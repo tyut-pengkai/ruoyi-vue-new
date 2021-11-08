@@ -1,150 +1,478 @@
 package com.ruoyi.system.domain;
 
+import com.ruoyi.common.annotation.Excels;
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.enums.*;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
-import com.ruoyi.common.enums.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * 软件管理表
+ * 软件对象 sys_app
  *
  * @author zwgu
+ * @date 2021-11-05
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class SysApp extends BaseEntity {
+public class SysApp extends BaseEntity
+{
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 参数主键
-     */
-    @Excel(name = "参数主键", cellType = Excel.ColumnType.NUMERIC)
+    /** 软件ID */
+    @Excel(name = "软件编号")
     private Long appId;
-    /**
-     * 软件名称
-     */
+
+    /** 软件名称 */
+    @Excel(name = "软件名称")
     private String appName;
-    /**
-     * 软件描述
-     */
+
+    /** 软件描述 */
+    @Excel(name = "软件描述")
     private String description;
-    /**
-     * API接口地址
-     */
+
+    /** API接口地址 */
     private String apiUrl;
-    /**
-     * 软件状态（0正常 1停用）
-     */
+
+    /** 软件状态（0正常 1停用） */
     @Excel(name = "软件状态", readConverterExp = "0=正常,1=停用")
     private String status;
-    /**
-     * 删除标志（0代表存在 2代表删除）
-     */
+
+    /** 删除标志（0代表存在 2代表删除） */
     private String delFlag;
-    /**
-     * 绑定模式
-     */
+
+    /** 绑定模式 */
+    @Excel(name = "绑定模式", dictType = "sys_bind_type")
     private BindType bindType;
-    /**
-     * 是否登录时自动绑定机器码
-     */
-    private boolean isAutoBind;
-    /**
-     * 是否开启计费
-     */
-    private boolean isCharge;
-    /**
-     * 软件主页
-     */
+
+    /** 是否开启计费 */
+    @Excel(name = "是否开启计费", readConverterExp = "Y=是,N=否")
+    private String isCharge;
+
+    /** 软件主页 */
+    @Excel(name = "软件主页")
     private String idxUrl;
-    /**
-     * 首次登录赠送免费时间或点数，单位秒或点
-     */
+
+    /** 首次登录赠送免费时间或点数，单位秒或点 */
+    @Excel(name = "首次登录赠送免费时间或点数，单位秒或点")
     private Long freeQuotaReg;
-    /**
-     * 换绑设备扣减时间或点数，单位秒或点
-     */
+
+    /** 换绑设备扣减时间或点数，单位秒或点 */
+    @Excel(name = "换绑设备扣减时间或点数，单位秒或点")
     private Long reduceQuotaUnbind;
-    /**
-     * 认证类型
-     */
+
+    /** 认证类型 */
+    @Excel(name = "认证类型", dictType = "sys_auth_type")
     private AuthType authType;
-    /**
-     * 计费类型
-     */
+
+    /** 计费类型 */
+    @Excel(name = "计费类型", dictType = "sys_bill_type")
     private BillType billType;
-    /**
-     * 数据输入加密方式
-     */
+
+    /** 数据输入加密方式 */
+    @Excel(name = "数据输入加密方式", dictType = "sys_encryp_type")
     private EncrypType dataInEnc;
-    /**
-     * 数据输入加密密码
-     */
+
+    /** 数据输入加密密码 */
     private String dataInPwd;
-    /**
-     * 数据输出加密方式
-     */
+
+    /** 数据输出加密方式 */
+    @Excel(name = "数据输出加密方式", dictType = "sys_encryp_type")
     private EncrypType dataOutEnc;
-    /**
-     * 数据输出加密密码
-     */
+
+    /** 数据输出加密密码 */
     private String dataOutPwd;
-    /**
-     * 数据包过期时间，单位秒，-1为不限制，默认为-1
-     */
+
+    /** 数据包过期时间，单位秒，-1为不限制，默认为-1 */
+    @Excel(name = "数据包过期时间，单位秒，-1为不限制，默认为-1")
     private Long dataExpireTime;
-    /**
-     * 登录用户数量限制，整数，-1为不限制，默认为-1
-     */
+
+    /** 登录用户数量限制，整数，-1为不限制，默认为-1 */
+    @Excel(name = "登录用户数量限制，整数，-1为不限制，默认为-1")
     private Integer loginLimitU;
-    /**
-     * 登录机器数量限制，整数，-1为不限制，默认为-1
-     */
+
+    /** 登录机器数量限制，整数，-1为不限制，默认为-1 */
+    @Excel(name = "登录机器数量限制，整数，-1为不限制，默认为-1")
     private Integer loginLimitM;
-    /**
-     * 达到上限后的操作，默认为TIPS
-     */
+
+    /** 达到上限后的操作，默认为TIPS */
+    @Excel(name = "达到上限后的操作，默认为TIPS", dictType = "sys_limit_oper")
     private LimitOper limitOper;
-    /**
-     * 心跳包时间，单位秒，客户端若在此时间范围内无任何操作将自动下线，默认为300秒
-     */
-    private Long heartBeatTime;
-    /**
-     * APP ID
-     */
-    private String appid;
-    /**
-     * APP KEY
-     */
-    private String appkey;
-    /**
-     * API匿名密码
-     */
+
+    /** 心跳包时间，单位秒，客户端若在此时间范围内无任何操作将自动下线，默认为300秒 */
+    @Excel(name = "心跳包时间，单位秒，客户端若在此时间范围内无任何操作将自动下线，默认为300秒")
+    private Integer heartBeatTime;
+
+    /** APP KEY */
+    @Excel(name = "APP KEY")
+    private String appKey;
+
+    /** APP SECRET */
+    private String appSecret;
+
+    /** API匿名密码 */
     private String apiPwd;
-    /**
-     * 登录码前缀
-     */
+
+    /** 登录码前缀 */
+    @Excel(name = "登录码前缀")
     private String loginCodePrefix;
-    /**
-     * 登录码后缀
-     */
+
+    /** 登录码后缀 */
+    @Excel(name = "登录码后缀")
     private String loginCodeSuffix;
-    /**
-     * 登录码长度，默认为32
-     */
+
+    /** 登录码长度，默认为32 */
+    @Excel(name = "登录码长度，默认为32")
     private Integer loginCodeLen;
-    /**
-     * 登录码生成规则，默认为大小写字母+数字
-     */
+
+    /** 登录码生成规则，默认为大小写字母+数字 */
+    @Excel(name = "登录码生成规则，默认为大小写字母+数字", dictType = "sys_gen_rule")
     private GenRule loginCodeGenRule;
-    /**
-     * 登录码生成规则为正则时生效
-     */
+
+    /** 登录码生成规则为正则时生效 */
+    @Excel(name = "登录码生成规则为正则时生效")
     private String loginCodeRegex;
-    /**
-     * 软件图标地址
-     */
+
+    /** 软件图标地址 */
+    @Excel(name = "软件图标")
     private String icon;
 
+    /**
+     * 软件开发者信息
+     */
+    @Excels({
+            @Excel(name = "开发者账号", targetAttr = "userName", type = Excel.Type.EXPORT),
+            @Excel(name = "开发者昵称", targetAttr = "nickName", type = Excel.Type.EXPORT)
+    })
+    private SysUser developer;
+
+    public SysUser getDeveloper() {
+        return developer;
+    }
+
+    public void setDeveloper(SysUser developer) {
+        this.developer = developer;
+    }
+
+    public void setAppId(Long appId)
+    {
+        this.appId = appId;
+    }
+
+    public Long getAppId()
+    {
+        return appId;
+    }
+    public void setAppName(String appName)
+    {
+        this.appName = appName;
+    }
+
+    public String getAppName()
+    {
+        return appName;
+    }
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+    public void setApiUrl(String apiUrl)
+    {
+        this.apiUrl = apiUrl;
+    }
+
+    public String getApiUrl()
+    {
+        return apiUrl;
+    }
+    public void setStatus(String status)
+    {
+        this.status = status;
+    }
+
+    public String getStatus()
+    {
+        return status;
+    }
+    public void setDelFlag(String delFlag)
+    {
+        this.delFlag = delFlag;
+    }
+
+    public String getDelFlag()
+    {
+        return delFlag;
+    }
+    public void setBindType(BindType bindType)
+    {
+        this.bindType = bindType;
+    }
+
+    public BindType getBindType()
+    {
+        return bindType;
+    }
+
+    public void setIsCharge(String isCharge)
+    {
+        this.isCharge = isCharge;
+    }
+
+    public String getIsCharge()
+    {
+        return isCharge;
+    }
+    public void setIdxUrl(String idxUrl)
+    {
+        this.idxUrl = idxUrl;
+    }
+
+    public String getIdxUrl()
+    {
+        return idxUrl;
+    }
+    public void setFreeQuotaReg(Long freeQuotaReg)
+    {
+        this.freeQuotaReg = freeQuotaReg;
+    }
+
+    public Long getFreeQuotaReg()
+    {
+        return freeQuotaReg;
+    }
+    public void setReduceQuotaUnbind(Long reduceQuotaUnbind)
+    {
+        this.reduceQuotaUnbind = reduceQuotaUnbind;
+    }
+
+    public Long getReduceQuotaUnbind()
+    {
+        return reduceQuotaUnbind;
+    }
+    public void setAuthType(AuthType authType)
+    {
+        this.authType = authType;
+    }
+
+    public AuthType getAuthType()
+    {
+        return authType;
+    }
+    public void setBillType(BillType billType)
+    {
+        this.billType = billType;
+    }
+
+    public BillType getBillType()
+    {
+        return billType;
+    }
+    public void setDataInEnc(EncrypType dataInEnc)
+    {
+        this.dataInEnc = dataInEnc;
+    }
+
+    public EncrypType getDataInEnc()
+    {
+        return dataInEnc;
+    }
+    public void setDataInPwd(String dataInPwd)
+    {
+        this.dataInPwd = dataInPwd;
+    }
+
+    public String getDataInPwd()
+    {
+        return dataInPwd;
+    }
+    public void setDataOutEnc(EncrypType dataOutEnc)
+    {
+        this.dataOutEnc = dataOutEnc;
+    }
+
+    public EncrypType getDataOutEnc()
+    {
+        return dataOutEnc;
+    }
+    public void setDataOutPwd(String dataOutPwd)
+    {
+        this.dataOutPwd = dataOutPwd;
+    }
+
+    public String getDataOutPwd()
+    {
+        return dataOutPwd;
+    }
+    public void setDataExpireTime(Long dataExpireTime)
+    {
+        this.dataExpireTime = dataExpireTime;
+    }
+
+    public Long getDataExpireTime()
+    {
+        return dataExpireTime;
+    }
+    public void setLoginLimitU(Integer loginLimitU)
+    {
+        this.loginLimitU = loginLimitU;
+    }
+
+    public Integer getLoginLimitU()
+    {
+        return loginLimitU;
+    }
+    public void setLoginLimitM(Integer loginLimitM)
+    {
+        this.loginLimitM = loginLimitM;
+    }
+
+    public Integer getLoginLimitM()
+    {
+        return loginLimitM;
+    }
+    public void setLimitOper(LimitOper limitOper)
+    {
+        this.limitOper = limitOper;
+    }
+
+    public LimitOper getLimitOper()
+    {
+        return limitOper;
+    }
+    public void setHeartBeatTime(Integer heartBeatTime)
+    {
+        this.heartBeatTime = heartBeatTime;
+    }
+
+    public Integer getHeartBeatTime()
+    {
+        return heartBeatTime;
+    }
+    public void setAppKey(String appKey)
+    {
+        this.appKey = appKey;
+    }
+
+    public String getAppKey()
+    {
+        return appKey;
+    }
+    public void setAppSecret(String appSecret)
+    {
+        this.appSecret = appSecret;
+    }
+
+    public String getAppSecret()
+    {
+        return appSecret;
+    }
+    public void setApiPwd(String apiPwd)
+    {
+        this.apiPwd = apiPwd;
+    }
+
+    public String getApiPwd()
+    {
+        return apiPwd;
+    }
+    public void setLoginCodePrefix(String loginCodePrefix)
+    {
+        this.loginCodePrefix = loginCodePrefix;
+    }
+
+    public String getLoginCodePrefix()
+    {
+        return loginCodePrefix;
+    }
+    public void setLoginCodeSuffix(String loginCodeSuffix)
+    {
+        this.loginCodeSuffix = loginCodeSuffix;
+    }
+
+    public String getLoginCodeSuffix()
+    {
+        return loginCodeSuffix;
+    }
+    public void setLoginCodeLen(Integer loginCodeLen)
+    {
+        this.loginCodeLen = loginCodeLen;
+    }
+
+    public Integer getLoginCodeLen()
+    {
+        return loginCodeLen;
+    }
+    public void setLoginCodeGenRule(GenRule loginCodeGenRule)
+    {
+        this.loginCodeGenRule = loginCodeGenRule;
+    }
+
+    public GenRule getLoginCodeGenRule()
+    {
+        return loginCodeGenRule;
+    }
+    public void setLoginCodeRegex(String loginCodeRegex)
+    {
+        this.loginCodeRegex = loginCodeRegex;
+    }
+
+    public String getLoginCodeRegex()
+    {
+        return loginCodeRegex;
+    }
+    public void setIcon(String icon)
+    {
+        this.icon = icon;
+    }
+
+    public String getIcon()
+    {
+        return icon;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
+                .append("appId", getAppId())
+                .append("appName", getAppName())
+                .append("description", getDescription())
+                .append("apiUrl", getApiUrl())
+                .append("status", getStatus())
+                .append("delFlag", getDelFlag())
+                .append("bindType", getBindType())
+                .append("isCharge", getIsCharge())
+                .append("idxUrl", getIdxUrl())
+                .append("freeQuotaReg", getFreeQuotaReg())
+                .append("reduceQuotaUnbind", getReduceQuotaUnbind())
+                .append("authType", getAuthType())
+                .append("billType", getBillType())
+                .append("dataInEnc", getDataInEnc())
+                .append("dataInPwd", getDataInPwd())
+                .append("dataOutEnc", getDataOutEnc())
+                .append("dataOutPwd", getDataOutPwd())
+                .append("dataExpireTime", getDataExpireTime())
+                .append("loginLimitU", getLoginLimitU())
+                .append("loginLimitM", getLoginLimitM())
+                .append("limitOper", getLimitOper())
+                .append("heartBeatTime", getHeartBeatTime())
+                .append("appKey", getAppKey())
+                .append("appSecret", getAppSecret())
+                .append("apiPwd", getApiPwd())
+                .append("loginCodePrefix", getLoginCodePrefix())
+                .append("loginCodeSuffix", getLoginCodeSuffix())
+                .append("loginCodeLen", getLoginCodeLen())
+                .append("loginCodeGenRule", getLoginCodeGenRule())
+                .append("loginCodeRegex", getLoginCodeRegex())
+                .append("icon", getIcon())
+                .append("createBy", getCreateBy())
+                .append("createTime", getCreateTime())
+                .append("updateBy", getUpdateBy())
+                .append("updateTime", getUpdateTime())
+                .append("remark", getRemark())
+                .toString();
+    }
 }

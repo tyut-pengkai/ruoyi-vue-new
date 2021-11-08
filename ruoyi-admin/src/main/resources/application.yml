@@ -96,11 +96,12 @@ mybatis-plus:
   mapperLocations: classpath*:mapper/**/*Mapper.xml
   # 加载全局的配置文件
   configLocation: classpath:mybatis/mybatis-config.xml
+  # 扫描枚举类
+  typeEnumsPackage: com.ruoyi.**.enums
 
 # PageHelper分页插件
 pagehelper: 
-  # helperDialect: mysql
-  helperDialect: postgresql
+  helperDialect: mysql
   supportMethodsArguments: true
   params: count=countSql 
 

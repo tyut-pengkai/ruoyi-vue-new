@@ -1,0 +1,1124 @@
+<template>
+  <div class="app-container">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      v-show="showSearch"
+      label-width="68px"
+    >
+      <el-form-item label="软件名称" prop="appName">
+        <el-input
+          v-model="queryParams.appName"
+          placeholder="请输入软件名称"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="软件描述" prop="description">
+        <el-input
+          v-model="queryParams.description"
+          placeholder="请输入软件描述"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="软件状态" prop="status">
+        <el-select
+          v-model="queryParams.status"
+          placeholder="请选择软件状态"
+          clearable
+          size="small"
+        >
+          <el-option
+            v-for="dict in dict.type.sys_normal_disable"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="绑定模式" prop="bindType">
+        <el-select
+          v-model="queryParams.bindType"
+          placeholder="请选择绑定模式"
+          clearable
+          size="small"
+        >
+          <el-option
+            v-for="dict in dict.type.sys_bind_type"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="开启计费" prop="isCharge">
+        <el-select
+          v-model="queryParams.isCharge"
+          placeholder="请选择是否开启计费"
+          clearable
+          size="small"
+        >
+          <el-option
+            v-for="dict in dict.type.sys_yes_no"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="认证类型" prop="authType">
+        <el-select
+          v-model="queryParams.authType"
+          placeholder="请选择认证类型"
+          clearable
+          size="small"
+        >
+          <el-option
+            v-for="dict in dict.type.sys_auth_type"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="计费类型" prop="billType">
+        <el-select
+          v-model="queryParams.billType"
+          placeholder="请选择计费类型"
+          clearable
+          size="small"
+        >
+          <el-option
+            v-for="dict in dict.type.sys_bill_type"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="软件作者" prop="createBy">
+        <el-input
+          v-model="queryParams.createBy"
+          placeholder="请输入软件作者"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="创建时间">
+        <el-date-picker
+          v-model="daterangeCreateTime"
+          size="small"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
+      </el-form-item>
+      <el-form-item>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+          >重置</el-button
+        >
+      </el-form-item>
+    </el-form>
+
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:app:add']"
+          >新增</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="single"
+          @click="handleUpdate"
+          v-hasPermi="['system:app:edit']"
+          >修改</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
+          :disabled="multiple"
+          @click="handleDelete"
+          v-hasPermi="['system:app:remove']"
+          >删除</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          :loading="exportLoading"
+          @click="handleExport"
+          v-hasPermi="['system:app:export']"
+          >导出</el-button
+        >
+      </el-col>
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+      ></right-toolbar>
+    </el-row>
+
+    <el-table
+      v-loading="loading"
+      :data="appList"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="软件编号" align="center" prop="appId" />
+      <!-- <el-table-column label="软件图标" align="center" prop="icon" /> -->
+      <el-table-column label="软件名称" align="center" prop="appName" />
+      <el-table-column
+        label="软件描述"
+        align="center"
+        prop="description"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column label="认证类型" align="center" prop="authType">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_auth_type"
+            :value="scope.row.authType"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="计费类型" align="center" prop="billType">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_bill_type"
+            :value="scope.row.billType"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="绑定模式"
+        align="center"
+        prop="bindType"
+        width="200px"
+      >
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_bind_type"
+            :value="scope.row.bindType"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="软件作者"
+        align="center"
+        prop="developer.nickName"
+      />
+      <el-table-column
+        label="创建时间"
+        align="center"
+        prop="createTime"
+        width="180"
+      >
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime, "{y}-{m}-{d}") }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="备注"
+        align="center"
+        prop="remark"
+        :show-overflow-tooltip="true"
+      />
+      <!-- <el-table-column label="软件状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_normal_disable"
+            :value="scope.row.status"
+          />
+        </template>
+      </el-table-column> -->
+      <el-table-column label="软件状态" align="center" key="status">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            active-value="0"
+            inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column label="开启计费" align="center" prop="isCharge">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_yes_no"
+            :value="scope.row.isCharge"
+          />
+        </template>
+      </el-table-column> -->
+      <el-table-column label="开启计费" align="center" key="isCharge">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.isCharge"
+            active-value="Y"
+            inactive-value="N"
+            @change="handleChargeStatusChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        width="260px"
+      >
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-user"
+            @click="handleAppUser(scope.row)"
+            v-hasPermi="['system:app:edit']"
+            >用户</el-button
+          >
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-bank-card"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:app:edit']"
+            >卡密</el-button
+          >
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit-outline"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:app:edit']"
+            >模板</el-button
+          >
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-set-up"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:app:edit']"
+            >配置</el-button
+          >
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:app:remove']"
+            ><span style="color: #f00">删除</span></el-button
+          >
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
+
+    <!-- 添加或修改软件对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-position="right">
+        <el-tabs type="border-card" ref="tabs" v-model="tabIdx">
+          <!-- 基本配置 -->
+          <el-tab-pane label="基本信息">
+            <el-form-item label="软件名称" prop="appName">
+              <el-input v-model="form.appName" placeholder="请输入软件名称" />
+            </el-form-item>
+            <el-form-item>
+              <el-col :span="12">
+                <el-form-item label="认证类型" prop="authType">
+                  <el-select
+                    v-model="form.authType"
+                    placeholder="请选择认证类型"
+                  >
+                    <el-option
+                      v-for="dict in dict.type.sys_auth_type"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="计费类型" prop="billType">
+                  <el-select
+                    v-model="form.billType"
+                    placeholder="请选择计费类型"
+                  >
+                    <el-option
+                      v-for="dict in dict.type.sys_bill_type"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+            <el-form-item label="软件描述" prop="description">
+              <el-input
+                v-model="form.description"
+                type="textarea"
+                placeholder="请输入软件描述"
+              />
+            </el-form-item>
+            <el-divider></el-divider>
+            <updown>
+              <el-form-item>
+                <el-col :span="12">
+                  <el-form-item label="软件状态" prop="status">
+                    <el-select
+                      v-model="form.status"
+                      placeholder="请选择软件状态"
+                    >
+                      <el-option
+                        v-for="dict in dict.type.sys_normal_disable"
+                        :key="dict.value"
+                        :label="dict.label"
+                        :value="dict.value"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="开启计费" prop="isCharge">
+                    <el-select
+                      v-model="form.isCharge"
+                      placeholder="请选择是否开启计费"
+                    >
+                      <el-option
+                        v-for="dict in dict.type.sys_yes_no"
+                        :key="dict.value"
+                        :label="dict.label"
+                        :value="dict.value"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+              </el-form-item>
+              <el-form-item label="绑定模式" prop="bindType">
+                <el-select v-model="form.bindType" placeholder="请选择绑定模式">
+                  <el-option
+                    v-for="dict in dict.type.sys_bind_type"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="软件主页" prop="idxUrl">
+                <el-input v-model="form.idxUrl" placeholder="请输入软件主页" />
+              </el-form-item>
+              <el-form-item>
+                <el-col :span="12">
+                  <el-form-item label="首次登录赠送" prop="freeQuotaReg">
+                    <span>
+                      <el-tooltip
+                        content="首次登录赠送免费时间或点数，单位秒或点"
+                        placement="top"
+                      >
+                        <i
+                          class="el-icon-question"
+                          style="margin-left: -12px; margin-right: 10px"
+                        ></i>
+                      </el-tooltip>
+                    </span>
+                    <el-input-number
+                      v-model="form.freeQuotaReg"
+                      controls-position="right"
+                      :min="0"
+                    />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="换绑设备扣除" prop="reduceQuotaUnbind">
+                    <span>
+                      <el-tooltip
+                        content="换绑设备扣减时间或点数，单位秒或点"
+                        placement="top"
+                      >
+                        <i
+                          class="el-icon-question"
+                          style="margin-left: -12px; margin-right: 10px"
+                        ></i>
+                      </el-tooltip>
+                    </span>
+                    <el-input-number
+                      v-model="form.reduceQuotaUnbind"
+                      controls-position="right"
+                      :min="0"
+                    />
+                  </el-form-item>
+                </el-col>
+              </el-form-item>
+              <el-form-item label="软件图标">
+                <imageUpload v-model="form.icon" :limit="1" />
+                <!-- <app-icon /> -->
+              </el-form-item>
+              <el-form-item label="备注" prop="remark">
+                <el-input
+                  v-model="form.remark"
+                  type="textarea"
+                  placeholder="请输入内容"
+                />
+              </el-form-item>
+            </updown>
+          </el-tab-pane>
+          <!-- 通信安全 -->
+          <el-tab-pane label="通信安全">
+            <el-form-item>
+              <el-col :span="12">
+                <el-form-item label="数据输入加密" prop="dataInEnc">
+                  <el-select
+                    v-model="form.dataInEnc"
+                    placeholder="请选择加密方式"
+                  >
+                    <el-option
+                      v-for="dict in dict.type.sys_encryp_type"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="密码" prop="dataInPwd" label-width="60px">
+                  <el-input
+                    v-model="form.dataInPwd"
+                    placeholder="请输入加密密码"
+                    :disabled="form.dataInEnc === '0' || form.dataInEnc === '1'"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+            <el-form-item>
+              <el-col :span="12">
+                <el-form-item label="数据输出加密" prop="dataOutEnc">
+                  <el-select
+                    v-model="form.dataOutEnc"
+                    placeholder="请选择加密方式"
+                  >
+                    <el-option
+                      v-for="dict in dict.type.sys_encryp_type"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="密码" prop="dataOutPwd" label-width="60px">
+                  <el-input
+                    v-model="form.dataOutPwd"
+                    placeholder="请输入加密密码"
+                    :disabled="
+                      form.dataOutEnc === '0' || form.dataOutEnc === '1'
+                    "
+                  />
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+            <el-form-item>
+              <el-col :span="12">
+                <el-form-item label="数据包过期时间" prop="dataExpireTime">
+                  <span>
+                    <el-tooltip
+                      content="数据包过期时间，单位秒，-1为不限制，默认为-1"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
+                  <el-input-number
+                    v-model="form.dataExpireTime"
+                    controls-position="right"
+                    :min="-1"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="心跳包时间" prop="heartBeatTime">
+                  <span>
+                    <el-tooltip
+                      content="心跳包时间，单位秒，客户端若在此时间范围内无任何操作将自动下线，-1为不检测，默认为300秒"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
+                  <el-input-number
+                    v-model="form.heartBeatTime"
+                    controls-position="right"
+                    :min="-1"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+            <el-form-item label="API匿名密码" prop="apiPwd">
+              <el-input v-model="form.apiPwd" placeholder="请输入API匿名密码" />
+            </el-form-item>
+          </el-tab-pane>
+          <!-- 限开设置 -->
+          <el-tab-pane label="限开设置">
+            <el-form-item>
+              <el-col :span="12">
+                <el-form-item label="登录用户数限制" prop="loginLimitU">
+                  <span>
+                    <el-tooltip
+                      content="登录用户数量限制，整数，-1为不限制，默认为-1"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
+                  <el-input-number
+                    v-model="form.loginLimitU"
+                    controls-position="right"
+                    :min="-1"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="登录机器数限制" prop="loginLimitM">
+                  <span>
+                    <el-tooltip
+                      content="登录机器数量限制，整数，-1为不限制，默认为-1"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
+                  <el-input-number
+                    v-model="form.loginLimitM"
+                    controls-position="right"
+                    :min="-1"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+            <el-form-item label="达到登录上限后" prop="limitOper">
+              <el-select
+                v-model="form.limitOper"
+                placeholder="请选择达到上限后的操作，默认为提示用户"
+              >
+                <el-option
+                  v-for="dict in dict.type.sys_limit_oper"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-tab-pane>
+          <!-- 登录码设置 -->
+          <el-tab-pane label="登录码设置">
+            <el-form-item>
+              <el-form-item label="登录码前缀" prop="loginCodePrefix">
+                <el-input
+                  v-model="form.loginCodePrefix"
+                  placeholder="请输入登录码前缀"
+                />
+              </el-form-item>
+              <el-form-item label="登录码后缀" prop="loginCodeSuffix">
+                <el-input
+                  v-model="form.loginCodeSuffix"
+                  placeholder="请输入登录码后缀"
+                />
+              </el-form-item>
+            </el-form-item>
+            <el-form-item label="登录码长度" prop="loginCodeLen">
+              <span>
+                <el-tooltip
+                  content="登录码长度，最短为16，最长为48，默认为32"
+                  placement="top"
+                >
+                  <i
+                    class="el-icon-question"
+                    style="margin-left: -12px; margin-right: 10px"
+                  ></i>
+                </el-tooltip>
+              </span>
+              <el-input-number
+                v-model="form.loginCodeLen"
+                controls-position="right"
+                :min="16"
+                :max="48"
+              />
+            </el-form-item>
+            <el-form-item>
+              <el-form-item label="登录码生成规则" prop="loginCodeGenRule">
+                <el-select
+                  v-model="form.loginCodeGenRule"
+                  placeholder="请输入登录码生成规则，默认为大小写字母+数字"
+                >
+                  <el-option
+                    v-for="dict in dict.type.sys_gen_rule"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="正则表达式" prop="loginCodeRegex">
+                <el-input
+                  v-model="form.loginCodeRegex"
+                  placeholder="请输入登录码生成规则"
+                  :disabled="form.loginCodeGenRule !== '7'"
+                />
+              </el-form-item>
+            </el-form-item>
+          </el-tab-pane>
+        </el-tabs>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import {
+  listApp,
+  getApp,
+  delApp,
+  addApp,
+  updateApp,
+  exportApp,
+  changeAppStatus,
+  changeAppChargeStatus,
+} from "@/api/system/app";
+import appIcon from "./appIcon";
+import Updown from "./updown";
+
+export default {
+  components: { appIcon, Updown },
+  name: "App",
+  dicts: [
+    "sys_normal_disable",
+    "sys_bind_type",
+    "sys_yes_no",
+    "sys_yes_no",
+    "sys_auth_type",
+    "sys_bill_type",
+    "sys_encryp_type",
+    "sys_gen_rule",
+    "sys_limit_oper",
+  ],
+  data() {
+    return {
+      // tab激活序号
+      tabIdx: "0",
+      // 遮罩层
+      loading: true,
+      // 导出遮罩层
+      exportLoading: false,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 显示搜索条件
+      showSearch: true,
+      // 总条数
+      total: 0,
+      // 软件表格数据
+      appList: [],
+      // 弹出层标题
+      title: "",
+      // 是否显示弹出层
+      open: false,
+      // 备注时间范围
+      daterangeCreateTime: [],
+      // 查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        appName: null,
+        description: null,
+        status: null,
+        bindType: null,
+        isCharge: null,
+        authType: null,
+        billType: null,
+        createBy: null,
+        createTime: null,
+      },
+      // 表单参数
+      form: {},
+      // 表单校验
+      rules: {
+        appName: [
+          { required: true, message: "软件名称不能为空", trigger: "blur" },
+        ],
+        status: [
+          { required: true, message: "软件状态不能为空", trigger: "change" },
+        ],
+        bindType: [
+          { required: true, message: "绑定模式不能为空", trigger: "change" },
+        ],
+        isCharge: [
+          {
+            required: true,
+            message: "是否开启计费不能为空",
+            trigger: "change",
+          },
+        ],
+        freeQuotaReg: [
+          {
+            required: true,
+            message: "首次登录赠送免费时间或点数不能为空",
+            trigger: "blur",
+          },
+        ],
+        reduceQuotaUnbind: [
+          {
+            required: true,
+            message: "换绑设备扣减时间或点数不能为空",
+            trigger: "blur",
+          },
+        ],
+        authType: [
+          { required: true, message: "认证类型不能为空", trigger: "change" },
+        ],
+        billType: [
+          { required: true, message: "计费类型不能为空", trigger: "change" },
+        ],
+        dataInEnc: [
+          {
+            required: true,
+            message: "数据输入加密方式不能为空",
+            trigger: "blur",
+          },
+        ],
+        dataInPwd: [
+          {
+            required: false,
+            message: "数据输入加密密码不能为空",
+            trigger: "blur",
+          },
+        ],
+        dataOutEnc: [
+          {
+            required: true,
+            message: "数据输出加密方式不能为空",
+            trigger: "blur",
+          },
+        ],
+        dataOutPwd: [
+          {
+            required: false,
+            message: "数据输出加密密码不能为空",
+            trigger: "blur",
+          },
+        ],
+        dataExpireTime: [
+          {
+            required: true,
+            message: "数据包过期时间不能为空",
+            trigger: "blur",
+          },
+        ],
+        loginLimitU: [
+          {
+            required: true,
+            message: "登录用户数量限制不能为空",
+            trigger: "blur",
+          },
+        ],
+        loginLimitM: [
+          {
+            required: true,
+            message: "登录机器数量限制不能为空",
+            trigger: "blur",
+          },
+        ],
+        limitOper: [
+          {
+            required: true,
+            message: "达到上限后的操作不能为空",
+            trigger: "blur",
+          },
+        ],
+        heartBeatTime: [
+          {
+            required: true,
+            message: "心跳包时间不能为空",
+            trigger: "blur",
+          },
+        ],
+        loginCodeLen: [
+          {
+            required: false,
+            message: "登录码长度不能为空",
+            trigger: "blur",
+          },
+        ],
+        loginCodeGenRule: [
+          {
+            required: false,
+            message: "登录码生成规则不能为空",
+            trigger: "blur",
+          },
+        ],
+        loginCodeRegex: [
+          {
+            required: false,
+            message: "登录码生成规则不能为空",
+            trigger: "blur",
+          },
+        ],
+      },
+    };
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+    /** 查询软件列表 */
+    getList() {
+      this.loading = true;
+      this.queryParams.params = {};
+      if (null != this.daterangeCreateTime && "" != this.daterangeCreateTime) {
+        this.queryParams.params["beginCreateTime"] =
+          this.daterangeCreateTime[0];
+        this.queryParams.params["endCreateTime"] = this.daterangeCreateTime[1];
+      }
+      listApp(this.queryParams).then((response) => {
+        this.appList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+      });
+    },
+    // 软件状态修改
+    handleStatusChange(row) {
+      let text = row.status === "0" ? "启用" : "停用";
+      this.$modal
+        .confirm('确认要"' + text + '""' + row.appName + '"软件吗？')
+        .then(function () {
+          return changeAppStatus(row.appId, row.status);
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.status = row.status === "0" ? "1" : "0";
+        });
+    },
+    // 软件计费状态修改
+    handleChargeStatusChange(row) {
+      let text = row.isCharge === "Y" ? "开启" : "关闭";
+      this.$modal
+        .confirm('确认要"' + text + '""' + row.appName + '"软件的计费模式吗？')
+        .then(function () {
+          return changeAppChargeStatus(row.appId, row.isCharge);
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.isCharge = row.isCharge === "Y" ? "N" : "Y";
+        });
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    // 表单重置
+    reset() {
+      this.form = {
+        appName: null,
+        description: null,
+        apiUrl: null,
+        status: "0",
+        bindType: "0",
+        isCharge: "Y",
+        idxUrl: null,
+        freeQuotaReg: 0,
+        reduceQuotaUnbind: 0,
+        authType: null,
+        billType: null,
+        dataInEnc: "0",
+        dataInPwd: null,
+        dataOutEnc: "0",
+        dataOutPwd: null,
+        dataExpireTime: -1,
+        loginLimitU: -1,
+        loginLimitM: -1,
+        limitOper: "0",
+        heartBeatTime: 300,
+        apiPwd: null,
+        loginCodePrefix: null,
+        loginCodeSuffix: null,
+        loginCodeLen: 32,
+        loginCodeGenRule: "0",
+        loginCodeRegex: null,
+        icon: null,
+        remark: null,
+      };
+      this.resetForm("form");
+      this.tabIdx = "0";
+    },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
+      this.getList();
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.daterangeCreateTime = [];
+      this.resetForm("queryForm");
+      this.handleQuery();
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map((item) => item.appId);
+      this.single = selection.length !== 1;
+      this.multiple = !selection.length;
+    },
+    /** 新增按钮操作 */
+    handleAdd() {
+      this.reset();
+      this.open = true;
+      this.title = "添加软件";
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const appId = row.appId || this.ids;
+      getApp(appId).then((response) => {
+        this.form = response.data;
+        this.open = true;
+        this.title = "修改软件";
+      });
+    },
+    /** 提交按钮 */
+    submitForm() {
+      this.$refs["form"].validate((valid) => {
+        if (valid) {
+          if (this.form.appId != null) {
+            updateApp(this.form).then((response) => {
+              this.$modal.msgSuccess("修改成功");
+              this.open = false;
+              this.getList();
+            });
+          } else {
+            addApp(this.form).then((response) => {
+              this.$modal.msgSuccess("新增成功");
+              this.open = false;
+              this.getList();
+            });
+          }
+        }
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const appIds = row.appId || this.ids;
+      this.$modal
+        .confirm('是否确认删除软件编号为"' + appIds + '"的数据项？')
+        .then(function () {
+          return delApp(appIds);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {});
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      const queryParams = this.queryParams;
+      this.$modal
+        .confirm("是否确认导出所有软件数据项？")
+        .then(() => {
+          this.exportLoading = true;
+          return exportApp(queryParams);
+        })
+        .then((response) => {
+          this.$download.name(response.msg);
+          this.exportLoading = false;
+        })
+        .catch(() => {});
+    },
+    showTabPane(show, idx) {
+      this.$nextTick(() => {
+        if (show) {
+          this.$refs.tabs.$children[0].$refs.tabs[idx].style.display =
+            "inline-block";
+        } else {
+          try {
+            this.$refs.tabs.$children[0].$refs.tabs[idx].style.display = "none";
+          } catch (error) {}
+        }
+      });
+    },
+    handleAppUser: function (row) {
+      const appId = row.appId;
+      this.$router.push({
+        path: "/system/app/user/" + appId,
+        query: { appName: row.appName },
+      });
+    },
+  },
+  watch: {
+    "form.authType": {
+      handler(newVal, oldVal) {
+        this.showTabPane(this.form.authType === "1", 3);
+      },
+    },
+  },
+};
+</script>
