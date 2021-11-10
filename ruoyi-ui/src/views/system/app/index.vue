@@ -194,10 +194,20 @@
       :data="appList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="软件编号" align="center" prop="appId" />
+      <el-table-column
+        type="selection"
+        width="55"
+        align="center"
+        fixed="left"
+      />
+      <el-table-column label="" type="index" align="center" />
       <!-- <el-table-column label="软件图标" align="center" prop="icon" /> -->
-      <el-table-column label="软件名称" align="center" prop="appName" />
+      <el-table-column
+        label="软件名称"
+        align="center"
+        prop="appName"
+        :show-overflow-tooltip="true"
+      />
       <el-table-column
         label="软件描述"
         align="center"
@@ -233,11 +243,11 @@
           />
         </template>
       </el-table-column>
-      <el-table-column
-        label="软件作者"
-        align="center"
-        prop="developer.nickName"
-      />
+      <el-table-column label="软件作者" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.developer.nickName }}({{ scope.row.developer.userName }})
+        </template>
+      </el-table-column>
       <el-table-column
         label="创建时间"
         align="center"
@@ -294,15 +304,25 @@
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
-        width="260px"
+        width="350px"
+        min-width="350px"
+        fixed="right"
       >
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-finished"
+            @click="handleAppVersion(scope.row)"
+            v-hasPermi="['system:appVersion:list']"
+            >版本</el-button
+          >
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-user"
             @click="handleAppUser(scope.row)"
-            v-hasPermi="['system:app:edit']"
+            v-hasPermi="['system:appUser:list']"
             >用户</el-button
           >
           <el-button
@@ -310,7 +330,7 @@
             type="text"
             icon="el-icon-bank-card"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:app:edit']"
+            v-hasPermi="['system:card:list']"
             >卡密</el-button
           >
           <el-button
@@ -318,13 +338,13 @@
             type="text"
             icon="el-icon-edit-outline"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:app:edit']"
+            v-hasPermi="['system:cardTemplate:list']"
             >模板</el-button
           >
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-set-up"
+            icon="el-icon-setting"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:app:edit']"
             >配置</el-button
@@ -402,7 +422,7 @@
               <el-form-item>
                 <el-col :span="12">
                   <el-form-item label="软件状态" prop="status">
-                    <el-select
+                    <!-- <el-select
                       v-model="form.status"
                       placeholder="请选择软件状态"
                     >
@@ -412,7 +432,15 @@
                         :label="dict.label"
                         :value="dict.value"
                       ></el-option>
-                    </el-select>
+                    </el-select> -->
+                    <el-radio-group v-model="form.status">
+                      <el-radio
+                        v-for="dict in dict.type.sys_normal_disable"
+                        :key="dict.value"
+                        :label="dict.value"
+                        >{{ dict.label }}</el-radio
+                      >
+                    </el-radio-group>
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">

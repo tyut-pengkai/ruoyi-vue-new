@@ -10,7 +10,7 @@ import lombok.Getter;
 public enum AuthType implements BaseEnum {
 
     ACCOUNT("0", "账号登录"),
-    CODE("1", "登录码登录");
+    LOGIN_CODE("1", "登录码登录");
     @EnumValue // 用于dao层序列化与反序列化
     @JsonValue // 用于controller层序列化
     private final String code;
