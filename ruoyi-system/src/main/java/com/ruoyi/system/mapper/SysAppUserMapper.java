@@ -1,9 +1,10 @@
 package com.ruoyi.system.mapper;
 
-import java.util.List;
-
 import com.ruoyi.system.domain.SysAppUser;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * 软件用户Mapper接口
@@ -61,4 +62,22 @@ public interface SysAppUserMapper
      * @return 结果
      */
     public int deleteSysAppUserByAppUserIds(Long[] appUserIds);
+
+    /**
+     * 查询软件用户
+     *
+     * @param appId 软件主键
+     * @param userId 账号主键
+     * @return 软件用户
+     */
+    public SysAppUser selectSysAppUserByAppIdAndUserId(@Param("appId") Long appId, @Param("userId") Long userId);
+
+    /**
+     * 查询软件用户
+     *
+     * @param appId 软件主键
+     * @param loginCode 登录码
+     * @return 软件用户
+     */
+    SysAppUser selectSysAppUserByAppIdAndLoginCode(@Param("appId") Long appId, @Param("loginCode")String loginCode);
 }

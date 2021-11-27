@@ -1,24 +1,21 @@
 package com.ruoyi.web.controller.system;
 
-import java.util.List;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.system.domain.SysAppUser;
-import com.ruoyi.system.service.ISysAppUserService;
-import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.enums.AuthType;
+import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.system.domain.SysApp;
+import com.ruoyi.system.domain.SysAppUser;
+import com.ruoyi.system.service.ISysAppService;
+import com.ruoyi.system.service.ISysAppUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 软件用户Controller
@@ -32,6 +29,8 @@ public class SysAppUserController extends BaseController
 {
     @Autowired
     private ISysAppUserService sysAppUserService;
+    @Autowired
+    private ISysAppService sysAppService;
 
     /**
      * 查询软件用户列表
@@ -76,6 +75,19 @@ public class SysAppUserController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody SysAppUser sysAppUser)
     {
+        sysAppUser.setCreateBy(getUsername());
+        SysApp sysApp = sysAppService.selectSysAppByAppId(sysAppUser.getAppId());
+        if(sysApp.getAuthType() == AuthType.ACCOUNT){
+            SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndUserId(sysAppUser.getAppId(), sysAppUser.getUserId());
+            if(appUser != null){
+                return AjaxResult.error("当前软件下该账号已拥有软件用户，可直接登录，无需重复添加");
+            }
+        }else{
+            SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(sysAppUser.getAppId(), sysAppUser.getLoginCode());
+            if(appUser != null){
+                return AjaxResult.error("当前软件下该登录码已拥有软件用户，可直接登录，无需重复添加");
+            }
+        }
         return toAjax(sysAppUserService.insertSysAppUser(sysAppUser));
     }
 
@@ -87,6 +99,7 @@ public class SysAppUserController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody SysAppUser sysAppUser)
     {
+        sysAppUser.setUpdateBy(getUsername());
         return toAjax(sysAppUserService.updateSysAppUser(sysAppUser));
     }
 

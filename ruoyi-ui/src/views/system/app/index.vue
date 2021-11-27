@@ -207,13 +207,25 @@
         align="center"
         prop="appName"
         :show-overflow-tooltip="true"
-      />
-      <el-table-column
+      >
+        <template slot-scope="scope">
+          {{ scope.row.appName }}
+          <span v-if="scope.row.description">
+            <el-tooltip :content="scope.row.description" placement="top">
+              <i
+                class="el-icon-info"
+                style="margin-left: 0px; margin-right: 10px"
+              ></i>
+            </el-tooltip>
+          </span>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column
         label="软件描述"
         align="center"
         prop="description"
         :show-overflow-tooltip="true"
-      />
+      /> -->
       <el-table-column label="认证类型" align="center" prop="authType">
         <template slot-scope="scope">
           <dict-tag
@@ -309,38 +321,38 @@
         fixed="right"
       >
         <template slot-scope="scope">
-          <el-button
+          <!-- <el-button
             size="mini"
             type="text"
             icon="el-icon-finished"
             @click="handleAppVersion(scope.row)"
             v-hasPermi="['system:appVersion:list']"
             >版本</el-button
-          >
-          <el-button
+          > -->
+          <!-- <el-button
             size="mini"
             type="text"
             icon="el-icon-user"
             @click="handleAppUser(scope.row)"
             v-hasPermi="['system:appUser:list']"
             >用户</el-button
-          >
-          <el-button
+          > -->
+          <!-- <el-button
             size="mini"
             type="text"
             icon="el-icon-bank-card"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:card:list']"
             >卡密</el-button
-          >
-          <el-button
+          > -->
+          <!-- <el-button
             size="mini"
             type="text"
             icon="el-icon-edit-outline"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:cardTemplate:list']"
             >模板</el-button
-          >
+          > -->
           <el-button
             size="mini"
             type="text"
@@ -357,6 +369,46 @@
             v-hasPermi="['system:app:remove']"
             ><span style="color: #f00">删除</span></el-button
           >
+          <el-dropdown
+            size="mini"
+            @command="(command) => handleCommand(command, scope.row)"
+            v-hasPermi="[
+              'system:appUser:list',
+              'system:appVersion:list',
+              'system:card:list',
+              'system:cardTemplate:list',
+            ]"
+          >
+            <span class="el-dropdown-link">
+              <i class="el-icon-d-arrow-right el-icon--right"></i>更多
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item
+                command="handleAppUser"
+                icon="el-icon-user"
+                v-hasPermi="['system:appUser:list']"
+                >用户管理</el-dropdown-item
+              >
+              <el-dropdown-item
+                command="handleVersionManage"
+                icon="el-icon-finished"
+                v-hasPermi="['system:appVersion:list']"
+                >版本管理</el-dropdown-item
+              >
+              <el-dropdown-item
+                command="handleCardTemplate"
+                icon="el-icon-edit-outline"
+                v-hasPermi="['system:cardTemplate:list']"
+                >卡密模板</el-dropdown-item
+              >
+              <el-dropdown-item
+                command="handleCardManage"
+                icon="el-icon-bank-card"
+                v-hasPermi="['system:card:list']"
+                >卡密管理</el-dropdown-item
+              >
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -384,6 +436,7 @@
                   <el-select
                     v-model="form.authType"
                     placeholder="请选择认证类型"
+                    :disabled="form.appId != null"
                   >
                     <el-option
                       v-for="dict in dict.type.sys_auth_type"
@@ -399,6 +452,7 @@
                   <el-select
                     v-model="form.billType"
                     placeholder="请选择计费类型"
+                    :disabled="form.appId != null"
                   >
                     <el-option
                       v-for="dict in dict.type.sys_bill_type"
@@ -1007,34 +1061,34 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        appName: null,
-        description: null,
-        apiUrl: null,
+        appName: undefined,
+        description: undefined,
+        apiUrl: undefined,
         status: "0",
         bindType: "0",
         isCharge: "Y",
-        idxUrl: null,
+        idxUrl: undefined,
         freeQuotaReg: 0,
         reduceQuotaUnbind: 0,
-        authType: null,
-        billType: null,
+        authType: undefined,
+        billType: undefined,
         dataInEnc: "0",
-        dataInPwd: null,
+        dataInPwd: undefined,
         dataOutEnc: "0",
-        dataOutPwd: null,
+        dataOutPwd: undefined,
         dataExpireTime: -1,
         loginLimitU: -1,
         loginLimitM: -1,
         limitOper: "0",
         heartBeatTime: 300,
-        apiPwd: null,
-        loginCodePrefix: null,
-        loginCodeSuffix: null,
+        apiPwd: undefined,
+        loginCodePrefix: undefined,
+        loginCodeSuffix: undefined,
         loginCodeLen: 32,
         loginCodeGenRule: "0",
-        loginCodeRegex: null,
-        icon: null,
-        remark: null,
+        loginCodeRegex: undefined,
+        icon: undefined,
+        remark: undefined,
       };
       this.resetForm("form");
       this.tabIdx = "0";
@@ -1077,6 +1131,8 @@ export default {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.appId != null) {
+            this.form.authType = undefined;
+            this.form.billType = undefined;
             updateApp(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -1137,8 +1193,27 @@ export default {
       const appId = row.appId;
       this.$router.push({
         path: "/system/app/user/" + appId,
-        query: { appName: row.appName },
+        // query: { appName: row.appName },
       });
+    },
+    // 更多操作触发
+    handleCommand(command, row) {
+      switch (command) {
+        case "handleAppUser":
+          this.handleAppUser(row);
+          break;
+        case "handleVersionManage":
+          this.handleVersionManage(row);
+          break;
+        case "handleCardManage":
+          this.handleCardManage(row);
+          break;
+        case "handleCardTemplate":
+          this.handleCardTemplate(row);
+          break;
+        default:
+          break;
+      }
     },
   },
   watch: {

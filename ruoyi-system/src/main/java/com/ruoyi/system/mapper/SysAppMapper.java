@@ -1,8 +1,10 @@
 package com.ruoyi.system.mapper;
 
-import java.util.List;
 import com.ruoyi.system.domain.SysApp;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * 软件Mapper接口
@@ -60,4 +62,11 @@ public interface SysAppMapper
      * @return 结果
      */
     public int deleteSysAppByAppIds(Long[] appIds);
+
+    /**
+     * 检查软件名称唯一性
+     * @param appName 软件名称
+     * @return
+     */
+    int checkAppNameUnique(@Param("appName")String appName, @Param("appId")Long appId);
 }

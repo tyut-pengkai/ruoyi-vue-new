@@ -1,26 +1,23 @@
 package com.ruoyi.web.controller.system;
 
-import java.util.List;
-
-import com.ruoyi.common.core.domain.entity.SysUser;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.ServletUtils;
+import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.SysApp;
 import com.ruoyi.system.service.ISysAppService;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.common.core.page.TableDataInfo;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 软件Controller
@@ -78,6 +75,19 @@ public class SysAppController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody SysApp sysApp)
     {
+        if (UserConstants.NOT_UNIQUE.equals(sysAppService.checkAppNameUnique(sysApp.getAppName(), null)))
+        {
+            return AjaxResult.error("新增软件'" + sysApp.getAppName() + "'失败，软件名称已存在");
+        }
+        sysApp.setCreateBy(getUsername());
+        sysApp.setCreateTime(DateUtils.getNowDate());
+        sysApp.setAppKey(RandomStringUtils.randomAlphanumeric(32));
+        sysApp.setAppSecret(RandomStringUtils.randomAlphanumeric(32));
+        HttpServletRequest request = ServletUtils.getRequest();
+        sysApp.setApiUrl(request.getScheme() + "://" + request.getServerName()
+                + ("80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort())
+                + "/api?appkey=" + sysApp.getAppKey());
+        sysApp.setDelFlag("0");
         return toAjax(sysAppService.insertSysApp(sysApp));
     }
 
@@ -89,6 +99,11 @@ public class SysAppController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody SysApp sysApp)
     {
+        if (UserConstants.NOT_UNIQUE.equals(sysAppService.checkAppNameUnique(sysApp.getAppName(), sysApp.getAppId())))
+        {
+            return AjaxResult.error("修改软件'" + sysApp.getAppName() + "'失败，软件名称已存在");
+        }
+        sysApp.setUpdateBy(getUsername());
         return toAjax(sysAppService.updateSysApp(sysApp));
     }
 

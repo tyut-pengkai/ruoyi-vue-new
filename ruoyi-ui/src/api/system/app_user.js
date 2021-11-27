@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 // 查询软件用户列表
-export function listApp_user(query) {
+export function listAppUser(query) {
   return request({
     url: '/system/app_user/list',
     method: 'get',
@@ -10,7 +10,7 @@ export function listApp_user(query) {
 }
 
 // 查询软件用户详细
-export function getApp_user(appUserId) {
+export function getAppUser(appUserId) {
   return request({
     url: '/system/app_user/' + appUserId,
     method: 'get'
@@ -18,7 +18,7 @@ export function getApp_user(appUserId) {
 }
 
 // 新增软件用户
-export function addApp_user(data) {
+export function addAppUser(data) {
   return request({
     url: '/system/app_user',
     method: 'post',
@@ -27,7 +27,7 @@ export function addApp_user(data) {
 }
 
 // 修改软件用户
-export function updateApp_user(data) {
+export function updateAppUser(data) {
   return request({
     url: '/system/app_user',
     method: 'put',
@@ -36,7 +36,7 @@ export function updateApp_user(data) {
 }
 
 // 删除软件用户
-export function delApp_user(appUserId) {
+export function delAppUser(appUserId) {
   return request({
     url: '/system/app_user/' + appUserId,
     method: 'delete'
@@ -44,7 +44,7 @@ export function delApp_user(appUserId) {
 }
 
 // 导出软件用户
-export function exportApp_user(query) {
+export function exportAppUser(query) {
   return request({
     url: '/system/app_user/export',
     method: 'get',

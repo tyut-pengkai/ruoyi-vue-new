@@ -1,7 +1,8 @@
 package com.ruoyi.system.service;
 
-import java.util.List;
 import com.ruoyi.system.domain.SysApp;
+
+import java.util.List;
 
 /**
  * 软件Service接口
@@ -74,4 +75,11 @@ public interface ISysAppService
      * @return 结果
      */
     int updateSysAppChargeStatus(SysApp app);
+
+    /**
+     * 检查软件名称唯一性
+     * @param appName
+     * @return
+     */
+    String checkAppNameUnique(String appName, Long appId);
 }

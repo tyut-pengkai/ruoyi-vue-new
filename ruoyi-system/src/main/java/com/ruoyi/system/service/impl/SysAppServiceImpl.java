@@ -1,22 +1,15 @@
 package com.ruoyi.system.service.impl;
 
-import java.util.List;
-
-import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.common.utils.ServletUtils;
-import com.ruoyi.common.utils.uuid.IdUtils;
-import com.ruoyi.system.service.ISysUserService;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.token.TokenService;
-import org.springframework.stereotype.Service;
-import com.ruoyi.system.mapper.SysAppMapper;
 import com.ruoyi.system.domain.SysApp;
+import com.ruoyi.system.mapper.SysAppMapper;
 import com.ruoyi.system.service.ISysAppService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 软件Service业务层处理
@@ -63,15 +56,6 @@ public class SysAppServiceImpl implements ISysAppService
     @Override
     public int insertSysApp(SysApp sysApp)
     {
-        sysApp.setCreateBy(SecurityUtils.getUsername());
-        sysApp.setCreateTime(DateUtils.getNowDate());
-        sysApp.setAppKey(RandomStringUtils.randomAlphanumeric(32));
-        sysApp.setAppSecret(RandomStringUtils.randomAlphanumeric(32));
-        HttpServletRequest request = ServletUtils.getRequest();
-        sysApp.setApiUrl(request.getScheme() + "://" + request.getServerName()
-                + ("80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort())
-                + "/api?appid=" + sysApp.getAppKey());
-        sysApp.setDelFlag("0");
         return sysAppMapper.insertSysApp(sysApp);
     }
 
@@ -85,6 +69,9 @@ public class SysAppServiceImpl implements ISysAppService
     public int updateSysApp(SysApp sysApp)
     {
         sysApp.setUpdateTime(DateUtils.getNowDate());
+        sysApp.setUpdateBy(SecurityUtils.getUsername());
+        sysApp.setAuthType(null);
+        sysApp.setBillType(null);
         return sysAppMapper.updateSysApp(sysApp);
     }
 
@@ -134,5 +121,20 @@ public class SysAppServiceImpl implements ISysAppService
     public int updateSysAppChargeStatus(SysApp app)
     {
         return sysAppMapper.updateSysApp(app);
+    }
+
+    /**
+     * 检查软件名称唯一性
+     * @param appName 软件名称
+     * @return
+     */
+    @Override
+    public String checkAppNameUnique(String appName, Long appId) {
+        int count = sysAppMapper.checkAppNameUnique(appName, appId);
+        if (count > 0)
+        {
+            return UserConstants.NOT_UNIQUE;
+        }
+        return UserConstants.UNIQUE;
     }
 }

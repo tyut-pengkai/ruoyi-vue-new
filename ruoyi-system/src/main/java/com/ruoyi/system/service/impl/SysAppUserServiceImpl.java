@@ -1,12 +1,12 @@
 package com.ruoyi.system.service.impl;
 
-import java.util.List;
-import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.system.domain.SysAppUser;
+import com.ruoyi.system.mapper.SysAppUserMapper;
+import com.ruoyi.system.service.ISysAppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.system.mapper.SysAppUserMapper;
-import com.ruoyi.system.domain.SysAppUser;
-import com.ruoyi.system.service.ISysAppUserService;
+
+import java.util.List;
 
 /**
  * 软件用户Service业务层处理
@@ -53,7 +53,6 @@ public class SysAppUserServiceImpl implements ISysAppUserService
     @Override
     public int insertSysAppUser(SysAppUser sysAppUser)
     {
-        sysAppUser.setCreateTime(DateUtils.getNowDate());
         return sysAppUserMapper.insertSysAppUser(sysAppUser);
     }
 
@@ -66,7 +65,6 @@ public class SysAppUserServiceImpl implements ISysAppUserService
     @Override
     public int updateSysAppUser(SysAppUser sysAppUser)
     {
-        sysAppUser.setUpdateTime(DateUtils.getNowDate());
         return sysAppUserMapper.updateSysAppUser(sysAppUser);
     }
 
@@ -92,5 +90,29 @@ public class SysAppUserServiceImpl implements ISysAppUserService
     public int deleteSysAppUserByAppUserId(Long appUserId)
     {
         return sysAppUserMapper.deleteSysAppUserByAppUserId(appUserId);
+    }
+
+    /**
+     * 查询软件用户
+     *
+     * @param appId 软件主键
+     * @param userId 账号主键
+     * @return 软件用户
+     */
+    @Override
+    public SysAppUser selectSysAppUserByAppIdAndUserId(Long appId, Long userId) {
+        return sysAppUserMapper.selectSysAppUserByAppIdAndUserId(appId, userId);
+    }
+
+    /**
+     * 查询软件用户
+     *
+     * @param appId 软件主键
+     * @param loginCode 登录码
+     * @return 软件用户
+     */
+    @Override
+    public SysAppUser selectSysAppUserByAppIdAndLoginCode(Long appId, String loginCode) {
+        return sysAppUserMapper.selectSysAppUserByAppIdAndLoginCode(appId, loginCode);
     }
 }

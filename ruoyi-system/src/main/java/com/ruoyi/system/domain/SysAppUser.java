@@ -1,14 +1,15 @@
 package com.ruoyi.system.domain;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excels;
+import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import com.ruoyi.common.annotation.Excel;
-import com.ruoyi.common.core.domain.BaseEntity;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 软件用户对象 sys_app_user
@@ -56,21 +57,20 @@ public class SysAppUser extends BaseEntity
     private BigDecimal totalPay;
 
     /** 最后登录时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "最后登录时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "最后登录时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date lastLoginTime;
 
     /** 登录次数 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "登录次数", width = 30, dateFormat = "yyyy-MM-dd")
-    private Date loginTimes;
+    @Excel(name = "登录次数")
+    private Long loginTimes;
 
     /** 密码连续错误次数 */
-    private Date pwdErrorTimes;
+    private Integer pwdErrorTimes;
 
     /** 过期时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "过期时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "过期时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date expireTime;
 
     /** 剩余点数 */
@@ -95,6 +95,20 @@ public class SysAppUser extends BaseEntity
      */
     @Excel(name = "软件名称", targetAttr = "appName", type = Excel.Type.EXPORT)
     private SysApp app;
+
+    /**
+     * 所属用户用户名称，用户承载搜索参数
+     */
+    private String userName;
+
+    /**
+     * 创建者信息
+     */
+    @Excels({
+            @Excel(name = "用户账号", targetAttr = "userName", type = Excel.Type.EXPORT),
+            @Excel(name = "用户昵称", targetAttr = "nickName", type = Excel.Type.EXPORT)
+    })
+    private SysUser createUser;
 
     public void setAppUserId(Long appUserId) 
     {
@@ -186,21 +200,21 @@ public class SysAppUser extends BaseEntity
     {
         return lastLoginTime;
     }
-    public void setLoginTimes(Date loginTimes) 
+    public void setLoginTimes(Long loginTimes)
     {
         this.loginTimes = loginTimes;
     }
 
-    public Date getLoginTimes() 
+    public Long getLoginTimes()
     {
         return loginTimes;
     }
-    public void setPwdErrorTimes(Date pwdErrorTimes) 
+    public void setPwdErrorTimes(Integer pwdErrorTimes)
     {
         this.pwdErrorTimes = pwdErrorTimes;
     }
 
-    public Date getPwdErrorTimes() 
+    public Integer getPwdErrorTimes()
     {
         return pwdErrorTimes;
     }
@@ -246,6 +260,22 @@ public class SysAppUser extends BaseEntity
 
     public void setApp(SysApp app) {
         this.app = app;
+    }
+
+    public SysUser getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(SysUser createUser) {
+        this.createUser = createUser;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     @Override

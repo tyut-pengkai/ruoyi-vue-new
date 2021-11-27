@@ -217,4 +217,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
  	</delete>
 
+	<select id="selectUserByExceptAppId" parameterType="Long" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		<if test="appId != null and appId != ''">where u.user_id not in (select user_id from sys_app_user au where au.app_id = #{appId})</if>
+	</select>
+
 </mapper>

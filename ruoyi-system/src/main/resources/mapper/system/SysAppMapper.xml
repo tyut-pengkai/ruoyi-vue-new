@@ -89,7 +89,7 @@
 			<if test="isCharge != null  and isCharge != ''"> and a.is_charge = #{isCharge}</if>
 			<if test="authType != null"> and a.auth_type = #{authType}</if>
 			<if test="billType != null"> and a.bill_type = #{billType}</if>
-			<if test="createBy != null  and createBy != ''"> and (u.nick_name = #{createBy} or u.user_name = #{createBy})</if>
+			<if test="createBy != null  and createBy != ''"> and (u.nick_name like concat('%', #{createBy}, '%') or u.user_name like concat('%', #{createBy}, '%'))</if>
 			<if test="params.beginCreateTime != null and params.beginCreateTime != ''"><!-- 开始时间检索 -->
 				AND date_format(a.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
 			</if>
@@ -139,7 +139,7 @@
 			<if test="loginCodeRegex != null">login_code_regex,</if>
 			<if test="icon != null">icon,</if>
 			<if test="createBy != null">create_by,</if>
-			<if test="createTime != null">create_time,</if>
+			create_time,
 			<if test="updateBy != null">update_by,</if>
 			<if test="updateTime != null">update_time,</if>
 			<if test="remark != null">remark,</if>
@@ -177,7 +177,7 @@
 			<if test="loginCodeRegex != null">#{loginCodeRegex},</if>
 			<if test="icon != null">#{icon},</if>
 			<if test="createBy != null">#{createBy},</if>
-			<if test="createTime != null">#{createTime},</if>
+			sysdate(),
 			<if test="updateBy != null">#{updateBy},</if>
 			<if test="updateTime != null">#{updateTime},</if>
 			<if test="remark != null">#{remark},</if>
@@ -197,8 +197,8 @@
 			<if test="idxUrl != null">idx_url = #{idxUrl},</if>
 			<if test="freeQuotaReg != null">free_quota_reg = #{freeQuotaReg},</if>
 			<if test="reduceQuotaUnbind != null">reduce_quota_unbind = #{reduceQuotaUnbind},</if>
-			<if test="authType != null">auth_type = #{authType},</if>
-			<if test="billType != null">bill_type = #{billType},</if>
+<!--			<if test="authType != null">auth_type = #{authType},</if>-->
+<!--			<if test="billType != null">bill_type = #{billType},</if>-->
 			<if test="dataInEnc != null">data_in_enc = #{dataInEnc},</if>
 			<if test="dataInPwd != null">data_in_pwd = #{dataInPwd},</if>
 			<if test="dataOutEnc != null">data_out_enc = #{dataOutEnc},</if>
@@ -208,7 +208,7 @@
 			<if test="loginLimitM != null">login_limit_m = #{loginLimitM},</if>
 			<if test="limitOper != null">limit_oper = #{limitOper},</if>
 			<if test="heartBeatTime != null">heart_beat_time = #{heartBeatTime},</if>
-			<if test="appKey != null">app_key = #{appKey},</if>
+<!--			<if test="appKey != null">app_key = #{appKey},</if>-->
 			<if test="appSecret != null">app_secret = #{appSecret},</if>
 			<if test="apiPwd != null">api_pwd = #{apiPwd},</if>
 			<if test="loginCodePrefix != null">login_code_prefix = #{loginCodePrefix},</if>
@@ -217,8 +217,8 @@
 			<if test="loginCodeGenRule != null">login_code_gen_rule = #{loginCodeGenRule},</if>
 			<if test="loginCodeRegex != null">login_code_regex = #{loginCodeRegex},</if>
 			<if test="icon != null">icon = #{icon},</if>
-			<if test="createBy != null">create_by = #{createBy},</if>
-			<if test="createTime != null">create_time = #{createTime},</if>
+<!--			<if test="createBy != null">create_by = #{createBy},</if>-->
+<!--			<if test="createTime != null">create_time = #{createTime},</if>-->
 			<if test="updateBy != null">update_by = #{updateBy},</if>
 			update_time = sysdate(),
 			<if test="remark != null">remark = #{remark},</if>
@@ -236,4 +236,10 @@
 			#{appId}
 		</foreach>
 	</delete>
+
+	<select id="checkAppNameUnique" resultType="int">
+		select count(1) from sys_app where app_name = #{appName}
+		<if test="appId != null and appId != ''">and app_id != #{appId}</if>
+		limit 1
+	</select>
 </mapper>

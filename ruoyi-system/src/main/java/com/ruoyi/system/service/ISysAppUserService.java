@@ -1,7 +1,8 @@
 package com.ruoyi.system.service;
 
-import java.util.List;
 import com.ruoyi.system.domain.SysAppUser;
+
+import java.util.List;
 
 /**
  * 软件用户Service接口
@@ -58,4 +59,22 @@ public interface ISysAppUserService
      * @return 结果
      */
     public int deleteSysAppUserByAppUserId(Long appUserId);
+
+    /**
+     * 查询软件用户
+     *
+     * @param appId 软件主键
+     * @param userId 账号主键
+     * @return 软件用户
+     */
+    public SysAppUser selectSysAppUserByAppIdAndUserId(Long appId, Long userId);
+
+    /**
+     * 查询软件用户
+     *
+     * @param appId 软件主键
+     * @param loginCode 登录码
+     * @return 软件用户
+     */
+    SysAppUser selectSysAppUserByAppIdAndLoginCode(Long appId, String loginCode);
 }
