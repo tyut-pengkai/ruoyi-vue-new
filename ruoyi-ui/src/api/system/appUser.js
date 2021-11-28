@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询软件用户列表
 export function listAppUser(query) {
   return request({
-    url: '/system/app_user/list',
+    url: '/system/appUser/list',
     method: 'get',
     params: query
   })
@@ -12,7 +12,7 @@ export function listAppUser(query) {
 // 查询软件用户详细
 export function getAppUser(appUserId) {
   return request({
-    url: '/system/app_user/' + appUserId,
+    url: '/system/appUser/' + appUserId,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function getAppUser(appUserId) {
 // 新增软件用户
 export function addAppUser(data) {
   return request({
-    url: '/system/app_user',
+    url: '/system/appUser',
     method: 'post',
     data: data
   })
@@ -29,7 +29,7 @@ export function addAppUser(data) {
 // 修改软件用户
 export function updateAppUser(data) {
   return request({
-    url: '/system/app_user',
+    url: '/system/appUser',
     method: 'put',
     data: data
   })
@@ -38,7 +38,7 @@ export function updateAppUser(data) {
 // 删除软件用户
 export function delAppUser(appUserId) {
   return request({
-    url: '/system/app_user/' + appUserId,
+    url: '/system/appUser/' + appUserId,
     method: 'delete'
   })
 }
@@ -46,7 +46,7 @@ export function delAppUser(appUserId) {
 // 导出软件用户
 export function exportAppUser(query) {
   return request({
-    url: '/system/app_user/export',
+    url: '/system/appUser/export',
     method: 'get',
     params: query
   })

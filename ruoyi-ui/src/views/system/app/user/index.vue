@@ -558,16 +558,9 @@
 </template>
 
 <script>
-import {
-  listAppUser,
-  getAppUser,
-  delAppUser,
-  addAppUser,
-  updateAppUser,
-  exportAppUser,
-} from "@/api/system/app_user";
-import { getApp } from "@/api/system/app";
-import { listUserByExceptAppid } from "@/api/system/user";
+import {addAppUser, delAppUser, exportAppUser, getAppUser, listAppUser, updateAppUser,} from "@/api/system/appUser";
+import {getApp} from "@/api/system/app";
+import {listUserByExceptAppid} from "@/api/system/user";
 
 export default {
   name: "AppUser",
@@ -759,8 +752,6 @@ export default {
         listUserByExceptAppid(this.app.appId).then((response) => {
           this.userList = response.rows;
         });
-      } else {
-        // TODO 获取登录码列表
       }
 
       this.open = true;

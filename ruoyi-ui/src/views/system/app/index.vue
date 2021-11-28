@@ -811,14 +811,14 @@
 
 <script>
 import {
-  listApp,
-  getApp,
-  delApp,
   addApp,
-  updateApp,
-  exportApp,
-  changeAppStatus,
   changeAppChargeStatus,
+  changeAppStatus,
+  delApp,
+  exportApp,
+  getApp,
+  listApp,
+  updateApp,
 } from "@/api/system/app";
 import appIcon from "./appIcon";
 import Updown from "./updown";
@@ -1193,7 +1193,12 @@ export default {
       const appId = row.appId;
       this.$router.push({
         path: "/system/app/user/" + appId,
-        // query: { appName: row.appName },
+      });
+    },
+    handleCardTemplate: function (row) {
+      const appId = row.appId;
+      this.$router.push({
+        path: "/system/app/cardTemplate/" + appId,
       });
     },
     // 更多操作触发

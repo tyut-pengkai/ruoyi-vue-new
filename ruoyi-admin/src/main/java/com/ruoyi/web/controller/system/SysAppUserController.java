@@ -24,7 +24,7 @@ import java.util.List;
  * @date 2021-11-09
  */
 @RestController
-@RequestMapping("/system/app_user")
+@RequestMapping("/system/appUser")
 public class SysAppUserController extends BaseController
 {
     @Autowired
@@ -35,7 +35,7 @@ public class SysAppUserController extends BaseController
     /**
      * 查询软件用户列表
      */
-    @PreAuthorize("@ss.hasPermi('system:app_user:list')")
+    @PreAuthorize("@ss.hasPermi('system:appUser:list')")
     @GetMapping("/list")
     public TableDataInfo list(SysAppUser sysAppUser)
     {
@@ -47,7 +47,7 @@ public class SysAppUserController extends BaseController
     /**
      * 导出软件用户列表
      */
-    @PreAuthorize("@ss.hasPermi('system:app_user:export')")
+    @PreAuthorize("@ss.hasPermi('system:appUser:export')")
     @Log(title = "软件用户", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(SysAppUser sysAppUser)
@@ -60,7 +60,7 @@ public class SysAppUserController extends BaseController
     /**
      * 获取软件用户详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:app_user:query')")
+    @PreAuthorize("@ss.hasPermi('system:appUser:query')")
     @GetMapping(value = "/{appUserId}")
     public AjaxResult getInfo(@PathVariable("appUserId") Long appUserId)
     {
@@ -70,7 +70,7 @@ public class SysAppUserController extends BaseController
     /**
      * 新增软件用户
      */
-    @PreAuthorize("@ss.hasPermi('system:app_user:add')")
+    @PreAuthorize("@ss.hasPermi('system:appUser:add')")
     @Log(title = "软件用户", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysAppUser sysAppUser)
@@ -94,7 +94,7 @@ public class SysAppUserController extends BaseController
     /**
      * 修改软件用户
      */
-    @PreAuthorize("@ss.hasPermi('system:app_user:edit')")
+    @PreAuthorize("@ss.hasPermi('system:appUser:edit')")
     @Log(title = "软件用户", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAppUser sysAppUser)
@@ -106,7 +106,7 @@ public class SysAppUserController extends BaseController
     /**
      * 删除软件用户
      */
-    @PreAuthorize("@ss.hasPermi('system:app_user:remove')")
+    @PreAuthorize("@ss.hasPermi('system:appUser:remove')")
     @Log(title = "软件用户", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{appUserIds}")
     public AjaxResult remove(@PathVariable Long[] appUserIds)

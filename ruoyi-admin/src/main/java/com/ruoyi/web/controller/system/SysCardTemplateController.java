@@ -1,0 +1,97 @@
+package com.ruoyi.web.controller.system;
+
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.core.controller.BaseController;
+import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.system.domain.SysCardTemplate;
+import com.ruoyi.system.service.ISysCardTemplateService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 卡密模板Controller
+ *
+ * @author zwgu
+ * @date 2021-11-28
+ */
+@RestController
+@RequestMapping("/system/cardTemplate")
+public class SysCardTemplateController extends BaseController
+{
+    @Autowired
+    private ISysCardTemplateService sysCardTemplateService;
+
+    /**
+     * 查询卡密模板列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:cardTemplate:list')")
+    @GetMapping("/list")
+    public TableDataInfo list(SysCardTemplate sysCardTemplate)
+    {
+        startPage();
+        List<SysCardTemplate> list = sysCardTemplateService.selectSysCardTemplateList(sysCardTemplate);
+        return getDataTable(list);
+    }
+
+    /**
+     * 导出卡密模板列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:cardTemplate:export')")
+    @Log(title = "卡密模板", businessType = BusinessType.EXPORT)
+    @GetMapping("/export")
+    public AjaxResult export(SysCardTemplate sysCardTemplate)
+    {
+        List<SysCardTemplate> list = sysCardTemplateService.selectSysCardTemplateList(sysCardTemplate);
+        ExcelUtil<SysCardTemplate> util = new ExcelUtil<SysCardTemplate>(SysCardTemplate.class);
+        return util.exportExcel(list, "卡密模板数据");
+    }
+
+    /**
+     * 获取卡密模板详细信息
+     */
+    @PreAuthorize("@ss.hasPermi('system:cardTemplate:query')")
+    @GetMapping(value = "/{templateId}")
+    public AjaxResult getInfo(@PathVariable("templateId") Long templateId)
+    {
+        return AjaxResult.success(sysCardTemplateService.selectSysCardTemplateByTemplateId(templateId));
+    }
+
+    /**
+     * 新增卡密模板
+     */
+    @PreAuthorize("@ss.hasPermi('system:cardTemplate:add')")
+    @Log(title = "卡密模板", businessType = BusinessType.INSERT)
+    @PostMapping
+    public AjaxResult add(@RequestBody SysCardTemplate sysCardTemplate)
+    {
+        return toAjax(sysCardTemplateService.insertSysCardTemplate(sysCardTemplate));
+    }
+
+    /**
+     * 修改卡密模板
+     */
+    @PreAuthorize("@ss.hasPermi('system:cardTemplate:edit')")
+    @Log(title = "卡密模板", businessType = BusinessType.UPDATE)
+    @PutMapping
+    public AjaxResult edit(@RequestBody SysCardTemplate sysCardTemplate)
+    {
+        return toAjax(sysCardTemplateService.updateSysCardTemplate(sysCardTemplate));
+    }
+
+    /**
+     * 删除卡密模板
+     */
+    @PreAuthorize("@ss.hasPermi('system:cardTemplate:remove')")
+    @Log(title = "卡密模板", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{templateIds}")
+    public AjaxResult remove(@PathVariable Long[] templateIds)
+    {
+        return toAjax(sysCardTemplateService.deleteSysCardTemplateByTemplateIds(templateIds));
+    }
+}

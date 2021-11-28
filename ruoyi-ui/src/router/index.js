@@ -1,10 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
-Vue.use(Router)
-
 /* Layout */
 import Layout from '@/layout'
+
+Vue.use(Router)
 
 /**
  * Note: 路由配置项
@@ -96,6 +95,14 @@ export const constantRoutes = [{
       name: 'AppUser',
       meta: {
         title: '软件用户',
+        activeMenu: '/system/app'
+      }
+    }, {
+      path: 'cardTemplate/:appId(\\d+)',
+      component: (resolve) => require(['@/views/system/app/cardTemplate/index'], resolve),
+      name: 'CardTemplate',
+      meta: {
+        title: '卡密模板',
         activeMenu: '/system/app'
       }
     }]
