@@ -6,15 +6,16 @@
         controls-position="right"
         @change="handleChange"
         :min="1"
+        style="width: 142px"
       >
       </el-input-number>
     </span>
     <span>
       <el-select
         v-model="unit"
-        placeholder="请选择"
+        placeholder="单位"
         @change="handleChange"
-        style="width: 100px; margin-left: 5px"
+        style="width: 75px; margin-left: 2px"
       >
         <el-option
           v-for="item in options"
@@ -49,11 +50,11 @@ export default {
         },
         {
           value: "hour",
-          label: "小时",
+          label: "时",
         },
         {
           value: "minute",
-          label: "分钟",
+          label: "分",
         },
         {
           value: "second",

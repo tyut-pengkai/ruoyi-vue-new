@@ -399,7 +399,7 @@
                 command="handleCardTemplate"
                 icon="el-icon-edit-outline"
                 v-hasPermi="['system:cardTemplate:list']"
-                >卡密模板</el-dropdown-item
+                >卡类管理</el-dropdown-item
               >
               <el-dropdown-item
                 command="handleCardManage"
@@ -821,7 +821,7 @@ import {
   updateApp,
 } from "@/api/system/app";
 import appIcon from "./appIcon";
-import Updown from "./updown";
+import Updown from "@/components/Updown";
 
 export default {
   components: { appIcon, Updown },

@@ -282,18 +282,18 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改卡密模板对话框 -->
+    <!-- 添加或修改卡类管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules">
         <div v-if="app">
           <el-form-item>
             <el-col :span="12">
-              <el-form-item label="所属软件">
+              <el-form-item label="所属软件" label-width="80px">
                 {{ this.app.appName }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="计费类型">
+              <el-form-item label="计费类型" label-width="80px">
                 <dict-tag
                   :options="dict.type.sys_bill_type"
                   :value="app.billType"
@@ -302,18 +302,23 @@
             </el-col>
           </el-form-item>
         </div>
-        <el-form-item label="卡名称" prop="cardName">
+        <el-form-item label="模板名称" prop="cardName" label-width="80px">
           <el-input v-model="form.cardName" placeholder="请输入卡名称" />
         </el-form-item>
         <el-form-item>
           <el-col :span="12">
-            <el-form-item label="面值" prop="quota">
+            <el-form-item
+              label="卡密面值"
+              prop="quota"
+              label-width="80px"
+              style="width: 300px"
+            >
               <!-- <el-input v-model="form.quota" placeholder="请输入面值" /> -->
               <date-duration @totalSeconds="handleQuota"></date-duration>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="价格" prop="price">
+            <el-form-item label="销售价格" prop="price" label-width="80px">
               <el-input-number
                 v-model="form.price"
                 controls-position="right"
@@ -324,133 +329,239 @@
             </el-form-item>
           </el-col>
         </el-form-item>
-        <el-form-item label="卡描述" prop="cardDescription">
+        <el-form-item
+          label="模板描述"
+          prop="cardDescription"
+          label-width="80px"
+        >
           <el-input
             v-model="form.cardDescription"
             type="textarea"
             placeholder="请输入内容"
           />
         </el-form-item>
-        <el-form-item label="卡号前缀" prop="cardNoPrefix">
-          <el-input v-model="form.cardNoPrefix" placeholder="请输入卡号前缀" />
-        </el-form-item>
-        <el-form-item label="卡号后缀" prop="cardNoSuffix">
-          <el-input v-model="form.cardNoSuffix" placeholder="请输入卡号后缀" />
-        </el-form-item>
-        <el-form-item label="卡号长度" prop="cardNoLen">
-          <el-input-number
-            v-model="form.cardNoLen"
-            controls-position="right"
-            :min="10"
-            :max="64"
-          />
-        </el-form-item>
-        <el-form-item label="卡号生成规则" prop="cardNoGenRule">
-          <el-select
-            v-model="form.cardNoGenRule"
-            placeholder="请选择卡号生成规则"
-          >
-            <el-option
-              v-for="dict in dict.type.sys_gen_rule"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="卡号正则" prop="cardNoRegex">
-          <el-input v-model="form.cardNoRegex" placeholder="请输入卡号正则" />
-        </el-form-item>
-        <el-form-item label="密码长度" prop="cardPassLen">
-          <el-input-number
-            v-model="form.cardPassLen"
-            controls-position="right"
-            :min="0"
-            :max="64"
-          />
-        </el-form-item>
-        <el-form-item label="密码生成规则" prop="cardPassGenRule">
-          <el-select
-            v-model="form.cardPassGenRule"
-            placeholder="请选择密码生成规则"
-          >
-            <el-option
-              v-for="dict in dict.type.sys_gen_rule"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="密码正则" prop="cardPassRegex">
-          <el-input v-model="form.cardPassRegex" placeholder="请输入密码正则" />
-        </el-form-item>
-        <el-form-item label="充值规则" prop="chargeRule">
-          <el-select v-model="form.chargeRule" placeholder="请选择充值规则">
-            <el-option
-              v-for="dict in dict.type.sys_charge_rule"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="是否上架" prop="onSale">
-          <el-select v-model="form.onSale" placeholder="请选择是否上架">
-            <el-option
-              v-for="dict in dict.type.sys_yes_no"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="优先库存" prop="firstStock">
-          <el-select v-model="form.firstStock" placeholder="请选择优先库存">
-            <el-option
-              v-for="dict in dict.type.sys_yes_no"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="有效时长" prop="effectiveDuration">
-          <el-input
-            v-model="form.effectiveDuration"
-            placeholder="请输入有效时长"
-          />
-        </el-form-item>
-        <el-form-item label="模板状态">
-          <el-radio-group v-model="form.status">
-            <el-radio
-              v-for="dict in dict.type.sys_normal_disable"
-              :key="dict.value"
-              :label="dict.value"
-              >{{ dict.label }}</el-radio
-            >
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="允许自动生成" prop="enableAutoGen">
-          <el-select
-            v-model="form.enableAutoGen"
-            placeholder="请选择允许自动生成"
-          >
-            <el-option
-              v-for="dict in dict.type.sys_yes_no"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input
-            v-model="form.remark"
-            type="textarea"
-            placeholder="请输入内容"
-          />
-        </el-form-item>
+        <el-divider></el-divider>
+        <updown>
+          <el-form-item>
+            <el-col :span="12">
+              <el-form-item label="模板状态" label-width="80px">
+                <el-radio-group v-model="form.status">
+                  <el-radio
+                    v-for="dict in dict.type.sys_normal_disable"
+                    :key="dict.value"
+                    :label="dict.value"
+                    >{{ dict.label }}</el-radio
+                  >
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="是否上架" prop="onSale" label-width="80px">
+                <el-select v-model="form.onSale" placeholder="请选择是否上架">
+                  <el-option
+                    v-for="dict in dict.type.sys_yes_no"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item>
+            <el-col :span="12">
+              <el-form-item
+                label="卡号前缀"
+                prop="cardNoPrefix"
+                label-width="80px"
+                style="width: 300px"
+              >
+                <el-input
+                  v-model="form.cardNoPrefix"
+                  placeholder="请输入卡号前缀"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item
+                label="卡号后缀"
+                prop="cardNoSuffix"
+                label-width="80px"
+                style="width: 300px"
+              >
+                <el-input
+                  v-model="form.cardNoSuffix"
+                  placeholder="请输入卡号后缀"
+                />
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item>
+            <el-col :span="12">
+              <el-form-item
+                label="卡号长度"
+                prop="cardNoLen"
+                label-width="80px"
+              >
+                <el-input-number
+                  v-model="form.cardNoLen"
+                  controls-position="right"
+                  :min="10"
+                  :max="64"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item
+                label="密码长度"
+                prop="cardPassLen"
+                label-width="80px"
+              >
+                <el-input-number
+                  v-model="form.cardPassLen"
+                  controls-position="right"
+                  :min="0"
+                  :max="64"
+                />
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item>
+            <el-col :span="12">
+              <el-form-item label="卡号生成规则" prop="cardNoGenRule">
+                <el-select
+                  v-model="form.cardNoGenRule"
+                  placeholder="请选择卡号生成规则"
+                >
+                  <el-option
+                    v-for="dict in dict.type.sys_gen_rule"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item
+                label="卡号正则"
+                prop="cardNoRegex"
+                label-width="80px"
+                style="width: 300px"
+              >
+                <el-input
+                  v-model="form.cardNoRegex"
+                  placeholder="请输入卡号正则"
+                  :disabled="form.cardNoGenRule !== '7'"
+                />
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item>
+            <el-col :span="12">
+              <el-form-item label="密码生成规则" prop="cardPassGenRule">
+                <el-select
+                  v-model="form.cardPassGenRule"
+                  placeholder="请选择密码生成规则"
+                >
+                  <el-option
+                    v-for="dict in dict.type.sys_gen_rule"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item
+                label="密码正则"
+                prop="cardPassRegex"
+                label-width="80px"
+                style="width: 300px"
+              >
+                <el-input
+                  v-model="form.cardPassRegex"
+                  placeholder="请输入密码正则"
+                  :disabled="form.cardPwdGenRule !== '7'"
+                />
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item>
+            <el-col :span="12">
+              <el-form-item label="优先销售库存" prop="firstStock">
+                <el-select
+                  v-model="form.firstStock"
+                  placeholder="请选择优先库存"
+                >
+                  <el-option
+                    v-for="dict in dict.type.sys_yes_no"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item
+                label="自动制卡"
+                prop="enableAutoGen"
+                label-width="80px"
+              >
+                <el-select
+                  v-model="form.enableAutoGen"
+                  placeholder="请选择是否允许自动制卡"
+                >
+                  <el-option
+                    v-for="dict in dict.type.sys_yes_no"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item>
+            <el-col :span="12">
+              <el-form-item label="卡密有效期" prop="effectiveDuration">
+                <el-input-number
+                  v-model="form.effectiveDuration"
+                  controls-position="right"
+                  :min="-1"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item
+                label="充值规则"
+                prop="chargeRule"
+                label-width="80px"
+              >
+                <el-select
+                  v-model="form.chargeRule"
+                  placeholder="请选择充值规则"
+                >
+                  <el-option
+                    v-for="dict in dict.type.sys_charge_rule"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item label="备注" prop="remark">
+            <el-input
+              v-model="form.remark"
+              type="textarea"
+              placeholder="请输入内容"
+            />
+          </el-form-item>
+        </updown>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -471,6 +582,7 @@ import {
 } from "@/api/system/cardTemplate";
 import {getApp} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
+import Updown from "@/components/Updown";
 
 export default {
   name: "CardTemplate",
@@ -484,7 +596,7 @@ export default {
     "sys_yes_no",
     "sys_bill_type",
   ],
-  components: { DateDuration },
+  components: { DateDuration, Updown },
   data() {
     return {
       // 软件数据
@@ -503,7 +615,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 卡密模板表格数据
+      // 卡类管理表格数据
       cardTemplateList: [],
       // 弹出层标题
       title: "",
@@ -530,11 +642,55 @@ export default {
         cardName: [
           { required: true, message: "卡名称不能为空", trigger: "blur" },
         ],
-        price: [
-          { required: true, message: "卡密价格不能为空", trigger: "blur" },
+        quota: [{ required: true, message: "额度不能为空", trigger: "blur" }],
+        price: [{ required: true, message: "价格不能为空", trigger: "blur" }],
+        cardNoLen: [
+          { required: true, message: "卡号长度不能为空", trigger: "blur" },
         ],
-        quota: [
-          { required: true, message: "卡密面值不能为空", trigger: "blur" },
+        cardNoGenRule: [
+          {
+            required: true,
+            message: "卡号生成规则不能为空",
+            trigger: "change",
+          },
+        ],
+        cardNoRegex: [
+          { required: false, message: "卡号正则不能为空", trigger: "blur" },
+        ],
+        cardPassLen: [
+          { required: true, message: "密码长度不能为空", trigger: "blur" },
+        ],
+        cardPassGenRule: [
+          {
+            required: true,
+            message: "密码生成规则不能为空",
+            trigger: "change",
+          },
+        ],
+        cardPassRegex: [
+          { required: false, message: "密码正则不能为空", trigger: "blur" },
+        ],
+        chargeRule: [
+          { required: true, message: "充值规则不能为空", trigger: "change" },
+        ],
+        onSale: [
+          { required: true, message: "是否上架不能为空", trigger: "change" },
+        ],
+        firstStock: [
+          { required: true, message: "优先库存不能为空", trigger: "change" },
+        ],
+        status: [
+          { required: true, message: "模板状态不能为空", trigger: "blur" },
+        ],
+        effectiveDuration: [
+          { required: true, message: "有效时长不能为空", trigger: "blur" },
+        ],
+        enableAutoGen: [
+          {
+            required: true,
+            message: "允许自动生成不能为空",
+            trigger: "change",
+          },
         ],
       },
     };
@@ -544,7 +700,7 @@ export default {
     if (appId != undefined && appId != null) {
       getApp(appId).then((response) => {
         this.app = response.data;
-        const title = "卡密模板";
+        const title = "卡类管理";
         const appName = this.app.appName;
         const route = Object.assign({}, this.$route, {
           title: `${title}-${appName}`,
@@ -557,7 +713,7 @@ export default {
     }
   },
   methods: {
-    /** 查询卡密模板列表 */
+    /** 查询卡类列表 */
     getList() {
       this.loading = true;
       listCardTemplate(this.queryParams).then((response) => {
@@ -618,7 +774,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加卡密模板";
+      this.title = "添加卡类";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -627,7 +783,7 @@ export default {
       getCardTemplate(templateId).then((response) => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改卡密模板";
+        this.title = "修改卡类";
       });
     },
     /** 提交按钮 */
@@ -655,7 +811,7 @@ export default {
     handleDelete(row) {
       const templateIds = row.templateId || this.ids;
       this.$modal
-        .confirm('是否确认删除卡密模板编号为"' + templateIds + '"的数据项？')
+        .confirm('是否确认删除卡类编号为"' + templateIds + '"的数据项？')
         .then(function () {
           return delCardTemplate(templateIds);
         })
@@ -669,7 +825,7 @@ export default {
     handleExport() {
       const queryParams = this.queryParams;
       this.$modal
-        .confirm("是否确认导出所有卡密模板数据项？")
+        .confirm("是否确认导出所有卡类数据项？")
         .then(() => {
           this.exportLoading = true;
           return exportCardTemplate(queryParams);

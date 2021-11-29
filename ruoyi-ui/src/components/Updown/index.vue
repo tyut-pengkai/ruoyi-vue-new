@@ -16,6 +16,7 @@
 
 <script>
 export default {
+  name: "Updown",
   components: {},
   props: {},
   data() {

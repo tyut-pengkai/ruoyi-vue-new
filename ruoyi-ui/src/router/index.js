@@ -102,7 +102,7 @@ export const constantRoutes = [{
       component: (resolve) => require(['@/views/system/app/cardTemplate/index'], resolve),
       name: 'CardTemplate',
       meta: {
-        title: '卡密模板',
+        title: '卡类管理',
         activeMenu: '/system/app'
       }
     }]
