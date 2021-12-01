@@ -96,6 +96,20 @@ public class SysCardTemplate extends BaseEntity
     @Excel(name = "允许自动生成")
     private String enableAutoGen;
 
+    /**
+     * 所属软件信息
+     */
+    @Excel(name = "软件名称", targetAttr = "appName", type = Excel.Type.EXPORT)
+    private SysApp app;
+
+    public SysApp getApp() {
+        return app;
+    }
+
+    public void setApp(SysApp app) {
+        this.app = app;
+    }
+
     public void setTemplateId(Long templateId) 
     {
         this.templateId = templateId;
@@ -258,7 +272,7 @@ public class SysCardTemplate extends BaseEntity
     {
         return effectiveDuration;
     }
-    public void setStatus(String tstatus)
+    public void setStatus(String status)
     {
         this.status = status;
     }

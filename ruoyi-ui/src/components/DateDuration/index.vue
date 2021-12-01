@@ -5,7 +5,8 @@
         v-model="num"
         controls-position="right"
         @change="handleChange"
-        :min="1"
+        @blur="handleChange"
+        :min="min"
         style="width: 142px"
       >
       </el-input-number>
@@ -15,6 +16,7 @@
         v-model="unit"
         placeholder="单位"
         @change="handleChange"
+        @blur="handleChange"
         style="width: 75px; margin-left: 2px"
       >
         <el-option
@@ -29,12 +31,24 @@
   </div>
 </template>
 <script>
+import {day, hour, minute, month, parseSeconds, second, year} from "@/utils/my";
+
 export default {
   name: "DateDuration",
+  props: { seconds: { type: Number }, min: { type: Number, default: 0 } },
+  created: function () {
+    this.initSelf();
+  },
+  watch: {
+    seconds: function () {
+      this.initSelf();
+    },
+  },
   data() {
     return {
-      totalSeconds: 86400,
-      num: null,
+      totalSeconds: undefined,
+      num: undefined,
+      unit: undefined,
       options: [
         {
           value: "year",
@@ -46,7 +60,7 @@ export default {
         },
         {
           value: "day",
-          label: "日",
+          label: "天",
         },
         {
           value: "hour",
@@ -61,7 +75,6 @@ export default {
           label: "秒",
         },
       ],
-      unit: null,
     };
   },
   methods: {
@@ -69,30 +82,46 @@ export default {
       let multiple = null;
       switch (this.unit) {
         case "year":
-          multiple = 12 * 30 * 24 * 60 * 60;
+          multiple = year;
           break;
         case "month":
-          multiple = 30 * 24 * 60 * 60;
+          multiple = month;
           break;
         case "day":
-          multiple = 24 * 60 * 60;
+          multiple = day;
           break;
         case "hour":
-          multiple = 60 * 60;
+          multiple = hour;
           break;
         case "minute":
-          multiple = 60;
+          multiple = minute;
           break;
         case "second":
-          multiple = 1;
+          multiple = second;
           break;
       }
-      if (this.num != undefined && this.num != null) {
-        this.totalSeconds = this.num * multiple;
+      if (this.num != undefined && this.num != null && multiple != null) {
+        if (this.num > 0) {
+          this.totalSeconds = this.num * multiple;
+        } else {
+          this.totalSeconds = this.num;
+        }
       } else {
         this.totalSeconds = null;
       }
       this.$emit("totalSeconds", this.totalSeconds);
+    },
+    initSelf() {
+      if (this.seconds != null) {
+        let parse = parseSeconds(this.seconds);
+        this.num = parse[0];
+        this.unit = parse[1];
+        this.handleChange(this.num);
+      } else {
+        this.num = undefined;
+        this.unit = undefined;
+        this.totalSeconds = undefined;
+      }
     },
   },
 };

@@ -6,10 +6,10 @@
       :inline="true"
       v-show="showSearch"
     >
-      <el-form-item label="卡名称" prop="cardName">
+      <el-form-item label="卡类名称" prop="cardName">
         <el-input
           v-model="queryParams.cardName"
-          placeholder="请输入卡名称"
+          placeholder="请输入卡类名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -45,10 +45,10 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="优先库存" prop="firstStock">
+      <el-form-item label="优先销售库存" prop="firstStock">
         <el-select
           v-model="queryParams.firstStock"
-          placeholder="请选择优先库存"
+          placeholder="请选择优先销售库存"
           clearable
           size="small"
         >
@@ -75,10 +75,10 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="允许自动生成" prop="enableAutoGen">
+      <el-form-item label="自动制卡" prop="enableAutoGen">
         <el-select
           v-model="queryParams.enableAutoGen"
-          placeholder="请选择允许自动生成"
+          placeholder="请选择自动制卡"
           clearable
           size="small"
         >
@@ -90,7 +90,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建者" prop="createBy">
+      <!-- <el-form-item label="创建者" prop="createBy">
         <el-input
           v-model="queryParams.createBy"
           placeholder="请输入创建者"
@@ -98,7 +98,7 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button
           type="primary"
@@ -172,23 +172,48 @@
       :data="cardTemplateList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="模板ID" align="center" prop="templateId" />
-      <el-table-column label="软件ID" align="center" prop="appId" />
-      <el-table-column label="卡名称" align="center" prop="cardName" />
-      <el-table-column label="卡描述" align="center" prop="cardDescription" />
-      <el-table-column label="面值" align="center" prop="quota" />
-      <el-table-column label="价格" align="center" prop="price" />
-      <el-table-column label="卡号长度" align="center" prop="cardNoLen" />
-      <el-table-column label="卡号生成规则" align="center" prop="cardNoGenRule">
+      <el-table-column
+        type="selection"
+        width="55"
+        align="center"
+        fixed="left"
+      />
+      <el-table-column label="" type="index" align="center" />
+      <el-table-column
+        label="卡类名称"
+        align="center"
+        prop="cardName"
+        :show-overflow-tooltip="true"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.cardName }}
+          <span v-if="scope.row.cardDescription">
+            <el-tooltip :content="scope.row.cardDescription" placement="top">
+              <i
+                class="el-icon-info"
+                style="margin-left: 0px; margin-right: 10px"
+              ></i>
+            </el-tooltip>
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="所属软件"
+        align="center"
+        prop="app.appName"
+        :show-overflow-tooltip="true"
+      />
+      <!-- <el-table-column label="卡描述" align="center" prop="cardDescription" /> -->
+      <!-- <el-table-column label="卡号长度" align="center" prop="cardNoLen" /> -->
+      <!-- <el-table-column label="卡号生成规则" align="center" prop="cardNoGenRule">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_gen_rule"
             :value="scope.row.cardNoGenRule"
           />
         </template>
-      </el-table-column>
-      <el-table-column label="卡号正则" align="center" prop="cardNoRegex" />
+      </el-table-column> -->
+      <!-- <el-table-column label="卡号正则" align="center" prop="cardNoRegex" />
       <el-table-column label="密码长度" align="center" prop="cardPassLen" />
       <el-table-column
         label="密码生成规则"
@@ -202,42 +227,29 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="密码正则" align="center" prop="cardPassRegex" />
-      <el-table-column label="充值规则" align="center" prop="chargeRule">
+      <el-table-column label="密码正则" align="center" prop="cardPassRegex" /> -->
+      <!-- <el-table-column label="充值规则" align="center" prop="chargeRule">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_charge_rule"
             :value="scope.row.chargeRule"
           />
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="是否上架" align="center" prop="onSale">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale" />
         </template>
       </el-table-column>
-      <el-table-column label="优先库存" align="center" prop="firstStock">
+      <!-- <el-table-column label="优先销售库存" align="center" prop="firstStock">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_yes_no"
             :value="scope.row.firstStock"
           />
         </template>
-      </el-table-column>
-      <el-table-column
-        label="有效时长"
-        align="center"
-        prop="effectiveDuration"
-      />
-      <el-table-column label="模板状态" align="center" prop="status">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_normal_disable"
-            :value="scope.row.status"
-          />
-        </template>
-      </el-table-column>
-      <el-table-column label="允许自动生成" align="center" prop="enableAutoGen">
+      </el-table-column> -->
+      <el-table-column label="自动制卡" align="center" prop="enableAutoGen">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_yes_no"
@@ -245,13 +257,46 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="创建者" align="center" prop="createBy" />
-      <el-table-column label="创建时间" align="center" prop="createTime" />
+      <el-table-column label="卡类状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_normal_disable"
+            :value="scope.row.status"
+          />
+        </template>
+      </el-table-column>
+      <!-- <el-table-column label="创建者" align="center" prop="createBy" /> -->
+      <el-table-column label="卡密面值" align="center" prop="quota">
+        <template slot-scope="scope">
+          <span>{{ parseSeconds(scope.row.quota) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="销售价格" align="center" prop="price" />
+      <el-table-column label="有效期" align="center" prop="effectiveDuration">
+        <template slot-scope="scope">
+          <span>{{
+            scope.row.effectiveDuration >= 0
+              ? parseSeconds(scope.row.effectiveDuration)
+              : "长期有效"
+          }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="创建时间"
+        align="center"
+        prop="createTime"
+        width="180"
+      >
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime, "{y}-{m}-{d}") }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
+        fixed="right"
       >
         <template slot-scope="scope">
           <el-button
@@ -313,8 +358,20 @@
               label-width="80px"
               style="width: 300px"
             >
-              <!-- <el-input v-model="form.quota" placeholder="请输入面值" /> -->
-              <date-duration @totalSeconds="handleQuota"></date-duration>
+              <div v-if="app && app.billType === '0'">
+                <date-duration
+                  @totalSeconds="handleQuota"
+                  :seconds="form.quota"
+                ></date-duration>
+              </div>
+              <div v-else>
+                <el-input-number
+                  v-model="form.quota"
+                  controls-position="right"
+                  :min="0"
+                />
+                <span style="margin-left: 6px">点</span>
+              </div>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -490,13 +547,30 @@
           </el-form-item>
           <el-form-item>
             <el-col :span="12">
-              <el-form-item label="优先销售库存" prop="firstStock">
+              <!-- <el-form-item label="优先销售库存" prop="firstStock">
                 <el-select
                   v-model="form.firstStock"
                   placeholder="请选择优先库存"
                 >
                   <el-option
                     v-for="dict in dict.type.sys_yes_no"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item> -->
+              <el-form-item
+                label="充值规则"
+                prop="chargeRule"
+                label-width="80px"
+              >
+                <el-select
+                  v-model="form.chargeRule"
+                  placeholder="请选择充值规则"
+                >
+                  <el-option
+                    v-for="dict in dict.type.sys_charge_rule"
                     :key="dict.value"
                     :label="dict.label"
                     :value="dict.value"
@@ -527,32 +601,14 @@
           <el-form-item>
             <el-col :span="12">
               <el-form-item label="卡密有效期" prop="effectiveDuration">
-                <el-input-number
-                  v-model="form.effectiveDuration"
-                  controls-position="right"
+                <date-duration
+                  @totalSeconds="handleEffectiveDuration"
+                  :seconds="form.effectiveDuration"
                   :min="-1"
-                />
+                ></date-duration>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
-              <el-form-item
-                label="充值规则"
-                prop="chargeRule"
-                label-width="80px"
-              >
-                <el-select
-                  v-model="form.chargeRule"
-                  placeholder="请选择充值规则"
-                >
-                  <el-option
-                    v-for="dict in dict.type.sys_charge_rule"
-                    :key="dict.value"
-                    :label="dict.label"
-                    :value="dict.value"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
+            <el-col :span="12"> </el-col>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input
@@ -583,6 +639,7 @@ import {
 import {getApp} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
+import {parseSeconds, parseUnit} from "@/utils/my";
 
 export default {
   name: "CardTemplate",
@@ -716,6 +773,7 @@ export default {
     /** 查询卡类列表 */
     getList() {
       this.loading = true;
+      this.queryParams.appId = this.app.appId;
       listCardTemplate(this.queryParams).then((response) => {
         this.cardTemplateList = response.rows;
         this.total = response.total;
@@ -736,7 +794,7 @@ export default {
         cardNoPrefix: undefined,
         cardNoSuffix: undefined,
         cardDescription: undefined,
-        quota: undefined,
+        quota: 0,
         price: undefined,
         cardNoLen: 20,
         cardNoGenRule: "0",
@@ -838,6 +896,13 @@ export default {
     },
     handleQuota(totalSeconds) {
       this.form.quota = totalSeconds;
+    },
+    handleEffectiveDuration(effectiveDuration) {
+      this.form.effectiveDuration = effectiveDuration;
+    },
+    parseSeconds(seconds) {
+      let parse = parseSeconds(seconds);
+      return parse[0] + parseUnit(parse[1]);
     },
   },
 };
