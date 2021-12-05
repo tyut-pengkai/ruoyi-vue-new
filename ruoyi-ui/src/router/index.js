@@ -105,6 +105,14 @@ export const constantRoutes = [{
         title: '卡类管理',
         activeMenu: '/system/app'
       }
+    }, {
+      path: 'card/:appId(\\d+)',
+      component: (resolve) => require(['@/views/system/app/card/index'], resolve),
+      name: 'Card',
+      meta: {
+        title: '卡密管理',
+        activeMenu: '/system/app'
+      }
     }]
   },
   {

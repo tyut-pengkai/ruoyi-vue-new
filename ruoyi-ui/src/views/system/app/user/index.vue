@@ -331,7 +331,13 @@
     />
 
     <!-- 添加或修改软件用户对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+    <el-dialog
+      :title="title"
+      :visible.sync="open"
+      width="800px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form ref="form" :model="form" :rules="rules">
         <!-- 新增 -->
         <div v-if="isAdd === true">

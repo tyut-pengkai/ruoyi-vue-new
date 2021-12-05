@@ -31,3 +31,7 @@ export function parseSeconds(seconds) {
 export function parseUnit(unit) {
   return unitMap[unit];
 }
+
+export function parseMoney(val) {
+  return Number(val).toFixed(2)
+}

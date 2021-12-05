@@ -50,7 +50,7 @@ public class SysCardTemplate extends BaseEntity
 
     /** 卡号长度 */
     @Excel(name = "卡号长度")
-    private Long cardNoLen;
+    private Integer cardNoLen;
 
     /** 卡号生成规则 */
     @Excel(name = "卡号生成规则")
@@ -62,7 +62,7 @@ public class SysCardTemplate extends BaseEntity
 
     /** 密码长度 */
     @Excel(name = "密码长度")
-    private Long cardPassLen;
+    private Integer cardPassLen;
 
     /** 密码生成规则 */
     @Excel(name = "密码生成规则")
@@ -182,12 +182,12 @@ public class SysCardTemplate extends BaseEntity
     {
         return price;
     }
-    public void setCardNoLen(Long cardNoLen) 
+    public void setCardNoLen(Integer cardNoLen)
     {
         this.cardNoLen = cardNoLen;
     }
 
-    public Long getCardNoLen() 
+    public Integer getCardNoLen()
     {
         return cardNoLen;
     }
@@ -209,12 +209,12 @@ public class SysCardTemplate extends BaseEntity
     {
         return cardNoRegex;
     }
-    public void setCardPassLen(Long cardPassLen) 
+    public void setCardPassLen(Integer cardPassLen)
     {
         this.cardPassLen = cardPassLen;
     }
 
-    public Long getCardPassLen() 
+    public Integer getCardPassLen()
     {
         return cardPassLen;
     }

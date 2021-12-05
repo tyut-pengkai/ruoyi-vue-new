@@ -267,7 +267,7 @@
         width="180"
       >
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime, "{y}-{m}-{d}") }}</span>
+          <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -422,7 +422,13 @@
     />
 
     <!-- 添加或修改软件对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+    <el-dialog
+      :title="title"
+      :visible.sync="open"
+      width="800px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form ref="form" :model="form" :rules="rules" label-position="right">
         <el-tabs type="border-card" ref="tabs" v-model="tabIdx">
           <!-- 基本配置 -->
@@ -1199,6 +1205,18 @@ export default {
       const appId = row.appId;
       this.$router.push({
         path: "/system/app/cardTemplate/" + appId,
+      });
+    },
+    handleCardManage: function (row) {
+      const appId = row.appId;
+      this.$router.push({
+        path: "/system/app/card/" + appId,
+      });
+    },
+    handleVersionManage: function (row) {
+      const appId = row.appId;
+      this.$router.push({
+        path: "/system/app/version/" + appId,
       });
     },
     // 更多操作触发

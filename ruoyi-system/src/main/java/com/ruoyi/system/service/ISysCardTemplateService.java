@@ -59,4 +59,13 @@ public interface ISysCardTemplateService
      * @return 结果
      */
     public int deleteSysCardTemplateByTemplateId(Long templateId);
+
+    /**
+     * 批量新增卡密
+     * @param sysCardTemplate
+     * @param genQuantity
+     * @param remark
+     * @return
+     */
+    public int genSysCardBatch(SysCardTemplate sysCardTemplate, Integer genQuantity, String onSale, String remark);
 }

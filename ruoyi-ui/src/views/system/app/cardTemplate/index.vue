@@ -271,7 +271,11 @@
           <span>{{ parseSeconds(scope.row.quota) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="销售价格" align="center" prop="price" />
+      <el-table-column label="销售价格" align="center" prop="price">
+        <template slot-scope="scope">
+          <span>{{ parseMoney(scope.row.price) }}元</span>
+        </template>
+      </el-table-column>
       <el-table-column label="有效期" align="center" prop="effectiveDuration">
         <template slot-scope="scope">
           <span>{{
@@ -288,10 +292,15 @@
         width="180"
       >
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime, "{y}-{m}-{d}") }}</span>
+          <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" />
+      <el-table-column
+        label="备注"
+        align="center"
+        prop="remark"
+        :show-overflow-tooltip="true"
+      />
       <el-table-column
         label="操作"
         align="center"
@@ -328,7 +337,13 @@
     />
 
     <!-- 添加或修改卡类管理对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+    <el-dialog
+      :title="title"
+      :visible.sync="open"
+      width="800px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form ref="form" :model="form" :rules="rules">
         <div v-if="app">
           <el-form-item>
@@ -383,6 +398,7 @@
                 :step="0.01"
                 :min="0"
               />
+              <span>元</span>
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -598,18 +614,29 @@
               </el-form-item>
             </el-col>
           </el-form-item>
-          <el-form-item>
-            <el-col :span="12">
-              <el-form-item label="卡密有效期" prop="effectiveDuration">
-                <date-duration
-                  @totalSeconds="handleEffectiveDuration"
-                  :seconds="form.effectiveDuration"
-                  :min="-1"
-                ></date-duration>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12"> </el-col>
+          <!-- <el-form-item> -->
+          <!-- <el-col :span="16"> -->
+          <el-form-item label="卡密有效期" prop="effectiveDuration">
+            <span>
+              <el-tooltip
+                content="卡密有效期，整数，-1为长期有效，默认为-1"
+                placement="top"
+              >
+                <i
+                  class="el-icon-question"
+                  style="margin-left: -12px; margin-right: 10px"
+                ></i>
+              </el-tooltip>
+            </span>
+            <date-duration
+              @totalSeconds="handleEffectiveDuration"
+              :seconds="form.effectiveDuration"
+              :min="-1"
+            ></date-duration>
           </el-form-item>
+          <!-- </el-col> -->
+          <!-- <el-col :span="8"> </el-col> -->
+          <!-- </el-form-item> -->
           <el-form-item label="备注" prop="remark">
             <el-input
               v-model="form.remark"
@@ -639,7 +666,7 @@ import {
 import {getApp} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
-import {parseSeconds, parseUnit} from "@/utils/my";
+import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
 
 export default {
   name: "CardTemplate",
@@ -903,6 +930,9 @@ export default {
     parseSeconds(seconds) {
       let parse = parseSeconds(seconds);
       return parse[0] + parseUnit(parse[1]);
+    },
+    parseMoney(val) {
+      return parseMoney(val);
     },
   },
 };

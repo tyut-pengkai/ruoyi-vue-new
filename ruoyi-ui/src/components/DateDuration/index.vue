@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <span>
     <span>
       <el-input-number
         v-model="num"
@@ -28,10 +28,10 @@
         </el-option>
       </el-select>
     </span>
-  </div>
+  </span>
 </template>
 <script>
-import {day, hour, minute, month, parseSeconds, second, year} from "@/utils/my";
+import {day, hour, minute, month, parseSeconds, second, year,} from "@/utils/my";
 
 export default {
   name: "DateDuration",
