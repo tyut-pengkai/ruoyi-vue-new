@@ -5,9 +5,8 @@
       ref="queryForm"
       :inline="true"
       v-show="showSearch"
-      label-width="68px"
     >
-      <el-form-item label="软件ID" prop="appId">
+      <!-- <el-form-item label="软件ID" prop="appId">
         <el-input
           v-model="queryParams.appId"
           placeholder="请输入软件ID"
@@ -15,38 +14,38 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
-      <el-form-item label="卡名称" prop="cardName">
+      </el-form-item> -->
+      <el-form-item label="卡密名称" prop="cardName">
         <el-input
           v-model="queryParams.cardName"
-          placeholder="请输入卡名称"
+          placeholder="请输入卡密名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="卡号" prop="cardNo">
+      <el-form-item label="充值卡号" prop="cardNo">
         <el-input
           v-model="queryParams.cardNo"
-          placeholder="请输入卡号"
+          placeholder="请输入充值卡号"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="额度" prop="quota">
+      <el-form-item label="卡密面值" prop="quota">
         <el-input
           v-model="queryParams.quota"
-          placeholder="请输入额度"
+          placeholder="请输入卡密面值"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="价格" prop="price">
+      <el-form-item label="卡密价格" prop="price">
         <el-input
           v-model="queryParams.price"
-          placeholder="请输入价格"
+          placeholder="请输入卡密价格"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -94,10 +93,10 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="是否被充值" prop="isCharged">
+      <el-form-item label="是否已充值" prop="isCharged">
         <el-select
           v-model="queryParams.isCharged"
-          placeholder="请选择是否被充值"
+          placeholder="请选择是否已充值"
           clearable
           size="small"
         >
@@ -247,7 +246,11 @@
         align="center"
         prop="cardNo"
         :show-overflow-tooltip="true"
-      />
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.cardNo }} </span>
+        </template>
+      </el-table-column>
       <el-table-column
         label="密码"
         align="center"
@@ -447,6 +450,7 @@
                 :step="0.01"
                 :min="0"
               />
+              <span>元</span>
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -530,7 +534,7 @@
       append-to-body
       :close-on-click-modal="false"
     >
-      <el-form ref="form" :model="form" :rules="rulesBatch">
+      <el-form ref="formBatch" :model="formBatch" :rules="rulesBatch">
         <div v-if="app">
           <el-form-item>
             <el-col :span="12">
@@ -549,7 +553,7 @@
           </el-form-item>
         </div>
         <el-form-item label="选择卡类" prop="templateId">
-          <el-select v-model="form.templateId" placeholder="请选择">
+          <el-select v-model="formBatch.templateId" placeholder="请选择">
             <el-option
               v-for="item in cardTemplateList"
               :key="item.templateId"
@@ -568,14 +572,14 @@
         </el-form-item>
         <el-form-item label="制卡数量" prop="genQuantity" label-width="80px">
           <el-input-number
-            v-model="form.genQuantity"
+            v-model="formBatch.genQuantity"
             controls-position="right"
             :min="1"
             :max="10000"
           />
         </el-form-item>
         <el-form-item label="是否上架" prop="onSale">
-          <el-select v-model="form.onSale" placeholder="请选择是否上架">
+          <el-select v-model="formBatch.onSale" placeholder="请选择是否上架">
             <el-option
               v-for="dict in dict.type.sys_yes_no"
               :key="dict.value"
@@ -586,14 +590,14 @@
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input
-            v-model="form.remark"
+            v-model="formBatch.remark"
             type="textarea"
             placeholder="请输入内容"
           />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button type="primary" @click="submitFormBatch">确 定</el-button>
         <el-button @click="cancelBatch">取 消</el-button>
       </div>
     </el-dialog>
@@ -667,6 +671,8 @@ export default {
       },
       // 表单参数
       form: {},
+      // 表单参数
+      formBatch: {},
       // 表单校验
       rules: {
         cardName: [
@@ -822,9 +828,29 @@ export default {
         status: "0",
         chargeRule: "0",
         remark: undefined,
-        genQuantity: 100,
       };
       this.resetForm("form");
+    },
+    resetBatch() {
+      this.formBatch = {
+        cardId: undefined,
+        appId: this.app.appId,
+        cardName: undefined,
+        cardNo: undefined,
+        cardPass: undefined,
+        quota: undefined,
+        price: undefined,
+        expireTime: undefined,
+        isSold: undefined,
+        onSale: "Y",
+        isCharged: undefined,
+        templateId: undefined,
+        status: undefined,
+        chargeRule: undefined,
+        remark: undefined,
+        genQuantity: 100,
+      };
+      this.resetForm("formBatch");
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -851,7 +877,7 @@ export default {
     },
     /**批量制卡按钮操作 */
     handleBatchAdd() {
-      this.reset();
+      this.resetBatch();
       let queryParams = {};
       queryParams.appId = this.app.appId;
       listCardTemplate(queryParams).then((response) => {
@@ -885,10 +911,22 @@ export default {
             addCard(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
-              this.batchOpen = false;
               this.getList();
             });
           }
+        }
+      });
+    },
+    /** 提交按钮 */
+    submitFormBatch() {
+      this.$refs["formBatch"].validate((valid) => {
+        if (valid) {
+          this.formBatch.appId = this.app.appId;
+          addCard(this.formBatch).then((response) => {
+            this.$modal.msgSuccess("新增成功");
+            this.batchOpen = false;
+            this.getList();
+          });
         }
       });
     },
@@ -925,8 +963,12 @@ export default {
       this.form.quota = totalSeconds;
     },
     parseSeconds(seconds) {
-      let parse = parseSeconds(seconds);
-      return parse[0] + parseUnit(parse[1]);
+      if (this.app.billType === "0") {
+        let parse = parseSeconds(seconds);
+        return parse[0] + parseUnit(parse[1]);
+      } else {
+        return seconds + "点";
+      }
     },
     parseMoney(val) {
       return parseMoney(val);
