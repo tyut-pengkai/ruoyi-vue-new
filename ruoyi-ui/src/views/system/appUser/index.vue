@@ -89,7 +89,7 @@
           />
         </el-form-item>
       </span>
-      <el-form-item label="创建者" prop="createBy">
+      <!-- <el-form-item label="创建者" prop="createBy">
         <el-input
           v-model="queryParams.createBy"
           placeholder="请输入创建者"
@@ -97,7 +97,7 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button
           type="primary"
@@ -211,22 +211,39 @@
         />
         <el-table-column label="用户状态" align="center" prop="status">
           <template slot-scope="scope">
-            <dict-tag
-              :options="dict.type.sys_normal_disable"
-              :value="scope.row.status"
-            />
+            <el-switch
+              v-model="scope.row.status"
+              active-value="0"
+              inactive-value="1"
+              @change="handleStatusChange(scope.row)"
+            ></el-switch>
           </template>
         </el-table-column>
         <el-table-column
           label="登录用户数限制"
           align="center"
           prop="loginLimitU"
-        />
+          ><template slot-scope="scope">
+            <span>
+              {{
+                scope.row.loginLimitU == -1 ? "无限制" : scope.row.loginLimitU
+              }}
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column
-          label="登录机器数限制"
+          label="登录设备数限制"
           align="center"
           prop="loginLimitM"
-        />
+        >
+          <template slot-scope="scope">
+            <span>
+              {{
+                scope.row.loginLimitM == -1 ? "无限制" : scope.row.loginLimitM
+              }}
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column label="免费余额" align="center" prop="freeBalance" />
         <el-table-column label="支付余额" align="center" prop="payBalance" />
         <el-table-column label="总消费" align="center" prop="totalPay" />
@@ -239,14 +256,20 @@
         >
           <template slot-scope="scope">
             <span>
-              {{ parseTime(scope.row.lastLoginTime) }}
+              {{
+                scope.row.lastLoginTime == null
+                  ? "从未登录过"
+                  : parseTime(scope.row.lastLoginTime)
+              }}
             </span>
           </template>
         </el-table-column>
 
         <el-table-column label="登录次数" align="center" prop="loginTimes">
           <template slot-scope="scope">
-            <span>{{ scope.row.loginTimes }}</span>
+            <span>{{
+              scope.row.loginTimes ? scope.row.loginTimes + "次" : "从未登录过"
+            }}</span>
           </template>
         </el-table-column>
       </div>
@@ -269,7 +292,7 @@
           </template>
         </el-table-column>
       </div>
-      <div>
+      <!-- <div>
         <el-table-column
           label="创建者"
           align="center"
@@ -284,7 +307,7 @@
             </div>
           </template>
         </el-table-column>
-      </div>
+      </div> -->
       <div>
         <el-table-column
           label="备注"
@@ -297,8 +320,8 @@
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
-        width="150px"
-        min-width="150px"
+        width="350px"
+        min-width="350px"
         fixed="right"
       >
         <template slot-scope="scope">
@@ -318,6 +341,23 @@
             v-hasPermi="['system:app_user:remove']"
             >删除</el-button
           >
+          <el-dropdown
+            size="mini"
+            @command="(command) => handleCommand(command, scope.row)"
+            v-hasPermi="['system:deviceCode:list']"
+          >
+            <span class="el-dropdown-link">
+              <i class="el-icon-d-arrow-right el-icon--right"></i>更多
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item
+                command="handleDeviceCode"
+                icon="el-icon-monitor"
+                v-hasPermi="['system:deviceCode:list']"
+                >设备码管理</el-dropdown-item
+              >
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -414,8 +454,7 @@
           <el-form-item>
             <el-col :span="8">
               <el-form-item label="总登录次数">
-                <div v-if="form.loginTimes">{{ form.loginTimes }} 次</div>
-                <div v-else>从未登录过</div>
+                {{ form.loginTimes ? form.loginTimes + "次" : "从未登录过" }}
               </el-form-item>
             </el-col>
             <el-col :span="8">
@@ -458,10 +497,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="登录机器数限制" prop="loginLimitM">
+            <el-form-item label="登录设备数限制" prop="loginLimitM">
               <span>
                 <el-tooltip
-                  content="登录机器数量限制，整数，-1为不限制，默认为-1"
+                  content="登录设备数量限制，整数，-1为不限制，默认为-1"
                   placement="top"
                 >
                   <i
@@ -554,6 +593,26 @@
             placeholder="请输入内容"
           />
         </el-form-item>
+        <div v-if="form.appUserId">
+          <el-form-item>
+            <el-col :span="12">
+              <el-form-item label="创建人" prop="createBy">{{
+                form.createBy
+              }}</el-form-item>
+              <el-form-item label="创建时间" prop="createTime"
+                >{{ form.createTime }}
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="最后更新" prop="updateBy">{{
+                form.updateBy
+              }}</el-form-item>
+              <el-form-item label="更新时间" prop="updateTime"
+                >{{ form.updateTime }}
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -564,7 +623,15 @@
 </template>
 
 <script>
-import {addAppUser, delAppUser, exportAppUser, getAppUser, listAppUser, updateAppUser,} from "@/api/system/appUser";
+import {
+  addAppUser,
+  changeAppUserStatus,
+  delAppUser,
+  exportAppUser,
+  getAppUser,
+  listAppUser,
+  updateAppUser,
+} from "@/api/system/appUser";
 import {getApp} from "@/api/system/app";
 import {listUserByExceptAppid} from "@/api/system/user";
 
@@ -637,7 +704,7 @@ export default {
         loginLimitM: [
           {
             required: true,
-            message: "登录机器数量限制，整数，-1为不限制，默认为-1不能为空",
+            message: "登录设备数量限制，整数，-1为不限制，默认为-1不能为空",
             trigger: "blur",
           },
         ],
@@ -665,7 +732,7 @@ export default {
     if (appId != undefined && appId != null) {
       getApp(appId).then((response) => {
         this.app = response.data;
-        const title = "软件用户";
+        const title = "用户管理";
         const appName = this.app.appName;
         const route = Object.assign({}, this.$route, {
           title: `${title}-${appName}`,
@@ -823,6 +890,46 @@ export default {
           this.exportLoading = false;
         })
         .catch(() => {});
+    },
+    handleDeviceCode: function (row) {
+      const appUserId = row.appUserId;
+      this.$router.push({
+        path: "/app/deviceCode/" + appUserId,
+      });
+    },
+    // 更多操作触发
+    handleCommand(command, row) {
+      switch (command) {
+        case "handleDeviceCode":
+          this.handleDeviceCode(row);
+          break;
+        default:
+          break;
+      }
+    },
+    // 状态修改
+    handleStatusChange(row) {
+      let text = row.status === "0" ? "启用" : "停用";
+      this.$modal
+        .confirm(
+          "确认要" +
+            text +
+            '"' +
+            row.user.nickName +
+            "(" +
+            row.user.userName +
+            ")" +
+            '"吗？'
+        )
+        .then(function () {
+          return changeAppUserStatus(row.appUserId, row.status);
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.status = row.status === "0" ? "1" : "0";
+        });
     },
   },
 };

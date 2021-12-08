@@ -644,6 +644,26 @@
               placeholder="请输入内容"
             />
           </el-form-item>
+          <div v-if="form.templateId">
+            <el-form-item>
+              <el-col :span="12">
+                <el-form-item label="创建人" prop="createBy">{{
+                  form.createBy
+                }}</el-form-item>
+                <el-form-item label="创建时间" prop="createTime"
+                  >{{ form.createTime }}
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="最后更新" prop="updateBy">{{
+                  form.updateBy
+                }}</el-form-item>
+                <el-form-item label="更新时间" prop="updateTime"
+                  >{{ form.updateTime }}
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+          </div>
         </updown>
       </el-form>
       <div slot="footer" class="dialog-footer">

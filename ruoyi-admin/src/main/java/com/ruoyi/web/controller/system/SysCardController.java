@@ -71,6 +71,7 @@ public class SysCardController extends BaseController {
     @PostMapping
     public AjaxResult add(@RequestBody SysCard sysCard) {
         if (sysCard.getTemplateId() == null) {
+            sysCard.setCreateBy(getUsername());
             return toAjax(sysCardService.insertSysCard(sysCard));
         } else {
             if (sysCard.getGenQuantity() == null || sysCard.getGenQuantity() < 0) {
@@ -92,6 +93,7 @@ public class SysCardController extends BaseController {
     @Log(title = "卡密", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysCard sysCard) {
+        sysCard.setUpdateBy(getUsername());
         return toAjax(sysCardService.updateSysCard(sysCard));
     }
 

@@ -241,22 +241,12 @@
         prop="cardName"
         :show-overflow-tooltip="true"
       />
-      <el-table-column
-        label="卡号"
-        align="center"
-        prop="cardNo"
-        :show-overflow-tooltip="true"
-      >
+      <el-table-column label="卡号" align="center" prop="cardNo">
         <template slot-scope="scope">
           <span>{{ scope.row.cardNo }} </span>
         </template>
       </el-table-column>
-      <el-table-column
-        label="密码"
-        align="center"
-        prop="cardPass"
-        :show-overflow-tooltip="true"
-      />
+      <el-table-column label="密码" align="center" prop="cardPass" />
       <el-table-column label="面值" align="center" prop="quota">
         <template slot-scope="scope">
           <span>{{ parseSeconds(scope.row.quota) }}</span>
@@ -519,6 +509,26 @@
             placeholder="请输入内容"
           />
         </el-form-item>
+        <div v-if="form.cardId">
+          <el-form-item>
+            <el-col :span="12">
+              <el-form-item label="创建人" prop="createBy">{{
+                form.createBy
+              }}</el-form-item>
+              <el-form-item label="创建时间" prop="createTime"
+                >{{ form.createTime }}
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="最后更新" prop="updateBy">{{
+                form.updateBy
+              }}</el-form-item>
+              <el-form-item label="更新时间" prop="updateTime"
+                >{{ form.updateTime }}
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -570,23 +580,36 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="制卡数量" prop="genQuantity" label-width="80px">
-          <el-input-number
-            v-model="formBatch.genQuantity"
-            controls-position="right"
-            :min="1"
-            :max="10000"
-          />
-        </el-form-item>
-        <el-form-item label="是否上架" prop="onSale">
-          <el-select v-model="formBatch.onSale" placeholder="请选择是否上架">
-            <el-option
-              v-for="dict in dict.type.sys_yes_no"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item
+              label="制卡数量"
+              prop="genQuantity"
+              label-width="80px"
+            >
+              <el-input-number
+                v-model="formBatch.genQuantity"
+                controls-position="right"
+                :min="1"
+                :max="10000"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="是否上架" prop="onSale">
+              <el-select
+                v-model="formBatch.onSale"
+                placeholder="请选择是否上架"
+              >
+                <el-option
+                  v-for="dict in dict.type.sys_yes_no"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input

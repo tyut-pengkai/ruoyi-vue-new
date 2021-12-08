@@ -70,6 +70,7 @@ public class SysCardTemplateController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody SysCardTemplate sysCardTemplate)
     {
+        sysCardTemplate.setCreateBy(getUsername());
         return toAjax(sysCardTemplateService.insertSysCardTemplate(sysCardTemplate));
     }
 
@@ -81,6 +82,7 @@ public class SysCardTemplateController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody SysCardTemplate sysCardTemplate)
     {
+        sysCardTemplate.setUpdateBy(getUsername());
         return toAjax(sysCardTemplateService.updateSysCardTemplate(sysCardTemplate));
     }
 

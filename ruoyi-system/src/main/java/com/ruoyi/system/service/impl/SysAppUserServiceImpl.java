@@ -115,4 +115,15 @@ public class SysAppUserServiceImpl implements ISysAppUserService
     public SysAppUser selectSysAppUserByAppIdAndLoginCode(Long appId, String loginCode) {
         return sysAppUserMapper.selectSysAppUserByAppIdAndLoginCode(appId, loginCode);
     }
+
+    /**
+     * 修改状态
+     *
+     * @param sysAppUser 信息
+     * @return 结果
+     */
+    @Override
+    public int updateSysDeviceCodeStatus(SysAppUser sysAppUser) {
+        return sysAppUserMapper.updateSysAppUser(sysAppUser);
+    }
 }

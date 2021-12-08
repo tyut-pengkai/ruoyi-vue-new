@@ -113,4 +113,16 @@ public class SysAppUserController extends BaseController
     {
         return toAjax(sysAppUserService.deleteSysAppUserByAppUserIds(appUserIds));
     }
+
+    /**
+     * 状态修改
+     */
+    @PreAuthorize("@ss.hasPermi('system:appUser:edit')")
+    @Log(title = "机器码管理", businessType = BusinessType.UPDATE)
+    @PutMapping("/changeStatus")
+    public AjaxResult changeStatus(@RequestBody SysAppUser sysAppUser)
+    {
+        sysAppUser.setUpdateBy(getUsername());
+        return toAjax(sysAppUserService.updateSysDeviceCodeStatus(sysAppUser));
+    }
 }

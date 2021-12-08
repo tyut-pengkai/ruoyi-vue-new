@@ -86,32 +86,40 @@ export const constantRoutes = [{
     }]
   },
   {
-    path: '/system/app',
+    path: '/app',
     component: Layout,
     hidden: true,
     children: [{
       path: 'user/:appId(\\d+)',
-      component: (resolve) => require(['@/views/system/app/user/index'], resolve),
+      component: (resolve) => require(['@/views/system/appUser/index'], resolve),
       name: 'AppUser',
       meta: {
         title: '软件用户',
-        activeMenu: '/system/app'
+        activeMenu: '/authentication/app'
+      }
+    }, {
+      path: 'deviceCode/:appUserId(\\d+)',
+      component: (resolve) => require(['@/views/system/deviceCode/index'], resolve),
+      name: 'DeviceCode',
+      meta: {
+        title: '设备码管理',
+        activeMenu: '/authentication/app'
       }
     }, {
       path: 'cardTemplate/:appId(\\d+)',
-      component: (resolve) => require(['@/views/system/app/cardTemplate/index'], resolve),
+      component: (resolve) => require(['@/views/system/cardTemplate/index'], resolve),
       name: 'CardTemplate',
       meta: {
         title: '卡类管理',
-        activeMenu: '/system/app'
+        activeMenu: '/authentication/app'
       }
     }, {
       path: 'card/:appId(\\d+)',
-      component: (resolve) => require(['@/views/system/app/card/index'], resolve),
+      component: (resolve) => require(['@/views/system/card/index'], resolve),
       name: 'Card',
       meta: {
         title: '卡密管理',
-        activeMenu: '/system/app'
+        activeMenu: '/authentication/app'
       }
     }]
   },

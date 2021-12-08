@@ -51,3 +51,16 @@ export function exportAppUser(query) {
     params: query
   })
 }
+
+// 状态修改
+export function changeAppUserStatus(appUserId, status) {
+  const data = {
+    appUserId,
+    status
+  }
+  return request({
+    url: '/system/appUser/changeStatus',
+    method: 'put',
+    data: data
+  })
+}

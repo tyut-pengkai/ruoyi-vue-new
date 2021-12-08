@@ -585,6 +585,26 @@
                   placeholder="请输入内容"
                 />
               </el-form-item>
+              <div v-if="form.appId">
+                <el-form-item>
+                  <el-col :span="12">
+                    <el-form-item label="创建人" prop="createBy">{{
+                      form.createBy
+                    }}</el-form-item>
+                    <el-form-item label="创建时间" prop="createTime"
+                      >{{ form.createTime }}
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="最后更新" prop="updateBy">{{
+                      form.updateBy
+                    }}</el-form-item>
+                    <el-form-item label="更新时间" prop="updateTime"
+                      >{{ form.updateTime }}
+                    </el-form-item>
+                  </el-col>
+                </el-form-item>
+              </div>
             </updown>
           </el-tab-pane>
           <!-- 通信安全 -->
@@ -805,6 +825,33 @@
               </el-form-item>
             </el-form-item>
           </el-tab-pane>
+          <!-- 对接信息 -->
+          <el-tab-pane label="接口信息" v-if="form.appId">
+            <el-form-item label="API接口地址" prop="apiUrl">
+              <el-input
+                placeholder="未获取到相关信息"
+                :value="form.apiUrl"
+                :readonly="true"
+              >
+              </el-input>
+            </el-form-item>
+            <el-form-item label="APP KEY" prop="apiUrl">
+              <el-input
+                placeholder="未获取到相关信息"
+                :value="form.appKey"
+                :readonly="true"
+              >
+              </el-input>
+            </el-form-item>
+            <el-form-item label="APP SECRET" prop="apiUrl">
+              <el-input
+                placeholder="未获取到相关信息"
+                :value="form.appSecret"
+                :readonly="true"
+              >
+              </el-input>
+            </el-form-item>
+          </el-tab-pane>
         </el-tabs>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -1012,6 +1059,7 @@ export default {
   },
   created() {
     this.getList();
+    this.showTabPane(false, 3);
   },
   methods: {
     /** 查询软件列表 */
@@ -1198,25 +1246,25 @@ export default {
     handleAppUser: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/system/app/user/" + appId,
+        path: "/app/user/" + appId,
       });
     },
     handleCardTemplate: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/system/app/cardTemplate/" + appId,
+        path: "/app/cardTemplate/" + appId,
       });
     },
     handleCardManage: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/system/app/card/" + appId,
+        path: "/app/card/" + appId,
       });
     },
     handleVersionManage: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/system/app/version/" + appId,
+        path: "/app/version/" + appId,
       });
     },
     // 更多操作触发

@@ -77,4 +77,12 @@ public interface ISysAppUserService
      * @return 软件用户
      */
     SysAppUser selectSysAppUserByAppIdAndLoginCode(Long appId, String loginCode);
+
+    /**
+     * 修改状态
+     *
+     * @param sysAppUser 信息
+     * @return 结果
+     */
+    public int updateSysDeviceCodeStatus(SysAppUser sysAppUser);
 }
