@@ -102,7 +102,7 @@ export const constantRoutes = [{
       component: (resolve) => require(['@/views/system/deviceCode/index'], resolve),
       name: 'DeviceCode',
       meta: {
-        title: '设备码管理',
+        title: '设备码管理old',
         activeMenu: '/authentication/app'
       }
     }, {
@@ -110,7 +110,7 @@ export const constantRoutes = [{
       component: (resolve) => require(['@/views/system/appUserDeviceCode/index'], resolve),
       name: 'AppUserDeviceCode',
       meta: {
-        title: '设备码管理new',
+        title: '设备码管理',
         activeMenu: '/authentication/app'
       }
     }, {

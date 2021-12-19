@@ -347,7 +347,7 @@ export default {
     if (appUserId != undefined && appUserId != null) {
       getAppUser(appUserId).then((response) => {
         this.appUser = response.data;
-        const title = "设备码管理";
+        const title = "设备码管理old";
         const appUserName =
           this.appUser.user.nickName + "(" + this.appUser.user.userName + ")";
         const route = Object.assign({}, this.$route, {

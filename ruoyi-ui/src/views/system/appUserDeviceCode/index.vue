@@ -58,12 +58,10 @@
           size="mini"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -89,8 +87,7 @@
           @click="handleUpdate"
           v-hasPermi="['system:appUserDeviceCode:edit']"
         >修改
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -102,8 +99,7 @@
           @click="handleDelete"
           v-hasPermi="['system:appUserDeviceCode:remove']"
         >删除
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -115,8 +111,7 @@
           @click="handleExport"
           v-hasPermi="['system:appUserDeviceCode:export']"
         >导出
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -188,8 +183,7 @@
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:appUserDeviceCode:edit']"
           >修改
-          </el-button
-          >
+          </el-button>
           <el-button
             size="mini"
             type="text"
@@ -197,8 +191,7 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:appUserDeviceCode:remove']"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -347,7 +340,7 @@ export default {
     if (appUserId != undefined && appUserId != null) {
       getAppUser(appUserId).then((response) => {
         this.appUser = response.data;
-        const title = "设备码管理new";
+        const title = "设备码管理";
         const appName = this.appUser.app.appName;
         const appUserName =
           this.appUser.user.nickName + "(" + this.appUser.user.userName + ")";

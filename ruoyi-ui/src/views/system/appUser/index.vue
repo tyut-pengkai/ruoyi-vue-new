@@ -334,19 +334,19 @@
               <i class="el-icon-d-arrow-right el-icon--right"></i>更多
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item
+              <!-- <el-dropdown-item
                 command="handleDeviceCode"
                 icon="el-icon-monitor"
                 v-hasPermi="['system:deviceCode:list']"
               >
-                设备码管理
-              </el-dropdown-item>
+                设备码管理old
+              </el-dropdown-item> -->
               <el-dropdown-item
                 command="handleAppUserDeviceCode"
                 icon="el-icon-monitor"
                 v-hasPermi="['system:appUserDeviceCode:list']"
               >
-                设备码管理new
+                设备码管理
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
