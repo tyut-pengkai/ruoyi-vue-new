@@ -106,6 +106,14 @@ export const constantRoutes = [{
         activeMenu: '/authentication/app'
       }
     }, {
+      path: 'appUserDeviceCode/:appUserId(\\d+)',
+      component: (resolve) => require(['@/views/system/appUserDeviceCode/index'], resolve),
+      name: 'AppUserDeviceCode',
+      meta: {
+        title: '设备码管理new',
+        activeMenu: '/authentication/app'
+      }
+    }, {
       path: 'cardTemplate/:appId(\\d+)',
       component: (resolve) => require(['@/views/system/cardTemplate/index'], resolve),
       name: 'CardTemplate',

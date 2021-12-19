@@ -34,21 +34,43 @@ public class SysAppUserDeviceCode extends BaseEntity
     @Excel(name = "最后登录时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date lastLoginTime;
 
-    /** 登录次数 */
+    /**
+     * 登录次数
+     */
     @Excel(name = "登录次数")
     private Long loginTimes;
 
-    /** 状态（0正常 1停用） */
+    /**
+     * 状态（0正常 1停用）
+     */
     @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
     private String status;
 
-    public void setId(Long id)
-    {
+    private SysAppUser appUser;
+
+    private SysDeviceCode deviceCode;
+
+    public SysAppUser getAppUser() {
+        return appUser;
+    }
+
+    public void setAppUser(SysAppUser appUser) {
+        this.appUser = appUser;
+    }
+
+    public SysDeviceCode getDeviceCode() {
+        return deviceCode;
+    }
+
+    public void setDeviceCode(SysDeviceCode deviceCode) {
+        this.deviceCode = deviceCode;
+    }
+
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Long getId()
-    {
+    public Long getId() {
         return id;
     }
     public void setAppUserId(Long appUserId)

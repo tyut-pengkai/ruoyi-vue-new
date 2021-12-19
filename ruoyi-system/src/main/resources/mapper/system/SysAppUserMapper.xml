@@ -26,7 +26,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
         <association property="user"    column="user_id" javaType="SysUser" resultMap="SysUserResult" />
-        <association property="createUser"    column="create_by" javaType="SysUser" resultMap="SysUserResult2" />
         <association property="app"    column="app_id" javaType="SysApp" resultMap="SysAppResult" />
     </resultMap>
 
@@ -49,29 +48,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateBy"     column="update_by"    />
         <result property="updateTime"   column="update_time"  />
         <result property="remark"       column="remark"       />
-        <!--		<association property="dept"    column="dept_id" javaType="SysDept" resultMap="deptResult" />-->
-        <!--		<collection  property="roles"   javaType="java.util.List"        resultMap="RoleResult" />-->
-    </resultMap>
-
-    <resultMap type="SysUser" id="SysUserResult2">
-        <id     property="userId"       column="user_id2"      />
-        <result property="deptId"       column="dept_id2"      />
-        <result property="userName"     column="user_name2"    />
-        <result property="nickName"     column="nick_name2"    />
-        <result property="email"        column="email2"        />
-        <result property="phonenumber"  column="phonenumber2"  />
-        <result property="sex"          column="sex2"          />
-        <result property="avatar"       column="avatar2"       />
-        <result property="password"     column="password2"     />
-        <result property="status"       column="status2"       />
-        <result property="delFlag"      column="del_flag2"     />
-        <result property="loginIp"      column="login_ip2"     />
-        <result property="loginDate"    column="login_date2"   />
-        <result property="createBy"     column="create_by2"    />
-        <result property="createTime"   column="create_time2"  />
-        <result property="updateBy"     column="update_by2"    />
-        <result property="updateTime"   column="update_time2"  />
-        <result property="remark"       column="remark2"       />
         <!--		<association property="dept"    column="dept_id" javaType="SysDept" resultMap="deptResult" />-->
         <!--		<collection  property="roles"   javaType="java.util.List"        resultMap="RoleResult" />-->
     </resultMap>
@@ -117,22 +93,82 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectSysAppUserVo">
-        select au.app_user_id, au.user_id, au.app_id, au.status, au.login_limit_u, au.login_limit_m, au.free_balance,
-               au.pay_balance, au.total_pay, au.last_login_time, au.login_times, au.pwd_error_times, au.expire_time,
-               au.point, au.login_code, au.create_by, au.create_time, au.update_by, au.update_time, au.remark,
-               a.app_id, a.app_name, a.description, a.api_url, a.status, a.del_flag, a.bind_type, a.is_charge, a.idx_url,
-               a.free_quota_reg, a.reduce_quota_unbind, a.auth_type, a.bill_type, a.data_in_enc, a.data_in_pwd,
-               a.data_out_enc, a.data_out_pwd, a.data_expire_time, a.login_limit_u, a.login_limit_m, a.limit_oper,
-               a.heart_beat_time, a.app_key, a.app_secret, a.api_pwd, a.login_code_prefix, a.login_code_suffix,
-               a.login_code_len, a.login_code_gen_rule, a.login_code_regex, a.icon, a.create_by, a.create_time,
-               a.update_by, a.update_time, a.remark, u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar,
-               u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by,
-               u.create_time, u.remark, cu.user_id as user_id2, cu.dept_id as dept_id2, cu.user_name as user_name2,
-               cu.nick_name as nick_name2, cu.email as email2, cu.avatar as avatar2,
-               cu.phonenumber as phonenumber2, cu.password as password2, cu.sex as sex2, cu.status as status2,
-               cu.del_flag as del_flag2, cu.login_ip as login_ip2, cu.login_date as login_date2, cu.create_by as create_by2,
-               cu.create_time as create_time2, cu.remark as remark2 from sys_app_user au left join sys_user u on au.user_id = u.user_id left join
-                   sys_app a on au.app_id = a.app_id left join sys_user cu on au.create_by = cu.user_name
+        select au.app_user_id,
+               au.user_id,
+               au.app_id,
+               au.status,
+               au.login_limit_u,
+               au.login_limit_m,
+               au.free_balance,
+               au.pay_balance,
+               au.total_pay,
+               au.last_login_time,
+               au.login_times,
+               au.pwd_error_times,
+               au.expire_time,
+               au.point,
+               au.login_code,
+               au.create_by,
+               au.create_time,
+               au.update_by,
+               au.update_time,
+               au.remark,
+               a.app_id,
+               a.app_name,
+               a.description,
+               a.api_url,
+               a.status,
+               a.del_flag,
+               a.bind_type,
+               a.is_charge,
+               a.idx_url,
+               a.free_quota_reg,
+               a.reduce_quota_unbind,
+               a.auth_type,
+               a.bill_type,
+               a.data_in_enc,
+               a.data_in_pwd,
+               a.data_out_enc,
+               a.data_out_pwd,
+               a.data_expire_time,
+               a.login_limit_u,
+               a.login_limit_m,
+               a.limit_oper,
+               a.heart_beat_time,
+               a.app_key,
+               a.app_secret,
+               a.api_pwd,
+               a.login_code_prefix,
+               a.login_code_suffix,
+               a.login_code_len,
+               a.login_code_gen_rule,
+               a.login_code_regex,
+               a.icon,
+               a.create_by,
+               a.create_time,
+               a.update_by,
+               a.update_time,
+               a.remark,
+               u.user_id,
+               u.dept_id,
+               u.user_name,
+               u.nick_name,
+               u.email,
+               u.avatar,
+               u.phonenumber,
+               u.password,
+               u.sex,
+               u.status,
+               u.del_flag,
+               u.login_ip,
+               u.login_date,
+               u.create_by,
+               u.create_time,
+               u.remark
+        from sys_app_user au
+                 left join sys_user u on au.user_id = u.user_id
+                 left join
+             sys_app a on au.app_id = a.app_id
     </sql>
 
     <select id="selectSysAppUserList" parameterType="SysAppUser" resultMap="SysAppUserResult">
@@ -145,7 +181,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''"> and au.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}</if>
             <if test="point != null  and point != ''"> and au.point = #{point}</if>
             <if test="loginCode != null  and loginCode != ''"> and au.login_code like concat('%', #{loginCode}, '%')</if>
-            <if test="createBy != null  and createBy != ''"> and (cu.nick_name like concat('%', #{createBy}, '%') or cu.user_name like concat('%', #{createBy}, '%'))</if>
         </where>
     </select>
     

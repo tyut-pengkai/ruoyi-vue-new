@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysAppUserDeviceCodeMapper">
+
+    <resultMap type="SysAppUserDeviceCode" id="SysAppUserDeviceCodeResult">
+        <result property="id" column="id"/>
+        <result property="appUserId" column="app_user_id"/>
+        <result property="deviceCodeId" column="device_code_id"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="loginTimes" column="login_times"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+
+    <sql id="selectSysAppUserDeviceCodeVo">
+        select saudc.id,
+               saudc.app_user_id,
+               saudc.device_code_id,
+               sdc.device_code,
+               saudc.last_login_time,
+               saudc.login_times,
+               saudc.status,
+               saudc.create_by,
+               saudc.create_time,
+               saudc.update_by,
+               saudc.update_time,
+               saudc.remark
+        from sys_app_user_device_code saudc
+                 inner join sys_device_code sdc on saudc.device_code_id = sdc.device_code_id
+    </sql>
+
+    <select id="selectSysAppUserDeviceCodeList" parameterType="SysAppUserDeviceCode"
+            resultMap="SysAppUserDeviceCodeResult">
+        <include refid="selectSysAppUserDeviceCodeVo"/>
+        <where>
+            <if test="appUserId != null ">and app_user_id = #{appUserId}</if>
+            <if test="deviceCodeId != null ">and device_code_id = #{deviceCodeId}</if>
+            <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''">
+                and saudc.last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}
+            </if>
+            <if test="params.beginLoginTimes != null and params.beginLoginTimes != '' and params.endLoginTimes != null and params.endLoginTimes != ''">
+                and saudc.login_times between #{params.beginLoginTimes} and #{params.endLoginTimes}
+            </if>
+            <if test="params.searchDeviceCode != null and params.searchDeviceCode != ''">and sdc.device_code like
+                concat('%', #{params.searchDeviceCode}, '%')
+            </if>
+            <if test="status != null  and status != ''">and saudc.status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectSysAppUserDeviceCodeById" parameterType="Long" resultMap="SysAppUserDeviceCodeResult">
+        <include refid="selectSysAppUserDeviceCodeVo"/>
+        where saudc.id = #{id}
+    </select>
+
+    <insert id="insertSysAppUserDeviceCode" parameterType="SysAppUserDeviceCode" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into sys_app_user_device_code
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appUserId != null">app_user_id,</if>
+            <if test="deviceCodeId != null">device_code_id,</if>
+            <if test="lastLoginTime != null">last_login_time,</if>
+            <if test="loginTimes != null">login_times,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            create_time,
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appUserId != null">#{appUserId},</if>
+            <if test="deviceCodeId != null">#{deviceCodeId},</if>
+            <if test="lastLoginTime != null">#{lastLoginTime},</if>
+            <if test="loginTimes != null">#{loginTimes},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysAppUserDeviceCode" parameterType="SysAppUserDeviceCode">
+        update sys_app_user_device_code
+        <trim prefix="SET" suffixOverrides=",">
+            <!--            <if test="appUserId != null">app_user_id = #{appUserId},</if>-->
+            <!--            <if test="deviceCodeId != null">device_code_id = #{deviceCodeId},</if>-->
+            <if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
+            <if test="loginTimes != null">login_times = #{loginTimes},</if>
+            <if test="status != null">status = #{status},</if>
+            <!--            <if test="createBy != null">create_by = #{createBy},</if>-->
+            <!--            <if test="createTime != null">create_time = #{createTime},</if>-->
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysAppUserDeviceCodeById" parameterType="Long">
+        delete
+        from sys_app_user_device_code
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteSysAppUserDeviceCodeByIds" parameterType="String">
+        delete from sys_app_user_device_code where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

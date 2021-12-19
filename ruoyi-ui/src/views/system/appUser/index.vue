@@ -292,22 +292,6 @@
           </template>
         </el-table-column>
       </div>
-      <!-- <div>
-        <el-table-column
-          label="创建者"
-          align="center"
-          prop="createBy"
-          :show-overflow-tooltip="true"
-        >
-          <template slot-scope="scope">
-            <div v-if="scope.row.createUser">
-              {{ scope.row.createUser.nickName }}({{
-                scope.row.createUser.userName
-              }})
-            </div>
-          </template>
-        </el-table-column>
-      </div> -->
       <div>
         <el-table-column
           label="备注"
@@ -354,8 +338,16 @@
                 command="handleDeviceCode"
                 icon="el-icon-monitor"
                 v-hasPermi="['system:deviceCode:list']"
-                >设备码管理</el-dropdown-item
               >
+                设备码管理
+              </el-dropdown-item>
+              <el-dropdown-item
+                command="handleAppUserDeviceCode"
+                icon="el-icon-monitor"
+                v-hasPermi="['system:appUserDeviceCode:list']"
+              >
+                设备码管理new
+              </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -889,7 +881,8 @@ export default {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     handleDeviceCode: function (row) {
       const appUserId = row.appUserId;
@@ -897,11 +890,20 @@ export default {
         path: "/app/deviceCode/" + appUserId,
       });
     },
+    handleAppUserDeviceCode: function (row) {
+      const appUserId = row.appUserId;
+      this.$router.push({
+        path: "/app/appUserDeviceCode/" + appUserId,
+      });
+    },
     // 更多操作触发
     handleCommand(command, row) {
       switch (command) {
         case "handleDeviceCode":
           this.handleDeviceCode(row);
+          break;
+        case "handleAppUserDeviceCode":
+          this.handleAppUserDeviceCode(row);
           break;
         default:
           break;

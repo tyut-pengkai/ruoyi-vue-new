@@ -101,15 +101,6 @@ public class SysAppUser extends BaseEntity
      */
     private String userName;
 
-    /**
-     * 创建者信息
-     */
-    @Excels({
-            @Excel(name = "用户账号", targetAttr = "userName", type = Excel.Type.EXPORT),
-            @Excel(name = "用户昵称", targetAttr = "nickName", type = Excel.Type.EXPORT)
-    })
-    private SysUser createUser;
-
     public void setAppUserId(Long appUserId) 
     {
         this.appUserId = appUserId;
@@ -260,14 +251,6 @@ public class SysAppUser extends BaseEntity
 
     public void setApp(SysApp app) {
         this.app = app;
-    }
-
-    public SysUser getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(SysUser createUser) {
-        this.createUser = createUser;
     }
 
     public String getUserName() {

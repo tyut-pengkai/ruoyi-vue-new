@@ -6,7 +6,7 @@
       :inline="true"
       v-show="showSearch"
     >
-      <el-form-item label="设备码" prop="deviceCode">
+      <el-form-item label="设备码" prop="deviceCodeId">
         <el-input
           v-model="searchDeviceCode"
           placeholder="请输入设备码"
@@ -57,26 +57,28 @@
           icon="el-icon-search"
           size="mini"
           @click="handleQuery"
-          >搜索</el-button
+        >搜索
+        </el-button
         >
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
+        >重置
+        </el-button
         >
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="primary"
           plain
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:deviceCode:add']"
+          v-hasPermi="['system:appUserDeviceCode:add']"
           >新增</el-button
         >
-      </el-col>
+      </el-col> -->
       <el-col :span="1.5">
         <el-button
           type="success"
@@ -85,8 +87,9 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:deviceCode:edit']"
-          >修改</el-button
+          v-hasPermi="['system:appUserDeviceCode:edit']"
+        >修改
+        </el-button
         >
       </el-col>
       <el-col :span="1.5">
@@ -97,8 +100,9 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:deviceCode:remove']"
-          >删除</el-button
+          v-hasPermi="['system:appUserDeviceCode:remove']"
+        >删除
+        </el-button
         >
       </el-col>
       <el-col :span="1.5">
@@ -109,8 +113,9 @@
           size="mini"
           :loading="exportLoading"
           @click="handleExport"
-          v-hasPermi="['system:deviceCode:export']"
-          >导出</el-button
+          v-hasPermi="['system:appUserDeviceCode:export']"
+        >导出
+        </el-button
         >
       </el-col>
       <right-toolbar
@@ -121,7 +126,7 @@
 
     <el-table
       v-loading="loading"
-      :data="deviceCodeList"
+      :data="appUserDeviceCodeList"
       @selection-change="handleSelectionChange"
     >
       <el-table-column
@@ -130,8 +135,13 @@
         align="center"
         fixed="left"
       />
-      <el-table-column label="" type="index" align="center" />
-      <el-table-column label="设备码" align="center" prop="deviceCode" />
+      <el-table-column label="" type="index" align="center"/>
+      <el-table-column label="设备码" align="center" prop="deviceCode">
+        <template slot-scope="scope">
+          <span>{{ scope.row.deviceCode.deviceCode }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column
         label="最后登录时间"
         align="center"
@@ -140,10 +150,10 @@
       >
         <template slot-scope="scope">
           <span>{{
-            scope.row.lastLoginTime == null
-              ? "从未登录过"
-              : parseTime(scope.row.lastLoginTime)
-          }}</span>
+              scope.row.lastLoginTime == null
+                ? "从未登录过"
+                : parseTime(scope.row.lastLoginTime)
+            }}</span>
         </template>
       </el-table-column>
       <el-table-column label="登录次数" align="center" prop="loginTimes">
@@ -163,7 +173,7 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" />
+      <el-table-column label="备注" align="center" prop="remark"/>
       <el-table-column
         label="操作"
         align="center"
@@ -176,16 +186,18 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:deviceCode:edit']"
-            >修改</el-button
+            v-hasPermi="['system:appUserDeviceCode:edit']"
+          >修改
+          </el-button
           >
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:deviceCode:remove']"
-            >删除</el-button
+            v-hasPermi="['system:appUserDeviceCode:remove']"
+          >删除
+          </el-button
           >
         </template>
       </el-table-column>
@@ -199,67 +211,57 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改设备码对话框 -->
+    <!-- 添加或修改软件用户与设备码关联对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules">
-        <div v-if="form.deviceCodeId">
+        <div v-if="form.id">
           <el-form-item>
             <el-col :span="12">
               <el-form-item label="设备码">
-                {{ form.deviceCode }}
+                {{ form.deviceCode.deviceCode }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <div v-if="form.deviceCodeId">
-                <el-form-item label="最后登录" prop="lastLoginTime">
-                  {{ form.lastLoginTime ? form.lastLoginTime : "从未登录过" }}
-                </el-form-item>
-              </div>
+              <el-form-item label="最后登录" prop="lastLoginTime">
+                {{ form.lastLoginTime ? form.lastLoginTime : "从未登录过" }}
+              </el-form-item>
             </el-col>
           </el-form-item>
-        </div>
-        <div v-else>
-          <el-form-item label="设备码" prop="deviceCode">
-            <el-input v-model="form.deviceCode" placeholder="请输入设备码" />
-          </el-form-item>
-        </div>
-        <el-form-item>
-          <el-col :span="12">
-            <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in dict.type.sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.value"
-                >
-                  {{ dict.label }}
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <div v-if="form.deviceCodeId">
+          <el-form-item>
+            <el-col :span="12">
+              <el-form-item label="状态">
+                <el-radio-group v-model="form.status">
+                  <el-radio
+                    v-for="dict in dict.type.sys_normal_disable"
+                    :key="dict.value"
+                    :label="dict.value"
+                  >
+                    {{ dict.label }}
+                  </el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
               <el-form-item label="登录次数" prop="loginTimes">
                 {{ form.loginTimes ? form.loginTimes + "次" : "从未登录过" }}
               </el-form-item>
-            </div>
-          </el-col>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input
-            v-model="form.remark"
-            type="textarea"
-            placeholder="请输入内容"
-          />
-        </el-form-item>
-        <div v-if="form.deviceCodeId">
+            </el-col>
+          </el-form-item>
+          <el-form-item label="备注" prop="remark">
+            <el-input
+              v-model="form.remark"
+              type="textarea"
+              placeholder="请输入内容"
+            />
+          </el-form-item>
+
           <el-form-item>
             <el-col :span="12">
               <el-form-item label="创建人" prop="createBy">
                 {{ form.createBy }}
               </el-form-item>
               <el-form-item label="创建时间" prop="createTime"
-                >{{ form.createTime }}
+              >{{ form.createTime }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -267,7 +269,7 @@
                 {{ form.updateBy }}
               </el-form-item>
               <el-form-item label="更新时间" prop="updateTime"
-                >{{ form.updateTime }}
+              >{{ form.updateTime }}
               </el-form-item>
             </el-col>
           </el-form-item>
@@ -283,18 +285,18 @@
 
 <script>
 import {
-  addDeviceCode,
-  changeDeviceCodeStatus,
-  delDeviceCode,
-  exportDeviceCode,
-  getDeviceCode,
-  listDeviceCode,
-  updateDeviceCode,
-} from "@/api/system/deviceCode";
+  addAppUserDeviceCode,
+  changeAppUserDeviceCodeStatus,
+  delAppUserDeviceCode,
+  exportAppUserDeviceCode,
+  getAppUserDeviceCode,
+  listAppUserDeviceCode,
+  updateAppUserDeviceCode,
+} from "@/api/system/appUserDeviceCode";
 import {getAppUser} from "@/api/system/appUser";
 
 export default {
-  name: "DeviceCode",
+  name: "AppUserDeviceCode",
   dicts: ["sys_normal_disable"],
   data() {
     return {
@@ -316,8 +318,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 设备码管理表格数据
-      deviceCodeList: [],
+      // 软件用户与设备码关联表格数据
+      appUserDeviceCodeList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -328,18 +330,16 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        appUserId: null,
+        deviceCodeId: null,
+        lastLoginTime: null,
         loginTimes: null,
         status: null,
       },
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-        deviceCode: [
-          { required: true, message: "设备码不能为空", trigger: "blur" },
-        ],
-        status: [{ required: true, message: "状态不能为空", trigger: "blur" }],
-      },
+      rules: {},
     };
   },
   created() {
@@ -347,11 +347,12 @@ export default {
     if (appUserId != undefined && appUserId != null) {
       getAppUser(appUserId).then((response) => {
         this.appUser = response.data;
-        const title = "设备码管理";
+        const title = "设备码管理new";
+        const appName = this.appUser.app.appName;
         const appUserName =
           this.appUser.user.nickName + "(" + this.appUser.user.userName + ")";
         const route = Object.assign({}, this.$route, {
-          title: `${title}-${appUserName}`,
+          title: `${title}-${appName}-${appUserName}`,
         });
         this.$store.dispatch("tagsView/updateVisitedView", route);
         this.getList();
@@ -361,7 +362,7 @@ export default {
     }
   },
   methods: {
-    /** 查询设备码管理列表 */
+    /** 查询软件用户与设备码关联列表 */
     getList() {
       this.loading = true;
       this.queryParams.params = {};
@@ -374,12 +375,12 @@ export default {
         this.queryParams.params["endLastLoginTime"] =
           this.daterangeLastLoginTime[1];
       }
-      this.queryParams.appUserId = this.appUser.appUserId;
       if (null != this.searchDeviceCode && "" != this.searchDeviceCode) {
         this.queryParams.params["searchDeviceCode"] = this.searchDeviceCode;
       }
-      listDeviceCode(this.queryParams).then((response) => {
-        this.deviceCodeList = response.rows;
+      this.queryParams.appUserId = this.appUser.appUserId;
+      listAppUserDeviceCode(this.queryParams).then((response) => {
+        this.appUserDeviceCodeList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -392,9 +393,16 @@ export default {
     // 表单重置
     reset() {
       this.form = {
+        id: null,
+        appUserId: null,
         deviceCodeId: null,
+        lastLoginTime: null,
         loginTimes: null,
         status: "0",
+        createBy: null,
+        createTime: null,
+        updateBy: null,
+        updateTime: null,
         remark: null,
       };
       this.resetForm("form");
@@ -412,38 +420,38 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.deviceCodeId);
+      this.ids = selection.map((item) => item.id);
       this.single = selection.length !== 1;
       this.multiple = !selection.length;
     },
     /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加设备码";
-    },
+    // handleAdd() {
+    //   this.reset();
+    //   this.open = true;
+    //   this.title = "添加软件用户与设备码关联";
+    // },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const deviceCodeId = row.deviceCodeId || this.ids;
-      getDeviceCode(deviceCodeId).then((response) => {
+      const id = row.id || this.ids;
+      getAppUserDeviceCode(id).then((response) => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改设备码";
+        this.title = "修改软件用户与设备码关联";
       });
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          if (this.form.deviceCodeId != null) {
-            updateDeviceCode(this.form).then((response) => {
+          if (this.form.id != null) {
+            updateAppUserDeviceCode(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addDeviceCode(this.form).then((response) => {
+            addAppUserDeviceCode(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -454,40 +462,44 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const deviceCodeIds = row.deviceCodeId || this.ids;
+      const ids = row.id || this.ids;
       this.$modal
-        .confirm('是否确认删除设备码编号为"' + deviceCodeIds + '"的数据项？')
+        .confirm(
+          '是否确认删除软件用户与设备码关联编号为"' + ids + '"的数据项？'
+        )
         .then(function () {
-          return delDeviceCode(deviceCodeIds);
+          return delAppUserDeviceCode(ids);
         })
         .then(() => {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
       this.$modal
-        .confirm("是否确认导出所有设备码数据项？")
+        .confirm("是否确认导出所有软件用户与设备码关联数据项？")
         .then(() => {
           this.exportLoading = true;
-          return exportDeviceCode(queryParams);
+          return exportAppUserDeviceCode(queryParams);
         })
         .then((response) => {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     // 状态修改
     handleStatusChange(row) {
       let text = row.status === "0" ? "启用" : "停用";
       this.$modal
-        .confirm("确认要" + text + '"' + row.deviceCode + '"吗？')
+        .confirm("确认要" + text + '"' + row.deviceCode.deviceCode + '"吗？')
         .then(function () {
-          return changeDeviceCodeStatus(row.deviceCodeId, row.status);
+          return changeAppUserDeviceCodeStatus(row.id, row.status);
         })
         .then(() => {
           this.$modal.msgSuccess(text + "成功");
