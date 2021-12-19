@@ -129,6 +129,14 @@ export const constantRoutes = [{
         title: '卡密管理',
         activeMenu: '/authentication/app'
       }
+    }, {
+      path: 'appVersion/:appId(\\d+)',
+      component: (resolve) => require(['@/views/system/appVersion/index'], resolve),
+      name: 'AppVersion',
+      meta: {
+        title: '版本管理',
+        activeMenu: '/authentication/app'
+      }
     }]
   },
   {

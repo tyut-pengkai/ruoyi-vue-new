@@ -1264,7 +1264,7 @@ export default {
     handleVersionManage: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/version/" + appId,
+        path: "/app/appVersion/" + appId,
       });
     },
     // 更多操作触发
