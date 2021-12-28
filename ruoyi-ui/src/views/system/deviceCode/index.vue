@@ -8,7 +8,7 @@
     >
       <el-form-item label="设备码" prop="deviceCode">
         <el-input
-          v-model="searchDeviceCode"
+          v-model="queryParams.deviceCode"
           placeholder="请输入设备码"
           clearable
           size="small"
@@ -66,7 +66,7 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="primary"
           plain
@@ -76,7 +76,7 @@
           v-hasPermi="['system:deviceCode:add']"
           >新增</el-button
         >
-      </el-col>
+      </el-col> -->
       <el-col :span="1.5">
         <el-button
           type="success"
@@ -139,18 +139,20 @@
         width="180"
       >
         <template slot-scope="scope">
-          <span>{{
-            scope.row.lastLoginTime == null
-              ? "从未登录过"
-              : parseTime(scope.row.lastLoginTime)
-          }}</span>
+          <span>
+            {{
+              scope.row.lastLoginTime == null
+                ? "从未登录过"
+                : parseTime(scope.row.lastLoginTime)
+            }}
+          </span>
         </template>
       </el-table-column>
       <el-table-column label="登录次数" align="center" prop="loginTimes">
         <template slot-scope="scope">
-          {{
-            scope.row.loginTimes ? scope.row.loginTimes + "次" : "从未登录过"
-          }}
+          <span>{{
+              scope.row.loginTimes ? scope.row.loginTimes + "次" : "从未登录过"
+            }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status">
@@ -199,51 +201,37 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改设备码对话框 -->
+    <!-- 添加或修改设备码管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules">
-        <div v-if="form.deviceCodeId">
-          <el-form-item>
-            <el-col :span="12">
-              <el-form-item label="设备码">
-                {{ form.deviceCode }}
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <div v-if="form.deviceCodeId">
-                <el-form-item label="最后登录" prop="lastLoginTime">
-                  {{ form.lastLoginTime ? form.lastLoginTime : "从未登录过" }}
-                </el-form-item>
-              </div>
-            </el-col>
-          </el-form-item>
-        </div>
-        <div v-else>
-          <el-form-item label="设备码" prop="deviceCode">
-            <el-input v-model="form.deviceCode" placeholder="请输入设备码" />
-          </el-form-item>
-        </div>
+        <el-form-item label="设备码" prop="deviceCode">
+          <el-input v-model="form.deviceCode" placeholder="请输入设备码"/>
+        </el-form-item>
         <el-form-item>
           <el-col :span="12">
-            <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in dict.type.sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.value"
-                >
-                  {{ dict.label }}
-                </el-radio>
-              </el-radio-group>
+            <el-form-item label="总登录次数">
+              {{ form.loginTimes ? form.loginTimes + "次" : "从未登录过" }}
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <div v-if="form.deviceCodeId">
-              <el-form-item label="登录次数" prop="loginTimes">
-                {{ form.loginTimes ? form.loginTimes + "次" : "从未登录过" }}
-              </el-form-item>
-            </div>
+            <el-form-item label="最近登录时间">
+              <div v-if="form.lastLoginTime">
+                {{ form.lastLoginTime }}
+              </div>
+              <div v-else>从未登录过</div>
+            </el-form-item>
           </el-col>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-radio-group v-model="form.status">
+            <el-radio
+              v-for="dict in dict.type.sys_normal_disable"
+              :key="dict.value"
+              :label="dict.value"
+            >{{ dict.label }}
+            </el-radio
+            >
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input
@@ -255,19 +243,21 @@
         <div v-if="form.deviceCodeId">
           <el-form-item>
             <el-col :span="12">
-              <el-form-item label="创建人" prop="createBy">
-                {{ form.createBy }}
+              <el-form-item label="创建人" prop="createBy">{{
+                  form.createBy
+                }}
               </el-form-item>
               <el-form-item label="创建时间" prop="createTime"
-                >{{ form.createTime }}
+              >{{ form.createTime }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="最后更新" prop="updateBy">
-                {{ form.updateBy }}
+              <el-form-item label="最后更新" prop="updateBy">{{
+                  form.updateBy
+                }}
               </el-form-item>
               <el-form-item label="更新时间" prop="updateTime"
-                >{{ form.updateTime }}
+              >{{ form.updateTime }}
               </el-form-item>
             </el-col>
           </el-form-item>
@@ -291,17 +281,12 @@ import {
   listDeviceCode,
   updateDeviceCode,
 } from "@/api/system/deviceCode";
-import {getAppUser} from "@/api/system/appUser";
 
 export default {
   name: "DeviceCode",
   dicts: ["sys_normal_disable"],
   data() {
     return {
-      // 软件用户
-      appUser: null,
-      // 设备码
-      searchDeviceCode: null,
       // 遮罩层
       loading: true,
       // 导出遮罩层
@@ -328,6 +313,8 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        deviceCode: null,
+        lastLoginTime: null,
         loginTimes: null,
         status: null,
       },
@@ -343,22 +330,7 @@ export default {
     };
   },
   created() {
-    const appUserId = this.$route.params && this.$route.params.appUserId;
-    if (appUserId != undefined && appUserId != null) {
-      getAppUser(appUserId).then((response) => {
-        this.appUser = response.data;
-        const title = "设备码管理old";
-        const appUserName =
-          this.appUser.user.nickName + "(" + this.appUser.user.userName + ")";
-        const route = Object.assign({}, this.$route, {
-          title: `${title}-${appUserName}`,
-        });
-        this.$store.dispatch("tagsView/updateVisitedView", route);
-        this.getList();
-      });
-    } else {
-      this.$modal.alertError("未获取到当前用户信息");
-    }
+    this.getList();
   },
   methods: {
     /** 查询设备码管理列表 */
@@ -373,10 +345,6 @@ export default {
           this.daterangeLastLoginTime[0];
         this.queryParams.params["endLastLoginTime"] =
           this.daterangeLastLoginTime[1];
-      }
-      this.queryParams.appUserId = this.appUser.appUserId;
-      if (null != this.searchDeviceCode && "" != this.searchDeviceCode) {
-        this.queryParams.params["searchDeviceCode"] = this.searchDeviceCode;
       }
       listDeviceCode(this.queryParams).then((response) => {
         this.deviceCodeList = response.rows;
@@ -393,8 +361,14 @@ export default {
     reset() {
       this.form = {
         deviceCodeId: null,
+        deviceCode: null,
+        lastLoginTime: null,
         loginTimes: null,
         status: "0",
+        createBy: null,
+        createTime: null,
+        updateBy: null,
+        updateTime: null,
         remark: null,
       };
       this.resetForm("form");
@@ -420,7 +394,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加设备码";
+      this.title = "添加设备码管理";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -429,7 +403,7 @@ export default {
       getDeviceCode(deviceCodeId).then((response) => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改设备码";
+        this.title = "修改设备码管理";
       });
     },
     /** 提交按钮 */
@@ -456,7 +430,9 @@ export default {
     handleDelete(row) {
       const deviceCodeIds = row.deviceCodeId || this.ids;
       this.$modal
-        .confirm('是否确认删除设备码编号为"' + deviceCodeIds + '"的数据项？')
+        .confirm(
+          '是否确认删除设备码管理编号为"' + deviceCodeIds + '"的数据项？'
+        )
         .then(function () {
           return delDeviceCode(deviceCodeIds);
         })
@@ -470,7 +446,7 @@ export default {
     handleExport() {
       const queryParams = this.queryParams;
       this.$modal
-        .confirm("是否确认导出所有设备码数据项？")
+        .confirm("是否确认导出所有设备码管理数据项？")
         .then(() => {
           this.exportLoading = true;
           return exportDeviceCode(queryParams);

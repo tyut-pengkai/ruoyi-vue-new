@@ -444,25 +444,18 @@
             </el-col>
           </el-form-item>
           <el-form-item>
-            <el-col :span="8">
+            <el-col :span="12">
               <el-form-item label="总登录次数">
                 {{ form.loginTimes ? form.loginTimes + "次" : "从未登录过" }}
               </el-form-item>
             </el-col>
-            <el-col :span="8">
-              <el-form-item label="最近一次登录时间">
+            <el-col :span="12">
+              <el-form-item label="最近登录时间">
                 <div v-if="form.lastLoginTime">
                   {{ form.lastLoginTime }}
                 </div>
                 <div v-else>从未登录过</div>
               </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <div v-if="form.createTime">
-                <el-form-item label="用户注册时间">
-                  {{ parseTime(form.createTime) }}
-                </el-form-item>
-              </div>
             </el-col>
           </el-form-item>
           <!-- end -->

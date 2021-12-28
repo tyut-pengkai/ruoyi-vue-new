@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询机器码管理列表
+// 查询设备码管理列表
 export function listDeviceCode(query) {
   return request({
     url: '/system/deviceCode/list',
@@ -9,7 +9,7 @@ export function listDeviceCode(query) {
   })
 }
 
-// 查询机器码管理详细
+// 查询设备码管理详细
 export function getDeviceCode(deviceCodeId) {
   return request({
     url: '/system/deviceCode/' + deviceCodeId,
@@ -17,7 +17,7 @@ export function getDeviceCode(deviceCodeId) {
   })
 }
 
-// 新增机器码管理
+// 新增设备码管理
 export function addDeviceCode(data) {
   return request({
     url: '/system/deviceCode',
@@ -26,7 +26,7 @@ export function addDeviceCode(data) {
   })
 }
 
-// 修改机器码管理
+// 修改设备码管理
 export function updateDeviceCode(data) {
   return request({
     url: '/system/deviceCode',
@@ -35,7 +35,7 @@ export function updateDeviceCode(data) {
   })
 }
 
-// 删除机器码管理
+// 删除设备码管理
 export function delDeviceCode(deviceCodeId) {
   return request({
     url: '/system/deviceCode/' + deviceCodeId,
@@ -43,7 +43,7 @@ export function delDeviceCode(deviceCodeId) {
   })
 }
 
-// 导出机器码管理
+// 导出设备码管理
 export function exportDeviceCode(query) {
   return request({
     url: '/system/deviceCode/export',
