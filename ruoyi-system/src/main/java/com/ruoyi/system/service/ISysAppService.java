@@ -10,8 +10,7 @@ import java.util.List;
  * @author zwgu
  * @date 2021-11-05
  */
-public interface ISysAppService
-{
+public interface ISysAppService {
     /**
      * 查询软件
      *
@@ -19,6 +18,14 @@ public interface ISysAppService
      * @return 软件
      */
     public SysApp selectSysAppByAppId(Long appId);
+
+    /**
+     * 查询软件
+     *
+     * @param appKey 软件AppKey
+     * @return 软件
+     */
+    public SysApp selectSysAppByAppKey(String appKey);
 
     /**
      * 查询软件列表

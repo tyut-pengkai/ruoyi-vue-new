@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.system.domain.SysAppVersion;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -60,4 +61,13 @@ public interface SysAppVersionMapper {
      * @return 结果
      */
     public int deleteSysAppVersionByAppVersionIds(Long[] appVersionIds);
+
+    /**
+     * 查询软件版本信息
+     *
+     * @param appId
+     * @param version
+     * @return 软件版本信息
+     */
+    SysAppVersion selectSysAppVersionByAppIdAndVersion(@Param("appId") Long appId, @Param("appVersion") Long appVersion);
 }

@@ -20,6 +20,14 @@ public interface ISysAppVersionService {
     public SysAppVersion selectSysAppVersionByAppVersionId(Long appVersionId);
 
     /**
+     * 查询软件版本信息
+     *
+     * @param appVersionId 软件版本信息主键
+     * @return 软件版本信息
+     */
+    public SysAppVersion selectSysAppVersionByAppIdAndVersion(Long appId, Long appVersion);
+
+    /**
      * 查询软件版本信息列表
      *
      * @param sysAppVersion 软件版本信息

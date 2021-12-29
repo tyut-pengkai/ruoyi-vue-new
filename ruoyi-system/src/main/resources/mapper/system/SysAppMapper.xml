@@ -94,25 +94,30 @@
 				AND date_format(a.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
 			</if>
 			<if test="params.endCreateTime != null and params.endCreateTime != ''"><!-- 结束时间检索 -->
-				AND date_format(a.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
-			</if>
-		</where>
-	</select>
+                AND date_format(a.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
 
-	<select id="selectSysAppByAppId" parameterType="Long" resultMap="SysAppResult">
-		<include refid="selectSysAppVo"/>
-		where app_id = #{appId}
-	</select>
+    <select id="selectSysAppByAppId" parameterType="Long" resultMap="SysAppResult">
+        <include refid="selectSysAppVo"/>
+        where app_id = #{appId}
+    </select>
 
-	<insert id="insertSysApp" parameterType="SysApp">
-		insert into sys_app
-		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="appId != null">app_id,</if>
-			<if test="appName != null and appName != ''">app_name,</if>
-			<if test="description != null">description,</if>
-			<if test="apiUrl != null">api_url,</if>
-			<if test="status != null">status,</if>
-			<if test="delFlag != null">del_flag,</if>
+    <select id="selectSysAppByAppKey" parameterType="String" resultMap="SysAppResult">
+        <include refid="selectSysAppVo"/>
+        where app_key = #{appKey}
+    </select>
+
+    <insert id="insertSysApp" parameterType="SysApp">
+        insert into sys_app
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appId != null">app_id,</if>
+            <if test="appName != null and appName != ''">app_name,</if>
+            <if test="description != null">description,</if>
+            <if test="apiUrl != null">api_url,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
 			<if test="bindType != null">bind_type,</if>
 			<if test="isCharge != null">is_charge,</if>
 			<if test="idxUrl != null">idx_url,</if>

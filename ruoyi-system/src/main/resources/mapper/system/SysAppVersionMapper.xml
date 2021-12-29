@@ -60,6 +60,11 @@
         where app_version_id = #{appVersionId}
     </select>
 
+    <select id="selectSysAppVersionByAppIdAndVersion" resultMap="SysAppVersionResult">
+        <include refid="selectSysAppVersionVo"/>
+        where app_id = #{appId} and version_no = #{appVersion}
+    </select>
+
     <insert id="insertSysAppVersion" parameterType="SysAppVersion" useGeneratedKeys="true" keyProperty="appVersionId">
         insert into sys_app_version
         <trim prefix="(" suffix=")" suffixOverrides=",">

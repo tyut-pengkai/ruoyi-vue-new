@@ -86,7 +86,7 @@ public class SysAppController extends BaseController
         HttpServletRequest request = ServletUtils.getRequest();
         sysApp.setApiUrl(request.getScheme() + "://" + request.getServerName()
                 + ("80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort())
-                + "/api?appkey=" + sysApp.getAppKey());
+                + "/api/v1?appkey=" + sysApp.getAppKey());
         sysApp.setDelFlag("0");
         return toAjax(sysAppService.insertSysApp(sysApp));
     }

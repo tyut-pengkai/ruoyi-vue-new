@@ -65,8 +65,17 @@ public interface SysAppMapper
 
     /**
      * 检查软件名称唯一性
+     *
      * @param appName 软件名称
      * @return
      */
-    int checkAppNameUnique(@Param("appName")String appName, @Param("appId")Long appId);
+    public int checkAppNameUnique(@Param("appName") String appName, @Param("appId") Long appId);
+
+    /**
+     * 查询软件
+     *
+     * @param appKey 软件AppKey
+     * @return 软件
+     */
+    public SysApp selectSysAppByAppKey(String appKey);
 }

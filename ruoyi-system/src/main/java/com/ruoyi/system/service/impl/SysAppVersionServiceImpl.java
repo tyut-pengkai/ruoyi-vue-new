@@ -32,6 +32,18 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     }
 
     /**
+     * 查询软件版本信息
+     *
+     * @param appId
+     * @param version
+     * @return 软件版本信息
+     */
+    @Override
+    public SysAppVersion selectSysAppVersionByAppIdAndVersion(Long appId, Long appVersion) {
+        return sysAppVersionMapper.selectSysAppVersionByAppIdAndVersion(appId, appVersion);
+    }
+
+    /**
      * 查询软件版本信息列表
      *
      * @param sysAppVersion 软件版本信息

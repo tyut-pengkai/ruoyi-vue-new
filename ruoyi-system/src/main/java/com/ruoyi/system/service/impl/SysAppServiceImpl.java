@@ -30,9 +30,19 @@ public class SysAppServiceImpl implements ISysAppService
      * @return 软件
      */
     @Override
-    public SysApp selectSysAppByAppId(Long appId)
-    {
+    public SysApp selectSysAppByAppId(Long appId) {
         return sysAppMapper.selectSysAppByAppId(appId);
+    }
+
+    /**
+     * 查询软件
+     *
+     * @param appKey 软件AppKey
+     * @return 软件
+     */
+    @Override
+    public SysApp selectSysAppByAppKey(String appKey) {
+        return sysAppMapper.selectSysAppByAppKey(appKey);
     }
 
     /**
@@ -42,8 +52,7 @@ public class SysAppServiceImpl implements ISysAppService
      * @return 软件
      */
     @Override
-    public List<SysApp> selectSysAppList(SysApp sysApp)
-    {
+    public List<SysApp> selectSysAppList(SysApp sysApp) {
         return sysAppMapper.selectSysAppList(sysApp);
     }
 
