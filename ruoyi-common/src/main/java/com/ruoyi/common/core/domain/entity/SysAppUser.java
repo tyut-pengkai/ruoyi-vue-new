@@ -1,22 +1,15 @@
-package com.ruoyi.system.domain;
+package com.ruoyi.common.core.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excels;
 import com.ruoyi.common.core.domain.BaseEntity;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-/**
- * 软件用户对象 sys_app_user
- * 
- * @author zwgu
- * @date 2021-11-09
- */
 public class SysAppUser extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -36,13 +29,17 @@ public class SysAppUser extends BaseEntity
     @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
     private String status;
 
-    /** 登录用户数量限制，整数，-1为不限制，默认为-1 */
+    /**
+     * 登录用户数量限制，整数，-1为不限制，默认为-1
+     */
     @Excel(name = "登录用户数量限制，整数，-1为不限制，默认为-1")
-    private Long loginLimitU;
+    private Integer loginLimitU;
 
-    /** 登录机器数量限制，整数，-1为不限制，默认为-1 */
+    /**
+     * 登录机器数量限制，整数，-1为不限制，默认为-1
+     */
     @Excel(name = "登录机器数量限制，整数，-1为不限制，默认为-1")
-    private Long loginLimitM;
+    private Integer loginLimitM;
 
     /** 免费余额 */
     @Excel(name = "免费余额")
@@ -73,9 +70,11 @@ public class SysAppUser extends BaseEntity
     @Excel(name = "过期时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date expireTime;
 
-    /** 剩余点数 */
+    /**
+     * 剩余点数
+     */
     @Excel(name = "剩余点数")
-    private String point;
+    private BigDecimal point;
 
     /** 登录码 */
     @Excel(name = "登录码")
@@ -133,38 +132,35 @@ public class SysAppUser extends BaseEntity
         this.status = status;
     }
 
-    public String getStatus() 
-    {
+    public String getStatus() {
         return status;
     }
-    public void setLoginLimitU(Long loginLimitU) 
-    {
+
+    public Integer getLoginLimitU() {
+        return loginLimitU;
+    }
+
+    public void setLoginLimitU(Integer loginLimitU) {
         this.loginLimitU = loginLimitU;
     }
 
-    public Long getLoginLimitU() 
-    {
-        return loginLimitU;
+    public Integer getLoginLimitM() {
+        return loginLimitM;
     }
-    public void setLoginLimitM(Long loginLimitM) 
-    {
+
+    public void setLoginLimitM(Integer loginLimitM) {
         this.loginLimitM = loginLimitM;
     }
 
-    public Long getLoginLimitM() 
-    {
-        return loginLimitM;
-    }
-    public void setFreeBalance(BigDecimal freeBalance) 
-    {
+    public void setFreeBalance(BigDecimal freeBalance) {
         this.freeBalance = freeBalance;
     }
 
-    public BigDecimal getFreeBalance() 
-    {
+    public BigDecimal getFreeBalance() {
         return freeBalance;
     }
-    public void setPayBalance(BigDecimal payBalance) 
+
+    public void setPayBalance(BigDecimal payBalance)
     {
         this.payBalance = payBalance;
     }
@@ -205,30 +201,27 @@ public class SysAppUser extends BaseEntity
         this.pwdErrorTimes = pwdErrorTimes;
     }
 
-    public Integer getPwdErrorTimes()
-    {
+    public Integer getPwdErrorTimes() {
         return pwdErrorTimes;
     }
-    public void setExpireTime(Date expireTime) 
-    {
+
+    public void setExpireTime(Date expireTime) {
         this.expireTime = expireTime;
     }
 
-    public Date getExpireTime() 
-    {
+    public Date getExpireTime() {
         return expireTime;
     }
-    public void setPoint(String point) 
-    {
+
+    public BigDecimal getPoint() {
+        return point;
+    }
+
+    public void setPoint(BigDecimal point) {
         this.point = point;
     }
 
-    public String getPoint() 
-    {
-        return point;
-    }
-    public void setLoginCode(String loginCode) 
-    {
+    public void setLoginCode(String loginCode) {
         this.loginCode = loginCode;
     }
 

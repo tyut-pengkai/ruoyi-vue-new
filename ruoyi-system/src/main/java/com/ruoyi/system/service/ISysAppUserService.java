@@ -1,6 +1,6 @@
 package com.ruoyi.system.service;
 
-import com.ruoyi.system.domain.SysAppUser;
+import com.ruoyi.common.core.domain.entity.SysAppUser;
 
 import java.util.List;
 

@@ -2,6 +2,7 @@ package com.ruoyi.system.domain;
 
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.enums.ChargeRule;
 import com.ruoyi.common.enums.GenRule;
 import org.apache.commons.lang3.builder.ToStringBuilder;

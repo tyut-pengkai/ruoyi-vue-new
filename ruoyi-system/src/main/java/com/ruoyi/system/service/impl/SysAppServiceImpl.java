@@ -1,9 +1,9 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.system.domain.SysApp;
 import com.ruoyi.system.mapper.SysAppMapper;
 import com.ruoyi.system.service.ISysAppService;
 import org.springframework.beans.factory.annotation.Autowired;

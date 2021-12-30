@@ -1,4 +1,4 @@
-package com.ruoyi.system.domain;
+package com.ruoyi.common.core.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
@@ -8,12 +8,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Date;
 
-/**
- * 机器码管理对象 sys_device_code
- * 
- * @author zwgu
- * @date 2021-12-06
- */
 public class SysDeviceCode extends BaseEntity
 {
     private static final long serialVersionUID = 1L;

@@ -1,19 +1,12 @@
-package com.ruoyi.system.domain;
+package com.ruoyi.common.core.domain.entity;
 
+import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excels;
-import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.enums.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import com.ruoyi.common.annotation.Excel;
-import com.ruoyi.common.core.domain.BaseEntity;
 
-/**
- * 软件对象 sys_app
- *
- * @author zwgu
- * @date 2021-11-05
- */
 public class SysApp extends BaseEntity
 {
     private static final long serialVersionUID = 1L;

@@ -84,4 +84,12 @@ public class SysAppLogininforServiceImpl implements ISysAppLogininforService {
     public int deleteSysAppLogininforByInfoId(Long infoId) {
         return sysAppLogininforMapper.deleteSysAppLogininforByInfoId(infoId);
     }
+
+    /**
+     * 清空系统登录日志
+     */
+    @Override
+    public void cleanLogininfor() {
+        sysAppLogininforMapper.cleanLogininfor();
+    }
 }

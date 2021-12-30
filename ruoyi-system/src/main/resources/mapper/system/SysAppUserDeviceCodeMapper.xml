@@ -60,6 +60,21 @@
         where saudc.id = #{id}
     </select>
 
+    <select id="selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId" resultMap="SysAppUserDeviceCodeResult">
+        <include refid="selectSysAppUserDeviceCodeVo"/>
+        where saudc.app_user_id = #{appUserId} and saudc.device_code_id = #{deviceCodeId}
+    </select>
+
+    <select id="selectSysAppUserDeviceCodeByAppUserId" resultMap="SysAppUserDeviceCodeResult">
+        <include refid="selectSysAppUserDeviceCodeVo"/>
+        where saudc.app_user_id = #{appUserId}
+    </select>
+
+    <select id="selectSysAppUserDeviceCodeByDeviceCodeId" resultMap="SysAppUserDeviceCodeResult">
+        <include refid="selectSysAppUserDeviceCodeVo"/>
+        where saudc.device_code_id = #{deviceCodeId}
+    </select>
+
     <insert id="insertSysAppUserDeviceCode" parameterType="SysAppUserDeviceCode" useGeneratedKeys="true"
             keyProperty="id">
         insert into sys_app_user_device_code

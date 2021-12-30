@@ -26,14 +26,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>
             <if test="deviceCode != null  and deviceCode != ''"> and device_code = #{deviceCode}</if>
             <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''"> and last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}</if>
-            <if test="params.beginLoginTimes != null and params.beginLoginTimes != '' and params.endLoginTimes != null and params.endLoginTimes != ''"> and login_times between #{params.beginLoginTimes} and #{params.endLoginTimes}</if>
-            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="params.beginLoginTimes != null and params.beginLoginTimes != '' and params.endLoginTimes != null and params.endLoginTimes != ''">
+                and login_times between #{params.beginLoginTimes} and #{params.endLoginTimes}
+            </if>
+            <if test="status != null  and status != ''">and status = #{status}</if>
         </where>
     </select>
 
     <select id="selectSysDeviceCodeByDeviceCodeId" parameterType="Long" resultMap="SysDeviceCodeResult">
         <include refid="selectSysDeviceCodeVo"/>
         where device_code_id = #{deviceCodeId}
+    </select>
+
+    <select id="selectSysDeviceCodeByDeviceCode" parameterType="String" resultMap="SysDeviceCodeResult">
+        <include refid="selectSysDeviceCodeVo"/>
+        where device_code = #{deviceCode}
     </select>
 
     <insert id="insertSysDeviceCode" parameterType="SysDeviceCode" useGeneratedKeys="true" keyProperty="deviceCodeId">

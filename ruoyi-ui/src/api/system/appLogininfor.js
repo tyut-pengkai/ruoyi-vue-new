@@ -51,3 +51,11 @@ export function exportAppLogininfor(query) {
     params: query
   })
 }
+
+// 清空登录日志
+export function cleanLogininfor() {
+  return request({
+    url: '/system/appLogininfor/clean',
+    method: 'delete'
+  })
+}

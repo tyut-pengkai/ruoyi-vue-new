@@ -65,5 +65,26 @@ public interface ISysAppUserDeviceCodeService {
      * @param appUserDeviceCode 信息
      * @return 结果
      */
-    int updateSysDeviceCodeStatus(SysAppUserDeviceCode appUserDeviceCode);
+    public int updateSysDeviceCodeStatus(SysAppUserDeviceCode appUserDeviceCode);
+
+    /**
+     * 查询软件用户与设备码关联
+     *
+     * @return 软件用户与设备码关联
+     */
+    public SysAppUserDeviceCode selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(Long appUserId, Long deviceCodeId);
+
+    /**
+     * 查询软件用户与设备码关联
+     *
+     * @return 软件用户与设备码关联
+     */
+    List<SysAppUserDeviceCode> selectSysAppUserDeviceCodeByAppUserId(Long appUserId);
+
+    /**
+     * 查询软件用户与设备码关联
+     *
+     * @return 软件用户与设备码关联
+     */
+    List<SysAppUserDeviceCode> selectSysAppUserDeviceCodeByDeviceCodeId(Long deviceCodeId);
 }

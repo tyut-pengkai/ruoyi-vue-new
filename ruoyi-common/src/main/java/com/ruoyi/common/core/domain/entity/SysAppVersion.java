@@ -1,16 +1,10 @@
-package com.ruoyi.system.domain;
+package com.ruoyi.common.core.domain.entity;
 
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-/**
- * 软件版本信息对象 sys_app_version
- *
- * @author zwgu
- * @date 2021-12-19
- */
 public class SysAppVersion extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -146,6 +140,10 @@ public class SysAppVersion extends BaseEntity {
 
     public void setMd5(String md5) {
         this.md5 = md5;
+    }
+
+    public String getVersionShow() {
+        return versionName + "(" + versionNo + ")";
     }
 
     @Override

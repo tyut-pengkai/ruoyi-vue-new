@@ -1,7 +1,7 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.core.domain.entity.SysDeviceCode;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.system.domain.SysDeviceCode;
 import com.ruoyi.system.mapper.SysDeviceCodeMapper;
 import com.ruoyi.system.service.ISysDeviceCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,5 +104,16 @@ public class SysDeviceCodeServiceImpl implements ISysDeviceCodeService
     @Override
     public int updateSysDeviceCodeStatus(SysDeviceCode deviceCode) {
         return sysDeviceCodeMapper.updateSysDeviceCode(deviceCode);
+    }
+
+    /**
+     * 查询机器码管理
+     *
+     * @param deviceCode 机器码
+     * @return 机器码管理
+     */
+    @Override
+    public SysDeviceCode selectSysDeviceCodeByDeviceCode(String deviceCode) {
+        return sysDeviceCodeMapper.selectSysDeviceCodeByDeviceCode(deviceCode);
     }
 }

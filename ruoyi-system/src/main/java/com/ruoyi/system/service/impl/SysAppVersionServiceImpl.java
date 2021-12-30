@@ -1,7 +1,7 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.core.domain.entity.SysAppVersion;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.system.domain.SysAppVersion;
 import com.ruoyi.system.mapper.SysAppVersionMapper;
 import com.ruoyi.system.service.ISysAppVersionService;
 import org.springframework.beans.factory.annotation.Autowired;

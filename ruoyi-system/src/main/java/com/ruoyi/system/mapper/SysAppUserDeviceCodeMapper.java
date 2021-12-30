@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.system.domain.SysAppUserDeviceCode;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -60,4 +61,29 @@ public interface SysAppUserDeviceCodeMapper {
      * @return 结果
      */
     public int deleteSysAppUserDeviceCodeByIds(Long[] ids);
+
+    /**
+     * 查询软件用户与设备码关联
+     *
+     * @param appUserId
+     * @param deviceCodeId
+     * @return 软件用户与设备码关联
+     */
+    public SysAppUserDeviceCode selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(@Param("appUserId") Long appUserId, @Param("deviceCodeId") Long deviceCodeId);
+
+    /**
+     * 查询软件用户与设备码关联
+     *
+     * @param appUserId
+     * @return 软件用户与设备码关联
+     */
+    List<SysAppUserDeviceCode> selectSysAppUserDeviceCodeByAppUserId(Long appUserId);
+
+    /**
+     * 查询软件用户与设备码关联
+     *
+     * @param deviceCodeId
+     * @return 软件用户与设备码关联
+     */
+    List<SysAppUserDeviceCode> selectSysAppUserDeviceCodeByDeviceCodeId(Long deviceCodeId);
 }

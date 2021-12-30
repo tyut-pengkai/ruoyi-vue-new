@@ -1,6 +1,6 @@
 package com.ruoyi.system.service;
 
-import com.ruoyi.system.domain.SysDeviceCode;
+import com.ruoyi.common.core.domain.entity.SysDeviceCode;
 
 import java.util.List;
 
@@ -67,4 +67,12 @@ public interface ISysDeviceCodeService
      * @return 结果
      */
     public int updateSysDeviceCodeStatus(SysDeviceCode deviceCode);
+
+    /**
+     * 查询机器码管理
+     *
+     * @param deviceCode 机器码
+     * @return 机器码管理
+     */
+    public SysDeviceCode selectSysDeviceCodeByDeviceCode(String deviceCode);
 }

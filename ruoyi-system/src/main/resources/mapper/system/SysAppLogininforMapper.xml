@@ -59,6 +59,7 @@
                 and login_time between #{params.beginLoginTime} and #{params.endLoginTime}
             </if>
         </where>
+        order by info_id desc
     </select>
 
     <select id="selectSysAppLogininforByInfoId" parameterType="Long" resultMap="SysAppLogininforResult">
@@ -80,7 +81,7 @@
             <if test="os != null">os,</if>
             <if test="status != null">status,</if>
             <if test="msg != null">msg,</if>
-            <if test="loginTime != null">login_time,</if>
+            login_time,
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userName != null">#{userName},</if>
@@ -94,7 +95,7 @@
             <if test="os != null">#{os},</if>
             <if test="status != null">#{status},</if>
             <if test="msg != null">#{msg},</if>
-            <if test="loginTime != null">#{loginTime},</if>
+            sysdate(),
         </trim>
     </insert>
 
@@ -129,4 +130,8 @@
             #{infoId}
         </foreach>
     </delete>
+
+    <update id="cleanLogininfor">
+        truncate table sys_app_logininfor
+    </update>
 </mapper>

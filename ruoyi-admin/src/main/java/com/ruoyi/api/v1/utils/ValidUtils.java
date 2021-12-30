@@ -3,21 +3,45 @@ package com.ruoyi.api.v1.utils;
 import com.ruoyi.api.v1.constants.ApiDefine;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.domain.entity.SysApp;
+import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.core.domain.entity.SysAppVersion;
+import com.ruoyi.common.core.domain.entity.SysDeviceCode;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ErrorCode;
+import com.ruoyi.common.enums.LimitOper;
 import com.ruoyi.common.exception.ApiException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.system.domain.SysApp;
-import com.ruoyi.system.domain.SysAppVersion;
+import com.ruoyi.framework.manager.AsyncManager;
+import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.framework.web.service.TokenService;
+import com.ruoyi.system.domain.SysAppUserDeviceCode;
+import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
+import com.ruoyi.system.service.ISysUserOnlineService;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Component
 public class ValidUtils {
+
+    @Resource
+    private ISysAppUserDeviceCodeService appUserDeviceCodeService;
+    @Resource
+    private ISysUserOnlineService userOnlineService;
+    @Resource
+    private RedisCache redisCache;
+    @Resource
+    private TokenService tokenService;
+
     /**
      * 不需要验证token的api接口验证
      */
@@ -151,4 +175,131 @@ public class ValidUtils {
 //            throw new ApiException(Code.ERROR_NO_LOGIN);
 //        }
 //    }
+
+    public void checkMoreMachine(Long appUserId, Long deviceCodeId) {
+        boolean flagFinishBind = false;
+        List<SysAppUserDeviceCode> appUserDeviceCodeList = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserId(appUserId);
+        if (appUserDeviceCodeList.size() > 0) {
+            for (SysAppUserDeviceCode appUserDeviceCode : appUserDeviceCodeList) {
+                if (Objects.equals(appUserDeviceCode.getDeviceCodeId(), deviceCodeId)) {
+                    flagFinishBind = true;
+                    break;
+                }
+            }
+            if (!flagFinishBind) {
+                throw new ApiException(ErrorCode.ERROR_BIND_MACHINE_LIMIT);
+            }
+        }
+    }
+
+    public void checkMoreUser(Long appUserId, Long deviceCodeId) {
+        boolean flagFinishBind = false;
+        List<SysAppUserDeviceCode> appUserDeviceCodeList = appUserDeviceCodeService.selectSysAppUserDeviceCodeByDeviceCodeId(deviceCodeId);
+        if (appUserDeviceCodeList.size() > 0) {
+            for (SysAppUserDeviceCode appUserDeviceCode : appUserDeviceCodeList) {
+                if (Objects.equals(appUserDeviceCode.getAppUserId(), appUserId)) {
+                    flagFinishBind = true;
+                    break;
+                }
+            }
+            if (!flagFinishBind) {
+                throw new ApiException(ErrorCode.ERROR_BIND_USER_LIMIT);
+            }
+        }
+    }
+
+    public void checkAppUserIsExpired(SysApp app, SysAppUser appUser) {
+        if (Objects.equals(app.getIsCharge(), UserConstants.YES)) {
+            if (app.getBillType() == BillType.TIME) {
+                if (appUser.getExpireTime() == null || !appUser.getExpireTime().after(DateUtils.getNowDate())) {
+                    throw new ApiException(ErrorCode.ERROR_APPUSER_EXPIRED);
+                }
+            } else if (app.getBillType() == BillType.POINT) {
+                if (appUser.getPoint() == null || appUser.getPoint().compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new ApiException(ErrorCode.ERROR_APPUSER_NO_POINT);
+                }
+            } else {
+                throw new ApiException("软件计费方式有误");
+            }
+        }
+    }
+
+    public void checkLoginLimit(SysApp app, SysAppUser appUser, SysDeviceCode deviceCode) {
+        Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
+        List<LoginUser> onlineListU = new ArrayList<>();
+        for (String key : keys) {
+            LoginUser user = redisCache.getCacheObject(key);
+            if (user.getIfApp() && Objects.equals(appUser.getAppUserId(), user.getAppUser().getAppUserId())) {
+                onlineListU.add(user);
+            }
+        }
+        // 检查用户数量
+        Integer userLimitApp = app.getLoginLimitU();
+        Integer userLimitAppUser = appUser.getLoginLimitU();
+        Integer mixU;
+        if (userLimitApp == -1) {
+            mixU = userLimitAppUser;
+        } else {
+            if (userLimitAppUser == -1) {
+                mixU = userLimitApp;
+            } else {
+                mixU = userLimitApp < userLimitAppUser ? userLimitApp : userLimitAppUser;
+            }
+        }
+        if (mixU != -1 && mixU <= onlineListU.size()) {
+            if (app.getLimitOper() == LimitOper.TIPS) {
+                throw new ApiException(ErrorCode.ERROR_LOGIN_USER_LIMIT);
+            } else if (app.getLimitOper() == LimitOper.EARLIEST_LOGOUT) {
+                // 登录最早的退出
+                logoutTheEarliest(onlineListU, "用户同时登录数量超出限制");
+            }
+        }
+        // 检查设备数量
+        if (deviceCode != null) {
+            List<Long> onlineListM = new ArrayList<>();
+            for (LoginUser user : onlineListU) {
+                onlineListM.add(user.getDeviceCode().getDeviceCodeId());
+            }
+            Integer machineLimitApp = app.getLoginLimitM();
+            Integer machineLimitAppUser = appUser.getLoginLimitM();
+            Integer mixM;
+            if (machineLimitApp == -1) {
+                mixM = machineLimitAppUser;
+            } else {
+                if (machineLimitAppUser == -1) {
+                    mixM = machineLimitApp;
+                } else {
+                    mixM = machineLimitApp < machineLimitAppUser ? machineLimitApp : machineLimitAppUser;
+                }
+            }
+            if (mixM != -1 && mixM <= onlineListM.size() && !onlineListM.contains(deviceCode.getDeviceCodeId())) {
+                if (app.getLimitOper() == LimitOper.TIPS) {
+                    throw new ApiException(ErrorCode.ERROR_LOGIN_MACHINE_LIMIT);
+                } else if (app.getLimitOper() == LimitOper.EARLIEST_LOGOUT) {
+                    // 登录最早的设备退出
+                    logoutTheEarliest(onlineListU, "同时在线设备数量超出限制");
+                }
+            }
+        }
+    }
+
+    /**
+     * 注销最早登录的账号
+     *
+     * @param onlineList
+     */
+    private void logoutTheEarliest(List<LoginUser> onlineList, String msg) {
+        // 将当前在线用户按照登录时间排序
+        onlineList.sort(Comparator.comparing(LoginUser::getLoginTime));
+        LoginUser loginUser = onlineList.get(0);
+        String userName = loginUser.getUsername();
+        // 删除用户缓存记录
+        tokenService.delLoginUser(loginUser.getToken());
+        // 记录用户退出日志
+        AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(loginUser.getAppUser().getAppUserId(), userName,
+                loginUser.getApp().getAppName(), loginUser.getAppVersion().getVersionShow(),
+                loginUser.getDeviceCode() != null ? loginUser.getDeviceCode().getDeviceCode() : null,
+                Constants.LOGOUT, "系统强制退出：" + msg));
+    }
+
 }

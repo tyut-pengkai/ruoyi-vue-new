@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.ruoyi.api.v1.utils.SignUtil;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.system.domain.SysApp;
+import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.system.service.ISysAppService;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;

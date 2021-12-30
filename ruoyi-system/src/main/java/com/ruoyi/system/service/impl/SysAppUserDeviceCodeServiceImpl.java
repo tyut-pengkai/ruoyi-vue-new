@@ -98,4 +98,38 @@ public class SysAppUserDeviceCodeServiceImpl implements ISysAppUserDeviceCodeSer
     public int updateSysDeviceCodeStatus(SysAppUserDeviceCode appUserDeviceCode) {
         return sysAppUserDeviceCodeMapper.updateSysAppUserDeviceCode(appUserDeviceCode);
     }
+
+    /**
+     * 查询软件用户与设备码关联
+     *
+     * @param appUserId
+     * @param deviceCodeId
+     * @return 软件用户与设备码关联
+     */
+    @Override
+    public SysAppUserDeviceCode selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(Long appUserId, Long deviceCodeId) {
+        return sysAppUserDeviceCodeMapper.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(appUserId, deviceCodeId);
+    }
+
+    /**
+     * 查询软件用户与设备码关联
+     *
+     * @param appUserId
+     * @return 软件用户与设备码关联
+     */
+    @Override
+    public List<SysAppUserDeviceCode> selectSysAppUserDeviceCodeByAppUserId(Long appUserId) {
+        return sysAppUserDeviceCodeMapper.selectSysAppUserDeviceCodeByAppUserId(appUserId);
+    }
+
+    /**
+     * 查询软件用户与设备码关联
+     *
+     * @param deviceCodeId
+     * @return 软件用户与设备码关联
+     */
+    @Override
+    public List<SysAppUserDeviceCode> selectSysAppUserDeviceCodeByDeviceCodeId(Long deviceCodeId) {
+        return sysAppUserDeviceCodeMapper.selectSysAppUserDeviceCodeByDeviceCodeId(deviceCodeId);
+    }
 }

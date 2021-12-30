@@ -58,4 +58,9 @@ public interface ISysAppLogininforService {
      * @return 结果
      */
     public int deleteSysAppLogininforByInfoId(Long infoId);
+
+    /**
+     * 清空系统登录日志
+     */
+    public void cleanLogininfor();
 }

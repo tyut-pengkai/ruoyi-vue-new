@@ -1,6 +1,6 @@
 package com.ruoyi.system.mapper;
 
-import com.ruoyi.system.domain.SysApp;
+import com.ruoyi.common.core.domain.entity.SysApp;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

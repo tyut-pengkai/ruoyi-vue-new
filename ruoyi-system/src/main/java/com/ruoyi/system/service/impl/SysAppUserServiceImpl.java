@@ -1,6 +1,6 @@
 package com.ruoyi.system.service.impl;
 
-import com.ruoyi.system.domain.SysAppUser;
+import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.system.mapper.SysAppUserMapper;
 import com.ruoyi.system.service.ISysAppUserService;
 import org.springframework.beans.factory.annotation.Autowired;

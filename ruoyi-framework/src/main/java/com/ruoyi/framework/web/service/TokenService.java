@@ -1,15 +1,10 @@
 package com.ruoyi.framework.web.service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.ip.AddressUtils;
@@ -19,6 +14,14 @@ import eu.bitwalker.useragentutils.UserAgent;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * token验证处理
@@ -138,13 +141,28 @@ public class TokenService
      *
      * @param loginUser 登录信息
      */
-    public void refreshToken(LoginUser loginUser)
-    {
-        loginUser.setLoginTime(System.currentTimeMillis());
-        loginUser.setExpireTime(loginUser.getLoginTime() + expireTime * MILLIS_MINUTE);
-        // 根据uuid将loginUser缓存
-        String userKey = getTokenKey(loginUser.getToken());
-        redisCache.setCacheObject(userKey, loginUser, expireTime, TimeUnit.MINUTES);
+    public void refreshToken(LoginUser loginUser) {
+        if (loginUser.getIfApp()) {
+            Integer heartBeatTime = loginUser.getApp().getHeartBeatTime();
+            loginUser.setLoginTime(System.currentTimeMillis());
+            // 根据uuid将loginUser缓存
+            String userKey = getTokenKey(loginUser.getToken());
+            if (heartBeatTime > -1) {
+                loginUser.setExpireTime(loginUser.getLoginTime() + heartBeatTime * MILLIS_SECOND);
+                redisCache.setCacheObject(userKey, loginUser, heartBeatTime, TimeUnit.SECONDS);
+            } else {
+                loginUser.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE).getTime());
+                redisCache.setCacheObject(userKey, loginUser, 3650, TimeUnit.DAYS);
+                redisCache.persist(userKey);
+            }
+        } else {
+            loginUser.setLoginTime(System.currentTimeMillis());
+            loginUser.setExpireTime(loginUser.getLoginTime() + expireTime * MILLIS_MINUTE);
+            // 根据uuid将loginUser缓存
+            String userKey = getTokenKey(loginUser.getToken());
+            redisCache.setCacheObject(userKey, loginUser, expireTime, TimeUnit.MINUTES);
+        }
+
     }
 
     /**
@@ -152,8 +170,7 @@ public class TokenService
      *
      * @param loginUser 登录信息
      */
-    public void setUserAgent(LoginUser loginUser)
-    {
+    public void setUserAgent(LoginUser loginUser) {
         UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtils.getRequest().getHeader("User-Agent"));
         String ip = IpUtils.getIpAddr(ServletUtils.getRequest());
         loginUser.setIpaddr(ip);

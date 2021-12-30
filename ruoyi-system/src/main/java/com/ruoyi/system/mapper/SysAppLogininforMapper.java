@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.system.domain.SysAppLogininfor;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import java.util.List;
  * @author zwgu
  * @date 2021-12-29
  */
+@Repository
 public interface SysAppLogininforMapper {
     /**
      * 查询系统访问记录
@@ -58,4 +60,11 @@ public interface SysAppLogininforMapper {
      * @return 结果
      */
     public int deleteSysAppLogininforByInfoIds(Long[] infoIds);
+
+    /**
+     * 清空系统登录日志
+     *
+     * @return 结果
+     */
+    public int cleanLogininfor();
 }
