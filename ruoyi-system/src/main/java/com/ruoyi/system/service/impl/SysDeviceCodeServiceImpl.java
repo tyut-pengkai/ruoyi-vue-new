@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * 机器码管理Service业务层处理
- * 
+ * 设备码管理Service业务层处理
+ *
  * @author zwgu
  * @date 2021-12-06
  */
@@ -22,10 +22,10 @@ public class SysDeviceCodeServiceImpl implements ISysDeviceCodeService
     private SysDeviceCodeMapper sysDeviceCodeMapper;
 
     /**
-     * 查询机器码管理
-     * 
-     * @param deviceCodeId 机器码管理主键
-     * @return 机器码管理
+     * 查询设备码管理
+     *
+     * @param deviceCodeId 设备码管理主键
+     * @return 设备码管理
      */
     @Override
     public SysDeviceCode selectSysDeviceCodeByDeviceCodeId(Long deviceCodeId)
@@ -34,10 +34,10 @@ public class SysDeviceCodeServiceImpl implements ISysDeviceCodeService
     }
 
     /**
-     * 查询机器码管理列表
-     * 
-     * @param sysDeviceCode 机器码管理
-     * @return 机器码管理
+     * 查询设备码管理列表
+     *
+     * @param sysDeviceCode 设备码管理
+     * @return 设备码管理
      */
     @Override
     public List<SysDeviceCode> selectSysDeviceCodeList(SysDeviceCode sysDeviceCode)
@@ -46,9 +46,9 @@ public class SysDeviceCodeServiceImpl implements ISysDeviceCodeService
     }
 
     /**
-     * 新增机器码管理
-     * 
-     * @param sysDeviceCode 机器码管理
+     * 新增设备码管理
+     *
+     * @param sysDeviceCode 设备码管理
      * @return 结果
      */
     @Override
@@ -59,9 +59,9 @@ public class SysDeviceCodeServiceImpl implements ISysDeviceCodeService
     }
 
     /**
-     * 修改机器码管理
-     * 
-     * @param sysDeviceCode 机器码管理
+     * 修改设备码管理
+     *
+     * @param sysDeviceCode 设备码管理
      * @return 结果
      */
     @Override
@@ -72,9 +72,9 @@ public class SysDeviceCodeServiceImpl implements ISysDeviceCodeService
     }
 
     /**
-     * 批量删除机器码管理
-     * 
-     * @param deviceCodeIds 需要删除的机器码管理主键
+     * 批量删除设备码管理
+     *
+     * @param deviceCodeIds 需要删除的设备码管理主键
      * @return 结果
      */
     @Override
@@ -84,9 +84,9 @@ public class SysDeviceCodeServiceImpl implements ISysDeviceCodeService
     }
 
     /**
-     * 删除机器码管理信息
-     * 
-     * @param deviceCodeId 机器码管理主键
+     * 删除设备码管理信息
+     *
+     * @param deviceCodeId 设备码管理主键
      * @return 结果
      */
     @Override
@@ -107,10 +107,10 @@ public class SysDeviceCodeServiceImpl implements ISysDeviceCodeService
     }
 
     /**
-     * 查询机器码管理
+     * 查询设备码管理
      *
-     * @param deviceCode 机器码
-     * @return 机器码管理
+     * @param deviceCode 设备码
+     * @return 设备码管理
      */
     @Override
     public SysDeviceCode selectSysDeviceCodeByDeviceCode(String deviceCode) {

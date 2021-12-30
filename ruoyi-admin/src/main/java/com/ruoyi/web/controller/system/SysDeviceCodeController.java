@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 机器码管理Controller
- * 
+ * 设备码管理Controller
+ *
  * @author zwgu
  * @date 2021-12-06
  */
@@ -28,7 +28,7 @@ public class SysDeviceCodeController extends BaseController
     private ISysDeviceCodeService sysDeviceCodeService;
 
     /**
-     * 查询机器码管理列表
+     * 查询设备码管理列表
      */
     @PreAuthorize("@ss.hasPermi('system:deviceCode:list')")
     @GetMapping("/list")
@@ -40,20 +40,20 @@ public class SysDeviceCodeController extends BaseController
     }
 
     /**
-     * 导出机器码管理列表
+     * 导出设备码管理列表
      */
     @PreAuthorize("@ss.hasPermi('system:deviceCode:export')")
-    @Log(title = "机器码管理", businessType = BusinessType.EXPORT)
+    @Log(title = "设备码管理", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(SysDeviceCode sysDeviceCode)
     {
         List<SysDeviceCode> list = sysDeviceCodeService.selectSysDeviceCodeList(sysDeviceCode);
         ExcelUtil<SysDeviceCode> util = new ExcelUtil<SysDeviceCode>(SysDeviceCode.class);
-        return util.exportExcel(list, "机器码管理数据");
+        return util.exportExcel(list, "设备码管理数据");
     }
 
     /**
-     * 获取机器码管理详细信息
+     * 获取设备码管理详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:deviceCode:query')")
     @GetMapping(value = "/{deviceCodeId}")
@@ -63,10 +63,10 @@ public class SysDeviceCodeController extends BaseController
     }
 
     /**
-     * 新增机器码管理
+     * 新增设备码管理
      */
     @PreAuthorize("@ss.hasPermi('system:deviceCode:add')")
-    @Log(title = "机器码管理", businessType = BusinessType.INSERT)
+    @Log(title = "设备码管理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysDeviceCode sysDeviceCode)
     {
@@ -74,10 +74,10 @@ public class SysDeviceCodeController extends BaseController
     }
 
     /**
-     * 修改机器码管理
+     * 修改设备码管理
      */
     @PreAuthorize("@ss.hasPermi('system:deviceCode:edit')")
-    @Log(title = "机器码管理", businessType = BusinessType.UPDATE)
+    @Log(title = "设备码管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysDeviceCode sysDeviceCode)
     {
@@ -85,11 +85,11 @@ public class SysDeviceCodeController extends BaseController
     }
 
     /**
-     * 删除机器码管理
+     * 删除设备码管理
      */
     @PreAuthorize("@ss.hasPermi('system:deviceCode:remove')")
-    @Log(title = "机器码管理", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{deviceCodeIds}")
+    @Log(title = "设备码管理", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{deviceCodeIds}")
     public AjaxResult remove(@PathVariable Long[] deviceCodeIds)
     {
         return toAjax(sysDeviceCodeService.deleteSysDeviceCodeByDeviceCodeIds(deviceCodeIds));
@@ -99,7 +99,7 @@ public class SysDeviceCodeController extends BaseController
      * 状态修改
      */
     @PreAuthorize("@ss.hasPermi('system:deviceCode:edit')")
-    @Log(title = "机器码管理", businessType = BusinessType.UPDATE)
+    @Log(title = "设备码管理", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
     public AjaxResult changeStatus(@RequestBody SysDeviceCode deviceCode)
     {

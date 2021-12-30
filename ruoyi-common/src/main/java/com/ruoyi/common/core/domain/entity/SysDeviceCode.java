@@ -8,23 +8,30 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Date;
 
-public class SysDeviceCode extends BaseEntity
-{
+public class SysDeviceCode extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /**
+     * 主键
+     */
     private Long deviceCodeId;
 
-    /** 机器码 */
-    @Excel(name = "机器码")
+    /**
+     * 设备码
+     */
+    @Excel(name = "设备码")
     private String deviceCode;
 
-    /** 最后登录时间 */
+    /**
+     * 最后登录时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Excel(name = "最后登录时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date lastLoginTime;
 
-    /** 登录次数 */
+    /**
+     * 登录次数
+     */
     @Excel(name = "登录次数")
     private Long loginTimes;
 

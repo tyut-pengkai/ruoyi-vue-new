@@ -97,7 +97,7 @@ public class ApiV1Controller extends BaseController {
 //            }
 //            if (software.getBindType() != null && software.getBindType() != BindType.NONE) {
 //                if (StringUtils.isBlank(machineCode)) {
-//                    throw new ApiException(Code.ERROR_PARAMETERS_MISSING, "机器码不能为空");
+//                    throw new ApiException(Code.ERROR_PARAMETERS_MISSING, "设备码不能为空");
 //                }
 //            }
 //            // 调用登录接口

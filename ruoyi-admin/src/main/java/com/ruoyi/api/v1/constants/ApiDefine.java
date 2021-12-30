@@ -17,7 +17,7 @@ public class ApiDefine {
 //		List<Param> params = new ArrayList<>();
 //		params.add(new Param("username", true, "用户名"));
 //		params.add(new Param("password", true, "密码"));
-//		params.add(new Param("mcode", false, "机器码"));
+//		params.add(new Param("mcode", false, "设备码"));
 //		params.add(new Param("c", false, "备注信息"));
 //		api.setParams(params);
 //		privateParamsNoTokenMap.put(api.getApi(), api);
@@ -26,7 +26,7 @@ public class ApiDefine {
 //				new Param[] { //
 //						new Param("username", true, "用户名"), //
 //						new Param("password", true, "密码"), //
-//						new Param("mcode", false, "机器码"), //
+//						new Param("mcode", false, "设备码"), //
 //						new Param("c", false, "备注信息")//
 //				});
 //		privateParamsNoTokenMap.put(api.getApi(), api);
