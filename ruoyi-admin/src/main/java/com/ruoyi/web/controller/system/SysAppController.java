@@ -41,6 +41,9 @@ public class SysAppController extends BaseController
     {
         startPage();
         List<SysApp> list = sysAppService.selectSysAppList(sysApp);
+        for (SysApp app : list) {
+            setApiUrl(app);
+        }
         return getDataTable(list);
     }
 
@@ -50,9 +53,11 @@ public class SysAppController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:app:export')")
     @Log(title = "软件管理", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
-    public AjaxResult export(SysApp sysApp)
-    {
+    public AjaxResult export(SysApp sysApp) {
         List<SysApp> list = sysAppService.selectSysAppList(sysApp);
+        for (SysApp app : list) {
+            setApiUrl(app);
+        }
         ExcelUtil<SysApp> util = new ExcelUtil<SysApp>(SysApp.class);
         return util.exportExcel(list, "软件数据");
     }
@@ -62,9 +67,10 @@ public class SysAppController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:app:query')")
     @GetMapping(value = "/{appId}")
-    public AjaxResult getInfo(@PathVariable("appId") Long appId)
-    {
-        return AjaxResult.success(sysAppService.selectSysAppByAppId(appId));
+    public AjaxResult getInfo(@PathVariable("appId") Long appId) {
+        SysApp sysApp = sysAppService.selectSysAppByAppId(appId);
+        setApiUrl(sysApp);
+        return AjaxResult.success(sysApp);
     }
 
     /**
@@ -83,10 +89,7 @@ public class SysAppController extends BaseController
         sysApp.setCreateTime(DateUtils.getNowDate());
         sysApp.setAppKey(RandomStringUtils.randomAlphanumeric(32));
         sysApp.setAppSecret(RandomStringUtils.randomAlphanumeric(32));
-        HttpServletRequest request = ServletUtils.getRequest();
-        sysApp.setApiUrl(request.getScheme() + "://" + request.getServerName()
-                + ("80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort())
-                + "/api/v1?appkey=" + sysApp.getAppKey());
+        setApiUrl(sysApp);
         sysApp.setDelFlag("0");
         return toAjax(sysAppService.insertSysApp(sysApp));
     }
@@ -136,9 +139,15 @@ public class SysAppController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:app:edit')")
     @Log(title = "软件管理", businessType = BusinessType.UPDATE)
     @PutMapping("/changeChargeStatus")
-    public AjaxResult changeChargeStatus(@RequestBody SysApp app)
-    {
+    public AjaxResult changeChargeStatus(@RequestBody SysApp app) {
         app.setUpdateBy(getUsername());
         return toAjax(sysAppService.updateSysAppChargeStatus(app));
+    }
+
+    public void setApiUrl(SysApp app) {
+        HttpServletRequest request = ServletUtils.getRequest();
+        app.setApiUrl(request.getScheme() + "://" + request.getServerName()
+                + ("80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort())
+                + "/api/v1/" + app.getAppKey() + "/");
     }
 }

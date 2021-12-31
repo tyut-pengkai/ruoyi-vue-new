@@ -8,18 +8,17 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.*;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
-import com.ruoyi.common.enums.AuthType;
-import com.ruoyi.common.enums.BillType;
-import com.ruoyi.common.enums.ErrorCode;
-import com.ruoyi.common.enums.LimitOper;
+import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.TokenService;
+import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
 import com.ruoyi.system.service.ISysUserOnlineService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -27,6 +26,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 @Component
+@Slf4j
 public class ValidUtils {
 
     @Resource
@@ -37,26 +37,62 @@ public class ValidUtils {
     private RedisCache redisCache;
     @Resource
     private TokenService tokenService;
+    @Resource
+    private ISysAppService appService;
+
+    /**
+     * 前置校验
+     */
+    public void apiCheckPre(String appkey, SysApp app, Long version, SysAppVersion appVersion, String deviceCode) {
+        // 检查软件是否存在
+        if (app == null) {
+            log.info("软件：{} 不存在.", appkey);
+            throw new ApiException(ErrorCode.ERROR_APP_NOT_EXIST);
+        } else if (UserStatus.DELETED.getCode().equals(app.getDelFlag())) {
+            log.info("软件：{} 已被删除.", app.getAppName());
+            throw new ApiException(ErrorCode.ERROR_ACCOUNT_NOT_EXIST, "软件：" + app.getAppName() + " 已被删除");
+        } else if (UserStatus.DISABLE.getCode().equals(app.getStatus())) {
+            log.info("软件：{} 已被停用.", app.getAppName());
+            throw new ApiException(ErrorCode.ERROR_APP_OFF, "软件：" + app.getAppName() + " 已停用");
+        }
+        // 检查软件版本是否存在
+        if (appVersion == null) {
+            log.info("软件 {} 的版本：{} 不存在.", app.getAppName(), version);
+            throw new ApiException(ErrorCode.ERROR_APP_VERSION_NOT_EXIST);
+        } else if (UserStatus.DELETED.getCode().equals(appVersion.getDelFlag())) {
+            log.info("软件 {} 的版本：{} 已被删除.", app.getAppName(), version);
+            throw new ApiException(ErrorCode.ERROR_APP_VERSION_NOT_EXIST, "软件版本：" + version + " 已被删除");
+        } else if (UserStatus.DISABLE.getCode().equals(appVersion.getStatus())) {
+            log.info("软件：{} 的版本：{} 已被停用.", app.getAppName(), version);
+            throw new ApiException(ErrorCode.ERROR_APP_VERSION_OFF, "软件版本：" + version + " 已停用");
+        }
+        // 设备码校验
+        if (app.getBindType() != null && app.getBindType() != BindType.NONE) {
+            if (StringUtils.isBlank(deviceCode)) {
+                throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "软件已开启设备验证，设备码不能为空");
+            }
+        }
+    }
 
     /**
      * 不需要验证token的api接口验证
      */
     public void apiCheck(SysApp app, SysAppVersion appVersion, Map<String, String> params, boolean needToken) {
-        // 检查api接口是否存在
-        checkApiExist(params, false);
         // 检查公共参数
         checkPublicParams(params);
+        // 检查api接口是否存在
+        checkApiExist(params, needToken);
         // 检查该软件是否可调用该api接口
         checkAppMatchApi(app, params);
         // 检查私有参数
         checkPrivateParams(params);
-        // 检查数据是否过期
-        checkDataExpired(app, params);
         // 检查md5
         checkMd5(appVersion, params);
         // 检查sign
         checkSign(app, params);
         if (needToken) {
+            // 检查数据是否过期
+            checkDataExpired(app, params);
             // 检查软件用户是否可用
 //        checkAppUserEnable(app, params);
         }

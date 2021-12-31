@@ -112,7 +112,7 @@ public class SysAppLoginService {
                 }
             }
             // 自动绑定设备码
-            if (deviceCodeStr != null) {
+            if (StringUtils.isNotBlank(deviceCodeStr)) {
                 deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCode(deviceCodeStr);
                 if (deviceCode == null) {
                     deviceCode = new SysDeviceCode();

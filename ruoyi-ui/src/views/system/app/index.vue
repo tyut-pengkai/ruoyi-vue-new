@@ -883,7 +883,6 @@ export default {
     "sys_normal_disable",
     "sys_bind_type",
     "sys_yes_no",
-    "sys_yes_no",
     "sys_auth_type",
     "sys_bill_type",
     "sys_encryp_type",
