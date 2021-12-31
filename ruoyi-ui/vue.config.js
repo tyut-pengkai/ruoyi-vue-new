@@ -7,7 +7,7 @@ function resolve(dir) {
 
 const CompressionPlugin = require('compression-webpack-plugin')
 
-const name = process.env.VUE_APP_TITLE || 'INAMS-软件网络验证管理系统' // 网页标题
+const name = process.env.VUE_APP_TITLE // 网页标题
 
 const port = process.env.port || process.env.npm_config_port || 80 // 端口
 
@@ -47,7 +47,9 @@ module.exports = {
   css: {
     loaderOptions: {
       sass: {
-        sassOptions: { outputStyle: "expanded" }
+        sassOptions: {
+          outputStyle: "expanded"
+        }
       }
     }
   },
@@ -61,10 +63,10 @@ module.exports = {
     plugins: [
       // http://doc.ruoyi.vip/ruoyi-vue/other/faq.html#使用gzip解压缩静态文件
       new CompressionPlugin({
-        test: /\.(js|css|html)?$/i,     // 压缩文件格式
-        filename: '[path].gz[query]',   // 压缩后的文件名
-        algorithm: 'gzip',              // 使用gzip压缩
-        minRatio: 0.8                   // 压缩率小于1才会压缩
+        test: /\.(js|css|html)?$/i, // 压缩文件格式
+        filename: '[path].gz[query]', // 压缩后的文件名
+        algorithm: 'gzip', // 使用gzip压缩
+        minRatio: 0.8 // 压缩率小于1才会压缩
       })
     ],
   },
@@ -96,7 +98,7 @@ module.exports = {
             .plugin('ScriptExtHtmlWebpackPlugin')
             .after('html')
             .use('script-ext-html-webpack-plugin', [{
-            // `runtime` must same as runtimeChunk name. default is `runtime`
+              // `runtime` must same as runtimeChunk name. default is `runtime`
               inline: /runtime\..*\.js$/
             }])
             .end()
@@ -123,11 +125,10 @@ module.exports = {
                   reuseExistingChunk: true
                 }
               }
-            })
-          config.optimization.runtimeChunk('single'),
-          {
-             from: path.resolve(__dirname, './public/robots.txt'), //防爬虫文件
-             to: './' //到根目录下
+          })
+          config.optimization.runtimeChunk('single'), {
+            from: path.resolve(__dirname, './public/robots.txt'), //防爬虫文件
+            to: './' //到根目录下
           }
         }
       )

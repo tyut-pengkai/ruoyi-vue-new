@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "framework-version": "3.8.1",
   "description": "网络验证管理系统",
-  "author": "Coordsoft.Com",
+  "author": "coordsoft.com",
   "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve",

@@ -15,11 +15,14 @@ public class RuoYiConfig {
      * 项目名称
      */
     private String name;
+    private String shortName;
 
     /**
      * 版本
      */
     private String version;
+
+    private Long versionNo;
 
     private String url;
 
@@ -30,6 +33,7 @@ public class RuoYiConfig {
      */
     private String copyrightYear;
 
+    private String copyright;
     /**
      * 实例演示开关
      */
@@ -158,5 +162,29 @@ public class RuoYiConfig {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCopyright() {
+        return copyright;
+    }
+
+    public void setCopyright(String copyright) {
+        this.copyright = copyright;
+    }
+
+    public Long getVersionNo() {
+        return versionNo;
+    }
+
+    public void setVersionNo(Long versionNo) {
+        this.versionNo = versionNo;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 }
