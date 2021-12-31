@@ -10,21 +10,34 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConfigurationProperties(prefix = "ruoyi")
-public class RuoYiConfig
-{
-    /** 项目名称 */
+public class RuoYiConfig {
+    /**
+     * 项目名称
+     */
     private String name;
 
-    /** 版本 */
+    /**
+     * 版本
+     */
     private String version;
 
-    /** 版权年份 */
+    private String url;
+
+    private String email;
+
+    /**
+     * 版权年份
+     */
     private String copyrightYear;
 
-    /** 实例演示开关 */
+    /**
+     * 实例演示开关
+     */
     private boolean demoEnabled;
 
-    /** 上传路径 */
+    /**
+     * 上传路径
+     */
     private static String profile;
 
     /** 获取地址开关 */
@@ -120,16 +133,30 @@ public class RuoYiConfig
     /**
      * 获取下载路径
      */
-    public static String getDownloadPath()
-    {
+    public static String getDownloadPath() {
         return getProfile() + "/download/";
     }
 
     /**
      * 获取上传路径
      */
-    public static String getUploadPath()
-    {
+    public static String getUploadPath() {
         return getProfile() + "/upload";
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

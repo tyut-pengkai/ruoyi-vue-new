@@ -25,8 +25,8 @@ public class DebugController extends BaseController {
 	@Resource
 	private ISysAppService sysAppService;
 
-	@PostMapping("/{appkey}/sign")
-	@ApiOperation(value = "计算sign", notes = "计算sign")
+	@PostMapping("/{appkey}/calcSign")
+	@ApiOperation(value = "计算sign", notes = "计算sign值")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "appkey", value = "AppKey", paramType = "path", required = true, dataType = "String"),
 			@ApiImplicitParam(name = "params", value = "接口需要的参数", paramType = "body", required = true, dataType = "Map")

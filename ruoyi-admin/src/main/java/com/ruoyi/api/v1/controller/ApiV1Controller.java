@@ -1,6 +1,8 @@
 package com.ruoyi.api.v1.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.ruoyi.api.v1.domain.SwaggerVo;
+import com.ruoyi.api.v1.service.SwaggerService;
 import com.ruoyi.api.v1.service.SysAppLoginService;
 import com.ruoyi.api.v1.utils.ValidUtils;
 import com.ruoyi.common.core.controller.BaseController;
@@ -19,8 +21,10 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @RequestMapping("/api/v1")
@@ -36,6 +40,14 @@ public class ApiV1Controller extends BaseController {
     private SysAppLoginService loginService;
     @Resource
     private ValidUtils validUtils;
+    @Resource
+    private SwaggerService swaggerService;
+
+    @GetMapping("/swagger")
+    @ApiIgnore
+    public SwaggerVo swagger(HttpServletRequest request) {
+        return swaggerService.getSwaggerInfo(request);
+    }
 
     //    @Encrypt(in = true, out = true)
     @PostMapping("/{appkey}/noAuth")
