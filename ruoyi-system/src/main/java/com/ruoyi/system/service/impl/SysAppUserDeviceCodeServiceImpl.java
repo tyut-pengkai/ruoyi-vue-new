@@ -1,7 +1,7 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.system.domain.SysAppUserDeviceCode;
 import com.ruoyi.system.mapper.SysAppUserDeviceCodeMapper;
 import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
 import org.springframework.beans.factory.annotation.Autowired;

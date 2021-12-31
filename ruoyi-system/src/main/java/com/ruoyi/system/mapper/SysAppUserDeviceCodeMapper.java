@@ -1,6 +1,6 @@
 package com.ruoyi.system.mapper;
 
-import com.ruoyi.system.domain.SysAppUserDeviceCode;
+import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

@@ -77,6 +77,8 @@ public class LoginUser implements UserDetails
 
     private SysDeviceCode deviceCode;
 
+    private SysAppUserDeviceCode appUserDeviceCode;
+
     /**
      * 用户信息
      */
@@ -310,5 +312,13 @@ public class LoginUser implements UserDetails
 
     public void setIfApp(Boolean ifApp) {
         this.ifApp = ifApp;
+    }
+
+    public SysAppUserDeviceCode getAppUserDeviceCode() {
+        return appUserDeviceCode;
+    }
+
+    public void setAppUserDeviceCode(SysAppUserDeviceCode appUserDeviceCode) {
+        this.appUserDeviceCode = appUserDeviceCode;
     }
 }

@@ -1,6 +1,6 @@
 package com.ruoyi.system.service;
 
-import com.ruoyi.system.domain.SysAppUserDeviceCode;
+import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
 
 import java.util.List;
 

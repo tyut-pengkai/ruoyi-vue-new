@@ -1,21 +1,13 @@
-package com.ruoyi.system.domain;
+package com.ruoyi.common.core.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
-import com.ruoyi.common.core.domain.entity.SysAppUser;
-import com.ruoyi.common.core.domain.entity.SysDeviceCode;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Date;
 
-/**
- * 软件用户与设备码关联对象 sys_app_user_device_code
- *
- * @author zwgu
- * @date 2021-12-08
- */
 public class SysAppUserDeviceCode extends BaseEntity
 {
     private static final long serialVersionUID = 1L;

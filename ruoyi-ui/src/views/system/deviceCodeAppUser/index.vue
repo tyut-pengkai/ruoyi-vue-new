@@ -144,6 +144,7 @@
       <el-table-column align="center" label="ID" prop="id"/>
       <el-table-column align="center" label="APP ID" prop="appUserId"/>
       <el-table-column align="center" label="设备码" prop="deviceCodeId"/>
+      <el-table-column align="center" label="登录次数" prop="loginTimes"/>
       <el-table-column
         align="center"
         label="最后登录时间"
@@ -154,7 +155,6 @@
           <span>{{ parseTime(scope.row.lastLoginTime, "{y}-{m}-{d}") }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="登录次数" prop="loginTimes"/>
       <el-table-column align="center" label="状态" prop="status">
         <template slot-scope="scope">
           <dict-tag

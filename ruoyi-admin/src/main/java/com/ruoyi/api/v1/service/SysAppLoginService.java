@@ -12,13 +12,11 @@ import com.ruoyi.common.enums.BindType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.enums.UserStatus;
 import com.ruoyi.common.exception.ApiException;
-import com.ruoyi.common.utils.MessageUtils;
-import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.*;
+import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.TokenService;
-import com.ruoyi.system.domain.SysAppUserDeviceCode;
 import com.ruoyi.system.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Slf4j
 @Component
@@ -62,6 +61,7 @@ public class SysAppLoginService {
         // 用户验证
         SysAppUser appUser = null;
         SysDeviceCode deviceCode = null;
+        SysAppUserDeviceCode appUserDeviceCode = null;
         String appName = app.getAppName();
         String appVersionStr = appVersion.getVersionShow();
         SysUser user = userService.selectUserByUserName(username);
@@ -127,7 +127,7 @@ public class SysAppLoginService {
                         throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "账号设备：" + deviceCodeStr + " 已停用");
                     }
                 }
-                SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
+                appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
                 if (appUserDeviceCode == null) {
                     // 检查绑定限制
                     if (app.getBindType() == BindType.ONE_TO_ONE) { // 账号与设备一对一
@@ -166,11 +166,14 @@ public class SysAppLoginService {
         AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), username, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
         LoginUser loginUser = new LoginUser();
         loginUser.setIfApp(true);
+        loginUser.setUserId(user.getUserId());
         loginUser.setApp(app);
         loginUser.setUser(user);
         loginUser.setAppUser(appUser);
         loginUser.setAppVersion(appVersion);
         loginUser.setDeviceCode(deviceCode);
+        loginUser.setAppUserDeviceCode(appUserDeviceCode);
+
         recordLoginInfo(loginUser);
         // 生成token
         return tokenService.createToken(loginUser);
@@ -180,10 +183,32 @@ public class SysAppLoginService {
      * 记录登录信息
      */
     public void recordLoginInfo(LoginUser loginUser) { // TODO
-//        SysUser sysUser = new SysUser();
-//        sysUser.setUserId(userId);
-//        sysUser.setLoginIp(IpUtils.getIpAddr(ServletUtils.getRequest()));
-//        sysUser.setLoginDate(DateUtils.getNowDate());
-//        userService.updateUserProfile(sysUser);
+        Date nowDate = DateUtils.getNowDate();
+        // 账号信息
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(loginUser.getUserId());
+        sysUser.setLoginIp(IpUtils.getIpAddr(ServletUtils.getRequest()));
+        sysUser.setLoginDate(nowDate);
+        userService.updateUserProfile(sysUser);
+        // 用户信息
+        SysAppUser appUser = new SysAppUser();
+        appUser.setAppUserId(loginUser.getAppUser().getAppUserId());
+        appUser.setLoginTimes(loginUser.getAppUser().getLoginTimes() + 1);
+        appUser.setLastLoginTime(nowDate);
+        appUserService.updateSysAppUser(appUser);
+        if (loginUser.getDeviceCode() != null) {
+            // 设备码信息
+            SysDeviceCode deviceCode = new SysDeviceCode();
+            deviceCode.setDeviceCodeId(loginUser.getDeviceCode().getDeviceCodeId());
+            deviceCode.setLoginTimes(loginUser.getDeviceCode().getLoginTimes() + 1);
+            deviceCode.setLastLoginTime(nowDate);
+            deviceCodeService.updateSysDeviceCode(deviceCode);
+            // 用户设备码信息
+            SysAppUserDeviceCode appUserDeviceCode = new SysAppUserDeviceCode();
+            appUserDeviceCode.setId(loginUser.getAppUserDeviceCode().getId());
+            appUserDeviceCode.setLoginTimes(loginUser.getAppUserDeviceCode().getLoginTimes() + 1);
+            appUserDeviceCode.setLastLoginTime(nowDate);
+            appUserDeviceCodeService.updateSysAppUserDeviceCode(appUserDeviceCode);
+        }
     }
 }
