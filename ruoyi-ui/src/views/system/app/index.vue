@@ -574,10 +574,10 @@
                   </el-form-item>
                 </el-col>
               </el-form-item>
-              <el-form-item label="软件图标">
-                <imageUpload v-model="form.icon" :limit="1" />
-                <!-- <app-icon /> -->
-              </el-form-item>
+              <!-- <el-form-item label="软件图标">
+                <imageUpload v-model="form.icon" :limit="1" /> -->
+              <!-- <app-icon /> -->
+              <!-- </el-form-item> -->
               <el-form-item label="备注" prop="remark">
                 <el-input
                   v-model="form.remark"
