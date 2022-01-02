@@ -31,12 +31,10 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -74,14 +72,15 @@
         label="登录地点"
         prop="loginLocation"
       />
-      <el-table-column label="浏览器" align="center" prop="browser"/>
-      <el-table-column label="操作系统" align="center" prop="os"/>
+      <el-table-column align="center" label="浏览器" prop="browser"/>
+      <el-table-column align="center" label="操作系统" prop="os"/>
       <el-table-column align="center" label="软件用户" prop="ifApp">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.ifApp"/>
         </template>
       </el-table-column>
       <el-table-column align="center" label="软件信息" prop="appDesc"/>
+      <el-table-column align="center" label="设备码" prop="deviceCode"/>
       <el-table-column
         align="center"
         label="登录时间"
@@ -105,8 +104,7 @@
             @click="handleForceLogout(scope.row)"
             v-hasPermi="['monitor:online:forceLogout']"
           >强退
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>

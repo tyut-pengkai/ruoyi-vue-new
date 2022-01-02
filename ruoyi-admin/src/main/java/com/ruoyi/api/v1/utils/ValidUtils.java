@@ -40,12 +40,10 @@ public class ValidUtils {
     @Resource
     private ISysAppService appService;
 
-    /**
-     * 前置校验
-     */
-    public void apiCheckPre(String appkey, SysApp app, Long version, SysAppVersion appVersion, String deviceCode) {
+
+    public void apiCheckApp(String appkey, SysApp app) {
         // 检查软件是否存在
-        if (app == null) {
+        if (StringUtils.isBlank(appkey) || app == null) {
             log.info("软件：{} 不存在.", appkey);
             throw new ApiException(ErrorCode.ERROR_APP_NOT_EXIST);
         } else if (UserStatus.DELETED.getCode().equals(app.getDelFlag())) {
@@ -55,6 +53,13 @@ public class ValidUtils {
             log.info("软件：{} 已被停用.", app.getAppName());
             throw new ApiException(ErrorCode.ERROR_APP_OFF, "软件：" + app.getAppName() + " 已停用");
         }
+    }
+
+    /**
+     * 前置校验
+     */
+    public void apiCheckAppAndVersion(String appkey, SysApp app, Long version, SysAppVersion appVersion) {
+        apiCheckApp(appkey, app);
         // 检查软件版本是否存在
         if (appVersion == null) {
             log.info("软件 {} 的版本：{} 不存在.", app.getAppName(), version);
@@ -66,18 +71,19 @@ public class ValidUtils {
             log.info("软件：{} 的版本：{} 已被停用.", app.getAppName(), version);
             throw new ApiException(ErrorCode.ERROR_APP_VERSION_OFF, "软件版本：" + version + " 已停用");
         }
-        // 设备码校验
-        if (app.getBindType() != null && app.getBindType() != BindType.NONE) {
-            if (StringUtils.isBlank(deviceCode)) {
-                throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "软件已开启设备验证，设备码不能为空");
-            }
-        }
     }
 
     /**
      * 不需要验证token的api接口验证
      */
     public void apiCheck(SysApp app, SysAppVersion appVersion, Map<String, String> params, boolean needToken) {
+        // 设备码校验
+        if (app.getBindType() != null && app.getBindType() != BindType.NONE) {
+            String deviceCode = params.get("dev_code");
+            if (StringUtils.isBlank(deviceCode)) {
+                throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "软件已开启设备验证，设备码不能为空");
+            }
+        }
         // 检查公共参数
         checkPublicParams(params);
         // 检查api接口是否存在

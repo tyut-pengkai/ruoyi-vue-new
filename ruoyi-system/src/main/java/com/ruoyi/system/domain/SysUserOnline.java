@@ -44,6 +44,8 @@ public class SysUserOnline
 
     private String appDesc;
 
+    private String deviceCode;
+
     public String getTokenId() {
         return tokenId;
     }
@@ -133,5 +135,13 @@ public class SysUserOnline
 
     public void setAppDesc(String appDesc) {
         this.appDesc = appDesc;
+    }
+
+    public String getDeviceCode() {
+        return deviceCode;
+    }
+
+    public void setDeviceCode(String deviceCode) {
+        this.deviceCode = deviceCode;
     }
 }

@@ -1,6 +1,7 @@
 package com.ruoyi.api.v1.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.ruoyi.api.v1.anno.Encrypt;
 import com.ruoyi.api.v1.domain.SwaggerVo;
 import com.ruoyi.api.v1.service.SwaggerService;
 import com.ruoyi.api.v1.service.SysAppLoginService;
@@ -49,7 +50,7 @@ public class ApiV1Controller extends BaseController {
         return swaggerService.getSwaggerInfo(request);
     }
 
-    //    @Encrypt(in = true, out = true)
+    @Encrypt(in = true, out = true)
     @PostMapping("/{appkey}/noAuth")
     @ApiOperation(value = "API接口", notes = "API接口")
     @ApiImplicitParams({
@@ -70,11 +71,10 @@ public class ApiV1Controller extends BaseController {
         SysApp app = appService.selectSysAppByAppKey(appkey);
         Long version = Long.parseLong(appVersionStr);
         SysAppVersion appVersion = appVersionService.selectSysAppVersionByAppIdAndVersion(app.getAppId(), version);
-        String deviceCode = params.get("dev_code");
         // API校验
-        validUtils.apiCheckPre(appkey, app, version, appVersion, deviceCode);
+        validUtils.apiCheckAppAndVersion(appkey, app, version, appVersion);
         validUtils.apiCheck(app, appVersion, params, false);
-
+        String deviceCode = params.get("dev_code");
         String api = params.get("api").trim();
         if ("login".equals(api)) {
             if (app.getAuthType() == AuthType.ACCOUNT) { // by account
@@ -112,7 +112,7 @@ public class ApiV1Controller extends BaseController {
     }
 
 
-    //    @Encrypt(in = true, out = true)
+    @Encrypt(in = true, out = true)
     @PostMapping("/{appkey}/auth")
     @ApiOperation(value = "API接口", notes = "API接口")
     @ApiImplicitParams({
@@ -134,16 +134,18 @@ public class ApiV1Controller extends BaseController {
         SysApp app = appService.selectSysAppByAppKey(appkey);
         Long version = Long.parseLong(appVersionStr);
         SysAppVersion appVersion = appVersionService.selectSysAppVersionByAppIdAndVersion(app.getAppId(), version);
-        String deviceCode = params.get("dev_code");
         // API校验
-        validUtils.apiCheckPre(appkey, app, version, appVersion, deviceCode);
+        validUtils.apiCheckAppAndVersion(appkey, app, version, appVersion);
         validUtils.apiCheck(app, appVersion, params, true);
 
         System.out.println(JSON.toJSONString(getLoginUser()));
 
+        String deviceCode = params.get("dev_code");
         String api = params.get("api").trim();
-        if ("times".equals(params.get("api"))) {
+        if ("times".equals(api)) {
             return DateUtils.getTime();
+        } else if ("testToken".equals(api)) {
+            return params;
         }
         return AjaxResult.error();
     }

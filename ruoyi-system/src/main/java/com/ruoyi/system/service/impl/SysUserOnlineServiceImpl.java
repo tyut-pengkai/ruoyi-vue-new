@@ -90,10 +90,14 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService
         sysUserOnline.setIfApp(user.getIfApp() ? 'Y' : 'N');
         if (user.getIfApp()) {
             sysUserOnline.setAppDesc(user.getApp().getAppName() + "-" + user.getAppVersion().getVersionShow());
+            if (user.getDeviceCode() != null) {
+                sysUserOnline.setDeviceCode(user.getDeviceCode().getDeviceCode());
+            }
         }
         if (StringUtils.isNotNull(user.getUser().getDept())) {
             sysUserOnline.setDeptName(user.getUser().getDept().getDeptName());
         }
+
         return sysUserOnline;
     }
 }

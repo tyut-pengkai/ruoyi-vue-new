@@ -4,6 +4,10 @@ import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BillType;
 
 public class Constants {
+
+    // 字符串标记前缀
+    public static String PREFIX_TYPE = "String:";
+
     // 用于校验接口调用是否符合软件设定
     public static AuthType[] AUTH_TYPE_ALL = new AuthType[]{AuthType.ACCOUNT, AuthType.LOGIN_CODE};
     public static BillType[] BILL_TYPE_ALL = new BillType[]{BillType.TIME, BillType.POINT};
