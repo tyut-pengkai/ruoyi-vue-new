@@ -7,6 +7,9 @@ import com.ruoyi.common.enums.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.List;
+import java.util.Map;
+
 public class SysApp extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -137,6 +140,8 @@ public class SysApp extends BaseEntity
             @Excel(name = "开发者昵称", targetAttr = "nickName", type = Excel.Type.EXPORT)
     })
     private SysUser developer;
+
+    private List<Map<String, String>> enApi;
 
     public SysUser getDeveloper() {
         return developer;
@@ -417,19 +422,26 @@ public class SysApp extends BaseEntity
     {
         return loginCodeRegex;
     }
-    public void setIcon(String icon)
-    {
+
+    public void setIcon(String icon) {
         this.icon = icon;
     }
 
-    public String getIcon()
-    {
+    public String getIcon() {
         return icon;
+    }
+
+    public List<Map<String, String>> getEnApi() {
+        return enApi;
+    }
+
+    public void setEnApi(List<Map<String, String>> enApi) {
+        this.enApi = enApi;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("appId", getAppId())
                 .append("appName", getAppName())
                 .append("description", getDescription())

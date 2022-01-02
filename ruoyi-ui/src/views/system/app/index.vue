@@ -852,6 +852,23 @@
               </el-input>
             </el-form-item>
           </el-tab-pane>
+          <el-tab-pane v-if="form.appId" label="API匿名信息">
+            <el-alert
+              :closable="false"
+              show-icon
+              title="本功能在【通讯安全】-【API匿名密码】设定密码后可用，开启功能后请使用匿名API代替原API进行接口调用"
+              type="info"
+            >
+            </el-alert>
+            <el-table
+              :data="enApiList"
+              border
+              style="width: 100%; margin-top: 10px"
+            >
+              <el-table-column label="原API" prop="api"></el-table-column>
+              <el-table-column label="匿名API" prop="enApi"></el-table-column>
+            </el-table>
+          </el-tab-pane>
         </el-tabs>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -891,6 +908,8 @@ export default {
   ],
   data() {
     return {
+      // API匿名
+      enApiList: [],
       // tab激活序号
       tabIdx: "0",
       // 遮罩层
@@ -1175,8 +1194,9 @@ export default {
       const appId = row.appId || this.ids;
       getApp(appId).then((response) => {
         this.form = response.data;
+        this.enApiList = response.data.enApi;
         this.open = true;
-        this.title = "修改软件";
+        this.title = "配置软件";
       });
     },
     /** 提交按钮 */

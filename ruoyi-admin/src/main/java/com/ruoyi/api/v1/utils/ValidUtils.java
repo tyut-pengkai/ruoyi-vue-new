@@ -76,7 +76,7 @@ public class ValidUtils {
     /**
      * 不需要验证token的api接口验证
      */
-    public void apiCheck(SysApp app, SysAppVersion appVersion, Map<String, String> params, boolean needToken) {
+    public void apiCheck(String api, SysApp app, SysAppVersion appVersion, Map<String, String> params, boolean needToken) {
         // 设备码校验
         if (app.getBindType() != null && app.getBindType() != BindType.NONE) {
             String deviceCode = params.get("dev_code");
@@ -87,11 +87,11 @@ public class ValidUtils {
         // 检查公共参数
         checkPublicParams(params);
         // 检查api接口是否存在
-        checkApiExist(params, needToken);
+        checkApiExist(api, needToken);
         // 检查该软件是否可调用该api接口
-        checkAppMatchApi(app, params);
+        checkAppMatchApi(api, app, params);
         // 检查私有参数
-        checkPrivateParams(params);
+        checkPrivateParams(api, params);
         // 检查md5
         checkMd5(appVersion, params);
         // 检查sign
@@ -118,15 +118,14 @@ public class ValidUtils {
     /**
      * 检查API是否存在
      */
-    private void checkApiExist(Map<String, String> params, Boolean needToken) {
-        String api = params.get("api");
-        if (needToken != ApiDefine.apiMap.get(api).isCheckToken()) {
+    private void checkApiExist(String api, Boolean needToken) {
+        if (!ApiDefine.apiMap.containsKey(api) || needToken != ApiDefine.apiMap.get(api).isCheckToken()) {
             throw new ApiException(ErrorCode.ERROR_API_NOT_EXIST);
         }
     }
 
-    private void checkPrivateParams(Map<String, String> params) {
-        Api apiParams = ApiDefine.apiMap.get(params.get("api"));
+    private void checkPrivateParams(String api, Map<String, String> params) {
+        Api apiParams = ApiDefine.apiMap.get(api);
         if (apiParams.getParams() != null) {
             for (Param privateParam : apiParams.getParams()) {
                 if (privateParam.isNecessary() && StringUtils.isBlank(params.get(privateParam.getName()))) {
@@ -156,8 +155,8 @@ public class ValidUtils {
         }
     }
 
-    private void checkAppMatchApi(SysApp app, Map<String, String> params) {
-        Api apiParams = ApiDefine.apiMap.get(params.get("api"));
+    private void checkAppMatchApi(String api, SysApp app, Map<String, String> params) {
+        Api apiParams = ApiDefine.apiMap.get(api);
         List<AuthType> loginTypeList = Arrays.asList(apiParams.getAuthTypes());
         List<BillType> chargeTypeList = Arrays.asList(apiParams.getBillTypes());
 

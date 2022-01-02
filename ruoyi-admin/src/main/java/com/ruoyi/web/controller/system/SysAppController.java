@@ -1,5 +1,8 @@
 package com.ruoyi.web.controller.system;
 
+import com.ruoyi.api.v1.constants.ApiDefine;
+import com.ruoyi.api.v1.domain.Api;
+import com.ruoyi.api.v1.utils.encrypt.AesCbcZeroPaddingUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -9,6 +12,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.ServletUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.service.ISysAppService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -17,7 +21,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 软件Controller
@@ -70,6 +77,27 @@ public class SysAppController extends BaseController
     public AjaxResult getInfo(@PathVariable("appId") Long appId) {
         SysApp sysApp = sysAppService.selectSysAppByAppId(appId);
         setApiUrl(sysApp);
+        // 设置API加密
+        List<Map<String, String>> enApiList = new ArrayList<>();
+        Map<String, Api> apis = ApiDefine.apiMap;
+        for (String api : apis.keySet()) {
+            try {
+                Map<String, String> map = new HashMap<>();
+                if (StringUtils.isNotBlank(sysApp.getApiPwd())) {
+                    String enApi = AesCbcZeroPaddingUtil.encodeSafe(api, sysApp.getApiPwd());
+                    map.put("api", api);
+                    map.put("enApi", enApi);
+                    enApiList.add(map);
+                } else {
+                    map.put("api", api);
+                    map.put("enApi", "未配置密码");
+                    enApiList.add(map);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        sysApp.setEnApi(enApiList);
         return AjaxResult.success(sysApp);
     }
 

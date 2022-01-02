@@ -6,6 +6,7 @@ import com.ruoyi.api.v1.domain.SwaggerVo;
 import com.ruoyi.api.v1.service.SwaggerService;
 import com.ruoyi.api.v1.service.SysAppLoginService;
 import com.ruoyi.api.v1.utils.ValidUtils;
+import com.ruoyi.api.v1.utils.encrypt.AesCbcZeroPaddingUtil;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
@@ -73,9 +74,18 @@ public class ApiV1Controller extends BaseController {
         SysAppVersion appVersion = appVersionService.selectSysAppVersionByAppIdAndVersion(app.getAppId(), version);
         // API校验
         validUtils.apiCheckAppAndVersion(appkey, app, version, appVersion);
-        validUtils.apiCheck(app, appVersion, params, false);
-        String deviceCode = params.get("dev_code");
         String api = params.get("api").trim();
+        try {
+            if (StringUtils.isNotBlank(app.getApiPwd())) {
+                api = AesCbcZeroPaddingUtil.decode(api, app.getApiPwd()).trim();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ApiException("匿名API解密发生错误，如果设置了API匿名密码，请使用加密后的API名称替换原API名称");
+        }
+        validUtils.apiCheck(api, app, appVersion, params, false);
+        String deviceCode = params.get("dev_code");
+
         if ("login".equals(api)) {
             if (app.getAuthType() == AuthType.ACCOUNT) { // by account
                 String username = params.get("username");
@@ -136,12 +146,19 @@ public class ApiV1Controller extends BaseController {
         SysAppVersion appVersion = appVersionService.selectSysAppVersionByAppIdAndVersion(app.getAppId(), version);
         // API校验
         validUtils.apiCheckAppAndVersion(appkey, app, version, appVersion);
-        validUtils.apiCheck(app, appVersion, params, true);
-
-        System.out.println(JSON.toJSONString(getLoginUser()));
-
-        String deviceCode = params.get("dev_code");
         String api = params.get("api").trim();
+        try {
+            if (StringUtils.isNotBlank(app.getApiPwd())) {
+                api = AesCbcZeroPaddingUtil.decode(api, app.getApiPwd()).trim();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ApiException("匿名API解密发生错误，如果设置了API匿名密码，请使用加密后的API名称替换原API名称");
+        }
+        validUtils.apiCheck(api, app, appVersion, params, true);
+        System.out.println(JSON.toJSONString(getLoginUser()));
+//        String deviceCode = params.get("dev_code");
+
         if ("times".equals(api)) {
             return DateUtils.getTime();
         } else if ("testToken".equals(api)) {
