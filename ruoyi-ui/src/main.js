@@ -12,13 +12,13 @@ import store from './store'
 import router from './router'
 import directive from './directive' // directive
 import plugins from './plugins' // plugins
-import { download } from '@/utils/request'
+import {download} from '@/utils/request'
 
 import './assets/icons' // icon
 import './permission' // permission control
-import { getDicts } from "@/api/system/dict/data";
-import { getConfigKey } from "@/api/system/config";
-import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/ruoyi";
+import {getDicts} from "@/api/system/dict/data";
+import {getConfigKey} from "@/api/system/config";
+import {addDateRange, handleTree, parseTime, resetForm, selectDictLabel, selectDictLabels} from "@/utils/ruoyi";
 // 分页组件
 import Pagination from "@/components/Pagination";
 // 自定义表格工具组件
@@ -77,6 +77,26 @@ Vue.use(Element, {
 })
 
 Vue.config.productionTip = false
+
+/**
+ * 模态框点击空白不消失
+ */
+Element.Dialog.props.closeOnClickModal.default = false
+
+// /**
+//  * 表格加边框
+//  */
+// // 带有斑马纹
+// Element.Table.props.stripe = {
+//   default: true,
+//   type: Boolean
+// }
+
+// // 带有边框
+// Element.Table.props.border = {
+//   default: true,
+//   type: Boolean
+// }
 
 new Vue({
   el: '#app',
