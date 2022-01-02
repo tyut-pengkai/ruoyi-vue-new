@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SwaggerService {
@@ -50,7 +47,7 @@ public class SwaggerService {
             tagsList.add(tagsObj);
         }
         swagger.put("tags", tagsList);
-        Map<String, Object> pathsObj = new HashMap<>();
+        Map<String, Object> pathsObj = new TreeMap<>();
         Map<String, Object> definitionsObj = new HashMap<>();
         for (Map.Entry<String, Api> apiDefine : ApiDefine.apiMap.entrySet()) {
             Api api = apiDefine.getValue();
@@ -102,7 +99,7 @@ public class SwaggerService {
             postObj.put("parameters", parametersList);
             Map<String, Object> propertiesObj = new HashMap<>();
             List<String> requiredList = new ArrayList<>();
-            if ("login".equals(api.getApi()) || api.isCheckToken()) {
+//            if ("login".equals(api.getApi()) || api.isCheckToken()) {
                 for (Param param : ApiDefine.publicParams) {
                     Map<String, Object> paramObj = new HashMap<>();
                     paramObj.put("type", "string");
@@ -112,7 +109,7 @@ public class SwaggerService {
                         requiredList.add(param.getName());
                     }
                 }
-            }
+//            }
             for (Param param : api.getParams()) {
                 Map<String, Object> paramObj = new HashMap<>();
                 paramObj.put("type", "string");

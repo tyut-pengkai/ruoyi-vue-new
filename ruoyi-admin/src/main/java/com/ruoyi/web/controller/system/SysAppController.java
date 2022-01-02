@@ -21,10 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 软件Controller
@@ -80,7 +77,9 @@ public class SysAppController extends BaseController
         // 设置API加密
         List<Map<String, String>> enApiList = new ArrayList<>();
         Map<String, Api> apis = ApiDefine.apiMap;
-        for (String api : apis.keySet()) {
+        List<String> apiList = new ArrayList<>(apis.keySet());
+        Collections.sort(apiList);
+        for (String api : apiList) {
             try {
                 Map<String, String> map = new HashMap<>();
                 if (StringUtils.isNotBlank(sysApp.getApiPwd())) {
