@@ -152,7 +152,8 @@ public class ApiV1Controller extends BaseController {
         String api = params.get("api").trim();
         try {
             if (StringUtils.isNotBlank(app.getApiPwd())) {
-                api = AesCbcZeroPaddingUtil.decode(api, app.getApiPwd()).trim();
+                api = AesCbcZeroPaddingUtil.decode(api, app.getApiPwd());
+                api = api != null ? api.trim() : "";
             }
         } catch (Exception e) {
             e.printStackTrace();
