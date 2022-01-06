@@ -66,4 +66,10 @@ public interface ISysAppVersionService {
      * @return 结果
      */
     public int deleteSysAppVersionByAppVersionId(Long appVersionId);
+
+    /**
+     * @param appId APP ID
+     * @return 最新版本信息
+     */
+    public SysAppVersion selectLatestVersionByAppId(Long appId);
 }

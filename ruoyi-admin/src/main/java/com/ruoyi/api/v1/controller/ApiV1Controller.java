@@ -77,7 +77,8 @@ public class ApiV1Controller extends BaseController {
         String api = params.get("api").trim();
         try {
             if (StringUtils.isNotBlank(app.getApiPwd())) {
-                api = AesCbcZeroPaddingUtil.decode(api, app.getApiPwd()).trim();
+                api = AesCbcZeroPaddingUtil.decode(api, app.getApiPwd());
+                api = api != null ? api.trim() : "";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,6 +118,8 @@ public class ApiV1Controller extends BaseController {
             return DateUtils.getTime();
         } else if ("testNoToken".equals(api)) {
             return params;
+        } else if ("latestVersion".equals(api)) {
+            return appVersionService.selectLatestVersionByAppId(app.getAppId());
         }
         return AjaxResult.error();
     }

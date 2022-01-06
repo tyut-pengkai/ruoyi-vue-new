@@ -99,4 +99,13 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     public int deleteSysAppVersionByAppVersionId(Long appVersionId) {
         return sysAppVersionMapper.deleteSysAppVersionByAppVersionId(appVersionId);
     }
+
+    /**
+     * @param appId APP ID
+     * @return 最新版本信息
+     */
+    @Override
+    public SysAppVersion selectLatestVersionByAppId(Long appId) {
+        return sysAppVersionMapper.selectLatestVersionByAppId(appId);
+    }
 }
