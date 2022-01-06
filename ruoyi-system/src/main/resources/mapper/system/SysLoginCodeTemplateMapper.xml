@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysLoginCodeTemplateMapper">
+
+    <resultMap type="SysLoginCodeTemplate" id="SysLoginCodeTemplateResult">
+        <result property="templateId" column="template_id"/>
+        <result property="appId" column="app_id"/>
+        <result property="cardName" column="card_name"/>
+        <result property="cardNoPrefix" column="card_no_prefix"/>
+        <result property="cardNoSuffix" column="card_no_suffix"/>
+        <result property="cardDescription" column="card_description"/>
+        <result property="quota" column="quota"/>
+        <result property="price" column="price"/>
+        <result property="cardNoLen" column="card_no_len"/>
+        <result property="cardNoGenRule" column="card_no_gen_rule"/>
+        <result property="cardNoRegex" column="card_no_regex"/>
+        <result property="onSale" column="on_sale"/>
+        <result property="firstStock" column="first_stock"/>
+        <result property="effectiveDuration" column="effective_duration"/>
+        <result property="status" column="status"/>
+        <result property="enableAutoGen" column="enable_auto_gen"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
+    </resultMap>
+
+    <resultMap type="SysApp" id="SysAppResult">
+        <result property="appId" column="app_id"/>
+        <result property="appName" column="app_name"/>
+        <result property="description" column="description"/>
+        <result property="apiUrl" column="api_url"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="bindType" column="bind_type"/>
+        <result property="isCharge" column="is_charge"/>
+        <result property="idxUrl" column="idx_url"/>
+        <result property="freeQuotaReg" column="free_quota_reg"/>
+        <result property="reduceQuotaUnbind" column="reduce_quota_unbind"/>
+        <result property="authType" column="auth_type"/>
+        <result property="billType" column="bill_type"/>
+        <result property="dataInEnc" column="data_in_enc"/>
+        <result property="dataInPwd" column="data_in_pwd"/>
+        <result property="dataOutEnc" column="data_out_enc"/>
+        <result property="dataOutPwd" column="data_out_pwd"/>
+        <result property="dataExpireTime" column="data_expire_time"/>
+        <result property="loginLimitU" column="login_limit_u"/>
+        <result property="loginLimitM" column="login_limit_m"/>
+        <result property="limitOper" column="limit_oper"/>
+        <result property="heartBeatTime" column="heart_beat_time"/>
+        <result property="appKey" column="app_key"/>
+        <result property="appSecret" column="app_secret"/>
+        <result property="apiPwd" column="api_pwd"/>
+        <result property="loginCodePrefix" column="login_code_prefix"/>
+        <result property="loginCodeSuffix" column="login_code_suffix"/>
+        <result property="loginCodeLen" column="login_code_len"/>
+        <result property="loginCodeGenRule" column="login_code_gen_rule"/>
+        <result property="loginCodeRegex" column="login_code_regex"/>
+        <result property="icon" column="icon"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <!--        <association property="developer"    column="create_by" javaType="SysUser" resultMap="SysUserResult" />-->
+    </resultMap>
+
+    <sql id="selectSysLoginCodeTemplateVo">
+        select ct.template_id, ct.app_id, ct.card_name, ct.card_no_prefix, ct.card_no_suffix, ct.card_description, ct.quota,
+               ct.price, ct.card_no_len, ct.card_no_gen_rule, ct.card_no_regex, ct.on_sale, ct.first_stock, ct.effective_duration, ct.status, ct.enable_auto_gen,
+               ct.create_by, ct.create_time, ct.update_by, ct.update_time, ct.remark, a.app_id, a.app_name, a.description, a.api_url,
+               a.status, a.del_flag, a.bind_type, a.is_charge, a.idx_url,
+               a.free_quota_reg, a.reduce_quota_unbind, a.auth_type, a.bill_type, a.data_in_enc, a.data_in_pwd,
+               a.data_out_enc, a.data_out_pwd, a.data_expire_time, a.login_limit_u, a.login_limit_m, a.limit_oper,
+               a.heart_beat_time, a.app_key, a.app_secret, a.api_pwd, a.login_code_prefix, a.login_code_suffix,
+               a.login_code_len, a.login_code_gen_rule, a.login_code_regex, a.icon, a.create_by, a.create_time,
+               a.update_by, a.update_time, a.remark from sys_login_code_template ct left join sys_app a on ct.app_id = a.app_id
+    </sql>
+
+    <select id="selectSysLoginCodeTemplateList" parameterType="SysLoginCodeTemplate"
+            resultMap="SysLoginCodeTemplateResult">
+        <include refid="selectSysLoginCodeTemplateVo"/>
+        <where>
+            <if test="appId != null ">and ct.app_id = #{appId}</if>
+            <if test="cardName != null  and cardName != ''">and ct.card_name like concat('%', #{cardName}, '%')</if>
+            <if test="cardNoPrefix != null">and ct.card_no_prefix = #{cardNoPrefix}</if>
+            <if test="cardNoSuffix != null">and ct.card_no_suffix = #{cardNoSuffix}</if>
+            <if test="cardDescription != null">and ct.card_description = #{cardDescription}</if>
+            <if test="quota != null ">and ct.quota = #{quota}</if>
+            <if test="price != null ">and ct.price = #{price}</if>
+            <if test="cardNoLen != null ">and ct.card_no_len = #{cardNoLen}</if>
+            <if test="cardNoGenRule != null">and ct.card_no_gen_rule = #{cardNoGenRule}</if>
+            <if test="cardNoRegex != null">and ct.card_no_regex = #{cardNoRegex}</if>
+            <if test="onSale != null">and ct.on_sale = #{onSale}</if>
+            <if test="firstStock != null">and ct.first_stock = #{firstStock}</if>
+            <if test="effectiveDuration != null ">and ct.effective_duration = #{effectiveDuration}</if>
+            <if test="status != null">and ct.status = #{status}</if>
+            <if test="enableAutoGen != null">and ct.enable_auto_gen = #{enableAutoGen}</if>
+        </where>
+    </select>
+
+    <select id="selectSysLoginCodeTemplateByTemplateId" parameterType="Long" resultMap="SysLoginCodeTemplateResult">
+        <include refid="selectSysLoginCodeTemplateVo"/>
+        where template_id = #{templateId}
+    </select>
+
+    <insert id="insertSysLoginCodeTemplate" parameterType="SysLoginCodeTemplate" useGeneratedKeys="true"
+            keyProperty="templateId">
+        insert into sys_login_code_template
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appId != null">app_id,</if>
+            <if test="cardName != null">card_name,</if>
+            <if test="cardNoPrefix != null">card_no_prefix,</if>
+            <if test="cardNoSuffix != null">card_no_suffix,</if>
+            <if test="cardDescription != null">card_description,</if>
+            <if test="quota != null">quota,</if>
+            <if test="price != null">price,</if>
+            <if test="cardNoLen != null">card_no_len,</if>
+            <if test="cardNoGenRule != null">card_no_gen_rule,</if>
+            <if test="cardNoRegex != null">card_no_regex,</if>
+            <if test="onSale != null">on_sale,</if>
+            <if test="firstStock != null">first_stock,</if>
+            <if test="effectiveDuration != null">effective_duration,</if>
+            <if test="status != null">status,</if>
+            <if test="enableAutoGen != null">enable_auto_gen,</if>
+            <if test="createBy != null">create_by,</if>
+            create_time,
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appId != null">#{appId},</if>
+            <if test="cardName != null">#{cardName},</if>
+            <if test="cardNoPrefix != null">#{cardNoPrefix},</if>
+            <if test="cardNoSuffix != null">#{cardNoSuffix},</if>
+            <if test="cardDescription != null">#{cardDescription},</if>
+            <if test="quota != null">#{quota},</if>
+            <if test="price != null">#{price},</if>
+            <if test="cardNoLen != null">#{cardNoLen},</if>
+            <if test="cardNoGenRule != null">#{cardNoGenRule},</if>
+            <if test="cardNoRegex != null">#{cardNoRegex},</if>
+            <if test="onSale != null">#{onSale},</if>
+            <if test="firstStock != null">#{firstStock},</if>
+            <if test="effectiveDuration != null">#{effectiveDuration},</if>
+            <if test="status != null">#{status},</if>
+            <if test="enableAutoGen != null">#{enableAutoGen},</if>
+            <if test="createBy != null">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysLoginCodeTemplate" parameterType="SysLoginCodeTemplate">
+        update sys_login_code_template
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="appId != null">app_id = #{appId},</if>
+            <if test="cardName != null">card_name = #{cardName},</if>
+            <if test="cardNoPrefix != null">card_no_prefix = #{cardNoPrefix},</if>
+            <if test="cardNoSuffix != null">card_no_suffix = #{cardNoSuffix},</if>
+            <if test="cardDescription != null">card_description = #{cardDescription},</if>
+            <if test="quota != null">quota = #{quota},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="cardNoLen != null">card_no_len = #{cardNoLen},</if>
+            <if test="cardNoGenRule != null">card_no_gen_rule = #{cardNoGenRule},</if>
+            <if test="cardNoRegex != null">card_no_regex = #{cardNoRegex},</if>
+            <if test="onSale != null">on_sale = #{onSale},</if>
+            <if test="firstStock != null">first_stock = #{firstStock},</if>
+            <if test="effectiveDuration != null">effective_duration = #{effectiveDuration},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="enableAutoGen != null">enable_auto_gen = #{enableAutoGen},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where template_id = #{templateId}
+    </update>
+
+    <delete id="deleteSysLoginCodeTemplateByTemplateId" parameterType="Long">
+        delete from sys_login_code_template where template_id = #{templateId}
+    </delete>
+
+    <delete id="deleteSysLoginCodeTemplateByTemplateIds" parameterType="String">
+        delete from sys_login_code_template where template_id in
+        <foreach item="templateId" collection="array" open="(" separator="," close=")">
+            #{templateId}
+        </foreach>
+    </delete>
+</mapper>

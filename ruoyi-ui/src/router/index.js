@@ -1,10 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
-Vue.use(Router)
-
 /* Layout */
 import Layout from '@/layout'
+
+Vue.use(Router)
 
 /**
  * Note: 路由配置项
@@ -130,6 +129,22 @@ export const constantRoutes = [
       name: 'Card',
       meta: {
         title: '卡密管理',
+        activeMenu: '/authentication/app'
+      }
+    }, {
+      path: 'loginCodeTemplate/:appId(\\d+)',
+      component: () => import('@/views/system/loginCodeTemplate/index'),
+      name: 'LoginCodeTemplate',
+      meta: {
+        title: '登录码类别',
+        activeMenu: '/authentication/app'
+      }
+    }, {
+      path: 'loginCode/:appId(\\d+)',
+      component: () => import('@/views/system/loginCode/index'),
+      name: 'LoginCode',
+      meta: {
+        title: '登录码管理',
         activeMenu: '/authentication/app'
       }
     }, {

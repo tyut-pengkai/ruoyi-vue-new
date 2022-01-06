@@ -89,14 +89,14 @@
     <select id="selectSysCardTemplateList" parameterType="SysCardTemplate" resultMap="SysCardTemplateResult">
         <include refid="selectSysCardTemplateVo"/>
         <where>
-            <if test="appId != null "> and ct.app_id = #{appId}</if>
-            <if test="cardName != null  and cardName != ''"> and ct.card_name like concat('%', #{cardName}, '%')</if>
-            <if test="chargeRule != null  and chargeRule != ''"> and ct.charge_rule = #{chargeRule}</if>
-            <if test="onSale != null  and onSale != ''"> and ct.on_sale = #{onSale}</if>
-            <if test="firstStock != null  and firstStock != ''"> and ct.first_stock = #{firstStock}</if>
-            <if test="status != null  and status != ''"> and ct.status = #{status}</if>
-            <if test="enableAutoGen != null  and enableAutoGen != ''"> and ct.enable_auto_gen = #{enableAutoGen}</if>
-            <if test="createBy != null  and createBy != ''"> and ct.create_by like concat('%', #{createBy}, '%')</if>
+            <if test="appId != null ">and ct.app_id = #{appId}</if>
+            <if test="cardName != null and cardName != ''">and ct.card_name like concat('%', #{cardName}, '%')</if>
+            <if test="chargeRule != null">and ct.charge_rule = #{chargeRule}</if>
+            <if test="onSale != null">and ct.on_sale = #{onSale}</if>
+            <if test="firstStock != null">and ct.first_stock = #{firstStock}</if>
+            <if test="status != null">and ct.status = #{status}</if>
+            <if test="enableAutoGen != null">and ct.enable_auto_gen = #{enableAutoGen}</if>
+            <if test="createBy != null  and createBy != ''">and ct.create_by like concat('%', #{createBy}, '%')</if>
         </where>
     </select>
 

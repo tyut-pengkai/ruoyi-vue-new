@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysLoginCodeMapper">
+
+    <resultMap type="SysLoginCode" id="SysLoginCodeResult">
+        <result property="cardId" column="card_id"/>
+        <result property="appId" column="app_id"/>
+        <result property="cardName" column="card_name"/>
+        <result property="cardNo" column="card_no"/>
+        <result property="quota" column="quota"/>
+        <result property="price" column="price"/>
+        <result property="expireTime" column="expire_time"/>
+        <result property="isSold" column="is_sold"/>
+        <result property="onSale" column="on_sale"/>
+        <result property="isCharged" column="is_charged"/>
+        <result property="templateId" column="template_id"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
+    </resultMap>
+
+    <resultMap type="SysApp" id="SysAppResult">
+        <result property="appId" column="app_id"/>
+        <result property="appName" column="app_name"/>
+        <result property="description" column="description"/>
+        <result property="apiUrl" column="api_url"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="bindType" column="bind_type"/>
+        <result property="isCharge" column="is_charge"/>
+        <result property="idxUrl" column="idx_url"/>
+        <result property="freeQuotaReg" column="free_quota_reg"/>
+        <result property="reduceQuotaUnbind" column="reduce_quota_unbind"/>
+        <result property="authType" column="auth_type"/>
+        <result property="billType" column="bill_type"/>
+        <result property="dataInEnc" column="data_in_enc"/>
+        <result property="dataInPwd" column="data_in_pwd"/>
+        <result property="dataOutEnc" column="data_out_enc"/>
+        <result property="dataOutPwd" column="data_out_pwd"/>
+        <result property="dataExpireTime" column="data_expire_time"/>
+        <result property="loginLimitU" column="login_limit_u"/>
+        <result property="loginLimitM" column="login_limit_m"/>
+        <result property="limitOper" column="limit_oper"/>
+        <result property="heartBeatTime" column="heart_beat_time"/>
+        <result property="appKey" column="app_key"/>
+        <result property="appSecret" column="app_secret"/>
+        <result property="apiPwd" column="api_pwd"/>
+        <result property="loginCodePrefix" column="login_code_prefix"/>
+        <result property="loginCodeSuffix" column="login_code_suffix"/>
+        <result property="loginCodeLen" column="login_code_len"/>
+        <result property="loginCodeGenRule" column="login_code_gen_rule"/>
+        <result property="loginCodeRegex" column="login_code_regex"/>
+        <result property="icon" column="icon"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <!--        <association property="developer"    column="create_by" javaType="SysUser" resultMap="SysUserResult" />-->
+    </resultMap>
+
+    <sql id="selectSysLoginCodeVo">
+        select c.card_id, c.app_id, c.card_name, c.card_no, c.quota, c.price, c.expire_time, c.is_sold,
+               c.on_sale, c.is_charged, c.template_id, c.status, c.create_by, c.create_time,
+               c.update_by, c.update_time, c.remark, a.app_id,
+               a.app_name, a.description, a.api_url, a.status, a.del_flag, a.bind_type, a.is_charge, a.idx_url,
+               a.free_quota_reg, a.reduce_quota_unbind, a.auth_type, a.bill_type, a.data_in_enc, a.data_in_pwd,
+               a.data_out_enc, a.data_out_pwd, a.data_expire_time, a.login_limit_u, a.login_limit_m, a.limit_oper,
+               a.heart_beat_time, a.app_key, a.app_secret, a.api_pwd, a.login_code_prefix, a.login_code_suffix,
+               a.login_code_len, a.login_code_gen_rule, a.login_code_regex, a.icon, a.create_by, a.create_time,
+               a.update_by, a.update_time, a.remark from sys_login_code c left join sys_app a on c.app_id = a.app_id
+    </sql>
+
+    <select id="selectSysLoginCodeList" parameterType="SysLoginCode" resultMap="SysLoginCodeResult">
+        <include refid="selectSysLoginCodeVo"/>
+        <where>
+            <if test="appId != null ">and c.app_id = #{appId}</if>
+            <if test="cardName != null  and cardName != ''">and c.card_name like concat('%', #{cardName}, '%')</if>
+            <if test="cardNo != null  and cardNo != ''">and c.card_no like concat('%', #{cardNo}, '%')</if>
+            <if test="params.beginQuota != null and params.beginQuota != '' and params.endQuota != null and params.endQuota != ''">
+                and c.quota between #{params.beginQuota} and #{params.endQuota}
+            </if>
+            <if test="params.beginPrice != null and params.beginPrice != '' and params.endPrice != null and params.endPrice != ''">
+                and c.price between #{params.beginPrice} and #{params.endPrice}
+            </if>
+            <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
+                and c.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
+            </if>
+            <if test="isSold != null  and isSold != ''">and c.is_sold = #{isSold}</if>
+            <if test="onSale != null  and onSale != ''">and c.on_sale = #{onSale}</if>
+            <if test="isCharged != null  and isCharged != ''">and c.is_charged = #{isCharged}</if>
+            <if test="status != null  and status != ''">and c.status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectSysLoginCodeByCardId" parameterType="Long" resultMap="SysLoginCodeResult">
+        <include refid="selectSysLoginCodeVo"/>
+        where c.card_id = #{cardId}
+    </select>
+
+    <select id="selectSysLoginCodeByCardNo" parameterType="String" resultMap="SysLoginCodeResult">
+        <include refid="selectSysLoginCodeVo"/>
+        where c.card_no = #{cardNo}
+    </select>
+
+    <insert id="insertSysLoginCode" parameterType="SysLoginCode" useGeneratedKeys="true" keyProperty="cardId">
+        insert into sys_login_code
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appId != null">app_id,</if>
+            <if test="cardName != null">card_name,</if>
+            <if test="cardNo != null">card_no,</if>
+            <if test="quota != null">quota,</if>
+            <if test="price != null">price,</if>
+            <if test="expireTime != null">expire_time,</if>
+            <if test="isSold != null">is_sold,</if>
+            <if test="onSale != null">on_sale,</if>
+            <if test="isCharged != null">is_charged,</if>
+            <if test="templateId != null">template_id,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            create_time,
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appId != null">#{appId},</if>
+            <if test="cardName != null">#{cardName},</if>
+            <if test="cardNo != null">#{cardNo},</if>
+            <if test="quota != null">#{quota},</if>
+            <if test="price != null">#{price},</if>
+            <if test="expireTime != null">#{expireTime},</if>
+            <if test="isSold != null">#{isSold},</if>
+            <if test="onSale != null">#{onSale},</if>
+            <if test="isCharged != null">#{isCharged},</if>
+            <if test="templateId != null">#{templateId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertSysLoginCodeBatch" useGeneratedKeys="true" keyProperty="cardId">
+        insert into sys_login_code(app_id,card_name,card_no,quota,price,expire_time,is_sold,on_sale,is_charged,
+        template_id,status,create_by,create_time,update_by,update_time,remark) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.appId},#{item.cardName},#{item.cardNo},#{item.quota},#{item.price},
+            #{item.expireTime},#{item.isSold},#{item.onSale},#{item.isCharged},
+            #{item.templateId},#{item.status},#{item.createBy},sysdate(),#{item.updateBy},
+            #{item.updateTime},#{item.remark})
+        </foreach>
+    </insert>
+
+    <update id="updateSysLoginCode" parameterType="SysLoginCode">
+        update sys_login_code
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="appId != null">app_id = #{appId},</if>
+            <if test="cardName != null">card_name = #{cardName},</if>
+            <if test="cardNo != null">card_no = #{cardNo},</if>
+            <if test="quota != null">quota = #{quota},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="expireTime != null">expire_time = #{expireTime},</if>
+            <if test="isSold != null">is_sold = #{isSold},</if>
+            <if test="onSale != null">on_sale = #{onSale},</if>
+            <if test="isCharged != null">is_charged = #{isCharged},</if>
+            <if test="templateId != null">template_id = #{templateId},</if>
+            <if test="status != null">status = #{status},</if>
+            <!--            <if test="createBy != null">create_by = #{createBy},</if>-->
+            <!--            <if test="createTime != null">create_time = #{createTime},</if>-->
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where card_id = #{cardId}
+    </update>
+
+    <delete id="deleteSysLoginCodeByCardId" parameterType="Long">
+        delete from sys_login_code where card_id = #{cardId}
+    </delete>
+
+    <delete id="deleteSysLoginCodeByCardIds" parameterType="String">
+        delete from sys_login_code where card_id in
+        <foreach item="cardId" collection="array" open="(" separator="," close=")">
+            #{cardId}
+        </foreach>
+    </delete>
+</mapper>

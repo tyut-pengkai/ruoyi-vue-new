@@ -395,18 +395,34 @@
                 v-hasPermi="['system:appVersion:list']"
                 >版本管理</el-dropdown-item
               >
-              <el-dropdown-item
-                command="handleCardTemplate"
-                icon="el-icon-edit-outline"
-                v-hasPermi="['system:cardTemplate:list']"
-                >卡类管理</el-dropdown-item
-              >
-              <el-dropdown-item
-                command="handleCardManage"
-                icon="el-icon-bank-card"
-                v-hasPermi="['system:card:list']"
-                >卡密管理</el-dropdown-item
-              >
+              <div v-if="scope.row.authType === '0' ">
+                <el-dropdown-item
+                  command="handleCardTemplate"
+                  icon="el-icon-edit-outline"
+                  v-hasPermi="['system:cardTemplate:list']"
+                  >卡类管理</el-dropdown-item
+                >
+                <el-dropdown-item
+                  command="handleCardManage"
+                  icon="el-icon-bank-card"
+                  v-hasPermi="['system:card:list']"
+                  >卡密管理</el-dropdown-item
+                >
+              </div>
+              <div v-if="scope.row.authType === '1' ">
+                <el-dropdown-item
+                  command="handleLoginCodeTemplate"
+                  icon="el-icon-edit-outline"
+                  v-hasPermi="['system:loginCodeTemplate:list']"
+                  >登录码类别</el-dropdown-item
+                >
+                <el-dropdown-item
+                  command="handleLoginCodeManage"
+                  icon="el-icon-bank-card"
+                  v-hasPermi="['system:loginCode:list']"
+                  >登录码管理</el-dropdown-item
+                >
+              </div>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -1280,6 +1296,18 @@ export default {
         path: "/app/card/" + appId,
       });
     },
+    handleLoginCodeTemplate: function (row) {
+      const appId = row.appId;
+      this.$router.push({
+        path: "/app/loginCodeTemplate/" + appId,
+      });
+    },
+    handleLoginCodeManage: function (row) {
+      const appId = row.appId;
+      this.$router.push({
+        path: "/app/loginCode/" + appId,
+      });
+    },
     handleVersionManage: function (row) {
       const appId = row.appId;
       this.$router.push({
@@ -1300,6 +1328,12 @@ export default {
           break;
         case "handleCardTemplate":
           this.handleCardTemplate(row);
+          break;
+        case "handleLoginCodeManage":
+          this.handleLoginCodeManage(row);
+          break;
+        case "handleLoginCodeTemplate":
+          this.handleLoginCodeTemplate(row);
           break;
         default:
           break;
