@@ -57,6 +57,7 @@ public class ApiDefine {
                         }), //
                 new Api("testNoToken", "测试非登录接口", false, Constants.API_TAG_COMMON, "测试noToken接口"), //
                 new Api("time", "获取服务器时间", false, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //
+                new Api("latestVersion", "获取最新版本", false, Constants.API_TAG_COMMON, "获取软件最新版本"), //
 
                 // Auth
                 new Api("logout", "用户登出", true, Constants.API_TAG_COMMON, "用户登出接口"), //
