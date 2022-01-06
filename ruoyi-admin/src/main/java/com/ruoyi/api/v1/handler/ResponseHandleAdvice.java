@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.SwaggerVo;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.utils.DateUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -29,13 +30,13 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 		// String类型不能直接包装，所以要进行些特别的处理
 		if (returnType.getGenericParameterType().equals(String.class) || (data instanceof String && data.toString().startsWith(Constants.PREFIX_TYPE))) {
 			// 将数据包装在RestResponse里后，再转换为json字符串响应给前端
-			return JSON.toJSONString(AjaxResult.success().put("data", handleResult(data)));
+			return JSON.toJSONString(AjaxResult.success().put("data", handleResult(data)).put("timestamp", DateUtils.getNowDate().getTime()));
 		}
 		// 将原本的数据包装在RestResponse里
 		if (returnType.getGenericParameterType().equals(SwaggerVo.class)) {
 			return data;
 		}
-		return AjaxResult.success().put("data", handleResult(data));
+		return AjaxResult.success().put("data", handleResult(data)).put("timestamp", DateUtils.getNowDate().getTime());
 	}
 
 	private Object handleResult(Object data) {

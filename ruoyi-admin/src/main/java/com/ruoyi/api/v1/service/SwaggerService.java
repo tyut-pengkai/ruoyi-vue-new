@@ -97,19 +97,29 @@ public class SwaggerService {
 
             }
             postObj.put("parameters", parametersList);
-            Map<String, Object> propertiesObj = new HashMap<>();
+            Map<String, Object> propertiesObj = new LinkedHashMap<>();
             List<String> requiredList = new ArrayList<>();
-//            if ("login".equals(api.getApi()) || api.isCheckToken()) {
-                for (Param param : ApiDefine.publicParams) {
+            if (api.isCheckToken()) {
+                for (Param param : ApiDefine.publicParamsAuth) {
                     Map<String, Object> paramObj = new HashMap<>();
                     paramObj.put("type", "string");
-                    paramObj.put("description", "[公共]" + param.getDescription());
+                    paramObj.put("description", "[公共]" + param.getDescription().replace("${api}", api.getApi()));
                     propertiesObj.put(param.getName(), paramObj);
                     if (param.isNecessary()) {
                         requiredList.add(param.getName());
                     }
                 }
-//            }
+            } else {
+                for (Param param : ApiDefine.publicParamsNoAuth) {
+                    Map<String, Object> paramObj = new HashMap<>();
+                    paramObj.put("type", "string");
+                    paramObj.put("description", "[公共]" + param.getDescription().replace("${api}", api.getApi()));
+                    propertiesObj.put(param.getName(), paramObj);
+                    if (param.isNecessary()) {
+                        requiredList.add(param.getName());
+                    }
+                }
+            }
             for (Param param : api.getParams()) {
                 Map<String, Object> paramObj = new HashMap<>();
                 paramObj.put("type", "string");
@@ -119,7 +129,8 @@ public class SwaggerService {
                     requiredList.add(param.getName());
                 }
             }
-            if (api.isCheckToken() || api.getParams().size() > 0) {
+//            if (api.isCheckToken() || api.getParams().size() > 0) {
+            if (!"calcSign".equals(api.getApi())) {
                 Map<String, Object> parametersObj = new HashMap<>();
                 parametersObj.put("in", "body");
                 parametersObj.put("name", "params");
@@ -138,6 +149,7 @@ public class SwaggerService {
                 definitionObj.put("title", defineVoName);
                 definitionsObj.put(defineVoName, definitionObj);
             }
+//            }
         }
         swagger.put("paths", pathsObj);
         Map<String, Object> definitionObj = new HashMap<>();

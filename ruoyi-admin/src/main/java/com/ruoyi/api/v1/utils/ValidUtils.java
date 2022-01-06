@@ -85,18 +85,18 @@ public class ValidUtils {
             }
         }
         // 检查公共参数
-        checkPublicParams(params);
+        checkPublicParams(params, needToken);
         // 检查api接口是否存在
         checkApiExist(api, needToken);
         // 检查该软件是否可调用该api接口
         checkAppMatchApi(api, app, params);
         // 检查私有参数
         checkPrivateParams(api, params);
-        // 检查md5
-        checkMd5(appVersion, params);
-        // 检查sign
-        checkSign(app, params);
         if (needToken) {
+            // 检查md5
+            checkMd5(appVersion, params);
+            // 检查sign
+            checkSign(app, params);
             // 检查数据是否过期
             checkDataExpired(app, params);
             // 检查软件用户是否可用
@@ -107,10 +107,18 @@ public class ValidUtils {
     /**
      * 检查公共参数
      */
-    private void checkPublicParams(Map<String, String> params) {
-        for (Param publicParam : ApiDefine.publicParams) {
-            if (publicParam.isNecessary() && StringUtils.isBlank(params.get(publicParam.getName()))) {
-                throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "缺少必要公共参数或参数值为空：" + publicParam.getName() + "，参数说明：" + publicParam.getDescription());
+    private void checkPublicParams(Map<String, String> params, boolean needToken) {
+        if (needToken) {
+            for (Param publicParam : ApiDefine.publicParamsAuth) {
+                if (publicParam.isNecessary() && StringUtils.isBlank(params.get(publicParam.getName()))) {
+                    throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "缺少必要公共参数或参数值为空：" + publicParam.getName() + "，参数说明：" + publicParam.getDescription());
+                }
+            }
+        } else {
+            for (Param publicParam : ApiDefine.publicParamsNoAuth) {
+                if (publicParam.isNecessary() && StringUtils.isBlank(params.get(publicParam.getName()))) {
+                    throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "缺少必要公共参数或参数值为空：" + publicParam.getName() + "，参数说明：" + publicParam.getDescription());
+                }
             }
         }
     }
