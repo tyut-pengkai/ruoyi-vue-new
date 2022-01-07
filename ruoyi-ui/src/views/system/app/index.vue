@@ -255,7 +255,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="软件作者" align="center">
+      <el-table-column label="软件作者" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           {{ scope.row.developer.nickName }}({{ scope.row.developer.userName }})
         </template>
@@ -316,8 +316,6 @@
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
-        width="350px"
-        min-width="350px"
         fixed="right"
       >
         <template slot-scope="scope">

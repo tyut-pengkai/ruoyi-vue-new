@@ -62,7 +62,7 @@ public class ApiDefine {
                         }), //
                 new Api("codeLogin", "登录码登录", false, Constants.API_TAG_CODE, "登录码登录接口",
                         new Param[]{
-                                new Param("loginCode", true, "登录码"), //
+                                new Param("login_code", true, "登录码"), //
                         }), //
 //                new Api("testNoToken", "测试非登录接口", false, Constants.API_TAG_COMMON, "测试noToken接口"), //
                 new Api("time", "获取服务器时间", false, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //

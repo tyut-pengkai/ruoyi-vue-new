@@ -168,6 +168,7 @@
         align="center"
         class-name="small-padding fixed-width"
         label="操作"
+        fixed="right"
       >
         <template slot-scope="scope">
           <el-button

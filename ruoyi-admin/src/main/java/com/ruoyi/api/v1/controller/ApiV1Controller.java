@@ -100,12 +100,16 @@ public class ApiV1Controller extends BaseController {
                 String password = params.get("password");
                 // 调用登录接口
                 return loginService.appLogin(username, password, app, appVersion, deviceCode);
+            } else {
+                throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
             }
         } else if ("codeLogin".equals(api)) {
             if (app.getAuthType() == AuthType.LOGIN_CODE) { // by login code
-                String loginCode = params.get("loginCode");
+                String loginCode = params.get("login_code");
                 // 调用登录接口
                 return loginService.appLogin(loginCode, app, appVersion, deviceCode);
+            } else {
+                throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
             }
         } else if ("time".equals(api)) {
             return DateUtils.getTime();

@@ -304,8 +304,6 @@
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
-        width="350px"
-        min-width="350px"
         fixed="right"
       >
         <template slot-scope="scope">
