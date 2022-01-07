@@ -87,6 +87,7 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService
         sysUserOnline.setBrowser(user.getBrowser());
         sysUserOnline.setOs(user.getOs());
         sysUserOnline.setLoginTime(user.getLoginTime());
+        sysUserOnline.setExpireTime(user.getExpireTime());
         sysUserOnline.setIfApp(user.getIfApp() ? 'Y' : 'N');
         if (user.getIfApp()) {
             sysUserOnline.setAppDesc(user.getApp().getAppName() + "-" + user.getAppVersion().getVersionShow());

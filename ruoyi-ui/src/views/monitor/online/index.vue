@@ -93,6 +93,16 @@
       </el-table-column>
       <el-table-column
         align="center"
+        label="过期时间"
+        prop="expireTime"
+        width="180"
+      >
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.expireTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        align="center"
         class-name="small-padding fixed-width"
         label="操作"
       >

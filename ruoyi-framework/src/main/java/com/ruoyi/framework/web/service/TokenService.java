@@ -130,10 +130,19 @@ public class TokenService
     {
         long expireTime = loginUser.getExpireTime();
         long currentTime = System.currentTimeMillis();
-        if (expireTime - currentTime <= MILLIS_MINUTE_TEN)
-        {
-            refreshToken(loginUser);
+        if (loginUser.getIfApp()) { // 自动刷新APP token
+            Integer heartBeatTime = loginUser.getApp().getHeartBeatTime();
+            if (heartBeatTime > -1) {
+//                if (expireTime - currentTime <= (heartBeatTime * 0.2) * MILLIS_SECOND) {
+                refreshToken(loginUser);
+//                }
+            }
+        } else {
+            if (expireTime - currentTime <= MILLIS_MINUTE_TEN) {
+                refreshToken(loginUser);
+            }
         }
+
     }
 
     /**

@@ -38,6 +38,11 @@ public class SysUserOnline
     private Long loginTime;
 
     /**
+     * 登录时间
+     */
+    private Long expireTime;
+
+    /**
      * 是否为软件登录
      */
     private char ifApp;
@@ -143,5 +148,13 @@ public class SysUserOnline
 
     public void setDeviceCode(String deviceCode) {
         this.deviceCode = deviceCode;
+    }
+
+    public Long getExpireTime() {
+        return expireTime;
+    }
+
+    public void setExpireTime(Long expireTime) {
+        this.expireTime = expireTime;
     }
 }
