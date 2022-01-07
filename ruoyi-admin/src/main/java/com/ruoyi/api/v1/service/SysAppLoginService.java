@@ -224,7 +224,7 @@ public class SysAppLoginService {
                 appUser.setPwdErrorTimes(0);
                 appUser.setStatus(UserConstants.NORMAL);
                 appUser.setTotalPay(BigDecimal.ZERO);
-                appUser.setUserName("<登录码用户>");
+                appUser.setUserName("<登录码>" + loginCodeStr);
                 if (app.getBillType() == BillType.TIME) {
                     appUser.setExpireTime(MyUtils.getNewExpiredTime(null, app.getFreeQuotaReg()));
                     appUser.setExpireTime(MyUtils.getNewExpiredTime(appUser.getExpireTime(), loginCode.getQuota()));
@@ -344,5 +344,20 @@ public class SysAppLoginService {
             appUserDeviceCode.setLastLoginTime(nowDate);
             appUserDeviceCodeService.updateSysAppUserDeviceCode(appUserDeviceCode);
         }
+    }
+
+    public String appLogout(LoginUser loginUser) {
+        SysApp app = loginUser.getApp();
+        SysAppVersion version = loginUser.getAppVersion();
+        SysAppUser appUser = loginUser.getAppUser();
+        SysDeviceCode deviceCode = loginUser.getDeviceCode();
+        String _deviceCodeStr = null;
+        if (deviceCode != null) {
+            _deviceCodeStr = deviceCode.getDeviceCode();
+        }
+        redisCache.deleteObject(Constants.LOGIN_TOKEN_KEY + loginUser.getToken());
+        AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), appUser.getUserName(),
+                app.getAppName(), version.getVersionShow(), _deviceCodeStr, Constants.LOGOUT, "用户注销登录"));
+        return "注销成功";
     }
 }

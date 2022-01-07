@@ -11,6 +11,8 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
@@ -45,6 +47,8 @@ public class ApiV1Controller extends BaseController {
     private ValidUtils validUtils;
     @Resource
     private SwaggerService swaggerService;
+    @Resource
+    private RedisCache redisCache;
 
     @GetMapping("/swagger")
     @ApiIgnore
@@ -94,29 +98,30 @@ public class ApiV1Controller extends BaseController {
 
         String deviceCode = params.get("dev_code");
 
-        if ("userLogin".equals(api)) {
-            if (app.getAuthType() == AuthType.ACCOUNT) { // by account
-                String username = params.get("username");
-                String password = params.get("password");
-                // 调用登录接口
-                return loginService.appLogin(username, password, app, appVersion, deviceCode);
-            } else {
-                throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
-            }
-        } else if ("codeLogin".equals(api)) {
-            if (app.getAuthType() == AuthType.LOGIN_CODE) { // by login code
-                String loginCode = params.get("login_code");
-                // 调用登录接口
-                return loginService.appLogin(loginCode, app, appVersion, deviceCode);
-            } else {
-                throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
-            }
-        } else if ("time".equals(api)) {
-            return DateUtils.getTime();
-        } else if ("testNoToken".equals(api)) {
-            return params;
-        } else if ("latestVersion".equals(api)) {
-            return appVersionService.selectLatestVersionByAppId(app.getAppId());
+        switch (api) {
+            case "testNoToken":
+                return params;
+            case "userLogin":
+                if (app.getAuthType() == AuthType.ACCOUNT) { // by account
+                    String username = params.get("username");
+                    String password = params.get("password");
+                    // 调用登录接口
+                    return loginService.appLogin(username, password, app, appVersion, deviceCode);
+                } else {
+                    throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
+                }
+            case "codeLogin":
+                if (app.getAuthType() == AuthType.LOGIN_CODE) { // by login code
+                    String loginCode = params.get("login_code");
+                    // 调用登录接口
+                    return loginService.appLogin(loginCode, app, appVersion, deviceCode);
+                } else {
+                    throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
+                }
+            case "time":
+                return DateUtils.getTime();
+            case "latestVersion":
+                return appVersionService.selectLatestVersionByAppId(app.getAppId());
         }
         return AjaxResult.error();
     }
@@ -163,10 +168,12 @@ public class ApiV1Controller extends BaseController {
             throw new ApiException(ErrorCode.ERROR_APPKEY_OR_APPSECRET_ERROR);
         }
 
-        if ("times".equals(api)) {
-            return DateUtils.getTime();
-        } else if ("testToken".equals(api)) {
-            return params;
+        switch (api) {
+            case "testToken":
+                return params;
+            case "logout":
+                LoginUser loginUser = getLoginUser();
+                return loginService.appLogout(loginUser);
         }
         return AjaxResult.error();
     }

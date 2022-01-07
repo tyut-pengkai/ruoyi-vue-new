@@ -55,6 +55,7 @@ public class ApiDefine {
                 // 调试工具
                 new Api("calcSign", "计算SIGN值", false, Constants.API_TAG_DEBUG_TOOL, "计算SIGN值"), //
                 // noAuth
+//                new Api("testNoToken", "测试非登录接口", false, Constants.API_TAG_COMMON, "测试noToken接口"), //
                 new Api("userLogin", "账号登录", false, Constants.API_TAG_ACCOUNT, "账号登录接口",
                         new Param[]{
                                 new Param("username", true, "账号"), //
@@ -64,14 +65,13 @@ public class ApiDefine {
                         new Param[]{
                                 new Param("login_code", true, "登录码"), //
                         }), //
-//                new Api("testNoToken", "测试非登录接口", false, Constants.API_TAG_COMMON, "测试noToken接口"), //
+
                 new Api("time", "获取服务器时间", false, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //
-                new Api("latestVersion", "获取最新版本", false, Constants.API_TAG_COMMON, "获取软件最新版本"), //
+                new Api("latestVersion", "获取软件最新版本", false, Constants.API_TAG_COMMON, "获取软件最新版本"), //
 
                 // Auth
-//                new Api("logout", "用户登出", true, Constants.API_TAG_COMMON, "用户登出接口"), //
 //                new Api("testToken", "测试登录接口", true, Constants.API_TAG_COMMON, "测试token接口"), //
-//                new Api("times", "获取服务器时间", true, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //
+                new Api("logout", "注销登录", true, Constants.API_TAG_COMMON, "注销登录接口"), //
         };
         for (Api api : apis) {
             apiMap.put(api.getApi(), api);
