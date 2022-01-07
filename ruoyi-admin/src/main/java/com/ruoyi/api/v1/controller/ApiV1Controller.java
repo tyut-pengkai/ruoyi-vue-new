@@ -28,6 +28,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.Objects;
 
 @RequestMapping("/api/v1")
 @RestController
@@ -85,34 +86,26 @@ public class ApiV1Controller extends BaseController {
             throw new ApiException("匿名API解密发生错误，如果设置了API匿名密码，请使用加密后的API名称替换原API名称");
         }
         validUtils.apiCheck(api, app, appVersion, params, false);
+
+        String appSecret = params.get("app_secret");
+        if (!Objects.equals(app.getAppSecret(), appSecret)) {
+            throw new ApiException(ErrorCode.ERROR_APPKEY_OR_APPSECRET_ERROR);
+        }
+
         String deviceCode = params.get("dev_code");
 
-        if ("login".equals(api)) {
+        if ("userLogin".equals(api)) {
             if (app.getAuthType() == AuthType.ACCOUNT) { // by account
                 String username = params.get("username");
                 String password = params.get("password");
-                if (StringUtils.isAnyBlank(username, password)) {
-                    throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "账号或密码不能为空");
-                }
                 // 调用登录接口
                 return loginService.appLogin(username, password, app, appVersion, deviceCode);
-//        } else { // by login code
-//            String loginCode = params.get("logincode");
-//            String codePwd = params.get("codepwd");
-//            String machineCode = params.get("mcode");
-//            String comments = params.get("c");
-//            if(StringUtils.isBlank(loginCode)) {
-//                throw new ApiException(Code.ERROR_PARAMETERS_MISSING, "登录码不能为空");
-//            }
-//            if (software.getBindType() != null && software.getBindType() != BindType.NONE) {
-//                if (StringUtils.isBlank(machineCode)) {
-//                    throw new ApiException(Code.ERROR_PARAMETERS_MISSING, "设备码不能为空");
-//                }
-//            }
-//            // 调用登录接口
-//            String token = apiV1LoginCodeService.login(request, loginCode, codePwd, machineCode, software.getId(),
-//                    loginPosition, comments);
-//            return token;
+            }
+        } else if ("codeLogin".equals(api)) {
+            if (app.getAuthType() == AuthType.LOGIN_CODE) { // by login code
+                String loginCode = params.get("loginCode");
+                // 调用登录接口
+                return loginService.appLogin(loginCode, app, appVersion, deviceCode);
             }
         } else if ("time".equals(api)) {
             return DateUtils.getTime();
@@ -160,8 +153,11 @@ public class ApiV1Controller extends BaseController {
             throw new ApiException("匿名API解密发生错误，如果设置了API匿名密码，请使用加密后的API名称替换原API名称");
         }
         validUtils.apiCheck(api, app, appVersion, params, true);
-        System.out.println(JSON.toJSONString(getLoginUser()));
-//        String deviceCode = params.get("dev_code");
+
+        String appSecret = params.get("app_secret");
+        if (!Objects.equals(app.getAppSecret(), appSecret)) {
+            throw new ApiException(ErrorCode.ERROR_APPKEY_OR_APPSECRET_ERROR);
+        }
 
         if ("times".equals(api)) {
             return DateUtils.getTime();

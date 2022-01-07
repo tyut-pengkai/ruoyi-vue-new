@@ -36,16 +36,18 @@ public class ApiDefine {
 
     static {
         publicParamsAuth.add(new Param("app_ver", true, "软件版本号"));
-        publicParamsAuth.add(new Param("api", true, "请求的API接口，这里应该填${api}"));
+        publicParamsAuth.add(new Param("api", true, "请求的API接口，此处为${api}"));
         publicParamsAuth.add(new Param("dev_code", false, "设备码，如果开启设备绑定，则必须提供"));
+        publicParamsAuth.add(new Param("app_secret", true, "AppSecret"));
         publicParamsAuth.add(new Param("md5", false, "软件MD5"));
         publicParamsAuth.add(new Param("vstr", false, "用作标记或验证的冗余数据，将原样返回"));
         publicParamsAuth.add(new Param("timestamp", true, "13位时间戳（精确到毫秒）"));
         publicParamsAuth.add(new Param("sign", true, "数据签名"));
         // ===================================
         publicParamsNoAuth.add(new Param("app_ver", true, "软件版本号"));
-        publicParamsNoAuth.add(new Param("api", true, "请求的API接口，这里应该填${api}"));
+        publicParamsNoAuth.add(new Param("api", true, "请求的API接口，此处为${api}"));
         publicParamsNoAuth.add(new Param("dev_code", false, "设备码，如果开启设备绑定，则必须提供"));
+        publicParamsNoAuth.add(new Param("app_secret", true, "AppSecret"));
     }
 
     static {
@@ -53,12 +55,14 @@ public class ApiDefine {
                 // 调试工具
                 new Api("calcSign", "计算SIGN值", false, Constants.API_TAG_DEBUG_TOOL, "计算SIGN值"), //
                 // noAuth
-                new Api("login", "账号登录", false, Constants.API_TAG_COMMON, "账号登录接口",
+                new Api("userLogin", "账号登录", false, Constants.API_TAG_ACCOUNT, "账号登录接口",
                         new Param[]{
-                                new Param("username", false, "账号"), //
-                                new Param("password", false, "密码"), //
-                                //						new Param("login_code", false, "登录码（用户名密码与登录码二选一）"), //
-                                //						new Param("remark", false, "备注信息")//
+                                new Param("username", true, "账号"), //
+                                new Param("password", true, "密码"), //
+                        }), //
+                new Api("codeLogin", "登录码登录", false, Constants.API_TAG_CODE, "登录码登录接口",
+                        new Param[]{
+                                new Param("loginCode", true, "登录码"), //
                         }), //
 //                new Api("testNoToken", "测试非登录接口", false, Constants.API_TAG_COMMON, "测试noToken接口"), //
                 new Api("time", "获取服务器时间", false, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //

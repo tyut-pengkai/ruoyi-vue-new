@@ -17,6 +17,7 @@ import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.TokenService;
+import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,6 +41,8 @@ public class SysAppLoginService {
     private ISysUserService userService;
     @Resource
     private ISysAppService appService;
+
+    private ISysLoginCodeService loginCodeService;
     @Resource
     private ISysAppUserService appUserService;
     @Resource
@@ -180,16 +183,147 @@ public class SysAppLoginService {
     }
 
     /**
+     * App登录验证
+     *
+     * @param loginCodeStr 登录码
+     * @return 结果
+     */
+    public String appLogin(String loginCodeStr, SysApp app, SysAppVersion appVersion, String deviceCodeStr) {
+        // 用户验证
+        SysAppUser appUser = null;
+        SysDeviceCode deviceCode = null;
+        SysAppUserDeviceCode appUserDeviceCode = null;
+        String appName = app.getAppName();
+        String appVersionStr = appVersion.getVersionShow();
+        SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
+        try {
+            if (StringUtils.isNull(loginCode)) {
+                log.info("登录码：{} 不存在.", loginCodeStr);
+                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST, "登录码：" + loginCodeStr + " 不存在");
+            } /*else if (UserStatus.DELETED.getCode().equals(loginCode.getDelFlag())) {
+                log.info("登录码：{} 已被删除.", loginCodeStr);
+                throw new ApiException(ErrorCode.ERROR_LOGINCODE_NOT_EXIST, "登录码：" + loginCodeStr + " 已被删除");
+            }*/ else if (UserStatus.DISABLE.getCode().equals(loginCode.getStatus())) {
+                log.info("登录码：{} 已被停用.", loginCodeStr);
+                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_LOCKED, "登录码：" + loginCodeStr + " 已停用");
+            } else if (loginCode.getAppId() != app.getAppId()) {
+                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_APP_MISMATCH, "登录码：" + loginCodeStr + " 与软件：" + app.getAppName() + "不匹配");
+            }
+            appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(app.getAppId(), loginCodeStr);
+            if (appUser == null) { // 首次登录
+                appUser = new SysAppUser();
+                appUser.setAppId(app.getAppId());
+                appUser.setUserId(null);
+                appUser.setFreeBalance(BigDecimal.ZERO);
+                appUser.setLastLoginTime(null);
+                appUser.setLoginCode(loginCodeStr);
+                appUser.setLoginLimitM(-1);
+                appUser.setLoginLimitU(-1);
+                appUser.setLoginTimes(0L);
+                appUser.setPayBalance(BigDecimal.ZERO);
+                appUser.setPwdErrorTimes(0);
+                appUser.setStatus(UserConstants.NORMAL);
+                appUser.setTotalPay(BigDecimal.ZERO);
+                appUser.setUserName("<登录码用户>");
+                if (app.getBillType() == BillType.TIME) {
+                    appUser.setExpireTime(MyUtils.getNewExpiredTime(null, app.getFreeQuotaReg()));
+                    appUser.setExpireTime(MyUtils.getNewExpiredTime(appUser.getExpireTime(), loginCode.getQuota()));
+                    appUser.setPoint(null);
+                } else if (app.getBillType() == BillType.POINT) {
+                    appUser.setExpireTime(null);
+                    appUser.setPoint(MyUtils.getNewPoint(null, app.getFreeQuotaReg()));
+                    appUser.setPoint(MyUtils.getNewPoint(appUser.getPoint(), loginCode.getQuota()));
+                } else {
+                    throw new ApiException("软件计费方式有误");
+                }
+                appUserService.insertSysAppUser(appUser);
+            } else {
+                if (UserStatus.DISABLE.getCode().equals(appUser.getStatus())) {
+                    log.info("登录用户：{} 已被停用.", loginCodeStr);
+                    throw new ApiException(ErrorCode.ERROR_APPUSER_LOCKED, "用户：" + loginCodeStr + " 已停用");
+                }
+            }
+            // 自动绑定设备码
+            if (StringUtils.isNotBlank(deviceCodeStr)) {
+                deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCode(deviceCodeStr);
+                if (deviceCode == null) {
+                    deviceCode = new SysDeviceCode();
+                    deviceCode.setDeviceCode(deviceCodeStr);
+                    deviceCode.setLoginTimes(0L);
+                    deviceCode.setStatus(UserConstants.NORMAL);
+                    deviceCode.setCreateBy(null);
+                    deviceCodeService.insertSysDeviceCode(deviceCode);
+                } else {
+                    if (UserStatus.DISABLE.getCode().equals(deviceCode.getStatus())) {
+                        log.info("账号设备：{} 已被停用.", deviceCodeStr);
+                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "账号设备：" + deviceCodeStr + " 已停用");
+                    }
+                }
+                appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
+                if (appUserDeviceCode == null) {
+                    // 检查绑定限制
+                    if (app.getBindType() == BindType.ONE_TO_ONE) { // 账号与设备一对一
+                        validUtils.checkMoreMachine(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
+                        validUtils.checkMoreUser(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
+                    } else if (app.getBindType() == BindType.MANY_TO_ONE) { // 账号与设备多对一
+                        validUtils.checkMoreMachine(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
+                    } else if (app.getBindType() == BindType.ONE_TO_MANY) { // 账号与设备一对多
+                        validUtils.checkMoreUser(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
+                    }
+                    appUserDeviceCode = new SysAppUserDeviceCode();
+                    appUserDeviceCode.setAppUserId(appUser.getAppUserId());
+                    appUserDeviceCode.setCreateBy(null);
+                    appUserDeviceCode.setDeviceCodeId(deviceCode.getDeviceCodeId());
+                    appUserDeviceCode.setLoginTimes(0L);
+                    appUserDeviceCode.setStatus(UserConstants.NORMAL);
+                    appUserDeviceCodeService.insertSysAppUserDeviceCode(appUserDeviceCode);
+                } else {
+                    if (UserStatus.DISABLE.getCode().equals(appUserDeviceCode.getStatus())) {
+                        log.info("用户设备：{} 已被停用.", deviceCodeStr);
+                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCodeStr + " 已停用");
+                    }
+                }
+            }
+            // 检测账号是否过期或点数不足
+            validUtils.checkAppUserIsExpired(app, appUser);
+            // 检查用户数、设备数限制
+            validUtils.checkLoginLimit(app, appUser, deviceCode);
+        } catch (ApiException e) {
+            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, loginCodeStr, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage() + (e.getDetailMessage() != null ? "：" + e.getDetailMessage() : "")));
+            throw e;
+        } catch (Exception e) {
+            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, loginCodeStr, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage()));
+            throw e;
+        }
+        AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), loginCodeStr, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        LoginUser loginUser = new LoginUser();
+        loginUser.setIfApp(true);
+        loginUser.setUserId(null);
+        loginUser.setApp(app);
+        loginUser.setUser(null);
+        loginUser.setAppUser(appUser);
+        loginUser.setAppVersion(appVersion);
+        loginUser.setDeviceCode(deviceCode);
+        loginUser.setAppUserDeviceCode(appUserDeviceCode);
+
+        recordLoginInfo(loginUser);
+        // 生成token
+        return tokenService.createToken(loginUser);
+    }
+
+    /**
      * 记录登录信息
      */
-    public void recordLoginInfo(LoginUser loginUser) { // TODO
+    public void recordLoginInfo(LoginUser loginUser) {
         Date nowDate = DateUtils.getNowDate();
         // 账号信息
-        SysUser sysUser = new SysUser();
-        sysUser.setUserId(loginUser.getUserId());
-        sysUser.setLoginIp(IpUtils.getIpAddr(ServletUtils.getRequest()));
-        sysUser.setLoginDate(nowDate);
-        userService.updateUserProfile(sysUser);
+        if (loginUser.getUserId() != null) {
+            SysUser sysUser = new SysUser();
+            sysUser.setUserId(loginUser.getUserId());
+            sysUser.setLoginIp(IpUtils.getIpAddr(ServletUtils.getRequest()));
+            sysUser.setLoginDate(nowDate);
+            userService.updateUserProfile(sysUser);
+        }
         // 用户信息
         SysAppUser appUser = new SysAppUser();
         appUser.setAppUserId(loginUser.getAppUser().getAppUserId());
