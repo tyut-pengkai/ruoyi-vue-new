@@ -143,7 +143,7 @@ export default {
 
 .layui-footer {
   position: fixed;
-  left: 200px;
+  left: calc(200px - #{$base-sidebar-width});
   right: 0;
   bottom: 0;
   height: 32px;
@@ -152,5 +152,7 @@ export default {
   background-color: #eee;
   font-family: "Helvetica Neue";
   text-align: center;
+  z-index: 9;
+  transition: width 0.28s;
 }
 </style>

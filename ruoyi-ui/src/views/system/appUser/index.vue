@@ -246,7 +246,7 @@
         </el-table-column>
         <el-table-column label="免费余额" align="center" prop="freeBalance" />
         <el-table-column label="支付余额" align="center" prop="payBalance" />
-        <el-table-column label="总消费" align="center" prop="totalPay" />
+        <el-table-column label="总充值" align="center" prop="totalPay" />
 
         <el-table-column
           label="最后登录时间"
@@ -698,7 +698,7 @@ export default {
           { required: true, message: "支付余额不能为空", trigger: "blur" },
         ],
         totalPay: [
-          { required: true, message: "总消费不能为空", trigger: "blur" },
+          { required: true, message: "总充值不能为空", trigger: "blur" },
         ],
         expireTime: [
           { required: true, message: "过期时间不能为空", trigger: "blur" },

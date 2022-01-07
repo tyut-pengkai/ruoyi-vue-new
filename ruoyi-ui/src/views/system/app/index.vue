@@ -316,6 +316,7 @@
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
+        width="160px"
         fixed="right"
       >
         <template slot-scope="scope">

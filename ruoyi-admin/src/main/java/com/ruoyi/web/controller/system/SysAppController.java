@@ -77,6 +77,7 @@ public class SysAppController extends BaseController
         // 设置API加密
         List<Map<String, String>> enApiList = new ArrayList<>();
         Map<String, Api> apis = ApiDefine.apiMap;
+        apis.remove("calcSign");
         List<String> apiList = new ArrayList<>(apis.keySet());
         Collections.sort(apiList);
         for (String api : apiList) {
