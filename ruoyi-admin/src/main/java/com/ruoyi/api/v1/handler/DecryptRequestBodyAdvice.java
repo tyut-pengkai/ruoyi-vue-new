@@ -123,7 +123,7 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
                 EncrypType encrypTypeIn = app.getDataInEnc();
                 if (!(encode && encrypTypeIn != null && encrypTypeIn != EncrypType.NONE)) {
                     log.info("没有解密标识不进行解密!");
-                    return in;
+                    return IOUtils.toInputStream(inputData, "UTF-8");
                 }
 
                 // 开始解密

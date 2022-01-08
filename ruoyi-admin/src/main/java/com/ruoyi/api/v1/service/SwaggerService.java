@@ -80,7 +80,11 @@ public class SwaggerService {
             Map<String, Object> response200Obj = new HashMap<>();
             response200Obj.put("description", "请求完成");
             Map<String, Object> response200SchemaObj = new HashMap<>();
-            response200SchemaObj.put("$ref", "#/definitions/AjaxResult");
+            if (api.isCheckToken()) {
+                response200SchemaObj.put("$ref", "#/definitions/AjaxResultAuth");
+            } else {
+                response200SchemaObj.put("$ref", "#/definitions/AjaxResultNoAuth");
+            }
             response200Obj.put("schema", response200SchemaObj);
             responsesObj.put("200", response200Obj);
             postObj.put("responses", responsesObj);
@@ -154,23 +158,38 @@ public class SwaggerService {
         swagger.put("paths", pathsObj);
         Map<String, Object> definitionObj = new HashMap<>();
         definitionObj.put("type", "object");
-        Map<String, Object> propertiesObj = new HashMap<>();
+        Map<String, Object> resultPropertiesObj = new LinkedHashMap<>();
         Map<String, Object> codeObj = new HashMap<>();
         codeObj.put("type", "integer");
         codeObj.put("format", "int64");
-        propertiesObj.put("code", codeObj);
+        codeObj.put("description", "执行成功返回200，否则返回错误码");
+        resultPropertiesObj.put("code", codeObj);
         Map<String, Object> dataObj = new HashMap<>();
         dataObj.put("type", "string");
-        propertiesObj.put("data", dataObj);
+        dataObj.put("description", "执行结果，可能为字符串或json对象");
+        resultPropertiesObj.put("data", dataObj);
         Map<String, Object> msgObj = new HashMap<>();
         msgObj.put("type", "string");
-        propertiesObj.put("msg", msgObj);
+        msgObj.put("description", "结果说明");
+        resultPropertiesObj.put("msg", msgObj);
         Map<String, Object> timestampObj = new HashMap<>();
         timestampObj.put("type", "string");
-        propertiesObj.put("timestamp", timestampObj);
-        definitionObj.put("properties", propertiesObj);
+        timestampObj.put("description", "结果生成时间");
+        resultPropertiesObj.put("timestamp", timestampObj);
+
+        definitionObj.put("properties", resultPropertiesObj);
         definitionObj.put("title", "AjaxResult");
-        definitionsObj.put("AjaxResult", definitionObj);
+        definitionsObj.put("AjaxResultNoAuth", definitionObj);
+
+        Map<String, Object> definitionObjAuth = new HashMap<>(definitionObj);
+        Map<String, Object> resultPropertiesObjAuth = new LinkedHashMap<>(resultPropertiesObj);
+        Map<String, Object> vstrObj = new HashMap<>();
+        vstrObj.put("type", "string");
+        vstrObj.put("description", "用作标记或验证的冗余数据，与输入保持一致");
+        resultPropertiesObjAuth.put("vstr", vstrObj);
+        definitionObjAuth.put("properties", resultPropertiesObjAuth);
+        definitionsObj.put("AjaxResultAuth", definitionObjAuth);
+
         swagger.put("definitions", definitionsObj);
         return swagger;
     }
