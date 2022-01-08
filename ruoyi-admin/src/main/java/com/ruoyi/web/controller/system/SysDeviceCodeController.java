@@ -70,6 +70,7 @@ public class SysDeviceCodeController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody SysDeviceCode sysDeviceCode)
     {
+        sysDeviceCode.setCreateBy(getUsername());
         return toAjax(sysDeviceCodeService.insertSysDeviceCode(sysDeviceCode));
     }
 
@@ -81,6 +82,7 @@ public class SysDeviceCodeController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody SysDeviceCode sysDeviceCode)
     {
+        sysDeviceCode.setUpdateBy(getUsername());
         return toAjax(sysDeviceCodeService.updateSysDeviceCode(sysDeviceCode));
     }
 

@@ -3,6 +3,7 @@ package com.ruoyi.api.v1.controller;
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.api.v1.anno.Encrypt;
 import com.ruoyi.api.v1.domain.SwaggerVo;
+import com.ruoyi.api.v1.domain.vo.SysAppVersionVo;
 import com.ruoyi.api.v1.service.SwaggerService;
 import com.ruoyi.api.v1.service.SysAppLoginService;
 import com.ruoyi.api.v1.utils.ValidUtils;
@@ -121,7 +122,8 @@ public class ApiV1Controller extends BaseController {
             case "time":
                 return DateUtils.getTime();
             case "latestVersion":
-                return appVersionService.selectLatestVersionByAppId(app.getAppId());
+                SysAppVersion sysAppVersion = appVersionService.selectLatestVersionByAppId(app.getAppId());
+                return new SysAppVersionVo(sysAppVersion);
         }
         return AjaxResult.error();
     }

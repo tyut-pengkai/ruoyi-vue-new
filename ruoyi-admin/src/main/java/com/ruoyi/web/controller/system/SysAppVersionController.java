@@ -73,6 +73,7 @@ public class SysAppVersionController extends BaseController {
     @Log(title = "软件版本信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysAppVersion sysAppVersion) {
+        sysAppVersion.setCreateBy(getUsername());
         return toAjax(sysAppVersionService.insertSysAppVersion(sysAppVersion));
     }
 
@@ -83,6 +84,7 @@ public class SysAppVersionController extends BaseController {
     @Log(title = "软件版本信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAppVersion sysAppVersion) {
+        sysAppVersion.setUpdateBy(getUsername());
         return toAjax(sysAppVersionService.updateSysAppVersion(sysAppVersion));
     }
 

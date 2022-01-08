@@ -75,8 +75,7 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService
     @Override
     public SysUserOnline loginUserToUserOnline(LoginUser user)
     {
-        if (StringUtils.isNull(user) || StringUtils.isNull(user.getUser()))
-        {
+        if (StringUtils.isNull(user) || (!user.getIfApp() && StringUtils.isNull(user.getUser()))) {
             return null;
         }
         SysUserOnline sysUserOnline = new SysUserOnline();
@@ -95,7 +94,7 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService
                 sysUserOnline.setDeviceCode(user.getDeviceCode().getDeviceCode());
             }
         }
-        if (StringUtils.isNotNull(user.getUser().getDept())) {
+        if (user.getUser() != null && StringUtils.isNotNull(user.getUser().getDept())) {
             sysUserOnline.setDeptName(user.getUser().getDept().getDeptName());
         }
 

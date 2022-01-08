@@ -65,6 +65,7 @@ public class SysAppLogininforController extends BaseController {
     @Log(title = "系统访问记录", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysAppLogininfor sysAppLogininfor) {
+        sysAppLogininfor.setCreateBy(getUsername());
         return toAjax(sysAppLogininforService.insertSysAppLogininfor(sysAppLogininfor));
     }
 
@@ -75,6 +76,7 @@ public class SysAppLogininforController extends BaseController {
     @Log(title = "系统访问记录", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAppLogininfor sysAppLogininfor) {
+        sysAppLogininfor.setUpdateBy(getUsername());
         return toAjax(sysAppLogininforService.updateSysAppLogininfor(sysAppLogininfor));
     }
 

@@ -20,12 +20,12 @@ import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -34,14 +34,10 @@ public class SysAppLoginService {
     @Resource
     private TokenService tokenService;
     @Resource
-    private AuthenticationManager authenticationManager;
-    @Resource
     private RedisCache redisCache;
     @Resource
     private ISysUserService userService;
     @Resource
-    private ISysAppService appService;
-
     private ISysLoginCodeService loginCodeService;
     @Resource
     private ISysAppUserService appUserService;
@@ -196,6 +192,7 @@ public class SysAppLoginService {
         String appName = app.getAppName();
         String appVersionStr = appVersion.getVersionShow();
         SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
+        String loginCodeShow = "<登录码>" + loginCodeStr;
         try {
             if (StringUtils.isNull(loginCode)) {
                 log.info("登录码：{} 不存在.", loginCodeStr);
@@ -206,7 +203,11 @@ public class SysAppLoginService {
             }*/ else if (UserStatus.DISABLE.getCode().equals(loginCode.getStatus())) {
                 log.info("登录码：{} 已被停用.", loginCodeStr);
                 throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_LOCKED, "登录码：" + loginCodeStr + " 已停用");
-            } else if (loginCode.getAppId() != app.getAppId()) {
+            } else if (loginCode.getExpireTime().before(DateUtils.getNowDate())) {
+                String expiredTime = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, loginCode.getExpireTime());
+                log.info("登录码：{} 有效期至：{}，现已过期", loginCodeStr, expiredTime);
+                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_EXPIRED, "登录码：" + loginCodeStr + " 有效期至：" + expiredTime + "，现已过期");
+            } else if (!Objects.equals(loginCode.getAppId(), app.getAppId())) {
                 throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_APP_MISMATCH, "登录码：" + loginCodeStr + " 与软件：" + app.getAppName() + "不匹配");
             }
             appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(app.getAppId(), loginCodeStr);
@@ -224,7 +225,7 @@ public class SysAppLoginService {
                 appUser.setPwdErrorTimes(0);
                 appUser.setStatus(UserConstants.NORMAL);
                 appUser.setTotalPay(BigDecimal.ZERO);
-                appUser.setUserName("<登录码>" + loginCodeStr);
+                appUser.setUserName(loginCodeShow);
                 if (app.getBillType() == BillType.TIME) {
                     appUser.setExpireTime(MyUtils.getNewExpiredTime(null, app.getFreeQuotaReg()));
                     appUser.setExpireTime(MyUtils.getNewExpiredTime(appUser.getExpireTime(), loginCode.getQuota()));
@@ -242,6 +243,7 @@ public class SysAppLoginService {
                     log.info("登录用户：{} 已被停用.", loginCodeStr);
                     throw new ApiException(ErrorCode.ERROR_APPUSER_LOCKED, "用户：" + loginCodeStr + " 已停用");
                 }
+                appUser.setUserName(loginCodeShow);
             }
             // 自动绑定设备码
             if (StringUtils.isNotBlank(deviceCodeStr)) {
@@ -289,13 +291,13 @@ public class SysAppLoginService {
             // 检查用户数、设备数限制
             validUtils.checkLoginLimit(app, appUser, deviceCode);
         } catch (ApiException e) {
-            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, loginCodeStr, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage() + (e.getDetailMessage() != null ? "：" + e.getDetailMessage() : "")));
+            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage() + (e.getDetailMessage() != null ? "：" + e.getDetailMessage() : "")));
             throw e;
         } catch (Exception e) {
-            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, loginCodeStr, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage()));
+            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage()));
             throw e;
         }
-        AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), loginCodeStr, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
         LoginUser loginUser = new LoginUser();
         loginUser.setIfApp(true);
         loginUser.setUserId(null);
