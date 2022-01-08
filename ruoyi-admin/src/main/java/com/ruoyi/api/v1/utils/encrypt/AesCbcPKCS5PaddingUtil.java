@@ -10,6 +10,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -19,7 +20,7 @@ public class AesCbcPKCS5PaddingUtil {
     private final static String AES_ALGORITHM = "AES";//算法名字
     private final static String AES_TRANSFORMATION = "AES/CBC/PKCS5Padding";//算法/模式/填充
     private final static String AES_STRING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLOP";
-    private final static Charset UTF_8 = Charset.forName("UTF-8");//编码格式
+    private final static Charset UTF_8 = StandardCharsets.UTF_8;//编码格式
 
     /**
      * 使用AES加密

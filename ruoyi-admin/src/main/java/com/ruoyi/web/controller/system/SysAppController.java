@@ -10,6 +10,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.enums.EncrypType;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -107,11 +108,15 @@ public class SysAppController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:app:add')")
     @Log(title = "软件管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody SysApp sysApp)
-    {
-        if (UserConstants.NOT_UNIQUE.equals(sysAppService.checkAppNameUnique(sysApp.getAppName(), null)))
-        {
+    public AjaxResult add(@RequestBody SysApp sysApp) {
+        if (UserConstants.NOT_UNIQUE.equals(sysAppService.checkAppNameUnique(sysApp.getAppName(), null))) {
             return AjaxResult.error("新增软件'" + sysApp.getAppName() + "'失败，软件名称已存在");
+        }
+        if (sysApp.getDataInEnc() != null && sysApp.getDataInEnc() != EncrypType.NONE && StringUtils.isBlank(sysApp.getDataInPwd())) {
+            return AjaxResult.error("新增软件'" + sysApp.getAppName() + "'失败，您设置了数据输入加密，但是未提供加密密码");
+        }
+        if (sysApp.getDataOutEnc() != null && sysApp.getDataOutEnc() != EncrypType.NONE && StringUtils.isBlank(sysApp.getDataOutPwd())) {
+            return AjaxResult.error("新增软件'" + sysApp.getAppName() + "'失败，您设置了数据输出加密，但是未提供加密密码");
         }
         sysApp.setCreateBy(getUsername());
         sysApp.setCreateTime(DateUtils.getNowDate());
@@ -128,11 +133,15 @@ public class SysAppController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:app:edit')")
     @Log(title = "软件管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody SysApp sysApp)
-    {
-        if (UserConstants.NOT_UNIQUE.equals(sysAppService.checkAppNameUnique(sysApp.getAppName(), sysApp.getAppId())))
-        {
+    public AjaxResult edit(@RequestBody SysApp sysApp) {
+        if (UserConstants.NOT_UNIQUE.equals(sysAppService.checkAppNameUnique(sysApp.getAppName(), sysApp.getAppId()))) {
             return AjaxResult.error("修改软件'" + sysApp.getAppName() + "'失败，软件名称已存在");
+        }
+        if (sysApp.getDataInEnc() != null && sysApp.getDataInEnc() != EncrypType.NONE && StringUtils.isBlank(sysApp.getDataInPwd())) {
+            return AjaxResult.error("修改软件'" + sysApp.getAppName() + "'失败，您设置了数据输入加密，但是未提供加密密码");
+        }
+        if (sysApp.getDataOutEnc() != null && sysApp.getDataOutEnc() != EncrypType.NONE && StringUtils.isBlank(sysApp.getDataOutPwd())) {
+            return AjaxResult.error("修改软件'" + sysApp.getAppName() + "'失败，您设置了数据输出加密，但是未提供加密密码");
         }
         sysApp.setUpdateBy(getUsername());
         return toAjax(sysAppService.updateSysApp(sysApp));

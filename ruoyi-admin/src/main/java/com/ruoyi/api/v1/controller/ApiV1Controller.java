@@ -171,6 +171,8 @@ public class ApiV1Controller extends BaseController {
         switch (api) {
             case "testToken":
                 return params;
+            case "times":
+                return DateUtils.getTime();
             case "logout":
                 LoginUser loginUser = getLoginUser();
                 return loginService.appLogout(loginUser);

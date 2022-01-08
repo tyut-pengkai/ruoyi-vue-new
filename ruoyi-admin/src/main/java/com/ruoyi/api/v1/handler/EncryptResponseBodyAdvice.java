@@ -87,15 +87,11 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 		SysApp app = appService.selectSysAppByAppKey(appkey);
 		// 检查软件是否可用（软件存在且正常开放）
 		validUtils.apiCheckApp(appkey, app);
-		String flagStr = ""; // 是否为字符串标记
-		if (body instanceof String) {
-			flagStr = Constants.PREFIX_TYPE;
-		}
 		// 是否加密
 		EncrypType encrypTypeOut = app.getDataOutEnc();
 		if (!(encode && encrypTypeOut != null && encrypTypeOut != EncrypType.NONE)) {
 			log.info("没有加密标识不进行加密!");
-			return flagStr + body;
+			return body instanceof String ? Constants.PREFIX_TYPE + body : body;
 		}
 		log.info("对字符串开始加密!");
 		String result = JSON.toJSONString(body);
@@ -115,10 +111,10 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 				encryptType = new EncryptBase64();
 			}
 //			String outputData = RSAUtils.encryptedDataOnJava(result, Constants.publicKey);
-			String outputData = flagStr + encryptType.encrypt(result, app.getDataOutPwd());
+			String outputData = encryptType.encrypt(result, app.getDataOutPwd());
 			log.info("加密内容：" + outputData);
 			log.info("操作结束!");
-			return outputData;
+			return body instanceof String ? Constants.PREFIX_TYPE + outputData : outputData;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ApiException(ErrorCode.ERROR_RESPONSE_ENCRYPT_EXCEPTION);

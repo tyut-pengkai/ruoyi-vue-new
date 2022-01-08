@@ -70,8 +70,9 @@ public class ApiDefine {
                 new Api("latestVersion", "获取软件最新版本", false, Constants.API_TAG_COMMON, "获取软件最新版本"), //
 
                 // Auth
-//                new Api("testToken", "测试登录接口", true, Constants.API_TAG_COMMON, "测试token接口"), //
+                new Api("testToken", "测试登录接口", true, Constants.API_TAG_COMMON, "测试token接口"), //
                 new Api("logout", "注销登录", true, Constants.API_TAG_COMMON, "注销登录接口"), //
+                new Api("times", "", true, Constants.API_TAG_COMMON, ""), //
         };
         for (Api api : apis) {
             apiMap.put(api.getApi(), api);

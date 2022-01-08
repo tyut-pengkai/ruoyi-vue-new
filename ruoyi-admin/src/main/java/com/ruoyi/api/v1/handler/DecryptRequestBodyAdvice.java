@@ -1,6 +1,5 @@
 package com.ruoyi.api.v1.handler;
 
-import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.api.v1.anno.Encrypt;
 import com.ruoyi.api.v1.encrypt.IEncryptType;
 import com.ruoyi.api.v1.encrypt.impl.EncryptAesCbcNoP;
@@ -110,10 +109,11 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
                 throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "请求体内容为空");
             }
             // 获取 params 加密串
-            JSONObject jsonObject = JSONObject.parseObject(bodyStr);
-//            Object object = jsonObject.get("params");
-//            String inputData = object == null ? "" : object.toString();
-            String inputData = jsonObject.toJSONString();
+//            JSONObject jsonObject = JSONObject.parseObject(bodyStr);
+////            Object object = jsonObject.get("params");
+////            String inputData = object == null ? "" : object.toString();
+//            String inputData = jsonObject.toJSONString();
+            String inputData = bodyStr;
 
             // 验证是否为空
             if (StringUtils.isBlank(inputData)) {
@@ -123,7 +123,7 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
                 EncrypType encrypTypeIn = app.getDataInEnc();
                 if (!(encode && encrypTypeIn != null && encrypTypeIn != EncrypType.NONE)) {
                     log.info("没有解密标识不进行解密!");
-                    return IOUtils.toInputStream(inputData, "UTF-8");
+                    return in;
                 }
 
                 // 开始解密
