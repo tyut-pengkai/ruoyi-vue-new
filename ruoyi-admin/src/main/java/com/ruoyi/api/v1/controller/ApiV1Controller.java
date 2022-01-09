@@ -2,6 +2,7 @@ package com.ruoyi.api.v1.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.api.v1.anno.Encrypt;
+import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.SwaggerVo;
 import com.ruoyi.api.v1.domain.vo.SysAppVersionVo;
 import com.ruoyi.api.v1.service.SwaggerService;
@@ -12,6 +13,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
+import com.ruoyi.common.core.domain.entity.SysDeviceCode;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AuthType;
@@ -30,6 +32,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -100,9 +104,9 @@ public class ApiV1Controller extends BaseController {
         String deviceCode = params.get("dev_code");
 
         switch (api) {
-            case "testNoToken":
+            case "testNoToken.a":
                 return params;
-            case "userLogin":
+            case "login.u":
                 if (app.getAuthType() == AuthType.ACCOUNT) { // by account
                     String username = params.get("username");
                     String password = params.get("password");
@@ -111,7 +115,7 @@ public class ApiV1Controller extends BaseController {
                 } else {
                     throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
                 }
-            case "codeLogin":
+            case "login.c":
                 if (app.getAuthType() == AuthType.LOGIN_CODE) { // by login code
                     String loginCode = params.get("login_code");
                     // 调用登录接口
@@ -119,11 +123,23 @@ public class ApiV1Controller extends BaseController {
                 } else {
                     throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
                 }
-            case "time":
+            case "time.a":
                 return DateUtils.getTime();
-            case "latestVersion":
+            case "latestVersion.a":
                 SysAppVersion sysAppVersion = appVersionService.selectLatestVersionByAppId(app.getAppId());
                 return new SysAppVersionVo(sysAppVersion);
+            default:
+                Class<?> clazz = null;
+                try {
+                    clazz = Class.forName("com.ruoyi.api.v1.api.ApiTime");
+                    Constructor<?> ct = null;
+                    ct = clazz.getDeclaredConstructor(SysApp.class, SysAppVersion.class, SysDeviceCode.class);
+                    Object obj = ct.newInstance(app, appVersion, null);
+                    Function func = (Function) obj;
+                    return func.run();
+                } catch (NoSuchMethodException | ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
         }
         return AjaxResult.error();
     }
@@ -171,11 +187,11 @@ public class ApiV1Controller extends BaseController {
         }
 
         switch (api) {
-            case "testToken":
+            case "testToken.a":
                 return params;
-            case "times":
+            case "times.a":
                 return DateUtils.getTime();
-            case "logout":
+            case "logout.a":
                 LoginUser loginUser = getLoginUser();
                 return loginService.appLogout(loginUser);
         }

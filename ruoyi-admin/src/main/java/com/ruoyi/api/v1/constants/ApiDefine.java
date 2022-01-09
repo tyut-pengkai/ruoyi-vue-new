@@ -56,23 +56,25 @@ public class ApiDefine {
                 new Api("calcSign", "计算SIGN值", false, Constants.API_TAG_DEBUG_TOOL, "计算SIGN值"), //
                 // noAuth
 //                new Api("testNoToken", "测试非登录接口", false, Constants.API_TAG_COMMON, "测试noToken接口"), //
-                new Api("userLogin", "账号登录", false, Constants.API_TAG_ACCOUNT, "账号登录接口",
+                new Api("login.u", "账号登录", false, Constants.API_TAG_ACCOUNT, "账号登录接口",
                         new Param[]{
                                 new Param("username", true, "账号"), //
                                 new Param("password", true, "密码"), //
                         }), //
-                new Api("codeLogin", "登录码登录", false, Constants.API_TAG_CODE, "登录码登录接口",
+                new Api("login.c", "登录码登录", false, Constants.API_TAG_CODE, "登录码登录接口",
                         new Param[]{
                                 new Param("login_code", true, "登录码"), //
                         }), //
 
-                new Api("time", "获取服务器时间", false, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //
-                new Api("latestVersion", "获取软件最新版本", false, Constants.API_TAG_COMMON, "获取软件最新版本"), //
+                new Api("time.a", "获取服务器时间", false, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //
+                new Api("timetime.a", "获取服务器时间", false, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //
+                new Api("latestVersion.a", "获取软件最新版本", false, Constants.API_TAG_COMMON, "获取软件最新版本"), //
 
                 // Auth
-                new Api("testToken", "测试登录接口", true, Constants.API_TAG_COMMON, "测试token接口"), //
-                new Api("logout", "注销登录", true, Constants.API_TAG_COMMON, "注销登录接口"), //
-                new Api("times", "", true, Constants.API_TAG_COMMON, ""), //
+//                new Api("testToken", "测试登录接口", true, Constants.API_TAG_COMMON, "测试token接口"), //
+//                new Api("times", "", true, Constants.API_TAG_COMMON, ""), //
+                new Api("logout.a", "注销登录", true, Constants.API_TAG_COMMON, "注销登录接口"), //
+
         };
         for (Api api : apis) {
             apiMap.put(api.getApi(), api);
