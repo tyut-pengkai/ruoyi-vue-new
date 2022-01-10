@@ -17,7 +17,7 @@ public class Constants {
     public static String API_TAG_CODE_TIME = "登录码计时API";
     public static String API_TAG_CODE_POINT = "登录码计点API";
     public static String API_TAG_GENERAL = "通用API";
-    public static String API_TAG_DEBUG_TOOL = "调试工具";
+    public static String API_TAG_DEV_TOOL = "开发工具";
     public static String[] API_TAG_ACCOUNT = new String[]{
             API_TAG_ACCOUNT_TIME,
             API_TAG_ACCOUNT_POINT

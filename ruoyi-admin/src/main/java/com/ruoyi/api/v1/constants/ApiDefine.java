@@ -1,9 +1,11 @@
 package com.ruoyi.api.v1.constants;
 
+import com.alibaba.fastjson.JSON;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.utils.MyUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class ApiDefine {
 
     public static String BASE_PACKAGE = "com.ruoyi.api.v1.api";
@@ -58,37 +61,26 @@ public class ApiDefine {
     }
 
     static {
-
         List<Class<?>> classList = MyUtils.getClassesFromPackage(BASE_PACKAGE);
-
-//        Api[] apis = new Api[]{ //
-//                // 调试工具
-//                new Api("calcSign", "计算SIGN值", false, Constants.API_TAG_DEBUG_TOOL, "计算SIGN值"), //
-//                // noAuth
-////                new Api("testNoToken", "测试非登录接口", false, Constants.API_TAG_COMMON, "测试noToken接口"), //
-//                new Api("login.u", "账号登录", false, Constants.API_TAG_ACCOUNT, "账号登录接口",
-//                        new Param[]{
-//                                new Param("username", true, "账号"), //
-//                                new Param("password", true, "密码"), //
-//                        }), //
-//                new Api("login.c", "登录码登录", false, Constants.API_TAG_CODE, "登录码登录接口",
-//                        new Param[]{
-//                                new Param("login_code", true, "登录码"), //
-//                        }), //
-//
-//                new Api("time.a", "获取服务器时间", false, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //
-//                new Api("timetime.a", "获取服务器时间", false, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //
-//                new Api("latestVersion.a", "获取软件最新版本", false, Constants.API_TAG_COMMON, "获取软件最新版本"), //
-//
-//                // Auth
-////                new Api("testToken", "测试登录接口", true, Constants.API_TAG_COMMON, "测试token接口"), //
-////                new Api("times", "", true, Constants.API_TAG_COMMON, ""), //
-//                new Api("logout.a", "注销登录", true, Constants.API_TAG_COMMON, "注销登录接口"), //
-//
-//        };
-//        for (Api api : apis) {
-//            apiMap.put(api.getApi(), api);
-//        }
+        Api[] apis = new Api[]{ //
+                // 调试工具
+                new Api("calcSign", "计算SIGN值", false, Constants.API_TAG_DEV_TOOL, "计算SIGN值"), //
+                // noAuth
+                new Api("login.nu", "账号登录", false, Constants.API_TAG_ACCOUNT, "账号登录接口",
+                        new Param[]{
+                                new Param("username", true, "账号"), //
+                                new Param("password", true, "密码"), //
+                        }), //
+                new Api("login.nc", "登录码登录", false, Constants.API_TAG_CODE, "登录码登录接口",
+                        new Param[]{
+                                new Param("login_code", true, "登录码"), //
+                        }), //
+                // Auth
+                new Api("logout.ag", "注销登录", true, Constants.API_TAG_GENERAL, "注销登录接口"), //
+        };
+        for (Api api : apis) {
+            apiMap.put(api.getApi(), api);
+        }
         for (Class<?> clazz : classList) {
             try {
                 Constructor<?> ct = clazz.getDeclaredConstructor();
@@ -101,5 +93,8 @@ public class ApiDefine {
                 e.printStackTrace();
             }
         }
+        log.info("总共加载API接口 {} 个，详情如下：", apiMap.size());
+        log.info(JSON.toJSONString(apiMap.keySet()));
+        log.debug(JSON.toJSONString(apiMap));
     }
 }

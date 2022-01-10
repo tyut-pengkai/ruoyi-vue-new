@@ -5,7 +5,6 @@ import com.ruoyi.api.v1.anno.Encrypt;
 import com.ruoyi.api.v1.constants.ApiDefine;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.SwaggerVo;
-import com.ruoyi.api.v1.domain.vo.SysAppVersionVo;
 import com.ruoyi.api.v1.service.SwaggerService;
 import com.ruoyi.api.v1.service.SysAppLoginService;
 import com.ruoyi.api.v1.utils.ValidUtils;
@@ -18,7 +17,6 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppVersionService;
@@ -101,8 +99,7 @@ public class ApiV1Controller extends BaseController {
         String deviceCode = params.get("dev_code");
 
         switch (api) {
-
-            case "login.nug":
+            case "login.nu":
                 if (app.getAuthType() == AuthType.ACCOUNT) { // by account
                     String username = params.get("username");
                     String password = params.get("password");
@@ -111,7 +108,7 @@ public class ApiV1Controller extends BaseController {
                 } else {
                     throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
                 }
-            case "login.ncg":
+            case "login.nc":
                 if (app.getAuthType() == AuthType.LOGIN_CODE) { // by login code
                     String loginCode = params.get("login_code");
                     // 调用登录接口
@@ -119,17 +116,11 @@ public class ApiV1Controller extends BaseController {
                 } else {
                     throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
                 }
-            case "time.ngg":
-                return DateUtils.getTime();
-            case "latestVersion.ngg":
-                SysAppVersion sysAppVersion = appVersionService.selectLatestVersionByAppId(app.getAppId());
-                return new SysAppVersionVo(sysAppVersion);
-            case "testNoToken.ngg":
-                return params;
             default:
                 Function function = ApiDefine.functionMap.get(api);
                 function.setApp(app);
                 function.setAppVersion(appVersion);
+                function.setParams(params);
                 return function.handle();
         }
     }
@@ -175,19 +166,14 @@ public class ApiV1Controller extends BaseController {
             throw new ApiException(ErrorCode.ERROR_APPKEY_OR_APPSECRET_ERROR);
         }
 
-        switch (api) {
-            case "logout.agg":
-                LoginUser loginUser = getLoginUser();
-                return loginService.appLogout(loginUser);
-            case "testToken.agg":
-                return params;
-            case "times.agg":
-                return DateUtils.getTime();
-            default:
-                Function function = ApiDefine.functionMap.get(api);
-                function.setApp(app);
-                function.setAppVersion(appVersion);
-                return function.handle();
+        if ("logout.ag".equals(api)) {
+            LoginUser loginUser = getLoginUser();
+            return loginService.appLogout(loginUser);
+        } else {
+            Function function = ApiDefine.functionMap.get(api);
+            function.setApp(app);
+            function.setAppVersion(appVersion);
+            return function.handle();
         }
     }
 }
