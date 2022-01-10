@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -27,8 +28,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author ZwGu
@@ -40,24 +43,27 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 	private ISysAppService appService;
 
 	@Override
-	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> aClass) {
+	public boolean supports(MethodParameter returnType, @Nullable Class<? extends HttpMessageConverter<?>> aClass) {
 		// 如果接口返回的类型本身就是RestResponse那就没有必要进行额外的操作，返回false
 		return !returnType.getGenericParameterType().equals(AjaxResult.class) && !returnType.getGenericParameterType().equals(SwaggerVo.class);
 	}
 
 	@Override
-	public Object beforeBodyWrite(Object data, MethodParameter returnType, MediaType mediaType,
-								  Class<? extends HttpMessageConverter<?>> aClass, ServerHttpRequest request, ServerHttpResponse response) {
+	@SuppressWarnings("unchecked")
+	public Object beforeBodyWrite(@Nullable Object data, @Nullable MethodParameter returnType, @Nullable MediaType mediaType,
+								  @Nullable Class<? extends HttpMessageConverter<?>> aClass, @Nullable ServerHttpRequest request, @Nullable ServerHttpResponse response) {
 		// 获取vstr
 		Object vstr = null;
 		try {
 			// 获取appkey
 			ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			assert servletRequestAttributes != null;
 			HttpServletRequest req = servletRequestAttributes.getRequest();
 			Map<String, String> map = (Map) req.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 			String appkey = map.get("appkey");
 			SysApp app = appService.selectSysAppByAppKey(appkey);
-			String inputData = IOUtils.toString(request.getBody(), "UTF-8");
+			assert request != null;
+			String inputData = IOUtils.toString(request.getBody(), StandardCharsets.UTF_8);
 			// 是否解密
 			EncrypType encrypTypeIn = app.getDataInEnc();
 			if (encrypTypeIn != null && encrypTypeIn != EncrypType.NONE) {
@@ -72,18 +78,20 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 				} else if (encrypTypeIn == EncrypType.BASE64) {
 					encryptType = new EncryptBase64();
 				}
+				assert encryptType != null;
 				inputData = encryptType.decrypt(inputData, app.getDataInPwd());
 			}
 			// 转化为MAP
-			Map paramMap = JSON.parseObject(inputData, HashMap.class);
+			HashMap paramMap = JSON.parseObject(inputData, HashMap.class);
 			vstr = paramMap.get("vstr");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		// 将原本的数据包装在RestResponse里
-		AjaxResult result = AjaxResult.success().put("data", handleResult(data)).put("timestamp", DateUtils.getNowDate().getTime()).put("vstr", vstr);
+		AjaxResult result = Objects.requireNonNull(Objects.requireNonNull(AjaxResult.success().put("data", handleResult(data))).put("timestamp", DateUtils.getNowDate().getTime())).put("vstr", vstr);
 		// String类型不能直接包装，所以要进行些特别的处理
+		assert returnType != null;
 		if (returnType.getGenericParameterType().equals(String.class) || (data instanceof String && data.toString().startsWith(Constants.PREFIX_TYPE))) {
 			// 将数据包装在RestResponse里后，再转换为json字符串响应给前端
 			return JSON.toJSONString(result);
