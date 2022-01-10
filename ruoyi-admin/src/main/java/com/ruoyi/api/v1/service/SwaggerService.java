@@ -94,7 +94,7 @@ public class SwaggerService {
                 pathsObj.put("/api/v1/{appkey}/auth?" + api.getApi(), pathObj);
             } else {
                 if (api.getApi().equals("calcSign")) {
-                    pathsObj.put("/api/v1/debug/{appkey}/calcSign", pathObj);
+                    pathsObj.put("/api/v1/devTool/{appkey}/calcSign", pathObj);
                 } else {
                     pathsObj.put("/api/v1/{appkey}/noAuth?" + api.getApi(), pathObj);
                 }
