@@ -17,35 +17,12 @@ public abstract class Function {
     //登录码登录
     private SysLoginCode loginCode;
 
-//    public Function() {
-//        init();
-//    }
-
-    public Function(SysApp app, SysAppVersion appVersion, SysDeviceCode deviceCode) {
+    public Function() {
         init();
-        this.app = app;
-        this.appVersion = appVersion;
-        this.deviceCode = deviceCode;
-    }
-
-    public Function(SysApp app, SysAppVersion appVersion, SysDeviceCode deviceCode, SysUser user) {
-        init();
-        this.app = app;
-        this.appVersion = appVersion;
-        this.deviceCode = deviceCode;
-        this.user = user;
-    }
-
-    public Function(SysApp app, SysAppVersion appVersion, SysDeviceCode deviceCode, SysLoginCode loginCode) {
-        init();
-        this.app = app;
-        this.appVersion = appVersion;
-        this.deviceCode = deviceCode;
-        this.loginCode = loginCode;
     }
 
     public abstract void init();
 
-    public abstract Object run();
+    public abstract Object handle();
 
 }

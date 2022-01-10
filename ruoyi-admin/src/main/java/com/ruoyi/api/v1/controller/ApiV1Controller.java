@@ -2,6 +2,7 @@ package com.ruoyi.api.v1.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.api.v1.anno.Encrypt;
+import com.ruoyi.api.v1.constants.ApiDefine;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.SwaggerVo;
 import com.ruoyi.api.v1.domain.vo.SysAppVersionVo;
@@ -10,10 +11,8 @@ import com.ruoyi.api.v1.service.SysAppLoginService;
 import com.ruoyi.api.v1.utils.ValidUtils;
 import com.ruoyi.api.v1.utils.encrypt.AesCbcZeroPaddingUtil;
 import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
-import com.ruoyi.common.core.domain.entity.SysDeviceCode;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AuthType;
@@ -32,8 +31,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -104,9 +101,8 @@ public class ApiV1Controller extends BaseController {
         String deviceCode = params.get("dev_code");
 
         switch (api) {
-            case "testNoToken.a":
-                return params;
-            case "login.u":
+
+            case "login.nug":
                 if (app.getAuthType() == AuthType.ACCOUNT) { // by account
                     String username = params.get("username");
                     String password = params.get("password");
@@ -115,7 +111,7 @@ public class ApiV1Controller extends BaseController {
                 } else {
                     throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
                 }
-            case "login.c":
+            case "login.ncg":
                 if (app.getAuthType() == AuthType.LOGIN_CODE) { // by login code
                     String loginCode = params.get("login_code");
                     // 调用登录接口
@@ -123,27 +119,20 @@ public class ApiV1Controller extends BaseController {
                 } else {
                     throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
                 }
-            case "time.a":
+            case "time.ngg":
                 return DateUtils.getTime();
-            case "latestVersion.a":
+            case "latestVersion.ngg":
                 SysAppVersion sysAppVersion = appVersionService.selectLatestVersionByAppId(app.getAppId());
                 return new SysAppVersionVo(sysAppVersion);
+            case "testNoToken.ngg":
+                return params;
             default:
-                Class<?> clazz = null;
-                try {
-                    clazz = Class.forName("com.ruoyi.api.v1.api.ApiTime");
-                    Constructor<?> ct = null;
-                    ct = clazz.getDeclaredConstructor(SysApp.class, SysAppVersion.class, SysDeviceCode.class);
-                    Object obj = ct.newInstance(app, appVersion, null);
-                    Function func = (Function) obj;
-                    return func.run();
-                } catch (NoSuchMethodException | ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+                Function function = ApiDefine.functionMap.get(api);
+                function.setApp(app);
+                function.setAppVersion(appVersion);
+                return function.handle();
         }
-        return AjaxResult.error();
     }
-
 
     @Encrypt(in = true, out = true)
     @PostMapping("/{appkey}/auth")
@@ -187,15 +176,18 @@ public class ApiV1Controller extends BaseController {
         }
 
         switch (api) {
-            case "testToken.a":
-                return params;
-            case "times.a":
-                return DateUtils.getTime();
-            case "logout.a":
+            case "logout.agg":
                 LoginUser loginUser = getLoginUser();
                 return loginService.appLogout(loginUser);
+            case "testToken.agg":
+                return params;
+            case "times.agg":
+                return DateUtils.getTime();
+            default:
+                Function function = ApiDefine.functionMap.get(api);
+                function.setApp(app);
+                function.setAppVersion(appVersion);
+                return function.handle();
         }
-        return AjaxResult.error();
     }
-
 }

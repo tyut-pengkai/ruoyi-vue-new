@@ -1,14 +1,20 @@
 package com.ruoyi.api.v1.constants;
 
 import com.ruoyi.api.v1.domain.Api;
+import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.api.v1.utils.MyUtils;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ApiDefine {
+
+    public static String BASE_PACKAGE = "com.ruoyi.api.v1.api";
     public static List<Param> publicParamsAuth = new ArrayList<>();
     public static List<Param> publicParamsNoAuth = new ArrayList<>();
     //	例：
@@ -33,6 +39,7 @@ public class ApiDefine {
 //		privateParamsNoTokenMap.put(api.getApi(), api);
 //	}
     public static Map<String, Api> apiMap = new HashMap<>();
+    public static Map<String, Function> functionMap = new HashMap<>();
 
     static {
         publicParamsAuth.add(new Param("app_ver", true, "软件版本号"));
@@ -51,33 +58,48 @@ public class ApiDefine {
     }
 
     static {
-        Api[] apis = new Api[]{ //
-                // 调试工具
-                new Api("calcSign", "计算SIGN值", false, Constants.API_TAG_DEBUG_TOOL, "计算SIGN值"), //
-                // noAuth
-//                new Api("testNoToken", "测试非登录接口", false, Constants.API_TAG_COMMON, "测试noToken接口"), //
-                new Api("login.u", "账号登录", false, Constants.API_TAG_ACCOUNT, "账号登录接口",
-                        new Param[]{
-                                new Param("username", true, "账号"), //
-                                new Param("password", true, "密码"), //
-                        }), //
-                new Api("login.c", "登录码登录", false, Constants.API_TAG_CODE, "登录码登录接口",
-                        new Param[]{
-                                new Param("login_code", true, "登录码"), //
-                        }), //
 
-                new Api("time.a", "获取服务器时间", false, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //
-                new Api("timetime.a", "获取服务器时间", false, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //
-                new Api("latestVersion.a", "获取软件最新版本", false, Constants.API_TAG_COMMON, "获取软件最新版本"), //
+        List<Class<?>> classList = MyUtils.getClassesFromPackage(BASE_PACKAGE);
 
-                // Auth
-//                new Api("testToken", "测试登录接口", true, Constants.API_TAG_COMMON, "测试token接口"), //
-//                new Api("times", "", true, Constants.API_TAG_COMMON, ""), //
-                new Api("logout.a", "注销登录", true, Constants.API_TAG_COMMON, "注销登录接口"), //
-
-        };
-        for (Api api : apis) {
-            apiMap.put(api.getApi(), api);
+//        Api[] apis = new Api[]{ //
+//                // 调试工具
+//                new Api("calcSign", "计算SIGN值", false, Constants.API_TAG_DEBUG_TOOL, "计算SIGN值"), //
+//                // noAuth
+////                new Api("testNoToken", "测试非登录接口", false, Constants.API_TAG_COMMON, "测试noToken接口"), //
+//                new Api("login.u", "账号登录", false, Constants.API_TAG_ACCOUNT, "账号登录接口",
+//                        new Param[]{
+//                                new Param("username", true, "账号"), //
+//                                new Param("password", true, "密码"), //
+//                        }), //
+//                new Api("login.c", "登录码登录", false, Constants.API_TAG_CODE, "登录码登录接口",
+//                        new Param[]{
+//                                new Param("login_code", true, "登录码"), //
+//                        }), //
+//
+//                new Api("time.a", "获取服务器时间", false, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //
+//                new Api("timetime.a", "获取服务器时间", false, Constants.API_TAG_COMMON, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"), //
+//                new Api("latestVersion.a", "获取软件最新版本", false, Constants.API_TAG_COMMON, "获取软件最新版本"), //
+//
+//                // Auth
+////                new Api("testToken", "测试登录接口", true, Constants.API_TAG_COMMON, "测试token接口"), //
+////                new Api("times", "", true, Constants.API_TAG_COMMON, ""), //
+//                new Api("logout.a", "注销登录", true, Constants.API_TAG_COMMON, "注销登录接口"), //
+//
+//        };
+//        for (Api api : apis) {
+//            apiMap.put(api.getApi(), api);
+//        }
+        for (Class<?> clazz : classList) {
+            try {
+                Constructor<?> ct = clazz.getDeclaredConstructor();
+                Object obj = ct.newInstance();
+                Function func = (Function) obj;
+                Api api = func.getApi();
+                apiMap.put(api.getApi(), api);
+                functionMap.put(api.getApi(), func);
+            } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
