@@ -18,6 +18,7 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.service.ISysAppService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,18 +33,18 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/system/app")
-public class SysAppController extends BaseController
-{
+public class SysAppController extends BaseController {
     @Autowired
     private ISysAppService sysAppService;
+    @Value("${server.port}")
+    private int port;
 
     /**
      * 查询软件列表
      */
     @PreAuthorize("@ss.hasPermi('system:app:list')")
     @GetMapping("/list")
-    public TableDataInfo list(SysApp sysApp)
-    {
+    public TableDataInfo list(SysApp sysApp) {
         startPage();
         List<SysApp> list = sysAppService.selectSysAppList(sysApp);
         for (SysApp app : list) {
@@ -184,7 +185,8 @@ public class SysAppController extends BaseController
     public void setApiUrl(SysApp app) {
         HttpServletRequest request = ServletUtils.getRequest();
         app.setApiUrl(request.getScheme() + "://" + request.getServerName()
-                + ("80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort())
-                + "/api/v1/" + app.getAppKey() + "/");
+//                + ("80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort())
+                + ("80".equals(String.valueOf(port)) ? "" : ":" + port)
+                + "/api/v1/" + app.getAppKey());
     }
 }
