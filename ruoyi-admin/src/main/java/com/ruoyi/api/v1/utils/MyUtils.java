@@ -17,7 +17,7 @@ import java.util.List;
 
 public class MyUtils {
 
-    public static Date getNewExpiredTime(Date oldExpiredTime, Long quota) {
+    public static Date getNewExpiredTimeAdd(Date oldExpiredTime, Long quota) {
         Date now = DateUtils.getNowDate();
         if (oldExpiredTime == null || oldExpiredTime.before(now)) {
             oldExpiredTime = now;
@@ -29,7 +29,19 @@ public class MyUtils {
         }
     }
 
-    public static BigDecimal getNewPoint(BigDecimal oldPoint, Long quota) {
+    public static Date getNewExpiredTimeSub(Date oldExpiredTime, Long quota) {
+        Date now = DateUtils.getNowDate();
+        if (oldExpiredTime == null || oldExpiredTime.before(now)) {
+            oldExpiredTime = now;
+        }
+        if (quota == null) {
+            return oldExpiredTime;
+        } else {
+            return DateUtils.addSeconds(oldExpiredTime, -quota.intValue());
+        }
+    }
+
+    public static BigDecimal getNewPointAdd(BigDecimal oldPoint, Long quota) {
         if (oldPoint == null) {
             oldPoint = BigDecimal.ZERO;
         }
@@ -37,6 +49,39 @@ public class MyUtils {
             return oldPoint;
         } else {
             return oldPoint.add(BigDecimal.valueOf(quota));
+        }
+    }
+
+    public static BigDecimal getNewPointAdd(BigDecimal oldPoint, Double quota) {
+        if (oldPoint == null) {
+            oldPoint = BigDecimal.ZERO;
+        }
+        if (quota == null) {
+            return oldPoint;
+        } else {
+            return oldPoint.add(BigDecimal.valueOf(quota));
+        }
+    }
+
+    public static BigDecimal getNewPointSub(BigDecimal oldPoint, Long quota) {
+        if (oldPoint == null) {
+            oldPoint = BigDecimal.ZERO;
+        }
+        if (quota == null) {
+            return oldPoint;
+        } else {
+            return oldPoint.subtract(BigDecimal.valueOf(quota));
+        }
+    }
+
+    public static BigDecimal getNewPointSub(BigDecimal oldPoint, Double quota) {
+        if (oldPoint == null) {
+            oldPoint = BigDecimal.ZERO;
+        }
+        if (quota == null) {
+            return oldPoint;
+        } else {
+            return oldPoint.subtract(BigDecimal.valueOf(quota));
         }
     }
 

@@ -257,11 +257,11 @@ public class ValidUtils {
         if (Objects.equals(app.getIsCharge(), UserConstants.YES)) {
             if (app.getBillType() == BillType.TIME) {
                 if (appUser.getExpireTime() == null || !appUser.getExpireTime().after(DateUtils.getNowDate())) {
-                    throw new ApiException(ErrorCode.ERROR_APPUSER_EXPIRED);
+                    throw new ApiException(ErrorCode.ERROR_APP_USER_EXPIRED);
                 }
             } else if (app.getBillType() == BillType.POINT) {
                 if (appUser.getPoint() == null || appUser.getPoint().compareTo(BigDecimal.ZERO) <= 0) {
-                    throw new ApiException(ErrorCode.ERROR_APPUSER_NO_POINT);
+                    throw new ApiException(ErrorCode.ERROR_APP_USER_NO_POINT);
                 }
             } else {
                 throw new ApiException("软件计费方式有误");

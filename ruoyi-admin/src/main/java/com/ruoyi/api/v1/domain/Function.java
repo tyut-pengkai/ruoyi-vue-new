@@ -23,6 +23,7 @@ public abstract class Function extends BaseAutoAware {
     private Map<String, String> params;
 
     public Function() {
+        super();
         init();
     }
 

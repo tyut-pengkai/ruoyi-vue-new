@@ -95,11 +95,11 @@ public class SysAppLoginService {
                 appUser.setTotalPay(BigDecimal.ZERO);
                 appUser.setUserName(user.getUserName());
                 if (app.getBillType() == BillType.TIME) {
-                    appUser.setExpireTime(MyUtils.getNewExpiredTime(null, app.getFreeQuotaReg()));
+                    appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg()));
                     appUser.setPoint(null);
                 } else if (app.getBillType() == BillType.POINT) {
                     appUser.setExpireTime(null);
-                    appUser.setPoint(MyUtils.getNewPoint(null, app.getFreeQuotaReg()));
+                    appUser.setPoint(MyUtils.getNewPointAdd(null, app.getFreeQuotaReg()));
                 } else {
                     throw new ApiException("软件计费方式有误");
                 }
@@ -227,13 +227,13 @@ public class SysAppLoginService {
                 appUser.setTotalPay(BigDecimal.ZERO);
                 appUser.setUserName(loginCodeShow);
                 if (app.getBillType() == BillType.TIME) {
-                    appUser.setExpireTime(MyUtils.getNewExpiredTime(null, app.getFreeQuotaReg()));
-                    appUser.setExpireTime(MyUtils.getNewExpiredTime(appUser.getExpireTime(), loginCode.getQuota()));
+                    appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg()));
+                    appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(appUser.getExpireTime(), loginCode.getQuota()));
                     appUser.setPoint(null);
                 } else if (app.getBillType() == BillType.POINT) {
                     appUser.setExpireTime(null);
-                    appUser.setPoint(MyUtils.getNewPoint(null, app.getFreeQuotaReg()));
-                    appUser.setPoint(MyUtils.getNewPoint(appUser.getPoint(), loginCode.getQuota()));
+                    appUser.setPoint(MyUtils.getNewPointAdd(null, app.getFreeQuotaReg()));
+                    appUser.setPoint(MyUtils.getNewPointAdd(appUser.getPoint(), loginCode.getQuota()));
                 } else {
                     throw new ApiException("软件计费方式有误");
                 }

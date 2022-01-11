@@ -113,6 +113,7 @@ public class TokenService
     {
         String token = IdUtils.fastUUID();
         loginUser.setToken(token);
+        loginUser.setLoginTime(System.currentTimeMillis());
         setUserAgent(loginUser);
         refreshToken(loginUser);
 
@@ -154,11 +155,10 @@ public class TokenService
     public void refreshToken(LoginUser loginUser) {
         if (loginUser.getIfApp()) {
             Integer heartBeatTime = loginUser.getApp().getHeartBeatTime();
-            loginUser.setLoginTime(System.currentTimeMillis());
             // 根据uuid将loginUser缓存
             String userKey = getTokenKey(loginUser.getToken());
             if (heartBeatTime > -1) {
-                loginUser.setExpireTime(loginUser.getLoginTime() + heartBeatTime * MILLIS_SECOND);
+                loginUser.setExpireTime(System.currentTimeMillis() + heartBeatTime * MILLIS_SECOND);
                 redisCache.setCacheObject(userKey, loginUser, heartBeatTime, TimeUnit.SECONDS);
             } else {
                 loginUser.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE).getTime());
@@ -166,8 +166,7 @@ public class TokenService
                 redisCache.persist(userKey);
             }
         } else {
-            loginUser.setLoginTime(System.currentTimeMillis());
-            loginUser.setExpireTime(loginUser.getLoginTime() + expireTime * MILLIS_MINUTE);
+            loginUser.setExpireTime(System.currentTimeMillis() + expireTime * MILLIS_MINUTE);
             // 根据uuid将loginUser缓存
             String userKey = getTokenKey(loginUser.getToken());
             redisCache.setCacheObject(userKey, loginUser, expireTime, TimeUnit.MINUTES);

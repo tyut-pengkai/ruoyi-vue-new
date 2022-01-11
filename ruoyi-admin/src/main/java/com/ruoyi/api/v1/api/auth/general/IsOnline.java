@@ -1,0 +1,19 @@
+package com.ruoyi.api.v1.api.auth.general;
+
+import com.ruoyi.api.v1.constants.Constants;
+import com.ruoyi.api.v1.domain.Api;
+import com.ruoyi.api.v1.domain.Function;
+
+public class IsOnline extends Function {
+
+    @Override
+    public void init() {
+        this.setApi(new Api("isOnline.ag", "获取用户在线状态", true, Constants.API_TAG_GENERAL,
+                "在线返回1"));
+    }
+
+    @Override
+    public Object handle() {
+        return "1";
+    }
+}
