@@ -173,6 +173,7 @@ public class ApiV1Controller extends BaseController {
             Function function = ApiDefine.functionMap.get(api);
             function.setApp(app);
             function.setAppVersion(appVersion);
+            function.setParams(params);
             return function.handle();
         }
     }
