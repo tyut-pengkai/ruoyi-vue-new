@@ -15,7 +15,7 @@ public class UserPoint extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("userPoint.ag", "获取用户点数余额", true, Constants.API_TAG_TIME, "获取用户点数余额"));
+        this.setApi(new Api("userPoint.ag", "获取用户点数余额", true, Constants.API_TAG_POINT, "获取用户点数余额"));
     }
 
     @Override

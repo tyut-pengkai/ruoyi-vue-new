@@ -134,7 +134,7 @@ public class SwaggerService {
                 }
             }
 //            if (api.isCheckToken() || api.getParams().size() > 0) {
-            if (!"calcSign".equals(api.getApi())) {
+//            if (!"calcSign".equals(api.getApi())) {
                 Map<String, Object> parametersObj = new HashMap<>();
                 parametersObj.put("in", "body");
                 parametersObj.put("name", "params");
@@ -152,7 +152,7 @@ public class SwaggerService {
                 definitionObj.put("properties", propertiesObj);
                 definitionObj.put("title", defineVoName);
                 definitionsObj.put(defineVoName, definitionObj);
-            }
+//            }
 //            }
         }
         swagger.put("paths", pathsObj);
