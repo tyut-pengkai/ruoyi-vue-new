@@ -3,6 +3,7 @@ package com.ruoyi.api.v1.controller;
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.api.v1.anno.Encrypt;
 import com.ruoyi.api.v1.constants.ApiDefine;
+import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.SwaggerVo;
 import com.ruoyi.api.v1.service.SwaggerService;
@@ -10,19 +11,17 @@ import com.ruoyi.api.v1.service.SysAppLoginService;
 import com.ruoyi.api.v1.utils.ValidUtils;
 import com.ruoyi.api.v1.utils.encrypt.AesCbcZeroPaddingUtil;
 import com.ruoyi.common.core.controller.BaseController;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
 import com.ruoyi.common.core.domain.model.LoginUser;
-import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppVersionService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -48,7 +47,7 @@ public class ApiV1Controller extends BaseController {
     @Resource
     private SwaggerService swaggerService;
     @Resource
-    private RedisCache redisCache;
+    private TokenService tokenService;
 
     @GetMapping("/swagger")
     @ApiIgnore
@@ -56,14 +55,19 @@ public class ApiV1Controller extends BaseController {
         return swaggerService.getSwaggerInfo(request);
     }
 
+    @GetMapping("/{appkey}")
+    public AjaxResult api() {
+        return AjaxResult.success("恭喜您创建软件成功！请通过POST方式根据接口文档说明接入您的软件。");
+    }
+
     @Encrypt(in = true, out = true)
-    @PostMapping("/{appkey}/noAuth")
-    @ApiOperation(value = "API接口", notes = "API接口")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "appkey", value = "AppKey", paramType = "path", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "params", value = "接口需要的参数", paramType = "body", required = true, dataType = "Map")
-    })
-    public Object noAuthApi(@PathVariable("appkey") String appkey, @RequestBody Map<String, String> params) {
+    @PostMapping("/{appkey}")
+//    @ApiOperation(value = "API接口", notes = "API接口")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "appkey", value = "AppKey", paramType = "path", required = true, dataType = "String"),
+//            @ApiImplicitParam(name = "params", value = "接口需要的参数", paramType = "body", required = true, dataType = "Map")
+//    })
+    public Object api(@PathVariable("appkey") String appkey, @RequestBody Map<String, String> params, HttpServletRequest request) {
         log.info("appkey: {}, 请求参数: {}", appkey, JSON.toJSON(params));
         // 检查软件是否存在
         if (StringUtils.isBlank(appkey)) {
@@ -89,15 +93,22 @@ public class ApiV1Controller extends BaseController {
             e.printStackTrace();
             throw new ApiException("匿名API解密发生错误，如果设置了API匿名密码，请使用加密后的API名称替换原API名称");
         }
-        validUtils.apiCheck(api, app, appVersion, params, false);
-
+        if (!ApiDefine.apiMap.containsKey(api)) {
+            throw new ApiException(ErrorCode.ERROR_API_NOT_EXIST);
+        }
+        Api apii = ApiDefine.apiMap.get(api);
+        validUtils.apiCheck(api, app, appVersion, params, apii.isCheckToken());
+        if (apii.isCheckToken()) {
+            LoginUser loginUser = tokenService.getLoginUser(request);
+            if (loginUser == null) {
+                throw new ApiException(ErrorCode.ERROR_UNAUTHORIZED);
+            }
+        }
         String appSecret = params.get("app_secret");
         if (!Objects.equals(app.getAppSecret(), appSecret)) {
             throw new ApiException(ErrorCode.ERROR_APPKEY_OR_APPSECRET_ERROR);
         }
-
         String deviceCode = params.get("dev_code");
-
         switch (api) {
             case "login.nu":
                 if (app.getAuthType() == AuthType.ACCOUNT) { // by account
@@ -116,65 +127,15 @@ public class ApiV1Controller extends BaseController {
                 } else {
                     throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
                 }
+            case "logout.ag":
+                LoginUser loginUser = getLoginUser();
+                return loginService.appLogout(loginUser);
             default:
                 Function function = ApiDefine.functionMap.get(api);
                 function.setApp(app);
                 function.setAppVersion(appVersion);
                 function.setParams(params);
                 return function.handle();
-        }
-    }
-
-    @Encrypt(in = true, out = true)
-    @PostMapping("/{appkey}/auth")
-    @ApiOperation(value = "API接口", notes = "API接口")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "authorization", value = "token", paramType = "header", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "appkey", value = "AppKey", paramType = "path", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "params", value = "接口需要的参数", paramType = "body", required = true, dataType = "Map")
-    })
-    public Object authApi(@PathVariable("appkey") String appkey, @RequestBody Map<String, String> params) {
-        log.info("appkey: {}, 请求参数: {}", appkey, JSON.toJSON(params));
-        // 检查软件是否存在
-        if (StringUtils.isBlank(appkey)) {
-            throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "AppKey不能为空");
-        }
-        // 检查软件版本是否存在
-        String appVersionStr = params.get("app_ver");
-        if (StringUtils.isBlank(appVersionStr)) {
-            throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "软件版本号不能为空");
-        }
-        SysApp app = appService.selectSysAppByAppKey(appkey);
-        Long version = Long.parseLong(appVersionStr);
-        SysAppVersion appVersion = appVersionService.selectSysAppVersionByAppIdAndVersion(app.getAppId(), version);
-        // API校验
-        validUtils.apiCheckAppAndVersion(appkey, app, version, appVersion);
-        String api = params.get("api").trim();
-        try {
-            if (StringUtils.isNotBlank(app.getApiPwd())) {
-                api = AesCbcZeroPaddingUtil.decode(api, app.getApiPwd());
-                api = api != null ? api.trim() : "";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ApiException("匿名API解密发生错误，如果设置了API匿名密码，请使用加密后的API名称替换原API名称");
-        }
-        validUtils.apiCheck(api, app, appVersion, params, true);
-
-        String appSecret = params.get("app_secret");
-        if (!Objects.equals(app.getAppSecret(), appSecret)) {
-            throw new ApiException(ErrorCode.ERROR_APPKEY_OR_APPSECRET_ERROR);
-        }
-
-        if ("logout.ag".equals(api)) {
-            LoginUser loginUser = getLoginUser();
-            return loginService.appLogout(loginUser);
-        } else {
-            Function function = ApiDefine.functionMap.get(api);
-            function.setApp(app);
-            function.setAppVersion(appVersion);
-            function.setParams(params);
-            return function.handle();
         }
     }
 }

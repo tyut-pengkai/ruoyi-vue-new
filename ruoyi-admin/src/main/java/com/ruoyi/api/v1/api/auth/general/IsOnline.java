@@ -9,7 +9,7 @@ public class IsOnline extends Function {
     @Override
     public void init() {
         this.setApi(new Api("isOnline.ag", "获取用户在线状态", true, Constants.API_TAG_GENERAL,
-                "在线返回1"));
+                "在线返回1", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL));
     }
 
     @Override

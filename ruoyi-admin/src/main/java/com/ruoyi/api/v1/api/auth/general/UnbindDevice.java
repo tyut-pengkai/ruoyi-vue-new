@@ -30,7 +30,7 @@ public class UnbindDevice extends Function {
     @Override
     public void init() {
         this.setApi(new Api("unbindDevice.ag", "解除绑定当前设备", true, Constants.API_TAG_GENERAL,
-                "解除绑定当前设备，解绑成功会根据软件设定扣减用户余额",
+                "解除绑定当前设备，解绑成功会根据软件设定扣减用户余额", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL,
                 new Param[]{
                         new Param("enableNegative", false, "是否允许用户过期(计时模式)或余额为负数(计点模式)，允许传1，不允许传0，默认为0")
                 }));

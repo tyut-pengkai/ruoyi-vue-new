@@ -16,7 +16,8 @@ public class AppInfo extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("appInfo.ng", "获取软件配置信息", false, Constants.API_TAG_GENERAL, "获取软件配置信息"));
+        this.setApi(new Api("appInfo.ng", "获取软件配置信息", false, Constants.API_TAG_GENERAL,
+                "获取软件配置信息", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL));
     }
 
     @Override

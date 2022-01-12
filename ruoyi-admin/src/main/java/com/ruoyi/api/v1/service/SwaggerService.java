@@ -91,12 +91,14 @@ public class SwaggerService {
             postObj.put("deprecated", false);
             pathObj.put("post", postObj);
             if (api.isCheckToken()) {
-                pathsObj.put("/api/v1/{appkey}/auth?" + api.getApi(), pathObj);
+//                pathsObj.put("/api/v1/{appkey}/auth?" + api.getApi(), pathObj);
+                pathsObj.put("/api/v1/{appkey}?" + api.getApi(), pathObj);
             } else {
                 if (api.getApi().equals("calcSign")) {
                     pathsObj.put("/api/v1/devTool/{appkey}/calcSign", pathObj);
                 } else {
-                    pathsObj.put("/api/v1/{appkey}/noAuth?" + api.getApi(), pathObj);
+//                    pathsObj.put("/api/v1/{appkey}/noAuth?" + api.getApi(), pathObj);
+                    pathsObj.put("/api/v1/{appkey}?" + api.getApi(), pathObj);
                 }
 
             }

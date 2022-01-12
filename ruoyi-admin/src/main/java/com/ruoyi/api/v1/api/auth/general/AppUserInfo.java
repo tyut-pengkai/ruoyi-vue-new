@@ -16,7 +16,8 @@ public class AppUserInfo extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("appUserInfo.ag", "获取用户信息", true, Constants.API_TAG_GENERAL, "获取用户信息"));
+        this.setApi(new Api("appUserInfo.ag", "获取用户信息", true, Constants.API_TAG_GENERAL,
+                "获取用户信息", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL));
     }
 
     @Override

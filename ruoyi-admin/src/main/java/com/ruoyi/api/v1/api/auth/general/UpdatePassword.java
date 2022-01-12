@@ -5,6 +5,7 @@ import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -19,7 +20,8 @@ public class UpdatePassword extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("updatePassword.ag", "修改账号密码", true, Constants.API_TAG_GENERAL, "修改账号密码",
+        this.setApi(new Api("updatePassword.ag", "修改账号密码", true, Constants.API_TAG_GENERAL,
+                "修改账号密码", new AuthType[]{AuthType.ACCOUNT}, Constants.BILL_TYPE_ALL,
                 new Param[]{
                         new Param("password", true, "原密码"),
                         new Param("newPassword", true, "新密码"),

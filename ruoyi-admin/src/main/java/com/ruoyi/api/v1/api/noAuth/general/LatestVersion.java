@@ -16,7 +16,8 @@ public class LatestVersion extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("latestVersion.ng", "获取软件最新版本", false, Constants.API_TAG_GENERAL, "获取软件最新版本"));
+        this.setApi(new Api("latestVersion.ng", "获取软件最新版本", false, Constants.API_TAG_GENERAL,
+                "获取软件最新版本", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL));
     }
 
     @Override

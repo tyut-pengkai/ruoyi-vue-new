@@ -1,6 +1,5 @@
 package com.ruoyi.api.v1.domain;
 
-import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BillType;
 import lombok.Data;
@@ -21,28 +20,28 @@ public class Api {
     private BillType[] billTypes;
     private List<Param> params;
 
-    public Api(String api, String name, boolean checkToken, String description) {
-        this(api, name, checkToken, Constants.API_TAG_ALL, description, Constants.AUTH_TYPE_ALL,
-                Constants.BILL_TYPE_ALL);
-    }
+//    public Api(String api, String name, boolean checkToken, String description) {
+//        this(api, name, checkToken, Constants.API_TAG_ALL, description, Constants.AUTH_TYPE_ALL,
+//                Constants.BILL_TYPE_ALL);
+//    }
 
-    public Api(String api, String name, boolean checkToken, String tag, String description) {
-        this(api, name, checkToken, new String[]{tag}, description, Constants.AUTH_TYPE_ALL,
-                Constants.BILL_TYPE_ALL);
-    }
+//    public Api(String api, String name, boolean checkToken, String tag, String description) {
+//        this(api, name, checkToken, new String[]{tag}, description, Constants.AUTH_TYPE_ALL,
+//                Constants.BILL_TYPE_ALL);
+//    }
 
-    public Api(String api, String name, boolean checkToken, String[] tags, String description) {
-        this(api, name, checkToken, tags, description, Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL);
-    }
+//    public Api(String api, String name, boolean checkToken, String[] tags, String description) {
+//        this(api, name, checkToken, tags, description, Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL);
+//    }
 
-    public Api(String api, String name, boolean checkToken, String tag, String description, Param[] params) {
-        this(api, name, checkToken, new String[]{tag}, description, Constants.AUTH_TYPE_ALL,
-                Constants.BILL_TYPE_ALL, params);
-    }
+//    public Api(String api, String name, boolean checkToken, String tag, String description, Param[] params) {
+//        this(api, name, checkToken, new String[]{tag}, description, Constants.AUTH_TYPE_ALL,
+//                Constants.BILL_TYPE_ALL, params);
+//    }
 
-    public Api(String api, String name, boolean checkToken, String[] tags, String description, Param[] params) {
-        this(api, name, checkToken, tags, description, Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL, params);
-    }
+//    public Api(String api, String name, boolean checkToken, String[] tags, String description, Param[] params) {
+//        this(api, name, checkToken, tags, description, Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL, params);
+//    }
 
     public Api(String api, String name, boolean checkToken, String tag, String description, AuthType loginTypes,
                BillType chargeTypes) {
@@ -52,6 +51,11 @@ public class Api {
     public Api(String api, String name, boolean checkToken, String[] tags, String description, AuthType loginTypes,
                BillType chargeTypes) {
         this(api, name, checkToken, tags, description, loginTypes, chargeTypes, null);
+    }
+
+    public Api(String api, String name, boolean checkToken, String tag, String description, AuthType[] loginTypes,
+               BillType[] chargeTypes, Param[] params) {
+        this(api, name, checkToken, new String[]{tag}, description, loginTypes, chargeTypes, params);
     }
 
     public Api(String api, String name, boolean checkToken, String tag, String description, AuthType loginTypes,

@@ -1,5 +1,7 @@
 package com.ruoyi.common.core.domain.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excels;
 import com.ruoyi.common.core.domain.BaseEntity;
@@ -108,24 +110,44 @@ public class SysApp extends BaseEntity
     /** API匿名密码 */
     private String apiPwd;
 
-    /** 登录码前缀 */
-    @Excel(name = "登录码前缀")
+    /**
+     * 登录码前缀
+     */
+//    @Excel(name = "登录码前缀")
+    @JSONField(serialize = false)
+    @JsonIgnore
     private String loginCodePrefix;
 
-    /** 登录码后缀 */
-    @Excel(name = "登录码后缀")
+    /**
+     * 登录码后缀
+     */
+//    @Excel(name = "登录码后缀")
+    @JSONField(serialize = false)
+    @JsonIgnore
     private String loginCodeSuffix;
 
-    /** 登录码长度，默认为32 */
-    @Excel(name = "登录码长度，默认为32")
+    /**
+     * 登录码长度，默认为32
+     */
+//    @Excel(name = "登录码长度，默认为32")
+    @JSONField(serialize = false)
+    @JsonIgnore
     private Integer loginCodeLen;
 
-    /** 登录码生成规则，默认为大小写字母+数字 */
-    @Excel(name = "登录码生成规则，默认为大小写字母+数字", dictType = "sys_gen_rule")
+    /**
+     * 登录码生成规则，默认为大小写字母+数字
+     */
+//    @Excel(name = "登录码生成规则，默认为大小写字母+数字", dictType = "sys_gen_rule")
+    @JSONField(serialize = false)
+    @JsonIgnore
     private GenRule loginCodeGenRule;
 
-    /** 登录码生成规则为正则时生效 */
-    @Excel(name = "登录码生成规则为正则时生效")
+    /**
+     * 登录码生成规则为正则时生效
+     */
+//    @Excel(name = "登录码生成规则为正则时生效")
+    @JSONField(serialize = false)
+    @JsonIgnore
     private String loginCodeRegex;
 
     /** 软件图标地址 */

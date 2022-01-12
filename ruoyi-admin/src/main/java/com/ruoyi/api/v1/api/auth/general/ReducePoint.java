@@ -7,6 +7,7 @@ import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.text.Convert;
+import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.system.service.ISysAppUserService;
@@ -21,7 +22,8 @@ public class ReducePoint extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("reducePoint.ag", "扣减用户点数", true, Constants.API_TAG_POINT, "扣减用户点数，返回扣减后点数余额",
+        this.setApi(new Api("reducePoint.ag", "扣减用户点数", true, Constants.API_TAG_POINT,
+                "扣减用户点数，返回扣减后点数余额", Constants.AUTH_TYPE_ALL, new BillType[]{BillType.POINT},
                 new Param[]{
                         new Param("point", true, "扣减的点数，需传入正数，可精确到两位小数"),
                         new Param("enableNegative", false, "是否允许余额为负数，允许传1，不允许传0，默认为0")

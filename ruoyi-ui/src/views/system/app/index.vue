@@ -783,7 +783,7 @@
             </el-form-item>
           </el-tab-pane>
           <!-- 登录码设置 -->
-          <el-tab-pane label="登录码设置">
+          <!-- <el-tab-pane label="登录码设置">
             <el-form-item>
               <el-form-item label="登录码前缀" prop="loginCodePrefix">
                 <el-input
@@ -839,7 +839,7 @@
                 />
               </el-form-item>
             </el-form-item>
-          </el-tab-pane>
+          </el-tab-pane> -->
           <!-- 对接信息 -->
           <el-tab-pane label="接口信息" v-if="form.appId">
             <el-form-item label="API接口地址" prop="apiUrl">
@@ -877,6 +877,7 @@
             </el-alert>
             <el-table
               :data="enApiList"
+              height="300"
               border
               style="width: 100%; margin-top: 10px"
             >
@@ -1340,11 +1341,11 @@ export default {
     },
   },
   watch: {
-    "form.authType": {
-      handler(newVal, oldVal) {
-        this.showTabPane(this.form.authType === "1", 3);
-      },
-    },
+    // "form.authType": {
+    //   handler(newVal, oldVal) {
+    //     this.showTabPane(this.form.authType === "1", 3);
+    //   },
+    // },
   },
 };
 </script>

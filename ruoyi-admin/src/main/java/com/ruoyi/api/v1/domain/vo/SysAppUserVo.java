@@ -15,7 +15,7 @@ import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SysAppUserVo extends SysApp {
+public class SysAppUserVo extends SysAppUser {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -66,6 +66,8 @@ public class SysAppUserVo extends SysApp {
     /**
      * 软件用户ID
      */
+    @JSONField(serialize = false)
+    @JsonIgnore
     private Long appUserId;
 
     /**

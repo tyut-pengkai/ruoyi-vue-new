@@ -15,9 +15,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.TokenService;
-import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
-import com.ruoyi.system.service.ISysUserOnlineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -32,13 +30,9 @@ public class ValidUtils {
     @Resource
     private ISysAppUserDeviceCodeService appUserDeviceCodeService;
     @Resource
-    private ISysUserOnlineService userOnlineService;
-    @Resource
     private RedisCache redisCache;
     @Resource
     private TokenService tokenService;
-    @Resource
-    private ISysAppService appService;
 
 
     public void apiCheckApp(String appkey, SysApp app) {
@@ -77,6 +71,8 @@ public class ValidUtils {
      * 不需要验证token的api接口验证
      */
     public void apiCheck(String api, SysApp app, SysAppVersion appVersion, Map<String, String> params, boolean needToken) {
+        // 检查该软件是否可调用该api接口
+        checkAppMatchApi(api, app, params);
         // 设备码校验
         if (app.getBindType() != null && app.getBindType() != BindType.NONE) {
             String deviceCode = params.get("dev_code");
@@ -86,10 +82,6 @@ public class ValidUtils {
         }
         // 检查公共参数
         checkPublicParams(params, needToken);
-        // 检查api接口是否存在
-        checkApiExist(api, needToken);
-        // 检查该软件是否可调用该api接口
-        checkAppMatchApi(api, app, params);
         // 检查私有参数
         checkPrivateParams(api, params);
         if (needToken) {
@@ -120,15 +112,6 @@ public class ValidUtils {
                     throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "缺少必要公共参数或参数值为空：" + publicParam.getName() + "，参数说明：" + publicParam.getDescription());
                 }
             }
-        }
-    }
-
-    /**
-     * 检查API是否存在
-     */
-    private void checkApiExist(String api, Boolean needToken) {
-        if (!ApiDefine.apiMap.containsKey(api) || needToken != ApiDefine.apiMap.get(api).isCheckToken()) {
-            throw new ApiException(ErrorCode.ERROR_API_NOT_EXIST);
         }
     }
 

@@ -33,7 +33,7 @@ public class LogoutAll extends Function {
     @Override
     public void init() {
         this.setApi(new Api("logoutAll.ng", "注销所有登录", false, Constants.API_TAG_GENERAL,
-                "注销指定账号在本软件的所有登录",
+                "注销指定账号在本软件的所有登录", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL,
                 new Param[]{
                         new Param("username", true, "要注销的账号"),
                         new Param("password", true, "密码")

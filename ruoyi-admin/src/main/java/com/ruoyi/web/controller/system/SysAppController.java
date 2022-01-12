@@ -36,8 +36,14 @@ import java.util.*;
 public class SysAppController extends BaseController {
     @Autowired
     private ISysAppService sysAppService;
-    @Value("${server.port}")
-    private int port;
+//    @Value("${server.port}")
+//    private int port;
+
+    /**
+     * 设置请求的统一前缀
+     */
+    @Value("${swagger.pathMapping}")
+    private String pathMapping;
 
     /**
      * 查询软件列表
@@ -186,7 +192,8 @@ public class SysAppController extends BaseController {
         HttpServletRequest request = ServletUtils.getRequest();
         app.setApiUrl(request.getScheme() + "://" + request.getServerName()
 //                + ("80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort())
-                + ("80".equals(String.valueOf(port)) ? "" : ":" + port)
+                + ("80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort()) + pathMapping
+//                + ("80".equals(String.valueOf(port)) ? "" : ":" + port)
                 + "/api/v1/" + app.getAppKey());
     }
 }

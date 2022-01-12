@@ -9,7 +9,8 @@ public class ServerTime extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("serverTime.ng", "获取服务器时间", false, Constants.API_TAG_GENERAL, "获取服务器时间，格式yyyy-MM-dd HH:mm:ss"));
+        this.setApi(new Api("serverTime.ng", "获取服务器时间", false, Constants.API_TAG_GENERAL,
+                "获取服务器时间，格式yyyy-MM-dd HH:mm:ss", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL));
     }
 
     @Override

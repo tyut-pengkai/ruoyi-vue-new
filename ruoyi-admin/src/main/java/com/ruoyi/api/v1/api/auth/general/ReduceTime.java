@@ -7,6 +7,7 @@ import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.text.Convert;
+import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.DateUtils;
@@ -22,7 +23,8 @@ public class ReduceTime extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("reduceTime.ag", "扣减用户时间", true, Constants.API_TAG_TIME, "扣减用户时间，返回扣减后到期时间",
+        this.setApi(new Api("reduceTime.ag", "扣减用户时间", true, Constants.API_TAG_TIME,
+                "扣减用户时间，返回扣减后到期时间", Constants.AUTH_TYPE_ALL, new BillType[]{BillType.TIME},
                 new Param[]{
                         new Param("seconds", true, "扣减的秒数，需传入正整数"),
                         new Param("enableNegative", false, "是否允许用户过期，允许传1，不允许传0，默认为0")

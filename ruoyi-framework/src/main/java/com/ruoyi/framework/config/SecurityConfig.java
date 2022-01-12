@@ -4,6 +4,7 @@ import com.ruoyi.framework.security.filter.JwtAuthenticationTokenFilter;
 import com.ruoyi.framework.security.handle.AuthenticationEntryPointImpl;
 import com.ruoyi.framework.security.handle.LogoutSuccessHandlerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
     /**
      * 自定义用户认证逻辑
      */
+    @Qualifier("userDetailsServiceImpl")
     @Autowired
     private UserDetailsService userDetailsService;
     
@@ -98,8 +100,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .authorizeRequests()
                 // 对于登录login 注册register 验证码captchaImage 允许匿名访问
                 .antMatchers("/login", "/register", "/captchaImage").anonymous()
-                .antMatchers("/api/v1/swagger").permitAll()
-                .antMatchers("/api/v1/devTool/**", "/api/v1/*/noAuth/**").permitAll()
+//                .antMatchers("/api/v1/swagger").permitAll()
+                .antMatchers("/api/v1/*", "/api/v1/devTool/**").permitAll()
                 .antMatchers(
                         HttpMethod.GET,
                         "/",

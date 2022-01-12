@@ -5,6 +5,7 @@ import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.utils.MyUtils;
+import com.ruoyi.common.enums.AuthType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Constructor;
@@ -64,19 +65,19 @@ public class ApiDefine {
         List<Class<?>> classList = MyUtils.getClassesFromPackage(BASE_PACKAGE);
         Api[] apis = new Api[]{ //
                 // 调试工具
-                new Api("calcSign", "计算SIGN值", false, Constants.API_TAG_DEV_TOOL, "计算SIGN值"), //
+                new Api("calcSign", "计算SIGN值", false, Constants.API_TAG_DEV_TOOL, "计算SIGN值", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL), //
                 // noAuth
-                new Api("login.nu", "账号登录", false, Constants.API_TAG_ACCOUNT, "账号登录接口",
+                new Api("login.nu", "账号登录", false, Constants.API_TAG_ACCOUNT, "账号登录接口", new AuthType[]{AuthType.ACCOUNT}, Constants.BILL_TYPE_ALL,
                         new Param[]{
                                 new Param("username", true, "账号"), //
                                 new Param("password", true, "密码"), //
                         }), //
-                new Api("login.nc", "登录码登录", false, Constants.API_TAG_CODE, "登录码登录接口",
+                new Api("login.nc", "登录码登录", false, Constants.API_TAG_CODE, "登录码登录接口", new AuthType[]{AuthType.LOGIN_CODE}, Constants.BILL_TYPE_ALL,
                         new Param[]{
                                 new Param("login_code", true, "登录码"), //
                         }), //
                 // Auth
-                new Api("logout.ag", "注销登录", true, Constants.API_TAG_GENERAL, "注销登录接口"), //
+                new Api("logout.ag", "注销登录", true, Constants.API_TAG_GENERAL, "注销登录接口", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL), //
         };
         for (Api api : apis) {
             apiMap.put(api.getApi(), api);
