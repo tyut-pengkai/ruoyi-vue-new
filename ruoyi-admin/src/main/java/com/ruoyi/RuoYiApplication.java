@@ -18,7 +18,7 @@ public class RuoYiApplication
         // System.setProperty("spring.devtools.restart.enabled", "false");
         SpringApplication.run(RuoYiApplication.class, args);
         RuoYiConfig config = SpringUtils.getBean(RuoYiConfig.class);
-        System.out.println("(♥◠‿◠)ﾉﾞ  系统启动成功，当前版本：" + config.getVersion() + " (" + config.getVersionNo() + ")" + "   ლ(´ڡ`ლ)ﾞ  \n" +
+        System.out.println(" 系统启动成功，当前版本：" + config.getVersion() + " (" + config.getVersionNo() + ")" + " \n" +
                 "   _____ ____   ____  _____  _____   _____  ____  ______ _______ _____ ____  __  __ \n" +
                 "  / ____/ __ \\ / __ \\|  __ \\|  __ \\ / ____|/ __ \\|  ____|__   __/ ____/ __ \\|  \\/  |\n" +
                 " | |   | |  | | |  | | |__) | |  | | (___ | |  | | |__     | | | |   | |  | | \\  / |\n" +

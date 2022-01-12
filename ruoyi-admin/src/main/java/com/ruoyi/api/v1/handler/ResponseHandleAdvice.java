@@ -11,6 +11,7 @@ import com.ruoyi.api.v1.encrypt.impl.EncryptBase64;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.enums.EncrypType;
+import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.service.ISysAppService;
 import org.apache.commons.io.IOUtils;
@@ -31,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author ZwGu
@@ -52,9 +52,9 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 	@SuppressWarnings("unchecked")
 	public Object beforeBodyWrite(@Nullable Object data, @Nullable MethodParameter returnType, @Nullable MediaType mediaType,
 								  @Nullable Class<? extends HttpMessageConverter<?>> aClass, @Nullable ServerHttpRequest request, @Nullable ServerHttpResponse response) {
-		// 获取vstr
-		Object vstr = null;
 		try {
+			// 获取vstr
+			Object vstr = null;
 			// 获取appkey
 			ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 			assert servletRequestAttributes != null;
@@ -84,20 +84,26 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 			// 转化为MAP
 			HashMap paramMap = JSON.parseObject(inputData, HashMap.class);
 			vstr = paramMap.get("vstr");
+			// 计算sign
+			Map<String, Object> resultMap = new HashMap<>();
+			resultMap.put("data", handleResult(data));
+			resultMap.put("timestamp", DateUtils.getNowDate().getTime());
+			resultMap.put("vstr", vstr);
+//			String sign = SignUtil.sign(JSON.toJSONString(resultMap), app.getAppSecret());
+//			resultMap.put("sign", sign);
+			// 将原本的数据包装在RestResponse里
+			AjaxResult result = AjaxResult.success().put(resultMap);
+			// String类型不能直接包装，所以要进行些特别的处理
+			assert returnType != null;
+			if (returnType.getGenericParameterType().equals(String.class) || (data instanceof String && data.toString().startsWith(Constants.PREFIX_TYPE))) {
+				// 将数据包装在RestResponse里后，再转换为json字符串响应给前端
+				return JSON.toJSONString(result);
+			}
+			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw new ApiException("处理结果数据出错");
 		}
-
-		// 将原本的数据包装在RestResponse里
-		AjaxResult result = Objects.requireNonNull(Objects.requireNonNull(AjaxResult.success().put("data", handleResult(data))).put("timestamp", DateUtils.getNowDate().getTime())).put("vstr", vstr);
-		// String类型不能直接包装，所以要进行些特别的处理
-		assert returnType != null;
-		if (returnType.getGenericParameterType().equals(String.class) || (data instanceof String && data.toString().startsWith(Constants.PREFIX_TYPE))) {
-			// 将数据包装在RestResponse里后，再转换为json字符串响应给前端
-			return JSON.toJSONString(result);
-		}
-
-		return result;
 	}
 
 	private Object handleResult(Object data) {
