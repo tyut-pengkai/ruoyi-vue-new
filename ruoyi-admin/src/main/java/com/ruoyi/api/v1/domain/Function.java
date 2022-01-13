@@ -2,7 +2,6 @@ package com.ruoyi.api.v1.domain;
 
 import com.ruoyi.api.v1.support.BaseAutoAware;
 import com.ruoyi.common.core.domain.entity.SysApp;
-import com.ruoyi.common.core.domain.entity.SysAppVersion;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.utils.SecurityUtils;
 import lombok.Data;
@@ -17,8 +16,6 @@ public abstract class Function extends BaseAutoAware {
     private Api api;
     @Autowired(required = false)
     private SysApp app;
-    @Autowired(required = false)
-    private SysAppVersion appVersion;
     @Autowired(required = false)
     private Map<String, String> params;
 

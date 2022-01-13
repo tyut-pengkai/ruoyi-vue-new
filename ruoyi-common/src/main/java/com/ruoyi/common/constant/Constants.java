@@ -70,6 +70,11 @@ public class Constants
     public static final String LOGIN_TOKEN_KEY = "login_tokens:";
 
     /**
+     * APP缓存 SYS_APP_KEY
+     */
+    public static final String SYS_APP_KEY = "sys_app:";
+
+    /**
      * 防重提交 redis key
      */
     public static final String REPEAT_SUBMIT_KEY = "repeat_submit:";

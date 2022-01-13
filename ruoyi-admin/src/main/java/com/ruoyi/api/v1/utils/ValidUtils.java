@@ -16,6 +16,7 @@ import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
+import com.ruoyi.system.service.ISysAppVersionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +34,8 @@ public class ValidUtils {
     private RedisCache redisCache;
     @Resource
     private TokenService tokenService;
+    @Resource
+    private ISysAppVersionService appVersionService;
 
 
     public void apiCheckApp(String appkey, SysApp app) {
@@ -49,46 +52,59 @@ public class ValidUtils {
         }
     }
 
-    /**
-     * 前置校验
-     */
-    public void apiCheckAppAndVersion(String appkey, SysApp app, Long version, SysAppVersion appVersion) {
-        apiCheckApp(appkey, app);
+    public void apiCheckVersion(SysApp app, String appVersionStr, SysAppVersion version) {
         // 检查软件版本是否存在
-        if (appVersion == null) {
-            log.info("软件 {} 的版本：{} 不存在.", app.getAppName(), version);
+        if (version == null) {
+            log.info("软件 {} 的版本：{} 不存在.", app.getAppName(), appVersionStr);
             throw new ApiException(ErrorCode.ERROR_APP_VERSION_NOT_EXIST);
-        } else if (UserStatus.DELETED.getCode().equals(appVersion.getDelFlag())) {
-            log.info("软件 {} 的版本：{} 已被删除.", app.getAppName(), version);
-            throw new ApiException(ErrorCode.ERROR_APP_VERSION_NOT_EXIST, "软件版本：" + version + " 已被删除");
-        } else if (UserStatus.DISABLE.getCode().equals(appVersion.getStatus())) {
-            log.info("软件：{} 的版本：{} 已被停用.", app.getAppName(), version);
-            throw new ApiException(ErrorCode.ERROR_APP_VERSION_OFF, "软件版本：" + version + " 已停用");
+        } else if (UserStatus.DELETED.getCode().equals(version.getDelFlag())) {
+            log.info("软件 {} 的版本：{} 已被删除.", app.getAppName(), appVersionStr);
+            throw new ApiException(ErrorCode.ERROR_APP_VERSION_NOT_EXIST, "软件版本：" + appVersionStr + " 已被删除");
+        } else if (UserStatus.DISABLE.getCode().equals(version.getStatus())) {
+            log.info("软件：{} 的版本：{} 已被停用.", app.getAppName(), appVersionStr);
+            throw new ApiException(ErrorCode.ERROR_APP_VERSION_OFF, "软件版本：" + appVersionStr + " 已停用");
         }
     }
 
     /**
-     * 不需要验证token的api接口验证
+     * 前置校验
      */
-    public void apiCheck(String api, SysApp app, SysAppVersion appVersion, Map<String, String> params, boolean needToken) {
-        // 检查该软件是否可调用该api接口
-        checkAppMatchApi(api, app, params);
-        // 设备码校验
+    public SysAppVersion apiCheckPreLogin(String appkey, SysApp app, Map<String, String> params) {
+        String appVersionStr = params.get("app_ver");
+        if (StringUtils.isBlank(appVersionStr)) {
+            throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "软件版本号不能为空");
+        }
+        Long version = Long.parseLong(appVersionStr);
+        SysAppVersion appVersion = appVersionService.selectSysAppVersionByAppIdAndVersion(app.getAppId(), version);
+        // APP
+//        apiCheckApp(appkey, app); 解码时已经检查过了，无需二次检测
+        // 版本
+        apiCheckVersion(app, appVersionStr, appVersion);
+        // MD5
+        checkMd5(appVersion, params);
+        // 设备码
         if (app.getBindType() != null && app.getBindType() != BindType.NONE) {
             String deviceCode = params.get("dev_code");
             if (StringUtils.isBlank(deviceCode)) {
                 throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "软件已开启设备验证，设备码不能为空");
             }
         }
+        return appVersion;
+    }
+
+    /**
+     * 不需要验证token的api接口验证
+     */
+    public void apiCheck(String api, SysApp app, Map<String, String> params, boolean needToken) {
+        // 检查该软件是否可调用该api接口
+        checkAppMatchApi(api, app, params);
         // 检查公共参数
         checkPublicParams(params, needToken);
         // 检查私有参数
         checkPrivateParams(api, params);
+        // 检查sign
+        checkSign(app, params);
         if (needToken) {
-            // 检查md5
-            checkMd5(appVersion, params);
-            // 检查sign
-            checkSign(app, params);
             // 检查数据是否过期
             checkDataExpired(app, params);
             // 检查软件用户是否可用

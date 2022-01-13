@@ -1,7 +1,9 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysApp;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.mapper.SysAppMapper;
@@ -9,6 +11,7 @@ import com.ruoyi.system.service.ISysAppService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -18,10 +21,11 @@ import java.util.List;
  * @date 2021-11-05
  */
 @Service
-public class SysAppServiceImpl implements ISysAppService
-{
+public class SysAppServiceImpl implements ISysAppService {
     @Autowired
     private SysAppMapper sysAppMapper;
+    @Resource
+    private RedisCache redisCache;
 
     /**
      * 查询软件
@@ -42,7 +46,12 @@ public class SysAppServiceImpl implements ISysAppService
      */
     @Override
     public SysApp selectSysAppByAppKey(String appKey) {
-        return sysAppMapper.selectSysAppByAppKey(appKey);
+        SysApp app = redisCache.getCacheObject(Constants.SYS_APP_KEY + appKey);
+        if (app == null) {
+            app = sysAppMapper.selectSysAppByAppKey(appKey);
+            redisCache.setCacheObject(Constants.SYS_APP_KEY + appKey, app);
+        }
+        return app;
     }
 
     /**
@@ -75,13 +84,17 @@ public class SysAppServiceImpl implements ISysAppService
      * @return 结果
      */
     @Override
-    public int updateSysApp(SysApp sysApp)
-    {
+    public int updateSysApp(SysApp sysApp) {
         sysApp.setUpdateTime(DateUtils.getNowDate());
         sysApp.setUpdateBy(SecurityUtils.getUsername());
         sysApp.setAuthType(null);
         sysApp.setBillType(null);
-        return sysAppMapper.updateSysApp(sysApp);
+        int i = sysAppMapper.updateSysApp(sysApp);
+        if (i > 0) {
+            SysApp app = selectSysAppByAppId(sysApp.getAppId());
+            redisCache.setCacheObject(Constants.SYS_APP_KEY + app.getAppKey(), app);
+        }
+        return i;
     }
 
     /**
@@ -91,8 +104,11 @@ public class SysAppServiceImpl implements ISysAppService
      * @return 结果
      */
     @Override
-    public int deleteSysAppByAppIds(Long[] appIds)
-    {
+    public int deleteSysAppByAppIds(Long[] appIds) {
+        for (Long appId : appIds) {
+            SysApp app = selectSysAppByAppId(appId);
+            redisCache.deleteObject(Constants.SYS_APP_KEY + app.getAppKey());
+        }
         return sysAppMapper.deleteSysAppByAppIds(appIds);
     }
 
@@ -103,8 +119,9 @@ public class SysAppServiceImpl implements ISysAppService
      * @return 结果
      */
     @Override
-    public int deleteSysAppByAppId(Long appId)
-    {
+    public int deleteSysAppByAppId(Long appId) {
+        SysApp app = selectSysAppByAppId(appId);
+        redisCache.deleteObject(Constants.SYS_APP_KEY + app.getAppKey());
         return sysAppMapper.deleteSysAppByAppId(appId);
     }
 
@@ -117,7 +134,7 @@ public class SysAppServiceImpl implements ISysAppService
     @Override
     public int updateSysAppStatus(SysApp app)
     {
-        return sysAppMapper.updateSysApp(app);
+        return updateSysApp(app);
     }
 
     /**
@@ -129,7 +146,7 @@ public class SysAppServiceImpl implements ISysAppService
     @Override
     public int updateSysAppChargeStatus(SysApp app)
     {
-        return sysAppMapper.updateSysApp(app);
+        return updateSysApp(app);
     }
 
     /**

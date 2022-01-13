@@ -162,8 +162,7 @@ public class TokenService
                 redisCache.setCacheObject(userKey, loginUser, heartBeatTime, TimeUnit.SECONDS);
             } else {
                 loginUser.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE).getTime());
-                redisCache.setCacheObject(userKey, loginUser, 3650, TimeUnit.DAYS);
-                redisCache.persist(userKey);
+                redisCache.setCacheObject(userKey, loginUser);
             }
         } else {
             loginUser.setExpireTime(System.currentTimeMillis() + expireTime * MILLIS_MINUTE);

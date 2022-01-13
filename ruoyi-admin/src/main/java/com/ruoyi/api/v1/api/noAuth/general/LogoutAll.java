@@ -68,12 +68,15 @@ public class LogoutAll extends Function {
                     _deviceCodeStr = loginUser.getDeviceCode().getDeviceCode();
                 }
                 redisCache.deleteObject(com.ruoyi.common.constant.Constants.LOGIN_TOKEN_KEY + loginUser.getToken());
-                AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), appUser.getUserName(),
-                        loginUser.getApp().getAppName(),
-                        loginUser.getAppVersion().getVersionShow(),
-                        _deviceCodeStr,
-                        com.ruoyi.common.constant.Constants.LOGOUT,
-                        "用户注销所有登录"));
+                AsyncManager.me().execute(
+                        AsyncFactory.recordAppLogininfor(
+                                loginUser.getAppUser().getAppUserId(),
+                                loginUser.getAppUser().getUserName(),
+                                loginUser.getApp().getAppName(),
+                                loginUser.getAppVersion().getVersionShow(),
+                                _deviceCodeStr,
+                                com.ruoyi.common.constant.Constants.LOGOUT,
+                                "用户注销所有登录"));
             }
         }
         return "成功";

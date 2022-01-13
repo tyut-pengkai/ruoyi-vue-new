@@ -93,7 +93,6 @@ public class SysAppLoginService {
                 appUser.setPwdErrorTimes(0);
                 appUser.setStatus(UserConstants.NORMAL);
                 appUser.setTotalPay(BigDecimal.ZERO);
-                appUser.setUserName(user.getUserName());
                 if (app.getBillType() == BillType.TIME) {
                     appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg()));
                     appUser.setPoint(null);
@@ -110,6 +109,7 @@ public class SysAppLoginService {
                     throw new ApiException(ErrorCode.ERROR_APPUSER_LOCKED, "用户：" + username + " 已停用");
                 }
             }
+            appUser.setUserName(user.getUserName());
             // 自动绑定设备码
             if (StringUtils.isNotBlank(deviceCodeStr)) {
                 deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCode(deviceCodeStr);
@@ -225,7 +225,6 @@ public class SysAppLoginService {
                 appUser.setPwdErrorTimes(0);
                 appUser.setStatus(UserConstants.NORMAL);
                 appUser.setTotalPay(BigDecimal.ZERO);
-                appUser.setUserName(loginCodeShow);
                 if (app.getBillType() == BillType.TIME) {
                     appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg()));
                     appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(appUser.getExpireTime(), loginCode.getQuota()));
@@ -245,6 +244,7 @@ public class SysAppLoginService {
                 }
                 appUser.setUserName(loginCodeShow);
             }
+            appUser.setUserName(loginCodeShow);
             // 自动绑定设备码
             if (StringUtils.isNotBlank(deviceCodeStr)) {
                 deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCode(deviceCodeStr);

@@ -73,16 +73,8 @@ public class ApiV1Controller extends BaseController {
         if (StringUtils.isBlank(appkey)) {
             throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "AppKey不能为空");
         }
-        // 检查软件版本是否存在
-        String appVersionStr = params.get("app_ver");
-        if (StringUtils.isBlank(appVersionStr)) {
-            throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "软件版本号不能为空");
-        }
         SysApp app = appService.selectSysAppByAppKey(appkey);
-        Long version = Long.parseLong(appVersionStr);
-        SysAppVersion appVersion = appVersionService.selectSysAppVersionByAppIdAndVersion(app.getAppId(), version);
         // API校验
-        validUtils.apiCheckAppAndVersion(appkey, app, version, appVersion);
         String api = params.get("api").trim();
         try {
             if (StringUtils.isNotBlank(app.getApiPwd())) {
@@ -97,33 +89,38 @@ public class ApiV1Controller extends BaseController {
             throw new ApiException(ErrorCode.ERROR_API_NOT_EXIST);
         }
         Api apii = ApiDefine.apiMap.get(api);
-        validUtils.apiCheck(api, app, appVersion, params, apii.isCheckToken());
         if (apii.isCheckToken()) {
             LoginUser loginUser = tokenService.getLoginUser(request);
             if (loginUser == null) {
                 throw new ApiException(ErrorCode.ERROR_UNAUTHORIZED);
             }
         }
+        validUtils.apiCheck(api, app, params, apii.isCheckToken());
         String appSecret = params.get("app_secret");
         if (!Objects.equals(app.getAppSecret(), appSecret)) {
             throw new ApiException(ErrorCode.ERROR_APPKEY_OR_APPSECRET_ERROR);
         }
         String deviceCode = params.get("dev_code");
+        SysAppVersion version = null;
         switch (api) {
             case "login.nu":
+                // 检查软件版本是否存在
+                version = validUtils.apiCheckPreLogin(appkey, app, params);
                 if (app.getAuthType() == AuthType.ACCOUNT) { // by account
                     String username = params.get("username");
                     String password = params.get("password");
                     // 调用登录接口
-                    return loginService.appLogin(username, password, app, appVersion, deviceCode);
+                    return loginService.appLogin(username, password, app, version, deviceCode);
                 } else {
                     throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
                 }
             case "login.nc":
+                // 检查软件版本是否存在
+                version = validUtils.apiCheckPreLogin(appkey, app, params);
                 if (app.getAuthType() == AuthType.LOGIN_CODE) { // by login code
                     String loginCode = params.get("login_code");
                     // 调用登录接口
-                    return loginService.appLogin(loginCode, app, appVersion, deviceCode);
+                    return loginService.appLogin(loginCode, app, version, deviceCode);
                 } else {
                     throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
                 }
@@ -133,7 +130,6 @@ public class ApiV1Controller extends BaseController {
             default:
                 Function function = ApiDefine.functionMap.get(api);
                 function.setApp(app);
-                function.setAppVersion(appVersion);
                 function.setParams(params);
                 return function.handle();
         }
