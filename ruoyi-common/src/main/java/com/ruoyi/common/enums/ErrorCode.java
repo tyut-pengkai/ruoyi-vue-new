@@ -33,6 +33,7 @@ public enum ErrorCode {
     ERROR_API_CALLED_MISMATCH(400090012, "该软件不适用于此接口"),
     ERROR_APP_USER_LOCKED(400090013, "软件用户被冻结"),
     ERROR_APP_USER_NOT_EXIST(400090014, "软件用户不存在"),
+    ERROR_REGISTER_FAILED(400090015, "注册账号失败"),
 
     // 400090200~400090999 业务相关
     ERROR_CARD_NOT_EXIST(400090201, "充值卡不存在"),

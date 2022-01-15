@@ -1,7 +1,6 @@
 package com.ruoyi.api.v1.domain.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysUser;
@@ -22,25 +21,33 @@ public class SysAppVo extends SysApp {
     /**
      * 创建者
      */
+    @JSONField(serialize = false)
+    @JsonIgnore
     private String createBy;
 
     /**
      * 创建时间
      */
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JSONField(serialize = false)
+    @JsonIgnore
+//    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 更新者
      */
+    @JSONField(serialize = false)
+    @JsonIgnore
     private String updateBy;
 
     /**
      * 更新时间
      */
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JSONField(serialize = false)
+    @JsonIgnore
+//    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**

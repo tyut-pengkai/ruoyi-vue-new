@@ -40,6 +40,10 @@ public class Register extends Function {
         RegisterBody user = new RegisterBody();
         user.setUsername(username);
         user.setPassword(password);
-        return registerService.register(user, false);
+        String register = registerService.register(user, false);
+        if (register.equals("")) {
+            return "成功";
+        }
+        throw new ApiException(ErrorCode.ERROR_REGISTER_FAILED, register);
     }
 }
