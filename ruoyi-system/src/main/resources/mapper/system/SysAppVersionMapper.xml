@@ -19,6 +19,7 @@
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
+        <result property="forceUpdate" column="force_update"/>
     </resultMap>
 
     <sql id="selectSysAppVersionVo">
@@ -35,7 +36,8 @@
                create_time,
                update_by,
                update_time,
-               remark
+               remark,
+               force_update
         from sys_app_version
     </sql>
 
@@ -66,17 +68,22 @@
     </select>
 
     <select id="selectLatestVersionByAppId" resultMap="SysAppVersionResult">
-        SELECT
-            v1.*
-        FROM
-            sys_app_version v1
-            INNER JOIN sys_app_version v2 ON v1.app_id = v2.app_id
-        WHERE
-            v1.app_id = #{appId}
-        GROUP BY
-            v1.version_no
-        HAVING
-            v1.version_no = max( v2.version_no )
+        SELECT v1.*
+        FROM sys_app_version v1
+                 INNER JOIN sys_app_version v2 ON v1.app_id = v2.app_id
+        WHERE v1.app_id = #{appId}
+        GROUP BY v1.version_no
+        HAVING v1.version_no = max(v2.version_no)
+    </select>
+
+    <select id="selectLatestVersionForceUpdateByAppId" resultMap="SysAppVersionResult">
+        SELECT v1.*
+        FROM sys_app_version v1
+                 INNER JOIN sys_app_version v2 ON v1.app_id = v2.app_id
+        WHERE v1.app_id = #{appId}
+          AND v2.force_update = 'Y'
+        GROUP BY v1.version_no
+        HAVING v1.version_no = max(v2.version_no)
     </select>
 
     <insert id="insertSysAppVersion" parameterType="SysAppVersion" useGeneratedKeys="true" keyProperty="appVersionId">
@@ -95,6 +102,7 @@
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
+            <if test="forceUpdate != null">force_update,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="appId != null">#{appId},</if>
@@ -110,6 +118,7 @@
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
+            <if test="forceUpdate != null">#{forceUpdate},</if>
         </trim>
     </insert>
 
@@ -129,6 +138,7 @@
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="remark != null">remark = #{remark},</if>
+            <if test="forceUpdate != null">force_update = #{forceUpdate},</if>
         </trim>
         where app_version_id = #{appVersionId}
     </update>

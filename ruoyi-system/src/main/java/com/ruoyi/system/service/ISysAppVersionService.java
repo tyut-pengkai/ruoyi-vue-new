@@ -22,7 +22,7 @@ public interface ISysAppVersionService {
     /**
      * 查询软件版本信息
      *
-     * @param appVersionId 软件版本信息主键
+     * @param appVersion 软件版本信息主键
      * @return 软件版本信息
      */
     public SysAppVersion selectSysAppVersionByAppIdAndVersion(Long appId, Long appVersion);
@@ -72,4 +72,10 @@ public interface ISysAppVersionService {
      * @return 最新版本信息
      */
     public SysAppVersion selectLatestVersionByAppId(Long appId);
+
+    /**
+     * @param appId APP ID
+     * @return 强制更新到的最新版本信息
+     */
+    public SysAppVersion selectLatestVersionForceUpdateByAppId(Long appId);
 }

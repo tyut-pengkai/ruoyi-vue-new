@@ -67,12 +67,10 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -86,8 +84,7 @@
           type="primary"
           @click="handleAdd"
         >新增
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -99,8 +96,7 @@
           type="success"
           @click="handleUpdate"
         >修改
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -112,8 +108,7 @@
           type="danger"
           @click="handleDelete"
         >删除
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -125,8 +120,7 @@
           type="warning"
           @click="handleExport"
         >导出
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -168,14 +162,6 @@
         label="下载地址"
         prop="downloadUrl"
       />
-      <el-table-column align="center" label="版本状态" prop="status">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_normal_disable"
-            :value="scope.row.status"
-          />
-        </template>
-      </el-table-column>
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
@@ -194,6 +180,22 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="备注" prop="remark"/>
+      <el-table-column align="center" label="版本状态" prop="status">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_normal_disable"
+            :value="scope.row.status"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="强制更新" prop="forceUpdate">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_yes_no"
+            :value="scope.row.forceUpdate"
+          />
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -208,8 +210,7 @@
             type="text"
             @click="handleUpdate(scope.row)"
           >修改
-          </el-button
-          >
+          </el-button>
           <el-button
             v-hasPermi="['system:appVersion:remove']"
             icon="el-icon-delete"
@@ -217,8 +218,7 @@
             type="text"
             @click="handleDelete(scope.row)"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -283,16 +283,31 @@
           <el-input v-model="form.downloadUrl" placeholder="请输入内容">
           </el-input>
         </el-form-item>
-        <el-form-item label="版本状态">
-          <el-radio-group v-model="form.status">
-            <el-radio
-              v-for="dict in dict.type.sys_normal_disable"
-              :key="dict.value"
-              :label="dict.value"
-            >{{ dict.label }}
-            </el-radio
-            >
-          </el-radio-group>
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="版本状态">
+              <el-radio-group v-model="form.status">
+                <el-radio
+                  v-for="dict in dict.type.sys_normal_disable"
+                  :key="dict.value"
+                  :label="dict.value"
+                >{{ dict.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="强制更新">
+              <el-radio-group v-model="form.forceUpdate">
+                <el-radio
+                  v-for="dict in dict.type.sys_yes_no"
+                  :key="dict.value"
+                  :label="dict.value"
+                >{{ dict.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
         </el-form-item>
         <el-form-item label="软件MD5" prop="md5">
           <el-input v-model="form.md5" placeholder="请输入软件MD5"/>
@@ -326,7 +341,7 @@ import {getApp} from "@/api/system/app";
 
 export default {
   name: "AppVersion",
-  dicts: ["sys_normal_disable", "sys_bill_type"],
+  dicts: ["sys_normal_disable", "sys_bill_type", "sys_yes_no"],
   data() {
     return {
       // 软件
@@ -437,6 +452,7 @@ export default {
         delFlag: undefined,
         md5: undefined,
         remark: undefined,
+        forceUpdate: "N",
       };
       this.resetForm("form");
     },

@@ -55,6 +55,6 @@ public class ReduceTime extends Function {
         } else {
             throw new ApiException(ErrorCode.ERROR_APP_USER_NO_TIME);
         }
-        return appUser.getExpireTime();
+        return DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, appUser.getExpireTime());
     }
 }

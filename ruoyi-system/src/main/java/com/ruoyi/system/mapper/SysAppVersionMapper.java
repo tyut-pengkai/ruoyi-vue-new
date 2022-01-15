@@ -66,7 +66,7 @@ public interface SysAppVersionMapper {
      * 查询软件版本信息
      *
      * @param appId
-     * @param version
+     * @param appVersion
      * @return 软件版本信息
      */
     public SysAppVersion selectSysAppVersionByAppIdAndVersion(@Param("appId") Long appId, @Param("appVersion") Long appVersion);
@@ -76,4 +76,10 @@ public interface SysAppVersionMapper {
      * @return 最新版本信息
      */
     public SysAppVersion selectLatestVersionByAppId(Long appId);
+
+    /**
+     * @param appId APP ID
+     * @return 强制更新到的最新版本信息
+     */
+    public SysAppVersion selectLatestVersionForceUpdateByAppId(Long appId);
 }

@@ -4,9 +4,9 @@ import com.ruoyi.common.core.domain.entity.SysAppVersion;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.mapper.SysAppVersionMapper;
 import com.ruoyi.system.service.ISysAppVersionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -17,7 +17,8 @@ import java.util.List;
  */
 @Service
 public class SysAppVersionServiceImpl implements ISysAppVersionService {
-    @Autowired
+
+    @Resource
     private SysAppVersionMapper sysAppVersionMapper;
 
     /**
@@ -35,7 +36,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      * 查询软件版本信息
      *
      * @param appId
-     * @param version
+     * @param appVersion
      * @return 软件版本信息
      */
     @Override
@@ -107,5 +108,14 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     @Override
     public SysAppVersion selectLatestVersionByAppId(Long appId) {
         return sysAppVersionMapper.selectLatestVersionByAppId(appId);
+    }
+
+    /**
+     * @param appId APP ID
+     * @return 强制更新到的最新版本信息
+     */
+    @Override
+    public SysAppVersion selectLatestVersionForceUpdateByAppId(Long appId) {
+        return sysAppVersionMapper.selectLatestVersionForceUpdateByAppId(appId);
     }
 }
