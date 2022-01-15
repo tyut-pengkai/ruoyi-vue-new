@@ -60,6 +60,11 @@ public class SysAppVersion extends BaseEntity {
     @Excel(name = "软件MD5")
     private String md5;
 
+    /**
+     * 是否强制更新到此版本
+     */
+    private String forceUpdate;
+
     private SysApp app;
 
     public SysApp getApp() {
@@ -146,6 +151,14 @@ public class SysAppVersion extends BaseEntity {
         return versionName + "(" + versionNo + ")";
     }
 
+    public String getForceUpdate() {
+        return forceUpdate;
+    }
+
+    public void setForceUpdate(String forceUpdate) {
+        this.forceUpdate = forceUpdate;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -163,6 +176,7 @@ public class SysAppVersion extends BaseEntity {
                 .append("updateBy", getUpdateBy())
                 .append("updateTime", getUpdateTime())
                 .append("remark", getRemark())
+                .append("forceUpdate", getForceUpdate())
                 .toString();
     }
 }

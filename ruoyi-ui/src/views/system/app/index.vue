@@ -255,7 +255,11 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="软件作者" align="center" :show-overflow-tooltip="true">
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="软件作者"
+      >
         <template slot-scope="scope">
           {{ scope.row.developer.nickName }}({{ scope.row.developer.userName }})
         </template>
@@ -394,12 +398,13 @@
                 v-hasPermi="['system:appVersion:list']"
                 >版本管理</el-dropdown-item
               >
-              <div v-if="scope.row.authType === '0' ">
+              <div v-if="scope.row.authType === '0'">
                 <el-dropdown-item
                   command="handleCardTemplate"
                   icon="el-icon-edit-outline"
                   v-hasPermi="['system:cardTemplate:list']"
-                  >卡类管理</el-dropdown-item
+                >卡类管理
+                </el-dropdown-item
                 >
                 <el-dropdown-item
                   command="handleCardManage"
@@ -408,12 +413,13 @@
                   >卡密管理</el-dropdown-item
                 >
               </div>
-              <div v-if="scope.row.authType === '1' ">
+              <div v-if="scope.row.authType === '1'">
                 <el-dropdown-item
                   command="handleLoginCodeTemplate"
                   icon="el-icon-edit-outline"
                   v-hasPermi="['system:loginCodeTemplate:list']"
-                  >登录码类别</el-dropdown-item
+                >登录码类别
+                </el-dropdown-item
                 >
                 <el-dropdown-item
                   command="handleLoginCodeManage"
@@ -593,6 +599,20 @@
                 <imageUpload v-model="form.icon" :limit="1" /> -->
               <!-- <app-icon /> -->
               <!-- </el-form-item> -->
+              <el-form-item label="欢迎语" prop="welcomeNotice">
+                <el-input
+                  v-model="form.welcomeNotice"
+                  placeholder="请输入内容"
+                  type="textarea"
+                />
+              </el-form-item>
+              <el-form-item label="停机公告" prop="offNotice">
+                <el-input
+                  v-model="form.offNotice"
+                  placeholder="请输入内容"
+                  type="textarea"
+                />
+              </el-form-item>
               <el-form-item label="备注" prop="remark">
                 <el-input
                   v-model="form.remark"

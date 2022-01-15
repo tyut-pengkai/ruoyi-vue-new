@@ -106,7 +106,7 @@ public class SysAppLoginService {
             } else {
                 if (UserStatus.DISABLE.getCode().equals(appUser.getStatus())) {
                     log.info("登录用户：{} 已被停用.", username);
-                    throw new ApiException(ErrorCode.ERROR_APPUSER_LOCKED, "用户：" + username + " 已停用");
+                    throw new ApiException(ErrorCode.ERROR_APP_USER_LOCKED, "用户：" + username + " 已停用");
                 }
             }
             appUser.setUserName(user.getUserName());
@@ -240,7 +240,7 @@ public class SysAppLoginService {
             } else {
                 if (UserStatus.DISABLE.getCode().equals(appUser.getStatus())) {
                     log.info("登录用户：{} 已被停用.", loginCodeStr);
-                    throw new ApiException(ErrorCode.ERROR_APPUSER_LOCKED, "用户：" + loginCodeStr + " 已停用");
+                    throw new ApiException(ErrorCode.ERROR_APP_USER_LOCKED, "用户：" + loginCodeStr + " 已停用");
                 }
                 appUser.setUserName(loginCodeShow);
             }
