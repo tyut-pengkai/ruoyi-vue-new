@@ -6,11 +6,13 @@ import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.mapper.SysAppMapper;
 import com.ruoyi.system.service.ISysAppService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -26,6 +28,16 @@ public class SysAppServiceImpl implements ISysAppService {
     private SysAppMapper sysAppMapper;
     @Resource
     private RedisCache redisCache;
+
+    @PostConstruct
+    public void init() {
+        List<SysApp> appList = sysAppMapper.selectSysAppList(new SysApp());
+        for (SysApp app : appList) {
+            if (StringUtils.isNotBlank(app.getAppKey())) {
+                redisCache.setCacheObject(Constants.SYS_APP_KEY + app.getAppKey(), app);
+            }
+        }
+    }
 
     /**
      * 查询软件

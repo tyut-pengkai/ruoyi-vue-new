@@ -1,7 +1,5 @@
 package com.ruoyi.common.core.domain.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excels;
 import com.ruoyi.common.core.domain.BaseEntity;
@@ -100,57 +98,35 @@ public class SysApp extends BaseEntity
     @Excel(name = "心跳包时间，单位秒，客户端若在此时间范围内无任何操作将自动下线，默认为300秒")
     private Integer heartBeatTime;
 
-    /** APP KEY */
+    /**
+     * APP KEY
+     */
     @Excel(name = "APP KEY")
     private String appKey;
 
-    /** APP SECRET */
+    /**
+     * APP SECRET
+     */
     private String appSecret;
 
-    /** API匿名密码 */
+    /**
+     * API匿名密码
+     */
     private String apiPwd;
 
     /**
-     * 登录码前缀
+     * 软件启动公告
      */
-//    @Excel(name = "登录码前缀")
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private String loginCodePrefix;
+    private String welcomeNotice;
 
     /**
-     * 登录码后缀
+     * 软件停机公告
      */
-//    @Excel(name = "登录码后缀")
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private String loginCodeSuffix;
+    private String offNotice;
 
     /**
-     * 登录码长度，默认为32
+     * 软件图标地址
      */
-//    @Excel(name = "登录码长度，默认为32")
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private Integer loginCodeLen;
-
-    /**
-     * 登录码生成规则，默认为大小写字母+数字
-     */
-//    @Excel(name = "登录码生成规则，默认为大小写字母+数字", dictType = "sys_gen_rule")
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private GenRule loginCodeGenRule;
-
-    /**
-     * 登录码生成规则为正则时生效
-     */
-//    @Excel(name = "登录码生成规则为正则时生效")
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private String loginCodeRegex;
-
-    /** 软件图标地址 */
     @Excel(name = "软件图标")
     private String icon;
 
@@ -386,63 +362,32 @@ public class SysApp extends BaseEntity
         this.appSecret = appSecret;
     }
 
-    public String getAppSecret()
-    {
+    public String getAppSecret() {
         return appSecret;
     }
-    public void setApiPwd(String apiPwd)
-    {
+
+    public void setApiPwd(String apiPwd) {
         this.apiPwd = apiPwd;
     }
 
-    public String getApiPwd()
-    {
+    public String getApiPwd() {
         return apiPwd;
     }
-    public void setLoginCodePrefix(String loginCodePrefix)
-    {
-        this.loginCodePrefix = loginCodePrefix;
+
+    public String getWelcomeNotice() {
+        return welcomeNotice;
     }
 
-    public String getLoginCodePrefix()
-    {
-        return loginCodePrefix;
-    }
-    public void setLoginCodeSuffix(String loginCodeSuffix)
-    {
-        this.loginCodeSuffix = loginCodeSuffix;
+    public void setWelcomeNotice(String welcomeNotice) {
+        this.welcomeNotice = welcomeNotice;
     }
 
-    public String getLoginCodeSuffix()
-    {
-        return loginCodeSuffix;
-    }
-    public void setLoginCodeLen(Integer loginCodeLen)
-    {
-        this.loginCodeLen = loginCodeLen;
+    public String getOffNotice() {
+        return offNotice;
     }
 
-    public Integer getLoginCodeLen()
-    {
-        return loginCodeLen;
-    }
-    public void setLoginCodeGenRule(GenRule loginCodeGenRule)
-    {
-        this.loginCodeGenRule = loginCodeGenRule;
-    }
-
-    public GenRule getLoginCodeGenRule()
-    {
-        return loginCodeGenRule;
-    }
-    public void setLoginCodeRegex(String loginCodeRegex)
-    {
-        this.loginCodeRegex = loginCodeRegex;
-    }
-
-    public String getLoginCodeRegex()
-    {
-        return loginCodeRegex;
+    public void setOffNotice(String offNotice) {
+        this.offNotice = offNotice;
     }
 
     public void setIcon(String icon) {
@@ -489,11 +434,8 @@ public class SysApp extends BaseEntity
                 .append("appKey", getAppKey())
                 .append("appSecret", getAppSecret())
                 .append("apiPwd", getApiPwd())
-                .append("loginCodePrefix", getLoginCodePrefix())
-                .append("loginCodeSuffix", getLoginCodeSuffix())
-                .append("loginCodeLen", getLoginCodeLen())
-                .append("loginCodeGenRule", getLoginCodeGenRule())
-                .append("loginCodeRegex", getLoginCodeRegex())
+                .append("welcomeNotice", getWelcomeNotice())
+                .append("offNotice", getOffNotice())
                 .append("icon", getIcon())
                 .append("createBy", getCreateBy())
                 .append("createTime", getCreateTime())

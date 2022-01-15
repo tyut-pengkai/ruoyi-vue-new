@@ -110,6 +110,9 @@ mybatis-plus:
   configLocation: classpath:mybatis/mybatis-config.xml
   # 扫描枚举类
   typeEnumsPackage: com.ruoyi.**.enums
+  # 是否显示mybatis-plus的logo
+  global-config:
+    banner: false
 
 # PageHelper分页插件
 pagehelper: 
