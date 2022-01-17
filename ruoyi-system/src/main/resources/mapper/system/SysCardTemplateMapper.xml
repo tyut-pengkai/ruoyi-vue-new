@@ -34,9 +34,11 @@
     </resultMap>
 
     <resultMap type="SysApp" id="SysAppResult">
-        <result property="appId"    column="app_id"    />
-        <result property="appName"    column="app_name"    />
-        <result property="description"    column="description"    />
+        <result property="appId" column="app_id"/>
+        <result property="appName" column="app_name"/>
+        <result property="authType" column="auth_type"/>
+        <result property="billType" column="bill_type"/>
+        <result property="description" column="description"/>
     </resultMap>
 
     <sql id="selectSysCardTemplateVo">
@@ -67,6 +69,8 @@
                ct.remark,
                a.app_id,
                a.app_name,
+               a.auth_type,
+               a.bill_type,
                a.description
         from sys_card_template ct
                  left join sys_app a on ct.app_id = a.app_id
