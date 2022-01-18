@@ -268,7 +268,7 @@
           <el-date-picker clearable size="small"
             v-model="form.${field}"
             type="date"
-            value-format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd HH:mm:ss"
             placeholder="选择${comment}">
           </el-date-picker>
         </el-form-item>

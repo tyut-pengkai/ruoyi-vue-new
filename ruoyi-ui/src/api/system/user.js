@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { parseStrEmpty } from "@/utils/ruoyi";
+import {parseStrEmpty} from "@/utils/ruoyi";
 
 // 查询用户列表
 export function listUser(query) {
@@ -123,5 +123,13 @@ export function updateAuthRole(data) {
     url: '/system/user/authRole',
     method: 'put',
     params: data
+  })
+}
+
+// 查询用户列表
+export function listUserByExceptAppid(appId) {
+  return request({
+    url: '/system/user/listByExceptAppId/' + parseStrEmpty(appId),
+    method: 'get'
   })
 }

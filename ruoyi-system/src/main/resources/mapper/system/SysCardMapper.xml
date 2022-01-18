@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysCardMapper">
+    
+    <resultMap type="SysCard" id="SysCardResult">
+        <result property="cardId"    column="card_id"    />
+        <result property="appId"    column="app_id"    />
+        <result property="cardName"    column="card_name"    />
+        <result property="cardNo"    column="card_no"    />
+        <result property="cardPass"    column="card_pass"    />
+        <result property="quota"    column="quota"    />
+        <result property="price"    column="price"    />
+        <result property="expireTime"    column="expire_time"    />
+        <result property="isSold"    column="is_sold"    />
+        <result property="onSale"    column="on_sale"    />
+        <result property="isCharged"    column="is_charged"    />
+        <result property="templateId"    column="template_id"    />
+        <result property="status"    column="status"    />
+        <result property="chargeRule"    column="charge_rule"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <association property="app"    column="app_id" javaType="SysApp" resultMap="SysAppResult" />
+    </resultMap>
+
+    <resultMap type="SysApp" id="SysAppResult">
+        <result property="appId" column="app_id"/>
+        <result property="appName" column="app_name"/>
+        <result property="authType" column="auth_type"/>
+        <result property="billType" column="bill_type"/>
+        <result property="description" column="description"/>
+    </resultMap>
+
+    <sql id="selectSysCardVo">
+        select c.card_id,
+               c.app_id,
+               c.card_name,
+               c.card_no,
+               c.card_pass,
+               c.quota,
+               c.price,
+               c.expire_time,
+               c.is_sold,
+               c.on_sale,
+               c.is_charged,
+               c.template_id,
+               c.status,
+               c.charge_rule,
+               c.create_by,
+               c.create_time,
+               c.update_by,
+               c.update_time,
+               c.remark,
+               a.app_id,
+               a.app_name,
+               a.auth_type,
+               a.bill_type,
+               a.description
+        from sys_card c
+                 left join sys_app a on c.app_id = a.app_id
+    </sql>
+
+    <select id="selectSysCardList" parameterType="SysCard" resultMap="SysCardResult">
+        <include refid="selectSysCardVo"/>
+        <where>  
+            <if test="appId != null "> and c.app_id = #{appId}</if>
+            <if test="cardName != null  and cardName != ''"> and c.card_name like concat('%', #{cardName}, '%')</if>
+            <if test="cardNo != null  and cardNo != ''"> and c.card_no like concat('%', #{cardNo}, '%')</if>
+            <if test="params.beginQuota != null and params.beginQuota != '' and params.endQuota != null and params.endQuota != ''"> and c.quota between #{params.beginQuota} and #{params.endQuota}</if>
+            <if test="params.beginPrice != null and params.beginPrice != '' and params.endPrice != null and params.endPrice != ''"> and c.price between #{params.beginPrice} and #{params.endPrice}</if>
+            <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''"> and c.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}</if>
+            <if test="isSold != null  and isSold != ''"> and c.is_sold = #{isSold}</if>
+            <if test="onSale != null  and onSale != ''"> and c.on_sale = #{onSale}</if>
+            <if test="isCharged != null  and isCharged != ''"> and c.is_charged = #{isCharged}</if>
+            <if test="status != null  and status != ''"> and c.status = #{status}</if>
+            <if test="chargeRule != null  and chargeRule != ''"> and c.charge_rule = #{chargeRule}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysCardByCardId" parameterType="Long" resultMap="SysCardResult">
+        <include refid="selectSysCardVo"/>
+        where c.card_id = #{cardId}
+    </select>
+
+    <select id="selectSysCardByCardNo" parameterType="String" resultMap="SysCardResult">
+        <include refid="selectSysCardVo"/>
+        where c.card_no = #{cardNo}
+    </select>
+        
+    <insert id="insertSysCard" parameterType="SysCard" useGeneratedKeys="true" keyProperty="cardId">
+        insert into sys_card
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appId != null">app_id,</if>
+            <if test="cardName != null">card_name,</if>
+            <if test="cardNo != null">card_no,</if>
+            <if test="cardPass != null">card_pass,</if>
+            <if test="quota != null">quota,</if>
+            <if test="price != null">price,</if>
+            <if test="expireTime != null">expire_time,</if>
+            <if test="isSold != null">is_sold,</if>
+            <if test="onSale != null">on_sale,</if>
+            <if test="isCharged != null">is_charged,</if>
+            <if test="templateId != null">template_id,</if>
+            <if test="status != null">status,</if>
+            <if test="chargeRule != null">charge_rule,</if>
+            <if test="createBy != null">create_by,</if>
+            create_time,
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appId != null">#{appId},</if>
+            <if test="cardName != null">#{cardName},</if>
+            <if test="cardNo != null">#{cardNo},</if>
+            <if test="cardPass != null">#{cardPass},</if>
+            <if test="quota != null">#{quota},</if>
+            <if test="price != null">#{price},</if>
+            <if test="expireTime != null">#{expireTime},</if>
+            <if test="isSold != null">#{isSold},</if>
+            <if test="onSale != null">#{onSale},</if>
+            <if test="isCharged != null">#{isCharged},</if>
+            <if test="templateId != null">#{templateId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="chargeRule != null">#{chargeRule},</if>
+            <if test="createBy != null">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertSysCardBatch" useGeneratedKeys="true" keyProperty="cardId">
+        insert into sys_card(app_id,card_name,card_no,card_pass,quota,price,expire_time,is_sold,on_sale,is_charged,
+                             template_id,status,charge_rule,create_by,create_time,update_by,update_time,remark) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.appId},#{item.cardName},#{item.cardNo},#{item.cardPass},#{item.quota},#{item.price},
+            #{item.expireTime},#{item.isSold},#{item.onSale},#{item.isCharged},
+            #{item.templateId},#{item.status},#{item.chargeRule},#{item.createBy},sysdate(),#{item.updateBy},
+            #{item.updateTime},#{item.remark})
+        </foreach>
+    </insert>
+
+    <update id="updateSysCard" parameterType="SysCard">
+        update sys_card
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="appId != null">app_id = #{appId},</if>
+            <if test="cardName != null">card_name = #{cardName},</if>
+            <if test="cardNo != null">card_no = #{cardNo},</if>
+            <if test="cardPass != null">card_pass = #{cardPass},</if>
+            <if test="quota != null">quota = #{quota},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="expireTime != null">expire_time = #{expireTime},</if>
+            <if test="isSold != null">is_sold = #{isSold},</if>
+            <if test="onSale != null">on_sale = #{onSale},</if>
+            <if test="isCharged != null">is_charged = #{isCharged},</if>
+            <if test="templateId != null">template_id = #{templateId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="chargeRule != null">charge_rule = #{chargeRule},</if>
+<!--            <if test="createBy != null">create_by = #{createBy},</if>-->
+<!--            <if test="createTime != null">create_time = #{createTime},</if>-->
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where card_id = #{cardId}
+    </update>
+
+    <delete id="deleteSysCardByCardId" parameterType="Long">
+        delete from sys_card where card_id = #{cardId}
+    </delete>
+
+    <delete id="deleteSysCardByCardIds" parameterType="String">
+        delete from sys_card where card_id in 
+        <foreach item="cardId" collection="array" open="(" separator="," close=")">
+            #{cardId}
+        </foreach>
+    </delete>
+</mapper>

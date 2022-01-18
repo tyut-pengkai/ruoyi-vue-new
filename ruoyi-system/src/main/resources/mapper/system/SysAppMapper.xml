@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysAppMapper">
+
+	<resultMap type="SysApp" id="SysAppResult">
+		<result property="appId"    column="app_id"    />
+		<result property="appName"    column="app_name"    />
+		<result property="description"    column="description"    />
+		<result property="apiUrl"    column="api_url"    />
+		<result property="status"    column="status"    />
+		<result property="delFlag"    column="del_flag"    />
+		<result property="bindType"    column="bind_type"    />
+		<result property="isCharge"    column="is_charge"    />
+		<result property="idxUrl"    column="idx_url"    />
+		<result property="freeQuotaReg"    column="free_quota_reg"    />
+		<result property="reduceQuotaUnbind"    column="reduce_quota_unbind"    />
+		<result property="authType"    column="auth_type"    />
+		<result property="billType"    column="bill_type"    />
+		<result property="dataInEnc"    column="data_in_enc"    />
+		<result property="dataInPwd"    column="data_in_pwd"    />
+		<result property="dataOutEnc" column="data_out_enc"/>
+		<result property="dataOutPwd" column="data_out_pwd"/>
+		<result property="dataExpireTime" column="data_expire_time"/>
+		<result property="loginLimitU" column="login_limit_u"/>
+		<result property="loginLimitM" column="login_limit_m"/>
+		<result property="limitOper" column="limit_oper"/>
+		<result property="heartBeatTime" column="heart_beat_time"/>
+		<result property="appKey" column="app_key"/>
+		<result property="appSecret" column="app_secret"/>
+		<result property="apiPwd" column="api_pwd"/>
+		<result property="welcomeNotice" column="welcome_notice"/>
+		<result property="offNotice" column="off_notice"/>
+		<result property="icon" column="icon"/>
+		<result property="createBy" column="create_by"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateBy" column="update_by"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<association property="developer" column="create_by" javaType="SysUser" resultMap="SysUserResult"/>
+	</resultMap>
+
+	<resultMap type="SysUser" id="SysUserResult">
+		<id     property="userId"       column="user_id"      />
+		<result property="userName"     column="user_name"    />
+		<result property="nickName"     column="nick_name"    />
+	</resultMap>
+
+	<sql id="selectSysAppVo">
+		select a.app_id,
+			   a.app_name,
+			   a.description,
+			   a.api_url,
+			   a.status,
+			   a.del_flag,
+			   a.bind_type,
+			   a.is_charge,
+			   a.idx_url,
+			   a.free_quota_reg,
+			   a.reduce_quota_unbind,
+			   a.auth_type,
+			   a.bill_type,
+			   a.data_in_enc,
+			   a.data_in_pwd,
+			   a.data_out_enc,
+			   a.data_out_pwd,
+			   a.data_expire_time,
+			   a.login_limit_u,
+			   a.login_limit_m,
+			   a.limit_oper,
+			   a.heart_beat_time,
+			   a.app_key,
+			   a.app_secret,
+			   a.api_pwd,
+			   a.welcome_notice,
+			   a.off_notice,
+			   a.icon,
+			   a.create_by,
+			   a.create_time,
+			   a.update_by,
+			   a.update_time,
+			   a.remark,
+			   u.user_id,
+			   u.user_name,
+			   u.nick_name
+		from sys_app a
+				 left join sys_user u on u.user_name = a.create_by
+	</sql>
+
+	<select id="selectSysAppList" parameterType="SysApp" resultMap="SysAppResult">
+		<include refid="selectSysAppVo"/>
+		<where>
+			<if test="appName != null  and appName != ''"> and a.app_name like concat('%', #{appName}, '%')</if>
+			<if test="description != null  and description != ''"> and a.description like concat('%', #{description}, '%')</if>
+			<if test="status != null  and status != ''"> and a.status = #{status}</if>
+			<if test="bindType != null"> and a.bind_type = #{bindType}</if>
+			<if test="isCharge != null  and isCharge != ''"> and a.is_charge = #{isCharge}</if>
+			<if test="authType != null"> and a.auth_type = #{authType}</if>
+			<if test="billType != null"> and a.bill_type = #{billType}</if>
+			<if test="createBy != null  and createBy != ''"> and (u.nick_name like concat('%', #{createBy}, '%') or u.user_name like concat('%', #{createBy}, '%'))</if>
+			<if test="params.beginCreateTime != null and params.beginCreateTime != ''"><!-- 开始时间检索 -->
+				AND date_format(a.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+			</if>
+			<if test="params.endCreateTime != null and params.endCreateTime != ''"><!-- 结束时间检索 -->
+                AND date_format(a.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSysAppByAppId" parameterType="Long" resultMap="SysAppResult">
+        <include refid="selectSysAppVo"/>
+        where app_id = #{appId}
+    </select>
+
+    <select id="selectSysAppByAppKey" parameterType="String" resultMap="SysAppResult">
+        <include refid="selectSysAppVo"/>
+        where app_key = #{appKey}
+    </select>
+
+    <insert id="insertSysApp" parameterType="SysApp">
+        insert into sys_app
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appId != null">app_id,</if>
+            <if test="appName != null and appName != ''">app_name,</if>
+            <if test="description != null">description,</if>
+            <if test="apiUrl != null">api_url,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+			<if test="bindType != null">bind_type,</if>
+			<if test="isCharge != null">is_charge,</if>
+			<if test="idxUrl != null">idx_url,</if>
+			<if test="freeQuotaReg != null">free_quota_reg,</if>
+			<if test="reduceQuotaUnbind != null">reduce_quota_unbind,</if>
+			<if test="authType != null">auth_type,</if>
+			<if test="billType != null">bill_type,</if>
+			<if test="dataInEnc != null">data_in_enc,</if>
+			<if test="dataInPwd != null">data_in_pwd,</if>
+			<if test="dataOutEnc != null">data_out_enc,</if>
+			<if test="dataOutPwd != null">data_out_pwd,</if>
+			<if test="dataExpireTime != null">data_expire_time,</if>
+			<if test="loginLimitU != null">login_limit_u,</if>
+			<if test="loginLimitM != null">login_limit_m,</if>
+			<if test="limitOper != null">limit_oper,</if>
+			<if test="heartBeatTime != null">heart_beat_time,</if>
+			<if test="appKey != null">app_key,</if>
+			<if test="appSecret != null">app_secret,</if>
+			<if test="apiPwd != null">api_pwd,</if>
+			<if test="welcomeNotice != null">welcome_notice,</if>
+			<if test="offNotice != null">off_notice,</if>
+			<if test="icon != null">icon,</if>
+			<if test="createBy != null">create_by,</if>
+			create_time,
+			<if test="updateBy != null">update_by,</if>
+			<if test="updateTime != null">update_time,</if>
+			<if test="remark != null">remark,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="appId != null">#{appId},</if>
+			<if test="appName != null and appName != ''">#{appName},</if>
+			<if test="description != null">#{description},</if>
+			<if test="apiUrl != null">#{apiUrl},</if>
+			<if test="status != null">#{status},</if>
+			<if test="delFlag != null">#{delFlag},</if>
+			<if test="bindType != null">#{bindType},</if>
+			<if test="isCharge != null">#{isCharge},</if>
+			<if test="idxUrl != null">#{idxUrl},</if>
+			<if test="freeQuotaReg != null">#{freeQuotaReg},</if>
+			<if test="reduceQuotaUnbind != null">#{reduceQuotaUnbind},</if>
+			<if test="authType != null">#{authType},</if>
+			<if test="billType != null">#{billType},</if>
+			<if test="dataInEnc != null">#{dataInEnc},</if>
+			<if test="dataInPwd != null">#{dataInPwd},</if>
+			<if test="dataOutEnc != null">#{dataOutEnc},</if>
+			<if test="dataOutPwd != null">#{dataOutPwd},</if>
+			<if test="dataExpireTime != null">#{dataExpireTime},</if>
+			<if test="loginLimitU != null">#{loginLimitU},</if>
+			<if test="loginLimitM != null">#{loginLimitM},</if>
+			<if test="limitOper != null">#{limitOper},</if>
+			<if test="heartBeatTime != null">#{heartBeatTime},</if>
+			<if test="appKey != null">#{appKey},</if>
+			<if test="appSecret != null">#{appSecret},</if>
+			<if test="apiPwd != null">#{apiPwd},</if>
+			<if test="welcomeNotice != null">#{welcomeNotice},</if>
+			<if test="offNotice != null">#{offNotice},</if>
+			<if test="icon != null">#{icon},</if>
+			<if test="createBy != null">#{createBy},</if>
+			sysdate(),
+			<if test="updateBy != null">#{updateBy},</if>
+			<if test="updateTime != null">#{updateTime},</if>
+			<if test="remark != null">#{remark},</if>
+		</trim>
+	</insert>
+
+	<update id="updateSysApp" parameterType="SysApp">
+		update sys_app
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="appName != null and appName != ''">app_name = #{appName},</if>
+			<if test="description != null">description = #{description},</if>
+			<if test="apiUrl != null">api_url = #{apiUrl},</if>
+			<if test="status != null">status = #{status},</if>
+			<if test="delFlag != null">del_flag = #{delFlag},</if>
+			<if test="bindType != null">bind_type = #{bindType},</if>
+			<if test="isCharge != null">is_charge = #{isCharge},</if>
+			<if test="idxUrl != null">idx_url = #{idxUrl},</if>
+			<if test="freeQuotaReg != null">free_quota_reg = #{freeQuotaReg},</if>
+			<if test="reduceQuotaUnbind != null">reduce_quota_unbind = #{reduceQuotaUnbind},</if>
+<!--			<if test="authType != null">auth_type = #{authType},</if>-->
+<!--			<if test="billType != null">bill_type = #{billType},</if>-->
+			<if test="dataInEnc != null">data_in_enc = #{dataInEnc},</if>
+			<if test="dataInPwd != null">data_in_pwd = #{dataInPwd},</if>
+			<if test="dataOutEnc != null">data_out_enc = #{dataOutEnc},</if>
+			<if test="dataOutPwd != null">data_out_pwd = #{dataOutPwd},</if>
+			<if test="dataExpireTime != null">data_expire_time = #{dataExpireTime},</if>
+			<if test="loginLimitU != null">login_limit_u = #{loginLimitU},</if>
+			<if test="loginLimitM != null">login_limit_m = #{loginLimitM},</if>
+			<if test="limitOper != null">limit_oper = #{limitOper},</if>
+			<if test="heartBeatTime != null">heart_beat_time = #{heartBeatTime},</if>
+			<!--			<if test="appKey != null">app_key = #{appKey},</if>-->
+			<if test="appSecret != null">app_secret = #{appSecret},</if>
+			<if test="apiPwd != null">api_pwd = #{apiPwd},</if>
+			<if test="welcomeNotice != null">welcome_notice = #{welcomeNotice},</if>
+			<if test="offNotice != null">off_notice = #{offNotice},</if>
+			<if test="icon != null">icon = #{icon},</if>
+			<!--			<if test="createBy != null">create_by = #{createBy},</if>-->
+			<!--			<if test="createTime != null">create_time = #{createTime},</if>-->
+			<if test="updateBy != null">update_by = #{updateBy},</if>
+			update_time = sysdate(),
+			<if test="remark != null">remark = #{remark},</if>
+		</trim>
+		where app_id = #{appId}
+	</update>
+
+	<delete id="deleteSysAppByAppId" parameterType="Long">
+		delete from sys_app where app_id = #{appId}
+	</delete>
+
+	<delete id="deleteSysAppByAppIds" parameterType="String">
+		delete from sys_app where app_id in
+		<foreach item="appId" collection="array" open="(" separator="," close=")">
+			#{appId}
+		</foreach>
+	</delete>
+
+	<select id="checkAppNameUnique" resultType="int">
+		select count(1) from sys_app where app_name = #{appName}
+		<if test="appId != null and appId != ''">and app_id != #{appId}</if>
+		limit 1
+	</select>
+</mapper>

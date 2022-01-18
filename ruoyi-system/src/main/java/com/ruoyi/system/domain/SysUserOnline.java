@@ -22,22 +22,40 @@ public class SysUserOnline
     /** 登录地址 */
     private String loginLocation;
 
-    /** 浏览器类型 */
+    /**
+     * 浏览器类型
+     */
     private String browser;
 
-    /** 操作系统 */
+    /**
+     * 操作系统
+     */
     private String os;
 
-    /** 登录时间 */
+    /**
+     * 登录时间
+     */
     private Long loginTime;
 
-    public String getTokenId()
-    {
+    /**
+     * 登录时间
+     */
+    private Long expireTime;
+
+    /**
+     * 是否为软件登录
+     */
+    private char ifApp;
+
+    private String appDesc;
+
+    private String deviceCode;
+
+    public String getTokenId() {
         return tokenId;
     }
 
-    public void setTokenId(String tokenId)
-    {
+    public void setTokenId(String tokenId) {
         this.tokenId = tokenId;
     }
 
@@ -96,18 +114,47 @@ public class SysUserOnline
         return os;
     }
 
-    public void setOs(String os)
-    {
+    public void setOs(String os) {
         this.os = os;
     }
 
-    public Long getLoginTime()
-    {
+    public Long getLoginTime() {
         return loginTime;
     }
 
-    public void setLoginTime(Long loginTime)
-    {
+    public void setLoginTime(Long loginTime) {
         this.loginTime = loginTime;
+    }
+
+    public char getIfApp() {
+        return ifApp;
+    }
+
+    public void setIfApp(char ifApp) {
+        this.ifApp = ifApp;
+    }
+
+    public String getAppDesc() {
+        return appDesc;
+    }
+
+    public void setAppDesc(String appDesc) {
+        this.appDesc = appDesc;
+    }
+
+    public String getDeviceCode() {
+        return deviceCode;
+    }
+
+    public void setDeviceCode(String deviceCode) {
+        this.deviceCode = deviceCode;
+    }
+
+    public Long getExpireTime() {
+        return expireTime;
+    }
+
+    public void setExpireTime(Long expireTime) {
+        this.expireTime = expireTime;
     }
 }

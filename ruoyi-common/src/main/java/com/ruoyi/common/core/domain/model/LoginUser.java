@@ -1,11 +1,12 @@
 package com.ruoyi.common.core.domain.model;
 
-import java.util.Collection;
-import java.util.Set;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.ruoyi.common.core.domain.entity.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.ruoyi.common.core.domain.entity.SysUser;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * 登录用户身份权限
@@ -66,13 +67,24 @@ public class LoginUser implements UserDetails
      */
     private Set<String> permissions;
 
+    private Boolean ifApp;
+
+    private SysApp app;
+
+    private SysAppUser appUser;
+
+    private SysAppVersion appVersion;
+
+    private SysDeviceCode deviceCode;
+
+    private SysAppUserDeviceCode appUserDeviceCode;
+
     /**
      * 用户信息
      */
     private SysUser user;
 
-    public Long getUserId()
-    {
+    public Long getUserId() {
         return userId;
     }
 
@@ -129,7 +141,7 @@ public class LoginUser implements UserDetails
     @Override
     public String getUsername()
     {
-        return user.getUserName();
+        return user != null ? user.getUserName() : (appUser != null ? appUser.getUserName() : null);
     }
 
     /**
@@ -253,14 +265,60 @@ public class LoginUser implements UserDetails
         return user;
     }
 
-    public void setUser(SysUser user)
-    {
+    public void setUser(SysUser user) {
         this.user = user;
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities()
-    {
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
+    }
+
+    public SysApp getApp() {
+        return app;
+    }
+
+    public void setApp(SysApp app) {
+        this.app = app;
+    }
+
+    public SysAppUser getAppUser() {
+        return appUser;
+    }
+
+    public void setAppUser(SysAppUser appUser) {
+        this.appUser = appUser;
+    }
+
+    public SysAppVersion getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(SysAppVersion appVersion) {
+        this.appVersion = appVersion;
+    }
+
+    public SysDeviceCode getDeviceCode() {
+        return deviceCode;
+    }
+
+    public void setDeviceCode(SysDeviceCode deviceCode) {
+        this.deviceCode = deviceCode;
+    }
+
+    public Boolean getIfApp() {
+        return ifApp;
+    }
+
+    public void setIfApp(Boolean ifApp) {
+        this.ifApp = ifApp;
+    }
+
+    public SysAppUserDeviceCode getAppUserDeviceCode() {
+        return appUserDeviceCode;
+    }
+
+    public void setAppUserDeviceCode(SysAppUserDeviceCode appUserDeviceCode) {
+        this.appUserDeviceCode = appUserDeviceCode;
     }
 }

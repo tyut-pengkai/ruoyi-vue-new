@@ -1,0 +1,84 @@
+package com.ruoyi.api.v1.api.noAuth.general;
+
+import com.ruoyi.api.v1.constants.Constants;
+import com.ruoyi.api.v1.domain.Api;
+import com.ruoyi.api.v1.domain.Function;
+import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.enums.ErrorCode;
+import com.ruoyi.common.enums.UserStatus;
+import com.ruoyi.common.exception.ApiException;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.framework.manager.AsyncManager;
+import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.system.service.ISysAppUserService;
+import com.ruoyi.system.service.ISysUserService;
+
+import javax.annotation.Resource;
+import java.util.Collection;
+import java.util.Objects;
+
+public class LogoutAll extends Function {
+
+    @Resource
+    ISysAppUserService appUserService;
+    @Resource
+    private ISysUserService userService;
+    @Resource
+    private RedisCache redisCache;
+
+    @Override
+    public void init() {
+        this.setApi(new Api("logoutAll.ng", "注销所有登录", false, Constants.API_TAG_GENERAL,
+                "注销指定账号在本软件的所有登录", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL,
+                new Param[]{
+                        new Param("username", true, "要注销的账号"),
+                        new Param("password", true, "密码")
+                }));
+    }
+
+    @Override
+    public Object handle() {
+        String username = this.getParams().get("username");
+        String password = this.getParams().get("password");
+
+        SysUser sysUser = userService.selectUserByUserName(username);
+        if (sysUser == null) {
+            throw new ApiException(ErrorCode.ERROR_ACCOUNT_NOT_EXIST, "账号：" + username + " 不存在");
+        } else if (UserStatus.DELETED.getCode().equals(sysUser.getDelFlag())) {
+            throw new ApiException(ErrorCode.ERROR_ACCOUNT_NOT_EXIST, "账号：" + username + " 已被删除");
+        } else if (!SecurityUtils.matchesPassword(password, sysUser.getPassword())) {
+            throw new ApiException(ErrorCode.ERROR_USERNAME_OR_PASSWORD_ERROR, "账号或密码错误");
+        }
+
+        SysAppUser appUser = appUserService.selectSysAppUserByAppIdAndUserId(this.getApp().getAppId(), sysUser.getUserId());
+        if (appUser == null) {
+            return "成功";
+        }
+
+        Collection<String> keys = redisCache.keys(com.ruoyi.common.constant.Constants.LOGIN_TOKEN_KEY + "*");
+        for (String key : keys) {
+            LoginUser loginUser = redisCache.getCacheObject(key);
+            if (loginUser.getIfApp() && Objects.equals(loginUser.getAppUser().getAppUserId(), appUser.getAppUserId())) {
+                String _deviceCodeStr = null;
+                if (loginUser.getDeviceCode() != null) {
+                    _deviceCodeStr = loginUser.getDeviceCode().getDeviceCode();
+                }
+                redisCache.deleteObject(com.ruoyi.common.constant.Constants.LOGIN_TOKEN_KEY + loginUser.getToken());
+                AsyncManager.me().execute(
+                        AsyncFactory.recordAppLogininfor(
+                                loginUser.getAppUser().getAppUserId(),
+                                loginUser.getAppUser().getUserName(),
+                                loginUser.getApp().getAppName(),
+                                loginUser.getAppVersion().getVersionShow(),
+                                _deviceCodeStr,
+                                com.ruoyi.common.constant.Constants.LOGOUT,
+                                "用户注销所有登录"));
+            }
+        }
+        return "成功";
+    }
+}

@@ -1,16 +1,17 @@
 package com.ruoyi.common.core.domain;
 
-import java.util.HashMap;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.utils.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 操作消息提醒
- * 
+ *
  * @author ruoyi
  */
-public class AjaxResult extends HashMap<String, Object>
-{
+public class AjaxResult extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;
 
     /** 状态码 */
@@ -154,9 +155,13 @@ public class AjaxResult extends HashMap<String, Object>
      * @return 数据对象
      */
     @Override
-    public AjaxResult put(String key, Object value)
-    {
+    public AjaxResult put(String key, Object value) {
         super.put(key, value);
+        return this;
+    }
+
+    public AjaxResult put(Map<String, Object> m) {
+        super.putAll(m);
         return this;
     }
 }

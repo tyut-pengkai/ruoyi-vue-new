@@ -230,4 +230,16 @@ public class SysUserController extends BaseController
         userService.insertUserAuth(userId, roleIds);
         return success();
     }
+
+    /**
+     * 获取用户列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:user:list')")
+    @GetMapping("/listByExceptAppId/{appId}")
+    public TableDataInfo listByExceptAppId(@PathVariable("appId")Long appId)
+    {
+        startPage();
+        List<SysUser> list = userService.selectUserByExceptAppId(appId);
+        return getDataTable(list);
+    }
 }

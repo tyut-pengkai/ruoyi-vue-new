@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysCardTemplateMapper">
+
+    <resultMap type="SysCardTemplate" id="SysCardTemplateResult">
+        <result property="templateId"    column="template_id"    />
+        <result property="appId"    column="app_id"    />
+        <result property="cardName"    column="card_name"    />
+        <result property="cardNoPrefix"    column="card_no_prefix"    />
+        <result property="cardNoSuffix"    column="card_no_suffix"    />
+        <result property="cardDescription"    column="card_description"    />
+        <result property="quota"    column="quota"    />
+        <result property="price"    column="price"    />
+        <result property="cardNoLen"    column="card_no_len"    />
+        <result property="cardNoGenRule"    column="card_no_gen_rule"    />
+        <result property="cardNoRegex"    column="card_no_regex"    />
+        <result property="cardPassLen"    column="card_pass_len"    />
+        <result property="cardPassGenRule"    column="card_pass_gen_rule"    />
+        <result property="cardPassRegex"    column="card_pass_regex"    />
+        <result property="chargeRule"    column="charge_rule"    />
+        <result property="onSale"    column="on_sale"    />
+        <result property="firstStock"    column="first_stock"    />
+        <result property="effectiveDuration"    column="effective_duration"    />
+        <result property="status"    column="status"    />
+        <result property="enableAutoGen"    column="enable_auto_gen"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <association property="app"    column="app_id" javaType="SysApp" resultMap="SysAppResult" />
+    </resultMap>
+
+    <resultMap type="SysApp" id="SysAppResult">
+        <result property="appId" column="app_id"/>
+        <result property="appName" column="app_name"/>
+        <result property="authType" column="auth_type"/>
+        <result property="billType" column="bill_type"/>
+        <result property="description" column="description"/>
+    </resultMap>
+
+    <sql id="selectSysCardTemplateVo">
+        select ct.template_id,
+               ct.app_id,
+               ct.card_name,
+               ct.card_no_prefix,
+               ct.card_no_suffix,
+               ct.card_description,
+               ct.quota,
+               ct.price,
+               ct.card_no_len,
+               ct.card_no_gen_rule,
+               ct.card_no_regex,
+               ct.card_pass_len,
+               ct.card_pass_gen_rule,
+               ct.card_pass_regex,
+               ct.charge_rule,
+               ct.on_sale,
+               ct.first_stock,
+               ct.effective_duration,
+               ct.status,
+               ct.enable_auto_gen,
+               ct.create_by,
+               ct.create_time,
+               ct.update_by,
+               ct.update_time,
+               ct.remark,
+               a.app_id,
+               a.app_name,
+               a.auth_type,
+               a.bill_type,
+               a.description
+        from sys_card_template ct
+                 left join sys_app a on ct.app_id = a.app_id
+    </sql>
+
+    <select id="selectSysCardTemplateList" parameterType="SysCardTemplate" resultMap="SysCardTemplateResult">
+        <include refid="selectSysCardTemplateVo"/>
+        <where>
+            <if test="appId != null ">and ct.app_id = #{appId}</if>
+            <if test="cardName != null and cardName != ''">and ct.card_name like concat('%', #{cardName}, '%')</if>
+            <if test="chargeRule != null">and ct.charge_rule = #{chargeRule}</if>
+            <if test="onSale != null">and ct.on_sale = #{onSale}</if>
+            <if test="firstStock != null">and ct.first_stock = #{firstStock}</if>
+            <if test="status != null">and ct.status = #{status}</if>
+            <if test="enableAutoGen != null">and ct.enable_auto_gen = #{enableAutoGen}</if>
+            <if test="createBy != null  and createBy != ''">and ct.create_by like concat('%', #{createBy}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectSysCardTemplateByTemplateId" parameterType="Long" resultMap="SysCardTemplateResult">
+        <include refid="selectSysCardTemplateVo"/>
+        where template_id = #{templateId}
+    </select>
+
+    <insert id="insertSysCardTemplate" parameterType="SysCardTemplate" useGeneratedKeys="true" keyProperty="templateId">
+        insert into sys_card_template
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appId != null">app_id,</if>
+            <if test="cardName != null and cardName != ''">card_name,</if>
+            <if test="cardNoPrefix != null">card_no_prefix,</if>
+            <if test="cardNoSuffix != null">card_no_suffix,</if>
+            <if test="cardDescription != null">card_description,</if>
+            <if test="quota != null">quota,</if>
+            <if test="price != null">price,</if>
+            <if test="cardNoLen != null">card_no_len,</if>
+            <if test="cardNoGenRule != null">card_no_gen_rule,</if>
+            <if test="cardNoRegex != null">card_no_regex,</if>
+            <if test="cardPassLen != null">card_pass_len,</if>
+            <if test="cardPassGenRule != null">card_pass_gen_rule,</if>
+            <if test="cardPassRegex != null">card_pass_regex,</if>
+            <if test="chargeRule != null">charge_rule,</if>
+            <if test="onSale != null">on_sale,</if>
+            <if test="firstStock != null">first_stock,</if>
+            <if test="effectiveDuration != null">effective_duration,</if>
+            <if test="status != null">status,</if>
+            <if test="enableAutoGen != null">enable_auto_gen,</if>
+            <if test="createBy != null">create_by,</if>
+            create_time,
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appId != null">#{appId},</if>
+            <if test="cardName != null and cardName != ''">#{cardName},</if>
+            <if test="cardNoPrefix != null">#{cardNoPrefix},</if>
+            <if test="cardNoSuffix != null">#{cardNoSuffix},</if>
+            <if test="cardDescription != null">#{cardDescription},</if>
+            <if test="quota != null">#{quota},</if>
+            <if test="price != null">#{price},</if>
+            <if test="cardNoLen != null">#{cardNoLen},</if>
+            <if test="cardNoGenRule != null">#{cardNoGenRule},</if>
+            <if test="cardNoRegex != null">#{cardNoRegex},</if>
+            <if test="cardPassLen != null">#{cardPassLen},</if>
+            <if test="cardPassGenRule != null">#{cardPassGenRule},</if>
+            <if test="cardPassRegex != null">#{cardPassRegex},</if>
+            <if test="chargeRule != null">#{chargeRule},</if>
+            <if test="onSale != null">#{onSale},</if>
+            <if test="firstStock != null">#{firstStock},</if>
+            <if test="effectiveDuration != null">#{effectiveDuration},</if>
+            <if test="status != null">#{status},</if>
+            <if test="enableAutoGen != null">#{enableAutoGen},</if>
+            <if test="createBy != null">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysCardTemplate" parameterType="SysCardTemplate">
+        update sys_card_template
+        <trim prefix="SET" suffixOverrides=",">
+<!--            <if test="appId != null">app_id = #{appId},</if>-->
+            <if test="cardName != null and cardName != ''">card_name = #{cardName},</if>
+            <if test="cardNoPrefix != null">card_no_prefix = #{cardNoPrefix},</if>
+            <if test="cardNoSuffix != null">card_no_suffix = #{cardNoSuffix},</if>
+            <if test="cardDescription != null">card_description = #{cardDescription},</if>
+            <if test="quota != null">quota = #{quota},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="cardNoLen != null">card_no_len = #{cardNoLen},</if>
+            <if test="cardNoGenRule != null">card_no_gen_rule = #{cardNoGenRule},</if>
+            <if test="cardNoRegex != null">card_no_regex = #{cardNoRegex},</if>
+            <if test="cardPassLen != null">card_pass_len = #{cardPassLen},</if>
+            <if test="cardPassGenRule != null">card_pass_gen_rule = #{cardPassGenRule},</if>
+            <if test="cardPassRegex != null">card_pass_regex = #{cardPassRegex},</if>
+            <if test="chargeRule != null">charge_rule = #{chargeRule},</if>
+            <if test="onSale != null">on_sale = #{onSale},</if>
+            <if test="firstStock != null">first_stock = #{firstStock},</if>
+            <if test="effectiveDuration != null">effective_duration = #{effectiveDuration},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="enableAutoGen != null">enable_auto_gen = #{enableAutoGen},</if>
+<!--            <if test="createBy != null">create_by = #{createBy},</if>-->
+<!--            <if test="createTime != null">create_time = #{createTime},</if>-->
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where template_id = #{templateId}
+    </update>
+
+    <delete id="deleteSysCardTemplateByTemplateId" parameterType="Long">
+        delete from sys_card_template where template_id = #{templateId}
+    </delete>
+
+    <delete id="deleteSysCardTemplateByTemplateIds" parameterType="String">
+        delete from sys_card_template where template_id in
+        <foreach item="templateId" collection="array" open="(" separator="," close=")">
+            #{templateId}
+        </foreach>
+    </delete>
+</mapper>

@@ -558,4 +558,9 @@ public class SysUserServiceImpl implements ISysUserService
         }
         return successMsg.toString();
     }
+
+    @Override
+    public List<SysUser> selectUserByExceptAppId(Long appId) {
+        return userMapper.selectUserByExceptAppId(appId);
+    }
 }

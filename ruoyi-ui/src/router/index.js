@@ -1,10 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
-Vue.use(Router)
-
 /* Layout */
 import Layout from '@/layout'
+
+Vue.use(Router)
 
 /**
  * Note: 路由配置项
@@ -87,8 +86,77 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
-  }
-]
+  },
+  {
+    path: '/app',
+    component: Layout,
+    hidden: true,
+    children: [{
+      path: 'user/:appId(\\d+)',
+      component: () => import('@/views/system/appUser/index'),
+      name: 'AppUser',
+      meta: {
+        title: '软件用户',
+        activeMenu: '/authentication/app'
+      }
+    }, {
+      path: 'deviceCode/:appUserId(\\d+)',
+      component: () => import('@/views/system/deviceCode/index'),
+      name: 'DeviceCode',
+      meta: {
+        title: '设备码管理old',
+        activeMenu: '/authentication/app'
+      }
+    }, {
+      path: 'appUserDeviceCode/:appUserId(\\d+)',
+      component: () => import('@/views/system/appUserDeviceCode/index'),
+      name: 'AppUserDeviceCode',
+      meta: {
+        title: '设备码管理',
+        activeMenu: '/authentication/app'
+      }
+    }, {
+      path: 'cardTemplate/:appId(\\d+)',
+      component: () => import('@/views/system/cardTemplate/index'),
+      name: 'CardTemplate',
+      meta: {
+        title: '卡类管理',
+        activeMenu: '/authentication/app'
+      }
+    }, {
+      path: 'card/:appId(\\d+)',
+      component: () => import('@/views/system/card/index'),
+      name: 'Card',
+      meta: {
+        title: '卡密管理',
+        activeMenu: '/authentication/app'
+      }
+    }, {
+      path: 'loginCodeTemplate/:appId(\\d+)',
+      component: () => import('@/views/system/loginCodeTemplate/index'),
+      name: 'LoginCodeTemplate',
+      meta: {
+        title: '登录码类别',
+        activeMenu: '/authentication/app'
+      }
+    }, {
+      path: 'loginCode/:appId(\\d+)',
+      component: () => import('@/views/system/loginCode/index'),
+      name: 'LoginCode',
+      meta: {
+        title: '登录码管理',
+        activeMenu: '/authentication/app'
+      }
+    }, {
+      path: 'appVersion/:appId(\\d+)',
+      component: () => import('@/views/system/appVersion/index'),
+      name: 'AppVersion',
+      meta: {
+        title: '版本管理',
+        activeMenu: '/authentication/app'
+      }
+    }]
+  }]
 
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [

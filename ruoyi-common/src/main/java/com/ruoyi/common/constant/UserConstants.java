@@ -35,6 +35,8 @@ public class UserConstants
 
     /** 是否为系统默认（是） */
     public static final String YES = "Y";
+    /** 是否为系统默认（否） */
+    public static final String NO = "N";
 
     /** 是否菜单外链（是） */
     public static final String YES_FRAME = "0";
@@ -75,4 +77,9 @@ public class UserConstants
      */
     public static final int PASSWORD_MIN_LENGTH = 5;
     public static final int PASSWORD_MAX_LENGTH = 20;
+
+    /**
+     * 长期有效的到期时间设置
+     */
+    public static final String MAX_DATE = "9999-12-31 23:59:59";
 }

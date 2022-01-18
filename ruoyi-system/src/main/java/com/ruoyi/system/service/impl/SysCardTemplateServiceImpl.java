@@ -1,0 +1,188 @@
+package com.ruoyi.system.service.impl;
+
+import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.enums.GenRule;
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.system.domain.SysCard;
+import com.ruoyi.system.domain.SysCardTemplate;
+import com.ruoyi.system.mapper.SysCardTemplateMapper;
+import com.ruoyi.system.service.ISysCardService;
+import com.ruoyi.system.service.ISysCardTemplateService;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * 卡密模板Service业务层处理
+ *
+ * @author zwgu
+ * @date 2021-11-28
+ */
+@Service
+public class SysCardTemplateServiceImpl implements ISysCardTemplateService
+{
+    @Autowired
+    private SysCardTemplateMapper sysCardTemplateMapper;
+    @Autowired
+    private ISysCardService sysCardService;
+
+    /**
+     * 查询卡密模板
+     *
+     * @param templateId 卡密模板主键
+     * @return 卡密模板
+     */
+    @Override
+    public SysCardTemplate selectSysCardTemplateByTemplateId(Long templateId)
+    {
+        return sysCardTemplateMapper.selectSysCardTemplateByTemplateId(templateId);
+    }
+
+    /**
+     * 查询卡密模板列表
+     *
+     * @param sysCardTemplate 卡密模板
+     * @return 卡密模板
+     */
+    @Override
+    public List<SysCardTemplate> selectSysCardTemplateList(SysCardTemplate sysCardTemplate)
+    {
+        return sysCardTemplateMapper.selectSysCardTemplateList(sysCardTemplate);
+    }
+
+    /**
+     * 新增卡密模板
+     *
+     * @param sysCardTemplate 卡密模板
+     * @return 结果
+     */
+    @Override
+    public int insertSysCardTemplate(SysCardTemplate sysCardTemplate)
+    {
+        sysCardTemplate.setCreateTime(DateUtils.getNowDate());
+        return sysCardTemplateMapper.insertSysCardTemplate(sysCardTemplate);
+    }
+
+    /**
+     * 修改卡密模板
+     *
+     * @param sysCardTemplate 卡密模板
+     * @return 结果
+     */
+    @Override
+    public int updateSysCardTemplate(SysCardTemplate sysCardTemplate)
+    {
+        sysCardTemplate.setUpdateTime(DateUtils.getNowDate());
+        return sysCardTemplateMapper.updateSysCardTemplate(sysCardTemplate);
+    }
+
+    /**
+     * 批量删除卡密模板
+     *
+     * @param templateIds 需要删除的卡密模板主键
+     * @return 结果
+     */
+    @Override
+    public int deleteSysCardTemplateByTemplateIds(Long[] templateIds)
+    {
+        return sysCardTemplateMapper.deleteSysCardTemplateByTemplateIds(templateIds);
+    }
+
+    /**
+     * 删除卡密模板信息
+     *
+     * @param templateId 卡密模板主键
+     * @return 结果
+     */
+    @Override
+    public int deleteSysCardTemplateByTemplateId(Long templateId)
+    {
+        return sysCardTemplateMapper.deleteSysCardTemplateByTemplateId(templateId);
+    }
+
+    /**
+     * 批量新增卡密
+     * @param cardTpl
+     * @param quantity
+     * @param remark
+     * @return
+     */
+    @Override
+    public int genSysCardBatch(SysCardTemplate cardTpl, Integer quantity, String onSale, String remark) {
+        List<SysCard> sysCardList = new ArrayList<>();
+        for(int i=0;i<quantity;i++){
+            SysCard sysCard = new SysCard();
+            sysCard.setCardName(cardTpl.getCardName());
+            sysCard.setCardNo(genNo(cardTpl.getCardNoPrefix(), cardTpl.getCardNoSuffix(), cardTpl.getCardNoLen(),cardTpl.getCardNoGenRule()));
+            sysCard.setCardPass(genPass(cardTpl.getCardPassLen(), cardTpl.getCardPassGenRule()));
+            sysCard.setApp(cardTpl.getApp());
+            sysCard.setTemplateId(cardTpl.getTemplateId());
+            sysCard.setAppId(cardTpl.getAppId());
+            sysCard.setChargeRule(cardTpl.getChargeRule());
+            if(cardTpl.getEffectiveDuration() == -1){
+                sysCard.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE));
+            }else{
+                sysCard.setExpireTime(DateUtils.addSeconds(new Date(), cardTpl.getEffectiveDuration().intValue()));
+            }
+            sysCard.setIsCharged(UserConstants.NO);
+            sysCard.setIsSold(UserConstants.NO);
+            sysCard.setOnSale(onSale);
+            sysCard.setPrice(cardTpl.getPrice());
+            sysCard.setQuota(cardTpl.getQuota());
+            sysCard.setStatus(UserConstants.NORMAL);
+            sysCard.setRemark(remark);
+            sysCard.setCreateBy(SecurityUtils.getUsername());
+            sysCardList.add(sysCard);
+        }
+        return sysCardService.insertSysCardBatch(sysCardList);
+    }
+
+    private String generate(Integer length, GenRule genRule) {
+        if(length <= 0) {
+            return "";
+        }
+        String random = "";
+        if(genRule == GenRule.LOWERCASE) {
+            random = RandomStringUtils.randomAlphabetic(length).toLowerCase();
+        }else if(genRule == GenRule.NUM) {
+            random = RandomStringUtils.randomNumeric(length);
+        }else if(genRule == GenRule.NUM_LOWERCASE) {
+            random = RandomStringUtils.randomAlphanumeric(length).toLowerCase();
+        }else if(genRule == GenRule.NUM_UPPERCASE) {
+            random = RandomStringUtils.randomAlphanumeric(length).toUpperCase();
+        }else if(genRule == GenRule.NUM_UPPERCASE_LOWERCASE) {
+            random = RandomStringUtils.randomAlphanumeric(length);
+        }else if(genRule == GenRule.UPPERCASE) {
+            random = RandomStringUtils.randomAlphabetic(length).toUpperCase();
+        }else if(genRule == GenRule.UPPERCASE_LOWERCASE) {
+            random = RandomStringUtils.randomAlphabetic(length);
+        }else if(genRule == GenRule.REGEX) {
+            random = ("regex"+RandomStringUtils.randomAlphanumeric(length)).substring(0, length);
+        }
+        return random;
+    }
+
+    private String genNo(String prefix, String suffix, Integer length, GenRule genRule) {
+        if(StringUtils.isBlank(prefix)){
+            prefix = "";
+        }
+        if(StringUtils.isBlank(suffix)){
+            suffix = "";
+        }
+        String random = prefix + generate(length, genRule) + suffix;
+        while(sysCardService.selectSysCardByCardNo(random) != null) {
+            random = prefix + generate(length, genRule) + suffix;
+        }
+        return random;
+    }
+
+    private String genPass(Integer length, GenRule genRule) {
+        return generate(length, genRule);
+    }
+}

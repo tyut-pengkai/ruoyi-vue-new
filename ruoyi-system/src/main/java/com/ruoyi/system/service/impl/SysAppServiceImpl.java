@@ -1,0 +1,178 @@
+package com.ruoyi.system.service.impl;
+
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.domain.entity.SysApp;
+import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.system.mapper.SysAppMapper;
+import com.ruoyi.system.service.ISysAppService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.List;
+
+/**
+ * 软件Service业务层处理
+ *
+ * @author zwgu
+ * @date 2021-11-05
+ */
+@Service
+public class SysAppServiceImpl implements ISysAppService {
+    @Autowired
+    private SysAppMapper sysAppMapper;
+    @Resource
+    private RedisCache redisCache;
+
+    @PostConstruct
+    public void init() {
+        List<SysApp> appList = sysAppMapper.selectSysAppList(new SysApp());
+        for (SysApp app : appList) {
+            if (StringUtils.isNotBlank(app.getAppKey())) {
+                redisCache.setCacheObject(Constants.SYS_APP_KEY + app.getAppKey(), app);
+            }
+        }
+    }
+
+    /**
+     * 查询软件
+     *
+     * @param appId 软件主键
+     * @return 软件
+     */
+    @Override
+    public SysApp selectSysAppByAppId(Long appId) {
+        return sysAppMapper.selectSysAppByAppId(appId);
+    }
+
+    /**
+     * 查询软件
+     *
+     * @param appKey 软件AppKey
+     * @return 软件
+     */
+    @Override
+    public SysApp selectSysAppByAppKey(String appKey) {
+        SysApp app = redisCache.getCacheObject(Constants.SYS_APP_KEY + appKey);
+        if (app == null) {
+            app = sysAppMapper.selectSysAppByAppKey(appKey);
+            redisCache.setCacheObject(Constants.SYS_APP_KEY + appKey, app);
+        }
+        return app;
+    }
+
+    /**
+     * 查询软件列表
+     *
+     * @param sysApp 软件
+     * @return 软件
+     */
+    @Override
+    public List<SysApp> selectSysAppList(SysApp sysApp) {
+        return sysAppMapper.selectSysAppList(sysApp);
+    }
+
+    /**
+     * 新增软件
+     *
+     * @param sysApp 软件
+     * @return 结果
+     */
+    @Override
+    public int insertSysApp(SysApp sysApp)
+    {
+        return sysAppMapper.insertSysApp(sysApp);
+    }
+
+    /**
+     * 修改软件
+     *
+     * @param sysApp 软件
+     * @return 结果
+     */
+    @Override
+    public int updateSysApp(SysApp sysApp) {
+        sysApp.setUpdateTime(DateUtils.getNowDate());
+        sysApp.setUpdateBy(SecurityUtils.getUsername());
+        sysApp.setAuthType(null);
+        sysApp.setBillType(null);
+        int i = sysAppMapper.updateSysApp(sysApp);
+        if (i > 0) {
+            SysApp app = selectSysAppByAppId(sysApp.getAppId());
+            redisCache.setCacheObject(Constants.SYS_APP_KEY + app.getAppKey(), app);
+        }
+        return i;
+    }
+
+    /**
+     * 批量删除软件
+     *
+     * @param appIds 需要删除的软件主键
+     * @return 结果
+     */
+    @Override
+    public int deleteSysAppByAppIds(Long[] appIds) {
+        for (Long appId : appIds) {
+            SysApp app = selectSysAppByAppId(appId);
+            redisCache.deleteObject(Constants.SYS_APP_KEY + app.getAppKey());
+        }
+        return sysAppMapper.deleteSysAppByAppIds(appIds);
+    }
+
+    /**
+     * 删除软件信息
+     *
+     * @param appId 软件主键
+     * @return 结果
+     */
+    @Override
+    public int deleteSysAppByAppId(Long appId) {
+        SysApp app = selectSysAppByAppId(appId);
+        redisCache.deleteObject(Constants.SYS_APP_KEY + app.getAppKey());
+        return sysAppMapper.deleteSysAppByAppId(appId);
+    }
+
+    /**
+     * 修改软件状态
+     *
+     * @param app 软件信息
+     * @return 结果
+     */
+    @Override
+    public int updateSysAppStatus(SysApp app)
+    {
+        return updateSysApp(app);
+    }
+
+    /**
+     * 修改软件计费状态
+     *
+     * @param app 软件信息
+     * @return 结果
+     */
+    @Override
+    public int updateSysAppChargeStatus(SysApp app)
+    {
+        return updateSysApp(app);
+    }
+
+    /**
+     * 检查软件名称唯一性
+     * @param appName 软件名称
+     * @return
+     */
+    @Override
+    public String checkAppNameUnique(String appName, Long appId) {
+        int count = sysAppMapper.checkAppNameUnique(appName, appId);
+        if (count > 0)
+        {
+            return UserConstants.NOT_UNIQUE;
+        }
+        return UserConstants.UNIQUE;
+    }
+}

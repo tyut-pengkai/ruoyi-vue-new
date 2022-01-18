@@ -1,0 +1,72 @@
+package com.ruoyi.common.enums;
+
+import lombok.Getter;
+
+@Getter
+public enum ErrorCode {
+
+    SUCCESS(0, "成功"),
+
+    // 400090000~400090099 参数错误
+    ERROR_PARAMETERS_MISSING(400090001, "缺少参数"),
+    ERROR_PARAMETERS_ERROR(400090002, "参数有误"),
+    ERROR_PARAMETER_DECRYPT_EXCEPTION(400090003, "请求参数解密错误"),
+    ERROR_PARAMETER_ANALYSE_EXCEPTION(400090004, "请求参数解析错误"),
+    ERROR_RESPONSE_ENCRYPT_EXCEPTION(400090005, "返回数据加密出现错误"),
+    ERROR_SIGN_INVALID(400090006, "sign验证未通过"),
+    ERROR_APP_MD5_MISMATCH(400090007, "程序完整性校验未通过"),
+    ERROR_DATA_EXPIRED(400090008, "数据包已过期，系统拒绝接收"),
+    ERROR_API_NOT_EXIST(400090009, "API接口不存在"),
+
+    // 400090100~400090199 认证类错
+    ERROR_UNAUTHORIZED(400090001, "未登录"),
+    ERROR_USERNAME_OR_PASSWORD_ERROR(400090002, "账号或密码错误"),
+    ERROR_ACCOUNT_NOT_EXIST(400090003, "账号不存在"),
+    ERROR_ACCOUNT_LOCKED(400090004, "账号被冻结"),
+    ERROR_LOGIN_CODE_NOT_EXIST(400090005, "登录码不存在"),
+    ERROR_LOGIN_CODE_LOCKED(400090006, "登录码被冻结"),
+    ERROR_LOGIN_CODE_EXPIRED(400090007, "登录码已过期"),
+    ERROR_LOGIN_CODE_APP_MISMATCH(400090008, "登录码与软件不匹配"),
+    ERROR_APP_NOT_EXIST(400090009, "软件不存在"),
+    ERROR_APP_VERSION_NOT_EXIST(400090010, "软件版本不存在"),
+    ERROR_APPKEY_OR_APPSECRET_ERROR(400090011, "软件APPKEY或APPSECRET错误"),
+    ERROR_API_CALLED_MISMATCH(400090012, "该软件不适用于此接口"),
+    ERROR_APP_USER_LOCKED(400090013, "软件用户被冻结"),
+    ERROR_APP_USER_NOT_EXIST(400090014, "软件用户不存在"),
+    ERROR_REGISTER_FAILED(400090015, "注册账号失败"),
+
+    // 400090200~400090999 业务相关
+    ERROR_CARD_NOT_EXIST(400090201, "充值卡不存在"),
+    ERROR_CARD_IS_USED(400090202, "充值卡已被使用"),
+    ERROR_CARD_APP_MISMATCH(400090203, "此充值卡不能用于该软件"),
+    ERROR_CARD_EXPIRED(400090204, "充值卡已过期"),
+    ERROR_CHARGE_RULE_MISMATCH(400090205, "不符合充值卡充值限制"),
+    ERROR_CARD_PASSWORD_MISMATCH(400090206, "充值卡密码有误"),
+    ERROR_CARD_LOCKED(400090207, "充值卡被冻结"),
+
+    ERROR_APP_OFF(400090207, "软件维护中"),
+    ERROR_APP_VERSION_OFF(400090208, "当前版本已停用"),
+    ERROR_BIND_MACHINE_LIMIT(400090209, "软件用户已绑定其他设备"),
+    ERROR_BIND_USER_LIMIT(400090210, "已有其他软件用户绑定此设备"),
+    ERROR_APP_USER_EXPIRED(400090211, "软件用户已过期"),
+    ERROR_APP_USER_NO_TIME(400090212, "软件用户剩余时间不足"),
+    ERROR_APP_USER_NO_POINT(400090213, "软件用户点数不足"),
+    ERROR_DEVICE_CODE_LOCKED(400090214, "设备码被锁定"),
+    ERROR_LOGIN_MACHINE_LIMIT(400090215, "同时登录设备数量达到上限"),
+    ERROR_LOGIN_USER_LIMIT(400090216, "同时在线数量达到上限"),
+
+    ERROR_APP_CUSTOM_PARAM_NOT_EXIST(400090217, "软件自定义参数不存在"),
+
+    ERROR_OTHER_FAULTS(400099999, "未知错误"),
+    ;
+
+    private Integer code;
+    private String msg;
+
+    private ErrorCode(Integer code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
+
+
+}

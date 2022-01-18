@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysAppVersionMapper">
+
+    <resultMap type="SysAppVersion" id="SysAppVersionResult">
+        <result property="appVersionId" column="app_version_id"/>
+        <result property="appId" column="app_id"/>
+        <result property="versionName" column="version_name"/>
+        <result property="versionNo" column="version_no"/>
+        <result property="updateLog" column="update_log"/>
+        <result property="downloadUrl" column="download_url"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="md5" column="md5"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="forceUpdate" column="force_update"/>
+    </resultMap>
+
+    <sql id="selectSysAppVersionVo">
+        select app_version_id,
+               app_id,
+               version_name,
+               version_no,
+               update_log,
+               download_url,
+               status,
+               del_flag,
+               md5,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               force_update
+        from sys_app_version
+    </sql>
+
+    <select id="selectSysAppVersionList" parameterType="SysAppVersion" resultMap="SysAppVersionResult">
+        <include refid="selectSysAppVersionVo"/>
+        <where>
+            <if test="appId != null ">and app_id = #{appId}</if>
+            <if test="versionName != null  and versionName != ''">and version_name like concat('%', #{versionName},
+                '%')
+            </if>
+            <if test="versionNo != null ">and version_no = #{versionNo}</if>
+            <if test="status != null  and status != ''">and status = #{status}</if>
+            <if test="md5 != null  and md5 != ''">and md5 like concat('%', #{md5}, '%')</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
+                and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSysAppVersionByAppVersionId" parameterType="Long" resultMap="SysAppVersionResult">
+        <include refid="selectSysAppVersionVo"/>
+        where app_version_id = #{appVersionId}
+    </select>
+
+    <select id="selectSysAppVersionByAppIdAndVersion" resultMap="SysAppVersionResult">
+        <include refid="selectSysAppVersionVo"/>
+        where app_id = #{appId} and version_no = #{appVersion}
+    </select>
+
+    <select id="selectLatestVersionByAppId" resultMap="SysAppVersionResult">
+        SELECT v1.*
+        FROM sys_app_version v1
+                 INNER JOIN sys_app_version v2 ON v1.app_id = v2.app_id
+        WHERE v1.app_id = #{appId}
+        GROUP BY v1.version_no
+        HAVING v1.version_no = max(v2.version_no)
+    </select>
+
+    <select id="selectLatestVersionForceUpdateByAppId" resultMap="SysAppVersionResult">
+        SELECT v1.*
+        FROM sys_app_version v1
+                 INNER JOIN sys_app_version v2 ON v1.app_id = v2.app_id
+        WHERE v1.app_id = #{appId}
+          AND v2.force_update = 'Y'
+        GROUP BY v1.version_no
+        HAVING v1.version_no = max(v2.version_no)
+    </select>
+
+    <insert id="insertSysAppVersion" parameterType="SysAppVersion" useGeneratedKeys="true" keyProperty="appVersionId">
+        insert into sys_app_version
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appId != null">app_id,</if>
+            <if test="versionName != null">version_name,</if>
+            <if test="versionNo != null">version_no,</if>
+            <if test="updateLog != null">update_log,</if>
+            <if test="downloadUrl != null">download_url,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="md5 != null">md5,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="forceUpdate != null">force_update,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appId != null">#{appId},</if>
+            <if test="versionName != null">#{versionName},</if>
+            <if test="versionNo != null">#{versionNo},</if>
+            <if test="updateLog != null">#{updateLog},</if>
+            <if test="downloadUrl != null">#{downloadUrl},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="md5 != null">#{md5},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="forceUpdate != null">#{forceUpdate},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysAppVersion" parameterType="SysAppVersion">
+        update sys_app_version
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="appId != null">app_id = #{appId},</if>
+            <if test="versionName != null">version_name = #{versionName},</if>
+            <if test="versionNo != null">version_no = #{versionNo},</if>
+            <if test="updateLog != null">update_log = #{updateLog},</if>
+            <if test="downloadUrl != null">download_url = #{downloadUrl},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="md5 != null">md5 = #{md5},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="forceUpdate != null">force_update = #{forceUpdate},</if>
+        </trim>
+        where app_version_id = #{appVersionId}
+    </update>
+
+    <delete id="deleteSysAppVersionByAppVersionId" parameterType="Long">
+        delete
+        from sys_app_version
+        where app_version_id = #{appVersionId}
+    </delete>
+
+    <delete id="deleteSysAppVersionByAppVersionIds" parameterType="String">
+        delete from sys_app_version where app_version_id in
+        <foreach item="appVersionId" collection="array" open="(" separator="," close=")">
+            #{appVersionId}
+        </foreach>
+    </delete>
+</mapper>

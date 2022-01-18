@@ -1,0 +1,111 @@
+package com.ruoyi.api.v1.utils;
+
+import com.ruoyi.common.utils.DateUtils;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.util.ClassUtils;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+public class MyUtils {
+
+    public static Date getNewExpiredTimeAdd(Date oldExpiredTime, Long quota) {
+        Date now = DateUtils.getNowDate();
+        if (oldExpiredTime == null || oldExpiredTime.before(now)) {
+            oldExpiredTime = now;
+        }
+        if (quota == null) {
+            return oldExpiredTime;
+        } else {
+            return DateUtils.addSeconds(oldExpiredTime, quota.intValue());
+        }
+    }
+
+    public static Date getNewExpiredTimeSub(Date oldExpiredTime, Long quota) {
+        Date now = DateUtils.getNowDate();
+        if (oldExpiredTime == null || oldExpiredTime.before(now)) {
+            oldExpiredTime = now;
+        }
+        if (quota == null) {
+            return oldExpiredTime;
+        } else {
+            return DateUtils.addSeconds(oldExpiredTime, -quota.intValue());
+        }
+    }
+
+    public static BigDecimal getNewPointAdd(BigDecimal oldPoint, Long quota) {
+        if (oldPoint == null) {
+            oldPoint = BigDecimal.ZERO;
+        }
+        if (quota == null) {
+            return oldPoint;
+        } else {
+            return oldPoint.add(BigDecimal.valueOf(quota));
+        }
+    }
+
+    public static BigDecimal getNewPointAdd(BigDecimal oldPoint, Double quota) {
+        if (oldPoint == null) {
+            oldPoint = BigDecimal.ZERO;
+        }
+        if (quota == null) {
+            return oldPoint;
+        } else {
+            return oldPoint.add(BigDecimal.valueOf(quota));
+        }
+    }
+
+    public static BigDecimal getNewPointSub(BigDecimal oldPoint, Long quota) {
+        if (oldPoint == null) {
+            oldPoint = BigDecimal.ZERO;
+        }
+        if (quota == null) {
+            return oldPoint;
+        } else {
+            return oldPoint.subtract(BigDecimal.valueOf(quota));
+        }
+    }
+
+    public static BigDecimal getNewPointSub(BigDecimal oldPoint, Double quota) {
+        if (oldPoint == null) {
+            oldPoint = BigDecimal.ZERO;
+        }
+        if (quota == null) {
+            return oldPoint;
+        } else {
+            return oldPoint.subtract(BigDecimal.valueOf(quota));
+        }
+    }
+
+    public static List<Class<?>> getClassesFromPackage(String packagePath) {
+        String RESOURCE_PATTERN = "/**/*.class";
+        List<Class<?>> classList = new ArrayList<>();
+        //spring工具类，可以获取指定路径下的全部类
+        ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+        try {
+            String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + ClassUtils.convertClassNameToResourcePath(packagePath) + RESOURCE_PATTERN;
+            Resource[] resources = resourcePatternResolver.getResources(pattern);
+            //MetadataReader 的工厂类
+            MetadataReaderFactory readerfactory = new CachingMetadataReaderFactory(resourcePatternResolver);
+            for (Resource resource : resources) {
+                //用于读取类信息
+                MetadataReader reader = readerfactory.getMetadataReader(resource);
+                //扫描到的class
+                String classname = reader.getClassMetadata().getClassName();
+                Class<?> clazz = Class.forName(classname);
+                classList.add(clazz);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return classList;
+    }
+}

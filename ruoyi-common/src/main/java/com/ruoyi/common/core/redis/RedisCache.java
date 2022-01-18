@@ -1,11 +1,5 @@
 package com.ruoyi.common.core.redis;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.data.redis.core.HashOperations;
@@ -13,15 +7,17 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 /**
  * spring redis 工具类
  *
  * @author ruoyi
  **/
-@SuppressWarnings(value = { "unchecked", "rawtypes" })
+@SuppressWarnings(value = {"unchecked", "rawtypes"})
 @Component
-public class RedisCache
-{
+public class RedisCache {
     @Autowired
     public RedisTemplate redisTemplate;
 
@@ -69,9 +65,18 @@ public class RedisCache
      * @param unit 时间单位
      * @return true=设置成功；false=设置失败
      */
-    public boolean expire(final String key, final long timeout, final TimeUnit unit)
-    {
+    public boolean expire(final String key, final long timeout, final TimeUnit unit) {
         return redisTemplate.expire(key, timeout, unit);
+    }
+
+    /**
+     * 设置长期有效
+     *
+     * @param key Redis键
+     * @return true=设置成功；false=设置失败
+     */
+    public boolean persist(final String key) {
+        return Boolean.TRUE.equals(redisTemplate.persist(key));
     }
 
     /**
@@ -80,8 +85,7 @@ public class RedisCache
      * @param key 缓存键值
      * @return 缓存键值对应的数据
      */
-    public <T> T getCacheObject(final String key)
-    {
+    public <T> T getCacheObject(final String key) {
         ValueOperations<String, T> operation = redisTemplate.opsForValue();
         return operation.get(key);
     }
@@ -211,9 +215,9 @@ public class RedisCache
 
     /**
      * 删除Hash中的数据
-     * 
+     *
      * @param key
-     * @param mapkey
+     * @param hkey
      */
     public void delCacheMapValue(final String key, final String hkey)
     {

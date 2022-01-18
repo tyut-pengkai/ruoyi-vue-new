@@ -1,7 +1,5 @@
 package com.ruoyi.framework.web.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysUser;
@@ -16,6 +14,8 @@ import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * 注册校验方法
@@ -37,19 +37,20 @@ public class SysRegisterService
     /**
      * 注册
      */
-    public String register(RegisterBody registerBody)
-    {
+    public String register(RegisterBody registerBody) {
+        return register(registerBody, true);
+    }
+
+    public String register(RegisterBody registerBody, boolean checkCaptcha) {
         String msg = "", username = registerBody.getUsername(), password = registerBody.getPassword();
 
-        boolean captchaOnOff = configService.selectCaptchaOnOff();
+        boolean captchaOnOff = checkCaptcha && configService.selectCaptchaOnOff();
         // 验证码开关
-        if (captchaOnOff)
-        {
+        if (captchaOnOff) {
             validateCaptcha(username, registerBody.getCode(), registerBody.getUuid());
         }
 
-        if (StringUtils.isEmpty(username))
-        {
+        if (StringUtils.isEmpty(username)) {
             msg = "用户名不能为空";
         }
         else if (StringUtils.isEmpty(password))
