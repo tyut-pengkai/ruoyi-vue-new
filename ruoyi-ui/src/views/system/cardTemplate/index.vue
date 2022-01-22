@@ -6,6 +6,31 @@
       :inline="true"
       v-show="showSearch"
     >
+    <el-form-item label="所属软件" prop="appId">
+        <el-select
+          v-model="queryParams.appId"
+          filterable
+          clearable
+          placeholder="请选择"
+          prop="appId"
+          @change="changeSearchApp"
+        >
+          <el-option
+            v-for="item in appList"
+            :key="item.appId"
+            :label="
+              '[' +
+              (item.authType == '0' ? '账号' : '登录码') +
+              (item.billType == '0' ? '计时' : '计点') +
+              '] ' +
+              item.appName
+            "
+            :value="item.appId"
+            :disabled="item.disabled"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="卡类名称" prop="cardName">
         <el-input
           v-model="queryParams.cardName"
@@ -45,7 +70,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="优先销售库存" prop="firstStock">
+      <!-- <el-form-item label="优先销售库存" prop="firstStock">
         <el-select
           v-model="queryParams.firstStock"
           placeholder="请选择优先销售库存"
@@ -59,7 +84,7 @@
             :value="dict.value"
           />
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="模板状态" prop="status">
         <el-select
           v-model="queryParams.status"
@@ -180,6 +205,15 @@
       />
       <el-table-column label="" type="index" align="center" />
       <el-table-column
+        label="所属软件"
+        align="center"
+        :show-overflow-tooltip="true"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.app.appName }}
+        </template>
+      </el-table-column>
+      <el-table-column
         label="卡类名称"
         align="center"
         prop="cardName"
@@ -197,12 +231,6 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column
-        label="所属软件"
-        align="center"
-        prop="app.appName"
-        :show-overflow-tooltip="true"
-      />
       <!-- <el-table-column label="卡描述" align="center" prop="cardDescription" /> -->
       <!-- <el-table-column label="卡号长度" align="center" prop="cardNoLen" /> -->
       <!-- <el-table-column label="卡号生成规则" align="center" prop="cardNoGenRule">
@@ -268,7 +296,7 @@
       <!-- <el-table-column label="创建者" align="center" prop="createBy" /> -->
       <el-table-column label="卡密面值" align="center" prop="quota">
         <template slot-scope="scope">
-          <span>{{ parseSeconds(scope.row.quota) }}</span>
+          <span>{{ parseSeconds(scope.row.app.billType, scope.row.quota) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="销售价格" align="center" prop="price">
@@ -280,12 +308,12 @@
         <template slot-scope="scope">
           <span>{{
             scope.row.effectiveDuration >= 0
-              ? parseSeconds(scope.row.effectiveDuration)
+              ? parseSeconds('0', scope.row.effectiveDuration)
               : "长期有效"
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         label="创建时间"
         align="center"
         prop="createTime"
@@ -294,7 +322,7 @@
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         label="备注"
         align="center"
@@ -345,18 +373,63 @@
       :close-on-click-modal="false"
     >
       <el-form ref="form" :model="form" :rules="rules">
-        <div v-if="app">
-          <el-form-item>
+        <!-- 新增 -->
+        <div v-if="form.templateId == null">
+          <el-form-item prop="">
             <el-col :span="12">
-              <el-form-item label="所属软件" label-width="80px">
-                {{ this.app.appName }}
+              <el-form-item label="所属软件" prop="appId">
+                <el-select
+                  v-model="form.appId"
+                  filterable
+                  placeholder="请选择"
+                  prop="appId"
+                  @change="changeSelectedApp"
+                >
+                  <el-option
+                    v-for="item in appList"
+                    :key="item.appId"
+                    :label="
+                      '[' +
+                      (item.authType == '0' ? '账号' : '登录码') +
+                      (item.billType == '0' ? '计时' : '计点') +
+                      '] ' +
+                      item.appName
+                    "
+                    :value="item.appId"
+                    :disabled="item.disabled"
+                  >
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="计费类型" label-width="80px">
+              <el-form-item label="计费类型" prop="billType">
+                <div v-if="app">
+                  <dict-tag
+                    :options="dict.type.sys_bill_type"
+                    :value="app.billType"
+                  />
+                </div>
+                <div v-else>
+                  请先选择软件
+                </div>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+        </div>
+        <!-- 修改 -->
+        <div v-if="form.templateId && form.app">
+          <el-form-item prop="">
+            <el-col :span="12">
+              <el-form-item label="所属软件" prop="appName">
+                {{ form.app.appName }}
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="计费类型" prop="billType">
                 <dict-tag
                   :options="dict.type.sys_bill_type"
-                  :value="app.billType"
+                  :value="form.app.billType"
                 />
               </el-form-item>
             </el-col>
@@ -366,29 +439,61 @@
           <el-input v-model="form.cardName" placeholder="请输入卡名称" />
         </el-form-item>
         <el-form-item>
-          <el-col :span="12">
-            <el-form-item
-              label="卡密面值"
-              prop="quota"
-              label-width="80px"
-              style="width: 300px"
-            >
-              <div v-if="app && app.billType === '0'">
-                <date-duration
-                  @totalSeconds="handleQuota"
-                  :seconds="form.quota"
-                ></date-duration>
-              </div>
-              <div v-else>
-                <el-input-number
-                  v-model="form.quota"
-                  controls-position="right"
-                  :min="0"
-                />
-                <span style="margin-left: 6px">点</span>
-              </div>
-            </el-form-item>
-          </el-col>
+          <div v-if="form.templateId == null">
+            <el-col :span="12">
+              <el-form-item
+                label="卡密面值"
+                prop="quota"
+                label-width="80px"
+                style="width: 300px"
+              >
+                <div v-if="app">
+                  <div v-if="app.billType === '0'">
+                    <date-duration
+                      @totalSeconds="handleQuota"
+                      :seconds="form.quota"
+                    ></date-duration>
+                  </div>
+                  <div v-if="app.billType === '1'">
+                    <el-input-number
+                      v-model="form.quota"
+                      controls-position="right"
+                      :min="0"
+                    />
+                    <span style="margin-left: 6px">点</span>
+                  </div>
+                </div>
+                <div v-else >
+                  请先选择软件
+                </div>
+              </el-form-item>
+            </el-col>
+          </div>
+          <div v-if="form.templateId && form.app">
+            <el-col :span="12">
+              <el-form-item
+                label="卡密面值"
+                prop="quota"
+                label-width="80px"
+                style="width: 300px"
+              >
+                <div v-if="form.app.billType === '0'">
+                  <date-duration
+                    @totalSeconds="handleQuota"
+                    :seconds="form.quota"
+                  ></date-duration>
+                </div>
+                <div v-if="form.app.billType === '1'">
+                  <el-input-number
+                    v-model="form.quota"
+                    controls-position="right"
+                    :min="0"
+                  />
+                  <span style="margin-left: 6px">点</span>
+                </div>
+              </el-form-item>
+            </el-col>
+          </div>
           <el-col :span="12">
             <el-form-item label="销售价格" prop="price" label-width="80px">
               <el-input-number
@@ -683,7 +788,7 @@ import {
   listCardTemplate,
   updateCardTemplate,
 } from "@/api/system/cardTemplate";
-import {getApp} from "@/api/system/app";
+import {getApp, listApp} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
 import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
@@ -700,6 +805,8 @@ export default {
   components: { DateDuration, Updown },
   data() {
     return {
+      appList: [],
+      appMap: [],
       // 软件数据
       app: null,
       // 遮罩层
@@ -798,26 +905,30 @@ export default {
   },
   created() {
     const appId = this.$route.params && this.$route.params.appId;
+    this.getAppList();
     if (appId != undefined && appId != null) {
       getApp(appId).then((response) => {
         this.app = response.data;
-        const title = "卡类管理";
-        const appName = this.app.appName;
-        const route = Object.assign({}, this.$route, {
-          title: `${title}-${appName}`,
-        });
-        this.$store.dispatch("tagsView/updateVisitedView", route);
+        // const title = "卡类管理";
+        // const appName = this.app.appName;
+        // const route = Object.assign({}, this.$route, {
+        //   title: `${title}-${appName}`,
+        // });
+        // this.$store.dispatch("tagsView/updateVisitedView", route);
         this.getList();
       });
     } else {
-      this.$modal.alertError("未获取到当前软件信息");
+      // this.$modal.alertError("未获取到当前软件信息");
+      this.getList();
     }
   },
   methods: {
     /** 查询卡类列表 */
     getList() {
       this.loading = true;
-      this.queryParams.appId = this.app.appId;
+      if (this.app) {
+        this.queryParams.appId = this.app.appId;
+      }
       listCardTemplate(this.queryParams).then((response) => {
         this.cardTemplateList = response.rows;
         this.total = response.total;
@@ -832,8 +943,8 @@ export default {
     // 表单重置
     reset() {
       this.form = {
+        appId: undefined,
         templateId: undefined,
-        appId: this.app.appId,
         cardName: undefined,
         cardNoPrefix: undefined,
         cardNoSuffix: undefined,
@@ -875,6 +986,9 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      if (this.app) {
+        this.form.appId = this.app.appId;
+      }
       this.open = true;
       this.title = "添加卡类";
     },
@@ -944,8 +1058,8 @@ export default {
     handleEffectiveDuration(effectiveDuration) {
       this.form.effectiveDuration = effectiveDuration;
     },
-    parseSeconds(seconds) {
-      if (this.app.billType === "0") {
+    parseSeconds(billType, seconds) {
+      if (billType === "0") {
         let parse = parseSeconds(seconds);
         return parse[0] + parseUnit(parse[1]);
       } else {
@@ -954,6 +1068,27 @@ export default {
     },
     parseMoney(val) {
       return parseMoney(val);
+    },
+    getAppList() {
+      this.loading = true;
+      let queryParams = {};
+      queryParams.params = {};
+      listApp(queryParams).then((response) => {
+        this.appList = response.rows;
+        for (let app of this.appList) {
+          this.appMap[app["appId"]] = app;
+        }
+        this.loading = false;
+      });
+    },
+    changeSelectedApp(appId) {
+      this.app = this.appMap[appId];
+    },
+    changeSearchApp(appId) {
+      this.loading = true;
+      this.app = this.appMap[appId];
+      this.getList();
+      this.loading = false;
     },
   },
 };

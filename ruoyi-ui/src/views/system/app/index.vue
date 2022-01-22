@@ -16,7 +16,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="软件描述" prop="description">
+      <!-- <el-form-item label="软件描述" prop="description">
         <el-input
           v-model="queryParams.description"
           placeholder="请输入软件描述"
@@ -24,7 +24,7 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="软件状态" prop="status">
         <el-select
           v-model="queryParams.status"

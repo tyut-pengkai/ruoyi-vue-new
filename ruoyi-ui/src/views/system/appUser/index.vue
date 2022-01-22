@@ -133,7 +133,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:app_user:add']"
+          v-hasPermi="['system:appUser:add']"
           >新增</el-button
         >
       </el-col>
@@ -145,7 +145,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:app_user:edit']"
+          v-hasPermi="['system:appUser:edit']"
           >修改</el-button
         >
       </el-col>
@@ -157,7 +157,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:app_user:remove']"
+          v-hasPermi="['system:appUser:remove']"
           >删除</el-button
         >
       </el-col>
@@ -169,7 +169,7 @@
           size="mini"
           :loading="exportLoading"
           @click="handleExport"
-          v-hasPermi="['system:app_user:export']"
+          v-hasPermi="['system:appUser:export']"
           >导出</el-button
         >
       </el-col>
@@ -210,7 +210,7 @@
             {{ scope.row.user.nickName }}({{ scope.row.user.userName }})
           </div>
           <div v-else>
-            {{ '<登录码>' + scope.row.loginCode }}
+            {{ '[登录码]' + scope.row.loginCode }}
           </div>
         </template>
       </el-table-column>
@@ -289,7 +289,7 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:app_user:edit']"
+            v-hasPermi="['system:appUser:edit']"
             >修改</el-button
           >
           <el-button
@@ -297,7 +297,7 @@
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:app_user:remove']"
+            v-hasPermi="['system:appUser:remove']"
             >删除</el-button
           >
           <el-dropdown
@@ -347,11 +347,10 @@
     >
       <el-form ref="form" :model="form" :rules="rules">
         <!-- 新增 -->
-        <div v-if="form.appUserId == null && app">
+        <div v-if="form.appUserId == null">
           <el-form-item prop="">
             <el-col :span="12">
               <el-form-item label="所属软件" prop="appId">
-                <!-- {{ this.app.appName }} -->
                 <el-select
                   v-model="form.appId"
                   filterable
@@ -378,42 +377,50 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="计费类型" prop="billType">
-                <dict-tag
-                  :options="dict.type.sys_bill_type"
-                  :value="app.billType"
-                />
+                <div v-if="app">
+                  <dict-tag
+                    :options="dict.type.sys_bill_type"
+                    :value="app.billType"
+                  />
+                </div>
+                <div v-else>
+                  请先选择软件
+                </div>
               </el-form-item>
             </el-col>
           </el-form-item>
-          <div v-if="app && app.authType === '0'">
-            <el-form-item label="所属账号" prop="userId">
-              <el-select
-                v-model="form.userId"
-                filterable
-                placeholder="请选择"
-                prop="userId"
-              >
-                <el-option
-                  v-for="item in userList"
-                  :key="item.userId"
-                  :label="item.nickName + '(' + item.userName + ')'"
-                  :value="item.userId"
-                  :disabled="item.disabled"
+          <el-form-item label="所属账号/登录码" prop="">
+          <div v-if="app">
+            <div v-if="app.authType === '0'">
+                <el-select
+                  v-model="form.userId"
+                  filterable
+                  placeholder="请选择"
+                  prop="userId"
                 >
-                </el-option>
-              </el-select>
-            </el-form-item>
+                  <el-option
+                    v-for="item in userList"
+                    :key="item.userId"
+                    :label="item.nickName + '(' + item.userName + ')'"
+                    :value="item.userId"
+                    :disabled="item.disabled"
+                  >
+                  </el-option>
+                </el-select>
+            </div>
+            <div v-if="app.authType === '1'">
+                <el-input
+                  placeholder="请输入登录码"
+                  v-model="form.loginCode"
+                  clearable
+                >
+                </el-input>
+            </div>
           </div>
-          <div v-if="app && app.authType === '1'">
-            <el-form-item label="登录码" prop="loginCode">
-              <el-input
-                placeholder="请输入登录码"
-                v-model="form.loginCode"
-                clearable
-              >
-              </el-input>
-            </el-form-item>
+          <div v-else>
+            请先选择软件
           </div>
+          </el-form-item>
           <!-- end -->
         </div>
         <!-- 修改 -->
