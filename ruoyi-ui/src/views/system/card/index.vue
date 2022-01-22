@@ -6,15 +6,31 @@
       :inline="true"
       v-show="showSearch"
     >
-      <!-- <el-form-item label="软件ID" prop="appId">
-        <el-input
+      <el-form-item label="所属软件" prop="appId">
+        <el-select
           v-model="queryParams.appId"
-          placeholder="请输入软件ID"
+          filterable
           clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item> -->
+          placeholder="请选择"
+          prop="appId"
+          @change="changeSearchApp"
+        >
+          <el-option
+            v-for="item in appList"
+            :key="item.appId"
+            :label="
+              '[' +
+              (item.authType == '0' ? '账号' : '登录码') +
+              (item.billType == '0' ? '计时' : '计点') +
+              '] ' +
+              item.appName
+            "
+            :value="item.appId"
+            :disabled="item.disabled"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="卡密名称" prop="cardName">
         <el-input
           v-model="queryParams.cardName"
@@ -33,7 +49,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="卡密面值" prop="quota">
+      <!-- <el-form-item label="卡密面值" prop="quota">
         <el-input
           v-model="queryParams.quota"
           placeholder="请输入卡密面值"
@@ -50,8 +66,8 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
-      <el-form-item label="过期时间">
+      </el-form-item> -->
+      <el-form-item label="过期时间" prop="">
         <el-date-picker
           v-model="daterangeExpireTime"
           size="small"
@@ -93,10 +109,10 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="是否已充值" prop="isCharged">
+      <el-form-item label="是否已用" prop="isCharged">
         <el-select
           v-model="queryParams.isCharged"
-          placeholder="请选择是否已充值"
+          placeholder="请选择是否已用"
           clearable
           size="small"
         >
@@ -138,7 +154,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item>
+      <el-form-item prop="">
         <el-button
           type="primary"
           icon="el-icon-search"
@@ -172,7 +188,7 @@
           size="mini"
           @click="handleBatchAdd"
           v-hasPermi="['system:card:add']"
-          >制卡</el-button
+          >批量制卡</el-button
         >
       </el-col>
       <el-col :span="1.5">
@@ -222,6 +238,76 @@
       :data="cardList"
       @selection-change="handleSelectionChange"
     >
+      <el-table-column type="expand">
+        <template slot-scope="scope">
+          <el-form label-position="left">
+            <el-form-item>
+              <el-col :span="4">
+                -
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="卡号">
+                  <span>{{ scope.row.cardNo }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="密码">
+                  <span>{{ scope.row.cardPass }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="面值">
+                  <span>{{
+                    parseSeconds(scope.row.app.billType, scope.row.quota)
+                  }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="价格">
+                  <span>{{ parseMoney(scope.row.price) }}元 </span>
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+            <el-form-item>
+              <el-col :span="4">
+                -
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="是否售出">
+                  <dict-tag
+                    :options="dict.type.sys_yes_no"
+                    :value="scope.row.isSold"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="是否上架">
+                  <dict-tag
+                    :options="dict.type.sys_yes_no"
+                    :value="scope.row.onSale"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="是否已用">
+                  <dict-tag
+                    :options="dict.type.sys_yes_no"
+                    :value="scope.row.isCharged"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="充值规则">
+                  <dict-tag
+                    :options="dict.type.sys_charge_rule"
+                    :value="scope.row.chargeRule"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
       <el-table-column
         type="selection"
         width="55"
@@ -232,31 +318,34 @@
       <el-table-column
         label="所属软件"
         align="center"
-        prop="app.appName"
         :show-overflow-tooltip="true"
-      />
+      >
+        <template slot-scope="scope">
+          {{ scope.row.app.appName }}
+        </template>
+      </el-table-column>
       <el-table-column
         label="卡名称"
         align="center"
         prop="cardName"
         :show-overflow-tooltip="true"
       />
-      <el-table-column label="卡号" align="center" prop="cardNo">
+      <el-table-column label="卡号" align="center" prop="cardNo" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <span>{{ scope.row.cardNo }} </span>
         </template>
       </el-table-column>
-      <el-table-column label="密码" align="center" prop="cardPass" />
-      <el-table-column label="面值" align="center" prop="quota">
+      <!-- <el-table-column label="密码" align="center" prop="cardPass" /> -->
+      <!-- <el-table-column label="面值" align="center" prop="quota">
         <template slot-scope="scope">
-          <span>{{ parseSeconds(scope.row.quota) }}</span>
+          <span>{{ parseSeconds(scope.row.app.billType, scope.row.quota) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="价格" align="center" prop="price">
         <template slot-scope="scope">
           <span>{{ parseMoney(scope.row.price) }}元 </span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         label="过期时间"
         align="center"
@@ -267,7 +356,7 @@
           <span>{{ parseTime(scope.row.expireTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否售出" align="center" prop="isSold">
+      <!-- <el-table-column label="是否售出" align="center" prop="isSold">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold" />
         </template>
@@ -277,14 +366,14 @@
           <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale" />
         </template>
       </el-table-column>
-      <el-table-column label="是否被充值" align="center" prop="isCharged">
+      <el-table-column label="是否已用" align="center" prop="isCharged">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_yes_no"
             :value="scope.row.isCharged"
           />
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="卡密状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag
@@ -293,14 +382,14 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="充值规则" align="center" prop="chargeRule">
+      <!-- <el-table-column label="充值规则" align="center" prop="chargeRule">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_charge_rule"
             :value="scope.row.chargeRule"
           />
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         label="备注"
         align="center"
@@ -351,18 +440,61 @@
       :close-on-click-modal="false"
     >
       <el-form ref="form" :model="form" :rules="rules">
-        <div v-if="app">
-          <el-form-item>
+        <!-- 新增 -->
+        <div v-if="form.cardId == null">
+          <el-form-item prop="">
             <el-col :span="12">
-              <el-form-item label="所属软件" label-width="80px">
-                {{ this.app.appName }}
+              <el-form-item label="所属软件" prop="appId">
+                <el-select
+                  v-model="form.appId"
+                  filterable
+                  placeholder="请选择"
+                  prop="appId"
+                  @change="changeSelectedApp"
+                >
+                  <el-option
+                    v-for="item in appList"
+                    :key="item.appId"
+                    :label="
+                      '[' +
+                      (item.authType == '0' ? '账号' : '登录码') +
+                      (item.billType == '0' ? '计时' : '计点') +
+                      '] ' +
+                      item.appName
+                    "
+                    :value="item.appId"
+                    :disabled="item.disabled"
+                  >
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="计费类型" label-width="80px">
+              <el-form-item label="计费类型" prop="billType">
+                <div v-if="app">
+                  <dict-tag
+                    :options="dict.type.sys_bill_type"
+                    :value="app.billType"
+                  />
+                </div>
+                <div v-else>请先选择软件</div>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+        </div>
+        <!-- 修改 -->
+        <div v-if="form.cardId">
+          <el-form-item prop="">
+            <el-col :span="12">
+              <el-form-item label="所属软件" label-width="80px" prop="">
+                {{ form.app.appName }}
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="计费类型" label-width="80px" prop="">
                 <dict-tag
                   :options="dict.type.sys_bill_type"
-                  :value="app.billType"
+                  :value="form.app.billType"
                 />
               </el-form-item>
             </el-col>
@@ -377,7 +509,7 @@
         <el-form-item label="充值密码" prop="cardPass" label-width="80px">
           <el-input v-model="form.cardPass" placeholder="请输入密码" />
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="">
           <el-col :span="12">
             <el-form-item label="卡密状态" prop="status">
               <el-radio-group v-model="form.status">
@@ -391,46 +523,74 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <!-- <div v-if="app && app.billType === '0'"> -->
-              <el-form-item label="过期时间" prop="expireTime">
-                <el-date-picker
-                  clearable
-                  size="small"
-                  v-model="form.expireTime"
-                  type="datetime"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                  placeholder="选择过期时间"
-                  :picker-options="pickerOptions"
-                >
-                </el-date-picker>
-              </el-form-item>
-            <!-- </div> -->
-          </el-col>
-        </el-form-item>
-        <el-form-item>
-          <el-col :span="12">
-            <el-form-item
-              label="卡密面值"
-              prop="quota"
-              label-width="80px"
-              style="width: 300px"
-            >
-              <div v-if="app && app.billType === '0'">
-                <date-duration
-                  @totalSeconds="handleQuota"
-                  :seconds="form.quota"
-                ></date-duration>
-              </div>
-              <div v-else>
-                <el-input-number
-                  v-model="form.quota"
-                  controls-position="right"
-                  :min="0"
-                />
-                <span style="margin-left: 6px">点</span>
-              </div>
+            <el-form-item label="过期时间" prop="expireTime">
+              <el-date-picker
+                clearable
+                size="small"
+                v-model="form.expireTime"
+                type="datetime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                placeholder="选择过期时间"
+                :picker-options="pickerOptions"
+              >
+              </el-date-picker>
             </el-form-item>
           </el-col>
+        </el-form-item>
+        <el-form-item prop="">
+          <div v-if="form.cardId == null">
+            <el-col :span="12">
+              <el-form-item
+                label="卡密面值"
+                prop="quota"
+                label-width="80px"
+                style="width: 300px"
+              >
+                <div v-if="app">
+                  <div v-if="app.billType === '0'">
+                    <date-duration
+                      @totalSeconds="handleQuota"
+                      :seconds="form.quota"
+                    ></date-duration>
+                  </div>
+                  <div v-if="app.billType === '1'">
+                    <el-input-number
+                      v-model="form.quota"
+                      controls-position="right"
+                      :min="0"
+                    />
+                    <span style="margin-left: 6px">点</span>
+                  </div>
+                </div>
+                <div v-else>请先选择软件</div>
+              </el-form-item>
+            </el-col>
+          </div>
+          <div v-if="form.cardId && form.app">
+            <el-col :span="12">
+              <el-form-item
+                label="卡密面值"
+                prop="quota"
+                label-width="80px"
+                style="width: 300px"
+              >
+                <div v-if="form.app.billType === '0'">
+                  <date-duration
+                    @totalSeconds="handleQuota"
+                    :seconds="form.quota"
+                  ></date-duration>
+                </div>
+                <div v-if="form.app.billType === '1'">
+                  <el-input-number
+                    v-model="form.quota"
+                    controls-position="right"
+                    :min="0"
+                  />
+                  <span style="margin-left: 6px">点</span>
+                </div>
+              </el-form-item>
+            </el-col>
+          </div>
           <el-col :span="12">
             <el-form-item label="销售价格" prop="price" label-width="80px">
               <el-input-number
@@ -444,7 +604,7 @@
             </el-form-item>
           </el-col>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="">
           <el-col :span="12">
             <el-form-item label="是否上架" prop="onSale">
               <el-select v-model="form.onSale" placeholder="请选择是否上架">
@@ -470,13 +630,10 @@
             </el-form-item>
           </el-col>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="">
           <el-col :span="12">
-            <el-form-item label="是否已充值" prop="isCharged">
-              <el-select
-                v-model="form.isCharged"
-                placeholder="请选择是否已充值"
-              >
+            <el-form-item label="是否已用" prop="isCharged">
+              <el-select v-model="form.isCharged" placeholder="请选择是否已用">
                 <el-option
                   v-for="dict in dict.type.sys_yes_no"
                   :key="dict.value"
@@ -510,7 +667,7 @@
           />
         </el-form-item>
         <div v-if="form.cardId">
-          <el-form-item>
+          <el-form-item prop="">
             <el-col :span="12">
               <el-form-item label="创建人" prop="createBy">{{
                 form.createBy
@@ -545,23 +702,45 @@
       :close-on-click-modal="false"
     >
       <el-form ref="formBatch" :model="formBatch" :rules="rulesBatch">
-        <div v-if="app">
-          <el-form-item>
+        <el-form-item prop="">
             <el-col :span="12">
-              <el-form-item label="所属软件" label-width="80px">
-                {{ this.app.appName }}
+              <el-form-item label="所属软件" prop="appId">
+                <el-select
+                  v-model="formBatch.appId"
+                  filterable
+                  placeholder="请选择"
+                  prop="appId"
+                  @change="changeSelectedApp"
+                >
+                  <el-option
+                    v-for="item in appList"
+                    :key="item.appId"
+                    :label="
+                      '[' +
+                      (item.authType == '0' ? '账号' : '登录码') +
+                      (item.billType == '0' ? '计时' : '计点') +
+                      '] ' +
+                      item.appName
+                    "
+                    :value="item.appId"
+                    :disabled="item.disabled"
+                  >
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="计费类型" label-width="80px">
-                <dict-tag
-                  :options="dict.type.sys_bill_type"
-                  :value="app.billType"
-                />
+              <el-form-item label="计费类型" prop="billType">
+                <div v-if="app">
+                  <dict-tag
+                    :options="dict.type.sys_bill_type"
+                    :value="app.billType"
+                  />
+                </div>
+                <div v-else>请先选择软件</div>
               </el-form-item>
             </el-col>
           </el-form-item>
-        </div>
         <el-form-item label="选择卡类" prop="templateId">
           <el-select v-model="formBatch.templateId" placeholder="请选择">
             <el-option
@@ -570,7 +749,7 @@
               :label="
                 item.cardName +
                 '|' +
-                parseSeconds(item.quota) +
+                parseSeconds(item.app.billType, item.quota) +
                 '|' +
                 item.price +
                 '元'
@@ -580,7 +759,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="">
           <el-col :span="12">
             <el-form-item
               label="制卡数量"
@@ -628,12 +807,19 @@
 </template>
 
 <script>
-import {addCard, delCard, exportCard, getCard, listCard, updateCard,} from "@/api/system/card";
-import {getApp} from "@/api/system/app";
+import {
+  addCard,
+  delCard,
+  exportCard,
+  getCard,
+  listCard,
+  updateCard,
+} from "@/api/system/card";
+import { getApp, listApp } from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
-import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
-import {listCardTemplate} from "@/api/system/cardTemplate";
+import { parseMoney, parseSeconds, parseUnit } from "@/utils/my";
+import { listCardTemplate } from "@/api/system/cardTemplate";
 
 export default {
   name: "Card",
@@ -646,6 +832,8 @@ export default {
   components: { DateDuration, Updown },
   data() {
     return {
+      appList: [],
+      appMap: [],
       // 卡类数据
       cardTemplateList: [],
       // 软件数据
@@ -696,6 +884,7 @@ export default {
       formBatch: {},
       // 表单校验
       rules: {
+        appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
         cardName: [
           { required: true, message: "卡名称不能为空", trigger: "blur" },
         ],
@@ -715,7 +904,7 @@ export default {
           { required: true, message: "是否上架不能为空", trigger: "change" },
         ],
         isCharged: [
-          { required: true, message: "是否被充值不能为空", trigger: "change" },
+          { required: true, message: "是否已用不能为空", trigger: "change" },
         ],
         status: [
           { required: true, message: "卡密状态不能为空", trigger: "blur" },
@@ -725,6 +914,7 @@ export default {
         ],
       },
       rulesBatch: {
+        appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
         templateId: [
           { required: true, message: "卡类不能为空", trigger: "change" },
         ],
@@ -789,19 +979,21 @@ export default {
   },
   created() {
     const appId = this.$route.params && this.$route.params.appId;
+    this.getAppList();
     if (appId != undefined && appId != null) {
       getApp(appId).then((response) => {
         this.app = response.data;
-        const title = "卡密管理";
-        const appName = this.app.appName;
-        const route = Object.assign({}, this.$route, {
-          title: `${title}-${appName}`,
-        });
-        this.$store.dispatch("tagsView/updateVisitedView", route);
+        // const title = "卡密管理";
+        // const appName = this.app.appName;
+        // const route = Object.assign({}, this.$route, {
+        //   title: `${title}-${appName}`,
+        // });
+        // this.$store.dispatch("tagsView/updateVisitedView", route);
         this.getList();
       });
     } else {
-      this.$modal.alertError("未获取到当前软件信息");
+      // this.$modal.alertError("未获取到当前软件信息");
+      this.getList();
     }
   },
   methods: {
@@ -809,11 +1001,13 @@ export default {
     getList() {
       this.loading = true;
       this.queryParams.params = {};
-      this.queryParams.appId = this.app.appId;
       if (null != this.daterangeExpireTime && "" != this.daterangeExpireTime) {
         this.queryParams.params["beginExpireTime"] =
           this.daterangeExpireTime[0];
         this.queryParams.params["endExpireTime"] = this.daterangeExpireTime[1];
+      }
+      if (this.app) {
+        this.queryParams.appId = this.app.appId;
       }
       listCard(this.queryParams).then((response) => {
         this.cardList = response.rows;
@@ -835,7 +1029,7 @@ export default {
     reset() {
       this.form = {
         cardId: undefined,
-        appId: this.app.appId,
+        appId: undefined,
         cardName: undefined,
         cardNo: undefined,
         cardPass: undefined,
@@ -855,7 +1049,7 @@ export default {
     resetBatch() {
       this.formBatch = {
         cardId: undefined,
-        appId: this.app.appId,
+        appId: undefined,
         cardName: undefined,
         cardNo: undefined,
         cardPass: undefined,
@@ -893,6 +1087,9 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      if (this.app) {
+        this.form.appId = this.app.appId;
+      }
       this.open = true;
       this.title = "添加卡密";
     },
@@ -900,7 +1097,10 @@ export default {
     handleBatchAdd() {
       this.resetBatch();
       let queryParams = {};
-      queryParams.appId = this.app.appId;
+      if (this.app) {
+        queryParams.appId = this.app.appId;
+        this.formBatch.appId = this.app.appId;
+      }
       listCardTemplate(queryParams).then((response) => {
         this.cardTemplateList = response.rows;
       });
@@ -983,8 +1183,8 @@ export default {
     handleQuota(totalSeconds) {
       this.form.quota = totalSeconds;
     },
-    parseSeconds(seconds) {
-      if (this.app.billType === "0") {
+    parseSeconds(billType, seconds) {
+      if (billType === "0") {
         let parse = parseSeconds(seconds);
         return parse[0] + parseUnit(parse[1]);
       } else {
@@ -993,6 +1193,37 @@ export default {
     },
     parseMoney(val) {
       return parseMoney(val);
+    },
+    getAppList() {
+      this.loading = true;
+      let queryParams = {};
+      queryParams.params = {};
+      listApp(queryParams).then((response) => {
+        this.appList = response.rows;
+        for (let app of this.appList) {
+          this.appMap[app["appId"]] = app;
+        }
+        this.loading = false;
+      });
+    },
+    changeSelectedApp(appId) {
+      this.cardTemplateList = [];
+      this.formBatch.templateId = null;
+      this.app = this.appMap[appId];
+      let queryParams = {};
+      if (this.app) {
+          queryParams.appId = this.app.appId;
+          listCardTemplate(queryParams).then((response) => {
+          this.cardTemplateList = response.rows;
+        });
+      }
+      
+    },
+    changeSearchApp(appId) {
+      this.loading = true;
+      this.app = this.appMap[appId];
+      this.getList();
+      this.loading = false;
     },
   },
 };

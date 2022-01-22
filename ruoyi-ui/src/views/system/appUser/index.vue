@@ -7,7 +7,6 @@
       v-show="showSearch"
     >
       <el-form-item label="所属软件" prop="appId">
-        <!-- {{ this.app.appName }} -->
         <el-select
           v-model="queryParams.appId"
           filterable
@@ -708,6 +707,9 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        appId: [
+          { required: true, message: "软件不能为空", trigger: "blur" },
+        ],
         userId: [
           { required: true, message: "所属账号不能为空", trigger: "blur" },
         ],

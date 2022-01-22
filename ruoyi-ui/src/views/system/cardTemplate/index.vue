@@ -847,6 +847,9 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        appId: [
+          { required: true, message: "软件不能为空", trigger: "blur" },
+        ],
         cardName: [
           { required: true, message: "卡名称不能为空", trigger: "blur" },
         ],
