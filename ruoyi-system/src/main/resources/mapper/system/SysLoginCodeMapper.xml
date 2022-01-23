@@ -28,6 +28,8 @@
     <resultMap type="SysApp" id="SysAppResult">
         <result property="appId" column="app_id"/>
         <result property="appName" column="app_name"/>
+        <result property="authType" column="auth_type"/>
+        <result property="billType" column="bill_type"/>
         <result property="description" column="description"/>
     </resultMap>
 
@@ -51,6 +53,8 @@
                c.remark,
                a.app_id,
                a.app_name,
+               a.auth_type,
+               a.bill_type,
                a.description
         from sys_login_code c
                  left join sys_app a on c.app_id = a.app_id
