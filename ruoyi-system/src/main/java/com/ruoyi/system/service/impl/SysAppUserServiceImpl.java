@@ -107,8 +107,8 @@ public class SysAppUserServiceImpl implements ISysAppUserService
     /**
      * 查询软件用户
      *
-     * @param appId 软件主键
-     * @param loginCode 登录码
+     * @param appId     软件主键
+     * @param loginCode 单码
      * @return 软件用户
      */
     @Override

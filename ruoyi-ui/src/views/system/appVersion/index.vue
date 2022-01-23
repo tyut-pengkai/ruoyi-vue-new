@@ -135,7 +135,6 @@
     >
       <el-table-column
         align="center"
-        fixed="left"
         type="selection"
         width="55"
       />

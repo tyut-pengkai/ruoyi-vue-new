@@ -128,7 +128,6 @@
         type="selection"
         width="55"
         align="center"
-        fixed="left"
       />
       <el-table-column label="" type="index" align="center"/>
       <el-table-column label="设备码" align="center" prop="deviceCode">

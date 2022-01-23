@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 登录码类别Service业务层处理
+ * 单码类别Service业务层处理
  *
  * @author zwgu
  * @date 2022-01-06
@@ -32,10 +32,10 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
     private ISysLoginCodeService sysLoginCodeService;
 
     /**
-     * 查询登录码类别
+     * 查询单码类别
      *
-     * @param templateId 登录码类别主键
-     * @return 登录码类别
+     * @param templateId 单码类别主键
+     * @return 单码类别
      */
     @Override
     public SysLoginCodeTemplate selectSysLoginCodeTemplateByTemplateId(Long templateId) {
@@ -43,10 +43,10 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
     }
 
     /**
-     * 查询登录码类别列表
+     * 查询单码类别列表
      *
-     * @param sysLoginCodeTemplate 登录码类别
-     * @return 登录码类别
+     * @param sysLoginCodeTemplate 单码类别
+     * @return 单码类别
      */
     @Override
     public List<SysLoginCodeTemplate> selectSysLoginCodeTemplateList(SysLoginCodeTemplate sysLoginCodeTemplate) {
@@ -54,9 +54,9 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
     }
 
     /**
-     * 新增登录码类别
+     * 新增单码类别
      *
-     * @param sysLoginCodeTemplate 登录码类别
+     * @param sysLoginCodeTemplate 单码类别
      * @return 结果
      */
     @Override
@@ -66,9 +66,9 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
     }
 
     /**
-     * 修改登录码类别
+     * 修改单码类别
      *
-     * @param sysLoginCodeTemplate 登录码类别
+     * @param sysLoginCodeTemplate 单码类别
      * @return 结果
      */
     @Override
@@ -78,9 +78,9 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
     }
 
     /**
-     * 批量删除登录码类别
+     * 批量删除单码类别
      *
-     * @param templateIds 需要删除的登录码类别主键
+     * @param templateIds 需要删除的单码类别主键
      * @return 结果
      */
     @Override
@@ -89,9 +89,9 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
     }
 
     /**
-     * 删除登录码类别信息
+     * 删除单码类别信息
      *
-     * @param templateId 登录码类别主键
+     * @param templateId 单码类别主键
      * @return 结果
      */
     @Override
@@ -102,7 +102,7 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
     /**
      * 批量新增卡密
      *
-     * @param cardTpl
+     * @param loginCodeTpl
      * @param quantity
      * @param remark
      * @return

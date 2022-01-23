@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * 登录码类别Controller
+ * 单码类别Controller
  *
  * @author zwgu
  * @date 2022-01-06
@@ -28,7 +28,7 @@ public class SysLoginCodeTemplateController extends BaseController {
     private ISysLoginCodeTemplateService sysLoginCodeTemplateService;
 
     /**
-     * 查询登录码类别列表
+     * 查询单码类别列表
      */
     @PreAuthorize("@ss.hasPermi('system:loginCodeTemplate:list')")
     @GetMapping("/list")
@@ -39,19 +39,19 @@ public class SysLoginCodeTemplateController extends BaseController {
     }
 
     /**
-     * 导出登录码类别列表
+     * 导出单码类别列表
      */
     @PreAuthorize("@ss.hasPermi('system:loginCodeTemplate:export')")
-    @Log(title = "登录码类别", businessType = BusinessType.EXPORT)
+    @Log(title = "单码类别", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysLoginCodeTemplate sysLoginCodeTemplate) {
         List<SysLoginCodeTemplate> list = sysLoginCodeTemplateService.selectSysLoginCodeTemplateList(sysLoginCodeTemplate);
         ExcelUtil<SysLoginCodeTemplate> util = new ExcelUtil<SysLoginCodeTemplate>(SysLoginCodeTemplate.class);
-        util.exportExcel(response, list, "登录码类别数据");
+        util.exportExcel(response, list, "单码类别数据");
     }
 
     /**
-     * 获取登录码类别详细信息
+     * 获取单码类别详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:loginCodeTemplate:query')")
     @GetMapping(value = "/{templateId}")
@@ -60,10 +60,10 @@ public class SysLoginCodeTemplateController extends BaseController {
     }
 
     /**
-     * 新增登录码类别
+     * 新增单码类别
      */
     @PreAuthorize("@ss.hasPermi('system:loginCodeTemplate:add')")
-    @Log(title = "登录码类别", businessType = BusinessType.INSERT)
+    @Log(title = "单码类别", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysLoginCodeTemplate sysLoginCodeTemplate) {
         sysLoginCodeTemplate.setCreateBy(getUsername());
@@ -71,10 +71,10 @@ public class SysLoginCodeTemplateController extends BaseController {
     }
 
     /**
-     * 修改登录码类别
+     * 修改单码类别
      */
     @PreAuthorize("@ss.hasPermi('system:loginCodeTemplate:edit')")
-    @Log(title = "登录码类别", businessType = BusinessType.UPDATE)
+    @Log(title = "单码类别", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysLoginCodeTemplate sysLoginCodeTemplate) {
         sysLoginCodeTemplate.setUpdateBy(getUsername());
@@ -82,10 +82,10 @@ public class SysLoginCodeTemplateController extends BaseController {
     }
 
     /**
-     * 删除登录码类别
+     * 删除单码类别
      */
     @PreAuthorize("@ss.hasPermi('system:loginCodeTemplate:remove')")
-    @Log(title = "登录码类别", businessType = BusinessType.DELETE)
+    @Log(title = "单码类别", businessType = BusinessType.DELETE)
     @DeleteMapping("/{templateIds}")
     public AjaxResult remove(@PathVariable Long[] templateIds) {
         return toAjax(sysLoginCodeTemplateService.deleteSysLoginCodeTemplateByTemplateIds(templateIds));

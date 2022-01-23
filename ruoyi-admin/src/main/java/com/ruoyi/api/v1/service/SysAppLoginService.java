@@ -181,7 +181,7 @@ public class SysAppLoginService {
     /**
      * App登录验证
      *
-     * @param loginCodeStr 登录码
+     * @param loginCodeStr 单码
      * @return 结果
      */
     public String appLogin(String loginCodeStr, SysApp app, SysAppVersion appVersion, String deviceCodeStr) {
@@ -192,23 +192,23 @@ public class SysAppLoginService {
         String appName = app.getAppName();
         String appVersionStr = appVersion.getVersionShow();
         SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
-        String loginCodeShow = "<登录码>" + loginCodeStr;
+        String loginCodeShow = "[单码]" + loginCodeStr;
         try {
             if (StringUtils.isNull(loginCode)) {
-                log.info("登录码：{} 不存在.", loginCodeStr);
-                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST, "登录码：" + loginCodeStr + " 不存在");
+                log.info("单码：{} 不存在.", loginCodeStr);
+                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST, "单码：" + loginCodeStr + " 不存在");
             } /*else if (UserStatus.DELETED.getCode().equals(loginCode.getDelFlag())) {
-                log.info("登录码：{} 已被删除.", loginCodeStr);
-                throw new ApiException(ErrorCode.ERROR_LOGINCODE_NOT_EXIST, "登录码：" + loginCodeStr + " 已被删除");
+                log.info("单码：{} 已被删除.", loginCodeStr);
+                throw new ApiException(ErrorCode.ERROR_LOGINCODE_NOT_EXIST, "单码：" + loginCodeStr + " 已被删除");
             }*/ else if (UserStatus.DISABLE.getCode().equals(loginCode.getStatus())) {
-                log.info("登录码：{} 已被停用.", loginCodeStr);
-                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_LOCKED, "登录码：" + loginCodeStr + " 已停用");
+                log.info("单码：{} 已被停用.", loginCodeStr);
+                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_LOCKED, "单码：" + loginCodeStr + " 已停用");
             } else if (loginCode.getExpireTime().before(DateUtils.getNowDate())) {
                 String expiredTime = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, loginCode.getExpireTime());
-                log.info("登录码：{} 有效期至：{}，现已过期", loginCodeStr, expiredTime);
-                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_EXPIRED, "登录码：" + loginCodeStr + " 有效期至：" + expiredTime + "，现已过期");
+                log.info("单码：{} 有效期至：{}，现已过期", loginCodeStr, expiredTime);
+                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_EXPIRED, "单码：" + loginCodeStr + " 有效期至：" + expiredTime + "，现已过期");
             } else if (!Objects.equals(loginCode.getAppId(), app.getAppId())) {
-                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_APP_MISMATCH, "登录码：" + loginCodeStr + " 与软件：" + app.getAppName() + "不匹配");
+                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_APP_MISMATCH, "单码：" + loginCodeStr + " 与软件：" + app.getAppName() + "不匹配");
             }
             appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(app.getAppId(), loginCodeStr);
             if (appUser == null) { // 首次登录

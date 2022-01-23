@@ -71,9 +71,9 @@ public class ApiDefine {
                                 new Param("dev_code", false, "设备码，如果开启设备绑定，则必须提供"),
                                 new Param("md5", false, "软件MD5")
                         }), //
-                new Api("login.nc", "登录码登录", false, Constants.API_TAG_CODE, "登录码登录接口", new AuthType[]{AuthType.LOGIN_CODE}, Constants.BILL_TYPE_ALL,
+                new Api("login.nc", "单码登录", false, Constants.API_TAG_CODE, "单码登录接口", new AuthType[]{AuthType.LOGIN_CODE}, Constants.BILL_TYPE_ALL,
                         new Param[]{
-                                new Param("login_code", true, "登录码"), //
+                                new Param("login_code", true, "单码"), //
                                 new Param("app_ver", true, "软件版本号"),
                                 new Param("dev_code", false, "设备码，如果开启设备绑定，则必须提供"),
                                 new Param("md5", false, "软件MD5")

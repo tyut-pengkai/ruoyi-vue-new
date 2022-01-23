@@ -85,7 +85,7 @@ public class SysAppUserController extends BaseController
         }else{
             SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(sysAppUser.getAppId(), sysAppUser.getLoginCode());
             if(appUser != null){
-                return AjaxResult.error("当前软件下该登录码已拥有软件用户，可直接登录，无需重复添加");
+                return AjaxResult.error("当前软件下该单码已拥有软件用户，可直接登录，无需重复添加");
             }
         }
         return toAjax(sysAppUserService.insertSysAppUser(sysAppUser));

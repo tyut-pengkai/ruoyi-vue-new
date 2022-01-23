@@ -20,7 +20,7 @@
             :key="item.appId"
             :label="
               '[' +
-              (item.authType == '0' ? '账号' : '登录码') +
+              (item.authType == '0' ? '账号' : '单码') +
               (item.billType == '0' ? '计时' : '计点') +
               '] ' +
               item.appName
@@ -312,7 +312,6 @@
         type="selection"
         width="55"
         align="center"
-        fixed="left"
       />
       <el-table-column label="" type="index" align="center" />
       <el-table-column
@@ -457,7 +456,7 @@
                     :key="item.appId"
                     :label="
                       '[' +
-                      (item.authType == '0' ? '账号' : '登录码') +
+                      (item.authType == '0' ? '账号' : '单码') +
                       (item.billType == '0' ? '计时' : '计点') +
                       '] ' +
                       item.appName
@@ -717,7 +716,7 @@
                     :key="item.appId"
                     :label="
                       '[' +
-                      (item.authType == '0' ? '账号' : '登录码') +
+                      (item.authType == '0' ? '账号' : '单码') +
                       (item.billType == '0' ? '计时' : '计点') +
                       '] ' +
                       item.appName

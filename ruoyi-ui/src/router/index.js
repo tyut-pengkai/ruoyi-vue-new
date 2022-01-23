@@ -136,7 +136,7 @@ export const constantRoutes = [
       component: () => import('@/views/system/loginCodeTemplate/index'),
       name: 'LoginCodeTemplate',
       meta: {
-        title: '登录码类别',
+        title: '单码类别',
         activeMenu: '/authentication/app'
       }
     }, {
@@ -144,7 +144,7 @@ export const constantRoutes = [
       component: () => import('@/views/system/loginCode/index'),
       name: 'LoginCode',
       meta: {
-        title: '登录码管理',
+        title: '单码管理',
         activeMenu: '/authentication/app'
       }
     }, {

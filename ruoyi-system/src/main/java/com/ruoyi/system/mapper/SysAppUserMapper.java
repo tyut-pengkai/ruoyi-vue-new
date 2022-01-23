@@ -75,8 +75,8 @@ public interface SysAppUserMapper
     /**
      * 查询软件用户
      *
-     * @param appId 软件主键
-     * @param loginCode 登录码
+     * @param appId     软件主键
+     * @param loginCode 单码
      * @return 软件用户
      */
     SysAppUser selectSysAppUserByAppIdAndLoginCode(@Param("appId") Long appId, @Param("loginCode")String loginCode);

@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 登录码Controller
+ * 单码Controller
  *
  * @author zwgu
  * @date 2021-12-03
@@ -32,7 +32,7 @@ public class SysLoginCodeController extends BaseController {
     private ISysLoginCodeTemplateService sysLoginCodeTemplateService;
 
     /**
-     * 查询登录码列表
+     * 查询单码列表
      */
     @PreAuthorize("@ss.hasPermi('system:loginCode:list')")
     @GetMapping("/list")
@@ -43,19 +43,19 @@ public class SysLoginCodeController extends BaseController {
     }
 
     /**
-     * 导出登录码列表
+     * 导出单码列表
      */
     @PreAuthorize("@ss.hasPermi('system:loginCode:export')")
-    @Log(title = "登录码", businessType = BusinessType.EXPORT)
+    @Log(title = "单码", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(SysLoginCode sysLoginCode) {
         List<SysLoginCode> list = sysLoginCodeService.selectSysLoginCodeList(sysLoginCode);
         ExcelUtil<SysLoginCode> util = new ExcelUtil<SysLoginCode>(SysLoginCode.class);
-        return util.exportExcel(list, "登录码数据");
+        return util.exportExcel(list, "单码数据");
     }
 
     /**
-     * 获取登录码详细信息
+     * 获取单码详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:loginCode:query')")
     @GetMapping(value = "/{cardId}")
@@ -64,10 +64,10 @@ public class SysLoginCodeController extends BaseController {
     }
 
     /**
-     * 新增登录码
+     * 新增单码
      */
     @PreAuthorize("@ss.hasPermi('system:loginCode:add')")
-    @Log(title = "登录码", businessType = BusinessType.INSERT)
+    @Log(title = "单码", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysLoginCode sysLoginCode) {
         if (sysLoginCode.getTemplateId() == null) {
@@ -87,10 +87,10 @@ public class SysLoginCodeController extends BaseController {
     }
 
     /**
-     * 修改登录码
+     * 修改单码
      */
     @PreAuthorize("@ss.hasPermi('system:loginCode:edit')")
-    @Log(title = "登录码", businessType = BusinessType.UPDATE)
+    @Log(title = "单码", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysLoginCode sysLoginCode) {
         sysLoginCode.setUpdateBy(getUsername());
@@ -98,10 +98,10 @@ public class SysLoginCodeController extends BaseController {
     }
 
     /**
-     * 删除登录码
+     * 删除单码
      */
     @PreAuthorize("@ss.hasPermi('system:loginCode:remove')")
-    @Log(title = "登录码", businessType = BusinessType.DELETE)
+    @Log(title = "单码", businessType = BusinessType.DELETE)
     @DeleteMapping("/{cardIds}")
     public AjaxResult remove(@PathVariable Long[] cardIds) {
         return toAjax(sysLoginCodeService.deleteSysLoginCodeByCardIds(cardIds));

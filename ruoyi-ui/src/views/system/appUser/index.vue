@@ -20,7 +20,7 @@
             :key="item.appId"
             :label="
               '[' +
-              (item.authType == '0' ? '账号' : '登录码') +
+              (item.authType == '0' ? '账号' : '单码') +
               (item.billType == '0' ? '计时' : '计点') +
               '] ' +
               item.appName
@@ -31,10 +31,10 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="用户名称/登录码" prop="userName">
+      <el-form-item label="用户名称/单码" prop="userName">
         <el-input
           v-model="queryParams.userName"
-          placeholder="请输入用户名称或登录码"
+          placeholder="请输入用户名称或单码"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -187,7 +187,6 @@
         type="selection"
         width="55"
         align="center"
-        fixed="left"
       />
       <el-table-column label="" type="index" align="center" />
       <el-table-column
@@ -200,7 +199,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="账号/登录码"
+        label="账号/单码"
         align="center"
         :show-overflow-tooltip="true"
       >
@@ -209,7 +208,7 @@
             {{ scope.row.user.nickName }}({{ scope.row.user.userName }})
           </div>
           <div v-else>
-            {{ '[登录码]' + scope.row.loginCode }}
+            {{ '[单码]' + scope.row.loginCode }}
           </div>
         </template>
       </el-table-column>
@@ -362,7 +361,7 @@
                     :key="item.appId"
                     :label="
                       '[' +
-                      (item.authType == '0' ? '账号' : '登录码') +
+                      (item.authType == '0' ? '账号' : '单码') +
                       (item.billType == '0' ? '计时' : '计点') +
                       '] ' +
                       item.appName
@@ -388,7 +387,7 @@
               </el-form-item>
             </el-col>
           </el-form-item>
-          <el-form-item label="所属账号/登录码" prop="">
+          <el-form-item label="所属账号/单码" prop="">
           <div v-if="app">
             <div v-if="app.authType === '0'">
                 <el-select
@@ -409,7 +408,7 @@
             </div>
             <div v-if="app.authType === '1'">
                 <el-input
-                  placeholder="请输入登录码"
+                  placeholder="请输入单码"
                   v-model="form.loginCode"
                   clearable
                 >
@@ -437,7 +436,7 @@
                 </el-form-item>
               </div>
               <div v-if="form.app.authType === '1'">
-                <el-form-item label="登录码" prop="loginCode">
+                <el-form-item label="单码" prop="loginCode">
                   {{ form.loginCode }}
                 </el-form-item>
               </div>
@@ -714,7 +713,7 @@ export default {
           { required: true, message: "所属账号不能为空", trigger: "blur" },
         ],
         loginCode: [
-          { required: true, message: "登录码不能为空", trigger: "blur" },
+          { required: true, message: "单码不能为空", trigger: "blur" },
         ],
         status: [{ required: true, message: "状态不能为空", trigger: "blur" }],
         loginLimitU: [

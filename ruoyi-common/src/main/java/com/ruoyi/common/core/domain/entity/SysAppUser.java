@@ -76,8 +76,10 @@ public class SysAppUser extends BaseEntity
     @Excel(name = "剩余点数")
     private BigDecimal point;
 
-    /** 登录码 */
-    @Excel(name = "登录码")
+    /**
+     * 单码
+     */
+    @Excel(name = "单码")
     private String loginCode;
 
     /**

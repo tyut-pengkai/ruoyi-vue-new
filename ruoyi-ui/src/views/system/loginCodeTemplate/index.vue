@@ -15,7 +15,7 @@
             :key="item.appId"
             :label="
               '[' +
-              (item.authType == '0' ? '账号' : '登录码') +
+              (item.authType == '0' ? '账号' : '单码') +
               (item.billType == '0' ? '计时' : '计点') +
               '] ' +
               item.appName
@@ -26,28 +26,28 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="登录码名称" prop="cardName">
+      <el-form-item label="单码名称" prop="cardName">
         <el-input
           v-model="queryParams.cardName"
-          placeholder="请输入登录码名称"
+          placeholder="请输入单码名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!-- <el-form-item label="登录码前缀" prop="cardNoPrefix">
+      <!-- <el-form-item label="单码前缀" prop="cardNoPrefix">
         <el-input
           v-model="queryParams.cardNoPrefix"
-          placeholder="请输入登录码前缀"
+          placeholder="请输入单码前缀"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="登录码后缀" prop="cardNoSuffix">
+      <el-form-item label="单码后缀" prop="cardNoSuffix">
         <el-input
           v-model="queryParams.cardNoSuffix"
-          placeholder="请输入登录码后缀"
+          placeholder="请输入单码后缀"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -71,28 +71,28 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="登录码长度" prop="cardNoLen">
+      <el-form-item label="单码长度" prop="cardNoLen">
         <el-input
           v-model="queryParams.cardNoLen"
-          placeholder="请输入登录码长度"
+          placeholder="请输入单码长度"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="登录码生成规则" prop="cardNoGenRule">
+      <el-form-item label="单码生成规则" prop="cardNoGenRule">
         <el-input
           v-model="queryParams.cardNoGenRule"
-          placeholder="请输入登录码生成规则"
+          placeholder="请输入单码生成规则"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="登录码正则" prop="cardNoRegex">
+      <el-form-item label="单码正则" prop="cardNoRegex">
         <el-input
           v-model="queryParams.cardNoRegex"
-          placeholder="请输入登录码正则"
+          placeholder="请输入单码正则"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -136,8 +136,8 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item> -->
-      <el-form-item label="登录码类别状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择登录码类别状态" clearable size="small">
+      <el-form-item label="类别状态" prop="status">
+        <el-select v-model="queryParams.status" placeholder="请选择单码类别状态" clearable size="small">
           <el-option
             v-for="dict in dict.type.sys_normal_disable"
             :key="dict.value"
@@ -213,7 +213,6 @@
         type="selection"
         width="55"
         align="center"
-        fixed="left"
       />
       <el-table-column label="" type="index" align="center" />
      <el-table-column
@@ -226,7 +225,7 @@
         </template>
       </el-table-column>
      <el-table-column
-        label="登录码名称"
+        label="单码名称"
         align="center"
         prop="cardName"
         :show-overflow-tooltip="true"
@@ -243,9 +242,9 @@
           </span>
         </template>
       </el-table-column>
-      <!-- <el-table-column label="登录码前缀" align="center" prop="cardNoPrefix" />
-      <el-table-column label="登录码后缀" align="center" prop="cardNoSuffix" />
-      <el-table-column label="登录码描述" align="center" prop="cardDescription" /> -->
+      <!-- <el-table-column label="单码前缀" align="center" prop="cardNoPrefix" />
+      <el-table-column label="单码后缀" align="center" prop="cardNoSuffix" />
+      <el-table-column label="单码描述" align="center" prop="cardDescription" /> -->
       <el-table-column label="是否上架" align="center" prop="onSale">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale"/>
@@ -266,7 +265,7 @@
           <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
         </template>
       </el-table-column>
-       <el-table-column label="登录码面值" align="center" prop="quota">
+       <el-table-column label="单码面值" align="center" prop="quota">
         <template slot-scope="scope">
           <span>{{ parseSeconds(scope.row.app.billType, scope.row.quota) }}</span>
         </template>
@@ -276,9 +275,9 @@
           <span>{{ parseMoney(scope.row.price) }}元</span>
         </template>
       </el-table-column>
-      <!-- <el-table-column label="登录码长度" align="center" prop="cardNoLen" />
-      <el-table-column label="登录码生成规则" align="center" prop="cardNoGenRule" />
-      <el-table-column label="登录码正则" align="center" prop="cardNoRegex" /> -->
+      <!-- <el-table-column label="单码长度" align="center" prop="cardNoLen" />
+      <el-table-column label="单码生成规则" align="center" prop="cardNoGenRule" />
+      <el-table-column label="单码正则" align="center" prop="cardNoRegex" /> -->
       <el-table-column label="有效期" align="center" prop="effectiveDuration">
         <template slot-scope="scope">
           <span>{{
@@ -327,7 +326,7 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改登录码类别对话框 -->
+    <!-- 添加或修改单码类别对话框 -->
     <el-dialog
       :title="title"
       :visible.sync="open"
@@ -353,7 +352,7 @@
                     :key="item.appId"
                     :label="
                       '[' +
-                      (item.authType == '0' ? '账号' : '登录码') +
+                      (item.authType == '0' ? '账号' : '单码') +
                       (item.billType == '0' ? '计时' : '计点') +
                       '] ' +
                       item.appName
@@ -405,7 +404,7 @@
           <div v-if="form.templateId == null">
             <el-col :span="12">
               <el-form-item
-                label="登录码面值"
+                label="单码面值"
                 prop="quota"
                 label-width="100px"
                 style="width: 320px"
@@ -435,7 +434,7 @@
           <div v-if="form.templateId && form.app">
             <el-col :span="12">
               <el-form-item
-                label="登录码面值"
+                label="单码面值"
                 prop="quota"
                 label-width="100px"
                 style="width: 320px"
@@ -512,27 +511,27 @@
           <el-form-item>
             <el-col :span="12">
               <el-form-item
-                label="登录码前缀"
+                label="单码前缀"
                 prop="cardNoPrefix"
                 label-width="100px"
                 style="width: 300px"
               >
                 <el-input
                   v-model="form.cardNoPrefix"
-                  placeholder="请输入登录码前缀"
+                  placeholder="请输入单码前缀"
                 />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item
-                label="登录码后缀"
+                label="单码后缀"
                 prop="cardNoSuffix"
                 label-width="100px"
                 style="width: 300px"
               >
                 <el-input
                   v-model="form.cardNoSuffix"
-                  placeholder="请输入登录码后缀"
+                  placeholder="请输入单码后缀"
                 />
               </el-form-item>
             </el-col>
@@ -540,7 +539,7 @@
           <el-form-item>
             <el-col :span="12">
               <el-form-item
-                label="登录码长度"
+                label="单码长度"
                 prop="cardNoLen"
                 label-width="100px"
               >
@@ -569,10 +568,10 @@
           </el-form-item>
           <el-form-item>
             <el-col :span="12">
-              <el-form-item label="登录码生成规则" prop="cardNoGenRule">
+              <el-form-item label="单码生成规则" prop="cardNoGenRule">
                 <el-select
                   v-model="form.cardNoGenRule"
-                  placeholder="请选择登录码生成规则"
+                  placeholder="请选择单码生成规则"
                 >
                   <el-option
                     v-for="dict in dict.type.sys_gen_rule"
@@ -585,14 +584,14 @@
             </el-col>
             <el-col :span="12">
               <el-form-item
-                label="登录码正则"
+                label="单码正则"
                 prop="cardNoRegex"
                 label-width="100px"
                 style="width: 300px"
               >
                 <el-input
                   v-model="form.cardNoRegex"
-                  placeholder="请输入登录码正则"
+                  placeholder="请输入单码正则"
                   :disabled="form.cardNoGenRule !== '7'"
                 />
               </el-form-item>
@@ -613,10 +612,10 @@
                   ></el-option>
                 </el-select>
               </el-form-item> -->
-              <el-form-item label="登录码有效期" prop="effectiveDuration">
+              <el-form-item label="单码有效期" prop="effectiveDuration">
                 <span>
                   <el-tooltip
-                    content="登录码有效期，整数，-1为长期有效，默认为-1"
+                    content="单码有效期，整数，-1为长期有效，默认为-1"
                     placement="top"
                   >
                     <i
@@ -723,7 +722,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 登录码类别表格数据
+      // 单码类别表格数据
       loginCodeTemplateList: [],
       // 弹出层标题
       title: "",
@@ -757,13 +756,13 @@ export default {
           { required: true, message: "价格不能为空", trigger: "blur" }
         ],
         cardNoLen: [
-          { required: true, message: "登录码长度不能为空", trigger: "blur" }
+          { required: true, message: "单码长度不能为空", trigger: "blur" }
         ],
         cardNoGenRule: [
-          { required: true, message: "登录码生成规则不能为空", trigger: "blur" }
+          { required: true, message: "单码生成规则不能为空", trigger: "blur" }
         ],
         cardNoRegex: [
-          { required: false, message: "登录码正则不能为空", trigger: "blur" }
+          { required: false, message: "单码正则不能为空", trigger: "blur" }
         ],
         onSale: [
           { required: true, message: "是否上架不能为空", trigger: "change" }
@@ -775,7 +774,7 @@ export default {
           { required: true, message: "有效时长不能为空", trigger: "blur" }
         ],
         status: [
-          { required: true, message: "登录码类别状态不能为空", trigger: "blur" }
+          { required: true, message: "单码类别状态不能为空", trigger: "blur" }
         ],
         enableAutoGen: [
           { required: true, message: "允许自动生成不能为空", trigger: "change" }
@@ -789,7 +788,7 @@ export default {
     if (appId != undefined && appId != null) {
       getApp(appId).then((response) => {
         this.app = response.data;
-        // const title = "登录码类别管理";
+        // const title = "单码类别管理";
         // const appName = this.app.appName;
         // const route = Object.assign({}, this.$route, {
         //   title: `${title}-${appName}`,
@@ -803,7 +802,7 @@ export default {
     }
   },
   methods: {
-    /** 查询登录码类别列表 */
+    /** 查询单码类别列表 */
     getList() {
       this.loading = true;
       if (this.app) {
@@ -866,7 +865,7 @@ export default {
         this.form.appId = this.app.appId;
       }
       this.open = true;
-      this.title = "添加登录码类别";
+      this.title = "添加单码类别";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -875,7 +874,7 @@ export default {
       getLoginCodeTemplate(templateId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改登录码类别";
+        this.title = "修改单码类别";
       });
     },
     /** 提交按钮 */
@@ -902,7 +901,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const templateIds = row.templateId || this.ids;
-      this.$modal.confirm('是否确认删除登录码类别编号为"' + templateIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除单码类别编号为"' + templateIds + '"的数据项？').then(function() {
         return delLoginCodeTemplate(templateIds);
       }).then(() => {
         this.getList();

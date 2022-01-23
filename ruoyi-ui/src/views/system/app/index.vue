@@ -109,7 +109,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="创建时间">
+      <!-- <el-form-item label="创建时间">
         <el-date-picker
           v-model="daterangeCreateTime"
           size="small"
@@ -120,7 +120,7 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
         ></el-date-picker>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button
           type="primary"
@@ -198,7 +198,6 @@
         type="selection"
         width="55"
         align="center"
-        fixed="left"
       />
       <el-table-column label="" type="index" align="center" />
       <!-- <el-table-column label="软件图标" align="center" prop="icon" /> -->
@@ -264,7 +263,7 @@
           {{ scope.row.developer.nickName }}({{ scope.row.developer.userName }})
         </template>
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         label="创建时间"
         align="center"
         prop="createTime"
@@ -273,7 +272,7 @@
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         label="备注"
         align="center"
@@ -417,14 +416,14 @@
                   command="handleLoginCodeTemplate"
                   icon="el-icon-edit-outline"
                   v-hasPermi="['system:loginCodeTemplate:list']"
-                >登录码类别
+                >单码类别
                 </el-dropdown-item
                 >
                 <el-dropdown-item
                   command="handleLoginCodeManage"
                   icon="el-icon-bank-card"
                   v-hasPermi="['system:loginCode:list']"
-                  >登录码管理</el-dropdown-item
+                  >单码管理</el-dropdown-item
                 >
               </div>
             </el-dropdown-menu>
@@ -801,26 +800,26 @@
               </el-select>
             </el-form-item>
           </el-tab-pane>
-          <!-- 登录码设置 -->
-          <!-- <el-tab-pane label="登录码设置">
+          <!-- 单码设置 -->
+          <!-- <el-tab-pane label="单码设置">
             <el-form-item>
-              <el-form-item label="登录码前缀" prop="loginCodePrefix">
+              <el-form-item label="单码前缀" prop="loginCodePrefix">
                 <el-input
                   v-model="form.loginCodePrefix"
-                  placeholder="请输入登录码前缀"
+                  placeholder="请输入单码前缀"
                 />
               </el-form-item>
-              <el-form-item label="登录码后缀" prop="loginCodeSuffix">
+              <el-form-item label="单码后缀" prop="loginCodeSuffix">
                 <el-input
                   v-model="form.loginCodeSuffix"
-                  placeholder="请输入登录码后缀"
+                  placeholder="请输入单码后缀"
                 />
               </el-form-item>
             </el-form-item>
-            <el-form-item label="登录码长度" prop="loginCodeLen">
+            <el-form-item label="单码长度" prop="loginCodeLen">
               <span>
                 <el-tooltip
-                  content="登录码长度，最短为16，最长为48，默认为32"
+                  content="单码长度，最短为16，最长为48，默认为32"
                   placement="top"
                 >
                   <i
@@ -837,10 +836,10 @@
               />
             </el-form-item>
             <el-form-item>
-              <el-form-item label="登录码生成规则" prop="loginCodeGenRule">
+              <el-form-item label="单码生成规则" prop="loginCodeGenRule">
                 <el-select
                   v-model="form.loginCodeGenRule"
-                  placeholder="请输入登录码生成规则，默认为大小写字母+数字"
+                  placeholder="请输入单码生成规则，默认为大小写字母+数字"
                 >
                   <el-option
                     v-for="dict in dict.type.sys_gen_rule"
@@ -853,7 +852,7 @@
               <el-form-item label="正则表达式" prop="loginCodeRegex">
                 <el-input
                   v-model="form.loginCodeRegex"
-                  placeholder="请输入登录码生成规则"
+                  placeholder="请输入单码生成规则"
                   :disabled="form.loginCodeGenRule !== '7'"
                 />
               </el-form-item>
@@ -1089,21 +1088,21 @@ export default {
         loginCodeLen: [
           {
             required: false,
-            message: "登录码长度不能为空",
+            message: "单码长度不能为空",
             trigger: "blur",
           },
         ],
         loginCodeGenRule: [
           {
             required: false,
-            message: "登录码生成规则不能为空",
+            message: "单码生成规则不能为空",
             trigger: "blur",
           },
         ],
         loginCodeRegex: [
           {
             required: false,
-            message: "登录码生成规则不能为空",
+            message: "单码生成规则不能为空",
             trigger: "blur",
           },
         ],

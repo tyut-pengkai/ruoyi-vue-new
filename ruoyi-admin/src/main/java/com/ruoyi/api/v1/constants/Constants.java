@@ -14,8 +14,8 @@ public class Constants {
     // 用于API文档接口分类
     public static String API_TAG_ACCOUNT_TIME = "账号计时API";
     public static String API_TAG_ACCOUNT_POINT = "账号计点API";
-    public static String API_TAG_CODE_TIME = "登录码计时API";
-    public static String API_TAG_CODE_POINT = "登录码计点API";
+    public static String API_TAG_CODE_TIME = "单码计时API";
+    public static String API_TAG_CODE_POINT = "单码计点API";
     public static String API_TAG_GENERAL = "通用API";
     public static String API_TAG_DEV_TOOL = "开发工具";
     public static String[] API_TAG_ACCOUNT = new String[]{

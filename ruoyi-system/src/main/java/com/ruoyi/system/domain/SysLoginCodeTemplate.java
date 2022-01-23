@@ -10,7 +10,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.math.BigDecimal;
 
 /**
- * 登录码类别对象 sys_login_code_template
+ * 单码类别对象 sys_login_code_template
  *
  * @author zwgu
  * @date 2022-01-06
@@ -32,19 +32,19 @@ public class SysLoginCodeTemplate extends BaseEntity {
     /**
      * 卡名称
      */
-    @Excel(name = "登录码名称")
+    @Excel(name = "单码名称")
     private String cardName;
 
     /**
-     * 登录码前缀
+     * 单码前缀
      */
-    @Excel(name = "登录码前缀")
+    @Excel(name = "单码前缀")
     private String cardNoPrefix;
 
     /**
-     * 登录码后缀
+     * 单码后缀
      */
-    @Excel(name = "登录码后缀")
+    @Excel(name = "单码后缀")
     private String cardNoSuffix;
 
     /**
@@ -66,21 +66,21 @@ public class SysLoginCodeTemplate extends BaseEntity {
     private BigDecimal price;
 
     /**
-     * 登录码长度
+     * 单码长度
      */
-    @Excel(name = "登录码长度")
+    @Excel(name = "单码长度")
     private Integer cardNoLen;
 
     /**
-     * 登录码生成规则
+     * 单码生成规则
      */
-    @Excel(name = "登录码生成规则")
+    @Excel(name = "单码生成规则")
     private GenRule cardNoGenRule;
 
     /**
-     * 登录码正则
+     * 单码正则
      */
-    @Excel(name = "登录码正则")
+    @Excel(name = "单码正则")
     private String cardNoRegex;
 
     /**
@@ -104,7 +104,7 @@ public class SysLoginCodeTemplate extends BaseEntity {
     /**
      * 卡类状态
      */
-    @Excel(name = "登录码类别状态")
+    @Excel(name = "单码类别状态")
     private String status;
 
     /**

@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 登录码对象 sys_login_code
+ * 单码对象 sys_login_code
  *
  * @author zwgu
  * @date 2021-12-03
@@ -21,7 +21,7 @@ public class SysLoginCode extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 登录码ID
+     * 单码ID
      */
     private Long cardId;
 
@@ -32,15 +32,15 @@ public class SysLoginCode extends BaseEntity {
     private Long appId;
 
     /**
-     * 登录码名称
+     * 单码名称
      */
-    @Excel(name = "登录码名称")
+    @Excel(name = "单码名称")
     private String cardName;
 
     /**
-     * 登录码
+     * 单码
      */
-    @Excel(name = "登录码")
+    @Excel(name = "单码")
     private String cardNo;
 
     /**
@@ -81,14 +81,14 @@ public class SysLoginCode extends BaseEntity {
     private String isCharged;
 
     /**
-     * 登录码类别ID
+     * 单码类别ID
      */
     private Long templateId;
 
     /**
-     * 登录码状态
+     * 单码状态
      */
-    @Excel(name = "登录码状态")
+    @Excel(name = "单码状态")
     private String status;
 
     /**
@@ -98,7 +98,7 @@ public class SysLoginCode extends BaseEntity {
     private SysApp app;
 
     /**
-     * 批量生成登录码数量
+     * 批量生成单码数量
      */
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Integer genQuantity;

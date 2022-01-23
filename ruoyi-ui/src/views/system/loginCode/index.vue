@@ -20,7 +20,7 @@
             :key="item.appId"
             :label="
               '[' +
-              (item.authType == '0' ? '账号' : '登录码') +
+              (item.authType == '0' ? '账号' : '单码') +
               (item.billType == '0' ? '计时' : '计点') +
               '] ' +
               item.appName
@@ -31,37 +31,37 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="登录码名称" prop="cardName">
+      <el-form-item label="单码名称" prop="cardName">
         <el-input
           v-model="queryParams.cardName"
-          placeholder="请输入登录码名称"
+          placeholder="请输入单码名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="登录码" prop="cardNo">
+      <el-form-item label="单码" prop="cardNo">
         <el-input
           v-model="queryParams.cardNo"
-          placeholder="请输入登录码"
+          placeholder="请输入单码"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!-- <el-form-item label="登录码面值" prop="quota">
+      <!-- <el-form-item label="单码面值" prop="quota">
         <el-input
           v-model="queryParams.quota"
-          placeholder="请输入登录码面值"
+          placeholder="请输入单码面值"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="登录码价格" prop="price">
+      <el-form-item label="单码价格" prop="price">
         <el-input
           v-model="queryParams.price"
-          placeholder="请输入登录码价格"
+          placeholder="请输入单码价格"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -124,10 +124,10 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="登录码状态" prop="status">
+      <el-form-item label="单码状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择登录码状态"
+          placeholder="请选择单码状态"
           clearable
           size="small"
         >
@@ -231,7 +231,7 @@
                 -
               </el-col>
               <el-col :span="6">
-                <el-form-item label="登录码" prop="">
+                <el-form-item label="单码" prop="">
                   <span>{{ scope.row.cardNo }}</span>
                 </el-form-item>
               </el-col>
@@ -284,7 +284,6 @@
         type="selection"
         width="55"
         align="center"
-        fixed="left"
       />
       <el-table-column label="" type="index" align="center" />
       <el-table-column
@@ -297,12 +296,12 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="登录码名称"
+        label="单码名称"
         align="center"
         prop="cardName"
         :show-overflow-tooltip="true"
       />
-      <el-table-column label="登录码" align="center" prop="cardNo">
+      <el-table-column label="单码" align="center" prop="cardNo">
         <template slot-scope="scope">
           <span>{{ scope.row.cardNo }} </span>
         </template>
@@ -345,7 +344,7 @@
           />
         </template>
       </el-table-column> -->
-      <el-table-column label="登录码状态" align="center" prop="status">
+      <el-table-column label="单码状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_normal_disable"
@@ -394,7 +393,7 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改登录码对话框 -->
+    <!-- 添加或修改单码对话框 -->
     <el-dialog
       :title="title"
       :visible.sync="open"
@@ -420,7 +419,7 @@
                     :key="item.appId"
                     :label="
                       '[' +
-                      (item.authType == '0' ? '账号' : '登录码') +
+                      (item.authType == '0' ? '账号' : '单码') +
                       (item.billType == '0' ? '计时' : '计点') +
                       '] ' +
                       item.appName
@@ -463,15 +462,15 @@
             </el-col>
           </el-form-item>
         </div>
-        <el-form-item label="登录码名称" prop="cardName" label-width="100px">
-          <el-input v-model="form.cardName" placeholder="请输入登录码名称" />
+        <el-form-item label="单码名称" prop="cardName" label-width="100px">
+          <el-input v-model="form.cardName" placeholder="请输入单码名称" />
         </el-form-item>
-        <el-form-item label="登录码" prop="cardNo" label-width="80px">
-          <el-input v-model="form.cardNo" placeholder="请输入登录码" />
+        <el-form-item label="单码" prop="cardNo" label-width="80px">
+          <el-input v-model="form.cardNo" placeholder="请输入单码" />
         </el-form-item>
         <el-form-item prop="">
           <el-col :span="12">
-            <el-form-item label="登录码状态" prop="status">
+            <el-form-item label="单码状态" prop="status">
               <el-radio-group v-model="form.status">
                 <el-radio
                   v-for="dict in dict.type.sys_normal_disable"
@@ -501,7 +500,7 @@
           <div v-if="form.cardId == null">
             <el-col :span="12">
               <el-form-item
-                label="登录码面值"
+                label="单码面值"
                 prop="quota"
                 label-width="100px"
                 style="width: 320px"
@@ -529,7 +528,7 @@
           <div v-if="form.cardId && form.app">
             <el-col :span="12">
               <el-form-item
-                label="登录码面值"
+                label="单码面值"
                 prop="quota"
                 label-width="100px"
                 style="width: 320px"
@@ -644,7 +643,7 @@
       </div>
     </el-dialog>
 
-    <!-- 批量制登录码对话框 -->
+    <!-- 批量制单码对话框 -->
     <el-dialog
       :title="title"
       :visible.sync="batchOpen"
@@ -668,7 +667,7 @@
                     :key="item.appId"
                     :label="
                       '[' +
-                      (item.authType == '0' ? '账号' : '登录码') +
+                      (item.authType == '0' ? '账号' : '单码') +
                       (item.billType == '0' ? '计时' : '计点') +
                       '] ' +
                       item.appName
@@ -692,7 +691,7 @@
               </el-form-item>
             </el-col>
           </el-form-item>
-        <el-form-item label="选择登录码类别" prop="templateId">
+        <el-form-item label="选择单码类别" prop="templateId">
           <el-select v-model="formBatch.templateId" placeholder="请选择">
             <el-option
               v-for="item in cardTemplateList"
@@ -795,7 +794,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 登录码表格数据
+      // 单码表格数据
       cardList: [],
       // 弹出层标题
       title: "",
@@ -830,9 +829,9 @@ export default {
           { required: true, message: "软件不能为空", trigger: "blur" },
         ],
         cardName: [
-          { required: true, message: "登录码名称不能为空", trigger: "blur" },
+          { required: true, message: "单码名称不能为空", trigger: "blur" },
         ],
-        cardNo: [{ required: true, message: "登录码不能为空", trigger: "blur" }],
+        cardNo: [{ required: true, message: "单码不能为空", trigger: "blur" }],
         quota: [{ required: true, message: "额度不能为空", trigger: "blur" }],
         price: [{ required: true, message: "价格不能为空", trigger: "blur" }],
         expireTime: [
@@ -848,7 +847,7 @@ export default {
           { required: true, message: "是否被充值不能为空", trigger: "change" },
         ],
         status: [
-          { required: true, message: "登录码状态不能为空", trigger: "blur" },
+          { required: true, message: "单码状态不能为空", trigger: "blur" },
         ],
       },
       rulesBatch: {
@@ -921,7 +920,7 @@ export default {
     if (appId != undefined && appId != null) {
       getApp(appId).then((response) => {
         this.app = response.data;
-        // const title = "登录码管理";
+        // const title = "单码管理";
         // const appName = this.app.appName;
         // const route = Object.assign({}, this.$route, {
         //   title: `${title}-${appName}`,
@@ -935,7 +934,7 @@ export default {
     }
   },
   methods: {
-    /** 查询登录码列表 */
+    /** 查询单码列表 */
     getList() {
       this.loading = true;
       this.queryParams.params = {};
@@ -1022,7 +1021,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加登录码";
+      this.title = "添加单码";
     },
     /**批量生成按钮操作 */
     handleBatchAdd() {
@@ -1036,7 +1035,7 @@ export default {
         this.cardTemplateList = response.rows;
       });
       this.batchOpen = true;
-      this.title = "批量生成登录码";
+      this.title = "批量生成单码";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -1045,7 +1044,7 @@ export default {
       getLoginCode(cardId).then((response) => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改登录码";
+        this.title = "修改单码";
       });
     },
     /** 提交按钮 */
@@ -1086,7 +1085,7 @@ export default {
     handleDelete(row) {
       const cardIds = row.cardId || this.ids;
       this.$modal
-        .confirm('是否确认删除登录码编号为"' + cardIds + '"的数据项？')
+        .confirm('是否确认删除单码编号为"' + cardIds + '"的数据项？')
         .then(function () {
           return delLoginCode(cardIds);
         })
@@ -1100,7 +1099,7 @@ export default {
     handleExport() {
       const queryParams = this.queryParams;
       this.$modal
-        .confirm("是否确认导出所有登录码数据项？")
+        .confirm("是否确认导出所有单码数据项？")
         .then(() => {
           this.exportLoading = true;
           return exportLoginCode(queryParams);

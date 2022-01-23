@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询登录码类别列表
+// 查询单码类别列表
 export function listLoginCodeTemplate(query) {
   return request({
     url: '/system/loginCodeTemplate/list',
@@ -9,7 +9,7 @@ export function listLoginCodeTemplate(query) {
   })
 }
 
-// 查询登录码类别详细
+// 查询单码类别详细
 export function getLoginCodeTemplate(templateId) {
   return request({
     url: '/system/loginCodeTemplate/' + templateId,
@@ -17,7 +17,7 @@ export function getLoginCodeTemplate(templateId) {
   })
 }
 
-// 新增登录码类别
+// 新增单码类别
 export function addLoginCodeTemplate(data) {
   return request({
     url: '/system/loginCodeTemplate',
@@ -26,7 +26,7 @@ export function addLoginCodeTemplate(data) {
   })
 }
 
-// 修改登录码类别
+// 修改单码类别
 export function updateLoginCodeTemplate(data) {
   return request({
     url: '/system/loginCodeTemplate',
@@ -35,7 +35,7 @@ export function updateLoginCodeTemplate(data) {
   })
 }
 
-// 删除登录码类别
+// 删除单码类别
 export function delLoginCodeTemplate(templateId) {
   return request({
     url: '/system/loginCodeTemplate/' + templateId,

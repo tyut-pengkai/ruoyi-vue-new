@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 登录码Service业务层处理
+ * 单码Service业务层处理
  *
  * @author zwgu
  * @date 2021-12-03
@@ -25,10 +25,10 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     private ISysLoginCodeTemplateService SysLoginCodeTemplateService;
 
     /**
-     * 查询登录码
+     * 查询单码
      *
-     * @param cardId 登录码主键
-     * @return 登录码
+     * @param cardId 单码主键
+     * @return 单码
      */
     @Override
     public SysLoginCode selectSysLoginCodeByCardId(Long cardId) {
@@ -36,10 +36,10 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     }
 
     /**
-     * 查询登录码列表
+     * 查询单码列表
      *
-     * @param SysLoginCode 登录码
-     * @return 登录码
+     * @param SysLoginCode 单码
+     * @return 单码
      */
     @Override
     public List<SysLoginCode> selectSysLoginCodeList(SysLoginCode SysLoginCode) {
@@ -47,9 +47,9 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     }
 
     /**
-     * 新增登录码
+     * 新增单码
      *
-     * @param SysLoginCode 登录码
+     * @param SysLoginCode 单码
      * @return 结果
      */
     @Override
@@ -59,9 +59,9 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     }
 
     /**
-     * 修改登录码
+     * 修改单码
      *
-     * @param SysLoginCode 登录码
+     * @param SysLoginCode 单码
      * @return 结果
      */
     @Override
@@ -71,9 +71,9 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     }
 
     /**
-     * 批量删除登录码
+     * 批量删除单码
      *
-     * @param cardIds 需要删除的登录码主键
+     * @param cardIds 需要删除的单码主键
      * @return 结果
      */
     @Override
@@ -82,9 +82,9 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     }
 
     /**
-     * 删除登录码信息
+     * 删除单码信息
      *
-     * @param cardId 登录码主键
+     * @param cardId 单码主键
      * @return 结果
      */
     @Override
@@ -93,7 +93,7 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     }
 
     /**
-     * 查询登录码
+     * 查询单码
      *
      * @param cardNo
      * @return
@@ -104,7 +104,7 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     }
 
     /**
-     * 新增登录码
+     * 新增单码
      *
      * @param SysLoginCodeList
      */
