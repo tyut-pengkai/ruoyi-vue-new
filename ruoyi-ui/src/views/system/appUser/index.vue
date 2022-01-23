@@ -280,7 +280,7 @@
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
-        fixed="right"
+        width="160"
       >
         <template slot-scope="scope">
           <el-button

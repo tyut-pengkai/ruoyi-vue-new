@@ -333,7 +333,7 @@
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
-        fixed="right"
+        width="130"
       >
         <template slot-scope="scope">
           <el-button
@@ -1076,6 +1076,7 @@ export default {
       this.loading = true;
       let queryParams = {};
       queryParams.params = {};
+      queryParams.authType = '0';
       listApp(queryParams).then((response) => {
         this.appList = response.rows;
         for (let app of this.appList) {

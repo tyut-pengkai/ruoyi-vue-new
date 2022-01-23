@@ -319,19 +319,10 @@
       <el-table-column
         label="操作"
         align="center"
+        width="200"
         class-name="small-padding fixed-width"
-        width="160px"
-        fixed="right"
       >
         <template slot-scope="scope">
-          <!-- <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-finished"
-            @click="handleAppVersion(scope.row)"
-            v-hasPermi="['system:appVersion:list']"
-            >版本</el-button
-          > -->
           <!-- <el-button
             size="mini"
             type="text"
@@ -367,6 +358,14 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-finished"
+            @click="handleAppVersion(scope.row)"
+            v-hasPermi="['system:appVersion:list']"
+            >版本</el-button
+          >
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:app:remove']"
@@ -392,12 +391,12 @@
                 v-hasPermi="['system:appUser:list']"
                 >用户管理</el-dropdown-item
               >
-              <el-dropdown-item
+              <!-- <el-dropdown-item
                 command="handleVersionManage"
                 icon="el-icon-finished"
                 v-hasPermi="['system:appVersion:list']"
                 >版本管理</el-dropdown-item
-              >
+              > -->
               <div v-if="scope.row.authType === '0'">
                 <el-dropdown-item
                   command="handleCardTemplate"
