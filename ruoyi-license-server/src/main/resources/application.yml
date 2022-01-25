@@ -1,0 +1,9 @@
+server:
+  port: 10000
+  tomcat:
+    uri-encoding: UTF-8
+
+license:
+  #license存储目录
+  licensePath: D:/license.lic
+

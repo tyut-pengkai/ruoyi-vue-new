@@ -223,6 +223,7 @@
         <module>ruoyi-quartz</module>
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
+        <module>ruoyi-license-server</module>
     </modules>
     <packaging>pom</packaging>
 
