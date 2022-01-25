@@ -1,0 +1,7 @@
+keytool -genkeypair -keysize 1024 -validity 3650 -alias "privateKey" -keystore "privateKeys.keystore" -storepass "a123456" -keypass "a123456" -dname "CN=localhost, OU=localhost, O=localhost, L=SH, ST=SH, C=CN"
+
+keytool -importkeystore -srckeystore privateKeys.keystore -destkeystore privateKeys.keystore -deststoretype pkcs12
+
+keytool -exportcert -alias "privateKey" -keystore "privateKeys.keystore" -storepass "a123456" -file "certfile.cer"
+
+keytool -import -alias "publicCert" -file "certfile.cer" -keystore "publicCerts.keystore" -storepass "a123456"
