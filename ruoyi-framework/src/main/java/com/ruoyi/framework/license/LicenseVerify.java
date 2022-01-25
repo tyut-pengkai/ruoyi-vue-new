@@ -34,16 +34,16 @@ public class LicenseVerify {
             LicenseManager licenseManager = LicenseManagerHolder.getInstance(initLicenseParam(param));
             licenseManager.uninstall();
             result = licenseManager.install(new File(param.getLicensePath()));
-            log.info(MessageFormat.format("证书安装成功，证书有效期：{0} - {1}", format.format(result.getNotBefore()), format.format(result.getNotAfter())));
+            log.info(MessageFormat.format("License载入成功，有效期：{0} - {1}", format.format(result.getNotBefore()), format.format(result.getNotAfter())));
         } catch (LicenseContentException lce) {
             if (EXC_LICENSE_HAS_EXPIRED.equals(lce.getMessage())) {
-                log.error("证书安装失败，证书已过期！");
+                log.error("License载入失败，License已过期！");
             } else {
-                log.error("证书安装失败！", lce);
+                log.error("License载入失败！");
             }
             throw lce;
         } catch (Exception e) {
-            log.error("证书安装失败！", e);
+            log.error("License载入失败！");
             throw e;
         }
         return result;
@@ -60,10 +60,10 @@ public class LicenseVerify {
         try {
             LicenseContent licenseContent = licenseManager.verify();
 //            System.out.println(licenseContent.getSubject());
-            log.debug(MessageFormat.format("证书校验通过，证书有效期：{0} - {1}", format.format(licenseContent.getNotBefore()), format.format(licenseContent.getNotAfter())));
+            log.debug(MessageFormat.format("License校验通过，有效期：{0} - {1}", format.format(licenseContent.getNotBefore()), format.format(licenseContent.getNotAfter())));
             return true;
         } catch (Exception e) {
-            log.error("证书校验失败！", e);
+            log.error("License校验失败：{}", e.getMessage());
             return false;
         }
     }

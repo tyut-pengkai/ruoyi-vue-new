@@ -1,9 +1,15 @@
+# 项目相关配置
+ruoyi:
+  # 名称
+  name: INAMS-软件网络验证管理系统
+
 server:
   port: 8888
   tomcat:
     uri-encoding: UTF-8
 
 license:
-  #license存储目录
-  licensePath: D:/license.lic
+  subject: ${ruoyi.name} #证书主题
+  privateAlias: privateKey #公钥别称
+  licensePath: D:/license.lic #license存储目录
 

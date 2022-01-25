@@ -1,4 +1,5 @@
 # 项目相关配置
+
 ruoyi:
   # 名称
   name: INAMS-软件网络验证管理系统
@@ -137,8 +138,5 @@ xss:
   urlPatterns: /system/*,/monitor/*,/tool/*
 
 license:
-  subject: license_sub #证书主题
+  subject: ${ruoyi.name} #证书主题
   publicAlias: publicCert #公钥别称
-  storePass: a123456 #访问公钥库的密码
-  licensePath: D:/license.lic #授权文件所在目录
-  publicKeysStorePath: D:/publicCerts.keystore #公钥库存储路径

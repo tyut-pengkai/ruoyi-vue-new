@@ -1,4 +1,6 @@
 # 数据源配置
+server:
+    projectName: ${ruoyi.name}[生产环境]
 spring:
     datasource:
         type: com.alibaba.druid.pool.DruidDataSource

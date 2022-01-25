@@ -37,10 +37,10 @@ public class LicenseCreator {
             LicenseContent licenseContent = initLicenseContent();
 
             licenseManager.store(licenseContent, new File(param.getLicensePath()));
-            log.info("证书生成成功！");
+            log.info("License生成成功！");
             return true;
         } catch (Exception e) {
-            log.error(MessageFormat.format("证书生成失败：{0}", param), e);
+            log.error(MessageFormat.format("License生成失败：{0}", param), e);
             return false;
         }
     }

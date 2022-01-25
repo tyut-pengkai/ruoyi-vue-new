@@ -1,7 +1,9 @@
 package com.ruoyi.license.controller;
 
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.license.bo.LicenseCheckModel;
+import com.ruoyi.common.utils.PathUtils;
 import com.ruoyi.common.utils.os.AbstractServerInfo;
 import com.ruoyi.common.utils.os.LinuxServerInfo;
 import com.ruoyi.common.utils.os.WindowsServerInfo;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 /**
  * @author huangchen@deepglint.com
@@ -29,6 +33,17 @@ public class LicenseCreatorController {
      */
     @Value("${license.licensePath}")
     private String licensePath;
+    /**
+     * 证书subject
+     */
+    @Value("${license.subject}")
+    private String subject;
+
+    /**
+     * 私钥别称
+     */
+    @Value("${license.privateAlias}")
+    private String privateAlias;
 
     /**
      * 获取服务器硬件信息
@@ -80,12 +95,25 @@ public class LicenseCreatorController {
         if (StringUtils.isBlank(param.getLicensePath())) {
             param.setLicensePath(licensePath);
         }
+        if (StringUtils.isBlank(param.getSubject())) {
+            param.setSubject(subject);
+        }
+        if (StringUtils.isBlank(param.getPrivateAlias())) {
+            param.setPrivateAlias(privateAlias);
+        }
+        param.setKeyPass(Constants.STORE_PASS);
+        param.setStorePass(Constants.STORE_PASS);
+        try {
+            param.setPrivateKeysStorePath(PathUtils.getResourceFile("privateKeys.keystore").getCanonicalPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         LicenseCreator licenseCreator = new LicenseCreator(param);
         boolean result = licenseCreator.generateLicense();
         if (result) {
-            return AjaxResult.success("授权文件生成成功！", param);
+            return AjaxResult.success("License生成成功！");
         } else {
-            return AjaxResult.error("授权文件生成失败！");
+            return AjaxResult.error("License生成失败！");
         }
     }
 }
