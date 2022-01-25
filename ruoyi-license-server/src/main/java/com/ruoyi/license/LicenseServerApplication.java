@@ -12,10 +12,10 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
  * @author ruoyi
  */
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-public class RuoYiApplication {
+public class LicenseServerApplication {
     public static void main(String[] args) {
         // System.setProperty("spring.devtools.restart.enabled", "false");
-        SpringApplication.run(RuoYiApplication.class, args);
+        SpringApplication.run(LicenseServerApplication.class, args);
         RuoYiConfig config = SpringUtils.getBean(RuoYiConfig.class);
         System.out.println(" 系统启动成功，当前版本：" + config.getVersion() + " (" + config.getVersionNo() + ")" + " \n" +
                 "   _____ ____   ____  _____  _____   _____  ____  ______ _______ _____ ____  __  __ \n" +
