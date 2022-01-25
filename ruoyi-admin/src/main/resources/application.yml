@@ -12,7 +12,7 @@ ruoyi:
   # email
   email: 1179403448@qq.com
   # 版权年份
-  copyrightYear: 2021
+  copyrightYear: 2022
   # 版权
   copyright: Copyright © 2020-${ruoyi.copyrightYear} Coordsoft.Com All Rights Reserved.
   # 实例演示开关

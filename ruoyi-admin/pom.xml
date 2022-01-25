@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>ruoyi</artifactId>
         <groupId>com.ruoyi</groupId>
+        <artifactId>ruoyi</artifactId>
         <version>3.8.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -104,8 +104,20 @@
                     <layout>ZIP</layout>
                     <includes>
                         <include>
-                            <groupId>non-exists</groupId>
-                            <artifactId>non-exists</artifactId>
+                            <groupId>com.ruoyi</groupId>
+                            <artifactId>ruoyi-common</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.ruoyi</groupId>
+                            <artifactId>ruoyi-framework</artifactId>
+                        </include>
+                        <!--                        <include>-->
+                        <!--                            <groupId>com.ruoyi</groupId>-->
+                        <!--                            <artifactId>ruoyi-quartz</artifactId>-->
+                        <!--                        </include>-->
+                        <include>
+                            <groupId>com.ruoyi</groupId>
+                            <artifactId>ruoyi-system</artifactId>
                         </include>
                     </includes>
                 </configuration>
@@ -135,6 +147,8 @@
                             <excludeTransitive>false</excludeTransitive>
                             <stripVersion>false</stripVersion>
                             <includeScope>runtime</includeScope>
+                            <!--排除以下GroupId的jar包-->
+                            <excludeGroupIds>com.ruoyi</excludeGroupIds>
                         </configuration>
                     </execution>
                 </executions>
