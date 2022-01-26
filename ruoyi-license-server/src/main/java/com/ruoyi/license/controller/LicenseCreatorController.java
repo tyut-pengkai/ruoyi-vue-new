@@ -2,11 +2,8 @@ package com.ruoyi.license.controller;
 
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.license.bo.LicenseCheckModel;
+import com.ruoyi.common.license.ServerInfo;
 import com.ruoyi.common.utils.PathUtils;
-import com.ruoyi.common.utils.os.AbstractServerInfo;
-import com.ruoyi.common.utils.os.LinuxServerInfo;
-import com.ruoyi.common.utils.os.WindowsServerInfo;
 import com.ruoyi.license.LicenseCreator;
 import com.ruoyi.license.domain.LicenseCreatorParam;
 import org.apache.commons.lang3.StringUtils;
@@ -52,21 +49,7 @@ public class LicenseCreatorController {
      */
     @RequestMapping(value = "/getServerInfos", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public AjaxResult getServerInfos(@RequestParam(value = "osName", required = false) String osName) {
-        //操作系统类型
-        if (StringUtils.isBlank(osName)) {
-            osName = System.getProperty("os.name");
-        }
-        osName = osName.toLowerCase();
-        AbstractServerInfo abstractServerInfo;
-        //根据不同操作系统类型选择不同的数据获取方法
-        if (osName.startsWith("windows")) {
-            abstractServerInfo = new WindowsServerInfo();
-        } else if (osName.startsWith("linux")) {
-            abstractServerInfo = new LinuxServerInfo();
-        } else {//其他服务器类型
-            abstractServerInfo = new LinuxServerInfo();
-        }
-        return AjaxResult.success(LicenseCheckModel.installServerInfo(abstractServerInfo));
+        return AjaxResult.success(ServerInfo.getServerInfo(osName));
     }
 
     /**

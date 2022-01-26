@@ -1,5 +1,8 @@
 package com.ruoyi;
 
+import com.alibaba.fastjson.JSON;
+import com.ruoyi.api.v1.utils.encrypt.Base64Util;
+import com.ruoyi.common.license.ServerInfo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -16,6 +19,10 @@ public class RuoYiApplication
         // System.setProperty("spring.devtools.restart.enabled", "false");
         SpringApplication.run(RuoYiApplication.class, args);
 //        RuoYiConfig config = SpringUtils.getBean(RuoYiConfig.class);
+
+        String machineCode = JSON.toJSONString(ServerInfo.getServerInfo());
+        machineCode = Base64Util.encode(machineCode);
+
         System.out.println(
                 "===============================================================================================\n" +
                         "//                                        服务器特征信息                                          \n" +
