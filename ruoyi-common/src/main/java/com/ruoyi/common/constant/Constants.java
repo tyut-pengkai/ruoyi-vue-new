@@ -1,5 +1,6 @@
 package com.ruoyi.common.constant;
 
+import de.schlichtherle.license.LicenseContent;
 import io.jsonwebtoken.Claims;
 
 /**
@@ -12,6 +13,21 @@ public class Constants {
      * 密钥库密码
      */
     public static final String STORE_PASS = "a123456";
+
+    /**
+     * 服务器机器码
+     */
+    public static String SERVER_SN;
+
+    /**
+     * 服务器IP
+     */
+    public static String SERVER_IP;
+
+    /**
+     * 授权信息
+     */
+    public static LicenseContent LICENSE_CONTENT;
 
     /**
      * UTF-8 字符集

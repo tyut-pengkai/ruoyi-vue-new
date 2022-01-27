@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.ruoyi.api.v1.anno.Encrypt;
 import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.encrypt.IEncryptType;
-import com.ruoyi.api.v1.encrypt.impl.EncryptAesCbcNoP;
 import com.ruoyi.api.v1.encrypt.impl.EncryptAesCbcPKCS5P;
 import com.ruoyi.api.v1.encrypt.impl.EncryptAesCbcZeroP;
 import com.ruoyi.api.v1.encrypt.impl.EncryptBase64;
@@ -101,19 +100,20 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 		log.info("原始内容：" + result);
 		IEncryptType encryptType = null;
 		try {
-			if (encrypTypeOut == EncrypType.AES_CBC_NoPadding) {
-				encryptType = new EncryptAesCbcNoP();
-			} else if (encrypTypeOut == EncrypType.AES_CBC_PKCS5Padding) {
-				encryptType = new EncryptAesCbcPKCS5P();
-			} else if (encrypTypeOut == EncrypType.AES_CBC_ZeroPadding) {
-				encryptType = new EncryptAesCbcZeroP();
-			} else if (encrypTypeOut == EncrypType.BASE64) {
-				encryptType = new EncryptBase64();
-			}
+//			if (encrypTypeOut == EncrypType.AES_CBC_NoPadding) {
+//				encryptType = new EncryptAesCbcNoP();
+//			} else
+            if (encrypTypeOut == EncrypType.AES_CBC_PKCS5Padding) {
+                encryptType = new EncryptAesCbcPKCS5P();
+            } else if (encrypTypeOut == EncrypType.AES_CBC_ZeroPadding) {
+                encryptType = new EncryptAesCbcZeroP();
+            } else if (encrypTypeOut == EncrypType.BASE64) {
+                encryptType = new EncryptBase64();
+            }
 //			String outputData = RSAUtils.encryptedDataOnJava(result, Constants.publicKey);
-			String outputData = encryptType.encrypt(result, app.getDataOutPwd());
-			log.info("加密内容：" + outputData);
-			log.info("操作结束!");
+            String outputData = encryptType.encrypt(result, app.getDataOutPwd());
+            log.info("加密内容：" + outputData);
+            log.info("操作结束!");
 			return body instanceof String ? Constants.PREFIX_TYPE + outputData : outputData;
 		} catch (Exception e) {
 			e.printStackTrace();

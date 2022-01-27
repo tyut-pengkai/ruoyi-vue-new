@@ -1,6 +1,7 @@
 package com.ruoyi.framework.license;
 
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.license.ServerInfo;
 import com.ruoyi.common.utils.PathUtils;
 import com.ruoyi.framework.license.bo.LicenseVerifyParam;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         //root application context 没有parent
+        ServerInfo.getServerInfo();
         ApplicationContext context = event.getApplicationContext().getParent();
         if (context == null) {
             log.info("开始载入License");

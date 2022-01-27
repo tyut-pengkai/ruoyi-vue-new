@@ -1,5 +1,6 @@
 package com.ruoyi.framework.license;
 
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.license.bo.CustomKeyStoreParam;
 import com.ruoyi.framework.license.bo.LicenseVerifyParam;
 import de.schlichtherle.license.*;
@@ -34,6 +35,7 @@ public class LicenseVerify {
             LicenseManager licenseManager = LicenseManagerHolder.getInstance(initLicenseParam(param));
             licenseManager.uninstall();
             result = licenseManager.install(new File(param.getLicensePath()));
+            Constants.LICENSE_CONTENT = result;
             log.info(MessageFormat.format("License载入成功，有效期：{0} - {1}", format.format(result.getNotBefore()), format.format(result.getNotAfter())));
         } catch (LicenseContentException lce) {
             if (EXC_LICENSE_HAS_EXPIRED.equals(lce.getMessage())) {

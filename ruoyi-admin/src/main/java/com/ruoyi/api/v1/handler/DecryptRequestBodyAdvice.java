@@ -2,7 +2,6 @@ package com.ruoyi.api.v1.handler;
 
 import com.ruoyi.api.v1.anno.Encrypt;
 import com.ruoyi.api.v1.encrypt.IEncryptType;
-import com.ruoyi.api.v1.encrypt.impl.EncryptAesCbcNoP;
 import com.ruoyi.api.v1.encrypt.impl.EncryptAesCbcPKCS5P;
 import com.ruoyi.api.v1.encrypt.impl.EncryptAesCbcZeroP;
 import com.ruoyi.api.v1.encrypt.impl.EncryptBase64;
@@ -131,9 +130,10 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
                 log.info("原始内容：" + inputData);
                 IEncryptType encryptType = null;
                 try {
-                    if (encrypTypeIn == EncrypType.AES_CBC_NoPadding) {
-                        encryptType = new EncryptAesCbcNoP();
-                    } else if (encrypTypeIn == EncrypType.AES_CBC_PKCS5Padding) {
+//                    if (encrypTypeIn == EncrypType.AES_CBC_NoPadding) {
+//                        encryptType = new EncryptAesCbcNoP();
+//                    } else
+                    if (encrypTypeIn == EncrypType.AES_CBC_PKCS5Padding) {
                         encryptType = new EncryptAesCbcPKCS5P();
                     } else if (encrypTypeIn == EncrypType.AES_CBC_ZeroPadding) {
                         encryptType = new EncryptAesCbcZeroP();

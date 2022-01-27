@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.SwaggerVo;
 import com.ruoyi.api.v1.encrypt.IEncryptType;
-import com.ruoyi.api.v1.encrypt.impl.EncryptAesCbcNoP;
 import com.ruoyi.api.v1.encrypt.impl.EncryptAesCbcPKCS5P;
 import com.ruoyi.api.v1.encrypt.impl.EncryptAesCbcZeroP;
 import com.ruoyi.api.v1.encrypt.impl.EncryptBase64;
@@ -67,20 +66,21 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 			// 是否解密
 			EncrypType encrypTypeIn = app.getDataInEnc();
 			if (encrypTypeIn != null && encrypTypeIn != EncrypType.NONE) {
-				// 开始解密
-				IEncryptType encryptType = null;
-				if (encrypTypeIn == EncrypType.AES_CBC_NoPadding) {
-					encryptType = new EncryptAesCbcNoP();
-				} else if (encrypTypeIn == EncrypType.AES_CBC_PKCS5Padding) {
-					encryptType = new EncryptAesCbcPKCS5P();
-				} else if (encrypTypeIn == EncrypType.AES_CBC_ZeroPadding) {
-					encryptType = new EncryptAesCbcZeroP();
-				} else if (encrypTypeIn == EncrypType.BASE64) {
-					encryptType = new EncryptBase64();
-				}
-				assert encryptType != null;
-				inputData = encryptType.decrypt(inputData, app.getDataInPwd());
-			}
+                // 开始解密
+                IEncryptType encryptType = null;
+//				if (encrypTypeIn == EncrypType.AES_CBC_NoPadding) {
+//					encryptType = new EncryptAesCbcNoP();
+//				} else
+                if (encrypTypeIn == EncrypType.AES_CBC_PKCS5Padding) {
+                    encryptType = new EncryptAesCbcPKCS5P();
+                } else if (encrypTypeIn == EncrypType.AES_CBC_ZeroPadding) {
+                    encryptType = new EncryptAesCbcZeroP();
+                } else if (encrypTypeIn == EncrypType.BASE64) {
+                    encryptType = new EncryptBase64();
+                }
+                assert encryptType != null;
+                inputData = encryptType.decrypt(inputData, app.getDataInPwd());
+            }
 			// 转化为MAP
 			HashMap paramMap = JSON.parseObject(inputData, HashMap.class);
 			vstr = paramMap.get("vstr");

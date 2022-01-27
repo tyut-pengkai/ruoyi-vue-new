@@ -1,13 +1,11 @@
 package com.ruoyi.common.license.bo;
 
-import com.ruoyi.common.utils.os.AbstractServerInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author huangchen@deepglint.com
@@ -21,35 +19,16 @@ import java.util.List;
 public class LicenseCheckModel implements Serializable {
 
     /**
-     * 可被允许的IP地址
+     * 可被允许的IP地址或域名
      */
-    private List<String> ipAddress;
-
+    private String ipAddress;
     /**
-     * 可被允许的MAC地址
+     * 服务器域名
      */
-    private List<String> macAddress;
-
+    private String domain;
     /**
-     * 可被允许的CPU序列号
+     * 服务器机器码
      */
-    private String cpuSerial;
+    private String serverSn;
 
-    /**
-     * 可被允许的主板序列号
-     */
-    private String mainBoardSerial;
-
-    public static LicenseCheckModel installServerInfo(AbstractServerInfo serverInfo) {
-        LicenseCheckModel result = new LicenseCheckModel();
-        try {
-            result.setIpAddress(serverInfo.getIpAddress());
-            result.setMacAddress(serverInfo.getMacAddress());
-            result.setCpuSerial(serverInfo.getCPUSerial());
-            result.setMainBoardSerial(serverInfo.getMainBoardSerial());
-        } catch (Exception e) {
-            log.error("获取服务器硬件信息失败", e);
-        }
-        return result;
-    }
 }

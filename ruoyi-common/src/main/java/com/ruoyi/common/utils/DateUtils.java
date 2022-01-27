@@ -1,10 +1,11 @@
 package com.ruoyi.common.utils;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
+
 import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.apache.commons.lang3.time.DateFormatUtils;
 
 /**
  * 时间工具类
@@ -63,24 +64,22 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         return parseDateToStr(format, new Date());
     }
 
-    public static final String dateTime(final Date date)
-    {
+    public static final String dateTime(final Date date) {
         return parseDateToStr(YYYY_MM_DD, date);
     }
 
-    public static final String parseDateToStr(final String format, final Date date)
-    {
+    public static final String parseDateToStr(final String format, final Date date) {
         return new SimpleDateFormat(format).format(date);
     }
 
-    public static final Date dateTime(final String format, final String ts)
-    {
-        try
-        {
+    public static final String parseDateToStr(final Date date) {
+        return new SimpleDateFormat(YYYY_MM_DD_HH_MM_SS).format(date);
+    }
+
+    public static final Date dateTime(final String format, final String ts) {
+        try {
             return new SimpleDateFormat(format).parse(ts);
-        }
-        catch (ParseException e)
-        {
+        } catch (ParseException e) {
             throw new RuntimeException(e);
         }
     }

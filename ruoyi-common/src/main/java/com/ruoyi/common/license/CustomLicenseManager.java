@@ -1,9 +1,7 @@
 package com.ruoyi.common.license;
 
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.license.bo.LicenseCheckModel;
-import com.ruoyi.common.utils.os.AbstractServerInfo;
-import com.ruoyi.common.utils.os.LinuxServerInfo;
-import com.ruoyi.common.utils.os.WindowsServerInfo;
 import de.schlichtherle.license.*;
 import de.schlichtherle.xml.GenericCertificate;
 import lombok.NoArgsConstructor;
@@ -135,31 +133,20 @@ public class CustomLicenseManager extends LicenseManager {
         //2. 然后校验自定义的License参数
         //License中可被允许的参数信息
         LicenseCheckModel expectedCheckModel = (LicenseCheckModel) content.getExtra();
-        //当前服务器真实的参数信息
-        LicenseCheckModel serverCheckModel = getServerInfos();
 
         if (expectedCheckModel != null) {
             //校验IP地址
-            if (!checkIpAddress(expectedCheckModel.getIpAddress(), serverCheckModel.getIpAddress())) {
-                throw new LicenseContentException("当前服务器的IP没在授权范围内");
-            }
-
-            //校验Mac地址
-            if (!checkIpAddress(expectedCheckModel.getMacAddress(), serverCheckModel.getMacAddress())) {
-                throw new LicenseContentException("当前服务器的Mac地址没在授权范围内");
+            if (!checkSerial(expectedCheckModel.getIpAddress(), Constants.SERVER_IP)) {
+                throw new LicenseContentException("当前服务器的IP未获得授权");
             }
 
             //校验主板序列号
-            if (!checkSerial(expectedCheckModel.getMainBoardSerial(), serverCheckModel.getMainBoardSerial())) {
-                throw new LicenseContentException("当前服务器的主板序列号没在授权范围内");
+            if (!checkSerial(expectedCheckModel.getServerSn(), Constants.SERVER_SN)) {
+                throw new LicenseContentException("当前服务器的设备码未获得授权");
             }
 
-            //校验CPU序列号
-            if (!checkSerial(expectedCheckModel.getCpuSerial(), serverCheckModel.getCpuSerial())) {
-                throw new LicenseContentException("当前服务器的CPU序列号没在授权范围内");
-            }
         } else {
-            throw new LicenseContentException("不能获取服务器硬件信息");
+            throw new LicenseContentException("获取服务器硬件信息失败");
         }
     }
 
@@ -194,27 +181,6 @@ public class CustomLicenseManager extends LicenseManager {
             }
         }
         return null;
-    }
-
-    /**
-     * 获取当前服务器需要额外校验的License参数
-     *
-     * @return demo.LicenseCheckModel
-     */
-    private LicenseCheckModel getServerInfos() {
-        //操作系统类型
-        String osName = System.getProperty("os.name").toLowerCase();
-        AbstractServerInfo abstractServerInfo = null;
-
-        //根据不同操作系统类型选择不同的数据获取方法
-        if (osName.startsWith("windows")) {
-            abstractServerInfo = new WindowsServerInfo();
-        } else if (osName.startsWith("linux")) {
-            abstractServerInfo = new LinuxServerInfo();
-        } else {//其他服务器类型
-            abstractServerInfo = new LinuxServerInfo();
-        }
-        return LicenseCheckModel.installServerInfo(abstractServerInfo);
     }
 
     /**
