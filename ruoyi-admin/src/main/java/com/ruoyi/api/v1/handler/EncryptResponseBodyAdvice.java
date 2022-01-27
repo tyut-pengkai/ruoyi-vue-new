@@ -114,8 +114,8 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
             String outputData = encryptType.encrypt(result, app.getDataOutPwd());
             log.info("加密内容：" + outputData);
             log.info("操作结束!");
-			return body instanceof String ? Constants.PREFIX_TYPE + outputData : outputData;
-		} catch (Exception e) {
+            return body instanceof String ? Constants.PREFIX_TYPE + outputData : outputData;
+        } catch (Exception e) {
 			e.printStackTrace();
 			throw new ApiException(ErrorCode.ERROR_RESPONSE_ENCRYPT_EXCEPTION);
 		}
