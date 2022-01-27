@@ -134,13 +134,16 @@ public class CustomLicenseManager extends LicenseManager {
         //License中可被允许的参数信息
         LicenseCheckModel expectedCheckModel = (LicenseCheckModel) content.getExtra();
 
-        if (expectedCheckModel != null) {
+        if (expectedCheckModel != null && Constants.SERVER_SN != null) {
             //校验IP地址
             if (!checkSerial(expectedCheckModel.getIpAddress(), Constants.SERVER_IP)) {
                 throw new LicenseContentException("当前服务器的IP未获得授权");
             }
 
             //校验主板序列号
+            if (StringUtils.isBlank(expectedCheckModel.getServerSn())) {
+                throw new LicenseContentException("当前服务器的设备码未获得授权");
+            }
             if (!checkSerial(expectedCheckModel.getServerSn(), Constants.SERVER_SN)) {
                 throw new LicenseContentException("当前服务器的设备码未获得授权");
             }
