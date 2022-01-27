@@ -1,14 +1,10 @@
 package com.ruoyi.common.utils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.springframework.util.AntPathMatcher;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.text.StrFormatter;
+import org.springframework.util.AntPathMatcher;
+
+import java.util.*;
 
 /**
  * 字符串工具类
@@ -520,15 +516,21 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
      * @param url 需要匹配的url
      * @return
      */
-    public static boolean isMatch(String pattern, String url)
-    {
+    public static boolean isMatch(String pattern, String url) {
         AntPathMatcher matcher = new AntPathMatcher();
         return matcher.match(pattern, url);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T cast(Object obj)
-    {
+    public static <T> T cast(Object obj) {
         return (T) obj;
+    }
+
+    /**
+     * 每四个字符间增加连字符
+     */
+    public static String insertPer4Char(String str) {
+        String s = str.replaceAll("(.{4})", "$1-");
+        return s.substring(0, s.length() - 1);
     }
 }
