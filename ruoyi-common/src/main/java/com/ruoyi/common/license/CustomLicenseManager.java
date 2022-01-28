@@ -6,11 +6,15 @@ import de.schlichtherle.license.*;
 import de.schlichtherle.xml.GenericCertificate;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.beans.XMLDecoder;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -136,20 +140,27 @@ public class CustomLicenseManager extends LicenseManager {
 
         if (expectedCheckModel != null && Constants.SERVER_SN != null) {
             //校验IP地址
-            if (!checkSerial(expectedCheckModel.getIpAddress(), Constants.SERVER_IP)) {
+            if (!checkIpAddress(expectedCheckModel.getIpAddress(), Constants.IP_ADDRESS)) {
                 throw new LicenseContentException("当前服务器的IP未获得授权");
             }
-
             //校验主板序列号
-            if (StringUtils.isBlank(expectedCheckModel.getServerSn())) {
+            if (!checkServerSn(expectedCheckModel.getServerSn(), Constants.SERVER_SN)) {
                 throw new LicenseContentException("当前服务器的设备码未获得授权");
             }
-            if (!checkSerial(expectedCheckModel.getServerSn(), Constants.SERVER_SN)) {
-                throw new LicenseContentException("当前服务器的设备码未获得授权");
+            //校验域名
+            try {
+                ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+                assert servletRequestAttributes != null;
+                HttpServletRequest request = servletRequestAttributes.getRequest();
+                String serverName = request.getServerName();
+                if (!checkIpAddress(expectedCheckModel.getDomainName(), Collections.singletonList(serverName))) {
+                    throw new LicenseContentException("当前服务器的域名未获得授权");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
         } else {
-            throw new LicenseContentException("获取服务器硬件信息失败");
+            throw new LicenseContentException("获取服务器信息失败");
         }
     }
 
@@ -212,12 +223,10 @@ public class CustomLicenseManager extends LicenseManager {
      *
      * @return boolean
      */
-    private boolean checkSerial(String expectedSerial, String serverSerial) {
+    private boolean checkServerSn(String expectedSerial, String serverSerial) {
         if (StringUtils.isNotBlank(expectedSerial)) {
             if (StringUtils.isNotBlank(serverSerial)) {
-                if (expectedSerial.equals(serverSerial)) {
-                    return true;
-                }
+                return expectedSerial.equals(serverSerial);
             }
             return false;
         } else {

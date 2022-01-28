@@ -3,6 +3,8 @@ package com.ruoyi.common.constant;
 import de.schlichtherle.license.LicenseContent;
 import io.jsonwebtoken.Claims;
 
+import java.util.List;
+
 /**
  * 通用常量信息
  *
@@ -18,11 +20,14 @@ public class Constants {
      * 服务器机器码
      */
     public static String SERVER_SN;
-
     /**
-     * 服务器IP
+     * 软件位限制
      */
-    public static String SERVER_IP;
+    public static String APP_LIMIT;
+    /**
+     * IP列表
+     */
+    public static List<String> IP_ADDRESS;
 
     /**
      * 授权信息

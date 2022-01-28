@@ -28,4 +28,13 @@ public enum LicenseType implements BaseEnum {
         return NO_LICENCE;
     }
 
+    public static LicenseType valueOfInfo(String info) {
+        for (LicenseType lt : LicenseType.values()) {
+            if (lt.getInfo().equals(info)) {
+                return lt;
+            }
+        }
+        return NO_LICENCE;
+    }
+
 }

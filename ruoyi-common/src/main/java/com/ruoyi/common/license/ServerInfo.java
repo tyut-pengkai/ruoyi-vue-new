@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import oshi.hardware.NetworkIF;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ServerInfo {
@@ -29,12 +30,13 @@ public class ServerInfo {
             //处理器ID
             String processorID = OshiUtil.getProcessor().getProcessorIdentifier().getProcessorID();
             //组装 系统机器码 mac串+序列号+处理器ID+程序系统路径+系统名称+主机名+系统架构+环境版本号  -->机器码  可以自行增加硬件信息确保唯一性
-            String temp = macAddress + serialNumber + processorID
-                    + SystemUtil.getUserInfo().getCurrentDir() + SystemUtil.getOsInfo().getName() + SystemUtil.getHostInfo().getName() +
-                    SystemUtil.getOsInfo().getArch() + SystemUtil.getJavaInfo().getVersion();
+            String temp = "CORE|" + macAddress + serialNumber + processorID
+                    + SystemUtil.getUserInfo().getCurrentDir() + SystemUtil.getOsInfo().getName()
+                    + SystemUtil.getHostInfo().getName() + SystemUtil.getOsInfo().getArch()
+                    + SystemUtil.getJavaInfo().getVersion();
             //再将机器码加密成16位字符串
             Constants.SERVER_SN = com.ruoyi.common.utils.StringUtils.insertPer4Char(Md5Utils.hash(temp).toUpperCase());
-            Constants.SERVER_IP = hostIp;
+            Constants.IP_ADDRESS = Collections.singletonList(hostIp);
         }
     }
 
