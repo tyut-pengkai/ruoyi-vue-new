@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.prefs.Preferences;
 
@@ -64,10 +63,10 @@ public class LicenseVerify {
         //2. 校验证书
         try {
             LicenseContent licenseContent = licenseManager.verify();
-            log.debug(MessageFormat.format("License校验通过，有效期：{0} - {1}", format.format(licenseContent.getNotBefore()), format.format(licenseContent.getNotAfter())));
+//            log.debug(MessageFormat.format("License校验通过，有效期：{0} - {1}", format.format(licenseContent.getNotBefore()), format.format(licenseContent.getNotAfter())));
             return true;
         } catch (Exception e) {
-            log.error("License校验失败：{}", e.getMessage());
+//            log.error("License校验失败：{}", e.getMessage());
 //            e.printStackTrace();
             return false;
         }
