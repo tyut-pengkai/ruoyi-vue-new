@@ -3,6 +3,7 @@ package com.ruoyi.framework.license;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.enums.LicenseType;
 import com.ruoyi.common.license.ServerInfo;
+import com.ruoyi.common.license.bo.LicenseCheckModel;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.PathUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
@@ -49,7 +50,7 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
         ServerInfo.getServerInfo();
         ApplicationContext context = event.getApplicationContext().getParent();
         if (context == null) {
-//            log.info("开始载入License");
+            log.info("开始载入License");
             LicenseVerifyParam param = new LicenseVerifyParam();
             param.setSubject(subject);
             param.setPublicAlias(publicAlias);
@@ -64,9 +65,10 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
             //安装证书
             try {
                 licenseVerify.install(param);
-//                log.info("License载入成功");
+                log.info("License载入成功");
             } catch (Exception e) {
-//                log.info("License载入失败：{}", e.getMessage());
+                log.info("License载入失败：{}", e.getMessage());
+//                e.printStackTrace();
             }
         }
         showLicenceInfo();
@@ -78,27 +80,34 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
             Date from = null;
             Date to = null;
             String licenceType = "未授权";
-            String appLimit = "未授权";
-            String maxOnline = "未授权";
+            String appLimit = "-";
+            String maxOnline = "-";
+            String licenseTo = "-";
+            String licenseDomain = "-";
+            String licenseIp = "-";
             String datetime = "0000-00-00 00:00:00 - 0000-00-00 00:00:00 (0天0小时0分钟)";
             if (license != null) {
+                LicenseCheckModel extra = (LicenseCheckModel) license.getExtra();
                 from = license.getNotBefore();
                 to = license.getNotAfter();
-                licenceType = LicenseType.valueOfCode(license.getConsumerType()).getInfo();
-                appLimit = "无限制";
-                maxOnline = license.getConsumerAmount() + " 人";
+                licenseTo = extra.getLicenseTo();
+                licenceType = LicenseType.valueOfCode(String.valueOf(extra.getLicenseTypeCode())).getInfo();
+                appLimit = extra.getAppLimit().toString();
+                maxOnline = extra.getMaxOnline().toString();
+                licenseDomain = String.join("/", extra.getDomainName());
+                licenseIp = String.join("/", extra.getIpAddress());
                 datetime = DateUtils.parseDateToStr(from) + " - " + DateUtils.parseDateToStr(to) +
                         " (" + DateUtils.getDatePoor(to, from) + ")";
             }
             File tipFile = PathUtils.getResourceFile("licenseTip.txt");
-            assert tipFile != null;
             String tip = FileUtils.readFileToString(tipFile, StandardCharsets.UTF_8);
             System.out.format(tip, Constants.SERVER_SN, IpUtils.getHostName(),
-                    IpUtils.getHostIp(), licenceType, appLimit, maxOnline, datetime);
+                    IpUtils.getHostIp(), licenceType, licenseTo, appLimit, maxOnline,
+                    licenseDomain, licenseIp, datetime);
             log.info("\n>>: 系统启动成功\n");
         } catch (Exception e) {
-            e.printStackTrace();
-            log.info("\n>>: 系统启动失败\n");
+//            e.printStackTrace();
+            log.info("\n>>: 系统启动失败：{}\n", e.getMessage());
         }
     }
 }

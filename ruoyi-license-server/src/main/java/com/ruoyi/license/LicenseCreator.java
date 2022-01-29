@@ -1,6 +1,5 @@
 package com.ruoyi.license;
 
-import com.ruoyi.common.enums.LicenseType;
 import com.ruoyi.common.license.CustomLicenseManager;
 import com.ruoyi.common.license.bo.CustomKeyStoreParam;
 import com.ruoyi.license.domain.LicenseCreatorParam;
@@ -81,7 +80,7 @@ public class LicenseCreator {
         licenseContent.setIssued(param.getIssuedTime());
         licenseContent.setNotBefore(param.getIssuedTime());
         licenseContent.setNotAfter(param.getExpiryTime());
-        licenseContent.setConsumerType(LicenseType.valueOfInfo(param.getConsumerType()).getCode());
+        licenseContent.setConsumerType(param.getConsumerType());
         licenseContent.setConsumerAmount(param.getConsumerAmount());
         licenseContent.setInfo(param.getDescription());
 

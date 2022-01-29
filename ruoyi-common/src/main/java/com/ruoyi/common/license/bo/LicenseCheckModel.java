@@ -20,17 +20,25 @@ import java.util.List;
 public class LicenseCheckModel implements Serializable {
 
     /**
+     * 客户名
+     */
+    private String licenseTo;
+    /**
      * 服务器机器码
      */
-    private String serverSn;
+    private String sn;
     /**
-     * 可被允许的IP地址或域名
+     * 可被允许的IP地址
      */
     private List<String> ipAddress;
     /**
      * 软件位限制
      */
     private Integer appLimit;
+    /**
+     * 最大在线人数限制
+     */
+    private Integer maxOnline;
     /**
      * 服务器域名
      */
@@ -39,5 +47,9 @@ public class LicenseCheckModel implements Serializable {
      * 模块名
      */
     private List<String> moduleName;
+    /**
+     * 授权类型
+     */
+    private Integer licenseTypeCode;
 
 }

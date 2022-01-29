@@ -87,7 +87,7 @@ public class CustomLicenseManager extends LicenseManager {
         // Load license key from preferences,
         final byte[] key = getLicenseKey();
         if (null == key) {
-            throw new NoLicenseInstalledException(getLicenseParam().getSubject());
+            throw new NoLicenseInstalledException("License文件未载入，请添加License后重启本软件");
         }
 
         certificate = getPrivacyGuard().key2cert(key);
@@ -144,20 +144,23 @@ public class CustomLicenseManager extends LicenseManager {
                 throw new LicenseContentException("当前服务器的IP未获得授权");
             }
             //校验主板序列号
-            if (!checkServerSn(expectedCheckModel.getServerSn(), Constants.SERVER_SN)) {
+            if (!checkServerSn(expectedCheckModel.getSn(), Constants.SERVER_SN)) {
                 throw new LicenseContentException("当前服务器的设备码未获得授权");
             }
             //校验域名
             try {
                 ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-                assert servletRequestAttributes != null;
-                HttpServletRequest request = servletRequestAttributes.getRequest();
-                String serverName = request.getServerName();
-                if (!checkIpAddress(expectedCheckModel.getDomainName(), Collections.singletonList(serverName))) {
-                    throw new LicenseContentException("当前服务器的域名未获得授权");
+                if (servletRequestAttributes != null) {
+                    HttpServletRequest request = servletRequestAttributes.getRequest();
+                    String serverName = request.getServerName();
+                    if (!checkIpAddress(expectedCheckModel.getDomainName(), Collections.singletonList(serverName))) {
+                        throw new LicenseContentException("当前服务器的域名[" + serverName + "]未获得授权");
+                    }
                 }
+            } catch (LicenseContentException e) {
+                throw e;
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         } else {
             throw new LicenseContentException("获取服务器信息失败");
