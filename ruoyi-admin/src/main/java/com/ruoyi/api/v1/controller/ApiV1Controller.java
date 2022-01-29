@@ -19,7 +19,7 @@ import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.framework.license.anno.CheckLicence;
+import com.ruoyi.framework.license.anno.LicenceCheck;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppVersionService;
@@ -61,7 +61,7 @@ public class ApiV1Controller extends BaseController {
         return AjaxResult.success("恭喜您创建软件成功！请通过POST方式根据接口文档说明接入您的软件。");
     }
 
-    @CheckLicence
+    @LicenceCheck
     @Encrypt(in = true, out = true)
     @PostMapping("/{appkey}")
 //    @ApiOperation(value = "API接口", notes = "API接口")

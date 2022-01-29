@@ -64,9 +64,9 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
             //安装证书
             try {
                 licenseVerify.install(param);
-                log.info("License载入成功");
+//                log.info("License载入成功");
             } catch (Exception e) {
-                log.info("License载入失败：{}", e.getMessage());
+//                log.info("License载入失败：{}", e.getMessage());
             }
         }
         showLicenceInfo();

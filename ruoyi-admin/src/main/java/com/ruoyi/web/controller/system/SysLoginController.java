@@ -6,7 +6,7 @@ import com.ruoyi.common.core.domain.entity.SysMenu;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginBody;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.framework.license.anno.CheckLicence;
+import com.ruoyi.framework.license.anno.LicenceCheck;
 import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.framework.web.service.SysPermissionService;
 import com.ruoyi.system.service.ISysMenuService;
@@ -42,7 +42,7 @@ public class SysLoginController
      * @param loginBody 登录信息
      * @return 结果
      */
-    @CheckLicence
+    @LicenceCheck
     @PostMapping("/login")
     public AjaxResult login(@RequestBody LoginBody loginBody)
     {

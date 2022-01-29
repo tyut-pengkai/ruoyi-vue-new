@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CheckLicence {
+public @interface LicenceCheck {
 
     /**
      * 入参是否解密，默认解密
