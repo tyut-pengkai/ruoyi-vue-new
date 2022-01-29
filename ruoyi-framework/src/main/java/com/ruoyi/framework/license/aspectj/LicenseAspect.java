@@ -1,6 +1,6 @@
 package com.ruoyi.framework.license.aspectj;
 
-import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.exception.LicenseException;
 import com.ruoyi.framework.license.LicenseVerify;
 import com.ruoyi.framework.license.anno.CheckLicence;
 import org.springframework.core.MethodParameter;
@@ -33,7 +33,7 @@ public class LicenseAspect implements RequestBodyAdvice {
         LicenseVerify licenseVerify = new LicenseVerify();
         //校验证书是否有效
         if (!licenseVerify.verify()) {
-            throw new ServiceException("您的授权证书无效，请核查服务器是否取得授权或重新申请证书！");
+            throw new LicenseException("您的授权证书无效，请核查服务器是否取得授权或重新申请证书！");
         }
         return inputMessage;
     }

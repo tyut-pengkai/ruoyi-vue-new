@@ -207,14 +207,14 @@ public class CustomLicenseManager extends LicenseManager {
         if (expectedList != null && expectedList.size() > 0) {
             if (serverList != null && serverList.size() > 0) {
                 for (String expected : expectedList) {
-                    if (serverList.contains(expected.trim())) {
+                    if ("*".equals(expected.trim()) || serverList.contains(expected.trim())) {
                         return true;
                     }
                 }
             }
             return false;
         } else {
-            return true;
+            return false;
         }
     }
 
@@ -230,7 +230,7 @@ public class CustomLicenseManager extends LicenseManager {
             }
             return false;
         } else {
-            return true;
+            return false;
         }
     }
 

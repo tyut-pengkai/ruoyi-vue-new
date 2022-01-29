@@ -1,6 +1,7 @@
 package com.ruoyi.framework.license;
 
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.exception.LicenseException;
 import com.ruoyi.common.license.bo.CustomKeyStoreParam;
 import com.ruoyi.framework.license.bo.LicenseVerifyParam;
 import de.schlichtherle.license.*;
@@ -9,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.prefs.Preferences;
 
@@ -28,7 +28,7 @@ public class LicenseVerify {
      */
     public synchronized LicenseContent install(LicenseVerifyParam param) throws Exception {
         LicenseContent result = null;
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         //1. 安装证书
         try {
@@ -36,17 +36,20 @@ public class LicenseVerify {
             licenseManager.uninstall();
             result = licenseManager.install(new File(param.getLicensePath()));
             Constants.LICENSE_CONTENT = result;
-            log.info(MessageFormat.format("License载入成功，有效期：{0} - {1}", format.format(result.getNotBefore()), format.format(result.getNotAfter())));
+//            log.info(MessageFormat.format("License载入成功，有效期：{0} - {1}", format.format(result.getNotBefore()), format.format(result.getNotAfter())));
         } catch (LicenseContentException lce) {
             if (EXC_LICENSE_HAS_EXPIRED.equals(lce.getMessage())) {
-                log.error("License载入失败，License已过期！");
+//                log.error("License载入失败，License已过期！");
+                throw new LicenseException("License载入失败，License已过期");
             } else {
-                log.error("License载入失败！");
+//                log.error("License载入失败！");
+                throw new LicenseException("License载入失败");
             }
-            throw lce;
+//            throw lce;
         } catch (Exception e) {
-            log.error("License载入失败！");
-            throw e;
+//            log.error("License载入失败！");
+//            throw e;
+            throw new LicenseException("License载入失败");
         }
         return result;
     }
@@ -62,10 +65,10 @@ public class LicenseVerify {
         try {
             LicenseContent licenseContent = licenseManager.verify();
 //            System.out.println(licenseContent.getSubject());
-            log.debug(MessageFormat.format("License校验通过，有效期：{0} - {1}", format.format(licenseContent.getNotBefore()), format.format(licenseContent.getNotAfter())));
+//            log.debug(MessageFormat.format("License校验通过，有效期：{0} - {1}", format.format(licenseContent.getNotBefore()), format.format(licenseContent.getNotAfter())));
             return true;
         } catch (Exception e) {
-            log.error("License校验失败：{}", e.getMessage());
+//            log.error("License校验失败：{}", e.getMessage());
             return false;
         }
     }

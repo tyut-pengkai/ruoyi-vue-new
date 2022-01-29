@@ -49,7 +49,7 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
         ServerInfo.getServerInfo();
         ApplicationContext context = event.getApplicationContext().getParent();
         if (context == null) {
-            log.info("开始载入License");
+//            log.info("开始载入License");
             LicenseVerifyParam param = new LicenseVerifyParam();
             param.setSubject(subject);
             param.setPublicAlias(publicAlias);
@@ -65,7 +65,6 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
             try {
                 licenseVerify.install(param);
                 log.info("License载入成功");
-
             } catch (Exception e) {
                 log.info("License载入失败：{}", e.getMessage());
             }
@@ -94,11 +93,12 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
             File tipFile = PathUtils.getResourceFile("licenseTip.txt");
             assert tipFile != null;
             String tip = FileUtils.readFileToString(tipFile, StandardCharsets.UTF_8);
-            System.out.format(tip + "\n>>: 系统启动成功\n", Constants.SERVER_SN, IpUtils.getHostName(),
+            System.out.format(tip, Constants.SERVER_SN, IpUtils.getHostName(),
                     IpUtils.getHostIp(), licenceType, appLimit, maxOnline, datetime);
+            log.info("\n>>: 系统启动成功\n");
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("\n>>: 系统启动失败\n");
+            log.info("\n>>: 系统启动失败\n");
         }
     }
 }

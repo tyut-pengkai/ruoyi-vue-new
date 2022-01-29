@@ -4,8 +4,11 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.exception.DemoModeException;
+import com.ruoyi.common.exception.LicenseException;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
+import de.schlichtherle.license.LicenseContentException;
+import de.schlichtherle.license.NoLicenseInstalledException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
@@ -53,6 +56,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ServiceException.class)
     public AjaxResult handleServiceException(ServiceException e, HttpServletRequest request) {
         log.error(e.getMessage(), e);
+        Integer code = e.getCode();
+        return StringUtils.isNotNull(code) ? AjaxResult.error(code, e.getMessage()) : AjaxResult.error(e.getMessage());
+    }
+
+    /**
+     * License异常
+     */
+    @ExceptionHandler({NoLicenseInstalledException.class, LicenseContentException.class, LicenseException.class})
+    public AjaxResult handleLicenseException(ServiceException e, HttpServletRequest request) {
+//        log.error(e.getMessage(), e.getDetailMessage(), e);
         Integer code = e.getCode();
         return StringUtils.isNotNull(code) ? AjaxResult.error(code, e.getMessage()) : AjaxResult.error(e.getMessage());
     }
