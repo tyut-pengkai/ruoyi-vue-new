@@ -102,6 +102,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/login", "/register", "/captchaImage").anonymous()
 //                .antMatchers("/api/v1/swagger").permitAll()
                 .antMatchers("/api/v1/*", "/api/v1/devTool/**").permitAll()
+                .antMatchers("/system/license/info").permitAll()
                 .antMatchers(
                         HttpMethod.GET,
                         "/",
