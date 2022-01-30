@@ -358,7 +358,7 @@
             size="mini"
             type="text"
             icon="el-icon-finished"
-            @click="handleAppVersion(scope.row)"
+            @click="handleVersionManage(scope.row)"
             v-hasPermi="['system:appVersion:list']"
             >版本</el-button
           >

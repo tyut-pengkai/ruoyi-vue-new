@@ -139,12 +139,12 @@
         width="55"
       />
       <el-table-column align="center" label="" type="index"/>
-      <el-table-column align="center" label="软件名称">
+      <el-table-column align="center" label="软件名称" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           {{ scope.row.app.appName }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="版本名称">
+      <el-table-column align="center" label="版本名称" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           {{ scope.row.versionName }}({{ scope.row.versionNo }})
         </template>
