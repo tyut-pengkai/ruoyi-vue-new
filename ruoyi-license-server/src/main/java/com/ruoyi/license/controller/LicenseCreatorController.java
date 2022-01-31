@@ -60,23 +60,25 @@ public class LicenseCreatorController {
      *                  "mainBoardSerial": "L1HF7B400HZ"
      *              }
      *          }
-     *          {
-     *              "licensePath": "D:/license.lic",
-     *              "issuedTime": "2022-01-01 00:00:00",
-     *              "expiryTime": "2023-01-01 00:00:00",
-     *              "description": "",
-     *              "licenseCheckModel": {
-     *                  "licenseTo": "COORDSOFT.COM",
-     *                  "sn": "8E29-0E70-A21F-7B35-5957-6888-6970-F5FF",
-     *                  "licenseTypeCode": 2,
-     *                  "appLimit": 100,
-     *                  "maxOnline": 100,
-     *                  "ipAddress": [""],
-     *                  "domainName": [],
-     *                  "moduleName": []
-     *              }
-     *          }
      */
+    /*{
+        "licensePath": "D:/license.lic",
+            "issuedTime": "2022-01-01 00:00:00",
+            "expiryTime": "2023-01-01 00:00:00",
+            "description": "",
+            "licenseCheckModel": {
+        "licenseTo": "COORDSOFT.COM",
+                "sn": "90EB-6C02-9D14-D763-2AD7-5167-B374-C084",
+                "licenseTypeCode": 2,
+                "appLimit": 100,
+                "maxOnline": 100,
+                "ipAddress": [
+        "*"
+    ],
+        "domainName": ["*"],
+        "moduleName": []
+    }
+    }*/
     @RequestMapping(value = "/generateLicense", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public AjaxResult generateLicense(@RequestBody LicenseCreatorParam param) {
         if (StringUtils.isBlank(param.getLicensePath())) {

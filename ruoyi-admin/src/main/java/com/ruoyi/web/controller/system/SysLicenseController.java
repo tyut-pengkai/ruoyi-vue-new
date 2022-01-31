@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.license.ServerInfo;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.license.bo.LicenseInfo;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +23,7 @@ public class SysLicenseController {
         serverInfo.put("sn", Constants.SERVER_SN);
         serverInfo.put("hostName", IpUtils.getHostName());
         serverInfo.put("hostDomain", request.getServerName());
-        serverInfo.put("hostIp", IpUtils.getHostIp());
+        serverInfo.put("hostIp", ServerInfo.getServerIp());
         LicenseInfo licenseInfo = LicenseInfo.getLicenseInfo();
         Map<String, Object> result = new HashMap<>();
         result.put("serverInfo", serverInfo);

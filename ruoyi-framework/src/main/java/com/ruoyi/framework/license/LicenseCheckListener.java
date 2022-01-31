@@ -76,7 +76,7 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
             File tipFile = PathUtils.getResourceFile("licenseTip.txt");
             String tip = FileUtils.readFileToString(tipFile, StandardCharsets.UTF_8);
             System.out.format(tip, Constants.SERVER_SN, IpUtils.getHostName(),
-                    IpUtils.getHostIp(), info.getLicenseType(), info.getLicenseTo(),
+                    ServerInfo.getServerIp(), info.getLicenseType(), info.getLicenseTo(),
                     info.getAppLimit(), info.getMaxOnline(), info.getLicenseDomain(),
                     info.getLicenseIp(), info.getDatetime());
             log.info("\n>>: 系统启动成功\n");
