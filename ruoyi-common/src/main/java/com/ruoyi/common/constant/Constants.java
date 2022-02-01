@@ -1,6 +1,7 @@
 package com.ruoyi.common.constant;
 
 import de.schlichtherle.license.LicenseContent;
+import de.schlichtherle.util.ObfuscatedString;
 import io.jsonwebtoken.Claims;
 
 import java.util.List;
@@ -14,16 +15,16 @@ public class Constants {
     /**
      * 密钥库密码
      */
-    public static final String STORE_PASS = "a123456";
+    public static final String STORE_PASS = new ObfuscatedString(new long[]{0x61FCA6F12D0B529BL, 0xEB31834955913DAL, 0x162A9C12A2B377EEL}).toString() /* => "Rly*05wtyapVZAft" */;
+
+    /**
+     *
+     */
 
     /**
      * 服务器机器码
      */
     public static String SERVER_SN;
-    /**
-     * 软件位限制
-     */
-    public static String APP_LIMIT;
     /**
      * IP列表
      */

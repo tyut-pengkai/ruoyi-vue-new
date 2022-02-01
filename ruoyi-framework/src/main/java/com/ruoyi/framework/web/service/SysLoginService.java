@@ -15,6 +15,7 @@ import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.system.service.ISysConfigService;
+import com.ruoyi.system.service.ISysUserOnlineService;
 import com.ruoyi.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,47 +42,54 @@ public class SysLoginService
 
     @Autowired
     private RedisCache redisCache;
-    
+
     @Autowired
     private ISysUserService userService;
 
     @Autowired
     private ISysConfigService configService;
 
+    @Autowired
+    private ISysUserOnlineService userOnlineService;
+
     /**
      * 登录验证
-     * 
+     *
      * @param username 用户名
      * @param password 密码
-     * @param code 验证码
-     * @param uuid 唯一标识
+     * @param code     验证码
+     * @param uuid     唯一标识
      * @return 结果
      */
-    public String login(String username, String password, String code, String uuid)
-    {
-        boolean captchaOnOff = configService.selectCaptchaOnOff();
+    public String login(String username, String password, String code, String uuid) {
+//        // 检查在线人数限制
+//        List<String> onlineAppUser = new ArrayList<>();
+//        Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
+//        for (String key : keys) {
+//            LoginUser user = redisCache.getCacheObject(key);
+//            if(user.getIfApp()){
+//                onlineAppUser.add(key);
+//            }
+//        }
+//        if(onlineAppUser.size() >= ((LicenseCheckModel)Constants.LICENSE_CONTENT.getExtra()).getMaxOnline()) {
+//            throw new ServiceException("当前在线人数已超出License上限，请升级License或稍后再试");
+//        }
         // 验证码开关
-        if (captchaOnOff)
-        {
+        boolean captchaOnOff = configService.selectCaptchaOnOff();
+        if (captchaOnOff) {
             validateCaptcha(username, code, uuid);
         }
         // 用户验证
         Authentication authentication = null;
-        try
-        {
+        try {
             // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername
             authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        }
-        catch (Exception e)
-        {
-            if (e instanceof BadCredentialsException)
-            {
+        } catch (Exception e) {
+            if (e instanceof BadCredentialsException) {
                 AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.password.not.match")));
                 throw new UserPasswordNotMatchException();
-            }
-            else
-            {
+            } else {
                 AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, e.getMessage()));
                 throw new ServiceException(e.getMessage());
             }

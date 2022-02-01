@@ -5,6 +5,7 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.license.ServerInfo;
 import com.ruoyi.common.license.bo.LicenseCheckModel;
 import com.ruoyi.license.domain.LicenseCreatorParam;
+import de.schlichtherle.util.ObfuscatedString;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -72,4 +73,12 @@ public class LicenseTest {
         LicenseCreator licenseCreator = new LicenseCreator(param);
         licenseCreator.generateLicense();
     }
+
+    @Test
+    public void obfuscatedString() {
+        String str = "publicCerts.keystore";
+        String result = ObfuscatedString.obfuscate(str);
+        System.out.format("KEYSTORE-FILENAME:  %s\n", result);
+    }
+
 }

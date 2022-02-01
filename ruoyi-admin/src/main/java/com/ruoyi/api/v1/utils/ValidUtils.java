@@ -10,6 +10,7 @@ import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ApiException;
+import com.ruoyi.common.license.bo.LicenseCheckModel;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.manager.AsyncManager;
@@ -344,6 +345,21 @@ public class ValidUtils {
                 loginUser.getApp().getAppName(), loginUser.getAppVersion().getVersionShow(),
                 loginUser.getDeviceCode() != null ? loginUser.getDeviceCode().getDeviceCode() : null,
                 Constants.LOGOUT, "系统强制退出：" + msg));
+    }
+
+    public void checkLicenseMaxOnline() {
+        // 检查在线人数限制
+        List<String> onlineAppUser = new ArrayList<>();
+        Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
+        for (String key : keys) {
+            LoginUser user = redisCache.getCacheObject(key);
+            if (user.getIfApp()) {
+                onlineAppUser.add(key);
+            }
+        }
+        if (onlineAppUser.size() >= ((LicenseCheckModel) Constants.LICENSE_CONTENT.getExtra()).getMaxOnline()) {
+            throw new ApiException("当前在线人数已超出License上限，请联系管理员升级License或稍后再试");
+        }
     }
 
 }

@@ -57,6 +57,8 @@ public class SysAppLoginService {
      * @return 结果
      */
     public String appLogin(String username, String password, SysApp app, SysAppVersion appVersion, String deviceCodeStr) {
+        // 检查在线人数限制
+        validUtils.checkLicenseMaxOnline();
         // 用户验证
         SysAppUser appUser = null;
         SysDeviceCode deviceCode = null;
@@ -185,6 +187,8 @@ public class SysAppLoginService {
      * @return 结果
      */
     public String appLogin(String loginCodeStr, SysApp app, SysAppVersion appVersion, String deviceCodeStr) {
+        // 检查在线人数限制
+        validUtils.checkLicenseMaxOnline();
         // 用户验证
         SysAppUser appUser = null;
         SysDeviceCode deviceCode = null;

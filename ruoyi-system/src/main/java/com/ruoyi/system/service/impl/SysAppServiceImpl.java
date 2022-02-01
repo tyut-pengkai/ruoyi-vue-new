@@ -4,6 +4,8 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.license.bo.LicenseCheckModel;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -84,8 +86,12 @@ public class SysAppServiceImpl implements ISysAppService {
      * @return 结果
      */
     @Override
-    public int insertSysApp(SysApp sysApp)
-    {
+    public int insertSysApp(SysApp sysApp) {
+        // 检查软件位限制
+        List<SysApp> appList = sysAppMapper.selectSysAppList(new SysApp());
+        if (appList != null && appList.size() >= ((LicenseCheckModel) Constants.LICENSE_CONTENT.getExtra()).getAppLimit()) {
+            throw new ServiceException("当前创建的软件数量已超出License上限，请升级License或删除部分软件后再试");
+        }
         return sysAppMapper.insertSysApp(sysApp);
     }
 

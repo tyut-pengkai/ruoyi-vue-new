@@ -6,6 +6,7 @@ import com.ruoyi.common.utils.PathUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.license.bo.LicenseInfo;
 import com.ruoyi.framework.license.bo.LicenseVerifyParam;
+import de.schlichtherle.util.ObfuscatedString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,7 +54,10 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
             param.setStorePass(Constants.STORE_PASS);
             param.setLicensePath(PathUtils.getUserPath() + "\\license.lic");
             try {
-                param.setPublicKeysStorePath(PathUtils.getResourceFile("publicCerts.keystore").getCanonicalPath());
+                param.setPublicKeysStorePath(PathUtils.getResourceFile(
+                                new ObfuscatedString(new long[]{0xD43EA2656C859964L, 0x114DCA318581A2B9L,
+                                        0xEEA6BCEAC5380304L, 0xD3D9A0D6A6B29B00L}).toString() /* => "publicCerts.keystore" */)
+                        .getCanonicalPath());
             } catch (IOException e) {
                 e.printStackTrace();
             }
