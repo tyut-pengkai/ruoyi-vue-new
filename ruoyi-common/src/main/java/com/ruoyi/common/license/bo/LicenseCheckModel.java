@@ -50,6 +50,6 @@ public class LicenseCheckModel implements Serializable {
     /**
      * 授权类型
      */
-    private Integer licenseTypeCode;
+    private String licenseType;
 
 }

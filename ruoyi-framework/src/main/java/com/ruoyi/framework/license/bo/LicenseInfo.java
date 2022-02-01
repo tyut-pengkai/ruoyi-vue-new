@@ -1,7 +1,6 @@
 package com.ruoyi.framework.license.bo;
 
 import com.ruoyi.common.constant.Constants;
-import com.ruoyi.common.enums.LicenseType;
 import com.ruoyi.common.license.bo.LicenseCheckModel;
 import com.ruoyi.common.utils.DateUtils;
 import de.schlichtherle.license.LicenseContent;
@@ -30,7 +29,7 @@ public class LicenseInfo {
             info.setFrom(from);
             info.setTo(to);
             info.setLicenseTo(extra.getLicenseTo());
-            info.setLicenseType(LicenseType.valueOfCode(String.valueOf(extra.getLicenseTypeCode())).getInfo());
+            info.setLicenseType(extra.getLicenseType());
             info.setAppLimit(extra.getAppLimit().toString());
             info.setMaxOnline(extra.getMaxOnline().toString());
             info.setLicenseDomain(String.join("/", extra.getDomainName()));
