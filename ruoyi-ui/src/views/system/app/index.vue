@@ -194,11 +194,7 @@
       :data="appList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        type="selection"
-        width="55"
-        align="center"
-      />
+      <el-table-column align="center" type="selection" width="55"/>
       <el-table-column label="" type="index" align="center" />
       <!-- <el-table-column label="软件图标" align="center" prop="icon" /> -->
       <el-table-column
@@ -402,8 +398,7 @@
                   icon="el-icon-edit-outline"
                   v-hasPermi="['system:cardTemplate:list']"
                 >卡类管理
-                </el-dropdown-item
-                >
+                </el-dropdown-item>
                 <el-dropdown-item
                   command="handleCardManage"
                   icon="el-icon-bank-card"
@@ -417,8 +412,7 @@
                   icon="el-icon-edit-outline"
                   v-hasPermi="['system:loginCodeTemplate:list']"
                 >单码类别
-                </el-dropdown-item
-                >
+                </el-dropdown-item>
                 <el-dropdown-item
                   command="handleLoginCodeManage"
                   icon="el-icon-bank-card"
@@ -1299,37 +1293,55 @@ export default {
     handleAppUser: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/user/" + appId,
+        path: "/app/user",
+        query: {
+          appId: appId,
+        },
       });
     },
     handleCardTemplate: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/cardTemplate/" + appId,
+        path: "/app/accountMode/cardTemplate",
+        query: {
+          appId: appId,
+        },
       });
     },
     handleCardManage: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/card/" + appId,
+        path: "/app/accountMode/card",
+        query: {
+          appId: appId,
+        },
       });
     },
     handleLoginCodeTemplate: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/loginCodeTemplate/" + appId,
+        path: "/app/cardMode/loginCodeTemplate",
+        query: {
+          appId: appId,
+        },
       });
     },
     handleLoginCodeManage: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/loginCode/" + appId,
+        path: "/app/cardMode/loginCode",
+        query: {
+          appId: appId,
+        },
       });
     },
     handleVersionManage: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/appVersion/" + appId,
+        path: "/app/appVersion",
+        query: {
+          appId: appId,
+        },
       });
     },
     // 更多操作触发

@@ -133,18 +133,22 @@
       :data="appVersionList"
       @selection-change="handleSelectionChange"
     >
+      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" label="" type="index"/>
       <el-table-column
         align="center"
-        type="selection"
-        width="55"
-      />
-      <el-table-column align="center" label="" type="index"/>
-      <el-table-column align="center" label="软件名称" :show-overflow-tooltip="true">
+        :show-overflow-tooltip="true"
+        label="软件名称"
+      >
         <template slot-scope="scope">
           {{ scope.row.app.appName }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="版本名称" :show-overflow-tooltip="true">
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="版本名称"
+      >
         <template slot-scope="scope">
           {{ scope.row.versionName }}({{ scope.row.versionNo }})
         </template>
@@ -202,6 +206,13 @@
         label="操作"
       >
         <template slot-scope="scope">
+          <el-button
+            icon="el-icon-upload2"
+            size="mini"
+            type="text"
+            @click="handleImport(scope.row)"
+          >快速接入
+          </el-button>
           <el-button
             v-hasPermi="['system:appVersion:edit']"
             icon="el-icon-edit"
@@ -324,6 +335,48 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!--快速接入对话框 -->
+    <el-dialog
+      :title="upload.title"
+      :visible.sync="upload.open"
+      append-to-body
+      width="400px"
+    >
+      <el-upload
+        ref="upload"
+        :action="upload.url"
+        :auto-upload="false"
+        :disabled="upload.isUploading"
+        :headers="upload.headers"
+        :limit="1"
+        :on-progress="handleFileUploadProgress"
+        :on-success="handleFileSuccess"
+        accept=".exe"
+        drag
+      >
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div slot="tip" class="el-upload__tip text-center">
+          <!-- <div class="el-upload__tip" slot="tip">
+            <el-checkbox v-model="upload.updateSupport" />
+            是否更新已经存在的用户数据
+          </div> -->
+          <span>仅允许导入exe格式文件。</span>
+          <!-- <el-link
+            type="primary"
+            :underline="false"
+            style="font-size: 12px; vertical-align: baseline"
+            @click="importTemplate"
+            >下载模板</el-link
+          > -->
+        </div>
+      </el-upload>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFileForm">确 定</el-button>
+        <el-button @click="upload.open = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -336,6 +389,7 @@ import {
   listAppVersion,
   updateAppVersion,
 } from "@/api/system/appVersion";
+import {getToken} from "@/utils/auth";
 import {getApp} from "@/api/system/app";
 
 export default {
@@ -396,10 +450,24 @@ export default {
         ],
         md5: [{required: false, message: "软件MD5不能为空", trigger: "blur"}],
       },
+      // 快速接入参数
+      upload: {
+        // 是否显示弹出层（快速接入）
+        open: false,
+        // 弹出层标题（快速接入）
+        title: "",
+        // 是否禁用上传
+        isUploading: false,
+        // 设置上传的请求头部
+        headers: {Authorization: "Bearer " + getToken()},
+        // 上传的地址
+        url: process.env.VUE_APP_BASE_API + "/system/appVersion/quickAccess",
+      },
     };
   },
   created() {
-    const appId = this.$route.params && this.$route.params.appId;
+    // const appId = this.$route.params && this.$route.params.appId;
+    const appId = this.$route.query && this.$route.query.appId;
     // const appName = this.$route.query && this.$route.query.appName;
     if (appId != undefined && appId != null) {
       getApp(appId).then((response) => {
@@ -540,6 +608,32 @@ export default {
         })
         .catch(() => {
         });
+    },
+    /** 导入按钮操作 */
+    handleImport() {
+      this.upload.title = "快速接入";
+      this.upload.open = true;
+    },
+    // 文件上传中处理
+    handleFileUploadProgress(event, file, fileList) {
+      this.upload.isUploading = true;
+    },
+    // 文件上传成功处理
+    handleFileSuccess(response, file, fileList) {
+      this.upload.open = false;
+      this.upload.isUploading = false;
+      this.$refs.upload.clearFiles();
+      this.$alert(
+        "<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" +
+        response.msg +
+        "</div>",
+        "导入结果",
+        {dangerouslyUseHTMLString: true}
+      );
+    },
+    // 提交上传文件
+    submitFileForm() {
+      this.$refs.upload.submit();
     },
   },
 };

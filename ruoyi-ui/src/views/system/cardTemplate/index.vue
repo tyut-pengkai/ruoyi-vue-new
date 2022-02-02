@@ -6,7 +6,7 @@
       :inline="true"
       v-show="showSearch"
     >
-    <el-form-item label="所属软件" prop="appId">
+      <el-form-item label="所属软件" prop="appId">
         <el-select
           v-model="queryParams.appId"
           filterable
@@ -197,11 +197,7 @@
       :data="cardTemplateList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        type="selection"
-        width="55"
-        align="center"
-      />
+      <el-table-column align="center" type="selection" width="55"/>
       <el-table-column label="" type="index" align="center" />
       <el-table-column
         label="所属软件"
@@ -295,7 +291,9 @@
       <!-- <el-table-column label="创建者" align="center" prop="createBy" /> -->
       <el-table-column label="卡密面值" align="center" prop="quota">
         <template slot-scope="scope">
-          <span>{{ parseSeconds(scope.row.app.billType, scope.row.quota) }}</span>
+          <span>{{
+              parseSeconds(scope.row.app.billType, scope.row.quota)
+            }}</span>
         </template>
       </el-table-column>
       <el-table-column label="销售价格" align="center" prop="price">
@@ -306,10 +304,10 @@
       <el-table-column label="有效期" align="center" prop="effectiveDuration">
         <template slot-scope="scope">
           <span>{{
-            scope.row.effectiveDuration >= 0
-              ? parseSeconds('0', scope.row.effectiveDuration)
-              : "长期有效"
-          }}</span>
+              scope.row.effectiveDuration >= 0
+                ? parseSeconds("0", scope.row.effectiveDuration)
+                : "长期有效"
+            }}</span>
         </template>
       </el-table-column>
       <!-- <el-table-column
@@ -409,9 +407,7 @@
                     :value="app.billType"
                   />
                 </div>
-                <div v-else>
-                  请先选择软件
-                </div>
+                <div v-else>请先选择软件</div>
               </el-form-item>
             </el-col>
           </el-form-item>
@@ -462,9 +458,7 @@
                     <span style="margin-left: 6px">点</span>
                   </div>
                 </div>
-                <div v-else >
-                  请先选择软件
-                </div>
+                <div v-else>请先选择软件</div>
               </el-form-item>
             </el-col>
           </div>
@@ -846,16 +840,14 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        appId: [
-          { required: true, message: "软件不能为空", trigger: "blur" },
-        ],
+        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
         cardName: [
-          { required: true, message: "卡名称不能为空", trigger: "blur" },
+          {required: true, message: "卡名称不能为空", trigger: "blur"},
         ],
-        quota: [{ required: true, message: "额度不能为空", trigger: "blur" }],
-        price: [{ required: true, message: "价格不能为空", trigger: "blur" }],
+        quota: [{required: true, message: "额度不能为空", trigger: "blur"}],
+        price: [{required: true, message: "价格不能为空", trigger: "blur"}],
         cardNoLen: [
-          { required: true, message: "卡号长度不能为空", trigger: "blur" },
+          {required: true, message: "卡号长度不能为空", trigger: "blur"},
         ],
         cardNoGenRule: [
           {
@@ -906,7 +898,8 @@ export default {
     };
   },
   created() {
-    const appId = this.$route.params && this.$route.params.appId;
+    // const appId = this.$route.params && this.$route.params.appId;
+    const appId = this.$route.query && this.$route.query.appId;
     this.getAppList();
     if (appId != undefined && appId != null) {
       getApp(appId).then((response) => {
@@ -1075,7 +1068,7 @@ export default {
       this.loading = true;
       let queryParams = {};
       queryParams.params = {};
-      queryParams.authType = '0';
+      queryParams.authType = "0";
       listApp(queryParams).then((response) => {
         this.appList = response.rows;
         for (let app of this.appList) {

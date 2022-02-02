@@ -227,9 +227,7 @@
         <template slot-scope="scope">
           <el-form label-position="left">
             <el-form-item prop="">
-              <el-col :span="6">
-                -
-              </el-col>
+              <el-col :span="6"> -</el-col>
               <el-col :span="6">
                 <el-form-item label="单码" prop="">
                   <span>{{ scope.row.cardNo }}</span>
@@ -249,9 +247,7 @@
               </el-col>
             </el-form-item>
             <el-form-item prop="">
-              <el-col :span="6">
-                -
-              </el-col>
+              <el-col :span="6"> -</el-col>
               <el-col :span="6">
                 <el-form-item label="是否售出" prop="">
                   <dict-tag
@@ -280,11 +276,7 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column
-        type="selection"
-        width="55"
-        align="center"
-      />
+      <el-table-column align="center" type="selection" width="55"/>
       <el-table-column label="" type="index" align="center" />
       <el-table-column
         label="所属软件"
@@ -482,18 +474,18 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-              <el-form-item label="过期时间" prop="expireTime">
-                <el-date-picker
-                  clearable
-                  size="small"
-                  v-model="form.expireTime"
-                  type="datetime"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                  placeholder="选择过期时间"
-                  :picker-options="pickerOptions"
-                >
-                </el-date-picker>
-              </el-form-item>
+            <el-form-item label="过期时间" prop="expireTime">
+              <el-date-picker
+                v-model="form.expireTime"
+                :picker-options="pickerOptions"
+                clearable
+                placeholder="选择过期时间"
+                size="small"
+                type="datetime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+              >
+              </el-date-picker>
+            </el-form-item>
           </el-col>
         </el-form-item>
         <el-form-item prop="">
@@ -653,44 +645,44 @@
     >
       <el-form ref="formBatch" :model="formBatch" :rules="rulesBatch">
         <el-form-item prop="">
-            <el-col :span="12">
-              <el-form-item label="所属软件" prop="appId">
-                <el-select
-                  v-model="formBatch.appId"
-                  filterable
-                  placeholder="请选择"
-                  prop="appId"
-                  @change="changeSelectedApp"
+          <el-col :span="12">
+            <el-form-item label="所属软件" prop="appId">
+              <el-select
+                v-model="formBatch.appId"
+                filterable
+                placeholder="请选择"
+                prop="appId"
+                @change="changeSelectedApp"
+              >
+                <el-option
+                  v-for="item in appList"
+                  :key="item.appId"
+                  :disabled="item.disabled"
+                  :label="
+                    '[' +
+                    (item.authType == '0' ? '账号' : '单码') +
+                    (item.billType == '0' ? '计时' : '计点') +
+                    '] ' +
+                    item.appName
+                  "
+                  :value="item.appId"
                 >
-                  <el-option
-                    v-for="item in appList"
-                    :key="item.appId"
-                    :label="
-                      '[' +
-                      (item.authType == '0' ? '账号' : '单码') +
-                      (item.billType == '0' ? '计时' : '计点') +
-                      '] ' +
-                      item.appName
-                    "
-                    :value="item.appId"
-                    :disabled="item.disabled"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="计费类型" prop="billType">
-                <div v-if="app">
-                  <dict-tag
-                    :options="dict.type.sys_bill_type"
-                    :value="app.billType"
-                  />
-                </div>
-                <div v-else>请先选择软件</div>
-              </el-form-item>
-            </el-col>
-          </el-form-item>
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="计费类型" prop="billType">
+              <div v-if="app">
+                <dict-tag
+                  :options="dict.type.sys_bill_type"
+                  :value="app.billType"
+                />
+              </div>
+              <div v-else>请先选择软件</div>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
         <el-form-item label="选择单码类别" prop="templateId">
           <el-select v-model="formBatch.templateId" placeholder="请选择">
             <el-option
@@ -757,7 +749,14 @@
 </template>
 
 <script>
-import {addLoginCode, delLoginCode, exportLoginCode, getLoginCode, listLoginCode, updateLoginCode,} from "@/api/system/loginCode";
+import {
+  addLoginCode,
+  delLoginCode,
+  exportLoginCode,
+  getLoginCode,
+  listLoginCode,
+  updateLoginCode,
+} from "@/api/system/loginCode";
 import {getApp, listApp} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
@@ -766,12 +765,8 @@ import {listLoginCodeTemplate} from "@/api/system/loginCodeTemplate";
 
 export default {
   name: "LoginCode",
-  dicts: [
-    "sys_yes_no",
-    "sys_normal_disable",
-    "sys_bill_type",
-  ],
-  components: { DateDuration, Updown },
+  dicts: ["sys_yes_no", "sys_normal_disable", "sys_bill_type"],
+  components: {DateDuration, Updown},
   data() {
     return {
       appList: [],
@@ -825,17 +820,15 @@ export default {
       formBatch: {},
       // 表单校验
       rules: {
-        appId: [
-          { required: true, message: "软件不能为空", trigger: "blur" },
-        ],
+        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
         cardName: [
-          { required: true, message: "单码名称不能为空", trigger: "blur" },
+          {required: true, message: "单码名称不能为空", trigger: "blur"},
         ],
-        cardNo: [{ required: true, message: "单码不能为空", trigger: "blur" }],
-        quota: [{ required: true, message: "额度不能为空", trigger: "blur" }],
-        price: [{ required: true, message: "价格不能为空", trigger: "blur" }],
+        cardNo: [{required: true, message: "单码不能为空", trigger: "blur"}],
+        quota: [{required: true, message: "额度不能为空", trigger: "blur"}],
+        price: [{required: true, message: "价格不能为空", trigger: "blur"}],
         expireTime: [
-          { required: true, message: "过期时间不能为空", trigger: "blur" },
+          {required: true, message: "过期时间不能为空", trigger: "blur"},
         ],
         isSold: [
           { required: true, message: "是否售出不能为空", trigger: "change" },
@@ -915,7 +908,8 @@ export default {
     };
   },
   created() {
-    const appId = this.$route.params && this.$route.params.appId;
+    // const appId = this.$route.params && this.$route.params.appId;
+    const appId = this.$route.query && this.$route.query.appId;
     this.getAppList();
     if (appId != undefined && appId != null) {
       getApp(appId).then((response) => {
@@ -1128,7 +1122,7 @@ export default {
       this.loading = true;
       let queryParams = {};
       queryParams.params = {};
-      queryParams.authType = '1';
+      queryParams.authType = "1";
       listApp(queryParams).then((response) => {
         this.appList = response.rows;
         for (let app of this.appList) {
@@ -1143,12 +1137,11 @@ export default {
       this.app = this.appMap[appId];
       let queryParams = {};
       if (this.app) {
-          queryParams.appId = this.app.appId;
-          listLoginCodeTemplate(queryParams).then((response) => {
+        queryParams.appId = this.app.appId;
+        listLoginCodeTemplate(queryParams).then((response) => {
           this.cardTemplateList = response.rows;
-      });
+        });
       }
-      
     },
     changeSearchApp(appId) {
       this.loading = true;

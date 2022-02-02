@@ -9,7 +9,7 @@ public class IsConnected extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("isConnected.ng", "是否正常连接到服务器", false, Constants.API_TAG_GENERAL,
+        this.setApi(new Api("isConnected.ng", "是否连接到服务器", false, Constants.API_TAG_GENERAL,
                 "判断是否正常连接到服务器，成功返回服务器13位时间戳（精确到毫秒）", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL));
     }
 

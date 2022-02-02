@@ -183,11 +183,7 @@
       :data="appUserList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        type="selection"
-        width="55"
-        align="center"
-      />
+      <el-table-column align="center" type="selection" width="55"/>
       <el-table-column label="" type="index" align="center" />
       <el-table-column
         label="所属软件"
@@ -208,7 +204,7 @@
             {{ scope.row.user.nickName }}({{ scope.row.user.userName }})
           </div>
           <div v-else>
-            {{ '[单码]' + scope.row.loginCode }}
+            {{ "[单码]" + scope.row.loginCode }}
           </div>
         </template>
       </el-table-column>
@@ -381,15 +377,13 @@
                     :value="app.billType"
                   />
                 </div>
-                <div v-else>
-                  请先选择软件
-                </div>
+                <div v-else>请先选择软件</div>
               </el-form-item>
             </el-col>
           </el-form-item>
           <el-form-item label="所属账号/单码" prop="">
-          <div v-if="app">
-            <div v-if="app.authType === '0'">
+            <div v-if="app">
+              <div v-if="app.authType === '0'">
                 <el-select
                   v-model="form.userId"
                   filterable
@@ -405,19 +399,17 @@
                   >
                   </el-option>
                 </el-select>
-            </div>
-            <div v-if="app.authType === '1'">
+              </div>
+              <div v-if="app.authType === '1'">
                 <el-input
                   placeholder="请输入单码"
                   v-model="form.loginCode"
                   clearable
                 >
                 </el-input>
+              </div>
             </div>
-          </div>
-          <div v-else>
-            请先选择软件
-          </div>
+            <div v-else>请先选择软件</div>
           </el-form-item>
           <!-- end -->
         </div>
@@ -651,8 +643,8 @@ import {
   listAppUser,
   updateAppUser,
 } from "@/api/system/appUser";
-import { getApp, listApp } from "@/api/system/app";
-import { listUserByExceptAppid } from "@/api/system/user";
+import {getApp, listApp} from "@/api/system/app";
+import {listUserByExceptAppid} from "@/api/system/user";
 
 export default {
   name: "AppUser",
@@ -706,16 +698,14 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        appId: [
-          { required: true, message: "软件不能为空", trigger: "blur" },
-        ],
+        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
         userId: [
-          { required: true, message: "所属账号不能为空", trigger: "blur" },
+          {required: true, message: "所属账号不能为空", trigger: "blur"},
         ],
         loginCode: [
-          { required: true, message: "单码不能为空", trigger: "blur" },
+          {required: true, message: "单码不能为空", trigger: "blur"},
         ],
-        status: [{ required: true, message: "状态不能为空", trigger: "blur" }],
+        status: [{required: true, message: "状态不能为空", trigger: "blur"}],
         loginLimitU: [
           {
             required: true,
@@ -749,7 +739,8 @@ export default {
     };
   },
   created() {
-    const appId = this.$route.params && this.$route.params.appId;
+    // const appId = this.$route.params && this.$route.params.appId;
+    const appId = this.$route.query && this.$route.query.appId;
     this.getAppList();
     // const appName = this.$route.query && this.$route.query.appName;
     // const title = "软件用户管理";

@@ -242,9 +242,7 @@
         <template slot-scope="scope">
           <el-form label-position="left">
             <el-form-item>
-              <el-col :span="4">
-                -
-              </el-col>
+              <el-col :span="4"> -</el-col>
               <el-col :span="5">
                 <el-form-item label="卡号">
                   <span>{{ scope.row.cardNo }}</span>
@@ -269,9 +267,7 @@
               </el-col>
             </el-form-item>
             <el-form-item>
-              <el-col :span="4">
-                -
-              </el-col>
+              <el-col :span="4"> -</el-col>
               <el-col :span="5">
                 <el-form-item label="是否售出">
                   <dict-tag
@@ -308,11 +304,7 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column
-        type="selection"
-        width="55"
-        align="center"
-      />
+      <el-table-column align="center" type="selection" width="55"/>
       <el-table-column label="" type="index" align="center" />
       <el-table-column
         label="所属软件"
@@ -329,7 +321,12 @@
         prop="cardName"
         :show-overflow-tooltip="true"
       />
-      <el-table-column label="卡号" align="center" prop="cardNo" :show-overflow-tooltip="true">
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="卡号"
+        prop="cardNo"
+      >
         <template slot-scope="scope">
           <span>{{ scope.row.cardNo }} </span>
         </template>
@@ -702,44 +699,44 @@
     >
       <el-form ref="formBatch" :model="formBatch" :rules="rulesBatch">
         <el-form-item prop="">
-            <el-col :span="12">
-              <el-form-item label="所属软件" prop="appId">
-                <el-select
-                  v-model="formBatch.appId"
-                  filterable
-                  placeholder="请选择"
-                  prop="appId"
-                  @change="changeSelectedApp"
+          <el-col :span="12">
+            <el-form-item label="所属软件" prop="appId">
+              <el-select
+                v-model="formBatch.appId"
+                filterable
+                placeholder="请选择"
+                prop="appId"
+                @change="changeSelectedApp"
+              >
+                <el-option
+                  v-for="item in appList"
+                  :key="item.appId"
+                  :disabled="item.disabled"
+                  :label="
+                    '[' +
+                    (item.authType == '0' ? '账号' : '单码') +
+                    (item.billType == '0' ? '计时' : '计点') +
+                    '] ' +
+                    item.appName
+                  "
+                  :value="item.appId"
                 >
-                  <el-option
-                    v-for="item in appList"
-                    :key="item.appId"
-                    :label="
-                      '[' +
-                      (item.authType == '0' ? '账号' : '单码') +
-                      (item.billType == '0' ? '计时' : '计点') +
-                      '] ' +
-                      item.appName
-                    "
-                    :value="item.appId"
-                    :disabled="item.disabled"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="计费类型" prop="billType">
-                <div v-if="app">
-                  <dict-tag
-                    :options="dict.type.sys_bill_type"
-                    :value="app.billType"
-                  />
-                </div>
-                <div v-else>请先选择软件</div>
-              </el-form-item>
-            </el-col>
-          </el-form-item>
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="计费类型" prop="billType">
+              <div v-if="app">
+                <dict-tag
+                  :options="dict.type.sys_bill_type"
+                  :value="app.billType"
+                />
+              </div>
+              <div v-else>请先选择软件</div>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
         <el-form-item label="选择卡类" prop="templateId">
           <el-select v-model="formBatch.templateId" placeholder="请选择">
             <el-option
@@ -806,19 +803,12 @@
 </template>
 
 <script>
-import {
-  addCard,
-  delCard,
-  exportCard,
-  getCard,
-  listCard,
-  updateCard,
-} from "@/api/system/card";
-import { getApp, listApp } from "@/api/system/app";
+import {addCard, delCard, exportCard, getCard, listCard, updateCard,} from "@/api/system/card";
+import {getApp, listApp} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
-import { parseMoney, parseSeconds, parseUnit } from "@/utils/my";
-import { listCardTemplate } from "@/api/system/cardTemplate";
+import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
+import {listCardTemplate} from "@/api/system/cardTemplate";
 
 export default {
   name: "Card",
@@ -828,7 +818,7 @@ export default {
     "sys_charge_rule",
     "sys_bill_type",
   ],
-  components: { DateDuration, Updown },
+  components: {DateDuration, Updown},
   data() {
     return {
       appList: [],
@@ -977,7 +967,8 @@ export default {
     };
   },
   created() {
-    const appId = this.$route.params && this.$route.params.appId;
+    // const appId = this.$route.params && this.$route.params.appId;
+    const appId = this.$route.query && this.$route.query.appId;
     this.getAppList();
     if (appId != undefined && appId != null) {
       getApp(appId).then((response) => {
@@ -1197,7 +1188,7 @@ export default {
       this.loading = true;
       let queryParams = {};
       queryParams.params = {};
-      queryParams.authType = '0';
+      queryParams.authType = "0";
       listApp(queryParams).then((response) => {
         this.appList = response.rows;
         for (let app of this.appList) {
@@ -1212,12 +1203,11 @@ export default {
       this.app = this.appMap[appId];
       let queryParams = {};
       if (this.app) {
-          queryParams.appId = this.app.appId;
-          listCardTemplate(queryParams).then((response) => {
+        queryParams.appId = this.app.appId;
+        listCardTemplate(queryParams).then((response) => {
           this.cardTemplateList = response.rows;
         });
       }
-      
     },
     changeSearchApp(appId) {
       this.loading = true;

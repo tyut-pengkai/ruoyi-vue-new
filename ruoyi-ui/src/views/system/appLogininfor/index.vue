@@ -5,7 +5,6 @@
       ref="queryForm"
       :inline="true"
       :model="queryParams"
-      label-width="68px"
     >
       <el-form-item label="用户名" prop="userName">
         <el-input
@@ -34,7 +33,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="登录IP地址" prop="ipaddr">
+      <el-form-item label="登录IP" prop="ipaddr">
         <el-input
           v-model="queryParams.ipaddr"
           clearable
@@ -185,8 +184,7 @@
           type="danger"
           @click="handleClean"
         >清空
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -225,7 +223,7 @@
       />
       <!-- <el-table-column align="center" label="用户ID" prop="appUserId"/> -->
       <el-table-column align="center" label="APP名" prop="appName"/>
-      <el-table-column align="center" label="登录IP地址" prop="ipaddr"/>
+      <el-table-column align="center" label="登录IP" prop="ipaddr"/>
       <el-table-column align="center" label="APP版本" prop="appVersion"/>
       <el-table-column align="center" label="登录地点" prop="loginLocation"/>
       <el-table-column align="center" label="设备码" prop="deviceCode"/>

@@ -1,6 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch">
+    <el-form
+      v-show="showSearch"
+      ref="queryForm"
+      :inline="true"
+      :model="queryParams"
+    >
       <el-form-item label="所属软件" prop="appId">
         <el-select
           v-model="queryParams.appId"
@@ -108,7 +113,12 @@
         />
       </el-form-item> -->
       <el-form-item label="是否上架" prop="onSale">
-        <el-select v-model="queryParams.onSale" placeholder="请选择是否上架" clearable size="small">
+        <el-select
+          v-model="queryParams.onSale"
+          clearable
+          placeholder="请选择是否上架"
+          size="small"
+        >
           <el-option
             v-for="dict in dict.type.sys_yes_no"
             :key="dict.value"
@@ -137,7 +147,12 @@
         />
       </el-form-item> -->
       <el-form-item label="类别状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择单码类别状态" clearable size="small">
+        <el-select
+          v-model="queryParams.status"
+          clearable
+          placeholder="请选择单码类别状态"
+          size="small"
+        >
           <el-option
             v-for="dict in dict.type.sys_normal_disable"
             :key="dict.value"
@@ -147,7 +162,12 @@
         </el-select>
       </el-form-item>
       <el-form-item label="自动生成" prop="enableAutoGen">
-        <el-select v-model="queryParams.enableAutoGen" placeholder="请选择是否允许自动生成" clearable size="small">
+        <el-select
+          v-model="queryParams.enableAutoGen"
+          clearable
+          placeholder="请选择是否允许自动生成"
+          size="small"
+        >
           <el-option
             v-for="dict in dict.type.sys_yes_no"
             :key="dict.value"
@@ -157,8 +177,18 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          icon="el-icon-search"
+          size="mini"
+          type="primary"
+          @click="handleQuery"
+        >搜索
+        </el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+        >重置
+        </el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -171,7 +201,9 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:loginCodeTemplate:add']"
-        >新增</el-button>
+        >新增
+        </el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -182,7 +214,9 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:loginCodeTemplate:edit']"
-        >修改</el-button>
+        >修改
+        </el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -193,7 +227,9 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:loginCodeTemplate:remove']"
-        >删除</el-button>
+        >删除
+        </el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -203,19 +239,24 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:loginCodeTemplate:export']"
-        >导出</el-button>
+        >导出
+        </el-button
+        >
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+      ></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="loginCodeTemplateList" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="loginCodeTemplateList"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column label="" type="index" align="center"/>
       <el-table-column
-        type="selection"
-        width="55"
-        align="center"
-      />
-      <el-table-column label="" type="index" align="center" />
-     <el-table-column
         label="所属软件"
         align="center"
         :show-overflow-tooltip="true"
@@ -224,7 +265,7 @@
           {{ scope.row.app.appName }}
         </template>
       </el-table-column>
-     <el-table-column
+      <el-table-column
         label="单码名称"
         align="center"
         prop="cardName"
@@ -257,17 +298,25 @@
       </el-table-column> -->
       <el-table-column label="自动生成" align="center" prop="enableAutoGen">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.enableAutoGen"/>
+          <dict-tag
+            :options="dict.type.sys_yes_no"
+            :value="scope.row.enableAutoGen"
+          />
         </template>
       </el-table-column>
-       <el-table-column label="类别状态" align="center" prop="status">
+      <el-table-column align="center" label="类别状态" prop="status">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
+          <dict-tag
+            :options="dict.type.sys_normal_disable"
+            :value="scope.row.status"
+          />
         </template>
       </el-table-column>
-       <el-table-column label="单码面值" align="center" prop="quota">
+      <el-table-column align="center" label="单码面值" prop="quota">
         <template slot-scope="scope">
-          <span>{{ parseSeconds(scope.row.app.billType, scope.row.quota) }}</span>
+          <span>{{
+              parseSeconds(scope.row.app.billType, scope.row.quota)
+            }}</span>
         </template>
       </el-table-column>
       <el-table-column label="销售价格" align="center" prop="price">
@@ -281,13 +330,13 @@
       <el-table-column label="有效期" align="center" prop="effectiveDuration">
         <template slot-scope="scope">
           <span>{{
-            scope.row.effectiveDuration >= 0
-              ? parseSeconds('0', scope.row.effectiveDuration)
-              : "长期有效"
-          }}</span>
+              scope.row.effectiveDuration >= 0
+                ? parseSeconds("0", scope.row.effectiveDuration)
+                : "长期有效"
+            }}</span>
         </template>
       </el-table-column>
-     <!-- <el-table-column
+      <!-- <el-table-column
         label="创建时间"
         align="center"
         prop="createTime"
@@ -297,8 +346,13 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="130">
+      <el-table-column label="备注" align="center" prop="remark"/>
+      <el-table-column
+        align="center"
+        class-name="small-padding fixed-width"
+        label="操作"
+        width="130"
+      >
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -306,20 +360,24 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:loginCodeTemplate:edit']"
-          >修改</el-button>
+          >修改
+          </el-button
+          >
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:loginCodeTemplate:remove']"
-          >删除</el-button>
+          >删除
+          </el-button
+          >
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -372,9 +430,7 @@
                     :value="app.billType"
                   />
                 </div>
-                <div v-else>
-                  请先选择软件
-                </div>
+                <div v-else>请先选择软件</div>
               </el-form-item>
             </el-col>
           </el-form-item>
@@ -425,9 +481,7 @@
                     <span style="margin-left: 6px">点</span>
                   </div>
                 </div>
-                <div v-else >
-                  请先选择软件
-                </div>
+                <div v-else>请先选择软件</div>
               </el-form-item>
             </el-col>
           </div>
@@ -689,7 +743,13 @@
 </template>
 
 <script>
-import { listLoginCodeTemplate, getLoginCodeTemplate, delLoginCodeTemplate, addLoginCodeTemplate, updateLoginCodeTemplate } from "@/api/system/loginCodeTemplate";
+import {
+  addLoginCodeTemplate,
+  delLoginCodeTemplate,
+  getLoginCodeTemplate,
+  listLoginCodeTemplate,
+  updateLoginCodeTemplate,
+} from "@/api/system/loginCodeTemplate";
 import {getApp, listApp} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
@@ -697,13 +757,8 @@ import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
 
 export default {
   name: "LoginCodeTemplate",
-  dicts: [
-    "sys_gen_rule",
-    "sys_yes_no",
-    "sys_normal_disable",
-    "sys_bill_type",
-    ],
-  components: { DateDuration, Updown },
+  dicts: ["sys_gen_rule", "sys_yes_no", "sys_normal_disable", "sys_bill_type"],
+  components: {DateDuration, Updown},
   data() {
     return {
       appList: [],
@@ -743,47 +798,46 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        appId: [
-          { required: true, message: "软件不能为空", trigger: "blur" },
-        ],
+        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
         cardName: [
-          { required: true, message: "类别名称不能为空", trigger: "blur" }
+          {required: true, message: "类别名称不能为空", trigger: "blur"},
         ],
-        quota: [
-          { required: true, message: "额度不能为空", trigger: "blur" }
-        ],
-        price: [
-          { required: true, message: "价格不能为空", trigger: "blur" }
-        ],
+        quota: [{required: true, message: "额度不能为空", trigger: "blur"}],
+        price: [{required: true, message: "价格不能为空", trigger: "blur"}],
         cardNoLen: [
-          { required: true, message: "单码长度不能为空", trigger: "blur" }
+          {required: true, message: "单码长度不能为空", trigger: "blur"},
         ],
         cardNoGenRule: [
-          { required: true, message: "单码生成规则不能为空", trigger: "blur" }
+          {required: true, message: "单码生成规则不能为空", trigger: "blur"},
         ],
         cardNoRegex: [
-          { required: false, message: "单码正则不能为空", trigger: "blur" }
+          {required: false, message: "单码正则不能为空", trigger: "blur"},
         ],
         onSale: [
-          { required: true, message: "是否上架不能为空", trigger: "change" }
+          {required: true, message: "是否上架不能为空", trigger: "change"},
         ],
         firstStock: [
-          { required: true, message: "优先库存不能为空", trigger: "change" }
+          {required: true, message: "优先库存不能为空", trigger: "change"},
         ],
         effectiveDuration: [
-          { required: true, message: "有效时长不能为空", trigger: "blur" }
+          {required: true, message: "有效时长不能为空", trigger: "blur"},
         ],
         status: [
-          { required: true, message: "单码类别状态不能为空", trigger: "blur" }
+          {required: true, message: "单码类别状态不能为空", trigger: "blur"},
         ],
         enableAutoGen: [
-          { required: true, message: "允许自动生成不能为空", trigger: "change" }
+          {
+            required: true,
+            message: "允许自动生成不能为空",
+            trigger: "change",
+          },
         ],
-      }
+      },
     };
   },
   created() {
-    const appId = this.$route.params && this.$route.params.appId;
+    // const appId = this.$route.params && this.$route.params.appId;
+    const appId = this.$route.query && this.$route.query.appId;
     this.getAppList();
     if (appId != undefined && appId != null) {
       getApp(appId).then((response) => {
@@ -808,7 +862,7 @@ export default {
       if (this.app) {
         this.queryParams.appId = this.app.appId;
       }
-      listLoginCodeTemplate(this.queryParams).then(response => {
+      listLoginCodeTemplate(this.queryParams).then((response) => {
         this.loginCodeTemplateList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -854,9 +908,9 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.templateId)
-      this.single = selection.length!==1
-      this.multiple = !selection.length
+      this.ids = selection.map((item) => item.templateId);
+      this.single = selection.length !== 1;
+      this.multiple = !selection.length;
     },
     /** 新增按钮操作 */
     handleAdd() {
@@ -870,8 +924,8 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const templateId = row.templateId || this.ids
-      getLoginCodeTemplate(templateId).then(response => {
+      const templateId = row.templateId || this.ids;
+      getLoginCodeTemplate(templateId).then((response) => {
         this.form = response.data;
         this.open = true;
         this.title = "修改单码类别";
@@ -879,17 +933,17 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.templateId != null) {
-            updateLoginCodeTemplate(this.form).then(response => {
+            updateLoginCodeTemplate(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
             this.form.appId = this.app.appId;
-            addLoginCodeTemplate(this.form).then(response => {
+            addLoginCodeTemplate(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -901,18 +955,27 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const templateIds = row.templateId || this.ids;
-      this.$modal.confirm('是否确认删除单码类别编号为"' + templateIds + '"的数据项？').then(function() {
-        return delLoginCodeTemplate(templateIds);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      this.$modal
+        .confirm('是否确认删除单码类别编号为"' + templateIds + '"的数据项？')
+        .then(function () {
+          return delLoginCodeTemplate(templateIds);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {
+        });
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/loginCodeTemplate/export', {
-        ...this.queryParams
-      }, `loginCodeTemplate_${new Date().getTime()}.xlsx`)
+      this.download(
+        "system/loginCodeTemplate/export",
+        {
+          ...this.queryParams,
+        },
+        `loginCodeTemplate_${new Date().getTime()}.xlsx`
+      );
     },
     handleQuota(totalSeconds) {
       this.form.quota = totalSeconds;
@@ -935,7 +998,7 @@ export default {
       this.loading = true;
       let queryParams = {};
       queryParams.params = {};
-      queryParams.authType = '1';
+      queryParams.authType = "1";
       listApp(queryParams).then((response) => {
         this.appList = response.rows;
         for (let app of this.appList) {
@@ -953,6 +1016,6 @@ export default {
       this.getList();
       this.loading = false;
     },
-  }
+  },
 };
 </script>
