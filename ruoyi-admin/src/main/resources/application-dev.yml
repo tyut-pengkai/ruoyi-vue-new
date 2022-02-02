@@ -1,5 +1,5 @@
 server:
-  projectName: ${ruoyi.name}[生产环境]
+  projectName: ${ruoyi.name}[开发环境]
   demo:
     enable: false
     denyOperation:
@@ -66,4 +66,4 @@ swagger:
   # 是否开启swagger
   enabled: true
   # 请求前缀 prod-api/dev-api
-  pathMapping: /prod-api
+  pathMapping: /dev-api

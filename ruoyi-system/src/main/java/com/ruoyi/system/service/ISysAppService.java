@@ -85,8 +85,16 @@ public interface ISysAppService {
 
     /**
      * 检查软件名称唯一性
+     *
      * @param appName
      * @return
      */
     String checkAppNameUnique(String appName, Long appId);
+
+    /**
+     * 设置ApiUrl
+     *
+     * @param app
+     */
+    public void setApiUrl(SysApp app);
 }

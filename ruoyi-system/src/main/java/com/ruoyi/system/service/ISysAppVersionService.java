@@ -1,6 +1,7 @@
 package com.ruoyi.system.service;
 
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -78,4 +79,13 @@ public interface ISysAppVersionService {
      * @return 强制更新到的最新版本信息
      */
     public SysAppVersion selectLatestVersionForceUpdateByAppId(Long appId);
+
+    /**
+     * 快速接入系统
+     *
+     * @param file
+     * @param versionId
+     * @return
+     */
+    public String quickAccess(MultipartFile file, Long versionId, boolean updateMd5);
 }

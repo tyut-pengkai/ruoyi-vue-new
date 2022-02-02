@@ -12,6 +12,7 @@ import com.ruoyi.system.service.ISysAppVersionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -96,5 +97,12 @@ public class SysAppVersionController extends BaseController {
     @DeleteMapping("/{appVersionIds}")
     public AjaxResult remove(@PathVariable Long[] appVersionIds) {
         return toAjax(sysAppVersionService.deleteSysAppVersionByAppVersionIds(appVersionIds));
+    }
+
+    // @Log(title = "用户管理", businessType = BusinessType.IMPORT)
+    // @PreAuthorize("@ss.hasPermi('system:user:import')")
+    @PostMapping("/quickAccess")
+    public AjaxResult quickAccess(MultipartFile file, Long versionId, boolean updateMd5) throws Exception {
+        return AjaxResult.success(sysAppVersionService.quickAccess(file, versionId, updateMd5));
     }
 }

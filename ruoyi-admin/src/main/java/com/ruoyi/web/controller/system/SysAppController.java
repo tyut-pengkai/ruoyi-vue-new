@@ -12,17 +12,14 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.EncrypType;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.service.ISysAppService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
@@ -40,12 +37,6 @@ public class SysAppController extends BaseController {
 //    private int port;
 
     /**
-     * 设置请求的统一前缀
-     */
-    @Value("${swagger.pathMapping}")
-    private String pathMapping;
-
-    /**
      * 查询软件列表
      */
     @PreAuthorize("@ss.hasPermi('system:app:list')")
@@ -54,7 +45,7 @@ public class SysAppController extends BaseController {
         startPage();
         List<SysApp> list = sysAppService.selectSysAppList(sysApp);
         for (SysApp app : list) {
-            setApiUrl(app);
+            sysAppService.setApiUrl(app);
         }
         return getDataTable(list);
     }
@@ -68,7 +59,7 @@ public class SysAppController extends BaseController {
     public AjaxResult export(SysApp sysApp) {
         List<SysApp> list = sysAppService.selectSysAppList(sysApp);
         for (SysApp app : list) {
-            setApiUrl(app);
+            sysAppService.setApiUrl(app);
         }
         ExcelUtil<SysApp> util = new ExcelUtil<SysApp>(SysApp.class);
         return util.exportExcel(list, "软件数据");
@@ -81,7 +72,7 @@ public class SysAppController extends BaseController {
     @GetMapping(value = "/{appId}")
     public AjaxResult getInfo(@PathVariable("appId") Long appId) {
         SysApp sysApp = sysAppService.selectSysAppByAppId(appId);
-        setApiUrl(sysApp);
+        sysAppService.setApiUrl(sysApp);
         // 设置API加密
         List<Map<String, String>> enApiList = new ArrayList<>();
         Map<String, Api> apis = ApiDefine.apiMap;
@@ -129,7 +120,7 @@ public class SysAppController extends BaseController {
         sysApp.setCreateTime(DateUtils.getNowDate());
         sysApp.setAppKey(RandomStringUtils.randomAlphanumeric(32));
         sysApp.setAppSecret(RandomStringUtils.randomAlphanumeric(32));
-        setApiUrl(sysApp);
+        sysAppService.setApiUrl(sysApp);
         sysApp.setDelFlag("0");
         return toAjax(sysAppService.insertSysApp(sysApp));
     }
@@ -186,14 +177,5 @@ public class SysAppController extends BaseController {
     public AjaxResult changeChargeStatus(@RequestBody SysApp app) {
         app.setUpdateBy(getUsername());
         return toAjax(sysAppService.updateSysAppChargeStatus(app));
-    }
-
-    public void setApiUrl(SysApp app) {
-        HttpServletRequest request = ServletUtils.getRequest();
-        app.setApiUrl(request.getScheme() + "://" + request.getServerName()
-//                + ("80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort())
-                + ("80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort()) + pathMapping
-//                + ("80".equals(String.valueOf(port)) ? "" : ":" + port)
-                + "/api/v1/" + app.getAppKey());
     }
 }

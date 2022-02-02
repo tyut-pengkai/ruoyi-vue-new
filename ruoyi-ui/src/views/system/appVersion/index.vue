@@ -345,11 +345,18 @@
     >
       <el-upload
         ref="upload"
-        :action="upload.url"
+        :action="
+          upload.url +
+          '?versionId=' +
+          upload.quickAccessVersionId +
+          '&updateMd5=' +
+          upload.updateMd5
+        "
         :auto-upload="false"
         :disabled="upload.isUploading"
         :headers="upload.headers"
         :limit="1"
+        :before-upload="onBeforeUpload"
         :on-progress="handleFileUploadProgress"
         :on-success="handleFileSuccess"
         accept=".exe"
@@ -358,11 +365,13 @@
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div slot="tip" class="el-upload__tip text-center">
-          <!-- <div class="el-upload__tip" slot="tip">
-            <el-checkbox v-model="upload.updateSupport" />
-            是否更新已经存在的用户数据
-          </div> -->
-          <span>仅允许导入exe格式文件。</span>
+          <div slot="tip" class="el-upload__tip">
+            <el-checkbox v-model="upload.updateMd5"/>
+            是否更新MD5(不会清除已有MD5设置)
+          </div>
+          <span style="margin-top: 5px"
+          >仅允许导入exe格式文件（20M以下）。</span
+          >
           <!-- <el-link
             type="primary"
             :underline="false"
@@ -462,6 +471,10 @@ export default {
         headers: {Authorization: "Bearer " + getToken()},
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/system/appVersion/quickAccess",
+        // 当前操作的版本ID
+        quickAccessVersionId: null,
+        // 是否自动更新MD5
+        updateMd5: true,
       },
     };
   },
@@ -610,9 +623,10 @@ export default {
         });
     },
     /** 导入按钮操作 */
-    handleImport() {
+    handleImport(row) {
       this.upload.title = "快速接入";
       this.upload.open = true;
+      this.upload.quickAccessVersionId = row.appVersionId;
     },
     // 文件上传中处理
     handleFileUploadProgress(event, file, fileList) {
@@ -620,20 +634,25 @@ export default {
     },
     // 文件上传成功处理
     handleFileSuccess(response, file, fileList) {
+      console.log(response);
       this.upload.open = false;
       this.upload.isUploading = false;
       this.$refs.upload.clearFiles();
-      this.$alert(
-        "<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" +
-        response.msg +
-        "</div>",
-        "导入结果",
-        {dangerouslyUseHTMLString: true}
-      );
+      this.exportLoading = true;
+      this.$download.name(response.msg);
+      this.exportLoading = false;
     },
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit();
+    },
+    // 校验文件
+    onBeforeUpload(file) {
+      const isLt1M = file.size / 1024 / 1024 < 20;
+      if (!isLt1M) {
+        this.$message.error("上传文件大小不能超过 20MB!");
+      }
+      return isLt1M;
     },
   },
 };

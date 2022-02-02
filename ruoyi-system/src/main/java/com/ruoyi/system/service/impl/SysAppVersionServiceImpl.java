@@ -1,12 +1,25 @@
 package com.ruoyi.system.service.impl;
 
+import cn.hutool.core.util.ArrayUtil;
+import com.alibaba.fastjson.JSON;
+import com.ruoyi.common.config.RuoYiConfig;
+import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.PathUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.mapper.SysAppVersionMapper;
+import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppVersionService;
+import lombok.Data;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -20,6 +33,8 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
 
     @Resource
     private SysAppVersionMapper sysAppVersionMapper;
+    @Resource
+    private ISysAppService sysAppService;
 
     /**
      * 查询软件版本信息
@@ -117,5 +132,101 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     @Override
     public SysAppVersion selectLatestVersionForceUpdateByAppId(Long appId) {
         return sysAppVersionMapper.selectLatestVersionForceUpdateByAppId(appId);
+    }
+
+    /**
+     * 快速接入系统
+     *
+     * @param file
+     * @param versionId
+     * @return
+     */
+    @Override
+    public String quickAccess(MultipartFile file, Long versionId, boolean updateMd5) {
+        try {
+            // 封装
+            byte[] bytes = file.getBytes();
+            SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(versionId);
+            bytes = quickAccessHandle(bytes, version);
+            // 生成文件
+            String filename = rename(file.getOriginalFilename(), version.getVersionName());
+            String filePath = RuoYiConfig.getDownloadPath() + filename;
+            File desc = new File(filePath);
+            if (!desc.getParentFile().exists()) {
+                desc.getParentFile().mkdirs();
+            }
+            assert bytes != null;
+            FileUtils.writeByteArrayToFile(desc, bytes);
+            // 更新MD5
+            if (updateMd5) {
+                String md5 = version.getMd5();
+                String md5New = DigestUtils.md5Hex(bytes);
+                if (StringUtils.isBlank(md5)) {
+                    md5 = md5New;
+                } else {
+                    if (md5.endsWith("|")) {
+                        md5 += md5New;
+                    } else {
+                        md5 += "|" + md5New;
+                    }
+                }
+                SysAppVersion versionNew = new SysAppVersion();
+                versionNew.setAppVersionId(versionId);
+                versionNew.setMd5(md5);
+                updateSysAppVersion(versionNew);
+            }
+            return filename;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private byte[] quickAccessHandle(byte[] bytes, SysAppVersion version) {
+        try {
+            SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
+            sysAppService.setApiUrl(app);
+            byte[] split = "||||".getBytes();
+            AppParamVo apv = new AppParamVo();
+            apv.setApiUrl(app.getApiUrl());
+            apv.setAppSecret(app.getAppSecret());
+            apv.setVersionNo(version.getVersionNo().toString());
+            apv.setDataInEnc(app.getDataInEnc().getCode());
+            apv.setDataInPwd(app.getDataInPwd());
+            apv.setDataOutEnc(app.getDataOutEnc().getCode());
+            apv.setDataOutPwd(app.getDataOutPwd());
+            byte[] apvBytes = JSON.toJSONString(apv).getBytes();
+            byte[] tplBytes = FileUtils.readFileToByteArray(new File(PathUtils.getUserPath() + "\\quickAccessTemplate.exe"));
+            return ArrayUtil.addAll(tplBytes, split, apvBytes, split, bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String rename(String filename, String append) {
+        if (filename != null) {
+            // split用的是正则，所以需要用 //. 来做分隔符
+            String[] split = filename.split("\\.");
+            //注意判断截取后的数组长度，数组最后一个元素是后缀名
+            if (split.length > 1) {
+                // String[] nameArr = new String[split.length - 1];
+                // System.arraycopy(split, 0, nameArr, 0, split.length - 1);
+                // String joinedName = String.join(".", nameArr);
+                return "_" + "." + (append.replaceAll("\\.", "_")) + "." + split[split.length - 1];
+            }
+        }
+        return "_." + append + ".exe";
+    }
+
+    @Data
+    class AppParamVo {
+        private String apiUrl;
+        private String appSecret;
+        private String versionNo;
+        private String dataInEnc;
+        private String dataInPwd;
+        private String dataOutEnc;
+        private String dataOutPwd;
     }
 }

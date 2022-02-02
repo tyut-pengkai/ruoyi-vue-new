@@ -1293,7 +1293,7 @@ export default {
     handleAppUser: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/user",
+        path: "/app/appUser",
         query: {
           appId: appId,
         },

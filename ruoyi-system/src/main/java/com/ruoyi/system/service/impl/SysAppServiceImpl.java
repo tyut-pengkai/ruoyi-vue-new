@@ -8,14 +8,17 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.license.bo.LicenseCheckModel;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.mapper.SysAppMapper;
 import com.ruoyi.system.service.ISysAppService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -30,6 +33,11 @@ public class SysAppServiceImpl implements ISysAppService {
     private SysAppMapper sysAppMapper;
     @Resource
     private RedisCache redisCache;
+    /**
+     * 设置请求的统一前缀
+     */
+    @Value("${swagger.pathMapping}")
+    private String pathMapping;
 
     @PostConstruct
     public void init() {
@@ -175,10 +183,21 @@ public class SysAppServiceImpl implements ISysAppService {
     @Override
     public String checkAppNameUnique(String appName, Long appId) {
         int count = sysAppMapper.checkAppNameUnique(appName, appId);
-        if (count > 0)
-        {
+        if (count > 0) {
             return UserConstants.NOT_UNIQUE;
         }
         return UserConstants.UNIQUE;
+    }
+
+    /**
+     * 设置ApiUrl
+     *
+     * @param app
+     */
+    public void setApiUrl(SysApp app) {
+        HttpServletRequest request = ServletUtils.getRequest();
+        String port = "80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort();
+        port = pathMapping.contains("dev") ? "" : port;
+        app.setApiUrl(request.getScheme() + "://" + request.getServerName() + port + pathMapping + "/api/v1/" + app.getAppKey());
     }
 }

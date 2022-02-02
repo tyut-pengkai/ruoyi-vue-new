@@ -19,7 +19,7 @@ ruoyi:
   # 实例演示开关
   demoEnabled: true
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: /home/ruoyi/uploadPath
+  profile: D:/ruoyi/uploadPath
   # 获取ip地址开关
   addressEnabled: true
   # 验证码类型 math 数组计算 char 字符验证
@@ -56,7 +56,7 @@ spring:
     # 国际化资源文件路径
     basename: i18n/messages
   profiles:
-    active: demo
+    active: dev
   # 文件上传
   servlet:
      multipart:
@@ -116,17 +116,10 @@ mybatis-plus:
     banner: false
 
 # PageHelper分页插件
-pagehelper: 
+pagehelper:
   helperDialect: mysql
   supportMethodsArguments: true
-  params: count=countSql 
-
-# Swagger配置
-swagger:
-  # 是否开启swagger
-  enabled: true
-  # 请求前缀
-  pathMapping: /prod-api
+  params: count=countSql
 
 # 防止XSS攻击
 xss: 
