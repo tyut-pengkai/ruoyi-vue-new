@@ -164,10 +164,12 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                 if (StringUtils.isBlank(md5)) {
                     md5 = md5New;
                 } else {
-                    if (md5.endsWith("|")) {
-                        md5 += md5New;
-                    } else {
-                        md5 += "|" + md5New;
+                    if (!md5.contains(md5New)) {
+                        if (md5.endsWith("|")) {
+                            md5 += md5New;
+                        } else {
+                            md5 += "|" + md5New;
+                        }
                     }
                 }
                 SysAppVersion versionNew = new SysAppVersion();

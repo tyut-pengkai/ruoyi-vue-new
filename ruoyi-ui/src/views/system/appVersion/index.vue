@@ -634,13 +634,10 @@ export default {
     },
     // 文件上传成功处理
     handleFileSuccess(response, file, fileList) {
-      console.log(response);
+      this.$download.name(response.msg);
       this.upload.open = false;
       this.upload.isUploading = false;
       this.$refs.upload.clearFiles();
-      this.exportLoading = true;
-      this.$download.name(response.msg);
-      this.exportLoading = false;
     },
     // 提交上传文件
     submitFileForm() {
