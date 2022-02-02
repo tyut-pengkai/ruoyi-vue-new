@@ -186,7 +186,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         try {
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
             sysAppService.setApiUrl(app);
-            byte[] split = "||||".getBytes();
+            byte[] split = "|*@#||*@#|".getBytes();
             AppParamVo apv = new AppParamVo();
             apv.setApiUrl(app.getApiUrl());
             apv.setAppSecret(app.getAppSecret());
