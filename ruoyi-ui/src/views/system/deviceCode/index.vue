@@ -124,13 +124,14 @@
       :data="deviceCodeList"
       @selection-change="handleSelectionChange"
     >
+      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" label="" type="index"/>
       <el-table-column
-        type="selection"
-        width="55"
+        :show-overflow-tooltip="true"
         align="center"
+        label="设备码"
+        prop="deviceCode"
       />
-      <el-table-column label="" type="index" align="center" />
-      <el-table-column label="设备码" align="center" prop="deviceCode" />
       <el-table-column
         label="最后登录时间"
         align="center"
@@ -228,8 +229,7 @@
               :key="dict.value"
               :label="dict.value"
             >{{ dict.label }}
-            </el-radio
-            >
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -242,18 +242,16 @@
         <div v-if="form.deviceCodeId">
           <el-form-item>
             <el-col :span="12">
-              <el-form-item label="创建人" prop="createBy">{{
-                  form.createBy
-                }}
+              <el-form-item label="创建人" prop="createBy"
+              >{{ form.createBy }}
               </el-form-item>
               <el-form-item label="创建时间" prop="createTime"
               >{{ form.createTime }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="最后更新" prop="updateBy">{{
-                  form.updateBy
-                }}
+              <el-form-item label="最后更新" prop="updateBy"
+              >{{ form.updateBy }}
               </el-form-item>
               <el-form-item label="更新时间" prop="updateTime"
               >{{ form.updateTime }}

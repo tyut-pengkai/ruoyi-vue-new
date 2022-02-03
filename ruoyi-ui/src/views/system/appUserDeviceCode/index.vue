@@ -126,7 +126,12 @@
     >
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="" type="index"/>
-      <el-table-column label="设备码" align="center" prop="deviceCode">
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="设备码"
+        prop="deviceCode"
+      >
         <template slot-scope="scope">
           <span>{{ scope.row.deviceCode.deviceCode }}</span>
         </template>
@@ -336,14 +341,14 @@ export default {
     if (appUserId != undefined && appUserId != null) {
       getAppUser(appUserId).then((response) => {
         this.appUser = response.data;
-        const title = "设备码管理";
-        const appName = this.appUser.app.appName;
-        const appUserName =
-          this.appUser.user.nickName + "(" + this.appUser.user.userName + ")";
-        const route = Object.assign({}, this.$route, {
-          title: `${title}-${appName}-${appUserName}`,
-        });
-        this.$store.dispatch("tagsView/updateVisitedView", route);
+        // const title = "设备码管理";
+        // const appName = this.appUser.app.appName;
+        // const appUserName =
+        //   this.appUser.user.nickName + "(" + this.appUser.user.userName + ")";
+        // const route = Object.assign({}, this.$route, {
+        //   title: `${title}-${appName}-${appUserName}`,
+        // });
+        // this.$store.dispatch("tagsView/updateVisitedView", route);
         this.getList();
       });
     } else {

@@ -293,7 +293,12 @@
         prop="cardName"
         :show-overflow-tooltip="true"
       />
-      <el-table-column label="单码" align="center" prop="cardNo">
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="单码"
+        prop="cardNo"
+      >
         <template slot-scope="scope">
           <span>{{ scope.row.cardNo }} </span>
         </template>
@@ -831,10 +836,10 @@ export default {
           {required: true, message: "过期时间不能为空", trigger: "blur"},
         ],
         isSold: [
-          { required: true, message: "是否售出不能为空", trigger: "change" },
+          {required: true, message: "是否售出不能为空", trigger: "change"},
         ],
         onSale: [
-          { required: true, message: "是否上架不能为空", trigger: "change" },
+          {required: true, message: "是否上架不能为空", trigger: "change"},
         ],
         isCharged: [
           { required: true, message: "是否被充值不能为空", trigger: "change" },
