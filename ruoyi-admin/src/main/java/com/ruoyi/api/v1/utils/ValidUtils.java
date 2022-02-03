@@ -49,7 +49,7 @@ public class ValidUtils {
             throw new ApiException(ErrorCode.ERROR_ACCOUNT_NOT_EXIST, "软件：" + app.getAppName() + " 已被删除");
         } else if (UserStatus.DISABLE.getCode().equals(app.getStatus())) {
             log.info("软件：{} 已被停用.", app.getAppName());
-            throw new ApiException(ErrorCode.ERROR_APP_OFF, "软件：" + app.getAppName() + " 已停用");
+            throw new ApiException(ErrorCode.ERROR_APP_OFF, "软件：" + app.getAppName() + " 正在维护中" + (StringUtils.isBlank(app.getOffNotice()) ? "" : "，详情：" + app.getOffNotice()));
         }
     }
 

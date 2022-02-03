@@ -916,7 +916,10 @@ export default {
     handleAppUserDeviceCode: function (row) {
       const appUserId = row.appUserId;
       this.$router.push({
-        path: "/app/appUserDeviceCode/" + appUserId,
+        path: "/app/appUserDeviceCode",
+        query: {
+          appUserId: appUserId,
+        },
       });
     },
     // 更多操作触发

@@ -1125,7 +1125,7 @@ export default {
     },
     // 软件状态修改
     handleStatusChange(row) {
-      let text = row.status === "0" ? "启用" : "停用";
+      let text = row.status === "0" ? "启用" : "停用（切换为维护状态）";
       this.$modal
         .confirm('确认要"' + text + '""' + row.appName + '"软件吗？')
         .then(function () {

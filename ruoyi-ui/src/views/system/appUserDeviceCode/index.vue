@@ -124,12 +124,8 @@
       :data="appUserDeviceCodeList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        type="selection"
-        width="55"
-        align="center"
-      />
-      <el-table-column label="" type="index" align="center"/>
+      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" label="" type="index"/>
       <el-table-column label="设备码" align="center" prop="deviceCode">
         <template slot-scope="scope">
           <span>{{ scope.row.deviceCode.deviceCode }}</span>
@@ -167,7 +163,7 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark"/>
+      <el-table-column align="center" label="备注" prop="remark"/>
       <el-table-column
         label="操作"
         align="center"
@@ -335,7 +331,8 @@ export default {
     };
   },
   created() {
-    const appUserId = this.$route.params && this.$route.params.appUserId;
+    // const appUserId = this.$route.params && this.$route.params.appUserId;
+    const appUserId = this.$route.query && this.$route.query.appUserId;
     if (appUserId != undefined && appUserId != null) {
       getAppUser(appUserId).then((response) => {
         this.appUser = response.data;
