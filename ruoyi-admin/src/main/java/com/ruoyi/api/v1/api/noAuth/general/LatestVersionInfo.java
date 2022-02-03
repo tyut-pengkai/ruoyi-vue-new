@@ -9,15 +9,15 @@ import com.ruoyi.system.service.ISysAppVersionService;
 
 import javax.annotation.Resource;
 
-public class LatestVersion extends Function {
+public class LatestVersionInfo extends Function {
 
     @Resource
     private ISysAppVersionService appVersionService;
 
     @Override
     public void init() {
-        this.setApi(new Api("latestVersion.ng", "获取软件最新版本", false, Constants.API_TAG_GENERAL,
-                "获取软件最新版本", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL));
+        this.setApi(new Api("latestVersionInfo.ng", "获取最新版本信息", false, Constants.API_TAG_GENERAL,
+                "获取软件最新版本信息", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL));
     }
 
     @Override

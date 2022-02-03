@@ -9,14 +9,14 @@ import com.ruoyi.system.service.ISysAppVersionService;
 
 import javax.annotation.Resource;
 
-public class LatestVersionForceUpdate extends Function {
+public class LatestVersionInfoForceUpdate extends Function {
 
     @Resource
     private ISysAppVersionService appVersionService;
 
     @Override
     public void init() {
-        this.setApi(new Api("latestVersionForceUpdate.ng", "获取强制更新软件版本", false, Constants.API_TAG_GENERAL,
+        this.setApi(new Api("latestVersionInfoForceUpdate.ng", "获取强制更新版本信息", false, Constants.API_TAG_GENERAL,
                 "获取需要被强制更新到的最低软件版本，如果当前版本低于此版本，则应该启动强制更新策略", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL));
     }
 
