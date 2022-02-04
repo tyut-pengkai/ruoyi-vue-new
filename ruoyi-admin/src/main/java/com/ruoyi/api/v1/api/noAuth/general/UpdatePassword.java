@@ -20,7 +20,7 @@ public class UpdatePassword extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("updatePassword.ng", "修改账号密码", true, Constants.API_TAG_GENERAL,
+        this.setApi(new Api("updatePassword.ng", "修改账号密码", false, Constants.API_TAG_GENERAL,
                 "修改账号密码", new AuthType[]{AuthType.ACCOUNT}, Constants.BILL_TYPE_ALL,
                 new Param[]{
                         new Param("username", true, "账号"),
