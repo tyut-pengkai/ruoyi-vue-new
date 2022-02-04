@@ -23,6 +23,6 @@ public class LatestVersionInfoForceUpdate extends Function {
     @Override
     public Object handle() {
         SysAppVersion sysAppVersion = appVersionService.selectLatestVersionForceUpdateByAppId(getApp().getAppId());
-        return new SysAppVersionVo(sysAppVersion);
+        return sysAppVersion == null ? new SysAppVersionVo(new SysAppVersion()) : new SysAppVersionVo(sysAppVersion);
     }
 }
