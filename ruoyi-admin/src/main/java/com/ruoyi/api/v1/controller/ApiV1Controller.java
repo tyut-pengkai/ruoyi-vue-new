@@ -10,12 +10,14 @@ import com.ruoyi.api.v1.service.SwaggerService;
 import com.ruoyi.api.v1.service.SysAppLoginService;
 import com.ruoyi.api.v1.utils.ValidUtils;
 import com.ruoyi.api.v1.utils.encrypt.AesCbcZeroPaddingUtil;
+import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.enums.AuthType;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.StringUtils;
@@ -69,6 +71,7 @@ public class ApiV1Controller extends BaseController {
 //            @ApiImplicitParam(name = "appkey", value = "AppKey", paramType = "path", required = true, dataType = "String"),
 //            @ApiImplicitParam(name = "params", value = "接口需要的参数", paramType = "body", required = true, dataType = "Map")
 //    })
+    @Log(title = "API调用", businessType = BusinessType.CALL_API)
     public Object api(@PathVariable("appkey") String appkey, @RequestBody Map<String, String> params, HttpServletRequest request) {
         log.info("appkey: {}, 请求参数: {}", appkey, JSON.toJSON(params));
         // 检查软件是否存在

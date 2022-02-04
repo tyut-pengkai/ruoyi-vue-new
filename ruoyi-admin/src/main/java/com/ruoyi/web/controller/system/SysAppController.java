@@ -110,10 +110,10 @@ public class SysAppController extends BaseController {
         if (UserConstants.NOT_UNIQUE.equals(sysAppService.checkAppNameUnique(sysApp.getAppName(), null))) {
             return AjaxResult.error("新增软件'" + sysApp.getAppName() + "'失败，软件名称已存在");
         }
-        if (sysApp.getDataInEnc() != null && sysApp.getDataInEnc() != EncrypType.NONE && StringUtils.isBlank(sysApp.getDataInPwd())) {
+        if (sysApp.getDataInEnc() != null && sysApp.getDataInEnc() != EncrypType.NONE && sysApp.getDataInEnc() != EncrypType.BASE64 && StringUtils.isBlank(sysApp.getDataInPwd())) {
             return AjaxResult.error("新增软件'" + sysApp.getAppName() + "'失败，您设置了数据输入加密，但是未提供加密密码");
         }
-        if (sysApp.getDataOutEnc() != null && sysApp.getDataOutEnc() != EncrypType.NONE && StringUtils.isBlank(sysApp.getDataOutPwd())) {
+        if (sysApp.getDataOutEnc() != null && sysApp.getDataOutEnc() != EncrypType.NONE && sysApp.getDataOutEnc() != EncrypType.BASE64 && StringUtils.isBlank(sysApp.getDataOutPwd())) {
             return AjaxResult.error("新增软件'" + sysApp.getAppName() + "'失败，您设置了数据输出加密，但是未提供加密密码");
         }
         sysApp.setCreateBy(getUsername());
@@ -135,10 +135,10 @@ public class SysAppController extends BaseController {
         if (UserConstants.NOT_UNIQUE.equals(sysAppService.checkAppNameUnique(sysApp.getAppName(), sysApp.getAppId()))) {
             return AjaxResult.error("修改软件'" + sysApp.getAppName() + "'失败，软件名称已存在");
         }
-        if (sysApp.getDataInEnc() != null && sysApp.getDataInEnc() != EncrypType.NONE && StringUtils.isBlank(sysApp.getDataInPwd())) {
+        if (sysApp.getDataInEnc() != null && sysApp.getDataInEnc() != EncrypType.NONE && sysApp.getDataInEnc() != EncrypType.BASE64 && StringUtils.isBlank(sysApp.getDataInPwd())) {
             return AjaxResult.error("修改软件'" + sysApp.getAppName() + "'失败，您设置了数据输入加密，但是未提供加密密码");
         }
-        if (sysApp.getDataOutEnc() != null && sysApp.getDataOutEnc() != EncrypType.NONE && StringUtils.isBlank(sysApp.getDataOutPwd())) {
+        if (sysApp.getDataOutEnc() != null && sysApp.getDataOutEnc() != EncrypType.NONE && sysApp.getDataOutEnc() != EncrypType.BASE64 && StringUtils.isBlank(sysApp.getDataOutPwd())) {
             return AjaxResult.error("修改软件'" + sysApp.getAppName() + "'失败，您设置了数据输出加密，但是未提供加密密码");
         }
         sysApp.setUpdateBy(getUsername());

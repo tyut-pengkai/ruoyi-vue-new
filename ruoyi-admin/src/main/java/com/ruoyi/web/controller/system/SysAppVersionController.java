@@ -99,7 +99,7 @@ public class SysAppVersionController extends BaseController {
         return toAjax(sysAppVersionService.deleteSysAppVersionByAppVersionIds(appVersionIds));
     }
 
-    // @Log(title = "用户管理", businessType = BusinessType.IMPORT)
+    @Log(title = "快速接入", businessType = BusinessType.QUICK_ACCESS)
     // @PreAuthorize("@ss.hasPermi('system:user:import')")
     @PostMapping("/quickAccess")
     public AjaxResult quickAccess(MultipartFile file, Long versionId, boolean updateMd5) throws Exception {
