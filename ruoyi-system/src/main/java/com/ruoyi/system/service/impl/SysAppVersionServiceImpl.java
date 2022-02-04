@@ -147,9 +147,10 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             // 封装
             byte[] bytes = file.getBytes();
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(versionId);
+            SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
             bytes = quickAccessHandle(bytes, version);
             // 生成文件
-            String filename = rename(file.getOriginalFilename(), version.getVersionName());
+            String filename = rename(app.getAppName(), file.getOriginalFilename(), version.getVersionName());
             String filePath = RuoYiConfig.getDownloadPath() + filename;
             File desc = new File(filePath);
             if (!desc.getParentFile().exists()) {
@@ -206,19 +207,8 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         return null;
     }
 
-    private String rename(String filename, String append) {
-        if (filename != null) {
-            // split用的是正则，所以需要用 //. 来做分隔符
-            String[] split = filename.split("\\.");
-            //注意判断截取后的数组长度，数组最后一个元素是后缀名
-            if (split.length > 1) {
-                // String[] nameArr = new String[split.length - 1];
-                // System.arraycopy(split, 0, nameArr, 0, split.length - 1);
-                // String joinedName = String.join(".", nameArr);
-                return "_" + "." + (append.replaceAll("\\.", "_")) + "." + split[split.length - 1];
-            }
-        }
-        return "_." + append + ".exe";
+    private String rename(String appName, String filename, String versionName) {
+        return "__" + appName + "_" + (versionName.replaceAll("\\.", "_")) + ".exe";
     }
 
     @Data

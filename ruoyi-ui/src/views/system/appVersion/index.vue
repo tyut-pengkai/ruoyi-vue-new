@@ -386,6 +386,26 @@
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!--下载进度条-->
+    <el-dialog
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
+      :visible.sync="fileDown.loadDialogStatus"
+      title="正在下载，请等待"
+      width="20%"
+    >
+      <div style="text-align: center">
+        <el-progress
+          :percentage="fileDown.percentage"
+          type="circle"
+        ></el-progress>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="downloadClose">取消下载</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -400,6 +420,7 @@ import {
 } from "@/api/system/appVersion";
 import {getToken} from "@/utils/auth";
 import {getApp} from "@/api/system/app";
+import axios from "axios";
 
 export default {
   name: "AppVersion",
@@ -475,6 +496,14 @@ export default {
         quickAccessVersionId: null,
         // 是否自动更新MD5
         updateMd5: true,
+      },
+      fileDown: {
+        //弹出框控制的状态
+        loadDialogStatus: false,
+        //进度条的百分比
+        percentage: 0,
+        //取消下载时的资源对象
+        source: {},
       },
     };
   },
@@ -634,7 +663,8 @@ export default {
     },
     // 文件上传成功处理
     handleFileSuccess(response, file, fileList) {
-      this.$download.name(response.msg);
+      // this.$download.name(response.msg);
+      this.downFile(response.msg);
       this.upload.open = false;
       this.upload.isUploading = false;
       this.$refs.upload.clearFiles();
@@ -650,6 +680,93 @@ export default {
         this.$message.error("上传文件大小不能超过 20MB!");
       }
       return isLt1M;
+    },
+    downFile(name) {
+      //这里放参数
+      var param = {};
+      this.fileDown.loadDialogStatus = true;
+      this.fileDown.percentage = 0;
+      const instance = this.initInstance();
+      instance({
+        method: "get",
+        withCredentials: true,
+        url:
+          process.env.VUE_APP_BASE_API +
+          "/common/download?fileName=" +
+          encodeURI(name) +
+          "&delete=false",
+        params: param,
+        responseType: "blob",
+        headers: {Authorization: "Bearer " + getToken()},
+      })
+        .then((res) => {
+          this.fileDown.loadDialogStatus = false;
+          console.info(res);
+          const content = res.data;
+          if (content.size == 0) {
+            this.loadClose();
+            this.$modal.alert("下载失败");
+            return;
+          }
+          const blob = new Blob([content]);
+          const fileName = decodeURI(res.headers["download-filename"]); //替换文件名
+          if ("download" in document.createElement("a")) {
+            // 非IE下载
+            const elink = document.createElement("a");
+            elink.download = fileName;
+            elink.style.display = "none";
+            elink.href = URL.createObjectURL(blob);
+            document.body.appendChild(elink);
+            elink.click();
+            setTimeout(function () {
+              URL.revokeObjectURL(elink.href); // 释放URL 对象
+              document.body.removeChild(elink);
+            }, 100);
+          } else {
+            // IE10+下载
+            navigator.msSaveBlob(blob, fileName);
+          }
+        })
+        .catch((error) => {
+          this.fileDown.loadDialogStatus = false;
+          console.info(error);
+        });
+    },
+    initInstance() {
+      var _this = this;
+      //取消时的资源标记
+      this.fileDown.source = axios.CancelToken.source();
+      const instance = axios.create({
+        //axios 这个对象要提前导入 或者替换为你们全局定义的
+        onDownloadProgress: function (ProgressEvent) {
+          const load = ProgressEvent.loaded;
+          const total = ProgressEvent.total;
+          const progress = (load / total) * 100;
+          console.log("progress=" + progress);
+          //一开始已经在计算了 这里要超过先前的计算才能继续往下
+          if (progress > _this.fileDown.percentage) {
+            _this.fileDown.percentage = Math.floor(progress);
+          }
+          if (progress == 100) {
+            //下载完成
+            _this.fileDown.open = false;
+          }
+        },
+        cancelToken: this.fileDown.source.token, //声明一个取消请求token
+      });
+      return instance;
+    },
+    downloadClose() {
+      //中断下载
+      this.$modal
+        .confirm("点击关闭后将中断下载，是否确定关闭？")
+        .then(() => {
+          //中断下载回调
+          this.fileDown.source.cancel("log==客户手动取消下载");
+        })
+        .catch(() => {
+          //取消--什么都不做
+        });
     },
   },
 };
