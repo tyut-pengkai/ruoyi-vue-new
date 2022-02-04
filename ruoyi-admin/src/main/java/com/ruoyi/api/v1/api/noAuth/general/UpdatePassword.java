@@ -1,4 +1,4 @@
-package com.ruoyi.api.v1.api.auth.general;
+package com.ruoyi.api.v1.api.noAuth.general;
 
 import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.Api;
@@ -20,9 +20,10 @@ public class UpdatePassword extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("updatePassword.ag", "修改账号密码", true, Constants.API_TAG_GENERAL,
+        this.setApi(new Api("updatePassword.ng", "修改账号密码", true, Constants.API_TAG_GENERAL,
                 "修改账号密码", new AuthType[]{AuthType.ACCOUNT}, Constants.BILL_TYPE_ALL,
                 new Param[]{
+                        new Param("username", true, "账号"),
                         new Param("password", true, "原密码"),
                         new Param("newPassword", true, "新密码"),
                         new Param("newPasswordRepeat", true, "重复新密码"),
@@ -31,7 +32,7 @@ public class UpdatePassword extends Function {
 
     @Override
     public Object handle() {
-
+        String username = this.getParams().get("username");
         String password = this.getParams().get("password");
         String newPassword = this.getParams().get("newPassword");
         String newPasswordRepeat = this.getParams().get("newPasswordRepeat");
@@ -42,14 +43,18 @@ public class UpdatePassword extends Function {
         if (password.equals(newPassword)) {
             throw new ApiException(ErrorCode.ERROR_PARAMETERS_ERROR, "新密码不能与原密码相同");
         }
-        SysUser user = userService.selectUserById(getLoginUser().getUserId());
-        if (!SecurityUtils.matchesPassword(password, user.getPassword())) {
-            throw new ApiException(ErrorCode.ERROR_USERNAME_OR_PASSWORD_ERROR, "原密码有误");
-        }
-        String newPasswordEn = SecurityUtils.encryptPassword(newPassword);
-        user.setPassword(newPasswordEn);
-        userService.updateUser(user);
+        SysUser user = userService.selectUserByUserName(username);
+        if (user != null) {
+            if (!SecurityUtils.matchesPassword(password, user.getPassword())) {
+                throw new ApiException(ErrorCode.ERROR_USERNAME_OR_PASSWORD_ERROR, "原密码有误");
+            }
+            String newPasswordEn = SecurityUtils.encryptPassword(newPassword);
+            user.setPassword(newPasswordEn);
+            userService.updateUser(user);
 
-        return "成功";
+            return "成功";
+        } else {
+            throw new ApiException(ErrorCode.ERROR_ACCOUNT_NOT_EXIST);
+        }
     }
 }

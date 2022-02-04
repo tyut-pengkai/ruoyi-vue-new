@@ -71,7 +71,7 @@ public class RechargeCard extends Function {
             throw new ApiException(ErrorCode.ERROR_APP_USER_NOT_EXIST, "该账号未登录过所充值软件，请至少登录一次后重试");
         }
         String cardNo = this.getParams().get("cardNo");
-        String cardPwd = this.getParams().get("cardPwd");
+        String cardPwd = this.getParams().get("cardPassword");
         SysCard card = cardService.selectSysCardByCardNo(cardNo);
         checkCard(appUser, card, cardPwd);
         if (this.getApp().getBillType() == BillType.TIME) {
