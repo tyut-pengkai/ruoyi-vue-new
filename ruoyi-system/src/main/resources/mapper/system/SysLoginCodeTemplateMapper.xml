@@ -71,6 +71,11 @@
     <select id="selectSysLoginCodeTemplateList" parameterType="SysLoginCodeTemplate"
             resultMap="SysLoginCodeTemplateResult">
         <include refid="selectSysLoginCodeTemplateVo"/>
+        <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
+            <!-- 数据范围过滤 -->
+            inner join sys_user u on a.create_by = u.user_name
+            inner join sys_user u1 on ct.create_by = u1.user_name
+        </if>
         <where>
             <if test="appId != null ">and ct.app_id = #{appId}</if>
             <if test="cardName != null  and cardName != ''">and ct.card_name like concat('%', #{cardName}, '%')</if>
@@ -87,6 +92,10 @@
             <if test="effectiveDuration != null ">and ct.effective_duration = #{effectiveDuration}</if>
             <if test="status != null">and ct.status = #{status}</if>
             <if test="enableAutoGen != null">and ct.enable_auto_gen = #{enableAutoGen}</if>
+            <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
+                <!-- 数据范围过滤 -->
+                ${params.dataScope}
+            </if>
         </where>
     </select>
 

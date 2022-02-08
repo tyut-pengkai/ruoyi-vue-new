@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.enums.GenRule;
 import com.ruoyi.common.utils.DateUtils;
@@ -51,6 +52,7 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
      * @return 卡密模板
      */
     @Override
+    @DataScope(deptAlias = "d", userAlias = "u")
     public List<SysCardTemplate> selectSysCardTemplateList(SysCardTemplate sysCardTemplate)
     {
         return sysCardTemplateMapper.selectSysCardTemplateList(sysCardTemplate);

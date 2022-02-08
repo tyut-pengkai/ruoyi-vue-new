@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.enums.GenRule;
 import com.ruoyi.common.utils.DateUtils;
@@ -49,6 +50,7 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
      * @return 单码类别
      */
     @Override
+    @DataScope(deptAlias = "d", userAlias = "u")
     public List<SysLoginCodeTemplate> selectSysLoginCodeTemplateList(SysLoginCodeTemplate sysLoginCodeTemplate) {
         return sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateList(sysLoginCodeTemplate);
     }

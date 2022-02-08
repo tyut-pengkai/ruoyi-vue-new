@@ -62,6 +62,11 @@
 
     <select id="selectSysLoginCodeList" parameterType="SysLoginCode" resultMap="SysLoginCodeResult">
         <include refid="selectSysLoginCodeVo"/>
+        <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
+            <!-- 数据范围过滤 -->
+            inner join sys_user u on a.create_by = u.user_name
+            inner join sys_user u1 on c.create_by = u1.user_name
+        </if>
         <where>
             <if test="appId != null ">and c.app_id = #{appId}</if>
             <if test="cardName != null  and cardName != ''">and c.card_name like concat('%', #{cardName}, '%')</if>
@@ -79,6 +84,10 @@
             <if test="onSale != null  and onSale != ''">and c.on_sale = #{onSale}</if>
             <if test="isCharged != null  and isCharged != ''">and c.is_charged = #{isCharged}</if>
             <if test="status != null  and status != ''">and c.status = #{status}</if>
+            <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
+                <!-- 数据范围过滤 -->
+                ${params.dataScope}
+            </if>
         </where>
     </select>
 

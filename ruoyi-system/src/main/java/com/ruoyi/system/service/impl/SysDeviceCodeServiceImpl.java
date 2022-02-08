@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.core.domain.entity.SysDeviceCode;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.mapper.SysDeviceCodeMapper;
@@ -40,6 +41,7 @@ public class SysDeviceCodeServiceImpl implements ISysDeviceCodeService
      * @return 设备码管理
      */
     @Override
+    @DataScope(deptAlias = "d", userAlias = "u")
     public List<SysDeviceCode> selectSysDeviceCodeList(SysDeviceCode sysDeviceCode)
     {
         return sysDeviceCodeMapper.selectSysDeviceCodeList(sysDeviceCode);

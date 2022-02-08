@@ -75,6 +75,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from sys_app_user au
                  left join sys_user u on au.user_id = u.user_id
                  left join sys_app a on au.app_id = a.app_id
+                 left join sys_user u1 on a.create_by = u1.user_name
     </sql>
 
     <select id="selectSysAppUserList" parameterType="SysAppUser" resultMap="SysAppUserResult">
@@ -92,6 +93,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 and au.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
             </if>
             <if test="point != null  and point != ''">and au.point = #{point}</if>
+            <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
+                <!-- 数据范围过滤 -->
+                ${params.dataScope}
+            </if>
         </where>
     </select>
     

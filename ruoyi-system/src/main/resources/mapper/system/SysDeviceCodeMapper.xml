@@ -18,18 +18,38 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectSysDeviceCodeVo">
-        select device_code_id, device_code, last_login_time, login_times, status, create_by, create_time, update_by, update_time, remark from sys_device_code
+        select device_code_id,
+               device_code,
+               last_login_time,
+               login_times,
+               sys_device_code.status,
+               sys_device_code.create_by,
+               sys_device_code.create_time,
+               sys_device_code.update_by,
+               sys_device_code.update_time,
+               sys_device_code.remark
+        from sys_device_code
     </sql>
 
     <select id="selectSysDeviceCodeList" parameterType="SysDeviceCode" resultMap="SysDeviceCodeResult">
         <include refid="selectSysDeviceCodeVo"/>
+        <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
+            <!-- 数据范围过滤 -->
+            inner join sys_user u on sys_device_code.create_by = u.user_name
+        </if>
         <where>
-            <if test="deviceCode != null  and deviceCode != ''"> and device_code = #{deviceCode}</if>
-            <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''"> and last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}</if>
+            <if test="deviceCode != null  and deviceCode != ''">and device_code = #{deviceCode}</if>
+            <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''">
+                and last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}
+            </if>
             <if test="params.beginLoginTimes != null and params.beginLoginTimes != '' and params.endLoginTimes != null and params.endLoginTimes != ''">
                 and login_times between #{params.beginLoginTimes} and #{params.endLoginTimes}
             </if>
             <if test="status != null  and status != ''">and status = #{status}</if>
+            <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
+                <!-- 数据范围过滤 -->
+                ${params.dataScope}
+            </if>
         </where>
     </select>
 

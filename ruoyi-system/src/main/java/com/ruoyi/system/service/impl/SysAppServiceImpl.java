@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysApp;
@@ -83,6 +84,7 @@ public class SysAppServiceImpl implements ISysAppService {
      * @return 软件
      */
     @Override
+    @DataScope(deptAlias = "d", userAlias = "u")
     public List<SysApp> selectSysAppList(SysApp sysApp) {
         return sysAppMapper.selectSysAppList(sysApp);
     }

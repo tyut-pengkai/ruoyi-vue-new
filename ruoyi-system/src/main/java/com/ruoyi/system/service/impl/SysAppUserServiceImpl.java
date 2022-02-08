@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.system.mapper.SysAppUserMapper;
 import com.ruoyi.system.service.ISysAppUserService;
@@ -39,6 +40,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService
      * @return 软件用户
      */
     @Override
+    @DataScope(deptAlias = "d", userAlias = "u")
     public List<SysAppUser> selectSysAppUserList(SysAppUser sysAppUser)
     {
         return sysAppUserMapper.selectSysAppUserList(sysAppUser);

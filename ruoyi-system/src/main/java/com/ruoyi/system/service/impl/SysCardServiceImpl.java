@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.mapper.SysCardMapper;
@@ -44,6 +45,7 @@ public class SysCardServiceImpl implements ISysCardService
      * @return 卡密
      */
     @Override
+    @DataScope(deptAlias = "d", userAlias = "u")
     public List<SysCard> selectSysCardList(SysCard sysCard)
     {
         return sysCardMapper.selectSysCardList(sysCard);

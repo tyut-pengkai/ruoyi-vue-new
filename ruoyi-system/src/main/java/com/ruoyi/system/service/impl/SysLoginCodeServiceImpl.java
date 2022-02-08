@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.mapper.SysLoginCodeMapper;
@@ -42,6 +43,7 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
      * @return 单码
      */
     @Override
+    @DataScope(deptAlias = "d", userAlias = "u")
     public List<SysLoginCode> selectSysLoginCodeList(SysLoginCode SysLoginCode) {
         return SysLoginCodeMapper.selectSysLoginCodeList(SysLoginCode);
     }

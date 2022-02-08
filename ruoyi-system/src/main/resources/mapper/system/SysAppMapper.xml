@@ -95,17 +95,23 @@
 			<if test="description != null  and description != ''"> and a.description like concat('%', #{description}, '%')</if>
 			<if test="status != null  and status != ''"> and a.status = #{status}</if>
 			<if test="bindType != null"> and a.bind_type = #{bindType}</if>
-			<if test="isCharge != null  and isCharge != ''"> and a.is_charge = #{isCharge}</if>
-			<if test="authType != null"> and a.auth_type = #{authType}</if>
-			<if test="billType != null"> and a.bill_type = #{billType}</if>
-			<if test="createBy != null  and createBy != ''"> and (u.nick_name like concat('%', #{createBy}, '%') or u.user_name like concat('%', #{createBy}, '%'))</if>
+			<if test="isCharge != null  and isCharge != ''">and a.is_charge = #{isCharge}</if>
+			<if test="authType != null">and a.auth_type = #{authType}</if>
+			<if test="billType != null">and a.bill_type = #{billType}</if>
+			<if test="createBy != null  and createBy != ''">and (u.nick_name like concat('%', #{createBy}, '%') or
+				u.user_name like concat('%', #{createBy}, '%'))
+			</if>
 			<if test="params.beginCreateTime != null and params.beginCreateTime != ''"><!-- 开始时间检索 -->
 				AND date_format(a.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
 			</if>
 			<if test="params.endCreateTime != null and params.endCreateTime != ''"><!-- 结束时间检索 -->
-                AND date_format(a.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
-            </if>
-        </where>
+				AND date_format(a.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+			</if>
+			<if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
+				<!-- 数据范围过滤 -->
+				${params.dataScope}
+			</if>
+		</where>
     </select>
 
     <select id="selectSysAppByAppId" parameterType="Long" resultMap="SysAppResult">
