@@ -49,6 +49,8 @@ public class SysUserOnline
 
     private String appDesc;
 
+    private String appAuthor;
+
     private String deviceCode;
 
     public String getTokenId() {
@@ -156,5 +158,13 @@ public class SysUserOnline
 
     public void setExpireTime(Long expireTime) {
         this.expireTime = expireTime;
+    }
+
+    public String getAppAuthor() {
+        return appAuthor;
+    }
+
+    public void setAppAuthor(String appAuthor) {
+        this.appAuthor = appAuthor;
     }
 }
