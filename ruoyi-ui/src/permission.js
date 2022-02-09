@@ -9,7 +9,7 @@ NProgress.configure({
   showSpinner: false
 })
 
-const whiteList = ['/login', '/auth-redirect', '/bind', '/register', '/common/sysInfo']
+const whiteList = ['/login', '/auth-redirect', '/bind', '/register', '/common/sysInfo', '/', '/queryOrder']
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
@@ -18,7 +18,7 @@ router.beforeEach((to, from, next) => {
     /* has token*/
     if (to.path === '/login') {
       next({
-        path: '/'
+        path: '/index'
       })
       NProgress.done()
     } else {
@@ -37,7 +37,7 @@ router.beforeEach((to, from, next) => {
           store.dispatch('LogOut').then(() => {
             Message.error(err)
             next({
-              path: '/'
+              path: '/index'
             })
           })
         })

@@ -59,6 +59,24 @@ export const constantRoutes = [{
   },
   {
     path: '',
+    component: () => import('@/views/sale/index'),
+    children: [{
+      path: '/',
+      component: () => import('@/views/sale/shop/index'),
+      name: 'Shop',
+    }, {
+      path: '/queryOrder',
+      component: () => import('@/views/sale/order/index'),
+      name: 'QueryOrder',
+    },
+    ]
+  },
+  {
+    path: '/index',
+    redirect: 'admin/index',
+  },
+  {
+    path: '/admin',
     component: Layout,
     redirect: 'index',
     children: [{
