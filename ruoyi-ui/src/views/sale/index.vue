@@ -57,6 +57,20 @@
   }
 </script>
 <style scoped>
+body {
+  margin: 0;
+}
+a {
+  text-decoration: None;
+}
+.home {
+  width: 1100px;
+}
+.el-main {
+  max-width: 1140px;
+  margin-left: auto;
+  margin-right: auto;
+}
 .my-logo {
     display: inline-block;
     float: left;
