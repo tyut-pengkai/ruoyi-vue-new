@@ -10,12 +10,12 @@
                                 <a href="/">
                                     <el-avatar src="/logo.png" image-size="48"></el-avatar>
                                     <span style="color: aliceblue; font-size: 19px; font-weight: bold; position: relative; left: 9px; bottom: 12px;">
-                                        INAMS商店
+                                        INAMS软件商店
                                     </span>
                                 </a>
                             </div>
                             <el-menu
-                            :default-active="activeIndex2"
+                            :default-active="activeIndex"
                             mode="horizontal"
                             @select="handleSelect"
                             background-color="#545c64"
@@ -46,12 +46,16 @@
     data() {
       return {
         activeIndex: '1',
-        activeIndex2: '1'
+        regShow: false,
+
       };
     },
     methods: {
       handleSelect(key, keyPath) {
         console.log(key, keyPath);
+      },
+      login() {
+
       }
     }
   }
