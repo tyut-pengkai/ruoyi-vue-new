@@ -1,8 +1,13 @@
 <template>
   <el-row :gutter="10">
-    <el-col v-for="item in data" :key="item.id" :span=4>
+    <el-col v-for="item in data" :key="item.id" :span="4">
       <div class="my-card-group">
-        <el-card shadow="hover" class="my-box-card" :class="{ 'my-box-card-select': cardKeyOn == item.id }" @click.native="handleSelect(item.id)">
+        <el-card
+          shadow="hover"
+          class="my-box-card"
+          :class="{ 'my-box-card-select': cardKeyOn == item.id }"
+          @click.native="handleSelect(item.id)"
+        >
           <div class="my-card-title">
             <p>{{ item.name }}</p>
             <span class="my-card-span">{{ des }}: {{ item.count }}</span>
@@ -15,9 +20,9 @@
 
 <script>
 export default {
-  name: "CardSelect",
+  name: "CardCategory",
   data: () => ({
-    cardKeyOn: 1,
+    cardKeyOn: 0,
   }),
   props: {
     data: {
@@ -32,7 +37,7 @@ export default {
     },
     cardKey: {
       type: Number,
-      default: 1,
+      default: 0,
     },
   },
   mounted() {
@@ -49,25 +54,29 @@ export default {
 
 <style scoped>
 .my-card-group :hover {
-  cursor: pointer
+  cursor: pointer;
 }
 
 .my-card-group {
-    margin-top: 4px;
+  margin-top: 4px;
 }
 
 .my-box-card {
   border-radius: 10px;
   background: #f8f8f8 !important;
-  height: 67px;
+  height: 72px;
 }
 
 .my-box-card-select {
-    background-image: linear-gradient(120deg, #3c8ce7 15%, #00eaff 80%) !important;
+  background-image: linear-gradient(
+    120deg,
+    #3c8ce7 15%,
+    #00eaff 80%
+  ) !important;
 }
 
 .my-box-card .my-card-title p {
-  margin: 0;
+  margin: 0 0 5px 0;
   font-size: 12px;
   font-weight: bold;
   color: #545454;
@@ -87,7 +96,4 @@ export default {
   color: #fff !important;
   opacity: 0.76;
 }
-
-
-
 </style>

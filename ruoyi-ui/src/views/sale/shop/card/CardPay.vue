@@ -1,31 +1,28 @@
 <template>
-  <div>
-    <el-row>
-      <div style="margin: 5px 10px 5px 0px" v-for="item in data" :key="item.id">
-        <div class="tz-card-select">
+    <el-row :gutter="10">
+      <el-col v-for="item in data" :key="item.id" :span="3">
+        <div class="my-card-group">
           <el-card
-            class="box-card"
-            :class="{ 'box-card-select-g': cardKeyOn == item.id }"
-            @click="handleSelect(item.id)"
+            shadow="hover"
+            class="my-box-card"
+            :class="{ 'my-box-card-select': cardKeyOn == item.id }"
+            @click.native="handleSelect(item.id)"
           >
-            <div class="card-pay">
-              <div class="card-title">
-
-                <i class="iconfont" :class="item.img"></i>
-
+            <div class="my-card-pay">
+              <div class="my-card-title">
+                <img :src=handleImgPath(item.img) />
                 <p>{{ item.name }}</p>
               </div>
             </div>
           </el-card>
         </div>
-      </div>
+      </el-col>
     </el-row>
-  </div>
 </template>
 
 <script>
 export default {
-  name: "card-pay",
+  name: "CardPay",
   data: () => ({
     cardKeyOn: 0,
   }),
@@ -49,8 +46,53 @@ export default {
       this.cardKeyOn = key;
       this.$emit("card-click", key);
     },
+    handleImgPath(img) {
+      return require('../../../../assets/images/' + img + '.svg');
+    }
   },
 };
 </script>
 
-<style></style>
+<style scoped>
+.my-card-group :hover {
+  cursor: pointer;
+}
+
+.my-card-group {
+  margin-top: 4px;
+}
+
+.my-box-card {
+  border-radius: 10px;
+  background: #fff !important;
+  height: 52px;
+}
+
+.my-box-card-select {
+  border-color: #3c8ce7;
+}
+
+.my-card-pay p {
+  display: inline-block;
+  margin-left: 3px !important;
+
+}
+
+.my-card-pay .my-card-title p {
+  margin: 0 0 5px 0;
+  font-size: 12px;
+  font-weight: bold;
+  color: #545454;
+}
+
+.my-card-pay .my-card-title i {
+  font-size: 24px;
+}
+
+.my-card-pay .my-card-title {
+  align-items: center;
+  text-align: center;
+  display: flex;
+  margin-bottom: 12px;
+}
+</style>

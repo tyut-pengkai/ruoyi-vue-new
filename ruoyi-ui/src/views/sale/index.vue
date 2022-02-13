@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-container>
-            <el-header style="padding: 0;">
+            <el-header style="padding: 0; position:fixed;z-index:9999; width:100%;">
                 <div style="background-color: #545c64">
                     <el-row>
                         <el-col :span=5><div class="grid-content"></div></el-col>
@@ -33,7 +33,7 @@
                     </el-row>
                 </div>
             </el-header>
-            <el-main>
+            <el-main style="margin-top: 61px;">
                 <transition name="fade" mode="out-in">
                 <router-view></router-view>
                 </transition>
