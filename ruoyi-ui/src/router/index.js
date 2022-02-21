@@ -1,10 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
-Vue.use(Router)
-
 /* Layout */
 import Layout from '@/layout'
+
+Vue.use(Router)
 
 /**
  * Note: 路由配置项
@@ -70,7 +69,7 @@ export const constantRoutes = [
       name: 'Shop',
     }, {
       path: '/queryOrder',
-      component: () => import('@/views/sale/order/index'),
+      component: () => import('@/views/sale/shop/queryOrder'),
       name: 'QueryOrder',
     },
     ]

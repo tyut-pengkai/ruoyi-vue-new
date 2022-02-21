@@ -92,7 +92,7 @@
               </el-form-item>
               <el-form-item label="购买数量">
                 <el-input-number
-                  v-model="buyNum"
+                  v-model="form.buyNum"
                   @change="handleBuyNumChange"
                   :min="1"
                   :max="selectedGoodsData.num"
@@ -137,6 +137,7 @@
       style="margin-top: 10px;"
       v-show="payButtonShow"
       v-model="inputText"
+      @click.native="handleSubmit"
     ></el-input>
   </div>
 </template>
@@ -145,6 +146,9 @@
 import CardCategory from "./card/CardCategory";
 import CardGoods from "./card/CardGoods";
 import CardPay from "./card/CardPay";
+import {listApp} from "@/api/sale/sale";
+import {listCardTemplate} from "@/api/system/cardTemplate";
+
 export default {
   components: { CardCategory, CardGoods, CardPay },
   data() {
@@ -152,51 +156,50 @@ export default {
       // 分类
       categoryId: null,
       categoryData: [
-        { id: 0, name: "测试分类", count: 2 },
-        { id: 1, name: "[官方]推荐服务", count: 3 },
-        { id: 2, name: "[官方]话费充值", count: 198 },
-        { id: 3, name: "[官方]影视专区", count: 185 },
-        { id: 4, name: "[官方]点卷专区", count: 185 },
+        // { id: 0, name: "测试分类", count: 2 },
+        // { id: 1, name: "[官方]推荐服务", count: 3 },
+        // { id: 2, name: "[官方]话费充值", count: 198 },
+        // { id: 3, name: "[官方]影视专区", count: 185 },
+        // { id: 4, name: "[官方]点卷专区", count: 185 },
       ],
       // 商品
       goodsId: null,
       goodsData: [
-        {
-          id: 0,
-          name: "测试分类",
-          max: 5,
-          min: 0.5,
-          tags: ["多件优惠", "加群XXX"],
-          num: 0,
-          place: "售后请加QQ：XXX",
-          wholesale: []
-        },
-        {
-          id: 1,
-          name: "[官方]推荐服务",
-          max: 100,
-          min: 50,
-          tags: ["多件优惠", "量大加微信XXX"],
-          num: 158,
-          wholesale: []
-        },
-        {
-          id: 2,
-          name: "[官方]话费充值",
-          min: 80,
-          tags: ["单次购买100件只需80元/件"],
-          num: 178,
-          wholesale: [{
-            num: 1,
-            price: 100
-          },{
-            num: 10,
-            price: 90
-          },{
-            num: 100,
-            price: 80
-          }]
-        },
+        // {
+        //   id: 0,
+        //   name: "测试分类",
+        //   max: 5,
+        //   min: 0.5,
+        //   tags: ["多件优惠", "加群XXX"],
+        //   num: 0,
+        //   wholesale: []
+        // },
+        // {
+        //   id: 1,
+        //   name: "[官方]推荐服务",
+        //   max: 100,
+        //   min: 50,
+        //   tags: ["多件优惠", "量大加微信XXX"],
+        //   num: 158,
+        //   wholesale: []
+        // },
+        // {
+        //   id: 2,
+        //   name: "[官方]话费充值",
+        //   min: 80,
+        //   tags: ["单次购买100件只需80元/件"],
+        //   num: 178,
+        //   wholesale: [{
+        //     num: 1,
+        //     price: 100
+        //   },{
+        //     num: 10,
+        //     price: 90
+        //   },{
+        //     num: 100,
+        //     price: 80
+        //   }]
+        // },
       ],
       selectedGoodsData: {},
       showGoodsDetail: false,
@@ -205,30 +208,49 @@ export default {
       form: {
         contact: "",
         queryPass: "",
+        buyNum: 1,
       },
-      buyNum: 1,
       // 支付
       payId: null,
       payButtonShow: false,
       payData: [
-        { id: 0, name: "账户积分", img: "pay-jifen" },
-        { id: 1, name: "支付宝", img: "pay-alipay" },
-        { id: 2, name: "微信支付", img: "pay-wechat" },
-        { id: 3, name: "银联支付", img: "pay-yinlian" },
-        { id: 4, name: "PayPal", img: "pay-paypal" },
+        { id: 0, name: "账户积分", code: 'balance', img: "pay-jifen" },
+        { id: 1, name: "支付宝", code: 'alipay', img: "pay-alipay" },
+        { id: 2, name: "微信支付", code: 'wechat', img: "pay-wechat" },
+        { id: 3, name: "银联支付", code: 'yinlian', img: "pay-yinlian" },
+        { id: 4, name: "PayPal", code: 'paypal', img: "pay-paypal" },
 
       ],
       inputText: "提交订单",
     };
   },
+  created() {
+    this.getList();
+  },
   methods: {
+    /** 查询软件列表 */
+    getList() {
+      listApp({}).then((response) => {
+        var appList = response.rows;
+        for(var app of appList){
+          if(app.tplCount > 0) {
+            this.categoryData.push({id:this.categoryData.length, appId: app.appId, name:app.appName, count:app.tplCount});
+          }
+        }
+      });
+    },
     handleCategorySelect(id) {
       console.log(id);
-    // 拉取当前选择目录下的商品列表
-
-
-
-
+      this.goodsData = [];
+      // 拉取当前选择目录下的商品列表
+      listCardTemplate({appId: this.categoryData[id].appId}).then((response) => {
+        var ctList = response.rows;
+        for(var ct of ctList){
+          if(ct.onSale) {
+            this.goodsData.push({id: this.goodsData.length, tplId: ct.templateId, name: ct.cardName, min: ct.price, tags: ["多件优惠"], num: 99999, wholesale: []});
+          }
+        }
+      });
       this.categoryId = id;
     },
     handleGoodsSelect(id) {
@@ -268,6 +290,9 @@ export default {
         this.payButtonShow = true;
       }
       this.payId = id;
+    },
+    handleSubmit() {
+      console.log(this.form, this.payData[this.payId].code);
     },
   }
 }
