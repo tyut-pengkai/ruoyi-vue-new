@@ -103,6 +103,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 //                .antMatchers("/api/v1/swagger").permitAll()
                 .antMatchers("/api/v1/*", "/api/v1/devTool/**").permitAll()
                 .antMatchers("/system/license/info").permitAll()
+                .antMatchers("/sale/shop/**").permitAll()
                 .antMatchers(
                         HttpMethod.GET,
                         "/",

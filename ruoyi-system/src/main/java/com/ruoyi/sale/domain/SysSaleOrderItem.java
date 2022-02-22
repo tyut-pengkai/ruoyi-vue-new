@@ -25,7 +25,7 @@ public class SysSaleOrderItem extends BaseEntity {
      * 订单ID
      */
     @Excel(name = "订单ID")
-    private String orderNo;
+    private Long orderId;
 
     /**
      * 1卡类2登录码类
@@ -89,12 +89,12 @@ public class SysSaleOrderItem extends BaseEntity {
         this.itemId = itemId;
     }
 
-    public String getOrderNo() {
-        return orderNo;
+    public Long getOrderId() {
+        return orderId;
     }
 
-    public void setOrderNo(String orderNo) {
-        this.orderNo = orderNo;
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 
     public String getTemplateType() {
@@ -173,7 +173,7 @@ public class SysSaleOrderItem extends BaseEntity {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("itemId", getItemId())
-                .append("orderNo", getOrderNo())
+                .append("orderId", getOrderId())
                 .append("templateType", getTemplateType())
                 .append("templateId", getTemplateId())
                 .append("num", getNum())

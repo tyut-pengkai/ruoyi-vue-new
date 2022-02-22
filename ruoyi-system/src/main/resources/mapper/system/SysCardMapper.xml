@@ -73,6 +73,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
         <where>
             <if test="appId != null ">and c.app_id = #{appId}</if>
+            <if test="templateId != null ">and c.template_id = #{templateId}</if>
             <if test="cardName != null  and cardName != ''">and c.card_name like concat('%', #{cardName}, '%')</if>
             <if test="cardNo != null  and cardNo != ''">and c.card_no like concat('%', #{cardNo}, '%')</if>
             <if test="params.beginQuota != null and params.beginQuota != '' and params.endQuota != null and params.endQuota != ''">

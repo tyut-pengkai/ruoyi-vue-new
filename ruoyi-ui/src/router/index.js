@@ -71,6 +71,10 @@ export const constantRoutes = [
       path: '/queryOrder',
       component: () => import('@/views/sale/shop/queryOrder'),
       name: 'QueryOrder',
+    }, {
+      path: '/billOrder',
+      component: () => import('@/views/sale/shop/billOrder'),
+      name: 'BillOrder',
     },
     ]
   },

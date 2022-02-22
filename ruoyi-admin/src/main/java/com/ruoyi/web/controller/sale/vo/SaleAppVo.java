@@ -1,4 +1,4 @@
-package com.ruoyi.web.domain;
+package com.ruoyi.web.controller.sale.vo;
 
 public class SaleAppVo {
 

@@ -76,7 +76,7 @@ public class SysSaleOrder extends BaseEntity {
      * 联系方式
      */
     @Excel(name = "联系方式")
-    private String concat;
+    private String contact;
 
     /**
      * 查询密码
@@ -189,12 +189,12 @@ public class SysSaleOrder extends BaseEntity {
         this.status = status;
     }
 
-    public String getConcat() {
-        return concat;
+    public String getContact() {
+        return contact;
     }
 
-    public void setConcat(String concat) {
-        this.concat = concat;
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 
     public String getQueryPass() {
@@ -257,7 +257,7 @@ public class SysSaleOrder extends BaseEntity {
                 .append("discountFee", getDiscountFee())
                 .append("payMode", getPayMode())
                 .append("status", getStatus())
-                .append("concat", getConcat())
+                .append("contact", getContact())
                 .append("queryPass", getQueryPass())
                 .append("createBy", getCreateBy())
                 .append("createTime", getCreateTime())

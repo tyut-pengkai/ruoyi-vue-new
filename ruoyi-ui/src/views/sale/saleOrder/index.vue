@@ -28,9 +28,9 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="联系方式" prop="concat">
+      <el-form-item label="联系方式" prop="contact">
         <el-input
-          v-model="queryParams.concat"
+          v-model="queryParams.contact"
           placeholder="请输入联系方式"
           clearable
           size="small"
@@ -109,7 +109,7 @@
       <el-table-column label="折扣金额" align="center" prop="discountFee" />
       <el-table-column label="支付方式" align="center" prop="payMode" />
       <el-table-column label="1未付款2已付款3未发货4已发货5交易成功6交易关闭" align="center" prop="status" />
-      <el-table-column label="联系方式" align="center" prop="concat" />
+      <el-table-column label="联系方式" align="center" prop="contact" />
       <el-table-column label="查询密码" align="center" prop="queryPass" />
       <el-table-column label="支付时间" align="center" prop="paymentTime" width="180">
         <template slot-scope="scope">
@@ -184,8 +184,8 @@
         <el-form-item label="支付方式" prop="payMode">
           <el-input v-model="form.payMode" placeholder="请输入支付方式" />
         </el-form-item>
-        <el-form-item label="联系方式" prop="concat">
-          <el-input v-model="form.concat" placeholder="请输入联系方式" />
+        <el-form-item label="联系方式" prop="contact">
+          <el-input v-model="form.contact" placeholder="请输入联系方式" />
         </el-form-item>
         <el-form-item label="查询密码" prop="queryPass">
           <el-input v-model="form.queryPass" placeholder="请输入查询密码" />
@@ -333,7 +333,7 @@ export default {
         userId: null,
         payMode: null,
         status: null,
-        concat: null,
+        contact: null,
         queryPass: null,
       },
       // 表单参数
@@ -382,7 +382,7 @@ export default {
         discountFee: null,
         payMode: null,
         status: null,
-        concat: null,
+        contact: null,
         queryPass: null,
         createBy: null,
         createTime: null,

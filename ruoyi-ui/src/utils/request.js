@@ -1,11 +1,11 @@
 import axios from 'axios'
-import { Notification, MessageBox, Message, Loading } from 'element-ui'
+import {Loading, Message, MessageBox, Notification} from 'element-ui'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
+import {getToken} from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
-import { tansParams, blobValidate } from "@/utils/ruoyi";
+import {blobValidate, tansParams} from "@/utils/ruoyi";
 import cache from '@/plugins/cache'
-import { saveAs } from 'file-saver'
+import {saveAs} from 'file-saver'
 
 let downloadLoadingInstance;
 // 是否显示重新登录
@@ -79,16 +79,16 @@ service.interceptors.response.use(res => {
       if (!isRelogin.show) {
         isRelogin.show = true;
         MessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', {
-          confirmButtonText: '重新登录',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }
-      ).then(() => {
-        isRelogin.show = false;
-        store.dispatch('LogOut').then(() => {
-          location.href = '/index';
-        })
-      }).catch(() => {
+            confirmButtonText: '重新登录',
+            cancelButtonText: '取消',
+            type: 'warning'
+          },
+        ).then(() => {
+          isRelogin.show = false;
+          store.dispatch('LogOut').then(() => {
+            location.href = '/index';
+          })
+        }).catch(() => {
         isRelogin.show = false;
       });
     }
@@ -96,12 +96,14 @@ service.interceptors.response.use(res => {
     } else if (code === 500) {
       Message({
         message: msg,
+        customClass: 'customClass',
         type: 'error'
       })
       return Promise.reject(new Error(msg))
     } else if (code !== 200) {
       Notification.error({
-        title: msg
+        title: msg,
+        customClass: 'customClass',
       })
       return Promise.reject('error')
     } else {
@@ -122,6 +124,7 @@ service.interceptors.response.use(res => {
     }
     Message({
       message: message,
+      customClass: 'customClass',
       type: 'error',
       duration: 5 * 1000
     })

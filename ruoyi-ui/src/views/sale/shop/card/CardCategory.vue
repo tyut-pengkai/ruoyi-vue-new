@@ -22,7 +22,7 @@
 export default {
   name: "CardCategory",
   data: () => ({
-    cardKeyOn: 0,
+    cardKeyOn: null,
   }),
   props: {
     data: {
@@ -37,7 +37,7 @@ export default {
     },
     cardKey: {
       type: Number,
-      default: 0,
+      default: null,
     },
   },
   mounted() {

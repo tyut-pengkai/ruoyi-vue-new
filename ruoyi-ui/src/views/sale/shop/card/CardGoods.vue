@@ -5,7 +5,7 @@
         <el-card
           shadow="hover"
           class="my-box-card"
-          :class="{ 'my-box-card-select': cardKeyOn == item.id }"
+          :class="{ 'my-box-card-select': cardKey == item.id }"
           @click.native="handleSelect(item.id)"
         >
           <div class="my-card-title">
@@ -41,9 +41,6 @@
 <script>
 export default {
   name: "CardGoods",
-  data: () => ({
-    cardKeyOn: 0,
-  }),
   props: {
     data: {
       type: Array,
@@ -53,15 +50,11 @@ export default {
     },
     cardKey: {
       type: Number,
-      default: 0,
+      default: null,
     },
-  },
-  mounted() {
-    this.cardKeyOn = this.$props.cardKey;
   },
   methods: {
     handleSelect(key) {
-      this.cardKeyOn = key;
       this.$emit("card-click", key);
     },
   },

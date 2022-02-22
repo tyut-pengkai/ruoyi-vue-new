@@ -139,6 +139,23 @@
       v-model="inputText"
       @click.native="handleSubmit"
     ></el-input>
+    <el-divider v-show="payButtonShow" id="pay"></el-divider>
+
+    <!-- Form -->
+    <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button>
+
+    <el-dialog title="确认订单" custom-class="customClass" :visible.sync="dialogFormVisible" width="30%" style="margin-top:20vh">
+      <el-form :model="form">
+        <el-form-item label="活动名称" label-width="120px">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">支 付</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -146,13 +163,13 @@
 import CardCategory from "./card/CardCategory";
 import CardGoods from "./card/CardGoods";
 import CardPay from "./card/CardPay";
-import {listApp} from "@/api/sale/sale";
-import {listCardTemplate} from "@/api/system/cardTemplate";
+import {listApp, listCardTemplate, createSaleOrder} from "@/api/sale/saleShop";
 
 export default {
   components: { CardCategory, CardGoods, CardPay },
   data() {
     return {
+      dialogFormVisible: false,
       // 分类
       categoryId: null,
       categoryData: [
@@ -240,21 +257,19 @@ export default {
       });
     },
     handleCategorySelect(id) {
-      console.log(id);
       this.goodsData = [];
+      this.showGoodsDetail = false;
+      this.goodsId = null;
       // 拉取当前选择目录下的商品列表
       listCardTemplate({appId: this.categoryData[id].appId}).then((response) => {
         var ctList = response.rows;
         for(var ct of ctList){
-          if(ct.onSale) {
-            this.goodsData.push({id: this.goodsData.length, tplId: ct.templateId, name: ct.cardName, min: ct.price, tags: ["多件优惠"], num: 99999, wholesale: []});
-          }
+          this.goodsData.push({id: this.goodsData.length, templateId: ct.templateId, name: ct.cardName, min: ct.price, tags: ["多件优惠"], num: ct.cardCount, wholesale: []});
         }
       });
       this.categoryId = id;
     },
     handleGoodsSelect(id) {
-      console.log(id);
       // 拉取当前选择商品的商品详情
       this.loading = true;
       this.showGoodsDetail = true;
@@ -277,7 +292,8 @@ export default {
       this.selectedGoodsData.totalPrice = this.selectedGoodsData.price * value;
     },
     handlePaySelect(id) {
-      console.log(id);
+      // 锚点跳转
+      location.href = "#pay";
       //这里检查之前表单是否有误，并判断当前环境是否需要验证。
       if (this.showGoodsDetail == false) {
         this.$notify({
@@ -285,6 +301,7 @@ export default {
           dangerouslyUseHTMLString: true,
           message: "请先选择商品",
           type: "warning",
+          offset: 100
         });
       } else {
         this.payButtonShow = true;
@@ -292,7 +309,32 @@ export default {
       this.payId = id;
     },
     handleSubmit() {
-      console.log(this.form, this.payData[this.payId].code);
+      //这里检查之前表单是否有误，并判断当前环境是否需要验证。
+      if (this.showGoodsDetail == false) {
+        this.$notify({
+          title: "消息",
+          dangerouslyUseHTMLString: true,
+          message: "请先选择商品",
+          type: "warning",
+          offset: 100
+        });
+      } else {
+        this.form['payMode'] = this.payData[this.payId].code;
+        this.form['appId'] = this.categoryData[this.categoryId].appId;
+        this.form['templateId'] = this.goodsData[this.goodsId].templateId;
+        createSaleOrder(JSON.stringify(this.form)).then((response) => {
+          if(response.code == 200) {
+            var orderId = response.orderId;
+            this.dialogFormVisible = true;
+            // this.$router.push({
+            //   path: "/billOrder",
+            //   query: {
+            //     orderId: orderId,
+            //   },
+            // });
+          }
+        });
+      }
     },
   }
 }
