@@ -33,7 +33,7 @@
                     </el-row>
                 </div>
             </el-header>
-            <el-main style="margin-top: 61px;">
+            <el-main style="margin-top: 60px;">
                 <transition name="fade" mode="out-in">
                 <router-view></router-view>
                 </transition>
@@ -83,6 +83,8 @@ a {
 .my-menu {
     float: right;
     max-width: 1140px;
+    height: 60px;
+    border-bottom: 0px;
 }
 .grid-content {
     border-radius: 4px;
@@ -107,6 +109,7 @@ a {
   color: rgb(255, 255, 255);
   border-color: #c6e2ff;
 }
+
 </style>
 
 <style scoped>

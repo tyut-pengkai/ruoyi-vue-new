@@ -104,6 +104,7 @@
                   placeholder="请填写您的QQ号或手机号方便查询"
                   :clearable="true"
                   v-model="form.contact"
+                  auto-complete="false"
                 ></el-input>
               </el-form-item>
               <el-form-item label="查询密码">
@@ -112,6 +113,7 @@
                   placeholder="请填写设置您的查询密码"
                   :show-password="true"
                   v-model="form.queryPass"
+                  auto-complete="false"
                 ></el-input>
               </el-form-item>
             </el-form>
@@ -132,27 +134,58 @@
       ></card-pay>
     </el-card>
     <el-input
+      id="pay"
       type="button"
       class="my-button"
       style="margin-top: 10px;"
       v-show="payButtonShow"
       v-model="inputText"
-      @click.native="handleSubmit"
+      @click.native="handleConfirmOrder"
     ></el-input>
-    <el-divider v-show="payButtonShow" id="pay"></el-divider>
+    <el-divider id="pay"></el-divider>
 
     <!-- Form -->
-    <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button>
+    <!-- <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
 
-    <el-dialog title="确认订单" custom-class="customClass" :visible.sync="dialogFormVisible" width="30%" style="margin-top:20vh">
-      <el-form :model="form">
-        <el-form-item label="活动名称" label-width="120px">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+    <el-dialog title="确认订单" custom-class="customClass" :visible.sync="dialogFormVisible" width="500px" style="margin-top:10vh">
+      <el-steps :active="1" finish-status="success" align-center style="margin-bottom: 30px;">
+        <el-step title="选择商品"></el-step>
+        <el-step title="确认订单"></el-step>
+        <el-step title="线上支付"></el-step>
+        <el-step title="提取商品"></el-step>
+      </el-steps>
+      <el-form :model="form" v-if="categoryData && goodsData && payData && categoryId!=null && goodsId!=null && payId!=null">
+        <el-form-item label="商品名称" label-width="120px">
+            [ {{categoryData[categoryId].name}} ] {{goodsData[goodsId].name}}
         </el-form-item>
+        <el-form-item label="商品单价" label-width="120px">
+          <span class="my-price">￥{{selectedGoodsData.price}}</span> <el-tag size="small">× {{form.buyNum}}</el-tag>
+        </el-form-item>
+        <el-form-item label="商品总价" label-width="120px">
+          <span class="my-price">￥{{selectedGoodsData.totalPrice}}</span>
+        </el-form-item>
+        <!-- <el-form-item label="优惠金额" label-width="120px">
+          <el-tag effect="plain" size="small" type="danger">立减</el-tag> <span class="my-discount">-￥10.00</span>  <br>
+          <el-tag effect="plain" size="small" type="danger">优惠券</el-tag> <span class="my-discount">-￥10.00</span>
+        </el-form-item> -->
+        <el-form-item label="联系方式" label-width="120px">
+          {{form.contact}}
+        </el-form-item>
+        <el-form-item label="支付方式" label-width="120px">
+          {{payData[payId].name}}
+        </el-form-item>
+        <el-divider></el-divider>
+        <el-row>
+          <el-col :span="18" :offset="4">
+            <el-form-item label="应付金额" label-width="120px" class="my-total">
+              <span>￥{{selectedGoodsData.totalPrice}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" style="margin-top:-40px;">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">支 付</el-button>
+        <el-button type="primary" @click.native="handlePay">立即支付</el-button>
       </div>
     </el-dialog>
 
@@ -163,7 +196,7 @@
 import CardCategory from "./card/CardCategory";
 import CardGoods from "./card/CardGoods";
 import CardPay from "./card/CardPay";
-import {listApp, listCardTemplate, createSaleOrder} from "@/api/sale/saleShop";
+import {listApp, listCardTemplate, checkStock, createSaleOrder} from "@/api/sale/saleShop";
 
 export default {
   components: { CardCategory, CardGoods, CardPay },
@@ -193,15 +226,6 @@ export default {
         // },
         // {
         //   id: 1,
-        //   name: "[官方]推荐服务",
-        //   max: 100,
-        //   min: 50,
-        //   tags: ["多件优惠", "量大加微信XXX"],
-        //   num: 158,
-        //   wholesale: []
-        // },
-        // {
-        //   id: 2,
         //   name: "[官方]话费充值",
         //   min: 80,
         //   tags: ["单次购买100件只需80元/件"],
@@ -234,8 +258,8 @@ export default {
         { id: 0, name: "账户积分", code: 'balance', img: "pay-jifen" },
         { id: 1, name: "支付宝", code: 'alipay', img: "pay-alipay" },
         { id: 2, name: "微信支付", code: 'wechat', img: "pay-wechat" },
-        { id: 3, name: "银联支付", code: 'yinlian', img: "pay-yinlian" },
-        { id: 4, name: "PayPal", code: 'paypal', img: "pay-paypal" },
+        // { id: 3, name: "银联支付", code: 'yinlian', img: "pay-yinlian" },
+        // { id: 4, name: "PayPal", code: 'paypal', img: "pay-paypal" },
 
       ],
       inputText: "提交订单",
@@ -289,11 +313,12 @@ export default {
     },
     handleBuyNumChange(value) {
       //更新商品价格
-      this.selectedGoodsData.totalPrice = this.selectedGoodsData.price * value;
+      this.selectedGoodsData.totalPrice = (this.selectedGoodsData.price * 100 * value)/100;
     },
     handlePaySelect(id) {
       // 锚点跳转
-      location.href = "#pay";
+      // location.href = "#pay";
+      window.scrollTo(0,document.documentElement.clientHeight);
       //这里检查之前表单是否有误，并判断当前环境是否需要验证。
       if (this.showGoodsDetail == false) {
         this.$notify({
@@ -308,7 +333,29 @@ export default {
       }
       this.payId = id;
     },
-    handleSubmit() {
+    handleConfirmOrder() {
+      //这里检查之前表单是否有误，并判断当前环境是否需要验证。
+      if (this.showGoodsDetail == false) {
+        this.$notify({
+          title: "消息",
+          dangerouslyUseHTMLString: true,
+          message: "请先选择商品",
+          type: "warning",
+          offset: 100
+        });
+      } else {
+        this.form['payMode'] = this.payData[this.payId].code;
+        this.form['appId'] = this.categoryData[this.categoryId].appId;
+        this.form['templateId'] = this.goodsData[this.goodsId].templateId;
+        
+        checkStock(JSON.stringify(this.form)).then((response) => {
+          if(response.code == 200) {
+            this.dialogFormVisible = true;
+          }
+        });
+      }
+    },
+    handlePay() {
       //这里检查之前表单是否有误，并判断当前环境是否需要验证。
       if (this.showGoodsDetail == false) {
         this.$notify({
@@ -325,13 +372,12 @@ export default {
         createSaleOrder(JSON.stringify(this.form)).then((response) => {
           if(response.code == 200) {
             var orderId = response.orderId;
-            this.dialogFormVisible = true;
-            // this.$router.push({
-            //   path: "/billOrder",
-            //   query: {
-            //     orderId: orderId,
-            //   },
-            // });
+            this.$router.push({
+              path: "/billOrder",
+              query: {
+                orderId: orderId,
+              },
+            });
           }
         });
       }
@@ -363,5 +409,28 @@ export default {
 
 .my-button .el-input__inner:active {
   background-color: #2e56ce;
+}
+
+.my-price {
+  font-weight: 600;
+  color: #3c8ce7;
+  margin-right: 5px;
+  font-size: 14px;
+}
+
+.my-discount {
+  font-weight: 600;
+  color: red;
+  font-size: 14px;
+}
+
+.my-total {
+  float: right;
+}
+
+.my-total span {
+  font-weight: 800;
+  color: red;
+  font-size: 24px;
 }
 </style>

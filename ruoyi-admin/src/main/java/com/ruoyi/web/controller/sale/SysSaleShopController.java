@@ -74,10 +74,9 @@ public class SysSaleShopController extends BaseController {
         return getDataTable(saleCardTemplateVoList);
     }
 
-    @PostMapping("/createSaleOrder")
-    public AjaxResult createSaleOrder(@RequestBody SaleOrderVo saleOrderVo) {
-        System.out.println(JSON.toJSONString(saleOrderVo));
-        // 1.检查库存
+    @PostMapping("/checkStock")
+    public AjaxResult checkStock(@RequestBody SaleOrderVo saleOrderVo) {
+        // 检查库存
         SysCardTemplate tpl = sysCardTemplateMapper.selectSysCardTemplateByTemplateId(saleOrderVo.getTemplateId());
         if (!UserConstants.YES.equals(tpl.getOnSale())) {
             throw new ServiceException("商品已下架", 400);
@@ -87,6 +86,14 @@ public class SysSaleShopController extends BaseController {
                 throw new ServiceException("库存不足，请稍后再试", 400);
             }
         }
+        return AjaxResult.success();
+    }
+
+    @PostMapping("/createSaleOrder")
+    public AjaxResult createSaleOrder(@RequestBody SaleOrderVo saleOrderVo) {
+        System.out.println(JSON.toJSONString(saleOrderVo));
+        // 1.检查库存
+        checkStock(saleOrderVo);
         // 2.订单生成
 
         return AjaxResult.success().put("orderId", "234567890");

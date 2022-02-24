@@ -109,11 +109,11 @@ public class SysSaleOrderServiceImpl implements ISysSaleOrderService {
      */
     public void insertSysSaleOrderItem(SysSaleOrder sysSaleOrder) {
         List<SysSaleOrderItem> sysSaleOrderItemList = sysSaleOrder.getSysSaleOrderItemList();
-        String orderNo = sysSaleOrder.getOrderNo();
+        Long orderId = sysSaleOrder.getOrderId();
         if (StringUtils.isNotNull(sysSaleOrderItemList)) {
             List<SysSaleOrderItem> list = new ArrayList<SysSaleOrderItem>();
             for (SysSaleOrderItem sysSaleOrderItem : sysSaleOrderItemList) {
-                sysSaleOrderItem.setOrderNo(orderNo);
+                sysSaleOrderItem.setOrderId(orderId);
                 list.add(sysSaleOrderItem);
             }
             if (list.size() > 0) {

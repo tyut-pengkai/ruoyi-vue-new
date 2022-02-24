@@ -17,6 +17,15 @@ export function listCardTemplate(data) {
   })
 }
 
+// 检查库存
+export function checkStock(data) {
+  return request({
+    url: '/sale/shop/checkStock',
+    method: 'post',
+    data: data
+  })
+}
+
 // 创建销售订单
 export function createSaleOrder(data) {
   return request({
