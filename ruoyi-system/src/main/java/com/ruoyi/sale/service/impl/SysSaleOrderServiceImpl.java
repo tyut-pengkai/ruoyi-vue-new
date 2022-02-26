@@ -36,6 +36,18 @@ public class SysSaleOrderServiceImpl implements ISysSaleOrderService {
     }
 
     /**
+     * 查询销售订单
+     *
+     * @param orderNo 销售订单主键
+     * @return 销售订单
+     */
+    @Override
+    public SysSaleOrder selectSysSaleOrderByOrderNo(String orderNo) {
+        return sysSaleOrderMapper.selectSysSaleOrderByOrderNo(orderNo);
+    }
+
+
+    /**
      * 查询销售订单列表
      *
      * @param sysSaleOrder 销售订单

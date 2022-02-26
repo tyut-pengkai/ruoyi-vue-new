@@ -24,6 +24,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -173,4 +175,27 @@ public class SysSaleShopController extends BaseController {
         return DateUtils.dateTimeNow("yyMMddHHmmssSSS") + appId + tplId + RandomStringUtils.randomNumeric(2);
     }
 
+    @RequestMapping("/notify")
+    public AjaxResult notify(HttpServletRequest request, HttpServletResponse response, String orderNo) {
+        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
+        if (sso != null) {
+            sso.setStatus(SaleOrderStatus.PAID);
+            sysSaleOrderService.updateSysSaleOrder(sso);
+        } else {
+            throw new ServiceException("订单不存在", 400);
+        }
+        System.out.println("支付成功回调。。。。");
+        return AjaxResult.success();
+    }
+
+    @PostMapping("/getCardList")
+    public AjaxResult getCardList(String orderNo, String queryPass) {
+        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
+        if (sso != null) {
+
+        } else {
+            throw new ServiceException("订单不存在", 400);
+        }
+        return AjaxResult.success();
+    }
 }

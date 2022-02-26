@@ -20,6 +20,14 @@ public interface ISysSaleOrderService {
     public SysSaleOrder selectSysSaleOrderByOrderId(Long orderId);
 
     /**
+     * 查询销售订单
+     *
+     * @param orderNo 销售订单主键
+     * @return 销售订单
+     */
+    public SysSaleOrder selectSysSaleOrderByOrderNo(String orderNo);
+
+    /**
      * 查询销售订单列表
      *
      * @param sysSaleOrder 销售订单

@@ -225,9 +225,8 @@
       </el-form>
       <div slot="footer" style="margin-top: -40px">
         <el-button @click="handleCancelPay">取 消</el-button>
-        <el-button type="primary" @click="handlePay">{{
-            submitButtonText
-          }}
+        <el-button type="primary" @click="handlePay"
+        >{{ submitButtonText }}
         </el-button>
       </div>
     </el-dialog>
@@ -466,7 +465,7 @@ export default {
           this.form["templateId"] = this.goodsData[this.goodsId].templateId;
 
           this.$modal.loading("正在提交，请稍后...");
-          createSaleOrder(JSON.stringify(this.form))
+          createSaleOrder(this.form)
             .then((response) => {
               if (response.code == 200) {
                 this.orderId = response.orderId;
@@ -496,8 +495,6 @@ export default {
           this.$modal
             .confirm("是否已成功支付？")
             .then(function () {
-            })
-            .then(() => {
             })
             .catch(() => {
             });

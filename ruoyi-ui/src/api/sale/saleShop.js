@@ -34,3 +34,21 @@ export function createSaleOrder(data) {
     data: data
   })
 }
+
+// 支付成功
+export function notify(data) {
+  return request({
+    url: '/sale/shop/notify',
+    method: 'post',
+    data: data
+  })
+}
+
+// 获取卡密
+export function getCardList(data) {
+  return request({
+    url: '/sale/shop/getCardList',
+    method: 'post',
+    data: data
+  })
+}

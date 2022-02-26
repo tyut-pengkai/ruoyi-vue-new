@@ -23,6 +23,14 @@ public interface SysSaleOrderMapper {
     public SysSaleOrder selectSysSaleOrderByOrderId(Long orderId);
 
     /**
+     * 查询销售订单
+     *
+     * @param orderNo 销售订单主键
+     * @return 销售订单
+     */
+    public SysSaleOrder selectSysSaleOrderByOrderNo(String orderNo);
+
+    /**
      * 查询销售订单列表
      *
      * @param sysSaleOrder 销售订单
@@ -78,7 +86,6 @@ public interface SysSaleOrderMapper {
      */
     public int batchSysSaleOrderItem(List<SysSaleOrderItem> sysSaleOrderItemList);
 
-
     /**
      * 通过销售订单主键删除销售订单详情信息
      *
@@ -86,4 +93,5 @@ public interface SysSaleOrderMapper {
      * @return 结果
      */
     public int deleteSysSaleOrderItemByOrderId(Long orderId);
+
 }

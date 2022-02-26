@@ -119,6 +119,43 @@
         where a.order_id = #{orderId}
     </select>
 
+    <select id="selectSysSaleOrderByOrderNo" parameterType="String" resultMap="SysSaleOrderSysSaleOrderItemResult">
+        select a.order_id,
+               a.order_no,
+               a.user_id,
+               a.actual_fee,
+               a.total_fee,
+               a.discount_rule,
+               a.discount_fee,
+               a.pay_mode,
+               a.status,
+               a.contact,
+               a.query_pass,
+               a.create_by,
+               a.create_time,
+               a.payment_time,
+               a.delivery_time,
+               a.finish_time,
+               a.close_time,
+               a.update_by,
+               a.update_time,
+               a.remark,
+               b.item_id       as sub_item_id,
+               b.order_id      as sub_order_id,
+               b.template_type as sub_template_type,
+               b.template_id   as sub_template_id,
+               b.num           as sub_num,
+               b.title         as sub_title,
+               b.price         as sub_price,
+               b.total_fee     as sub_total_fee,
+               b.discount_rule as sub_discount_rule,
+               b.discount_fee  as sub_discount_fee,
+               b.actual_fee    as sub_actual_fee
+        from sys_sale_order a
+                 left join sys_sale_order_item b on b.order_id = a.order_id
+        where a.order_no = #{orderNo}
+    </select>
+
     <insert id="insertSysSaleOrder" parameterType="SysSaleOrder" useGeneratedKeys="true" keyProperty="orderId">
         insert into sys_sale_order
         <trim prefix="(" suffix=")" suffixOverrides=",">
