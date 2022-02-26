@@ -43,7 +43,7 @@ public class SysSaleOrderItem extends BaseEntity {
      * 购买数量
      */
     @Excel(name = "购买数量")
-    private Long num;
+    private Integer num;
 
     /**
      * 商品标题
@@ -61,7 +61,7 @@ public class SysSaleOrderItem extends BaseEntity {
      * 总价格（折扣前）
      */
     @Excel(name = "总价格", readConverterExp = "折=扣前")
-    private String totalFee;
+    private BigDecimal totalFee;
 
     /**
      * 折扣规则
@@ -73,13 +73,13 @@ public class SysSaleOrderItem extends BaseEntity {
      * 折扣金额
      */
     @Excel(name = "折扣金额")
-    private String discountFee;
+    private BigDecimal discountFee;
 
     /**
      * 应付金额
      */
     @Excel(name = "应付金额")
-    private String actualFee;
+    private BigDecimal actualFee;
 
     public Long getItemId() {
         return itemId;
@@ -113,11 +113,11 @@ public class SysSaleOrderItem extends BaseEntity {
         this.templateId = templateId;
     }
 
-    public Long getNum() {
+    public Integer getNum() {
         return num;
     }
 
-    public void setNum(Long num) {
+    public void setNum(Integer num) {
         this.num = num;
     }
 
@@ -137,11 +137,11 @@ public class SysSaleOrderItem extends BaseEntity {
         this.price = price;
     }
 
-    public String getTotalFee() {
+    public BigDecimal getTotalFee() {
         return totalFee;
     }
 
-    public void setTotalFee(String totalFee) {
+    public void setTotalFee(BigDecimal totalFee) {
         this.totalFee = totalFee;
     }
 
@@ -153,19 +153,19 @@ public class SysSaleOrderItem extends BaseEntity {
         this.discountRule = discountRule;
     }
 
-    public String getDiscountFee() {
+    public BigDecimal getDiscountFee() {
         return discountFee;
     }
 
-    public void setDiscountFee(String discountFee) {
+    public void setDiscountFee(BigDecimal discountFee) {
         this.discountFee = discountFee;
     }
 
-    public String getActualFee() {
+    public BigDecimal getActualFee() {
         return actualFee;
     }
 
-    public void setActualFee(String actualFee) {
+    public void setActualFee(BigDecimal actualFee) {
         this.actualFee = actualFee;
     }
 

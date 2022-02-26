@@ -6,8 +6,12 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.sale.domain.SysSaleOrder;
+import com.ruoyi.sale.domain.SysSaleOrderItem;
+import com.ruoyi.sale.service.ISysSaleOrderService;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.mapper.SysAppMapper;
@@ -16,10 +20,13 @@ import com.ruoyi.system.mapper.SysCardTemplateMapper;
 import com.ruoyi.web.controller.sale.vo.SaleAppVo;
 import com.ruoyi.web.controller.sale.vo.SaleCardTemplateVo;
 import com.ruoyi.web.controller.sale.vo.SaleOrderVo;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +45,8 @@ public class SysSaleShopController extends BaseController {
     private SysCardTemplateMapper sysCardTemplateMapper;
     @Autowired
     private SysCardMapper sysCardTMapper;
+    @Autowired
+    private ISysSaleOrderService sysSaleOrderService;
 
     /**
      * 查询软件列表
@@ -95,8 +104,48 @@ public class SysSaleShopController extends BaseController {
         // 1.检查库存
         checkStock(saleOrderVo);
         // 2.订单生成
-
-        return AjaxResult.success().put("orderId", "234567890");
+        String orderNo = genOrderNo(saleOrderVo);
+        SysSaleOrder sso = new SysSaleOrder();
+        SysSaleOrderItem ssoi = new SysSaleOrderItem();
+        sso.setOrderNo(orderNo);
+        sso.setUserId(null);
+        // 3.计算金额
+        SysCardTemplate sct = sysCardTemplateMapper.selectSysCardTemplateByTemplateId(saleOrderVo.getTemplateId());
+        BigDecimal totalFee = sct.getPrice().multiply(BigDecimal.valueOf(saleOrderVo.getBuyNum()));
+        sso.setTotalFee(totalFee);
+        // 4.计算优惠
+        sso.setDiscountRule(null);
+        sso.setDiscountFee(null);
+        // 5.计算要支付的金额
+        sso.setActualFee(totalFee);
+        sso.setPayMode(saleOrderVo.getPayMode());
+        sso.setStatus(SaleOrderStatus.WAIT_PAY);
+        sso.setContact(saleOrderVo.getContact());
+        sso.setQueryPass(saleOrderVo.getQueryPass());
+        sso.setCreateBy(null);
+        sso.setPaymentTime(null);
+        sso.setDeliveryTime(null);
+        sso.setFinishTime(null);
+        sso.setCloseTime(null);
+        sso.setRemark(null);
+        sso.setExpireTime(new Date(DateUtils.getNowDate().getTime() + 1000 * 60 * 5));
+        sso.setUpdateBy(null);
+        sso.setUpdateTime(null);
+        // 6.订单详情
+        ssoi.setTemplateType("1"); // 1卡类 2登录码类
+        ssoi.setTemplateId(saleOrderVo.getTemplateId());
+        ssoi.setNum(saleOrderVo.getBuyNum());
+        ssoi.setTitle(sct.getCardName());
+        ssoi.setPrice(sct.getPrice());
+        ssoi.setTotalFee(totalFee);
+        ssoi.setDiscountRule(null);
+        ssoi.setDiscountFee(null);
+        ssoi.setActualFee(totalFee);
+        List<SysSaleOrderItem> itemList = new ArrayList<>();
+        itemList.add(ssoi);
+        sso.setSysSaleOrderItemList(itemList);
+        sysSaleOrderService.insertSysSaleOrder(sso);
+        return AjaxResult.success().put("orderId", orderNo);
     }
 
     /**
@@ -114,6 +163,14 @@ public class SysSaleShopController extends BaseController {
         card.setStatus(UserConstants.NORMAL);
         return sysCardTMapper.selectSysCardList(card)
                 .stream().filter(c -> c.getExpireTime().after(DateUtils.getNowDate())).collect(Collectors.toList());
+    }
+
+    private synchronized String genOrderNo(SaleOrderVo saleOrderVo) {
+        String appId = String.format("%04d", saleOrderVo.getAppId());
+        appId = appId.substring(appId.length() - 4, appId.length());
+        String tplId = String.format("%04d", saleOrderVo.getTemplateId());
+        tplId = tplId.substring(tplId.length() - 4, tplId.length());
+        return DateUtils.dateTimeNow("yyMMddHHmmssSSS") + appId + tplId + RandomStringUtils.randomNumeric(2);
     }
 
 }

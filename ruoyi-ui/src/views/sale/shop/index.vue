@@ -2,13 +2,12 @@
   <div class="home">
     <el-alert title="公告" type="success" :closable="false">
       <p>本站为INAMS演示站。所有商品仅供测试。并无实际商品。请悉知。</p>
-      <p>
-
-      </p>
     </el-alert>
     <el-card class="box-card" style="margin-top: 15px">
       <div class="my-title">
-        <img src="../../../assets/images/category.svg"/>&nbsp;<span>选择分类</span>
+        <img src="../../../assets/images/category.svg"/>&nbsp;<span
+      >选择分类</span
+      >
       </div>
       <card-category
         style="margin-top: 15px"
@@ -19,7 +18,9 @@
       </card-category>
       <el-divider></el-divider>
       <div class="my-title">
-        <img src="../../../assets/images/goods.svg"/>&nbsp;<span>选择商品</span>
+        <img src="../../../assets/images/goods.svg"/>&nbsp;<span
+      >选择商品</span
+      >
       </div>
       <card-goods
         style="margin-top: 15px"
@@ -30,45 +31,52 @@
       </card-goods>
       <el-divider v-show="showGoodsDetail" id="goods"></el-divider>
       <div class="my-title" v-show="showGoodsDetail">
-        <img src="../../../assets/images/detail.svg"/>&nbsp;<span>商品详情</span>
+        <img src="../../../assets/images/detail.svg"/>&nbsp;<span
+      >商品详情</span
+      >
       </div>
       <div v-show="showGoodsDetail">
         <el-skeleton :throttle="300" :loading="loading" animated>
           <template #template>
-            <div style="margin:10px 0;">
+            <div style="margin: 10px 0">
               <el-skeleton-item
                 variant="text"
-                style="height: 28px;margin-bottom: 18px;"
+                style="height: 28px; margin-bottom: 18px"
               />
               <el-skeleton-item
                 variant="text"
-                style="height: 28px;margin-bottom: 18px;"
+                style="height: 28px; margin-bottom: 18px"
               />
               <el-skeleton-item
                 variant="text"
-                style="height: 28px;margin-bottom: 18px;"
+                style="height: 28px; margin-bottom: 18px"
               />
               <el-skeleton-item
                 variant="text"
-                style="height: 28px;margin-bottom: 18px;"
+                style="height: 28px; margin-bottom: 18px"
               />
               <el-skeleton-item
                 variant="text"
-                style="height: 28px;margin-bottom: 18px;"
+                style="height: 28px; margin-bottom: 18px"
               />
               <el-skeleton-item
                 variant="text"
-                style="height: 28px;margin-bottom: 18px;"
+                style="height: 28px; margin-bottom: 18px"
               />
             </div>
           </template>
           <template #default>
-            <el-alert title="商品公告" type="success" :closable="false" style="margin:10px 0;">
-              <p>本项目靠爱发电，如果觉得对您有帮助，何不请作者喝瓶冰阔乐</p>
+            <el-alert
+              :closable="false"
+              style="margin: 10px 0"
+              title="商品公告"
+              type="success"
+            >
+              <p>感谢您的使用</p>
             </el-alert>
             <el-form
               ref="form"
-              style="margin-top: 10px;"
+              style="margin-top: 10px"
               :model="form"
               label-width="80px"
               size="mini"
@@ -137,7 +145,7 @@
       id="pay"
       type="button"
       class="my-button"
-      style="margin-top: 10px;"
+      style="margin-top: 10px"
       v-show="payButtonShow"
       v-model="inputText"
       @click.native="handleConfirmOrder"
@@ -147,48 +155,82 @@
     <!-- Form -->
     <!-- <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
 
-    <el-dialog title="确认订单" custom-class="customClass" :visible.sync="dialogFormVisible" width="500px" style="margin-top:10vh">
-      <el-steps :active="1" finish-status="success" align-center style="margin-bottom: 30px;">
+    <el-dialog
+      :before-close="handleCancelPay"
+      :title="dialogTitle"
+      :visible.sync="dialogFormVisible"
+      custom-class="customClass"
+      style="margin-top: 10vh"
+      width="500px"
+    >
+      <el-steps
+        :active="activeStep"
+        align-center
+        finish-status="success"
+        style="margin-bottom: 30px"
+      >
         <el-step title="选择商品"></el-step>
         <el-step title="确认订单"></el-step>
         <el-step title="线上支付"></el-step>
         <el-step title="提取商品"></el-step>
       </el-steps>
-      <el-form :model="form" v-if="categoryData && goodsData && payData && categoryId!=null && goodsId!=null && payId!=null">
+      <el-form
+        v-if="
+          categoryData &&
+          goodsData &&
+          payData &&
+          categoryId != null &&
+          goodsId != null &&
+          payId != null
+        "
+        :model="form"
+      >
         <el-form-item label="商品名称" label-width="120px">
-            [ {{categoryData[categoryId].name}} ] {{goodsData[goodsId].name}}
+          [ {{ categoryData[categoryId].name }} ] {{ goodsData[goodsId].name }}
         </el-form-item>
         <el-form-item label="商品单价" label-width="120px">
-          <span class="my-price">￥{{selectedGoodsData.price}}</span> <el-tag size="small">× {{form.buyNum}}</el-tag>
+          <span class="my-price">￥{{ selectedGoodsData.price }}</span>
+          <el-tag size="small">× {{ form.buyNum }}</el-tag>
         </el-form-item>
         <el-form-item label="商品总价" label-width="120px">
-          <span class="my-price">￥{{selectedGoodsData.totalPrice}}</span>
+          <span class="my-price">￥{{ selectedGoodsData.totalPrice }}</span>
         </el-form-item>
         <!-- <el-form-item label="优惠金额" label-width="120px">
           <el-tag effect="plain" size="small" type="danger">立减</el-tag> <span class="my-discount">-￥10.00</span>  <br>
           <el-tag effect="plain" size="small" type="danger">优惠券</el-tag> <span class="my-discount">-￥10.00</span>
         </el-form-item> -->
         <el-form-item label="联系方式" label-width="120px">
-          {{form.contact}}
+          {{ form.contact }}
         </el-form-item>
         <el-form-item label="支付方式" label-width="120px">
-          {{payData[payId].name}}
+          {{ payData[payId].name }}
         </el-form-item>
         <el-divider></el-divider>
+        <div v-if="orderShow">
+          <el-form-item label="" label-width="120px">
+            <span class="my-discount">[ 订单已提交，请在5分钟内支付 ]</span>
+          </el-form-item>
+          <el-form-item label="订单编号" label-width="120px">
+            {{ orderId }}
+            <span class="my-discount"> [ {{ remainTimeShow }} ] </span>
+          </el-form-item>
+        </div>
         <el-row>
           <el-col :span="18" :offset="4">
             <el-form-item label="应付金额" label-width="120px" class="my-total">
-              <span>￥{{selectedGoodsData.totalPrice}}</span>
+              <span>￥{{ selectedGoodsData.totalPrice }}</span>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-      <div slot="footer" style="margin-top:-40px;">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click.native="handlePay">立即支付</el-button>
+      <div slot="footer" style="margin-top: -40px">
+        <el-button @click="handleCancelPay">取 消</el-button>
+        <el-button type="primary" @click="handlePay">{{
+            submitButtonText
+          }}
+        </el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
@@ -196,7 +238,7 @@
 import CardCategory from "./card/CardCategory";
 import CardGoods from "./card/CardGoods";
 import CardPay from "./card/CardPay";
-import {listApp, listCardTemplate, checkStock, createSaleOrder} from "@/api/sale/saleShop";
+import {checkStock, createSaleOrder, listApp, listCardTemplate,} from "@/api/sale/saleShop";
 
 export default {
   components: { CardCategory, CardGoods, CardPay },
@@ -246,23 +288,32 @@ export default {
       showGoodsDetail: false,
       loading: false,
       // 详情
+      formCopy: {},
       form: {
         contact: "",
         queryPass: "",
         buyNum: 1,
       },
-      // 支付
+      // 下单
       payId: null,
       payButtonShow: false,
       payData: [
-        { id: 0, name: "账户积分", code: 'balance', img: "pay-jifen" },
-        { id: 1, name: "支付宝", code: 'alipay', img: "pay-alipay" },
-        { id: 2, name: "微信支付", code: 'wechat', img: "pay-wechat" },
+        {id: 0, name: "账户积分", code: "balance", img: "pay-jifen"},
+        {id: 1, name: "支付宝", code: "alipay", img: "pay-alipay"},
+        {id: 2, name: "微信支付", code: "wechat", img: "pay-wechat"},
         // { id: 3, name: "银联支付", code: 'yinlian', img: "pay-yinlian" },
         // { id: 4, name: "PayPal", code: 'paypal', img: "pay-paypal" },
-
       ],
       inputText: "提交订单",
+      dialogTitle: "确认订单",
+      submitButtonText: "确认订单",
+      activeStep: 1,
+      // 支付
+      orderShow: false,
+      orderId: null,
+      remainTime: 300,
+      remainTimeShow: "00:05:00",
+      time: null,
     };
   },
   created() {
@@ -273,9 +324,14 @@ export default {
     getList() {
       listApp({}).then((response) => {
         var appList = response.rows;
-        for(var app of appList){
-          if(app.tplCount > 0) {
-            this.categoryData.push({id:this.categoryData.length, appId: app.appId, name:app.appName, count:app.tplCount});
+        for (var app of appList) {
+          if (app.tplCount > 0) {
+            this.categoryData.push({
+              id: this.categoryData.length,
+              appId: app.appId,
+              name: app.appName,
+              count: app.tplCount,
+            });
           }
         }
       });
@@ -285,12 +341,22 @@ export default {
       this.showGoodsDetail = false;
       this.goodsId = null;
       // 拉取当前选择目录下的商品列表
-      listCardTemplate({appId: this.categoryData[id].appId}).then((response) => {
-        var ctList = response.rows;
-        for(var ct of ctList){
-          this.goodsData.push({id: this.goodsData.length, templateId: ct.templateId, name: ct.cardName, min: ct.price, tags: ["多件优惠"], num: ct.cardCount, wholesale: []});
+      listCardTemplate({appId: this.categoryData[id].appId}).then(
+        (response) => {
+          var ctList = response.rows;
+          for (var ct of ctList) {
+            this.goodsData.push({
+              id: this.goodsData.length,
+              templateId: ct.templateId,
+              name: ct.cardName,
+              min: ct.price,
+              tags: ["多件优惠"],
+              num: ct.cardCount,
+              wholesale: [],
+            });
+          }
         }
-      });
+      );
       this.categoryId = id;
     },
     handleGoodsSelect(id) {
@@ -303,7 +369,7 @@ export default {
         this.loading = false;
       }, 1000);
       // 是否出现下单按钮
-      if(this.payId != null){
+      if (this.payId != null) {
         this.payButtonShow = true;
       }
       this.selectedGoodsData = this.goodsData[id];
@@ -313,12 +379,13 @@ export default {
     },
     handleBuyNumChange(value) {
       //更新商品价格
-      this.selectedGoodsData.totalPrice = (this.selectedGoodsData.price * 100 * value)/100;
+      this.selectedGoodsData.totalPrice =
+        (this.selectedGoodsData.price * 100 * value) / 100;
     },
     handlePaySelect(id) {
       // 锚点跳转
       // location.href = "#pay";
-      window.scrollTo(0,document.documentElement.clientHeight);
+      window.scrollTo(0, document.documentElement.clientHeight);
       //这里检查之前表单是否有误，并判断当前环境是否需要验证。
       if (this.showGoodsDetail == false) {
         this.$notify({
@@ -326,7 +393,7 @@ export default {
           dangerouslyUseHTMLString: true,
           message: "请先选择商品",
           type: "warning",
-          offset: 100
+          offset: 100,
         });
       } else {
         this.payButtonShow = true;
@@ -341,20 +408,47 @@ export default {
           dangerouslyUseHTMLString: true,
           message: "请先选择商品",
           type: "warning",
-          offset: 100
+          offset: 100,
         });
       } else {
-        this.form['payMode'] = this.payData[this.payId].code;
-        this.form['appId'] = this.categoryData[this.categoryId].appId;
-        this.form['templateId'] = this.goodsData[this.goodsId].templateId;
-        
-        checkStock(JSON.stringify(this.form)).then((response) => {
-          if(response.code == 200) {
-            this.dialogFormVisible = true;
-          }
-        });
+        this.orderId = null;
+        this.dialogTitle = "确认订单";
+        this.activeStep = 1;
+        this.submitButtonText = "确认订单";
+        this.orderShow = false;
+        if (this.timer) {
+          clearInterval(this.timer);
+        }
+
+        this.form["payMode"] = this.payData[this.payId].code;
+        this.form["appId"] = this.categoryData[this.categoryId].appId;
+        this.form["templateId"] = this.goodsData[this.goodsId].templateId;
+
+        checkStock(JSON.stringify(this.form))
+          .then((response) => {
+            if (response.code == 200) {
+              this.dialogFormVisible = true;
+            }
+          })
+          .finally(() => {
+          });
       }
     },
+
+    countDown() {
+      if (this.remainTime >= 0) {
+        var minutes = Math.floor(this.remainTime / 60);
+        var seconds = Math.floor(this.remainTime % 60);
+        this.remainTimeShow =
+          "00:0" + minutes + ":" + (seconds >= 10 ? seconds : "0" + seconds);
+        --this.remainTime;
+      } else {
+        clearInterval(this.timer);
+        this.dialogFormVisible = false;
+        this.$modal.alert("订单超时未支付，已自动关闭订单");
+      }
+    },
+
     handlePay() {
       //这里检查之前表单是否有误，并判断当前环境是否需要验证。
       if (this.showGoodsDetail == false) {
@@ -363,27 +457,61 @@ export default {
           dangerouslyUseHTMLString: true,
           message: "请先选择商品",
           type: "warning",
-          offset: 100
+          offset: 100,
         });
       } else {
-        this.form['payMode'] = this.payData[this.payId].code;
-        this.form['appId'] = this.categoryData[this.categoryId].appId;
-        this.form['templateId'] = this.goodsData[this.goodsId].templateId;
-        createSaleOrder(JSON.stringify(this.form)).then((response) => {
-          if(response.code == 200) {
-            var orderId = response.orderId;
-            this.$router.push({
-              path: "/billOrder",
-              query: {
-                orderId: orderId,
-              },
+        if (this.activeStep == 1) {
+          this.form["payMode"] = this.payData[this.payId].code;
+          this.form["appId"] = this.categoryData[this.categoryId].appId;
+          this.form["templateId"] = this.goodsData[this.goodsId].templateId;
+
+          this.$modal.loading("正在提交，请稍后...");
+          createSaleOrder(JSON.stringify(this.form))
+            .then((response) => {
+              if (response.code == 200) {
+                this.orderId = response.orderId;
+              }
+            })
+            .finally(() => {
+              setTimeout(() => {
+                this.dialogTitle = "线上支付";
+                this.activeStep = 2;
+                this.submitButtonText = "立即支付";
+                this.remainTime = 300;
+                this.remainTimeShow = "00:05:00";
+                if (this.timer) {
+                  clearInterval(this.timer);
+                }
+                this.timer = setInterval(this.countDown, 1000);
+                this.orderShow = true;
+                this.$modal.closeLoading();
+              }, 1000);
             });
-          }
-        });
+        } else if (this.activeStep == 2) {
+          const newPage = this.$router.resolve({
+            path: "/billOrder",
+            query: {orderId: this.orderId},
+          });
+          window.open(newPage.href, "_blank");
+          this.$modal
+            .confirm("是否已成功支付？")
+            .then(function () {
+            })
+            .then(() => {
+            })
+            .catch(() => {
+            });
+        }
       }
     },
-  }
-}
+    handleCancelPay() {
+      this.dialogFormVisible = false;
+      if (this.timer) {
+        clearInterval(this.timer);
+      }
+    },
+  },
+};
 </script>
 
 <style>
@@ -394,7 +522,7 @@ export default {
 }
 
 .my-title img {
-    vertical-align: bottom;
+  vertical-align: bottom;
 }
 
 .my-button .el-input__inner {

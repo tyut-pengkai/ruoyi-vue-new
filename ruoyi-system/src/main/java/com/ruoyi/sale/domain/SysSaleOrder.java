@@ -3,6 +3,7 @@ package com.ruoyi.sale.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.enums.SaleOrderStatus;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -70,7 +71,7 @@ public class SysSaleOrder extends BaseEntity {
      * 1未付款2已付款3未发货4已发货5交易成功6交易关闭
      */
     @Excel(name = "1未付款2已付款3未发货4已发货5交易成功6交易关闭")
-    private String status;
+    private SaleOrderStatus status;
 
     /**
      * 联系方式
@@ -111,6 +112,13 @@ public class SysSaleOrder extends BaseEntity {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Excel(name = "订单关闭时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date closeTime;
+
+    /**
+     * 订单超时时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "订单超时时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date expireTime;
 
     /**
      * 销售订单详情信息
@@ -181,11 +189,11 @@ public class SysSaleOrder extends BaseEntity {
         this.payMode = payMode;
     }
 
-    public String getStatus() {
+    public SaleOrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(SaleOrderStatus status) {
         this.status = status;
     }
 
@@ -245,6 +253,14 @@ public class SysSaleOrder extends BaseEntity {
         this.sysSaleOrderItemList = sysSaleOrderItemList;
     }
 
+    public Date getExpireTime() {
+        return expireTime;
+    }
+
+    public void setExpireTime(Date expireTime) {
+        this.expireTime = expireTime;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -265,6 +281,7 @@ public class SysSaleOrder extends BaseEntity {
                 .append("deliveryTime", getDeliveryTime())
                 .append("finishTime", getFinishTime())
                 .append("closeTime", getCloseTime())
+                .append("expireTime", getExpireTime())
                 .append("updateBy", getUpdateBy())
                 .append("updateTime", getUpdateTime())
                 .append("remark", getRemark())

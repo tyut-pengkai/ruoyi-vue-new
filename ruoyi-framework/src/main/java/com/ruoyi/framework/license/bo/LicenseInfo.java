@@ -35,7 +35,7 @@ public class LicenseInfo {
             info.setLicenseDomain(String.join("/", extra.getDomainName()));
             info.setLicenseIp(String.join("/", extra.getIpAddress()));
             info.setDatetime(DateUtils.parseDateToStr(from) + " - " + DateUtils.parseDateToStr(to) +
-                    " (" + DateUtils.getDatePoor(to, from) + ")");
+                    " (剩余" + DateUtils.getDatePoor(to, DateUtils.getNowDate()) + ")");
         }
         return info;
     }
