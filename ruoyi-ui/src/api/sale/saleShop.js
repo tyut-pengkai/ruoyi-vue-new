@@ -39,8 +39,8 @@ export function createSaleOrder(data) {
 export function notify(data) {
   return request({
     url: '/sale/shop/notify',
-    method: 'post',
-    data: data
+    method: 'get',
+    params: data
   })
 }
 
@@ -48,7 +48,7 @@ export function notify(data) {
 export function getCardList(data) {
   return request({
     url: '/sale/shop/getCardList',
-    method: 'post',
-    data: data
+    method: 'get',
+    params: data
   })
 }

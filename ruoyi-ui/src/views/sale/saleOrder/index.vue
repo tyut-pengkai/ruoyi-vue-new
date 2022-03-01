@@ -108,7 +108,7 @@
       <el-table-column label="折扣规则" align="center" prop="discountRule" />
       <el-table-column label="折扣金额" align="center" prop="discountFee" />
       <el-table-column label="支付方式" align="center" prop="payMode" />
-      <el-table-column label="1未付款2已付款3未发货4已发货5交易成功6交易关闭" align="center" prop="status" />
+      <el-table-column label="0未付款1已付款2交易关闭3交易成功4交易结束" align="center" prop="status" />
       <el-table-column label="联系方式" align="center" prop="contact" />
       <el-table-column label="查询密码" align="center" prop="queryPass" />
       <el-table-column label="支付时间" align="center" prop="paymentTime" width="180">

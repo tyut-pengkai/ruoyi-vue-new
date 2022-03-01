@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.sale.mapper.SysSaleOrderItemGoodsMapper">
+
+    <resultMap type="SysSaleOrderItemGoods" id="SysSaleOrderItemGoodsResult">
+        <result property="id" column="id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="cardId" column="card_id"/>
+    </resultMap>
+
+    <sql id="selectSysSaleOrderItemGoodsVo">
+        select id, item_id, card_id
+        from sys_sale_order_item_goods
+    </sql>
+
+    <select id="selectSysSaleOrderItemGoodsList" parameterType="SysSaleOrderItemGoods"
+            resultMap="SysSaleOrderItemGoodsResult">
+        <include refid="selectSysSaleOrderItemGoodsVo"/>
+        <where>
+            <if test="itemId != null ">and item_id = #{itemId}</if>
+            <if test="cardId != null ">and card_id = #{cardId}</if>
+        </where>
+    </select>
+
+    <select id="selectSysSaleOrderItemGoodsById" parameterType="Long" resultMap="SysSaleOrderItemGoodsResult">
+        <include refid="selectSysSaleOrderItemGoodsVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectSysSaleOrderItemGoodsByItemId" parameterType="Long" resultMap="SysSaleOrderItemGoodsResult">
+        <include refid="selectSysSaleOrderItemGoodsVo"/>
+        where item_id = #{itemId}
+    </select>
+
+    <insert id="insertSysSaleOrderItemGoods" parameterType="SysSaleOrderItemGoods" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into sys_sale_order_item_goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="itemId != null">item_id,</if>
+            <if test="cardId != null">card_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="itemId != null">#{itemId},</if>
+            <if test="cardId != null">#{cardId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysSaleOrderItemGoods" parameterType="SysSaleOrderItemGoods">
+        update sys_sale_order_item_goods
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="itemId != null">item_id = #{itemId},</if>
+            <if test="cardId != null">card_id = #{cardId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysSaleOrderItemGoodsById" parameterType="Long">
+        delete
+        from sys_sale_order_item_goods
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteSysSaleOrderItemGoodsByIds" parameterType="String">
+        delete from sys_sale_order_item_goods where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

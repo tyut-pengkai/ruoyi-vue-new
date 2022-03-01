@@ -211,7 +211,7 @@
             <span class="my-discount">[ 订单已提交，请在5分钟内支付 ]</span>
           </el-form-item>
           <el-form-item label="订单编号" label-width="120px">
-            {{ orderId }}
+            {{ orderNo }}
             <span class="my-discount"> [ {{ remainTimeShow }} ] </span>
           </el-form-item>
         </div>
@@ -237,7 +237,7 @@
 import CardCategory from "./card/CardCategory";
 import CardGoods from "./card/CardGoods";
 import CardPay from "./card/CardPay";
-import {checkStock, createSaleOrder, listApp, listCardTemplate,} from "@/api/sale/saleShop";
+import {checkStock, createSaleOrder, listApp, listCardTemplate, getCardList} from "@/api/sale/saleShop";
 
 export default {
   components: { CardCategory, CardGoods, CardPay },
@@ -309,7 +309,7 @@ export default {
       activeStep: 1,
       // 支付
       orderShow: false,
-      orderId: null,
+      orderNo: null,
       remainTime: 300,
       remainTimeShow: "00:05:00",
       time: null,
@@ -410,7 +410,7 @@ export default {
           offset: 100,
         });
       } else {
-        this.orderId = null;
+        this.orderNo = null;
         this.dialogTitle = "确认订单";
         this.activeStep = 1;
         this.submitButtonText = "确认订单";
@@ -468,7 +468,7 @@ export default {
           createSaleOrder(this.form)
             .then((response) => {
               if (response.code == 200) {
-                this.orderId = response.orderId;
+                this.orderNo = response.orderNo;
               }
             })
             .finally(() => {
@@ -489,12 +489,28 @@ export default {
         } else if (this.activeStep == 2) {
           const newPage = this.$router.resolve({
             path: "/billOrder",
-            query: {orderId: this.orderId},
+            query: {orderNo: this.orderNo},
           });
           window.open(newPage.href, "_blank");
+          if (this.timer) {
+            clearInterval(this.timer);
+          }
+          this.dialogFormVisible = false;
           this.$modal
             .confirm("是否已成功支付？")
-            .then(function () {
+            .then(() => {
+              console.log("确认");
+              var data = {orderNo: this.orderNo, queryPass: this.form.queryPass};
+              getCardList(data)
+              .then((response) => {
+                if (response.code == 200) {
+                  console.log(response)
+                  var itemList = response.itemList;
+                   this.$modal.confirm(itemList[0].goodsList[0].cardNo);
+                }
+              })
+              .finally(() => {
+              });
             })
             .catch(() => {
             });

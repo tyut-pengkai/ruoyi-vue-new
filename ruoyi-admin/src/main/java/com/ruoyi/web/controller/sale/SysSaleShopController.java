@@ -11,12 +11,17 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.domain.SysSaleOrderItem;
+import com.ruoyi.sale.domain.SysSaleOrderItemGoods;
+import com.ruoyi.sale.domain.vo.SysCardVo;
+import com.ruoyi.sale.domain.vo.SysSaleOrderItemVo;
+import com.ruoyi.sale.service.ISysSaleOrderItemGoodsService;
 import com.ruoyi.sale.service.ISysSaleOrderService;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.mapper.SysAppMapper;
 import com.ruoyi.system.mapper.SysCardMapper;
 import com.ruoyi.system.mapper.SysCardTemplateMapper;
+import com.ruoyi.system.mapper.SysLoginCodeMapper;
 import com.ruoyi.web.controller.sale.vo.SaleAppVo;
 import com.ruoyi.web.controller.sale.vo.SaleCardTemplateVo;
 import com.ruoyi.web.controller.sale.vo.SaleOrderVo;
@@ -46,9 +51,13 @@ public class SysSaleShopController extends BaseController {
     @Autowired
     private SysCardTemplateMapper sysCardTemplateMapper;
     @Autowired
-    private SysCardMapper sysCardTMapper;
+    private SysCardMapper sysCardMapper;
+    @Autowired
+    private SysLoginCodeMapper sysLoginCodeMapper;
     @Autowired
     private ISysSaleOrderService sysSaleOrderService;
+    @Autowired
+    private ISysSaleOrderItemGoodsService sysSaleOrderItemGoodsService;
 
     /**
      * 查询软件列表
@@ -147,7 +156,7 @@ public class SysSaleShopController extends BaseController {
         itemList.add(ssoi);
         sso.setSysSaleOrderItemList(itemList);
         sysSaleOrderService.insertSysSaleOrder(sso);
-        return AjaxResult.success().put("orderId", orderNo);
+        return AjaxResult.success().put("orderNo", orderNo);
     }
 
     /**
@@ -163,7 +172,7 @@ public class SysSaleShopController extends BaseController {
         card.setIsCharged(UserConstants.NO);
         card.setIsSold(UserConstants.NO);
         card.setStatus(UserConstants.NORMAL);
-        return sysCardTMapper.selectSysCardList(card)
+        return sysCardMapper.selectSysCardList(card)
                 .stream().filter(c -> c.getExpireTime().after(DateUtils.getNowDate())).collect(Collectors.toList());
     }
 
@@ -175,27 +184,66 @@ public class SysSaleShopController extends BaseController {
         return DateUtils.dateTimeNow("yyMMddHHmmssSSS") + appId + tplId + RandomStringUtils.randomNumeric(2);
     }
 
-    @RequestMapping("/notify")
+    @GetMapping("/notify")
     public AjaxResult notify(HttpServletRequest request, HttpServletResponse response, String orderNo) {
-        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
-        if (sso != null) {
-            sso.setStatus(SaleOrderStatus.PAID);
-            sysSaleOrderService.updateSysSaleOrder(sso);
-        } else {
+        if (orderNo == null) {
             throw new ServiceException("订单不存在", 400);
         }
+        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
+        if (sso == null) {
+            throw new ServiceException("订单不存在", 400);
+        }
+        sso.setStatus(SaleOrderStatus.PAID);
+        sysSaleOrderService.updateSysSaleOrder(sso);
+        // 发货
+        List<SysSaleOrderItem> itemList = sso.getSysSaleOrderItemList();
+        for (SysSaleOrderItem item : itemList) {
+            SysSaleOrderItemGoods goods = new SysSaleOrderItemGoods();
+            goods.setItemId(item.getItemId());
+            goods.setCardId(1L);
+            sysSaleOrderItemGoodsService.insertSysSaleOrderItemGoods(goods);
+        }
+        sso.setStatus(SaleOrderStatus.TRADE_SUCCESS);
+        sysSaleOrderService.updateSysSaleOrder(sso);
         System.out.println("支付成功回调。。。。");
         return AjaxResult.success();
     }
 
-    @PostMapping("/getCardList")
-    public AjaxResult getCardList(String orderNo, String queryPass) {
+    @GetMapping("/getCardList")
+    public AjaxResult getCardList(@RequestParam("orderNo") String orderNo, @RequestParam("queryPass") String queryPass) {
         SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
-        if (sso != null) {
-
-        } else {
+        if (orderNo == null) {
             throw new ServiceException("订单不存在", 400);
         }
-        return AjaxResult.success();
+        if (sso == null) {
+            throw new ServiceException("订单不存在", 400);
+        }
+        if (sso.getStatus() == null || sso.getStatus() == SaleOrderStatus.WAIT_PAY) {
+            throw new ServiceException("订单未支付", 400);
+        }
+        if (!sso.getQueryPass().equals(queryPass)) {
+            throw new ServiceException("查询密码有误", 400);
+        }
+
+        List<SysSaleOrderItem> itemList = sso.getSysSaleOrderItemList();
+        List<SysSaleOrderItemVo> itemVoList = new ArrayList<>();
+        for (SysSaleOrderItem item : itemList) {
+            List<SysSaleOrderItemGoods> goodsList = sysSaleOrderItemGoodsService.selectSysSaleOrderItemGoodsByItemId(item.getItemId());
+            if (goodsList != null && goodsList.size() > 0) {
+                if ("1".equals(item.getTemplateType())) { // 充值卡
+                    for (SysSaleOrderItemGoods goods : goodsList) {
+                        if (item.getGoodsList() == null) {
+                            item.setGoodsList(new ArrayList<>());
+                        }
+                        item.getGoodsList().add(new SysCardVo(sysCardMapper.selectSysCardByCardId(goods.getCardId())));
+                    }
+                } else if ("2".equals(item.getTemplateType())) { // 登录码
+
+                }
+            }
+            itemVoList.add(new SysSaleOrderItemVo(item));
+        }
+
+        return AjaxResult.success().put("itemList", itemVoList);
     }
 }

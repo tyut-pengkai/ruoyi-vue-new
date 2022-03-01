@@ -1,6 +1,6 @@
 <template>
   <div>
-    订单编号：{{ orderId }}
+    订单编号：{{ orderNo }}
     <el-button @click="paySuccess">支付成功</el-button>
   </div>
 </template>
@@ -11,15 +11,15 @@ import {notify} from "@/api/sale/saleShop";
 export default {
   data() {
     return {
-      orderId: null,
+      orderNo: null,
     };
   },
   created() {
-    this.orderId = this.$route.query && this.$route.query.orderId;
+    this.orderNo = this.$route.query && this.$route.query.orderNo;
   },
   methods: {
     paySuccess() {
-      var data = {orderId: this.orderId};
+      var data = {orderNo: this.orderNo};
       notify(data)
         .then((response) => {
           if (response.code == 200) {

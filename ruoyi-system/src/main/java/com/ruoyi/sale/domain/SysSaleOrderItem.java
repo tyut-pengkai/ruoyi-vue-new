@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 销售订单详情对象 sys_sale_order_item
@@ -80,6 +81,11 @@ public class SysSaleOrderItem extends BaseEntity {
      */
     @Excel(name = "应付金额")
     private BigDecimal actualFee;
+
+    /**
+     * 销售订单关联卡密
+     */
+    private List<BaseEntity> goodsList;
 
     public Long getItemId() {
         return itemId;
@@ -167,6 +173,14 @@ public class SysSaleOrderItem extends BaseEntity {
 
     public void setActualFee(BigDecimal actualFee) {
         this.actualFee = actualFee;
+    }
+
+    public List<BaseEntity> getGoodsList() {
+        return goodsList;
+    }
+
+    public void setGoodsList(List<BaseEntity> goodsList) {
+        this.goodsList = goodsList;
     }
 
     @Override

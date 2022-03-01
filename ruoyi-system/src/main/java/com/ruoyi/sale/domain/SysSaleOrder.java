@@ -68,9 +68,9 @@ public class SysSaleOrder extends BaseEntity {
     private String payMode;
 
     /**
-     * 1未付款2已付款3未发货4已发货5交易成功6交易关闭
+     * 0未付款1已付款2交易关闭3交易成功4交易结束
      */
-    @Excel(name = "1未付款2已付款3未发货4已发货5交易成功6交易关闭")
+    @Excel(name = "0未付款1已付款2交易关闭3交易成功4交易结束")
     private SaleOrderStatus status;
 
     /**
