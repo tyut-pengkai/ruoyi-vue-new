@@ -153,7 +153,7 @@
     <el-divider id="pay"></el-divider>
 
     <!-- Form -->
-    <!-- <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
+    <el-button type="text" @click="dialogFormVisible = true">模拟订单展示</el-button>
 
     <el-dialog
       :before-close="handleCancelPay"
@@ -230,6 +230,19 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <!-- Table -->
+    <el-button type="text" @click="dialogTableVisible = true">模拟商品展示</el-button>
+
+    <el-dialog title="您购买的商品如下，请妥善保存"
+      :visible.sync="dialogTableVisible"
+      custom-class="customClass"
+      style="margin-top: 10vh; height:80%;"
+      width="1000px"
+    >
+      <item-data></item-data>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -237,10 +250,12 @@
 import CardCategory from "./card/CardCategory";
 import CardGoods from "./card/CardGoods";
 import CardPay from "./card/CardPay";
+import ItemData from "./card/ItemData";
 import {checkStock, createSaleOrder, listApp, listCardTemplate, getCardList} from "@/api/sale/saleShop";
 
 export default {
-  components: { CardCategory, CardGoods, CardPay },
+  name: "Shop",
+  components: { CardCategory, CardGoods, CardPay, ItemData },
   data() {
     return {
       dialogFormVisible: false,
@@ -257,29 +272,16 @@ export default {
       goodsId: null,
       goodsData: [
         // {
-        //   id: 0,
-        //   name: "测试分类",
-        //   max: 5,
-        //   min: 0.5,
-        //   tags: ["多件优惠", "加群XXX"],
-        //   num: 0,
-        //   wholesale: []
+        //   id: 0, name: "测试分类", max: 5, min: 0.5, tags: ["多件优惠", "加群XXX"], num: 0, wholesale: []
         // },
         // {
-        //   id: 1,
-        //   name: "[官方]话费充值",
-        //   min: 80,
-        //   tags: ["单次购买100件只需80元/件"],
-        //   num: 178,
+        //   id: 1, name: "[官方]话费充值", min: 80, tags: ["单次购买100件只需80元/件"], num: 178,
         //   wholesale: [{
-        //     num: 1,
-        //     price: 100
+        //     num: 1, price: 100
         //   },{
-        //     num: 10,
-        //     price: 90
+        //     num: 10, price: 90
         //   },{
-        //     num: 100,
-        //     price: 80
+        //     num: 100, price: 80
         //   }]
         // },
       ],
@@ -297,7 +299,7 @@ export default {
       payId: null,
       payButtonShow: false,
       payData: [
-        {id: 0, name: "账户积分", code: "balance", img: "pay-jifen"},
+        // {id: 0, name: "账户积分", code: "balance", img: "pay-jifen"},
         {id: 1, name: "支付宝", code: "alipay", img: "pay-alipay"},
         {id: 2, name: "微信支付", code: "wechat", img: "pay-wechat"},
         // { id: 3, name: "银联支付", code: 'yinlian', img: "pay-yinlian" },
@@ -313,6 +315,9 @@ export default {
       remainTime: 300,
       remainTimeShow: "00:05:00",
       time: null,
+
+      // 支付成功
+      dialogTableVisible: false,
     };
   },
   created() {
@@ -573,5 +578,13 @@ export default {
   font-weight: 800;
   color: red;
   font-size: 24px;
+}
+
+.clearfix:before, .clearfix:after {
+  display: table;
+  content: "";
+}
+.clearfix:after {
+  clear: both
 }
 </style>

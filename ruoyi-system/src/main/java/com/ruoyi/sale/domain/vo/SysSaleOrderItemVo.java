@@ -83,13 +83,6 @@ public class SysSaleOrderItemVo extends SysSaleOrderItem {
     private Long orderId;
 
     /**
-     * 1卡类2登录码类
-     */
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private String templateType;
-
-    /**
      * 模板ID
      */
     @JSONField(serialize = false)
