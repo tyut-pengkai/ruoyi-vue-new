@@ -1,7 +1,9 @@
 <template>
   <div>
     订单编号：{{ orderNo }}
-    <el-button @click="paySuccess">支付成功</el-button>
+    <div align="center" style="margin-top: 20px">
+      <el-button @click="paySuccess" type="primary">点击模拟支付</el-button>
+    </div>
   </div>
 </template>
 

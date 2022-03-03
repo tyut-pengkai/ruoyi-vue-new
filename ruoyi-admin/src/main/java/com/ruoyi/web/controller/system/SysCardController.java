@@ -81,7 +81,7 @@ public class SysCardController extends BaseController {
             if (sysCardTemplate == null) {
                 return AjaxResult.error("卡类不存在，批量制卡失败");
             }
-            return toAjax(sysCardTemplateService.genSysCardBatch(sysCardTemplate, sysCard.getGenQuantity(), sysCard.getOnSale(), sysCard.getRemark()));
+            return toAjax(sysCardTemplateService.genSysCardBatch(sysCardTemplate, sysCard.getGenQuantity(), sysCard.getOnSale(), sysCard.getRemark()).size());
         }
 
     }

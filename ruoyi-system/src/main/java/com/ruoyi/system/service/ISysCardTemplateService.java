@@ -1,5 +1,6 @@
 package com.ruoyi.system.service;
 
+import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
 
 import java.util.List;
@@ -62,10 +63,11 @@ public interface ISysCardTemplateService
 
     /**
      * 批量新增卡密
+     *
      * @param sysCardTemplate
      * @param genQuantity
      * @param remark
      * @return
      */
-    public int genSysCardBatch(SysCardTemplate sysCardTemplate, Integer genQuantity, String onSale, String remark);
+    public List<SysCard> genSysCardBatch(SysCardTemplate sysCardTemplate, Integer genQuantity, String onSale, String remark);
 }

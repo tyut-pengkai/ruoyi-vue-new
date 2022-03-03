@@ -742,7 +742,7 @@ export default {
           const load = ProgressEvent.loaded;
           const total = ProgressEvent.total;
           const progress = (load / total) * 100;
-          console.log("progress=" + progress);
+          // console.log("progress=" + progress);
           //一开始已经在计算了 这里要超过先前的计算才能继续往下
           if (progress > _this.fileDown.percentage) {
             _this.fileDown.percentage = Math.floor(progress);

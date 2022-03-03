@@ -1,7 +1,7 @@
 <template>
   <div class="home" ref="home">
 
-    afsegfwsgorder
+    功能建设中。。。
   </div>
 </template>
 

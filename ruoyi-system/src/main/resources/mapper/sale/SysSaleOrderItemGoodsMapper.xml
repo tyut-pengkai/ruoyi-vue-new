@@ -47,6 +47,13 @@
         </trim>
     </insert>
 
+    <insert id="insertSysSaleOrderItemGoodsBatch" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_sale_order_item_goods(item_id,card_id) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.itemId},#{item.cardId})
+        </foreach>
+    </insert>
+
     <update id="updateSysSaleOrderItemGoods" parameterType="SysSaleOrderItemGoods">
         update sys_sale_order_item_goods
         <trim prefix="SET" suffixOverrides=",">

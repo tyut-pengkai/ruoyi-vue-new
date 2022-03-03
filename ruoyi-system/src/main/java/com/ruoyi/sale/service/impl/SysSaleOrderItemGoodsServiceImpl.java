@@ -64,6 +64,17 @@ public class SysSaleOrderItemGoodsServiceImpl implements ISysSaleOrderItemGoodsS
     }
 
     /**
+     * 新增订单商品
+     *
+     * @param sysSaleOrderItemGoodsList 订单商品
+     * @return 结果
+     */
+    @Override
+    public int insertSysSaleOrderItemGoodsBatch(List<SysSaleOrderItemGoods> sysSaleOrderItemGoodsList) {
+        return sysSaleOrderItemGoodsMapper.insertSysSaleOrderItemGoodsBatch(sysSaleOrderItemGoodsList);
+    }
+
+    /**
      * 修改订单商品
      *
      * @param sysSaleOrderItemGoods 订单商品

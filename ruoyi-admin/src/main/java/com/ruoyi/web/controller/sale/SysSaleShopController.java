@@ -22,11 +22,13 @@ import com.ruoyi.system.mapper.SysAppMapper;
 import com.ruoyi.system.mapper.SysCardMapper;
 import com.ruoyi.system.mapper.SysCardTemplateMapper;
 import com.ruoyi.system.mapper.SysLoginCodeMapper;
+import com.ruoyi.system.service.ISysCardTemplateService;
 import com.ruoyi.web.controller.sale.vo.SaleAppVo;
 import com.ruoyi.web.controller.sale.vo.SaleCardTemplateVo;
 import com.ruoyi.web.controller.sale.vo.SaleOrderVo;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,6 +52,8 @@ public class SysSaleShopController extends BaseController {
     private SysAppMapper sysAppMapper;
     @Autowired
     private SysCardTemplateMapper sysCardTemplateMapper;
+    @Autowired
+    private ISysCardTemplateService sysCardTemplateService;
     @Autowired
     private SysCardMapper sysCardMapper;
     @Autowired
@@ -196,17 +200,34 @@ public class SysSaleShopController extends BaseController {
         sso.setStatus(SaleOrderStatus.PAID);
         sysSaleOrderService.updateSysSaleOrder(sso);
         // 发货
+        deliveryGoods(sso);
+        System.out.println("支付成功回调。。。。");
+        return AjaxResult.success();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    protected void deliveryGoods(SysSaleOrder sso) {
         List<SysSaleOrderItem> itemList = sso.getSysSaleOrderItemList();
         for (SysSaleOrderItem item : itemList) {
-            SysSaleOrderItemGoods goods = new SysSaleOrderItemGoods();
-            goods.setItemId(item.getItemId());
-            goods.setCardId(1L);
-            sysSaleOrderItemGoodsService.insertSysSaleOrderItemGoods(goods);
+            if (item.getNum() == null || item.getNum() < 0) {
+                throw new ServiceException("购卡数量有误，购买失败", 400);
+            }
+            SysCardTemplate cardTemplate = sysCardTemplateMapper.selectSysCardTemplateByTemplateId(item.getTemplateId());
+            if (cardTemplate == null) {
+                throw new ServiceException("商品不存在，购买失败", 400);
+            }
+            List<SysCard> cardList = sysCardTemplateService.genSysCardBatch(cardTemplate, item.getNum(), UserConstants.NO, "系统制卡");
+            List<SysSaleOrderItemGoods> goodsList = new ArrayList<>();
+            for (SysCard card : cardList) {
+                SysSaleOrderItemGoods goods = new SysSaleOrderItemGoods();
+                goods.setItemId(item.getItemId());
+                goods.setCardId(card.getCardId());
+                goodsList.add(goods);
+            }
+            sysSaleOrderItemGoodsService.insertSysSaleOrderItemGoodsBatch(goodsList);
         }
         sso.setStatus(SaleOrderStatus.TRADE_SUCCESS);
         sysSaleOrderService.updateSysSaleOrder(sso);
-        System.out.println("支付成功回调。。。。");
-        return AjaxResult.success();
     }
 
     @GetMapping("/getCardList")

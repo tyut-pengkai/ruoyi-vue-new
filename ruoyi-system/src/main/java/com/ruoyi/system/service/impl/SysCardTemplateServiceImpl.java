@@ -110,18 +110,19 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
 
     /**
      * 批量新增卡密
+     *
      * @param cardTpl
      * @param quantity
      * @param remark
      * @return
      */
     @Override
-    public int genSysCardBatch(SysCardTemplate cardTpl, Integer quantity, String onSale, String remark) {
+    public List<SysCard> genSysCardBatch(SysCardTemplate cardTpl, Integer quantity, String onSale, String remark) {
         List<SysCard> sysCardList = new ArrayList<>();
-        for(int i=0;i<quantity;i++){
+        for (int i = 0; i < quantity; i++) {
             SysCard sysCard = new SysCard();
             sysCard.setCardName(cardTpl.getCardName());
-            sysCard.setCardNo(genNo(cardTpl.getCardNoPrefix(), cardTpl.getCardNoSuffix(), cardTpl.getCardNoLen(),cardTpl.getCardNoGenRule()));
+            sysCard.setCardNo(genNo(cardTpl.getCardNoPrefix(), cardTpl.getCardNoSuffix(), cardTpl.getCardNoLen(), cardTpl.getCardNoGenRule()));
             sysCard.setCardPass(genPass(cardTpl.getCardPassLen(), cardTpl.getCardPassGenRule()));
             sysCard.setApp(cardTpl.getApp());
             sysCard.setTemplateId(cardTpl.getTemplateId());
@@ -129,7 +130,7 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
             sysCard.setChargeRule(cardTpl.getChargeRule());
             if(cardTpl.getEffectiveDuration() == -1){
                 sysCard.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE));
-            }else{
+            } else {
                 sysCard.setExpireTime(DateUtils.addSeconds(new Date(), cardTpl.getEffectiveDuration().intValue()));
             }
             sysCard.setIsCharged(UserConstants.NO);
@@ -139,10 +140,15 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
             sysCard.setQuota(cardTpl.getQuota());
             sysCard.setStatus(UserConstants.NORMAL);
             sysCard.setRemark(remark);
-            sysCard.setCreateBy(SecurityUtils.getUsername());
+            try {
+                sysCard.setCreateBy(SecurityUtils.getUsername());
+            } catch (Exception ignored) {
+
+            }
             sysCardList.add(sysCard);
         }
-        return sysCardService.insertSysCardBatch(sysCardList);
+        sysCardService.insertSysCardBatch(sysCardList);
+        return sysCardList;
     }
 
     private String generate(Integer length, GenRule genRule) {

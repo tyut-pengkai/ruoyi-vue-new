@@ -3,6 +3,17 @@
     <el-alert title="公告" type="success" :closable="false">
       <p>本站为INAMS演示站。所有商品仅供测试。并无实际商品。请悉知。</p>
     </el-alert>
+    <el-steps
+        :active="4"
+        align-center
+        :simple="true"
+        style="margin-top: 30px; margin-bottom: 0px"
+      >
+      <el-step title="选择商品" icon="el-icon-shopping-cart-2"></el-step>
+      <el-step title="确认订单" icon="el-icon-document"></el-step>
+      <el-step title="线上支付" icon="el-icon-bank-card"></el-step>
+      <el-step title="提取商品" icon="el-icon-sell"></el-step>
+    </el-steps>
     <el-card class="box-card" style="margin-top: 15px">
       <div class="my-title">
         <img src="../../../assets/images/category.svg"/>&nbsp;<span
@@ -153,7 +164,7 @@
     <el-divider id="pay"></el-divider>
 
     <!-- Form -->
-    <el-button type="text" @click="dialogFormVisible = true">模拟订单展示</el-button>
+    <!-- <el-button type="text" @click="dialogFormVisible = true">模拟订单展示</el-button> -->
 
     <el-dialog
       :before-close="handleCancelPay"
@@ -232,7 +243,7 @@
     </el-dialog>
 
     <!-- Table -->
-    <el-button type="text" @click="dialogTableVisible = true">模拟商品展示</el-button>
+    <!-- <el-button type="text" @click="dialogTableVisible = true">模拟商品展示</el-button> -->
 
     <el-dialog title="您购买的商品如下，请妥善保存"
       :visible.sync="dialogTableVisible"
@@ -240,13 +251,16 @@
       style="margin-top: 10vh; height:80%;"
       width="1000px"
     >
-      <item-data></item-data>
+      <item-data :itemData="itemData"></item-data>
     </el-dialog>
 
   </div>
 </template>
 
 <script>
+
+import Clipboard from 'clipboard'; 
+
 import CardCategory from "./card/CardCategory";
 import CardGoods from "./card/CardGoods";
 import CardPay from "./card/CardPay";
@@ -300,10 +314,11 @@ export default {
       payButtonShow: false,
       payData: [
         // {id: 0, name: "账户积分", code: "balance", img: "pay-jifen"},
-        {id: 1, name: "支付宝", code: "alipay", img: "pay-alipay"},
-        {id: 2, name: "微信支付", code: "wechat", img: "pay-wechat"},
-        // { id: 3, name: "银联支付", code: 'yinlian', img: "pay-yinlian" },
-        // { id: 4, name: "PayPal", code: 'paypal', img: "pay-paypal" },
+        {id: 0, name: "支付宝", code: "alipay", img: "pay-alipay"},
+        {id: 1, name: "微信支付", code: "wechat", img: "pay-wechat"},
+        // { id: 2, name: "银联支付", code: 'yinlian', img: "pay-yinlian" },
+        // { id: 3, name: "PayPal", code: 'paypal', img: "pay-paypal" },
+        
       ],
       inputText: "提交订单",
       dialogTitle: "确认订单",
@@ -318,6 +333,51 @@ export default {
 
       // 支付成功
       dialogTableVisible: false,
+      itemData: [
+        // {
+        //   title: "XXX软件-天卡",
+        //   templateType: "1",
+        //   goodsList: [
+        //     {
+        //       cardNo: "tbkgdzgaN3jhnnT23JKj",
+        //       cardPass: "ZN6w395WnnXJrq3uxoAg",
+        //       expireTime: "2022-03-02 23:31:16",
+        //       chargeRule: "0",
+        //     },{
+        //       cardNo: "tbkgdzgaN3jhnnT23JKj",
+        //       cardPass: "ZN6w395WnnXJrq3uxoAg",
+        //       expireTime: "2022-03-02 23:31:16",
+        //       chargeRule: "0",
+        //     },{
+        //       cardNo: "tbkgdzgaN3jhnnT23JKj",
+        //       cardPass: "ZN6w395WnnXJrq3uxoAg",
+        //       expireTime: "2022-03-02 23:31:16",
+        //       chargeRule: "0",
+        //     },
+        //   ],
+        // },{
+        //   title: "XXX软件-天卡",
+        //   templateType: "2",
+        //   goodsList: [
+        //     {
+        //       cardNo: "tbkgdzgaN3jhnnT23JKj",
+        //       cardPass: "ZN6w395WnnXJrq3uxoAg",
+        //       expireTime: "2022-03-02 23:31:16",
+        //       chargeRule: "0",
+        //     },{
+        //       cardNo: "tbkgdzgaN3jhnnT23JKj",
+        //       cardPass: "ZN6w395WnnXJrq3uxoAg",
+        //       expireTime: "2022-03-02 23:31:16",
+        //       chargeRule: "0",
+        //     },{
+        //       cardNo: "tbkgdzgaN3jhnnT23JKj",
+        //       cardPass: "ZN6w395WnnXJrq3uxoAg",
+        //       expireTime: "2022-03-02 23:31:16",
+        //       chargeRule: "0",
+        //     },
+        //   ],
+        // },
+      ],
     };
   },
   created() {
@@ -401,8 +461,8 @@ export default {
         });
       } else {
         this.payButtonShow = true;
+        this.payId = id;
       }
-      this.payId = id;
     },
     handleConfirmOrder() {
       //这里检查之前表单是否有误，并判断当前环境是否需要验证。
@@ -504,14 +564,15 @@ export default {
           this.$modal
             .confirm("是否已成功支付？")
             .then(() => {
-              console.log("确认");
+              // console.log("确认");
               var data = {orderNo: this.orderNo, queryPass: this.form.queryPass};
               getCardList(data)
               .then((response) => {
                 if (response.code == 200) {
-                  console.log(response)
+                  // console.log(response)
                   var itemList = response.itemList;
-                   this.$modal.confirm(itemList[0].goodsList[0].cardNo);
+                  this.itemData = [].concat(itemList);
+                  this.dialogTableVisible = true;
                 }
               })
               .finally(() => {

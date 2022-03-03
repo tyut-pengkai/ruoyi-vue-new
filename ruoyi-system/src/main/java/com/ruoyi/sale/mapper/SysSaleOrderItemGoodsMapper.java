@@ -46,6 +46,14 @@ public interface SysSaleOrderItemGoodsMapper {
     public int insertSysSaleOrderItemGoods(SysSaleOrderItemGoods sysSaleOrderItemGoods);
 
     /**
+     * 新增订单商品
+     *
+     * @param sysSaleOrderItemGoodsList 订单商品
+     * @return 结果
+     */
+    public int insertSysSaleOrderItemGoodsBatch(List<SysSaleOrderItemGoods> sysSaleOrderItemGoodsList);
+
+    /**
      * 修改订单商品
      *
      * @param sysSaleOrderItemGoods 订单商品
