@@ -223,6 +223,10 @@ public class SysSaleShopController extends BaseController {
                 goods.setItemId(item.getItemId());
                 goods.setCardId(card.getCardId());
                 goodsList.add(goods);
+                // 更新充值卡状态 下架/已出售/
+                card.setOnSale(UserConstants.NO);
+                card.setIsSold(UserConstants.YES);
+                sysCardMapper.updateSysCard(card);
             }
             sysSaleOrderItemGoodsService.insertSysSaleOrderItemGoodsBatch(goodsList);
         }

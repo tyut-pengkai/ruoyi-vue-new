@@ -56,19 +56,18 @@
       </el-card>
     </div>
     <div align="center" style="margin-top: 15px">
-      <el-button
-        type="primary"
-        id="copyButton"
-        @click="copy"
-      >
-        一键复制全部
+      <el-button id="copyButton" type="primary" @click="copy">
+        复制文本
+      </el-button>
+      <el-button id="saveButton" type="primary" @click="save">
+        下载保存
       </el-button>
     </div>
-    
   </div>
 </template>
 <script>
-import Clipboard from 'clipboard'; 
+import Clipboard from "clipboard";
+
 export default {
   name: "ItemData",
   dicts: ["sys_charge_rule"],
@@ -158,28 +157,43 @@ export default {
   },
   created() {},
   methods: {
-    copy() {  
-      var clipboard = new Clipboard('#copyButton', {
-        text: () => { // 如果想从其它DOM元素内容复制。应该是target:function(){return: };
-          var content = "";
-          for(var item of this.itemData) {
-            content += "========" + item.title + "========\n";
-            for(var goods of item.goodsList) {
-              content += goods.cardNo + "----";
-              if(item.templateType == '1') {
-                content += goods.cardPass + "----";
-              }
-              content += goods.expireTime;
-              if(item.templateType == '1') {
-                content += "----" + this.chargeRuleFormat(goods.chargeRule);
-              }
-              content += "\n";
+    generateText() {
+      var content = "";
+      for (var item of this.itemData) {
+        content +=
+          "========" +
+          item.title +
+          "（共" +
+          item.goodsList.length +
+          "张）========\n";
+        for (var index in item.goodsList) {
+          var goods = item.goodsList[index];
+          content += "第" + (parseInt(index) + 1) + "张\n";
+          if (item.templateType == "1") {
+            content += "充值卡号：" + goods.cardNo + "\n";
+            content += "充值密码：" + goods.cardPass + "\n";
+            content += "有效期至：" + goods.expireTime + "\n";
+            if (goods.chargeRule && goods.chargeRule != "0") {
+              content +=
+                "充值规则：" + this.chargeRuleFormat(goods.chargeRule) + "\n";
             }
+          } else if (item.templateType == "2") {
+            content += "登录码：" + goods.cardNo + "\n";
+            content += "有效期至：" + goods.expireTime + "\n";
           }
-          return content;
+          content += "\n";
         }
+      }
+      return content;
+    },
+    copy() {
+      var clipboard = new Clipboard("#copyButton", {
+        text: () => {
+          // 如果想从其它DOM元素内容复制。应该是target:function(){return: };
+          return this.generateText();
+        },
       });
-      clipboard.on('success', (e) => {
+      clipboard.on("success", (e) => {
         this.$notify({
           title: "消息",
           dangerouslyUseHTMLString: true,
@@ -189,7 +203,7 @@ export default {
         });
         clipboard.destroy();
       });
-      clipboard.on('error', (e) => {
+      clipboard.on("error", (e) => {
         this.$notify({
           title: "消息",
           dangerouslyUseHTMLString: true,
@@ -199,6 +213,83 @@ export default {
         });
         clipboard.destroy();
       });
+    },
+    download(filename, text) {
+      var pom = document.createElement("a");
+      pom.setAttribute(
+        "href",
+        "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+      );
+      pom.setAttribute("download", filename);
+      if (document.createEvent) {
+        var event = document.createEvent("MouseEvents");
+        event.initEvent("click", true, true);
+        pom.dispatchEvent(event);
+      } else {
+        pom.click();
+      }
+    },
+    /** * 对Date的扩展，将 Date 转化为指定格式的String * 月(M)、日(d)、12小时(h)、24小时(H)、分(m)、秒(s)、周(E)、季度(q)
+     可以用 1-2 个占位符 * 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字) * eg: * (new
+     Date()).pattern("yyyy-MM-dd hh:mm:ss.S")==> 2006-07-02 08:09:04.423
+     * (new Date()).pattern("yyyy-MM-dd E HH:mm:ss") ==> 2009-03-10 二 20:09:04
+     * (new Date()).pattern("yyyy-MM-dd EE hh:mm:ss") ==> 2009-03-10 周二 08:09:04
+     * (new Date()).pattern("yyyy-MM-dd EEE hh:mm:ss") ==> 2009-03-10 星期二 08:09:04
+     * (new Date()).pattern("yyyy-M-d h:m:s.S") ==> 2006-7-2 8:9:4.18
+     */
+    dateFormat(date, fmt) {
+      var o = {
+        "M+": date.getMonth() + 1, //月份
+        "d+": date.getDate(), //日
+        "h+": date.getHours() % 12 == 0 ? 12 : date.getHours() % 12, //小时
+        "H+": date.getHours(), //小时
+        "m+": date.getMinutes(), //分
+        "s+": date.getSeconds(), //秒
+        "q+": Math.floor((date.getMonth() + 3) / 3), //季度
+        S: date.getMilliseconds(), //毫秒
+      };
+      var week = {
+        0: "/u65e5",
+        1: "/u4e00",
+        2: "/u4e8c",
+        3: "/u4e09",
+        4: "/u56db",
+        5: "/u4e94",
+        6: "/u516d",
+      };
+      if (/(y+)/.test(fmt)) {
+        fmt = fmt.replace(
+          RegExp.$1,
+          (date.getFullYear() + "").substr(4 - RegExp.$1.length)
+        );
+      }
+      if (/(E+)/.test(fmt)) {
+        fmt = fmt.replace(
+          RegExp.$1,
+          (RegExp.$1.length > 1
+            ? RegExp.$1.length > 2
+              ? "/u661f/u671f"
+              : "/u5468"
+            : "") + week[date.getDay() + ""]
+        );
+      }
+      for (var k in o) {
+        if (new RegExp("(" + k + ")").test(fmt)) {
+          fmt = fmt.replace(
+            RegExp.$1,
+            RegExp.$1.length == 1
+              ? o[k]
+              : ("00" + o[k]).substr(("" + o[k]).length)
+          );
+        }
+      }
+      return fmt;
+    },
+    save() {
+      this.download(
+        "save_" + this.dateFormat(new Date(), "yyyyMMddHHmmss") + ".txt",
+        this.generateText()
+      );
     },
     chargeRuleFormat(code) {
       return this.selectDictLabel(this.dict.type.sys_charge_rule, code);

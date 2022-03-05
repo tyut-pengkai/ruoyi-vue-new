@@ -4,11 +4,11 @@
       <p>本站为INAMS演示站。所有商品仅供测试。并无实际商品。请悉知。</p>
     </el-alert>
     <el-steps
-        :active="4"
-        align-center
-        :simple="true"
-        style="margin-top: 30px; margin-bottom: 0px"
-      >
+      :active="4"
+      :simple="true"
+      align-center
+      style="margin-top: 30px; margin-bottom: 0px"
+    >
       <el-step title="选择商品" icon="el-icon-shopping-cart-2"></el-step>
       <el-step title="确认订单" icon="el-icon-document"></el-step>
       <el-step title="线上支付" icon="el-icon-bank-card"></el-step>
@@ -243,29 +243,28 @@
     </el-dialog>
 
     <!-- Table -->
-    <!-- <el-button type="text" @click="dialogTableVisible = true">模拟商品展示</el-button> -->
+    <!-- <el-button type="text" @click="dialogTableVisible = true">
+      模拟商品展示
+    </el-button> -->
 
-    <el-dialog title="您购买的商品如下，请妥善保存"
+    <el-dialog
+      style="margin-top: 10vh; height: 80%"
       :visible.sync="dialogTableVisible"
       custom-class="customClass"
-      style="margin-top: 10vh; height:80%;"
+      title="您购买的商品如下，请妥善保存"
       width="1000px"
     >
       <item-data :itemData="itemData"></item-data>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-
-import Clipboard from 'clipboard'; 
-
 import CardCategory from "./card/CardCategory";
 import CardGoods from "./card/CardGoods";
 import CardPay from "./card/CardPay";
 import ItemData from "./card/ItemData";
-import {checkStock, createSaleOrder, listApp, listCardTemplate, getCardList} from "@/api/sale/saleShop";
+import {checkStock, createSaleOrder, getCardList, listApp, listCardTemplate,} from "@/api/sale/saleShop";
 
 export default {
   name: "Shop",
@@ -318,7 +317,6 @@ export default {
         {id: 1, name: "微信支付", code: "wechat", img: "pay-wechat"},
         // { id: 2, name: "银联支付", code: 'yinlian', img: "pay-yinlian" },
         // { id: 3, name: "PayPal", code: 'paypal', img: "pay-paypal" },
-        
       ],
       inputText: "提交订单",
       dialogTitle: "确认订单",
@@ -343,19 +341,22 @@ export default {
         //       cardPass: "ZN6w395WnnXJrq3uxoAg",
         //       expireTime: "2022-03-02 23:31:16",
         //       chargeRule: "0",
-        //     },{
+        //     },
+        //     {
         //       cardNo: "tbkgdzgaN3jhnnT23JKj",
         //       cardPass: "ZN6w395WnnXJrq3uxoAg",
         //       expireTime: "2022-03-02 23:31:16",
         //       chargeRule: "0",
-        //     },{
+        //     },
+        //     {
         //       cardNo: "tbkgdzgaN3jhnnT23JKj",
         //       cardPass: "ZN6w395WnnXJrq3uxoAg",
         //       expireTime: "2022-03-02 23:31:16",
         //       chargeRule: "0",
         //     },
         //   ],
-        // },{
+        // },
+        // {
         //   title: "XXX软件-天卡",
         //   templateType: "2",
         //   goodsList: [
@@ -364,12 +365,14 @@ export default {
         //       cardPass: "ZN6w395WnnXJrq3uxoAg",
         //       expireTime: "2022-03-02 23:31:16",
         //       chargeRule: "0",
-        //     },{
+        //     },
+        //     {
         //       cardNo: "tbkgdzgaN3jhnnT23JKj",
         //       cardPass: "ZN6w395WnnXJrq3uxoAg",
         //       expireTime: "2022-03-02 23:31:16",
         //       chargeRule: "0",
-        //     },{
+        //     },
+        //     {
         //       cardNo: "tbkgdzgaN3jhnnT23JKj",
         //       cardPass: "ZN6w395WnnXJrq3uxoAg",
         //       expireTime: "2022-03-02 23:31:16",
@@ -565,18 +568,21 @@ export default {
             .confirm("是否已成功支付？")
             .then(() => {
               // console.log("确认");
-              var data = {orderNo: this.orderNo, queryPass: this.form.queryPass};
+              var data = {
+                orderNo: this.orderNo,
+                queryPass: this.form.queryPass,
+              };
               getCardList(data)
-              .then((response) => {
-                if (response.code == 200) {
-                  // console.log(response)
-                  var itemList = response.itemList;
-                  this.itemData = [].concat(itemList);
-                  this.dialogTableVisible = true;
-                }
-              })
-              .finally(() => {
-              });
+                .then((response) => {
+                  if (response.code == 200) {
+                    // console.log(response)
+                    var itemList = response.itemList;
+                    this.itemData = [].concat(itemList);
+                    this.dialogTableVisible = true;
+                  }
+                })
+                .finally(() => {
+                });
             })
             .catch(() => {
             });
@@ -641,11 +647,13 @@ export default {
   font-size: 24px;
 }
 
-.clearfix:before, .clearfix:after {
+.clearfix:before,
+.clearfix:after {
   display: table;
   content: "";
 }
+
 .clearfix:after {
-  clear: both
+  clear: both;
 }
 </style>
