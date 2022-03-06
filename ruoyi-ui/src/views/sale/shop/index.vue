@@ -245,12 +245,11 @@
     <!-- <el-button type="text" @click="dialogTableVisible = true">
       模拟商品展示
     </el-button> -->
-
     <el-dialog
       style="margin-top: 10vh; height: 80%"
       :visible.sync="dialogTableVisible"
       custom-class="customClass"
-      title="您购买的商品如下，请妥善保存"
+      :title="'您购买的商品如下，请妥善保存，订单编号：' + orderNo"
       width="1000px"
     >
       <item-data :itemData="itemData"></item-data>

@@ -59,6 +59,17 @@ public class SysSaleOrderServiceImpl implements ISysSaleOrderService {
     }
 
     /**
+     * 查询销售订单列表
+     *
+     * @param sysSaleOrder 销售订单
+     * @return 销售订单
+     */
+    @Override
+    public List<SysSaleOrder> selectSysSaleOrderQuery(SysSaleOrder sysSaleOrder) {
+        return sysSaleOrderMapper.selectSysSaleOrderQuery(sysSaleOrder);
+    }
+
+    /**
      * 新增销售订单
      *
      * @param sysSaleOrder 销售订单

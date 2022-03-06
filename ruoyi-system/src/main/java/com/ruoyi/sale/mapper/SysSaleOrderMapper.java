@@ -39,6 +39,14 @@ public interface SysSaleOrderMapper {
     public List<SysSaleOrder> selectSysSaleOrderList(SysSaleOrder sysSaleOrder);
 
     /**
+     * 查询销售订单列表
+     *
+     * @param sysSaleOrder 销售订单
+     * @return 销售订单集合
+     */
+    public List<SysSaleOrder> selectSysSaleOrderQuery(SysSaleOrder sysSaleOrder);
+
+    /**
      * 新增销售订单
      *
      * @param sysSaleOrder 销售订单

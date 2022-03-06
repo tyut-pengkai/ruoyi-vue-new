@@ -283,4 +283,13 @@ public class SysSaleShopController extends BaseController {
 
         return AjaxResult.success().put("itemList", itemVoList);
     }
+
+    /**
+     * 查询销售订单列表，订单查询调用
+     */
+    @GetMapping("/querySaleOrderByContact")
+    public TableDataInfo querySaleOrderByContact(SysSaleOrder sysSaleOrder) {
+        List<SysSaleOrder> list = sysSaleOrderService.selectSysSaleOrderQuery(sysSaleOrder);
+        return getDataTable(list);
+    }
 }

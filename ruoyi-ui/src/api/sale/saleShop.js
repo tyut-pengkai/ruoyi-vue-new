@@ -52,3 +52,13 @@ export function getCardList(data) {
     params: data
   })
 }
+
+// 查询销售订单列表，查询订单调用
+export function querySaleOrderByContact(query) {
+  return request({
+    url: '/sale/shop/querySaleOrderByContact',
+    method: 'get',
+    params: query
+  })
+}
+

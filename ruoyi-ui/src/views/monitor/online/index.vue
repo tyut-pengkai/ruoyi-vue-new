@@ -1,17 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form
-      ref="queryForm"
-      :inline="true"
-      :model="queryParams"
-      label-width="68px"
-    >
+    <el-form ref="queryForm" :inline="true" :model="queryParams" label-width="68px" size="small">
       <el-form-item label="登录地址" prop="ipaddr">
         <el-input
           v-model="queryParams.ipaddr"
           placeholder="请输入登录地址"
           clearable
-          size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -20,27 +14,19 @@
           v-model="queryParams.userName"
           placeholder="请输入用户名称"
           clearable
-          size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
-        <el-button
-          icon="el-icon-search"
-          size="mini"
-          type="primary"
-          @click="handleQuery"
-        >搜索
-        </el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
-        </el-button>
+        <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
+
     </el-form>
     <el-table
       v-loading="loading"
-      :data="list.slice((pageNum - 1) * pageSize, pageNum * pageSize)"
-      style="width: 100%"
+      :data="list.slice((pageNum-1)*pageSize,pageNum*pageSize)"
+      style="width: 100%;"
     >
       <el-table-column label="序号" type="index" align="center">
         <template slot-scope="scope">
@@ -158,7 +144,7 @@ export default {
     /** 查询登录日志列表 */
     getList() {
       this.loading = true;
-      list(this.queryParams).then((response) => {
+      list(this.queryParams).then(response => {
         this.list = response.rows;
         this.total = response.total;
         this.loading = false;

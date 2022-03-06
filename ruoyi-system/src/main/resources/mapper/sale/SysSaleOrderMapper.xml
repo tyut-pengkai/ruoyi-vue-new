@@ -82,6 +82,20 @@
         </where>
     </select>
 
+    <select id="selectSysSaleOrderQuery" parameterType="SysSaleOrder" resultMap="SysSaleOrderResult">
+        <include refid="selectSysSaleOrderVo"/>
+        <where>
+            <if test="orderNo != null  and orderNo != ''">and order_no = #{orderNo}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="payMode != null  and payMode != ''">and pay_mode = #{payMode}</if>
+            <if test="status != null  and status != ''">and status = #{status}</if>
+            <if test="contact != null  and contact != ''">and contact = #{contact}</if>
+            <if test="queryPass != null  and queryPass != ''">and query_pass = #{queryPass}</if>
+        </where>
+        order by order_id desc
+        limit 5
+    </select>
+
     <select id="selectSysSaleOrderByOrderId" parameterType="Long" resultMap="SysSaleOrderSysSaleOrderItemResult">
         select a.order_id,
                a.order_no,
