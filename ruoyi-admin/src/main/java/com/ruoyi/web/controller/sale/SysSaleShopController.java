@@ -216,9 +216,21 @@ public class SysSaleShopController extends BaseController {
             if (cardTemplate == null) {
                 throw new ServiceException("商品不存在，购买失败", 400);
             }
-            List<SysCard> cardList = sysCardTemplateService.genSysCardBatch(cardTemplate, item.getNum(), UserConstants.NO, "系统制卡");
+            List<SysCard> resultCardList = new ArrayList<>();
+            // 获取库存数量
+            List<SysCard> saleableCard = getSaleableCard(item.getTemplateId());
+            if (saleableCard.size() >= item.getNum()) { //库存足够
+                resultCardList.addAll(saleableCard.subList(0, item.getNum()));
+            } else { // 库存不足
+                if (!UserConstants.YES.equals(cardTemplate.getEnableAutoGen())) { // 非自动制卡
+                    throw new ServiceException("库存不足，请稍后再试", 400);
+                }
+                resultCardList.addAll(saleableCard);
+                List<SysCard> cardList = sysCardTemplateService.genSysCardBatch(cardTemplate, item.getNum() - saleableCard.size(), UserConstants.NO, "系统制卡");
+                resultCardList.addAll(cardList);
+            }
             List<SysSaleOrderItemGoods> goodsList = new ArrayList<>();
-            for (SysCard card : cardList) {
+            for (SysCard card : resultCardList) {
                 SysSaleOrderItemGoods goods = new SysSaleOrderItemGoods();
                 goods.setItemId(item.getItemId());
                 goods.setCardId(card.getCardId());

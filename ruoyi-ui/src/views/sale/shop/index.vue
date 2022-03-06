@@ -29,9 +29,8 @@
       </card-category>
       <el-divider></el-divider>
       <div class="my-title">
-        <img src="../../../assets/images/goods.svg"/>&nbsp;<span
-      >选择商品</span
-      >
+        <img src="../../../assets/images/goods.svg"/>&nbsp;
+        <span>选择商品</span>
       </div>
       <card-goods
         style="margin-top: 15px"
