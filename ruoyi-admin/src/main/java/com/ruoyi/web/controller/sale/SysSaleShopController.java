@@ -1,11 +1,13 @@
 package com.ruoyi.web.controller.sale;
 
 import com.alibaba.fastjson.JSON;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
@@ -62,6 +64,8 @@ public class SysSaleShopController extends BaseController {
     private ISysSaleOrderService sysSaleOrderService;
     @Autowired
     private ISysSaleOrderItemGoodsService sysSaleOrderItemGoodsService;
+    @Autowired
+    private RedisCache redisCache;
 
     /**
      * 查询软件列表
@@ -160,6 +164,7 @@ public class SysSaleShopController extends BaseController {
         itemList.add(ssoi);
         sso.setSysSaleOrderItemList(itemList);
         sysSaleOrderService.insertSysSaleOrder(sso);
+        redisCache.redisTemplate.opsForZSet().add(Constants.SALE_ORDER_EXPIRE_KEY, orderNo, sso.getExpireTime().getTime());
         return AjaxResult.success().put("orderNo", orderNo);
     }
 
@@ -198,6 +203,7 @@ public class SysSaleShopController extends BaseController {
             throw new ServiceException("订单不存在", 400);
         }
         sso.setStatus(SaleOrderStatus.PAID);
+        sso.setPaymentTime(DateUtils.getNowDate());
         sysSaleOrderService.updateSysSaleOrder(sso);
         // 发货
         deliveryGoods(sso);
@@ -243,6 +249,9 @@ public class SysSaleShopController extends BaseController {
             sysSaleOrderItemGoodsService.insertSysSaleOrderItemGoodsBatch(goodsList);
         }
         sso.setStatus(SaleOrderStatus.TRADE_SUCCESS);
+        Date nowDate = DateUtils.getNowDate();
+        sso.setDeliveryTime(nowDate);
+        sso.setFinishTime(nowDate);
         sysSaleOrderService.updateSysSaleOrder(sso);
     }
 

@@ -41,7 +41,16 @@
             </el-form>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="浏览器缓存查询">浏览器缓存查询</el-tab-pane>
+        <el-tab-pane label="浏览器缓存查询">
+          <div style="width: 500px;margin: 20px auto">
+            <el-form ref="formQueryByCookie" :model="formQueryByCookie" :rules="rules" label-width="80px">
+              <div align="center">
+                <el-button round type="primary" @click="submitForm('formQueryByCookie')">立即查询</el-button>
+                <!-- <el-button @click="resetForm('formQueryByCookie')">清空输入</el-button> -->
+              </div>
+            </el-form>
+          </div>
+        </el-tab-pane>
       </el-tabs>
     </el-card>
 
@@ -95,10 +104,12 @@
             label="操作"
             width="150">
             <template slot-scope="scope">
+              <el-button v-if="scope.row.status == '0' " size="small" type="text" @click="handlePay(scope.row)">立即支付
+              </el-button>
+              <el-button v-if="scope.row.status == '1' " size="small" type="text" @click="handleFetch(scope.row)">解决办法
+              </el-button>
               <el-button v-if="scope.row.status == '3' || scope.row.status == '4' " size="small" type="text"
                          @click="handleClick(scope.row)">查看商品
-              </el-button>
-              <el-button v-if="scope.row.status == '0' " size="small" type="text" @click="handlePay(scope.row)">立即支付
               </el-button>
             </template>
           </el-table-column>
@@ -109,6 +120,7 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie';
 import {getCardList, querySaleOrderByContact} from "@/api/sale/saleShop";
 import ItemData from "./card/ItemData";
 
@@ -127,6 +139,7 @@ export default {
         contact: null,
         queryPass: null,
       },
+      formQueryByCookie: {},
       itemData: null,
       dialogTableVisible: false,
       rules: {
@@ -189,6 +202,57 @@ export default {
         .finally(() => {
         });
     },
+    queryByCookie() {
+      // var o = [{
+      //   orderNo: "2203070057428750001000107",
+      //   queryPass: "admin1234",
+      // }];
+
+      // Cookies.set('orderList', JSON.stringify(o));
+      var orderListStr = Cookies.get('orderList');
+      if (orderListStr) {
+        var orderList = JSON.parse(orderListStr);
+        if (orderList.length > 0) {
+          if (orderList.length > 5) {
+            orderList = orderList.slice(0, 5);
+          }
+          this.saleOrderList = [];
+          for (var order of orderList) {
+            var data = {
+              orderNo: order.orderNo,
+              queryPass: order.queryPass,
+            };
+            querySaleOrderByContact(data).then((response) => {
+              if (response.code == 200) {
+                // console.log(response)
+                if (response.rows.length > 0) {
+                  this.saleOrderList = this.saleOrderList.concat(response.rows);
+                  this.dialogTableVisible2 = true;
+                }
+              }
+            })
+              .finally(() => {
+              });
+          }
+        } else {
+          this.$notify({
+            title: "消息",
+            dangerouslyUseHTMLString: true,
+            message: "未查找到有效订单",
+            type: "warning",
+            offset: 100,
+          });
+        }
+      } else {
+        this.$notify({
+          title: "消息",
+          dangerouslyUseHTMLString: true,
+          message: "未查找到有效订单",
+          type: "warning",
+          offset: 100,
+        });
+      }
+    },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -196,8 +260,9 @@ export default {
             this.queryByOrderNo();
           } else if (formName == 'formQueryByContact') {
             this.queryByContact();
+          } else if (formName == 'formQueryByCookie') {
+            this.queryByCookie();
           }
-
         } else {
           return false;
         }
@@ -230,6 +295,15 @@ export default {
         query: {orderNo: row.orderNo},
       });
       window.open(newPage.href, "_blank");
+    },
+    handleFetch(row) {
+      this.$notify({
+        title: "消息",
+        dangerouslyUseHTMLString: true,
+        message: "在您支付完成前该商品已售罄，请联系店主处理",
+        type: "warning",
+        offset: 100,
+      });
     },
   }
 }
