@@ -106,7 +106,7 @@
             <template slot-scope="scope">
               <el-button v-if="scope.row.status == '0' " size="small" type="text" @click="handlePay(scope.row)">立即支付
               </el-button>
-              <el-button v-if="scope.row.status == '1' " size="small" type="text" @click="handleFetch(scope.row)">解决办法
+              <el-button v-if="scope.row.status == '1' " size="small" type="text" @click="handleFetch(scope.row)">尝试提货
               </el-button>
               <el-button v-if="scope.row.status == '3' || scope.row.status == '4' " size="small" type="text"
                          @click="handleClick(scope.row)">查看商品
@@ -121,7 +121,7 @@
 
 <script>
 import Cookies from 'js-cookie';
-import {getCardList, querySaleOrderByContact} from "@/api/sale/saleShop";
+import {fetchGoods, getCardList, querySaleOrderByContact} from "@/api/sale/saleShop";
 import ItemData from "./card/ItemData";
 
 export default {
@@ -297,13 +297,26 @@ export default {
       window.open(newPage.href, "_blank");
     },
     handleFetch(row) {
-      this.$notify({
-        title: "消息",
-        dangerouslyUseHTMLString: true,
-        message: "在您支付完成前该商品已售罄，请联系店主处理",
-        type: "warning",
-        offset: 100,
-      });
+      // this.$notify({
+      //   title: "消息",
+      //   dangerouslyUseHTMLString: true,
+      //   message: "在您支付完成前该商品已售罄，请联系店主处理",
+      //   type: "warning",
+      //   offset: 100,
+      // });
+      var data = {
+        orderNo: row.orderNo,
+        queryPass: row.queryPass,
+      };
+      fetchGoods(data)
+        .then((response) => {
+          if (response.code == 200) {
+            // console.log(response)
+            this.handleClick(row);
+          }
+        })
+        .finally(() => {
+        });
     },
   }
 }

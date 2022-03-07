@@ -193,6 +193,44 @@ public class SysSaleShopController extends BaseController {
         return DateUtils.dateTimeNow("yyMMddHHmmssSSS") + appId + tplId + RandomStringUtils.randomNumeric(2);
     }
 
+    @GetMapping("/paySaleOrder")
+    public AjaxResult paySaleOrder(HttpServletRequest request, HttpServletResponse response, String orderNo) {
+        if (orderNo == null) {
+            throw new ServiceException("订单不存在", 400);
+        }
+        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
+        if (sso == null) {
+            throw new ServiceException("订单不存在", 400);
+        }
+        if (sso.getStatus() != SaleOrderStatus.WAIT_PAY) {
+            throw new ServiceException("该订单非待支付订单或已过期", 400);
+        }
+        // 调第三方支付平台
+        return notify(request, response, orderNo);
+    }
+
+    /**
+     * 支付完成但是发货失败，调用此接口重新发货
+     *
+     * @param orderNo
+     * @return
+     */
+    @GetMapping("/fetchGoods")
+    public AjaxResult fetchGoods(String orderNo) {
+        if (orderNo == null) {
+            throw new ServiceException("订单不存在", 400);
+        }
+        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
+        if (sso == null) {
+            throw new ServiceException("订单不存在", 400);
+        }
+        if (sso.getStatus() != SaleOrderStatus.PAID) {
+            throw new ServiceException("该订单非待发货订单", 400);
+        }
+        deliveryGoods(sso);
+        return AjaxResult.success();
+    }
+
     @GetMapping("/notify")
     public AjaxResult notify(HttpServletRequest request, HttpServletResponse response, String orderNo) {
         if (orderNo == null) {
@@ -202,12 +240,16 @@ public class SysSaleShopController extends BaseController {
         if (sso == null) {
             throw new ServiceException("订单不存在", 400);
         }
-        sso.setStatus(SaleOrderStatus.PAID);
-        sso.setPaymentTime(DateUtils.getNowDate());
-        sysSaleOrderService.updateSysSaleOrder(sso);
-        // 发货
-        deliveryGoods(sso);
-        System.out.println("支付成功回调。。。。");
+        if (sso.getStatus() == SaleOrderStatus.WAIT_PAY) {
+            sso.setStatus(SaleOrderStatus.PAID);
+            sso.setPaymentTime(DateUtils.getNowDate());
+            sysSaleOrderService.updateSysSaleOrder(sso);
+            // 发货
+            deliveryGoods(sso);
+            System.out.println("支付成功回调。。。。");
+            // 反馈给第三方支付平台
+
+        }
         return AjaxResult.success();
     }
 
