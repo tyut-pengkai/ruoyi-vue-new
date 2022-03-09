@@ -312,7 +312,7 @@ export default {
       payButtonShow: false,
       payData: [
         // {id: 0, name: "账户积分", code: "balance", img: "pay-jifen"},
-        {id: 0, name: "支付宝", code: "alipay", img: "pay-alipay"},
+        {id: 0, name: "支付宝当面付", code: "alipay_qr", img: "pay-alipay"},
         {id: 1, name: "微信支付", code: "wechat", img: "pay-wechat"},
         // { id: 2, name: "银联支付", code: 'yinlian', img: "pay-yinlian" },
         // { id: 3, name: "PayPal", code: 'paypal', img: "pay-paypal" },

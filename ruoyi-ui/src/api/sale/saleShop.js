@@ -71,3 +71,12 @@ export function fetchGoods(query) {
   })
 }
 
+// 支付成功
+export function paySaleOrder(data) {
+  return request({
+    url: '/sale/shop/paySaleOrder',
+    method: 'get',
+    params: data
+  })
+}
+

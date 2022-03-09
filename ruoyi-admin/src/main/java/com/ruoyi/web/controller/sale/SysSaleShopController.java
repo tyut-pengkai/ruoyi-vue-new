@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.sale;
 
 import com.alibaba.fastjson.JSON;
+import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -11,6 +12,9 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.payment.constants.PaymentDefine;
+import com.ruoyi.payment.domain.Payment;
 import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.domain.SysSaleOrderItem;
 import com.ruoyi.sale.domain.SysSaleOrderItemGoods;
@@ -28,14 +32,16 @@ import com.ruoyi.system.service.ISysCardTemplateService;
 import com.ruoyi.web.controller.sale.vo.SaleAppVo;
 import com.ruoyi.web.controller.sale.vo.SaleCardTemplateVo;
 import com.ruoyi.web.controller.sale.vo.SaleOrderVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,24 +53,25 @@ import java.util.stream.Collectors;
  * @author zwgu
  * @date 2022-02-21
  */
+@Slf4j
 @RestController
 @RequestMapping("/sale/shop")
 public class SysSaleShopController extends BaseController {
-    @Autowired
+    @Resource
     private SysAppMapper sysAppMapper;
-    @Autowired
+    @Resource
     private SysCardTemplateMapper sysCardTemplateMapper;
-    @Autowired
+    @Resource
     private ISysCardTemplateService sysCardTemplateService;
-    @Autowired
+    @Resource
     private SysCardMapper sysCardMapper;
-    @Autowired
+    @Resource
     private SysLoginCodeMapper sysLoginCodeMapper;
-    @Autowired
+    @Resource
     private ISysSaleOrderService sysSaleOrderService;
-    @Autowired
+    @Resource
     private ISysSaleOrderItemGoodsService sysSaleOrderItemGoodsService;
-    @Autowired
+    @Resource
     private RedisCache redisCache;
 
     /**
@@ -91,11 +98,14 @@ public class SysSaleShopController extends BaseController {
         List<SaleCardTemplateVo> saleCardTemplateVoList = new ArrayList<>();
         List<SysCardTemplate> list = sysCardTemplateMapper.selectSysCardTemplateList(sysCardTemplate);
         for (SysCardTemplate ct : list) {
-            Integer cardCount = null;
+            int cardCount;
             if (UserConstants.YES.equals(ct.getEnableAutoGen())) {
-                cardCount = 999999;
+                cardCount = 10000;
             } else {
                 cardCount = getSaleableCard(ct.getTemplateId()).size();
+                if (cardCount > 10000) {
+                    cardCount = 10000;
+                }
             }
             saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount));
         }
@@ -206,7 +216,21 @@ public class SysSaleShopController extends BaseController {
             throw new ServiceException("该订单非待支付订单或已过期", 400);
         }
         // 调第三方支付平台
-        return notify(request, response, orderNo);
+        String payMode = sso.getPayMode();
+        if (StringUtils.isBlank(payMode)) {
+            throw new ServiceException("未指定支付方式或支付方式有误", 400);
+        }
+        Payment payment = PaymentDefine.paymentMap.get(payMode);
+        if (payment == null) {
+            throw new ServiceException("暂不支持该支付方式", 400);
+        }
+        Object o = payment.payment(sso);
+
+        if (o instanceof AlipayTradePrecreateResponse) {
+            AlipayTradePrecreateResponse aliResponse = (AlipayTradePrecreateResponse) payment.payment(sso);
+            return AjaxResult.success(aliResponse);
+        }
+        return AjaxResult.error("支付结果未被处理，请联系管理员");
     }
 
     /**
@@ -231,26 +255,64 @@ public class SysSaleShopController extends BaseController {
         return AjaxResult.success();
     }
 
-    @GetMapping("/notify")
-    public AjaxResult notify(HttpServletRequest request, HttpServletResponse response, String orderNo) {
-        if (orderNo == null) {
-            throw new ServiceException("订单不存在", 400);
-        }
-        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
-        if (sso == null) {
-            throw new ServiceException("订单不存在", 400);
-        }
-        if (sso.getStatus() == SaleOrderStatus.WAIT_PAY) {
-            sso.setStatus(SaleOrderStatus.PAID);
-            sso.setPaymentTime(DateUtils.getNowDate());
-            sysSaleOrderService.updateSysSaleOrder(sso);
-            // 发货
-            deliveryGoods(sso);
-            System.out.println("支付成功回调。。。。");
-            // 反馈给第三方支付平台
+    @RequestMapping("/notify_alipay")
+    public void notify_alipay(HttpServletRequest request, HttpServletResponse response) {
+        log.info("支付成功, 进入异步通知接口...");
+        try {
+            boolean verify = PaymentDefine.paymentMap.get("alipay_qr").verify(request, response);
+            if (verify) {
+                //商户订单号
+                String out_trade_no = new String(request.getParameter("out_trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+                //支付宝交易号
+                String trade_no = new String(request.getParameter("trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+                //交易状态
+                String trade_status = new String(request.getParameter("trade_status").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+                //付款金额
+                String total_amount = new String(request.getParameter("total_amount").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+                if (trade_status.equals("TRADE_FINISHED")) {
+                    //判断该笔订单是否在商户网站中已经做过处理
+                    //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
+                    //如果有做过处理，不执行商户的业务程序
 
+                    //注意： 订单没有退款功能, 这个条件判断是进不来的, 所以此处不必写代码
+                    //退款日期超过可退款期限后（如三个月可退款），支付宝系统发送该交易状态通知
+                } else if (trade_status.equals("TRADE_SUCCESS")) {
+                    //判断该笔订单是否在商户网站中已经做过处理
+                    //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
+                    //如果有做过处理，不执行商户的业务程序
+
+                    //注意：
+                    //付款完成后，支付宝系统发送该交易状态通知
+
+                    // 修改订单状态，改为 支付成功，已付款; 同时新增支付流水
+                    SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(out_trade_no);
+                    if (sso == null) {
+                        throw new ServiceException("订单不存在", 400);
+                    }
+                    if (sso.getStatus() == SaleOrderStatus.WAIT_PAY) {
+                        sso.setStatus(SaleOrderStatus.PAID);
+                        sso.setPaymentTime(DateUtils.getNowDate());
+                        sso.setRemark("支付宝交易号：" + trade_no);
+                        sysSaleOrderService.updateSysSaleOrder(sso);
+                        // 发货
+                        deliveryGoods(sso);
+                        log.info("******************** 支付成功(支付宝异步通知) ********************");
+                        log.info("******************** 订单发货(支付宝异步通知) ********************");
+                    }
+                    log.info("******************** 支付宝异步通知 ********************");
+                    log.info("* 订单号: {}", out_trade_no);
+                    log.info("* 支付宝交易号: {}", trade_no);
+                    log.info("* 实付金额: {}", total_amount);
+                    log.info("* 购买产品: {}", sso.getSysSaleOrderItemList().get(0).getTitle());
+                    log.info("* 购买数量: {}", sso.getSysSaleOrderItemList().get(0).getNum());
+                    log.info("***************************************************************");
+                    // 反馈给第三方支付平台
+                    response.getWriter().write("success");
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), 400);
         }
-        return AjaxResult.success();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -306,8 +368,8 @@ public class SysSaleShopController extends BaseController {
         if (sso == null) {
             throw new ServiceException("订单不存在", 400);
         }
-        if (sso.getStatus() == null || sso.getStatus() == SaleOrderStatus.WAIT_PAY) {
-            throw new ServiceException("订单未支付", 400);
+        if (sso.getStatus() == null || sso.getStatus() == SaleOrderStatus.WAIT_PAY || sso.getStatus() == SaleOrderStatus.TRADE_CLOSED) {
+            throw new ServiceException("订单未支付或已过期", 400);
         }
         if (!sso.getQueryPass().equals(queryPass)) {
             throw new ServiceException("查询密码有误", 400);

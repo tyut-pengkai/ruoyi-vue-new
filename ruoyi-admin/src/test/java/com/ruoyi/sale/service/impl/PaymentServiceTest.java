@@ -5,13 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.annotation.Resource;
-
 @SpringBootTest
 class PaymentServiceTest {
-
-    @Resource
-    private AlipayServiceImpl alipayService;
 
     @BeforeEach
     void setUp() {
@@ -23,7 +18,7 @@ class PaymentServiceTest {
 
     @Test
     public void test() {
-        alipayService.test();
+
     }
 
 }
