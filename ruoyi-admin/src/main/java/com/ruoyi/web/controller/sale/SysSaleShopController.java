@@ -229,7 +229,7 @@ public class SysSaleShopController extends BaseController {
 
         if (o instanceof AlipayTradePrecreateResponse) {
             AlipayTradePrecreateResponse aliResponse = (AlipayTradePrecreateResponse) payment.payment(sso);
-            return AjaxResult.success(aliResponse);
+            return AjaxResult.success(aliResponse).put("actualFee", sso.getActualFee());
         }
         return AjaxResult.error("支付结果未被处理，请联系管理员");
     }

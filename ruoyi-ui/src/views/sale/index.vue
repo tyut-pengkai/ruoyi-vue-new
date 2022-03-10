@@ -12,7 +12,7 @@
             <el-col :span="14">
               <div class="my-logo">
                 <a href="/">
-                  <el-avatar image-size="48" src="/logo.png"></el-avatar>
+                  <el-avatar :src="logo" image-size="48"></el-avatar>
                   <span
                     style="
                       color: aliceblue;
@@ -63,6 +63,7 @@ export default {
     return {
       activeIndex: "1",
       regShow: false,
+      logo: require("../../assets/logo/logo.png"),
     };
   },
   methods: {

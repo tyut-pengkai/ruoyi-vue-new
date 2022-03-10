@@ -10,10 +10,13 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.ServletUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.payment.domain.Payment;
 import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.domain.SysSaleOrderItem;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +28,13 @@ import java.util.Map;
 @Slf4j
 public class AlipayPayment extends Payment {
 
+    private static String notifyUrl = "";
     private static AlipayClient alipayClient;
+    /**
+     * 设置请求的统一前缀
+     */
+    @Value("${swagger.pathMapping}")
+    private String pathMapping;
 
 //    private static String serverUrl = "https://openapi.alipaydev.com/gateway.do";
 //    private static String appId = "2016102000727957";
@@ -38,18 +47,28 @@ public class AlipayPayment extends Payment {
     private static String privateKey = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDIXCCEYDTnYTxxxMffAew3RJR+zijQTxRhlj1npasjvVRW7rxQWGx8N5DX2e7do+WrDdEDAlwHazGljXAqfjALkRq/OLcFEqm7x/9ankJhr7xoNhY333pIx+81Zb9q7garEI2BvNjjboWAenP0c+dhoNizwpxg78BqDOSKucPYCVA2RivedGJHWnzgXq+YTRAEVZdkiPXZH+e3VyqOCv07NiT7DzrP3rFQufztdMddxte/efQAm5VIKPsr07xdm15e3JZes8l7XHrNb7gu0xvSDfD9xJWpJR9Sr5rCRmVR6Y5JBZ+QGtOVrN7Bgr9XgwvJio0ZjB4v6/ymdtzdYcERAgMBAAECggEAFqUK68svz4LW4QjbiiHef7SZj+dfB4QYipr/X6qCuCxazuR2liIYSMXC8hJog9ZVS8ro940Zt6Du4IYmyjau2W/R9RDE5qbgVh/ZhXVjjUTeZ2zNgA0a9gTazU8tnjk+ubDKPYKJhNLl9cphNpyu5wLV2yNAp1gRiCri3ab3MoBPnKJa3y5a+nGIabUG/PL8211A23HFHz+kDx3YIfACmZpp/+TzAePKoEBptkUBAa0QweLwuWngUKmLV7m8RMeKToHARKq4LKbUqZcxfmA/IwiWMGXHRwrMHbupm6dN2sVWMGC2Kxe0jyKWBAch5hSnjcRPOPGBl9Gb3q+V/tScEQKBgQD1LIvOFfKOra8ikz/T7CYUrID4bRhQHaoO6Cawv/Cs1CzLEwijTexn9hDOiP+5mS7wCL7w6QudkrJmS1ZEJY3TbKKSXBb0kkVrIZ3KlGi0QZNtLt+XRELHcB3umocgwKLqw0Yix8mgeC6r7rocE4sM+H3yL3bGAEsQRoYYUw52jQKBgQDRNQAp9Neai6dzw9wqBm3FcuxbekULleZV0/8ukkVtwkeKsnTh2xapkq8yPWCnGHj953kmilJaZiYEgKWzKex2y4PqskqLl4YZBdvYMI+/jJ4Ak8KdqVlD7KszsjSE0MJw3VTPfvJW25QSLPw05uiydG2WESXP3NiLUJRKhb4FlQKBgBLSK51Tc/5d+O7XjPPQ0g+OOoxXm6Ey1cY1LhstcOVjmFiyilw29Cn66slgHPl7d+33TekiisC67TULHYE3vM55LXW82gpGXEvgFcPiZrNHwXCFQ6bSF6pFwhZ6CFuMTjVlbjHnUmQeNb7/IYxcN7V0Mf7wg9apWRnTwCGH5rlVAoGAChmg9GWZsyBi6TfffTfqPMoblx8EDlciU6p0e28cYvwqMAwFkJHfOjiWtLo53FdWIAv40V+EMlEULMt5NHklrWaN69rHto2OL88Umg9eIUVMq4J2tt3iLWFTsp874d2iRYip+4qJcKAROf9p/bPYMCVm1QPm624iFjfBsQdb8TECgYEA2bmVpKjkGejydYELVhBXlrddPGteIqwSCycy2JqZ720B7ziiaOYeEwjTc2O3+J3Mt4F6ubLudb/BAfE6nDZatviLFfCU8KTrP7dmjd9Ou0g+M9BOpjIZMhu3LRH1j2mfQ8FxBhnl2jAtADiMw3drzE1KJDxFfd0o9rk7r+58vhw=";
     private static String alipayPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs3TETDWmn6Giiy4tMqGJ+UoQc7Nb9KSavLyeg2RTDOjRhV13lQ9UmcdElh4GQK38ZfwIPVw8plI3DHRuJCkvOvhD+WHbL3rzgYLLgUNDWj6EigJ+l3Tupub+802CGpgh4LbrQldruAFdpk+uR04tl3KjEtJ1Z4XiJZAKdrEVYyCkHxhy7Ji3YNQecrZ+kI5GQ+uhBJzFeo0IKE0Ep4yug4Dk9gGFIc1H+xO2scahOM0yYOju7IBASgr3Y2/g7g8n2BmY+hnudt/BX9ERrcOvN0MDU2T0LOdzHxl1WhgEPK2rJRB72CwlaThZv+OX/m5uLAB23B5c7XKN/p0P7wpm/QIDAQAB";
     private static String signType = "RSA2";
-    private static String notifyUrl = "http://1508qs4589.zicp.vip/dev-api/sale/shop/notify_alipay";
 
-
+    @Override
     public void init() {
+        if (StringUtils.isBlank(notifyUrl)) {
+            if (pathMapping.contains("dev")) {
+                notifyUrl = "http://1508qs4589.zicp.vip";
+            } else {
+                HttpServletRequest request = ServletUtils.getRequest();
+                String port = "80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort();
+                notifyUrl = request.getScheme() + "://" + request.getServerName() + port;
+            }
+            notifyUrl += pathMapping + "/sale/shop/notify_alipay";
+        }
         this.setCode("alipay_qr");
-        this.setName("支付宝当面付");
+        this.setName("支付宝");
         this.setIcon("pay-alipay");
         this.setEncode("UTF-8");
         this.setEnable(true);
         alipayClient = new DefaultAlipayClient(serverUrl, appId, privateKey, "json", this.getEncode(), alipayPublicKey, signType);
     }
 
+    @Override
     public Object payment(SysSaleOrder sso) {
         AlipayTradePrecreateRequest request = new AlipayTradePrecreateRequest();
         request.setNotifyUrl("");
@@ -81,8 +100,9 @@ public class AlipayPayment extends Payment {
         try {
             request.setBizContent(bizContent.toString());
             request.setNotifyUrl(notifyUrl);
+            log.debug(JSON.toJSONString(request));
             AlipayTradePrecreateResponse response = alipayClient.execute(request);
-            System.out.println(JSON.toJSONString(response));
+            log.debug(JSON.toJSONString(response));
             return response;
         } catch (AlipayApiException e) {
             throw new ServiceException(e.getMessage(), 400);

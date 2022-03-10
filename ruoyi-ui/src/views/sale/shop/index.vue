@@ -567,7 +567,7 @@ export default {
         } else if (this.activeStep == 2) {
           const newPage = this.$router.resolve({
             path: "/billOrder",
-            query: {orderNo: this.orderNo},
+            query: {orderNo: this.orderNo, payMode: this.payData[this.payId].name},
           });
           window.open(newPage.href, "_blank");
           if (this.timer) {
