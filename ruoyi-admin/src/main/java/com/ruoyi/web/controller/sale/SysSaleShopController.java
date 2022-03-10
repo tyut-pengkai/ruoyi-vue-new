@@ -161,10 +161,11 @@ public class SysSaleShopController extends BaseController {
         sso.setUpdateBy(null);
         sso.setUpdateTime(null);
         // 6.订单详情
+        SysApp app = sysAppMapper.selectSysAppByAppId(sct.getAppId());
         ssoi.setTemplateType("1"); // 1卡类 2登录码类
         ssoi.setTemplateId(saleOrderVo.getTemplateId());
         ssoi.setNum(saleOrderVo.getBuyNum());
-        ssoi.setTitle(sct.getCardName());
+        ssoi.setTitle("[" + app.getAppName() + "]" + sct.getCardName());
         ssoi.setPrice(sct.getPrice());
         ssoi.setTotalFee(totalFee);
         ssoi.setDiscountRule(null);
