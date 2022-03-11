@@ -258,7 +258,7 @@
 </template>
 
 <script>
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import CardCategory from "./card/CardCategory";
 import CardGoods from "./card/CardGoods";
 import CardPay from "./card/CardPay";
@@ -537,16 +537,19 @@ export default {
               if (response.code == 200) {
                 this.orderNo = response.orderNo;
                 // 存储到COOKIE
-                var orderListStr = Cookies.get('orderList');
+                var orderListStr = Cookies.get("orderList");
                 var orderList = [];
                 if (orderListStr) {
                   orderList = JSON.parse(orderListStr);
                 }
-                orderList.unshift({orderNo: this.orderNo, queryPass: this.form.queryPass})
+                orderList.unshift({
+                  orderNo: this.orderNo,
+                  queryPass: this.form.queryPass,
+                });
                 if (orderList.length > 5) {
                   orderList = orderList.slice(0, 5);
                 }
-                Cookies.set('orderList', JSON.stringify(orderList));
+                Cookies.set("orderList", JSON.stringify(orderList));
               }
             })
             .finally(() => {
@@ -567,7 +570,10 @@ export default {
         } else if (this.activeStep == 2) {
           const newPage = this.$router.resolve({
             path: "/billOrder",
-            query: {orderNo: this.orderNo, payMode: this.payData[this.payId].name},
+            query: {
+              orderNo: this.orderNo,
+              // payMode: this.payData[this.payId].name
+            },
           });
           window.open(newPage.href, "_blank");
           if (this.timer) {

@@ -15,6 +15,9 @@ public abstract class Payment extends BaseAutoAware {
     private String icon;
     private String encode;
     private Boolean enable;
+    private String showType;
+
+    public abstract Object pay(SysSaleOrder sso);
 
     public Payment() {
         super();
@@ -23,7 +26,13 @@ public abstract class Payment extends BaseAutoAware {
 
     public abstract void init();
 
-    public abstract Object payment(SysSaleOrder sso);
+    public abstract void notify(HttpServletRequest request, HttpServletResponse response);
+
+    public static class ShowType {
+        public static String QR = "qr";
+        public static String HTML = "html";
+        public static String FORWARD = "forward";
+    }
 
     public abstract boolean verify(HttpServletRequest request, HttpServletResponse response) throws Exception;
 

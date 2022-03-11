@@ -1,7 +1,6 @@
 package com.ruoyi.web.controller.sale;
 
 import com.alibaba.fastjson.JSON;
-import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -22,30 +21,26 @@ import com.ruoyi.sale.domain.vo.SysCardVo;
 import com.ruoyi.sale.domain.vo.SysSaleOrderItemVo;
 import com.ruoyi.sale.service.ISysSaleOrderItemGoodsService;
 import com.ruoyi.sale.service.ISysSaleOrderService;
-import com.ruoyi.system.domain.SysCard;
+import com.ruoyi.sale.service.ISysSaleShopService;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.mapper.SysAppMapper;
 import com.ruoyi.system.mapper.SysCardMapper;
 import com.ruoyi.system.mapper.SysCardTemplateMapper;
 import com.ruoyi.system.mapper.SysLoginCodeMapper;
-import com.ruoyi.system.service.ISysCardTemplateService;
 import com.ruoyi.web.controller.sale.vo.SaleAppVo;
 import com.ruoyi.web.controller.sale.vo.SaleCardTemplateVo;
 import com.ruoyi.web.controller.sale.vo.SaleOrderVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 销售Controller
@@ -62,7 +57,7 @@ public class SysSaleShopController extends BaseController {
     @Resource
     private SysCardTemplateMapper sysCardTemplateMapper;
     @Resource
-    private ISysCardTemplateService sysCardTemplateService;
+    private ISysSaleShopService sysSaleShopService;
     @Resource
     private SysCardMapper sysCardMapper;
     @Resource
@@ -102,7 +97,7 @@ public class SysSaleShopController extends BaseController {
             if (UserConstants.YES.equals(ct.getEnableAutoGen())) {
                 cardCount = 10000;
             } else {
-                cardCount = getSaleableCard(ct.getTemplateId()).size();
+                cardCount = sysSaleShopService.getSaleableCard(ct.getTemplateId()).size();
                 if (cardCount > 10000) {
                     cardCount = 10000;
                 }
@@ -120,7 +115,7 @@ public class SysSaleShopController extends BaseController {
             throw new ServiceException("商品已下架", 400);
         }
         if (!UserConstants.YES.equals(tpl.getEnableAutoGen())) { // 非自动制卡
-            if (getSaleableCard(tpl.getTemplateId()).size() < saleOrderVo.getBuyNum()) {
+            if (sysSaleShopService.getSaleableCard(tpl.getTemplateId()).size() < saleOrderVo.getBuyNum()) {
                 throw new ServiceException("库存不足，请稍后再试", 400);
             }
         }
@@ -179,23 +174,6 @@ public class SysSaleShopController extends BaseController {
         return AjaxResult.success().put("orderNo", orderNo);
     }
 
-    /**
-     * 获取可售卖的卡，满足条件：卡上架，卡未过期，卡未使用，卡未售出，卡状态正常
-     *
-     * @param templateId
-     * @return
-     */
-    private List<SysCard> getSaleableCard(Long templateId) {
-        SysCard card = new SysCard();
-        card.setTemplateId(templateId);
-        card.setOnSale(UserConstants.YES);
-        card.setIsCharged(UserConstants.NO);
-        card.setIsSold(UserConstants.NO);
-        card.setStatus(UserConstants.NORMAL);
-        return sysCardMapper.selectSysCardList(card)
-                .stream().filter(c -> c.getExpireTime().after(DateUtils.getNowDate())).collect(Collectors.toList());
-    }
-
     private synchronized String genOrderNo(SaleOrderVo saleOrderVo) {
         String appId = String.format("%04d", saleOrderVo.getAppId());
         appId = appId.substring(appId.length() - 4, appId.length());
@@ -222,16 +200,12 @@ public class SysSaleShopController extends BaseController {
             throw new ServiceException("未指定支付方式或支付方式有误", 400);
         }
         Payment payment = PaymentDefine.paymentMap.get(payMode);
-        if (payment == null) {
+        if (payment == null || !payment.getEnable()) {
             throw new ServiceException("暂不支持该支付方式", 400);
         }
-        Object o = payment.payment(sso);
-
-        if (o instanceof AlipayTradePrecreateResponse) {
-            AlipayTradePrecreateResponse aliResponse = (AlipayTradePrecreateResponse) payment.payment(sso);
-            return AjaxResult.success(aliResponse).put("actualFee", sso.getActualFee());
-        }
-        return AjaxResult.error("支付结果未被处理，请联系管理员");
+        Object payResponse = payment.pay(sso);
+        return AjaxResult.success(payResponse).put("showType", payment.getShowType()) // qr：扫码，html：渲染，forward：跳转
+                .put("actualFee", sso.getActualFee()).put("payMode", payment.getName());
     }
 
     /**
@@ -249,115 +223,13 @@ public class SysSaleShopController extends BaseController {
         if (sso == null) {
             throw new ServiceException("订单不存在", 400);
         }
-        if (sso.getStatus() != SaleOrderStatus.PAID) {
-            throw new ServiceException("该订单非待发货订单", 400);
-        }
-        deliveryGoods(sso);
+        sysSaleShopService.deliveryGoods(sso);
         return AjaxResult.success();
     }
 
-    @RequestMapping("/notify_alipay")
-    public void notify_alipay(HttpServletRequest request, HttpServletResponse response) {
-        log.info("支付成功, 进入异步通知接口...");
-        try {
-            boolean verify = PaymentDefine.paymentMap.get("alipay_qr").verify(request, response);
-            if (verify) {
-                //商户订单号
-                String out_trade_no = new String(request.getParameter("out_trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-                //支付宝交易号
-                String trade_no = new String(request.getParameter("trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-                //交易状态
-                String trade_status = new String(request.getParameter("trade_status").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-                //付款金额
-                String total_amount = new String(request.getParameter("total_amount").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-                if (trade_status.equals("TRADE_FINISHED")) {
-                    //判断该笔订单是否在商户网站中已经做过处理
-                    //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
-                    //如果有做过处理，不执行商户的业务程序
-
-                    //注意： 订单没有退款功能, 这个条件判断是进不来的, 所以此处不必写代码
-                    //退款日期超过可退款期限后（如三个月可退款），支付宝系统发送该交易状态通知
-                } else if (trade_status.equals("TRADE_SUCCESS")) {
-                    //判断该笔订单是否在商户网站中已经做过处理
-                    //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
-                    //如果有做过处理，不执行商户的业务程序
-
-                    //注意：
-                    //付款完成后，支付宝系统发送该交易状态通知
-
-                    // 修改订单状态，改为 支付成功，已付款; 同时新增支付流水
-                    SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(out_trade_no);
-                    if (sso == null) {
-                        throw new ServiceException("订单不存在", 400);
-                    }
-                    if (sso.getStatus() == SaleOrderStatus.WAIT_PAY) {
-                        sso.setStatus(SaleOrderStatus.PAID);
-                        sso.setPaymentTime(DateUtils.getNowDate());
-                        sso.setRemark("支付宝交易号：" + trade_no);
-                        sysSaleOrderService.updateSysSaleOrder(sso);
-                        // 发货
-                        deliveryGoods(sso);
-                        log.info("******************** 支付成功(支付宝异步通知) ********************");
-                        log.info("******************** 订单发货(支付宝异步通知) ********************");
-                    }
-                    log.info("******************** 支付宝异步通知 ********************");
-                    log.info("* 订单号: {}", out_trade_no);
-                    log.info("* 支付宝交易号: {}", trade_no);
-                    log.info("* 实付金额: {}", total_amount);
-                    log.info("* 购买产品: {}", sso.getSysSaleOrderItemList().get(0).getTitle());
-                    log.info("* 购买数量: {}", sso.getSysSaleOrderItemList().get(0).getNum());
-                    log.info("***************************************************************");
-                    // 反馈给第三方支付平台
-                    response.getWriter().write("success");
-                }
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e.getMessage(), 400);
-        }
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    protected void deliveryGoods(SysSaleOrder sso) {
-        List<SysSaleOrderItem> itemList = sso.getSysSaleOrderItemList();
-        for (SysSaleOrderItem item : itemList) {
-            if (item.getNum() == null || item.getNum() < 0) {
-                throw new ServiceException("购卡数量有误，购买失败", 400);
-            }
-            SysCardTemplate cardTemplate = sysCardTemplateMapper.selectSysCardTemplateByTemplateId(item.getTemplateId());
-            if (cardTemplate == null) {
-                throw new ServiceException("商品不存在，购买失败", 400);
-            }
-            List<SysCard> resultCardList = new ArrayList<>();
-            // 获取库存数量
-            List<SysCard> saleableCard = getSaleableCard(item.getTemplateId());
-            if (saleableCard.size() >= item.getNum()) { //库存足够
-                resultCardList.addAll(saleableCard.subList(0, item.getNum()));
-            } else { // 库存不足
-                if (!UserConstants.YES.equals(cardTemplate.getEnableAutoGen())) { // 非自动制卡
-                    throw new ServiceException("库存不足，请稍后再试", 400);
-                }
-                resultCardList.addAll(saleableCard);
-                List<SysCard> cardList = sysCardTemplateService.genSysCardBatch(cardTemplate, item.getNum() - saleableCard.size(), UserConstants.NO, "系统制卡");
-                resultCardList.addAll(cardList);
-            }
-            List<SysSaleOrderItemGoods> goodsList = new ArrayList<>();
-            for (SysCard card : resultCardList) {
-                SysSaleOrderItemGoods goods = new SysSaleOrderItemGoods();
-                goods.setItemId(item.getItemId());
-                goods.setCardId(card.getCardId());
-                goodsList.add(goods);
-                // 更新充值卡状态 下架/已出售/
-                card.setOnSale(UserConstants.NO);
-                card.setIsSold(UserConstants.YES);
-                sysCardMapper.updateSysCard(card);
-            }
-            sysSaleOrderItemGoodsService.insertSysSaleOrderItemGoodsBatch(goodsList);
-        }
-        sso.setStatus(SaleOrderStatus.TRADE_SUCCESS);
-        Date nowDate = DateUtils.getNowDate();
-        sso.setDeliveryTime(nowDate);
-        sso.setFinishTime(nowDate);
-        sysSaleOrderService.updateSysSaleOrder(sso);
+    @RequestMapping("/notify/{payMode}")
+    public void notify_alipay(HttpServletRequest request, HttpServletResponse response, @PathVariable("payMode") String payMode) {
+        PaymentDefine.paymentMap.get(payMode).notify(request, response);
     }
 
     @GetMapping("/getCardList")

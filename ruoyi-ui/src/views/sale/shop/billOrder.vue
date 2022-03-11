@@ -6,29 +6,56 @@
         <span>扫码支付</span>
       </div>
       <div align="center" style="margin-top: 20px">
-        <span class="my-font">支付方式：[{{ payMode }}]，请打开APP扫码支付！有效期3分钟</span>
+        <span class="my-font"
+        >支付方式：[{{ payMode }}]，请打开APP扫码支付！有效期3分钟</span
+        >
       </div>
       <div align="center" style="margin-top: 10px">
         <span class="my-font">订单编号：</span>{{ orderNo }}
       </div>
-      <div align="center" style="margin-top: 20px; margin-bottom: 20px;">
+      <div align="center" style="margin-top: 20px; margin-bottom: 20px">
         <div v-if="htmlText">
           <!-- <div v-html="htmlText"></div> -->
-          <iframe :srcdoc="htmlText"
-                  border="0"
-                  frameborder="no"
-                  height="300"
-                  marginheight="0"
-                  marginwidth="0"
-                  scrolling="no"
-                  style="overflow:hidden;"
-                  width="300">
+          <iframe
+            :srcdoc="htmlText"
+            border="0"
+            frameborder="no"
+            height="300"
+            marginheight="0"
+            marginwidth="0"
+            scrolling="no"
+            style="overflow: hidden"
+            width="300"
+          >
           </iframe>
         </div>
-        <div v-if="qrText">
-          <div style="width:300px; padding: 15px; border-style: solid; border-radius: 20px; border-color: #3C8CE7;">
-            <div>应付金额：<span class="my-price">￥{{ actualFee }}</span></div>
-            <vue-qr :logoSrc="logoUrl" :size="200" :text="qrText"></vue-qr>
+        <div>
+          <div
+            style="
+              width: 300px;
+              padding: 15px;
+              border-style: solid;
+              border-radius: 20px;
+              border-color: #3c8ce7;
+            "
+          >
+            <div>
+              应付金额：<span class="my-price">￥{{ actualFee }}</span>
+            </div>
+            <el-skeleton :loading="loading" animated style="width: 200px">
+              <template slot="template">
+                <el-skeleton-item
+                  style="width: 200px; height: 200px"
+                  variant="image"
+                />
+              </template>
+            </el-skeleton>
+            <vue-qr
+              v-if="qrText"
+              :logoSrc="logoUrl"
+              :size="200"
+              :text="qrText"
+            ></vue-qr>
           </div>
         </div>
       </div>
@@ -41,7 +68,7 @@
 </template>
 
 <script>
-import vueQr from 'vue-qr';
+import vueQr from "vue-qr";
 import {notify, paySaleOrder} from "@/api/sale/saleShop";
 
 export default {
@@ -53,13 +80,15 @@ export default {
       actualFee: null,
       payMode: null,
       htmlText: null,
+      showType: null,
       logoUrl: require("../../../assets/logo/logo.png"),
       qrText: null,
+      loading: true,
     };
   },
   created() {
     this.orderNo = this.$route.query && this.$route.query.orderNo;
-    this.payMode = this.$route.query && this.$route.query.payMode;
+    // this.payMode = this.$route.query && this.$route.query.payMode;
 
     var data = {orderNo: this.orderNo};
     paySaleOrder(data)
@@ -67,11 +96,16 @@ export default {
         if (response.code == 200) {
           this.response = response;
           this.actualFee = response.actualFee;
+          this.payMode = response.payMode;
+          this.showType = response.showType;
           var data = response.data;
           if (data.success == true) {
-            if (data.qrCode) {
-              this.qrText = data.qrCode;
-            } else {
+            if (this.showType == "qr") {
+              if (data.qrCode) {
+                this.qrText = data.qrCode;
+                this.loading = false;
+              }
+            } else if (this.showType == "html") {
               this.htmlText = data.body;
             }
           }
@@ -106,7 +140,7 @@ export default {
 .my-font {
   font-weight: 600;
   font-size: 18px;
-  color: #3C8CE7;
+  color: #3c8ce7;
 }
 
 .my-title span {

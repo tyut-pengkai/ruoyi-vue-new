@@ -6,9 +6,11 @@ import 'nprogress/nprogress.css'
 import {getToken} from '@/utils/auth'
 import {isRelogin} from '@/utils/request'
 
-NProgress.configure({showSpinner: false})
+NProgress.configure({
+  showSpinner: false
+})
 
-const whiteList = ['/login', '/auth-redirect', '/bind', '/register', '/common/sysInfo', '/', '/queryOrder', '/billOrder', '/getCardList', '/sale/shop/notify_alipay']
+const whiteList = ['/login', '/auth-redirect', '/bind', '/register', '/common/sysInfo', '/', '/queryOrder', '/billOrder', '/getCardList', 'regx:/sale/shop/notify/.*']
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
@@ -29,7 +31,10 @@ router.beforeEach((to, from, next) => {
           store.dispatch('GenerateRoutes').then(accessRoutes => {
             // 根据roles权限生成可访问的路由表
             router.addRoutes(accessRoutes) // 动态添加可访问路由表
-            next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
+            next({
+              ...to,
+              replace: true
+            }) // hack方法 确保addRoutes已完成
           })
         }).catch(err => {
           store.dispatch('LogOut').then(() => {
@@ -50,8 +55,23 @@ router.beforeEach((to, from, next) => {
       // 在免登录白名单，直接进入
       next()
     } else {
-      next(`/login?redirect=${to.fullPath}`) // 否则全部重定向到登录页
-      NProgress.done()
+      var pass = false;
+      for (var item of whiteList) {
+        if (item.substring(0, 5) == "regx:") {
+          var regx = item.replace("regx:", "")
+          var patt = new RegExp(regx);
+          if (patt.test(to.path)) {
+            pass = true;
+            break;
+          }
+        }
+      }
+      if (pass) {
+        next();
+      } else {
+        next(`/login?redirect=${to.fullPath}`) // 否则全部重定向到登录页
+        NProgress.done();
+      }
     }
   }
 })
