@@ -1293,7 +1293,7 @@ export default {
     handleAppUser: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/appUser",
+        path: "/verify/appUser",
         query: {
           appId: appId,
         },
@@ -1302,7 +1302,7 @@ export default {
     handleCardTemplate: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/accountMode/cardTemplate",
+        path: "/verify/accountMode/cardTemplate",
         query: {
           appId: appId,
         },
@@ -1311,7 +1311,7 @@ export default {
     handleCardManage: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/accountMode/card",
+        path: "/verify/accountMode/card",
         query: {
           appId: appId,
         },
@@ -1320,7 +1320,7 @@ export default {
     handleLoginCodeTemplate: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/cardMode/loginCodeTemplate",
+        path: "/verify/cardMode/loginCodeTemplate",
         query: {
           appId: appId,
         },
@@ -1329,7 +1329,7 @@ export default {
     handleLoginCodeManage: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/cardMode/loginCode",
+        path: "/verify/cardMode/loginCode",
         query: {
           appId: appId,
         },
@@ -1338,7 +1338,7 @@ export default {
     handleVersionManage: function (row) {
       const appId = row.appId;
       this.$router.push({
-        path: "/app/appVersion",
+        path: "/verify/appVersion",
         query: {
           appId: appId,
         },

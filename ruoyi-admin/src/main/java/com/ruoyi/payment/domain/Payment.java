@@ -9,31 +9,79 @@ import javax.servlet.http.HttpServletResponse;
 
 @Data
 public abstract class Payment extends BaseAutoAware {
-
+    /**
+     * 支付方式代码
+     */
     private String code;
+    /**
+     * 支付方式名称
+     */
     private String name;
+    /**
+     * 支付方式ICON
+     */
     private String icon;
+    /**
+     * 支付方式编码
+     */
     private String encode;
+    /**
+     * 是否启用
+     */
     private Boolean enable;
+    /**
+     * {@link ShowType}
+     */
     private String showType;
-
-    public abstract Object pay(SysSaleOrder sso);
 
     public Payment() {
         super();
         init();
     }
 
+    /**
+     * 初始化
+     */
     public abstract void init();
 
+    /**
+     * 触发支付流程
+     *
+     * @param sso
+     * @return
+     */
+    public abstract Object pay(SysSaleOrder sso);
+
+    /**
+     * 回调通知会触发此函数，在此函数中判断回调订单状态并发货
+     *
+     * @param request
+     * @param response
+     */
     public abstract void notify(HttpServletRequest request, HttpServletResponse response);
 
+    /**
+     * 未支付订单即将过期时触发，可以在此函数中主动向支付平台查询一次订单状态并发货，防止因未收到交易平台回调通知而漏发订单
+     *
+     * @param sso
+     */
+    public abstract void beforeExpire(SysSaleOrder sso);
+
+    /**
+     * 付款时的展示方式
+     */
     public static class ShowType {
+        /**
+         * 扫码
+         */
         public static String QR = "qr";
+        /**
+         * 渲染页面
+         */
         public static String HTML = "html";
+        /**
+         * 跳转页面
+         */
         public static String FORWARD = "forward";
     }
-
-    public abstract boolean verify(HttpServletRequest request, HttpServletResponse response) throws Exception;
-
 }

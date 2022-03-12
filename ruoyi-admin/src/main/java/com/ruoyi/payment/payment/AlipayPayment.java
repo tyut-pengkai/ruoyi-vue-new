@@ -8,7 +8,9 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
+import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
@@ -130,9 +132,9 @@ public class AlipayPayment extends Payment {
         }
     }
 
-    public boolean verify(HttpServletRequest request, HttpServletResponse response) throws AlipayApiException {
+    private boolean verify(HttpServletRequest request) throws AlipayApiException {
         //获取支付宝POST过来反馈信息
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         Map<String, String[]> requestParams = request.getParameterMap();
         System.out.println(JSON.toJSONString(requestParams));
         for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
@@ -147,10 +149,8 @@ public class AlipayPayment extends Payment {
 //            valueStr = new String(valueStr.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
             params.put(name, valueStr);
         }
-
         //调用SDK验证签名
         boolean signVerified = AlipaySignature.rsaCheckV1(params, alipayPublicKey, this.getEncode(), signType);
-
         //——请在这里编写您的程序（以下代码仅作参考）——
            /* 实际验证过程建议商户务必添加以下校验：
            1、需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
@@ -170,7 +170,7 @@ public class AlipayPayment extends Payment {
     public void notify(HttpServletRequest request, HttpServletResponse response) {
         log.info("支付成功, 进入异步通知接口...");
         try {
-            if (verify(request, response)) {
+            if (verify(request)) {
                 //商户订单号
                 String out_trade_no = new String(request.getParameter("out_trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
                 //支付宝交易号
@@ -201,26 +201,62 @@ public class AlipayPayment extends Payment {
                     if (sso.getStatus() == SaleOrderStatus.WAIT_PAY) {
                         sso.setStatus(SaleOrderStatus.PAID);
                         sso.setPaymentTime(DateUtils.getNowDate());
-                        sso.setRemark("支付宝交易号：" + trade_no);
+                        sso.setTradeNo(trade_no);
                         sysSaleOrderService.updateSysSaleOrder(sso);
                         // 发货
                         sysSaleShopService.deliveryGoods(sso);
                         log.info("******************** 支付成功(支付宝异步通知) ********************");
+                        log.info("* 支付宝交易号: {}", trade_no);
                         log.info("******************** 订单发货(支付宝异步通知) ********************");
                     }
-                    log.info("******************** 支付宝异步通知 ********************");
-                    log.info("* 订单号: {}", out_trade_no);
-                    log.info("* 支付宝交易号: {}", trade_no);
-                    log.info("* 实付金额: {}", total_amount);
-                    log.info("* 购买产品: {}", sso.getSysSaleOrderItemList().get(0).getTitle());
-                    log.info("* 购买数量: {}", sso.getSysSaleOrderItemList().get(0).getNum());
-                    log.info("***************************************************************");
                     // 反馈给第三方支付平台
                     response.getWriter().write("success");
                 }
             }
         } catch (Exception e) {
             throw new ServiceException(e.getMessage(), 400);
+        }
+    }
+
+    @Override
+    public void beforeExpire(SysSaleOrder sso) {
+//        System.out.println("主动查询" + orderNo);
+        if (sso != null && SaleOrderStatus.WAIT_PAY.equals(sso.getStatus())) {
+            AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+            JSONObject bizContent = new JSONObject();
+            bizContent.put("out_trade_no", sso.getOrderNo());
+            try {
+                request.setBizContent(bizContent.toString());
+                request.setNotifyUrl(notifyUrl);
+                log.debug(JSON.toJSONString(request));
+                AlipayTradeQueryResponse response = alipayClient.execute(request);
+                log.debug(JSON.toJSONString(response));
+                String tradeNo = response.getTradeNo();
+                String status = response.getTradeStatus();
+                // 交易状态：
+                // WAIT_BUYER_PAY（交易创建，等待买家付款）、
+                // TRADE_CLOSED（未付款交易超时关闭，或支付完成后全额退款）、
+                // TRADE_SUCCESS（交易支付成功）、
+                // TRADE_FINISHED（交易结束，不可退款）
+                if ("TRADE_SUCCESS".equals(status)) {
+                    sso.setStatus(SaleOrderStatus.PAID);
+                    sso.setPaymentTime(DateUtils.getNowDate());
+                    sso.setTradeNo(tradeNo);
+                    sysSaleOrderService.updateSysSaleOrder(sso);
+                    // 发货
+                    sysSaleShopService.deliveryGoods(sso);
+                    log.info("******************** 支付成功(主动查询支付宝) ********************");
+                    log.info("* 支付宝交易号: {}", tradeNo);
+                    log.info("******************** 订单发货(主动查询支付宝) ********************");
+                } else {
+                    sso.setStatus(SaleOrderStatus.TRADE_CLOSED);
+                    sso.setCloseTime(DateUtils.getNowDate());
+                    sso.setTradeNo(tradeNo);
+                    sysSaleOrderService.updateSysSaleOrder(sso);
+                }
+            } catch (AlipayApiException e) {
+                throw new ServiceException(e.getMessage(), 400);
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.ruoyi.framework.daemon;
+package com.ruoyi.payment.deamon;
 
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -38,7 +38,7 @@ public class SaleOrderExpireDaemon implements ApplicationListener<ContextRefresh
             for (SysSaleOrder sso : orders) {
 //                sso.setExpireTime(new Date(sso.getCreateTime().getTime() + 5*60*1000));
 //                saleOrderService.updateSysSaleOrder(sso);
-                redisCache.redisTemplate.opsForZSet().add(Constants.SALE_ORDER_EXPIRE_KEY, sso.getOrderNo(), sso.getExpireTime().getTime());
+                redisCache.redisTemplate.opsForZSet().add(Constants.SALE_ORDER_EXPIRE_KEY, sso.getPayMode() + "|" + sso.getOrderNo(), sso.getExpireTime().getTime());
             }
             daemonThread.checkSaleOrderExpire();
             log.info("启动订单监控线程完毕");

@@ -1,6 +1,12 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form
+      v-show="showSearch"
+      ref="queryForm"
+      :inline="true"
+      :model="queryParams"
+      label-width="68px"
+    >
       <el-form-item label="订单编号" prop="orderNo">
         <el-input
           v-model="queryParams.orderNo"
@@ -47,8 +53,18 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          icon="el-icon-search"
+          size="mini"
+          type="primary"
+          @click="handleQuery"
+        >搜索
+        </el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+        >重置
+        </el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -61,7 +77,9 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['sale:saleOrder:add']"
-        >新增</el-button>
+        >新增
+        </el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -72,7 +90,9 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['sale:saleOrder:edit']"
-        >修改</el-button>
+        >修改
+        </el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -83,7 +103,9 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['sale:saleOrder:remove']"
-        >删除</el-button>
+        >删除
+        </el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -93,46 +115,189 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['sale:saleOrder:export']"
-        >导出</el-button>
+        >导出
+        </el-button
+        >
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+      ></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="saleOrderList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="订单ID" align="center" prop="orderId" />
-      <el-table-column label="订单编号" align="center" prop="orderNo" />
-      <el-table-column label="用户ID" align="center" prop="userId" />
-      <el-table-column label="应付金额" align="center" prop="actualFee" />
-      <el-table-column label="总价格" align="center" prop="totalFee" />
-      <el-table-column label="折扣规则" align="center" prop="discountRule" />
-      <el-table-column label="折扣金额" align="center" prop="discountFee" />
-      <el-table-column label="支付方式" align="center" prop="payMode" />
-      <el-table-column label="0未付款1已付款2交易关闭3交易成功4交易结束" align="center" prop="status" />
-      <el-table-column label="联系方式" align="center" prop="contact" />
-      <el-table-column label="查询密码" align="center" prop="queryPass" />
-      <el-table-column label="支付时间" align="center" prop="paymentTime" width="180">
+    <el-table
+      v-loading="loading"
+      :data="saleOrderList"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="expand">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.paymentTime, '{y}-{m}-{d}') }}</span>
+          <el-form label-position="left">
+            <el-form-item>
+              <el-col :span="4"> -</el-col>
+              <el-col :span="5">
+                <el-form-item label="订单编号">
+                  <span>{{ scope.row.orderNo }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="支付方式">
+                  <dict-tag
+                    :options="dict.type.pay_mode"
+                    :value="scope.row.payMode"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="支付平台交易号">
+                  <span>{{ scope.row.tradeNo }}</span>
+                </el-form-item>
+              </el-col>
+              <!-- <el-col :span="5">
+                <el-form-item label="价格">
+                  <span>{{ parseMoney(scope.row.price) }}元 </span>
+                </el-form-item>
+              </el-col> -->
+            </el-form-item>
+            <el-form-item>
+              <el-col :span="4"> -</el-col>
+              <el-col :span="5">
+                <el-form-item label="联系方式">
+                  <span>{{ scope.row.contact }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="查询密码">
+                  <span>{{ scope.row.queryPass }}</span>
+                </el-form-item>
+              </el-col>
+              <!-- <el-col :span="5">
+                <el-form-item label="面值">
+                  <span>{{
+                    parseSeconds(scope.row.app.billType, scope.row.quota)
+                  }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="价格">
+                  <span>{{ parseMoney(scope.row.price) }}元 </span>
+                </el-form-item>
+              </el-col> -->
+            </el-form-item>
+            <el-form-item>
+              <el-col :span="4"> -</el-col>
+              <el-col :span="5">
+                <el-form-item label="支付时间">
+                  <span>{{ parseTime(scope.row.paymentTime) }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="完成时间">
+                  <span>{{ parseTime(scope.row.finishTime) }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="关闭时间">
+                  <span>{{ parseTime(scope.row.closeTime) }}</span>
+                </el-form-item>
+              </el-col>
+              <!-- <el-col :span="5">
+                <el-form-item label="充值规则">
+                  <dict-tag
+                    :options="dict.type.sys_charge_rule"
+                    :value="scope.row.chargeRule"
+                  />
+                </el-form-item>
+              </el-col> -->
+            </el-form-item>
+          </el-form>
         </template>
       </el-table-column>
-      <el-table-column label="发货时间" align="center" prop="deliveryTime" width="180">
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column align="center" label="" type="index"/>
+      <!-- <el-table-column label="订单ID" align="center" prop="orderId" /> -->
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="订单编号"
+        prop="orderNo"
+      />
+      <!-- <el-table-column label="用户ID" align="center" prop="userId" /> -->
+      <el-table-column label="总价格" align="center" prop="totalFee"/>
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="折扣规则"
+        prop="discountRule"
+      />
+      <el-table-column label="折扣金额" align="center" prop="discountFee"/>
+      <el-table-column align="center" label="应付金额" prop="actualFee"/>
+      <el-table-column align="center" label="支付方式" prop="payMode">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.deliveryTime, '{y}-{m}-{d}') }}</span>
+          <dict-tag :options="dict.type.pay_mode" :value="scope.row.payMode"/>
         </template>
       </el-table-column>
-      <el-table-column label="订单完成时间" align="center" prop="finishTime" width="180">
+      <el-table-column align="center" label="订单状态" prop="status">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.finishTime, '{y}-{m}-{d}') }}</span>
+          <dict-tag
+            :options="dict.type.sale_order_status"
+            :value="scope.row.status"
+          />
         </template>
       </el-table-column>
-      <el-table-column label="订单关闭时间" align="center" prop="closeTime" width="180">
+      <!-- <el-table-column label="联系方式" align="center" prop="contact" />
+      <el-table-column label="查询密码" align="center" prop="queryPass" /> -->
+      <!-- <el-table-column
+        label="支付时间"
+        align="center"
+        prop="paymentTime"
+        width="180"
+      >
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.closeTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.paymentTime) }}</span>
+        </template>
+      </el-table-column> -->
+      <!-- <el-table-column
+        label="发货时间"
+        align="center"
+        prop="deliveryTime"
+        width="180"
+      >
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.deliveryTime) }}</span>
+        </template>
+      </el-table-column> -->
+      <!-- <el-table-column
+        label="完成时间"
+        align="center"
+        prop="finishTime"
+        width="180"
+      >
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.finishTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column
+        label="关闭时间"
+        align="center"
+        prop="closeTime"
+        width="180"
+      >
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.closeTime) }}</span>
+        </template>
+      </el-table-column> -->
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="备注"
+        prop="remark"
+      />
+      <el-table-column
+        align="center"
+        class-name="small-padding fixed-width"
+        label="操作"
+      >
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -140,20 +305,24 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['sale:saleOrder:edit']"
-          >修改</el-button>
+          >修改
+          </el-button
+          >
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['sale:saleOrder:remove']"
-          >删除</el-button>
+          >删除
+          </el-button
+          >
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -191,60 +360,106 @@
           <el-input v-model="form.queryPass" placeholder="请输入查询密码" />
         </el-form-item>
         <el-form-item label="支付时间" prop="paymentTime">
-          <el-date-picker clearable size="small"
+          <el-date-picker
+            clearable
+            placeholder="选择支付时间"
             v-model="form.paymentTime"
             type="date"
             value-format="yyyy-MM-dd HH:mm:ss"
-            placeholder="选择支付时间">
+            size="small"
+          >
           </el-date-picker>
         </el-form-item>
         <el-form-item label="发货时间" prop="deliveryTime">
-          <el-date-picker clearable size="small"
+          <el-date-picker
+            clearable
+            placeholder="选择发货时间"
             v-model="form.deliveryTime"
             type="date"
             value-format="yyyy-MM-dd HH:mm:ss"
-            placeholder="选择发货时间">
+            size="small"
+          >
           </el-date-picker>
         </el-form-item>
         <el-form-item label="订单完成时间" prop="finishTime">
-          <el-date-picker clearable size="small"
+          <el-date-picker
+            clearable
+            placeholder="选择订单完成时间"
             v-model="form.finishTime"
             type="date"
             value-format="yyyy-MM-dd HH:mm:ss"
-            placeholder="选择订单完成时间">
+            size="small"
+          >
           </el-date-picker>
         </el-form-item>
         <el-form-item label="订单关闭时间" prop="closeTime">
-          <el-date-picker clearable size="small"
+          <el-date-picker
+            clearable
+            placeholder="选择订单关闭时间"
             v-model="form.closeTime"
             type="date"
             value-format="yyyy-MM-dd HH:mm:ss"
-            placeholder="选择订单关闭时间">
+            size="small"
+          >
           </el-date-picker>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input
+            v-model="form.remark"
+            placeholder="请输入内容"
+            type="textarea"
+          />
         </el-form-item>
         <el-divider content-position="center">销售订单详情信息</el-divider>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddSysSaleOrderItem">添加</el-button>
+            <el-button
+              icon="el-icon-plus"
+              size="mini"
+              type="primary"
+              @click="handleAddSysSaleOrderItem"
+            >添加
+            </el-button
+            >
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteSysSaleOrderItem">删除</el-button>
+            <el-button
+              icon="el-icon-delete"
+              size="mini"
+              type="danger"
+              @click="handleDeleteSysSaleOrderItem"
+            >删除
+            </el-button
+            >
           </el-col>
         </el-row>
-        <el-table :data="sysSaleOrderItemList" :row-class-name="rowSysSaleOrderItemIndex" @selection-change="handleSysSaleOrderItemSelectionChange" ref="sysSaleOrderItem">
-          <el-table-column type="selection" width="50" align="center" />
-          <el-table-column label="序号" align="center" prop="index" width="50"/>
+        <el-table
+          ref="sysSaleOrderItem"
+          :data="sysSaleOrderItemList"
+          :row-class-name="rowSysSaleOrderItemIndex"
+          @selection-change="handleSysSaleOrderItemSelectionChange"
+        >
+          <el-table-column type="selection" width="50" align="center"/>
+          <el-table-column
+            align="center"
+            label="序号"
+            prop="index"
+            width="50"
+          />
           <el-table-column label="1卡类2登录码类" prop="templateType">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.templateType" placeholder="请输入1卡类2登录码类" />
+              <el-input
+                v-model="scope.row.templateType"
+                placeholder="请输入1卡类2登录码类"
+              />
             </template>
           </el-table-column>
           <el-table-column label="模板ID" prop="templateId">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.templateId" placeholder="请输入模板ID" />
+              <el-input
+                v-model="scope.row.templateId"
+                placeholder="请输入模板ID"
+              />
             </template>
           </el-table-column>
           <el-table-column label="购买数量" prop="num">
@@ -254,32 +469,50 @@
           </el-table-column>
           <el-table-column label="商品标题" prop="title">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.title" placeholder="请输入商品标题" />
+              <el-input
+                v-model="scope.row.title"
+                placeholder="请输入商品标题"
+              />
             </template>
           </el-table-column>
           <el-table-column label="商品单价" prop="price">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.price" placeholder="请输入商品单价" />
+              <el-input
+                v-model="scope.row.price"
+                placeholder="请输入商品单价"
+              />
             </template>
           </el-table-column>
           <el-table-column label="总价格" prop="totalFee">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.totalFee" placeholder="请输入总价格" />
+              <el-input
+                v-model="scope.row.totalFee"
+                placeholder="请输入总价格"
+              />
             </template>
           </el-table-column>
           <el-table-column label="折扣规则" prop="discountRule">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.discountRule" placeholder="请输入折扣规则" />
+              <el-input
+                v-model="scope.row.discountRule"
+                placeholder="请输入折扣规则"
+              />
             </template>
           </el-table-column>
           <el-table-column label="折扣金额" prop="discountFee">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.discountFee" placeholder="请输入折扣金额" />
+              <el-input
+                v-model="scope.row.discountFee"
+                placeholder="请输入折扣金额"
+              />
             </template>
           </el-table-column>
           <el-table-column label="应付金额" prop="actualFee">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.actualFee" placeholder="请输入应付金额" />
+              <el-input
+                v-model="scope.row.actualFee"
+                placeholder="请输入应付金额"
+              />
             </template>
           </el-table-column>
         </el-table>
@@ -293,10 +526,11 @@
 </template>
 
 <script>
-import { listSaleOrder, getSaleOrder, delSaleOrder, addSaleOrder, updateSaleOrder } from "@/api/sale/saleOrder";
+import {addSaleOrder, delSaleOrder, getSaleOrder, listSaleOrder, updateSaleOrder,} from "@/api/sale/saleOrder";
 
 export default {
   name: "SaleOrder",
+  dicts: ["sale_order_status", "pay_mode"],
   data() {
     return {
       // 遮罩层
@@ -339,8 +573,7 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {},
     };
   },
   created() {
@@ -351,15 +584,25 @@ export default {
     getList() {
       this.loading = true;
       this.queryParams.params = {};
-      if (null != this.daterangePaymentTime && '' != this.daterangePaymentTime) {
-        this.queryParams.params["beginPaymentTime"] = this.daterangePaymentTime[0];
-        this.queryParams.params["endPaymentTime"] = this.daterangePaymentTime[1];
+      if (
+        null != this.daterangePaymentTime &&
+        "" != this.daterangePaymentTime
+      ) {
+        this.queryParams.params["beginPaymentTime"] =
+          this.daterangePaymentTime[0];
+        this.queryParams.params["endPaymentTime"] =
+          this.daterangePaymentTime[1];
       }
-      if (null != this.daterangeDeliveryTime && '' != this.daterangeDeliveryTime) {
-        this.queryParams.params["beginDeliveryTime"] = this.daterangeDeliveryTime[0];
-        this.queryParams.params["endDeliveryTime"] = this.daterangeDeliveryTime[1];
+      if (
+        null != this.daterangeDeliveryTime &&
+        "" != this.daterangeDeliveryTime
+      ) {
+        this.queryParams.params["beginDeliveryTime"] =
+          this.daterangeDeliveryTime[0];
+        this.queryParams.params["endDeliveryTime"] =
+          this.daterangeDeliveryTime[1];
       }
-      listSaleOrder(this.queryParams).then(response => {
+      listSaleOrder(this.queryParams).then((response) => {
         this.saleOrderList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -392,7 +635,7 @@ export default {
         closeTime: null,
         updateBy: null,
         updateTime: null,
-        remark: null
+        remark: null,
       };
       this.sysSaleOrderItemList = [];
       this.resetForm("form");
@@ -411,9 +654,9 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.orderId)
-      this.single = selection.length!==1
-      this.multiple = !selection.length
+      this.ids = selection.map((item) => item.orderId);
+      this.single = selection.length !== 1;
+      this.multiple = !selection.length;
     },
     /** 新增按钮操作 */
     handleAdd() {
@@ -424,8 +667,8 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const orderId = row.orderId || this.ids
-      getSaleOrder(orderId).then(response => {
+      const orderId = row.orderId || this.ids;
+      getSaleOrder(orderId).then((response) => {
         this.form = response.data;
         this.sysSaleOrderItemList = response.data.sysSaleOrderItemList;
         this.open = true;
@@ -434,17 +677,17 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
           this.form.sysSaleOrderItemList = this.sysSaleOrderItemList;
           if (this.form.orderId != null) {
-            updateSaleOrder(this.form).then(response => {
+            updateSaleOrder(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addSaleOrder(this.form).then(response => {
+            addSaleOrder(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -456,14 +699,19 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const orderIds = row.orderId || this.ids;
-      this.$modal.confirm('是否确认删除销售订单编号为"' + orderIds + '"的数据项？').then(function() {
-        return delSaleOrder(orderIds);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      this.$modal
+        .confirm('是否确认删除销售订单编号为"' + orderIds + '"的数据项？')
+        .then(function () {
+          return delSaleOrder(orderIds);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {
+        });
     },
-	/** 销售订单详情序号 */
+    /** 销售订单详情序号 */
     rowSysSaleOrderItemIndex({ row, rowIndex }) {
       row.index = rowIndex + 1;
     },
@@ -488,21 +736,27 @@ export default {
       } else {
         const sysSaleOrderItemList = this.sysSaleOrderItemList;
         const checkedSysSaleOrderItem = this.checkedSysSaleOrderItem;
-        this.sysSaleOrderItemList = sysSaleOrderItemList.filter(function(item) {
-          return checkedSysSaleOrderItem.indexOf(item.index) == -1
+        this.sysSaleOrderItemList = sysSaleOrderItemList.filter(function (
+          item
+        ) {
+          return checkedSysSaleOrderItem.indexOf(item.index) == -1;
         });
       }
     },
     /** 复选框选中数据 */
     handleSysSaleOrderItemSelectionChange(selection) {
-      this.checkedSysSaleOrderItem = selection.map(item => item.index)
+      this.checkedSysSaleOrderItem = selection.map((item) => item.index);
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('sale/saleOrder/export', {
-        ...this.queryParams
-      }, `saleOrder_${new Date().getTime()}.xlsx`)
-    }
-  }
+      this.download(
+        "sale/saleOrder/export",
+        {
+          ...this.queryParams,
+        },
+        `saleOrder_${new Date().getTime()}.xlsx`
+      );
+    },
+  },
 };
 </script>

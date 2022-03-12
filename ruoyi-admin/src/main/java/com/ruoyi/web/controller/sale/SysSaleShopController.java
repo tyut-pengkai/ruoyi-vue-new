@@ -170,7 +170,7 @@ public class SysSaleShopController extends BaseController {
         itemList.add(ssoi);
         sso.setSysSaleOrderItemList(itemList);
         sysSaleOrderService.insertSysSaleOrder(sso);
-        redisCache.redisTemplate.opsForZSet().add(Constants.SALE_ORDER_EXPIRE_KEY, orderNo, sso.getExpireTime().getTime());
+        redisCache.redisTemplate.opsForZSet().add(Constants.SALE_ORDER_EXPIRE_KEY, sso.getPayMode() + "|" + orderNo, sso.getExpireTime().getTime());
         return AjaxResult.success().put("orderNo", orderNo);
     }
 
@@ -275,7 +275,7 @@ public class SysSaleShopController extends BaseController {
      */
     @GetMapping("/querySaleOrderByContact")
     public TableDataInfo querySaleOrderByContact(SysSaleOrder sysSaleOrder) {
-        List<SysSaleOrder> list = sysSaleOrderService.selectSysSaleOrderQuery(sysSaleOrder);
+        List<SysSaleOrder> list = sysSaleOrderService.selectSysSaleOrderQueryLimit5(sysSaleOrder);
         return getDataTable(list);
     }
 }

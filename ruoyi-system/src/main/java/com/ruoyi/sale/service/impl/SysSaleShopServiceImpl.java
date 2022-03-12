@@ -15,6 +15,7 @@ import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.mapper.SysCardMapper;
 import com.ruoyi.system.mapper.SysCardTemplateMapper;
 import com.ruoyi.system.service.ISysCardTemplateService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class SysSaleShopServiceImpl implements ISysSaleShopService {
 
     @Resource
@@ -84,6 +86,12 @@ public class SysSaleShopServiceImpl implements ISysSaleShopService {
         sso.setDeliveryTime(nowDate);
         sso.setFinishTime(nowDate);
         sysSaleOrderService.updateSysSaleOrder(sso);
+        log.info("***********************************");
+        log.info("* 订单号: {}", sso.getOrderNo());
+        log.info("* 实付金额: {}", sso.getActualFee());
+        log.info("* 购买产品: {}", sso.getSysSaleOrderItemList().get(0).getTitle());
+        log.info("* 购买数量: {}", sso.getSysSaleOrderItemList().get(0).getNum());
+        log.info("***********************************");
     }
 
     /**

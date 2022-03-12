@@ -121,6 +121,12 @@ public class SysSaleOrder extends BaseEntity {
     private Date expireTime;
 
     /**
+     * 支付平台交易号
+     */
+    @Excel(name = "支付平台交易号")
+    private String tradeNo;
+
+    /**
      * 销售订单详情信息
      */
     private List<SysSaleOrderItem> sysSaleOrderItemList;
@@ -261,6 +267,14 @@ public class SysSaleOrder extends BaseEntity {
         this.expireTime = expireTime;
     }
 
+    public String getTradeNo() {
+        return tradeNo;
+    }
+
+    public void setTradeNo(String tradeNo) {
+        this.tradeNo = tradeNo;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -284,6 +298,7 @@ public class SysSaleOrder extends BaseEntity {
                 .append("expireTime", getExpireTime())
                 .append("updateBy", getUpdateBy())
                 .append("updateTime", getUpdateTime())
+                .append("tradeNo", getTradeNo())
                 .append("remark", getRemark())
                 .append("sysSaleOrderItemList", getSysSaleOrderItemList())
                 .toString();

@@ -65,8 +65,8 @@ public class SysSaleOrderServiceImpl implements ISysSaleOrderService {
      * @return 销售订单
      */
     @Override
-    public List<SysSaleOrder> selectSysSaleOrderQuery(SysSaleOrder sysSaleOrder) {
-        return sysSaleOrderMapper.selectSysSaleOrderQuery(sysSaleOrder);
+    public List<SysSaleOrder> selectSysSaleOrderQueryLimit5(SysSaleOrder sysSaleOrder) {
+        return sysSaleOrderMapper.selectSysSaleOrderQueryLimit5(sysSaleOrder);
     }
 
     /**
