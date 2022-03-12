@@ -162,6 +162,11 @@
             <el-form-item>
               <el-col :span="4"> -</el-col>
               <el-col :span="5">
+                <el-form-item label="登录账号">
+                  <span>{{ scope.row.userId ? scope.row.userId : "[未登录]" }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
                 <el-form-item label="联系方式">
                   <span>{{ scope.row.contact }}</span>
                 </el-form-item>
