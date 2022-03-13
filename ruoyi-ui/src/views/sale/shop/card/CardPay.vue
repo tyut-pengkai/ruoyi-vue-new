@@ -1,23 +1,23 @@
 <template>
-    <el-row :gutter="10">
-      <el-col v-for="item in data" :key="item.id" :span="3">
-        <div class="my-card-group">
-          <el-card
-            shadow="hover"
-            class="my-box-card"
-            :class="{ 'my-box-card-select': cardKeyOn == item.id }"
-            @click.native="handleSelect(item.id)"
-          >
-            <div class="my-card-pay">
-              <div class="my-card-title">
-                <img :src=handleImgPath(item.img) />
-                <p>{{ item.name }}</p>
-              </div>
+  <el-row :gutter="10">
+    <el-col v-for="item in data" :key="item.id" :span="3">
+      <div class="my-card-group">
+        <el-card
+          :class="{ 'my-box-card-select': cardKeyOn == item.id }"
+          class="my-box-card"
+          shadow="hover"
+          @click.native="handleSelect(item.id)"
+        >
+          <div class="my-card-pay">
+            <div class="my-card-title">
+              <img :src="handleImgPath(item.img)"/>
+              <p>{{ item.name }}</p>
             </div>
-          </el-card>
-        </div>
-      </el-col>
-    </el-row>
+          </div>
+        </el-card>
+      </div>
+    </el-col>
+  </el-row>
 </template>
 
 <script>
@@ -47,8 +47,8 @@ export default {
       this.$emit("card-click", key);
     },
     handleImgPath(img) {
-      return require('../../../../assets/images/' + img + '.svg');
-    }
+      return require("../../../../assets/images/" + img + ".svg");
+    },
   },
 };
 </script>
@@ -75,11 +75,10 @@ export default {
 .my-card-pay p {
   display: inline-block;
   margin-left: 3px !important;
-
 }
 
 .my-card-pay .my-card-title p {
-  margin: 0 0 5px 0;
+  margin: 3px 0 5px 0;
   font-size: 12px;
   font-weight: bold;
   color: #545454;
