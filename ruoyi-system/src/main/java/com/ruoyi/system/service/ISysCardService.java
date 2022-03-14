@@ -10,19 +10,26 @@ import java.util.List;
  * @author zwgu
  * @date 2021-12-03
  */
-public interface ISysCardService 
-{
+public interface ISysCardService {
     /**
      * 查询卡密
-     * 
+     *
      * @param cardId 卡密主键
      * @return 卡密
      */
     public SysCard selectSysCardByCardId(Long cardId);
 
     /**
+     * 查询卡密
+     *
+     * @param cardIds 卡密主键
+     * @return 卡密
+     */
+    public List<SysCard> selectSysCardByCardIds(Long[] cardIds);
+
+    /**
      * 查询卡密列表
-     * 
+     *
      * @param sysCard 卡密
      * @return 卡密集合
      */

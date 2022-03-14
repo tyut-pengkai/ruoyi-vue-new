@@ -28,7 +28,7 @@
                 <p></p>
               </div>
               <span style="margin-left: 100px; font-size: 12px">
-                剩余 {{ item.num }} 件
+                剩余 {{ item.num >= 1000 ? '999+' : item.num }} 件
               </span>
             </div>
           </div>

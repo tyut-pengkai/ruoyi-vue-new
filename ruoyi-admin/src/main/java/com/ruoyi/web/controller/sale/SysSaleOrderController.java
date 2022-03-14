@@ -7,12 +7,19 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.sale.domain.SysSaleOrder;
+import com.ruoyi.sale.domain.SysSaleOrderItem;
+import com.ruoyi.sale.domain.SysSaleOrderItemGoods;
+import com.ruoyi.sale.domain.vo.SysCardVo;
+import com.ruoyi.sale.service.ISysSaleOrderItemGoodsService;
 import com.ruoyi.sale.service.ISysSaleOrderService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ruoyi.system.domain.SysCard;
+import com.ruoyi.system.service.ISysCardService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,8 +31,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/sale/saleOrder")
 public class SysSaleOrderController extends BaseController {
-    @Autowired
+    @Resource
     private ISysSaleOrderService sysSaleOrderService;
+    @Resource
+    private ISysSaleOrderItemGoodsService sysSaleOrderItemGoodsService;
+    @Resource
+    private ISysCardService sysCardService;
 
     /**
      * 查询销售订单列表
@@ -56,7 +67,24 @@ public class SysSaleOrderController extends BaseController {
     @PreAuthorize("@ss.hasPermi('sale:saleOrder:query')")
     @GetMapping(value = "/{orderId}")
     public AjaxResult getInfo(@PathVariable("orderId") Long orderId) {
-        return AjaxResult.success(sysSaleOrderService.selectSysSaleOrderByOrderId(orderId));
+        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderId(orderId);
+        List<SysSaleOrderItem> itemList = sso.getSysSaleOrderItemList();
+        for (SysSaleOrderItem item : itemList) {
+            item.setGoodsList(new ArrayList<>());
+            List<SysSaleOrderItemGoods> goodsList = sysSaleOrderItemGoodsService.selectSysSaleOrderItemGoodsByItemId(item.getItemId());
+            if (goodsList != null && goodsList.size() > 0) {
+                if ("1".equals(item.getTemplateType())) { // 充值卡
+                    Long[] ids = goodsList.stream().map(SysSaleOrderItemGoods::getCardId).toArray(Long[]::new);
+                    List<SysCard> cardList = sysCardService.selectSysCardByCardIds(ids);
+                    for (SysCard card : cardList) {
+                        item.getGoodsList().add(new SysCardVo(card));
+                    }
+                } else if ("2".equals(item.getTemplateType())) { // 登录码
+
+                }
+            }
+        }
+        return AjaxResult.success(sso);
     }
 
     /**

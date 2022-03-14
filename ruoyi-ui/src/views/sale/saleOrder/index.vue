@@ -16,7 +16,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="用户ID" prop="userId">
+      <!-- <el-form-item label="用户ID" prop="userId">
         <el-input
           v-model="queryParams.userId"
           placeholder="请输入用户ID"
@@ -24,8 +24,8 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
-      <el-form-item label="支付方式" prop="payMode">
+      </el-form-item> -->
+      <!-- <el-form-item label="支付方式" prop="payMode">
         <el-input
           v-model="queryParams.payMode"
           placeholder="请输入支付方式"
@@ -33,7 +33,7 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="联系方式" prop="contact">
         <el-input
           v-model="queryParams.contact"
@@ -69,7 +69,7 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="primary"
           plain
@@ -80,8 +80,8 @@
         >新增
         </el-button
         >
-      </el-col>
-      <el-col :span="1.5">
+      </el-col> -->
+      <!-- <el-col :span="1.5">
         <el-button
           type="success"
           plain
@@ -93,7 +93,7 @@
         >修改
         </el-button
         >
-      </el-col>
+      </el-col> -->
       <el-col :span="1.5">
         <el-button
           type="danger"
@@ -149,7 +149,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="5">
-                <el-form-item label="支付平台交易号">
+                <el-form-item label="支付交易号">
                   <span>{{ scope.row.tradeNo }}</span>
                 </el-form-item>
               </el-col>
@@ -162,7 +162,7 @@
             <el-form-item>
               <el-col :span="4"> -</el-col>
               <el-col :span="5">
-                <el-form-item label="登录账号">
+                <el-form-item label="下单账号">
                   <span>{{ scope.row.userId ? scope.row.userId : "[未登录]" }}</span>
                 </el-form-item>
               </el-col>
@@ -310,7 +310,7 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['sale:saleOrder:edit']"
-          >修改
+          >详情
           </el-button
           >
           <el-button
@@ -335,78 +335,104 @@
     />
 
     <!-- 添加或修改销售订单对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" append-to-body width="800px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="订单编号" prop="orderNo">
-          <el-input v-model="form.orderNo" placeholder="请输入订单编号" />
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="订单编号" prop="orderNo">
+              {{ form.orderNo }}
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="下单账号" prop="userId">
+              <span>{{ form.userId ? form.userId : "[未登录]" }}</span>
+            </el-form-item>
+          </el-col>
         </el-form-item>
-        <el-form-item label="用户ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入用户ID" />
+        <el-form-item>
+          <el-col :span="24">
+            <el-form-item label="订单状态" prop="status">
+              <dict-tag
+                :options="dict.type.sale_order_status"
+                :value="form.status"
+              />
+            </el-form-item>
+          </el-col>
         </el-form-item>
-        <el-form-item label="应付金额" prop="actualFee">
-          <el-input v-model="form.actualFee" placeholder="请输入应付金额" />
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="总价格" prop="totalFee">
+              <span>{{ parseMoney(form.totalFee) }}元 </span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="应付金额" prop="actualFee">
+              <span>{{ parseMoney(form.actualFee) }}元 </span>
+            </el-form-item>
+          </el-col>
         </el-form-item>
-        <el-form-item label="总价格" prop="totalFee">
-          <el-input v-model="form.totalFee" placeholder="请输入总价格" />
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="折扣规则" prop="discountRule">
+              {{ form.discountRule }}
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="折扣金额" prop="discountFee">
+              <span>{{ parseMoney(form.discountFee) }}元 </span>
+            </el-form-item>
+          </el-col>
         </el-form-item>
-        <el-form-item label="折扣规则" prop="discountRule">
-          <el-input v-model="form.discountRule" placeholder="请输入折扣规则" />
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="支付方式" prop="payMode">
+              <dict-tag
+                :options="dict.type.pay_mode"
+                :value="form.payMode"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="支付交易号" label-width="93px" prop="tradeNo">
+              <span>{{ form.tradeNo }}</span>
+            </el-form-item>
+          </el-col>
         </el-form-item>
-        <el-form-item label="折扣金额" prop="discountFee">
-          <el-input v-model="form.discountFee" placeholder="请输入折扣金额" />
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="联系方式" prop="contact">
+              <el-input v-model="form.contact" placeholder="请输入联系方式"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="查询密码" prop="queryPass">
+              <el-input v-model="form.queryPass" placeholder="请输入查询密码"/>
+            </el-form-item>
+          </el-col>
         </el-form-item>
-        <el-form-item label="支付方式" prop="payMode">
-          <el-input v-model="form.payMode" placeholder="请输入支付方式" />
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="支付时间" prop="paymentTime">
+              {{ form.paymentTime }}
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="发货时间" prop="deliveryTime">
+              {{ form.deliveryTime }}
+            </el-form-item>
+          </el-col>
         </el-form-item>
-        <el-form-item label="联系方式" prop="contact">
-          <el-input v-model="form.contact" placeholder="请输入联系方式" />
-        </el-form-item>
-        <el-form-item label="查询密码" prop="queryPass">
-          <el-input v-model="form.queryPass" placeholder="请输入查询密码" />
-        </el-form-item>
-        <el-form-item label="支付时间" prop="paymentTime">
-          <el-date-picker
-            clearable
-            placeholder="选择支付时间"
-            v-model="form.paymentTime"
-            type="date"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            size="small"
-          >
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="发货时间" prop="deliveryTime">
-          <el-date-picker
-            clearable
-            placeholder="选择发货时间"
-            v-model="form.deliveryTime"
-            type="date"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            size="small"
-          >
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="订单完成时间" prop="finishTime">
-          <el-date-picker
-            clearable
-            placeholder="选择订单完成时间"
-            v-model="form.finishTime"
-            type="date"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            size="small"
-          >
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="订单关闭时间" prop="closeTime">
-          <el-date-picker
-            clearable
-            placeholder="选择订单关闭时间"
-            v-model="form.closeTime"
-            type="date"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            size="small"
-          >
-          </el-date-picker>
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="完成时间" prop="finishTime">
+              {{ form.finishTime }}
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="关闭时间" prop="closeTime">
+              {{ form.closeTime }}
+            </el-form-item>
+          </el-col>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input
@@ -416,7 +442,7 @@
           />
         </el-form-item>
         <el-divider content-position="center">销售订单详情信息</el-divider>
-        <el-row :gutter="10" class="mb8">
+        <!-- <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
             <el-button
               icon="el-icon-plus"
@@ -437,89 +463,123 @@
             </el-button
             >
           </el-col>
-        </el-row>
-        <el-table
+        </el-row> -->
+        <!-- <el-table
           ref="sysSaleOrderItem"
           :data="sysSaleOrderItemList"
           :row-class-name="rowSysSaleOrderItemIndex"
           @selection-change="handleSysSaleOrderItemSelectionChange"
+        > -->
+        <el-table
+          ref="sysSaleOrderItem"
+          :data="sysSaleOrderItemList"
         >
-          <el-table-column type="selection" width="50" align="center"/>
-          <el-table-column
-            align="center"
-            label="序号"
-            prop="index"
-            width="50"
-          />
-          <el-table-column label="1卡类2登录码类" prop="templateType">
-            <template slot-scope="scope">
-              <el-input
-                v-model="scope.row.templateType"
-                placeholder="请输入1卡类2登录码类"
-              />
+          <el-table-column type="expand">
+            <template slot-scope="item">
+              <!-- <div v-for="(scope, index) in item.row.goodsList" :key="index">
+                {{index}}
+              </div> -->
+              <el-table :data="item.row.goodsList" max-height="300px">
+                <el-table-column align="center" label="" type="index"/>
+                <el-table-column
+                  :label="item.row.templateType == '1' ? '充值卡号' : '登录码'"
+                >
+                  <template slot-scope="scope">
+                    {{ scope.row.cardNo }}
+                  </template>
+                </el-table-column>
+                <!-- <el-table-column label="充值密码" v-if="item.row.templateType == '1'">
+                  <template slot-scope="scope">
+                    {{ scope.row.cardPass }}
+                  </template>
+                </el-table-column> -->
+                <!-- <el-table-column label="过期时间">
+                  <template slot-scope="scope">
+                    {{ scope.row.expireTime }}
+                  </template>
+                </el-table-column> -->
+                <el-table-column v-if="item.row.templateType == '1'" label="是否已用">
+                  <template slot-scope="scope">
+                    <dict-tag
+                      :options="dict.type.sys_yes_no"
+                      :value="scope.row.isCharged"
+                    />
+                  </template>
+                </el-table-column>
+              </el-table>
             </template>
           </el-table-column>
-          <el-table-column label="模板ID" prop="templateId">
+          <!-- <el-table-column type="selection" width="50" align="center"/> -->
+          <!-- <el-table-column
+            align="center"
+            label="序号"
+            type="index"
+          /> -->
+          <el-table-column label="商品类别" prop="templateType">
+            <template slot-scope="scope">
+              {{ scope.row.templateType == 1 ? '充值卡' : '登录码' }}
+            </template>
+          </el-table-column>
+          <!-- <el-table-column label="模板ID" prop="templateId">
             <template slot-scope="scope">
               <el-input
                 v-model="scope.row.templateId"
                 placeholder="请输入模板ID"
               />
             </template>
-          </el-table-column>
-          <el-table-column label="购买数量" prop="num">
+          </el-table-column> -->
+          <el-table-column :show-overflow-tooltip="true" label="商品标题" prop="title">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.num" placeholder="请输入购买数量" />
-            </template>
-          </el-table-column>
-          <el-table-column label="商品标题" prop="title">
-            <template slot-scope="scope">
-              <el-input
-                v-model="scope.row.title"
-                placeholder="请输入商品标题"
-              />
+              {{ scope.row.title }}
             </template>
           </el-table-column>
           <el-table-column label="商品单价" prop="price">
             <template slot-scope="scope">
-              <el-input
-                v-model="scope.row.price"
-                placeholder="请输入商品单价"
-              />
+              {{ parseMoney(scope.row.price) }}元
+            </template>
+          </el-table-column>
+          <el-table-column label="购买数量" prop="num">
+            <template slot-scope="scope">
+              {{ scope.row.num }}
             </template>
           </el-table-column>
           <el-table-column label="总价格" prop="totalFee">
             <template slot-scope="scope">
-              <el-input
-                v-model="scope.row.totalFee"
-                placeholder="请输入总价格"
-              />
+              {{ parseMoney(scope.row.totalFee) }}元
             </template>
           </el-table-column>
           <el-table-column label="折扣规则" prop="discountRule">
             <template slot-scope="scope">
-              <el-input
-                v-model="scope.row.discountRule"
-                placeholder="请输入折扣规则"
-              />
+              {{ scope.row.discountRule }}
             </template>
           </el-table-column>
           <el-table-column label="折扣金额" prop="discountFee">
             <template slot-scope="scope">
-              <el-input
-                v-model="scope.row.discountFee"
-                placeholder="请输入折扣金额"
-              />
+              {{ parseMoney(scope.row.discountFee) }}元
             </template>
           </el-table-column>
           <el-table-column label="应付金额" prop="actualFee">
             <template slot-scope="scope">
-              <el-input
-                v-model="scope.row.actualFee"
-                placeholder="请输入应付金额"
-              />
+              {{ parseMoney(scope.row.actualFee) }}元
             </template>
           </el-table-column>
+          <!-- <el-table-column
+            label="操作"
+            align="center"
+            class-name="small-padding fixed-width"
+            width="100"
+          >
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-edit"
+                @click="handleShowGoods(scope.row)"
+                v-hasPermi="['system:card:list']"
+                >查看关联商品</el-button
+              >
+            </template>
+          </el-table-column> -->
         </el-table>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -532,10 +592,12 @@
 
 <script>
 import {addSaleOrder, delSaleOrder, getSaleOrder, listSaleOrder, updateSaleOrder,} from "@/api/sale/saleOrder";
+import {parseMoney} from "@/utils/my";
+
 
 export default {
   name: "SaleOrder",
-  dicts: ["sale_order_status", "pay_mode"],
+  dicts: ["sale_order_status", "pay_mode", "sys_yes_no"],
   data() {
     return {
       // 遮罩层
@@ -663,12 +725,12 @@ export default {
       this.single = selection.length !== 1;
       this.multiple = !selection.length;
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加销售订单";
-    },
+    // /** 新增按钮操作 */
+    // handleAdd() {
+    //   this.reset();
+    //   this.open = true;
+    //   this.title = "添加销售订单";
+    // },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
@@ -677,7 +739,7 @@ export default {
         this.form = response.data;
         this.sysSaleOrderItemList = response.data.sysSaleOrderItemList;
         this.open = true;
-        this.title = "修改销售订单";
+        this.title = "销售订单详情";
       });
     },
     /** 提交按钮 */
@@ -717,41 +779,41 @@ export default {
         });
     },
     /** 销售订单详情序号 */
-    rowSysSaleOrderItemIndex({ row, rowIndex }) {
+    rowSysSaleOrderItemIndex({row, rowIndex}) {
       row.index = rowIndex + 1;
     },
-    /** 销售订单详情添加按钮操作 */
-    handleAddSysSaleOrderItem() {
-      let obj = {};
-      obj.templateType = "";
-      obj.templateId = "";
-      obj.num = "";
-      obj.title = "";
-      obj.price = "";
-      obj.totalFee = "";
-      obj.discountRule = "";
-      obj.discountFee = "";
-      obj.actualFee = "";
-      this.sysSaleOrderItemList.push(obj);
-    },
-    /** 销售订单详情删除按钮操作 */
-    handleDeleteSysSaleOrderItem() {
-      if (this.checkedSysSaleOrderItem.length == 0) {
-        this.$modal.msgError("请先选择要删除的销售订单详情数据");
-      } else {
-        const sysSaleOrderItemList = this.sysSaleOrderItemList;
-        const checkedSysSaleOrderItem = this.checkedSysSaleOrderItem;
-        this.sysSaleOrderItemList = sysSaleOrderItemList.filter(function (
-          item
-        ) {
-          return checkedSysSaleOrderItem.indexOf(item.index) == -1;
-        });
-      }
-    },
-    /** 复选框选中数据 */
-    handleSysSaleOrderItemSelectionChange(selection) {
-      this.checkedSysSaleOrderItem = selection.map((item) => item.index);
-    },
+    // /** 销售订单详情添加按钮操作 */
+    // handleAddSysSaleOrderItem() {
+    //   let obj = {};
+    //   obj.templateType = "";
+    //   obj.templateId = "";
+    //   obj.num = "";
+    //   obj.title = "";
+    //   obj.price = "";
+    //   obj.totalFee = "";
+    //   obj.discountRule = "";
+    //   obj.discountFee = "";
+    //   obj.actualFee = "";
+    //   this.sysSaleOrderItemList.push(obj);
+    // },
+    // /** 销售订单详情删除按钮操作 */
+    // handleDeleteSysSaleOrderItem() {
+    //   if (this.checkedSysSaleOrderItem.length == 0) {
+    //     this.$modal.msgError("请先选择要删除的销售订单详情数据");
+    //   } else {
+    //     const sysSaleOrderItemList = this.sysSaleOrderItemList;
+    //     const checkedSysSaleOrderItem = this.checkedSysSaleOrderItem;
+    //     this.sysSaleOrderItemList = sysSaleOrderItemList.filter(function (
+    //       item
+    //     ) {
+    //       return checkedSysSaleOrderItem.indexOf(item.index) == -1;
+    //     });
+    //   }
+    // },
+    // /** 复选框选中数据 */
+    // handleSysSaleOrderItemSelectionChange(selection) {
+    //   this.checkedSysSaleOrderItem = selection.map((item) => item.index);
+    // },
     /** 导出按钮操作 */
     handleExport() {
       this.download(
@@ -761,6 +823,9 @@ export default {
         },
         `saleOrder_${new Date().getTime()}.xlsx`
       );
+    },
+    parseMoney(val) {
+      return parseMoney(val);
     },
   },
 };

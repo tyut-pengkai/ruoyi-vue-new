@@ -114,12 +114,11 @@
                   @change="handleBuyNumChange"
                   :min="1"
                   :max="selectedGoodsData.num"
-                  label="描述文字"
                 ></el-input-number>
               </el-form-item>
               <el-form-item label="联系方式">
                 <el-input
-                  placeholder="请填写您的QQ号或手机号方便查询"
+                  placeholder="请填写您的邮箱或手机号方便查询"
                   :clearable="true"
                   v-model="form.contact"
                   auto-complete="false"
@@ -416,9 +415,9 @@ export default {
               templateId: ct.templateId,
               name: ct.cardName,
               min: ct.price,
-              tags: ["多件优惠"],
+              // tags: ["多件优惠"],
               num: ct.cardCount,
-              wholesale: [],
+              wholesale: [], //批发
             });
           }
         }
@@ -439,6 +438,9 @@ export default {
         this.payButtonShow = true;
       }
       this.selectedGoodsData = this.goodsData[id];
+      if (this.selectedGoodsData.num >= 1000) {
+        this.selectedGoodsData.num = 1000;
+      }
       this.selectedGoodsData.price = this.goodsData[id].min;
       this.selectedGoodsData.totalPrice = this.selectedGoodsData.price;
       this.goodsId = id;

@@ -95,11 +95,11 @@ public class SysSaleShopController extends BaseController {
         for (SysCardTemplate ct : list) {
             int cardCount;
             if (UserConstants.YES.equals(ct.getEnableAutoGen())) {
-                cardCount = 10000;
+                cardCount = 1000;
             } else {
                 cardCount = sysSaleShopService.getSaleableCard(ct.getTemplateId()).size();
-                if (cardCount > 10000) {
-                    cardCount = 10000;
+                if (cardCount > 1000) {
+                    cardCount = 1000;
                 }
             }
             saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount));

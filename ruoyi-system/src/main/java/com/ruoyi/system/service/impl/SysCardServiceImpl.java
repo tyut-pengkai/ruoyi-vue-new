@@ -28,19 +28,29 @@ public class SysCardServiceImpl implements ISysCardService
 
     /**
      * 查询卡密
-     * 
+     *
      * @param cardId 卡密主键
      * @return 卡密
      */
     @Override
-    public SysCard selectSysCardByCardId(Long cardId)
-    {
+    public SysCard selectSysCardByCardId(Long cardId) {
         return sysCardMapper.selectSysCardByCardId(cardId);
     }
 
     /**
+     * 查询卡密
+     *
+     * @param cardIds 卡密主键
+     * @return 卡密
+     */
+    @Override
+    public List<SysCard> selectSysCardByCardIds(Long[] cardIds) {
+        return sysCardMapper.selectSysCardByCardIds(cardIds);
+    }
+
+    /**
      * 查询卡密列表
-     * 
+     *
      * @param sysCard 卡密
      * @return 卡密
      */
