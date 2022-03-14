@@ -8,6 +8,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
@@ -23,10 +24,8 @@ import com.ruoyi.sale.service.ISysSaleOrderItemGoodsService;
 import com.ruoyi.sale.service.ISysSaleOrderService;
 import com.ruoyi.sale.service.ISysSaleShopService;
 import com.ruoyi.system.domain.SysCardTemplate;
-import com.ruoyi.system.mapper.SysAppMapper;
-import com.ruoyi.system.mapper.SysCardMapper;
-import com.ruoyi.system.mapper.SysCardTemplateMapper;
-import com.ruoyi.system.mapper.SysLoginCodeMapper;
+import com.ruoyi.system.domain.SysLoginCodeTemplate;
+import com.ruoyi.system.mapper.*;
 import com.ruoyi.web.controller.sale.vo.SaleAppVo;
 import com.ruoyi.web.controller.sale.vo.SaleCardTemplateVo;
 import com.ruoyi.web.controller.sale.vo.SaleOrderVo;
@@ -57,6 +56,8 @@ public class SysSaleShopController extends BaseController {
     @Resource
     private SysCardTemplateMapper sysCardTemplateMapper;
     @Resource
+    private SysLoginCodeTemplateMapper sysLoginCodeTemplateMapper;
+    @Resource
     private ISysSaleShopService sysSaleShopService;
     @Resource
     private SysCardMapper sysCardMapper;
@@ -77,10 +78,18 @@ public class SysSaleShopController extends BaseController {
         List<SaleAppVo> saleAppVoList = new ArrayList<>();
         List<SysApp> appList = sysAppMapper.selectSysAppList(new SysApp());
         for (SysApp app : appList) {
-            SysCardTemplate ct = new SysCardTemplate();
-            ct.setAppId(app.getAppId());
-            ct.setOnSale(UserConstants.YES);
-            saleAppVoList.add(new SaleAppVo(app.getAppId(), app.getAppName(), sysCardTemplateMapper.selectSysCardTemplateList(ct).size()));
+            if (app.getAuthType().equals(AuthType.ACCOUNT)) {
+                SysCardTemplate ct = new SysCardTemplate();
+                ct.setAppId(app.getAppId());
+                ct.setOnSale(UserConstants.YES);
+                saleAppVoList.add(new SaleAppVo(app.getAppId(), app.getAppName(), sysCardTemplateMapper.selectSysCardTemplateList(ct).size()));
+            } else {
+                SysLoginCodeTemplate ct = new SysLoginCodeTemplate();
+                ct.setAppId(app.getAppId());
+                ct.setOnSale(UserConstants.YES);
+                saleAppVoList.add(new SaleAppVo(app.getAppId(), app.getAppName(), sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateList(ct).size()));
+            }
+
         }
         return getDataTable(saleAppVoList);
     }
