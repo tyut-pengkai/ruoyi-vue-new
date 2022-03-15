@@ -54,85 +54,87 @@ public class SysSaleShopServiceImpl implements ISysSaleShopService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deliveryGoods(SysSaleOrder sso) {
-        if (sso.getStatus() != SaleOrderStatus.PAID) {
-            throw new ServiceException("该订单非待发货订单", 400);
-        }
-        List<SysSaleOrderItem> itemList = sso.getSysSaleOrderItemList();
-        List<SysSaleOrderItemGoods> goodsList = new ArrayList<>();
-        for (SysSaleOrderItem item : itemList) {
-            if (item.getNum() == null || item.getNum() < 0) {
-                throw new ServiceException("购卡数量有误，购买失败", 400);
+        synchronized (sso.getOrderNo()) {
+            if (sso.getStatus() != SaleOrderStatus.PAID) {
+                throw new ServiceException("该订单非待发货订单", 400);
             }
-            if ("1".equals(item.getTemplateType())) {
-                SysCardTemplate cardTemplate = sysCardTemplateMapper.selectSysCardTemplateByTemplateId(item.getTemplateId());
-                if (cardTemplate == null) {
-                    throw new ServiceException("商品不存在，购买失败", 400);
+            List<SysSaleOrderItem> itemList = sso.getSysSaleOrderItemList();
+            List<SysSaleOrderItemGoods> goodsList = new ArrayList<>();
+            for (SysSaleOrderItem item : itemList) {
+                if (item.getNum() == null || item.getNum() < 0) {
+                    throw new ServiceException("购卡数量有误，购买失败", 400);
                 }
-                List<SysCard> resultCardList = new ArrayList<>();
-                // 获取库存数量
-                List<SysCard> saleableCard = getSaleableCard(item.getTemplateId());
-                if (saleableCard.size() >= item.getNum()) { //库存足够
-                    resultCardList.addAll(saleableCard.subList(0, item.getNum()));
-                } else { // 库存不足
-                    if (!UserConstants.YES.equals(cardTemplate.getEnableAutoGen())) { // 非自动制卡
-                        throw new ServiceException("库存不足，请稍后再试", 400);
+                if ("1".equals(item.getTemplateType())) {
+                    SysCardTemplate cardTemplate = sysCardTemplateMapper.selectSysCardTemplateByTemplateId(item.getTemplateId());
+                    if (cardTemplate == null) {
+                        throw new ServiceException("商品不存在，购买失败", 400);
                     }
-                    resultCardList.addAll(saleableCard);
-                    List<SysCard> cardList = sysCardTemplateService.genSysCardBatch(cardTemplate, item.getNum() - saleableCard.size(), UserConstants.NO, "系统制卡");
-                    resultCardList.addAll(cardList);
-                }
-                for (SysCard card : resultCardList) {
-                    SysSaleOrderItemGoods goods = new SysSaleOrderItemGoods();
-                    goods.setItemId(item.getItemId());
-                    goods.setCardId(card.getCardId());
-                    goodsList.add(goods);
-                    // 更新充值卡状态 下架/已出售/
-                    card.setOnSale(UserConstants.NO);
-                    card.setIsSold(UserConstants.YES);
-                    sysCardMapper.updateSysCard(card);
-                }
-            } else if ("2".equals(item.getTemplateType())) {
-                SysLoginCodeTemplate cardTemplate = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateByTemplateId(item.getTemplateId());
-                if (cardTemplate == null) {
-                    throw new ServiceException("商品不存在，购买失败", 400);
-                }
-                List<SysLoginCode> resultCardList = new ArrayList<>();
-                // 获取库存数量
-                List<SysLoginCode> saleableCard = getSaleableLoginCode(item.getTemplateId());
-                if (saleableCard.size() >= item.getNum()) { //库存足够
-                    resultCardList.addAll(saleableCard.subList(0, item.getNum()));
-                } else { // 库存不足
-                    if (!UserConstants.YES.equals(cardTemplate.getEnableAutoGen())) { // 非自动制卡
-                        throw new ServiceException("库存不足，请稍后再试", 400);
+                    List<SysCard> resultCardList = new ArrayList<>();
+                    // 获取库存数量
+                    List<SysCard> saleableCard = getSaleableCard(item.getTemplateId());
+                    if (saleableCard.size() >= item.getNum()) { //库存足够
+                        resultCardList.addAll(saleableCard.subList(0, item.getNum()));
+                    } else { // 库存不足
+                        if (!UserConstants.YES.equals(cardTemplate.getEnableAutoGen())) { // 非自动制卡
+                            throw new ServiceException("库存不足，请稍后再试", 400);
+                        }
+                        resultCardList.addAll(saleableCard);
+                        List<SysCard> cardList = sysCardTemplateService.genSysCardBatch(cardTemplate, item.getNum() - saleableCard.size(), UserConstants.NO, "系统制卡");
+                        resultCardList.addAll(cardList);
                     }
-                    resultCardList.addAll(saleableCard);
-                    List<SysLoginCode> cardList = sysLoginCodeTemplateService.genSysLoginCodeBatch(cardTemplate, item.getNum() - saleableCard.size(), UserConstants.NO, "系统制卡");
-                    resultCardList.addAll(cardList);
+                    for (SysCard card : resultCardList) {
+                        SysSaleOrderItemGoods goods = new SysSaleOrderItemGoods();
+                        goods.setItemId(item.getItemId());
+                        goods.setCardId(card.getCardId());
+                        goodsList.add(goods);
+                        // 更新充值卡状态 下架/已出售/
+                        card.setOnSale(UserConstants.NO);
+                        card.setIsSold(UserConstants.YES);
+                        sysCardMapper.updateSysCard(card);
+                    }
+                } else if ("2".equals(item.getTemplateType())) {
+                    SysLoginCodeTemplate cardTemplate = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateByTemplateId(item.getTemplateId());
+                    if (cardTemplate == null) {
+                        throw new ServiceException("商品不存在，购买失败", 400);
+                    }
+                    List<SysLoginCode> resultCardList = new ArrayList<>();
+                    // 获取库存数量
+                    List<SysLoginCode> saleableCard = getSaleableLoginCode(item.getTemplateId());
+                    if (saleableCard.size() >= item.getNum()) { //库存足够
+                        resultCardList.addAll(saleableCard.subList(0, item.getNum()));
+                    } else { // 库存不足
+                        if (!UserConstants.YES.equals(cardTemplate.getEnableAutoGen())) { // 非自动制卡
+                            throw new ServiceException("库存不足，请稍后再试", 400);
+                        }
+                        resultCardList.addAll(saleableCard);
+                        List<SysLoginCode> cardList = sysLoginCodeTemplateService.genSysLoginCodeBatch(cardTemplate, item.getNum() - saleableCard.size(), UserConstants.NO, "系统制卡");
+                        resultCardList.addAll(cardList);
+                    }
+                    for (SysLoginCode card : resultCardList) {
+                        SysSaleOrderItemGoods goods = new SysSaleOrderItemGoods();
+                        goods.setItemId(item.getItemId());
+                        goods.setCardId(card.getCardId());
+                        goodsList.add(goods);
+                        // 更新充值卡状态 下架/已出售/
+                        card.setOnSale(UserConstants.NO);
+                        card.setIsSold(UserConstants.YES);
+                        sysLoginCodeMapper.updateSysLoginCode(card);
+                    }
                 }
-                for (SysLoginCode card : resultCardList) {
-                    SysSaleOrderItemGoods goods = new SysSaleOrderItemGoods();
-                    goods.setItemId(item.getItemId());
-                    goods.setCardId(card.getCardId());
-                    goodsList.add(goods);
-                    // 更新充值卡状态 下架/已出售/
-                    card.setOnSale(UserConstants.NO);
-                    card.setIsSold(UserConstants.YES);
-                    sysLoginCodeMapper.updateSysLoginCode(card);
-                }
+                sysSaleOrderItemGoodsService.insertSysSaleOrderItemGoodsBatch(goodsList);
             }
-            sysSaleOrderItemGoodsService.insertSysSaleOrderItemGoodsBatch(goodsList);
+            sso.setStatus(SaleOrderStatus.TRADE_SUCCESS);
+            Date nowDate = DateUtils.getNowDate();
+            sso.setDeliveryTime(nowDate);
+            sso.setFinishTime(nowDate);
+            sysSaleOrderService.updateSysSaleOrder(sso);
+            log.info("***********************************");
+            log.info("* 订单号: {}", sso.getOrderNo());
+            log.info("* 实付金额: {}", sso.getActualFee());
+            log.info("* 购买产品: {}", sso.getSysSaleOrderItemList().get(0).getTitle());
+            log.info("* 购买数量: {}", sso.getSysSaleOrderItemList().get(0).getNum());
+            log.info("***********************************");
         }
-        sso.setStatus(SaleOrderStatus.TRADE_SUCCESS);
-        Date nowDate = DateUtils.getNowDate();
-        sso.setDeliveryTime(nowDate);
-        sso.setFinishTime(nowDate);
-        sysSaleOrderService.updateSysSaleOrder(sso);
-        log.info("***********************************");
-        log.info("* 订单号: {}", sso.getOrderNo());
-        log.info("* 实付金额: {}", sso.getActualFee());
-        log.info("* 购买产品: {}", sso.getSysSaleOrderItemList().get(0).getTitle());
-        log.info("* 购买数量: {}", sso.getSysSaleOrderItemList().get(0).getNum());
-        log.info("***********************************");
     }
 
     /**
