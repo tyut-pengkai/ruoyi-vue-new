@@ -5,15 +5,21 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.enums.SaleOrderStatus;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.domain.SysSaleOrderItem;
 import com.ruoyi.sale.domain.SysSaleOrderItemGoods;
 import com.ruoyi.sale.domain.vo.SysCardVo;
+import com.ruoyi.sale.domain.vo.SysLoginCodeVo;
 import com.ruoyi.sale.service.ISysSaleOrderItemGoodsService;
 import com.ruoyi.sale.service.ISysSaleOrderService;
+import com.ruoyi.sale.service.ISysSaleShopService;
 import com.ruoyi.system.domain.SysCard;
+import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.ISysCardService;
+import com.ruoyi.system.service.ISysLoginCodeService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +43,10 @@ public class SysSaleOrderController extends BaseController {
     private ISysSaleOrderItemGoodsService sysSaleOrderItemGoodsService;
     @Resource
     private ISysCardService sysCardService;
+    @Resource
+    private ISysLoginCodeService sysLoginCodeService;
+    @Resource
+    private ISysSaleShopService sysSaleShopService;
 
     /**
      * 查询销售订单列表
@@ -73,14 +83,17 @@ public class SysSaleOrderController extends BaseController {
             item.setGoodsList(new ArrayList<>());
             List<SysSaleOrderItemGoods> goodsList = sysSaleOrderItemGoodsService.selectSysSaleOrderItemGoodsByItemId(item.getItemId());
             if (goodsList != null && goodsList.size() > 0) {
+                Long[] ids = goodsList.stream().map(SysSaleOrderItemGoods::getCardId).toArray(Long[]::new);
                 if ("1".equals(item.getTemplateType())) { // 充值卡
-                    Long[] ids = goodsList.stream().map(SysSaleOrderItemGoods::getCardId).toArray(Long[]::new);
                     List<SysCard> cardList = sysCardService.selectSysCardByCardIds(ids);
                     for (SysCard card : cardList) {
                         item.getGoodsList().add(new SysCardVo(card));
                     }
                 } else if ("2".equals(item.getTemplateType())) { // 登录码
-
+                    List<SysLoginCode> cardList = sysLoginCodeService.selectSysLoginCodeByCardIds(ids);
+                    for (SysLoginCode card : cardList) {
+                        item.getGoodsList().add(new SysLoginCodeVo(card));
+                    }
                 }
             }
         }
@@ -115,5 +128,35 @@ public class SysSaleOrderController extends BaseController {
     @DeleteMapping("/{orderIds}")
     public AjaxResult remove(@PathVariable Long[] orderIds) {
         return toAjax(sysSaleOrderService.deleteSysSaleOrderByOrderIds(orderIds));
+    }
+
+    /**
+     * 获取销售订单详细信息
+     */
+    @PreAuthorize("@ss.hasPermi('sale:saleOrder:query')")
+    @GetMapping(value = "/manualDelivery")
+    public AjaxResult manualDelivery(String orderNo) {
+        if (orderNo == null) {
+            throw new ServiceException("订单不存在", 400);
+        }
+        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
+        if (sso == null) {
+            throw new ServiceException("订单不存在", 400);
+        }
+        SaleOrderStatus status = sso.getStatus();
+        if (status != SaleOrderStatus.WAIT_PAY && status != SaleOrderStatus.TRADE_CLOSED) {
+            throw new ServiceException("该订单已自动发货，无法再次发货");
+        }
+        try {
+            sso.setStatus(SaleOrderStatus.PAID);
+            sysSaleShopService.deliveryGoods(sso);
+            sso.setPayMode("manual"); // 手动发货
+            sysSaleOrderService.updateSysSaleOrder(sso);
+        } catch (Exception e) {
+            sso.setStatus(status);
+            sysSaleOrderService.updateSysSaleOrder(sso);
+            throw e;
+        }
+        return AjaxResult.success();
     }
 }

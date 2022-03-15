@@ -42,3 +42,12 @@ export function delSaleOrder(orderId) {
     method: 'delete'
   })
 }
+
+// 手动发货
+export function manualDelivery(query) {
+  return request({
+    url: '/sale/saleOrder/manualDelivery',
+    method: 'get',
+    params: query
+  })
+}

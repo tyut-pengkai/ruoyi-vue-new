@@ -96,6 +96,14 @@
         where c.card_id = #{cardId}
     </select>
 
+    <select id="selectSysLoginCodeByCardIds" parameterType="Long" resultMap="SysLoginCodeResult">
+        <include refid="selectSysLoginCodeVo"/>
+        where c.card_id in
+        <foreach item="cardId" collection="array" open="(" separator="," close=")">
+            #{cardId}
+        </foreach>
+    </select>
+
     <select id="selectSysLoginCodeByCardNo" parameterType="String" resultMap="SysLoginCodeResult">
         <include refid="selectSysLoginCodeVo"/>
         where c.card_no = #{cardNo}

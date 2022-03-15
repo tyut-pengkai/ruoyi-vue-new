@@ -9,9 +9,9 @@ export function listApp() {
 }
 
 // 查询卡类列表
-export function listCardTemplate(data) {
+export function listCategory(data) {
   return request({
-    url: '/sale/shop/cardTemplateList',
+    url: '/sale/shop/listCategory',
     method: 'get',
     params: data
   })

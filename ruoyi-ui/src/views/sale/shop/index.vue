@@ -262,7 +262,7 @@ import CardCategory from "./card/CardCategory";
 import CardGoods from "./card/CardGoods";
 import CardPay from "./card/CardPay";
 import ItemData from "./card/ItemData";
-import {checkStock, createSaleOrder, getCardList, listApp, listCardTemplate,} from "@/api/sale/saleShop";
+import {checkStock, createSaleOrder, getCardList, listApp, listCategory,} from "@/api/sale/saleShop";
 
 export default {
   name: "Shop",
@@ -406,7 +406,7 @@ export default {
       this.showGoodsDetail = false;
       this.goodsId = null;
       // 拉取当前选择目录下的商品列表
-      listCardTemplate({appId: this.categoryData[id].appId}).then(
+      listCategory({appId: this.categoryData[id].appId}).then(
         (response) => {
           var ctList = response.rows;
           for (var ct of ctList) {

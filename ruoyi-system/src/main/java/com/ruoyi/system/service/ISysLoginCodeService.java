@@ -20,6 +20,14 @@ public interface ISysLoginCodeService {
     public SysLoginCode selectSysLoginCodeByCardId(Long cardId);
 
     /**
+     * 查询单码
+     *
+     * @param cardIds 单码主键
+     * @return 单码
+     */
+    public List<SysLoginCode> selectSysLoginCodeByCardIds(Long[] cardIds);
+
+    /**
      * 查询单码列表
      *
      * @param SysLoginCode 单码

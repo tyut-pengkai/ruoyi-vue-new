@@ -228,15 +228,27 @@
         prop="orderNo"
       />
       <!-- <el-table-column label="用户ID" align="center" prop="userId" /> -->
-      <el-table-column label="总价格" align="center" prop="totalFee"/>
-      <el-table-column
+      <el-table-column align="center" label="总价格" prop="totalFee">
+        <template slot-scope="scope">
+          <span>{{ parseMoney(scope.row.totalFee) }}</span>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column
         :show-overflow-tooltip="true"
         align="center"
         label="折扣规则"
         prop="discountRule"
-      />
-      <el-table-column label="折扣金额" align="center" prop="discountFee"/>
-      <el-table-column align="center" label="应付金额" prop="actualFee"/>
+      /> -->
+      <el-table-column align="center" label="折扣金额" prop="discountFee">
+        <template slot-scope="scope">
+          <span>{{ parseMoney(scope.row.discountFee) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="应付金额" prop="actualFee">
+        <template slot-scope="scope">
+          <span>{{ parseMoney(scope.row.actualFee) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="支付方式" prop="payMode">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.pay_mode" :value="scope.row.payMode"/>
@@ -307,10 +319,20 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
+            icon="el-icon-view"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['sale:saleOrder:edit']"
           >详情
+          </el-button
+          >
+          <el-button
+            v-hasPermi="['sale:saleOrder:edit']"
+            :disabled="scope.row.status != '0' && scope.row.status != '2' "
+            icon="el-icon-sell"
+            size="mini"
+            type="text"
+            @click="handleDelivery(scope.row)"
+          >手动发货
           </el-button
           >
           <el-button
@@ -350,7 +372,12 @@
           </el-col>
         </el-form-item>
         <el-form-item>
-          <el-col :span="24">
+          <el-col :span="12">
+            <el-form-item label="下单时间" prop="createTime">
+              {{ form.createTime }}
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="订单状态" prop="status">
               <dict-tag
                 :options="dict.type.sale_order_status"
@@ -591,9 +618,15 @@
 </template>
 
 <script>
-import {addSaleOrder, delSaleOrder, getSaleOrder, listSaleOrder, updateSaleOrder,} from "@/api/sale/saleOrder";
+import {
+  addSaleOrder,
+  delSaleOrder,
+  getSaleOrder,
+  listSaleOrder,
+  manualDelivery,
+  updateSaleOrder,
+} from "@/api/sale/saleOrder";
 import {parseMoney} from "@/utils/my";
-
 
 export default {
   name: "SaleOrder",
@@ -826,6 +859,28 @@ export default {
     },
     parseMoney(val) {
       return parseMoney(val);
+    },
+    /** 手动发货按钮操作 */
+    handleDelivery(row) {
+      const orderIds = row.orderId || this.ids;
+      this.$modal
+        .confirm('本操作将为用户发货并更改订单状态为交易成功，请确保您已在其他渠道收到货款，避免资金损失，是否继续？')
+        .then(() => {
+          var data = {orderNo: row.orderNo};
+          manualDelivery(data)
+            .then((response) => {
+              if (response.code == 200) {
+                this.$modal.msgSuccess("发货成功");
+                this.getList();
+              }
+            })
+            .finally(() => {
+            });
+        })
+        .then(() => {
+        })
+        .catch(() => {
+        });
     },
   },
 };

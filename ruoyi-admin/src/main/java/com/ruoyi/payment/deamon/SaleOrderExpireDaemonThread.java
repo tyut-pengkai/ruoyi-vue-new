@@ -36,7 +36,7 @@ public class SaleOrderExpireDaemonThread {
                     String[] split = orderNoStr.toString().split("\\|");
                     String payMode = split[0];
                     String orderNo = split[1];
-                    SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo.toString());
+                    SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
                     if (sso != null && SaleOrderStatus.WAIT_PAY.equals(sso.getStatus())) {
                         PaymentDefine.paymentMap.get(payMode).beforeExpire(sso);
                     }

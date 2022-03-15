@@ -102,7 +102,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where c.card_id = #{cardId}
     </select>
 
-    <select id="selectSysCardByCardIds" resultMap="SysCardResult" parameterType="String">
+    <select id="selectSysCardByCardIds" resultMap="SysCardResult" parameterType="Long">
         <include refid="selectSysCardVo"/>
         where c.card_id in
         <foreach item="cardId" collection="array" open="(" separator="," close=")">

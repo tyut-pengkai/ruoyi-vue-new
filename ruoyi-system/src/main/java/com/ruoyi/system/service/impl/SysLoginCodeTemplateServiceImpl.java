@@ -110,7 +110,7 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
      * @return
      */
     @Override
-    public int genSysLoginCodeBatch(SysLoginCodeTemplate loginCodeTpl, Integer quantity, String onSale, String remark) {
+    public List<SysLoginCode> genSysLoginCodeBatch(SysLoginCodeTemplate loginCodeTpl, Integer quantity, String onSale, String remark) {
         List<SysLoginCode> sysLoginCodeList = new ArrayList<>();
         for (int i = 0; i < quantity; i++) {
             SysLoginCode sysLoginCode = new SysLoginCode();
@@ -134,7 +134,8 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
             sysLoginCode.setCreateBy(SecurityUtils.getUsername());
             sysLoginCodeList.add(sysLoginCode);
         }
-        return sysLoginCodeService.insertSysLoginCodeBatch(sysLoginCodeList);
+        sysLoginCodeService.insertSysLoginCodeBatch(sysLoginCodeList);
+        return sysLoginCodeList;
     }
 
     private String generate(Integer length, GenRule genRule) {

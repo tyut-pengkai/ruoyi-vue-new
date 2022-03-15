@@ -1,5 +1,6 @@
 package com.ruoyi.system.service;
 
+import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
 
 import java.util.List;
@@ -67,5 +68,5 @@ public interface ISysLoginCodeTemplateService {
      * @param remark
      * @return
      */
-    public int genSysLoginCodeBatch(SysLoginCodeTemplate sysLoginCodeTemplate, Integer genQuantity, String onSale, String remark);
+    public List<SysLoginCode> genSysLoginCodeBatch(SysLoginCodeTemplate sysLoginCodeTemplate, Integer genQuantity, String onSale, String remark);
 }

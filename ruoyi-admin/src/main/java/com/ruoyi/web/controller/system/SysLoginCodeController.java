@@ -81,7 +81,7 @@ public class SysLoginCodeController extends BaseController {
             if (sysLoginCodeTemplate == null) {
                 return AjaxResult.error("卡类不存在，批量制卡失败");
             }
-            return toAjax(sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), sysLoginCode.getOnSale(), sysLoginCode.getRemark()));
+            return toAjax(sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), sysLoginCode.getOnSale(), sysLoginCode.getRemark()).size());
         }
 
     }

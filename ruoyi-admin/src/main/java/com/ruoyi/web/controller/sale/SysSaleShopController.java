@@ -19,11 +19,14 @@ import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.domain.SysSaleOrderItem;
 import com.ruoyi.sale.domain.SysSaleOrderItemGoods;
 import com.ruoyi.sale.domain.vo.SysCardVo;
+import com.ruoyi.sale.domain.vo.SysLoginCodeVo;
 import com.ruoyi.sale.domain.vo.SysSaleOrderItemVo;
 import com.ruoyi.sale.service.ISysSaleOrderItemGoodsService;
 import com.ruoyi.sale.service.ISysSaleOrderService;
 import com.ruoyi.sale.service.ISysSaleShopService;
+import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
+import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
 import com.ruoyi.system.mapper.*;
 import com.ruoyi.web.controller.sale.vo.SaleAppVo;
@@ -97,21 +100,42 @@ public class SysSaleShopController extends BaseController {
     /**
      * 查询卡密模板列表
      */
-    @GetMapping("/cardTemplateList")
-    public TableDataInfo cardTemplateList(SysCardTemplate sysCardTemplate) {
+    @GetMapping("/listCategory")
+    public TableDataInfo cardTemplateList(Long appId) {
+        SysApp app = sysAppMapper.selectSysAppByAppId(appId);
         List<SaleCardTemplateVo> saleCardTemplateVoList = new ArrayList<>();
-        List<SysCardTemplate> list = sysCardTemplateMapper.selectSysCardTemplateList(sysCardTemplate);
-        for (SysCardTemplate ct : list) {
-            int cardCount;
-            if (UserConstants.YES.equals(ct.getEnableAutoGen())) {
-                cardCount = 1000;
-            } else {
-                cardCount = sysSaleShopService.getSaleableCard(ct.getTemplateId()).size();
-                if (cardCount > 1000) {
+        if (app.getAuthType() == AuthType.ACCOUNT) {
+            SysCardTemplate sysCardTemplate = new SysCardTemplate();
+            sysCardTemplate.setAppId(appId);
+            List<SysCardTemplate> list = sysCardTemplateMapper.selectSysCardTemplateList(sysCardTemplate);
+            for (SysCardTemplate ct : list) {
+                int cardCount;
+                if (UserConstants.YES.equals(ct.getEnableAutoGen())) {
                     cardCount = 1000;
+                } else {
+                    cardCount = sysSaleShopService.getSaleableCard(ct.getTemplateId()).size();
+                    if (cardCount > 1000) {
+                        cardCount = 1000;
+                    }
                 }
+                saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount));
             }
-            saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount));
+        } else if (app.getAuthType() == AuthType.LOGIN_CODE) {
+            SysLoginCodeTemplate sysLoginCodeTemplate = new SysLoginCodeTemplate();
+            sysLoginCodeTemplate.setAppId(appId);
+            List<SysLoginCodeTemplate> list = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateList(sysLoginCodeTemplate);
+            for (SysLoginCodeTemplate ct : list) {
+                int cardCount;
+                if (UserConstants.YES.equals(ct.getEnableAutoGen())) {
+                    cardCount = 1000;
+                } else {
+                    cardCount = sysSaleShopService.getSaleableLoginCode(ct.getTemplateId()).size();
+                    if (cardCount > 1000) {
+                        cardCount = 1000;
+                    }
+                }
+                saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount));
+            }
         }
         return getDataTable(saleCardTemplateVoList);
     }
@@ -119,13 +143,26 @@ public class SysSaleShopController extends BaseController {
     @PostMapping("/checkStock")
     public AjaxResult checkStock(@RequestBody SaleOrderVo saleOrderVo) {
         // 检查库存
-        SysCardTemplate tpl = sysCardTemplateMapper.selectSysCardTemplateByTemplateId(saleOrderVo.getTemplateId());
-        if (!UserConstants.YES.equals(tpl.getOnSale())) {
-            throw new ServiceException("商品已下架", 400);
-        }
-        if (!UserConstants.YES.equals(tpl.getEnableAutoGen())) { // 非自动制卡
-            if (sysSaleShopService.getSaleableCard(tpl.getTemplateId()).size() < saleOrderVo.getBuyNum()) {
-                throw new ServiceException("库存不足，请稍后再试", 400);
+        SysApp app = sysAppMapper.selectSysAppByAppId(saleOrderVo.getAppId());
+        if (app.getAuthType() == AuthType.ACCOUNT) {
+            SysCardTemplate tpl = sysCardTemplateMapper.selectSysCardTemplateByTemplateId(saleOrderVo.getTemplateId());
+            if (!UserConstants.YES.equals(tpl.getOnSale())) {
+                throw new ServiceException("商品已下架", 400);
+            }
+            if (!UserConstants.YES.equals(tpl.getEnableAutoGen())) { // 非自动制卡
+                if (sysSaleShopService.getSaleableCard(tpl.getTemplateId()).size() < saleOrderVo.getBuyNum()) {
+                    throw new ServiceException("库存不足，请稍后再试", 400);
+                }
+            }
+        } else if (app.getAuthType() == AuthType.LOGIN_CODE) {
+            SysLoginCodeTemplate tpl = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateByTemplateId(saleOrderVo.getTemplateId());
+            if (!UserConstants.YES.equals(tpl.getOnSale())) {
+                throw new ServiceException("商品已下架", 400);
+            }
+            if (!UserConstants.YES.equals(tpl.getEnableAutoGen())) { // 非自动制卡
+                if (sysSaleShopService.getSaleableLoginCode(tpl.getTemplateId()).size() < saleOrderVo.getBuyNum()) {
+                    throw new ServiceException("库存不足，请稍后再试", 400);
+                }
             }
         }
         return AjaxResult.success();
@@ -134,6 +171,7 @@ public class SysSaleShopController extends BaseController {
     @PostMapping("/createSaleOrder")
     public AjaxResult createSaleOrder(@RequestBody SaleOrderVo saleOrderVo) {
         System.out.println(JSON.toJSONString(saleOrderVo));
+        SysApp app = sysAppMapper.selectSysAppByAppId(saleOrderVo.getAppId());
         // 1.检查库存
         checkStock(saleOrderVo);
         // 2.订单生成
@@ -143,8 +181,24 @@ public class SysSaleShopController extends BaseController {
         sso.setOrderNo(orderNo);
         sso.setUserId(null);
         // 3.计算金额
-        SysCardTemplate sct = sysCardTemplateMapper.selectSysCardTemplateByTemplateId(saleOrderVo.getTemplateId());
-        BigDecimal totalFee = sct.getPrice().multiply(BigDecimal.valueOf(saleOrderVo.getBuyNum()));
+        BigDecimal unitPrice = null;
+        String templateType = null;
+        String goodsName = null;
+        if (app.getAuthType() == AuthType.ACCOUNT) {
+            SysCardTemplate sct = sysCardTemplateMapper.selectSysCardTemplateByTemplateId(saleOrderVo.getTemplateId());
+            unitPrice = sct.getPrice();
+            templateType = "1";
+            goodsName = sct.getCardName();
+        } else if (app.getAuthType() == AuthType.LOGIN_CODE) {
+            SysLoginCodeTemplate sct = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateByTemplateId(saleOrderVo.getTemplateId());
+            unitPrice = sct.getPrice();
+            templateType = "2";
+            goodsName = sct.getCardName();
+        }
+        if (unitPrice == null) {
+            throw new ServiceException("商品未设定价格，下单失败", 400);
+        }
+        BigDecimal totalFee = unitPrice.multiply(BigDecimal.valueOf(saleOrderVo.getBuyNum()));
         sso.setTotalFee(totalFee);
         // 4.计算优惠
         sso.setDiscountRule(null);
@@ -165,12 +219,11 @@ public class SysSaleShopController extends BaseController {
         sso.setUpdateBy(null);
         sso.setUpdateTime(null);
         // 6.订单详情
-        SysApp app = sysAppMapper.selectSysAppByAppId(sct.getAppId());
-        ssoi.setTemplateType("1"); // 1卡类 2登录码类
+        ssoi.setTemplateType(templateType); // 1卡类 2登录码类
         ssoi.setTemplateId(saleOrderVo.getTemplateId());
         ssoi.setNum(saleOrderVo.getBuyNum());
-        ssoi.setTitle("[" + app.getAppName() + "]" + sct.getCardName());
-        ssoi.setPrice(sct.getPrice());
+        ssoi.setTitle("[" + app.getAppName() + "]" + goodsName);
+        ssoi.setPrice(unitPrice);
         ssoi.setTotalFee(totalFee);
         ssoi.setDiscountRule(null);
         ssoi.setDiscountFee(null);
@@ -243,10 +296,10 @@ public class SysSaleShopController extends BaseController {
 
     @GetMapping("/getCardList")
     public AjaxResult getCardList(@RequestParam("orderNo") String orderNo, @RequestParam("queryPass") String queryPass) {
-        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
         if (orderNo == null) {
             throw new ServiceException("订单不存在", 400);
         }
+        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
         if (sso == null) {
             throw new ServiceException("订单不存在", 400);
         }
@@ -260,17 +313,20 @@ public class SysSaleShopController extends BaseController {
         List<SysSaleOrderItem> itemList = sso.getSysSaleOrderItemList();
         List<SysSaleOrderItemVo> itemVoList = new ArrayList<>();
         for (SysSaleOrderItem item : itemList) {
+            item.setGoodsList(new ArrayList<>());
             List<SysSaleOrderItemGoods> goodsList = sysSaleOrderItemGoodsService.selectSysSaleOrderItemGoodsByItemId(item.getItemId());
             if (goodsList != null && goodsList.size() > 0) {
+                Long[] ids = goodsList.stream().map(SysSaleOrderItemGoods::getCardId).toArray(Long[]::new);
                 if ("1".equals(item.getTemplateType())) { // 充值卡
-                    for (SysSaleOrderItemGoods goods : goodsList) {
-                        if (item.getGoodsList() == null) {
-                            item.setGoodsList(new ArrayList<>());
-                        }
-                        item.getGoodsList().add(new SysCardVo(sysCardMapper.selectSysCardByCardId(goods.getCardId())));
+                    List<SysCard> cardList = sysCardMapper.selectSysCardByCardIds(ids);
+                    for (SysCard card : cardList) {
+                        item.getGoodsList().add(new SysCardVo(card));
                     }
                 } else if ("2".equals(item.getTemplateType())) { // 登录码
-
+                    List<SysLoginCode> cardList = sysLoginCodeMapper.selectSysLoginCodeByCardIds(ids);
+                    for (SysLoginCode card : cardList) {
+                        item.getGoodsList().add(new SysLoginCodeVo(card));
+                    }
                 }
             }
             itemVoList.add(new SysSaleOrderItemVo(item));

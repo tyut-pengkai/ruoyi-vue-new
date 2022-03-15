@@ -37,6 +37,17 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     }
 
     /**
+     * 查询单码
+     *
+     * @param cardIds 单码主键
+     * @return 单码
+     */
+    @Override
+    public List<SysLoginCode> selectSysLoginCodeByCardIds(Long[] cardIds) {
+        return SysLoginCodeMapper.selectSysLoginCodeByCardIds(cardIds);
+    }
+
+    /**
      * 查询单码列表
      *
      * @param SysLoginCode 单码
