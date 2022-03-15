@@ -1,9 +1,7 @@
 <template>
   <div>
     <el-container>
-      <el-header
-        style="padding: 0; position: fixed; z-index: 9999; width: 100%"
-      >
+      <el-header class="my-header">
         <div style="background-color: #545c64">
           <el-row>
             <el-col :span="5">
@@ -54,6 +52,11 @@
           <router-view></router-view>
         </transition>
       </el-main>
+      <el-footer class="my-footer" style="height: 24px">
+        <div align="center">
+          <div>Copyright © 2022 Coordsoft.Com. All rights reserved.</div>
+        </div>
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -82,9 +85,19 @@ body {
 a {
   text-decoration: None;
 }
+
 .home {
   width: 1100px;
 }
+
+.my-header {
+  top: 0;
+  padding: 0;
+  position: fixed;
+  z-index: 9999;
+  width: 100%
+}
+
 .el-main {
   max-width: 1140px;
   margin-left: auto;
@@ -119,10 +132,22 @@ a {
   color: rgb(255, 255, 255);
   border-color: #c6e2ff;
 }
+
 .my-button:focus {
   background-color: rgb(84, 92, 100);
   color: rgb(255, 255, 255);
   border-color: #c6e2ff;
+}
+
+.my-footer {
+  width: 100%;
+  bottom: 0;
+  position: fixed;
+  z-index: 9999;
+  background-color: #f6f6f6;
+  margin: 0 auto;
+  color: #999;
+  line-height: 24px;
 }
 </style>
 

@@ -13,7 +13,7 @@
       </right-panel>
       <!-- <el-footer> -->
       <el-link type="info" :underline="false">
-        <div class="layui-footer">
+        <div class="my-footer">
           <span>
             {{ copyright }}
           </span>
@@ -133,18 +133,19 @@ export default {
   width: 100%;
 }
 
-.layui-footer {
-  position: fixed;
-  left: calc(200px - #{$base-sidebar-width});
-  right: 0;
-  bottom: 0;
-  height: 32px;
-  line-height: 32px;
-  padding: 0 15px;
-  background-color: #eee;
-  font-family: "Helvetica Neue";
-  text-align: center;
-  z-index: 9;
-  transition: width 0.28s;
-}
+  .my-footer {
+    position: fixed;
+    // left: calc(200px - #{$base-sidebar-width});
+    right: 0;
+    bottom: 0;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 15px;
+    background-color: #eee;
+    font-family: "Helvetica Neue";
+    text-align: center;
+    z-index: 999;
+    transition: width 0.28s;
+    width: 100%;
+  }
 </style>
