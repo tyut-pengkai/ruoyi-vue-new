@@ -883,7 +883,7 @@
             <el-alert
               :closable="false"
               show-icon
-              title="本功能在【通讯安全】-【API匿名密码】设定密码后可用，开启功能后请使用匿名API代替原API进行接口调用"
+              title="本功能在【通信安全】-【API匿名密码】设定密码后可用，开启功能后请使用匿名API代替原API进行接口调用"
               type="info"
             >
             </el-alert>
