@@ -52,24 +52,39 @@
           <router-view></router-view>
         </transition>
       </el-main>
-      <el-footer class="my-footer" style="height: 24px">
-        <div align="center">
-          <div>Copyright © 2022 Coordsoft.Com. All rights reserved.</div>
+      <!-- <el-footer> -->
+      <el-link :underline="false" type="info">
+        <div class="my-footer">
+          <span>
+              {{ copyright }}
+            </span>
         </div>
-      </el-footer>
+      </el-link>
+      <!-- </el-footer> -->
     </el-container>
   </div>
 </template>
 <script>
+import {getSysInfo} from "@/api/common";
+
 export default {
   data() {
     return {
+      copyright: "",
       activeIndex: "1",
       regShow: false,
       logo: require("../../assets/logo/logo.png"),
     };
   },
+  created() {
+    this.getSysInfo();
+  },
   methods: {
+    getSysInfo() {
+      getSysInfo().then((res) => {
+        this.copyright = res.copyright;
+      });
+    },
     handleSelect(key, keyPath) {
       // console.log(key, keyPath);
     },
@@ -140,14 +155,19 @@ a {
 }
 
 .my-footer {
-  width: 100%;
-  bottom: 0;
   position: fixed;
+  right: 0;
+  bottom: 0;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 15px;
+  background-color: #eee;
+  font-family: "Helvetica Neue";
+  text-align: center;
   z-index: 9999;
-  background-color: #f6f6f6;
-  margin: 0 auto;
+  transition: width 0.28s;
+  width: 100%;
   color: #999;
-  line-height: 24px;
 }
 </style>
 

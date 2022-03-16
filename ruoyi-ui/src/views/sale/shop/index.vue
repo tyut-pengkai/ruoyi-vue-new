@@ -1,13 +1,23 @@
 <template>
   <div class="home">
-    <el-alert title="公告" type="success" :closable="false">
-      <p>本站为INAMS演示站。所有商品仅供测试。并无实际商品。请悉知。</p>
+    <el-alert v-if="shopConfig && shopConfig['saleShopNotice']" :closable="false" style="margin-bottom: 20px" title="公告"
+              type="success">
+      <div class="ql-container ql-bubble">
+        <div class="ql-editor">
+          <div>
+            <div v-if="shopConfig && shopConfig['saleShopNotice']">
+              <span v-html="shopConfig['saleShopNotice']"></span>
+            </div>
+            <!-- <div v-else>暂无公告</div> -->
+          </div>
+        </div>
+      </div>
     </el-alert>
     <el-steps
       :active="4"
       :simple="true"
       align-center
-      style="margin-top: 30px; margin-bottom: 0px"
+      style="margin-bottom: 0px"
     >
       <el-step title="选择商品" icon="el-icon-shopping-cart-2"></el-step>
       <el-step title="确认订单" icon="el-icon-document"></el-step>
@@ -52,38 +62,19 @@
               <el-skeleton-item
                 variant="text"
                 style="height: 28px; margin-bottom: 18px"
-              />
-              <el-skeleton-item
-                variant="text"
-                style="height: 28px; margin-bottom: 18px"
-              />
-              <el-skeleton-item
-                variant="text"
-                style="height: 28px; margin-bottom: 18px"
-              />
-              <el-skeleton-item
-                variant="text"
-                style="height: 28px; margin-bottom: 18px"
-              />
-              <el-skeleton-item
-                variant="text"
-                style="height: 28px; margin-bottom: 18px"
-              />
-              <el-skeleton-item
-                variant="text"
-                style="height: 28px; margin-bottom: 18px"
+                v-for="(item, index) in [0,1,2,3,4]" :key="index"
               />
             </div>
           </template>
           <template #default>
-            <el-alert
+            <!-- <el-alert
               :closable="false"
               style="margin: 10px 0"
               title="商品公告"
               type="success"
             >
               <p>感谢您的使用</p>
-            </el-alert>
+            </el-alert> -->
             <el-form
               ref="form"
               style="margin-top: 10px"
@@ -257,16 +248,19 @@
 </template>
 
 <script>
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 import Cookies from "js-cookie";
 import CardCategory from "./card/CardCategory";
 import CardGoods from "./card/CardGoods";
 import CardPay from "./card/CardPay";
 import ItemData from "./card/ItemData";
-import {checkStock, createSaleOrder, getCardList, listApp, listCategory,} from "@/api/sale/saleShop";
+import {checkStock, createSaleOrder, getCardList, getShopConfig, listApp, listCategory,} from "@/api/sale/saleShop";
 
 export default {
   name: "Shop",
-  components: { CardCategory, CardGoods, CardPay, ItemData },
+  components: {CardCategory, CardGoods, CardPay, ItemData},
   data() {
     return {
       dialogFormVisible: false,
@@ -379,12 +373,21 @@ export default {
         //   ],
         // },
       ],
+      // 商店配置
+      shopConfig: null,
     };
   },
   created() {
+    this.getShopConfig();
     this.getList();
   },
   methods: {
+    /** 获取商店配置 */
+    getShopConfig() {
+      getShopConfig({}).then((response) => {
+        this.shopConfig = response.data;
+      });
+    },
     /** 查询软件列表 */
     getList() {
       listApp({}).then((response) => {

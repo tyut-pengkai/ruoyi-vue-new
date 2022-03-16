@@ -80,3 +80,11 @@ export function paySaleOrder(data) {
   })
 }
 
+// 获取商店配置
+export function getShopConfig() {
+  return request({
+    url: '/sale/shop/getShopConfig',
+    method: 'get'
+  })
+}
+

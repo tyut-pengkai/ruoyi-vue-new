@@ -9,6 +9,7 @@ import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AuthType;
+import com.ruoyi.common.enums.NoticeType;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
@@ -24,11 +25,9 @@ import com.ruoyi.sale.domain.vo.SysSaleOrderItemVo;
 import com.ruoyi.sale.service.ISysSaleOrderItemGoodsService;
 import com.ruoyi.sale.service.ISysSaleOrderService;
 import com.ruoyi.sale.service.ISysSaleShopService;
-import com.ruoyi.system.domain.SysCard;
-import com.ruoyi.system.domain.SysCardTemplate;
-import com.ruoyi.system.domain.SysLoginCode;
-import com.ruoyi.system.domain.SysLoginCodeTemplate;
+import com.ruoyi.system.domain.*;
 import com.ruoyi.system.mapper.*;
+import com.ruoyi.system.service.ISysNoticeService;
 import com.ruoyi.web.controller.sale.vo.SaleAppVo;
 import com.ruoyi.web.controller.sale.vo.SaleCardTemplateVo;
 import com.ruoyi.web.controller.sale.vo.SaleOrderVo;
@@ -40,9 +39,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 销售Controller
@@ -72,6 +69,8 @@ public class SysSaleShopController extends BaseController {
     private ISysSaleOrderItemGoodsService sysSaleOrderItemGoodsService;
     @Resource
     private RedisCache redisCache;
+    @Resource
+    private ISysNoticeService sysNoticeService;
 
     /**
      * 查询软件列表
@@ -342,5 +341,23 @@ public class SysSaleShopController extends BaseController {
     public TableDataInfo querySaleOrderByContact(SysSaleOrder sysSaleOrder) {
         List<SysSaleOrder> list = sysSaleOrderService.selectSysSaleOrderQueryLimit5(sysSaleOrder);
         return getDataTable(list);
+    }
+
+    /**
+     * 获取商店配置
+     *
+     * @return
+     */
+    @GetMapping("/getShopConfig")
+    public AjaxResult getShopConfig() {
+        Map<String, Object> map = new HashMap<>();
+        SysNotice sysNotice = new SysNotice();
+        sysNotice.setNoticeType(NoticeType.FRONTEND.getCode());
+        sysNotice.setStatus(UserConstants.NORMAL);
+        SysNotice latestNotice = sysNoticeService.selectLatestNotice(sysNotice);
+        if (latestNotice != null) {
+            map.put("saleShopNotice", latestNotice.getNoticeContent());
+        }
+        return AjaxResult.success(map);
     }
 }

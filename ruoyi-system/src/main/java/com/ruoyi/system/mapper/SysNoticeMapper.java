@@ -1,17 +1,17 @@
 package com.ruoyi.system.mapper;
 
-import java.util.List;
 import com.ruoyi.system.domain.SysNotice;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 通知公告表 数据层
- * 
+ *
  * @author ruoyi
  */
 @Repository
-public interface SysNoticeMapper
-{
+public interface SysNoticeMapper {
     /**
      * 查询公告信息
      * 
@@ -22,15 +22,23 @@ public interface SysNoticeMapper
 
     /**
      * 查询公告列表
-     * 
+     *
      * @param notice 公告信息
      * @return 公告集合
      */
     public List<SysNotice> selectNoticeList(SysNotice notice);
 
     /**
+     * 查询最新公告
+     *
+     * @param notice 公告信息
+     * @return 公告集合
+     */
+    public SysNotice selectLatestNotice(SysNotice notice);
+
+    /**
      * 新增公告
-     * 
+     *
      * @param notice 公告信息
      * @return 结果
      */

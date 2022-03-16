@@ -1,11 +1,12 @@
 package com.ruoyi.system.service.impl;
 
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.ruoyi.system.domain.SysNotice;
 import com.ruoyi.system.mapper.SysNoticeMapper;
 import com.ruoyi.system.service.ISysNoticeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 公告 服务层实现
@@ -32,25 +33,34 @@ public class SysNoticeServiceImpl implements ISysNoticeService
 
     /**
      * 查询公告列表
-     * 
+     *
      * @param notice 公告信息
      * @return 公告集合
      */
     @Override
-    public List<SysNotice> selectNoticeList(SysNotice notice)
-    {
+    public List<SysNotice> selectNoticeList(SysNotice notice) {
         return noticeMapper.selectNoticeList(notice);
     }
 
     /**
+     * 查询最新公告
+     *
+     * @param notice 公告信息
+     * @return 公告集合
+     */
+    @Override
+    public SysNotice selectLatestNotice(SysNotice notice) {
+        return noticeMapper.selectLatestNotice(notice);
+    }
+
+    /**
      * 新增公告
-     * 
+     *
      * @param notice 公告信息
      * @return 结果
      */
     @Override
-    public int insertNotice(SysNotice notice)
-    {
+    public int insertNotice(SysNotice notice) {
         return noticeMapper.insertNotice(notice);
     }
 
