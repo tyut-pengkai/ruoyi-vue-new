@@ -5,6 +5,7 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.payment.constants.PaymentDefine;
+import com.ruoyi.payment.domain.Payment;
 import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.service.ISysSaleOrderService;
 import com.ruoyi.sale.service.ISysSaleShopService;
@@ -38,7 +39,10 @@ public class SaleOrderExpireDaemonThread {
                     String orderNo = split[1];
                     SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
                     if (sso != null && SaleOrderStatus.WAIT_PAY.equals(sso.getStatus())) {
-                        PaymentDefine.paymentMap.get(payMode).beforeExpire(sso);
+                        Payment payment = PaymentDefine.paymentMap.get(payMode);
+                        if (payment != null) {
+                            payment.beforeExpire(sso);
+                        }
                     }
                     if (sso != null && SaleOrderStatus.WAIT_PAY.equals(sso.getStatus())) {
                         sso.setStatus(SaleOrderStatus.TRADE_CLOSED);

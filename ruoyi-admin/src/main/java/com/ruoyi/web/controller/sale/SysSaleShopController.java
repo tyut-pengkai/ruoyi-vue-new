@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.sale;
 
-import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -141,6 +140,18 @@ public class SysSaleShopController extends BaseController {
 
     @PostMapping("/checkStock")
     public AjaxResult checkStock(@RequestBody SaleOrderVo saleOrderVo) {
+
+        Payment payment = PaymentDefine.paymentMap.get(saleOrderVo.getPayMode());
+        if (payment == null) {
+            throw new ServiceException("支付方式有误，下单失败", 400);
+        }
+        if (saleOrderVo.getBuyNum() <= 0) {
+            throw new ServiceException("购买数量有误，下单失败", 400);
+        }
+        if (saleOrderVo.getTemplateId() == null || saleOrderVo.getAppId() == null) {
+            throw new ServiceException("提交数据有误，下单失败", 400);
+        }
+
         // 检查库存
         SysApp app = sysAppMapper.selectSysAppByAppId(saleOrderVo.getAppId());
         if (app.getAuthType() == AuthType.ACCOUNT) {
@@ -169,7 +180,18 @@ public class SysSaleShopController extends BaseController {
 
     @PostMapping("/createSaleOrder")
     public AjaxResult createSaleOrder(@RequestBody SaleOrderVo saleOrderVo) {
-        System.out.println(JSON.toJSONString(saleOrderVo));
+
+        Payment payment = PaymentDefine.paymentMap.get(saleOrderVo.getPayMode());
+        if (payment == null) {
+            throw new ServiceException("支付方式有误，下单失败", 400);
+        }
+        if (saleOrderVo.getBuyNum() <= 0) {
+            throw new ServiceException("购买数量有误，下单失败", 400);
+        }
+        if (saleOrderVo.getTemplateId() == null || saleOrderVo.getAppId() == null) {
+            throw new ServiceException("提交数据有误，下单失败", 400);
+        }
+
         SysApp app = sysAppMapper.selectSysAppByAppId(saleOrderVo.getAppId());
         // 1.检查库存
         checkStock(saleOrderVo);
@@ -244,7 +266,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @GetMapping("/paySaleOrder")
-    public AjaxResult paySaleOrder(HttpServletRequest request, HttpServletResponse response, String orderNo) {
+    public AjaxResult paySaleOrder(String orderNo) {
         if (orderNo == null) {
             throw new ServiceException("订单不存在", 400);
         }
