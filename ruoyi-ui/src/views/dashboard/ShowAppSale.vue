@@ -105,14 +105,14 @@ export default {
 
 .card-title-app-num {
   font-style: normal;
-  font-size: 30px;
+  font-size: 24px;
   font-weight: 300;
   color: #666;
   margin-top: 15px;
 }
 
 .card-s-p-fix {
-  font-size: 20px;
+  font-size: 14px;
   font-weight: bold;
   color: #666;
 }

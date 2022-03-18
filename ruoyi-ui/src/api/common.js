@@ -7,3 +7,11 @@ export function getSysInfo() {
     method: 'get'
   })
 }
+
+// 获取Dashboard信息
+export function getDashboardInfo() {
+  return request({
+    url: '/common/dashboardInfo',
+    method: 'get'
+  })
+}
