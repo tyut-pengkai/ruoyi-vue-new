@@ -278,6 +278,9 @@ public class CommonController {
         ArrayList<Map<String, Object>> feeAppList = new ArrayList<>(feeAppMap.values());
         feeAppList.sort((o1, o2) -> ((BigDecimal) o2.get("feeTotal")).compareTo(((BigDecimal) o1.get("feeTotal"))));
         map.put("feeAppList", feeAppList);
+        // 本周数据
+
+
         return AjaxResult.success(map);
     }
 }

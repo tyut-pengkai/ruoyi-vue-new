@@ -84,7 +84,6 @@ export default {
         ],
         series: [
           {
-            name: 'Line 1',
             type: 'line',
             stack: 'Total',
             smooth: true,

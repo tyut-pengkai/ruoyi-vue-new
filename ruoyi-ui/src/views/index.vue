@@ -233,7 +233,9 @@ export default {
         this.piedata = [];
         if (this.d['feeAppList']) {
           for (var item of this.d['feeAppList']) {
-            this.piedata.push({'value': item['feeWeek'], 'name': item['appName']});
+            if (item['feeWeek'] > 0) {
+              this.piedata.push({'value': item['feeWeek'], 'name': item['appName']});
+            }
           }
         }
       });
