@@ -82,8 +82,8 @@ export default {
             name: this.title,
             type: 'pie',
             // roseType: 'radius',
-            // radius: [10, 80],
-            center: ['50%', '50%'],
+            radius: [10, '50%'],
+            center: ['50%', '45%'],
             data: this.data,
             animationEasing: 'cubicInOut',
             animationDuration: 2600

@@ -8,6 +8,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.framework.config.ServerConfig;
+import com.ruoyi.payment.constants.PaymentDefine;
 import com.ruoyi.sale.mapper.SysSaleOrderMapper;
 import com.ruoyi.system.service.ISysAppService;
 import org.slf4j.Logger;
@@ -24,7 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +35,7 @@ import java.util.Map;
 
 /**
  * 通用请求处理
- * 
+ *
  * @author ruoyi
  */
 @RestController
@@ -58,12 +61,9 @@ public class CommonController {
      * @param delete   是否删除
      */
     @GetMapping("/download")
-    public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request)
-    {
-        try
-        {
-            if (!FileUtils.checkAllowDownload(fileName))
-            {
+    public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request) {
+        try {
+            if (!FileUtils.checkAllowDownload(fileName)) {
                 throw new Exception(StringUtils.format("文件名称({})非法，不允许下载。 ", fileName));
             }
             String realFileName = System.currentTimeMillis() + fileName.substring(fileName.indexOf("_") + 1);
@@ -76,13 +76,10 @@ public class CommonController {
             response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
             FileUtils.setAttachmentResponseHeader(response, realFileName);
             FileUtils.writeBytes(filePath, response.getOutputStream());
-            if (delete)
-            {
+            if (delete) {
                 FileUtils.deleteFile(filePath);
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error("下载文件失败", e);
         }
     }
@@ -91,10 +88,8 @@ public class CommonController {
      * 通用上传请求（单个）
      */
     @PostMapping("/upload")
-    public AjaxResult uploadFile(MultipartFile file) throws Exception
-    {
-        try
-        {
+    public AjaxResult uploadFile(MultipartFile file) throws Exception {
+        try {
             // 上传文件路径
             String filePath = RuoYiConfig.getUploadPath();
             // 上传并返回新文件名称
@@ -106,9 +101,7 @@ public class CommonController {
             ajax.put("newFileName", FileUtils.getName(fileName));
             ajax.put("originalFilename", file.getOriginalFilename());
             return ajax;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return AjaxResult.error(e.getMessage());
         }
     }
@@ -117,18 +110,15 @@ public class CommonController {
      * 通用上传请求（多个）
      */
     @PostMapping("/uploads")
-    public AjaxResult uploadFiles(List<MultipartFile> files) throws Exception
-    {
-        try
-        {
+    public AjaxResult uploadFiles(List<MultipartFile> files) throws Exception {
+        try {
             // 上传文件路径
             String filePath = RuoYiConfig.getUploadPath();
             List<String> urls = new ArrayList<String>();
             List<String> fileNames = new ArrayList<String>();
             List<String> newFileNames = new ArrayList<String>();
             List<String> originalFilenames = new ArrayList<String>();
-            for (MultipartFile file : files)
-            {
+            for (MultipartFile file : files) {
                 // 上传并返回新文件名称
                 String fileName = FileUploadUtils.upload(filePath, file);
                 String url = serverConfig.getUrl() + fileName;
@@ -143,9 +133,7 @@ public class CommonController {
             ajax.put("newFileNames", StringUtils.join(newFileNames, FILE_DELIMETER));
             ajax.put("originalFilenames", StringUtils.join(originalFilenames, FILE_DELIMETER));
             return ajax;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return AjaxResult.error(e.getMessage());
         }
     }
@@ -155,12 +143,9 @@ public class CommonController {
      */
     @GetMapping("/download/resource")
     public void resourceDownload(String resource, HttpServletRequest request, HttpServletResponse response)
-            throws Exception
-    {
-        try
-        {
-            if (!FileUtils.checkAllowDownload(resource))
-            {
+            throws Exception {
+        try {
+            if (!FileUtils.checkAllowDownload(resource)) {
                 throw new Exception(StringUtils.format("资源文件({})非法，不允许下载。 ", resource));
             }
             // 本地资源路径
@@ -204,6 +189,7 @@ public class CommonController {
         map.put("feeToday", feeToday);
         int tradeToday = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
         map.put("tradeToday", tradeToday);
+        // 各个软件
         List<Map<String, Object>> mapListToday = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
         // 今日下单（含未付款）
         BigDecimal feeTodayAll = sysSaleOrderMapper.queryTotalFeeAllBetween(start, end);
@@ -217,6 +203,7 @@ public class CommonController {
         map.put("feeYesterday", feeYesterday);
         int tradeYesterday = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
         map.put("tradeYesterday", tradeYesterday);
+        // 各个软件
         List<Map<String, Object>> mapListYesterday = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
         // 近七日成交
         start = localDate.minusDays(6).toString();
@@ -225,8 +212,28 @@ public class CommonController {
         map.put("feeWeek", feeWeek);
         int tradeWeek = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
         map.put("tradeWeek", tradeWeek);
+        // 各个软件
         List<Map<String, Object>> mapListWeek = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
-        // 获取软件列表
+        // 近七日收款类型统计
+        List<Map<String, Object>> mapListPayMode = sysSaleOrderMapper.queryPayModeBetween(start, end);
+        List<Map<String, Object>> payModeList = new ArrayList<>();
+        for (Map<String, Object> item : mapListPayMode) {
+            Map<String, Object> mapPayMode = new HashMap<>();
+            String payMode = item.get("pay_mode").toString();
+            Object totalCount = item.get("total_count");
+            if ("manual".equals(payMode)) {
+                mapPayMode.put("payMode", "人工");
+            } else if (PaymentDefine.paymentMap.containsKey(payMode)) {
+                mapPayMode.put("payMode", PaymentDefine.paymentMap.get(payMode).getName());
+            } else {
+                continue; // 丢弃
+            }
+            mapPayMode.put("totalCount", totalCount);
+            payModeList.add(mapPayMode);
+        }
+        map.put("payModeList", payModeList);
+
+        // 各软件详细数据
         List<SysApp> appList = sysAppService.selectSysAppList(new SysApp());
         Map<String, Map<String, Object>> feeAppMap = new HashMap<>();
         for (Map<String, Object> item : mapListTotal) {
@@ -278,9 +285,47 @@ public class CommonController {
         ArrayList<Map<String, Object>> feeAppList = new ArrayList<>(feeAppMap.values());
         feeAppList.sort((o1, o2) -> ((BigDecimal) o2.get("feeTotal")).compareTo(((BigDecimal) o1.get("feeTotal"))));
         map.put("feeAppList", feeAppList);
-        // 本周数据
-
-
+        // 本周数据（直方图和折线图）
+        LocalDate monday = localDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        List<List<Map<String, Object>>> mapListList = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            LocalDate previous = monday.plusDays(i);
+            LocalDate next = previous.plusDays(1);
+            List<Map<String, Object>> tempMapList = sysSaleOrderMapper.queryAppTotalFeeBetween(previous.toString(), next.toString());
+            mapListList.add(tempMapList);
+        }
+        Map<String, Map<String, Object>> feeAppWeekMap = new HashMap<>();
+        for (int i = 0; i < mapListList.size(); i++) {
+            List<Map<String, Object>> mapList = mapListList.get(i);
+            for (Map<String, Object> item : mapList) {
+                String appId = item.get("app_id").toString();
+                Object feeApp = item.get("total_fee");
+                if (!feeAppWeekMap.containsKey(appId)) {
+                    feeAppWeekMap.put(appId, new HashMap<>());
+                }
+                if (!feeAppWeekMap.get(appId).containsKey("data")) {
+                    feeAppWeekMap.get(appId).put("data", new ArrayList<>());
+                }
+                ((ArrayList<Object>) feeAppWeekMap.get(appId).get("data")).add(feeApp);
+            }
+            for (SysApp app : appList) {
+                String appId = app.getAppId().toString();
+                if (!feeAppWeekMap.containsKey(appId)) {
+                    feeAppWeekMap.put(appId, new HashMap<>());
+                    feeAppWeekMap.get(appId).put("data", new ArrayList<>());
+                }
+                ArrayList<Object> data = (ArrayList<Object>) feeAppWeekMap.get(appId).get("data");
+                while (data.size() <= i) {
+                    data.add(BigDecimal.ZERO);
+                }
+            }
+        }
+        for (SysApp app : appList) {
+            String appId = app.getAppId().toString();
+            String appName = app.getAppName();
+            feeAppWeekMap.get(appId).put("appName", appName);
+        }
+        map.put("feeAppWeekList", feeAppWeekMap.values());
         return AjaxResult.success(map);
     }
 }

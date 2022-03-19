@@ -28,6 +28,9 @@
                                   suffix=" 笔"/>
                       </span>
                     </span>
+                    <el-button :loading="refreshLoading" icon="el-icon-refresh" plain size="small"
+                               style="float: right; margin-left: 20px; margin-top: -7px" @click="refresh">刷新
+                    </el-button>
                     <el-switch
                       v-model="showMode"
                       active-text="按月统计"
@@ -47,7 +50,7 @@
                 <show-card :value="d['feeWeek']" tag="七日" title="近七日成交" type="p"></show-card>
               </el-col>
               <el-col :lg="6" :sm="24" :xs="24" style="margin-top: 10px;">
-                <show-card :value="d['feeTodayAll']" tag="今日" title="今日下单（含未付款）" type="p"></show-card>
+                <show-card :value="d['feeTodayAll']-d['feeToday']" tag="今日" title="今日下单未付款" type="p"></show-card>
               </el-col>
             </el-row>
             <el-row :gutter="10">
@@ -61,113 +64,66 @@
                 <show-card :value="d['tradeWeek']" tag="七日" title="近七日成交" type="s"></show-card>
               </el-col>
               <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :value="d['tradeTodayAll']" tag="今日" title="今日下单（含未付款）" type="s"></show-card>
+                <show-card :value="d['tradeTodayAll']-d['tradeToday']" tag="今日" title="今日下单未付款" type="s"></show-card>
               </el-col>
             </el-row>
             <el-row :gutter="10">
-              <el-carousel :interval="10000" arrow="always" height="340px">
-                <el-carousel-item>
-                  <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px;">
-                    <el-card shadow="never">
-                      <div class="card-title">
-                        <span>近七天交易流水</span>
-                      </div>
-                      <div style="margin-top: 20px">
-                        <bar-chart height="260px"/>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px;">
-                    <el-card shadow="never">
-                      <div class="card-title">
-                        <span>近七天收款趋势统计</span>
-                      </div>
-                      <div style="margin-top: 20px">
-                        <line-chart :data="lineData"></line-chart>
-                      </div>
-                    </el-card>
-                  </el-col>
-                </el-carousel-item>
-                <el-carousel-item>
-                  <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px;">
-                    <el-card shadow="never">
-                      <div class="card-title">
-                        <span>近七天软件收益</span>
-                      </div>
-                      <div style="margin-top: 20px">
-                        <pie-chart :data="piedata" height="260px"/>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px;">
-                    <el-card shadow="never">
-                      <div class="card-title">
-                        <span>近七天收款类型统计</span>
-                      </div>
-                      <div style="margin-top: 20px">
-                        <pie-chart :data="piedata" height="260px"/>
-                      </div>
-                    </el-card>
-                  </el-col>
-                </el-carousel-item>
-              </el-carousel>
-              <!-- <el-col :lg="6" :sm="24" :xs="24" style="margin-top: 10px;">
+              <!-- <el-carousel :interval="10000" :autoplay="false" arrow="always" height="340px"> -->
+              <!-- <el-carousel-item> -->
+              <el-col :lg="10" :sm="24" :xs="24" style="margin-top: 10px;">
                 <el-card shadow="never">
                   <div class="card-title">
                     <span>近七天交易流水</span>
                   </div>
                   <div style="margin-top: 20px">
-                    <bar-chart height="260px"/>
+                    <bar-chart :data="barData"></bar-chart>
                   </div>
                 </el-card>
-              </el-col> -->
-              <!-- <el-col :lg="7" :sm="24" :xs="24" style="margin-top: 10px;">
-                <el-card shadow="never">
-                  <div class="card-title">
-                    <span>近七天软件收益</span>
-                  </div>
-                  <div style="margin-top: 20px">
-                    <pie-chart height="260px" :data="piedata" />
-                  </div>
-                </el-card>
-              </el-col> -->
-              <!-- <el-col :lg="7" :sm="24" :xs="24" style="margin-top: 10px;">
-                <el-card shadow="never">
-                  <div class="card-title">
-                    <span>近七天收款类型统计</span>
-                  </div>
-                  <div style="margin-top: 20px">
-                    <pie-chart height="260px" :data="piedata"/>
-                  </div>
-                </el-card>
-              </el-col> -->
-              <!-- <el-col :lg="6" :sm="24" :xs="24" style="margin-top: 10px;">
-                <el-card shadow="never">
+              </el-col>
+              <el-col :lg="7" :sm="24" :xs="24" style="margin-top: 10px;">
+                <!-- <el-card shadow="never">
                   <div class="card-title">
                     <span>近七天收款趋势统计</span>
                   </div>
                   <div style="margin-top: 20px">
                     <line-chart :data="lineData"></line-chart>
                   </div>
+                </el-card> -->
+                <el-card shadow="never">
+                  <div class="card-title">
+                    <span>近七天软件收益</span>
+                  </div>
+                  <div style="margin-top: 20px">
+                    <pie-chart :data="pieData"></pie-chart>
+                  </div>
                 </el-card>
-              </el-col> -->
-            </el-row>
-            <!-- <el-row :gutter="10">
-              <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px;">
+              </el-col>
+              <el-col :lg="7" :sm="24" :xs="24" style="margin-top: 10px;">
                 <el-card shadow="never">
                   <div class="card-title">
                     <span>近七天收款类型统计</span>
                   </div>
                   <div style="margin-top: 20px">
-                    <line-chart :data="lineData"></line-chart>
+                    <pie-chart :data="pie2Data"></pie-chart>
                   </div>
                 </el-card>
               </el-col>
-            </el-row> -->
+              <!-- </el-carousel-item> -->
+              <!-- <el-carousel-item>
+                <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px;">
+                  <el-card shadow="never">
+                    <div class="card-title">
+                      <span>近七天收款类型统计</span>
+                    </div>
+                    <div style="margin-top: 20px">
+                      <pie-chart></pie-chart>
+                    </div>
+                  </el-card>
+                </el-col>
+              </el-carousel-item> -->
+              <!-- </el-carousel> -->
+            </el-row>
             <el-row :gutter="10">
-              <!-- <el-col :lg="8" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-app-sale title="平台全部软件数据统计" :data="[1,2,3,4]"></show-app-sale>
-              </el-col> -->
               <el-col v-for="(item, index) in d['feeAppList']" :key="index" :lg="8" :sm="12" :xs="24"
                       style="margin-top: 10px;">
                 <show-app-sale :data="[item['feeTotal'],item['feeToday'],item['feeYesterday'],item['feeWeek']]"
@@ -193,7 +149,7 @@ import ShowCard from './dashboard/ShowCard'
 import {getDashboardInfo} from '@/api/common'
 import ShowAppSale from './dashboard/ShowAppSale'
 import PieChart from "./dashboard/MyPieChart"
-import BarChart from "./dashboard/BarChart"
+import BarChart from "./dashboard/MyBarChart"
 import LineChart from "./dashboard/MyLineChart"
 
 export default {
@@ -208,19 +164,21 @@ export default {
   },
   data() {
     return {
+      refreshLoading: false,
       showMode: false,
       d: {},
-      piedata: [
-        // { value: parseMoney(320), name: 'APP1' },
-        // { value: 240, name: 'APP2' },
-        // { value: 149, name: 'APP3' },
-        // { value: 100, name: 'APP4' },
-        // { value: 59, name: 'APP5' }
+      pieData: [
+        // { value: 320, name: 'APP1' },
       ],
-      lineData: {
-        expectedData: [100, 120, 161, 134, 105, 160, 165],
-        actualData: [120, 82, 91, 154, 162, 140, 145],
-      },
+      pie2Data: [
+        // { value: 320, name: 'APP1' },
+      ],
+      barData: [
+        // {data: [0, 0, 0, 0, 0, 0, 0], appName: "123"},
+      ],
+      lineData: [
+        // 0, 0, 0, 0, 0, 0, 0
+      ],
     };
   },
   created() {
@@ -228,17 +186,46 @@ export default {
   },
   methods: {
     getDashboardInfo() {
+      this.$modal.loading("正在加载数据，请稍后...");
       getDashboardInfo().then(response => {
         this.d = response.data;
-        this.piedata = [];
+        this.pieData = [];
         if (this.d['feeAppList']) {
           for (var item of this.d['feeAppList']) {
             if (item['feeWeek'] > 0) {
-              this.piedata.push({'value': item['feeWeek'], 'name': item['appName']});
+              this.pieData.push({'value': item['feeWeek'], 'name': item['appName']});
             }
           }
         }
+        this.pie2Data = [];
+        if (this.d['payModeList']) {
+          for (var item of this.d['payModeList']) {
+            if (item['totalCount'] > 0) {
+              this.pie2Data.push({'value': item['totalCount'], 'name': item['payMode']});
+            }
+          }
+        }
+        this.barData = [];
+        this.lineData = [];
+        if (this.d['feeAppWeekList']) {
+          this.barData = this.d['feeAppWeekList'];
+          for (var i = 0; i < 7; i++) {
+            this.lineData.push(0);
+            for (var item of this.barData) {
+              this.lineData[i] = this.lineData[i] + item['data'][i];
+            }
+          }
+        }
+        this.$modal.closeLoading();
+        if (this.refreshLoading) {
+          this.refreshLoading = false;
+          this.$modal.msgSuccess("数据已刷新");
+        }
       });
+    },
+    refresh() {
+      this.refreshLoading = true;
+      this.getDashboardInfo();
     }
   },
   computed: {}

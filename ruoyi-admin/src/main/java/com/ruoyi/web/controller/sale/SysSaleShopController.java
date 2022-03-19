@@ -373,6 +373,7 @@ public class SysSaleShopController extends BaseController {
     @GetMapping("/getShopConfig")
     public AjaxResult getShopConfig() {
         Map<String, Object> map = new HashMap<>();
+        // 公告
         SysNotice sysNotice = new SysNotice();
         sysNotice.setNoticeType(NoticeType.FRONTEND.getCode());
         sysNotice.setStatus(UserConstants.NORMAL);
@@ -380,6 +381,18 @@ public class SysSaleShopController extends BaseController {
         if (latestNotice != null) {
             map.put("saleShopNotice", latestNotice.getNoticeContent());
         }
+        // 支付方式
+        List<Map<String, String>> payModeList = new ArrayList<>();
+        for (Payment payment : PaymentDefine.paymentMap.values()) {
+            if (payment.getEnable()) {
+                Map<String, String> payModeMap = new HashMap<>();
+                payModeMap.put("code", payment.getCode());
+                payModeMap.put("name", payment.getName());
+                payModeMap.put("img", payment.getIcon());
+                payModeList.add(payModeMap);
+            }
+        }
+        map.put("payModeList", payModeList);
         return AjaxResult.success(map);
     }
 }

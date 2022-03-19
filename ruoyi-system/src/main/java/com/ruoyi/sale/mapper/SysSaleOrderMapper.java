@@ -155,4 +155,8 @@ public interface SysSaleOrderMapper {
             "GROUP BY a.app_id")
     public List<Map<String, Object>> queryAppTotalFeeBetween(@Param("start") String start, @Param("end") String end);
 
+    @Select("SELECT sso.pay_mode, count(pay_mode) as total_count FROM sys_sale_order sso\n" +
+            "WHERE sso.STATUS IN ( '1', '3', '4' ) AND sso.create_time BETWEEN #{start} AND #{end} GROUP BY pay_mode")
+    public List<Map<String, Object>> queryPayModeBetween(@Param("start") String start, @Param("end") String end);
+
 }

@@ -28,8 +28,10 @@ export default {
       default: true
     },
     data: {
-      type: Object,
-      required: true
+      type: Array,
+      default: function () {
+        return [];
+      }
     }
   },
   data() {
@@ -37,7 +39,18 @@ export default {
       chart: null
     }
   },
-  watch: {},
+  watch: {
+    data: {
+      deep: true,
+      handler(newValue, oldValue) {
+        if (oldValue != newValue) {
+          this.$nextTick(() => {
+            this.initChart()
+          })
+        }
+      },
+    }
+  },
   mounted() {
     this.$nextTick(() => {
       this.initChart()
@@ -107,7 +120,8 @@ export default {
             emphasis: {
               focus: 'series'
             },
-            data: [140, 232, 101, 264, 90, 340, 250]
+            animationDuration: 2600,
+            data: this.data
           },
         ]
       })

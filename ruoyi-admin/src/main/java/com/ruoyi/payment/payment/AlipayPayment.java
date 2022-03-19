@@ -83,7 +83,7 @@ public class AlipayPayment extends Payment {
             notifyUrl += pathMapping + "/sale/shop/notify/alipay_qr";
         }
         this.setCode("alipay_qr");
-        this.setName("支付宝");
+        this.setName("支付宝QR");
         this.setIcon("pay-alipay");
         this.setEncode("UTF-8");
         this.setEnable(true);

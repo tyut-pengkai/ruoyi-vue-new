@@ -7,6 +7,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.domain.SysSaleOrderItem;
@@ -131,7 +132,7 @@ public class SysSaleOrderController extends BaseController {
     }
 
     /**
-     * 获取销售订单详细信息
+     * 手动发货
      */
     @PreAuthorize("@ss.hasPermi('sale:saleOrder:query')")
     @GetMapping(value = "/manualDelivery")
@@ -150,6 +151,9 @@ public class SysSaleOrderController extends BaseController {
         try {
             sso.setStatus(SaleOrderStatus.PAID);
             sysSaleShopService.deliveryGoods(sso);
+            if (StringUtils.isNotBlank(sso.getPayMode())) {
+                sso.setRemark("该订单手工发货，原支付方式：" + sso.getPayMode());
+            }
             sso.setPayMode("manual"); // 手动发货
             sysSaleOrderService.updateSysSaleOrder(sso);
         } catch (Exception e) {
