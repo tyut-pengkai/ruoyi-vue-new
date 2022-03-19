@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.sale;
 
+import com.ruoyi.common.annotation.RateLimiter;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -8,6 +9,7 @@ import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AuthType;
+import com.ruoyi.common.enums.LimitType;
 import com.ruoyi.common.enums.NoticeType;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
@@ -394,5 +396,21 @@ public class SysSaleShopController extends BaseController {
         }
         map.put("payModeList", payModeList);
         return AjaxResult.success(map);
+    }
+
+    /**
+     * 获取订单是否已支付
+     *
+     * @param orderNo
+     * @return
+     */
+    @GetMapping("/getPayStatus")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
+    public AjaxResult getPayStatus(String orderNo) {
+        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
+        if (SaleOrderStatus.PAID == sso.getStatus() || SaleOrderStatus.TRADE_SUCCESS == sso.getStatus() || SaleOrderStatus.TRADE_FINISHED == sso.getStatus()) {
+            return AjaxResult.success("1");
+        }
+        return AjaxResult.success("0");
     }
 }

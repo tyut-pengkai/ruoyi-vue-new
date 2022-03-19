@@ -81,19 +81,19 @@ export const constantRoutes = [
   },
   {
     path: '/index',
-    redirect: 'admin/index',
+    redirect: '/admin/index',
   },
   {
     path: '/admin',
     component: Layout,
-    redirect: 'index',
+    redirect: '/admin/index',
     children: [
       {
         path: 'index',
         component: () => import('@/views/index'),
         name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
-      }
+        meta: {title: '首页', icon: 'dashboard', affix: true}
+      },
     ]
   },
   {

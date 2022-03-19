@@ -1,6 +1,6 @@
 <template>
-  <div class="dashboard">
-    <div style="margin: 10px;">
+  <div class="dashboard" style="min-height: 85vh">
+    <div v-if="checkRole(['admin', 'manager'])" style="margin: 10px;">
       <el-row :gutter="10">
         <el-col :lg="24" :sm="24" :xs="24">
           <div style="margin: 10px; margin-top: 0px;">
@@ -8,7 +8,8 @@
               <el-col :span="24">
                 <el-card shadow="never">
                   <div style="height: 15px;">
-                    <span>
+                    <span style="margin-right: 20px">欢迎您，{{ username }}，上次刷新：{{ parseTime(new Date()) }}</span>
+                    <div style="display: inline">
                       <el-tag style="margin-top: -5px; line-height: 30px;">平台总交易额</el-tag>
                       <span>
                         <count-to :decimals="2" :duration="2600" :end-val="d['feeTotal']" :start-val="0"
@@ -27,7 +28,7 @@
                         <count-to :duration="2600" :end-val="d['tradeTotalAll']" :start-val="0" class="card-num"
                                   suffix=" 笔"/>
                       </span>
-                    </span>
+                    </div>
                     <el-button :loading="refreshLoading" icon="el-icon-refresh" plain size="small"
                                style="float: right; margin-left: 20px; margin-top: -7px" @click="refresh">刷新
                     </el-button>
@@ -140,10 +141,72 @@
         </el-col> -->
       </el-row>
     </div>
+    <div v-else style="margin: 10px;">
+      <el-row :gutter="10">
+        <el-col :lg="24" :sm="24" :xs="24">
+          <div style="margin: 10px; margin-top: 0px;">
+            <el-row :gutter="10">
+              <el-col :span="24">
+                <el-card shadow="never">
+                  <div style="height: 15px;">
+                    <span style="margin-right: 20px">欢迎您，{{ username }}，上次刷新：{{ parseTime(new Date()) }}</span>
+                    <div style="display: inline">
+                      <el-button :loading="refreshLoading" icon="el-icon-refresh" plain size="small"
+                                 style="float: right; margin-left: 20px; margin-top: -7px" @click="refresh">刷新
+                      </el-button>
+                      <el-switch
+                        v-model="showMode"
+                        active-text="按月统计"
+                        inactive-text="按天统计"
+                        style="float: right;">
+                      </el-switch>
+                    </div>
+                  </div>
+                </el-card>
+              </el-col>
+            </el-row>
+            <el-row :gutter="10">
+              <!-- <el-carousel :interval="10000" :autoplay="false" arrow="always" height="340px"> -->
+              <!-- <el-carousel-item> -->
+              <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px;">
+                <el-card shadow="never">
+                  <div class="card-title">
+                    <span>近七天交易流水</span>
+                  </div>
+                  <div style="margin-top: 20px">
+                    <bar-chart :data="barData"></bar-chart>
+                  </div>
+                </el-card>
+              </el-col>
+              <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px;">
+                <el-card shadow="never">
+                  <div class="card-title">
+                    <span>近七天软件收益</span>
+                  </div>
+                  <div style="margin-top: 20px">
+                    <pie-chart :data="pieData"></pie-chart>
+                  </div>
+                </el-card>
+              </el-col>
+              <!-- </el-carousel-item> -->
+            </el-row>
+            <el-row :gutter="10">
+              <el-col v-for="(item, index) in d['feeAppList']" :key="index" :lg="8" :sm="12" :xs="24"
+                      style="margin-top: 10px;">
+                <show-app-sale :data="[item['feeTotal'],item['feeToday'],item['feeYesterday'],item['feeWeek']]"
+                               :tag="'TOP'+(index+1)"
+                               :title="item['appName']"></show-app-sale>
+              </el-col>
+            </el-row>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
   </div>
 </template>
 
 <script>
+import {checkPermi, checkRole} from "@/utils/permission"; // 权限判断函数
 import CountTo from 'vue-count-to'
 import ShowCard from './dashboard/ShowCard'
 import {getDashboardInfo} from '@/api/common'
@@ -164,6 +227,7 @@ export default {
   },
   data() {
     return {
+      username: this.$store.state.user.name,
       refreshLoading: false,
       showMode: false,
       d: {},
@@ -226,7 +290,9 @@ export default {
     refresh() {
       this.refreshLoading = true;
       this.getDashboardInfo();
-    }
+    },
+    checkPermi,
+    checkRole
   },
   computed: {}
 };

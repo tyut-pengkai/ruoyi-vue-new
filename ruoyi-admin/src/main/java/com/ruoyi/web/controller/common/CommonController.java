@@ -28,10 +28,8 @@ import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 通用请求处理
@@ -269,6 +267,9 @@ public class CommonController {
             feeAppMap.get(appId).put("feeWeek", feeAppWeek);
         }
         String[] keys = new String[]{"feeTotal", "feeToday", "feeYesterday", "feeWeek"};
+
+        List<String> appIdList = appList.stream().map(app -> app.getAppId().toString()).collect(Collectors.toList());
+
         for (SysApp app : appList) {
             String appId = app.getAppId().toString();
             String appName = app.getAppName();
@@ -281,6 +282,13 @@ public class CommonController {
                 }
             }
             feeAppMap.get(appId).put("appName", appName);
+        }
+        // 过滤
+        Set<String> keySet = new HashSet<>(feeAppMap.keySet());
+        for (String appId : keySet) {
+            if (!appIdList.contains(appId)) {
+                feeAppMap.remove(appId);
+            }
         }
         ArrayList<Map<String, Object>> feeAppList = new ArrayList<>(feeAppMap.values());
         feeAppList.sort((o1, o2) -> ((BigDecimal) o2.get("feeTotal")).compareTo(((BigDecimal) o1.get("feeTotal"))));
@@ -324,6 +332,13 @@ public class CommonController {
             String appId = app.getAppId().toString();
             String appName = app.getAppName();
             feeAppWeekMap.get(appId).put("appName", appName);
+        }
+        // 过滤
+        Set<String> keySet2 = new HashSet<>(feeAppWeekMap.keySet());
+        for (String appId : keySet2) {
+            if (!appIdList.contains(appId)) {
+                feeAppWeekMap.remove(appId);
+            }
         }
         map.put("feeAppWeekList", feeAppWeekMap.values());
         return AjaxResult.success(map);

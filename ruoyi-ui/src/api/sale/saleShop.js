@@ -88,3 +88,12 @@ export function getShopConfig() {
   })
 }
 
+// 获取订单状态
+export function getPayStatus(query) {
+  return request({
+    url: '/sale/shop/getPayStatus',
+    method: 'get',
+    params: query
+  })
+}
+

@@ -8,7 +8,7 @@
       <div align="center" style="margin-top: 20px">
         <span class="my-font"
         >支付方式：[{{ payMode }}]，请打开APP扫码支付！有效期3分钟</span
-        >
+        > <span class="my-discount"> [ {{ remainTimeShow }} ] </span>
       </div>
       <div align="center" style="margin-top: 10px">
         <span class="my-font">订单编号：</span>{{ orderNo }}
@@ -69,7 +69,7 @@
 
 <script>
 import vueQr from "vue-qr";
-import {notify, paySaleOrder} from "@/api/sale/saleShop";
+import {getPayStatus, paySaleOrder} from "@/api/sale/saleShop";
 
 export default {
   name: "BillOrder",
@@ -84,6 +84,10 @@ export default {
       logoUrl: require("../../../assets/logo/logo.png"),
       qrText: null,
       loading: true,
+      remainTime: 180,
+      remainTimeShow: "00:03:00",
+      timer: null,
+      timerPay: null,
     };
   },
   created() {
@@ -100,6 +104,16 @@ export default {
           this.showType = response.showType;
           var data = response.data;
           if (data.success == true) {
+            // 倒计时
+            this.remainTime = 180;
+            this.remainTimeShow = "00:03:00";
+            if (this.timer) {
+              clearInterval(this.timer);
+            }
+            this.timer = setInterval(this.countDown, 1000);
+            // 获取支付状态
+            this.timerPay = setInterval(this.checkSaleOrderStatus, 10000);
+
             if (this.showType == "qr") {
               if (data.qrCode) {
                 this.qrText = data.qrCode;
@@ -115,23 +129,49 @@ export default {
       });
   },
   methods: {
-    paySuccess() {
-      var data = {orderNo: this.orderNo};
-      notify(data)
-        .then((response) => {
-          if (response.code == 200) {
-            this.$modal
-              .confirm("订单支付成功，是否关闭当前页面？")
-              .then(function () {
-                window.close();
-              })
-              .catch(() => {
-              });
-          }
-        })
-        .finally(() => {
-        });
+    // paySuccess() {
+    //   var data = {orderNo: this.orderNo};
+    //   notify(data)
+    //     .then((response) => {
+    //       if (response.code == 200) {
+    //         this.$modal
+    //           .confirm("订单支付成功，是否关闭当前页面？")
+    //           .then(function () {
+    //             window.close();
+    //           })
+    //           .catch(() => {
+    //           });
+    //       }
+    //     })
+    //     .finally(() => {
+    //     });
+    // },
+    countDown() {
+      if (this.remainTime >= 0) {
+        var minutes = Math.floor(this.remainTime / 60);
+        var seconds = Math.floor(this.remainTime % 60);
+        this.remainTimeShow =
+          "00:0" + minutes + ":" + (seconds >= 10 ? seconds : "0" + seconds);
+        --this.remainTime;
+      } else {
+        clearInterval(this.timer);
+        clearInterval(this.timerPay);
+        this.$modal.alert("订单超时未支付，已自动关闭订单");
+      }
     },
+    checkSaleOrderStatus() {
+      getPayStatus({orderNo: this.orderNo}).then((response) => {
+        if (response.code == 200 && response.msg === '1') {
+          clearInterval(this.timerPay);
+          this.$alert('支付成功', '系统提示', {
+            confirmButtonText: '确定',
+            callback: action => {
+              window.close();
+            }
+          });
+        }
+      });
+    }
   },
 };
 </script>
@@ -157,6 +197,12 @@ export default {
   font-weight: 600;
   color: #3c8ce7;
   margin-right: 5px;
+  font-size: 18px;
+}
+
+.my-discount {
+  font-weight: 600;
+  color: red;
   font-size: 18px;
 }
 </style>

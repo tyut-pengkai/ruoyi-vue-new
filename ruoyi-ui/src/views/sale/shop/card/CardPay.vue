@@ -1,6 +1,6 @@
 <template>
   <el-row :gutter="10">
-    <el-col v-for="item in data" :key="item.id" :span="3">
+    <el-col v-for="item in data" :key="item.id" :span="4">
       <div class="my-card-group">
         <el-card
           :class="{ 'my-box-card-select': cardKeyOn == item.id }"

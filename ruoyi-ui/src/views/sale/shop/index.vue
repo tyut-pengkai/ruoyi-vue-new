@@ -319,7 +319,7 @@ export default {
       orderNo: null,
       remainTime: 300,
       remainTimeShow: "00:05:00",
-      time: null,
+      timer: null,
 
       // 支付成功
       dialogTableVisible: false,
