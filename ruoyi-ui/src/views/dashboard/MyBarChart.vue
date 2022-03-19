@@ -119,7 +119,7 @@ export default {
       for (var item of this.data) {
         data.push({
           name: item['appName'],
-          type: 'line',
+          type: 'bar',
           stack: 'vistors',
           barWidth: '60%',
           data: item['data'],
