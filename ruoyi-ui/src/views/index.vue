@@ -10,7 +10,7 @@
                   <div style="height: 15px;">
                     <span style="margin-right: 20px">欢迎您，{{ username }}，上次刷新：{{ parseTime(new Date()) }}</span>
                     <div style="display: inline">
-                      <el-tag style="margin-top: -5px; line-height: 30px;">平台总交易额：
+                      <el-tag style="margin-top: -5px; line-height: 30px;">总交易额：
                         <span>
                           <count-to :decimals="2" :duration="2600" :end-val="d['feeTotal']" :start-val="0"
                                     class="card-num"
@@ -18,14 +18,14 @@
                         </span>
                       </el-tag>
                       <el-divider direction="vertical"></el-divider>
-                      <el-tag style="margin-top: -5px; line-height: 30px;">平台总成交数：
+                      <el-tag style="margin-top: -5px; line-height: 30px;">总成交数：
                         <span>
                           <count-to :duration="2600" :end-val="d['tradeTotal']" :start-val="0" class="card-num"
                                     suffix=" 笔"/>
                         </span>
                       </el-tag>
                       <el-divider direction="vertical"></el-divider>
-                      <el-tag style="margin-top: -5px; line-height: 30px;">平台总下单数(含未付款)：
+                      <el-tag style="margin-top: -5px; line-height: 30px;">总下单数(含未付款)：
                         <span>
                           <count-to :duration="2600" :end-val="d['tradeTotalAll']" :start-val="0" class="card-num"
                                     suffix=" 笔"/>
@@ -51,40 +51,42 @@
                   </div>
                 </el-card>
               </el-col>
-              <el-col :lg="6" :sm="24" :xs="24" style="margin-top: 10px;">
+              <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px;">
                 <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeToday']" :value="d['feeToday']"
-                           type="p"></show-card>
+                           :trade="d['tradeToday']" icon="el-icon-coin" type="p"></show-card>
               </el-col>
-              <el-col :lg="6" :sm="24" :xs="24" style="margin-top: 10px;">
-                <show-card :tag="s[showMode]['feeYesterdayTag']" :title="s[showMode]['feeYesterday']"
-                           :value="d['feeYesterday']" type="p"></show-card>
-              </el-col>
-              <el-col :lg="6" :sm="24" :xs="24" style="margin-top: 10px;">
-                <show-card :tag="s[showMode]['feeWeekTag']" :title="s[showMode]['feeWeek']" :value="d['feeWeek']"
-                           type="p"></show-card>
-              </el-col>
-              <el-col :lg="6" :sm="24" :xs="24" style="margin-top: 10px;">
+              <!-- <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
+                <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeToday']" :value="d['tradeToday']"
+                           type="s" icon="el-icon-sell"></show-card>
+              </el-col> -->
+              <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px;">
                 <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeTodayAll']"
-                           :value="d['feeTodayAll']-d['feeToday']" type="p"></show-card>
+                           :trade="d['tradeTodayAll']-d['tradeToday']" :value="d['feeTodayAll']-d['feeToday']"
+                           icon="el-icon-warning-outline" type="p"></show-card>
               </el-col>
+              <!-- <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
+                <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeTodayAll']"
+                           :value="d['tradeTodayAll']-d['tradeToday']" type="s" icon="el-icon-warning-outline"></show-card>
+              </el-col> -->
             </el-row>
             <el-row :gutter="10">
-              <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeToday']" :value="d['tradeToday']"
-                           type="s"></show-card>
-              </el-col>
-              <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
+              <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px;">
                 <show-card :tag="s[showMode]['feeYesterdayTag']" :title="s[showMode]['feeYesterday']"
-                           :value="d['tradeYesterday']" type="s"></show-card>
+                           :trade="d['tradeYesterday']" :value="d['feeYesterday']" icon="el-icon-coin"
+                           type="p"></show-card>
               </el-col>
-              <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
+              <!-- <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
+                <show-card :tag="s[showMode]['feeYesterdayTag']" :title="s[showMode]['feeYesterday']"
+                           :value="d['tradeYesterday']" type="s" icon="el-icon-sell"></show-card>
+              </el-col> -->
+              <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px;">
+                <show-card :tag="s[showMode]['feeWeekTag']" :title="s[showMode]['feeWeek']" :trade="d['tradeWeek']"
+                           :value="d['feeWeek']" icon="el-icon-coin" type="p"></show-card>
+              </el-col>
+              <!-- <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
                 <show-card :tag="s[showMode]['feeWeekTag']" :title="s[showMode]['feeWeek']" :value="d['tradeWeek']"
-                           type="s"></show-card>
-              </el-col>
-              <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeTodayAll']"
-                           :value="d['tradeTodayAll']-d['tradeToday']" type="s"></show-card>
-              </el-col>
+                           type="s" icon="el-icon-sell"></show-card>
+              </el-col> -->
             </el-row>
             <el-row :gutter="10">
               <!-- <el-carousel :interval="10000" :autoplay="false" arrow="always" height="340px"> -->
@@ -92,6 +94,7 @@
               <el-col :lg="10" :sm="24" :xs="24" style="margin-top: 10px;">
                 <el-card shadow="never">
                   <div class="card-title">
+                    <i class="el-icon-data-analysis" style="margin-right: 5px"></i>
                     <span>{{ s[showMode]['tradeWeek'] }}</span>
                   </div>
                   <div style="margin-top: -10px">
@@ -110,6 +113,7 @@
                 </el-card> -->
                 <el-card shadow="never">
                   <div class="card-title">
+                    <i class="el-icon-pie-chart" style="margin-right: 5px"></i>
                     <span>{{ s[showMode]['feeAppWeek'] }}</span>
                   </div>
                   <div style="margin-top: 20px">
@@ -120,6 +124,7 @@
               <el-col :lg="7" :sm="24" :xs="24" style="margin-top: 10px;">
                 <el-card shadow="never">
                   <div class="card-title">
+                    <i class="el-icon-pie-chart" style="margin-right: 5px"></i>
                     <span>{{ s[showMode]['payModeWeek'] }}</span>
                   </div>
                   <div style="margin-top: 20px">
@@ -231,7 +236,7 @@
 <script>
 import {checkPermi, checkRole} from "@/utils/permission"; // 权限判断函数
 import CountTo from 'vue-count-to'
-import ShowCard from './dashboard/ShowCard'
+import ShowCard from './dashboard/ShowCard2'
 import {getDashboardInfo} from '@/api/common'
 import ShowAppSale from './dashboard/ShowAppSale'
 import PieChart from "./dashboard/MyPieChart"
