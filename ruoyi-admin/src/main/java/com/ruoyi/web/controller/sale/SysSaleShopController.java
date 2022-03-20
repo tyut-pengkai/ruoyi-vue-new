@@ -382,6 +382,7 @@ public class SysSaleShopController extends BaseController {
         SysNotice latestNotice = sysNoticeService.selectLatestNotice(sysNotice);
         if (latestNotice != null) {
             map.put("saleShopNotice", latestNotice.getNoticeContent());
+            map.put("saleShopNoticeTitle", latestNotice.getNoticeTitle());
         }
         // 支付方式
         List<Map<String, String>> payModeList = new ArrayList<>();

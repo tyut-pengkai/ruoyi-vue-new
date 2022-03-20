@@ -1,6 +1,7 @@
 <template>
   <div class="home">
-    <el-alert v-if="shopConfig && shopConfig['saleShopNotice']" :closable="false" style="margin-bottom: 20px" title="公告"
+    <el-alert v-if="shopConfig && shopConfig['saleShopNotice']" :closable="false"
+              :title="shopConfig['saleShopNoticeTitle'] || '公告' " style="margin-bottom: 20px"
               type="success">
       <div class="ql-container ql-bubble">
         <div class="ql-editor">
