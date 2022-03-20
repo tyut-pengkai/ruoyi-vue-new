@@ -9,9 +9,10 @@ export function getSysInfo() {
 }
 
 // 获取Dashboard信息
-export function getDashboardInfo() {
+export function getDashboardInfo(query) {
   return request({
     url: '/common/dashboardInfo',
-    method: 'get'
+    method: 'get',
+    params: query
   })
 }

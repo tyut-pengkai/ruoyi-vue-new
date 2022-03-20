@@ -10,62 +10,80 @@
                   <div style="height: 15px;">
                     <span style="margin-right: 20px">欢迎您，{{ username }}，上次刷新：{{ parseTime(new Date()) }}</span>
                     <div style="display: inline">
-                      <el-tag style="margin-top: -5px; line-height: 30px;">平台总交易额</el-tag>
-                      <span>
-                        <count-to :decimals="2" :duration="2600" :end-val="d['feeTotal']" :start-val="0"
-                                  class="card-num"
-                                  prefix="￥ "/>
-                      </span>
+                      <el-tag style="margin-top: -5px; line-height: 30px;">平台总交易额：
+                        <span>
+                          <count-to :decimals="2" :duration="2600" :end-val="d['feeTotal']" :start-val="0"
+                                    class="card-num"
+                                    prefix="￥ "/>
+                        </span>
+                      </el-tag>
                       <el-divider direction="vertical"></el-divider>
-                      <el-tag style="margin-top: -5px; line-height: 30px;">平台总成交数</el-tag>
-                      <span>
-                        <count-to :duration="2600" :end-val="d['tradeTotal']" :start-val="0" class="card-num"
-                                  suffix=" 笔"/>
-                      </span>
+                      <el-tag style="margin-top: -5px; line-height: 30px;">平台总成交数：
+                        <span>
+                          <count-to :duration="2600" :end-val="d['tradeTotal']" :start-val="0" class="card-num"
+                                    suffix=" 笔"/>
+                        </span>
+                      </el-tag>
                       <el-divider direction="vertical"></el-divider>
-                      <el-tag style="margin-top: -5px; line-height: 30px;">平台总下单数（含未付款）</el-tag>
-                      <span>
-                        <count-to :duration="2600" :end-val="d['tradeTotalAll']" :start-val="0" class="card-num"
-                                  suffix=" 笔"/>
-                      </span>
+                      <el-tag style="margin-top: -5px; line-height: 30px;">平台总下单数(含未付款)：
+                        <span>
+                          <count-to :duration="2600" :end-val="d['tradeTotalAll']" :start-val="0" class="card-num"
+                                    suffix=" 笔"/>
+                        </span>
+                      </el-tag>
                     </div>
-                    <el-button :loading="refreshLoading" icon="el-icon-refresh" plain size="small"
-                               style="float: right; margin-left: 20px; margin-top: -7px" @click="refresh">刷新
-                    </el-button>
-                    <el-switch
-                      v-model="showMode"
-                      active-text="按月统计"
-                      inactive-text="按天统计"
-                      style="float: right;">
-                    </el-switch>
+                    <div style="float: right; ">
+                      <el-switch
+                        v-model="showMode"
+                        active-text="按月统计"
+                        active-value="1"
+                        inactive-text="按天统计"
+                        inactive-value="0"
+                        @change="handleShowModeChange">
+                      </el-switch>
+                      <el-button :loading="refreshLoading" icon="el-icon-refresh" plain size="small"
+                                 style="margin-left: 20px; margin-top: -7px" @click="refresh">刷新
+                      </el-button>
+                      <el-checkbox v-model="autoRefresh" style="margin-left: 10px;" @change="handleAutoRefreshChange">
+                        自动
+                      </el-checkbox>
+                    </div>
                   </div>
                 </el-card>
               </el-col>
               <el-col :lg="6" :sm="24" :xs="24" style="margin-top: 10px;">
-                <show-card :value="d['feeToday']" tag="今日" title="今日成交" type="p"></show-card>
+                <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeToday']" :value="d['feeToday']"
+                           type="p"></show-card>
               </el-col>
               <el-col :lg="6" :sm="24" :xs="24" style="margin-top: 10px;">
-                <show-card :value="d['feeYesterday']" tag="昨日" title="昨日成交" type="p"></show-card>
+                <show-card :tag="s[showMode]['feeYesterdayTag']" :title="s[showMode]['feeYesterday']"
+                           :value="d['feeYesterday']" type="p"></show-card>
               </el-col>
               <el-col :lg="6" :sm="24" :xs="24" style="margin-top: 10px;">
-                <show-card :value="d['feeWeek']" tag="七日" title="近七日成交" type="p"></show-card>
+                <show-card :tag="s[showMode]['feeWeekTag']" :title="s[showMode]['feeWeek']" :value="d['feeWeek']"
+                           type="p"></show-card>
               </el-col>
               <el-col :lg="6" :sm="24" :xs="24" style="margin-top: 10px;">
-                <show-card :value="d['feeTodayAll']-d['feeToday']" tag="今日" title="今日下单未付款" type="p"></show-card>
+                <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeTodayAll']"
+                           :value="d['feeTodayAll']-d['feeToday']" type="p"></show-card>
               </el-col>
             </el-row>
             <el-row :gutter="10">
               <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :value="d['tradeToday']" tag="今日" title="今日成交" type="s"></show-card>
+                <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeToday']" :value="d['tradeToday']"
+                           type="s"></show-card>
               </el-col>
               <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :value="d['tradeYesterday']" tag="昨日" title="昨日成交" type="s"></show-card>
+                <show-card :tag="s[showMode]['feeYesterdayTag']" :title="s[showMode]['feeYesterday']"
+                           :value="d['tradeYesterday']" type="s"></show-card>
               </el-col>
               <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :value="d['tradeWeek']" tag="七日" title="近七日成交" type="s"></show-card>
+                <show-card :tag="s[showMode]['feeWeekTag']" :title="s[showMode]['feeWeek']" :value="d['tradeWeek']"
+                           type="s"></show-card>
               </el-col>
               <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :value="d['tradeTodayAll']-d['tradeToday']" tag="今日" title="今日下单未付款" type="s"></show-card>
+                <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeTodayAll']"
+                           :value="d['tradeTodayAll']-d['tradeToday']" type="s"></show-card>
               </el-col>
             </el-row>
             <el-row :gutter="10">
@@ -74,10 +92,10 @@
               <el-col :lg="10" :sm="24" :xs="24" style="margin-top: 10px;">
                 <el-card shadow="never">
                   <div class="card-title">
-                    <span>近七天交易流水</span>
+                    <span>{{ s[showMode]['tradeWeek'] }}</span>
                   </div>
-                  <div style="margin-top: 20px">
-                    <bar-chart :data="barData"></bar-chart>
+                  <div style="margin-top: -10px">
+                    <bar-chart :data="barData" :xTitle="barTitle" height="290px"></bar-chart>
                   </div>
                 </el-card>
               </el-col>
@@ -92,7 +110,7 @@
                 </el-card> -->
                 <el-card shadow="never">
                   <div class="card-title">
-                    <span>近七天软件收益</span>
+                    <span>{{ s[showMode]['feeAppWeek'] }}</span>
                   </div>
                   <div style="margin-top: 20px">
                     <pie-chart :data="pieData"></pie-chart>
@@ -102,7 +120,7 @@
               <el-col :lg="7" :sm="24" :xs="24" style="margin-top: 10px;">
                 <el-card shadow="never">
                   <div class="card-title">
-                    <span>近七天收款类型统计</span>
+                    <span>{{ s[showMode]['payModeWeek'] }}</span>
                   </div>
                   <div style="margin-top: 20px">
                     <pie-chart :data="pie2Data"></pie-chart>
@@ -114,7 +132,7 @@
                 <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px;">
                   <el-card shadow="never">
                     <div class="card-title">
-                      <span>近七天收款类型统计</span>
+                      <span>{{s[showMode]['payModeWeek']}}</span>
                     </div>
                     <div style="margin-top: 20px">
                       <pie-chart></pie-chart>
@@ -150,16 +168,21 @@
                 <el-card shadow="never">
                   <div style="height: 15px;">
                     <span style="margin-right: 20px">欢迎您，{{ username }}，上次刷新：{{ parseTime(new Date()) }}</span>
-                    <div style="display: inline">
-                      <el-button :loading="refreshLoading" icon="el-icon-refresh" plain size="small"
-                                 style="float: right; margin-left: 20px; margin-top: -7px" @click="refresh">刷新
-                      </el-button>
+                    <div style="float: right; ">
                       <el-switch
                         v-model="showMode"
                         active-text="按月统计"
                         inactive-text="按天统计"
-                        style="float: right;">
+                        active-value="1"
+                        inactive-value="0"
+                        @change="handleShowModeChange">
                       </el-switch>
+                      <el-button :loading="refreshLoading" icon="el-icon-refresh" plain size="small"
+                                 style="margin-left: 20px; margin-top: -7px" @click="refresh">刷新
+                      </el-button>
+                      <el-checkbox v-model="autoRefresh" style="margin-left: 10px;" @change="handleAutoRefreshChange">
+                        自动
+                      </el-checkbox>
                     </div>
                   </div>
                 </el-card>
@@ -171,7 +194,7 @@
               <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px;">
                 <el-card shadow="never">
                   <div class="card-title">
-                    <span>近七天交易流水</span>
+                    <span>{{ s[showMode]['tradeWeek'] }}</span>
                   </div>
                   <div style="margin-top: 20px">
                     <bar-chart :data="barData"></bar-chart>
@@ -181,7 +204,7 @@
               <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px;">
                 <el-card shadow="never">
                   <div class="card-title">
-                    <span>近七天软件收益</span>
+                    <span>{{ s[showMode]['feeAppWeek'] }}</span>
                   </div>
                   <div style="margin-top: 20px">
                     <pie-chart :data="pieData"></pie-chart>
@@ -229,7 +252,9 @@ export default {
     return {
       username: this.$store.state.user.name,
       refreshLoading: false,
-      showMode: false,
+      showMode: "0",
+      autoRefresh: false,
+      timer: null,
       d: {},
       pieData: [
         // { value: 320, name: 'APP1' },
@@ -240,9 +265,36 @@ export default {
       barData: [
         // {data: [0, 0, 0, 0, 0, 0, 0], appName: "123"},
       ],
+      barTitle: [],
       lineData: [
         // 0, 0, 0, 0, 0, 0, 0
       ],
+      s: {
+        "0": {
+          feeToday: "今日成交",
+          feeYesterday: "昨日成交",
+          feeWeek: "近七日成交",
+          feeTodayTag: "今日",
+          feeYesterdayTag: "昨日",
+          feeWeekTag: "七日",
+          feeTodayAll: "今日下单未付款",
+          tradeWeek: "近七天交易流水",
+          feeAppWeek: "近七天软件收益",
+          payModeWeek: "近七天收款类型统计",
+        },
+        "1": {
+          feeToday: "本月成交",
+          feeYesterday: "上月成交",
+          feeWeek: "近半年成交",
+          feeTodayTag: "本月",
+          feeYesterdayTag: "上月",
+          feeWeekTag: "半年",
+          feeTodayAll: "本月下单未付款",
+          tradeWeek: "近半年交易流水",
+          feeAppWeek: "近半年软件收益",
+          payModeWeek: "近半年收款类型统计",
+        }
+      }
     };
   },
   created() {
@@ -251,7 +303,7 @@ export default {
   methods: {
     getDashboardInfo() {
       this.$modal.loading("正在加载数据，请稍后...");
-      getDashboardInfo().then(response => {
+      getDashboardInfo({showMode: this.showMode}).then(response => {
         this.d = response.data;
         this.pieData = [];
         if (this.d['feeAppList']) {
@@ -270,16 +322,18 @@ export default {
           }
         }
         this.barData = [];
+        this.barTitle = [];
         this.lineData = [];
         if (this.d['feeAppWeekList']) {
           this.barData = this.d['feeAppWeekList'];
-          for (var i = 0; i < 7; i++) {
+          for (var i = 0; i < this.barData[0].length; i++) {
             this.lineData.push(0);
             for (var item of this.barData) {
               this.lineData[i] = this.lineData[i] + item['data'][i];
             }
           }
         }
+        this.barTitle = this.d['dateWeekList']
         this.$modal.closeLoading();
         if (this.refreshLoading) {
           this.refreshLoading = false;
@@ -290,6 +344,18 @@ export default {
     refresh() {
       this.refreshLoading = true;
       this.getDashboardInfo();
+    },
+    handleShowModeChange() {
+      this.refresh();
+    },
+    handleAutoRefreshChange() {
+      if (this.autoRefresh) {
+        this.timer = setInterval(this.refresh, 30000);
+      } else {
+        if (this.timer) {
+          clearInterval(this.timer);
+        }
+      }
     },
     checkPermi,
     checkRole

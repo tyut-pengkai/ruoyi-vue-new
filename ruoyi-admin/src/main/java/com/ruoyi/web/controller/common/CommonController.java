@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.math.BigDecimal;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
@@ -51,6 +50,23 @@ public class CommonController {
     private ISysAppService sysAppService;
 
     private static final String FILE_DELIMETER = ",";
+
+    private static final Map<Integer, String> convertMap = new HashMap<>();
+
+    static {
+        convertMap.put(1, "一");
+        convertMap.put(2, "二");
+        convertMap.put(3, "三");
+        convertMap.put(4, "四");
+        convertMap.put(5, "五");
+        convertMap.put(6, "六");
+        convertMap.put(7, "七");
+        convertMap.put(8, "八");
+        convertMap.put(9, "九");
+        convertMap.put(10, "十");
+        convertMap.put(11, "十一");
+        convertMap.put(12, "十二");
+    }
 
     /**
      * 通用下载请求
@@ -166,8 +182,9 @@ public class CommonController {
     }
 
     @GetMapping("/dashboardInfo")
-    public AjaxResult dashboardInfo() {
+    public AjaxResult dashboardInfo(boolean showMode) {
         Map<String, Object> map = new HashMap<>();
+        // ==================全局统计部分==================
         // 平台总交易额
         BigDecimal feeTotal = sysSaleOrderMapper.queryTotalFee();
         map.put("feeTotal", feeTotal);
@@ -179,168 +196,346 @@ public class CommonController {
         map.put("tradeTotalAll", tradeTotalAll);
         // 各个软件
         List<Map<String, Object>> mapListTotal = sysSaleOrderMapper.queryAppTotalFee();
-        // 今日成交
-        LocalDate localDate = LocalDate.now();
-        String start = localDate.toString();
-        String end = localDate.plusDays(1).toString();
-        BigDecimal feeToday = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
-        map.put("feeToday", feeToday);
-        int tradeToday = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
-        map.put("tradeToday", tradeToday);
-        // 各个软件
-        List<Map<String, Object>> mapListToday = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
-        // 今日下单（含未付款）
-        BigDecimal feeTodayAll = sysSaleOrderMapper.queryTotalFeeAllBetween(start, end);
-        map.put("feeTodayAll", feeTodayAll);
-        int tradeTodayAll = sysSaleOrderMapper.queryTotalTradeAllBetween(start, end);
-        map.put("tradeTodayAll", tradeTodayAll);
-        // 昨日成交
-        start = localDate.minusDays(1).toString();
-        end = localDate.toString();
-        BigDecimal feeYesterday = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
-        map.put("feeYesterday", feeYesterday);
-        int tradeYesterday = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
-        map.put("tradeYesterday", tradeYesterday);
-        // 各个软件
-        List<Map<String, Object>> mapListYesterday = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
-        // 近七日成交
-        start = localDate.minusDays(6).toString();
-        end = localDate.plusDays(1).toString();
-        BigDecimal feeWeek = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
-        map.put("feeWeek", feeWeek);
-        int tradeWeek = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
-        map.put("tradeWeek", tradeWeek);
-        // 各个软件
-        List<Map<String, Object>> mapListWeek = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
-        // 近七日收款类型统计
-        List<Map<String, Object>> mapListPayMode = sysSaleOrderMapper.queryPayModeBetween(start, end);
-        List<Map<String, Object>> payModeList = new ArrayList<>();
-        for (Map<String, Object> item : mapListPayMode) {
-            Map<String, Object> mapPayMode = new HashMap<>();
-            String payMode = item.get("pay_mode").toString();
-            Object totalCount = item.get("total_count");
-            if ("manual".equals(payMode)) {
-                mapPayMode.put("payMode", "人工");
-            } else if (PaymentDefine.paymentMap.containsKey(payMode)) {
-                mapPayMode.put("payMode", PaymentDefine.paymentMap.get(payMode).getName());
-            } else {
-                continue; // 丢弃
-            }
-            mapPayMode.put("totalCount", totalCount);
-            payModeList.add(mapPayMode);
-        }
-        map.put("payModeList", payModeList);
 
-        // 各软件详细数据
-        List<SysApp> appList = sysAppService.selectSysAppList(new SysApp());
-        Map<String, Map<String, Object>> feeAppMap = new HashMap<>();
-        for (Map<String, Object> item : mapListTotal) {
-            String appId = item.get("app_id").toString();
-            Object feeAppTotal = item.get("total_fee");
-            if (!feeAppMap.containsKey(appId)) {
-                feeAppMap.put(appId, new HashMap<>());
-            }
-            feeAppMap.get(appId).put("feeTotal", feeAppTotal);
-        }
-        for (Map<String, Object> item : mapListToday) {
-            String appId = item.get("app_id").toString();
-            Object feeAppToday = item.get("total_fee");
-            if (!feeAppMap.containsKey(appId)) {
-                feeAppMap.put(appId, new HashMap<>());
-            }
-            feeAppMap.get(appId).put("feeToday", feeAppToday);
-        }
-        for (Map<String, Object> item : mapListYesterday) {
-            String appId = item.get("app_id").toString();
-            Object feeAppYesterday = item.get("total_fee");
-            if (!feeAppMap.containsKey(appId)) {
-                feeAppMap.put(appId, new HashMap<>());
-            }
-            feeAppMap.get(appId).put("feeYesterday", feeAppYesterday);
-        }
-        for (Map<String, Object> item : mapListWeek) {
-            String appId = item.get("app_id").toString();
-            Object feeAppWeek = item.get("total_fee");
-            if (!feeAppMap.containsKey(appId)) {
-                feeAppMap.put(appId, new HashMap<>());
-            }
-            feeAppMap.get(appId).put("feeWeek", feeAppWeek);
-        }
-        String[] keys = new String[]{"feeTotal", "feeToday", "feeYesterday", "feeWeek"};
-
-        List<String> appIdList = appList.stream().map(app -> app.getAppId().toString()).collect(Collectors.toList());
-
-        for (SysApp app : appList) {
-            String appId = app.getAppId().toString();
-            String appName = app.getAppName();
-            if (!feeAppMap.containsKey(appId)) {
-                feeAppMap.put(appId, new HashMap<>());
-            }
-            for (String key : keys) {
-                if (!feeAppMap.get(appId).containsKey(key)) {
-                    feeAppMap.get(appId).put(key, BigDecimal.ZERO);
+        if (!showMode) {
+            // ===================按天统计部分===============
+            // 今日成交
+            LocalDate localDate = LocalDate.now();
+            String start = localDate.toString();
+            String end = localDate.plusDays(1).toString();
+            BigDecimal feeToday = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
+            map.put("feeToday", feeToday);
+            int tradeToday = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
+            map.put("tradeToday", tradeToday);
+            // 各个软件
+            List<Map<String, Object>> mapListToday = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
+            // 今日下单（含未付款）
+            BigDecimal feeTodayAll = sysSaleOrderMapper.queryTotalFeeAllBetween(start, end);
+            map.put("feeTodayAll", feeTodayAll);
+            int tradeTodayAll = sysSaleOrderMapper.queryTotalTradeAllBetween(start, end);
+            map.put("tradeTodayAll", tradeTodayAll);
+            // 昨日成交
+            start = localDate.minusDays(1).toString();
+            end = localDate.toString();
+            BigDecimal feeYesterday = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
+            map.put("feeYesterday", feeYesterday);
+            int tradeYesterday = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
+            map.put("tradeYesterday", tradeYesterday);
+            // 各个软件
+            List<Map<String, Object>> mapListYesterday = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
+            // 近七日成交
+            start = localDate.minusDays(6).toString();
+            end = localDate.plusDays(1).toString();
+            BigDecimal feeWeek = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
+            map.put("feeWeek", feeWeek);
+            int tradeWeek = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
+            map.put("tradeWeek", tradeWeek);
+            // 各个软件
+            List<Map<String, Object>> mapListWeek = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
+            // 近七日收款类型统计
+            List<Map<String, Object>> mapListPayMode = sysSaleOrderMapper.queryPayModeBetween(start, end);
+            List<Map<String, Object>> payModeList = new ArrayList<>();
+            for (Map<String, Object> item : mapListPayMode) {
+                Map<String, Object> mapPayMode = new HashMap<>();
+                String payMode = item.get("pay_mode").toString();
+                Object totalCount = item.get("total_count");
+                if ("manual".equals(payMode)) {
+                    mapPayMode.put("payMode", "人工");
+                } else if (PaymentDefine.paymentMap.containsKey(payMode)) {
+                    mapPayMode.put("payMode", PaymentDefine.paymentMap.get(payMode).getName());
+                } else {
+                    continue; // 丢弃
                 }
+                mapPayMode.put("totalCount", totalCount);
+                payModeList.add(mapPayMode);
             }
-            feeAppMap.get(appId).put("appName", appName);
-        }
-        // 过滤
-        Set<String> keySet = new HashSet<>(feeAppMap.keySet());
-        for (String appId : keySet) {
-            if (!appIdList.contains(appId)) {
-                feeAppMap.remove(appId);
-            }
-        }
-        ArrayList<Map<String, Object>> feeAppList = new ArrayList<>(feeAppMap.values());
-        feeAppList.sort((o1, o2) -> ((BigDecimal) o2.get("feeTotal")).compareTo(((BigDecimal) o1.get("feeTotal"))));
-        map.put("feeAppList", feeAppList);
-        // 本周数据（直方图和折线图）
-        LocalDate monday = localDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        List<List<Map<String, Object>>> mapListList = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-            LocalDate previous = monday.plusDays(i);
-            LocalDate next = previous.plusDays(1);
-            List<Map<String, Object>> tempMapList = sysSaleOrderMapper.queryAppTotalFeeBetween(previous.toString(), next.toString());
-            mapListList.add(tempMapList);
-        }
-        Map<String, Map<String, Object>> feeAppWeekMap = new HashMap<>();
-        for (int i = 0; i < mapListList.size(); i++) {
-            List<Map<String, Object>> mapList = mapListList.get(i);
-            for (Map<String, Object> item : mapList) {
+            map.put("payModeList", payModeList);
+
+            // 各软件详细数据
+            List<SysApp> appList = sysAppService.selectSysAppList(new SysApp());
+            Map<String, Map<String, Object>> feeAppMap = new HashMap<>();
+            for (Map<String, Object> item : mapListTotal) {
                 String appId = item.get("app_id").toString();
-                Object feeApp = item.get("total_fee");
-                if (!feeAppWeekMap.containsKey(appId)) {
-                    feeAppWeekMap.put(appId, new HashMap<>());
+                Object feeAppTotal = item.get("total_fee");
+                if (!feeAppMap.containsKey(appId)) {
+                    feeAppMap.put(appId, new HashMap<>());
                 }
-                if (!feeAppWeekMap.get(appId).containsKey("data")) {
-                    feeAppWeekMap.get(appId).put("data", new ArrayList<>());
+                feeAppMap.get(appId).put("feeTotal", feeAppTotal);
+            }
+            for (Map<String, Object> item : mapListToday) {
+                String appId = item.get("app_id").toString();
+                Object feeAppToday = item.get("total_fee");
+                if (!feeAppMap.containsKey(appId)) {
+                    feeAppMap.put(appId, new HashMap<>());
                 }
-                ((ArrayList<Object>) feeAppWeekMap.get(appId).get("data")).add(feeApp);
+                feeAppMap.get(appId).put("feeToday", feeAppToday);
+            }
+            for (Map<String, Object> item : mapListYesterday) {
+                String appId = item.get("app_id").toString();
+                Object feeAppYesterday = item.get("total_fee");
+                if (!feeAppMap.containsKey(appId)) {
+                    feeAppMap.put(appId, new HashMap<>());
+                }
+                feeAppMap.get(appId).put("feeYesterday", feeAppYesterday);
+            }
+            for (Map<String, Object> item : mapListWeek) {
+                String appId = item.get("app_id").toString();
+                Object feeAppWeek = item.get("total_fee");
+                if (!feeAppMap.containsKey(appId)) {
+                    feeAppMap.put(appId, new HashMap<>());
+                }
+                feeAppMap.get(appId).put("feeWeek", feeAppWeek);
+            }
+            String[] keys = new String[]{"feeTotal", "feeToday", "feeYesterday", "feeWeek"};
+
+            List<String> appIdList = appList.stream().map(app -> app.getAppId().toString()).collect(Collectors.toList());
+
+            for (SysApp app : appList) {
+                String appId = app.getAppId().toString();
+                String appName = app.getAppName();
+                if (!feeAppMap.containsKey(appId)) {
+                    feeAppMap.put(appId, new HashMap<>());
+                }
+                for (String key : keys) {
+                    if (!feeAppMap.get(appId).containsKey(key)) {
+                        feeAppMap.get(appId).put(key, BigDecimal.ZERO);
+                    }
+                }
+                feeAppMap.get(appId).put("appName", appName);
+            }
+            // 过滤
+            Set<String> keySet = new HashSet<>(feeAppMap.keySet());
+            for (String appId : keySet) {
+                if (!appIdList.contains(appId)) {
+                    feeAppMap.remove(appId);
+                }
+            }
+            ArrayList<Map<String, Object>> feeAppList = new ArrayList<>(feeAppMap.values());
+            feeAppList.sort((o1, o2) -> ((BigDecimal) o2.get("feeTotal")).compareTo(((BigDecimal) o1.get("feeTotal"))));
+            map.put("feeAppList", feeAppList);
+            // 近七天数据（直方图和折线图）
+//            LocalDate monday = localDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            LocalDate monday = localDate.minusDays(6);
+            List<List<Map<String, Object>>> mapListList = new ArrayList<>();
+            List<String> dateWeekList = new ArrayList<>();
+            for (int i = 0; i < 7; i++) {
+                LocalDate previous = monday.plusDays(i);
+                LocalDate next = previous.plusDays(1);
+                List<Map<String, Object>> tempMapList = sysSaleOrderMapper.queryAppTotalFeeBetween(previous.toString(), next.toString());
+                mapListList.add(tempMapList);
+                dateWeekList.add(previous.toString().replaceAll("-", "/"));
+            }
+            Map<String, Map<String, Object>> feeAppWeekMap = new HashMap<>();
+            for (int i = 0; i < mapListList.size(); i++) {
+                List<Map<String, Object>> mapList = mapListList.get(i);
+                for (Map<String, Object> item : mapList) {
+                    String appId = item.get("app_id").toString();
+                    Object feeApp = item.get("total_fee");
+                    if (!feeAppWeekMap.containsKey(appId)) {
+                        feeAppWeekMap.put(appId, new HashMap<>());
+                    }
+                    if (!feeAppWeekMap.get(appId).containsKey("data")) {
+                        feeAppWeekMap.get(appId).put("data", new ArrayList<>());
+                    }
+                    ((ArrayList<Object>) feeAppWeekMap.get(appId).get("data")).add(feeApp);
+                }
+                for (SysApp app : appList) {
+                    String appId = app.getAppId().toString();
+                    if (!feeAppWeekMap.containsKey(appId)) {
+                        feeAppWeekMap.put(appId, new HashMap<>());
+                        feeAppWeekMap.get(appId).put("data", new ArrayList<>());
+                    }
+                    ArrayList<Object> data = (ArrayList<Object>) feeAppWeekMap.get(appId).get("data");
+                    while (data.size() <= i) {
+                        data.add(BigDecimal.ZERO);
+                    }
+                }
             }
             for (SysApp app : appList) {
                 String appId = app.getAppId().toString();
-                if (!feeAppWeekMap.containsKey(appId)) {
-                    feeAppWeekMap.put(appId, new HashMap<>());
-                    feeAppWeekMap.get(appId).put("data", new ArrayList<>());
-                }
-                ArrayList<Object> data = (ArrayList<Object>) feeAppWeekMap.get(appId).get("data");
-                while (data.size() <= i) {
-                    data.add(BigDecimal.ZERO);
+                String appName = app.getAppName();
+                feeAppWeekMap.get(appId).put("appName", appName);
+            }
+            // 过滤
+            Set<String> keySet2 = new HashSet<>(feeAppWeekMap.keySet());
+            for (String appId : keySet2) {
+                if (!appIdList.contains(appId)) {
+                    feeAppWeekMap.remove(appId);
                 }
             }
-        }
-        for (SysApp app : appList) {
-            String appId = app.getAppId().toString();
-            String appName = app.getAppName();
-            feeAppWeekMap.get(appId).put("appName", appName);
-        }
-        // 过滤
-        Set<String> keySet2 = new HashSet<>(feeAppWeekMap.keySet());
-        for (String appId : keySet2) {
-            if (!appIdList.contains(appId)) {
-                feeAppWeekMap.remove(appId);
+            map.put("dateWeekList", dateWeekList);
+            map.put("feeAppWeekList", feeAppWeekMap.values());
+        } else {
+            // ===================按月统计部分===============
+            // 本月成交
+            LocalDate localDate = LocalDate.now();
+            String start = localDate.with(TemporalAdjusters.firstDayOfMonth()).toString();
+            String end = localDate.with(TemporalAdjusters.firstDayOfNextMonth()).toString();
+            BigDecimal feeToday = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
+            map.put("feeToday", feeToday);
+            int tradeToday = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
+            map.put("tradeToday", tradeToday);
+            // 各个软件
+            List<Map<String, Object>> mapListToday = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
+            // 本月下单（含未付款）
+            BigDecimal feeTodayAll = sysSaleOrderMapper.queryTotalFeeAllBetween(start, end);
+            map.put("feeTodayAll", feeTodayAll);
+            int tradeTodayAll = sysSaleOrderMapper.queryTotalTradeAllBetween(start, end);
+            map.put("tradeTodayAll", tradeTodayAll);
+            // 上月成交
+            LocalDate lastDayOfLastMonth = localDate.with(TemporalAdjusters.firstDayOfMonth()).minusDays(1);
+            start = lastDayOfLastMonth.with(TemporalAdjusters.firstDayOfMonth()).toString();
+            end = localDate.with(TemporalAdjusters.firstDayOfMonth()).toString();
+            BigDecimal feeYesterday = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
+            map.put("feeYesterday", feeYesterday);
+            int tradeYesterday = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
+            map.put("tradeYesterday", tradeYesterday);
+            // 各个软件
+            List<Map<String, Object>> mapListYesterday = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
+            // 近半年成交
+            start = localDate.minusMonths(6).toString();
+            end = localDate.plusDays(1).toString();
+            BigDecimal feeWeek = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
+            map.put("feeWeek", feeWeek);
+            int tradeWeek = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
+            map.put("tradeWeek", tradeWeek);
+            // 各个软件
+            List<Map<String, Object>> mapListWeek = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
+            // 近半年收款类型统计
+            List<Map<String, Object>> mapListPayMode = sysSaleOrderMapper.queryPayModeBetween(start, end);
+            List<Map<String, Object>> payModeList = new ArrayList<>();
+            for (Map<String, Object> item : mapListPayMode) {
+                Map<String, Object> mapPayMode = new HashMap<>();
+                String payMode = item.get("pay_mode").toString();
+                Object totalCount = item.get("total_count");
+                if ("manual".equals(payMode)) {
+                    mapPayMode.put("payMode", "人工");
+                } else if (PaymentDefine.paymentMap.containsKey(payMode)) {
+                    mapPayMode.put("payMode", PaymentDefine.paymentMap.get(payMode).getName());
+                } else {
+                    continue; // 丢弃
+                }
+                mapPayMode.put("totalCount", totalCount);
+                payModeList.add(mapPayMode);
             }
+            map.put("payModeList", payModeList);
+
+            // 各软件详细数据
+            List<SysApp> appList = sysAppService.selectSysAppList(new SysApp());
+            Map<String, Map<String, Object>> feeAppMap = new HashMap<>();
+            for (Map<String, Object> item : mapListTotal) {
+                String appId = item.get("app_id").toString();
+                Object feeAppTotal = item.get("total_fee");
+                if (!feeAppMap.containsKey(appId)) {
+                    feeAppMap.put(appId, new HashMap<>());
+                }
+                feeAppMap.get(appId).put("feeTotal", feeAppTotal);
+            }
+            for (Map<String, Object> item : mapListToday) {
+                String appId = item.get("app_id").toString();
+                Object feeAppToday = item.get("total_fee");
+                if (!feeAppMap.containsKey(appId)) {
+                    feeAppMap.put(appId, new HashMap<>());
+                }
+                feeAppMap.get(appId).put("feeToday", feeAppToday);
+            }
+            for (Map<String, Object> item : mapListYesterday) {
+                String appId = item.get("app_id").toString();
+                Object feeAppYesterday = item.get("total_fee");
+                if (!feeAppMap.containsKey(appId)) {
+                    feeAppMap.put(appId, new HashMap<>());
+                }
+                feeAppMap.get(appId).put("feeYesterday", feeAppYesterday);
+            }
+            for (Map<String, Object> item : mapListWeek) {
+                String appId = item.get("app_id").toString();
+                Object feeAppWeek = item.get("total_fee");
+                if (!feeAppMap.containsKey(appId)) {
+                    feeAppMap.put(appId, new HashMap<>());
+                }
+                feeAppMap.get(appId).put("feeWeek", feeAppWeek);
+            }
+            String[] keys = new String[]{"feeTotal", "feeToday", "feeYesterday", "feeWeek"};
+
+            List<String> appIdList = appList.stream().map(app -> app.getAppId().toString()).collect(Collectors.toList());
+
+            for (SysApp app : appList) {
+                String appId = app.getAppId().toString();
+                String appName = app.getAppName();
+                if (!feeAppMap.containsKey(appId)) {
+                    feeAppMap.put(appId, new HashMap<>());
+                }
+                for (String key : keys) {
+                    if (!feeAppMap.get(appId).containsKey(key)) {
+                        feeAppMap.get(appId).put(key, BigDecimal.ZERO);
+                    }
+                }
+                feeAppMap.get(appId).put("appName", appName);
+            }
+            // 过滤
+            Set<String> keySet = new HashSet<>(feeAppMap.keySet());
+            for (String appId : keySet) {
+                if (!appIdList.contains(appId)) {
+                    feeAppMap.remove(appId);
+                }
+            }
+            ArrayList<Map<String, Object>> feeAppList = new ArrayList<>(feeAppMap.values());
+            feeAppList.sort((o1, o2) -> ((BigDecimal) o2.get("feeTotal")).compareTo(((BigDecimal) o1.get("feeTotal"))));
+            map.put("feeAppList", feeAppList);
+            // 近半年数据（直方图和折线图）
+//            LocalDate monday = localDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            LocalDate monday = localDate.minusMonths(5);
+            List<List<Map<String, Object>>> mapListList = new ArrayList<>();
+            List<String> dateWeekList = new ArrayList<>();
+            for (int i = 0; i < 6; i++) {
+                LocalDate previous = monday.plusMonths(i).with(TemporalAdjusters.firstDayOfMonth());
+                LocalDate next = previous.with(TemporalAdjusters.firstDayOfNextMonth());
+                List<Map<String, Object>> tempMapList = sysSaleOrderMapper.queryAppTotalFeeBetween(previous.toString(), next.toString());
+                mapListList.add(tempMapList);
+//                dateWeekList.add(convertMap.get(previous.getMonthValue()) + "-" + convertMap.get(next.getMonthValue()) + "月");
+                dateWeekList.add(previous.getMonthValue() + "月");
+            }
+            Map<String, Map<String, Object>> feeAppWeekMap = new HashMap<>();
+            for (int i = 0; i < mapListList.size(); i++) {
+                List<Map<String, Object>> mapList = mapListList.get(i);
+                for (Map<String, Object> item : mapList) {
+                    String appId = item.get("app_id").toString();
+                    Object feeApp = item.get("total_fee");
+                    if (!feeAppWeekMap.containsKey(appId)) {
+                        feeAppWeekMap.put(appId, new HashMap<>());
+                    }
+                    if (!feeAppWeekMap.get(appId).containsKey("data")) {
+                        feeAppWeekMap.get(appId).put("data", new ArrayList<>());
+                    }
+                    ((ArrayList<Object>) feeAppWeekMap.get(appId).get("data")).add(feeApp);
+                }
+                for (SysApp app : appList) {
+                    String appId = app.getAppId().toString();
+                    if (!feeAppWeekMap.containsKey(appId)) {
+                        feeAppWeekMap.put(appId, new HashMap<>());
+                        feeAppWeekMap.get(appId).put("data", new ArrayList<>());
+                    }
+                    ArrayList<Object> data = (ArrayList<Object>) feeAppWeekMap.get(appId).get("data");
+                    while (data.size() <= i) {
+                        data.add(BigDecimal.ZERO);
+                    }
+                }
+            }
+            for (SysApp app : appList) {
+                String appId = app.getAppId().toString();
+                String appName = app.getAppName();
+                feeAppWeekMap.get(appId).put("appName", appName);
+            }
+            // 过滤
+            Set<String> keySet2 = new HashSet<>(feeAppWeekMap.keySet());
+            for (String appId : keySet2) {
+                if (!appIdList.contains(appId)) {
+                    feeAppWeekMap.remove(appId);
+                }
+            }
+            map.put("dateWeekList", dateWeekList);
+            map.put("feeAppWeekList", feeAppWeekMap.values());
         }
-        map.put("feeAppWeekList", feeAppWeekMap.values());
         return AjaxResult.success(map);
     }
 }

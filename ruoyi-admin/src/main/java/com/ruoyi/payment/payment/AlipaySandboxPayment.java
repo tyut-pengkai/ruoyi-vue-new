@@ -14,6 +14,7 @@ import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.payment.domain.Payment;
 import com.ruoyi.sale.domain.SysSaleOrder;
@@ -59,7 +60,10 @@ public class AlipaySandboxPayment extends Payment {
     public void init() {
         if (StringUtils.isBlank(notifyUrl)) {
             // 回调地址
-            notifyUrl = "http://1508qs4589.zicp.vip";
+//            notifyUrl = "http://1508qs4589.zicp.vip";
+            HttpServletRequest request = ServletUtils.getRequest();
+            String port = "80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort();
+            notifyUrl = request.getScheme() + "://" + request.getServerName() + port;
             // 配置参数
             serverUrl = "https://openapi.alipaydev.com/gateway.do";
             appId = "2016102000727957";

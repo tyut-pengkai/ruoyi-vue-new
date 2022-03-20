@@ -16,7 +16,10 @@
 
     <div class="right-menu">
       <template v-if="device !== 'mobile'">
-        <search id="header-search" class="right-menu-item" />
+
+        <el-tooltip content="全局搜索" effect="dark" placement="bottom">
+          <search id="header-search" class="right-menu-item"/>
+        </el-tooltip>
 
         <!-- <el-tooltip content="源码地址" effect="dark" placement="bottom">
           <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />
@@ -26,10 +29,16 @@
           <ruo-yi-doc id="ruoyi-doc" class="right-menu-item hover-effect" />
         </el-tooltip> -->
 
-        <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        <el-tooltip content="前台商店" effect="dark" placement="bottom">
+          <home id="home" class="right-menu-item hover-effect"/>
+        </el-tooltip>
+
+        <el-tooltip content="全屏显示" effect="dark" placement="bottom">
+          <screenfull id="screenfull" class="right-menu-item hover-effect"/>
+        </el-tooltip>
 
         <el-tooltip content="布局大小" effect="dark" placement="bottom">
-          <size-select id="size-select" class="right-menu-item hover-effect" />
+          <size-select id="size-select" class="right-menu-item hover-effect"/>
         </el-tooltip>
       </template>
 
@@ -58,7 +67,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import {mapGetters} from "vuex";
 import Breadcrumb from "@/components/Breadcrumb";
 import TopNav from "@/components/TopNav";
 import Hamburger from "@/components/Hamburger";
@@ -67,6 +76,7 @@ import SizeSelect from "@/components/SizeSelect";
 import Search from "@/components/HeaderSearch";
 import RuoYiGit from "@/components/RuoYi/Git";
 import RuoYiDoc from "@/components/RuoYi/Doc";
+import Home from "@/components/Home";
 
 export default {
   components: {
@@ -78,6 +88,7 @@ export default {
     Search,
     RuoYiGit,
     RuoYiDoc,
+    Home
   },
   computed: {
     ...mapGetters(["sidebar", "avatar", "device"]),

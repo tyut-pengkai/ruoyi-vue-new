@@ -156,12 +156,13 @@ export default {
       } else {
         clearInterval(this.timer);
         clearInterval(this.timerPay);
-        this.$modal.alert("订单超时未支付，已自动关闭订单");
+        this.$modal.alert("订单超时未支付，已自动关闭订单（如果已支付，请在3分钟在【查询订单】中查询）");
       }
     },
     checkSaleOrderStatus() {
       getPayStatus({orderNo: this.orderNo}).then((response) => {
         if (response.code == 200 && response.msg === '1') {
+          clearInterval(this.timer);
           clearInterval(this.timerPay);
           this.$alert('支付成功', '系统提示', {
             confirmButtonText: '确定',

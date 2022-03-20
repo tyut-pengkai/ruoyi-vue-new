@@ -36,7 +36,13 @@ export default {
       default: function () {
         return [];
       }
-    }
+    },
+    xTitle: {
+      type: Array,
+      default: function () {
+        return [];
+      }
+    },
   },
   data() {
     return {
@@ -90,15 +96,15 @@ export default {
           }
         },
         grid: {
-          top: 10,
+          top: 40,
           left: '2%',
           right: '2%',
-          bottom: 40,
+          bottom: 70,
           containLabel: true
         },
         xAxis: [{
           type: 'category',
-          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+          data: this.xTitle,
           axisTick: {
             alignWithLabel: true
           }
@@ -121,7 +127,7 @@ export default {
           name: item['appName'],
           type: 'bar',
           stack: 'vistors',
-          barWidth: '60%',
+          barWidth: '30%',
           data: item['data'],
           animationDuration,
           lineStyle: {
@@ -129,16 +135,16 @@ export default {
           },
           areaStyle: {
             opacity: 0.8,
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              {
-                offset: 0,
-                color: 'rgb(128, 255, 165)'
-              },
-              {
-                offset: 1,
-                color: 'rgb(1, 191, 236)'
-              }
-            ])
+            // color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            //   {
+            //     offset: 0,
+            //     color: 'rgb(128, 255, 165)'
+            //   },
+            //   {
+            //     offset: 1,
+            //     color: 'rgb(1, 191, 236)'
+            //   }
+            // ])
           },
         });
       }
