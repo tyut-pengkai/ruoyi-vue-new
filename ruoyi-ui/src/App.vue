@@ -15,12 +15,18 @@ export default {
       titleTemplate: title => {
         // return title ? `${title} - ${process.env.VUE_APP_TITLE}` : process.env.VUE_APP_TITLE
         return title ? `${title} - ${this.title}` : this.title
-      }
+      },
+      meta: [
+        {vmid: 'description', name: 'description', content: this.description},
+        {vmid: 'keywords', name: 'keywords', content: this.keywords}
+      ]
     }
   },
   data() {
     return {
-      title: ""
+      title: "",
+      description: "",
+      keywords: "",
     }
   },
   created() {
@@ -29,8 +35,18 @@ export default {
   methods: {
     initData() {
       getWebsiteConfig().then((res) => {
-        this.title = res.data.name || "";
-        document.title = this.title;
+        let websiteName = res.data.name || "";
+        let websiteShortName = res.data.shortName || "";
+        let websiteLogo = res.data.logo || "";
+        let description = res.data.description || "";
+        let keywords = res.data.keywords || "";
+        this.title = websiteName;
+        this.description = description;
+        this.keywords = keywords;
+        document.title = websiteName;
+        this.$store.dispatch('settings/setWebsiteName', websiteName);
+        this.$store.dispatch('settings/setWebsiteShortName', websiteShortName);
+        this.$store.dispatch('settings/setWebsiteLogo', websiteLogo);
         if (res.data.favicon) {
           var faviconurl = res.data.favicon; //这里可以是动态的获取的favicon的地址
           var link = document.querySelector("link[rel*='icon']") || document.createElement('link');

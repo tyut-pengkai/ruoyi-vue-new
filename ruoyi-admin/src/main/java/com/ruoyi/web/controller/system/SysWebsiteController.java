@@ -57,7 +57,6 @@ public class SysWebsiteController extends BaseController {
         sysWebsite.setId(1L);
         sysWebsite.setUpdateBy(getUsername());
         sysWebsite.setUpdateTime(DateUtils.getNowDate());
-        sysWebsite.getFavicon();
         return toAjax(sysWebsiteService.saveOrUpdate(sysWebsite));
     }
 }

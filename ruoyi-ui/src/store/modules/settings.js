@@ -15,7 +15,8 @@ const state = {
   dynamicTitle: storageSetting.dynamicTitle === undefined ? dynamicTitle : storageSetting.dynamicTitle,
   // 自定义添加非ruoyi框架
   websiteName: '',
-  websiteShortName: ''
+  websiteShortName: '',
+  websiteLogo: ''
 }
 const mutations = {
   CHANGE_SETTING: (state, { key, value }) => {
@@ -41,6 +42,10 @@ const actions = {
   // 设置网站简称
   setWebsiteShortName({commit}, websiteShortName) {
     state.websiteShortName = websiteShortName
+  },
+  // 设置网站简称
+  setWebsiteLogo({commit}, websiteLogo) {
+    state.websiteLogo = websiteLogo
   }
 }
 

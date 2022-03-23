@@ -9,7 +9,7 @@
           <el-form-item>
             <el-col :span="12">
               <el-form-item label="网站icon">
-                <image-upload :limit="1" @input="handleFileFavicon"></image-upload>
+                <image-upload :fileSize="0.5" :limit="1" @input="handleFileFavicon"></image-upload>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -19,7 +19,7 @@
           <el-form-item>
             <el-col :span="12">
               <el-form-item label="网站logo">
-                <image-upload :limit="1" @input="handleFileLogo"></image-upload>
+                <image-upload :fileSize="0.5" :limit="1" @input="handleFileLogo"></image-upload>
               </el-form-item>
             </el-col>
             <el-col :span="12">

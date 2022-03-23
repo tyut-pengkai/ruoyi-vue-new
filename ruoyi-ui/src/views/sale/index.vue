@@ -84,6 +84,17 @@ export default {
       getSysInfo().then((res) => {
         this.copyright = res.copyright;
       });
+      if (this.$store.state.settings.websiteLogo) {
+        this.logo = process.env.VUE_APP_BASE_API + this.$store.state.settings.websiteLogo;
+      }
+      if (this.$store.state.settings.websiteFavicon) {
+        var faviconurl = this.$store.state.settings.websiteFavicon; //这里可以是动态的获取的favicon的地址
+        var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+        link.type = 'image/x-icon';
+        link.rel = 'shortcut icon';
+        link.href = process.env.VUE_APP_BASE_API + faviconurl;
+        document.getElementsByTagName('head')[0].appendChild(link);
+      }
     },
     handleSelect(key, keyPath) {
       // console.log(key, keyPath);

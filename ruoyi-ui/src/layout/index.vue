@@ -32,7 +32,6 @@ import ResizeMixin from "./mixin/ResizeHandler";
 import {mapState} from "vuex";
 import variables from "@/assets/styles/variables.scss";
 import {getSysInfo} from "@/api/common";
-import {getWebsiteConfig} from "@/api/system/website";
 
 export default {
   name: "Layout",
@@ -84,14 +83,7 @@ export default {
         this.copyright = res.copyright;
         this.version = res.version + " (" + res.versionNo + ")";
       });
-      getWebsiteConfig().then((res) => {
-        this.shortName = res.data.shortName || '';
-        if (res.data.logo) {
-          this.logo = process.env.VUE_APP_BASE_API + res.data.logo;
-        } else {
-          this.logo = '';
-        }
-      });
+      this.logo = this.$store.state.settings.websiteLogo ? process.env.VUE_APP_BASE_API + this.$store.state.settings.websiteLogo : '';
     },
     handleClickOutside() {
       this.$store.dispatch("app/closeSideBar", {withoutAnimation: false});
