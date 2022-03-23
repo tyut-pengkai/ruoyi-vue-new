@@ -12,7 +12,10 @@ const state = {
   tagsView: storageSetting.tagsView === undefined ? tagsView : storageSetting.tagsView,
   fixedHeader: storageSetting.fixedHeader === undefined ? fixedHeader : storageSetting.fixedHeader,
   sidebarLogo: storageSetting.sidebarLogo === undefined ? sidebarLogo : storageSetting.sidebarLogo,
-  dynamicTitle: storageSetting.dynamicTitle === undefined ? dynamicTitle : storageSetting.dynamicTitle
+  dynamicTitle: storageSetting.dynamicTitle === undefined ? dynamicTitle : storageSetting.dynamicTitle,
+  // 自定义添加非ruoyi框架
+  websiteName: '',
+  websiteShortName: ''
 }
 const mutations = {
   CHANGE_SETTING: (state, { key, value }) => {
@@ -24,12 +27,20 @@ const mutations = {
 
 const actions = {
   // 修改布局设置
-  changeSetting({ commit }, data) {
+  changeSetting({commit}, data) {
     commit('CHANGE_SETTING', data)
   },
   // 设置网页标题
-  setTitle({ commit }, title) {
+  setTitle({commit}, title) {
     state.title = title
+  },
+  // 设置网站名称
+  setWebsiteName({commit}, websiteName) {
+    state.websiteName = websiteName
+  },
+  // 设置网站简称
+  setWebsiteShortName({commit}, websiteShortName) {
+    state.websiteShortName = websiteShortName
   }
 }
 

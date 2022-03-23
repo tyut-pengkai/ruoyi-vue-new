@@ -63,6 +63,10 @@ export default {
       type: String,
       required: true,
     },
+    logoSrc: {
+      type: String,
+      default: '',
+    },
   },
   computed: {
     variables() {
@@ -74,7 +78,7 @@ export default {
   },
   data() {
     return {
-      logo: logoImg,
+      logo: this.logoSrc || logoImg,
     };
   },
 };

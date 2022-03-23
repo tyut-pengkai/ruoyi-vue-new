@@ -34,29 +34,31 @@ public class RuoYiConfig {
     private String copyrightYear;
 
     private String copyright;
-    /**
-     * 实例演示开关
-     */
-    private boolean demoEnabled;
+//    /**
+//     * 实例演示开关
+//     */
+//    private boolean demoEnabled;
 
     /**
      * 上传路径
      */
     private static String profile;
 
-    /** 获取地址开关 */
+    /**
+     * 获取地址开关
+     */
     private static boolean addressEnabled;
 
-    /** 验证码类型 */
+    /**
+     * 验证码类型
+     */
     private static String captchaType;
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -70,43 +72,37 @@ public class RuoYiConfig {
         this.version = version;
     }
 
-    public String getCopyrightYear()
-    {
-        return copyrightYear;
-    }
-
-    public void setCopyrightYear(String copyrightYear)
-    {
-        this.copyrightYear = copyrightYear;
-    }
-
-    public boolean isDemoEnabled()
-    {
-        return demoEnabled;
-    }
-
-    public void setDemoEnabled(boolean demoEnabled)
-    {
-        this.demoEnabled = demoEnabled;
-    }
-
-    public static String getProfile()
-    {
+    public static String getProfile() {
         return profile;
     }
 
-    public void setProfile(String profile)
-    {
+    public void setProfile(String profile) {
         RuoYiConfig.profile = profile;
     }
 
-    public static boolean isAddressEnabled()
-    {
+//    public boolean isDemoEnabled()
+//    {
+//        return demoEnabled;
+//    }
+//
+//    public void setDemoEnabled(boolean demoEnabled)
+//    {
+//        this.demoEnabled = demoEnabled;
+//    }
+
+    public String getCopyrightYear() {
+        return copyrightYear;
+    }
+
+    public void setCopyrightYear(String copyrightYear) {
+        this.copyrightYear = copyrightYear;
+    }
+
+    public static boolean isAddressEnabled() {
         return addressEnabled;
     }
 
-    public void setAddressEnabled(boolean addressEnabled)
-    {
+    public void setAddressEnabled(boolean addressEnabled) {
         RuoYiConfig.addressEnabled = addressEnabled;
     }
 

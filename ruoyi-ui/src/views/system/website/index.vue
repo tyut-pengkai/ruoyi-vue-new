@@ -29,6 +29,9 @@
           <el-form-item label="网站名称">
             <el-input v-model="form.name"></el-input>
           </el-form-item>
+          <el-form-item label="网站简称">
+            <el-input v-model="form.shortName"></el-input>
+          </el-form-item>
           <el-form-item label="网站域名">
             <el-input v-model="form.domain"></el-input>
           </el-form-item>
@@ -77,6 +80,7 @@ export default {
         favicon: "",
         logo: "",
         name: "",
+        shortName: "",
         domain: "",
         contact: "",
         keywords: "",

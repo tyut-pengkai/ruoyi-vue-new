@@ -36,6 +36,12 @@ public class SysWebsite extends BaseEntity {
     private String name;
 
     /**
+     * 网站短名称
+     */
+    @Excel(name = "网站短名称")
+    private String shortName;
+
+    /**
      * 网站域名
      */
     @Excel(name = "网站域名")
@@ -97,6 +103,14 @@ public class SysWebsite extends BaseEntity {
         this.name = name;
     }
 
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
     public String getDomain() {
         return domain;
     }
@@ -144,6 +158,7 @@ public class SysWebsite extends BaseEntity {
                 ", favicon='" + favicon + '\'' +
                 ", logo='" + logo + '\'' +
                 ", name='" + name + '\'' +
+                ", shortName='" + shortName + '\'' +
                 ", domain='" + domain + '\'' +
                 ", contact='" + contact + '\'' +
                 ", keywords='" + keywords + '\'' +

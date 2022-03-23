@@ -8,7 +8,7 @@
           : variables.menuLightBackground,
     }"
   >
-    <logo v-if="showLogo" :collapse="isCollapse" :title="title"/>
+    <logo v-if="showLogo" :collapse="isCollapse" :logoSrc="logo" :title="title"/>
     <el-scrollbar :class="settings.sideTheme" wrap-class="scrollbar-wrapper">
       <el-menu
         :active-text-color="settings.theme"
@@ -51,6 +51,10 @@ export default {
     title: {
       type: String,
       required: true,
+    },
+    logo: {
+      type: String,
+      default: '',
     },
   },
   computed: {

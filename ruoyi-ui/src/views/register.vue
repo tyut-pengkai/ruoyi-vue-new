@@ -98,6 +98,7 @@
 <script>
 import {getCodeImg, register} from "@/api/login";
 import {getSysInfo} from "@/api/common";
+import {getWebsiteConfig} from "@/api/system/website";
 
 export default {
   name: "Register",
@@ -156,8 +157,10 @@ export default {
   methods: {
     getSysInfo() {
       getSysInfo().then((res) => {
-        this.name = res.name;
         this.copyright = res.copyright;
+      });
+      getWebsiteConfig().then((res) => {
+        this.name = res.data.name || '';
       });
     },
     getCode() {

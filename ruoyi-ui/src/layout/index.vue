@@ -1,7 +1,7 @@
 <template>
   <div :class="classObj" class="app-wrapper" :style="{ '--current-color': theme }">
     <div v-if="device === 'mobile' && sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
-    <sidebar v-if="!sidebar.hide" :title="shortName" class="sidebar-container"/>
+    <sidebar v-if="!sidebar.hide" :logo="logo" :title="shortName" class="sidebar-container"/>
     <div :class="{ hasTagsView: needTagsView,sidebarHide:sidebar.hide }" class="main-container">
       <div :class="{ 'fixed-header': fixedHeader }">
         <navbar/>
@@ -32,6 +32,7 @@ import ResizeMixin from "./mixin/ResizeHandler";
 import {mapState} from "vuex";
 import variables from "@/assets/styles/variables.scss";
 import {getSysInfo} from "@/api/common";
+import {getWebsiteConfig} from "@/api/system/website";
 
 export default {
   name: "Layout",
@@ -70,6 +71,7 @@ export default {
       shortName: "",
       copyright: "",
       version: "",
+      logo: "",
     };
   },
   created() {
@@ -81,6 +83,14 @@ export default {
         this.shortName = res.shortName;
         this.copyright = res.copyright;
         this.version = res.version + " (" + res.versionNo + ")";
+      });
+      getWebsiteConfig().then((res) => {
+        this.shortName = res.data.shortName || '';
+        if (res.data.logo) {
+          this.logo = process.env.VUE_APP_BASE_API + res.data.logo;
+        } else {
+          this.logo = '';
+        }
       });
     },
     handleClickOutside() {

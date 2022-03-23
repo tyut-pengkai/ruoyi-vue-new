@@ -1,11 +1,14 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysWebsite;
+import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysWebsiteService;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,13 +26,25 @@ public class SysWebsiteController extends BaseController {
 
     @Resource
     private ISysWebsiteService sysWebsiteService;
+    @Resource
+    private ISysConfigService sysConfigService;
+    @Resource
+    private RuoYiConfig config;
 
     /**
      * 获取网站配置信息
      */
     @GetMapping
     public AjaxResult getConfig() {
+
         SysWebsite website = sysWebsiteService.getById(1);
+        if (StringUtils.isBlank(website.getName())) {
+            website.setName(config.getName());
+        }
+        if (StringUtils.isBlank(website.getShortName())) {
+            website.setShortName(config.getShortName());
+        }
+
         return AjaxResult.success(website);
     }
 
@@ -42,6 +57,7 @@ public class SysWebsiteController extends BaseController {
         sysWebsite.setId(1L);
         sysWebsite.setUpdateBy(getUsername());
         sysWebsite.setUpdateTime(DateUtils.getNowDate());
+        sysWebsite.getFavicon();
         return toAjax(sysWebsiteService.saveOrUpdate(sysWebsite));
     }
 }
