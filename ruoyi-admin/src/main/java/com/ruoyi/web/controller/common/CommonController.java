@@ -244,7 +244,8 @@ public class CommonController {
                 } else if (PaymentDefine.paymentMap.containsKey(payMode)) {
                     mapPayMode.put("payMode", PaymentDefine.paymentMap.get(payMode).getName());
                 } else {
-                    continue; // 丢弃
+                    mapPayMode.put("payMode", payMode);
+//                    continue; // 丢弃
                 }
                 mapPayMode.put("totalCount", totalCount);
                 payModeList.add(mapPayMode);
@@ -413,7 +414,8 @@ public class CommonController {
                 } else if (PaymentDefine.paymentMap.containsKey(payMode)) {
                     mapPayMode.put("payMode", PaymentDefine.paymentMap.get(payMode).getName());
                 } else {
-                    continue; // 丢弃
+                    mapPayMode.put("payMode", payMode);
+//                    continue; // 丢弃
                 }
                 mapPayMode.put("totalCount", totalCount);
                 payModeList.add(mapPayMode);
