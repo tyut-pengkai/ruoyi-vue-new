@@ -59,8 +59,12 @@ public class ApiV1Controller extends BaseController {
     }
 
     @GetMapping("/{appkey}")
-    public AjaxResult api() {
-        return AjaxResult.success("恭喜您创建软件成功！请通过POST方式根据接口文档说明接入您的软件。");
+    public AjaxResult api(@PathVariable("appkey") String appkey) {
+        SysApp app = appService.selectSysAppByAppKey(appkey);
+        if (app != null) {
+            return AjaxResult.success("恭喜您创建软件成功！请通过POST方式根据接口文档说明接入您的软件。");
+        }
+        return AjaxResult.error("访问有误");
     }
 
     @LicenceCheck
