@@ -20,6 +20,14 @@ public interface ISysPaymentService {
     public SysPayment selectSysPaymentByPayId(Long payId);
 
     /**
+     * 查询支付配置
+     *
+     * @param payCode 支付配置主键
+     * @return 支付配置
+     */
+    public SysPayment selectSysPaymentByPayCode(String payCode);
+
+    /**
      * 查询支付配置列表
      *
      * @param sysPayment 支付配置

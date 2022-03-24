@@ -29,6 +29,7 @@ import com.ruoyi.sale.service.ISysSaleShopService;
 import com.ruoyi.system.domain.*;
 import com.ruoyi.system.mapper.*;
 import com.ruoyi.system.service.ISysNoticeService;
+import com.ruoyi.system.service.ISysPaymentService;
 import com.ruoyi.web.controller.sale.vo.SaleAppVo;
 import com.ruoyi.web.controller.sale.vo.SaleCardTemplateVo;
 import com.ruoyi.web.controller.sale.vo.SaleOrderVo;
@@ -72,6 +73,8 @@ public class SysSaleShopController extends BaseController {
     private RedisCache redisCache;
     @Resource
     private ISysNoticeService sysNoticeService;
+    @Resource
+    private ISysPaymentService sysPaymentService;
 
     /**
      * 查询软件列表
@@ -285,7 +288,8 @@ public class SysSaleShopController extends BaseController {
             throw new ServiceException("未指定支付方式或支付方式有误", 400);
         }
         Payment payment = PaymentDefine.paymentMap.get(payMode);
-        if (payment == null || !payment.getEnable()) {
+        SysPayment payment1 = sysPaymentService.selectSysPaymentByPayCode(payMode);
+        if (payment == null || payment1 == null || !UserConstants.NORMAL.equals(payment1.getStatus())) {
             throw new ServiceException("暂不支持该支付方式", 400);
         }
         Object payResponse = payment.pay(sso);
@@ -387,7 +391,8 @@ public class SysSaleShopController extends BaseController {
         // 支付方式
         List<Map<String, String>> payModeList = new ArrayList<>();
         for (Payment payment : PaymentDefine.paymentMap.values()) {
-            if (payment.getEnable()) {
+            SysPayment payment1 = sysPaymentService.selectSysPaymentByPayCode(payment.getCode());
+            if (payment1 != null && UserConstants.NORMAL.equals(payment1.getStatus())) {
                 Map<String, String> payModeMap = new HashMap<>();
                 payModeMap.put("code", payment.getCode());
                 payModeMap.put("name", payment.getName());

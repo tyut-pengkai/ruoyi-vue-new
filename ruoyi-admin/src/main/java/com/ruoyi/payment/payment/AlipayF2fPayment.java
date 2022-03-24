@@ -21,7 +21,8 @@ import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.domain.SysSaleOrderItem;
 import com.ruoyi.sale.service.ISysSaleOrderService;
 import com.ruoyi.sale.service.ISysSaleShopService;
-import com.ruoyi.system.service.ISysConfigService;
+import com.ruoyi.system.domain.SysPayment;
+import com.ruoyi.system.service.ISysPaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -35,60 +36,51 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class AlipayPayment extends Payment {
-
+public class AlipayF2fPayment extends Payment {
     private static String notifyUrl = "";
+    private static String alipayPublicKey = "";
     private static AlipayClient alipayClient;
     /**
      * 设置请求的统一前缀
      */
     @Value("${swagger.pathMapping}")
     private String pathMapping;
-    private static String serverUrl;
-    private static String appId;
-    private static String privateKey;
-    private static String alipayPublicKey;
-    private static String signType;
-    @Resource
-    private ISysConfigService configService;
     @Resource
     private ISysSaleOrderService sysSaleOrderService;
     @Resource
     private ISysSaleShopService sysSaleShopService;
+    @Resource
+    private ISysPaymentService sysPaymentService;
 
     @Override
     public void init() {
+        this.setCode("alipay_f2f");
+        this.setName("支付宝当面付");
+        this.setIcon("pay-alipay");
+        this.setShowType(ShowType.QR);
         if (StringUtils.isBlank(notifyUrl)) {
-            if (pathMapping.contains("dev")) {
-                // 回调地址
-                notifyUrl = "http://1508qs4589.zicp.vip";
-                // 配置参数
-                serverUrl = "https://openapi.alipaydev.com/gateway.do";
-                appId = "2016102000727957";
-                privateKey = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC0/phi1ABrXfKPbRqkt/w9KBOVh0RO6fCmRxbWxZoy23HsPJB4l9/J55Npaduz9jVdpJWhlIH76TQbL4Aw+vX/bap6mRCS7qy16XovELkqhBEq9kMVz93zuak4lBpJWY5NiMMXGyIdO+zCMv8r+bIS9VlFBPu/dm5YOMQ4FXiNWU/yVlMeit4YMgw6G3IwmiHF/794s3d2m2Kfr2mOPNyx0wSbXMpiCA65Jw5A1iX0LNtCCkkeuvAH99oDyQwirlMhpK/LJr6j8dns7JFGkAtPEyXWuOqdVXikjtPLecV/YOMEym1O0Lfs5aeYVRV2o4ecja/Pdaz/JJBJKhygpOTJAgMBAAECggEBAJbSoYGZUFAoFXzXWiBxAMylnMw5z/5Ci7rD+pA2UeyXWTOWtH0Jcf757qklAWPRg17pS5c9/aNCDZ2p05T9TAjyBeHrsxf9tAZS7PJTaTm4m+XFGNoQQdBbolv3boA5FJAfqxKSFbduvDiH7oNiq7WIpj8RjAdcVU9G3pwtqCuAG0XtWqeQskIr4j7O5e/DeOqsooDIqeVpBNVor47WoJ38fsY1Deixyockag00nSXaT5GBg7pD1ReXBE+l+l/WDah2XDLEr+eW8SyhOJbaP8N46hmc5M6nlk/irQU5Vb1RCVQVOlkNXAWbC7+0xiiSqv3C9c/vYeZIcotT2FsmhJECgYEA9oDafIUTq+eB9FP4sIWPDxripaeclWsbsbYZ0IQMuCwckc767vXVqhQOcfTbmnKPN94oQ3uO7jIBNNGJxFe3nnrJLJO0O2IFcQ7rJWdpaD3sfCCAKvoWJYRk2FE1EXOFimA/CC19R2WWJoAD/f3+t9GUj9ZRi2OZE8Xr3Pr08N8CgYEAu/eouWHHoIEi01Dgc49caMKs/IDNx/jY4GCRUXPpYYiOuzzKw/BZ+qAdDH3vqJ083Eeoi8xGZF9Fxc9Atvl7SHzDOkWjI43LEVeSgbcy+zRvq3szL+YXROpO3DiX3c9WCW+BmI1PqmqDpJhvqjmLbPUKPv3cU8HcHAYcMwOdF1cCgYAvLYQjdtjH+tv9ZiDfsAAsVOnx6H1of4JiZcbVCKDikta49VNDbtuA3KvTFZj+G1TbzXIJUFmPrxRaBoyGfn9PHpLoLDC/eMgv1jodA4jCAbAEJbhCAXFBpvAiEpDEkUaKsFb/+qzSgFfXcILTFsysY7k6OjuLIPnINgYpWgKNIwKBgGcevW/GlvAVKHfp3NlJAxduBd0ZBMv6V3DxSYf4IUci1bse5NaN269Fe+pIhNxqNuNaZLsdPFkAc5TL2OMJB3uDBs/HOHLe7VL8SiHj0ZJC+CiJlFFo18c1DEKAwcAsaTUP+Xcpv1Tszn/UKR6oJzeFTzOzrdY9enXdXEcYamxNAoGAQTS/WT0wzvebALsDcJptn7KeIbzUDEo4mO3nHd5lrMuEYEjK8HwSvqUWip7FgniClXmMiZ76SH8L4KyImwgkFsQrppKCz486vJI7nAtND07fGlOVyugTSxN4AktSU2hFZG5Y1kXMOwSlVL7mojk12jGOZt3cdxVBckcKBtHhHL8=";
-                alipayPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgvhIg0spf1cPGjqyNB6Ev2iL3RKG3XPeeH8a6r43I1yLs7OyDoR9eBhS0R2Uwl7yaK6g3mFBPfhLulAfz7Sxymf+H01k+cR2fkjg1oVw7I7dr2xunyZs8oKwKe0WMeEE10T7bJrubp3UAVrV1vKnWyeTMVt/J6+T9+Geo9fDg49VXuwOvTxe4eeZS+QAyhcWYMCk3Amy/ZpRRa4qJ50LFtKeF52CtCWhENW5uQUNadnyv091ssb0nZZAoM02EnfeeC6UxW+x7uPr4QR265+L3TC7c0+21U1OU5iXHI8caX4wprQDxaMnuqJMm0ki2Gri6os+GT051VZ7vJuZW4MJ5QIDAQAB";
-                signType = "RSA2";
+            SysPayment payment = sysPaymentService.selectSysPaymentByPayCode(this.getCode());
+            if (payment == null) {
+                throw new ServiceException("支付方式【" + this.getName() + "】未配置参数");
+            }
+            AlipayConfig config = JSON.parseObject(payment.getConfig(), AlipayConfig.class);
+            // 配置参数
+            String serverUrl = "https://openapi.alipay.com/gateway.do";
+            alipayPublicKey = config.getAlipayPublicKey();
+            if (StringUtils.isNotBlank(payment.getIcon())) {
+                this.setIcon(payment.getIcon());
+            }
+            // 回调地址
+            if (StringUtils.isNotBlank(config.getNotifyUrl())) {
+                notifyUrl = config.getNotifyUrl();
             } else {
-                // 回调地址
                 HttpServletRequest request = ServletUtils.getRequest();
                 String port = "80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort();
                 notifyUrl = request.getScheme() + "://" + request.getServerName() + port;
-                // 配置参数
-                serverUrl = configService.selectConfigByKey("payment.alipay.qr.gateway"); // https://openapi.alipay.com/gateway.do
-                appId = configService.selectConfigByKey("payment.alipay.qr.appId"); // 2021003122648690
-                privateKey = configService.selectConfigByKey("payment.alipay.qr.privateKey");// MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDIXCCEYDTnYTxxxMffAew3RJR+zijQTxRhlj1npasjvVRW7rxQWGx8N5DX2e7do+WrDdEDAlwHazGljXAqfjALkRq/OLcFEqm7x/9ankJhr7xoNhY333pIx+81Zb9q7garEI2BvNjjboWAenP0c+dhoNizwpxg78BqDOSKucPYCVA2RivedGJHWnzgXq+YTRAEVZdkiPXZH+e3VyqOCv07NiT7DzrP3rFQufztdMddxte/efQAm5VIKPsr07xdm15e3JZes8l7XHrNb7gu0xvSDfD9xJWpJR9Sr5rCRmVR6Y5JBZ+QGtOVrN7Bgr9XgwvJio0ZjB4v6/ymdtzdYcERAgMBAAECggEAFqUK68svz4LW4QjbiiHef7SZj+dfB4QYipr/X6qCuCxazuR2liIYSMXC8hJog9ZVS8ro940Zt6Du4IYmyjau2W/R9RDE5qbgVh/ZhXVjjUTeZ2zNgA0a9gTazU8tnjk+ubDKPYKJhNLl9cphNpyu5wLV2yNAp1gRiCri3ab3MoBPnKJa3y5a+nGIabUG/PL8211A23HFHz+kDx3YIfACmZpp/+TzAePKoEBptkUBAa0QweLwuWngUKmLV7m8RMeKToHARKq4LKbUqZcxfmA/IwiWMGXHRwrMHbupm6dN2sVWMGC2Kxe0jyKWBAch5hSnjcRPOPGBl9Gb3q+V/tScEQKBgQD1LIvOFfKOra8ikz/T7CYUrID4bRhQHaoO6Cawv/Cs1CzLEwijTexn9hDOiP+5mS7wCL7w6QudkrJmS1ZEJY3TbKKSXBb0kkVrIZ3KlGi0QZNtLt+XRELHcB3umocgwKLqw0Yix8mgeC6r7rocE4sM+H3yL3bGAEsQRoYYUw52jQKBgQDRNQAp9Neai6dzw9wqBm3FcuxbekULleZV0/8ukkVtwkeKsnTh2xapkq8yPWCnGHj953kmilJaZiYEgKWzKex2y4PqskqLl4YZBdvYMI+/jJ4Ak8KdqVlD7KszsjSE0MJw3VTPfvJW25QSLPw05uiydG2WESXP3NiLUJRKhb4FlQKBgBLSK51Tc/5d+O7XjPPQ0g+OOoxXm6Ey1cY1LhstcOVjmFiyilw29Cn66slgHPl7d+33TekiisC67TULHYE3vM55LXW82gpGXEvgFcPiZrNHwXCFQ6bSF6pFwhZ6CFuMTjVlbjHnUmQeNb7/IYxcN7V0Mf7wg9apWRnTwCGH5rlVAoGAChmg9GWZsyBi6TfffTfqPMoblx8EDlciU6p0e28cYvwqMAwFkJHfOjiWtLo53FdWIAv40V+EMlEULMt5NHklrWaN69rHto2OL88Umg9eIUVMq4J2tt3iLWFTsp874d2iRYip+4qJcKAROf9p/bPYMCVm1QPm624iFjfBsQdb8TECgYEA2bmVpKjkGejydYELVhBXlrddPGteIqwSCycy2JqZ720B7ziiaOYeEwjTc2O3+J3Mt4F6ubLudb/BAfE6nDZatviLFfCU8KTrP7dmjd9Ou0g+M9BOpjIZMhu3LRH1j2mfQ8FxBhnl2jAtADiMw3drzE1KJDxFfd0o9rk7r+58vhw=
-                alipayPublicKey = configService.selectConfigByKey("payment.alipay.qr.alipayPublicKey"); // MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs3TETDWmn6Giiy4tMqGJ+UoQc7Nb9KSavLyeg2RTDOjRhV13lQ9UmcdElh4GQK38ZfwIPVw8plI3DHRuJCkvOvhD+WHbL3rzgYLLgUNDWj6EigJ+l3Tupub+802CGpgh4LbrQldruAFdpk+uR04tl3KjEtJ1Z4XiJZAKdrEVYyCkHxhy7Ji3YNQecrZ+kI5GQ+uhBJzFeo0IKE0Ep4yug4Dk9gGFIc1H+xO2scahOM0yYOju7IBASgr3Y2/g7g8n2BmY+hnudt/BX9ERrcOvN0MDU2T0LOdzHxl1WhgEPK2rJRB72CwlaThZv+OX/m5uLAB23B5c7XKN/p0P7wpm/QIDAQAB
-                signType = configService.selectConfigByKey("payment.alipay.qr.signType"); // RSA2
             }
-            notifyUrl += pathMapping + "/sale/shop/notify/alipay_qr";
+            notifyUrl += pathMapping + "/sale/shop/notify/" + this.getCode();
+            alipayClient = new DefaultAlipayClient(serverUrl, config.getAppId(), config.getPrivateKey(), "json", "UTF-8", alipayPublicKey, "RSA2");
         }
-        this.setCode("alipay_qr");
-        this.setName("支付宝QR");
-        this.setIcon("pay-alipay");
-        this.setEncode("UTF-8");
-        this.setEnable(true);
-        this.setShowType(ShowType.QR);
-        alipayClient = new DefaultAlipayClient(serverUrl, appId, privateKey, "json", this.getEncode(), alipayPublicKey, signType);
     }
 
     @Override
@@ -150,7 +142,7 @@ public class AlipayPayment extends Payment {
             params.put(name, valueStr);
         }
         //调用SDK验证签名
-        boolean signVerified = AlipaySignature.rsaCheckV1(params, alipayPublicKey, this.getEncode(), signType);
+        boolean signVerified = AlipaySignature.rsaCheckV1(params, alipayPublicKey, "UTF-8", "RSA2");
         //——请在这里编写您的程序（以下代码仅作参考）——
            /* 实际验证过程建议商户务必添加以下校验：
            1、需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，

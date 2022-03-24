@@ -32,6 +32,17 @@ public class SysPaymentServiceImpl implements ISysPaymentService {
     }
 
     /**
+     * 查询支付配置
+     *
+     * @param payCode 支付配置主键
+     * @return 支付配置
+     */
+    @Override
+    public SysPayment selectSysPaymentByPayCode(String payCode) {
+        return sysPaymentMapper.selectSysPaymentByPayCode(payCode);
+    }
+
+    /**
      * 查询支付配置列表
      *
      * @param sysPayment 支付配置

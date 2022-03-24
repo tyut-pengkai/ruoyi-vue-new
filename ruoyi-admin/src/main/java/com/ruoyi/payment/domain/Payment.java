@@ -22,14 +22,6 @@ public abstract class Payment extends BaseAutoAware {
      */
     private String icon;
     /**
-     * 支付方式编码
-     */
-    private String encode;
-    /**
-     * 是否启用
-     */
-    private Boolean enable;
-    /**
      * {@link ShowType}
      */
     private String showType;

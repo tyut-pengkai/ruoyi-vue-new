@@ -55,6 +55,11 @@
         where pay_id = #{payId}
     </select>
 
+    <select id="selectSysPaymentByPayCode" parameterType="String" resultMap="SysPaymentResult">
+        <include refid="selectSysPaymentVo"/>
+        where code = #{payCode}
+    </select>
+
     <insert id="insertSysPayment" parameterType="SysPayment" useGeneratedKeys="true" keyProperty="payId">
         insert into sys_payment
         <trim prefix="(" suffix=")" suffixOverrides=",">

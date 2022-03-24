@@ -66,6 +66,7 @@ public class SysPaymentController extends BaseController {
     @Log(title = "支付配置", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysPayment sysPayment) {
+        sysPayment.setCreateBy(getUsername());
         return toAjax(sysPaymentService.insertSysPayment(sysPayment));
     }
 
@@ -76,6 +77,7 @@ public class SysPaymentController extends BaseController {
     @Log(title = "支付配置", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysPayment sysPayment) {
+        sysPayment.setUpdateBy(getUsername());
         return toAjax(sysPaymentService.updateSysPayment(sysPayment));
     }
 

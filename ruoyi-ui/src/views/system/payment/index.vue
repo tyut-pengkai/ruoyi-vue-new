@@ -105,9 +105,9 @@
 
     <el-table v-loading="loading" :data="paymentList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="支付ID" prop="payId"/>
-      <el-table-column align="center" label="支付编码" prop="code"/>
+      <el-table-column align="center" label="" type="index"/>
       <el-table-column align="center" label="支付名称" prop="name"/>
+      <el-table-column align="center" label="支付编码" prop="code"/>
       <el-table-column align="center" label="描述" prop="description"/>
       <el-table-column align="center" label="移动端" prop="mobile">
         <template slot-scope="scope">
@@ -120,24 +120,24 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="图标" prop="icon"/>
-      <el-table-column align="center" label="配置" prop="config"/>
+      <!-- <el-table-column align="center" label="配置" prop="config"/> -->
       <el-table-column align="center" label="状态" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="创建者" prop="createBy"/>
+      <!-- <el-table-column align="center" label="创建者" prop="createBy"/>
       <el-table-column align="center" label="创建时间" prop="createTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="更新者" prop="updateBy"/>
       <el-table-column align="center" label="更新时间" prop="updateTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column align="center" label="备注" prop="remark"/>
       <el-table-column align="center" class-name="small-padding fixed-width" label="操作">
         <template slot-scope="scope">
@@ -149,14 +149,14 @@
             @click="handleUpdate(scope.row)"
           >修改
           </el-button>
-          <el-button
+          <!-- <el-button
             v-hasPermi="['system:payment:remove']"
             icon="el-icon-delete"
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
           >删除
-          </el-button>
+          </el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -170,56 +170,104 @@
     />
 
     <!-- 添加或修改支付配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="支付编码" prop="code">
-          <el-input v-model="form.code" placeholder="请输入支付编码"/>
+    <el-dialog :title="title" :visible.sync="open" append-to-body width="800px">
+      <el-form ref="form" :model="form" :rules="rules" style="margin: 0 30px">
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="支付名称" label-width="80px" prop="name">
+              <el-input v-model="form.name" placeholder="请输入支付名称"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="支付编码" label-width="80px" prop="code">
+              <el-input v-model="form.code" placeholder="请输入支付编码"/>
+            </el-form-item>
+          </el-col>
         </el-form-item>
-        <el-form-item label="支付名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入支付名称"/>
+        <el-form-item label="描述" label-width="80px" prop="description">
+          <el-input v-model="form.description" placeholder="请输入描述" type="textarea"/>
         </el-form-item>
-        <el-form-item label="描述" prop="description">
-          <el-input v-model="form.description" placeholder="请输入描述"/>
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="移动端" label-width="80px" prop="mobile">
+              <el-select v-model="form.mobile" placeholder="请选择移动端">
+                <el-option
+                  v-for="dict in dict.type.sys_yes_no"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="电脑端" label-width="80px" prop="pc">
+              <el-select v-model="form.pc" placeholder="请选择电脑端">
+                <el-option
+                  v-for="dict in dict.type.sys_yes_no"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
         </el-form-item>
-        <el-form-item label="移动端" prop="mobile">
-          <el-select v-model="form.mobile" placeholder="请选择移动端">
-            <el-option
-              v-for="dict in dict.type.sys_yes_no"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="状态" label-width="80px" prop="status">
+              <el-select v-model="form.status" placeholder="请选择状态">
+                <el-option
+                  v-for="dict in dict.type.sys_normal_disable"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="图标" label-width="80px" prop="icon">
+              <el-input v-model="form.icon" placeholder="请输入图标"/>
+            </el-form-item>
+          </el-col>
         </el-form-item>
-        <el-form-item label="电脑端" prop="pc">
-          <el-select v-model="form.pc" placeholder="请选择电脑端">
-            <el-option
-              v-for="dict in dict.type.sys_yes_no"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
+        <!-- <el-form-item :label="key" v-for="(value, key, index) in form.configParams" :key="index" :prop="'configParams.' + key"
+        :rules="{required: true, message: key + '不能为空', trigger: 'blur'}" label-width="150px"> -->
+        <el-form-item v-for="(value, key, index) in form.configParams" :key="index" :label="key"
+                      :prop="'configParams.' + key"
+                      :rules="{required: false, message: key + '不能为空', trigger: 'blur'}" label-width="80px">
+          <el-input v-model="form.configParams[key]" :placeholder="'请输入' + key" type="textarea"
+                    @input="change($event)"/>
         </el-form-item>
-        <el-form-item label="图标" prop="icon">
-          <el-input v-model="form.icon" placeholder="请输入图标"/>
-        </el-form-item>
-        <el-form-item label="配置" prop="config">
+        <el-form-item v-if="!form.payId" label="配置" prop="config">
           <el-input v-model="form.config" placeholder="请输入配置"/>
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="form.status" placeholder="请选择状态">
-            <el-option
-              v-for="dict in dict.type.sys_normal_disable"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入内容" type="textarea"/>
         </el-form-item>
+        <div v-if="form.payId">
+          <el-form-item prop="">
+            <el-col :span="12">
+              <el-form-item label="创建人" prop="createBy">{{
+                  form.createBy
+                }}
+              </el-form-item>
+              <el-form-item label="创建时间" prop="createTime"
+              >{{ form.createTime }}
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="最后更新" prop="updateBy">{{
+                  form.updateBy
+                }}
+              </el-form-item>
+              <el-form-item label="更新时间" prop="updateTime"
+              >{{ form.updateTime }}
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -266,9 +314,14 @@ export default {
         status: null,
       },
       // 表单参数
-      form: {},
+      form: {
+        configParams: {}
+      },
       // 表单校验
-      rules: {}
+      rules: {
+        code: [{required: true, message: "支付编码不能为空", trigger: "blur"}],
+        name: [{required: true, message: "支付名称不能为空", trigger: "blur"}],
+      }
     };
   },
   created() {
@@ -299,13 +352,12 @@ export default {
         mobile: null,
         pc: null,
         icon: null,
-        config: null,
         status: null,
         createBy: null,
         createTime: null,
         updateBy: null,
         updateTime: null,
-        remark: null
+        remark: null,
       };
       this.resetForm("form");
     },
@@ -337,6 +389,10 @@ export default {
       const payId = row.payId || this.ids
       getPayment(payId).then(response => {
         this.form = response.data;
+        this.form['configParams'] = {};
+        if (this.form.config) {
+          Object.assign(this.form.configParams, JSON.parse(this.form.config));
+        }
         this.open = true;
         this.title = "修改支付配置";
       });
@@ -345,6 +401,7 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          this.form.config = JSON.stringify(this.form.configParams);
           if (this.form.payId != null) {
             updatePayment(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
@@ -377,6 +434,9 @@ export default {
       this.download('system/payment/export', {
         ...this.queryParams
       }, `payment_${new Date().getTime()}.xlsx`)
+    },
+    change(e) {
+      this.$forceUpdate()
     }
   }
 };
