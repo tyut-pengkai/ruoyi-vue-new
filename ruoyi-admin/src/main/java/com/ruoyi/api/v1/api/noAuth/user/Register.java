@@ -1,4 +1,4 @@
-package com.ruoyi.api.v1.api.noAuth.general;
+package com.ruoyi.api.v1.api.noAuth.user;
 
 import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.Api;
@@ -20,7 +20,7 @@ public class Register extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("register.ng", "注册新账号", false, Constants.API_TAG_GENERAL,
+        this.setApi(new Api("register.nu", "注册新账号", false, Constants.API_TAG_ACCOUNT,
                 "注册新账号", new AuthType[]{AuthType.ACCOUNT}, Constants.BILL_TYPE_ALL,
                 new Param[]{
                         new Param("username", true, "账号"),
