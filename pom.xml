@@ -213,6 +213,8 @@
                 <version>${ruoyi.version}</version>
             </dependency>
 
+
+
         </dependencies>
     </dependencyManagement>
 
@@ -223,6 +225,8 @@
         <module>ruoyi-quartz</module>
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
+        <module>jiao-web</module>
+        <module>jiao-test</module>
     </modules>
     <packaging>pom</packaging>
 
