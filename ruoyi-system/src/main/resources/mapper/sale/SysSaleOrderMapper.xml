@@ -78,6 +78,7 @@
         <include refid="selectSysSaleOrderVo"/>
         <where>
             <if test="orderNo != null and orderNo != ''">and order_no = #{orderNo}</if>
+            <if test="tradeNo != null and tradeNo != ''">and trade_no = #{tradeNo}</if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="payMode != null and payMode != ''">and pay_mode = #{payMode}</if>
             <if test="status != null ">and status = #{status}</if>

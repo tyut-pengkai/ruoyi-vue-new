@@ -16,6 +16,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="交易编号" prop="tradeNo">
+        <el-input
+          v-model="queryParams.tradeNo"
+          placeholder="请输入交易编号"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <!-- <el-form-item label="用户ID" prop="userId">
         <el-input
           v-model="queryParams.userId"
