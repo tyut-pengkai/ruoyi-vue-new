@@ -9,9 +9,18 @@ export function getSysInfo() {
 }
 
 // 获取Dashboard信息
-export function getDashboardInfo(query) {
+export function getDashboardInfoSaleView(query) {
   return request({
-    url: '/common/dashboardInfo',
+    url: '/common/dashboardInfoSaleView',
+    method: 'get',
+    params: query
+  })
+}
+
+// 获取Dashboard信息
+export function getDashboardInfoAppView(query) {
+  return request({
+    url: '/common/dashboardInfoAppView',
     method: 'get',
     params: query
   })

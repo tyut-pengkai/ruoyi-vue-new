@@ -1,68 +1,110 @@
 <template>
-  <div class="dashboard" style="min-height: 85vh">
-    <div v-if="checkRole(['admin', 'manager'])" style="margin: 10px;">
+  <div class="dashboard" style="min-height: 90vh">
+    <div v-if="checkRole(['admin', 'manager'])">
       <el-row :gutter="10">
         <el-col :lg="24" :sm="24" :xs="24">
-          <div style="margin: 10px; margin-top: 0px;">
+          <div style="margin: 10px">
             <el-row :gutter="10">
               <el-col :span="24">
                 <el-card shadow="never">
-                  <div style="height: 15px;">
-                    <span style="margin-right: 20px">欢迎您，{{ username }}，上次刷新：{{ parseTime(new Date()) }}</span>
+                  <div style="height: 15px">
+                    <span style="margin-right: 20px"
+                    >上次刷新：{{ parseTime(new Date()) }}</span
+                    >
                     <div style="display: inline">
-                      <el-tag style="margin-top: -5px; line-height: 30px;">总交易额：
+                      <el-tag style="margin-top: -5px; line-height: 30px"
+                      >总交易额：
                         <span>
-                          <count-to :decimals="2" :duration="2600" :end-val="d['feeTotal']" :start-val="0"
-                                    class="card-num"
-                                    prefix="￥ "/>
+                          <count-to
+                            :decimals="2"
+                            :duration="2600"
+                            :end-val="d['feeTotal']"
+                            :start-val="0"
+                            class="card-num"
+                            prefix="￥ "
+                          />
                         </span>
                       </el-tag>
                       <el-divider direction="vertical"></el-divider>
-                      <el-tag style="margin-top: -5px; line-height: 30px;">总成交数：
+                      <el-tag style="margin-top: -5px; line-height: 30px"
+                      >总成交数：
                         <span>
-                          <count-to :duration="2600" :end-val="d['tradeTotal']" :start-val="0" class="card-num"
-                                    suffix=" 笔"/>
+                          <count-to
+                            :duration="2600"
+                            :end-val="d['tradeTotal']"
+                            :start-val="0"
+                            class="card-num"
+                            suffix=" 笔"
+                          />
                         </span>
                       </el-tag>
                       <el-divider direction="vertical"></el-divider>
-                      <el-tag style="margin-top: -5px; line-height: 30px;">总下单数(含未付款)：
+                      <el-tag style="margin-top: -5px; line-height: 30px"
+                      >总下单数(含未付款)：
                         <span>
-                          <count-to :duration="2600" :end-val="d['tradeTotalAll']" :start-val="0" class="card-num"
-                                    suffix=" 笔"/>
+                          <count-to
+                            :duration="2600"
+                            :end-val="d['tradeTotalAll']"
+                            :start-val="0"
+                            class="card-num"
+                            suffix=" 笔"
+                          />
                         </span>
                       </el-tag>
                     </div>
-                    <div style="float: right; ">
+                    <div style="float: right">
                       <el-switch
                         v-model="showMode"
                         active-text="按月统计"
                         active-value="1"
                         inactive-text="按天统计"
                         inactive-value="0"
-                        @change="handleShowModeChange">
+                        @change="handleShowModeChange"
+                      >
                       </el-switch>
-                      <el-button :loading="refreshLoading" icon="el-icon-refresh" plain size="small"
-                                 style="margin-left: 20px; margin-top: -7px" @click="refresh">刷新
+                      <el-button
+                        :loading="refreshLoading"
+                        icon="el-icon-refresh"
+                        plain
+                        size="small"
+                        style="margin-left: 20px; margin-top: -7px"
+                        @click="refresh"
+                      >刷新
                       </el-button>
-                      <el-checkbox v-model="autoRefresh" style="margin-left: 10px;" @change="handleAutoRefreshChange">
+                      <el-checkbox
+                        v-model="autoRefresh"
+                        style="margin-left: 10px"
+                        @change="handleAutoRefreshChange"
+                      >
                         自动
                       </el-checkbox>
                     </div>
                   </div>
                 </el-card>
               </el-col>
-              <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeToday']" :trade="d['tradeToday']"
-                           :value="d['feeToday']" icon="el-icon-coin" type="p"></show-card>
+              <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px">
+                <show-card
+                  :tag="s[showMode]['feeTodayTag']"
+                  :title="s[showMode]['feeToday']"
+                  :trade="d['tradeToday']"
+                  :value="d['feeToday']"
+                  icon="el-icon-coin"
+                  type="p"
+                ></show-card>
               </el-col>
               <!-- <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
                 <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeToday']" :value="d['tradeToday']"
                            type="s" icon="el-icon-sell"></show-card>
               </el-col> -->
-              <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeTodayAll']"
-                           :trade="d['tradeTodayAll']-d['tradeToday']" :value="d['feeTodayAll']-d['feeToday']"
-                           icon="el-icon-warning-outline" type="p"></show-card>
+              <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px">
+                <show-card
+                  :tag="s[showMode]['feeTodayTag']"
+                  :title="s[showMode]['feeTodayAll']"
+                  :trade="d['tradeTodayAll'] - d['tradeToday']"
+                  :value="d['feeTodayAll'] - d['feeToday']"
+                  icon="el-icon-warning-outline"
+                  type="p"
+                ></show-card>
               </el-col>
               <!-- <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
                 <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeTodayAll']"
@@ -70,18 +112,29 @@
               </el-col> -->
             </el-row>
             <el-row :gutter="10">
-              <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :tag="s[showMode]['feeYesterdayTag']" :title="s[showMode]['feeYesterday']"
-                           :trade="d['tradeYesterday']" :value="d['feeYesterday']" icon="el-icon-coin"
-                           type="p"></show-card>
+              <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px">
+                <show-card
+                  :tag="s[showMode]['feeYesterdayTag']"
+                  :title="s[showMode]['feeYesterday']"
+                  :trade="d['tradeYesterday']"
+                  :value="d['feeYesterday']"
+                  icon="el-icon-coin"
+                  type="p"
+                ></show-card>
               </el-col>
               <!-- <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
                 <show-card :tag="s[showMode]['feeYesterdayTag']" :title="s[showMode]['feeYesterday']"
                            :value="d['tradeYesterday']" type="s" icon="el-icon-sell"></show-card>
               </el-col> -->
-              <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :tag="s[showMode]['feeWeekTag']" :title="s[showMode]['feeWeek']" :trade="d['tradeWeek']"
-                           :value="d['feeWeek']" icon="el-icon-coin" type="p"></show-card>
+              <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px">
+                <show-card
+                  :tag="s[showMode]['feeWeekTag']"
+                  :title="s[showMode]['feeWeek']"
+                  :trade="d['tradeWeek']"
+                  :value="d['feeWeek']"
+                  icon="el-icon-coin"
+                  type="p"
+                ></show-card>
               </el-col>
               <!-- <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
                 <show-card :tag="s[showMode]['feeWeekTag']" :title="s[showMode]['feeWeek']" :value="d['tradeWeek']"
@@ -91,18 +144,25 @@
             <el-row :gutter="10">
               <!-- <el-carousel :interval="10000" :autoplay="false" arrow="always" height="340px"> -->
               <!-- <el-carousel-item> -->
-              <el-col :lg="10" :sm="24" :xs="24" style="margin-top: 10px;">
+              <el-col :lg="10" :sm="24" :xs="24" style="margin-top: 10px">
                 <el-card shadow="never">
                   <div class="card-title">
-                    <i class="el-icon-data-analysis" style="margin-right: 5px"></i>
-                    <span>{{ s[showMode]['tradeWeek'] }}</span>
+                    <i
+                      class="el-icon-data-analysis"
+                      style="margin-right: 5px"
+                    ></i>
+                    <span>{{ s[showMode]["tradeWeek"] }}</span>
                   </div>
                   <div style="margin-top: -10px">
-                    <bar-chart :data="barData" :xTitle="barTitle" height="290px"></bar-chart>
+                    <bar-chart
+                      :data="barData"
+                      :xTitle="barTitle"
+                      height="290px"
+                    ></bar-chart>
                   </div>
                 </el-card>
               </el-col>
-              <el-col :lg="7" :sm="24" :xs="24" style="margin-top: 10px;">
+              <el-col :lg="7" :sm="24" :xs="24" style="margin-top: 10px">
                 <!-- <el-card shadow="never">
                   <div class="card-title">
                     <span>近七天收款趋势统计</span>
@@ -114,18 +174,18 @@
                 <el-card shadow="never">
                   <div class="card-title">
                     <i class="el-icon-pie-chart" style="margin-right: 5px"></i>
-                    <span>{{ s[showMode]['feeAppWeek'] }}</span>
+                    <span>{{ s[showMode]["feeAppWeek"] }}</span>
                   </div>
                   <div style="margin-top: 20px">
                     <pie-chart :data="pieData"></pie-chart>
                   </div>
                 </el-card>
               </el-col>
-              <el-col :lg="7" :sm="24" :xs="24" style="margin-top: 10px;">
+              <el-col :lg="7" :sm="24" :xs="24" style="margin-top: 10px">
                 <el-card shadow="never">
                   <div class="card-title">
                     <i class="el-icon-pie-chart" style="margin-right: 5px"></i>
-                    <span>{{ s[showMode]['payModeWeek'] }}</span>
+                    <span>{{ s[showMode]["payModeWeek"] }}</span>
                   </div>
                   <div style="margin-top: 20px">
                     <pie-chart :data="pie2Data"></pie-chart>
@@ -148,11 +208,25 @@
               <!-- </el-carousel> -->
             </el-row>
             <el-row :gutter="10">
-              <el-col v-for="(item, index) in d['feeAppList']" :key="index" :lg="8" :sm="12" :xs="24"
-                      style="margin-top: 10px;">
-                <show-app-sale :data="[item['feeTotal'],item['feeToday'],item['feeYesterday'],item['feeWeek']]"
-                               :tag="'TOP'+(index+1)"
-                               :title="item['appName']"></show-app-sale>
+              <el-col
+                v-for="(item, index) in d['feeAppList']"
+                :key="index"
+                :lg="8"
+                :sm="12"
+                :xs="24"
+                style="margin-top: 10px"
+              >
+                <show-app-sale
+                  :data="[
+                    item['feeTotal'],
+                    item['feeToday'],
+                    item['feeYesterday'],
+                    item['feeWeek'],
+                  ]"
+                  :showMode="showMode"
+                  :tag="'TOP' + (index + 1)"
+                  :title="item['appName']"
+                ></show-app-sale>
               </el-col>
             </el-row>
           </div>
@@ -164,28 +238,43 @@
         </el-col> -->
       </el-row>
     </div>
-    <div v-else style="margin: 10px;">
+    <div v-else style="margin: 10px">
       <el-row :gutter="10">
         <el-col :lg="24" :sm="24" :xs="24">
-          <div style="margin: 10px; margin-top: 0px;">
+          <div style="margin: 10px; margin-top: 0px">
             <el-row :gutter="10">
               <el-col :span="24">
                 <el-card shadow="never">
-                  <div style="height: 15px;">
-                    <span style="margin-right: 20px">欢迎您，{{ username }}，上次刷新：{{ parseTime(new Date()) }}</span>
-                    <div style="float: right; ">
+                  <div style="height: 15px">
+                    <span style="margin-right: 20px"
+                    >欢迎您，{{ username }}，上次刷新：{{
+                        parseTime(new Date())
+                      }}</span
+                    >
+                    <div style="float: right">
                       <el-switch
                         v-model="showMode"
                         active-text="按月统计"
                         active-value="1"
                         inactive-text="按天统计"
                         inactive-value="0"
-                        @change="handleShowModeChange">
+                        @change="handleShowModeChange"
+                      >
                       </el-switch>
-                      <el-button :loading="refreshLoading" icon="el-icon-refresh" plain size="small"
-                                 style="margin-left: 20px; margin-top: -7px" @click="refresh">刷新
+                      <el-button
+                        :loading="refreshLoading"
+                        icon="el-icon-refresh"
+                        plain
+                        size="small"
+                        style="margin-left: 20px; margin-top: -7px"
+                        @click="refresh"
+                      >刷新
                       </el-button>
-                      <el-checkbox v-model="autoRefresh" style="margin-left: 10px;" @change="handleAutoRefreshChange">
+                      <el-checkbox
+                        v-model="autoRefresh"
+                        style="margin-left: 10px"
+                        @change="handleAutoRefreshChange"
+                      >
                         自动
                       </el-checkbox>
                     </div>
@@ -196,20 +285,20 @@
             <el-row :gutter="10">
               <!-- <el-carousel :interval="10000" :autoplay="false" arrow="always" height="340px"> -->
               <!-- <el-carousel-item> -->
-              <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px;">
+              <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px">
                 <el-card shadow="never">
                   <div class="card-title">
-                    <span>{{ s[showMode]['tradeWeek'] }}</span>
+                    <span>{{ s[showMode]["tradeWeek"] }}</span>
                   </div>
                   <div style="margin-top: 20px">
                     <bar-chart :data="barData"></bar-chart>
                   </div>
                 </el-card>
               </el-col>
-              <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px;">
+              <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px">
                 <el-card shadow="never">
                   <div class="card-title">
-                    <span>{{ s[showMode]['feeAppWeek'] }}</span>
+                    <span>{{ s[showMode]["feeAppWeek"] }}</span>
                   </div>
                   <div style="margin-top: 20px">
                     <pie-chart :data="pieData"></pie-chart>
@@ -219,11 +308,25 @@
               <!-- </el-carousel-item> -->
             </el-row>
             <el-row :gutter="10">
-              <el-col v-for="(item, index) in d['feeAppList']" :key="index" :lg="8" :sm="12" :xs="24"
-                      style="margin-top: 10px;">
-                <show-app-sale :data="[item['feeTotal'],item['feeToday'],item['feeYesterday'],item['feeWeek']]"
-                               :tag="'TOP'+(index+1)"
-                               :title="item['appName']"></show-app-sale>
+              <el-col
+                v-for="(item, index) in d['feeAppList']"
+                :key="index"
+                :lg="8"
+                :sm="12"
+                :xs="24"
+                style="margin-top: 10px"
+              >
+                <show-app-sale
+                  :data="[
+                    item['feeTotal'],
+                    item['feeToday'],
+                    item['feeYesterday'],
+                    item['feeWeek'],
+                  ]"
+                  :showMode="showMode"
+                  :tag="'TOP' + (index + 1)"
+                  :title="item['appName']"
+                ></show-app-sale>
               </el-col>
             </el-row>
           </div>
@@ -235,23 +338,23 @@
 
 <script>
 import {checkPermi, checkRole} from "@/utils/permission"; // 权限判断函数
-import CountTo from 'vue-count-to'
-import ShowCard from '@/views/dashboard/ShowCard2'
-import {getDashboardInfo} from '@/api/common'
-import ShowAppSale from '@/views/dashboard/ShowAppSale'
-import PieChart from "@/views/dashboard/MyPieChart"
-import BarChart from "@/views/dashboard/MyBarChart"
-import LineChart from "@/views/dashboard/MyLineChart"
+import CountTo from "vue-count-to";
+import ShowCard from "@/views/dashboard/ShowCardSale";
+import {getDashboardInfoSaleView} from "@/api/common";
+import ShowAppSale from "@/views/dashboard/ShowAppSale";
+import PieChart from "@/views/dashboard/MyPieChart";
+import BarChart from "@/views/dashboard/MyBarChart";
+import LineChart from "@/views/dashboard/MyLineChart";
 
 export default {
-  name: "Index",
+  name: "SaleView",
   components: {
     CountTo,
     ShowCard,
     ShowAppSale,
     PieChart,
     BarChart,
-    LineChart
+    LineChart,
   },
   data() {
     return {
@@ -275,7 +378,7 @@ export default {
         // 0, 0, 0, 0, 0, 0, 0
       ],
       s: {
-        "0": {
+        0: {
           feeToday: "今日成交",
           feeYesterday: "昨日成交",
           feeWeek: "近七日成交",
@@ -287,7 +390,7 @@ export default {
           feeAppWeek: "近七天软件收益",
           payModeWeek: "近七天收款类型统计",
         },
-        "1": {
+        1: {
           feeToday: "本月成交",
           feeYesterday: "上月成交",
           feeWeek: "近半年成交",
@@ -298,8 +401,8 @@ export default {
           tradeWeek: "近半年交易流水",
           feeAppWeek: "近半年软件收益",
           payModeWeek: "近半年收款类型统计",
-        }
-      }
+        },
+      },
     };
   },
   created() {
@@ -308,37 +411,43 @@ export default {
   methods: {
     getDashboardInfo() {
       this.$modal.loading("正在加载数据，请稍后...");
-      getDashboardInfo({showMode: this.showMode}).then(response => {
+      getDashboardInfoSaleView({showMode: this.showMode}).then((response) => {
         this.d = response.data;
         this.pieData = [];
-        if (this.d['feeAppList']) {
-          for (var item of this.d['feeAppList']) {
-            if (item['feeWeek'] > 0) {
-              this.pieData.push({'value': item['feeWeek'], 'name': item['appName']});
+        if (this.d["feeAppList"]) {
+          for (var item of this.d["feeAppList"]) {
+            if (item["feeWeek"] > 0) {
+              this.pieData.push({
+                value: item["feeWeek"],
+                name: item["appName"],
+              });
             }
           }
         }
         this.pie2Data = [];
-        if (this.d['payModeList']) {
-          for (var item of this.d['payModeList']) {
-            if (item['totalCount'] > 0) {
-              this.pie2Data.push({'value': item['totalCount'], 'name': item['payMode']});
+        if (this.d["payModeList"]) {
+          for (var item of this.d["payModeList"]) {
+            if (item["totalCount"] > 0) {
+              this.pie2Data.push({
+                value: item["totalCount"],
+                name: item["payMode"],
+              });
             }
           }
         }
         this.barData = [];
         this.barTitle = [];
         this.lineData = [];
-        if (this.d['feeAppWeekList']) {
-          this.barData = this.d['feeAppWeekList'];
+        if (this.d["feeAppWeekList"]) {
+          this.barData = this.d["feeAppWeekList"];
           for (var i = 0; i < this.barData[0].length; i++) {
             this.lineData.push(0);
             for (var item of this.barData) {
-              this.lineData[i] = this.lineData[i] + item['data'][i];
+              this.lineData[i] = this.lineData[i] + item["data"][i];
             }
           }
         }
-        this.barTitle = this.d['dateWeekList']
+        this.barTitle = this.d["dateWeekList"];
         this.$modal.closeLoading();
         if (this.refreshLoading) {
           this.refreshLoading = false;
@@ -363,9 +472,9 @@ export default {
       }
     },
     checkPermi,
-    checkRole
+    checkRole,
   },
-  computed: {}
+  computed: {},
 };
 </script>
 
@@ -386,5 +495,4 @@ export default {
   font-weight: bold;
   color: #595959;
 }
-
 </style>

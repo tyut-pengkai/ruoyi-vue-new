@@ -3,54 +3,83 @@
     <el-card shadow="never">
       <div slot="header" align="center" class="card-title">
         <span>{{ title }}</span>
-        <el-tag v-if="tag" :hit="true" :type="tagType" effect="plain" size="mini" style="float: right;">{{ tag }}
+        <el-tag
+          v-if="tag"
+          :hit="true"
+          :type="tagType"
+          effect="plain"
+          size="mini"
+          style="float: right"
+        >{{ tag }}
         </el-tag>
       </div>
       <div>
         <el-row :gutter="8">
           <el-col :span="12">
-            <el-card shadow="never" style="background-color: #f8f8f8;">
-              <div align="center" class="card-title-app">
-                总交易额
-              </div>
+            <el-card shadow="never" style="background-color: #f8f8f8">
+              <div align="center" class="card-title-app">总交易额</div>
               <div align="center" class="card-title-app-num">
                 <span class="card-s-p-fix">￥ </span>
-                <count-to :decimals="2" :duration="2600" :end-val="data[0]" :start-val="0" class="card-num"/>
+                <count-to
+                  :decimals="2"
+                  :duration="2600"
+                  :end-val="data[0]"
+                  :start-val="0"
+                  class="card-num"
+                />
               </div>
             </el-card>
           </el-col>
           <el-col :span="12">
-            <el-card shadow="never" style="background-color: #f8f8f8;">
+            <el-card shadow="never" style="background-color: #f8f8f8">
               <div align="center" class="card-title-app">
-                今日成交
+                {{ showMode == "1" ? "本月" : "今日" }}成交
               </div>
               <div align="center" class="card-title-app-num">
                 <span class="card-s-p-fix">￥ </span>
-                <count-to :decimals="2" :duration="2600" :end-val="data[1]" :start-val="0" class="card-num"/>
+                <count-to
+                  :decimals="2"
+                  :duration="2600"
+                  :end-val="data[1]"
+                  :start-val="0"
+                  class="card-num"
+                />
               </div>
             </el-card>
           </el-col>
         </el-row>
         <el-row :gutter="10">
-          <el-col :span="12" style="margin-top: 8px;">
-            <el-card shadow="never" style="background-color: #f8f8f8;">
+          <el-col :span="12" style="margin-top: 8px">
+            <el-card shadow="never" style="background-color: #f8f8f8">
               <div align="center" class="card-title-app">
-                昨日成交
+                {{ showMode == "1" ? "上月" : "昨日" }}成交
               </div>
               <div align="center" class="card-title-app-num">
                 <span class="card-s-p-fix">￥ </span>
-                <count-to :decimals="2" :duration="2600" :end-val="data[2]" :start-val="0" class="card-num"/>
+                <count-to
+                  :decimals="2"
+                  :duration="2600"
+                  :end-val="data[2]"
+                  :start-val="0"
+                  class="card-num"
+                />
               </div>
             </el-card>
           </el-col>
-          <el-col :span="12" style="margin-top: 8px;">
-            <el-card shadow="never" style="background-color: #f8f8f8;">
+          <el-col :span="12" style="margin-top: 8px">
+            <el-card shadow="never" style="background-color: #f8f8f8">
               <div align="center" class="card-title-app">
-                近七日成交
+                近{{ showMode == "1" ? "半年" : "七日" }}成交
               </div>
               <div align="center" class="card-title-app-num">
                 <span class="card-s-p-fix">￥ </span>
-                <count-to :decimals="2" :duration="2600" :end-val="data[3]" :start-val="0" class="card-num"/>
+                <count-to
+                  :decimals="2"
+                  :duration="2600"
+                  :end-val="data[3]"
+                  :start-val="0"
+                  class="card-num"
+                />
               </div>
             </el-card>
           </el-col>
@@ -60,7 +89,7 @@
   </div>
 </template>
 <script>
-import CountTo from 'vue-count-to'
+import CountTo from "vue-count-to";
 
 export default {
   name: "ShowAppInfo",
@@ -83,11 +112,15 @@ export default {
     data: {
       type: Array,
       default: function () {
-        return [0, 0, 0, 0]
+        return [0, 0, 0, 0];
       },
     },
-  }
-}
+    showMode: {
+      type: String,
+      default: "0",
+    },
+  },
+};
 </script>
 <style scoped>
 .card-title {
