@@ -81,6 +81,13 @@ public class SysLoginCode extends BaseEntity {
     private String isCharged;
 
     /**
+     * 充值时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "充值时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date chargeTime;
+
+    /**
      * 单码类别ID
      */
     private Long templateId;
@@ -215,6 +222,14 @@ public class SysLoginCode extends BaseEntity {
         this.status = status;
     }
 
+    public Date getChargeTime() {
+        return chargeTime;
+    }
+
+    public void setChargeTime(Date chargeTime) {
+        this.chargeTime = chargeTime;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -228,6 +243,7 @@ public class SysLoginCode extends BaseEntity {
                 .append("isSold", getIsSold())
                 .append("onSale", getOnSale())
                 .append("isCharged", getIsCharged())
+                .append("chargeTime", getChargeTime())
                 .append("templateId", getTemplateId())
                 .append("status", getStatus())
                 .append("createBy", getCreateBy())

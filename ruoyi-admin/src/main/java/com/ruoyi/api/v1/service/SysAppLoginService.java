@@ -241,6 +241,9 @@ public class SysAppLoginService {
                     throw new ApiException("软件计费方式有误");
                 }
                 appUserService.insertSysAppUser(appUser);
+                loginCode.setIsCharged(UserConstants.YES);
+                loginCode.setChargeTime(DateUtils.getNowDate());
+                loginCodeService.updateSysLoginCode(loginCode);
             } else {
                 if (UserStatus.DISABLE.getCode().equals(appUser.getStatus())) {
                     log.info("登录用户：{} 已被停用.", loginCodeStr);

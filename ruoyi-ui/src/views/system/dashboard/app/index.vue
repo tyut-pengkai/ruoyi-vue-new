@@ -18,7 +18,7 @@
                           <count-to
                             :decimals="0"
                             :duration="2600"
-                            :end-val="1000"
+                            :end-val="d['userTotal']"
                             :start-val="0"
                             class="card-num"
                             prefix=""
@@ -60,8 +60,8 @@
               </el-col>
               <el-col :lg="8" :sm="24" :xs="24" style="margin-top: 10px">
                 <show-card-app
-                  :increase="500"
-                  :value="1000"
+                  :increase="d['appUserToday']"
+                  :value="d['appUserTotal']"
                   icon="el-icon-user"
                   tag=""
                   title="用户总数"
@@ -69,8 +69,8 @@
               </el-col>
               <el-col :lg="8" :sm="24" :xs="24" style="margin-top: 10px">
                 <show-card-app
-                  :increase="50"
-                  :value="100"
+                  :increase="d['appUserVipToday']"
+                  :value="d['appUserVipTotal']"
                   icon="el-icon-user"
                   tag=""
                   title="VIP用户数"
@@ -78,8 +78,8 @@
               </el-col>
               <el-col :lg="8" :sm="24" :xs="24" style="margin-top: 10px">
                 <show-card-app
-                  :increase="50"
-                  :value="100"
+                  :increase="0"
+                  :value="d['loginAppUserToday']"
                   icon="el-icon-user"
                   increaseUnit="当前在线"
                   tag=""
@@ -91,8 +91,8 @@
             <el-row :gutter="10">
               <el-col :lg="8" :sm="24" :xs="24" style="margin-top: 10px">
                 <show-card-app
-                  :increase="50"
-                  :value="100"
+                  :increase="d['cardToday']"
+                  :value="d['cardTotal']"
                   icon="el-icon-tickets"
                   increaseUnit="今日制卡"
                   tag=""
@@ -102,8 +102,8 @@
               </el-col>
               <el-col :lg="8" :sm="24" :xs="24" style="margin-top: 10px">
                 <show-card-app
-                  :increase="500"
-                  :value="1000"
+                  :increase="d['cardActiveToday']"
+                  :value="d['cardActive']"
                   icon="el-icon-tickets"
                   increaseUnit="今日激活"
                   tag=""
@@ -113,8 +113,8 @@
               </el-col>
               <el-col :lg="8" :sm="24" :xs="24" style="margin-top: 10px">
                 <show-card-app
-                  :increase="50"
-                  :value="100"
+                  :increase="d['cardNoActiveToday']"
+                  :value="d['cardNoActive']"
                   icon="el-icon-tickets"
                   tag=""
                   title="未激活充值卡数量"
@@ -125,8 +125,8 @@
             <el-row :gutter="10">
               <el-col :lg="8" :sm="24" :xs="24" style="margin-top: 10px">
                 <show-card-app
-                  :increase="50"
-                  :value="100"
+                  :increase="d['loginCodeToday']"
+                  :value="d['loginCodeTotal']"
                   icon="el-icon-user"
                   increaseUnit="今日制码"
                   tag=""
@@ -135,8 +135,8 @@
               </el-col>
               <el-col :lg="8" :sm="24" :xs="24" style="margin-top: 10px">
                 <show-card-app
-                  :increase="500"
-                  :value="1000"
+                  :increase="d['loginCodeActiveToday']"
+                  :value="d['loginCodeActive']"
                   icon="el-icon-user"
                   increaseUnit="今日激活"
                   tag=""
@@ -145,8 +145,8 @@
               </el-col>
               <el-col :lg="8" :sm="24" :xs="24" style="margin-top: 10px">
                 <show-card-app
-                  :increase="50"
-                  :value="100"
+                  :increase="d['loginCodeNoActiveToday']"
+                  :value="d['loginCodeNoActive']"
                   icon="el-icon-user"
                   tag=""
                   title="未激活登录码数量"
@@ -154,23 +154,39 @@
               </el-col>
             </el-row>
             <el-row :gutter="10">
-              <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px">
+              <el-col :lg="10" :sm="24" :xs="24" style="margin-top: 10px">
                 <el-card shadow="never">
                   <div class="card-title">
+                    <i
+                      class="el-icon-data-analysis"
+                      style="margin-right: 5px"
+                    ></i>
                     <span>近七日新增用户数</span>
                   </div>
                   <div style="margin-top: 20px">
-                    <bar-chart :data="barData"></bar-chart>
+                    <bar-chart :data="barData" :xTitle="barTitle"></bar-chart>
                   </div>
                 </el-card>
               </el-col>
-              <el-col :lg="12" :sm="24" :xs="24" style="margin-top: 10px">
+              <el-col :lg="7" :sm="24" :xs="24" style="margin-top: 10px">
                 <el-card shadow="never">
                   <div class="card-title">
-                    <span>近七日激活充值卡</span>
+                    <i class="el-icon-pie-chart" style="margin-right: 5px"></i>
+                    <span>近七日激活充值卡(软件)</span>
                   </div>
                   <div style="margin-top: 20px">
                     <pie-chart :data="pieData"></pie-chart>
+                  </div>
+                </el-card>
+              </el-col>
+              <el-col :lg="7" :sm="24" :xs="24" style="margin-top: 10px">
+                <el-card shadow="never">
+                  <div class="card-title">
+                    <i class="el-icon-pie-chart" style="margin-right: 5px"></i>
+                    <span>近七日激活充值卡(卡类)</span>
+                  </div>
+                  <div style="margin-top: 20px">
+                    <pie-chart :data="pie2Data"></pie-chart>
                   </div>
                 </el-card>
               </el-col>
@@ -189,7 +205,7 @@
             </el-row> -->
             <el-row :gutter="10">
               <el-col
-                v-for="(item, index) in d['feeAppList']"
+                v-for="(item, index) in d['appDataList']"
                 :key="index"
                 :lg="8"
                 :sm="12"
@@ -198,14 +214,14 @@
               >
                 <show-app-user
                   :data="[
-                    item['feeTotal'],
-                    item['feeToday'],
-                    item['feeYesterday'],
-                    item['feeWeek'],
+                    item['appUserTotal'],
+                    item['appUserVipTotal'],
+                    item['loginToday'],
+                    item['online'],
                   ]"
                   :tag="'TOP' + (index + 1)"
                   :title="item['appName']"
-                  showMode="0"
+                  :showMode="showMode"
                 ></show-app-user>
               </el-col>
             </el-row>
@@ -218,6 +234,7 @@
 
 <script>
 import ShowCardApp from "@/views/dashboard/ShowCardApp";
+import {getDashboardInfoAppView} from "@/api/common";
 import ShowCardSmall from "@/views/dashboard/ShowCardSmall";
 import ShowAppUser from "@/views/dashboard/ShowAppUser";
 import PieChart from "@/views/dashboard/MyPieChart";
@@ -244,22 +261,70 @@ export default {
       autoRefresh: false,
       timer: null,
       d: {
-        feeAppList: [
-          {
-            appName: "123",
-            feeTotal: 0,
-            feeToday: 0,
-            feeYesterday: 0,
-            feeWeek: 0,
-          },
-        ],
+        // feeAppList: [
+        //   {
+        //     appName: "123",
+        //     feeTotal: 0,
+        //     feeToday: 0,
+        //     feeYesterday: 0,
+        //     feeWeek: 0,
+        //   },
+        // ],
       },
-      pieData: [{value: 320, name: "APP1"}],
-      barData: [{data: [10, 20, 30, 45, 58, 46, 17], appName: "123"}],
+      pieData: [
+        //   { value: 320, name: "APP1" }
+      ],
+      pie2Data: [
+        //   { value: 320, name: "APP1" }
+      ],
+      barData: [
+        //   {data: [10, 20, 30, 45, 58, 46, 17], appName: "123"}
+      ],
+      barTitle: [],
     };
+  },
+  created() {
+    this.getDashboardInfo();
   },
   methods: {
     getDashboardInfo() {
+      this.$modal.loading("正在加载数据，请稍后...");
+      getDashboardInfoAppView({showMode: this.showMode}).then((response) => {
+        this.d = response.data;
+        this.pieData = [];
+        if (this.d["cardActiveList"]) {
+          for (var item of this.d["cardActiveList"]) {
+            if (item["totalCount"] > 0) {
+              this.pieData.push({
+                value: item["totalCount"],
+                name: item["appName"],
+              });
+            }
+          }
+        }
+        this.pie2Data = [];
+        if (this.d["cardActiveList2"]) {
+          for (var item of this.d["cardActiveList2"]) {
+            if (item["totalCount"] > 0) {
+              this.pie2Data.push({
+                value: item["totalCount"],
+                name: item["cardName"],
+              });
+            }
+          }
+        }
+        this.barData = [];
+        this.barTitle = [];
+        if (this.d["increaseUserWeekList"]) {
+          this.barData = this.d["increaseUserWeekList"];
+        }
+        this.barTitle = this.d["dateWeekList"];
+        this.$modal.closeLoading();
+        if (this.refreshLoading) {
+          this.refreshLoading = false;
+          this.$modal.msgSuccess("数据已刷新");
+        }
+      });
     },
     refresh() {
       this.refreshLoading = true;

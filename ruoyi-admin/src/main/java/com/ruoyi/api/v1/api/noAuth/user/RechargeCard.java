@@ -82,6 +82,7 @@ public class RechargeCard extends Function {
             appUser.setPoint(newPoint);
         }
         card.setIsCharged(UserConstants.YES);
+        card.setChargeTime(DateUtils.getNowDate());
         card.setOnSale(UserConstants.NO);
         cardService.updateSysCard(card);
         appUserService.updateSysAppUser(appUser);

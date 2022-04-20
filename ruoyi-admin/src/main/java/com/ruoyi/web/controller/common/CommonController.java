@@ -11,10 +11,10 @@ import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.framework.config.ServerConfig;
 import com.ruoyi.payment.constants.PaymentDefine;
-import com.ruoyi.sale.mapper.SysSaleOrderMapper;
+import com.ruoyi.sale.mapper.DashboardSaleViewMapper;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysLoginCode;
-import com.ruoyi.system.mapper.SysAppUserMapper;
+import com.ruoyi.system.mapper.DashboardAppViewMapper;
 import com.ruoyi.system.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,11 +50,11 @@ public class CommonController {
     @Resource
     private RuoYiConfig config;
     @Resource
-    private SysSaleOrderMapper sysSaleOrderMapper;
-    @Resource
     private ISysAppService sysAppService;
     @Resource
-    private SysAppUserMapper sysAppUserMapper;
+    private DashboardSaleViewMapper saleViewMapper;
+    @Resource
+    private DashboardAppViewMapper appViewMapper;
     @Resource
     private ISysUserService sysUserService;
     @Resource
@@ -201,16 +201,16 @@ public class CommonController {
         Map<String, Object> map = new HashMap<>();
         // ==================全局统计部分==================
         // 平台总交易额
-        BigDecimal feeTotal = sysSaleOrderMapper.queryTotalFee();
+        BigDecimal feeTotal = saleViewMapper.queryTotalFee();
         map.put("feeTotal", feeTotal);
         // 平台总成交数
-        int tradeTotal = sysSaleOrderMapper.queryTotalTrade();
+        int tradeTotal = saleViewMapper.queryTotalTrade();
         map.put("tradeTotal", tradeTotal);
         // 平台总下单数（含未付款）
-        int tradeTotalAll = sysSaleOrderMapper.queryTotalTradeAll();
+        int tradeTotalAll = saleViewMapper.queryTotalTradeAll();
         map.put("tradeTotalAll", tradeTotalAll);
         // 各个软件
-        List<Map<String, Object>> mapListTotal = sysSaleOrderMapper.queryAppTotalFee();
+        List<Map<String, Object>> mapListTotal = saleViewMapper.queryAppTotalFee();
 
         if (!showMode) {
             // ===================按天统计部分===============
@@ -218,37 +218,37 @@ public class CommonController {
             LocalDate localDate = LocalDate.now();
             String start = localDate.toString();
             String end = localDate.plusDays(1).toString();
-            BigDecimal feeToday = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
+            BigDecimal feeToday = saleViewMapper.queryTotalFeeBetween(start, end);
             map.put("feeToday", feeToday);
-            int tradeToday = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
+            int tradeToday = saleViewMapper.queryTotalTradeBetween(start, end);
             map.put("tradeToday", tradeToday);
             // 各个软件
-            List<Map<String, Object>> mapListToday = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
+            List<Map<String, Object>> mapListToday = saleViewMapper.queryAppTotalFeeBetween(start, end);
             // 今日下单（含未付款）
-            BigDecimal feeTodayAll = sysSaleOrderMapper.queryTotalFeeAllBetween(start, end);
+            BigDecimal feeTodayAll = saleViewMapper.queryTotalFeeAllBetween(start, end);
             map.put("feeTodayAll", feeTodayAll);
-            int tradeTodayAll = sysSaleOrderMapper.queryTotalTradeAllBetween(start, end);
+            int tradeTodayAll = saleViewMapper.queryTotalTradeAllBetween(start, end);
             map.put("tradeTodayAll", tradeTodayAll);
             // 昨日成交
             start = localDate.minusDays(1).toString();
             end = localDate.toString();
-            BigDecimal feeYesterday = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
+            BigDecimal feeYesterday = saleViewMapper.queryTotalFeeBetween(start, end);
             map.put("feeYesterday", feeYesterday);
-            int tradeYesterday = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
+            int tradeYesterday = saleViewMapper.queryTotalTradeBetween(start, end);
             map.put("tradeYesterday", tradeYesterday);
             // 各个软件
-            List<Map<String, Object>> mapListYesterday = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
+            List<Map<String, Object>> mapListYesterday = saleViewMapper.queryAppTotalFeeBetween(start, end);
             // 近七日成交
             start = localDate.minusDays(6).toString();
             end = localDate.plusDays(1).toString();
-            BigDecimal feeWeek = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
+            BigDecimal feeWeek = saleViewMapper.queryTotalFeeBetween(start, end);
             map.put("feeWeek", feeWeek);
-            int tradeWeek = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
+            int tradeWeek = saleViewMapper.queryTotalTradeBetween(start, end);
             map.put("tradeWeek", tradeWeek);
             // 各个软件
-            List<Map<String, Object>> mapListWeek = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
+            List<Map<String, Object>> mapListWeek = saleViewMapper.queryAppTotalFeeBetween(start, end);
             // 近七日收款类型统计
-            List<Map<String, Object>> mapListPayMode = sysSaleOrderMapper.queryPayModeBetween(start, end);
+            List<Map<String, Object>> mapListPayMode = saleViewMapper.queryPayModeBetween(start, end);
             List<Map<String, Object>> payModeList = new ArrayList<>();
             for (Map<String, Object> item : mapListPayMode) {
                 Map<String, Object> mapPayMode = new HashMap<>();
@@ -337,7 +337,7 @@ public class CommonController {
             for (int i = 0; i < 7; i++) {
                 LocalDate previous = firstDay.plusDays(i);
                 LocalDate next = previous.plusDays(1);
-                List<Map<String, Object>> tempMapList = sysSaleOrderMapper.queryAppTotalFeeBetween(previous.toString(), next.toString());
+                List<Map<String, Object>> tempMapList = saleViewMapper.queryAppTotalFeeBetween(previous.toString(), next.toString());
                 mapListList.add(tempMapList);
                 dateWeekList.add(previous.toString().replaceAll("-", "/"));
             }
@@ -387,38 +387,38 @@ public class CommonController {
             LocalDate localDate = LocalDate.now();
             String start = localDate.with(TemporalAdjusters.firstDayOfMonth()).toString();
             String end = localDate.with(TemporalAdjusters.firstDayOfNextMonth()).toString();
-            BigDecimal feeToday = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
+            BigDecimal feeToday = saleViewMapper.queryTotalFeeBetween(start, end);
             map.put("feeToday", feeToday);
-            int tradeToday = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
+            int tradeToday = saleViewMapper.queryTotalTradeBetween(start, end);
             map.put("tradeToday", tradeToday);
             // 各个软件
-            List<Map<String, Object>> mapListToday = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
+            List<Map<String, Object>> mapListToday = saleViewMapper.queryAppTotalFeeBetween(start, end);
             // 本月下单（含未付款）
-            BigDecimal feeTodayAll = sysSaleOrderMapper.queryTotalFeeAllBetween(start, end);
+            BigDecimal feeTodayAll = saleViewMapper.queryTotalFeeAllBetween(start, end);
             map.put("feeTodayAll", feeTodayAll);
-            int tradeTodayAll = sysSaleOrderMapper.queryTotalTradeAllBetween(start, end);
+            int tradeTodayAll = saleViewMapper.queryTotalTradeAllBetween(start, end);
             map.put("tradeTodayAll", tradeTodayAll);
             // 上月成交
             LocalDate lastDayOfLastMonth = localDate.with(TemporalAdjusters.firstDayOfMonth()).minusDays(1);
             start = lastDayOfLastMonth.with(TemporalAdjusters.firstDayOfMonth()).toString();
             end = localDate.with(TemporalAdjusters.firstDayOfMonth()).toString();
-            BigDecimal feeYesterday = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
+            BigDecimal feeYesterday = saleViewMapper.queryTotalFeeBetween(start, end);
             map.put("feeYesterday", feeYesterday);
-            int tradeYesterday = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
+            int tradeYesterday = saleViewMapper.queryTotalTradeBetween(start, end);
             map.put("tradeYesterday", tradeYesterday);
             // 各个软件
-            List<Map<String, Object>> mapListYesterday = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
+            List<Map<String, Object>> mapListYesterday = saleViewMapper.queryAppTotalFeeBetween(start, end);
             // 近半年成交
             start = localDate.minusMonths(6).toString();
             end = localDate.plusDays(1).toString();
-            BigDecimal feeWeek = sysSaleOrderMapper.queryTotalFeeBetween(start, end);
+            BigDecimal feeWeek = saleViewMapper.queryTotalFeeBetween(start, end);
             map.put("feeWeek", feeWeek);
-            int tradeWeek = sysSaleOrderMapper.queryTotalTradeBetween(start, end);
+            int tradeWeek = saleViewMapper.queryTotalTradeBetween(start, end);
             map.put("tradeWeek", tradeWeek);
             // 各个软件
-            List<Map<String, Object>> mapListWeek = sysSaleOrderMapper.queryAppTotalFeeBetween(start, end);
+            List<Map<String, Object>> mapListWeek = saleViewMapper.queryAppTotalFeeBetween(start, end);
             // 近半年收款类型统计
-            List<Map<String, Object>> mapListPayMode = sysSaleOrderMapper.queryPayModeBetween(start, end);
+            List<Map<String, Object>> mapListPayMode = saleViewMapper.queryPayModeBetween(start, end);
             List<Map<String, Object>> payModeList = new ArrayList<>();
             for (Map<String, Object> item : mapListPayMode) {
                 Map<String, Object> mapPayMode = new HashMap<>();
@@ -507,7 +507,7 @@ public class CommonController {
             for (int i = 0; i < 6; i++) {
                 LocalDate previous = monday.plusMonths(i).with(TemporalAdjusters.firstDayOfMonth());
                 LocalDate next = previous.with(TemporalAdjusters.firstDayOfNextMonth());
-                List<Map<String, Object>> tempMapList = sysSaleOrderMapper.queryAppTotalFeeBetween(previous.toString(), next.toString());
+                List<Map<String, Object>> tempMapList = saleViewMapper.queryAppTotalFeeBetween(previous.toString(), next.toString());
                 mapListList.add(tempMapList);
 //                dateWeekList.add(convertMap.get(previous.getMonthValue()) + "-" + convertMap.get(next.getMonthValue()) + "月");
                 dateWeekList.add(previous.getMonthValue() + "月");
@@ -568,21 +568,39 @@ public class CommonController {
         int appUserTotal = sysAppUserService.selectSysAppUserList(new SysAppUser()).size();
         map.put("appUserTotal", appUserTotal);
         // 平台VIP用户数
-        int appUserVipTotal = sysAppUserMapper.queryAppUserVipTotal();
+        int appUserVipTotal = appViewMapper.queryAppUserVipTotal();
         map.put("appUserVipTotal", appUserVipTotal);
-        // 平台各个软件VIP用户数
-
         // 平台当前在线数
 
         // 平台充值卡数量
         int cardTotal = sysCardService.selectSysCardList(new SysCard()).size();
         map.put("cardTotal", cardTotal);
+        // 平台已激活充值卡数量
+        SysCard cardActiveObj = new SysCard();
+        cardActiveObj.setIsCharged("Y");
+        int cardActive = sysCardService.selectSysCardList(cardActiveObj).size();
+        map.put("cardActive", cardActive);
+        // 平台未激活充值卡数量
+        SysCard cardNoActiveObj = new SysCard();
+        cardNoActiveObj.setIsCharged("N");
+        int cardNoActive = sysCardService.selectSysCardList(cardNoActiveObj).size();
+        map.put("cardNoActive", cardNoActive);
         // 平台登录码数量
         int loginCodeTotal = sysLoginCodeService.selectSysLoginCodeList(new SysLoginCode()).size();
         map.put("loginCodeTotal", loginCodeTotal);
+        // 平台已激活登录码数量
+        SysLoginCode loginCodeActiveObj = new SysLoginCode();
+        loginCodeActiveObj.setIsCharged("Y");
+        int loginCodeActive = sysLoginCodeService.selectSysLoginCodeList(loginCodeActiveObj).size();
+        map.put("loginCodeActive", loginCodeActive);
+        // 平台未激活登录码数量
+        SysLoginCode loginCodeNoActiveObj = new SysLoginCode();
+        loginCodeNoActiveObj.setIsCharged("N");
+        int loginCodeNoActive = sysLoginCodeService.selectSysLoginCodeList(loginCodeNoActiveObj).size();
+        map.put("loginCodeNoActive", loginCodeNoActive);
         // 各个软件
-        List<Map<String, Object>> mapListAppUser = sysAppUserMapper.queryAppUser();
-        List<Map<String, Object>> mapListAppUserVip = sysAppUserMapper.queryAppUserVip();
+        List<Map<String, Object>> mapListAppUser = appViewMapper.queryAppUser();
+        List<Map<String, Object>> mapListAppUserVip = appViewMapper.queryAppUserVip();
 
         if (!showMode) {
             // ===================按天统计部分===============
@@ -590,17 +608,83 @@ public class CommonController {
             LocalDate localDate = LocalDate.now();
             String start = localDate.toString();
             String end = localDate.plusDays(1).toString();
-            int appUserToday = sysAppUserMapper.queryAppUserTotalBetween(start, end);
+            int appUserToday = appViewMapper.queryAppUserTotalBetween(start, end);
             map.put("appUserToday", appUserToday);
             // 平台VIP用户总数-今日新增
-            int appUserVipToday = sysAppUserMapper.queryAppUserVipTotalBetween(start, end);
+            int appUserVipToday = appViewMapper.queryAppUserVipTotalBetween(start, end);
             map.put("appUserVipToday", appUserVipToday);
             // 平台今日登录用户总数
-            int loginAppUserToday = sysAppUserMapper.queryLoginAppUserTotalBetween(start, end);
+            int loginAppUserToday = appViewMapper.queryLoginAppUserTotalBetween(start, end);
             map.put("loginAppUserToday", loginAppUserToday);
+            // 平台今日新增充值卡数量
+            int cardToday = appViewMapper.queryCardTotalBetween(start, end);
+            map.put("cardToday", cardToday);
+            // 平台今日新增激活充值卡数量
+            int cardActiveToday = appViewMapper.queryCardActiveBetween(start, end);
+            map.put("cardActiveToday", cardActiveToday);
+            // 平台今日新增未激活充值卡数量
+            int cardNoActiveToday = appViewMapper.queryCardNoActiveBetween(start, end);
+            map.put("cardNoActiveToday", cardNoActiveToday);
+            // 平台今日新增激活登录码数量
+            int loginCodeActiveToday = appViewMapper.queryLoginCodeActiveBetween(start, end);
+            map.put("loginCodeActiveToday", loginCodeActiveToday);
+            // 平台今日新增未激活登录码数量
+            int loginCodeNoActiveToday = appViewMapper.queryLoginCodeNoActiveBetween(start, end);
+            map.put("loginCodeNoActiveToday", loginCodeNoActiveToday);
+
+            List<SysApp> appList = sysAppService.selectSysAppList(new SysApp());
+            List<String> appIdList = appList.stream().map(app -> app.getAppId().toString()).collect(Collectors.toList());
+            // 近七日激活充值卡-APP角度
+            start = localDate.minusDays(6).toString();
+            end = localDate.plusDays(1).toString();
+            List<Map<String, Object>> mapListCardActive = appViewMapper.queryAppCardActiveBetween(start, end);
+            Map<String, Map<String, Object>> cardActiveMap = new HashMap<>();
+            for (Map<String, Object> item : mapListCardActive) {
+                Map<String, Object> mapAppCardActive = new HashMap<>();
+                String appId = item.get("app_id").toString();
+                String appName = item.get("app_name").toString();
+                Object totalCount = item.get("total_count");
+                mapAppCardActive.put("appId", appId);
+                mapAppCardActive.put("appName", appName);
+                mapAppCardActive.put("totalCount", totalCount);
+                cardActiveMap.put(appId, mapAppCardActive);
+            }
+            // 过滤
+            Set<String> keySet = new HashSet<>(cardActiveMap.keySet());
+            for (String appId : keySet) {
+                if (!appIdList.contains(appId)) {
+                    cardActiveMap.remove(appId);
+                }
+            }
+            map.put("cardActiveList", cardActiveMap.values());
+
+            // 近七日激活充值卡-卡类角度
+            start = localDate.minusDays(6).toString();
+            end = localDate.plusDays(1).toString();
+            List<Map<String, Object>> mapListCardActive2 = appViewMapper.queryTemplateCardActiveBetween(start, end);
+            Map<String, Map<String, Object>> cardActiveMap2 = new HashMap<>();
+            for (Map<String, Object> item : mapListCardActive2) {
+                Map<String, Object> mapAppCardActive = new HashMap<>();
+                String appId = item.get("app_id").toString();
+                String appName = item.get("app_name").toString();
+                String templateId = item.get("template_id").toString();
+                String cardName = item.get("card_name").toString();
+                Object totalCount = item.get("total_count");
+                mapAppCardActive.put("templateId", templateId);
+                mapAppCardActive.put("cardName", "[" + appName + "]" + cardName);
+                mapAppCardActive.put("totalCount", totalCount);
+                cardActiveMap2.put(appId, mapAppCardActive);
+            }
+            // 过滤
+            Set<String> keySet4 = new HashSet<>(cardActiveMap2.keySet());
+            for (String appId : keySet4) {
+                if (!appIdList.contains(appId)) {
+                    cardActiveMap2.remove(appId);
+                }
+            }
+            map.put("cardActiveList2", cardActiveMap2.values());
 
             // 各软件详细数据
-            List<SysApp> appList = sysAppService.selectSysAppList(new SysApp());
             Map<String, Map<String, Object>> appDataMap = new HashMap<>();
             for (Map<String, Object> item : mapListAppUser) {
                 String appId = item.get("app_id").toString();
@@ -620,9 +704,6 @@ public class CommonController {
             }
 
             String[] keys = new String[]{"appUserTotal", "appUserVipTotal", "loginToday", "online"};
-
-            List<String> appIdList = appList.stream().map(app -> app.getAppId().toString()).collect(Collectors.toList());
-
             for (SysApp app : appList) {
                 String appId = app.getAppId().toString();
                 String appName = app.getAppName();
@@ -631,21 +712,23 @@ public class CommonController {
                 }
                 for (String key : keys) {
                     if (!appDataMap.get(appId).containsKey(key)) {
-                        appDataMap.get(appId).put(key, 0);
+                        appDataMap.get(appId).put(key, 0L);
                     }
                 }
                 appDataMap.get(appId).put("appName", appName);
             }
             // 过滤
-            Set<String> keySet = new HashSet<>(appDataMap.keySet());
-            for (String appId : keySet) {
+            Set<String> keySet3 = new HashSet<>(appDataMap.keySet());
+            for (String appId : keySet3) {
                 if (!appIdList.contains(appId)) {
                     appDataMap.remove(appId);
                 }
             }
-            ArrayList<Map<String, Object>> feeAppList = new ArrayList<>(appDataMap.values());
-            feeAppList.sort((o1, o2) -> ((BigDecimal) o2.get("appUserTotal")).compareTo(((BigDecimal) o1.get("appUserTotal"))));
-            map.put("appDataList", feeAppList);
+            ArrayList<Map<String, Object>> appDataList = new ArrayList<>(appDataMap.values());
+            appDataList.sort((o1, o2) -> (((Long) o2.get("appUserTotal")).compareTo(((Long) o1.get("appUserTotal"))) == 0 ?
+                    ((Long) o2.get("appUserVipTotal")).compareTo(((Long) o1.get("appUserVipTotal"))) :
+                    ((Long) o2.get("appUserTotal")).compareTo(((Long) o1.get("appUserTotal")))));
+            map.put("appDataList", appDataList);
 
             // 近七天数据（直方图和折线图）
             LocalDate firstDay = localDate.minusDays(6);
@@ -654,7 +737,7 @@ public class CommonController {
             for (int i = 0; i < 7; i++) {
                 LocalDate previous = firstDay.plusDays(i);
                 LocalDate next = previous.plusDays(1);
-                List<Map<String, Object>> tempMapList = sysAppUserMapper.queryAppUserBetween(previous.toString(), next.toString());
+                List<Map<String, Object>> tempMapList = appViewMapper.queryAppUserBetween(previous.toString(), next.toString());
                 mapListList.add(tempMapList);
                 dateWeekList.add(previous.toString().replaceAll("-", "/"));
             }
@@ -680,7 +763,7 @@ public class CommonController {
                     }
                     ArrayList<Object> data = (ArrayList<Object>) increaseUserWeekMap.get(appId).get("data");
                     while (data.size() <= i) {
-                        data.add(0);
+                        data.add(0L);
                     }
                 }
             }
@@ -698,6 +781,7 @@ public class CommonController {
             }
             map.put("dateWeekList", dateWeekList);
             map.put("increaseUserWeekList", increaseUserWeekMap.values());
+
         } else {
             // ===================按月统计部分===============
             // 本月成交

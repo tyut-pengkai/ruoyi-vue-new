@@ -14,66 +14,100 @@ import java.util.Date;
 
 /**
  * 卡密对象 sys_card
- * 
+ *
  * @author zwgu
  * @date 2021-12-03
  */
-public class SysCard extends BaseEntity
-{
+public class SysCard extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
-    /** 卡密ID */
+    /**
+     * 卡密ID
+     */
     private Long cardId;
 
-    /** 软件ID */
+    /**
+     * 软件ID
+     */
     @Excel(name = "软件ID")
     private Long appId;
 
-    /** 卡名称 */
+    /**
+     * 卡名称
+     */
     @Excel(name = "卡名称")
     private String cardName;
 
-    /** 卡号 */
+    /**
+     * 卡号
+     */
     @Excel(name = "卡号")
     private String cardNo;
 
-    /** 密码 */
+    /**
+     * 密码
+     */
     @Excel(name = "密码")
     private String cardPass;
 
-    /** 额度 */
+    /**
+     * 额度
+     */
     @Excel(name = "额度")
     private Long quota;
 
-    /** 价格 */
+    /**
+     * 价格
+     */
     @Excel(name = "价格")
     private BigDecimal price;
 
-    /** 过期时间 */
+    /**
+     * 过期时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Excel(name = "过期时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date expireTime;
 
-    /** 是否售出 */
+    /**
+     * 是否售出
+     */
     @Excel(name = "是否售出")
     private String isSold;
 
-    /** 是否上架 */
+    /**
+     * 是否上架
+     */
     @Excel(name = "是否上架")
     private String onSale;
 
-    /** 是否被充值 */
+    /**
+     * 是否被充值
+     */
     @Excel(name = "是否被充值")
     private String isCharged;
 
-    /** 卡类ID */
+    /**
+     * 充值时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "充值时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date chargeTime;
+
+    /**
+     * 卡类ID
+     */
     private Long templateId;
 
-    /** 卡密状态 */
+    /**
+     * 卡密状态
+     */
     @Excel(name = "卡密状态")
     private String status;
 
-    /** 充值规则 */
+    /**
+     * 充值规则
+     */
     @Excel(name = "充值规则")
     private ChargeRule chargeRule;
 
@@ -105,155 +139,149 @@ public class SysCard extends BaseEntity
         this.app = app;
     }
 
-    public void setCardId(Long cardId)
-    {
+    public Long getCardId() {
+        return cardId;
+    }
+
+    public void setCardId(Long cardId) {
         this.cardId = cardId;
     }
 
-    public Long getCardId() 
-    {
-        return cardId;
+    public Long getAppId() {
+        return appId;
     }
-    public void setAppId(Long appId) 
-    {
+
+    public void setAppId(Long appId) {
         this.appId = appId;
     }
 
-    public Long getAppId() 
-    {
-        return appId;
+    public String getCardName() {
+        return cardName;
     }
-    public void setCardName(String cardName) 
-    {
+
+    public void setCardName(String cardName) {
         this.cardName = cardName;
     }
 
-    public String getCardName() 
-    {
-        return cardName;
+    public String getCardNo() {
+        return cardNo;
     }
-    public void setCardNo(String cardNo) 
-    {
+
+    public void setCardNo(String cardNo) {
         this.cardNo = cardNo;
     }
 
-    public String getCardNo() 
-    {
-        return cardNo;
+    public String getCardPass() {
+        return cardPass;
     }
-    public void setCardPass(String cardPass) 
-    {
+
+    public void setCardPass(String cardPass) {
         this.cardPass = cardPass;
     }
 
-    public String getCardPass() 
-    {
-        return cardPass;
+    public Long getQuota() {
+        return quota;
     }
-    public void setQuota(Long quota) 
-    {
+
+    public void setQuota(Long quota) {
         this.quota = quota;
     }
 
-    public Long getQuota() 
-    {
-        return quota;
+    public BigDecimal getPrice() {
+        return price;
     }
-    public void setPrice(BigDecimal price) 
-    {
+
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public BigDecimal getPrice() 
-    {
-        return price;
+    public Date getExpireTime() {
+        return expireTime;
     }
-    public void setExpireTime(Date expireTime) 
-    {
+
+    public void setExpireTime(Date expireTime) {
         this.expireTime = expireTime;
     }
 
-    public Date getExpireTime() 
-    {
-        return expireTime;
+    public String getIsSold() {
+        return isSold;
     }
-    public void setIsSold(String isSold) 
-    {
+
+    public void setIsSold(String isSold) {
         this.isSold = isSold;
     }
 
-    public String getIsSold() 
-    {
-        return isSold;
+    public String getOnSale() {
+        return onSale;
     }
-    public void setOnSale(String onSale) 
-    {
+
+    public void setOnSale(String onSale) {
         this.onSale = onSale;
     }
 
-    public String getOnSale() 
-    {
-        return onSale;
+    public String getIsCharged() {
+        return isCharged;
     }
-    public void setIsCharged(String isCharged) 
-    {
+
+    public void setIsCharged(String isCharged) {
         this.isCharged = isCharged;
     }
 
-    public String getIsCharged() 
-    {
-        return isCharged;
+    public Long getTemplateId() {
+        return templateId;
     }
-    public void setTemplateId(Long templateId) 
-    {
+
+    public void setTemplateId(Long templateId) {
         this.templateId = templateId;
     }
 
-    public Long getTemplateId() 
-    {
-        return templateId;
+    public String getStatus() {
+        return status;
     }
-    public void setStatus(String status) 
-    {
+
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public String getStatus() 
-    {
-        return status;
+    public ChargeRule getChargeRule() {
+        return chargeRule;
     }
-    public void setChargeRule(ChargeRule chargeRule)
-    {
+
+    public void setChargeRule(ChargeRule chargeRule) {
         this.chargeRule = chargeRule;
     }
 
-    public ChargeRule getChargeRule()
-    {
-        return chargeRule;
+    public Date getChargeTime() {
+        return chargeTime;
+    }
+
+    public void setChargeTime(Date chargeTime) {
+        this.chargeTime = chargeTime;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("cardId", getCardId())
-            .append("appId", getAppId())
-            .append("cardName", getCardName())
-            .append("cardNo", getCardNo())
-            .append("cardPass", getCardPass())
-            .append("quota", getQuota())
-            .append("price", getPrice())
-            .append("expireTime", getExpireTime())
-            .append("isSold", getIsSold())
-            .append("onSale", getOnSale())
-            .append("isCharged", getIsCharged())
-            .append("templateId", getTemplateId())
-            .append("status", getStatus())
-            .append("chargeRule", getChargeRule())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .append("updateBy", getUpdateBy())
-            .append("updateTime", getUpdateTime())
-            .append("remark", getRemark())
-            .toString();
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("cardId", getCardId())
+                .append("appId", getAppId())
+                .append("cardName", getCardName())
+                .append("cardNo", getCardNo())
+                .append("cardPass", getCardPass())
+                .append("quota", getQuota())
+                .append("price", getPrice())
+                .append("expireTime", getExpireTime())
+                .append("isSold", getIsSold())
+                .append("onSale", getOnSale())
+                .append("isCharged", getIsCharged())
+                .append("chargeTime", getChargeTime())
+                .append("templateId", getTemplateId())
+                .append("status", getStatus())
+                .append("chargeRule", getChargeRule())
+                .append("createBy", getCreateBy())
+                .append("createTime", getCreateTime())
+                .append("updateBy", getUpdateBy())
+                .append("updateTime", getUpdateTime())
+                .append("remark", getRemark())
+                .toString();
     }
 }

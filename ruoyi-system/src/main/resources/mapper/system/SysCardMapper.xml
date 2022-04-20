@@ -16,6 +16,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="isSold"    column="is_sold"    />
         <result property="onSale"    column="on_sale"    />
         <result property="isCharged"    column="is_charged"    />
+        <result property="chargeTime" column="charge_time"/>
         <result property="templateId"    column="template_id"    />
         <result property="status"    column="status"    />
         <result property="chargeRule"    column="charge_rule"    />
@@ -47,6 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                c.is_sold,
                c.on_sale,
                c.is_charged,
+               c.charge_time,
                c.template_id,
                c.status,
                c.charge_rule,
@@ -183,6 +185,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="isSold != null">is_sold = #{isSold},</if>
             <if test="onSale != null">on_sale = #{onSale},</if>
             <if test="isCharged != null">is_charged = #{isCharged},</if>
+            <if test="chargeTime != null">charge_time = #{chargeTime},</if>
             <if test="templateId != null">template_id = #{templateId},</if>
             <if test="status != null">status = #{status},</if>
             <if test="chargeRule != null">charge_rule = #{chargeRule},</if>
