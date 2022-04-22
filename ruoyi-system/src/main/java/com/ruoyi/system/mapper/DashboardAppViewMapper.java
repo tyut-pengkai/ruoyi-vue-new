@@ -130,4 +130,14 @@ public interface DashboardAppViewMapper {
     @Select("SELECT c.template_id, a.app_name, c.app_id, ct.card_name, count( 1 ) AS total_count FROM sys_card c join sys_app a on a.app_id = c.app_id join sys_card_template ct on ct.template_id = c.template_id\n" +
             "WHERE c.is_charged = 'Y' AND c.charge_time BETWEEN #{start} AND #{end} GROUP BY c.template_id")
     List<Map<String, Object>> queryTemplateCardActiveBetween(@Param("start") String start, @Param("end") String end);
+
+    @Select("SELECT\n" +
+            "\tapp_id,\n" +
+            "\tcount( 1 ) AS total_user \n" +
+            "FROM\n" +
+            "\tsys_app_user au \n" +
+            "WHERE\n" +
+            "\tau.last_login_time BETWEEN #{start} AND #{end} \n" +
+            "GROUP BY app_id")
+    List<Map<String, Object>> queryAppLoginAppUserTotalBetween(@Param("start") String start, @Param("end") String end);
 }

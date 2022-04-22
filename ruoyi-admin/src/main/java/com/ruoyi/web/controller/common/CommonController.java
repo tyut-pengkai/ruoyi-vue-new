@@ -6,6 +6,8 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.FileUtils;
@@ -63,6 +65,8 @@ public class CommonController {
     private ISysCardService sysCardService;
     @Resource
     private ISysLoginCodeService sysLoginCodeService;
+    @Resource
+    private RedisCache redisCache;
 
     private static final String FILE_DELIMETER = ",";
 
@@ -571,7 +575,16 @@ public class CommonController {
         int appUserVipTotal = appViewMapper.queryAppUserVipTotal();
         map.put("appUserVipTotal", appUserVipTotal);
         // 平台当前在线数
-
+        List<LoginUser> onlineUserList = new ArrayList<>();
+        Collection<String> loginKeys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
+        for (String key : loginKeys) {
+            LoginUser user = redisCache.getCacheObject(key);
+            if (user.getIfApp()) {
+                onlineUserList.add(user);
+            }
+        }
+        int onlineTotal = onlineUserList.size();
+        map.put("onlineTotal", onlineTotal);
         // 平台充值卡数量
         int cardTotal = sysCardService.selectSysCardList(new SysCard()).size();
         map.put("cardTotal", cardTotal);
@@ -631,6 +644,9 @@ public class CommonController {
             // 平台今日新增未激活登录码数量
             int loginCodeNoActiveToday = appViewMapper.queryLoginCodeNoActiveBetween(start, end);
             map.put("loginCodeNoActiveToday", loginCodeNoActiveToday);
+            // 各个软件
+            List<Map<String, Object>> mapListLoginAppUser = appViewMapper.queryAppLoginAppUserTotalBetween(start, end);
+
 
             List<SysApp> appList = sysAppService.selectSysAppList(new SysApp());
             List<String> appIdList = appList.stream().map(app -> app.getAppId().toString()).collect(Collectors.toList());
@@ -701,6 +717,28 @@ public class CommonController {
                     appDataMap.put(appId, new HashMap<>());
                 }
                 appDataMap.get(appId).put("appUserVipTotal", totalUser);
+            }
+            for (Map<String, Object> item : mapListLoginAppUser) {
+                String appId = item.get("app_id").toString();
+                Object totalUser = item.get("total_user");
+                if (!appDataMap.containsKey(appId)) {
+                    appDataMap.put(appId, new HashMap<>());
+                }
+                appDataMap.get(appId).put("loginToday", totalUser);
+            }
+            // 当前在线
+            for (LoginUser user : onlineUserList) {
+                if (user.getIfApp()) {
+                    String appId = user.getApp().getAppId().toString();
+                    if (!appDataMap.containsKey(appId)) {
+                        appDataMap.put(appId, new HashMap<>());
+                    }
+                    if (appDataMap.get(appId).containsKey("online")) {
+                        appDataMap.get(appId).put("online", (int) (appDataMap.get(appId).get("online")) + 1);
+                    } else {
+                        appDataMap.get(appId).put("online", 1);
+                    }
+                }
             }
 
             String[] keys = new String[]{"appUserTotal", "appUserVipTotal", "loginToday", "online"};
@@ -788,6 +826,203 @@ public class CommonController {
             LocalDate localDate = LocalDate.now();
             String start = localDate.with(TemporalAdjusters.firstDayOfMonth()).toString();
             String end = localDate.with(TemporalAdjusters.firstDayOfNextMonth()).toString();
+
+            int appUserToday = appViewMapper.queryAppUserTotalBetween(start, end);
+            map.put("appUserToday", appUserToday);
+            // 平台VIP用户总数-本月新增
+            int appUserVipToday = appViewMapper.queryAppUserVipTotalBetween(start, end);
+            map.put("appUserVipToday", appUserVipToday);
+            // 平台本月登录用户总数
+            int loginAppUserToday = appViewMapper.queryLoginAppUserTotalBetween(start, end);
+            map.put("loginAppUserToday", loginAppUserToday);
+            // 平台本月新增充值卡数量
+            int cardToday = appViewMapper.queryCardTotalBetween(start, end);
+            map.put("cardToday", cardToday);
+            // 平台本月新增激活充值卡数量
+            int cardActiveToday = appViewMapper.queryCardActiveBetween(start, end);
+            map.put("cardActiveToday", cardActiveToday);
+            // 平台本月新增未激活充值卡数量
+            int cardNoActiveToday = appViewMapper.queryCardNoActiveBetween(start, end);
+            map.put("cardNoActiveToday", cardNoActiveToday);
+            // 平台本月新增激活登录码数量
+            int loginCodeActiveToday = appViewMapper.queryLoginCodeActiveBetween(start, end);
+            map.put("loginCodeActiveToday", loginCodeActiveToday);
+            // 平台本月新增未激活登录码数量
+            int loginCodeNoActiveToday = appViewMapper.queryLoginCodeNoActiveBetween(start, end);
+            map.put("loginCodeNoActiveToday", loginCodeNoActiveToday);
+            // 各个软件
+            List<Map<String, Object>> mapListLoginAppUser = appViewMapper.queryAppLoginAppUserTotalBetween(start, end);
+
+
+            List<SysApp> appList = sysAppService.selectSysAppList(new SysApp());
+            List<String> appIdList = appList.stream().map(app -> app.getAppId().toString()).collect(Collectors.toList());
+            // 近半年激活充值卡-APP角度
+            start = localDate.minusMonths(6).toString();
+            end = localDate.plusDays(1).toString();
+            List<Map<String, Object>> mapListCardActive = appViewMapper.queryAppCardActiveBetween(start, end);
+            Map<String, Map<String, Object>> cardActiveMap = new HashMap<>();
+            for (Map<String, Object> item : mapListCardActive) {
+                Map<String, Object> mapAppCardActive = new HashMap<>();
+                String appId = item.get("app_id").toString();
+                String appName = item.get("app_name").toString();
+                Object totalCount = item.get("total_count");
+                mapAppCardActive.put("appId", appId);
+                mapAppCardActive.put("appName", appName);
+                mapAppCardActive.put("totalCount", totalCount);
+                cardActiveMap.put(appId, mapAppCardActive);
+            }
+            // 过滤
+            Set<String> keySet = new HashSet<>(cardActiveMap.keySet());
+            for (String appId : keySet) {
+                if (!appIdList.contains(appId)) {
+                    cardActiveMap.remove(appId);
+                }
+            }
+            map.put("cardActiveList", cardActiveMap.values());
+
+            // 近七日激活充值卡-卡类角度
+            List<Map<String, Object>> mapListCardActive2 = appViewMapper.queryTemplateCardActiveBetween(start, end);
+            Map<String, Map<String, Object>> cardActiveMap2 = new HashMap<>();
+            for (Map<String, Object> item : mapListCardActive2) {
+                Map<String, Object> mapAppCardActive = new HashMap<>();
+                String appId = item.get("app_id").toString();
+                String appName = item.get("app_name").toString();
+                String templateId = item.get("template_id").toString();
+                String cardName = item.get("card_name").toString();
+                Object totalCount = item.get("total_count");
+                mapAppCardActive.put("templateId", templateId);
+                mapAppCardActive.put("cardName", "[" + appName + "]" + cardName);
+                mapAppCardActive.put("totalCount", totalCount);
+                cardActiveMap2.put(appId, mapAppCardActive);
+            }
+            // 过滤
+            Set<String> keySet4 = new HashSet<>(cardActiveMap2.keySet());
+            for (String appId : keySet4) {
+                if (!appIdList.contains(appId)) {
+                    cardActiveMap2.remove(appId);
+                }
+            }
+            map.put("cardActiveList2", cardActiveMap2.values());
+
+            // 各软件详细数据
+            Map<String, Map<String, Object>> appDataMap = new HashMap<>();
+            for (Map<String, Object> item : mapListAppUser) {
+                String appId = item.get("app_id").toString();
+                Object totalUser = item.get("total_user");
+                if (!appDataMap.containsKey(appId)) {
+                    appDataMap.put(appId, new HashMap<>());
+                }
+                appDataMap.get(appId).put("appUserTotal", totalUser);
+            }
+            for (Map<String, Object> item : mapListAppUserVip) {
+                String appId = item.get("app_id").toString();
+                Object totalUser = item.get("total_user");
+                if (!appDataMap.containsKey(appId)) {
+                    appDataMap.put(appId, new HashMap<>());
+                }
+                appDataMap.get(appId).put("appUserVipTotal", totalUser);
+            }
+            for (Map<String, Object> item : mapListLoginAppUser) {
+                String appId = item.get("app_id").toString();
+                Object totalUser = item.get("total_user");
+                if (!appDataMap.containsKey(appId)) {
+                    appDataMap.put(appId, new HashMap<>());
+                }
+                appDataMap.get(appId).put("loginToday", totalUser);
+            }
+            // 当前在线
+            for (LoginUser user : onlineUserList) {
+                if (user.getIfApp()) {
+                    String appId = user.getApp().getAppId().toString();
+                    if (!appDataMap.containsKey(appId)) {
+                        appDataMap.put(appId, new HashMap<>());
+                    }
+                    if (appDataMap.get(appId).containsKey("online")) {
+                        appDataMap.get(appId).put("online", (int) (appDataMap.get(appId).get("online")) + 1);
+                    } else {
+                        appDataMap.get(appId).put("online", 1);
+                    }
+                }
+            }
+
+            String[] keys = new String[]{"appUserTotal", "appUserVipTotal", "loginToday", "online"};
+            for (SysApp app : appList) {
+                String appId = app.getAppId().toString();
+                String appName = app.getAppName();
+                if (!appDataMap.containsKey(appId)) {
+                    appDataMap.put(appId, new HashMap<>());
+                }
+                for (String key : keys) {
+                    if (!appDataMap.get(appId).containsKey(key)) {
+                        appDataMap.get(appId).put(key, 0L);
+                    }
+                }
+                appDataMap.get(appId).put("appName", appName);
+            }
+            // 过滤
+            Set<String> keySet3 = new HashSet<>(appDataMap.keySet());
+            for (String appId : keySet3) {
+                if (!appIdList.contains(appId)) {
+                    appDataMap.remove(appId);
+                }
+            }
+            ArrayList<Map<String, Object>> appDataList = new ArrayList<>(appDataMap.values());
+            appDataList.sort((o1, o2) -> (((Long) o2.get("appUserTotal")).compareTo(((Long) o1.get("appUserTotal"))) == 0 ?
+                    ((Long) o2.get("appUserVipTotal")).compareTo(((Long) o1.get("appUserVipTotal"))) :
+                    ((Long) o2.get("appUserTotal")).compareTo(((Long) o1.get("appUserTotal")))));
+            map.put("appDataList", appDataList);
+
+            // 近半年数据（直方图和折线图）
+            LocalDate monday = localDate.minusMonths(5);
+            List<List<Map<String, Object>>> mapListList = new ArrayList<>();
+            List<String> dateWeekList = new ArrayList<>();
+            for (int i = 0; i < 6; i++) {
+                LocalDate previous = monday.plusMonths(i).with(TemporalAdjusters.firstDayOfMonth());
+                LocalDate next = previous.with(TemporalAdjusters.firstDayOfNextMonth());
+                List<Map<String, Object>> tempMapList = appViewMapper.queryAppUserBetween(previous.toString(), next.toString());
+                mapListList.add(tempMapList);
+                dateWeekList.add(previous.getMonthValue() + "月");
+            }
+            Map<String, Map<String, Object>> increaseUserWeekMap = new HashMap<>();
+            for (int i = 0; i < mapListList.size(); i++) {
+                List<Map<String, Object>> mapList = mapListList.get(i);
+                for (Map<String, Object> item : mapList) {
+                    String appId = item.get("app_id").toString();
+                    Object totalUser = item.get("total_user");
+                    if (!increaseUserWeekMap.containsKey(appId)) {
+                        increaseUserWeekMap.put(appId, new HashMap<>());
+                    }
+                    if (!increaseUserWeekMap.get(appId).containsKey("data")) {
+                        increaseUserWeekMap.get(appId).put("data", new ArrayList<>());
+                    }
+                    ((ArrayList<Object>) increaseUserWeekMap.get(appId).get("data")).add(totalUser);
+                }
+                for (SysApp app : appList) {
+                    String appId = app.getAppId().toString();
+                    if (!increaseUserWeekMap.containsKey(appId)) {
+                        increaseUserWeekMap.put(appId, new HashMap<>());
+                        increaseUserWeekMap.get(appId).put("data", new ArrayList<>());
+                    }
+                    ArrayList<Object> data = (ArrayList<Object>) increaseUserWeekMap.get(appId).get("data");
+                    while (data.size() <= i) {
+                        data.add(0L);
+                    }
+                }
+            }
+            for (SysApp app : appList) {
+                String appId = app.getAppId().toString();
+                String appName = app.getAppName();
+                increaseUserWeekMap.get(appId).put("appName", appName);
+            }
+            // 过滤
+            Set<String> keySet2 = new HashSet<>(increaseUserWeekMap.keySet());
+            for (String appId : keySet2) {
+                if (!appIdList.contains(appId)) {
+                    increaseUserWeekMap.remove(appId);
+                }
+            }
+            map.put("dateWeekList", dateWeekList);
+            map.put("increaseUserWeekList", increaseUserWeekMap.values());
 
         }
         return AjaxResult.success(map);

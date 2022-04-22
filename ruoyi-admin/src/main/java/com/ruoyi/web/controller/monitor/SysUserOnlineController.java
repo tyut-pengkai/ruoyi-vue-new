@@ -106,14 +106,18 @@ public class SysUserOnlineController extends BaseController
         return getDataTable(userOnlineListFilted);
     }
 
+    public List<SysUserOnline> getOnlineUserList() {
+        TableDataInfo list = list(null, null);
+        return (List<SysUserOnline>) list.getRows();
+    }
+
     /**
      * 强退用户
      */
     @PreAuthorize("@ss.hasPermi('monitor:online:forceLogout')")
     @Log(title = "在线用户", businessType = BusinessType.FORCE)
     @DeleteMapping("/{tokenId}")
-    public AjaxResult forceLogout(@PathVariable String tokenId)
-    {
+    public AjaxResult forceLogout(@PathVariable String tokenId) {
         redisCache.deleteObject(Constants.LOGIN_TOKEN_KEY + tokenId);
         return AjaxResult.success();
     }

@@ -45,7 +45,9 @@
         <el-row :gutter="10">
           <el-col :span="12" style="margin-top: 8px">
             <el-card shadow="never" style="background-color: #f8f8f8">
-              <div align="center" class="card-title-app">今日登录数</div>
+              <div align="center" class="card-title-app">
+                {{ showMode == "1" ? "本月" : "今日" }}登录数
+              </div>
               <div align="center" class="card-title-app-num">
                 <count-to
                   :duration="2600"
@@ -100,6 +102,10 @@ export default {
       default: function () {
         return [0, 0, 0, 0];
       },
+    },
+    showMode: {
+      type: String,
+      default: "0",
     },
   },
 };

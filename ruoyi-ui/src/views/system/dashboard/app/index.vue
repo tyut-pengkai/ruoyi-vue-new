@@ -26,7 +26,7 @@
                         </span>
                         个
                       </el-tag>
-                      <el-divider direction="vertical"></el-divider>
+                      <!-- <el-divider direction="vertical"></el-divider> -->
                     </div>
                     <div style="float: right">
                       <el-switch
@@ -63,6 +63,7 @@
                   :increase="d['appUserToday']"
                   :value="d['appUserTotal']"
                   icon="el-icon-user"
+                  :increaseUnit="s[showMode]['userTotal']"
                   tag=""
                   title="用户总数"
                 ></show-card-app>
@@ -72,18 +73,19 @@
                   :increase="d['appUserVipToday']"
                   :value="d['appUserVipTotal']"
                   icon="el-icon-user"
+                  :increaseUnit="s[showMode]['userTotal']"
                   tag=""
                   title="VIP用户数"
                 ></show-card-app>
               </el-col>
               <el-col :lg="8" :sm="24" :xs="24" style="margin-top: 10px">
                 <show-card-app
-                  :increase="0"
+                  :increase="d['onlineTotal']"
                   :value="d['loginAppUserToday']"
                   icon="el-icon-user"
                   increaseUnit="当前在线"
                   tag=""
-                  title="今日登录用户"
+                  :title="s[showMode]['loginAppUserToday']"
                   unit="人"
                 ></show-card-app>
               </el-col>
@@ -94,7 +96,7 @@
                   :increase="d['cardToday']"
                   :value="d['cardTotal']"
                   icon="el-icon-tickets"
-                  increaseUnit="今日制卡"
+                  :increaseUnit="s[showMode]['cardTotal']"
                   tag=""
                   title="总制充值卡数量"
                   unit="张"
@@ -105,7 +107,7 @@
                   :increase="d['cardActiveToday']"
                   :value="d['cardActive']"
                   icon="el-icon-tickets"
-                  increaseUnit="今日激活"
+                  :increaseUnit="s[showMode]['activeCardTotal']"
                   tag=""
                   title="已激活充值卡数量"
                   unit="张"
@@ -116,6 +118,7 @@
                   :increase="d['cardNoActiveToday']"
                   :value="d['cardNoActive']"
                   icon="el-icon-tickets"
+                  :increaseUnit="s[showMode]['userTotal']"
                   tag=""
                   title="未激活充值卡数量"
                   unit="张"
@@ -128,7 +131,7 @@
                   :increase="d['loginCodeToday']"
                   :value="d['loginCodeTotal']"
                   icon="el-icon-user"
-                  increaseUnit="今日制码"
+                  :increaseUnit="s[showMode]['loginCodeTotal']"
                   tag=""
                   title="总登录码数量"
                 ></show-card-app>
@@ -138,7 +141,7 @@
                   :increase="d['loginCodeActiveToday']"
                   :value="d['loginCodeActive']"
                   icon="el-icon-user"
-                  increaseUnit="今日激活"
+                  :increaseUnit="s[showMode]['activeCardTotal']"
                   tag=""
                   title="已激活登录码数量"
                 ></show-card-app>
@@ -148,6 +151,7 @@
                   :increase="d['loginCodeNoActiveToday']"
                   :value="d['loginCodeNoActive']"
                   icon="el-icon-user"
+                  :increaseUnit="s[showMode]['userTotal']"
                   tag=""
                   title="未激活登录码数量"
                 ></show-card-app>
@@ -161,7 +165,7 @@
                       class="el-icon-data-analysis"
                       style="margin-right: 5px"
                     ></i>
-                    <span>近七日新增用户数</span>
+                    <span>{{ s[showMode]["increaseUserTitle"] }}</span>
                   </div>
                   <div style="margin-top: 20px">
                     <bar-chart :data="barData" :xTitle="barTitle"></bar-chart>
@@ -172,7 +176,7 @@
                 <el-card shadow="never">
                   <div class="card-title">
                     <i class="el-icon-pie-chart" style="margin-right: 5px"></i>
-                    <span>近七日激活充值卡(软件)</span>
+                    <span>{{ s[showMode]["activeAppCardTitle"] }}</span>
                   </div>
                   <div style="margin-top: 20px">
                     <pie-chart :data="pieData"></pie-chart>
@@ -183,7 +187,7 @@
                 <el-card shadow="never">
                   <div class="card-title">
                     <i class="el-icon-pie-chart" style="margin-right: 5px"></i>
-                    <span>近七日激活充值卡(卡类)</span>
+                    <span>{{ s[showMode]["activeTemplateCardTitle"] }}</span>
                   </div>
                   <div style="margin-top: 20px">
                     <pie-chart :data="pie2Data"></pie-chart>
@@ -281,6 +285,28 @@ export default {
         //   {data: [10, 20, 30, 45, 58, 46, 17], appName: "123"}
       ],
       barTitle: [],
+      s: {
+        0: {
+          userTotal: "今日新增",
+          loginAppUserToday: "今日登录用户",
+          cardTotal: "今日制卡",
+          activeCardTotal: "今日激活",
+          loginCodeTotal: "今日制码",
+          increaseUserTitle: "近七日激活充值卡(软件)",
+          activeAppCardTitle: "近七日激活充值卡(软件)",
+          activeTemplateCardTitle: "近七日激活充值卡(卡类)",
+        },
+        1: {
+          userTotal: "本月新增",
+          loginAppUserToday: "本月登录用户",
+          cardTotal: "本月制卡",
+          activeCardTotal: "本月激活",
+          loginCodeTotal: "本月制码",
+          increaseUserTitle: "近半年激活充值卡(软件)",
+          activeAppCardTitle: "近半年激活充值卡(软件)",
+          activeTemplateCardTitle: "近半年激活充值卡(卡类)",
+        },
+      },
     };
   },
   created() {
