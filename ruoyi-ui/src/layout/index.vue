@@ -131,31 +131,31 @@ export default {
     width: calc(100% - 54px);
   }
 
-.mobile .fixed-header {
-  width: 100%;
-}
+ .mobile .fixed-header {
+   width: 100%;
+ }
 
-.my-footer {
-  position: fixed;
-  // left: calc(200px - #{$base-sidebar-width});
-  right: 0;
-  bottom: 0;
-  height: 32px;
-  line-height: 32px;
-  padding: 0 15px;
-  background-color: #eee;
-  font-family: "Helvetica Neue";
-  text-align: center;
-  z-index: 999;
-  transition: width 0.28s;
-  width: 100%;
-}
+ .my-footer {
+   position: fixed;
+   // left: calc(200px - #{$base-sidebar-width});
+   right: 0;
+   bottom: 0;
+   height: 32px;
+   line-height: 32px;
+   padding: 0 15px;
+   background-color: #eee;
+   font-family: "Helvetica Neue";
+   text-align: center;
+   z-index: 999;
+   transition: width 0.28s;
+   width: 100%;
+ }
 
-.sidebarHide .fixed-header {
-  width: calc(100%);
-}
+ .sidebarHide .fixed-header {
+   width: 100%;
+ }
 
-.mobile .fixed-header {
-  width: 100%;
-}
+ .mobile .fixed-header {
+   width: 100%;
+ }
 </style>
