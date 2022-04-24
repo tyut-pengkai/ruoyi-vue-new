@@ -10,10 +10,10 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
  * @author ruoyi
  */
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-public class InamsApplication {
+public class HyApplication {
     public static void main(String[] args) {
         // System.setProperty("spring.devtools.restart.enabled", "false");
-        SpringApplication.run(InamsApplication.class, args);
+        SpringApplication.run(HyApplication.class, args);
 //        RuoYiConfig config = SpringUtils.getBean(RuoYiConfig.class);
     }
 }

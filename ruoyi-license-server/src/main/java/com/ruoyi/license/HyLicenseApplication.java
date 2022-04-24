@@ -10,10 +10,10 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
  * @author ruoyi
  */
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-public class InamsLicenseApplication {
+public class HyLicenseApplication {
     public static void main(String[] args) {
         // System.setProperty("spring.devtools.restart.enabled", "false");
-        SpringApplication.run(InamsLicenseApplication.class, args);
+        SpringApplication.run(HyLicenseApplication.class, args);
         System.out.println(" 系统启动成功");
     }
 }

@@ -9,11 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
-    <artifactId>inams-license</artifactId>
+    <groupId>com.coordsoft</groupId>
+    <artifactId>hy-license</artifactId>
     <version>1.0.0</version>
 
     <description>
-        inams license服务器
+        红叶验证license服务器
     </description>
 
     <dependencies>

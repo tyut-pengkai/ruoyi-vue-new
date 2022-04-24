@@ -1,6 +1,13 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" label-width="68px" size="small">
+    <el-form
+      v-show="showSearch"
+      ref="queryForm"
+      :inline="true"
+      :model="queryParams"
+      label-width="68px"
+      size="small"
+    >
       <el-form-item label="支付编码" prop="code">
         <el-input
           v-model="queryParams.code"
@@ -17,8 +24,12 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="移动端" prop="mobile">
-        <el-select v-model="queryParams.mobile" clearable placeholder="请选择移动端">
+      <!-- <el-form-item label="移动端" prop="mobile">
+        <el-select
+          v-model="queryParams.mobile"
+          clearable
+          placeholder="请选择移动端"
+        >
           <el-option
             v-for="dict in dict.type.sys_yes_no"
             :key="dict.value"
@@ -28,7 +39,11 @@
         </el-select>
       </el-form-item>
       <el-form-item label="电脑端" prop="pc">
-        <el-select v-model="queryParams.pc" clearable placeholder="请选择电脑端">
+        <el-select
+          v-model="queryParams.pc"
+          clearable
+          placeholder="请选择电脑端"
+        >
           <el-option
             v-for="dict in dict.type.sys_yes_no"
             :key="dict.value"
@@ -36,9 +51,13 @@
             :value="dict.value"
           />
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" clearable placeholder="请选择状态">
+        <el-select
+          v-model="queryParams.status"
+          clearable
+          placeholder="请选择状态"
+        >
           <el-option
             v-for="dict in dict.type.sys_normal_disable"
             :key="dict.value"
@@ -48,8 +67,18 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          icon="el-icon-search"
+          size="mini"
+          type="primary"
+          @click="handleQuery"
+        >搜索
+        </el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+        >重置
+        </el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -100,30 +129,40 @@
         >导出
         </el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+      ></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="paymentList" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="paymentList"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="" type="index"/>
       <el-table-column align="center" label="支付名称" prop="name"/>
       <el-table-column align="center" label="支付编码" prop="code"/>
       <el-table-column align="center" label="描述" prop="description"/>
-      <el-table-column align="center" label="移动端" prop="mobile">
+      <!-- <el-table-column align="center" label="移动端" prop="mobile">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.mobile"/>
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.mobile" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="电脑端" prop="pc">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.pc"/>
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.pc" />
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column align="center" label="图标" prop="icon"/>
       <!-- <el-table-column align="center" label="配置" prop="config"/> -->
       <el-table-column align="center" label="状态" prop="status">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
+          <dict-tag
+            :options="dict.type.sys_normal_disable"
+            :value="scope.row.status"
+          />
         </template>
       </el-table-column>
       <!-- <el-table-column align="center" label="创建者" prop="createBy"/>
@@ -139,7 +178,11 @@
         </template>
       </el-table-column> -->
       <el-table-column align="center" label="备注" prop="remark"/>
-      <el-table-column align="center" class-name="small-padding fixed-width" label="操作">
+      <el-table-column
+        align="center"
+        class-name="small-padding fixed-width"
+        label="操作"
+      >
         <template slot-scope="scope">
           <el-button
             v-hasPermi="['system:payment:edit']"
@@ -162,7 +205,7 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :limit.sync="queryParams.pageSize"
       :page.sync="queryParams.pageNum"
       :total="total"
@@ -185,9 +228,13 @@
           </el-col>
         </el-form-item>
         <el-form-item label="描述" label-width="80px" prop="description">
-          <el-input v-model="form.description" placeholder="请输入描述" type="textarea"/>
+          <el-input
+            v-model="form.description"
+            placeholder="请输入描述"
+            type="textarea"
+          />
         </el-form-item>
-        <el-form-item>
+        <!-- <el-form-item>
           <el-col :span="12">
             <el-form-item label="移动端" label-width="80px" prop="mobile">
               <el-select v-model="form.mobile" placeholder="请选择移动端">
@@ -212,7 +259,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
           <el-col :span="12">
             <el-form-item label="状态" label-width="80px" prop="status">
@@ -234,33 +281,48 @@
         </el-form-item>
         <!-- <el-form-item :label="key" v-for="(value, key, index) in form.configParams" :key="index" :prop="'configParams.' + key"
         :rules="{required: true, message: key + '不能为空', trigger: 'blur'}" label-width="150px"> -->
-        <el-form-item v-for="(value, key, index) in form.configParams" :key="index" :label="key"
-                      :prop="'configParams.' + key"
-                      :rules="{required: false, message: key + '不能为空', trigger: 'blur'}" label-width="80px">
-          <el-input v-model="form.configParams[key]" :placeholder="'请输入' + key" type="textarea"
-                    @input="change($event)"/>
+        <el-form-item
+          v-for="(value, key, index) in form.configParams"
+          :key="index"
+          :label="key"
+          :prop="'configParams.' + key"
+          :rules="{
+            required: false,
+            message: key + '不能为空',
+            trigger: 'blur',
+          }"
+          label-width="80px"
+        >
+          <el-input
+            v-model="form.configParams[key]"
+            :placeholder="'请输入' + key"
+            type="textarea"
+            @input="change($event)"
+          />
         </el-form-item>
         <el-form-item v-if="!form.payId" label="配置" prop="config">
           <el-input v-model="form.config" placeholder="请输入配置"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入内容" type="textarea"/>
+          <el-input
+            v-model="form.remark"
+            placeholder="请输入内容"
+            type="textarea"
+          />
         </el-form-item>
         <div v-if="form.payId">
           <el-form-item prop="">
             <el-col :span="12">
-              <el-form-item label="创建人" prop="createBy">{{
-                  form.createBy
-                }}
+              <el-form-item label="创建人" prop="createBy"
+              >{{ form.createBy }}
               </el-form-item>
               <el-form-item label="创建时间" prop="createTime"
               >{{ form.createTime }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="最后更新" prop="updateBy">{{
-                  form.updateBy
-                }}
+              <el-form-item label="最后更新" prop="updateBy"
+              >{{ form.updateBy }}
               </el-form-item>
               <el-form-item label="更新时间" prop="updateTime"
               >{{ form.updateTime }}
@@ -278,11 +340,11 @@
 </template>
 
 <script>
-import {addPayment, delPayment, getPayment, listPayment, updatePayment} from "@/api/system/payment";
+import {addPayment, delPayment, getPayment, listPayment, updatePayment,} from "@/api/system/payment";
 
 export default {
   name: "Payment",
-  dicts: ['sys_yes_no', 'sys_normal_disable'],
+  dicts: ["sys_yes_no", "sys_normal_disable"],
   data() {
     return {
       // 遮罩层
@@ -315,13 +377,17 @@ export default {
       },
       // 表单参数
       form: {
-        configParams: {}
+        configParams: {},
       },
       // 表单校验
       rules: {
-        code: [{required: true, message: "支付编码不能为空", trigger: "blur"}],
-        name: [{required: true, message: "支付名称不能为空", trigger: "blur"}],
-      }
+        code: [
+          {required: true, message: "支付编码不能为空", trigger: "blur"},
+        ],
+        name: [
+          {required: true, message: "支付名称不能为空", trigger: "blur"},
+        ],
+      },
     };
   },
   created() {
@@ -331,7 +397,7 @@ export default {
     /** 查询支付配置列表 */
     getList() {
       this.loading = true;
-      listPayment(this.queryParams).then(response => {
+      listPayment(this.queryParams).then((response) => {
         this.paymentList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -373,9 +439,9 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.payId)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
+      this.ids = selection.map((item) => item.payId);
+      this.single = selection.length !== 1;
+      this.multiple = !selection.length;
     },
     /** 新增按钮操作 */
     handleAdd() {
@@ -386,10 +452,10 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const payId = row.payId || this.ids
-      getPayment(payId).then(response => {
+      const payId = row.payId || this.ids;
+      getPayment(payId).then((response) => {
         this.form = response.data;
-        this.form['configParams'] = {};
+        this.form["configParams"] = {};
         if (this.form.config) {
           Object.assign(this.form.configParams, JSON.parse(this.form.config));
         }
@@ -399,17 +465,17 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
           this.form.config = JSON.stringify(this.form.configParams);
           if (this.form.payId != null) {
-            updatePayment(this.form).then(response => {
+            updatePayment(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addPayment(this.form).then(response => {
+            addPayment(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -421,23 +487,31 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const payIds = row.payId || this.ids;
-      this.$modal.confirm('是否确认删除支付配置编号为"' + payIds + '"的数据项？').then(function () {
-        return delPayment(payIds);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
+      this.$modal
+        .confirm('是否确认删除支付配置编号为"' + payIds + '"的数据项？')
+        .then(function () {
+          return delPayment(payIds);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {
+        });
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/payment/export', {
-        ...this.queryParams
-      }, `payment_${new Date().getTime()}.xlsx`)
+      this.download(
+        "system/payment/export",
+        {
+          ...this.queryParams,
+        },
+        `payment_${new Date().getTime()}.xlsx`
+      );
     },
     change(e) {
-      this.$forceUpdate()
-    }
-  }
+      this.$forceUpdate();
+    },
+  },
 };
 </script>

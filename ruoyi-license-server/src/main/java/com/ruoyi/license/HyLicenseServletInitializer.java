@@ -1,4 +1,4 @@
-package com.ruoyi;
+package com.ruoyi.license;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -8,9 +8,9 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  *
  * @author ruoyi
  */
-public class InamsServletInitializer extends SpringBootServletInitializer {
+public class HyLicenseServletInitializer extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(InamsApplication.class);
+        return application.sources(HyLicenseApplication.class);
     }
 }
