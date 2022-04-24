@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 /**
- * @author huangchen@deepglint.com
+ * @author zwgu
  * @desc 用于生成证书文件，不能放在给客户部署的代码里
  * @date 2019/3/14 10:33
  */

@@ -5,7 +5,7 @@ import de.schlichtherle.license.LicenseManager;
 import de.schlichtherle.license.LicenseParam;
 
 /**
- * @author huangchen@deepglint.com
+ * @author zwgu
  * @desc
  * @date 2019/3/14 13:26
  */

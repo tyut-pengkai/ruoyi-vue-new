@@ -12,7 +12,7 @@ import java.text.MessageFormat;
 import java.util.prefs.Preferences;
 
 /**
- * @author huangchen@deepglint.com
+ * @author zwgu
  * @desc License生成类
  * @date 2019/3/14 10:24
  */

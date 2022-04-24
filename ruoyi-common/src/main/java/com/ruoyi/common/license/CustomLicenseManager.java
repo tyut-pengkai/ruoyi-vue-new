@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author huangchen@deepglint.com
+ * @author zwgu
  * @desc 自定义LicenseManager，用于增加额外的服务器硬件信息校验
  * @date 2019/3/14 9:55
  */

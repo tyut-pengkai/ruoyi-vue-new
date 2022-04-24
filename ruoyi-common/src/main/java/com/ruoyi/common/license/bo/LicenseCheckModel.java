@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author huangchen@deepglint.com
+ * @author zwgu
  * @desc 自定义需要校验的License参数
  * @date 2019/3/14 10:00
  */

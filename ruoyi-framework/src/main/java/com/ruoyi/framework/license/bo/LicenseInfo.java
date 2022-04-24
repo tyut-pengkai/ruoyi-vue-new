@@ -30,8 +30,8 @@ public class LicenseInfo {
             info.setTo(to);
             info.setLicenseTo(extra.getLicenseTo());
             info.setLicenseType(extra.getLicenseType());
-            info.setAppLimit(extra.getAppLimit().toString());
-            info.setMaxOnline(extra.getMaxOnline().toString());
+            info.setAppLimit(extra.getAppLimit() == -1 ? "*": extra.getAppLimit().toString());
+            info.setMaxOnline(extra.getMaxOnline() == -1 ? "*": extra.getMaxOnline().toString());
             info.setLicenseDomain(String.join("/", extra.getDomainName()));
             info.setLicenseIp(String.join("/", extra.getIpAddress()));
             info.setDatetime(DateUtils.parseDateToStr(from) + " - " + DateUtils.parseDateToStr(to) +

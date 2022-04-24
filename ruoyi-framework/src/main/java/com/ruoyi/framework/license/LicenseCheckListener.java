@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * 在项目启动时安装证书
  *
- * @author huangchen@deepglint.com
+ * @author zwgu
  * @date 2019/3/14 13:18
  */
 @Component

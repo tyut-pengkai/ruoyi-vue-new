@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @author huangchen@deepglint.com
+ * @author zwgu
  * @desc License生成类需要的参数
  * @date 2019/3/14 10:10
  */

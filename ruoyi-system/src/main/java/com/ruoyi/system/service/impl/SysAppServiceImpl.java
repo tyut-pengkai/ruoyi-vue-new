@@ -99,8 +99,10 @@ public class SysAppServiceImpl implements ISysAppService {
     public int insertSysApp(SysApp sysApp) {
         // 检查软件位限制
         List<SysApp> appList = sysAppMapper.selectSysAppList(new SysApp());
-        if (appList != null && appList.size() >= ((LicenseCheckModel) Constants.LICENSE_CONTENT.getExtra()).getAppLimit()) {
-            throw new ServiceException("当前创建的软件数量已超出License上限，请升级License或删除部分软件后再试");
+        // -1 表示不限制
+        Integer appLimit = ((LicenseCheckModel) Constants.LICENSE_CONTENT.getExtra()).getAppLimit();
+        if (appLimit != -1 && appList != null && appList.size() >= appLimit) {
+            throw new ServiceException("当前创建的软件数量已超出授权上限，请升级授权或删除部分软件后再试");
         }
         return sysAppMapper.insertSysApp(sysApp);
     }

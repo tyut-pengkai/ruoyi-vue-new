@@ -357,8 +357,10 @@ public class ValidUtils {
                 onlineAppUser.add(key);
             }
         }
-        if (onlineAppUser.size() >= ((LicenseCheckModel) Constants.LICENSE_CONTENT.getExtra()).getMaxOnline()) {
-            throw new ApiException("当前在线人数已超出License上限，请联系管理员升级License或稍后再试");
+        // -1 表示不限制
+        Integer maxOnline = ((LicenseCheckModel) Constants.LICENSE_CONTENT.getExtra()).getMaxOnline();
+        if (maxOnline != -1 && onlineAppUser.size() >= maxOnline) {
+            throw new ApiException("当前在线人数已超出授权上限，请联系管理员升级授权或稍后再试");
         }
     }
 

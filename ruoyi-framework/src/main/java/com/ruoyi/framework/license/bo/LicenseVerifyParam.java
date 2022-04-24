@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * @author huangchen@deepglint.com
+ * @author zwgu
  * @desc License校验类需要的参数
  * @date 2019/3/14 13:22
  */

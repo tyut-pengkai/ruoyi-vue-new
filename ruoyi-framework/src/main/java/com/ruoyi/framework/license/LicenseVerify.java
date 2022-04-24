@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.prefs.Preferences;
 
 /**
- * @author huangchen@deepglint.com
+ * @author zwgu
  * @desc License校验类
  * @date 2019/3/14 13:24
  */
