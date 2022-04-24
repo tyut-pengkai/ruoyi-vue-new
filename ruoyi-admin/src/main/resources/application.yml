@@ -2,7 +2,7 @@
 ruoyi:
   # 名称
   name: 红叶网络验证与软件管理系统
-  shortName: 红叶验证
+  shortName: 红叶网络验证
   # 版本
   version: v1.0.0
   # 版本号
