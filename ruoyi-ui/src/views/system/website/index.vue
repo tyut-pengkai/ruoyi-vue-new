@@ -9,21 +9,37 @@
           <el-form-item>
             <el-col :span="12">
               <el-form-item label="网站icon">
-                <image-upload :fileSize="0.5" :limit="1" @input="handleFileFavicon"></image-upload>
+                <image-upload
+                  :fileSize="0.5"
+                  :limit="1"
+                  @input="handleFileFavicon"
+                ></image-upload>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <image-preview :src="form.favicon" height="146px" width="146px"></image-preview>
+              <image-preview
+                :src="form.favicon"
+                height="146px"
+                width="146px"
+              ></image-preview>
             </el-col>
           </el-form-item>
           <el-form-item>
             <el-col :span="12">
               <el-form-item label="网站logo">
-                <image-upload :fileSize="0.5" :limit="1" @input="handleFileLogo"></image-upload>
+                <image-upload
+                  :fileSize="0.5"
+                  :limit="1"
+                  @input="handleFileLogo"
+                ></image-upload>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <image-preview :src="form.logo" height="146px" width="146px"></image-preview>
+              <image-preview
+                :src="form.logo"
+                height="146px"
+                width="146px"
+              ></image-preview>
             </el-col>
           </el-form-item>
           <el-form-item label="网站名称">
@@ -31,6 +47,9 @@
           </el-form-item>
           <el-form-item label="网站简称">
             <el-input v-model="form.shortName"></el-input>
+          </el-form-item>
+          <el-form-item label="商城名称">
+            <el-input v-model="form.shopName"></el-input>
           </el-form-item>
           <el-form-item label="网站域名">
             <el-input v-model="form.domain"></el-input>
@@ -64,16 +83,14 @@
 </template>
 
 <script>
-import ImageUpload from '@/components/ImageUpload'
-import ImagePreview from '@/components/ImagePreview'
-import {getWebsiteConfig, updateWebsiteConfig} from '@/api/system/website';
+import ImageUpload from "@/components/ImageUpload";
+import ImagePreview from "@/components/ImagePreview";
+import {getWebsiteConfig, updateWebsiteConfig} from "@/api/system/website";
 
 export default {
-  name: 'Website',
+  name: "Website",
   components: {ImageUpload, ImagePreview},
-  dicts: [
-    "sys_normal_disable",
-  ],
+  dicts: ["sys_normal_disable"],
   data() {
     return {
       form: {
@@ -86,7 +103,7 @@ export default {
         keywords: "",
         description: "",
       },
-    }
+    };
   },
   created() {
     this.init();
@@ -115,6 +132,6 @@ export default {
         }
       });
     },
-  }
-}
+  },
+};
 </script>

@@ -18,9 +18,9 @@ public class QuickAccessTest {
             byte[] split = "||||".getBytes();
             byte[] apiUrl = "1".getBytes();
             byte[] appSecret = "2".getBytes();
-            byte[] bytes = FileUtils.readFileToByteArray(new File(PathUtils.getUserPath() + "\\..\\template.exe"));
+            byte[] bytes = FileUtils.readFileToByteArray(new File(PathUtils.getUserPath() + File.separator + ".." + File.separator + "template.exe"));
             byte[] joinedBytes = ArrayUtil.addAll(bytes, split, apiUrl, split, appSecret);
-            FileUtils.writeByteArrayToFile(new File(PathUtils.getUserPath() + "\\..\\template_new.exe"), joinedBytes);
+            FileUtils.writeByteArrayToFile(new File(PathUtils.getUserPath() + File.separator + ".." + File.separator + "template_new.exe"), joinedBytes);
         } catch (IOException e) {
             e.printStackTrace();
         }

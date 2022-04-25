@@ -8,35 +8,38 @@
 import {getWebsiteConfig} from "@/api/system/website";
 
 export default {
-  name: 'App',
+  name: "App",
   metaInfo() {
     return {
-      title: this.$store.state.settings.dynamicTitle && this.$store.state.settings.title,
-      titleTemplate: title => {
+      title:
+        this.$store.state.settings.dynamicTitle &&
+        this.$store.state.settings.title,
+      titleTemplate: (title) => {
         // return title ? `${title} - ${process.env.VUE_APP_TITLE}` : process.env.VUE_APP_TITLE
-        return title ? `${title} - ${this.title}` : this.title
+        return title ? `${title} - ${this.title}` : this.title;
       },
       meta: [
-        {vmid: 'description', name: 'description', content: this.description},
-        {vmid: 'keywords', name: 'keywords', content: this.keywords}
-      ]
-    }
+        {vmid: "description", name: "description", content: this.description},
+        {vmid: "keywords", name: "keywords", content: this.keywords},
+      ],
+    };
   },
   data() {
     return {
       title: "",
       description: "",
       keywords: "",
-    }
+    };
   },
   created() {
-    this.initData()
+    this.initData();
   },
   methods: {
     initData() {
       getWebsiteConfig().then((res) => {
         let websiteName = res.data.name || "";
         let websiteShortName = res.data.shortName || "";
+        let shopName = res.data.shopName || "";
         let websiteLogo = res.data.logo || "";
         let description = res.data.description || "";
         let keywords = res.data.keywords || "";
@@ -44,19 +47,22 @@ export default {
         this.description = description;
         this.keywords = keywords;
         document.title = websiteName;
-        this.$store.dispatch('settings/setWebsiteName', websiteName);
-        this.$store.dispatch('settings/setWebsiteShortName', websiteShortName);
-        this.$store.dispatch('settings/setWebsiteLogo', websiteLogo);
+        this.$store.dispatch("settings/setWebsiteName", websiteName);
+        this.$store.dispatch("settings/setWebsiteShortName", websiteShortName);
+        this.$store.dispatch("settings/setShopName", shopName);
+        this.$store.dispatch("settings/setWebsiteLogo", websiteLogo);
         if (res.data.favicon) {
           var faviconurl = res.data.favicon; //这里可以是动态的获取的favicon的地址
-          var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-          link.type = 'image/x-icon';
-          link.rel = 'shortcut icon';
+          var link =
+            document.querySelector("link[rel*='icon']") ||
+            document.createElement("link");
+          link.type = "image/x-icon";
+          link.rel = "shortcut icon";
           link.href = process.env.VUE_APP_BASE_API + faviconurl;
-          document.getElementsByTagName('head')[0].appendChild(link);
+          document.getElementsByTagName("head")[0].appendChild(link);
         }
       });
-    }
-  }
-}
+    },
+  },
+};
 </script>

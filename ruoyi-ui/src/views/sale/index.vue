@@ -21,7 +21,7 @@
                       bottom: 12px;
                     "
                   >
-                    INAMS软件商店
+                    {{ title }}
                   </span>
                 </a>
               </div>
@@ -56,8 +56,8 @@
       <el-link :underline="false" type="info">
         <div class="my-footer">
           <span>
-              {{ copyright }}
-            </span>
+            {{ copyright }}
+          </span>
         </div>
       </el-link>
       <!-- </el-footer> -->
@@ -74,6 +74,7 @@ export default {
       activeIndex: "1",
       regShow: false,
       logo: require("../../assets/logo/logo.png"),
+      title: "在线商城",
     };
   },
   created() {
@@ -84,16 +85,22 @@ export default {
       getSysInfo().then((res) => {
         this.copyright = res.copyright;
       });
+      if (this.$store.state.settings.shopName) {
+        this.title = this.$store.state.settings.shopName;
+      }
       if (this.$store.state.settings.websiteLogo) {
-        this.logo = process.env.VUE_APP_BASE_API + this.$store.state.settings.websiteLogo;
+        this.logo =
+          process.env.VUE_APP_BASE_API + this.$store.state.settings.websiteLogo;
       }
       if (this.$store.state.settings.websiteFavicon) {
         var faviconurl = this.$store.state.settings.websiteFavicon; //这里可以是动态的获取的favicon的地址
-        var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-        link.type = 'image/x-icon';
-        link.rel = 'shortcut icon';
+        var link =
+          document.querySelector("link[rel*='icon']") ||
+          document.createElement("link");
+        link.type = "image/x-icon";
+        link.rel = "shortcut icon";
         link.href = process.env.VUE_APP_BASE_API + faviconurl;
-        document.getElementsByTagName('head')[0].appendChild(link);
+        document.getElementsByTagName("head")[0].appendChild(link);
       }
     },
     handleSelect(key, keyPath) {
@@ -121,7 +128,7 @@ a {
   padding: 0;
   position: fixed;
   z-index: 9999;
-  width: 100%
+  width: 100%;
 }
 
 .el-main {

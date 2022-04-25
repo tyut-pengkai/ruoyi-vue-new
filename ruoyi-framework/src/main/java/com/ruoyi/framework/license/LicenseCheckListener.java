@@ -52,7 +52,7 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
             param.setSubject(subject);
             param.setPublicAlias(publicAlias);
             param.setStorePass(Constants.STORE_PASS);
-            param.setLicensePath(PathUtils.getUserPath() + "\\license.lic");
+            param.setLicensePath(PathUtils.getUserPath() + File.separator + "license.lic");
             try {
                 param.setPublicKeysStorePath(PathUtils.getResourceFile(
                                 new ObfuscatedString(new long[]{0xD43EA2656C859964L, 0x114DCA318581A2B9L,

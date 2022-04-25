@@ -1,6 +1,14 @@
 import defaultSettings from '@/settings'
 
-const { sideTheme, showSettings, topNav, tagsView, fixedHeader, sidebarLogo, dynamicTitle } = defaultSettings
+const {
+  sideTheme,
+  showSettings,
+  topNav,
+  tagsView,
+  fixedHeader,
+  sidebarLogo,
+  dynamicTitle
+} = defaultSettings
 
 const storageSetting = JSON.parse(localStorage.getItem('layout-setting')) || ''
 const state = {
@@ -15,11 +23,15 @@ const state = {
   dynamicTitle: storageSetting.dynamicTitle === undefined ? dynamicTitle : storageSetting.dynamicTitle,
   // 自定义添加非ruoyi框架
   websiteName: '',
+  shopName: '',
   websiteShortName: '',
   websiteLogo: ''
 }
 const mutations = {
-  CHANGE_SETTING: (state, { key, value }) => {
+  CHANGE_SETTING: (state, {
+    key,
+    value
+  }) => {
     if (state.hasOwnProperty(key)) {
       state[key] = value
     }
@@ -28,23 +40,39 @@ const mutations = {
 
 const actions = {
   // 修改布局设置
-  changeSetting({commit}, data) {
+  changeSetting({
+                  commit
+                }, data) {
     commit('CHANGE_SETTING', data)
   },
   // 设置网页标题
-  setTitle({commit}, title) {
+  setTitle({
+             commit
+           }, title) {
     state.title = title
   },
   // 设置网站名称
-  setWebsiteName({commit}, websiteName) {
+  setWebsiteName({
+                   commit
+                 }, websiteName) {
     state.websiteName = websiteName
   },
-  // 设置网站简称
-  setWebsiteShortName({commit}, websiteShortName) {
-    state.websiteShortName = websiteShortName
+  // 设置商城名称
+  setShopName({
+                commit
+              }, shopName) {
+    state.shopName = shopName
   },
   // 设置网站简称
-  setWebsiteLogo({commit}, websiteLogo) {
+  setWebsiteShortName({
+                        commit
+                      }, websiteShortName) {
+    state.websiteShortName = websiteShortName
+  },
+  // 设置网站Logo
+  setWebsiteLogo({
+                   commit
+                 }, websiteLogo) {
     state.websiteLogo = websiteLogo
   }
 }
@@ -55,4 +83,3 @@ export default {
   mutations,
   actions
 }
-

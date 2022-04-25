@@ -1,0 +1,1 @@
+nohup java -jar -Dloader.path=.,lib ruoyi-admin.jar &
