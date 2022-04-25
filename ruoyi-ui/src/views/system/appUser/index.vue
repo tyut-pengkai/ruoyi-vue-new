@@ -916,7 +916,7 @@ export default {
     handleAppUserDeviceCode: function (row) {
       const appUserId = row.appUserId;
       this.$router.push({
-        path: "/app/appUserDeviceCode",
+        path: "/verify/appUserDeviceCode",
         query: {
           appUserId: appUserId,
         },
