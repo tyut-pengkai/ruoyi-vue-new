@@ -75,7 +75,7 @@ public class ApiV1Controller extends BaseController {
 //            @ApiImplicitParam(name = "appkey", value = "AppKey", paramType = "path", required = true, dataType = "String"),
 //            @ApiImplicitParam(name = "params", value = "接口需要的参数", paramType = "body", required = true, dataType = "Map")
 //    })
-    @Log(title = "API调用", businessType = BusinessType.CALL_API)
+    @Log(title = "WEB API", businessType = BusinessType.CALL_API)
     public Object api(@PathVariable("appkey") String appkey, @RequestBody Map<String, String> params, HttpServletRequest request) {
         log.info("appkey: {}, 请求参数: {}", appkey, JSON.toJSON(params));
         // 检查软件是否存在
