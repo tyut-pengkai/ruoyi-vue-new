@@ -1,8 +1,12 @@
 <template>
   <div class="home">
-    <el-alert v-if="shopConfig && shopConfig['saleShopNotice']" :closable="false"
-              :title="shopConfig['saleShopNoticeTitle'] || '公告' " style="margin-bottom: 20px"
-              type="success">
+    <el-alert
+      v-if="shopConfig && shopConfig['saleShopNotice']"
+      :closable="false"
+      :title="shopConfig['saleShopNoticeTitle'] || '公告'"
+      style="margin-bottom: 20px"
+      type="success"
+    >
       <div class="ql-container ql-bubble">
         <div class="ql-editor">
           <div>
@@ -63,7 +67,8 @@
               <el-skeleton-item
                 variant="text"
                 style="height: 28px; margin-bottom: 18px"
-                v-for="(item, index) in [0,1,2,3,4]" :key="index"
+                v-for="(item, index) in [0, 1, 2, 3, 4]"
+                :key="index"
               />
             </div>
           </template>
@@ -387,8 +392,10 @@ export default {
     getShopConfig() {
       getShopConfig({}).then((response) => {
         this.shopConfig = response.data;
-        for (var payMode of this.shopConfig['payModeList']) {
-          this.payData.push(Object.assign({id: this.payData.length}, payMode))
+        for (var payMode of this.shopConfig["payModeList"]) {
+          this.payData.push(
+            Object.assign({id: this.payData.length}, payMode)
+          );
         }
       });
     },
@@ -413,22 +420,20 @@ export default {
       this.showGoodsDetail = false;
       this.goodsId = null;
       // 拉取当前选择目录下的商品列表
-      listCategory({appId: this.categoryData[id].appId}).then(
-        (response) => {
-          var ctList = response.rows;
-          for (var ct of ctList) {
-            this.goodsData.push({
-              id: this.goodsData.length,
-              templateId: ct.templateId,
-              name: ct.cardName,
-              min: ct.price,
-              // tags: ["多件优惠"],
-              num: ct.cardCount,
-              wholesale: [], //批发
-            });
-          }
+      listCategory({appId: this.categoryData[id].appId}).then((response) => {
+        var ctList = response.rows;
+        for (var ct of ctList) {
+          this.goodsData.push({
+            id: this.goodsData.length,
+            templateId: ct.templateId,
+            name: ct.cardName,
+            min: ct.price,
+            // tags: ["多件优惠"],
+            num: ct.cardCount,
+            wholesale: [], //批发
+          });
         }
-      );
+      });
       this.categoryId = id;
     },
     handleGoodsSelect(id) {
@@ -625,6 +630,10 @@ export default {
 </script>
 
 <style>
+.el-alert__content {
+  width: 100%;
+}
+
 .my-title span {
   font-weight: 600;
   font-size: 18px;
