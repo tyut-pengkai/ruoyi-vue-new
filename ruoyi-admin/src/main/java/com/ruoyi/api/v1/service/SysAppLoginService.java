@@ -133,11 +133,11 @@ public class SysAppLoginService {
                     // 检查绑定限制
                     if (app.getBindType() == BindType.ONE_TO_ONE) { // 账号与设备一对一
                         validUtils.checkMoreMachine(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
-                        validUtils.checkMoreUser(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
+                        validUtils.checkMoreUser(appUser.getAppId(), appUser.getAppUserId(), deviceCode.getDeviceCodeId());
                     } else if (app.getBindType() == BindType.MANY_TO_ONE) { // 账号与设备多对一
                         validUtils.checkMoreMachine(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
                     } else if (app.getBindType() == BindType.ONE_TO_MANY) { // 账号与设备一对多
-                        validUtils.checkMoreUser(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
+                        validUtils.checkMoreUser(appUser.getAppId(), appUser.getAppUserId(), deviceCode.getDeviceCodeId());
                     }
                     appUserDeviceCode = new SysAppUserDeviceCode();
                     appUserDeviceCode.setAppUserId(appUser.getAppUserId());
@@ -273,11 +273,11 @@ public class SysAppLoginService {
                     // 检查绑定限制
                     if (app.getBindType() == BindType.ONE_TO_ONE) { // 账号与设备一对一
                         validUtils.checkMoreMachine(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
-                        validUtils.checkMoreUser(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
+                        validUtils.checkMoreUser(appUser.getAppId(), appUser.getAppUserId(), deviceCode.getDeviceCodeId());
                     } else if (app.getBindType() == BindType.MANY_TO_ONE) { // 账号与设备多对一
                         validUtils.checkMoreMachine(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
                     } else if (app.getBindType() == BindType.ONE_TO_MANY) { // 账号与设备一对多
-                        validUtils.checkMoreUser(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
+                        validUtils.checkMoreUser(appUser.getAppId(), appUser.getAppUserId(), deviceCode.getDeviceCodeId());
                     }
                     appUserDeviceCode = new SysAppUserDeviceCode();
                     appUserDeviceCode.setAppUserId(appUser.getAppUserId());

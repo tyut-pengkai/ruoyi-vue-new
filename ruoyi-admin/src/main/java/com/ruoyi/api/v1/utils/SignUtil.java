@@ -11,7 +11,7 @@ public class SignUtil {
      * @param sArray 签名参数组
      * @return 去掉空值与签名参数后的新签名参数组
      */
-    public static Map<String, String> paraFilter(Map<String, String> sArray) {
+    public static Map<String, String> paramFilter(Map<String, String> sArray) {
         Map<String, String> result = new HashMap<>();
         if (sArray == null || sArray.size() <= 0) {
             return result;
@@ -67,7 +67,7 @@ public class SignUtil {
      * @param salt   密钥
      */
     public static String sign(Map<String, String> params, String salt) {
-        Map<String, String> map = SignUtil.paraFilter(params);
+        Map<String, String> map = SignUtil.paramFilter(params);
         String text = SignUtil.createLinkString(map);
         return SignUtil.sign(text, salt);
     }
@@ -95,7 +95,7 @@ public class SignUtil {
      * @return 验证是否通过
      */
     public static Boolean verifySign(Map<String, String> params, String sign, String salt) {
-        Map<String, String> map = SignUtil.paraFilter(params);
+        Map<String, String> map = SignUtil.paramFilter(params);
         String text = SignUtil.createLinkString(map);
         return SignUtil.verify(text, sign, salt);
     }

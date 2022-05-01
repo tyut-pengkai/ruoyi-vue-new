@@ -129,7 +129,7 @@ public class SysAppUserDeviceCodeServiceImpl implements ISysAppUserDeviceCodeSer
      * @return 软件用户与设备码关联
      */
     @Override
-    public List<SysAppUserDeviceCode> selectSysAppUserDeviceCodeByDeviceCodeId(Long deviceCodeId) {
-        return sysAppUserDeviceCodeMapper.selectSysAppUserDeviceCodeByDeviceCodeId(deviceCodeId);
+    public List<SysAppUserDeviceCode> selectSysAppUserDeviceCodeByAppIdAndDeviceCodeId(Long appId, Long deviceCodeId) {
+        return sysAppUserDeviceCodeMapper.selectSysAppUserDeviceCodeByAppIdAndDeviceCodeId(appId, deviceCodeId);
     }
 }

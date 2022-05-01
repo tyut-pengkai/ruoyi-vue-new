@@ -86,5 +86,5 @@ public interface ISysAppUserDeviceCodeService {
      *
      * @return 软件用户与设备码关联
      */
-    List<SysAppUserDeviceCode> selectSysAppUserDeviceCodeByDeviceCodeId(Long deviceCodeId);
+    List<SysAppUserDeviceCode> selectSysAppUserDeviceCodeByAppIdAndDeviceCodeId(Long appId, Long deviceCodeId);
 }

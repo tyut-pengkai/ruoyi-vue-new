@@ -237,9 +237,9 @@ public class ValidUtils {
         }
     }
 
-    public void checkMoreUser(Long appUserId, Long deviceCodeId) {
+    public void checkMoreUser(Long appId, Long appUserId, Long deviceCodeId) {
         boolean flagFinishBind = false;
-        List<SysAppUserDeviceCode> appUserDeviceCodeList = appUserDeviceCodeService.selectSysAppUserDeviceCodeByDeviceCodeId(deviceCodeId);
+        List<SysAppUserDeviceCode> appUserDeviceCodeList = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppIdAndDeviceCodeId(appId, deviceCodeId);
         if (appUserDeviceCodeList.size() > 0) {
             for (SysAppUserDeviceCode appUserDeviceCode : appUserDeviceCodeList) {
                 if (Objects.equals(appUserDeviceCode.getAppUserId(), appUserId)) {

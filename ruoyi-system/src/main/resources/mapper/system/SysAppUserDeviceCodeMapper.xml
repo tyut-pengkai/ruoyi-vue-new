@@ -34,6 +34,7 @@
                saudc.remark
         from sys_app_user_device_code saudc
                  inner join sys_device_code sdc on saudc.device_code_id = sdc.device_code_id
+                 inner join sys_app_user sau on saudc.app_user_id = sau.app_user_id
     </sql>
 
     <select id="selectSysAppUserDeviceCodeList" parameterType="SysAppUserDeviceCode"
@@ -70,9 +71,9 @@
         where saudc.app_user_id = #{appUserId}
     </select>
 
-    <select id="selectSysAppUserDeviceCodeByDeviceCodeId" resultMap="SysAppUserDeviceCodeResult">
+    <select id="selectSysAppUserDeviceCodeByAppIdAndDeviceCodeId" resultMap="SysAppUserDeviceCodeResult">
         <include refid="selectSysAppUserDeviceCodeVo"/>
-        where saudc.device_code_id = #{deviceCodeId}
+        where sau.app_id = #{appId} and saudc.device_code_id = #{deviceCodeId}
     </select>
 
     <insert id="insertSysAppUserDeviceCode" parameterType="SysAppUserDeviceCode" useGeneratedKeys="true"

@@ -85,5 +85,5 @@ public interface SysAppUserDeviceCodeMapper {
      * @param deviceCodeId
      * @return 软件用户与设备码关联
      */
-    List<SysAppUserDeviceCode> selectSysAppUserDeviceCodeByDeviceCodeId(Long deviceCodeId);
+    List<SysAppUserDeviceCode> selectSysAppUserDeviceCodeByAppIdAndDeviceCodeId(@Param("appId") Long appId, @Param("deviceCodeId") Long deviceCodeId);
 }
