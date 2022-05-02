@@ -343,6 +343,14 @@
       append-to-body
       width="400px"
     >
+      <el-alert
+        :closable="false"
+        show-icon
+        style="margin-bottom: 10px"
+        title="快速接入安全性较低，不建议生产环境使用，主要用于开发者临时接单需要快速接入快速测试的场景"
+        type="info"
+      >
+      </el-alert>
       <el-upload
         ref="upload"
         :action="
