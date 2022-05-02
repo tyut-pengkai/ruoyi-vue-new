@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
+import com.ruoyi.common.utils.AesCbcPKCS5PaddingUtil;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.PathUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -18,8 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.File;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -199,10 +206,20 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             apv.setDataOutEnc(app.getDataOutEnc().getCode());
             apv.setDataOutPwd(app.getDataOutPwd());
             apv.setApiPwd(app.getApiPwd());
-            byte[] apvBytes = JSON.toJSONString(apv).getBytes();
-            byte[] tplBytes = FileUtils.readFileToByteArray(new File(PathUtils.getUserPath() + "\\quickAccessTemplate.exe"));
-            return ArrayUtil.addAll(tplBytes, split, apvBytes, split, bytes);
-        } catch (IOException e) {
+
+            // 加密
+            String apvStr = JSON.toJSONString(apv);
+            apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");
+            byte[] apvBytes = apvStr.getBytes();
+
+            byte[] exe = bytes;
+            // String exeStr = AesCbcPKCS5PaddingUtil.encode(bytes, "quickAccess");
+            // exe = exeStr.getBytes();
+
+            byte[] tplBytes = FileUtils.readFileToByteArray(new File(PathUtils.getUserPath() + File.separator + "quickAccessTemplate.exe"));
+
+            return ArrayUtil.addAll(tplBytes, split, apvBytes, split, exe);
+        } catch (IOException | InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
             e.printStackTrace();
         }
         return null;
