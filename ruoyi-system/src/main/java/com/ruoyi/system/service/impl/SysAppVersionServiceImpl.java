@@ -198,6 +198,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             apv.setDataInPwd(app.getDataInPwd());
             apv.setDataOutEnc(app.getDataOutEnc().getCode());
             apv.setDataOutPwd(app.getDataOutPwd());
+            apv.setApiPwd(app.getApiPwd());
             byte[] apvBytes = JSON.toJSONString(apv).getBytes();
             byte[] tplBytes = FileUtils.readFileToByteArray(new File(PathUtils.getUserPath() + "\\quickAccessTemplate.exe"));
             return ArrayUtil.addAll(tplBytes, split, apvBytes, split, bytes);
@@ -220,5 +221,6 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         private String dataInPwd;
         private String dataOutEnc;
         private String dataOutPwd;
+        private String apiPwd;
     }
 }

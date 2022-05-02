@@ -414,7 +414,7 @@
           <!-- end -->
         </div>
         <!-- 修改 -->
-        <div v-if="form.appUserId && form.app && form.user">
+        <div v-if="form.appUserId && form.app">
           <el-form-item prop="">
             <el-col :span="8">
               <el-form-item label="所属软件" prop="appName">
@@ -571,7 +571,7 @@
               </div>
             </el-col>
           </div>
-          <div v-if="form.appUserId && form.app && form.user">
+          <div v-if="form.appUserId && form.app">
             <el-col :span="12">
               <div v-if="form.app.billType === '0'">
                 <el-form-item label="过期时间" prop="expireTime">

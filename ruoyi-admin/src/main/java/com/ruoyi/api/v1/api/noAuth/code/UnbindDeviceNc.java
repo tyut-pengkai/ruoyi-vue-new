@@ -14,9 +14,11 @@ import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
 import com.ruoyi.system.service.ISysAppUserService;
 import com.ruoyi.system.service.ISysDeviceCodeService;
+import com.ruoyi.system.service.ISysLoginCodeService;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -27,6 +29,8 @@ public class UnbindDeviceNc extends Function {
 
     @Resource
     private ISysAppUserService appUserService;
+    @Resource
+    private ISysLoginCodeService loginCodeService;
     @Resource
     private ISysDeviceCodeService deviceCodeService;
     @Resource
@@ -47,9 +51,13 @@ public class UnbindDeviceNc extends Function {
     @Transactional(noRollbackFor = ApiException.class, rollbackFor = Exception.class)
     public Object handle() {
         String deviceCodeStr = this.getParams().get("deviceCode");
-        String loginCode = this.getParams().get("loginCode");
+        String loginCodeStr = this.getParams().get("loginCode");
 
-        SysAppUser appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(getApp().getAppId(), loginCode);
+        SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
+        if (loginCode == null) {
+            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST);
+        }
+        SysAppUser appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(getApp().getAppId(), loginCodeStr);
         if (appUser == null) {
             throw new ApiException(ErrorCode.ERROR_APP_USER_NOT_EXIST);
         }
