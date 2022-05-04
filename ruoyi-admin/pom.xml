@@ -167,8 +167,43 @@
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
+            <!-- 源码加密 --> <!--开源官网：https://github.com/core-lib/xjar-maven-plugin-->
+            <!-- https://blog.csdn.net/weixin_40816738/article/details/120388026 --> <!-- package -Dxjar.password=xxx -f pom.xml -->
+            <plugin>
+                <groupId>com.github.core-lib</groupId>
+                <artifactId>xjar-maven-plugin</artifactId>
+                <version>4.0.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <!-- 或使用 <phase>install</phase> -->
+                        <configuration>
+                            <excludes>
+                                <exclude>static/**</exclude>
+                                <exclude>templates/**</exclude>
+                                <exclude>resources/**</exclude>
+                                <exclude>META-INF/resources/**</exclude>
+                            </excludes>
+                            <!-- 目标jar存放目录 -->
+                            <targetDir>${project.build.directory}/xJarDir/</targetDir>
+                            <!-- 目标jar名称,也可以用表达式（参考官网） -->
+                            <targetJar>${project.artifactId}-${project.version}-release.jar</targetJar>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <finalName>${project.artifactId}-${project.version}</finalName>
     </build>
-
+    <!-- 源码加密 -->
+    <!-- 设置 jitpack.io 插件仓库 -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </pluginRepository>
+    </pluginRepositories>
 </project>
