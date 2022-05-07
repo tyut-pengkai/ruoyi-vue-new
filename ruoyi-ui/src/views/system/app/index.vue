@@ -256,7 +256,14 @@
         label="软件作者"
       >
         <template slot-scope="scope">
-          {{ scope.row.developer.nickName }}({{ scope.row.developer.userName }})
+          {{
+            scope.row.developer
+              ? scope.row.developer.nickName +
+              "(" +
+              scope.row.developer.userName +
+              ")"
+              : "[用户不存在]"
+          }}
         </template>
       </el-table-column>
       <!-- <el-table-column

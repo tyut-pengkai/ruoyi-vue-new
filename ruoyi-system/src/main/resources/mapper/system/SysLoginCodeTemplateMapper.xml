@@ -76,27 +76,26 @@
             inner join sys_user u on a.create_by = u.user_name
             inner join sys_user u1 on ct.create_by = u1.user_name
         </if>
-        <where>
-            <if test="appId != null ">and ct.app_id = #{appId}</if>
-            <if test="cardName != null  and cardName != ''">and ct.card_name like concat('%', #{cardName}, '%')</if>
-            <if test="cardNoPrefix != null">and ct.card_no_prefix = #{cardNoPrefix}</if>
-            <if test="cardNoSuffix != null">and ct.card_no_suffix = #{cardNoSuffix}</if>
-            <if test="cardDescription != null">and ct.card_description = #{cardDescription}</if>
-            <if test="quota != null ">and ct.quota = #{quota}</if>
-            <if test="price != null ">and ct.price = #{price}</if>
-            <if test="cardNoLen != null ">and ct.card_no_len = #{cardNoLen}</if>
-            <if test="cardNoGenRule != null">and ct.card_no_gen_rule = #{cardNoGenRule}</if>
-            <if test="cardNoRegex != null">and ct.card_no_regex = #{cardNoRegex}</if>
-            <if test="onSale != null">and ct.on_sale = #{onSale}</if>
-            <if test="firstStock != null">and ct.first_stock = #{firstStock}</if>
-            <if test="effectiveDuration != null ">and ct.effective_duration = #{effectiveDuration}</if>
-            <if test="status != null">and ct.status = #{status}</if>
-            <if test="enableAutoGen != null">and ct.enable_auto_gen = #{enableAutoGen}</if>
-            <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
-                <!-- 数据范围过滤 -->
-                ${params.dataScope}
-            </if>
-        </where>
+        where a.del_flag = '0'
+        <if test="appId != null ">and ct.app_id = #{appId}</if>
+        <if test="cardName != null  and cardName != ''">and ct.card_name like concat('%', #{cardName}, '%')</if>
+        <if test="cardNoPrefix != null">and ct.card_no_prefix = #{cardNoPrefix}</if>
+        <if test="cardNoSuffix != null">and ct.card_no_suffix = #{cardNoSuffix}</if>
+        <if test="cardDescription != null">and ct.card_description = #{cardDescription}</if>
+        <if test="quota != null ">and ct.quota = #{quota}</if>
+        <if test="price != null ">and ct.price = #{price}</if>
+        <if test="cardNoLen != null ">and ct.card_no_len = #{cardNoLen}</if>
+        <if test="cardNoGenRule != null">and ct.card_no_gen_rule = #{cardNoGenRule}</if>
+        <if test="cardNoRegex != null">and ct.card_no_regex = #{cardNoRegex}</if>
+        <if test="onSale != null">and ct.on_sale = #{onSale}</if>
+        <if test="firstStock != null">and ct.first_stock = #{firstStock}</if>
+        <if test="effectiveDuration != null ">and ct.effective_duration = #{effectiveDuration}</if>
+        <if test="status != null">and ct.status = #{status}</if>
+        <if test="enableAutoGen != null">and ct.enable_auto_gen = #{enableAutoGen}</if>
+        <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </if>
     </select>
 
     <select id="selectSysLoginCodeTemplateByTemplateId" parameterType="Long" resultMap="SysLoginCodeTemplateResult">

@@ -80,24 +80,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectSysAppUserList" parameterType="SysAppUser" resultMap="SysAppUserResult">
         <include refid="selectSysAppUserVo"/>
-        <where>
-            <if test="userName != null ">and (u.nick_name like concat('%', #{userName}, '%') or u.user_name like
-                concat('%', #{userName}, '%') or au.login_code like concat('%', #{userName}, '%'))
-            </if>
-            <if test="appId != null ">and au.app_id = #{appId}</if>
-            <if test="status != null  and status != ''">and au.status = #{status}</if>
-            <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''">
-                and au.last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}
-            </if>
-            <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
-                and au.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
-            </if>
-            <if test="point != null  and point != ''">and au.point = #{point}</if>
-            <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
-                <!-- 数据范围过滤 -->
-                ${params.dataScope}
-            </if>
-        </where>
+        where a.del_flag = '0'
+        <if test="userName != null ">and (u.nick_name like concat('%', #{userName}, '%') or u.user_name like
+            concat('%', #{userName}, '%') or au.login_code like concat('%', #{userName}, '%'))
+        </if>
+        <if test="appId != null ">and au.app_id = #{appId}</if>
+        <if test="status != null  and status != ''">and au.status = #{status}</if>
+        <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''">
+            and au.last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}
+        </if>
+        <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
+            and au.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
+        </if>
+        <if test="point != null  and point != ''">and au.point = #{point}</if>
+        <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </if>
     </select>
     
     <select id="selectSysAppUserByAppUserId" parameterType="Long" resultMap="SysAppUserResult">
