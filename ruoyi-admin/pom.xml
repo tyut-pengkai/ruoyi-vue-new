@@ -80,15 +80,17 @@
     </dependencies>
 
     <build>
-        <!--<resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                &lt;!&ndash;打包时排除掉资源文件&ndash;&gt;
-                <excludes>
-                    <exclude>**/**</exclude>
-                </excludes>
-            </resource>
-        </resources>-->
+        <!--        <resources>-->
+        <!--            <resource>-->
+        <!--                <filtering>true</filtering>-->
+        <!--                <directory>src/main/resources</directory>-->
+        <!--                &lt;!&ndash;打包时排除掉资源文件&ndash;&gt;-->
+        <!--                <excludes>-->
+        <!--&lt;!&ndash;                    <exclude>**/**</exclude>&ndash;&gt;-->
+        <!--                    <exclude>**/*.yml</exclude>-->
+        <!--                </excludes>-->
+        <!--            </resource>-->
+        <!--        </resources>-->
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -149,6 +151,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>

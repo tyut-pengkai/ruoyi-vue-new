@@ -78,6 +78,9 @@ public class AlipayF2fPayment extends Payment {
                 String port = "80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort();
                 notifyUrl = request.getScheme() + "://" + request.getServerName() + port;
             }
+            if (notifyUrl.endsWith("/")) {
+                notifyUrl = notifyUrl.substring(0, notifyUrl.length() - 1);
+            }
             notifyUrl += pathMapping + "/sale/shop/notify/" + this.getCode();
             alipayClient = new DefaultAlipayClient(serverUrl, config.getAppId(), config.getPrivateKey(), "json", "UTF-8", alipayPublicKey, "RSA2");
         }
