@@ -1,6 +1,6 @@
 package com.ruoyi.api.v1.handler;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.api.v1.anno.Encrypt;
 import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.encrypt.IEncryptType;
@@ -93,7 +93,8 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 			return body instanceof String ? Constants.PREFIX_TYPE + body : body;
 		}
 		log.info("对字符串开始加密!");
-		String result = JSON.toJSONString(body);
+		// String result = JSON.toJSONString(body);
+		String result = (new ObjectMapper()).writeValueAsString(body);
 		if (body instanceof String) {
 			result = (String) body;
 		}
@@ -103,7 +104,7 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 //			if (encrypTypeOut == EncrypType.AES_CBC_NoPadding) {
 //				encryptType = new EncryptAesCbcNoP();
 //			} else
-            if (encrypTypeOut == EncrypType.AES_CBC_PKCS5Padding) {
+			if (encrypTypeOut == EncrypType.AES_CBC_PKCS5Padding) {
                 encryptType = new EncryptAesCbcPKCS5P();
             } else if (encrypTypeOut == EncrypType.AES_CBC_ZeroPadding) {
                 encryptType = new EncryptAesCbcZeroP();
