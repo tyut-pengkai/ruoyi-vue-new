@@ -134,18 +134,28 @@
 </template>
 
 <script>
+import {getSysInfo} from "@/api/common";
+
 export default {
   name: "Index",
   data() {
     return {
       // 版本号
-      version: "内测版v1.0",
+      version: null,
     };
   },
   methods: {
     goTarget(href) {
       window.open(href, "_blank");
     },
+    getSysInfo() {
+      getSysInfo().then((res) => {
+        this.version = res.version + "(" + res.versionNo + ")";
+      });
+    },
+  },
+  created() {
+    this.getSysInfo();
   },
 };
 </script>

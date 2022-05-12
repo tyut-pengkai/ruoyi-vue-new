@@ -1,14 +1,12 @@
-package com.ruoyi.framework.license;
+package com.ruoyi.framework.hy;
 
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.license.ServerInfo;
 import com.ruoyi.common.utils.PathUtils;
-import com.ruoyi.common.utils.ip.IpUtils;
-import com.ruoyi.framework.license.bo.LicenseInfo;
+import com.ruoyi.framework.license.LicenseVerify;
 import com.ruoyi.framework.license.bo.LicenseVerifyParam;
 import de.schlichtherle.util.ObfuscatedString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 /**
  * 在项目启动时安装证书
@@ -27,7 +24,7 @@ import java.nio.charset.StandardCharsets;
  */
 @Component
 @Slf4j
-public class LicenseCheckListener implements ApplicationListener<ContextRefreshedEvent> {
+public class HyListener implements ApplicationListener<ContextRefreshedEvent> {
 
     /**
      * 证书subject
@@ -47,7 +44,7 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
         ServerInfo.getServerInfo();
         ApplicationContext context = event.getApplicationContext().getParent();
         if (context == null) {
-            log.info("开始载入License");
+//            log.info("开始载入License");
             LicenseVerifyParam param = new LicenseVerifyParam();
             param.setSubject(subject);
             param.setPublicAlias(publicAlias);
@@ -68,28 +65,28 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
             //安装证书
             try {
                 licenseVerify.install(param);
-                log.info("License载入成功");
+//                log.info("License载入成功");
             } catch (Exception e) {
-                log.info("License载入失败：{}", e.getMessage());
+//                log.info("License载入失败：{}", e.getMessage());
 //                e.printStackTrace();
             }
         }
-        showLicenceInfo();
+//        showLicenceInfo();
     }
 
-    private void showLicenceInfo() {
-        try {
-            LicenseInfo info = LicenseInfo.getLicenseInfo();
-            File tipFile = PathUtils.getResourceFile("licenseTip.txt");
-            String tip = FileUtils.readFileToString(tipFile, StandardCharsets.UTF_8);
-            System.out.format(tip, Constants.SERVER_SN, IpUtils.getHostName(),
-                    ServerInfo.getServerIp(), info.getLicenseType(), info.getLicenseTo(),
-                    info.getAppLimit(), info.getMaxOnline(), info.getLicenseDomain(),
-                    info.getLicenseIp(), info.getDatetime());
-            log.info("\n>>: 系统启动成功\n");
-        } catch (Exception e) {
-//            e.printStackTrace();
-            log.info("\n>>: 系统启动失败：{}\n", e.getMessage());
-        }
-    }
+//    private void showLicenceInfo() {
+//        try {
+//            LicenseInfo info = LicenseInfo.getLicenseInfo();
+//            File tipFile = PathUtils.getResourceFile("licenseTip.txt");
+//            String tip = FileUtils.readFileToString(tipFile, StandardCharsets.UTF_8);
+//            System.out.format(tip, Constants.SERVER_SN, IpUtils.getHostName(),
+//                    ServerInfo.getServerIp(), info.getLicenseType(), info.getLicenseTo(),
+//                    info.getAppLimit(), info.getMaxOnline(), info.getLicenseDomain(),
+//                    info.getLicenseIp(), info.getDatetime());
+//            log.info("\n>>: 系统启动成功\n");
+//        } catch (Exception e) {
+////            e.printStackTrace();
+//            log.info("\n>>: 系统启动失败：{}\n", e.getMessage());
+//        }
+//    }
 }

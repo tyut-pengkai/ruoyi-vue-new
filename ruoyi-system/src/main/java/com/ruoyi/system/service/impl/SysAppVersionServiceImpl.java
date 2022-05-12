@@ -216,7 +216,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             // String exeStr = AesCbcPKCS5PaddingUtil.encode(bytes, "quickAccess");
             // exe = exeStr.getBytes();
 
-            byte[] tplBytes = FileUtils.readFileToByteArray(new File(PathUtils.getUserPath() + File.separator + "quickAccessTemplate.exe"));
+            byte[] tplBytes = FileUtils.readFileToByteArray(new File(PathUtils.getUserPath() + File.separator + "template" + File.separator + "quickAccessTemplate.tpl"));
 
             return ArrayUtil.addAll(tplBytes, split, apvBytes, split, exe);
         } catch (IOException | InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {

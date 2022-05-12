@@ -9,8 +9,6 @@ import de.schlichtherle.util.ObfuscatedString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.prefs.Preferences;
 
 /**
@@ -58,7 +56,7 @@ public class LicenseVerify {
      */
     public boolean verify() {
         LicenseManager licenseManager = LicenseManagerHolder.getInstance(null);
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         //2. 校验证书
         try {

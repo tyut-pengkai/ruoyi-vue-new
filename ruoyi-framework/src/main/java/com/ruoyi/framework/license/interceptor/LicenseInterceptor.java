@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
 /**
- * 防止重复提交拦截器
+ * 证书检查拦截器
  *
  * @author ruoyi
  */
