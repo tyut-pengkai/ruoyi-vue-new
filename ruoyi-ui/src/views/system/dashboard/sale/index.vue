@@ -342,10 +342,12 @@ export default {
         this.lineData = [];
         if (this.d["feeAppWeekList"]) {
           this.barData = this.d["feeAppWeekList"];
-          for (var i = 0; i < this.barData[0].length; i++) {
-            this.lineData.push(0);
-            for (var item of this.barData) {
-              this.lineData[i] = this.lineData[i] + item["data"][i];
+          if (this.barData && this.barData.length > 0) {
+            for (var i = 0; i < this.barData[0].length; i++) {
+              this.lineData.push(0);
+              for (var item of this.barData) {
+                this.lineData[i] = this.lineData[i] + item["data"][i];
+              }
             }
           }
         }
