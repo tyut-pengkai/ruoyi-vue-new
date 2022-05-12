@@ -27,6 +27,7 @@
         <result property="remark" column="remark"/>
         <result property="expireTime" column="expire_time"/>
         <result property="tradeNo" column="trade_no"/>
+        <result property="manualDelivery" column="manual_delivery"/>
     </resultMap>
 
     <resultMap id="SysSaleOrderSysSaleOrderItemResult" type="SysSaleOrder" extends="SysSaleOrderResult">
@@ -70,7 +71,8 @@
                update_time,
                remark,
                expire_time,
-               trade_no
+               trade_no,
+               manual_delivery
         from sys_sale_order
     </sql>
 
@@ -125,6 +127,7 @@
                a.remark,
                a.expire_time,
                a.trade_no,
+               a.manual_delivery,
                b.item_id       as sub_item_id,
                b.order_id      as sub_order_id,
                b.template_type as sub_template_type,
@@ -164,6 +167,7 @@
                a.remark,
                a.expire_time,
                a.trade_no,
+               a.manual_delivery,
                b.item_id       as sub_item_id,
                b.order_id      as sub_order_id,
                b.template_type as sub_template_type,
@@ -204,6 +208,7 @@
             <if test="remark != null">remark,</if>
             <if test="expireTime != null">expire_time,</if>
             <if test="tradeNo != null">trade_no,</if>
+            <if test="manualDelivery != null">manual_delivery,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderNo != null">#{orderNo},</if>
@@ -227,6 +232,7 @@
             <if test="remark != null">#{remark},</if>
             <if test="expireTime != null">#{expireTime},</if>
             <if test="tradeNo != null">#{tradeNo},</if>
+            <if test="manualDelivery != null">#{manualDelivery},</if>
         </trim>
     </insert>
 
@@ -254,6 +260,7 @@
             <if test="remark != null">remark = #{remark},</if>
             <if test="expireTime != null">expire_time = #{expireTime},</if>
             <if test="tradeNo != null">trade_no = #{tradeNo},</if>
+            <if test="manualDelivery != null">manual_delivery = #{manualDelivery},</if>
         </trim>
         where order_id = #{orderId}
     </update>

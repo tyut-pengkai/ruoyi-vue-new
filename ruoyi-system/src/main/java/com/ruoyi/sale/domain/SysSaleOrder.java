@@ -67,10 +67,13 @@ public class SysSaleOrder extends BaseEntity {
     @Excel(name = "支付方式")
     private String payMode;
 
+    @Excel(name = "手动发货0否1是")
+    private char manualDelivery;
+
     /**
      * 0未付款1已付款2交易关闭3交易成功4交易结束
      */
-    @Excel(name = "0未付款1已付款2交易关闭3交易成功4交易结束")
+    @Excel(name = "订单状态0未付款1已付款2交易关闭3交易成功4交易结束")
     private SaleOrderStatus status;
 
     /**
@@ -275,6 +278,14 @@ public class SysSaleOrder extends BaseEntity {
         this.tradeNo = tradeNo;
     }
 
+    public char getManualDelivery() {
+        return manualDelivery;
+    }
+
+    public void setManualDelivery(char manualDelivery) {
+        this.manualDelivery = manualDelivery;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -301,6 +312,7 @@ public class SysSaleOrder extends BaseEntity {
                 .append("tradeNo", getTradeNo())
                 .append("remark", getRemark())
                 .append("sysSaleOrderItemList", getSysSaleOrderItemList())
+                .append("manualDelevery", getManualDelivery())
                 .toString();
     }
 }

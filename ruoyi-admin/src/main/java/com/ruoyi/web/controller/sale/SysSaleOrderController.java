@@ -7,7 +7,6 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.domain.SysSaleOrderItem;
@@ -145,16 +144,16 @@ public class SysSaleOrderController extends BaseController {
             throw new ServiceException("订单不存在", 400);
         }
         SaleOrderStatus status = sso.getStatus();
-        if (status != SaleOrderStatus.WAIT_PAY && status != SaleOrderStatus.TRADE_CLOSED) {
-            throw new ServiceException("该订单已自动发货，无法再次发货");
+        if (status != SaleOrderStatus.WAIT_PAY && status != SaleOrderStatus.PAID && status != SaleOrderStatus.TRADE_CLOSED) {
+            throw new ServiceException("该订单已自动发货或交易已结束，无法再次发货");
         }
         try {
             sso.setStatus(SaleOrderStatus.PAID);
             sysSaleShopService.deliveryGoods(sso);
-            if (StringUtils.isNotBlank(sso.getPayMode())) {
-                sso.setRemark("该订单手工发货，原支付方式：" + sso.getPayMode());
-            }
-            sso.setPayMode("manual"); // 手动发货
+//            if (StringUtils.isNotBlank(sso.getPayMode())) {
+//                sso.setRemark("该订单手工发货，原支付方式：" + sso.getPayMode());
+//            }
+            sso.setManualDelivery('1'); // 手动发货
             sysSaleOrderService.updateSysSaleOrder(sso);
         } catch (Exception e) {
             sso.setStatus(status);

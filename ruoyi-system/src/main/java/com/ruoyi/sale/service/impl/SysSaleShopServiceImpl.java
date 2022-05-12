@@ -126,6 +126,7 @@ public class SysSaleShopServiceImpl implements ISysSaleShopService {
             sso.setStatus(SaleOrderStatus.TRADE_SUCCESS);
             Date nowDate = DateUtils.getNowDate();
             sso.setDeliveryTime(nowDate);
+            sso.setManualDelivery('0');
             sso.setFinishTime(nowDate);
             sysSaleOrderService.updateSysSaleOrder(sso);
             log.info("***********************************");

@@ -76,7 +76,7 @@ public class LicenseTest {
 
     @Test
     public void obfuscatedString() {
-        String str = "hy.ini";
+        String str = "license.lic";
         String result = ObfuscatedString.obfuscate(str);
         System.out.format("KEYSTORE-FILENAME:  %s\n", result);
     }

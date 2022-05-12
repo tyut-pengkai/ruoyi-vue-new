@@ -238,6 +238,7 @@ public class SysSaleShopController extends BaseController {
         sso.setCreateBy(null);
         sso.setPaymentTime(null);
         sso.setDeliveryTime(null);
+        sso.setManualDelivery('0');
         sso.setFinishTime(null);
         sso.setCloseTime(null);
         sso.setRemark(null);

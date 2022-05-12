@@ -4,6 +4,7 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.payment.constants.PaymentDefine;
 import com.ruoyi.payment.domain.Payment;
 import com.ruoyi.sale.domain.SysSaleOrder;
@@ -37,19 +38,21 @@ public class SaleOrderExpireDaemonThread {
                     String[] split = orderNoStr.toString().split("\\|");
                     String payMode = split[0];
                     String orderNo = split[1];
-                    SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
-                    if (sso != null && SaleOrderStatus.WAIT_PAY.equals(sso.getStatus())) {
-                        Payment payment = PaymentDefine.paymentMap.get(payMode);
-                        if (payment != null) {
-                            payment.beforeExpire(sso);
+                    if (StringUtils.isNotBlank(orderNo)) {
+                        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
+                        if (sso != null && SaleOrderStatus.WAIT_PAY.equals(sso.getStatus())) {
+                            Payment payment = PaymentDefine.paymentMap.get(payMode);
+                            if (payment != null) {
+                                payment.beforeExpire(sso);
+                            }
                         }
+                        if (sso != null && SaleOrderStatus.WAIT_PAY.equals(sso.getStatus())) {
+                            sso.setStatus(SaleOrderStatus.TRADE_CLOSED);
+                            sso.setCloseTime(DateUtils.getNowDate());
+                            sysSaleOrderService.updateSysSaleOrder(sso);
+                        }
+                        redisCache.redisTemplate.opsForZSet().remove(Constants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
                     }
-                    if (sso != null && SaleOrderStatus.WAIT_PAY.equals(sso.getStatus())) {
-                        sso.setStatus(SaleOrderStatus.TRADE_CLOSED);
-                        sso.setCloseTime(DateUtils.getNowDate());
-                        sysSaleOrderService.updateSysSaleOrder(sso);
-                    }
-                    redisCache.redisTemplate.opsForZSet().remove(Constants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
                 }
             }
             try {

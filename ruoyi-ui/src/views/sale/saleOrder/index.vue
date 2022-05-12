@@ -336,7 +336,7 @@
           >
           <el-button
             v-hasPermi="['sale:saleOrder:edit']"
-            :disabled="scope.row.status != '0' && scope.row.status != '2' "
+            :disabled="scope.row.status != '0' && scope.row.status != '1' && scope.row.status != '2' "
             icon="el-icon-sell"
             size="mini"
             type="text"
@@ -429,6 +429,16 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
+            <el-form-item label="发货方式" label-width="93px" prop="manualDelivery">
+              <dict-tag
+                :options="dict.type.delivery_type"
+                :value="form.manualDelivery"
+              />
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item>
+          <el-col :span="24">
             <el-form-item label="支付交易号" label-width="93px" prop="tradeNo">
               <span>{{ form.tradeNo }}</span>
             </el-form-item>
@@ -639,7 +649,7 @@ import {parseMoney} from "@/utils/my";
 
 export default {
   name: "SaleOrder",
-  dicts: ["sale_order_status", "pay_mode", "sys_yes_no"],
+  dicts: ["sale_order_status", "pay_mode", "sys_yes_no", "delivery_type"],
   data() {
     return {
       // 遮罩层

@@ -10,13 +10,13 @@ import com.ruoyi.common.exception.user.CaptchaExpireException;
 import com.ruoyi.common.exception.user.UserPasswordNotMatchException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.MessageUtils;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.ServletUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
+import com.ruoyi.framework.hy.HyL;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.system.service.ISysConfigService;
-import com.ruoyi.system.service.ISysUserOnlineService;
 import com.ruoyi.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -51,7 +51,7 @@ public class SysLoginService
     private ISysConfigService configService;
 
     @Autowired
-    private ISysUserOnlineService userOnlineService;
+    private HyL hyL;
 
     /**
      * 登录验证
@@ -75,6 +75,12 @@ public class SysLoginService
 //        if(onlineAppUser.size() >= ((LicenseCheckModel)Constants.LICENSE_CONTENT.getExtra()).getMaxOnline()) {
 //            throw new ServiceException("当前在线人数已超出License上限，请升级License或稍后再试");
 //        }
+        // 触发暗桩检测
+        try {
+            hyL.start();
+        } catch (Exception e) {
+            return "success"; // 虚假token
+        }
         // 验证码开关
         boolean captchaOnOff = configService.selectCaptchaOnOff();
         if (captchaOnOff) {

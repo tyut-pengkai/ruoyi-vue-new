@@ -87,6 +87,7 @@
               :model="form"
               label-width="80px"
               size="mini"
+              :rules="rules"
             >
               <el-form-item label="商品名称">
                 <el-input
@@ -113,7 +114,7 @@
                   :max="selectedGoodsData.num"
                 ></el-input-number>
               </el-form-item>
-              <el-form-item label="联系方式">
+              <el-form-item label="联系方式" prop="contact">
                 <el-input
                   placeholder="请填写您的邮箱或手机号方便查询"
                   :clearable="true"
@@ -121,7 +122,7 @@
                   auto-complete="false"
                 ></el-input>
               </el-form-item>
-              <el-form-item label="查询密码">
+              <el-form-item label="查询密码" prop="queryPass">
                 <el-input
                   type="password"
                   placeholder="请填写设置您的查询密码"
@@ -381,6 +382,10 @@ export default {
       ],
       // 商店配置
       shopConfig: null,
+      rules: {
+        contact: [{required: true, message: "联系方式是为您售后时的重要依据，不能为空", trigger: "blur"}],
+        queryPass: [{required: true, message: "查询密码是您查询已购商品的重要依据，不能为空", trigger: "blur"}],
+      },
     };
   },
   created() {

@@ -200,4 +200,9 @@ public class Constants {
      * 销售订单过期前缀
      */
     public static final String SALE_ORDER_EXPIRE_KEY = "sale_order_expire:";
+
+    /**
+     * 暗桩，标记被破解
+     */
+    public static boolean IS_CRCD = false;
 }
