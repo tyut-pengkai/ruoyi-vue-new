@@ -5,7 +5,7 @@
         <span>网站设置</span>
       </div>
       <div>
-        <el-form ref="form" :model="form" label-width="80px">
+        <el-form ref="form" :model="form" style="max-width: 1400px">
           <el-form-item>
             <el-col :span="12">
               <el-form-item label="网站icon">
@@ -73,6 +73,20 @@
               >
               </el-radio-group>
           </el-form-item> -->
+          <el-form-item label="自定义后台登录入口">
+            <span>
+              <el-tooltip
+                content="修改后台登录入口后，您只能通过此地址 [ http(s)://网站域名/login/自定义入口 ] 来登录您的验证管理后台"
+                placement="top"
+              >
+                <i
+                  class="el-icon-question"
+                  style="margin-left: -12px; margin-right: 10px"
+                ></i>
+              </el-tooltip>
+            </span>
+            <el-input v-model="form.entrance"></el-input>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm">确 定</el-button>
           </el-form-item>
@@ -102,6 +116,7 @@ export default {
         contact: "",
         keywords: "",
         description: "",
+        entrance: "",
       },
     };
   },

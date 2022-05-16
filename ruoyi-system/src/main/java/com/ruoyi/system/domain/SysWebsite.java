@@ -77,6 +77,11 @@ public class SysWebsite extends BaseEntity {
     @Excel(name = "网站状态")
     private String status;
 
+    /**
+     * 用户自定义后台登录入口
+     */
+    private String entrance;
+
     public Long getId() {
         return id;
     }
@@ -165,6 +170,14 @@ public class SysWebsite extends BaseEntity {
         this.shopName = shopName;
     }
 
+    public String getEntrance() {
+        return entrance;
+    }
+
+    public void setEntrance(String entrance) {
+        this.entrance = entrance;
+    }
+
     @Override
     public String toString() {
         return "SysWebsite{" +
@@ -179,6 +192,7 @@ public class SysWebsite extends BaseEntity {
                 ", keywords='" + keywords + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
+                ", entrance='" + entrance + '\'' +
                 '}';
     }
 }

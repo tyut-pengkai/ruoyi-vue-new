@@ -27,13 +27,13 @@ public class LoginBody
      */
     private String uuid;
 
-    public String getUsername()
-    {
+    private String vstr;
+
+    public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username)
-    {
+    public void setUsername(String username) {
         this.username = username;
     }
 
@@ -57,13 +57,19 @@ public class LoginBody
         this.code = code;
     }
 
-    public String getUuid()
-    {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(String uuid)
-    {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public String getVstr() {
+        return vstr;
+    }
+
+    public void setVstr(String vstr) {
+        this.vstr = vstr;
     }
 }

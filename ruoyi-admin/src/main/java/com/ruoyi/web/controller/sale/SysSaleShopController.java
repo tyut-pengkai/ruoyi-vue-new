@@ -189,6 +189,9 @@ public class SysSaleShopController extends BaseController {
     @RateLimiter(limitType = LimitType.IP)
     public AjaxResult createSaleOrder(@RequestBody SaleOrderVo saleOrderVo) {
 
+        if (StringUtils.isAnyBlank(saleOrderVo.getContact(), saleOrderVo.getQueryPass())) {
+            throw new ServiceException("联系方式或查询密码不能为空", 400);
+        }
         Payment payment = PaymentDefine.paymentMap.get(saleOrderVo.getPayMode());
         if (payment == null) {
             throw new ServiceException("支付方式有误，下单失败", 400);

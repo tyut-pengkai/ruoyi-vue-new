@@ -58,8 +58,7 @@
         v-model="loginForm.rememberMe"
         style="margin: 0px 0px 25px 0px"
       >记住密码
-      </el-checkbox
-      >
+      </el-checkbox>
       <el-form-item style="width: 100%">
         <el-button
           :loading="loading"
@@ -74,8 +73,7 @@
         <div v-if="register" style="float: right">
           <router-link :to="'/register'" class="link-type"
           >立即注册
-          </router-link
-          >
+          </router-link>
         </div>
       </el-form-item>
     </el-form>
@@ -102,11 +100,12 @@ export default {
       copyright: "",
       codeUrl: "",
       loginForm: {
-        username: "admin",
-        password: "admin123",
+        username: "",
+        password: "",
         rememberMe: false,
         code: "",
         uuid: "",
+        vstr: "",
       },
       loginRules: {
         username: [
@@ -137,6 +136,7 @@ export default {
     this.getSysInfo();
     this.getCode();
     this.getCookie();
+    this.loginForm.vstr = this.$route.params.vstr;
   },
   methods: {
     getSysInfo() {
@@ -144,7 +144,7 @@ export default {
         this.copyright = res.copyright;
       });
       getWebsiteConfig().then((res) => {
-        this.name = res.data.name || '';
+        this.name = res.data.name || "";
       });
     },
     getCode() {
@@ -188,8 +188,10 @@ export default {
           this.$store
             .dispatch("Login", this.loginForm)
             .then(() => {
-              this.$router.push({path: this.redirect || "/"}).catch(() => {
-              });
+              this.$router
+                .push({path: this.redirect || "/admin"})
+                .catch(() => {
+                });
             })
             .catch(() => {
               this.loading = false;

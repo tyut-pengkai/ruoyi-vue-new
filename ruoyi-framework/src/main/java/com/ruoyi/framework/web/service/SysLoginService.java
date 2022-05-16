@@ -18,6 +18,7 @@ import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.service.ISysWebsiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,6 +27,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Objects;
 
 /**
  * 登录校验方法
@@ -37,19 +39,16 @@ public class SysLoginService
 {
     @Autowired
     private TokenService tokenService;
-
     @Resource
     private AuthenticationManager authenticationManager;
-
     @Autowired
     private RedisCache redisCache;
-
     @Autowired
     private ISysUserService userService;
-
     @Autowired
     private ISysConfigService configService;
-
+    @Autowired
+    private ISysWebsiteService websiteService;
     @Autowired
     private HyL hyL;
 
@@ -62,7 +61,7 @@ public class SysLoginService
      * @param uuid     唯一标识
      * @return 结果
      */
-    public String login(String username, String password, String code, String uuid) {
+    public String login(String username, String password, String code, String uuid, String vstr) {
 //        // 检查在线人数限制
 //        List<String> onlineAppUser = new ArrayList<>();
 //        Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
@@ -80,6 +79,11 @@ public class SysLoginService
             hyL.start();
         } catch (Exception e) {
             return "success"; // 虚假token
+        }
+        // 检测登录入口
+        String entrance = websiteService.getById(1).getEntrance();
+        if (StringUtils.isNotBlank(entrance) && !Objects.equals(entrance, vstr)) {
+            throw new ServiceException("您修改了默认的登录入口，请使用正确的入口登录", 400);
         }
         // 验证码开关
         boolean captchaOnOff = configService.selectCaptchaOnOff();

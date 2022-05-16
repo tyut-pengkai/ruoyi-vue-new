@@ -10,7 +10,7 @@ NProgress.configure({
   showSpinner: false
 })
 
-const whiteList = ['/login', '/auth-redirect', '/bind', '/register', '/common/sysInfo', '/system/website/config', '/', '/queryOrder', '/billOrder', '/getCardList', '/getShopConfig', 'regx:/sale/shop/notify/.*']
+const whiteList = ['regx:/login/.*', '/auth-redirect', '/bind', '/register', '/common/sysInfo', '/system/website/config', '/', '/queryOrder', '/billOrder', '/getCardList', '/getShopConfig', 'regx:/sale/shop/notify/.*']
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
@@ -49,7 +49,7 @@ router.beforeEach((to, from, next) => {
       }
     }
   } else {
-    console.log(to.path);
+    // console.log(to.path);
     // 没有token
     if (whiteList.indexOf(to.path) !== -1) {
       // 在免登录白名单，直接进入
@@ -69,7 +69,8 @@ router.beforeEach((to, from, next) => {
       if (pass) {
         next();
       } else {
-        next(`/login?redirect=${to.fullPath}`) // 否则全部重定向到登录页
+        // next(`/login?redirect=${to.fullPath}`) // 否则全部重定向到登录页
+        next(`/`) // 否则全部重定向到商城页
         NProgress.done();
       }
     }
