@@ -102,6 +102,14 @@
             <span>更新日志</span>
           </div>
           <el-collapse accordion>
+            <el-collapse-item title="v0.0.3 - 2022-05-16">
+              <ol>
+                <li>优化：优化订单号生成逻辑（可支持高并发）</li>
+                <li>
+                  卡密列表/登录码列表/订单列表展示优化，单击表项可展开详情信息
+                </li>
+              </ol>
+            </el-collapse-item>
             <el-collapse-item title="v0.0.2 - 2022-05-14">
               <ol>
                 <li>优化：降低系统内存占用</li>
@@ -109,7 +117,9 @@
             </el-collapse-item>
             <el-collapse-item title="v0.0.1 - 2022-05-12">
               <ol>
-                <li>修复：修复选择了API输出加密选项后返回客户端的枚举值不正确的问题（感谢@ゞ孤独旅程℡.）</li>
+                <li>
+                  修复：修复选择了API输出加密选项后返回客户端的枚举值不正确的问题（感谢@ゞ孤独旅程℡.）
+                </li>
                 <li>修复：修复无数据时sale dashboard页面超出下标的问题</li>
                 <li>优化：购物时联系方式和查询密码改为必填项</li>
                 <li>优化：订单记录增加字段区分自动发货还是手动发货</li>

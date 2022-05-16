@@ -1,4 +1,4 @@
-package com.ruoyi.payment.payment;
+package com.ruoyi.payment.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

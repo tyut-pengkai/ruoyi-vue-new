@@ -68,12 +68,10 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -113,8 +111,7 @@
           @click="handleDelete"
           v-hasPermi="['sale:saleOrder:remove']"
         >删除
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -125,8 +122,7 @@
           @click="handleExport"
           v-hasPermi="['sale:saleOrder:export']"
         >导出
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -137,6 +133,9 @@
     <el-table
       v-loading="loading"
       :data="saleOrderList"
+      :expand-row-keys="expands"
+      row-key="orderId"
+      @row-click="handleRowClick"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="expand">
@@ -172,7 +171,9 @@
               <el-col :span="4"> -</el-col>
               <el-col :span="5">
                 <el-form-item label="下单账号">
-                  <span>{{ scope.row.userId ? scope.row.userId : "[未登录]" }}</span>
+                  <span>{{
+                      scope.row.userId ? scope.row.userId : "[未登录]"
+                    }}</span>
                 </el-form-item>
               </el-col>
               <el-col :span="5">
@@ -227,7 +228,7 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="" type="index"/>
       <!-- <el-table-column label="订单ID" align="center" prop="orderId" /> -->
       <el-table-column
@@ -332,18 +333,20 @@
             @click="handleUpdate(scope.row)"
             v-hasPermi="['sale:saleOrder:edit']"
           >详情
-          </el-button
-          >
+          </el-button>
           <el-button
             v-hasPermi="['sale:saleOrder:edit']"
-            :disabled="scope.row.status != '0' && scope.row.status != '1' && scope.row.status != '2' "
+            :disabled="
+              scope.row.status != '0' &&
+              scope.row.status != '1' &&
+              scope.row.status != '2'
+            "
             icon="el-icon-sell"
             size="mini"
             type="text"
             @click="handleDelivery(scope.row)"
           >手动发货
-          </el-button
-          >
+          </el-button>
           <el-button
             size="mini"
             type="text"
@@ -351,8 +354,7 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['sale:saleOrder:remove']"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -422,14 +424,15 @@
         <el-form-item>
           <el-col :span="12">
             <el-form-item label="支付方式" prop="payMode">
-              <dict-tag
-                :options="dict.type.pay_mode"
-                :value="form.payMode"
-              />
+              <dict-tag :options="dict.type.pay_mode" :value="form.payMode"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="发货方式" label-width="93px" prop="manualDelivery">
+            <el-form-item
+              label="发货方式"
+              label-width="93px"
+              prop="manualDelivery"
+            >
               <dict-tag
                 :options="dict.type.delivery_type"
                 :value="form.manualDelivery"
@@ -516,10 +519,7 @@
           :row-class-name="rowSysSaleOrderItemIndex"
           @selection-change="handleSysSaleOrderItemSelectionChange"
         > -->
-        <el-table
-          ref="sysSaleOrderItem"
-          :data="sysSaleOrderItemList"
-        >
+        <el-table ref="sysSaleOrderItem" :data="sysSaleOrderItemList">
           <el-table-column type="expand">
             <template slot-scope="item">
               <!-- <div v-for="(scope, index) in item.row.goodsList" :key="index">
@@ -544,7 +544,10 @@
                     {{ scope.row.expireTime }}
                   </template>
                 </el-table-column> -->
-                <el-table-column v-if="item.row.templateType == '1'" label="是否已用">
+                <el-table-column
+                  v-if="item.row.templateType == '1'"
+                  label="是否已用"
+                >
                   <template slot-scope="scope">
                     <dict-tag
                       :options="dict.type.sys_yes_no"
@@ -563,7 +566,7 @@
           /> -->
           <el-table-column label="商品类别" prop="templateType">
             <template slot-scope="scope">
-              {{ scope.row.templateType == 1 ? '充值卡' : '登录码' }}
+              {{ scope.row.templateType == 1 ? "充值卡" : "登录码" }}
             </template>
           </el-table-column>
           <!-- <el-table-column label="模板ID" prop="templateId">
@@ -574,7 +577,11 @@
               />
             </template>
           </el-table-column> -->
-          <el-table-column :show-overflow-tooltip="true" label="商品标题" prop="title">
+          <el-table-column
+            :show-overflow-tooltip="true"
+            label="商品标题"
+            prop="title"
+          >
             <template slot-scope="scope">
               {{ scope.row.title }}
             </template>
@@ -693,6 +700,7 @@ export default {
       form: {},
       // 表单校验
       rules: {},
+      expands: [],
     };
   },
   created() {
@@ -883,7 +891,9 @@ export default {
     handleDelivery(row) {
       const orderIds = row.orderId || this.ids;
       this.$modal
-        .confirm('本操作将为用户发货并更改订单状态为交易成功，请确保您已在其他渠道收到货款，避免资金损失，是否继续？')
+        .confirm(
+          "本操作将为用户发货并更改订单状态为交易成功，请确保您已在其他渠道收到货款，避免资金损失，是否继续？"
+        )
         .then(() => {
           var data = {orderNo: row.orderNo};
           manualDelivery(data)
@@ -900,6 +910,20 @@ export default {
         })
         .catch(() => {
         });
+    },
+    //在<table>⾥，我们已经设置row的key值设置为每⾏数据id：row-key="cardId"
+    handleRowClick(row, event, column) {
+      Array.prototype.remove = function (val) {
+        let index = this.indexOf(val);
+        if (index > -1) {
+          this.splice(index, 1);
+        }
+      };
+      if (this.expands.indexOf(row.orderId) < 0) {
+        this.expands.push(row.orderId);
+      } else {
+        this.expands.remove(row.orderId);
+      }
     },
   },
 };

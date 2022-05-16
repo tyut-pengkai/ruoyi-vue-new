@@ -236,6 +236,9 @@
     <el-table
       v-loading="loading"
       :data="cardList"
+      :expand-row-keys="expands"
+      row-key="cardId"
+      @row-click="handleRowClick"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="expand">
@@ -352,9 +355,9 @@
           <span>{{ parseTime(scope.row.expireTime) }}</span>
         </template>
       </el-table-column>
-      <!-- <el-table-column label="是否售出" align="center" prop="isSold">
+      <el-table-column align="center" label="是否售出" prop="isSold">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold" />
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold"/>
         </template>
       </el-table-column>
       <el-table-column label="是否上架" align="center" prop="onSale">
@@ -369,7 +372,7 @@
             :value="scope.row.isCharged"
           />
         </template>
-      </el-table-column> -->
+      </el-table-column>
       <el-table-column label="卡密状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag
@@ -964,6 +967,7 @@ export default {
           },
         ],
       },
+      expands: [],
     };
   },
   created() {
@@ -1214,6 +1218,20 @@ export default {
       this.app = this.appMap[appId];
       this.getList();
       this.loading = false;
+    },
+    //在<table>⾥，我们已经设置row的key值设置为每⾏数据id：row-key="cardId"
+    handleRowClick(row, event, column) {
+      Array.prototype.remove = function (val) {
+        let index = this.indexOf(val);
+        if (index > -1) {
+          this.splice(index, 1);
+        }
+      };
+      if (this.expands.indexOf(row.cardId) < 0) {
+        this.expands.push(row.cardId);
+      } else {
+        this.expands.remove(row.cardId);
+      }
     },
   },
 };

@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * 防止重复提交拦截器
+ * 演示模式拦截器
  *
  * @author ruoyi
  */

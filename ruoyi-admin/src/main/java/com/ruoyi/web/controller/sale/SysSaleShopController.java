@@ -15,6 +15,7 @@ import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.uuid.SnowflakeIdWorker;
 import com.ruoyi.payment.constants.PaymentDefine;
 import com.ruoyi.payment.domain.Payment;
 import com.ruoyi.sale.domain.SysSaleOrder;
@@ -34,7 +35,6 @@ import com.ruoyi.web.controller.sale.vo.SaleAppVo;
 import com.ruoyi.web.controller.sale.vo.SaleCardTemplateVo;
 import com.ruoyi.web.controller.sale.vo.SaleOrderVo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -75,6 +75,8 @@ public class SysSaleShopController extends BaseController {
     private ISysNoticeService sysNoticeService;
     @Resource
     private ISysPaymentService sysPaymentService;
+
+    private static final SnowflakeIdWorker sf = new SnowflakeIdWorker();
 
     /**
      * 查询软件列表
@@ -184,6 +186,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @PostMapping("/createSaleOrder")
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult createSaleOrder(@RequestBody SaleOrderVo saleOrderVo) {
 
         Payment payment = PaymentDefine.paymentMap.get(saleOrderVo.getPayMode());
@@ -263,12 +266,8 @@ public class SysSaleShopController extends BaseController {
         return AjaxResult.success().put("orderNo", orderNo);
     }
 
-    private synchronized String genOrderNo(SaleOrderVo saleOrderVo) {
-        String appId = String.format("%04d", saleOrderVo.getAppId());
-        appId = appId.substring(appId.length() - 4, appId.length());
-        String tplId = String.format("%04d", saleOrderVo.getTemplateId());
-        tplId = tplId.substring(tplId.length() - 4, tplId.length());
-        return DateUtils.dateTimeNow("yyMMddHHmmssSSS") + appId + tplId + RandomStringUtils.randomNumeric(2);
+    private String genOrderNo(SaleOrderVo saleOrderVo) {
+        return String.valueOf(sf.nextId());
     }
 
     @GetMapping("/paySaleOrder")

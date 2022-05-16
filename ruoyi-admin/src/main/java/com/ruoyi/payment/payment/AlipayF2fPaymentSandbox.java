@@ -16,13 +16,16 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.payment.domain.AlipayConfig;
 import com.ruoyi.payment.domain.Payment;
 import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.domain.SysSaleOrderItem;
 import com.ruoyi.sale.service.ISysSaleOrderService;
 import com.ruoyi.sale.service.ISysSaleShopService;
 import com.ruoyi.system.domain.SysPayment;
+import com.ruoyi.system.domain.SysWebsite;
 import com.ruoyi.system.service.ISysPaymentService;
+import com.ruoyi.system.service.ISysWebsiteService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -51,6 +54,8 @@ public class AlipayF2fPaymentSandbox extends Payment {
     private ISysSaleShopService sysSaleShopService;
     @Resource
     private ISysPaymentService sysPaymentService;
+    @Resource
+    private ISysWebsiteService sysWebsiteService;
 
     @Override
     public void init() {
@@ -74,9 +79,18 @@ public class AlipayF2fPaymentSandbox extends Payment {
             if (StringUtils.isNotBlank(config.getNotifyUrl())) {
                 notifyUrl = config.getNotifyUrl();
             } else {
-                HttpServletRequest request = ServletUtils.getRequest();
-                String port = "80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort();
-                notifyUrl = request.getScheme() + "://" + request.getServerName() + port;
+                SysWebsite website = sysWebsiteService.getById(1);
+                if (website != null && StringUtils.isNotBlank(website.getDomain())) {
+                    notifyUrl = website.getDomain();
+                } else {
+                    try {
+                        HttpServletRequest request = ServletUtils.getRequest();
+                        String port = "80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort();
+                        notifyUrl = request.getScheme() + "://" + request.getServerName() + port;
+                    } catch (Exception e) {
+                        throw new ServiceException("支付方式[" + this.getName() + "]未配置支付回调接口，加载失败", 400);
+                    }
+                }
             }
             if (notifyUrl.endsWith("/")) {
                 notifyUrl = notifyUrl.substring(0, notifyUrl.length() - 1);
