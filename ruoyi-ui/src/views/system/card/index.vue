@@ -236,8 +236,8 @@
     <el-table
       v-loading="loading"
       :data="cardList"
-      :expand-row-keys="expands"
       row-key="cardId"
+      :expand-row-keys="expands"
       @row-click="handleRowClick"
       @selection-change="handleSelectionChange"
     >
@@ -1149,7 +1149,7 @@ export default {
     handleDelete(row) {
       const cardIds = row.cardId || this.ids;
       this.$modal
-        .confirm('是否确认删除卡密编号为"' + cardIds + '"的数据项？')
+        .confirm("是否确认删除数据项？")
         .then(function () {
           return delCard(cardIds);
         })
@@ -1220,7 +1220,10 @@ export default {
       this.loading = false;
     },
     //在<table>⾥，我们已经设置row的key值设置为每⾏数据id：row-key="cardId"
-    handleRowClick(row, event, column) {
+    handleRowClick(row, column, event) {
+      if (column.label == "操作") {
+        return;
+      }
       Array.prototype.remove = function (val) {
         let index = this.indexOf(val);
         if (index > -1) {

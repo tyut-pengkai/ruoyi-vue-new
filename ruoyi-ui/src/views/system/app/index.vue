@@ -1260,7 +1260,7 @@ export default {
     handleDelete(row) {
       const appIds = row.appId || this.ids;
       this.$modal
-        .confirm('是否确认删除软件编号为"' + appIds + '"的数据项？')
+        .confirm("是否确认删除数据项？")
         .then(function () {
           return delApp(appIds);
         })

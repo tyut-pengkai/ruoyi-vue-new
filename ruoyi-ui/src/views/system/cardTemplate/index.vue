@@ -1022,7 +1022,7 @@ export default {
     handleDelete(row) {
       const templateIds = row.templateId || this.ids;
       this.$modal
-        .confirm('是否确认删除卡类编号为"' + templateIds + '"的数据项？')
+        .confirm("是否确认删除数据项？")
         .then(function () {
           return delCardTemplate(templateIds);
         })

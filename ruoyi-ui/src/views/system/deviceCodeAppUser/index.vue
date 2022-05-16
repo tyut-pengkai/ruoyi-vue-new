@@ -68,12 +68,10 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -87,8 +85,7 @@
           type="primary"
           @click="handleAdd"
         >新增
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -100,8 +97,7 @@
           type="success"
           @click="handleUpdate"
         >修改
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -113,8 +109,7 @@
           type="danger"
           @click="handleDelete"
         >删除
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -126,8 +121,7 @@
           type="warning"
           @click="handleExport"
         >导出
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -178,8 +172,7 @@
             type="text"
             @click="handleUpdate(scope.row)"
           >修改
-          </el-button
-          >
+          </el-button>
           <el-button
             v-hasPermi="['system:appUserDeviceCode:remove']"
             icon="el-icon-delete"
@@ -187,8 +180,7 @@
             type="text"
             @click="handleDelete(scope.row)"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -231,8 +223,7 @@
               :key="dict.value"
               :label="dict.value"
             >{{ dict.label }}
-            </el-radio
-            >
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -406,9 +397,7 @@ export default {
     handleDelete(row) {
       const ids = row.id || this.ids;
       this.$modal
-        .confirm(
-          '是否确认删除软件用户与设备码关联编号为"' + ids + '"的数据项？'
-        )
+        .confirm("是否确认删除数据项？")
         .then(function () {
           return delAppUserDeviceCode(ids);
         })

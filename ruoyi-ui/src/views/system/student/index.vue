@@ -262,14 +262,7 @@
 </template>
 
 <script>
-import {
-  listStudent,
-  getStudent,
-  delStudent,
-  addStudent,
-  updateStudent,
-  exportStudent,
-} from "@/api/system/student";
+import {addStudent, delStudent, exportStudent, getStudent, listStudent, updateStudent,} from "@/api/system/student";
 
 export default {
   name: "Student",
@@ -398,15 +391,11 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const studentIds = row.studentId || this.ids;
-      this.$confirm(
-        '是否确认删除学生信息编号为"' + studentIds + '"的数据项?',
-        "警告",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        }
-      )
+      this.$confirm("是否确认删除数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
         .then(function () {
           return delStudent(studentIds);
         })

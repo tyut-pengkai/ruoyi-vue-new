@@ -630,9 +630,7 @@ export default {
     handleDelete(row) {
       const appVersionIds = row.appVersionId || this.ids;
       this.$modal
-        .confirm(
-          '是否确认删除软件版本信息编号为"' + appVersionIds + '"的数据项？'
-        )
+        .confirm("是否确认删除数据项？")
         .then(function () {
           return delAppVersion(appVersionIds);
         })

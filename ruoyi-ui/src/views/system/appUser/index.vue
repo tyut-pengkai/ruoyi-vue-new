@@ -882,7 +882,7 @@ export default {
     handleDelete(row) {
       const appUserIds = row.appUserId || this.ids;
       this.$modal
-        .confirm('是否确认删除软件用户编号为"' + appUserIds + '"的数据项？')
+        .confirm("是否确认删除数据项？")
         .then(function () {
           return delAppUser(appUserIds);
         })

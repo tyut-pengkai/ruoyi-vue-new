@@ -458,9 +458,7 @@ export default {
     handleDelete(row) {
       const ids = row.id || this.ids;
       this.$modal
-        .confirm(
-          '是否确认删除软件用户与设备码关联编号为"' + ids + '"的数据项？'
-        )
+        .confirm("是否确认删除数据项？")
         .then(function () {
           return delAppUserDeviceCode(ids);
         })

@@ -827,7 +827,7 @@ export default {
     handleDelete(row) {
       const orderIds = row.orderId || this.ids;
       this.$modal
-        .confirm('是否确认删除销售订单编号为"' + orderIds + '"的数据项？')
+        .confirm("是否确认删除数据项？")
         .then(function () {
           return delSaleOrder(orderIds);
         })
@@ -912,7 +912,10 @@ export default {
         });
     },
     //在<table>⾥，我们已经设置row的key值设置为每⾏数据id：row-key="cardId"
-    handleRowClick(row, event, column) {
+    handleRowClick(row, column, event) {
+      if (column.label == "操作") {
+        return;
+      }
       Array.prototype.remove = function (val) {
         let index = this.indexOf(val);
         if (index > -1) {

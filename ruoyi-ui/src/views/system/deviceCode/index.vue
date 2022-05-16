@@ -427,9 +427,7 @@ export default {
     handleDelete(row) {
       const deviceCodeIds = row.deviceCodeId || this.ids;
       this.$modal
-        .confirm(
-          '是否确认删除设备码管理编号为"' + deviceCodeIds + '"的数据项？'
-        )
+        .confirm("是否确认删除数据项？")
         .then(function () {
           return delDeviceCode(deviceCodeIds);
         })

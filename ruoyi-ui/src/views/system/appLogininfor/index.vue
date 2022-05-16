@@ -516,7 +516,7 @@ export default {
     handleDelete(row) {
       const infoIds = row.infoId || this.ids;
       this.$modal
-        .confirm('是否确认删除系统访问记录编号为"' + infoIds + '"的数据项？')
+        .confirm("是否确认删除数据项？")
         .then(function () {
           return delAppLogininfor(infoIds);
         })
