@@ -81,7 +81,7 @@ public class SysLoginService
             return "success"; // 虚假token
         }
         // 检测登录入口
-        String entrance = websiteService.getById(1).getEntrance();
+        String entrance = websiteService.getById(1).getSafeEntrance();
         if (StringUtils.isNotBlank(entrance) && !Objects.equals(entrance, vstr)) {
             throw new ServiceException("您修改了默认的登录入口，请使用正确的入口登录", 400);
         }
@@ -143,12 +143,20 @@ public class SysLoginService
      *
      * @param userId 用户ID
      */
-    public void recordLoginInfo(Long userId)
-    {
+    public void recordLoginInfo(Long userId) {
         SysUser sysUser = new SysUser();
         sysUser.setUserId(userId);
         sysUser.setLoginIp(IpUtils.getIpAddr(ServletUtils.getRequest()));
         sysUser.setLoginDate(DateUtils.getNowDate());
         userService.updateUserProfile(sysUser);
+    }
+
+    public String checkSafeEntrance(String vstr) {
+        String entrance = websiteService.getById(1).getSafeEntrance();
+        if (StringUtils.isNotBlank(entrance) && !Objects.equals(entrance, vstr)) {
+            return "1";
+        } else {
+            return "0";
+        }
     }
 }

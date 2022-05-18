@@ -44,7 +44,16 @@ public class SysWebsiteController extends BaseController {
         if (StringUtils.isBlank(website.getShortName())) {
             website.setShortName(config.getShortName());
         }
-
+        if (StringUtils.isNotBlank(website.getSafeEntrance())) {
+            website.setIsSafeEntrance('1');
+        } else {
+            website.setIsSafeEntrance('0');
+        }
+        try {
+            getLoginUser();
+        } catch (Exception e) { // 未登录不返回安全入口的值
+            website.setSafeEntrance(null);
+        }
         return AjaxResult.success(website);
     }
 

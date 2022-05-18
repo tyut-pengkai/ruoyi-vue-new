@@ -85,7 +85,10 @@
                 ></i>
               </el-tooltip>
             </span>
-            <el-input v-model="form.entrance"></el-input>
+            <el-input
+              v-model="form.safeEntrance"
+              placeholder="修改后台登录入口后，您只能通过此地址 [ http(s)://网站域名/login/自定义入口 ] 来登录您的验证管理后台"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -116,7 +119,7 @@ export default {
         contact: "",
         keywords: "",
         description: "",
-        entrance: "",
+        safeEntrance: "",
       },
     };
   },

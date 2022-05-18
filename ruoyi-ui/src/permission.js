@@ -49,7 +49,7 @@ router.beforeEach((to, from, next) => {
       }
     }
   } else {
-    // console.log(to.path);
+    console.log(to.path);
     // 没有token
     if (whiteList.indexOf(to.path) !== -1) {
       // 在免登录白名单，直接进入
@@ -70,7 +70,36 @@ router.beforeEach((to, from, next) => {
         next();
       } else {
         // next(`/login?redirect=${to.fullPath}`) // 否则全部重定向到登录页
-        next(`/`) // 否则全部重定向到商城页
+        if (to.path == '/admin/index') {
+          console.log(store.getters.safeEntrance)
+          if (store.getters.safeEntrance.length == 0) {
+            console.log(store.getters.safeEntrance)
+            if (store.getters.safeEntrance.length == 0) {
+              store.dispatch('settings/GetSafeEntrance').then(() => {
+                if (store.getters.safeEntrance == '1') {
+                  next(`/`)
+                } else {
+                  next(`/login?redirect=${to.fullPath}`)
+                }
+              }).catch(err => {
+                store.dispatch('LogOut').then(() => {
+                  Message.error(err)
+                  next({
+                    path: '/index'
+                  })
+                })
+              })
+            } else {
+              if (store.getters.safeEntrance == '1') {
+                next(`/`)
+              } else {
+                next(`/login?redirect=${to.fullPath}`)
+              }
+            }
+          } else {
+            next(`/`) // 否则全部重定向到商城页
+          }
+        }
         NProgress.done();
       }
     }

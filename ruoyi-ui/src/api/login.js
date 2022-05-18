@@ -1,5 +1,14 @@
 import request from '@/utils/request'
 
+// 检查安全入口是否正确
+export function checkSafeEntrance(query) {
+  return request({
+    url: '/checkSafeEntrance',
+    params: query,
+    method: 'get'
+  })
+}
+
 // 登录方法
 export function login(username, password, code, uuid, vstr) {
   const data = {

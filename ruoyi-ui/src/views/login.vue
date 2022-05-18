@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import {getCodeImg} from "@/api/login";
+import {checkSafeEntrance, getCodeImg} from "@/api/login";
 import {getSysInfo} from "@/api/common";
 import {getWebsiteConfig} from "@/api/system/website";
 
@@ -133,12 +133,22 @@ export default {
     },
   },
   created() {
-    this.getSysInfo();
-    this.getCode();
-    this.getCookie();
     this.loginForm.vstr = this.$route.params.vstr;
+    this.checkSafeEntrance();
   },
   methods: {
+    checkSafeEntrance() {
+      checkSafeEntrance({vstr: this.loginForm.vstr}).then((res) => {
+        if (res.data != "0") {
+          this.$router.push({path: "/"}).catch(() => {
+          });
+        } else {
+          this.getSysInfo();
+          this.getCode();
+          this.getCookie();
+        }
+      });
+    },
     getSysInfo() {
       getSysInfo().then((res) => {
         this.copyright = res.copyright;
@@ -166,6 +176,7 @@ export default {
         password:
           password === undefined ? this.loginForm.password : decrypt(password),
         rememberMe: rememberMe === undefined ? false : Boolean(rememberMe),
+        vstr: this.$route.params.vstr,
       };
     },
     handleLogin() {

@@ -104,6 +104,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/api/v1/*", "/api/v1/devTool/**", "/system/dict/data/type/*").permitAll()
                 .antMatchers("/system/license/info").permitAll()
                 .antMatchers("/sale/shop/**").permitAll()
+                .antMatchers("/checkSafeEntrance").permitAll()
                 .antMatchers(
                         HttpMethod.GET,
                         "/",

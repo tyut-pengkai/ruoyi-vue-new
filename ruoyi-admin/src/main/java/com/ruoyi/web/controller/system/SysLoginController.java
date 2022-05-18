@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.system;
 
+import com.ruoyi.common.annotation.RateLimiter;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysMenu;
@@ -11,10 +12,7 @@ import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.framework.web.service.SysPermissionService;
 import com.ruoyi.system.service.ISysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
@@ -25,8 +23,7 @@ import java.util.Set;
  * @author ruoyi
  */
 @RestController
-public class SysLoginController
-{
+public class SysLoginController {
     @Autowired
     private SysLoginService loginService;
 
@@ -37,8 +34,20 @@ public class SysLoginController
     private SysPermissionService permissionService;
 
     /**
+     * 检查安全入口
+     *
+     * @param vstr
+     * @return
+     */
+    @RateLimiter
+    @GetMapping("/checkSafeEntrance")
+    public AjaxResult checkSafeEntrance(@RequestParam("vstr") String vstr) {
+        return AjaxResult.success().put("data", loginService.checkSafeEntrance(vstr));
+    }
+
+    /**
      * 登录方法
-     * 
+     *
      * @param loginBody 登录信息
      * @return 结果
      */

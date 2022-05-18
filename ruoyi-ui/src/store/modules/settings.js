@@ -1,4 +1,5 @@
 import defaultSettings from '@/settings'
+import {getWebsiteConfig} from '@/api/system/website'
 
 const {
   sideTheme,
@@ -25,7 +26,8 @@ const state = {
   websiteName: '',
   shopName: '',
   websiteShortName: '',
-  websiteLogo: ''
+  websiteLogo: '',
+  safeEntrance: '',
 }
 const mutations = {
   CHANGE_SETTING: (state, {
@@ -35,7 +37,10 @@ const mutations = {
     if (state.hasOwnProperty(key)) {
       state[key] = value
     }
-  }
+  },
+  SET_SAFE_ENTRANCE: (state, safeEntrance) => {
+    state.safeEntrance = safeEntrance
+  },
 }
 
 const actions = {
@@ -74,7 +79,21 @@ const actions = {
                    commit
                  }, websiteLogo) {
     state.websiteLogo = websiteLogo
-  }
+  },
+  // 获取安全入口
+  GetSafeEntrance({
+                    commit,
+                    state
+                  }) {
+    return new Promise((resolve, reject) => {
+      getWebsiteConfig().then(res => {
+        commit('SET_SAFE_ENTRANCE', res.data.isSafeEntrance)
+        resolve(res)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
 }
 
 export default {

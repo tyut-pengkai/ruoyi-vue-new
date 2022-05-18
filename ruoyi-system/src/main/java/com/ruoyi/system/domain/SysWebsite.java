@@ -1,5 +1,6 @@
 package com.ruoyi.system.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
@@ -80,7 +81,12 @@ public class SysWebsite extends BaseEntity {
     /**
      * 用户自定义后台登录入口
      */
-    private String entrance;
+//    @JSONField(serialize = false)
+//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String safeEntrance;
+
+    @TableField(exist = false)
+    private char isSafeEntrance;
 
     public Long getId() {
         return id;
@@ -170,12 +176,20 @@ public class SysWebsite extends BaseEntity {
         this.shopName = shopName;
     }
 
-    public String getEntrance() {
-        return entrance;
+    public String getSafeEntrance() {
+        return safeEntrance;
     }
 
-    public void setEntrance(String entrance) {
-        this.entrance = entrance;
+    public void setSafeEntrance(String safeEntrance) {
+        this.safeEntrance = safeEntrance;
+    }
+
+    public char getIsSafeEntrance() {
+        return isSafeEntrance;
+    }
+
+    public void setIsSafeEntrance(char isSafeEntrance) {
+        this.isSafeEntrance = isSafeEntrance;
     }
 
     @Override
@@ -192,7 +206,8 @@ public class SysWebsite extends BaseEntity {
                 ", keywords='" + keywords + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
-                ", entrance='" + entrance + '\'' +
+                ", safeEntrance='" + safeEntrance + '\'' +
+                ", isSafeEntrance=" + isSafeEntrance +
                 '}';
     }
 }
