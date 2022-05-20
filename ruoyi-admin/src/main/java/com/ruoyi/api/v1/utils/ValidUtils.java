@@ -254,7 +254,18 @@ public class ValidUtils {
     }
 
     public void checkAppUserIsExpired(SysApp app, SysAppUser appUser) {
-        if (Objects.equals(app.getIsCharge(), UserConstants.YES)) {
+        checkAppUserIsExpired(app, appUser, false);
+    }
+
+    /**
+     * 检查软件用户是否过期
+     *
+     * @param app
+     * @param appUser
+     * @param checkEvenFree 是否即使软件关闭计费依然检查，否则将不检查直接通过
+     */
+    public void checkAppUserIsExpired(SysApp app, SysAppUser appUser, boolean checkEvenFree) {
+        if (Objects.equals(app.getIsCharge(), UserConstants.YES) || checkEvenFree) {
             if (app.getBillType() == BillType.TIME) {
                 if (appUser.getExpireTime() == null || !appUser.getExpireTime().after(DateUtils.getNowDate())) {
                     throw new ApiException(ErrorCode.ERROR_APP_USER_EXPIRED);

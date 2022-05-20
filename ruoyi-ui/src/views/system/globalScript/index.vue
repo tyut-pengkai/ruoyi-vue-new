@@ -1,0 +1,539 @@
+<template>
+  <div class="app-container">
+    <el-form
+      v-show="showSearch"
+      ref="queryForm"
+      :inline="true"
+      :model="queryParams"
+      size="small"
+    >
+      <el-form-item label="脚本名" prop="name">
+        <el-input
+          v-model="queryParams.name"
+          clearable
+          placeholder="请输入脚本名"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="脚本Key" prop="scriptKey">
+        <el-input
+          v-model="queryParams.scriptKey"
+          clearable
+          placeholder="请输入脚本Key"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="是否需要登录" prop="checkToken">
+        <el-select
+          v-model="queryParams.checkToken"
+          clearable
+          placeholder="请选择是否需要登录"
+        >
+          <el-option
+            v-for="dict in dict.type.sys_yes_no"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="是否需要VIP" prop="checkVip">
+        <el-select
+          v-model="queryParams.checkVip"
+          clearable
+          placeholder="请选择是否需要VIP"
+        >
+          <el-option
+            v-for="dict in dict.type.sys_yes_no"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="脚本语言" prop="language">
+        <el-select
+          v-model="queryParams.language"
+          clearable
+          placeholder="请选择脚本语言"
+        >
+          <el-option
+            v-for="dict in dict.type.sys_script_type"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button
+          icon="el-icon-search"
+          size="mini"
+          type="primary"
+          @click="handleQuery"
+        >搜索
+        </el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+        >重置
+        </el-button
+        >
+      </el-form-item>
+    </el-form>
+
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+          v-hasPermi="['system:globalScript:add']"
+          icon="el-icon-plus"
+          plain
+          size="mini"
+          type="primary"
+          @click="handleAdd"
+        >新增
+        </el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          v-hasPermi="['system:globalScript:edit']"
+          :disabled="single"
+          icon="el-icon-edit"
+          plain
+          size="mini"
+          type="success"
+          @click="handleUpdate"
+        >修改
+        </el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          v-hasPermi="['system:globalScript:remove']"
+          :disabled="multiple"
+          icon="el-icon-delete"
+          plain
+          size="mini"
+          type="danger"
+          @click="handleDelete"
+        >删除
+        </el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          v-hasPermi="['system:globalScript:export']"
+          icon="el-icon-download"
+          plain
+          size="mini"
+          type="warning"
+          @click="handleExport"
+        >导出
+        </el-button
+        >
+      </el-col>
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+      ></right-toolbar>
+    </el-row>
+
+    <el-table
+      v-loading="loading"
+      :data="globalScriptList"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" label="" type="index"/>
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="脚本名"
+        prop="name"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.name }}
+          <span v-if="scope.row.description">
+            <el-tooltip :content="scope.row.description" placement="top">
+              <i
+                class="el-icon-info"
+                style="margin-left: 0px; margin-right: 10px"
+              ></i>
+            </el-tooltip>
+          </span>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column label="脚本Key" align="center" prop="scriptKey" /> -->
+      <!-- <el-table-column
+        label="脚本描述"
+        align="center"
+        prop="description"
+        :show-overflow-tooltip="true"
+      /> -->
+      <el-table-column align="center" label="是否需要登录" prop="checkToken">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_yes_no"
+            :value="scope.row.checkToken"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="是否需要VIP" prop="checkVip">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_yes_no"
+            :value="scope.row.checkVip"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="脚本内容"
+        prop="content"
+      />
+      <el-table-column align="center" label="脚本语言" prop="language">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_script_type"
+            :value="scope.row.language"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="备注"
+        prop="remark"
+      />
+      <el-table-column
+        align="center"
+        class-name="small-padding fixed-width"
+        label="操作"
+      >
+        <template slot-scope="scope">
+          <el-button
+            v-hasPermi="['system:globalScript:edit']"
+            icon="el-icon-edit"
+            size="mini"
+            type="text"
+            @click="handleUpdate(scope.row)"
+          >修改
+          </el-button
+          >
+          <el-button
+            v-hasPermi="['system:globalScript:remove']"
+            icon="el-icon-delete"
+            size="mini"
+            type="text"
+            @click="handleDelete(scope.row)"
+          >删除
+          </el-button
+          >
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <pagination
+      v-show="total > 0"
+      :limit.sync="queryParams.pageSize"
+      :page.sync="queryParams.pageNum"
+      :total="total"
+      @pagination="getList"
+    />
+
+    <!-- 添加或修改全局脚本对话框 -->
+    <el-dialog :title="title" :visible.sync="open" append-to-body width="800px">
+      <el-form ref="form" :model="form" :rules="rules">
+        <el-form-item prop="">
+          <el-col :span="12">
+            <el-form-item
+              label="脚本名称"
+              label-width="70px"
+              prop="name"
+              style="width: 300px"
+            >
+              <el-input v-model="form.name" placeholder="请输入脚本名称"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="脚本语言" prop="language">
+              <el-select
+                v-model="form.language"
+                placeholder="请选择脚本语言"
+                @change="handleChangeLanguage"
+              >
+                <el-option
+                  v-for="dict in dict.type.sys_script_type"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item v-if="form.scriptId" label="脚本Key" prop="scriptKey">
+          <el-input
+            v-model="form.scriptKey"
+            :readonly="true"
+            placeholder="未获取到相关信息"
+          />
+        </el-form-item>
+        <el-form-item label="脚本描述" prop="description">
+          <el-input
+            v-model="form.description"
+            placeholder="请输入内容"
+            type="textarea"
+          />
+        </el-form-item>
+        <el-form-item prop="">
+          <el-col :span="12">
+            <el-form-item label="是否需要登录" prop="checkToken">
+              <el-select
+                v-model="form.checkToken"
+                placeholder="请选择是否需要登录"
+              >
+                <el-option
+                  v-for="dict in dict.type.sys_yes_no"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="是否需要VIP" prop="checkVip">
+              <el-select
+                v-model="form.checkVip"
+                placeholder="请选择是否需要VIP"
+              >
+                <el-option
+                  v-for="dict in dict.type.sys_yes_no"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="脚本内容">
+          <!-- <editor v-model="form.content" :min-height="192" /> -->
+          <div style="margin-bottom: 25px">
+            <CodeEditor
+              v-model="form.content"
+              :language="scriptLanguage"
+              title="全局远程函数"
+            ></CodeEditor>
+          </div>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input
+            v-model="form.remark"
+            placeholder="请输入内容"
+            type="textarea"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import {
+  addGlobalScript,
+  delGlobalScript,
+  getGlobalScript,
+  listGlobalScript,
+  updateGlobalScript,
+} from "@/api/system/globalScript";
+import CodeEditor from "@/components/CodeEditor";
+
+export default {
+  name: "GlobalScript",
+  dicts: ["sys_script_type", "sys_yes_no"],
+  components: {
+    CodeEditor,
+  },
+  data() {
+    return {
+      // 遮罩层
+      loading: true,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 显示搜索条件
+      showSearch: true,
+      // 总条数
+      total: 0,
+      // 全局脚本表格数据
+      globalScriptList: [],
+      // 弹出层标题
+      title: "",
+      // 是否显示弹出层
+      open: false,
+      // 查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        name: null,
+        checkToken: null,
+        checkVip: null,
+        content: null,
+        language: null,
+      },
+      // 表单参数
+      form: {},
+      // 表单校验
+      rules: {
+        checkToken: [
+          {required: true, message: "是否需要登录不能为空", trigger: "blur"},
+        ],
+        checkVip: [
+          {required: true, message: "是否需要VIP不能为空", trigger: "blur"},
+        ],
+      },
+    };
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+    /** 查询全局脚本列表 */
+    getList() {
+      this.loading = true;
+      listGlobalScript(this.queryParams).then((response) => {
+        this.globalScriptList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+      });
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    // 表单重置
+    reset() {
+      this.form = {
+        scriptId: null,
+        name: null,
+        description: null,
+        checkToken: null,
+        checkVip: null,
+        content: null,
+        language: null,
+        createBy: null,
+        createTime: null,
+        updateBy: null,
+        updateTime: null,
+        remark: null,
+      };
+      this.resetForm("form");
+    },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
+      this.getList();
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.resetForm("queryForm");
+      this.handleQuery();
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map((item) => item.scriptId);
+      this.single = selection.length !== 1;
+      this.multiple = !selection.length;
+    },
+    /** 新增按钮操作 */
+    handleAdd() {
+      this.reset();
+      this.open = true;
+      this.title = "添加全局脚本";
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const scriptId = row.scriptId || this.ids;
+      getGlobalScript(scriptId).then((response) => {
+        this.form = response.data;
+        this.open = true;
+        this.title = "修改全局脚本";
+      });
+    },
+    /** 提交按钮 */
+    submitForm() {
+      this.$refs["form"].validate((valid) => {
+        if (valid) {
+          if (this.form.scriptId != null) {
+            updateGlobalScript(this.form).then((response) => {
+              this.$modal.msgSuccess("修改成功");
+              this.open = false;
+              this.getList();
+            });
+          } else {
+            addGlobalScript(this.form).then((response) => {
+              this.$modal.msgSuccess("新增成功");
+              this.open = false;
+              this.getList();
+            });
+          }
+        }
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const scriptIds = row.scriptId || this.ids;
+      this.$modal
+        .confirm("是否确认删除数据项？")
+        .then(function () {
+          return delGlobalScript(scriptIds);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {
+        });
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      this.download(
+        "system/globalScript/export",
+        {
+          ...this.queryParams,
+        },
+        `globalScript_${new Date().getTime()}.xlsx`
+      );
+    },
+    handleChangeLanguage(item) {
+      this.language = item;
+      if (item == "python2" || item == "python3") {
+        this.language = "python";
+      }
+    },
+  },
+  computed: {
+    scriptLanguage: function () {
+      if (this.form.language == "1") {
+        return "javascript";
+      } else if (this.form.language == "2" || this.form.language == "3") {
+        return "python";
+      } else if (this.form.language == "4") {
+        return "php";
+      }
+    },
+  },
+};
+</script>

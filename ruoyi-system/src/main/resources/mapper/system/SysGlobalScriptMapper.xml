@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysGlobalScriptMapper">
+
+    <resultMap type="SysGlobalScript" id="SysGlobalScriptResult">
+        <result property="scriptId" column="script_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="checkToken" column="check_token"/>
+        <result property="checkVip" column="check_vip"/>
+        <result property="content" column="content"/>
+        <result property="language" column="language"/>
+        <result property="scriptKey" column="script_key"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectSysGlobalScriptVo">
+        select script_id,
+               name,
+               description,
+               check_token,
+               check_vip,
+               content,
+               language,
+               script_key,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from sys_global_script
+    </sql>
+
+    <select id="selectSysGlobalScriptList" parameterType="SysGlobalScript" resultMap="SysGlobalScriptResult">
+        <include refid="selectSysGlobalScriptVo"/>
+        <where>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="checkToken != null  and checkToken != ''">and check_token = #{checkToken}</if>
+            <if test="checkVip != null  and checkVip != ''">and check_vip = #{checkVip}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="language != null  and language != ''">and language = #{language}</if>
+            <if test="scriptKey != null  and scriptKey != ''">and script_key = #{scriptKey}</if>
+        </where>
+    </select>
+
+    <select id="selectSysGlobalScriptByScriptId" parameterType="Long" resultMap="SysGlobalScriptResult">
+        <include refid="selectSysGlobalScriptVo"/>
+        where script_id = #{scriptId}
+    </select>
+
+    <select id="selectSysGlobalScriptByScriptName" parameterType="String" resultMap="SysGlobalScriptResult">
+        <include refid="selectSysGlobalScriptVo"/>
+        where name = #{scriptName}
+    </select>
+
+    <select id="selectSysGlobalScriptByScriptKey" parameterType="String" resultMap="SysGlobalScriptResult">
+        <include refid="selectSysGlobalScriptVo"/>
+        where script_key = #{scriptKey}
+    </select>
+
+    <insert id="insertSysGlobalScript" parameterType="SysGlobalScript" useGeneratedKeys="true" keyProperty="scriptId">
+        insert into sys_global_script
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="description != null">description,</if>
+            <if test="checkToken != null">check_token,</if>
+            <if test="checkVip != null">check_vip,</if>
+            <if test="content != null">content,</if>
+            <if test="language != null">language,</if>
+            <if test="scriptKey != null">script_key,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="description != null">#{description},</if>
+            <if test="checkToken != null">#{checkToken},</if>
+            <if test="checkVip != null">#{checkVip},</if>
+            <if test="content != null">#{content},</if>
+            <if test="language != null">#{language},</if>
+            <if test="scriptKey != null">#{scriptKey},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysGlobalScript" parameterType="SysGlobalScript">
+        update sys_global_script
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="checkToken != null">check_token = #{checkToken},</if>
+            <if test="checkVip != null">check_vip = #{checkVip},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="language != null">language = #{language},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where script_id = #{scriptId}
+    </update>
+
+    <delete id="deleteSysGlobalScriptByScriptId" parameterType="Long">
+        delete
+        from sys_global_script
+        where script_id = #{scriptId}
+    </delete>
+
+    <delete id="deleteSysGlobalScriptByScriptIds" parameterType="String">
+        delete from sys_global_script where script_id in
+        <foreach item="scriptId" collection="array" open="(" separator="," close=")">
+            #{scriptId}
+        </foreach>
+    </delete>
+</mapper>

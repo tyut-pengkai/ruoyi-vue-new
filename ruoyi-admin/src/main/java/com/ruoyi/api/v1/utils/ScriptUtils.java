@@ -1,35 +1,26 @@
-package com.ruoyi.system.service;
+package com.ruoyi.api.v1.utils;
 
-import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.enums.ScriptLanguage;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.system.domain.SysGlobalScript;
 import com.ruoyi.system.domain.vo.ScriptResultVo;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
-@SpringBootTest
-public class RemoteFunctionTest {
+public class ScriptUtils {
 
-    @Resource
-    private ISysGlobalScriptService globalScriptService;
-
-    public ScriptResultVo exec(String scriptContent, ScriptLanguage language) {
+    public static ScriptResultVo exec(String scriptContent, ScriptLanguage language, String params) {
         String execPrefix = "";
         if (language == ScriptLanguage.JAVA_SCRIPT) {
             execPrefix = "node";
         } else if (language == ScriptLanguage.PYTHON2) {
-            execPrefix = "python";
+            execPrefix = "python2";
         } else if (language == ScriptLanguage.PYTHON3) {
             execPrefix = "python";
         } else if (language == ScriptLanguage.PHP) {
@@ -40,12 +31,15 @@ public class RemoteFunctionTest {
         if (StringUtils.isBlank(execPrefix)) {
             throw new ServiceException("未指定脚本语言");
         }
-        File tempFile = null;
+        File tempFile;
         try {
             // 生成临时脚本文件
             tempFile = File.createTempFile("hyScriptTempFile" + System.currentTimeMillis(), null);
             FileUtils.write(tempFile, scriptContent, "utf-8");
             String command = execPrefix + " " + tempFile.getCanonicalPath();
+            if (StringUtils.isNotBlank(command)) {
+                command += " " + params;
+            }
             //接收正常结果流
             ByteArrayOutputStream susStream = new ByteArrayOutputStream();
             //接收异常结果流
@@ -64,11 +58,4 @@ public class RemoteFunctionTest {
         }
     }
 
-    @Test
-    public void test() {
-        SysGlobalScript script = globalScriptService.selectSysGlobalScriptByScriptId(1L);
-        System.out.println(script.getContent());
-        ScriptResultVo scriptResult = exec(script.getContent(), script.getLanguage());
-        System.out.println(JSON.toJSONString(scriptResult));
-    }
 }
