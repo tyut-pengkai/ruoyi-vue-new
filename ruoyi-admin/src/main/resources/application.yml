@@ -2,11 +2,12 @@
 ruoyi:
   # 名称
   name: 红叶网络验证与软件管理系统
+  # 简称
   shortName: 红叶网络验证
   # 版本
-  version: v0.0.2
+  version: v0.0.3
   # 版本号
-  versionNo: 20220514000000
+  versionNo: 20220521153200
   # URL
   url: http://www.coordsoft.com
   # email
@@ -15,10 +16,8 @@ ruoyi:
   copyrightYear: 2022
   # 版权
   copyright: Copyright © 2020-${ruoyi.copyrightYear} Coordsoft.Com All Rights Reserved.
-  #  # 实例演示开关
-  #  demoEnabled: true
-  # 文件路径 示例（ Windows配置D:/hywlyz/uploadPath，Linux配置 /home/hywlyz/uploadPath）
-  profile: D:/hywlyz/uploadPath
+  # 文件路径 示例（ Windows配置D:/hywlyz/uploadPath，Linux配置 /opt/app/hywlyz/uploadPath）
+  profile: /opt/app/hywlyz/uploadPath
   # 获取ip地址开关
   addressEnabled: true
   # 验证码类型 math 数组计算 char 字符验证
@@ -75,7 +74,7 @@ spring:
       master:
         url: jdbc:mysql://127.0.0.1:3306/hywlyz?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
         username: hywlyz
-        password:
+        password: 数据库密码
       # 从库数据源
       slave:
         # 从数据源开关/默认关闭
@@ -132,7 +131,7 @@ spring:
   servlet:
     multipart:
       # 单个文件大小
-       max-file-size: 20MB
+      max-file-size: 20MB
        # 设置总上传的文件大小
        max-request-size:  20MB
   # 服务模块
@@ -197,7 +196,7 @@ xss:
   # 过滤开关
   enabled: true
   # 排除链接（多个用逗号分隔）
-  excludes: /system/notice,/system/globalScript
+  excludes: /system/notice,/system/globalScript/*
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*
 

@@ -11,8 +11,10 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.system.domain.SysWebsite;
 import com.ruoyi.system.mapper.SysAppMapper;
 import com.ruoyi.system.service.ISysAppService;
+import com.ruoyi.system.service.ISysWebsiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,8 @@ public class SysAppServiceImpl implements ISysAppService {
     private SysAppMapper sysAppMapper;
     @Resource
     private RedisCache redisCache;
+    @Resource
+    private ISysWebsiteService sysWebsiteService;
     /**
      * 设置请求的统一前缀
      */
@@ -202,6 +206,16 @@ public class SysAppServiceImpl implements ISysAppService {
         HttpServletRequest request = ServletUtils.getRequest();
         String port = "80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort();
         port = pathMapping.contains("dev") ? "" : port;
-        app.setApiUrl(request.getScheme() + "://" + request.getServerName() + port + pathMapping + "/api/v1/" + app.getAppKey());
+        String url = "";
+        SysWebsite website = sysWebsiteService.getById(1);
+        if (website != null && StringUtils.isNotBlank(website.getDomain())) {
+            url = website.getDomain();
+        } else {
+            url = request.getScheme() + "://" + request.getServerName() + port;
+        }
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
+        app.setApiUrl(url + pathMapping + "/api/v1/" + app.getAppKey());
     }
 }

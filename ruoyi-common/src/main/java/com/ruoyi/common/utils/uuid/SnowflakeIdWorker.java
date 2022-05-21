@@ -120,7 +120,7 @@ public class SnowflakeIdWorker {
                 id = id % (maxDatacenterId + 1);
             }
         } catch (Exception e) {
-            logger.error("getDatacenterId exception.", e);
+            id = 1L;
         }
         return id;
     }

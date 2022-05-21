@@ -102,9 +102,13 @@
             <span>更新日志</span>
           </div>
           <el-collapse accordion>
-            <el-collapse-item title="v0.0.3 - 2022-05-16">
+            <el-collapse-item title="v0.0.3 - 2022-05-21">
               <ol>
-                <li>新增：自定义后台登录入口地址</li>
+                <li>修复：修复后台启动时支付插件偶发加载失败的问题</li>
+                <li>新增：添加后台安全入口功能，可自定义后台登录地址</li>
+                <li>
+                  新增：添加全局远程脚本功能，可支持JavaScript/Python/PHP三种语言，同步添加远程脚本调用API接口
+                </li>
                 <li>优化：优化订单号生成逻辑</li>
                 <li>
                   优化：卡密列表/登录码列表/订单列表展示优化，单击表项可展开详情信息
