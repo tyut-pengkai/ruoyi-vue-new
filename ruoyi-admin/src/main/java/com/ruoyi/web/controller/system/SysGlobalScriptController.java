@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.system;
 
+import com.ruoyi.api.v1.utils.ScriptUtils;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -7,6 +8,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.SysGlobalScript;
+import com.ruoyi.system.domain.vo.ScriptResultVo;
 import com.ruoyi.system.service.ISysGlobalScriptService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,4 +98,13 @@ public class SysGlobalScriptController extends BaseController {
     public AjaxResult remove(@PathVariable Long[] scriptIds) {
         return toAjax(sysGlobalScriptService.deleteSysGlobalScriptByScriptIds(scriptIds));
     }
+
+    @PreAuthorize("@ss.hasPermi('system:globalScript:test')")
+    @Log(title = "全局脚本", businessType = BusinessType.OTHER)
+    @PostMapping("/scriptTest")
+    public AjaxResult scriptTest(@RequestBody SysGlobalScript script) {
+        ScriptResultVo scriptResultVo = ScriptUtils.exec(script.getContent(), script.getLanguage(), script.getScriptParams());
+        return AjaxResult.success(scriptResultVo);
+    }
+
 }

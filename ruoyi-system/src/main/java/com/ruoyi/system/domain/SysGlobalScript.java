@@ -1,5 +1,6 @@
 package com.ruoyi.system.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.enums.ScriptLanguage;
@@ -61,6 +62,12 @@ public class SysGlobalScript extends BaseEntity {
      */
     @Excel(name = "脚本Key")
     private String scriptKey;
+
+    /**
+     * 脚本参数
+     */
+    @TableField(exist = false)
+    private String scriptParams;
 
     public Long getScriptId() {
         return scriptId;
@@ -124,6 +131,14 @@ public class SysGlobalScript extends BaseEntity {
 
     public void setScriptKey(String scriptKey) {
         this.scriptKey = scriptKey;
+    }
+
+    public String getScriptParams() {
+        return scriptParams;
+    }
+
+    public void setScriptParams(String scriptParams) {
+        this.scriptParams = scriptParams;
     }
 
     @Override

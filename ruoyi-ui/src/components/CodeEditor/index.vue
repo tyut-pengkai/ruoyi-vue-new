@@ -113,7 +113,7 @@ export default {
 <style lang="scss" scoped>
 .echart-pie-wrap {
   width: 100%;
-  height: 500px;
+  height: 400px;
 
   .myEditorTop {
     height: 45px;

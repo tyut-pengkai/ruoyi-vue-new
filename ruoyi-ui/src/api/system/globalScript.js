@@ -42,3 +42,12 @@ export function delGlobalScript(scriptId) {
     method: 'delete'
   })
 }
+
+// 测试全局脚本
+export function testGlobalScript(data) {
+  return request({
+    url: '/system/globalScript/scriptTest',
+    method: 'post',
+    data: data
+  })
+}

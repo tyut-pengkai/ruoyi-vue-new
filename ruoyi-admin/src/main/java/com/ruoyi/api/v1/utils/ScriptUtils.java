@@ -6,6 +6,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.vo.ScriptResultVo;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 
@@ -53,6 +54,8 @@ public class ScriptUtils {
             String suc = susStream.toString("UTF-8");
             String err = errStream.toString("UTF-8");
             return new ScriptResultVo(code, suc, err);
+        } catch (ExecuteException e) {
+            return new ScriptResultVo(e.getExitValue(), "", e.getMessage());
         } catch (IOException e) {
             throw new ServiceException(e.getMessage());
         }

@@ -72,12 +72,10 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -91,8 +89,7 @@
           type="primary"
           @click="handleAdd"
         >新增
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -104,8 +101,7 @@
           type="success"
           @click="handleUpdate"
         >修改
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -117,8 +113,7 @@
           type="danger"
           @click="handleDelete"
         >删除
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -129,8 +124,7 @@
           type="warning"
           @click="handleExport"
         >导出
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -219,8 +213,7 @@
             type="text"
             @click="handleUpdate(scope.row)"
           >修改
-          </el-button
-          >
+          </el-button>
           <el-button
             v-hasPermi="['system:globalScript:remove']"
             icon="el-icon-delete"
@@ -228,8 +221,7 @@
             type="text"
             @click="handleDelete(scope.row)"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -319,6 +311,13 @@
             </el-form-item>
           </el-col>
         </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input
+            v-model="form.remark"
+            placeholder="请输入内容"
+            type="textarea"
+          />
+        </el-form-item>
         <el-form-item label="脚本内容">
           <!-- <editor v-model="form.content" :min-height="192" /> -->
           <div style="margin-bottom: 25px">
@@ -329,18 +328,84 @@
             ></CodeEditor>
           </div>
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input
-            v-model="form.remark"
-            placeholder="请输入内容"
-            type="textarea"
-          />
+        <el-form-item label="脚本调用测试" prop="">
+          <el-col :span="1">
+            <el-form-item label-width="0px" prop="">
+              <el-tooltip content="多个脚本参数以空格分隔" placement="top">
+                <i class="el-icon-info" style="margin-left: -10px"></i>
+              </el-tooltip>
+            </el-form-item>
+          </el-col>
+          <el-col :span="17">
+            <el-form-item label-width="0px" prop="">
+              <el-input
+                v-model="scriptParams"
+                placeholder="请输入参数"
+                style="margin-left: -10px"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="2">
+            <el-form-item label-width="0px" prop="">
+              <el-button
+                style="margin-left: 10px"
+                type="primary"
+                @click="scriptTest"
+              >
+                调用
+              </el-button>
+            </el-form-item>
+          </el-col>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="dialogVisible"
+      custom-class="customClass"
+      title="脚本执行结果"
+      width="800px"
+    >
+      <div v-if="scriptTestResult">
+        <el-form>
+          <el-form-item label="脚本退出代码（0为正常）">
+            <el-input :readonly="true" :value="scriptTestResult.exitCode"/>
+          </el-form-item>
+          <el-form-item label="执行结果">
+            <el-input
+              :readonly="true"
+              :value="scriptTestResult.result"
+              autosize
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="错误信息">
+            <el-input
+              :readonly="true"
+              :value="scriptTestResult.error"
+              autosize
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="原始文本">
+            <el-input
+              :readonly="true"
+              :value="JSON.stringify(scriptTestResult)"
+              autosize
+              type="textarea"
+            />
+          </el-form-item>
+        </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogVisible = false"
+        >确 定</el-button
+        >
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -351,6 +416,7 @@ import {
   delGlobalScript,
   getGlobalScript,
   listGlobalScript,
+  testGlobalScript,
   updateGlobalScript,
 } from "@/api/system/globalScript";
 import CodeEditor from "@/components/CodeEditor";
@@ -402,6 +468,9 @@ export default {
           {required: true, message: "是否需要VIP不能为空", trigger: "blur"},
         ],
       },
+      scriptParams: "",
+      scriptTestResult: null,
+      dialogVisible: false,
     };
   },
   created() {
@@ -522,6 +591,13 @@ export default {
       if (item == "python2" || item == "python3") {
         this.language = "python";
       }
+    },
+    scriptTest() {
+      this.form.scriptParams = this.scriptParams;
+      testGlobalScript(this.form).then((response) => {
+        this.scriptTestResult = response.data;
+        this.dialogVisible = true;
+      });
     },
   },
   computed: {
