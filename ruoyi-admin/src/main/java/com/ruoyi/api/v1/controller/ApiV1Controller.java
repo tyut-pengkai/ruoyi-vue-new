@@ -105,11 +105,11 @@ public class ApiV1Controller extends BaseController {
             }
         }
         validUtils.apiCheck(api, app, params, apii.isCheckToken());
-        String appSecret = params.get("app_secret");
+        String appSecret = params.get("appSecret");
         if (!Objects.equals(app.getAppSecret(), appSecret)) {
             throw new ApiException(ErrorCode.ERROR_APPKEY_OR_APPSECRET_ERROR);
         }
-        String deviceCode = params.get("dev_code");
+        String deviceCode = params.get("deviceCode");
         SysAppVersion version = null;
         switch (api) {
             case "login.nu":
@@ -127,7 +127,7 @@ public class ApiV1Controller extends BaseController {
                 // 检查软件版本是否存在
                 version = validUtils.apiCheckPreLogin(appkey, app, params);
                 if (app.getAuthType() == AuthType.LOGIN_CODE) { // by login code
-                    String loginCode = params.get("login_code");
+                    String loginCode = params.get("loginCode");
                     // 调用登录接口
                     return loginService.appLogin(loginCode, app, version, deviceCode);
                 } else {

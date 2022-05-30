@@ -71,7 +71,7 @@ public class ValidUtils {
      * 前置校验
      */
     public SysAppVersion apiCheckPreLogin(String appkey, SysApp app, Map<String, String> params) {
-        String appVersionStr = params.get("app_ver");
+        String appVersionStr = params.get("appVer");
         if (StringUtils.isBlank(appVersionStr)) {
             throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "软件版本号不能为空");
         }
@@ -85,7 +85,7 @@ public class ValidUtils {
         checkMd5(appVersion, params);
         // 设备码
         if (app.getBindType() != null && app.getBindType() != BindType.NONE) {
-            String deviceCode = params.get("dev_code");
+            String deviceCode = params.get("deviceCode");
             if (StringUtils.isBlank(deviceCode)) {
                 throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "软件已开启设备验证，设备码不能为空");
             }
