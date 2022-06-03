@@ -66,4 +66,9 @@ public enum BusinessType
      * 快速接入
      */
     QUICK_ACCESS,
+
+    /**
+     * 测试
+     */
+    TEST,
 }

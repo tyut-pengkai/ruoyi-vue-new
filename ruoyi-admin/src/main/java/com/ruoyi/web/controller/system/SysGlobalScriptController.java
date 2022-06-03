@@ -100,7 +100,7 @@ public class SysGlobalScriptController extends BaseController {
     }
 
     @PreAuthorize("@ss.hasPermi('system:globalScript:test')")
-    @Log(title = "全局脚本", businessType = BusinessType.OTHER)
+    @Log(title = "全局脚本", businessType = BusinessType.TEST)
     @PostMapping("/scriptTest")
     public AjaxResult scriptTest(@RequestBody SysGlobalScript script) {
         ScriptResultVo scriptResultVo = ScriptUtils.exec(script.getContent(), script.getLanguage(), script.getScriptParams());

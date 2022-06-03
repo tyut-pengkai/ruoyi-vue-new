@@ -77,7 +77,7 @@ public class LicenseCreatorController {
             "moduleName": ["*"]
         }
     }*/
-    @RequestMapping(value = "/generateLicense", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(value = "/generateLicense", produces = {MediaType.APPLICATION_JSON_VALUE})
     public AjaxResult generateLicense(@RequestBody LicenseCreatorParam param) {
         if (StringUtils.isBlank(param.getLicensePath())) {
             param.setLicensePath(licensePath);

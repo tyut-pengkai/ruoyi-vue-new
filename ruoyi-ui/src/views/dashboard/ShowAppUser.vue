@@ -111,6 +111,12 @@ export default {
 };
 </script>
 <style scoped>
+.card-title {
+  font-size: 14px;
+  margin-top: -3px;
+  color: #595959;
+}
+
 .card-title-app {
   font-size: 12px;
   margin-top: -8px;

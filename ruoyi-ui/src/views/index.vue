@@ -102,6 +102,16 @@
             <span>更新日志</span>
           </div>
           <el-collapse accordion>
+            <el-collapse-item title="v0.0.4 - 2022-06-01">
+              <ol>
+                <li>修复：仪表盘软件数据页内中英文软件名有时无法对齐的问题</li>
+                <!-- <li>新增：</li>
+                <li>新增：</li> -->
+                <li>
+                  优化：规范API接口参数，都使用小驼峰命名法，同步修改易模块及调用例程
+                </li>
+              </ol>
+            </el-collapse-item>
             <el-collapse-item title="v0.0.3 - 2022-05-21">
               <ol>
                 <li>修复：修复后台启动时支付插件偶发加载失败的问题</li>
