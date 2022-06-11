@@ -3,22 +3,21 @@ package com.ruoyi.agent.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excels;
-import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.core.domain.TreeEntity;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 代理管理对象 sys_agent
  *
  * @author zwgu
- * @date 2022-06-08
+ * @date 2022-06-11
  */
-public class SysAgent extends BaseEntity {
+public class SysAgent extends TreeEntity {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -85,9 +84,6 @@ public class SysAgent extends BaseEntity {
             @Excel(name = "上级昵称", targetAttr = "nickName", type = Excel.Type.EXPORT)
     })
     private SysUser parentUser;
-
-
-    private List<SysAgent> children;
 
     public Long getAgentId() {
         return agentId;
@@ -168,14 +164,6 @@ public class SysAgent extends BaseEntity {
 
     public void setUser(SysUser user) {
         this.user = user;
-    }
-
-    public List<SysAgent> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<SysAgent> children) {
-        this.children = children;
     }
 
     @Override

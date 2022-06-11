@@ -12,7 +12,7 @@ import java.util.List;
  * 代理管理Mapper接口
  *
  * @author zwgu
- * @date 2022-06-08
+ * @date 2022-06-11
  */
 @Repository
 public interface SysAgentMapper {

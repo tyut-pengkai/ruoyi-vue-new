@@ -24,14 +24,15 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 代理管理Controller
  *
  * @author zwgu
- * @date 2022-06-08
+ * @date 2022-06-11
  */
 @RestController
 @RequestMapping("/agent/agentUser")
@@ -52,36 +53,15 @@ public class SysAgentController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('agent:agentUser:list')")
     @GetMapping("/list")
-    public TableDataInfo list(SysAgent sysAgent) {
-        startPage();
+    public AjaxResult list(SysAgent sysAgent) {
         List<SysAgent> list = sysAgentService.selectSysAgentList(sysAgent);
-
-        Set<Long> agentIdSet = new HashSet<>();
         for (SysAgent agent : list) {
-            fill(agent, agentIdSet);
-//            // 填充父级代理信息
-//            fillParentAgent(agent);
-//            // 填充子代理信息
-//            SysAgent sAgent = new SysAgent();
-//            sAgent.setParentUserId(agent.getUserId());
-//            List<SysAgent> subAgents = sysAgentService.selectSysAgentList(sAgent);
-//            // 填充子代理的父级代理
-//            for(SysAgent sag : subAgents) {
-//                fillParentAgent(sag);
-//            }
-//            agent.setChildren(subAgents);
-//            agentIdSet.addAll(subAgents.stream().map(SysAgent::getAgentId).collect(Collectors.toSet()));
+            fill(agent);
         }
-        List<SysAgent> filterList = new ArrayList<>();
-        for (SysAgent agent : list) {
-            if (!agentIdSet.contains(agent.getAgentId())) {
-                filterList.add(agent);
-            }
-        }
-        return getDataTable(filterList);
+        return AjaxResult.success(list);
     }
 
-    private void fill(SysAgent agent, Set<Long> agentIdSet) {
+    private void fill(SysAgent agent) {
         // 填充父级代理信息
         fillParentAgent(agent);
         // 填充子代理信息
@@ -89,9 +69,8 @@ public class SysAgentController extends BaseController {
         sAgent.setParentAgentId(agent.getAgentId());
         List<SysAgent> subAgents = sysAgentService.selectSysAgentList(sAgent);
         agent.setChildren(subAgents);
-        agentIdSet.addAll(subAgents.stream().map(SysAgent::getAgentId).collect(Collectors.toSet()));
         for (SysAgent ag : subAgents) {
-            fill(ag, agentIdSet);
+            fill(ag);
         }
     }
 
@@ -171,7 +150,7 @@ public class SysAgentController extends BaseController {
      */
     private void checkCircleParentAgentAndFillPath(SysAgent sysAgent) {
         String path;
-        if (sysAgent.getParentAgentId() != null) {
+        if (sysAgent.getParentAgentId() != null && sysAgent.getParentAgentId() != 0) {
             SysAgent parentAgent = sysAgentService.selectSysAgentByAgentId(sysAgent.getParentAgentId());
             if (parentAgent != null) {
                 // 上级为代理
@@ -198,7 +177,7 @@ public class SysAgentController extends BaseController {
     }
 
     private void fillParentAgent(SysAgent agent) {
-        if (agent.getParentAgentId() != null) {
+        if (agent.getParentAgentId() != null && agent.getParentAgentId() != 0) {
             SysAgent parentAgent = sysAgentService.selectSysAgentByAgentId(agent.getParentAgentId());
             SysUser sysUser = sysUserService.selectUserById(parentAgent.getUserId());
             SysUser user = new SysUser();
