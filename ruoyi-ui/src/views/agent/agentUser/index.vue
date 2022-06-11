@@ -61,12 +61,10 @@
           size="mini"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -80,8 +78,7 @@
           @click="handleAdd"
           type="primary"
         >新增
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -91,8 +88,7 @@
           size="mini"
           @click="toggleExpandAll"
         >展开/折叠
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -178,8 +174,7 @@
             @click="handleUpdate(scope.row)"
             icon="el-icon-edit"
           >修改
-          </el-button
-          >
+          </el-button>
           <el-button
             v-hasPermi="['agent:agentUser:grant']"
             icon="el-icon-edit"
@@ -195,8 +190,7 @@
             type="text"
             @click="handleAdd(scope.row)"
           >新增
-          </el-button
-          >
+          </el-button>
           <el-button
             size="mini"
             type="text"
@@ -204,13 +198,12 @@
             @click="handleDelete(scope.row)"
             icon="el-icon-delete"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- 添加或修改代理管理对话框 -->
+    <!-- 添加或修改代理用户对话框 -->
     <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
       <el-form ref="form" :model="form" :rules="rules">
         <el-form-item label="上级代理" prop="parentAgentId">
@@ -250,8 +243,7 @@
               :key="dict.value"
               :label="dict.value"
             >{{ dict.label }}
-            </el-radio
-            >
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="代理过期时间" prop="expireTime">
@@ -271,8 +263,7 @@
               :key="dict.value"
               :label="dict.value"
             >{{ dict.label }}
-            </el-radio
-            >
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -339,9 +330,9 @@ export default {
       loading: true,
       // 显示搜索条件
       showSearch: true,
-      // 代理管理表格数据
+      // 代理用户表格数据
       agentUserList: [],
-      // 代理管理树选项
+      // 代理用户树选项
       agentUserOptions: [],
       // 弹出层标题
       title: "",
@@ -395,7 +386,7 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询代理管理列表 */
+    /** 查询代理用户列表 */
     getList() {
       this.loading = true;
       this.queryParams.params = {};
@@ -416,7 +407,7 @@ export default {
         this.loading = false;
       });
     },
-    /** 转换代理管理数据结构 */
+    /** 转换代理用户数据结构 */
     normalizer(node) {
       if (node.children && !node.children.length) {
         delete node.children;
@@ -429,7 +420,7 @@ export default {
         children: node.children,
       };
     },
-    /** 查询代理管理下拉树结构 */
+    /** 查询代理用户下拉树结构 */
     getTreeselect() {
       listAgentUser().then((response) => {
         this.agentUserOptions = [];
@@ -493,7 +484,7 @@ export default {
         this.form.parentAgentId = 0;
       }
       this.open = true;
-      this.title = "添加代理管理";
+      this.title = "添加代理用户";
     },
     /** 展开/折叠操作 */
     toggleExpandAll() {
@@ -513,7 +504,7 @@ export default {
       getAgentUser(row.agentId).then((response) => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改代理管理";
+        this.title = "修改代理用户";
       });
     },
     /** 提交按钮 */

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.agent.mapper.SysAgentItemMapper">
+
+    <resultMap type="SysAgentItem" id="SysAgentItemResult">
+        <result property="id" column="id"/>
+        <result property="agentId" column="agent_id"/>
+        <result property="templateType" column="template_type"/>
+        <result property="templateId" column="template_id"/>
+        <result property="price" column="price"/>
+        <result property="expireTime" column="expire_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectSysAgentItemVo">
+        select id,
+               agent_id,
+               template_type,
+               template_id,
+               price,
+               expire_time,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from sys_agent_item
+    </sql>
+
+    <select id="selectSysAgentItemList" parameterType="SysAgentItem" resultMap="SysAgentItemResult">
+        <include refid="selectSysAgentItemVo"/>
+        <where>
+            <if test="agentId != null ">and agent_id = #{agentId}</if>
+            <if test="templateType != null">and template_type = #{templateType}</if>
+            <if test="templateId != null ">and template_id = #{templateId}</if>
+            <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
+                and expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSysAgentItemById" parameterType="Long" resultMap="SysAgentItemResult">
+        <include refid="selectSysAgentItemVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSysAgentItem" parameterType="SysAgentItem" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_agent_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="agentId != null">agent_id,</if>
+            <if test="templateType != null">template_type,</if>
+            <if test="templateId != null">template_id,</if>
+            <if test="price != null">price,</if>
+            <if test="expireTime != null">expire_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="agentId != null">#{agentId},</if>
+            <if test="templateType != null">#{templateType},</if>
+            <if test="templateId != null">#{templateId},</if>
+            <if test="price != null">#{price},</if>
+            <if test="expireTime != null">#{expireTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysAgentItem" parameterType="SysAgentItem">
+        update sys_agent_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="agentId != null">agent_id = #{agentId},</if>
+            <if test="templateType != null">template_type = #{templateType},</if>
+            <if test="templateId != null">template_id = #{templateId},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="expireTime != null">expire_time = #{expireTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysAgentItemById" parameterType="Long">
+        delete
+        from sys_agent_item
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteSysAgentItemByIds" parameterType="String">
+        delete from sys_agent_item where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
