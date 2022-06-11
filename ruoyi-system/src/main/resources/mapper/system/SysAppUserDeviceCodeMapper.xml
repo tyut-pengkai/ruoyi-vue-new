@@ -41,8 +41,8 @@
             resultMap="SysAppUserDeviceCodeResult">
         <include refid="selectSysAppUserDeviceCodeVo"/>
         <where>
-            <if test="appUserId != null ">and app_user_id = #{appUserId}</if>
-            <if test="deviceCodeId != null ">and device_code_id = #{deviceCodeId}</if>
+            <if test="appUserId != null ">and saudc.app_user_id = #{appUserId}</if>
+            <if test="deviceCodeId != null ">and saudc.device_code_id = #{deviceCodeId}</if>
             <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''">
                 and saudc.last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}
             </if>

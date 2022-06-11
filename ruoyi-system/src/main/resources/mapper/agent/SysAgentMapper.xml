@@ -52,7 +52,9 @@
         <include refid="selectSysAgentVo"/>
         <where>
             <if test="parentAgentId != null ">and ag.parent_agent_id = #{parentAgentId}</if>
-            <if test="userId != null ">and ag.user_id = #{userId}</if>
+            <if test="params.userName != null ">and (u.user_name like concat('%', #{params.userName}, '%') or
+                u.nick_name like concat('%', #{params.userName}, '%'))
+            </if>
             <if test="enableAddSubagent != null  and enableAddSubagent != ''">and ag.enable_add_subagent =
                 #{enableAddSubagent}
             </if>

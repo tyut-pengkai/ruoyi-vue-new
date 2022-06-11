@@ -7,11 +7,11 @@
       :model="queryParams"
       size="small"
     >
-      <el-form-item label="用户ID" prop="userId">
+      <el-form-item label="用户名称" prop="userName">
         <el-input
-          v-model="queryParams.userId"
+          v-model="queryParams.userName"
           clearable
-          placeholder="请输入用户ID"
+          placeholder="请输入用户名称"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -61,12 +61,10 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -80,8 +78,7 @@
           type="primary"
           @click="handleAdd"
         >新增
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -93,8 +90,7 @@
           type="success"
           @click="handleUpdate"
         >修改
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -106,8 +102,7 @@
           type="danger"
           @click="handleDelete"
         >删除
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -118,8 +113,7 @@
           type="warning"
           @click="handleExport"
         >导出
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -141,7 +135,7 @@
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
-        label="用户账号"
+        label="用户名称"
         prop="userId"
       >
         <template slot-scope="scope">
@@ -207,8 +201,7 @@
             type="text"
             @click="handleUpdate(scope.row)"
           >修改
-          </el-button
-          >
+          </el-button>
           <el-button
             v-hasPermi="['agent:agentUser:grant']"
             icon="el-icon-edit"
@@ -216,8 +209,7 @@
             type="text"
             @click="handleGrant(scope.row)"
           >授权
-          </el-button
-          >
+          </el-button>
           <el-button
             v-hasPermi="['agent:agentUser:remove']"
             icon="el-icon-delete"
@@ -225,8 +217,7 @@
             type="text"
             @click="handleDelete(scope.row)"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -267,7 +258,7 @@
             placeholder="选择上级菜单"
           /> -->
         </el-form-item>
-        <el-form-item label="用户账号" prop="userId">
+        <el-form-item label="用户名称" prop="userId">
           <div v-if="form.agentId == null">
             <el-select
               v-model="form.userId"
@@ -295,8 +286,7 @@
               :key="dict.value"
               :label="dict.value"
             >{{ dict.label }}
-            </el-radio
-            >
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="代理过期时间" prop="expireTime">
@@ -316,8 +306,7 @@
               :key="dict.value"
               :label="dict.value"
             >{{ dict.label }}
-            </el-radio
-            >
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -359,7 +348,15 @@
 </template>
 
 <script>
-import {addAgent, delAgent, getAgent, listAgent, listAgents, listNonAgents, updateAgent,} from "@/api/agent/agentUser";
+import {
+  addAgentUser,
+  delAgentUser,
+  getAgentUser,
+  listAgents,
+  listAgentUser,
+  listNonAgents,
+  updateAgentUser,
+} from "@/api/agent/agentUser";
 // import Treeselect from "@riophae/vue-treeselect";
 // import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -397,7 +394,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         parentAgentId: null,
-        userId: null,
+        userName: null,
         enableAddSubagent: null,
         expireTime: null,
         status: null,
@@ -445,12 +442,15 @@ export default {
     getList() {
       this.loading = true;
       this.queryParams.params = {};
+      if (this.queryParams.userName) {
+        this.queryParams.params["userName"] = this.queryParams.userName;
+      }
       if (null != this.daterangeExpireTime && "" != this.daterangeExpireTime) {
         this.queryParams.params["beginExpireTime"] =
           this.daterangeExpireTime[0];
         this.queryParams.params["endExpireTime"] = this.daterangeExpireTime[1];
       }
-      listAgent(this.queryParams).then((response) => {
+      listAgentUser(this.queryParams).then((response) => {
         this.agentList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -514,7 +514,7 @@ export default {
       const agentId = row.agentId || this.ids;
       this.loading = true;
       this.getAgentsList(agentId);
-      getAgent(agentId).then((response) => {
+      getAgentUser(agentId).then((response) => {
         this.form = response.data;
         this.open = true;
         this.title = "修改代理管理";
@@ -525,13 +525,13 @@ export default {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.agentId != null) {
-            updateAgent(this.form).then((response) => {
+            updateAgentUser(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addAgent(this.form).then((response) => {
+            addAgentUser(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -546,7 +546,7 @@ export default {
       this.$modal
         .confirm("是否确认删除数据项？")
         .then(function () {
-          return delAgent(agentIds);
+          return delAgentUser(agentIds);
         })
         .then(() => {
           this.getList();
@@ -601,7 +601,7 @@ export default {
     // },
     // /** 查询菜单下拉树结构 */
     // getTreeselect() {
-    //   listAgent().then((response) => {
+    //   listAgentUser().then((response) => {
     //     this.agentOptions = [];
     //     const root = {
     //       agentId: 0,

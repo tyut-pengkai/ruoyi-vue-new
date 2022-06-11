@@ -2,7 +2,7 @@ import request from '@/utils/request'
 import {parseStrEmpty} from "@/utils/ruoyi";
 
 // 查询代理管理列表
-export function listAgent(query) {
+export function listAgentUser(query) {
   return request({
     url: '/agent/agentUser/list',
     method: 'get',
@@ -11,7 +11,7 @@ export function listAgent(query) {
 }
 
 // 查询代理管理详细
-export function getAgent(agentId) {
+export function getAgentUser(agentId) {
   return request({
     url: '/agent/agentUser/' + agentId,
     method: 'get'
@@ -19,7 +19,7 @@ export function getAgent(agentId) {
 }
 
 // 新增代理管理
-export function addAgent(data) {
+export function addAgentUser(data) {
   return request({
     url: '/agent/agentUser',
     method: 'post',
@@ -28,7 +28,7 @@ export function addAgent(data) {
 }
 
 // 修改代理管理
-export function updateAgent(data) {
+export function updateAgentUser(data) {
   return request({
     url: '/agent/agentUser',
     method: 'put',
@@ -37,7 +37,7 @@ export function updateAgent(data) {
 }
 
 // 删除代理管理
-export function delAgent(agentId) {
+export function delAgentUser(agentId) {
   return request({
     url: '/agent/agentUser/' + agentId,
     method: 'delete'

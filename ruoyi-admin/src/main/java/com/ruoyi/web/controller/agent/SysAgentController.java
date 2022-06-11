@@ -14,6 +14,8 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.service.PermissionService;
+import com.ruoyi.system.domain.SysCardTemplate;
+import com.ruoyi.system.service.ISysCardTemplateService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,6 +44,8 @@ public class SysAgentController extends BaseController {
     private ISysUserService sysUserService;
     @Resource
     private PermissionService permissionService;
+    @Resource
+    private ISysCardTemplateService sysCardTemplateService;
 
     /**
      * 查询代理管理列表
@@ -267,5 +271,10 @@ public class SysAgentController extends BaseController {
         List<AgentInfoVo> list = sysAgentService.getNonAgents();
         return getDataTable(list);
     }
+
+    public void getGrantedCardTemplateByAgentId() {
+        sysCardTemplateService.selectSysCardTemplateList(new SysCardTemplate());
+    }
+
 
 }
