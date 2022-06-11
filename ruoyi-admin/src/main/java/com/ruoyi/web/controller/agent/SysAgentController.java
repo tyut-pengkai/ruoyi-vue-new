@@ -122,9 +122,6 @@ public class SysAgentController extends BaseController {
     @Log(title = "代理管理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysAgent sysAgent) {
-        if (Objects.equals(sysAgent.getParentAgentId(), sysAgent.getAgentId())) {
-            throw new ServiceException("代理与上级代理不能为同一个用户");
-        }
         SysAgent agentNow = sysAgentService.selectSysAgentByUserId(sysAgent.getUserId());
         if (agentNow != null) {
             throw new ServiceException("该用户已经是代理身份");
@@ -134,11 +131,12 @@ public class SysAgentController extends BaseController {
             SysRole sysRole = sysRoleService.selectRoleByKey("agent");
             sysRoleService.insertAuthUsers(sysRole.getRoleId(), new Long[]{sysAgent.getUserId()});
         }
-
-        checkCircleParentAgentAndFillPath(sysAgent);
-
         sysAgent.setDelFlag("0");
-        return toAjax(sysAgentService.insertSysAgent(sysAgent));
+        sysAgent.setCreateBy(getUsername());
+        sysAgentService.insertSysAgent(sysAgent);
+        checkCircleParentAgentAndFillPath(sysAgent);
+        sysAgentService.updateSysAgent(sysAgent);
+        return AjaxResult.success();
     }
 
     /**
@@ -160,6 +158,7 @@ public class SysAgentController extends BaseController {
             agent.setPath(agent.getPath().replace(oldPath, sysAgent.getPath()));
             sysAgentService.updateSysAgent(agent);
         }
+        sysAgent.setUpdateBy(getUsername());
         return toAjax(sysAgentService.updateSysAgent(sysAgent));
     }
 

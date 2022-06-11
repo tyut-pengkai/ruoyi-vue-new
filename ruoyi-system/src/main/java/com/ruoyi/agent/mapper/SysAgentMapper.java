@@ -109,7 +109,7 @@ public interface SysAgentMapper {
             "\tFROM\n" +
             "\t\tsys_agent ag \n" +
             "\tWHERE\n" +
-            "\tag.user_id = 10 \n" +
+            "\tag.agent_id = #{agentId} \n" +
             "\t)")
     public List<Long> getSubAgents(@Param("agentId") Long agentId);
 }
