@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
     <groupId>com.coordsoft</groupId>
     <artifactId>hywlyz</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
 
     <description>
         红叶网络验证web服务入口

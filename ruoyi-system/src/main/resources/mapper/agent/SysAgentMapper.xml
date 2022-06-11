@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.agent.mapper.SysAgentMapper">
+
+    <resultMap type="SysAgent" id="SysAgentResult">
+        <result property="agentId" column="agent_id"/>
+        <result property="parentAgentId" column="parent_agent_id"/>
+        <result property="path" column="path"/>
+        <result property="userId" column="user_id"/>
+        <result property="enableAddSubagent" column="enable_add_subagent"/>
+        <result property="expireTime" column="expire_time"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
+    </resultMap>
+
+    <resultMap type="SysUser" id="SysUserResult">
+        <id property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
+    </resultMap>
+
+    <sql id="selectSysAgentVo">
+        select ag.agent_id,
+               ag.parent_agent_id,
+               ag.path,
+               ag.user_id,
+               ag.enable_add_subagent,
+               ag.expire_time,
+               ag.status,
+               ag.del_flag,
+               ag.create_by,
+               ag.create_time,
+               ag.update_by,
+               ag.update_time,
+               ag.remark,
+               u.user_id,
+               u.user_name,
+               u.nick_name
+        from sys_agent ag
+                 left join sys_user u on ag.user_id = u.user_id
+    </sql>
+
+    <select id="selectSysAgentList" parameterType="SysAgent" resultMap="SysAgentResult">
+        <include refid="selectSysAgentVo"/>
+        <where>
+            <if test="parentAgentId != null ">and ag.parent_agent_id = #{parentAgentId}</if>
+            <if test="userId != null ">and ag.user_id = #{userId}</if>
+            <if test="enableAddSubagent != null  and enableAddSubagent != ''">and ag.enable_add_subagent =
+                #{enableAddSubagent}
+            </if>
+            <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
+                and ag.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
+            </if>
+            <if test="status != null  and status != ''">and ag.status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectSysAgentByAgentId" parameterType="Long" resultMap="SysAgentResult">
+        <include refid="selectSysAgentVo"/>
+        where ag.agent_id = #{agentId}
+    </select>
+
+    <select id="selectSysAgentByUserId" parameterType="Long" resultMap="SysAgentResult">
+        <include refid="selectSysAgentVo"/>
+        where ag.user_id = #{userId}
+    </select>
+
+    <insert id="insertSysAgent" parameterType="SysAgent" useGeneratedKeys="true" keyProperty="agentId">
+        insert into sys_agent
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentAgentId != null">parent_agent_id,</if>
+            <if test="path != null">path,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="enableAddSubagent != null">enable_add_subagent,</if>
+            <if test="expireTime != null">expire_time,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parentAgentId != null">#{parentAgentId},</if>
+            <if test="path != null">#{path},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="enableAddSubagent != null">#{enableAddSubagent},</if>
+            <if test="expireTime != null">#{expireTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysAgent" parameterType="SysAgent">
+        update sys_agent
+        <trim prefix="SET" suffixOverrides=",">
+            parent_agent_id = #{parentAgentId},
+            <if test="path != null">path = #{path},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="enableAddSubagent != null">enable_add_subagent = #{enableAddSubagent},</if>
+            <if test="expireTime != null">expire_time = #{expireTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where agent_id = #{agentId}
+    </update>
+
+    <delete id="deleteSysAgentByAgentId" parameterType="Long">
+        delete
+        from sys_agent
+        where agent_id = #{agentId}
+    </delete>
+
+    <delete id="deleteSysAgentByAgentIds" parameterType="String">
+        delete from sys_agent where agent_id in
+        <foreach item="agentId" collection="array" open="(" separator="," close=")">
+            #{agentId}
+        </foreach>
+    </delete>
+</mapper>

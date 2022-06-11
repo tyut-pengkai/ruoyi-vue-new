@@ -13,7 +13,7 @@ function authPermission(permission) {
 }
 
 function authRole(role) {
-  const super_admin = "admin";
+  const super_admin = "sadmin";
   const roles = store.getters && store.getters.roles
   if (role && role.length > 0) {
     return roles.some(v => {

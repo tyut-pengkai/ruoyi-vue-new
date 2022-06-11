@@ -10,22 +10,29 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class SysAppUser extends BaseEntity
-{
+public class SysAppUser extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
-    /** 软件用户ID */
+    /**
+     * 软件用户ID
+     */
     private Long appUserId;
 
-    /** 用户ID */
+    /**
+     * 用户ID
+     */
     @Excel(name = "用户ID")
     private Long userId;
 
-    /** 软件ID */
+    /**
+     * 软件ID
+     */
     @Excel(name = "软件ID")
     private Long appId;
 
-    /** 状态（0正常 1停用） */
+    /**
+     * 状态（0正常 1停用）
+     */
     @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
     private String status;
 
@@ -41,31 +48,51 @@ public class SysAppUser extends BaseEntity
     @Excel(name = "登录机器数量限制，整数，-1为不限制，默认为-1")
     private Integer loginLimitM;
 
-    /** 免费余额 */
+    /**
+     * 免费余额
+     */
     @Excel(name = "免费余额")
     private BigDecimal freeBalance;
 
-    /** 支付余额 */
+    /**
+     * 支付余额
+     */
     @Excel(name = "支付余额")
     private BigDecimal payBalance;
 
-    /** 总消费 */
-    @Excel(name = "总消费")
-    private BigDecimal totalPay;
+    /**
+     * 免费消费
+     */
+    @Excel(name = "免费消费")
+    private BigDecimal freePayment;
 
-    /** 最后登录时间 */
+    /**
+     * 支付消费
+     */
+    @Excel(name = "支付消费")
+    private BigDecimal payPayment;
+
+    /**
+     * 最后登录时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Excel(name = "最后登录时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date lastLoginTime;
 
-    /** 登录次数 */
+    /**
+     * 登录次数
+     */
     @Excel(name = "登录次数")
     private Long loginTimes;
 
-    /** 密码连续错误次数 */
+    /**
+     * 密码连续错误次数
+     */
     private Integer pwdErrorTimes;
 
-    /** 过期时间 */
+    /**
+     * 过期时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Excel(name = "过期时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date expireTime;
@@ -102,35 +129,31 @@ public class SysAppUser extends BaseEntity
      */
     private String userName;
 
-    public void setAppUserId(Long appUserId) 
-    {
+    public Long getAppUserId() {
+        return appUserId;
+    }
+
+    public void setAppUserId(Long appUserId) {
         this.appUserId = appUserId;
     }
 
-    public Long getAppUserId() 
-    {
-        return appUserId;
+    public Long getUserId() {
+        return userId;
     }
-    public void setUserId(Long userId) 
-    {
+
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public Long getUserId() 
-    {
-        return userId;
+    public Long getAppId() {
+        return appId;
     }
-    public void setAppId(Long appId) 
-    {
+
+    public void setAppId(Long appId) {
         this.appId = appId;
     }
 
-    public Long getAppId() 
-    {
-        return appId;
-    }
-    public void setStatus(String status) 
-    {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -162,44 +185,47 @@ public class SysAppUser extends BaseEntity
         return freeBalance;
     }
 
-    public void setPayBalance(BigDecimal payBalance)
-    {
+    public BigDecimal getPayBalance() {
+        return payBalance;
+    }
+
+    public void setPayBalance(BigDecimal payBalance) {
         this.payBalance = payBalance;
     }
 
-    public BigDecimal getPayBalance() 
-    {
-        return payBalance;
-    }
-    public void setTotalPay(BigDecimal totalPay) 
-    {
-        this.totalPay = totalPay;
+    public BigDecimal getFreePayment() {
+        return freePayment;
     }
 
-    public BigDecimal getTotalPay() 
-    {
-        return totalPay;
+    public void setFreePayment(BigDecimal freePayment) {
+        this.freePayment = freePayment;
     }
-    public void setLastLoginTime(Date lastLoginTime) 
-    {
+
+    public BigDecimal getPayPayment() {
+        return payPayment;
+    }
+
+    public void setPayPayment(BigDecimal payPayment) {
+        this.payPayment = payPayment;
+    }
+
+    public Date getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(Date lastLoginTime) {
         this.lastLoginTime = lastLoginTime;
     }
 
-    public Date getLastLoginTime() 
-    {
-        return lastLoginTime;
+    public Long getLoginTimes() {
+        return loginTimes;
     }
-    public void setLoginTimes(Long loginTimes)
-    {
+
+    public void setLoginTimes(Long loginTimes) {
         this.loginTimes = loginTimes;
     }
 
-    public Long getLoginTimes()
-    {
-        return loginTimes;
-    }
-    public void setPwdErrorTimes(Integer pwdErrorTimes)
-    {
+    public void setPwdErrorTimes(Integer pwdErrorTimes) {
         this.pwdErrorTimes = pwdErrorTimes;
     }
 
@@ -227,8 +253,7 @@ public class SysAppUser extends BaseEntity
         this.loginCode = loginCode;
     }
 
-    public String getLoginCode() 
-    {
+    public String getLoginCode() {
         return loginCode;
     }
 
@@ -258,27 +283,28 @@ public class SysAppUser extends BaseEntity
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("appUserId", getAppUserId())
-            .append("userId", getUserId())
-            .append("appId", getAppId())
-            .append("status", getStatus())
-            .append("loginLimitU", getLoginLimitU())
-            .append("loginLimitM", getLoginLimitM())
-            .append("freeBalance", getFreeBalance())
-            .append("payBalance", getPayBalance())
-            .append("totalPay", getTotalPay())
-            .append("lastLoginTime", getLastLoginTime())
-            .append("loginTimes", getLoginTimes())
-            .append("pwdErrorTimes", getPwdErrorTimes())
-            .append("expireTime", getExpireTime())
-            .append("point", getPoint())
-            .append("loginCode", getLoginCode())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .append("updateBy", getUpdateBy())
-            .append("updateTime", getUpdateTime())
-            .append("remark", getRemark())
-            .toString();
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("appUserId", getAppUserId())
+                .append("userId", getUserId())
+                .append("appId", getAppId())
+                .append("status", getStatus())
+                .append("loginLimitU", getLoginLimitU())
+                .append("loginLimitM", getLoginLimitM())
+                .append("freeBalance", getFreeBalance())
+                .append("payBalance", getPayBalance())
+                .append("totalPay", getFreePayment())
+                .append("totalPay", getPayBalance())
+                .append("lastLoginTime", getLastLoginTime())
+                .append("loginTimes", getLoginTimes())
+                .append("pwdErrorTimes", getPwdErrorTimes())
+                .append("expireTime", getExpireTime())
+                .append("point", getPoint())
+                .append("loginCode", getLoginCode())
+                .append("createBy", getCreateBy())
+                .append("createTime", getCreateTime())
+                .append("updateBy", getUpdateBy())
+                .append("updateTime", getUpdateTime())
+                .append("remark", getRemark())
+                .toString();
     }
 }

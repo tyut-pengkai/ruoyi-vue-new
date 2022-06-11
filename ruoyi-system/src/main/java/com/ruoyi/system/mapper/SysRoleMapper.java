@@ -1,17 +1,17 @@
 package com.ruoyi.system.mapper;
 
-import java.util.List;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 角色表 数据层
- * 
+ *
  * @author ruoyi
  */
 @Repository
-public interface SysRoleMapper
-{
+public interface SysRoleMapper {
     /**
      * 根据条件分页查询角色数据
      * 
@@ -101,9 +101,17 @@ public interface SysRoleMapper
 
     /**
      * 批量删除角色信息
-     * 
+     *
      * @param roleIds 需要删除的角色ID
      * @return 结果
      */
     public int deleteRoleByIds(Long[] roleIds);
+
+    /**
+     * 通过角色Key查询角色
+     *
+     * @param roleKey
+     * @return
+     */
+    public SysRole selectRoleByKey(String roleKey);
 }

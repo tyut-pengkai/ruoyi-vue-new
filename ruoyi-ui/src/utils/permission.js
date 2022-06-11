@@ -34,7 +34,7 @@ export function checkRole(value) {
   if (value && value instanceof Array && value.length > 0) {
     const roles = store.getters && store.getters.roles
     const permissionRoles = value
-    const super_admin = "admin";
+    const super_admin = "sadmin";
 
     const hasRole = roles.some(role => {
       return super_admin === role || permissionRoles.includes(role)

@@ -222,9 +222,10 @@
           </span>
         </template>
       </el-table-column>
-      <!-- <el-table-column label="免费余额" align="center" prop="freeBalance" />
+      <!-- <el-table-column label="赠送余额" align="center" prop="freeBalance" />
         <el-table-column label="支付余额" align="center" prop="payBalance" />
-        <el-table-column label="总充值" align="center" prop="totalPay" /> -->
+        <el-table-column label="赠送消费" align="center" prop="freePayment" />
+        <el-table-column label="支付消费" align="center" prop="payPayment" /> -->
       <el-table-column label="最后登录时间" align="center" width="180">
         <template slot-scope="scope">
           <span>
@@ -502,8 +503,8 @@
           </el-col>
         </el-form-item>
         <el-form-item prop="">
-          <el-col :span="8">
-            <el-form-item label="免费余额" prop="freeBalance">
+          <el-col :span="12">
+            <el-form-item label="赠送余额" prop="freeBalance">
               <el-input-number
                 v-model="form.freeBalance"
                 controls-position="right"
@@ -512,8 +513,8 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="充值余额" prop="payBalance">
+          <el-col :span="12">
+            <el-form-item label="支付余额" prop="payBalance">
               <el-input-number
                 v-model="form.payBalance"
                 controls-position="right"
@@ -522,10 +523,22 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="总充值" prop="totalPay">
+        </el-form-item>
+        <el-form-item prop="">
+          <el-col :span="12">
+            <el-form-item label="赠送消费" prop="freePayment">
               <el-input-number
-                v-model="form.totalPay"
+                v-model="form.freePayment"
+                :precision="2"
+                :step="0.01"
+                controls-position="right"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="支付消费" prop="payPayment">
+              <el-input-number
+                v-model="form.payPayment"
                 controls-position="right"
                 :precision="2"
                 :step="0.01"
@@ -721,19 +734,22 @@ export default {
           },
         ],
         freeBalance: [
-          { required: true, message: "免费余额不能为空", trigger: "blur" },
+          {required: true, message: "赠送余额不能为空", trigger: "blur"},
         ],
         payBalance: [
-          { required: true, message: "支付余额不能为空", trigger: "blur" },
+          {required: true, message: "支付余额不能为空", trigger: "blur"},
         ],
-        totalPay: [
-          { required: true, message: "总充值不能为空", trigger: "blur" },
+        freePayment: [
+          {required: true, message: "赠送消费不能为空", trigger: "blur"},
+        ],
+        payPayment: [
+          {required: true, message: "支付消费不能为空", trigger: "blur"},
         ],
         expireTime: [
-          { required: true, message: "过期时间不能为空", trigger: "blur" },
+          {required: true, message: "过期时间不能为空", trigger: "blur"},
         ],
         point: [
-          { required: true, message: "剩余点数不能为空", trigger: "blur" },
+          {required: true, message: "剩余点数不能为空", trigger: "blur"},
         ],
       },
     };
@@ -803,7 +819,8 @@ export default {
         loginLimitM: -1,
         freeBalance: 0,
         payBalance: 0,
-        totalPay: 0,
+        freePayment: 0,
+        payPayment: 0,
         lastLoginTime: undefined,
         loginTimes: 0,
         expireTime: undefined,

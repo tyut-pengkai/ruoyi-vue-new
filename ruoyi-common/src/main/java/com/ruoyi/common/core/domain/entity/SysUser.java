@@ -1,16 +1,20 @@
 package com.ruoyi.common.core.domain.entity;
 
-import java.util.Date;
-import java.util.List;
-import javax.validation.constraints.*;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excel.ColumnType;
 import com.ruoyi.common.annotation.Excel.Type;
 import com.ruoyi.common.annotation.Excels;
 import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.xss.Xss;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 用户对象 sys_user
@@ -73,20 +77,52 @@ public class SysUser extends BaseEntity
     @Excel(name = "最后登录时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", type = Type.EXPORT)
     private Date loginDate;
 
-    /** 部门对象 */
+    /**
+     * 部门对象
+     */
     @Excels({
-        @Excel(name = "部门名称", targetAttr = "deptName", type = Type.EXPORT),
-        @Excel(name = "部门负责人", targetAttr = "leader", type = Type.EXPORT)
+            @Excel(name = "部门名称", targetAttr = "deptName", type = Type.EXPORT),
+            @Excel(name = "部门负责人", targetAttr = "leader", type = Type.EXPORT)
     })
     private SysDept dept;
 
-    /** 角色对象 */
+    /**
+     * 免费余额
+     */
+    @Excel(name = "免费余额")
+    private BigDecimal freeBalance;
+
+    /**
+     * 支付余额
+     */
+    @Excel(name = "支付余额")
+    private BigDecimal payBalance;
+
+    /**
+     * 免费消费
+     */
+    @Excel(name = "免费消费")
+    private BigDecimal freePayment;
+
+    /**
+     * 支付消费
+     */
+    @Excel(name = "支付消费")
+    private BigDecimal payPayment;
+
+    /**
+     * 角色对象
+     */
     private List<SysRole> roles;
 
-    /** 角色组 */
+    /**
+     * 角色组
+     */
     private Long[] roleIds;
 
-    /** 岗位组 */
+    /**
+     * 岗位组
+     */
     private Long[] postIds;
 
     /** 角色ID */
@@ -255,23 +291,51 @@ public class SysUser extends BaseEntity
         return loginDate;
     }
 
-    public void setLoginDate(Date loginDate)
-    {
+    public void setLoginDate(Date loginDate) {
         this.loginDate = loginDate;
     }
 
-    public SysDept getDept()
-    {
+    public SysDept getDept() {
         return dept;
     }
 
-    public void setDept(SysDept dept)
-    {
+    public void setDept(SysDept dept) {
         this.dept = dept;
     }
 
-    public List<SysRole> getRoles()
-    {
+    public BigDecimal getFreeBalance() {
+        return freeBalance;
+    }
+
+    public void setFreeBalance(BigDecimal freeBalance) {
+        this.freeBalance = freeBalance;
+    }
+
+    public BigDecimal getPayBalance() {
+        return payBalance;
+    }
+
+    public void setPayBalance(BigDecimal payBalance) {
+        this.payBalance = payBalance;
+    }
+
+    public BigDecimal getFreePayment() {
+        return freePayment;
+    }
+
+    public void setFreePayment(BigDecimal freePayment) {
+        this.freePayment = freePayment;
+    }
+
+    public BigDecimal getPayPayment() {
+        return payPayment;
+    }
+
+    public void setPayPayment(BigDecimal payPayment) {
+        this.payPayment = payPayment;
+    }
+
+    public List<SysRole> getRoles() {
         return roles;
     }
 
@@ -316,17 +380,21 @@ public class SysUser extends BaseEntity
             .append("userId", getUserId())
             .append("deptId", getDeptId())
             .append("userName", getUserName())
-            .append("nickName", getNickName())
-            .append("email", getEmail())
-            .append("phonenumber", getPhonenumber())
-            .append("sex", getSex())
-            .append("avatar", getAvatar())
-            .append("password", getPassword())
-            .append("salt", getSalt())
-            .append("status", getStatus())
-            .append("delFlag", getDelFlag())
-            .append("loginIp", getLoginIp())
-            .append("loginDate", getLoginDate())
+                .append("nickName", getNickName())
+                .append("email", getEmail())
+                .append("phonenumber", getPhonenumber())
+                .append("sex", getSex())
+                .append("avatar", getAvatar())
+                .append("password", getPassword())
+                .append("salt", getSalt())
+                .append("status", getStatus())
+                .append("delFlag", getDelFlag())
+                .append("loginIp", getLoginIp())
+                .append("loginDate", getLoginDate())
+                .append("freeBalance", getFreeBalance())
+                .append("payBalance", getPayBalance())
+                .append("totalPay", getFreePayment())
+                .append("totalPay", getPayBalance())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())
             .append("updateBy", getUpdateBy())

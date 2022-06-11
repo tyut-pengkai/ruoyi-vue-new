@@ -85,16 +85,17 @@ public class SysAppLoginService {
                 appUser = new SysAppUser();
                 appUser.setAppId(app.getAppId());
                 appUser.setUserId(user.getUserId());
-                appUser.setFreeBalance(BigDecimal.ZERO);
                 appUser.setLastLoginTime(null);
                 appUser.setLoginCode(null);
                 appUser.setLoginLimitM(-1);
                 appUser.setLoginLimitU(-1);
                 appUser.setLoginTimes(0L);
-                appUser.setPayBalance(BigDecimal.ZERO);
                 appUser.setPwdErrorTimes(0);
                 appUser.setStatus(UserConstants.NORMAL);
-                appUser.setTotalPay(BigDecimal.ZERO);
+                appUser.setFreeBalance(BigDecimal.ZERO);
+                appUser.setPayBalance(BigDecimal.ZERO);
+                appUser.setFreePayment(BigDecimal.ZERO);
+                appUser.setPayPayment(BigDecimal.ZERO);
                 if (app.getBillType() == BillType.TIME) {
                     appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg()));
                     appUser.setPoint(null);
@@ -219,16 +220,17 @@ public class SysAppLoginService {
                 appUser = new SysAppUser();
                 appUser.setAppId(app.getAppId());
                 appUser.setUserId(null);
-                appUser.setFreeBalance(BigDecimal.ZERO);
                 appUser.setLastLoginTime(null);
                 appUser.setLoginCode(loginCodeStr);
                 appUser.setLoginLimitM(-1);
                 appUser.setLoginLimitU(-1);
                 appUser.setLoginTimes(0L);
-                appUser.setPayBalance(BigDecimal.ZERO);
                 appUser.setPwdErrorTimes(0);
                 appUser.setStatus(UserConstants.NORMAL);
-                appUser.setTotalPay(BigDecimal.ZERO);
+                appUser.setFreeBalance(BigDecimal.ZERO);
+                appUser.setPayBalance(BigDecimal.ZERO);
+                appUser.setFreePayment(BigDecimal.ZERO);
+                appUser.setPayPayment(BigDecimal.ZERO);
                 if (app.getBillType() == BillType.TIME) {
                     appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg()));
                     appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(appUser.getExpireTime(), loginCode.getQuota()));
