@@ -32,9 +32,18 @@ public class SysCardTemplateController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:cardTemplate:list')")
     @GetMapping("/list")
-    public TableDataInfo list(SysCardTemplate sysCardTemplate)
-    {
+    public TableDataInfo list(SysCardTemplate sysCardTemplate) {
         startPage();
+        List<SysCardTemplate> list = sysCardTemplateService.selectSysCardTemplateList(sysCardTemplate);
+        return getDataTable(list);
+    }
+
+    /**
+     * 查询卡密模板列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:cardTemplate:list')")
+    @GetMapping("/listAll")
+    public TableDataInfo listAll(SysCardTemplate sysCardTemplate) {
         List<SysCardTemplate> list = sysCardTemplateService.selectSysCardTemplateList(sysCardTemplate);
         return getDataTable(list);
     }

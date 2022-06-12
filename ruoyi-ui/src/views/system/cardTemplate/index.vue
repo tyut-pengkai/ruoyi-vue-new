@@ -781,7 +781,7 @@ import {
   listCardTemplate,
   updateCardTemplate,
 } from "@/api/system/cardTemplate";
-import {getApp, listApp} from "@/api/system/app";
+import {getApp, listAppAll} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
 import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
@@ -1069,7 +1069,7 @@ export default {
       let queryParams = {};
       queryParams.params = {};
       queryParams.authType = "0";
-      listApp(queryParams).then((response) => {
+      listAppAll(queryParams).then((response) => {
         this.appList = response.rows;
         for (let app of this.appList) {
           this.appMap[app["appId"]] = app;

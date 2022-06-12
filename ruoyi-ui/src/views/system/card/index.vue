@@ -807,11 +807,11 @@
 
 <script>
 import {addCard, delCard, exportCard, getCard, listCard, updateCard,} from "@/api/system/card";
-import {getApp, listApp} from "@/api/system/app";
+import {getApp, listAppAll} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
 import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
-import {listCardTemplate} from "@/api/system/cardTemplate";
+import {listCardTemplateAll} from "@/api/system/cardTemplate";
 
 export default {
   name: "Card",
@@ -1095,7 +1095,7 @@ export default {
         queryParams.appId = this.app.appId;
         this.formBatch.appId = this.app.appId;
       }
-      listCardTemplate(queryParams).then((response) => {
+      listCardTemplateAll(queryParams).then((response) => {
         this.cardTemplateList = response.rows;
       });
       this.batchOpen = true;
@@ -1193,7 +1193,7 @@ export default {
       let queryParams = {};
       queryParams.params = {};
       queryParams.authType = "0";
-      listApp(queryParams).then((response) => {
+      listAppAll(queryParams).then((response) => {
         this.appList = response.rows;
         for (let app of this.appList) {
           this.appMap[app["appId"]] = app;
@@ -1208,7 +1208,7 @@ export default {
       let queryParams = {};
       if (this.app) {
         queryParams.appId = this.app.appId;
-        listCardTemplate(queryParams).then((response) => {
+        listCardTemplateAll(queryParams).then((response) => {
           this.cardTemplateList = response.rows;
         });
       }

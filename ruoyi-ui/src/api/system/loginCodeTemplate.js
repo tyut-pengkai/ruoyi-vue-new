@@ -9,6 +9,15 @@ export function listLoginCodeTemplate(query) {
   })
 }
 
+// 查询单码类别列表
+export function listLoginCodeTemplateAll(query) {
+  return request({
+    url: '/system/loginCodeTemplate/listAll',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询单码类别详细
 export function getLoginCodeTemplate(templateId) {
   return request({

@@ -9,6 +9,15 @@ export function listCardTemplate(query) {
   })
 }
 
+// 查询卡密模板列表
+export function listCardTemplateAll(query) {
+  return request({
+    url: '/system/cardTemplate/listAll',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询卡密模板详细
 export function getCardTemplate(templateId) {
   return request({

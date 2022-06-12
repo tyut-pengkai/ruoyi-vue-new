@@ -20,6 +20,14 @@ public interface ISysAgentItemService {
     public SysAgentItem selectSysAgentItemById(Long id);
 
     /**
+     * 查询代理卡类关联
+     *
+     * @param agentId 代理卡类关联主键
+     * @return 代理卡类关联
+     */
+    public List<SysAgentItem> selectSysAgentItemByAgentId(Long agentId);
+
+    /**
      * 查询代理卡类关联列表
      *
      * @param sysAgentItem 代理卡类关联

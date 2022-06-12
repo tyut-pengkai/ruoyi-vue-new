@@ -12,6 +12,7 @@ import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.TemplateType;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysCardTemplate;
@@ -55,6 +56,9 @@ public class SysAgentItemController extends BaseController {
     public TableDataInfo list(SysAgentItem sysAgentItem) {
         startPage();
         List<SysAgentItem> list = sysAgentItemService.selectSysAgentItemList(sysAgentItem);
+        for (SysAgentItem item : list) {
+            fillTemplateInfo(item);
+        }
         return getDataTable(list);
     }
 
@@ -86,6 +90,17 @@ public class SysAgentItemController extends BaseController {
     @Log(title = "代理卡类关联", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysAgentItem sysAgentItem) {
+
+        SysAgentItem s = new SysAgentItem();
+        s.setAgentId(sysAgentItem.getAgentId());
+        s.setTemplateType(sysAgentItem.getTemplateType());
+        s.setTemplateId(sysAgentItem.getTemplateId());
+        List<SysAgentItem> items = sysAgentItemService.selectSysAgentItemList(s);
+        if (items.size() > 0) {
+            throw new ServiceException("此代理已有代理该卡的权限，无法重复授权");
+        }
+
+        sysAgentItem.setCreateBy(getUsername());
         return toAjax(sysAgentItemService.insertSysAgentItem(sysAgentItem));
     }
 
@@ -96,6 +111,17 @@ public class SysAgentItemController extends BaseController {
     @Log(title = "代理卡类关联", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAgentItem sysAgentItem) {
+
+        SysAgentItem s = new SysAgentItem();
+        s.setAgentId(sysAgentItem.getAgentId());
+        s.setTemplateType(sysAgentItem.getTemplateType());
+        s.setTemplateId(sysAgentItem.getTemplateId());
+        List<SysAgentItem> items = sysAgentItemService.selectSysAgentItemList(s);
+        if (items.size() > 0) {
+            throw new ServiceException("此代理已有代理该卡的权限，无法重复授权");
+        }
+
+        sysAgentItem.setUpdateBy(getUsername());
         return toAjax(sysAgentItemService.updateSysAgentItem(sysAgentItem));
     }
 
@@ -139,26 +165,30 @@ public class SysAgentItemController extends BaseController {
             sysAgentItem.setAgentId(sysAgent.getAgentId());
             List<SysAgentItem> sysAgentItems = sysAgentItemService.selectSysAgentItemList(sysAgentItem);
             for (SysAgentItem item : sysAgentItems) {
-                Long templateId = item.getTemplateId();
-                if (item.getTemplateType() == TemplateType.CHARGE_CARD) {
-                    SysCardTemplate sysCardTemplate = sysCardTemplateService.selectSysCardTemplateByTemplateId(templateId);
-                    TemplateInfoVo info = new TemplateInfoVo();
-                    info.setTemplateId(sysCardTemplate.getTemplateId());
-                    info.setTemplateName(sysCardTemplate.getCardName());
-                    info.setTemplateType(TemplateType.CHARGE_CARD);
-                    info.setAppName(sysCardTemplate.getApp().getAppName());
-                    templateList.add(info);
-                } else if (item.getTemplateType() == TemplateType.LOGIN_CODE) {
-                    SysLoginCodeTemplate sysLoginCodeTemplate = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByTemplateId(templateId);
-                    TemplateInfoVo info = new TemplateInfoVo();
-                    info.setTemplateId(sysLoginCodeTemplate.getTemplateId());
-                    info.setTemplateName(sysLoginCodeTemplate.getCardName());
-                    info.setTemplateType(TemplateType.LOGIN_CODE);
-                    info.setAppName(sysLoginCodeTemplate.getApp().getAppName());
-                    templateList.add(info);
-                }
+                fillTemplateInfo(item);
+                templateList.add(item.getTemplateInfo());
             }
         }
         return AjaxResult.success(templateList);
     }
+
+    private void fillTemplateInfo(SysAgentItem item) {
+        Long templateId = item.getTemplateId();
+        TemplateInfoVo info = new TemplateInfoVo();
+        if (item.getTemplateType() == TemplateType.CHARGE_CARD) {
+            SysCardTemplate sysCardTemplate = sysCardTemplateService.selectSysCardTemplateByTemplateId(templateId);
+            info.setTemplateId(sysCardTemplate.getTemplateId());
+            info.setTemplateName(sysCardTemplate.getCardName());
+            info.setTemplateType(TemplateType.CHARGE_CARD);
+            info.setAppName(sysCardTemplate.getApp().getAppName());
+        } else if (item.getTemplateType() == TemplateType.LOGIN_CODE) {
+            SysLoginCodeTemplate sysLoginCodeTemplate = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByTemplateId(templateId);
+            info.setTemplateId(sysLoginCodeTemplate.getTemplateId());
+            info.setTemplateName(sysLoginCodeTemplate.getCardName());
+            info.setTemplateType(TemplateType.LOGIN_CODE);
+            info.setAppName(sysLoginCodeTemplate.getApp().getAppName());
+        }
+        item.setTemplateInfo(info);
+    }
+
 }

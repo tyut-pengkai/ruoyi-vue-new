@@ -86,6 +86,7 @@
         <if test="onSale != null  and onSale != ''">and c.on_sale = #{onSale}</if>
         <if test="isCharged != null  and isCharged != ''">and c.is_charged = #{isCharged}</if>
         <if test="status != null  and status != ''">and c.status = #{status}</if>
+        <if test="createBy != null  and createBy != ''">and c.create_by = #{createBy}</if>
         <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
             <!-- 数据范围过滤 -->
             ${params.dataScope}

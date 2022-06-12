@@ -39,6 +39,16 @@ public class SysLoginCodeTemplateController extends BaseController {
     }
 
     /**
+     * 查询单码类别列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:loginCodeTemplate:list')")
+    @GetMapping("/listAll")
+    public TableDataInfo listAll(SysLoginCodeTemplate sysLoginCodeTemplate) {
+        List<SysLoginCodeTemplate> list = sysLoginCodeTemplateService.selectSysLoginCodeTemplateList(sysLoginCodeTemplate);
+        return getDataTable(list);
+    }
+
+    /**
      * 导出单码类别列表
      */
     @PreAuthorize("@ss.hasPermi('system:loginCodeTemplate:export')")

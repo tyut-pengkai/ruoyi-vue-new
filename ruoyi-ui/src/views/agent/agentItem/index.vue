@@ -42,12 +42,10 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -61,8 +59,7 @@
           type="primary"
           @click="handleAdd"
         >新增
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -74,8 +71,7 @@
           type="success"
           @click="handleUpdate"
         >修改
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -87,8 +83,7 @@
           type="danger"
           @click="handleDelete"
         >删除
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -99,8 +94,7 @@
           type="warning"
           @click="handleExport"
         >导出
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -115,7 +109,17 @@
     >
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="ID" prop="id"/>
-      <el-table-column align="center" label="代理ID" prop="agentId"/>
+      <!-- <el-table-column align="center" label="代理ID" prop="agentId"/> -->
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="代理名称"
+        prop="agentId"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.user.nickName }}({{ scope.row.user.userName }})
+        </template>
+      </el-table-column>
       <!-- <el-table-column
         label="卡类别1充值卡2单码"
         align="center"
@@ -129,8 +133,25 @@
           />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="卡类ID" prop="templateId"/>
-      <el-table-column align="center" label="价格" prop="price"/>
+      <!-- <el-table-column align="center" label="卡类ID" prop="templateId" /> -->
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="卡类名称"
+        prop="templateId"
+      >
+        <template slot-scope="scope">
+          [{{ scope.row.templateInfo.appName }}]{{
+            scope.row.templateInfo.templateName
+          }}
+        </template>
+      </el-table-column>
+      <!-- <el-table-column align="center" label="价格" prop="price" /> -->
+      <el-table-column align="center" label="代理价格" prop="price">
+        <template slot-scope="scope">
+          <span>{{ parseMoney(scope.row.price) }}元</span>
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
         label="代理该卡过期时间"
@@ -155,8 +176,7 @@
             type="text"
             @click="handleUpdate(scope.row)"
           >修改
-          </el-button
-          >
+          </el-button>
           <el-button
             v-hasPermi="['agent:agentItem:remove']"
             icon="el-icon-delete"
@@ -164,8 +184,7 @@
             type="text"
             @click="handleDelete(scope.row)"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -179,8 +198,8 @@
     />
 
     <!-- 添加或修改代理卡类关联对话框 -->
-    <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :title="title" :visible.sync="open" append-to-body width="800px">
+      <el-form ref="form" :model="form" :rules="rules">
         <!-- <el-form-item label="代理ID" prop="agentId">
           <el-input v-model="form.agentId" placeholder="请输入代理ID" />
         </el-form-item> -->
@@ -214,16 +233,27 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="代理价格" prop="price">
-          <el-input v-model="form.price" placeholder="请输入代理价格"/>
+        <!-- <el-form-item label="代理价格" prop="price">
+          <el-input v-model="form.price" placeholder="请输入代理价格" />
+        </el-form-item> -->
+        <el-form-item label="代理价格" label-width="80px" prop="price">
+          <el-input-number
+            v-model="form.price"
+            :min="0"
+            :precision="2"
+            :step="0.01"
+            controls-position="right"
+          />
+          <span>元</span>
         </el-form-item>
         <el-form-item label="代理该卡过期时间" prop="expireTime">
           <el-date-picker
             v-model="form.expireTime"
             clearable
             placeholder="请选择代理该卡过期时间"
-            type="date"
+            :picker-options="pickerOptions"
             value-format="yyyy-MM-dd HH:mm:ss"
+            type="datetime"
           >
           </el-date-picker>
         </el-form-item>
@@ -255,6 +285,7 @@ import {
 import {listAgentUser} from "@/api/agent/agentUser";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import {parseMoney} from "@/utils/my";
 
 export default {
   name: "AgentItem",
@@ -316,6 +347,56 @@ export default {
       agentUserOptions: [],
       // 可代理卡类
       templateList: [],
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: "长期有效",
+            onClick(picker) {
+              picker.$emit("pick", new Date("9999-12-31 23:59:59"));
+            },
+          },
+          {
+            text: "1小时后",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() + 3600 * 1000);
+              picker.$emit("pick", date);
+            },
+          },
+          {
+            text: "1天后",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() + 3600 * 1000 * 24);
+              picker.$emit("pick", date);
+            },
+          },
+          {
+            text: "1周后(7天)",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", date);
+            },
+          },
+          {
+            text: "1月后(30天)",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 30);
+              picker.$emit("pick", date);
+            },
+          },
+          {
+            text: "1年后(360天)",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 30 * 12);
+              picker.$emit("pick", date);
+            },
+          },
+        ],
+      },
     };
   },
   created() {
@@ -336,6 +417,7 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+      this.getGrantableTemplate();
     },
     /** 转换代理用户数据结构 */
     normalizer(node) {
@@ -422,6 +504,15 @@ export default {
       const id = row.id || this.ids;
       getAgentItem(id).then((response) => {
         this.form = response.data;
+        for (let item of this.templateList) {
+          if (
+            this.form.templateType == item.templateType &&
+            this.form.templateId == item.templateId
+          ) {
+            this.form.tid = item.id;
+            break;
+          }
+        }
         this.open = true;
         this.title = "修改代理卡类";
       });
@@ -430,23 +521,28 @@ export default {
     submitForm() {
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          if (this.form.tid != null) {
-            this.form.templateId = this.templateList[this.form.tid].templateId;
-            this.form.templateType =
-              this.templateList[this.form.tid].templateType;
-          }
-          if (this.form.id != null) {
-            updateAgentItem(this.form).then((response) => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
+          if (this.form.agentId > 0) {
+            if (this.form.tid != null) {
+              this.form.templateId =
+                this.templateList[this.form.tid].templateId;
+              this.form.templateType =
+                this.templateList[this.form.tid].templateType;
+            }
+            if (this.form.id != null) {
+              updateAgentItem(this.form).then((response) => {
+                this.$modal.msgSuccess("修改成功");
+                this.open = false;
+                this.getList();
+              });
+            } else {
+              addAgentItem(this.form).then((response) => {
+                this.$modal.msgSuccess("新增成功");
+                this.open = false;
+                this.getList();
+              });
+            }
           } else {
-            addAgentItem(this.form).then((response) => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+            this.$modal.msgError("代理不可选择根节点");
           }
         }
       });
@@ -489,6 +585,9 @@ export default {
           });
         }
       });
+    },
+    parseMoney(val) {
+      return parseMoney(val);
     },
   },
 };

@@ -32,6 +32,17 @@ public class SysAgentItemServiceImpl implements ISysAgentItemService {
     }
 
     /**
+     * 查询代理卡类关联
+     *
+     * @param agentId 代理卡类关联主键
+     * @return 代理卡类关联
+     */
+    @Override
+    public List<SysAgentItem> selectSysAgentItemByAgentId(Long agentId) {
+        return sysAgentItemMapper.selectSysAgentItemByAgentId(agentId);
+    }
+
+    /**
      * 查询代理卡类关联列表
      *
      * @param sysAgentItem 代理卡类关联

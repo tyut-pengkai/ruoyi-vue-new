@@ -51,6 +51,19 @@ public class SysAppController extends BaseController {
     }
 
     /**
+     * 查询软件列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:app:list')")
+    @GetMapping("/listAll")
+    public TableDataInfo listAll(SysApp sysApp) {
+        List<SysApp> list = sysAppService.selectSysAppList(sysApp);
+        for (SysApp app : list) {
+            sysAppService.setApiUrl(app);
+        }
+        return getDataTable(list);
+    }
+
+    /**
      * 导出软件列表
      */
     @PreAuthorize("@ss.hasPermi('system:app:export')")

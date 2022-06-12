@@ -101,6 +101,9 @@ public class SysAgentController extends BaseController {
     @Log(title = "代理管理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysAgent sysAgent) {
+        if (sysAgent.getAgentId() == null || sysAgent.getAgentId() < 1) {
+            throw new ServiceException("代理选择有误，不可选择根节点");
+        }
         SysAgent agentNow = sysAgentService.selectSysAgentByUserId(sysAgent.getUserId());
         if (agentNow != null) {
             throw new ServiceException("该用户已经是代理身份");
@@ -125,6 +128,9 @@ public class SysAgentController extends BaseController {
     @Log(title = "代理管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAgent sysAgent) {
+        if (sysAgent.getAgentId() == null || sysAgent.getAgentId() < 1) {
+            throw new ServiceException("代理选择有误，不可选择根节点");
+        }
         if (Objects.equals(sysAgent.getParentAgentId(), sysAgent.getAgentId())) {
             throw new ServiceException("代理与上级代理不能为同一个用户");
         }

@@ -16,38 +16,56 @@
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
+        <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
+    </resultMap>
+
+    <resultMap type="SysUser" id="SysUserResult">
+        <id property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
     </resultMap>
 
     <sql id="selectSysAgentItemVo">
-        select id,
-               agent_id,
-               template_type,
-               template_id,
-               price,
-               expire_time,
-               create_by,
-               create_time,
-               update_by,
-               update_time,
-               remark
-        from sys_agent_item
+        select ai.id,
+               ai.agent_id,
+               ai.template_type,
+               ai.template_id,
+               ai.price,
+               ai.expire_time,
+               ai.create_by,
+               ai.create_time,
+               ai.update_by,
+               ai.update_time,
+               ai.remark,
+               u.user_id,
+               u.user_name,
+               u.nick_name
+        from sys_agent_item ai
+                 left join sys_agent ag on ag.agent_id = ai.agent_id
+                 left join sys_user u on ag.user_id = u.user_id
     </sql>
 
     <select id="selectSysAgentItemList" parameterType="SysAgentItem" resultMap="SysAgentItemResult">
         <include refid="selectSysAgentItemVo"/>
         <where>
-            <if test="agentId != null ">and agent_id = #{agentId}</if>
-            <if test="templateType != null">and template_type = #{templateType}</if>
-            <if test="templateId != null ">and template_id = #{templateId}</if>
+            <if test="agentId != null ">and ai.agent_id = #{agentId}</if>
+            <if test="templateType != null">and ai.template_type = #{templateType}</if>
+            <if test="templateId != null ">and ai.template_id = #{templateId}</if>
             <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
-                and expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
+                and ai.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
             </if>
         </where>
+        order by ai.id
     </select>
 
     <select id="selectSysAgentItemById" parameterType="Long" resultMap="SysAgentItemResult">
         <include refid="selectSysAgentItemVo"/>
-        where id = #{id}
+        where ai.id = #{id}
+    </select>
+
+    <select id="selectSysAgentItemByAgentId" parameterType="Long" resultMap="SysAgentItemResult">
+        <include refid="selectSysAgentItemVo"/>
+        where ai.agent_id = #{agentId}
     </select>
 
     <insert id="insertSysAgentItem" parameterType="SysAgentItem" useGeneratedKeys="true" keyProperty="id">

@@ -1,16 +1,16 @@
 <template>
   <div class="app-container">
     <el-form
-      :model="queryParams"
+      v-show="showSearch"
       ref="queryForm"
       :inline="true"
-      v-show="showSearch"
+      :model="queryParams"
     >
       <el-form-item label="所属软件" prop="appId">
         <el-select
           v-model="queryParams.appId"
-          filterable
           clearable
+          filterable
           placeholder="请选择"
           prop="appId"
           @change="changeSearchApp"
@@ -18,6 +18,7 @@
           <el-option
             v-for="item in appList"
             :key="item.appId"
+            :disabled="item.disabled"
             :label="
               '[' +
               (item.authType == '0' ? '账号' : '单码') +
@@ -26,7 +27,6 @@
               item.appName
             "
             :value="item.appId"
-            :disabled="item.disabled"
           >
           </el-option>
         </el-select>
@@ -34,8 +34,8 @@
       <el-form-item label="单码名称" prop="cardName">
         <el-input
           v-model="queryParams.cardName"
-          placeholder="请输入单码名称"
           clearable
+          placeholder="请输入单码名称"
           size="small"
           @keyup.enter.native="handleQuery"
         />
@@ -43,8 +43,8 @@
       <el-form-item label="单码" prop="cardNo">
         <el-input
           v-model="queryParams.cardNo"
-          placeholder="请输入单码"
           clearable
+          placeholder="请输入单码"
           size="small"
           @keyup.enter.native="handleQuery"
         />
@@ -70,20 +70,20 @@
       <el-form-item label="过期时间" prop="">
         <el-date-picker
           v-model="daterangeExpireTime"
-          size="small"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
           end-placeholder="结束日期"
+          range-separator="-"
+          size="small"
+          start-placeholder="开始日期"
+          style="width: 240px"
+          type="daterange"
+          value-format="yyyy-MM-dd"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="是否售出" prop="isSold">
         <el-select
           v-model="queryParams.isSold"
-          placeholder="请选择是否售出"
           clearable
+          placeholder="请选择是否售出"
           size="small"
         >
           <el-option
@@ -97,8 +97,8 @@
       <el-form-item label="是否上架" prop="onSale">
         <el-select
           v-model="queryParams.onSale"
-          placeholder="请选择是否上架"
           clearable
+          placeholder="请选择是否上架"
           size="small"
         >
           <el-option
@@ -112,8 +112,8 @@
       <el-form-item label="是否已用" prop="isCharged">
         <el-select
           v-model="queryParams.isCharged"
-          placeholder="请选择是否已用"
           clearable
+          placeholder="请选择是否已用"
           size="small"
         >
           <el-option
@@ -127,8 +127,8 @@
       <el-form-item label="单码状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择单码状态"
           clearable
+          placeholder="请选择单码状态"
           size="small"
         >
           <el-option
@@ -141,14 +141,16 @@
       </el-form-item>
       <el-form-item prop="">
         <el-button
-          type="primary"
           icon="el-icon-search"
           size="mini"
+          type="primary"
           @click="handleQuery"
-          >搜索</el-button
+        >搜索
+        </el-button
         >
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
+        >重置
+        </el-button
         >
       </el-form-item>
     </el-form>
@@ -156,60 +158,65 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
+          v-hasPermi="['system:loginCode:add']"
           icon="el-icon-plus"
+          plain
           size="mini"
+          type="primary"
           @click="handleAdd"
-          v-hasPermi="['system:loginCode:add']"
-          >新增</el-button
+        >新增
+        </el-button
         >
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
+          v-hasPermi="['system:loginCode:add']"
           icon="el-icon-plus"
+          plain
           size="mini"
+          type="primary"
           @click="handleBatchAdd"
-          v-hasPermi="['system:loginCode:add']"
-          >批量生成</el-button
+        >批量生成
+        </el-button
         >
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
           v-hasPermi="['system:loginCode:edit']"
-          >修改</el-button
+          :disabled="single"
+          icon="el-icon-edit"
+          plain
+          size="mini"
+          type="success"
+          @click="handleUpdate"
+        >修改
+        </el-button
         >
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
           v-hasPermi="['system:loginCode:remove']"
-          >删除</el-button
+          :disabled="multiple"
+          icon="el-icon-delete"
+          plain
+          size="mini"
+          type="danger"
+          @click="handleDelete"
+        >删除
+        </el-button
         >
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          :loading="exportLoading"
-          @click="handleExport"
           v-hasPermi="['system:loginCode:export']"
-          >导出</el-button
+          :loading="exportLoading"
+          icon="el-icon-download"
+          plain
+          size="mini"
+          type="warning"
+          @click="handleExport"
+        >导出
+        </el-button
         >
       </el-col>
       <right-toolbar
@@ -239,8 +246,8 @@
               <el-col :span="6">
                 <el-form-item label="面值" prop="">
                   <span>{{
-                    parseSeconds(scope.row.app.billType, scope.row.quota)
-                  }}</span>
+                      parseSeconds(scope.row.app.billType, scope.row.quota)
+                    }}</span>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
@@ -280,21 +287,21 @@
         </template>
       </el-table-column>
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column label="" type="index" align="center" />
+      <el-table-column align="center" label="" type="index"/>
       <el-table-column
-        label="所属软件"
-        align="center"
         :show-overflow-tooltip="true"
+        align="center"
+        label="所属软件"
       >
         <template slot-scope="scope">
           {{ scope.row.app.appName }}
         </template>
       </el-table-column>
       <el-table-column
-        label="单码名称"
-        align="center"
-        prop="cardName"
         :show-overflow-tooltip="true"
+        align="center"
+        label="单码名称"
+        prop="cardName"
       />
       <el-table-column
         :show-overflow-tooltip="true"
@@ -317,8 +324,8 @@
         </template>
       </el-table-column> -->
       <el-table-column
-        label="过期时间"
         align="center"
+        label="过期时间"
         prop="expireTime"
         width="180"
       >
@@ -331,12 +338,12 @@
           <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold"/>
         </template>
       </el-table-column>
-      <el-table-column label="是否上架" align="center" prop="onSale">
+      <el-table-column align="center" label="是否上架" prop="onSale">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale" />
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale"/>
         </template>
       </el-table-column>
-      <el-table-column label="是否已用" align="center" prop="isCharged">
+      <el-table-column align="center" label="是否已用" prop="isCharged">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_yes_no"
@@ -344,7 +351,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="单码状态" align="center" prop="status">
+      <el-table-column align="center" label="单码状态" prop="status">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_normal_disable"
@@ -353,33 +360,35 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="备注"
-        align="center"
-        prop="remark"
         :show-overflow-tooltip="true"
+        align="center"
+        label="备注"
+        prop="remark"
       />
       <el-table-column
-        label="操作"
         align="center"
         class-name="small-padding fixed-width"
+        label="操作"
         width="130"
       >
         <template slot-scope="scope">
           <el-button
+            v-hasPermi="['system:loginCode:edit']"
+            icon="el-icon-edit"
             size="mini"
             type="text"
-            icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:loginCode:edit']"
-            >修改</el-button
+          >修改
+          </el-button
           >
           <el-button
+            v-hasPermi="['system:loginCode:remove']"
+            icon="el-icon-delete"
             size="mini"
             type="text"
-            icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:loginCode:remove']"
-            >删除</el-button
+          >删除
+          </el-button
           >
         </template>
       </el-table-column>
@@ -387,19 +396,19 @@
 
     <pagination
       v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
+      :page.sync="queryParams.pageNum"
+      :total="total"
       @pagination="getList"
     />
 
     <!-- 添加或修改单码对话框 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="title"
       :visible.sync="open"
-      width="800px"
       append-to-body
-      :close-on-click-modal="false"
+      width="800px"
     >
       <el-form ref="form" :model="form" :rules="rules">
         <!-- 新增 -->
@@ -417,6 +426,7 @@
                   <el-option
                     v-for="item in appList"
                     :key="item.appId"
+                    :disabled="item.disabled"
                     :label="
                       '[' +
                       (item.authType == '0' ? '账号' : '单码') +
@@ -425,7 +435,6 @@
                       item.appName
                     "
                     :value="item.appId"
-                    :disabled="item.disabled"
                   >
                   </el-option>
                 </el-select>
@@ -462,11 +471,11 @@
             </el-col>
           </el-form-item>
         </div>
-        <el-form-item label="单码名称" prop="cardName" label-width="100px">
-          <el-input v-model="form.cardName" placeholder="请输入单码名称" />
+        <el-form-item label="单码名称" label-width="100px" prop="cardName">
+          <el-input v-model="form.cardName" placeholder="请输入单码名称"/>
         </el-form-item>
-        <el-form-item label="单码" prop="cardNo" label-width="80px">
-          <el-input v-model="form.cardNo" placeholder="请输入单码" />
+        <el-form-item label="单码" label-width="80px" prop="cardNo">
+          <el-input v-model="form.cardNo" placeholder="请输入单码"/>
         </el-form-item>
         <el-form-item prop="">
           <el-col :span="12">
@@ -476,7 +485,8 @@
                   v-for="dict in dict.type.sys_normal_disable"
                   :key="dict.value"
                   :label="dict.value"
-                  >{{ dict.label }}</el-radio
+                >{{ dict.label }}
+                </el-radio
                 >
               </el-radio-group>
             </el-form-item>
@@ -501,22 +511,22 @@
             <el-col :span="12">
               <el-form-item
                 label="单码面值"
-                prop="quota"
                 label-width="100px"
+                prop="quota"
                 style="width: 320px"
               >
                 <div v-if="app">
                   <div v-if="app.billType === '0'">
                     <date-duration
-                      @totalSeconds="handleQuota"
                       :seconds="form.quota"
+                      @totalSeconds="handleQuota"
                     ></date-duration>
                   </div>
                   <div v-if="app.billType === '1'">
                     <el-input-number
                       v-model="form.quota"
-                      controls-position="right"
                       :min="0"
+                      controls-position="right"
                     />
                     <span style="margin-left: 6px">点</span>
                   </div>
@@ -529,21 +539,21 @@
             <el-col :span="12">
               <el-form-item
                 label="单码面值"
-                prop="quota"
                 label-width="100px"
+                prop="quota"
                 style="width: 320px"
               >
                 <div v-if="form.app.billType === '0'">
                   <date-duration
-                    @totalSeconds="handleQuota"
                     :seconds="form.quota"
+                    @totalSeconds="handleQuota"
                   ></date-duration>
                 </div>
                 <div v-if="form.app.billType === '1'">
                   <el-input-number
                     v-model="form.quota"
-                    controls-position="right"
                     :min="0"
+                    controls-position="right"
                   />
                   <span style="margin-left: 6px">点</span>
                 </div>
@@ -551,13 +561,13 @@
             </el-col>
           </div>
           <el-col :span="12">
-            <el-form-item label="销售价格" prop="price" label-width="80px">
+            <el-form-item label="销售价格" label-width="80px" prop="price">
               <el-input-number
                 v-model="form.price"
-                controls-position="right"
+                :min="0"
                 :precision="2"
                 :step="0.01"
-                :min="0"
+                controls-position="right"
               />
               <span>元</span>
             </el-form-item>
@@ -609,26 +619,28 @@
         <el-form-item label="备注" prop="remark">
           <el-input
             v-model="form.remark"
-            type="textarea"
             placeholder="请输入内容"
+            type="textarea"
           />
         </el-form-item>
         <div v-if="form.cardId">
           <el-form-item prop="">
             <el-col :span="12">
               <el-form-item label="创建人" prop="createBy">{{
-                form.createBy
-              }}</el-form-item>
+                  form.createBy
+                }}
+              </el-form-item>
               <el-form-item label="创建时间" prop="createTime"
-                >{{ form.createTime }}
+              >{{ form.createTime }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="最后更新" prop="updateBy">{{
-                form.updateBy
-              }}</el-form-item>
+                  form.updateBy
+                }}
+              </el-form-item>
               <el-form-item label="更新时间" prop="updateTime"
-                >{{ form.updateTime }}
+              >{{ form.updateTime }}
               </el-form-item>
             </el-col>
           </el-form-item>
@@ -642,11 +654,11 @@
 
     <!-- 批量制单码对话框 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="title"
       :visible.sync="batchOpen"
-      width="800px"
       append-to-body
-      :close-on-click-modal="false"
+      width="800px"
     >
       <el-form ref="formBatch" :model="formBatch" :rules="rulesBatch">
         <el-form-item prop="">
@@ -710,14 +722,14 @@
           <el-col :span="12">
             <el-form-item
               label="生成数量"
-              prop="genQuantity"
               label-width="80px"
+              prop="genQuantity"
             >
               <el-input-number
                 v-model="formBatch.genQuantity"
-                controls-position="right"
-                :min="1"
                 :max="10000"
+                :min="1"
+                controls-position="right"
               />
             </el-form-item>
           </el-col>
@@ -740,8 +752,8 @@
         <el-form-item label="备注" prop="remark">
           <el-input
             v-model="formBatch.remark"
-            type="textarea"
             placeholder="请输入内容"
+            type="textarea"
           />
         </el-form-item>
       </el-form>
@@ -760,13 +772,13 @@ import {
   exportLoginCode,
   getLoginCode,
   listLoginCode,
+  listLoginCodeTemplateAll,
   updateLoginCode,
-} from "@/api/system/loginCode";
-import {getApp, listAppAll} from "@/api/system/app";
+} from "@/api/agent/agentLoginCode";
+import {listAppAll} from "@/api/agent/agentApp";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
 import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
-import {listLoginCodeTemplateAll} from "@/api/system/loginCodeTemplate";
 
 export default {
   name: "LoginCode",
@@ -842,22 +854,22 @@ export default {
           {required: true, message: "是否上架不能为空", trigger: "change"},
         ],
         isCharged: [
-          { required: true, message: "是否被充值不能为空", trigger: "change" },
+          {required: true, message: "是否被充值不能为空", trigger: "change"},
         ],
         status: [
-          { required: true, message: "单码状态不能为空", trigger: "blur" },
+          {required: true, message: "单码状态不能为空", trigger: "blur"},
         ],
       },
       rulesBatch: {
-        appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
+        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
         templateId: [
-          { required: true, message: "类别不能为空", trigger: "change" },
+          {required: true, message: "类别不能为空", trigger: "change"},
         ],
         onSale: [
-          { required: true, message: "是否上架不能为空", trigger: "change" },
+          {required: true, message: "是否上架不能为空", trigger: "change"},
         ],
         genQuantity: [
-          { required: true, message: "生成数量不能为空", trigger: "blur" },
+          {required: true, message: "生成数量不能为空", trigger: "blur"},
         ],
       },
       pickerOptions: {
@@ -914,24 +926,8 @@ export default {
     };
   },
   created() {
-    // const appId = this.$route.params && this.$route.params.appId;
-    const appId = this.$route.query && this.$route.query.appId;
     this.getAppList();
-    if (appId != undefined && appId != null) {
-      getApp(appId).then((response) => {
-        this.app = response.data;
-        // const title = "单码管理";
-        // const appName = this.app.appName;
-        // const route = Object.assign({}, this.$route, {
-        //   title: `${title}-${appName}`,
-        // });
-        // this.$store.dispatch("tagsView/updateVisitedView", route);
-        this.getList();
-      });
-    } else {
-      // this.$modal.alertError("未获取到当前软件信息");
-      this.getList();
-    }
+    this.getList();
   },
   methods: {
     /** 查询单码列表 */
@@ -1093,7 +1089,8 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -1108,7 +1105,8 @@ export default {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     handleQuota(totalSeconds) {
       this.form.quota = totalSeconds;

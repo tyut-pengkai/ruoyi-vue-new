@@ -9,6 +9,15 @@ export function listApp(query) {
   })
 }
 
+// 查询软件列表
+export function listAppAll(query) {
+  return request({
+    url: '/system/app/listAll',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询软件详细
 export function getApp(appId) {
   return request({

@@ -183,12 +183,10 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -202,8 +200,7 @@
           @click="handleAdd"
           v-hasPermi="['system:loginCodeTemplate:add']"
         >新增
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -215,8 +212,7 @@
           @click="handleUpdate"
           v-hasPermi="['system:loginCodeTemplate:edit']"
         >修改
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -228,8 +224,7 @@
           @click="handleDelete"
           v-hasPermi="['system:loginCodeTemplate:remove']"
         >删除
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -240,8 +235,7 @@
           @click="handleExport"
           v-hasPermi="['system:loginCodeTemplate:export']"
         >导出
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -255,7 +249,7 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column label="" type="index" align="center"/>
+      <el-table-column align="center" label="" type="index"/>
       <el-table-column
         label="所属软件"
         align="center"
@@ -346,7 +340,7 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column label="备注" align="center" prop="remark"/>
+      <el-table-column align="center" label="备注" prop="remark"/>
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -361,8 +355,7 @@
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:loginCodeTemplate:edit']"
           >修改
-          </el-button
-          >
+          </el-button>
           <el-button
             size="mini"
             type="text"
@@ -370,8 +363,7 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:loginCodeTemplate:remove']"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -750,7 +742,7 @@ import {
   listLoginCodeTemplate,
   updateLoginCodeTemplate,
 } from "@/api/system/loginCodeTemplate";
-import {getApp, listApp} from "@/api/system/app";
+import {getApp, listAppAll} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
 import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
@@ -999,7 +991,7 @@ export default {
       let queryParams = {};
       queryParams.params = {};
       queryParams.authType = "1";
-      listApp(queryParams).then((response) => {
+      listAppAll(queryParams).then((response) => {
         this.appList = response.rows;
         for (let app of this.appList) {
           this.appMap[app["appId"]] = app;

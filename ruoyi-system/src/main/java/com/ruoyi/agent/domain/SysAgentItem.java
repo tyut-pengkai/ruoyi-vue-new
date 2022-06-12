@@ -1,8 +1,11 @@
 package com.ruoyi.agent.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.agent.domain.vo.TemplateInfoVo;
 import com.ruoyi.common.annotation.Excel;
+import com.ruoyi.common.annotation.Excels;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.enums.TemplateType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -55,6 +58,17 @@ public class SysAgentItem extends BaseEntity {
     @Excel(name = "代理该卡过期时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date expireTime;
 
+    /**
+     * 所属账号信息
+     */
+    @Excels({
+            @Excel(name = "用户账号", targetAttr = "userName", type = Excel.Type.EXPORT),
+            @Excel(name = "用户昵称", targetAttr = "nickName", type = Excel.Type.EXPORT)
+    })
+    private SysUser user;
+
+    private TemplateInfoVo templateInfo;
+
     public Long getId() {
         return id;
     }
@@ -101,6 +115,22 @@ public class SysAgentItem extends BaseEntity {
 
     public void setExpireTime(Date expireTime) {
         this.expireTime = expireTime;
+    }
+
+    public SysUser getUser() {
+        return user;
+    }
+
+    public void setUser(SysUser user) {
+        this.user = user;
+    }
+
+    public TemplateInfoVo getTemplateInfo() {
+        return templateInfo;
+    }
+
+    public void setTemplateInfo(TemplateInfoVo templateInfo) {
+        this.templateInfo = templateInfo;
     }
 
     @Override

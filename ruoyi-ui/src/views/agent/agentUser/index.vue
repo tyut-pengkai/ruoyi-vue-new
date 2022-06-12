@@ -7,11 +7,11 @@
       :inline="true"
       size="small"
     >
-      <el-form-item label="用户名称" prop="userName">
+      <el-form-item label="代理名称" prop="userName">
         <el-input
           v-model="queryParams.userName"
           clearable
-          placeholder="请输入用户名称"
+          placeholder="请输入代理名称"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -109,7 +109,7 @@
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
-        label="用户名称"
+        label="代理名称"
         prop="userId"
       >
         <template slot-scope="scope">
@@ -175,14 +175,14 @@
             icon="el-icon-edit"
           >修改
           </el-button>
-          <el-button
+          <!-- <el-button
             v-hasPermi="['agent:agentUser:grant']"
             icon="el-icon-edit"
             size="mini"
             type="text"
             @click="handleGrant(scope.row)"
-          >授权
-          </el-button>
+            >授权
+          </el-button> -->
           <el-button
             v-hasPermi="['agent:agentUser:add']"
             icon="el-icon-plus"
@@ -204,7 +204,7 @@
     </el-table>
 
     <!-- 添加或修改代理用户对话框 -->
-    <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
+    <el-dialog :title="title" :visible.sync="open" append-to-body width="800px">
       <el-form ref="form" :model="form" :rules="rules">
         <el-form-item label="上级代理" prop="parentAgentId">
           <treeselect
@@ -214,7 +214,7 @@
             placeholder="请选择上级代理"
           />
         </el-form-item>
-        <el-form-item label="用户名称" prop="userId">
+        <el-form-item label="代理名称" prop="userId">
           <!--          <el-input v-model="form.userId" placeholder="请输入用户ID" />-->
           <div v-if="form.agentId == null">
             <el-select
@@ -253,6 +253,7 @@
             type="datetime"
             value-format="yyyy-MM-dd HH:mm:ss"
             placeholder="选择代理过期时间"
+            :picker-options="pickerOptions"
           >
           </el-date-picker>
         </el-form-item>
@@ -277,28 +278,6 @@
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
-
-    <!-- 授权代理卡类对话框 -->
-    <el-dialog
-      :visible.sync="grantOpen"
-      append-to-body
-      title="可代理卡类授权"
-      width="800px"
-    >
-      <el-transfer
-        v-model="grantValue"
-        :data="grantData"
-        :filter-method="filterMethod"
-        :titles="['可选卡类', '已选卡类']"
-        filter-placeholder="请输入软件/卡类名称"
-        filterable
-      >
-      </el-transfer>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitGrantForm">确 定</el-button>
-        <el-button @click="grantCancel">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -369,16 +348,55 @@ export default {
           {required: true, message: "代理状态不能为空", trigger: "blur"},
         ],
       },
-      // 卡类授权
-      grantOpen: false,
-      grantData: [
-        {key: 0, label: "aaa"},
-        {key: 1, label: "bbb"},
-        {key: 2, label: "ccc"},
-      ],
-      grantValue: [],
-      filterMethod(query, item) {
-        return item.label.indexOf(query) > -1;
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: "长期有效",
+            onClick(picker) {
+              picker.$emit("pick", new Date("9999-12-31 23:59:59"));
+            },
+          },
+          {
+            text: "1小时后",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() + 3600 * 1000);
+              picker.$emit("pick", date);
+            },
+          },
+          {
+            text: "1天后",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() + 3600 * 1000 * 24);
+              picker.$emit("pick", date);
+            },
+          },
+          {
+            text: "1周后(7天)",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", date);
+            },
+          },
+          {
+            text: "1月后(30天)",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 30);
+              picker.$emit("pick", date);
+            },
+          },
+          {
+            text: "1年后(360天)",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 30 * 12);
+              picker.$emit("pick", date);
+            },
+          },
+        ],
       },
     };
   },
@@ -441,9 +459,6 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
-    },
-    grantCancel() {
-      this.grantOpen = false;
     },
     // 表单重置
     reset() {
@@ -547,15 +562,6 @@ export default {
         this.nonAgentList = response.rows;
         this.loading = false;
       });
-    },
-    /** 授权按钮操作 */
-    handleGrant(row) {
-      const agentId = row.agentId || this.ids;
-      this.grantOpen = true;
-    },
-    /** 提交按钮 */
-    submitGrantForm() {
-      console.log(this.grantValue);
     },
   },
 };

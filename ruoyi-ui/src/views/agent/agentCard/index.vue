@@ -1,16 +1,16 @@
 <template>
   <div class="app-container">
     <el-form
-      :model="queryParams"
+      v-show="showSearch"
       ref="queryForm"
       :inline="true"
-      v-show="showSearch"
+      :model="queryParams"
     >
       <el-form-item label="所属软件" prop="appId">
         <el-select
           v-model="queryParams.appId"
-          filterable
           clearable
+          filterable
           placeholder="请选择"
           prop="appId"
           @change="changeSearchApp"
@@ -18,6 +18,7 @@
           <el-option
             v-for="item in appList"
             :key="item.appId"
+            :disabled="item.disabled"
             :label="
               '[' +
               (item.authType == '0' ? '账号' : '单码') +
@@ -26,64 +27,45 @@
               item.appName
             "
             :value="item.appId"
-            :disabled="item.disabled"
           >
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="单码名称" prop="cardName">
+      <el-form-item label="卡密名称" prop="cardName">
         <el-input
           v-model="queryParams.cardName"
-          placeholder="请输入单码名称"
           clearable
+          placeholder="请输入卡密名称"
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="单码" prop="cardNo">
+      <el-form-item label="充值卡号" prop="cardNo">
         <el-input
           v-model="queryParams.cardNo"
-          placeholder="请输入单码"
           clearable
+          placeholder="请输入充值卡号"
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!-- <el-form-item label="单码面值" prop="quota">
-        <el-input
-          v-model="queryParams.quota"
-          placeholder="请输入单码面值"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="单码价格" prop="price">
-        <el-input
-          v-model="queryParams.price"
-          placeholder="请输入单码价格"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item> -->
       <el-form-item label="过期时间" prop="">
         <el-date-picker
           v-model="daterangeExpireTime"
-          size="small"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
           end-placeholder="结束日期"
+          range-separator="-"
+          size="small"
+          start-placeholder="开始日期"
+          style="width: 240px"
+          type="daterange"
+          value-format="yyyy-MM-dd"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="是否售出" prop="isSold">
         <el-select
           v-model="queryParams.isSold"
-          placeholder="请选择是否售出"
           clearable
+          placeholder="请选择是否售出"
           size="small"
         >
           <el-option
@@ -97,8 +79,8 @@
       <el-form-item label="是否上架" prop="onSale">
         <el-select
           v-model="queryParams.onSale"
-          placeholder="请选择是否上架"
           clearable
+          placeholder="请选择是否上架"
           size="small"
         >
           <el-option
@@ -112,8 +94,8 @@
       <el-form-item label="是否已用" prop="isCharged">
         <el-select
           v-model="queryParams.isCharged"
-          placeholder="请选择是否已用"
           clearable
+          placeholder="请选择是否已用"
           size="small"
         >
           <el-option
@@ -124,11 +106,11 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="单码状态" prop="status">
+      <el-form-item label="卡密状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择单码状态"
           clearable
+          placeholder="请选择卡密状态"
           size="small"
         >
           <el-option
@@ -139,16 +121,33 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="充值规则" prop="chargeRule">
+        <el-select
+          v-model="queryParams.chargeRule"
+          clearable
+          placeholder="请选择充值规则"
+          size="small"
+        >
+          <el-option
+            v-for="dict in dict.type.sys_charge_rule"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item prop="">
         <el-button
-          type="primary"
           icon="el-icon-search"
           size="mini"
+          type="primary"
           @click="handleQuery"
-          >搜索</el-button
+        >搜索
+        </el-button
         >
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
+        >重置
+        </el-button
         >
       </el-form-item>
     </el-form>
@@ -156,60 +155,53 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
+          v-hasPermi="['agent:agentCard:add']"
           icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:loginCode:add']"
-          >新增</el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
           plain
-          icon="el-icon-plus"
           size="mini"
+          type="primary"
           @click="handleBatchAdd"
-          v-hasPermi="['system:loginCode:add']"
-          >批量生成</el-button
+        >批量制卡
+        </el-button
         >
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
+          v-hasPermi="['agent:agentCard:edit']"
           :disabled="single"
+          icon="el-icon-edit"
+          plain
+          size="mini"
+          type="success"
           @click="handleUpdate"
-          v-hasPermi="['system:loginCode:edit']"
-          >修改</el-button
+        >修改
+        </el-button
         >
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
+          v-hasPermi="['agent:agentCard:remove']"
           :disabled="multiple"
+          icon="el-icon-delete"
+          plain
+          size="mini"
+          type="danger"
           @click="handleDelete"
-          v-hasPermi="['system:loginCode:remove']"
-          >删除</el-button
+        >删除
+        </el-button
         >
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
+          v-hasPermi="['agent:agentCard:export']"
           :loading="exportLoading"
+          icon="el-icon-download"
+          plain
+          size="mini"
+          type="warning"
           @click="handleExport"
-          v-hasPermi="['system:loginCode:export']"
-          >导出</el-button
+        >导出
+        </el-button
         >
       </el-col>
       <right-toolbar
@@ -229,49 +221,62 @@
       <el-table-column type="expand">
         <template slot-scope="scope">
           <el-form label-position="left">
-            <el-form-item prop="">
-              <el-col :span="6"> -</el-col>
-              <el-col :span="6">
-                <el-form-item label="单码" prop="">
+            <el-form-item>
+              <el-col :span="4"> -</el-col>
+              <el-col :span="5">
+                <el-form-item label="卡号">
                   <span>{{ scope.row.cardNo }}</span>
                 </el-form-item>
               </el-col>
-              <el-col :span="6">
-                <el-form-item label="面值" prop="">
-                  <span>{{
-                    parseSeconds(scope.row.app.billType, scope.row.quota)
-                  }}</span>
+              <el-col :span="5">
+                <el-form-item label="密码">
+                  <span>{{ scope.row.cardPass }}</span>
                 </el-form-item>
               </el-col>
-              <el-col :span="6">
-                <el-form-item label="价格" prop="">
+              <el-col :span="5">
+                <el-form-item label="面值">
+                  <span>{{
+                      parseSeconds(scope.row.app.billType, scope.row.quota)
+                    }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="价格">
                   <span>{{ parseMoney(scope.row.price) }}元 </span>
                 </el-form-item>
               </el-col>
             </el-form-item>
-            <el-form-item prop="">
-              <el-col :span="6"> -</el-col>
-              <el-col :span="6">
-                <el-form-item label="是否售出" prop="">
+            <el-form-item>
+              <el-col :span="4"> -</el-col>
+              <el-col :span="5">
+                <el-form-item label="是否售出">
                   <dict-tag
                     :options="dict.type.sys_yes_no"
                     :value="scope.row.isSold"
                   />
                 </el-form-item>
               </el-col>
-              <el-col :span="6">
-                <el-form-item label="是否上架" prop="">
+              <el-col :span="5">
+                <el-form-item label="是否上架">
                   <dict-tag
                     :options="dict.type.sys_yes_no"
                     :value="scope.row.onSale"
                   />
                 </el-form-item>
               </el-col>
-              <el-col :span="6">
-                <el-form-item label="是否已用" prop="">
+              <el-col :span="5">
+                <el-form-item label="是否已用">
                   <dict-tag
                     :options="dict.type.sys_yes_no"
                     :value="scope.row.isCharged"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="5">
+                <el-form-item label="充值规则">
+                  <dict-tag
+                    :options="dict.type.sys_charge_rule"
+                    :value="scope.row.chargeRule"
                   />
                 </el-form-item>
               </el-col>
@@ -280,32 +285,33 @@
         </template>
       </el-table-column>
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column label="" type="index" align="center" />
+      <el-table-column align="center" label="" type="index"/>
       <el-table-column
-        label="所属软件"
-        align="center"
         :show-overflow-tooltip="true"
+        align="center"
+        label="所属软件"
       >
         <template slot-scope="scope">
           {{ scope.row.app.appName }}
         </template>
       </el-table-column>
       <el-table-column
-        label="单码名称"
-        align="center"
-        prop="cardName"
         :show-overflow-tooltip="true"
+        align="center"
+        label="卡名称"
+        prop="cardName"
       />
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
-        label="单码"
+        label="卡号"
         prop="cardNo"
       >
         <template slot-scope="scope">
           <span>{{ scope.row.cardNo }} </span>
         </template>
       </el-table-column>
+      <!-- <el-table-column label="密码" align="center" prop="cardPass" /> -->
       <!-- <el-table-column label="面值" align="center" prop="quota">
         <template slot-scope="scope">
           <span>{{ parseSeconds(scope.row.app.billType, scope.row.quota) }}</span>
@@ -317,8 +323,8 @@
         </template>
       </el-table-column> -->
       <el-table-column
-        label="过期时间"
         align="center"
+        label="过期时间"
         prop="expireTime"
         width="180"
       >
@@ -331,12 +337,12 @@
           <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold"/>
         </template>
       </el-table-column>
-      <el-table-column label="是否上架" align="center" prop="onSale">
+      <el-table-column align="center" label="是否上架" prop="onSale">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale" />
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale"/>
         </template>
       </el-table-column>
-      <el-table-column label="是否已用" align="center" prop="isCharged">
+      <el-table-column align="center" label="是否已用" prop="isCharged">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_yes_no"
@@ -344,7 +350,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="单码状态" align="center" prop="status">
+      <el-table-column align="center" label="卡密状态" prop="status">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_normal_disable"
@@ -352,34 +358,44 @@
           />
         </template>
       </el-table-column>
+      <!-- <el-table-column label="充值规则" align="center" prop="chargeRule">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_charge_rule"
+            :value="scope.row.chargeRule"
+          />
+        </template>
+      </el-table-column> -->
       <el-table-column
-        label="备注"
-        align="center"
-        prop="remark"
         :show-overflow-tooltip="true"
+        align="center"
+        label="备注"
+        prop="remark"
       />
       <el-table-column
-        label="操作"
         align="center"
         class-name="small-padding fixed-width"
+        label="操作"
         width="130"
       >
         <template slot-scope="scope">
           <el-button
+            v-hasPermi="['agent:agentCard:edit']"
+            icon="el-icon-edit"
             size="mini"
             type="text"
-            icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:loginCode:edit']"
-            >修改</el-button
+          >修改
+          </el-button
           >
           <el-button
+            v-hasPermi="['agent:agentCard:remove']"
+            icon="el-icon-delete"
             size="mini"
             type="text"
-            icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:loginCode:remove']"
-            >删除</el-button
+          >删除
+          </el-button
           >
         </template>
       </el-table-column>
@@ -387,63 +403,21 @@
 
     <pagination
       v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
+      :page.sync="queryParams.pageNum"
+      :total="total"
       @pagination="getList"
     />
 
-    <!-- 添加或修改单码对话框 -->
+    <!-- 添加或修改卡密对话框 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="title"
       :visible.sync="open"
-      width="800px"
       append-to-body
-      :close-on-click-modal="false"
+      width="800px"
     >
       <el-form ref="form" :model="form" :rules="rules">
-        <!-- 新增 -->
-        <div v-if="form.cardId == null">
-          <el-form-item prop="">
-            <el-col :span="12">
-              <el-form-item label="所属软件" prop="appId">
-                <el-select
-                  v-model="form.appId"
-                  filterable
-                  placeholder="请选择"
-                  prop="appId"
-                  @change="changeSelectedApp"
-                >
-                  <el-option
-                    v-for="item in appList"
-                    :key="item.appId"
-                    :label="
-                      '[' +
-                      (item.authType == '0' ? '账号' : '单码') +
-                      (item.billType == '0' ? '计时' : '计点') +
-                      '] ' +
-                      item.appName
-                    "
-                    :value="item.appId"
-                    :disabled="item.disabled"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="计费类型" prop="billType">
-                <div v-if="app">
-                  <dict-tag
-                    :options="dict.type.sys_bill_type"
-                    :value="app.billType"
-                  />
-                </div>
-                <div v-else>请先选择软件</div>
-              </el-form-item>
-            </el-col>
-          </el-form-item>
-        </div>
         <!-- 修改 -->
         <div v-if="form.cardId">
           <el-form-item prop="">
@@ -462,102 +436,69 @@
             </el-col>
           </el-form-item>
         </div>
-        <el-form-item label="单码名称" prop="cardName" label-width="100px">
-          <el-input v-model="form.cardName" placeholder="请输入单码名称" />
+        <el-form-item label="卡密名称" label-width="80px" prop="cardName">
+          <!-- <el-input v-model="form.cardName" placeholder="请输入卡密名称" /> -->
+          {{ form.cardName }}
         </el-form-item>
-        <el-form-item label="单码" prop="cardNo" label-width="80px">
-          <el-input v-model="form.cardNo" placeholder="请输入单码" />
+        <el-form-item label="充值卡号" label-width="80px" prop="cardNo">
+          <!-- <el-input v-model="form.cardNo" placeholder="请输入卡号" /> -->
+          {{ form.cardNo }}
+        </el-form-item>
+        <el-form-item label="充值密码" label-width="80px" prop="cardPass">
+          <!-- <el-input v-model="form.cardPass" placeholder="请输入密码" /> -->
+          {{ form.cardPass }}
         </el-form-item>
         <el-form-item prop="">
           <el-col :span="12">
-            <el-form-item label="单码状态" prop="status">
+            <el-form-item label="卡密状态" prop="status">
               <el-radio-group v-model="form.status">
                 <el-radio
                   v-for="dict in dict.type.sys_normal_disable"
                   :key="dict.value"
                   :label="dict.value"
-                  >{{ dict.label }}</el-radio
+                >{{ dict.label }}
+                </el-radio
                 >
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="过期时间" prop="expireTime">
-              <el-date-picker
-                v-model="form.expireTime"
-                :picker-options="pickerOptions"
+              <!-- <el-date-picker
                 clearable
-                placeholder="选择过期时间"
                 size="small"
+                v-model="form.expireTime"
                 type="datetime"
                 value-format="yyyy-MM-dd HH:mm:ss"
+                placeholder="选择过期时间"
+                :picker-options="pickerOptions"
               >
-              </el-date-picker>
+              </el-date-picker> -->
+              {{ parseTime(form.expireTime) }}
             </el-form-item>
           </el-col>
         </el-form-item>
         <el-form-item prop="">
-          <div v-if="form.cardId == null">
-            <el-col :span="12">
-              <el-form-item
-                label="单码面值"
-                prop="quota"
-                label-width="100px"
-                style="width: 320px"
-              >
-                <div v-if="app">
-                  <div v-if="app.billType === '0'">
-                    <date-duration
-                      @totalSeconds="handleQuota"
-                      :seconds="form.quota"
-                    ></date-duration>
-                  </div>
-                  <div v-if="app.billType === '1'">
-                    <el-input-number
-                      v-model="form.quota"
-                      controls-position="right"
-                      :min="0"
-                    />
-                    <span style="margin-left: 6px">点</span>
-                  </div>
-                </div>
-                <div v-else>请先选择软件</div>
-              </el-form-item>
-            </el-col>
-          </div>
           <div v-if="form.cardId && form.app">
             <el-col :span="12">
               <el-form-item
-                label="单码面值"
+                label="卡密面值"
+                label-width="80px"
                 prop="quota"
-                label-width="100px"
-                style="width: 320px"
+                style="width: 300px"
               >
-                <div v-if="form.app.billType === '0'">
-                  <date-duration
-                    @totalSeconds="handleQuota"
-                    :seconds="form.quota"
-                  ></date-duration>
-                </div>
-                <div v-if="form.app.billType === '1'">
-                  <el-input-number
-                    v-model="form.quota"
-                    controls-position="right"
-                    :min="0"
-                  />
-                  <span style="margin-left: 6px">点</span>
-                </div>
+                {{ parseSeconds(form.app.billType, form.quota) }}
               </el-form-item>
             </el-col>
           </div>
           <el-col :span="12">
-            <el-form-item label="销售价格" prop="price" label-width="80px">
+            <el-form-item label="销售价格" label-width="80px" prop="price">
               <el-input-number
                 v-model="form.price"
-                controls-position="right"
+                :min="0"
                 :precision="2"
                 :step="0.01"
-                :min="0"
+                controls-position="right"
               />
               <span>元</span>
             </el-form-item>
@@ -601,34 +542,41 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <!-- <el-form-item label="类别ID" prop="templateId">
-              <el-input v-model="form.templateId" placeholder="请输入类别ID" />
-            </el-form-item> -->
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="充值规则" prop="chargeRule">
+              <dict-tag
+                :options="dict.type.sys_charge_rule"
+                :value="form.chargeRule"
+              />
+            </el-form-item>
           </el-col>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input
             v-model="form.remark"
-            type="textarea"
             placeholder="请输入内容"
+            type="textarea"
           />
         </el-form-item>
         <div v-if="form.cardId">
           <el-form-item prop="">
             <el-col :span="12">
               <el-form-item label="创建人" prop="createBy">{{
-                form.createBy
-              }}</el-form-item>
+                  form.createBy
+                }}
+              </el-form-item>
               <el-form-item label="创建时间" prop="createTime"
-                >{{ form.createTime }}
+              >{{ form.createTime }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="最后更新" prop="updateBy">{{
-                form.updateBy
-              }}</el-form-item>
+                  form.updateBy
+                }}
+              </el-form-item>
               <el-form-item label="更新时间" prop="updateTime"
-                >{{ form.updateTime }}
+              >{{ form.updateTime }}
               </el-form-item>
             </el-col>
           </el-form-item>
@@ -640,13 +588,13 @@
       </div>
     </el-dialog>
 
-    <!-- 批量制单码对话框 -->
+    <!-- 批量制卡对话框 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="title"
       :visible.sync="batchOpen"
-      width="800px"
       append-to-body
-      :close-on-click-modal="false"
+      width="800px"
     >
       <el-form ref="formBatch" :model="formBatch" :rules="rulesBatch">
         <el-form-item prop="">
@@ -688,7 +636,7 @@
             </el-form-item>
           </el-col>
         </el-form-item>
-        <el-form-item label="选择单码类别" prop="templateId">
+        <el-form-item label="选择卡类" prop="templateId">
           <el-select v-model="formBatch.templateId" placeholder="请选择">
             <el-option
               v-for="item in cardTemplateList"
@@ -709,15 +657,15 @@
         <el-form-item prop="">
           <el-col :span="12">
             <el-form-item
-              label="生成数量"
-              prop="genQuantity"
+              label="制卡数量"
               label-width="80px"
+              prop="genQuantity"
             >
               <el-input-number
                 v-model="formBatch.genQuantity"
-                controls-position="right"
-                :min="1"
                 :max="10000"
+                :min="1"
+                controls-position="right"
               />
             </el-form-item>
           </el-col>
@@ -740,8 +688,8 @@
         <el-form-item label="备注" prop="remark">
           <el-input
             v-model="formBatch.remark"
-            type="textarea"
             placeholder="请输入内容"
+            type="textarea"
           />
         </el-form-item>
       </el-form>
@@ -754,29 +702,26 @@
 </template>
 
 <script>
-import {
-  addLoginCode,
-  delLoginCode,
-  exportLoginCode,
-  getLoginCode,
-  listLoginCode,
-  updateLoginCode,
-} from "@/api/system/loginCode";
-import {getApp, listAppAll} from "@/api/system/app";
+import {addCard, delCard, exportCard, getCard, listCard, listCardTemplateAll, updateCard,} from "@/api/agent/agentCard";
+import {listAppAll} from "@/api/agent/agentApp";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
 import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
-import {listLoginCodeTemplateAll} from "@/api/system/loginCodeTemplate";
 
 export default {
-  name: "LoginCode",
-  dicts: ["sys_yes_no", "sys_normal_disable", "sys_bill_type"],
+  name: "Card",
+  dicts: [
+    "sys_yes_no",
+    "sys_normal_disable",
+    "sys_charge_rule",
+    "sys_bill_type",
+  ],
   components: {DateDuration, Updown},
   data() {
     return {
       appList: [],
       appMap: [],
-      // 类别数据
+      // 卡类数据
       cardTemplateList: [],
       // 软件数据
       app: null,
@@ -794,13 +739,13 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 单码表格数据
+      // 卡密表格数据
       cardList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
-      // 是否显示批量生成弹出层
+      // 是否显示批量制卡弹出层
       batchOpen: false,
       // 备注时间范围
       daterangeExpireTime: [],
@@ -818,6 +763,7 @@ export default {
         onSale: null,
         isCharged: null,
         status: null,
+        chargeRule: null,
       },
       // 表单参数
       form: {},
@@ -827,9 +773,12 @@ export default {
       rules: {
         appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
         cardName: [
-          {required: true, message: "单码名称不能为空", trigger: "blur"},
+          {required: true, message: "卡名称不能为空", trigger: "blur"},
         ],
-        cardNo: [{required: true, message: "单码不能为空", trigger: "blur"}],
+        cardNo: [{required: true, message: "卡号不能为空", trigger: "blur"}],
+        cardPass: [
+          {required: true, message: "密码不能为空", trigger: "blur"},
+        ],
         quota: [{required: true, message: "额度不能为空", trigger: "blur"}],
         price: [{required: true, message: "价格不能为空", trigger: "blur"}],
         expireTime: [
@@ -842,22 +791,25 @@ export default {
           {required: true, message: "是否上架不能为空", trigger: "change"},
         ],
         isCharged: [
-          { required: true, message: "是否被充值不能为空", trigger: "change" },
+          {required: true, message: "是否已用不能为空", trigger: "change"},
         ],
         status: [
-          { required: true, message: "单码状态不能为空", trigger: "blur" },
+          {required: true, message: "卡密状态不能为空", trigger: "blur"},
+        ],
+        chargeRule: [
+          {required: true, message: "充值规则不能为空", trigger: "change"},
         ],
       },
       rulesBatch: {
-        appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
+        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
         templateId: [
-          { required: true, message: "类别不能为空", trigger: "change" },
+          {required: true, message: "卡类不能为空", trigger: "change"},
         ],
         onSale: [
-          { required: true, message: "是否上架不能为空", trigger: "change" },
+          {required: true, message: "是否上架不能为空", trigger: "change"},
         ],
         genQuantity: [
-          { required: true, message: "生成数量不能为空", trigger: "blur" },
+          {required: true, message: "制卡数量不能为空", trigger: "blur"},
         ],
       },
       pickerOptions: {
@@ -914,27 +866,11 @@ export default {
     };
   },
   created() {
-    // const appId = this.$route.params && this.$route.params.appId;
-    const appId = this.$route.query && this.$route.query.appId;
     this.getAppList();
-    if (appId != undefined && appId != null) {
-      getApp(appId).then((response) => {
-        this.app = response.data;
-        // const title = "单码管理";
-        // const appName = this.app.appName;
-        // const route = Object.assign({}, this.$route, {
-        //   title: `${title}-${appName}`,
-        // });
-        // this.$store.dispatch("tagsView/updateVisitedView", route);
-        this.getList();
-      });
-    } else {
-      // this.$modal.alertError("未获取到当前软件信息");
-      this.getList();
-    }
+    this.getList();
   },
   methods: {
-    /** 查询单码列表 */
+    /** 查询卡密列表 */
     getList() {
       this.loading = true;
       this.queryParams.params = {};
@@ -946,7 +882,7 @@ export default {
       if (this.app) {
         this.queryParams.appId = this.app.appId;
       }
-      listLoginCode(this.queryParams).then((response) => {
+      listCard(this.queryParams).then((response) => {
         this.cardList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -969,6 +905,7 @@ export default {
         appId: undefined,
         cardName: undefined,
         cardNo: undefined,
+        cardPass: undefined,
         quota: undefined,
         price: undefined,
         expireTime: undefined,
@@ -977,6 +914,7 @@ export default {
         isCharged: "N",
         templateId: undefined,
         status: "0",
+        chargeRule: "0",
         remark: undefined,
       };
       this.resetForm("form");
@@ -987,6 +925,7 @@ export default {
         appId: undefined,
         cardName: undefined,
         cardNo: undefined,
+        cardPass: undefined,
         quota: undefined,
         price: undefined,
         expireTime: undefined,
@@ -995,6 +934,7 @@ export default {
         isCharged: undefined,
         templateId: undefined,
         status: undefined,
+        chargeRule: undefined,
         remark: undefined,
         genQuantity: 100,
       };
@@ -1017,13 +957,7 @@ export default {
       this.single = selection.length !== 1;
       this.multiple = !selection.length;
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加单码";
-    },
-    /**批量生成按钮操作 */
+    /**批量制卡按钮操作 */
     handleBatchAdd() {
       this.resetBatch();
       let queryParams = {};
@@ -1031,20 +965,20 @@ export default {
         queryParams.appId = this.app.appId;
         this.formBatch.appId = this.app.appId;
       }
-      listLoginCodeTemplateAll(queryParams).then((response) => {
+      listCardTemplateAll(queryParams).then((response) => {
         this.cardTemplateList = response.rows;
       });
       this.batchOpen = true;
-      this.title = "批量生成单码";
+      this.title = "批量制卡";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const cardId = row.cardId || this.ids;
-      getLoginCode(cardId).then((response) => {
+      getCard(cardId).then((response) => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改单码";
+        this.title = "修改卡密";
       });
     },
     /** 提交按钮 */
@@ -1052,14 +986,14 @@ export default {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.cardId != null) {
-            updateLoginCode(this.form).then((response) => {
+            updateCard(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
             this.form.appId = this.app.appId;
-            addLoginCode(this.form).then((response) => {
+            addCard(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -1073,7 +1007,7 @@ export default {
       this.$refs["formBatch"].validate((valid) => {
         if (valid) {
           this.formBatch.appId = this.app.appId;
-          addLoginCode(this.formBatch).then((response) => {
+          addCard(this.formBatch).then((response) => {
             this.$modal.msgSuccess("新增成功");
             this.batchOpen = false;
             this.getList();
@@ -1085,30 +1019,32 @@ export default {
     handleDelete(row) {
       const cardIds = row.cardId || this.ids;
       this.$modal
-        .confirm('是否确认删除单码编号为"' + cardIds + '"的数据项？')
+        .confirm("是否确认删除数据项？")
         .then(function () {
-          return delLoginCode(cardIds);
+          return delCard(cardIds);
         })
         .then(() => {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
       this.$modal
-        .confirm("是否确认导出所有单码数据项？")
+        .confirm("是否确认导出所有卡密数据项？")
         .then(() => {
           this.exportLoading = true;
-          return exportLoginCode(queryParams);
+          return exportCard(queryParams);
         })
         .then((response) => {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     handleQuota(totalSeconds) {
       this.form.quota = totalSeconds;
@@ -1128,7 +1064,7 @@ export default {
       this.loading = true;
       let queryParams = {};
       queryParams.params = {};
-      queryParams.authType = "1";
+      queryParams.authType = "0";
       listAppAll(queryParams).then((response) => {
         this.appList = response.rows;
         for (let app of this.appList) {
@@ -1144,7 +1080,7 @@ export default {
       let queryParams = {};
       if (this.app) {
         queryParams.appId = this.app.appId;
-        listLoginCodeTemplateAll(queryParams).then((response) => {
+        listCardTemplateAll(queryParams).then((response) => {
           this.cardTemplateList = response.rows;
         });
       }
