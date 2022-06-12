@@ -1,10 +1,15 @@
 package com.ruoyi.web.controller.agent;
 
+import com.ruoyi.agent.domain.SysAgent;
+import com.ruoyi.agent.domain.SysAgentItem;
+import com.ruoyi.agent.service.ISysAgentItemService;
+import com.ruoyi.agent.service.ISysAgentService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.enums.TemplateType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysLoginCode;
@@ -16,7 +21,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 单码Controller
@@ -29,6 +37,10 @@ import java.util.List;
 public class SysAgentLoginCodeController extends BaseController {
     @Autowired
     private ISysLoginCodeService sysLoginCodeService;
+    @Resource
+    private ISysAgentItemService sysAgentItemService;
+    @Resource
+    private ISysAgentService sysAgentService;
     @Resource
     private ISysLoginCodeTemplateService sysLoginCodeTemplateService;
     @Resource
@@ -122,7 +134,26 @@ public class SysAgentLoginCodeController extends BaseController {
     @PreAuthorize("@ss.hasRole('agent')")
     @GetMapping("/loginCodeTemplate/listAll")
     public TableDataInfo listAll(SysLoginCodeTemplate sysLoginCodeTemplate) {
-        List<SysLoginCodeTemplate> list = sysLoginCodeTemplateService.selectSysLoginCodeTemplateList(sysLoginCodeTemplate);
+        List<SysLoginCodeTemplate> list = new ArrayList<>();
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            Set<Long> appIds = new HashSet<>();
+            // 获取我的代理ID
+            SysAgent agent = sysAgentService.selectSysAgentByUserId(getLoginUser().getUserId());
+            // 获取代理的所有卡类
+            List<SysAgentItem> agentItems = sysAgentItemService.selectSysAgentItemByAgentId(agent.getAgentId());
+            // 获取所有卡类信息
+            for (SysAgentItem item : agentItems) {
+                if (item.getTemplateType() == TemplateType.LOGIN_CODE) {
+                    SysLoginCodeTemplate template = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByTemplateId(item.getTemplateId());
+                    if (!appIds.contains(template.getTemplateId())) {
+                        list.add(template);
+                        appIds.add(template.getTemplateId());
+                    }
+                }
+            }
+        } else {
+            list.addAll(sysLoginCodeTemplateService.selectSysLoginCodeTemplateList(sysLoginCodeTemplate));
+        }
         return getDataTable(list);
     }
 }

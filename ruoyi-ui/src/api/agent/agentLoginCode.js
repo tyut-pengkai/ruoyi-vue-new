@@ -55,7 +55,7 @@ export function exportLoginCode(query) {
 // 查询卡密模板列表
 export function listLoginCodeTemplateAll(query) {
   return request({
-    url: '/agent/agentLoginCodeTemplate/listAll',
+    url: '/agent/agentLoginCode/loginCodeTemplate/listAll',
     method: 'get',
     params: query
   })

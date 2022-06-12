@@ -146,43 +146,28 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['system:loginCode:add']"
-          icon="el-icon-plus"
-          plain
-          size="mini"
-          type="primary"
-          @click="handleAdd"
-        >新增
-        </el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:loginCode:add']"
+          v-hasPermi="['agent:agentLoginCode:add']"
           icon="el-icon-plus"
           plain
           size="mini"
           type="primary"
           @click="handleBatchAdd"
         >批量生成
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['system:loginCode:edit']"
+          v-hasPermi="['agent:agentLoginCode:edit']"
           :disabled="single"
           icon="el-icon-edit"
           plain
@@ -190,12 +175,11 @@
           type="success"
           @click="handleUpdate"
         >修改
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['system:loginCode:remove']"
+          v-hasPermi="['agent:agentLoginCode:remove']"
           :disabled="multiple"
           icon="el-icon-delete"
           plain
@@ -203,12 +187,11 @@
           type="danger"
           @click="handleDelete"
         >删除
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['system:loginCode:export']"
+          v-hasPermi="['agent:agentLoginCode:export']"
           :loading="exportLoading"
           icon="el-icon-download"
           plain
@@ -216,8 +199,7 @@
           type="warning"
           @click="handleExport"
         >导出
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -373,23 +355,21 @@
       >
         <template slot-scope="scope">
           <el-button
-            v-hasPermi="['system:loginCode:edit']"
+            v-hasPermi="['agent:agentLoginCode:edit']"
             icon="el-icon-edit"
             size="mini"
             type="text"
             @click="handleUpdate(scope.row)"
           >修改
-          </el-button
-          >
+          </el-button>
           <el-button
-            v-hasPermi="['system:loginCode:remove']"
+            v-hasPermi="['agent:agentLoginCode:remove']"
             icon="el-icon-delete"
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -411,48 +391,6 @@
       width="800px"
     >
       <el-form ref="form" :model="form" :rules="rules">
-        <!-- 新增 -->
-        <div v-if="form.cardId == null">
-          <el-form-item prop="">
-            <el-col :span="12">
-              <el-form-item label="所属软件" prop="appId">
-                <el-select
-                  v-model="form.appId"
-                  filterable
-                  placeholder="请选择"
-                  prop="appId"
-                  @change="changeSelectedApp"
-                >
-                  <el-option
-                    v-for="item in appList"
-                    :key="item.appId"
-                    :disabled="item.disabled"
-                    :label="
-                      '[' +
-                      (item.authType == '0' ? '账号' : '单码') +
-                      (item.billType == '0' ? '计时' : '计点') +
-                      '] ' +
-                      item.appName
-                    "
-                    :value="item.appId"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="计费类型" prop="billType">
-                <div v-if="app">
-                  <dict-tag
-                    :options="dict.type.sys_bill_type"
-                    :value="app.billType"
-                  />
-                </div>
-                <div v-else>请先选择软件</div>
-              </el-form-item>
-            </el-col>
-          </el-form-item>
-        </div>
         <!-- 修改 -->
         <div v-if="form.cardId">
           <el-form-item prop="">
@@ -472,10 +410,12 @@
           </el-form-item>
         </div>
         <el-form-item label="单码名称" label-width="100px" prop="cardName">
-          <el-input v-model="form.cardName" placeholder="请输入单码名称"/>
+          <!-- <el-input v-model="form.cardName" placeholder="请输入单码名称" /> -->
+          {{ form.cardName }}
         </el-form-item>
         <el-form-item label="单码" label-width="80px" prop="cardNo">
-          <el-input v-model="form.cardNo" placeholder="请输入单码"/>
+          <!-- <el-input v-model="form.cardNo" placeholder="请输入单码" /> -->
+          {{ form.cardNo }}
         </el-form-item>
         <el-form-item prop="">
           <el-col :span="12">
@@ -486,14 +426,13 @@
                   :key="dict.value"
                   :label="dict.value"
                 >{{ dict.label }}
-                </el-radio
-                >
+                </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="过期时间" prop="expireTime">
-              <el-date-picker
+              <!-- <el-date-picker
                 v-model="form.expireTime"
                 :picker-options="pickerOptions"
                 clearable
@@ -502,39 +441,12 @@
                 type="datetime"
                 value-format="yyyy-MM-dd HH:mm:ss"
               >
-              </el-date-picker>
+              </el-date-picker> -->
+              {{ parseTime(form.expireTime) }}
             </el-form-item>
           </el-col>
         </el-form-item>
         <el-form-item prop="">
-          <div v-if="form.cardId == null">
-            <el-col :span="12">
-              <el-form-item
-                label="单码面值"
-                label-width="100px"
-                prop="quota"
-                style="width: 320px"
-              >
-                <div v-if="app">
-                  <div v-if="app.billType === '0'">
-                    <date-duration
-                      :seconds="form.quota"
-                      @totalSeconds="handleQuota"
-                    ></date-duration>
-                  </div>
-                  <div v-if="app.billType === '1'">
-                    <el-input-number
-                      v-model="form.quota"
-                      :min="0"
-                      controls-position="right"
-                    />
-                    <span style="margin-left: 6px">点</span>
-                  </div>
-                </div>
-                <div v-else>请先选择软件</div>
-              </el-form-item>
-            </el-col>
-          </div>
           <div v-if="form.cardId && form.app">
             <el-col :span="12">
               <el-form-item
@@ -543,20 +455,7 @@
                 prop="quota"
                 style="width: 320px"
               >
-                <div v-if="form.app.billType === '0'">
-                  <date-duration
-                    :seconds="form.quota"
-                    @totalSeconds="handleQuota"
-                  ></date-duration>
-                </div>
-                <div v-if="form.app.billType === '1'">
-                  <el-input-number
-                    v-model="form.quota"
-                    :min="0"
-                    controls-position="right"
-                  />
-                  <span style="margin-left: 6px">点</span>
-                </div>
+                {{ parseSeconds(form.app.billType, form.quota) }}
               </el-form-item>
             </el-col>
           </div>
@@ -611,9 +510,6 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <!-- <el-form-item label="类别ID" prop="templateId">
-              <el-input v-model="form.templateId" placeholder="请输入类别ID" />
-            </el-form-item> -->
           </el-col>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -626,18 +522,16 @@
         <div v-if="form.cardId">
           <el-form-item prop="">
             <el-col :span="12">
-              <el-form-item label="创建人" prop="createBy">{{
-                  form.createBy
-                }}
+              <el-form-item label="创建人" prop="createBy"
+              >{{ form.createBy }}
               </el-form-item>
               <el-form-item label="创建时间" prop="createTime"
               >{{ form.createTime }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="最后更新" prop="updateBy">{{
-                  form.updateBy
-                }}
+              <el-form-item label="最后更新" prop="updateBy"
+              >{{ form.updateBy }}
               </el-form-item>
               <el-form-item label="更新时间" prop="updateTime"
               >{{ form.updateTime }}
@@ -1012,12 +906,6 @@ export default {
       this.ids = selection.map((item) => item.cardId);
       this.single = selection.length !== 1;
       this.multiple = !selection.length;
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加单码";
     },
     /**批量生成按钮操作 */
     handleBatchAdd() {
