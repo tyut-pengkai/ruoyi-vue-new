@@ -2,8 +2,8 @@ package com.ruoyi.agent.service.impl;
 
 import com.ruoyi.agent.domain.SysAgent;
 import com.ruoyi.agent.domain.vo.AgentInfoVo;
-import com.ruoyi.agent.mapper.SysAgentMapper;
-import com.ruoyi.agent.service.ISysAgentService;
+import com.ruoyi.agent.mapper.SysAgentUserMapper;
+import com.ruoyi.agent.service.ISysAgentUserService;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,9 +17,9 @@ import java.util.List;
  * @date 2022-06-11
  */
 @Service
-public class SysAgentServiceImpl implements ISysAgentService {
+public class SysAgentUserServiceImpl implements ISysAgentUserService {
     @Autowired
-    private SysAgentMapper sysAgentMapper;
+    private SysAgentUserMapper sysAgentMapper;
 
     /**
      * 查询代理管理

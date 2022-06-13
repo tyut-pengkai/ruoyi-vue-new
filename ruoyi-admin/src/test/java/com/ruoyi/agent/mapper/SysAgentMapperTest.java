@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 class SysAgentMapperTest {
 
     @Resource
-    private SysAgentMapper mapper;
+    private SysAgentUserMapper mapper;
 
     @Test
     void getAgents() {

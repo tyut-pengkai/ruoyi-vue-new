@@ -2,7 +2,7 @@ package com.ruoyi.web.controller.agent;
 
 import com.ruoyi.agent.domain.SysAgent;
 import com.ruoyi.agent.domain.vo.AgentInfoVo;
-import com.ruoyi.agent.service.ISysAgentService;
+import com.ruoyi.agent.service.ISysAgentUserService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -34,9 +34,9 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/agent/agentUser")
-public class SysAgentController extends BaseController {
+public class SysAgentUserController extends BaseController {
     @Resource
-    private ISysAgentService sysAgentService;
+    private ISysAgentUserService sysAgentService;
     @Resource
     private ISysRoleService sysRoleService;
     @Resource
@@ -51,10 +51,23 @@ public class SysAgentController extends BaseController {
     @GetMapping("/list")
     public AjaxResult list(SysAgent sysAgent) {
         List<SysAgent> list = sysAgentService.selectSysAgentList(sysAgent);
-        for (SysAgent agent : list) {
+        List<SysAgent> filterList = new ArrayList<>();
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            // 获取我的代理ID
+            SysAgent agent = sysAgentService.selectSysAgentByUserId(getLoginUser().getUserId());
+            List<Long> subAgents = sysAgentService.getSubAgents(agent.getAgentId());
+            for (SysAgent item : list) {
+                if (subAgents.contains(item.getAgentId())) {
+                    filterList.add(item);
+                }
+            }
+        } else {
+            filterList.addAll(list);
+        }
+        for (SysAgent agent : filterList) {
             fill(agent);
         }
-        return AjaxResult.success(list);
+        return AjaxResult.success(filterList);
     }
 
     private void fill(SysAgent agent) {

@@ -4,7 +4,7 @@ import com.ruoyi.agent.domain.SysAgent;
 import com.ruoyi.agent.domain.SysAgentItem;
 import com.ruoyi.agent.domain.vo.TemplateInfoVo;
 import com.ruoyi.agent.service.ISysAgentItemService;
-import com.ruoyi.agent.service.ISysAgentService;
+import com.ruoyi.agent.service.ISysAgentUserService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 代理卡类关联Controller
+ * 代理授权Controller
  *
  * @author zwgu
  * @date 2022-06-11
@@ -40,7 +40,7 @@ public class SysAgentItemController extends BaseController {
     @Autowired
     private ISysAgentItemService sysAgentItemService;
     @Resource
-    private ISysAgentService sysAgentService;
+    private ISysAgentUserService sysAgentService;
     @Resource
     private ISysCardTemplateService sysCardTemplateService;
     @Resource
@@ -49,7 +49,7 @@ public class SysAgentItemController extends BaseController {
     private PermissionService permissionService;
 
     /**
-     * 查询代理卡类关联列表
+     * 查询代理授权列表
      */
     @PreAuthorize("@ss.hasPermi('agent:agentItem:list')")
     @GetMapping("/list")
@@ -63,19 +63,19 @@ public class SysAgentItemController extends BaseController {
     }
 
     /**
-     * 导出代理卡类关联列表
+     * 导出代理授权列表
      */
     @PreAuthorize("@ss.hasPermi('agent:agentItem:export')")
-    @Log(title = "代理卡类关联", businessType = BusinessType.EXPORT)
+    @Log(title = "代理授权", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysAgentItem sysAgentItem) {
         List<SysAgentItem> list = sysAgentItemService.selectSysAgentItemList(sysAgentItem);
         ExcelUtil<SysAgentItem> util = new ExcelUtil<SysAgentItem>(SysAgentItem.class);
-        util.exportExcel(response, list, "代理卡类关联数据");
+        util.exportExcel(response, list, "代理授权数据");
     }
 
     /**
-     * 获取代理卡类关联详细信息
+     * 获取代理授权详细信息
      */
     @PreAuthorize("@ss.hasPermi('agent:agentItem:query')")
     @GetMapping(value = "/{id}")
@@ -84,10 +84,10 @@ public class SysAgentItemController extends BaseController {
     }
 
     /**
-     * 新增代理卡类关联
+     * 新增代理授权
      */
     @PreAuthorize("@ss.hasPermi('agent:agentItem:add')")
-    @Log(title = "代理卡类关联", businessType = BusinessType.INSERT)
+    @Log(title = "代理授权", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysAgentItem sysAgentItem) {
 
@@ -105,10 +105,10 @@ public class SysAgentItemController extends BaseController {
     }
 
     /**
-     * 修改代理卡类关联
+     * 修改代理授权
      */
     @PreAuthorize("@ss.hasPermi('agent:agentItem:edit')")
-    @Log(title = "代理卡类关联", businessType = BusinessType.UPDATE)
+    @Log(title = "代理授权", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAgentItem sysAgentItem) {
 
@@ -126,10 +126,10 @@ public class SysAgentItemController extends BaseController {
     }
 
     /**
-     * 删除代理卡类关联
+     * 删除代理授权
      */
     @PreAuthorize("@ss.hasPermi('agent:agentItem:remove')")
-    @Log(title = "代理卡类关联", businessType = BusinessType.DELETE)
+    @Log(title = "代理授权", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(sysAgentItemService.deleteSysAgentItemByIds(ids));

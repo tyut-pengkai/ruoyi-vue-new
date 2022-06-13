@@ -3,7 +3,7 @@ package com.ruoyi.web.controller.agent;
 import com.ruoyi.agent.domain.SysAgent;
 import com.ruoyi.agent.domain.SysAgentItem;
 import com.ruoyi.agent.service.ISysAgentItemService;
-import com.ruoyi.agent.service.ISysAgentService;
+import com.ruoyi.agent.service.ISysAgentUserService;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -37,7 +37,7 @@ public class SysAgentAppController extends BaseController {
     @Resource
     private ISysAgentItemService sysAgentItemService;
     @Resource
-    private ISysAgentService sysAgentService;
+    private ISysAgentUserService sysAgentService;
     @Resource
     private PermissionService permissionService;
     @Resource

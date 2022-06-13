@@ -11,7 +11,7 @@ import java.util.List;
  * @author zwgu
  * @date 2022-06-11
  */
-public interface ISysAgentService {
+public interface ISysAgentUserService {
     /**
      * 查询代理管理
      *

@@ -15,7 +15,7 @@ import java.util.List;
  * @date 2022-06-11
  */
 @Repository
-public interface SysAgentMapper {
+public interface SysAgentUserMapper {
     /**
      * 查询代理管理
      *
