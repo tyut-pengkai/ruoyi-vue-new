@@ -9,7 +9,7 @@
         <result property="agentId" column="agent_id"/>
         <result property="templateType" column="template_type"/>
         <result property="templateId" column="template_id"/>
-        <result property="price" column="price"/>
+        <result property="agentPrice" column="agent_price"/>
         <result property="expireTime" column="expire_time"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
@@ -30,7 +30,7 @@
                ai.agent_id,
                ai.template_type,
                ai.template_id,
-               ai.price,
+               ai.agent_price,
                ai.expire_time,
                ai.create_by,
                ai.create_time,
@@ -48,11 +48,16 @@
     <select id="selectSysAgentItemList" parameterType="SysAgentItem" resultMap="SysAgentItemResult">
         <include refid="selectSysAgentItemVo"/>
         <where>
-            <if test="agentId != null ">and ai.agent_id = #{agentId}</if>
+            <if test="agentId != null">and ai.agent_id = #{agentId}</if>
             <if test="templateType != null">and ai.template_type = #{templateType}</if>
-            <if test="templateId != null ">and ai.template_id = #{templateId}</if>
+            <if test="templateId != null">and ai.template_id = #{templateId}</if>
             <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
                 and ai.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
+            </if>
+            <if test="params._agentId != null">
+                and ai.agent_id in (SELECT ag.agent_id FROM sys_agent ag WHERE ag.path LIKE CONCAT(( SELECT ag.path FROM
+                sys_agent ag WHERE ag.agent_id = #{params._agentId} ), '%')
+                AND ag.path != (SELECT ag.path FROM sys_agent ag WHERE ag.agent_id = #{params._agentId}))
             </if>
         </where>
         order by ai.id
@@ -74,7 +79,7 @@
             <if test="agentId != null">agent_id,</if>
             <if test="templateType != null">template_type,</if>
             <if test="templateId != null">template_id,</if>
-            <if test="price != null">price,</if>
+            <if test="agentPrice != null">agent_price,</if>
             <if test="expireTime != null">expire_time,</if>
             <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
@@ -86,7 +91,7 @@
             <if test="agentId != null">#{agentId},</if>
             <if test="templateType != null">#{templateType},</if>
             <if test="templateId != null">#{templateId},</if>
-            <if test="price != null">#{price},</if>
+            <if test="agentPrice != null">#{agentPrice},</if>
             <if test="expireTime != null">#{expireTime},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
@@ -102,7 +107,7 @@
             <if test="agentId != null">agent_id = #{agentId},</if>
             <if test="templateType != null">template_type = #{templateType},</if>
             <if test="templateId != null">template_id = #{templateId},</if>
-            <if test="price != null">price = #{price},</if>
+            <if test="agentPrice != null">agent_price = #{agentPrice},</if>
             <if test="expireTime != null">expire_time = #{expireTime},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>

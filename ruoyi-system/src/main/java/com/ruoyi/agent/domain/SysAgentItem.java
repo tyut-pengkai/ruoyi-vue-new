@@ -48,8 +48,14 @@ public class SysAgentItem extends BaseEntity {
     /**
      * 价格
      */
-    @Excel(name = "价格")
+    @Excel(name = "零售价格")
     private BigDecimal price;
+
+    /**
+     * 价格
+     */
+    @Excel(name = "代理价格")
+    private BigDecimal agentPrice;
 
     /**
      * 代理该卡过期时间
@@ -101,12 +107,12 @@ public class SysAgentItem extends BaseEntity {
         this.templateId = templateId;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public BigDecimal getAgentPrice() {
+        return agentPrice;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setAgentPrice(BigDecimal agentPrice) {
+        this.agentPrice = agentPrice;
     }
 
     public Date getExpireTime() {
@@ -129,6 +135,14 @@ public class SysAgentItem extends BaseEntity {
         return templateInfo;
     }
 
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
     public void setTemplateInfo(TemplateInfoVo templateInfo) {
         this.templateInfo = templateInfo;
     }
@@ -141,6 +155,7 @@ public class SysAgentItem extends BaseEntity {
                 .append("templateType", getTemplateType())
                 .append("templateId", getTemplateId())
                 .append("price", getPrice())
+                .append("agentPrice", getAgentPrice())
                 .append("expireTime", getExpireTime())
                 .append("createBy", getCreateBy())
                 .append("createTime", getCreateTime())

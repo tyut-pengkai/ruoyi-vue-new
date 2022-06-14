@@ -146,6 +146,7 @@ public class SysAgentLoginCodeController extends BaseController {
                 if (item.getTemplateType() == TemplateType.LOGIN_CODE) {
                     SysLoginCodeTemplate template = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByTemplateId(item.getTemplateId());
                     if (!appIds.contains(template.getTemplateId())) {
+                        template.setAgentPrice(item.getAgentPrice());
                         list.add(template);
                         appIds.add(template.getTemplateId());
                     }

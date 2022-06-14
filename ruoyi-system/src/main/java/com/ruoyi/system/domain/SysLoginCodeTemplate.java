@@ -114,6 +114,12 @@ public class SysLoginCodeTemplate extends BaseEntity {
     private String enableAutoGen;
 
     /**
+     * 价格
+     */
+    @Excel(name = "代理价格")
+    private BigDecimal agentPrice;
+
+    /**
      * 所属软件信息
      */
     @Excel(name = "软件名称", targetAttr = "appName", type = Excel.Type.EXPORT)
@@ -255,6 +261,14 @@ public class SysLoginCodeTemplate extends BaseEntity {
         this.enableAutoGen = enableAutoGen;
     }
 
+    public BigDecimal getAgentPrice() {
+        return agentPrice;
+    }
+
+    public void setAgentPrice(BigDecimal agentPrice) {
+        this.agentPrice = agentPrice;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -266,6 +280,7 @@ public class SysLoginCodeTemplate extends BaseEntity {
                 .append("cardDescription", getCardDescription())
                 .append("quota", getQuota())
                 .append("price", getPrice())
+                .append("agentPrice", getAgentPrice())
                 .append("cardNoLen", getCardNoLen())
                 .append("cardNoGenRule", getCardNoGenRule())
                 .append("cardNoRegex", getCardNoRegex())

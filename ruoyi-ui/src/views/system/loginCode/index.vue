@@ -244,7 +244,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item label="价格" prop="">
+                <el-form-item label="零售价格" prop="">
                   <span>{{ parseMoney(scope.row.price) }}元 </span>
                 </el-form-item>
               </el-col>
@@ -311,7 +311,7 @@
           <span>{{ parseSeconds(scope.row.app.billType, scope.row.quota) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="价格" align="center" prop="price">
+      <el-table-column label="零售价格" align="center" prop="price">
         <template slot-scope="scope">
           <span>{{ parseMoney(scope.row.price) }}元 </span>
         </template>
@@ -551,7 +551,7 @@
             </el-col>
           </div>
           <el-col :span="12">
-            <el-form-item label="销售价格" prop="price" label-width="80px">
+            <el-form-item label="零售价格" label-width="80px" prop="price">
               <el-input-number
                 v-model="form.price"
                 controls-position="right"

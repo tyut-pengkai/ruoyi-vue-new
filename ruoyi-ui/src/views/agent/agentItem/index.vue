@@ -146,10 +146,15 @@
           }}
         </template>
       </el-table-column>
-      <!-- <el-table-column align="center" label="价格" prop="price" /> -->
-      <el-table-column align="center" label="代理价格" prop="price">
+      <!-- <el-table-column align="center" label="零售价格" prop="price" /> -->
+      <el-table-column align="center" label="零售价格" prop="price">
         <template slot-scope="scope">
           <span>{{ parseMoney(scope.row.price) }}元</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="代理价格" prop="agentPrice">
+        <template slot-scope="scope">
+          <span>{{ parseMoney(scope.row.agentPrice) }}元</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -233,12 +238,12 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <!-- <el-form-item label="代理价格" prop="price">
-          <el-input v-model="form.price" placeholder="请输入代理价格" />
+        <!-- <el-form-item label="代理价格" prop="agentPrice">
+          <el-input v-model="form.agentPrice" placeholder="请输入代理价格" />
         </el-form-item> -->
-        <el-form-item label="代理价格" label-width="80px" prop="price">
+        <el-form-item label="代理价格" label-width="80px" prop="agentPrice">
           <el-input-number
-            v-model="form.price"
+            v-model="form.agentPrice"
             :min="0"
             :precision="2"
             :step="0.01"
@@ -339,7 +344,7 @@ export default {
         //   },
         // ],
         tid: [{required: true, message: "代理卡类不能为空", trigger: "blur"}],
-        price: [
+        agentPrice: [
           {required: true, message: "代理价格不能为空", trigger: "blur"},
         ],
       },
@@ -461,7 +466,7 @@ export default {
         agentId: null,
         templateType: null,
         templateId: null,
-        price: null,
+        agentPrice: null,
         expireTime: null,
         createBy: null,
         createTime: null,
@@ -574,6 +579,7 @@ export default {
     },
     getGrantableTemplate() {
       grantableTemplate().then((response) => {
+        this.templateList = [];
         let dataList = response.data;
         for (let data of dataList) {
           this.templateList.push({

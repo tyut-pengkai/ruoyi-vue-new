@@ -55,6 +55,10 @@ public class SysAgentItemController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo list(SysAgentItem sysAgentItem) {
         startPage();
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            SysAgent sysAgent = sysAgentService.selectSysAgentByUserId(getUserId());
+            sysAgentItem.getParams().put("_agentId", sysAgent.getAgentId());
+        }
         List<SysAgentItem> list = sysAgentItemService.selectSysAgentItemList(sysAgentItem);
         for (SysAgentItem item : list) {
             fillTemplateInfo(item);
@@ -176,17 +180,19 @@ public class SysAgentItemController extends BaseController {
         Long templateId = item.getTemplateId();
         TemplateInfoVo info = new TemplateInfoVo();
         if (item.getTemplateType() == TemplateType.CHARGE_CARD) {
-            SysCardTemplate sysCardTemplate = sysCardTemplateService.selectSysCardTemplateByTemplateId(templateId);
-            info.setTemplateId(sysCardTemplate.getTemplateId());
-            info.setTemplateName(sysCardTemplate.getCardName());
+            SysCardTemplate template = sysCardTemplateService.selectSysCardTemplateByTemplateId(templateId);
+            info.setTemplateId(template.getTemplateId());
+            info.setTemplateName(template.getCardName());
             info.setTemplateType(TemplateType.CHARGE_CARD);
-            info.setAppName(sysCardTemplate.getApp().getAppName());
+            info.setAppName(template.getApp().getAppName());
+            item.setPrice(template.getPrice());
         } else if (item.getTemplateType() == TemplateType.LOGIN_CODE) {
-            SysLoginCodeTemplate sysLoginCodeTemplate = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByTemplateId(templateId);
-            info.setTemplateId(sysLoginCodeTemplate.getTemplateId());
-            info.setTemplateName(sysLoginCodeTemplate.getCardName());
+            SysLoginCodeTemplate template = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByTemplateId(templateId);
+            info.setTemplateId(template.getTemplateId());
+            info.setTemplateName(template.getCardName());
             info.setTemplateType(TemplateType.LOGIN_CODE);
-            info.setAppName(sysLoginCodeTemplate.getApp().getAppName());
+            info.setAppName(template.getApp().getAppName());
+            item.setPrice(template.getPrice());
         }
         item.setTemplateInfo(info);
     }

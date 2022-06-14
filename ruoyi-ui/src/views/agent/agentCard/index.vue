@@ -143,12 +143,10 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -162,8 +160,7 @@
           type="primary"
           @click="handleBatchAdd"
         >批量制卡
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -175,8 +172,7 @@
           type="success"
           @click="handleUpdate"
         >修改
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -188,8 +184,7 @@
           type="danger"
           @click="handleDelete"
         >删除
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -201,8 +196,7 @@
           type="warning"
           @click="handleExport"
         >导出
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -241,7 +235,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="5">
-                <el-form-item label="价格">
+                <el-form-item label="零售价格">
                   <span>{{ parseMoney(scope.row.price) }}元 </span>
                 </el-form-item>
               </el-col>
@@ -317,7 +311,7 @@
           <span>{{ parseSeconds(scope.row.app.billType, scope.row.quota) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="价格" align="center" prop="price">
+      <el-table-column label="零售价格" align="center" prop="price">
         <template slot-scope="scope">
           <span>{{ parseMoney(scope.row.price) }}元 </span>
         </template>
@@ -386,8 +380,7 @@
             type="text"
             @click="handleUpdate(scope.row)"
           >修改
-          </el-button
-          >
+          </el-button>
           <el-button
             v-hasPermi="['agent:agentCard:remove']"
             icon="el-icon-delete"
@@ -395,8 +388,7 @@
             type="text"
             @click="handleDelete(scope.row)"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -457,8 +449,7 @@
                   :key="dict.value"
                   :label="dict.value"
                 >{{ dict.label }}
-                </el-radio
-                >
+                </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -492,7 +483,7 @@
             </el-col>
           </div>
           <el-col :span="12">
-            <el-form-item label="销售价格" label-width="80px" prop="price">
+            <el-form-item label="零售价格" label-width="80px" prop="price">
               <el-input-number
                 v-model="form.price"
                 :min="0"
@@ -562,18 +553,16 @@
         <div v-if="form.cardId">
           <el-form-item prop="">
             <el-col :span="12">
-              <el-form-item label="创建人" prop="createBy">{{
-                  form.createBy
-                }}
+              <el-form-item label="创建人" prop="createBy"
+              >{{ form.createBy }}
               </el-form-item>
               <el-form-item label="创建时间" prop="createTime"
               >{{ form.createTime }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="最后更新" prop="updateBy">{{
-                  form.updateBy
-                }}
+              <el-form-item label="最后更新" prop="updateBy"
+              >{{ form.updateBy }}
               </el-form-item>
               <el-form-item label="更新时间" prop="updateTime"
               >{{ form.updateTime }}
@@ -645,8 +634,10 @@
                 item.cardName +
                 '|' +
                 parseSeconds(item.app.billType, item.quota) +
-                '|' +
+                '|零售' +
                 item.price +
+                '元|制卡' +
+                item.agentPrice +
                 '元'
               "
               :value="item.templateId"

@@ -162,7 +162,7 @@
                 </el-form-item>
               </el-col>
               <!-- <el-col :span="5">
-                <el-form-item label="价格">
+                <el-form-item label="零售价格">
                   <span>{{ parseMoney(scope.row.price) }}元 </span>
                 </el-form-item>
               </el-col> -->
@@ -194,7 +194,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="5">
-                <el-form-item label="价格">
+                <el-form-item label="零售价格">
                   <span>{{ parseMoney(scope.row.price) }}元 </span>
                 </el-form-item>
               </el-col> -->

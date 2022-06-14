@@ -16,86 +16,131 @@ import java.math.BigDecimal;
  * @author zwgu
  * @date 2021-11-28
  */
-public class SysCardTemplate extends BaseEntity
-{
+public class SysCardTemplate extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
-    /** 模板ID */
+    /**
+     * 模板ID
+     */
     private Long templateId;
 
-    /** 软件ID */
+    /**
+     * 软件ID
+     */
     @Excel(name = "软件ID")
     private Long appId;
 
-    /** 卡名称 */
+    /**
+     * 卡名称
+     */
     @Excel(name = "卡名称")
     private String cardName;
 
-    /** 卡号前缀 */
+    /**
+     * 卡号前缀
+     */
     private String cardNoPrefix;
 
-    /** 卡号后缀 */
+    /**
+     * 卡号后缀
+     */
     private String cardNoSuffix;
 
-    /** 卡描述 */
+    /**
+     * 卡描述
+     */
     @Excel(name = "卡描述")
     private String cardDescription;
 
-    /** 额度 */
+    /**
+     * 额度
+     */
     @Excel(name = "额度")
     private Long quota;
 
-    /** 价格 */
+    /**
+     * 价格
+     */
     @Excel(name = "价格")
     private BigDecimal price;
 
-    /** 卡号长度 */
+    /**
+     * 卡号长度
+     */
     @Excel(name = "卡号长度")
     private Integer cardNoLen;
 
-    /** 卡号生成规则 */
+    /**
+     * 卡号生成规则
+     */
     @Excel(name = "卡号生成规则")
     private GenRule cardNoGenRule;
 
-    /** 卡号正则 */
+    /**
+     * 卡号正则
+     */
     @Excel(name = "卡号正则")
     private String cardNoRegex;
 
-    /** 密码长度 */
+    /**
+     * 密码长度
+     */
     @Excel(name = "密码长度")
     private Integer cardPassLen;
 
-    /** 密码生成规则 */
+    /**
+     * 密码生成规则
+     */
     @Excel(name = "密码生成规则")
     private GenRule cardPassGenRule;
 
-    /** 密码正则 */
+    /**
+     * 密码正则
+     */
     @Excel(name = "密码正则")
     private String cardPassRegex;
 
-    /** 充值规则 */
+    /**
+     * 充值规则
+     */
     @Excel(name = "充值规则")
     private ChargeRule chargeRule;
 
-    /** 是否上架 */
+    /**
+     * 是否上架
+     */
     @Excel(name = "是否上架")
     private String onSale;
 
-    /** 优先库存 */
+    /**
+     * 优先库存
+     */
     @Excel(name = "优先库存")
     private String firstStock;
 
-    /** 有效时长 */
+    /**
+     * 有效时长
+     */
     @Excel(name = "有效时长")
     private Long effectiveDuration;
 
-    /** 模板状态 */
+    /**
+     * 模板状态
+     */
     @Excel(name = "模板状态")
     private String status;
 
-    /** 允许自动生成 */
+    /**
+     * 允许自动生成
+     */
     @Excel(name = "允许自动生成")
     private String enableAutoGen;
+
+    /**
+     * 价格
+     */
+    @Excel(name = "代理价格")
+    private BigDecimal agentPrice;
 
     /**
      * 所属软件信息
@@ -111,215 +156,203 @@ public class SysCardTemplate extends BaseEntity
         this.app = app;
     }
 
-    public void setTemplateId(Long templateId) 
-    {
+    public Long getTemplateId() {
+        return templateId;
+    }
+
+    public void setTemplateId(Long templateId) {
         this.templateId = templateId;
     }
 
-    public Long getTemplateId() 
-    {
-        return templateId;
+    public Long getAppId() {
+        return appId;
     }
-    public void setAppId(Long appId) 
-    {
+
+    public void setAppId(Long appId) {
         this.appId = appId;
     }
 
-    public Long getAppId() 
-    {
-        return appId;
+    public String getCardName() {
+        return cardName;
     }
-    public void setCardName(String cardName) 
-    {
+
+    public void setCardName(String cardName) {
         this.cardName = cardName;
     }
 
-    public String getCardName() 
-    {
-        return cardName;
+    public String getCardNoPrefix() {
+        return cardNoPrefix;
     }
-    public void setCardNoPrefix(String cardNoPrefix) 
-    {
+
+    public void setCardNoPrefix(String cardNoPrefix) {
         this.cardNoPrefix = cardNoPrefix;
     }
 
-    public String getCardNoPrefix() 
-    {
-        return cardNoPrefix;
+    public String getCardNoSuffix() {
+        return cardNoSuffix;
     }
-    public void setCardNoSuffix(String cardNoSuffix) 
-    {
+
+    public void setCardNoSuffix(String cardNoSuffix) {
         this.cardNoSuffix = cardNoSuffix;
     }
 
-    public String getCardNoSuffix() 
-    {
-        return cardNoSuffix;
+    public String getCardDescription() {
+        return cardDescription;
     }
-    public void setCardDescription(String cardDescription) 
-    {
+
+    public void setCardDescription(String cardDescription) {
         this.cardDescription = cardDescription;
     }
 
-    public String getCardDescription() 
-    {
-        return cardDescription;
+    public Long getQuota() {
+        return quota;
     }
-    public void setQuota(Long quota) 
-    {
+
+    public void setQuota(Long quota) {
         this.quota = quota;
     }
 
-    public Long getQuota() 
-    {
-        return quota;
+    public BigDecimal getPrice() {
+        return price;
     }
-    public void setPrice(BigDecimal price) 
-    {
+
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public BigDecimal getPrice() 
-    {
-        return price;
+    public Integer getCardNoLen() {
+        return cardNoLen;
     }
-    public void setCardNoLen(Integer cardNoLen)
-    {
+
+    public void setCardNoLen(Integer cardNoLen) {
         this.cardNoLen = cardNoLen;
     }
 
-    public Integer getCardNoLen()
-    {
-        return cardNoLen;
+    public GenRule getCardNoGenRule() {
+        return cardNoGenRule;
     }
-    public void setCardNoGenRule(GenRule cardNoGenRule)
-    {
+
+    public void setCardNoGenRule(GenRule cardNoGenRule) {
         this.cardNoGenRule = cardNoGenRule;
     }
 
-    public GenRule getCardNoGenRule()
-    {
-        return cardNoGenRule;
+    public String getCardNoRegex() {
+        return cardNoRegex;
     }
-    public void setCardNoRegex(String cardNoRegex) 
-    {
+
+    public void setCardNoRegex(String cardNoRegex) {
         this.cardNoRegex = cardNoRegex;
     }
 
-    public String getCardNoRegex() 
-    {
-        return cardNoRegex;
+    public Integer getCardPassLen() {
+        return cardPassLen;
     }
-    public void setCardPassLen(Integer cardPassLen)
-    {
+
+    public void setCardPassLen(Integer cardPassLen) {
         this.cardPassLen = cardPassLen;
     }
 
-    public Integer getCardPassLen()
-    {
-        return cardPassLen;
+    public GenRule getCardPassGenRule() {
+        return cardPassGenRule;
     }
-    public void setCardPassGenRule(GenRule cardPassGenRule)
-    {
+
+    public void setCardPassGenRule(GenRule cardPassGenRule) {
         this.cardPassGenRule = cardPassGenRule;
     }
 
-    public GenRule getCardPassGenRule()
-    {
-        return cardPassGenRule;
+    public String getCardPassRegex() {
+        return cardPassRegex;
     }
-    public void setCardPassRegex(String cardPassRegex) 
-    {
+
+    public void setCardPassRegex(String cardPassRegex) {
         this.cardPassRegex = cardPassRegex;
     }
 
-    public String getCardPassRegex() 
-    {
-        return cardPassRegex;
+    public ChargeRule getChargeRule() {
+        return chargeRule;
     }
-    public void setChargeRule(ChargeRule chargeRule)
-    {
+
+    public void setChargeRule(ChargeRule chargeRule) {
         this.chargeRule = chargeRule;
     }
 
-    public ChargeRule getChargeRule()
-    {
-        return chargeRule;
+    public String getOnSale() {
+        return onSale;
     }
-    public void setOnSale(String onSale) 
-    {
+
+    public void setOnSale(String onSale) {
         this.onSale = onSale;
     }
 
-    public String getOnSale() 
-    {
-        return onSale;
+    public String getFirstStock() {
+        return firstStock;
     }
-    public void setFirstStock(String firstStock) 
-    {
+
+    public void setFirstStock(String firstStock) {
         this.firstStock = firstStock;
     }
 
-    public String getFirstStock() 
-    {
-        return firstStock;
+    public Long getEffectiveDuration() {
+        return effectiveDuration;
     }
-    public void setEffectiveDuration(Long effectiveDuration) 
-    {
+
+    public void setEffectiveDuration(Long effectiveDuration) {
         this.effectiveDuration = effectiveDuration;
     }
 
-    public Long getEffectiveDuration() 
-    {
-        return effectiveDuration;
+    public String getStatus() {
+        return status;
     }
-    public void setStatus(String status)
-    {
+
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public String getStatus()
-    {
-        return status;
+    public String getEnableAutoGen() {
+        return enableAutoGen;
     }
-    public void setEnableAutoGen(String enableAutoGen) 
-    {
+
+    public void setEnableAutoGen(String enableAutoGen) {
         this.enableAutoGen = enableAutoGen;
     }
 
-    public String getEnableAutoGen() 
-    {
-        return enableAutoGen;
+    public BigDecimal getAgentPrice() {
+        return agentPrice;
+    }
+
+    public void setAgentPrice(BigDecimal agentPrice) {
+        this.agentPrice = agentPrice;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("templateId", getTemplateId())
-            .append("appId", getAppId())
-            .append("cardName", getCardName())
-            .append("cardNoPrefix", getCardNoPrefix())
-            .append("cardNoSuffix", getCardNoSuffix())
-            .append("cardDescription", getCardDescription())
-            .append("quota", getQuota())
-            .append("price", getPrice())
-            .append("cardNoLen", getCardNoLen())
-            .append("cardNoGenRule", getCardNoGenRule())
-            .append("cardNoRegex", getCardNoRegex())
-            .append("cardPassLen", getCardPassLen())
-            .append("cardPassGenRule", getCardPassGenRule())
-            .append("cardPassRegex", getCardPassRegex())
-            .append("chargeRule", getChargeRule())
-            .append("onSale", getOnSale())
-            .append("firstStock", getFirstStock())
-            .append("effectiveDuration", getEffectiveDuration())
-            .append("status", getStatus())
-            .append("enableAutoGen", getEnableAutoGen())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .append("updateBy", getUpdateBy())
-            .append("updateTime", getUpdateTime())
-            .append("remark", getRemark())
-            .toString();
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("templateId", getTemplateId())
+                .append("appId", getAppId())
+                .append("cardName", getCardName())
+                .append("cardNoPrefix", getCardNoPrefix())
+                .append("cardNoSuffix", getCardNoSuffix())
+                .append("cardDescription", getCardDescription())
+                .append("quota", getQuota())
+                .append("price", getPrice())
+                .append("agentPrice", getAgentPrice())
+                .append("cardNoLen", getCardNoLen())
+                .append("cardNoGenRule", getCardNoGenRule())
+                .append("cardNoRegex", getCardNoRegex())
+                .append("cardPassLen", getCardPassLen())
+                .append("cardPassGenRule", getCardPassGenRule())
+                .append("cardPassRegex", getCardPassRegex())
+                .append("chargeRule", getChargeRule())
+                .append("onSale", getOnSale())
+                .append("firstStock", getFirstStock())
+                .append("effectiveDuration", getEffectiveDuration())
+                .append("status", getStatus())
+                .append("enableAutoGen", getEnableAutoGen())
+                .append("createBy", getCreateBy())
+                .append("createTime", getCreateTime())
+                .append("updateBy", getUpdateBy())
+                .append("updateTime", getUpdateTime())
+                .append("remark", getRemark())
+                .toString();
     }
 }

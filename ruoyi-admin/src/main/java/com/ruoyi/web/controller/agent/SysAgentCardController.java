@@ -145,6 +145,7 @@ public class SysAgentCardController extends BaseController {
                 if (item.getTemplateType() == TemplateType.CHARGE_CARD) {
                     SysCardTemplate template = sysCardTemplateService.selectSysCardTemplateByTemplateId(item.getTemplateId());
                     if (!appIds.contains(template.getTemplateId())) {
+                        template.setAgentPrice(item.getAgentPrice());
                         list.add(template);
                         appIds.add(template.getTemplateId());
                     }
