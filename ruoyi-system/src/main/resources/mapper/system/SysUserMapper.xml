@@ -18,8 +18,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag" column="del_flag"/>
         <result property="loginIp" column="login_ip"/>
         <result property="loginDate" column="login_date"/>
-        <result property="freeBalance" column="free_balance"/>
-        <result property="payBalance" column="pay_balance"/>
+        <result property="availablePayBalance" column="available_pay_balance"/>
+        <result property="freezePayBalance" column="freeze_pay_balance"/>
+        <result property="availableFreeBalance" column="available_free_balance"/>
+        <result property="freezeFreeBalance" column="freeze_free_balance"/>
         <result property="freePayment" column="free_payment"/>
         <result property="payPayment" column="pay_payment"/>
         <result property="createBy" column="create_by"/>
@@ -64,8 +66,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                u.del_flag,
                u.login_ip,
                u.login_date,
-               u.free_balance,
-               u.pay_balance,
+               u.available_pay_balance,
+               u.freeze_pay_balance,
+               u.available_free_balance,
+               u.freeze_free_balance,
                u.free_payment,
                u.pay_payment,
                u.create_by,
@@ -93,7 +97,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
         select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status,
         u.del_flag, u.login_ip, u.login_date,
-        u.free_balance, u.pay_balance, u.free_payment, u.pay_payment, u.create_by, u.create_time, u.remark, d.dept_name,
+        u.available_pay_balance, u.freeze_pay_balance, u.available_free_balance, u.freeze_free_balance, u.free_payment,
+        u.pay_payment, u.create_by, u.create_time, u.remark, d.dept_name,
         d.leader from sys_user u
         left join sys_dept d on u.dept_id = d.dept_id
         where u.del_flag = '0'
@@ -191,8 +196,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="sex != null and sex != ''">sex,</if>
         <if test="password != null and password != ''">password,</if>
         <if test="status != null and status != ''">status,</if>
-        <if test="freeBalance != null">free_balance,</if>
-        <if test="payBalance != null">pay_balance,</if>
+        <if test="availablePayBalance != null">available_pay_balance,</if>
+        <if test="freezePayBalance != null">freeze_pay_balance,</if>
+        <if test="availableFreeBalance != null">available_free_balance,</if>
+        <if test="freezeFreeBalance != null">freeze_free_balance,</if>
         <if test="freePayment != null">free_payment,</if>
         <if test="payPayment != null">pay_payment,</if>
         <if test="createBy != null and createBy != ''">create_by,</if>
@@ -233,8 +240,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null and status != ''">status = #{status},</if>
             <if test="loginIp != null and loginIp != ''">login_ip = #{loginIp},</if>
             <if test="loginDate != null">login_date = #{loginDate},</if>
-            <if test="freeBalance != null">free_balance = #{freeBalance},</if>
-            <if test="payBalance != null">pay_balance = #{payBalance},</if>
+            <if test="availablePayBalance != null">available_pay_balance = #{availablePayBalance},</if>
+            <if test="freezePayBalance != null">freeze_pay_balance = #{freezePayBalance},</if>
+            <if test="availableFreeBalance != null">available_free_balance = #{availableFreeBalance},</if>
+            <if test="freezeFreeBalance != null">freeze_free_balance = #{freezeFreeBalance},</if>
             <if test="freePayment != null">free_payment = #{freePayment},</if>
             <if test="payPayment != null">pay_payment = #{payPayment},</if>
             <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>

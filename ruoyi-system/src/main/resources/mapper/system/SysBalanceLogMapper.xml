@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysBalanceLogMapper">
+
+    <resultMap type="SysBalanceLog" id="SysBalanceLogResult">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="sourceUserId" column="source_user_id"/>
+        <result property="changeAvailablePayAmount" column="change_available_pay_amount"/>
+        <result property="changeFreezePayAmount" column="change_freeze_pay_amount"/>
+        <result property="changeType" column="change_type"/>
+        <result property="changeAvailableFreeAmount" column="change_available_free_amount"/>
+        <result property="changeFreezeFreeAmount" column="change_freeze_free_amount"/>
+        <result property="freezeFreeAfter" column="freeze_free_after"/>
+        <result property="freezeFreeBefore" column="freeze_free_before"/>
+        <result property="availableFreeAfter" column="available_free_after"/>
+        <result property="availableFreeBefore" column="available_free_before"/>
+        <result property="freezePayAfter" column="freeze_pay_after"/>
+        <result property="freezePayBefore" column="freeze_pay_before"/>
+        <result property="availablePayAfter" column="available_pay_after"/>
+        <result property="availablePayBefore" column="available_pay_before"/>
+        <result property="changeDesc" column="change_desc"/>
+        <result property="saleOrderId" column="sale_order_id"/>
+        <result property="withdrawCashId" column="withdraw_cash_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectSysBalanceLogVo">
+        select id,
+               user_id,
+               source_user_id,
+               change_available_pay_amount,
+               change_freeze_pay_amount,
+               change_type,
+               change_available_free_amount,
+               change_freeze_free_amount,
+               freeze_free_after,
+               freeze_free_before,
+               available_free_after,
+               available_free_before,
+               freeze_pay_after,
+               freeze_pay_before,
+               available_pay_after,
+               available_pay_before,
+               change_desc,
+               sale_order_id,
+               withdraw_cash_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from sys_balance_log
+    </sql>
+
+    <select id="selectSysBalanceLogList" parameterType="SysBalanceLog" resultMap="SysBalanceLogResult">
+        <include refid="selectSysBalanceLogVo"/>
+        <where>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="changeType != null  and changeType != ''">and change_type = #{changeType}</if>
+            <if test="changeDesc != null  and changeDesc != ''">and change_desc = #{changeDesc}</if>
+            <if test="saleOrderId != null ">and sale_order_id = #{saleOrderId}</if>
+            <if test="withdrawCashId != null ">and withdraw_cash_id = #{withdrawCashId}</if>
+        </where>
+    </select>
+
+    <select id="selectSysBalanceLogById" parameterType="Long" resultMap="SysBalanceLogResult">
+        <include refid="selectSysBalanceLogVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSysBalanceLog" parameterType="SysBalanceLog" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_balance_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="sourceUserId != null">source_user_id,</if>
+            <if test="changeAvailablePayAmount != null">change_available_pay_amount,</if>
+            <if test="changeFreezePayAmount != null">change_freeze_pay_amount,</if>
+            <if test="changeType != null and changeType != ''">change_type,</if>
+            <if test="changeAvailableFreeAmount != null">change_available_free_amount,</if>
+            <if test="changeFreezeFreeAmount != null">change_freeze_free_amount,</if>
+            <if test="freezeFreeAfter != null">freeze_free_after,</if>
+            <if test="freezeFreeBefore != null">freeze_free_before,</if>
+            <if test="availableFreeAfter != null">available_free_after,</if>
+            <if test="availableFreeBefore != null">available_free_before,</if>
+            <if test="freezePayAfter != null">freeze_pay_after,</if>
+            <if test="freezePayBefore != null">freeze_pay_before,</if>
+            <if test="availablePayAfter != null">available_pay_after,</if>
+            <if test="availablePayBefore != null">available_pay_before,</if>
+            <if test="changeDesc != null and changeDesc != ''">change_desc,</if>
+            <if test="saleOrderId != null">sale_order_id,</if>
+            <if test="withdrawCashId != null">withdraw_cash_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="sourceUserId != null">#{sourceUserId},</if>
+            <if test="changeAvailablePayAmount != null">#{changeAvailablePayAmount},</if>
+            <if test="changeFreezePayAmount != null">#{changeFreezePayAmount},</if>
+            <if test="changeType != null and changeType != ''">#{changeType},</if>
+            <if test="changeAvailableFreeAmount != null">#{changeAvailableFreeAmount},</if>
+            <if test="changeFreezeFreeAmount != null">#{changeFreezeFreeAmount},</if>
+            <if test="freezeFreeAfter != null">#{freezeFreeAfter},</if>
+            <if test="freezeFreeBefore != null">#{freezeFreeBefore},</if>
+            <if test="availableFreeAfter != null">#{availableFreeAfter},</if>
+            <if test="availableFreeBefore != null">#{availableFreeBefore},</if>
+            <if test="freezePayAfter != null">#{freezePayAfter},</if>
+            <if test="freezePayBefore != null">#{freezePayBefore},</if>
+            <if test="availablePayAfter != null">#{availablePayAfter},</if>
+            <if test="availablePayBefore != null">#{availablePayBefore},</if>
+            <if test="changeDesc != null and changeDesc != ''">#{changeDesc},</if>
+            <if test="saleOrderId != null">#{saleOrderId},</if>
+            <if test="withdrawCashId != null">#{withdrawCashId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysBalanceLog" parameterType="SysBalanceLog">
+        update sys_balance_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="sourceUserId != null">source_user_id = #{sourceUserId},</if>
+            <if test="changeAvailablePayAmount != null">change_available_pay_amount = #{changeAvailablePayAmount},</if>
+            <if test="changeFreezePayAmount != null">change_freeze_pay_amount = #{changeFreezePayAmount},</if>
+            <if test="changeType != null and changeType != ''">change_type = #{changeType},</if>
+            <if test="changeAvailableFreeAmount != null">change_available_free_amount = #{changeAvailableFreeAmount},
+            </if>
+            <if test="changeFreezeFreeAmount != null">change_freeze_free_amount = #{changeFreezeFreeAmount},</if>
+            <if test="freezeFreeAfter != null">freeze_free_after = #{freezeFreeAfter},</if>
+            <if test="freezeFreeBefore != null">freeze_free_before = #{freezeFreeBefore},</if>
+            <if test="availableFreeAfter != null">available_free_after = #{availableFreeAfter},</if>
+            <if test="availableFreeBefore != null">available_free_before = #{availableFreeBefore},</if>
+            <if test="freezePayAfter != null">freeze_pay_after = #{freezePayAfter},</if>
+            <if test="freezePayBefore != null">freeze_pay_before = #{freezePayBefore},</if>
+            <if test="availablePayAfter != null">available_pay_after = #{availablePayAfter},</if>
+            <if test="availablePayBefore != null">available_pay_before = #{availablePayBefore},</if>
+            <if test="changeDesc != null and changeDesc != ''">change_desc = #{changeDesc},</if>
+            <if test="saleOrderId != null">sale_order_id = #{saleOrderId},</if>
+            <if test="withdrawCashId != null">withdraw_cash_id = #{withdrawCashId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysBalanceLogById" parameterType="Long">
+        delete
+        from sys_balance_log
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteSysBalanceLogByIds" parameterType="String">
+        delete from sys_balance_log where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
