@@ -17,6 +17,8 @@ import com.ruoyi.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 /**
  * 注册校验方法
  * 
@@ -71,19 +73,21 @@ public class SysRegisterService
         {
             msg = "保存用户'" + username + "'失败，注册账号已存在";
         }
-        else
-        {
+        else {
             SysUser sysUser = new SysUser();
             sysUser.setUserName(username);
             sysUser.setNickName(username);
             sysUser.setPassword(SecurityUtils.encryptPassword(registerBody.getPassword()));
+            sysUser.setAvailableFreeBalance(BigDecimal.ZERO);
+            sysUser.setAvailablePayBalance(BigDecimal.ZERO);
+            sysUser.setFreezeFreeBalance(BigDecimal.ZERO);
+            sysUser.setFreezePayBalance(BigDecimal.ZERO);
+            sysUser.setPayPayment(BigDecimal.ZERO);
+            sysUser.setFreePayment(BigDecimal.ZERO);
             boolean regFlag = userService.registerUser(sysUser);
-            if (!regFlag)
-            {
+            if (!regFlag) {
                 msg = "注册失败,请联系系统管理人员";
-            }
-            else
-            {
+            } else {
                 AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.REGISTER,
                         MessageUtils.message("user.register.success")));
             }

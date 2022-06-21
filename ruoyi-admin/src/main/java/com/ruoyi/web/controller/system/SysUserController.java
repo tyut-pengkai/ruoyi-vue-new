@@ -131,6 +131,8 @@ public class SysUserController extends BaseController
         user.setAvailablePayBalance(BigDecimal.ZERO);
         user.setFreezeFreeBalance(BigDecimal.ZERO);
         user.setFreezePayBalance(BigDecimal.ZERO);
+        user.setPayPayment(BigDecimal.ZERO);
+        user.setFreePayment(BigDecimal.ZERO);
         return toAjax(userService.insertUser(user));
     }
 

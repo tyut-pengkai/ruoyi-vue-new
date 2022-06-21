@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -72,6 +73,7 @@ public class SysCardController extends BaseController {
     public AjaxResult add(@RequestBody SysCard sysCard) {
         if (sysCard.getTemplateId() == null) {
             sysCard.setCreateBy(getUsername());
+            sysCard.setIsAgent(UserConstants.NO);
             return toAjax(sysCardService.insertSysCard(sysCard));
         } else {
             if (sysCard.getGenQuantity() == null || sysCard.getGenQuantity() < 0) {
@@ -81,7 +83,7 @@ public class SysCardController extends BaseController {
             if (sysCardTemplate == null) {
                 return AjaxResult.error("卡类不存在，批量制卡失败");
             }
-            return toAjax(sysCardTemplateService.genSysCardBatch(sysCardTemplate, sysCard.getGenQuantity(), sysCard.getOnSale(), sysCard.getRemark()).size());
+            return toAjax(sysCardTemplateService.genSysCardBatch(sysCardTemplate, sysCard.getGenQuantity(), sysCard.getOnSale(), UserConstants.NO, sysCard.getRemark()).size());
         }
 
     }

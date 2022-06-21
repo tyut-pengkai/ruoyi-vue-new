@@ -79,7 +79,7 @@ public class SysSaleShopServiceImpl implements ISysSaleShopService {
                             throw new ServiceException("库存不足，请稍后再试", 400);
                         }
                         resultCardList.addAll(saleableCard);
-                        List<SysCard> cardList = sysCardTemplateService.genSysCardBatch(cardTemplate, item.getNum() - saleableCard.size(), UserConstants.NO, "系统制卡");
+                        List<SysCard> cardList = sysCardTemplateService.genSysCardBatch(cardTemplate, item.getNum() - saleableCard.size(), UserConstants.NO, UserConstants.NO, "销售系统自动制卡");
                         resultCardList.addAll(cardList);
                     }
                     for (SysCard card : resultCardList) {
@@ -139,7 +139,7 @@ public class SysSaleShopServiceImpl implements ISysSaleShopService {
     }
 
     /**
-     * 获取可售卖的卡，满足条件：卡上架，卡未过期，卡未使用，卡未售出，卡状态正常
+     * 获取可售卖的卡，满足条件：卡上架，卡未过期，卡未使用，卡未售出，卡状态正常，非代理制卡
      *
      * @param templateId
      * @return
@@ -151,6 +151,7 @@ public class SysSaleShopServiceImpl implements ISysSaleShopService {
         card.setOnSale(UserConstants.YES);
         card.setIsCharged(UserConstants.NO);
         card.setIsSold(UserConstants.NO);
+        card.setIsAgent(UserConstants.NO);
         card.setStatus(UserConstants.NORMAL);
         return sysCardMapper.selectSysCardList(card)
                 .stream().filter(c -> c.getExpireTime().after(DateUtils.getNowDate())).collect(Collectors.toList());

@@ -2,6 +2,7 @@ package com.ruoyi.system.domain;
 
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.enums.BalanceChangeType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -49,7 +50,7 @@ public class SysBalanceLog extends BaseEntity {
      * 1：提现冻结，2：提现成功，3：撤销提现解冻； 4：代理分成，5：推广分成，6：转账收入，7：其他收入，8：消费支出，9：转账支出； 10：其他支出
      */
     @Excel(name = "1：提现冻结，2：提现成功，3：撤销提现解冻； 4：代理分成，5：推广分成，6：转账收入，7：其他收入，8：消费支出，9：转账支出； 10：其他支出")
-    private String changeType;
+    private BalanceChangeType changeType;
 
     /**
      * 变动可用赠送金额
@@ -169,11 +170,11 @@ public class SysBalanceLog extends BaseEntity {
         this.changeFreezePayAmount = changeFreezePayAmount;
     }
 
-    public String getChangeType() {
+    public BalanceChangeType getChangeType() {
         return changeType;
     }
 
-    public void setChangeType(String changeType) {
+    public void setChangeType(BalanceChangeType changeType) {
         this.changeType = changeType;
     }
 

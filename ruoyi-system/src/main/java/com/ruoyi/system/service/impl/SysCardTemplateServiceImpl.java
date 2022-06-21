@@ -117,7 +117,7 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
      * @return
      */
     @Override
-    public List<SysCard> genSysCardBatch(SysCardTemplate cardTpl, Integer quantity, String onSale, String remark) {
+    public List<SysCard> genSysCardBatch(SysCardTemplate cardTpl, Integer quantity, String onSale, String isAgent, String remark) {
         List<SysCard> sysCardList = new ArrayList<>();
         for (int i = 0; i < quantity; i++) {
             SysCard sysCard = new SysCard();
@@ -136,6 +136,7 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
             sysCard.setIsCharged(UserConstants.NO);
             sysCard.setIsSold(UserConstants.NO);
             sysCard.setOnSale(onSale);
+            sysCard.setIsAgent(isAgent);
             sysCard.setPrice(cardTpl.getPrice());
             sysCard.setQuota(cardTpl.getQuota());
             sysCard.setStatus(UserConstants.NORMAL);

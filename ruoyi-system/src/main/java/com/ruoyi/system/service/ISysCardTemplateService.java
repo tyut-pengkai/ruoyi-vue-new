@@ -69,5 +69,5 @@ public interface ISysCardTemplateService
      * @param remark
      * @return
      */
-    public List<SysCard> genSysCardBatch(SysCardTemplate sysCardTemplate, Integer genQuantity, String onSale, String remark);
+    public List<SysCard> genSysCardBatch(SysCardTemplate sysCardTemplate, Integer genQuantity, String onSale, String isAgent, String remark);
 }

@@ -112,6 +112,12 @@ public class SysCard extends BaseEntity {
     private ChargeRule chargeRule;
 
     /**
+     * 是否被充值
+     */
+    @Excel(name = "是否代理制卡")
+    private String isAgent;
+
+    /**
      * 所属软件信息
      */
     @Excel(name = "软件名称", targetAttr = "appName", type = Excel.Type.EXPORT)
@@ -259,6 +265,14 @@ public class SysCard extends BaseEntity {
         this.chargeTime = chargeTime;
     }
 
+    public String getIsAgent() {
+        return isAgent;
+    }
+
+    public void setIsAgent(String isAgent) {
+        this.isAgent = isAgent;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -277,6 +291,7 @@ public class SysCard extends BaseEntity {
                 .append("templateId", getTemplateId())
                 .append("status", getStatus())
                 .append("chargeRule", getChargeRule())
+                .append("isAgent", getIsAgent())
                 .append("createBy", getCreateBy())
                 .append("createTime", getCreateTime())
                 .append("updateBy", getUpdateBy())
