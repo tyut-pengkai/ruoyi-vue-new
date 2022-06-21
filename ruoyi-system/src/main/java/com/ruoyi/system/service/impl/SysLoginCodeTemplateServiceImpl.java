@@ -110,7 +110,7 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
      * @return
      */
     @Override
-    public List<SysLoginCode> genSysLoginCodeBatch(SysLoginCodeTemplate loginCodeTpl, Integer quantity, String onSale, String remark) {
+    public List<SysLoginCode> genSysLoginCodeBatch(SysLoginCodeTemplate loginCodeTpl, Integer quantity, String onSale, String isAgent, String remark) {
         List<SysLoginCode> sysLoginCodeList = new ArrayList<>();
         for (int i = 0; i < quantity; i++) {
             SysLoginCode sysLoginCode = new SysLoginCode();
@@ -127,6 +127,7 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
             sysLoginCode.setIsCharged(UserConstants.NO);
             sysLoginCode.setIsSold(UserConstants.NO);
             sysLoginCode.setOnSale(onSale);
+            sysLoginCode.setIsAgent(isAgent);
             sysLoginCode.setPrice(loginCodeTpl.getPrice());
             sysLoginCode.setQuota(loginCodeTpl.getQuota());
             sysLoginCode.setStatus(UserConstants.NORMAL);

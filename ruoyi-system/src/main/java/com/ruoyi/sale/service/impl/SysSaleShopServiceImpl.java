@@ -107,7 +107,7 @@ public class SysSaleShopServiceImpl implements ISysSaleShopService {
                             throw new ServiceException("库存不足，请稍后再试", 400);
                         }
                         resultCardList.addAll(saleableCard);
-                        List<SysLoginCode> cardList = sysLoginCodeTemplateService.genSysLoginCodeBatch(cardTemplate, item.getNum() - saleableCard.size(), UserConstants.NO, "系统制卡");
+                        List<SysLoginCode> cardList = sysLoginCodeTemplateService.genSysLoginCodeBatch(cardTemplate, item.getNum() - saleableCard.size(), UserConstants.NO, UserConstants.NO, "系统制卡");
                         resultCardList.addAll(cardList);
                     }
                     for (SysLoginCode card : resultCardList) {

@@ -68,5 +68,5 @@ public interface ISysLoginCodeTemplateService {
      * @param remark
      * @return
      */
-    public List<SysLoginCode> genSysLoginCodeBatch(SysLoginCodeTemplate sysLoginCodeTemplate, Integer genQuantity, String onSale, String remark);
+    public List<SysLoginCode> genSysLoginCodeBatch(SysLoginCodeTemplate sysLoginCodeTemplate, Integer genQuantity, String onSale, String isAgent, String remark);
 }

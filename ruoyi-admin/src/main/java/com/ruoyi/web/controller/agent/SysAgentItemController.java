@@ -94,7 +94,9 @@ public class SysAgentItemController extends BaseController {
     @Log(title = "代理授权", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysAgentItem sysAgentItem) {
-
+        if (sysAgentItem.getAgentId() == null || sysAgentItem.getAgentId() < 1) {
+            throw new ServiceException("代理选择有误，不可选择根节点");
+        }
         SysAgentItem s = new SysAgentItem();
         s.setAgentId(sysAgentItem.getAgentId());
         s.setTemplateType(sysAgentItem.getTemplateType());
@@ -115,7 +117,9 @@ public class SysAgentItemController extends BaseController {
     @Log(title = "代理授权", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAgentItem sysAgentItem) {
-
+        if (sysAgentItem.getAgentId() == null || sysAgentItem.getAgentId() < 1) {
+            throw new ServiceException("代理选择有误，不可选择根节点");
+        }
         SysAgentItem s = new SysAgentItem();
         s.setAgentId(sysAgentItem.getAgentId());
         s.setTemplateType(sysAgentItem.getTemplateType());

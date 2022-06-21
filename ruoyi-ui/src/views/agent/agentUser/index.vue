@@ -207,12 +207,17 @@
     <el-dialog :title="title" :visible.sync="open" append-to-body width="800px">
       <el-form ref="form" :model="form" :rules="rules">
         <el-form-item label="上级代理" prop="parentAgentId">
-          <treeselect
-            v-model="form.parentAgentId"
-            :options="agentUserOptions"
-            :normalizer="normalizer"
-            placeholder="请选择上级代理"
-          />
+          <div v-if="checkRole(['sadmin', 'admin'])">
+            <treeselect
+              v-model="form.parentAgentId"
+              :normalizer="normalizer"
+              :options="agentUserOptions"
+              placeholder="请选择上级代理"
+            />
+          </div>
+          <div v-else>
+            {{ user.nickName + "(" + user.userName + ")" }}
+          </div>
         </el-form-item>
         <el-form-item label="代理名称" prop="userId">
           <!--          <el-input v-model="form.userId" placeholder="请输入用户ID" />-->
@@ -294,6 +299,8 @@ import {
 } from "@/api/agent/agentUser";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import {checkPermi, checkRole} from "@/utils/permission"; // 权限判断函数
+import {getUserProfile} from "@/api/system/user";
 
 export default {
   name: "AgentUser",
@@ -303,6 +310,7 @@ export default {
   },
   data() {
     return {
+      user: {},
       // 可选代理列表
       nonAgentList: [],
       // 遮罩层
@@ -402,8 +410,11 @@ export default {
   },
   created() {
     this.getList();
+    this.getUser();
   },
   methods: {
+    checkPermi,
+    checkRole,
     /** 查询代理用户列表 */
     getList() {
       this.loading = true;
@@ -561,6 +572,11 @@ export default {
       listNonAgents().then((response) => {
         this.nonAgentList = response.rows;
         this.loading = false;
+      });
+    },
+    getUser() {
+      getUserProfile().then((response) => {
+        this.user = response.data;
       });
     },
   },

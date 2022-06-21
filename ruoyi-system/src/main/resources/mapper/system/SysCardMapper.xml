@@ -93,7 +93,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="onSale != null  and onSale != ''">and c.on_sale = #{onSale}</if>
         <if test="isCharged != null  and isCharged != ''">and c.is_charged = #{isCharged}</if>
         <if test="status != null  and status != ''">and c.status = #{status}</if>
-        <if test="chargeRule != null  and chargeRule != ''">and c.charge_rule = #{chargeRule}</if>
+        <if test="chargeRule != null">and c.charge_rule = #{chargeRule}</if>
         <if test="isAgent != null  and isAgent != ''">and c.is_agent = #{isAgent}</if>
         <if test="createBy != null  and createBy != ''">and c.create_by = #{createBy}</if>
         <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->

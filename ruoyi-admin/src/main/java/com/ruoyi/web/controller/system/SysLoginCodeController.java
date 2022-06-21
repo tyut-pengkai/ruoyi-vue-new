@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -81,7 +82,7 @@ public class SysLoginCodeController extends BaseController {
             if (sysLoginCodeTemplate == null) {
                 return AjaxResult.error("卡类不存在，批量制卡失败");
             }
-            return toAjax(sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), sysLoginCode.getOnSale(), sysLoginCode.getRemark()).size());
+            return toAjax(sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), sysLoginCode.getOnSale(), UserConstants.NO, sysLoginCode.getRemark()).size());
         }
 
     }

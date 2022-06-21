@@ -114,8 +114,13 @@ public class SysAgentUserController extends BaseController {
     @Log(title = "代理管理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysAgent sysAgent) {
-        if (sysAgent.getAgentId() == null || sysAgent.getAgentId() < 1) {
-            throw new ServiceException("代理选择有误，不可选择根节点");
+        if (sysAgent.getParentAgentId() == null) {
+            sysAgent.setParentAgentId(0L);
+        }
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            if (sysAgent.getParentAgentId() < 1) {
+                sysAgent.setParentAgentId(sysAgentService.selectSysAgentByUserId(getUserId()).getAgentId());
+            }
         }
         SysAgent agentNow = sysAgentService.selectSysAgentByUserId(sysAgent.getUserId());
         if (agentNow != null) {
@@ -141,8 +146,13 @@ public class SysAgentUserController extends BaseController {
     @Log(title = "代理管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAgent sysAgent) {
-        if (sysAgent.getAgentId() == null || sysAgent.getAgentId() < 1) {
-            throw new ServiceException("代理选择有误，不可选择根节点");
+        if (sysAgent.getParentAgentId() == null) {
+            sysAgent.setParentAgentId(0L);
+        }
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            if (sysAgent.getParentAgentId() < 1) {
+                sysAgent.setParentAgentId(sysAgentService.selectSysAgentByUserId(getUserId()).getAgentId());
+            }
         }
         if (Objects.equals(sysAgent.getParentAgentId(), sysAgent.getAgentId())) {
             throw new ServiceException("代理与上级代理不能为同一个用户");
