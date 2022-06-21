@@ -172,7 +172,7 @@ public class SysAgentLoginCodeController extends BaseController {
                     sysBalanceLogService.insertSysBalanceLog(balanceLog);
                     // 扣款
                     user.setAvailablePayBalance(user.getAvailablePayBalance().subtract(totalFee));
-                    userService.updateUser(user);
+                    userService.updateUserProfile(user);
                 } else {
                     throw new ServiceException("您的余额不足", 400);
                 }
