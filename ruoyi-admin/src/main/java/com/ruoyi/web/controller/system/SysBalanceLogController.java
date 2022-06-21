@@ -6,12 +6,14 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysBalanceLog;
 import com.ruoyi.system.service.ISysBalanceLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -26,6 +28,8 @@ import java.util.List;
 public class SysBalanceLogController extends BaseController {
     @Autowired
     private ISysBalanceLogService sysBalanceLogService;
+    @Resource
+    private PermissionService permissionService;
 
     /**
      * 查询余额变动列表
@@ -34,6 +38,9 @@ public class SysBalanceLogController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo list(SysBalanceLog sysBalanceLog) {
         startPage();
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            sysBalanceLog.setUserId(getUserId());
+        }
         List<SysBalanceLog> list = sysBalanceLogService.selectSysBalanceLogList(sysBalanceLog);
         return getDataTable(list);
     }
@@ -45,6 +52,9 @@ public class SysBalanceLogController extends BaseController {
     @Log(title = "余额变动", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysBalanceLog sysBalanceLog) {
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            sysBalanceLog.setUserId(getUserId());
+        }
         List<SysBalanceLog> list = sysBalanceLogService.selectSysBalanceLogList(sysBalanceLog);
         ExcelUtil<SysBalanceLog> util = new ExcelUtil<SysBalanceLog>(SysBalanceLog.class);
         util.exportExcel(response, list, "余额变动数据");

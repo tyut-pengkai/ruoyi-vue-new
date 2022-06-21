@@ -7,14 +7,14 @@
       :model="queryParams"
       size="small"
     >
-      <el-form-item label="明细所属用户 id" prop="userId">
+      <!-- <el-form-item label="明细所属用户 id" prop="userId">
         <el-input
           v-model="queryParams.userId"
           clearable
           placeholder="请输入明细所属用户 id"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="变动类型" prop="changeType">
         <el-select
           v-model="queryParams.changeType"
@@ -115,12 +115,28 @@
     >
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="ID" prop="id"/>
-      <el-table-column align="center" label="用户 id" prop="userId"/>
-      <el-table-column
+      <el-table-column align="center" label="变动用户" prop="userId">
+        <template slot-scope="scope">
+          {{
+            scope.row.user
+              ? scope.row.user.nickName + "(" + scope.row.user.userName + ")"
+              : "[用户不存在]"
+          }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="变动类型" prop="changeType">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_balance_change_type"
+            :value="scope.row.changeType"
+          />
+        </template>
+      </el-table-column>
+      <!-- <el-table-column
         align="center"
         label="金额来源用户"
         prop="sourceUserId"
-      />
+      /> -->
       <el-table-column
         align="center"
         label="可用金额变动"
@@ -211,14 +227,6 @@
           <span>{{ parseMoney(scope.row.freezePayAfter) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="变动类型" prop="changeType">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_balance_change_type"
-            :value="scope.row.changeType"
-          />
-        </template>
-      </el-table-column>
       <el-table-column
         align="center"
         :show-overflow-tooltip="true"
@@ -235,36 +243,28 @@
         label="关联提现记录ID"
         prop="withdrawCashId"
       /> -->
-      <el-table-column
+      <!-- <el-table-column
         :show-overflow-tooltip="true"
         align="center"
         label="备注"
         prop="remark"
-      />
-      <el-table-column
+      /> -->
+      <!-- <el-table-column
         align="center"
         class-name="small-padding fixed-width"
         label="操作"
       >
         <template slot-scope="scope">
           <el-button
-            v-hasPermi="['system:balanceLog:edit']"
+            v-hasPermi="['system:balanceLog:query']"
             icon="el-icon-edit"
             size="mini"
             type="text"
             @click="handleUpdate(scope.row)"
-          >详情
+            >详情
           </el-button>
-          <!-- <el-button
-            v-hasPermi="['system:balanceLog:remove']"
-            icon="el-icon-delete"
-            size="mini"
-            type="text"
-            @click="handleDelete(scope.row)"
-            >删除
-          </el-button> -->
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
 
     <pagination
@@ -278,15 +278,31 @@
     <!-- 添加或修改余额变动对话框 -->
     <el-dialog :title="title" :visible.sync="open" append-to-body width="800px">
       <el-form ref="form" :model="form" :rules="rules">
-        <el-form-item label="明细所属用户 id" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入明细所属用户 id"/>
+        <el-form-item prop="">
+          <el-col :span="12">
+            <el-form-item label="变动用户" label-width="80px" prop="">
+              {{
+                form.user
+                  ? form.user.nickName + "(" + form.user.userName + ")"
+                  : "[用户不存在]"
+              }}
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="变动类型" prop="changeType">
+              <dict-tag
+                :options="dict.type.sys_balance_change_type"
+                :value="form.changeType"
+              />
+            </el-form-item>
+          </el-col>
         </el-form-item>
-        <el-form-item label="金额来源用户" prop="sourceUserId">
+        <!-- <el-form-item label="金额来源用户" prop="sourceUserId">
           <el-input
             v-model="form.sourceUserId"
             placeholder="请输入金额来源用户"
           />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="变动可用充值金额" prop="changeAvailablePayAmount">
           <el-input
             v-model="form.changeAvailablePayAmount"
@@ -298,16 +314,6 @@
             v-model="form.changeFreezePayAmount"
             placeholder="请输入变动冻结充值金额"
           />
-        </el-form-item>
-        <el-form-item label="变动类型" prop="changeType">
-          <el-select v-model="form.changeType" placeholder="请选择变动类型">
-            <el-option
-              v-for="dict in dict.type.sys_balance_change_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
         </el-form-item>
         <!-- <el-form-item label="变动可用赠送金额" prop="changeAvailableFreeAmount">
           <el-input
@@ -372,7 +378,7 @@
         <el-form-item label="变动描述" prop="changeDesc">
           <el-input v-model="form.changeDesc" placeholder="请输入变动描述"/>
         </el-form-item>
-        <el-form-item label="关联订单记录ID" prop="saleOrderId">
+        <!-- <el-form-item label="关联订单记录ID" prop="saleOrderId">
           <el-input
             v-model="form.saleOrderId"
             placeholder="请输入关联订单记录ID"
@@ -390,24 +396,21 @@
             placeholder="请输入内容"
             type="textarea"
           />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
+        <el-button @click="open = false">关 闭</el-button>
+      </div>
+      <!-- <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
-      </div>
+      </div> -->
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {
-  cleanBalancelog,
-  delBalanceLog,
-  getBalanceLog,
-  listBalanceLog,
-  updateBalanceLog,
-} from "@/api/system/balanceLog";
+import {cleanBalancelog, delBalanceLog, getBalanceLog, listBalanceLog,} from "@/api/system/balanceLog";
 import {parseMoney} from "@/utils/my";
 
 export default {
@@ -523,20 +526,20 @@ export default {
         this.title = "余额变动详情";
       });
     },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate((valid) => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateBalanceLog(this.form).then((response) => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
+    // /** 提交按钮 */
+    // submitForm() {
+    //   this.$refs["form"].validate((valid) => {
+    //     if (valid) {
+    //       if (this.form.id != null) {
+    //         updateBalanceLog(this.form).then((response) => {
+    //           this.$modal.msgSuccess("修改成功");
+    //           this.open = false;
+    //           this.getList();
+    //         });
+    //       }
+    //     }
+    //   });
+    // },
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;

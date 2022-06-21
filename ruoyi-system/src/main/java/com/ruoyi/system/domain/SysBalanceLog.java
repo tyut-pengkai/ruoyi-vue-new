@@ -1,7 +1,9 @@
 package com.ruoyi.system.domain;
 
 import com.ruoyi.common.annotation.Excel;
+import com.ruoyi.common.annotation.Excels;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.enums.BalanceChangeType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -129,6 +131,15 @@ public class SysBalanceLog extends BaseEntity {
      */
     @Excel(name = "关联提现记录ID")
     private Long withdrawCashId;
+
+    /**
+     * 用户信息
+     */
+    @Excels({
+            @Excel(name = "用户账号", targetAttr = "userName", type = Excel.Type.EXPORT),
+            @Excel(name = "用户昵称", targetAttr = "nickName", type = Excel.Type.EXPORT)
+    })
+    private SysUser user;
 
     public Long getId() {
         return id;
@@ -280,6 +291,14 @@ public class SysBalanceLog extends BaseEntity {
 
     public void setWithdrawCashId(Long withdrawCashId) {
         this.withdrawCashId = withdrawCashId;
+    }
+
+    public SysUser getUser() {
+        return user;
+    }
+
+    public void setUser(SysUser user) {
+        this.user = user;
     }
 
     @Override

@@ -29,50 +29,63 @@
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
+        <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
+    </resultMap>
+
+    <resultMap type="SysUser" id="SysUserResult">
+        <id property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
     </resultMap>
 
     <sql id="selectSysBalanceLogVo">
-        select id,
-               user_id,
-               source_user_id,
-               change_available_pay_amount,
-               change_freeze_pay_amount,
-               change_type,
-               change_available_free_amount,
-               change_freeze_free_amount,
-               freeze_free_after,
-               freeze_free_before,
-               available_free_after,
-               available_free_before,
-               freeze_pay_after,
-               freeze_pay_before,
-               available_pay_after,
-               available_pay_before,
-               change_desc,
-               sale_order_id,
-               withdraw_cash_id,
-               create_by,
-               create_time,
-               update_by,
-               update_time,
-               remark
-        from sys_balance_log
+        select bl.id,
+               bl.user_id,
+               bl.source_user_id,
+               bl.change_available_pay_amount,
+               bl.change_freeze_pay_amount,
+               bl.change_type,
+               bl.change_available_free_amount,
+               bl.change_freeze_free_amount,
+               bl.freeze_free_after,
+               bl.freeze_free_before,
+               bl.available_free_after,
+               bl.available_free_before,
+               bl.freeze_pay_after,
+               bl.freeze_pay_before,
+               bl.available_pay_after,
+               bl.available_pay_before,
+               bl.change_desc,
+               bl.sale_order_id,
+               bl.withdraw_cash_id,
+               bl.create_by,
+               bl.create_time,
+               bl.update_by,
+               bl.update_time,
+               bl.remark,
+               u.user_id,
+               u.user_name,
+               u.nick_name
+        from sys_balance_log bl
+                 left join sys_user u on u.user_id = bl.user_id
     </sql>
 
     <select id="selectSysBalanceLogList" parameterType="SysBalanceLog" resultMap="SysBalanceLogResult">
         <include refid="selectSysBalanceLogVo"/>
         <where>
-            <if test="userId != null ">and user_id = #{userId}</if>
-            <if test="changeType != null">and change_type = #{changeType}</if>
-            <if test="changeDesc != null  and changeDesc != ''">and change_desc = #{changeDesc}</if>
-            <if test="saleOrderId != null ">and sale_order_id = #{saleOrderId}</if>
-            <if test="withdrawCashId != null ">and withdraw_cash_id = #{withdrawCashId}</if>
+            <if test="userId != null ">and bl.user_id = #{userId}</if>
+            <if test="changeType != null">and bl.change_type = #{changeType}</if>
+            <if test="changeDesc != null  and changeDesc != ''">and bl.change_desc = #{changeDesc}</if>
+            <if test="saleOrderId != null ">and bl.sale_order_id = #{saleOrderId}</if>
+            <if test="withdrawCashId != null ">and bl.withdraw_cash_id = #{withdrawCashId}</if>
+            <if test="createBy != null  and createBy != ''">and bl.create_by = #{createBy}</if>
         </where>
+        order by bl.id desc
     </select>
 
     <select id="selectSysBalanceLogById" parameterType="Long" resultMap="SysBalanceLogResult">
         <include refid="selectSysBalanceLogVo"/>
-        where id = #{id}
+        where bl.id = #{id}
     </select>
 
     <insert id="insertSysBalanceLog" parameterType="SysBalanceLog" useGeneratedKeys="true" keyProperty="id">
