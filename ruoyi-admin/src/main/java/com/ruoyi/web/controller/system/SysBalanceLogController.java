@@ -88,4 +88,12 @@ public class SysBalanceLogController extends BaseController {
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(sysBalanceLogService.deleteSysBalanceLogByIds(ids));
     }
+
+    @Log(title = "余额变动", businessType = BusinessType.CLEAN)
+    @PreAuthorize("@ss.hasPermi('system:balanceLog:remove')")
+    @DeleteMapping("/clean")
+    public AjaxResult clean() {
+        sysBalanceLogService.cleanBalanceLog();
+        return AjaxResult.success();
+    }
 }

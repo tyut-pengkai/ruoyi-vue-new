@@ -60,4 +60,9 @@ public interface SysBalanceLogMapper {
      * @return 结果
      */
     public int deleteSysBalanceLogByIds(Long[] ids);
+
+    /**
+     * 清空日志
+     */
+    public void cleanBalanceLog();
 }

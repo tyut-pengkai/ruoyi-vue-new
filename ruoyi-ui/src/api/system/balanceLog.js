@@ -42,3 +42,11 @@ export function delBalanceLog(id) {
     method: 'delete'
   })
 }
+
+// 清空操作日志
+export function cleanBalancelog() {
+  return request({
+    url: '/system/balanceLog/clean',
+    method: 'delete'
+  })
+}

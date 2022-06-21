@@ -152,7 +152,7 @@ public class SysAgentCardController extends BaseController {
                     SysBalanceLog balanceLog = new SysBalanceLog();
                     balanceLog.setUserId(getUserId());
                     balanceLog.setSourceUserId(null);
-                    balanceLog.setChangeAvailablePayAmount(totalFee);
+                    balanceLog.setChangeAvailablePayAmount(totalFee.multiply(BigDecimal.valueOf(-1)));
                     balanceLog.setChangeFreezePayAmount(BigDecimal.ZERO);
                     balanceLog.setChangeType(BalanceChangeType.CONSUME);
                     balanceLog.setChangeAvailableFreeAmount(BigDecimal.ZERO);

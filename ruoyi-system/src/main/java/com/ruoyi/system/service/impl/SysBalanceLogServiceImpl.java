@@ -87,4 +87,12 @@ public class SysBalanceLogServiceImpl implements ISysBalanceLogService {
     public int deleteSysBalanceLogById(Long id) {
         return sysBalanceLogMapper.deleteSysBalanceLogById(id);
     }
+
+    /**
+     * 清空日志
+     */
+    @Override
+    public void cleanBalanceLog() {
+        sysBalanceLogMapper.cleanBalanceLog();
+    }
 }

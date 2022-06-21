@@ -172,4 +172,8 @@
             #{id}
         </foreach>
     </delete>
+
+    <update id="cleanBalanceLog">
+        truncate table sys_balance_log
+    </update>
 </mapper>

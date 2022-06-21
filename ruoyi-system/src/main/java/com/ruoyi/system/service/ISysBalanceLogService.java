@@ -58,4 +58,9 @@ public interface ISysBalanceLogService {
      * @return 结果
      */
     public int deleteSysBalanceLogById(Long id);
+
+    /**
+     * 清空日志
+     */
+    public void cleanBalanceLog();
 }

@@ -5,7 +5,6 @@
       ref="queryForm"
       :inline="true"
       :model="queryParams"
-      label-width="68px"
       size="small"
     >
       <el-form-item label="明细所属用户 id" prop="userId">
@@ -38,7 +37,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="关联订单记录ID" prop="saleOrderId">
+      <!-- <el-form-item label="关联订单记录ID" prop="saleOrderId">
         <el-input
           v-model="queryParams.saleOrderId"
           clearable
@@ -53,7 +52,7 @@
           placeholder="请输入关联提现记录ID"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button
           icon="el-icon-search"
@@ -61,41 +60,14 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:balanceLog:add']"
-          icon="el-icon-plus"
-          plain
-          size="mini"
-          type="primary"
-          @click="handleAdd"
-        >新增
-        </el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:balanceLog:edit']"
-          :disabled="single"
-          icon="el-icon-edit"
-          plain
-          size="mini"
-          type="success"
-          @click="handleUpdate"
-        >修改
-        </el-button
-        >
-      </el-col>
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['system:balanceLog:remove']"
@@ -106,8 +78,18 @@
           type="danger"
           @click="handleDelete"
         >删除
-        </el-button
-        >
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          icon="el-icon-delete"
+          plain
+          type="danger"
+          size="mini"
+          @click="handleClean"
+          v-hasPermi="['system:balanceLog:remove']"
+        >清空
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -118,8 +100,7 @@
           type="warning"
           @click="handleExport"
         >导出
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -133,8 +114,8 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="钱包明细 id" prop="id"/>
-      <el-table-column align="center" label="明细所属用户 id" prop="userId"/>
+      <el-table-column align="center" label="ID" prop="id"/>
+      <el-table-column align="center" label="用户 id" prop="userId"/>
       <el-table-column
         align="center"
         label="金额来源用户"
@@ -142,20 +123,26 @@
       />
       <el-table-column
         align="center"
-        label="变动可用充值金额"
+        label="可用金额变动"
         prop="changeAvailablePayAmount"
-      />
+      >
+        <template slot-scope="scope">
+          <span>{{
+              (scope.row.changeAvailablePayAmount > 0 ? "+" : "") +
+              parseMoney(scope.row.changeAvailablePayAmount)
+            }}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
-        label="变动冻结充值金额"
+        label="冻结金额变动"
         prop="changeFreezePayAmount"
-      />
-      <el-table-column align="center" label="变动类型" prop="changeType">
+      >
         <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_balance_change_type"
-            :value="scope.row.changeType"
-          />
+          <span>{{
+              (scope.row.changeFreezePayAmount > 0 ? "+" : "") +
+              parseMoney(scope.row.changeFreezePayAmount)
+            }}</span>
         </template>
       </el-table-column>
       <!-- <el-table-column
@@ -190,26 +177,55 @@
       /> -->
       <el-table-column
         align="center"
-        label="冻结充值余额后"
-        prop="freezePayAfter"
-      />
-      <el-table-column
-        align="center"
-        label="冻结充值余额前"
-        prop="freezePayBefore"
-      />
-      <el-table-column
-        align="center"
-        label="可用充值余额后"
-        prop="availablePayAfter"
-      />
-      <el-table-column
-        align="center"
-        label="可用充值余额前"
+        label="可用余额(变动前)"
         prop="availablePayBefore"
-      />
-      <el-table-column align="center" label="变动描述" prop="changeDesc"/>
+      >
+        <template slot-scope="scope">
+          <span>{{ parseMoney(scope.row.availablePayBefore) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column
+        align="center"
+        label="可用余额(变动后)"
+        prop="availablePayAfter"
+      >
+        <template slot-scope="scope">
+          <span>{{ parseMoney(scope.row.availablePayAfter) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        align="center"
+        label="冻结余额(变动前)"
+        prop="freezePayBefore"
+      >
+        <template slot-scope="scope">
+          <span>{{ parseMoney(scope.row.freezePayBefore) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        align="center"
+        label="冻结余额(变动后)"
+        prop="freezePayAfter"
+      >
+        <template slot-scope="scope">
+          <span>{{ parseMoney(scope.row.freezePayAfter) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="变动类型" prop="changeType">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_balance_change_type"
+            :value="scope.row.changeType"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column
+        align="center"
+        :show-overflow-tooltip="true"
+        label="变动描述"
+        prop="changeDesc"
+      />
+      <!-- <el-table-column
         align="center"
         label="关联订单记录ID"
         prop="saleOrderId"
@@ -218,8 +234,13 @@
         align="center"
         label="关联提现记录ID"
         prop="withdrawCashId"
+      /> -->
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="备注"
+        prop="remark"
       />
-      <el-table-column align="center" label="备注" prop="remark"/>
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -232,18 +253,16 @@
             size="mini"
             type="text"
             @click="handleUpdate(scope.row)"
-          >修改
-          </el-button
-          >
-          <el-button
+          >详情
+          </el-button>
+          <!-- <el-button
             v-hasPermi="['system:balanceLog:remove']"
             icon="el-icon-delete"
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
-          >删除
-          </el-button
-          >
+            >删除
+          </el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -257,8 +276,8 @@
     />
 
     <!-- 添加或修改余额变动对话框 -->
-    <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :title="title" :visible.sync="open" append-to-body width="800px">
+      <el-form ref="form" :model="form" :rules="rules">
         <el-form-item label="明细所属用户 id" prop="userId">
           <el-input v-model="form.userId" placeholder="请输入明细所属用户 id"/>
         </el-form-item>
@@ -382,7 +401,14 @@
 </template>
 
 <script>
-import {addBalanceLog, delBalanceLog, getBalanceLog, listBalanceLog, updateBalanceLog,} from "@/api/system/balanceLog";
+import {
+  cleanBalancelog,
+  delBalanceLog,
+  getBalanceLog,
+  listBalanceLog,
+  updateBalanceLog,
+} from "@/api/system/balanceLog";
+import {parseMoney} from "@/utils/my";
 
 export default {
   name: "BalanceLog",
@@ -420,109 +446,7 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-        userId: [
-          {
-            required: true,
-            message: "明细所属用户 id不能为空",
-            trigger: "blur",
-          },
-        ],
-        changeAvailablePayAmount: [
-          {
-            required: true,
-            message: "变动可用充值金额不能为空",
-            trigger: "blur",
-          },
-        ],
-        changeFreezePayAmount: [
-          {
-            required: true,
-            message: "变动冻结充值金额不能为空",
-            trigger: "blur",
-          },
-        ],
-        changeType: [
-          {
-            required: true,
-            message: "变动类型不能为空",
-            trigger: "change",
-          },
-        ],
-        // changeAvailableFreeAmount: [
-        //   {
-        //     required: true,
-        //     message: "变动可用赠送金额不能为空",
-        //     trigger: "blur",
-        //   },
-        // ],
-        // changeFreezeFreeAmount: [
-        //   {
-        //     required: true,
-        //     message: "变动冻结赠送金额不能为空",
-        //     trigger: "blur",
-        //   },
-        // ],
-        // freezeFreeAfter: [
-        //   {
-        //     required: true,
-        //     message: "冻结赠送余额后不能为空",
-        //     trigger: "blur",
-        //   },
-        // ],
-        // freezeFreeBefore: [
-        //   {
-        //     required: true,
-        //     message: "冻结赠送余额前不能为空",
-        //     trigger: "blur",
-        //   },
-        // ],
-        // availableFreeAfter: [
-        //   {
-        //     required: true,
-        //     message: "可用赠送余额后不能为空",
-        //     trigger: "blur",
-        //   },
-        // ],
-        // availableFreeBefore: [
-        //   {
-        //     required: true,
-        //     message: "可用赠送余额前不能为空",
-        //     trigger: "blur",
-        //   },
-        // ],
-        freezePayAfter: [
-          {
-            required: true,
-            message: "冻结充值余额后不能为空",
-            trigger: "blur",
-          },
-        ],
-        freezePayBefore: [
-          {
-            required: true,
-            message: "冻结充值余额前不能为空",
-            trigger: "blur",
-          },
-        ],
-        availablePayAfter: [
-          {
-            required: true,
-            message: "可用充值余额后不能为空",
-            trigger: "blur",
-          },
-        ],
-        availablePayBefore: [
-          {
-            required: true,
-            message: "可用充值余额前不能为空",
-            trigger: "blur",
-          },
-        ],
-        changeDesc: [
-          {required: true, message: "变动描述不能为空", trigger: "blur"},
-        ],
-      },
+      rules: {},
     };
   },
   created() {
@@ -589,12 +513,6 @@ export default {
       this.single = selection.length !== 1;
       this.multiple = !selection.length;
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加余额变动";
-    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
@@ -602,7 +520,7 @@ export default {
       getBalanceLog(id).then((response) => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改余额变动";
+        this.title = "余额变动详情";
       });
     },
     /** 提交按钮 */
@@ -612,12 +530,6 @@ export default {
           if (this.form.id != null) {
             updateBalanceLog(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addBalanceLog(this.form).then((response) => {
-              this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
             });
@@ -640,6 +552,20 @@ export default {
         .catch(() => {
         });
     },
+    /** 清空按钮操作 */
+    handleClean() {
+      this.$modal
+        .confirm("是否确认清空所有金额变动日志数据项？")
+        .then(function () {
+          return cleanBalancelog();
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("清空成功");
+        })
+        .catch(() => {
+        });
+    },
     /** 导出按钮操作 */
     handleExport() {
       this.download(
@@ -649,6 +575,9 @@ export default {
         },
         `balanceLog_${new Date().getTime()}.xlsx`
       );
+    },
+    parseMoney(val) {
+      return parseMoney(val);
     },
   },
 };
