@@ -1,6 +1,7 @@
 package com.ruoyi.agent.service;
 
 import com.ruoyi.agent.domain.SysAgentItem;
+import com.ruoyi.common.enums.TemplateType;
 
 import java.util.List;
 
@@ -66,4 +67,14 @@ public interface ISysAgentItemService {
      * @return 结果
      */
     public int deleteSysAgentItemById(Long id);
+
+    /**
+     * 检查代理指定卡类权限
+     *
+     * @param agentId
+     * @param templateType
+     * @param templateId
+     * @return
+     */
+    public SysAgentItem checkAgentItem(Long agentId, TemplateType templateType, Long templateId);
 }

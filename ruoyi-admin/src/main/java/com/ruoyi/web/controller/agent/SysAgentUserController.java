@@ -118,8 +118,10 @@ public class SysAgentUserController extends BaseController {
             sysAgent.setParentAgentId(0L);
         }
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+            sysAgentService.checkAgent(agent, true);
             if (sysAgent.getParentAgentId() < 1) {
-                sysAgent.setParentAgentId(sysAgentService.selectSysAgentByUserId(getUserId()).getAgentId());
+                sysAgent.setParentAgentId(agent.getAgentId());
             }
         }
         SysAgent agentNow = sysAgentService.selectSysAgentByUserId(sysAgent.getUserId());
@@ -150,8 +152,10 @@ public class SysAgentUserController extends BaseController {
             sysAgent.setParentAgentId(0L);
         }
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+            sysAgentService.checkAgent(agent, true);
             if (sysAgent.getParentAgentId() < 1) {
-                sysAgent.setParentAgentId(sysAgentService.selectSysAgentByUserId(getUserId()).getAgentId());
+                sysAgent.setParentAgentId(agent.getAgentId());
             }
         }
         if (Objects.equals(sysAgent.getParentAgentId(), sysAgent.getAgentId())) {

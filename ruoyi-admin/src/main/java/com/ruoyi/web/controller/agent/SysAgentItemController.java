@@ -97,6 +97,11 @@ public class SysAgentItemController extends BaseController {
         if (sysAgentItem.getAgentId() == null || sysAgentItem.getAgentId() < 1) {
             throw new ServiceException("代理选择有误，不可选择根节点");
         }
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+            sysAgentService.checkAgent(agent, false);
+            sysAgentItemService.checkAgentItem(agent.getAgentId(), sysAgentItem.getTemplateType(), sysAgentItem.getTemplateId());
+        }
         SysAgentItem s = new SysAgentItem();
         s.setAgentId(sysAgentItem.getAgentId());
         s.setTemplateType(sysAgentItem.getTemplateType());
@@ -105,7 +110,6 @@ public class SysAgentItemController extends BaseController {
         if (items.size() > 0) {
             throw new ServiceException("此代理已有代理该卡的权限，无法重复授权");
         }
-
         sysAgentItem.setCreateBy(getUsername());
         return toAjax(sysAgentItemService.insertSysAgentItem(sysAgentItem));
     }
@@ -120,6 +124,11 @@ public class SysAgentItemController extends BaseController {
         if (sysAgentItem.getAgentId() == null || sysAgentItem.getAgentId() < 1) {
             throw new ServiceException("代理选择有误，不可选择根节点");
         }
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+            sysAgentService.checkAgent(agent, false);
+            sysAgentItemService.checkAgentItem(agent.getAgentId(), sysAgentItem.getTemplateType(), sysAgentItem.getTemplateId());
+        }
         SysAgentItem s = new SysAgentItem();
         s.setAgentId(sysAgentItem.getAgentId());
         s.setTemplateType(sysAgentItem.getTemplateType());
@@ -128,7 +137,6 @@ public class SysAgentItemController extends BaseController {
         if (items.size() > 0) {
             throw new ServiceException("此代理已有代理该卡的权限，无法重复授权");
         }
-
         sysAgentItem.setUpdateBy(getUsername());
         return toAjax(sysAgentItemService.updateSysAgentItem(sysAgentItem));
     }

@@ -14,7 +14,6 @@ import com.ruoyi.common.enums.BalanceChangeType;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.TemplateType;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysBalanceLog;
@@ -116,68 +115,49 @@ public class SysAgentLoginCodeController extends BaseController {
         if (sysLoginCodeTemplate == null) {
             return AjaxResult.error("卡类不存在，批量制卡失败");
         }
-        // 判断是否有代理权限
-        SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            if (agent != null) {
-                if (agent.getExpireTime() != null && !agent.getExpireTime().after(DateUtils.getNowDate())) {
-                    throw new ServiceException("您代理该卡的权限已过期，请联系您的上级代理", 400);
-                }
-                // 判断是否有代理该卡的权限
-                SysAgentItem agentItem = null;
-                SysAgentItem agentItemS = new SysAgentItem();
-                agentItemS.setAgentId(agent.getAgentId());
-                agentItemS.setTemplateType(TemplateType.LOGIN_CODE);
-                agentItemS.setTemplateId(sysLoginCode.getTemplateId());
-                List<SysAgentItem> agentItems = sysAgentItemService.selectSysAgentItemList(agentItemS);
-                if (agentItems.size() == 1) {
-                    agentItem = agentItems.get(0);
-                    if (agentItem.getExpireTime() != null && !agentItem.getExpireTime().after(DateUtils.getNowDate())) {
-                        throw new ServiceException("您代理该卡的权限已过期，请联系您的上级代理", 400);
-                    }
-                } else {
-                    throw new ServiceException("代理信息有误", 400);
-                }
-                // 计算金额
-                BigDecimal unitPrice = agentItem.getAgentPrice();
-                // 获取代理价格
-                if (unitPrice == null) {
-                    throw new ServiceException("商品未设定价格", 400);
-                }
-                BigDecimal totalFee = unitPrice.multiply(BigDecimal.valueOf(sysLoginCode.getGenQuantity()));
-                // 获取用户余额
-                SysUser user = userService.selectUserById(getUserId());
-                if (user.getAvailablePayBalance().compareTo(totalFee) >= 0) {
-                    // 记录金额变动日志
-                    SysBalanceLog balanceLog = new SysBalanceLog();
-                    balanceLog.setUserId(getUserId());
-                    balanceLog.setSourceUserId(null);
-                    balanceLog.setChangeAvailablePayAmount(totalFee.multiply(BigDecimal.valueOf(-1)));
-                    balanceLog.setChangeFreezePayAmount(BigDecimal.ZERO);
-                    balanceLog.setChangeType(BalanceChangeType.CONSUME);
-                    balanceLog.setChangeAvailableFreeAmount(BigDecimal.ZERO);
-                    balanceLog.setChangeFreezeFreeAmount(BigDecimal.ZERO);
-                    balanceLog.setFreezeFreeAfter(user.getFreezeFreeBalance());
-                    balanceLog.setFreezeFreeBefore(user.getFreezeFreeBalance());
-                    balanceLog.setAvailableFreeAfter(user.getAvailableFreeBalance());
-                    balanceLog.setAvailableFreeBefore(user.getAvailableFreeBalance());
-                    balanceLog.setFreezePayAfter(user.getFreezePayBalance());
-                    balanceLog.setFreezePayBefore(user.getFreezePayBalance());
-                    balanceLog.setAvailablePayAfter(user.getAvailablePayBalance().subtract(totalFee));
-                    balanceLog.setAvailablePayBefore(user.getAvailablePayBalance());
-                    balanceLog.setChangeDesc("批量制卡：[" + sysLoginCodeTemplate.getApp().getAppName() + "]" + sysLoginCodeTemplate.getCardName() + "，" + sysLoginCode.getGenQuantity() + "张，单价" + unitPrice);
-                    balanceLog.setSaleOrderId(null);
-                    balanceLog.setWithdrawCashId(null);
-                    balanceLog.setCreateBy(getUsername());
-                    sysBalanceLogService.insertSysBalanceLog(balanceLog);
-                    // 扣款
-                    user.setAvailablePayBalance(user.getAvailablePayBalance().subtract(totalFee));
-                    userService.updateUserProfile(user);
-                } else {
-                    throw new ServiceException("您的余额不足", 400);
-                }
+            SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+            // 判断是否有代理权限
+            sysAgentService.checkAgent(agent, false);
+            // 判断是否有代理该卡的权限
+            SysAgentItem agentItem = sysAgentItemService.checkAgentItem(agent.getAgentId(), TemplateType.LOGIN_CODE, sysLoginCode.getTemplateId());
+            // 计算金额
+            BigDecimal unitPrice = agentItem.getAgentPrice();
+            // 获取代理价格
+            if (unitPrice == null) {
+                throw new ServiceException("商品未设定价格", 400);
+            }
+            BigDecimal totalFee = unitPrice.multiply(BigDecimal.valueOf(sysLoginCode.getGenQuantity()));
+            // 获取用户余额
+            SysUser user = userService.selectUserById(getUserId());
+            if (user.getAvailablePayBalance().compareTo(totalFee) >= 0) {
+                // 记录金额变动日志
+                SysBalanceLog balanceLog = new SysBalanceLog();
+                balanceLog.setUserId(getUserId());
+                balanceLog.setSourceUserId(null);
+                balanceLog.setChangeAvailablePayAmount(totalFee.multiply(BigDecimal.valueOf(-1)));
+                balanceLog.setChangeFreezePayAmount(BigDecimal.ZERO);
+                balanceLog.setChangeType(BalanceChangeType.CONSUME);
+                balanceLog.setChangeAvailableFreeAmount(BigDecimal.ZERO);
+                balanceLog.setChangeFreezeFreeAmount(BigDecimal.ZERO);
+                balanceLog.setFreezeFreeAfter(user.getFreezeFreeBalance());
+                balanceLog.setFreezeFreeBefore(user.getFreezeFreeBalance());
+                balanceLog.setAvailableFreeAfter(user.getAvailableFreeBalance());
+                balanceLog.setAvailableFreeBefore(user.getAvailableFreeBalance());
+                balanceLog.setFreezePayAfter(user.getFreezePayBalance());
+                balanceLog.setFreezePayBefore(user.getFreezePayBalance());
+                balanceLog.setAvailablePayAfter(user.getAvailablePayBalance().subtract(totalFee));
+                balanceLog.setAvailablePayBefore(user.getAvailablePayBalance());
+                balanceLog.setChangeDesc("批量制卡：[" + sysLoginCodeTemplate.getApp().getAppName() + "]" + sysLoginCodeTemplate.getCardName() + "，" + sysLoginCode.getGenQuantity() + "张，单价" + unitPrice);
+                balanceLog.setSaleOrderId(null);
+                balanceLog.setWithdrawCashId(null);
+                balanceLog.setCreateBy(getUsername());
+                sysBalanceLogService.insertSysBalanceLog(balanceLog);
+                // 扣款
+                user.setAvailablePayBalance(user.getAvailablePayBalance().subtract(totalFee));
+                userService.updateUserProfile(user);
             } else {
-                throw new ServiceException("代理信息缺失", 400);
+                throw new ServiceException("您的余额不足", 400);
             }
         }
         return toAjax(sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), sysLoginCode.getOnSale(), UserConstants.YES, sysLoginCode.getRemark()).size());

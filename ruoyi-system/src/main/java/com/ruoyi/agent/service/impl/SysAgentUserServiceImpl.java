@@ -4,6 +4,8 @@ import com.ruoyi.agent.domain.SysAgent;
 import com.ruoyi.agent.domain.vo.AgentInfoVo;
 import com.ruoyi.agent.mapper.SysAgentUserMapper;
 import com.ruoyi.agent.service.ISysAgentUserService;
+import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -115,5 +117,30 @@ public class SysAgentUserServiceImpl implements ISysAgentUserService {
      */
     public List<Long> getSubAgents(Long agentId) {
         return sysAgentMapper.getSubAgents(agentId);
+    }
+
+    /**
+     * 检查代理
+     *
+     * @param agent
+     * @param checkEnableAddSubagent 添加代理、添加授权和制卡操作用的是同一个函数，添加授权和制卡操作时不需要检查是否可发展下级代理
+     */
+    public void checkAgent(SysAgent agent, boolean checkEnableAddSubagent) {
+        if (agent != null) {
+            if (!UserConstants.NORMAL.equals(agent.getStatus())) {
+                throw new ServiceException("您的代理权限被冻结");
+            }
+            if (agent.getExpireTime() != null && !agent.getExpireTime().after(DateUtils.getNowDate())) {
+                throw new ServiceException("您的代理权限已过期");
+            }
+            if (checkEnableAddSubagent) {
+                if (!UserConstants.YES.equals(agent.getEnableAddSubagent())) {
+                    throw new ServiceException("您没有发展下级代理的权限");
+                }
+            }
+        } else {
+            throw new ServiceException("代理信息缺失", 400);
+        }
+
     }
 }

@@ -81,4 +81,13 @@ public interface ISysAgentUserService {
      * @return
      */
     public List<Long> getSubAgents(Long agentId);
+
+    /**
+     * 检查代理
+     *
+     * @param agent
+     * @param checkEnableAddSubagent 添加代理、添加授权和制卡操作用的是同一个函数，添加授权和制卡操作时不需要检查是否可发展下级代理
+     */
+    public void checkAgent(SysAgent agent, boolean checkEnableAddSubagent);
+
 }

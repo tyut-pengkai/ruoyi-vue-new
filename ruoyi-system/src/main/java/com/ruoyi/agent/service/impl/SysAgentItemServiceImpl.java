@@ -3,6 +3,8 @@ package com.ruoyi.agent.service.impl;
 import com.ruoyi.agent.domain.SysAgentItem;
 import com.ruoyi.agent.mapper.SysAgentItemMapper;
 import com.ruoyi.agent.service.ISysAgentItemService;
+import com.ruoyi.common.enums.TemplateType;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -97,5 +99,31 @@ public class SysAgentItemServiceImpl implements ISysAgentItemService {
     @Override
     public int deleteSysAgentItemById(Long id) {
         return sysAgentItemMapper.deleteSysAgentItemById(id);
+    }
+
+    /**
+     * 检查代理指定卡类权限
+     *
+     * @param agentId
+     * @param templateType
+     * @param templateId
+     * @return
+     */
+    public SysAgentItem checkAgentItem(Long agentId, TemplateType templateType, Long templateId) {
+        SysAgentItem s = new SysAgentItem();
+        s.setAgentId(agentId);
+        s.setTemplateType(templateType);
+        s.setTemplateId(templateId);
+        List<SysAgentItem> items = selectSysAgentItemList(s);
+        if (items.size() == 0) {
+            throw new ServiceException("您没有代理该卡的权限");
+        } else if (items.size() == 1) {
+            if (items.get(0).getExpireTime() != null && !items.get(0).getExpireTime().after(DateUtils.getNowDate())) {
+                throw new ServiceException("您代理该卡的权限已过期");
+            }
+        } else {
+            throw new ServiceException("代理信息有误");
+        }
+        return items.get(0);
     }
 }
