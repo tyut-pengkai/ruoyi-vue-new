@@ -348,22 +348,22 @@ public class SysUserServiceImpl implements ISysUserService
         // 检查余额是否足够
         if (isNegative(change.getAvailablePayBalance())) {
             if (isLessThan(userNow.getAvailablePayBalance(), change.getAvailablePayBalance().abs())) {
-                throw new ServiceException("您的可用余额不足");
+                throw new ServiceException("可用余额不足");
             }
         }
         if (isNegative(change.getAvailableFreeBalance())) {
             if (isLessThan(userNow.getAvailableFreeBalance(), change.getAvailableFreeBalance().abs())) {
-                throw new ServiceException("您的冻结余额不足");
+                throw new ServiceException("冻结余额不足");
             }
         }
         if (isNegative(change.getFreezePayBalance())) {
             if (isLessThan(userNow.getFreezePayBalance(), change.getFreezePayBalance().abs())) {
-                throw new ServiceException("您的可用赠送余额不足");
+                throw new ServiceException("可用赠送余额不足");
             }
         }
         if (isNegative(change.getFreezeFreeBalance())) {
             if (isLessThan(userNow.getFreezeFreeBalance(), change.getFreezeFreeBalance().abs())) {
-                throw new ServiceException("您的冻结赠送余额不足");
+                throw new ServiceException("冻结赠送余额不足");
             }
         }
         // 记录金额变动日志

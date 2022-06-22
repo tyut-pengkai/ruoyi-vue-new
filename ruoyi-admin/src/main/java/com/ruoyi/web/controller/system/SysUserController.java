@@ -7,10 +7,13 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.enums.BalanceChangeType;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.system.domain.vo.BalanceChangeVo;
+import com.ruoyi.system.domain.vo.UserBalanceChangeVo;
 import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
@@ -237,9 +240,25 @@ public class SysUserController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:user:list')")
     @GetMapping("/listByExceptAppId/{appId}")
-    public TableDataInfo listByExceptAppId(@PathVariable("appId")Long appId)
-    {
+    public TableDataInfo listByExceptAppId(@PathVariable("appId") Long appId) {
         List<SysUser> list = userService.selectUserByExceptAppId(appId);
         return getDataTable(list);
+    }
+
+    /**
+     * 修改用户余额
+     */
+    @PreAuthorize("@ss.hasPermi('system:user:edit')")
+    @Log(title = "用户管理", businessType = BusinessType.UPDATE)
+    @PutMapping("/balance")
+    public AjaxResult editBalance(@Validated @RequestBody UserBalanceChangeVo vo) {
+        userService.checkUserDataScope(vo.getUserId());
+        BalanceChangeVo change = new BalanceChangeVo();
+        change.setUserId(vo.getUserId());
+        change.setUpdateBy(getUsername());
+        change.setType("1".equals(vo.getOperation()) ? BalanceChangeType.OTHOR_IN : BalanceChangeType.OTHOR_OUT);
+        change.setDescription("管理员后台" + ("1".equals(vo.getOperation()) ? "加款" : "扣款") + "：" + vo.getAmount() + "，附加信息：" + vo.getRemark());
+        change.setAvailablePayBalance("1".equals(vo.getOperation()) ? vo.getAmount() : vo.getAmount().negate());
+        return toAjax(userService.updateUserBalance(change));
     }
 }

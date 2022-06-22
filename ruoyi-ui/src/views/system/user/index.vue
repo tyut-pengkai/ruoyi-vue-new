@@ -407,6 +407,14 @@
                 :disabled="true"
               /> -->
                 {{ parseMoney(form.availablePayBalance) }}
+                <el-divider direction="vertical"></el-divider>
+                <el-link
+                  v-hasPermi="['system:user:edit']"
+                  type="primary"
+                  @click="handleUpdateB(form)"
+                >
+                  加减款
+                </el-link>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -543,11 +551,66 @@
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 加减款对话框 -->
+    <el-dialog
+      :visible.sync="openB"
+      append-to-body
+      title="加减用户余额"
+      width="600px"
+    >
+      <el-form ref="formB" :model="formB" :rules="rulesB" label-width="80px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="调整操作" prop="operation">
+              <el-select v-model="formB.operation" placeholder="请选择">
+                <el-option key="1" label="增加余额" value="1"></el-option>
+                <el-option key="2" label="减少余额" value="2"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="调整金额" prop="amount">
+              <el-input-number
+                v-model="formB.amount"
+                :precision="2"
+                :step="0.01"
+                controls-position="right"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="调整原因" prop="remark">
+              <el-input
+                v-model="formB.remark"
+                placeholder="请输入内容"
+                type="textarea"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFormB">确 定</el-button>
+        <el-button @click="cancelB">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import {addUser, changeUserStatus, delUser, getUser, listUser, resetUserPwd, updateUser,} from "@/api/system/user";
+import {
+  addUser,
+  changeUserStatus,
+  delUser,
+  getUser,
+  listUser,
+  resetUserPwd,
+  updateUser,
+  updateUserBalance,
+} from "@/api/system/user";
 import {getToken} from "@/utils/auth";
 import {treeselect} from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
@@ -678,6 +741,21 @@ export default {
         ],
         payPayment: [
           {required: true, message: "支付消费不能为空", trigger: "blur"},
+        ],
+      },
+      // 加减款
+      // 是否显示弹出层
+      openB: false,
+      formB: {},
+      rulesB: {
+        operation: [
+          {required: true, message: "调整类型不能为空", trigger: "blur"},
+        ],
+        amount: [
+          {required: true, message: "调整金额不能为空", trigger: "blur"},
+        ],
+        remark: [
+          {required: true, message: "调整原因不能为空", trigger: "blur"},
         ],
       },
     };
@@ -927,6 +1005,30 @@ export default {
     },
     parseMoney(val) {
       return parseMoney(val);
+    },
+    // 加减款
+    /** 修改按钮操作 */
+    handleUpdateB(form) {
+      this.openB = true;
+      this.formB.userId = form.userId;
+    },
+    // 取消按钮
+    cancelB() {
+      this.openB = false;
+    },
+    /** 提交按钮 */
+    submitFormB: function () {
+      this.$refs["formB"].validate((valid) => {
+        if (valid) {
+          updateUserBalance(this.formB).then((response) => {
+            getUser(this.formB.userId).then((response) => {
+              this.form = response.data;
+            });
+            this.$modal.msgSuccess("修改成功");
+            this.openB = false;
+          });
+        }
+      });
     },
   },
 };

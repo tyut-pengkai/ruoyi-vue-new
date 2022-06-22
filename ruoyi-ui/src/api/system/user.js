@@ -36,6 +36,15 @@ export function updateUser(data) {
   })
 }
 
+// 修改用户余额
+export function updateUserBalance(data) {
+  return request({
+    url: '/system/user/balance',
+    method: 'put',
+    data: data
+  })
+}
+
 // 删除用户
 export function delUser(userId) {
   return request({
