@@ -79,7 +79,7 @@
             </span> -->
           </el-tag>
           <el-divider direction="vertical"></el-divider>
-          <el-link type="primary">充值</el-link>
+          <el-link type="primary" @click="handleCharge()">充值</el-link>
           <el-divider direction="vertical"></el-divider>
           <el-link type="primary">提现</el-link>
           <el-tag style="margin-left: 50px" type="info">
@@ -123,6 +123,34 @@
         </el-card>
       </el-col>
     </el-row>
+
+    <!-- 充值对话框 -->
+    <el-dialog
+      :visible.sync="openC"
+      append-to-body
+      title="余额充值"
+      width="600px"
+    >
+      <el-form ref="formC" :model="formC" :rules="rulesC" label-width="80px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="充值金额" prop="amount">
+              <el-input-number
+                v-model="formC.amount"
+                :min="0.01"
+                :precision="2"
+                :step="0.01"
+                controls-position="right"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFormC">提 交</el-button>
+        <el-button @click="cancelC">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -142,6 +170,12 @@ export default {
       roleGroup: {},
       postGroup: {},
       activeTab: "userinfo",
+      // 充值
+      openC: false,
+      formC: {amount: 100},
+      rulesC: {
+        amount: [{required: true, message: "金额不能为空", trigger: "blur"}],
+      },
     };
   },
   created() {
@@ -153,6 +187,26 @@ export default {
         this.user = response.data;
         this.roleGroup = response.roleGroup;
         this.postGroup = response.postGroup;
+      });
+    },
+    // 充值
+    /** 充值按钮操作 */
+    handleCharge() {
+      this.openC = true;
+    },
+    // 取消按钮
+    cancelC() {
+      this.openC = false;
+    },
+    /** 提交按钮 */
+    submitFormC: function () {
+      this.$refs["formC"].validate((valid) => {
+        if (valid) {
+          // rechargeBalance(this.formB).then((response) => {
+          //   this.$modal.msgSuccess("充值成功");
+          //   this.openC = false;
+          // });
+        }
       });
     },
   },
