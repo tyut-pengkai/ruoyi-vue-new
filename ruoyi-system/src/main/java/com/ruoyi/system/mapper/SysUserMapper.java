@@ -64,17 +64,25 @@ public interface SysUserMapper
 
     /**
      * 修改用户信息
-     * 
+     *
      * @param user 用户信息
      * @return 结果
      */
     public int updateUser(SysUser user);
 
     /**
+     * 修改用户信息
+     *
+     * @param user 用户信息
+     * @return 结果
+     */
+    public int updateUserBalance(SysUser user);
+
+    /**
      * 修改用户头像
-     * 
+     *
      * @param userName 用户名
-     * @param avatar 头像地址
+     * @param avatar   头像地址
      * @return 结果
      */
     public int updateUserAvatar(@Param("userName") String userName, @Param("avatar") String avatar);

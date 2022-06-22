@@ -87,12 +87,10 @@
               type="primary"
               @click="handleQuery"
             >搜索
-            </el-button
-            >
+            </el-button>
             <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
             >重置
-            </el-button
-            >
+            </el-button>
           </el-form-item>
         </el-form>
 
@@ -106,8 +104,7 @@
               @click="handleAdd"
               v-hasPermi="['system:user:add']"
             >新增
-            </el-button
-            >
+            </el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button
@@ -119,8 +116,7 @@
               @click="handleUpdate"
               v-hasPermi="['system:user:edit']"
             >修改
-            </el-button
-            >
+            </el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button
@@ -132,8 +128,7 @@
               @click="handleDelete"
               v-hasPermi="['system:user:remove']"
             >删除
-            </el-button
-            >
+            </el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button
@@ -144,8 +139,7 @@
               @click="handleImport"
               v-hasPermi="['system:user:import']"
             >导入
-            </el-button
-            >
+            </el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button
@@ -156,8 +150,7 @@
               @click="handleExport"
               v-hasPermi="['system:user:export']"
             >导出
-            </el-button
-            >
+            </el-button>
           </el-col>
           <right-toolbar
             :columns="columns"
@@ -171,7 +164,7 @@
           :data="userList"
           @selection-change="handleSelectionChange"
         >
-          <el-table-column type="selection" width="50" align="center"/>
+          <el-table-column align="center" type="selection" width="50"/>
           <el-table-column
             v-if="columns[0].visible"
             key="userId"
@@ -251,8 +244,7 @@
                 @click="handleUpdate(scope.row)"
                 v-hasPermi="['system:user:edit']"
               >修改
-              </el-button
-              >
+              </el-button>
               <el-button
                 size="mini"
                 type="text"
@@ -260,8 +252,7 @@
                 @click="handleDelete(scope.row)"
                 v-hasPermi="['system:user:remove']"
               >删除
-              </el-button
-              >
+              </el-button>
               <el-dropdown
                 v-hasPermi="['system:user:resetPwd', 'system:user:edit']"
                 size="mini"
@@ -276,15 +267,13 @@
                     command="handleResetPwd"
                     icon="el-icon-key"
                   >重置密码
-                  </el-dropdown-item
-                  >
+                  </el-dropdown-item>
                   <el-dropdown-item
                     v-hasPermi="['system:user:edit']"
                     command="handleAuthRole"
                     icon="el-icon-circle-check"
                   >分配角色
-                  </el-dropdown-item
-                  >
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </template>
@@ -406,50 +395,68 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="赠送余额" prop="freeBalance">
-              <el-input-number
-                v-model="form.freeBalance"
+        <div v-if="form.userId">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="余额" prop="availablePayBalance">
+                <!-- <el-input-number
+                v-model="form.availablePayBalance"
                 :precision="2"
                 :step="0.01"
                 controls-position="right"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="支付余额" prop="payBalance">
-              <el-input-number
-                v-model="form.payBalance"
+                :disabled="true"
+              /> -->
+                {{ parseMoney(form.availablePayBalance) }}
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="冻结余额" prop="freezeFreeBalance">
+                <!-- <el-input-number
+                v-model="form.freezeFreeBalance"
                 :precision="2"
                 :step="0.01"
                 controls-position="right"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="赠送消费" prop="freePayment">
-              <el-input-number
-                v-model="form.freePayment"
-                :precision="2"
-                :step="0.01"
-                controls-position="right"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="支付消费" prop="payPayment">
-              <el-input-number
-                v-model="form.payPayment"
-                :precision="2"
-                :step="0.01"
-                controls-position="right"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
+                :disabled="true"
+              /> -->
+                {{ parseMoney(form.freezeFreeBalance) }}
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <!-- <el-row>
+            <el-col :span="12">
+              <el-form-item label="共计充值" prop="payPayment">
+                <el-input-number
+                  v-model="form.payPayment"
+                  :precision="2"
+                  :step="0.01"
+                  controls-position="right"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row> -->
+          <!-- <el-row>
+            <el-col :span="12">
+              <el-form-item label="赠送余额" prop="freeBalance">
+                <el-input-number
+                  v-model="form.freeBalance"
+                  :precision="2"
+                  :step="0.01"
+                  controls-position="right"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="赠送消费" prop="freePayment">
+                <el-input-number
+                  v-model="form.freePayment"
+                  :precision="2"
+                  :step="0.01"
+                  controls-position="right"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row> -->
+        </div>
         <el-row>
           <!-- <el-col :span="12">
             <el-form-item label="岗位">
@@ -472,8 +479,7 @@
                   :key="dict.value"
                   :label="dict.value"
                 >{{ dict.label }}
-                </el-radio
-                >
+                </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -529,8 +535,7 @@
             type="primary"
             @click="importTemplate"
           >下载模板
-          </el-link
-          >
+          </el-link>
         </div>
       </el-upload>
       <div slot="footer" class="dialog-footer">
@@ -547,6 +552,7 @@ import {getToken} from "@/utils/auth";
 import {treeselect} from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import {parseMoney} from "@/utils/my";
 
 export default {
   name: "User",
@@ -918,6 +924,9 @@ export default {
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit();
+    },
+    parseMoney(val) {
+      return parseMoney(val);
     },
   },
 };

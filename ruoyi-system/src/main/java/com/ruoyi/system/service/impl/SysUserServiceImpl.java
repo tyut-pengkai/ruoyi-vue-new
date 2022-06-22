@@ -1,34 +1,37 @@
 package com.ruoyi.system.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.validation.Validator;
+import com.ruoyi.common.annotation.DataScope;
+import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.domain.entity.SysRole;
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.enums.BalanceChangeType;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.bean.BeanValidators;
+import com.ruoyi.common.utils.spring.SpringUtils;
+import com.ruoyi.system.domain.SysBalanceLog;
+import com.ruoyi.system.domain.SysPost;
+import com.ruoyi.system.domain.SysUserPost;
+import com.ruoyi.system.domain.SysUserRole;
+import com.ruoyi.system.domain.vo.BalanceChangeVo;
+import com.ruoyi.system.mapper.*;
+import com.ruoyi.system.service.ISysBalanceLogService;
+import com.ruoyi.system.service.ISysConfigService;
+import com.ruoyi.system.service.ISysUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import com.ruoyi.common.annotation.DataScope;
-import com.ruoyi.common.constant.UserConstants;
-import com.ruoyi.common.core.domain.entity.SysRole;
-import com.ruoyi.common.core.domain.entity.SysUser;
-import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.common.utils.bean.BeanValidators;
-import com.ruoyi.common.utils.spring.SpringUtils;
-import com.ruoyi.system.domain.SysPost;
-import com.ruoyi.system.domain.SysUserPost;
-import com.ruoyi.system.domain.SysUserRole;
-import com.ruoyi.system.mapper.SysPostMapper;
-import com.ruoyi.system.mapper.SysRoleMapper;
-import com.ruoyi.system.mapper.SysUserMapper;
-import com.ruoyi.system.mapper.SysUserPostMapper;
-import com.ruoyi.system.mapper.SysUserRoleMapper;
-import com.ruoyi.system.service.ISysConfigService;
-import com.ruoyi.system.service.ISysUserService;
+
+import javax.annotation.Resource;
+import javax.validation.Validator;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户 业务层处理
@@ -42,28 +45,24 @@ public class SysUserServiceImpl implements ISysUserService
 
     @Autowired
     private SysUserMapper userMapper;
-
     @Autowired
     private SysRoleMapper roleMapper;
-
     @Autowired
     private SysPostMapper postMapper;
-
     @Autowired
     private SysUserRoleMapper userRoleMapper;
-
     @Autowired
     private SysUserPostMapper userPostMapper;
-
     @Autowired
     private ISysConfigService configService;
-
     @Autowired
     protected Validator validator;
+    @Resource
+    private ISysBalanceLogService sysBalanceLogService;
 
     /**
      * 根据条件分页查询用户列表
-     * 
+     *
      * @param user 用户信息
      * @return 用户信息集合信息
      */
@@ -326,26 +325,103 @@ public class SysUserServiceImpl implements ISysUserService
 
     /**
      * 修改用户基本信息
-     * 
+     *
      * @param user 用户信息
      * @return 结果
      */
     @Override
-    public int updateUserProfile(SysUser user)
-    {
+    public int updateUserProfile(SysUser user) {
         return userMapper.updateUser(user);
     }
 
     /**
-     * 修改用户头像
-     * 
-     * @param userName 用户名
-     * @param avatar 头像地址
+     * 修改用户余额信息
+     *
+     * @param change 用户信息
      * @return 结果
      */
     @Override
-    public boolean updateUserAvatar(String userName, String avatar)
-    {
+    @Transactional(rollbackFor = Exception.class)
+    public int updateUserBalance(BalanceChangeVo change) {
+        // 获取当前余额
+        SysUser userNow = selectUserById(change.getUserId());
+        // 检查余额是否足够
+        if (isNegative(change.getAvailablePayBalance())) {
+            if (isLessThan(userNow.getAvailablePayBalance(), change.getAvailablePayBalance().abs())) {
+                throw new ServiceException("您的可用余额不足");
+            }
+        }
+        if (isNegative(change.getAvailableFreeBalance())) {
+            if (isLessThan(userNow.getAvailableFreeBalance(), change.getAvailableFreeBalance().abs())) {
+                throw new ServiceException("您的冻结余额不足");
+            }
+        }
+        if (isNegative(change.getFreezePayBalance())) {
+            if (isLessThan(userNow.getFreezePayBalance(), change.getFreezePayBalance().abs())) {
+                throw new ServiceException("您的可用赠送余额不足");
+            }
+        }
+        if (isNegative(change.getFreezeFreeBalance())) {
+            if (isLessThan(userNow.getFreezeFreeBalance(), change.getFreezeFreeBalance().abs())) {
+                throw new ServiceException("您的冻结赠送余额不足");
+            }
+        }
+        // 记录金额变动日志
+        SysBalanceLog balanceLog = new SysBalanceLog();
+        balanceLog.setUserId(change.getUserId());
+        balanceLog.setChangeType(change.getType());
+        balanceLog.setSourceUserId(change.getSourceUserId());
+        balanceLog.setChangeAvailablePayAmount(change.getAvailablePayBalance());
+        balanceLog.setChangeFreezePayAmount(change.getFreezePayBalance());
+        balanceLog.setChangeAvailableFreeAmount(change.getAvailableFreeBalance());
+        balanceLog.setChangeFreezeFreeAmount(change.getFreezeFreeBalance());
+        balanceLog.setAvailablePayBefore(userNow.getAvailablePayBalance());
+        balanceLog.setAvailablePayAfter(userNow.getAvailablePayBalance().add(change.getAvailablePayBalance()));
+        balanceLog.setFreezePayBefore(userNow.getFreezePayBalance());
+        balanceLog.setFreezePayAfter(userNow.getFreezePayBalance().add(change.getFreezePayBalance()));
+        balanceLog.setAvailableFreeBefore(userNow.getAvailableFreeBalance());
+        balanceLog.setAvailableFreeAfter(userNow.getAvailableFreeBalance().add(change.getAvailableFreeBalance()));
+        balanceLog.setFreezeFreeBefore(userNow.getFreezeFreeBalance());
+        balanceLog.setFreezeFreeAfter(userNow.getFreezeFreeBalance().add(change.getFreezeFreeBalance()));
+        balanceLog.setChangeDesc(change.getDescription());
+        balanceLog.setSaleOrderId(change.getSaleOrderId());
+        balanceLog.setWithdrawCashId(change.getWithdrawCashId());
+        balanceLog.setCreateBy(change.getUpdateBy());
+        sysBalanceLogService.insertSysBalanceLog(balanceLog);
+        // 扣除
+        SysUser compute = new SysUser();
+        compute.setUserId(change.getUserId());
+        compute.setUpdateBy(change.getUpdateBy());
+        compute.setAvailablePayBalance(balanceLog.getAvailablePayAfter());
+        compute.setFreezePayBalance(balanceLog.getFreezePayAfter());
+        compute.setAvailableFreeBalance(balanceLog.getAvailableFreeAfter());
+        compute.setFreezeFreeBalance(balanceLog.getFreezeFreeAfter());
+        if (change.getType() == BalanceChangeType.RECHARGE && !isNegative(change.getAvailablePayBalance())) {
+            compute.setPayPayment(userNow.getPayPayment().add(change.getAvailablePayBalance()));
+        }
+        if (!isNegative(change.getAvailableFreeBalance())) {
+            compute.setFreePayment(userNow.getFreePayment().add(change.getAvailableFreeBalance()));
+        }
+        return userMapper.updateUserBalance(compute);
+    }
+
+    private boolean isNegative(BigDecimal amount) {
+        return BigDecimal.ZERO.compareTo(amount) > 0;
+    }
+
+    private boolean isLessThan(BigDecimal amount1, BigDecimal amount2) {
+        return amount1.compareTo(amount2) < 0;
+    }
+
+    /**
+     * 修改用户头像
+     *
+     * @param userName 用户名
+     * @param avatar   头像地址
+     * @return 结果
+     */
+    @Override
+    public boolean updateUserAvatar(String userName, String avatar) {
         return userMapper.updateUserAvatar(userName, avatar) > 0;
     }
 
@@ -500,10 +576,8 @@ public class SysUserServiceImpl implements ISysUserService
      * @return 结果
      */
     @Override
-    public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName)
-    {
-        if (StringUtils.isNull(userList) || userList.size() == 0)
-        {
+    public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName) {
+        if (StringUtils.isNull(userList) || userList.size() == 0) {
             throw new ServiceException("导入用户数据不能为空！");
         }
         int successNum = 0;
@@ -511,23 +585,24 @@ public class SysUserServiceImpl implements ISysUserService
         StringBuilder successMsg = new StringBuilder();
         StringBuilder failureMsg = new StringBuilder();
         String password = configService.selectConfigByKey("sys.user.initPassword");
-        for (SysUser user : userList)
-        {
-            try
-            {
+        for (SysUser user : userList) {
+            user.setAvailableFreeBalance(BigDecimal.ZERO);
+            user.setAvailablePayBalance(BigDecimal.ZERO);
+            user.setFreezeFreeBalance(BigDecimal.ZERO);
+            user.setFreezePayBalance(BigDecimal.ZERO);
+            user.setPayPayment(BigDecimal.ZERO);
+            user.setFreePayment(BigDecimal.ZERO);
+            try {
                 // 验证是否存在这个用户
                 SysUser u = userMapper.selectUserByUserName(user.getUserName());
-                if (StringUtils.isNull(u))
-                {
+                if (StringUtils.isNull(u)) {
                     BeanValidators.validateWithException(validator, user);
                     user.setPassword(SecurityUtils.encryptPassword(password));
                     user.setCreateBy(operName);
                     this.insertUser(user);
                     successNum++;
                     successMsg.append("<br/>" + successNum + "、账号 " + user.getUserName() + " 导入成功");
-                }
-                else if (isUpdateSupport)
-                {
+                } else if (isUpdateSupport) {
                     BeanValidators.validateWithException(validator, user);
                     user.setUpdateBy(operName);
                     this.updateUser(user);

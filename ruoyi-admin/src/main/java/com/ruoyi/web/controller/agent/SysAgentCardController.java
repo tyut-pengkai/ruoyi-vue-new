@@ -8,7 +8,6 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BalanceChangeType;
 import com.ruoyi.common.enums.BusinessType;
@@ -16,9 +15,9 @@ import com.ruoyi.common.enums.TemplateType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.service.PermissionService;
-import com.ruoyi.system.domain.SysBalanceLog;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
+import com.ruoyi.system.domain.vo.BalanceChangeVo;
 import com.ruoyi.system.service.ISysBalanceLogService;
 import com.ruoyi.system.service.ISysCardService;
 import com.ruoyi.system.service.ISysCardTemplateService;
@@ -128,37 +127,15 @@ public class SysAgentCardController extends BaseController {
                 throw new ServiceException("商品未设定价格");
             }
             BigDecimal totalFee = unitPrice.multiply(BigDecimal.valueOf(sysCard.getGenQuantity()));
-            // 获取用户余额
-            SysUser user = userService.selectUserById(getUserId());
-            if (user.getAvailablePayBalance().compareTo(totalFee) >= 0) {
-                // 记录金额变动日志
-                SysBalanceLog balanceLog = new SysBalanceLog();
-                balanceLog.setUserId(getUserId());
-                balanceLog.setSourceUserId(null);
-                balanceLog.setChangeAvailablePayAmount(totalFee.multiply(BigDecimal.valueOf(-1)));
-                balanceLog.setChangeFreezePayAmount(BigDecimal.ZERO);
-                balanceLog.setChangeType(BalanceChangeType.CONSUME);
-                balanceLog.setChangeAvailableFreeAmount(BigDecimal.ZERO);
-                balanceLog.setChangeFreezeFreeAmount(BigDecimal.ZERO);
-                balanceLog.setFreezeFreeAfter(user.getFreezeFreeBalance());
-                balanceLog.setFreezeFreeBefore(user.getFreezeFreeBalance());
-                balanceLog.setAvailableFreeAfter(user.getAvailableFreeBalance());
-                balanceLog.setAvailableFreeBefore(user.getAvailableFreeBalance());
-                balanceLog.setFreezePayAfter(user.getFreezePayBalance());
-                balanceLog.setFreezePayBefore(user.getFreezePayBalance());
-                balanceLog.setAvailablePayAfter(user.getAvailablePayBalance().subtract(totalFee));
-                balanceLog.setAvailablePayBefore(user.getAvailablePayBalance());
-                balanceLog.setChangeDesc("批量制卡：[" + sysCardTemplate.getApp().getAppName() + "]" + sysCardTemplate.getCardName() + "，" + sysCard.getGenQuantity() + "张，单价" + unitPrice);
-                balanceLog.setSaleOrderId(null);
-                balanceLog.setWithdrawCashId(null);
-                balanceLog.setCreateBy(getUsername());
-                sysBalanceLogService.insertSysBalanceLog(balanceLog);
-                // 扣款
-                user.setAvailablePayBalance(user.getAvailablePayBalance().subtract(totalFee));
-                userService.updateUserProfile(user);
-            } else {
-                throw new ServiceException("您的余额不足");
-            }
+            // 扣除余额
+            BalanceChangeVo change = new BalanceChangeVo();
+            change.setUserId(getUserId());
+            change.setUpdateBy(getUsername());
+            change.setType(BalanceChangeType.CONSUME);
+            change.setDescription("批量制卡：[" + sysCardTemplate.getApp().getAppName() + "]" + sysCardTemplate.getCardName() + "，" + sysCard.getGenQuantity() + "张，单价" + unitPrice);
+            change.setAvailablePayBalance(totalFee.negate());
+            // 扣款
+            userService.updateUserBalance(change);
         }
         return toAjax(sysCardTemplateService.genSysCardBatch(sysCardTemplate, sysCard.getGenQuantity(), sysCard.getOnSale(), UserConstants.YES, sysCard.getRemark()).size());
     }

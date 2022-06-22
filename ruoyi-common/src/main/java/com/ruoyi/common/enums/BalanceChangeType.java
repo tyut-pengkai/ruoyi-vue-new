@@ -17,7 +17,8 @@ public enum BalanceChangeType implements BaseEnum {
     OTHOR_IN("7", "其他收入"),
     CONSUME("8", "消费支出"),
     TRANSFER_OUT("9", "转账支出"),
-    OTHOR_OUT("10", "其他支出");
+    OTHOR_OUT("10", "其他支出"),
+    RECHARGE("11", "余额充值");
 
     @EnumValue
     @JsonValue

@@ -1,6 +1,7 @@
 package com.ruoyi.system.service;
 
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.system.domain.vo.BalanceChangeVo;
 
 import java.util.List;
 
@@ -147,17 +148,25 @@ public interface ISysUserService
 
     /**
      * 修改用户基本信息
-     * 
+     *
      * @param user 用户信息
      * @return 结果
      */
     public int updateUserProfile(SysUser user);
 
     /**
+     * 修改用户余额信息
+     *
+     * @param change 用户信息
+     * @return 结果
+     */
+    public int updateUserBalance(BalanceChangeVo change);
+
+    /**
      * 修改用户头像
-     * 
+     *
      * @param userName 用户名
-     * @param avatar 头像地址
+     * @param avatar   头像地址
      * @return 结果
      */
     public boolean updateUserAvatar(String userName, String avatar);
