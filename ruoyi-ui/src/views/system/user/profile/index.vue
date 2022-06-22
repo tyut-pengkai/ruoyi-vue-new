@@ -129,7 +129,7 @@
       :visible.sync="openC"
       append-to-body
       title="余额充值"
-      width="600px"
+      width="800px"
     >
       <el-form ref="formC" :model="formC" :rules="rulesC" label-width="80px">
         <el-row>
@@ -142,6 +142,19 @@
                 :step="0.01"
                 controls-position="right"
               />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="支付方式" prop="payMode">
+              <card-pay
+                :addon="true"
+                :cardKey="payId"
+                :data="payData"
+                :span="6"
+                v-on:card-click="handlePaySelect"
+              ></card-pay>
             </el-form-item>
           </el-col>
         </el-row>
@@ -160,10 +173,11 @@ import userInfo from "./userInfo";
 import resetPwd from "./resetPwd";
 import {getUserProfile} from "@/api/system/user";
 import CountTo from "vue-count-to";
+import CardPay from "@/views/sale/shop/card/CardPay";
 
 export default {
   name: "Profile",
-  components: {userAvatar, userInfo, resetPwd, CountTo},
+  components: {userAvatar, userInfo, resetPwd, CountTo, CardPay},
   data() {
     return {
       user: {},
@@ -176,6 +190,14 @@ export default {
       rulesC: {
         amount: [{required: true, message: "金额不能为空", trigger: "blur"}],
       },
+      payId: null,
+      payData: [
+        // { id: 0, name: "账户积分", code: "balance", img: "pay-jifen" },
+        {id: 0, name: "支付宝当面付", code: "alipay_qr", img: "pay-alipay"},
+        {id: 1, name: "微信支付", code: "wechat", img: "pay-wechat"},
+        // { id: 2, name: "银联支付", code: "yinlian", img: "pay-yinlian" },
+        // { id: 3, name: "PayPal", code: "paypal", img: "pay-paypal" },
+      ],
     };
   },
   created() {
@@ -208,6 +230,9 @@ export default {
           // });
         }
       });
+    },
+    handlePaySelect(id) {
+      this.payId = id;
     },
   },
 };

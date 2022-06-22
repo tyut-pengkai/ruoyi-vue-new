@@ -1,6 +1,6 @@
 <template>
   <el-row :gutter="10">
-    <el-col v-for="item in data" :key="item.id" :span="4">
+    <el-col v-for="item in data" :key="item.id" :span="span">
       <div class="my-card-group">
         <el-card
           :class="{ 'my-box-card-select': cardKeyOn == item.id }"
@@ -9,7 +9,7 @@
           @click.native="handleSelect(item.id)"
         >
           <div class="my-card-pay">
-            <div class="my-card-title">
+            <div :class="{ addon: addon }" class="my-card-title">
               <img :src="handleImgPath(item.img)"/>
               <p>{{ item.name }}</p>
             </div>
@@ -36,6 +36,14 @@ export default {
     cardKey: {
       type: Number,
       default: 0,
+    },
+    addon: {
+      type: Boolean,
+      default: false,
+    },
+    span: {
+      type: Number,
+      default: 4,
     },
   },
   mounted() {
@@ -92,6 +100,11 @@ export default {
   align-items: center;
   text-align: center;
   display: flex;
-  margin-bottom: 12px;
+  /* margin-bottom: 12px; */
+  /* margin-top: -10px; */
+}
+
+.addon {
+  margin-top: -10px;
 }
 </style>
