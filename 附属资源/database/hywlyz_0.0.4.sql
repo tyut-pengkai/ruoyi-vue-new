@@ -1,21 +1,77 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 123.206.55.70
  Source Server Type    : MySQL
- Source Server Version : 50724
- Source Host           : 123.206.55.70:3306
+ Source Server Version : 50730
  Source Schema         : hywlyz
 
  Target Server Type    : MySQL
- Target Server Version : 50724
+ Target Server Version : 50730
  File Encoding         : 65001
 
- Date: 08/05/2022 12:29:58
+ Date: 23/06/2022 17:44:42
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for sys_agent
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_agent`;
+CREATE TABLE `sys_agent`
+(
+    `agent_id`            bigint(20)                                                    NOT NULL AUTO_INCREMENT COMMENT '代理ID',
+    `parent_agent_id`     bigint(20)                                                    NULL DEFAULT NULL COMMENT '上级代理ID',
+    `path`                varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '代理树',
+    `user_id`             bigint(20)                                                    NOT NULL COMMENT '用户ID',
+    `enable_add_subagent` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '允许发展下级',
+    `expire_time`         datetime                                                      NULL DEFAULT NULL COMMENT '代理过期时间',
+    `status`              char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '代理状态（0正常 1停用）',
+    `del_flag`            char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
+    `create_by`           varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '创建者',
+    `create_time`         datetime                                                      NULL DEFAULT NULL COMMENT '创建时间',
+    `update_by`           varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '更新者',
+    `update_time`         datetime                                                      NULL DEFAULT NULL COMMENT '更新时间',
+    `remark`              varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+    PRIMARY KEY (`agent_id`) USING BTREE
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '代理信息表'
+  ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of sys_agent
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for sys_agent_item
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_agent_item`;
+CREATE TABLE `sys_agent_item`
+(
+    `id`            bigint(20)                                                    NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `agent_id`      bigint(20)                                                    NOT NULL COMMENT '代理ID',
+    `template_type` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NOT NULL COMMENT '卡类别1充值卡2单码',
+    `template_id`   bigint(20)                                                    NOT NULL COMMENT '卡类ID',
+    `agent_price`   decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '代理价格',
+    `expire_time`   datetime                                                      NULL DEFAULT NULL COMMENT '代理该卡过期时间',
+    `create_by`     varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '创建者',
+    `create_time`   datetime                                                      NULL DEFAULT NULL COMMENT '创建时间',
+    `update_by`     varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '更新者',
+    `update_time`   datetime                                                      NULL DEFAULT NULL COMMENT '更新时间',
+    `remark`        varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '代理卡类关联表'
+  ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of sys_agent_item
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for sys_app
@@ -112,7 +168,8 @@ CREATE TABLE `sys_app_user`
     `login_limit_m`   int(11)                                                       NULL DEFAULT NULL COMMENT '登录机器数量限制，整数，-1为不限制，默认为-1',
     `free_balance`    decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '免费余额',
     `pay_balance`     decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '支付余额',
-    `total_pay`       decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '总消费',
+    `free_payment`    decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '免费消费',
+    `pay_payment`     decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '支付消费',
     `last_login_time` datetime                                                      NULL DEFAULT NULL COMMENT '最后登录时间',
     `login_times`     bigint(11)                                                    NULL DEFAULT NULL COMMENT '登录次数',
     `pwd_error_times` int(11)                                                       NULL DEFAULT NULL COMMENT '密码连续错误次数',
@@ -127,7 +184,7 @@ CREATE TABLE `sys_app_user`
     PRIMARY KEY (`app_user_id`) USING BTREE,
     INDEX `user_id` (`user_id`) USING BTREE,
     INDEX `app_id` (`app_id`) USING BTREE,
-    INDEX `login_code` (`login_code`(191)) USING BTREE,
+    INDEX `login_code` (`login_code`) USING BTREE,
     CONSTRAINT `sys_app_user_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT `sys_app_user_ibfk_2` FOREIGN KEY (`app_id`) REFERENCES `sys_app` (`app_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
@@ -197,13 +254,54 @@ CREATE TABLE `sys_app_version`
     INDEX `app_id` (`app_id`, `version_no`) USING BTREE,
     CONSTRAINT `sys_app_version_ibfk_1` FOREIGN KEY (`app_id`) REFERENCES `sys_app` (`app_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 14
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '软件版本信息表'
   ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_app_version
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for sys_balance_log
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_balance_log`;
+CREATE TABLE `sys_balance_log`
+(
+    `id`                           bigint(20) UNSIGNED                                           NOT NULL AUTO_INCREMENT COMMENT '钱包明细 id',
+    `user_id`                      bigint(20) UNSIGNED                                           NOT NULL COMMENT '明细所属用户 id',
+    `source_user_id`               bigint(20) UNSIGNED                                           NULL     DEFAULT 0 COMMENT '金额来源用户',
+    `change_available_pay_amount`  decimal(10, 2)                                                NOT NULL COMMENT '变动可用充值金额',
+    `change_freeze_pay_amount`     decimal(10, 2)                                                NOT NULL COMMENT '变动冻结充值金额',
+    `change_type`                  char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NOT NULL DEFAULT '0' COMMENT '1：提现冻结，2：提现成功，3：撤销提现解冻； 4：代理分成，5：推广分成，6：转账收入，7：其他收入，8：消费支出，9：转账支出； 10：其他支出',
+    `change_available_free_amount` decimal(10, 2)                                                NOT NULL COMMENT '变动可用赠送金额',
+    `change_freeze_free_amount`    decimal(10, 2)                                                NOT NULL COMMENT '变动冻结赠送金额',
+    `freeze_free_after`            decimal(10, 2)                                                NOT NULL COMMENT '冻结赠送余额后',
+    `freeze_free_before`           decimal(10, 2)                                                NOT NULL COMMENT '冻结赠送余额前',
+    `available_free_after`         decimal(10, 2)                                                NOT NULL COMMENT '可用赠送余额后',
+    `available_free_before`        decimal(10, 2)                                                NOT NULL COMMENT '可用赠送余额前',
+    `freeze_pay_after`             decimal(10, 2)                                                NOT NULL COMMENT '冻结充值余额后',
+    `freeze_pay_before`            decimal(10, 2)                                                NOT NULL COMMENT '冻结充值余额前',
+    `available_pay_after`          decimal(10, 2)                                                NOT NULL COMMENT '可用充值余额后',
+    `available_pay_before`         decimal(10, 2)                                                NOT NULL COMMENT '可用充值余额前',
+    `change_desc`                  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '变动描述',
+    `sale_order_id`                bigint(20) UNSIGNED                                           NULL     DEFAULT NULL COMMENT '关联订单记录ID',
+    `withdraw_cash_id`             bigint(20) UNSIGNED                                           NULL     DEFAULT NULL COMMENT '关联提现记录ID',
+    `create_by`                    varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL     DEFAULT '' COMMENT '创建者',
+    `create_time`                  datetime                                                      NULL     DEFAULT NULL COMMENT '创建时间',
+    `update_by`                    varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL     DEFAULT '' COMMENT '更新者',
+    `update_time`                  datetime                                                      NULL     DEFAULT NULL COMMENT '更新时间',
+    `remark`                       varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL     DEFAULT NULL COMMENT '备注',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '金额变动表'
+  ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of sys_balance_log
 -- ----------------------------
 
 -- ----------------------------
@@ -227,6 +325,7 @@ CREATE TABLE `sys_card`
     `template_id` bigint(20)                                                    NULL DEFAULT NULL COMMENT '卡类ID',
     `status`      char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '卡密状态',
     `charge_rule` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '充值规则',
+    `is_agent`    char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '是否代理制卡',
     `create_by`   varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '创建者',
     `create_time` datetime                                                      NULL DEFAULT NULL COMMENT '创建时间',
     `update_by`   varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '更新者',
@@ -234,7 +333,7 @@ CREATE TABLE `sys_card`
     `remark`      varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`card_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 31236
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '卡密表'
   ROW_FORMAT = DYNAMIC;
@@ -278,7 +377,7 @@ CREATE TABLE `sys_card_template`
     INDEX `app_id` (`app_id`) USING BTREE,
     CONSTRAINT `sys_card_template_ibfk_1` FOREIGN KEY (`app_id`) REFERENCES `sys_app` (`app_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 12
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '卡密模板表'
   ROW_FORMAT = DYNAMIC;
@@ -305,7 +404,7 @@ CREATE TABLE `sys_config`
     `remark`       varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`config_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 14
+  AUTO_INCREMENT = 7
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '参数配置表'
   ROW_FORMAT = DYNAMIC;
@@ -354,7 +453,7 @@ CREATE TABLE `sys_dept`
     `update_time` datetime                                                     NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`dept_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 113
+  AUTO_INCREMENT = 101
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '部门表'
   ROW_FORMAT = DYNAMIC;
@@ -382,9 +481,9 @@ CREATE TABLE `sys_device_code`
     `update_time`     datetime                                                      NULL DEFAULT NULL COMMENT '更新时间',
     `remark`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`device_code_id`) USING BTREE,
-    INDEX `device_code` (`device_code`(191)) USING BTREE
+    INDEX `device_code` (`device_code`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 11
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '机器码管理表'
   ROW_FORMAT = DYNAMIC;
@@ -415,7 +514,7 @@ CREATE TABLE `sys_dict_data`
     `remark`      varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`dict_code`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 139
+  AUTO_INCREMENT = 167
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '字典数据表'
   ROW_FORMAT = DYNAMIC;
@@ -592,6 +691,90 @@ VALUES (137, 1, '支付宝当面付', 'alipay_f2f', 'pay_mode', NULL, 'primary',
 INSERT INTO `sys_dict_data`
 VALUES (138, 2, '支付宝当面付沙箱', 'alipay_f2f_sandbox', 'pay_mode', NULL, 'info', 'N', '0', 'sadmin', '2022-03-25 13:48:40',
         '', NULL, '支付宝当面付沙箱');
+INSERT INTO `sys_dict_data`
+VALUES (139, 0, '自动发货', '0', 'delivery_type', NULL, 'primary', 'N', '0', 'sadmin', '2022-05-12 22:38:14', 'sadmin',
+        '2022-05-12 22:44:58', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (140, 1, '手动发货', '1', 'delivery_type', NULL, 'primary', 'N', '0', 'sadmin', '2022-05-12 22:38:31', 'sadmin',
+        '2022-05-12 22:45:03', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (141, 0, 'JavaScript', '1', 'sys_script_type', NULL, 'primary', 'N', '0', 'sadmin', '2022-05-19 19:43:34',
+        'sadmin', '2022-05-20 00:05:23', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (142, 1, 'Python3', '2', 'sys_script_type', NULL, 'primary', 'N', '0', 'sadmin', '2022-05-19 19:47:50', 'sadmin',
+        '2022-05-20 00:05:29', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (143, 3, 'PHP', '4', 'sys_script_type', NULL, 'primary', 'N', '0', 'sadmin', '2022-05-19 19:48:42', 'sadmin',
+        '2022-05-20 00:05:36', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (144, 2, 'Python2', '3', 'sys_script_type', NULL, 'primary', 'N', '0', 'sadmin', '2022-05-19 19:49:19', 'sadmin',
+        '2022-05-20 00:05:32', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (145, 12, '测试', '12', 'sys_oper_type', NULL, 'info', 'N', '0', 'sadmin', '2022-06-03 18:58:06', 'sadmin',
+        '2022-06-03 18:58:43', '测试');
+INSERT INTO `sys_dict_data`
+VALUES (146, 0, '充值卡', '1', 'sys_template_type', NULL, 'primary', 'N', '0', 'sadmin', '2022-06-11 23:46:49', 'sadmin',
+        '2022-06-11 23:47:07', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (147, 1, '登录码', '2', 'sys_template_type', NULL, 'success', 'N', '0', 'sadmin', '2022-06-11 23:47:20', 'sadmin',
+        '2022-06-11 23:47:46', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (148, 0, '提现冻结', '1', 'sys_balance_change_type', NULL, 'info', 'N', '0', 'sadmin', '2022-06-16 21:47:59',
+        'sadmin', '2022-06-16 21:58:04', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (149, 1, '提现成功', '2', 'sys_balance_change_type', NULL, 'primary', 'N', '0', 'sadmin', '2022-06-16 21:48:22',
+        'sadmin', '2022-06-16 21:58:51', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (150, 2, '撤销提现解冻', '3', 'sys_balance_change_type', NULL, 'info', 'N', '0', 'sadmin', '2022-06-16 21:48:46',
+        'sadmin', '2022-06-16 21:58:30', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (151, 3, '代理分成', '4', 'sys_balance_change_type', NULL, 'success', 'N', '0', 'sadmin', '2022-06-16 21:48:59',
+        'sadmin', '2022-06-16 21:58:57', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (152, 4, '推广分成', '5', 'sys_balance_change_type', NULL, 'success', 'N', '0', 'sadmin', '2022-06-16 21:49:13',
+        'sadmin', '2022-06-16 21:59:03', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (153, 5, '转账收入', '6', 'sys_balance_change_type', NULL, 'success', 'N', '0', 'sadmin', '2022-06-16 21:49:32',
+        'sadmin', '2022-06-16 21:59:08', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (154, 6, '其他收入', '7', 'sys_balance_change_type', NULL, 'success', 'N', '0', 'sadmin', '2022-06-16 21:49:52',
+        'sadmin', '2022-06-16 21:59:12', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (155, 7, '消费支出', '8', 'sys_balance_change_type', NULL, 'primary', 'N', '0', 'sadmin', '2022-06-16 21:50:20',
+        'sadmin', '2022-06-16 21:59:28', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (156, 8, '转账支出', '9', 'sys_balance_change_type', NULL, 'primary', 'N', '0', 'sadmin', '2022-06-16 21:50:38', '',
+        NULL, NULL);
+INSERT INTO `sys_dict_data`
+VALUES (157, 9, '其他支出', '10', 'sys_balance_change_type', NULL, 'primary', 'N', '0', 'sadmin', '2022-06-16 21:50:53', '',
+        NULL, NULL);
+INSERT INTO `sys_dict_data`
+VALUES (158, 0, '待审核', '1', 'sys_cash_status', NULL, 'warning', 'N', '0', 'sadmin', '2022-06-16 21:55:43', 'sadmin',
+        '2022-06-16 21:56:54', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (159, 1, '审核通过', '2', 'sys_cash_status', NULL, 'info', 'N', '0', 'sadmin', '2022-06-16 21:55:55', 'sadmin',
+        '2022-06-16 21:56:45', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (160, 2, '审核不通过', '3', 'sys_cash_status', NULL, 'danger', 'N', '0', 'sadmin', '2022-06-16 21:56:09', 'sadmin',
+        '2022-06-16 21:57:45', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (161, 3, '待打款', '4', 'sys_cash_status', NULL, 'primary', 'N', '0', 'sadmin', '2022-06-16 21:56:21', 'sadmin',
+        '2022-06-16 21:56:26', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (162, 4, '已打款', '5', 'sys_cash_status', NULL, 'success', 'N', '0', 'sadmin', '2022-06-16 21:57:18', '', NULL,
+        NULL);
+INSERT INTO `sys_dict_data`
+VALUES (163, 5, '打款失败', '6', 'sys_cash_status', NULL, 'danger', 'N', '0', 'sadmin', '2022-06-16 21:57:35', '', NULL,
+        NULL);
+INSERT INTO `sys_dict_data`
+VALUES (164, 10, '余额充值', '11', 'sys_balance_change_type', NULL, 'success', 'N', '0', 'sadmin', '2022-06-22 13:50:00',
+        'sadmin', '2022-06-22 13:50:14', NULL);
+INSERT INTO `sys_dict_data`
+VALUES (165, 0, '商城订单', '1', 'sys_order_type', NULL, 'primary', 'N', '0', 'sadmin', '2022-06-23 14:20:31', '', NULL,
+        NULL);
+INSERT INTO `sys_dict_data`
+VALUES (166, 1, '充值订单', '2', 'sys_order_type', NULL, 'success', 'N', '0', 'sadmin', '2022-06-23 14:20:41', 'sadmin',
+        '2022-06-23 14:22:21', NULL);
 
 -- ----------------------------
 -- Table structure for sys_dict_type
@@ -611,7 +794,7 @@ CREATE TABLE `sys_dict_type`
     PRIMARY KEY (`dict_id`) USING BTREE,
     UNIQUE INDEX `dict_type` (`dict_type`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 109
+  AUTO_INCREMENT = 115
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '字典类型表'
   ROW_FORMAT = DYNAMIC;
@@ -657,6 +840,64 @@ INSERT INTO `sys_dict_type`
 VALUES (107, '销售订单状态', 'sale_order_status', '0', 'sadmin', '2022-02-21 23:36:35', '', NULL, '销售订单状态');
 INSERT INTO `sys_dict_type`
 VALUES (108, '支付方式', 'pay_mode', '0', 'sadmin', '2022-03-13 00:54:41', '', NULL, '支付方式');
+INSERT INTO `sys_dict_type`
+VALUES (109, '发货类型', 'delivery_type', '0', 'sadmin', '2022-05-12 22:37:06', 'sadmin', '2022-05-12 22:37:17', '发货类型');
+INSERT INTO `sys_dict_type`
+VALUES (110, '脚本语言', 'sys_script_type', '0', 'sadmin', '2022-05-19 19:42:45', 'sadmin', '2022-05-19 19:42:53', '脚本语言');
+INSERT INTO `sys_dict_type`
+VALUES (111, '模板类型', 'sys_template_type', '0', 'sadmin', '2022-06-11 23:45:55', 'sadmin', '2022-06-16 21:47:27',
+        '模板类型');
+INSERT INTO `sys_dict_type`
+VALUES (112, '余额变动类型', 'sys_balance_change_type', '0', 'sadmin', '2022-06-16 21:47:22', '', NULL, '余额变动类型');
+INSERT INTO `sys_dict_type`
+VALUES (113, '提现状态', 'sys_cash_status', '0', 'sadmin', '2022-06-16 21:55:29', '', NULL, '提现状态');
+INSERT INTO `sys_dict_type`
+VALUES (114, '订单类型', 'sys_order_type', '0', 'sadmin', '2022-06-23 14:19:54', '', NULL, '订单类型');
+
+-- ----------------------------
+-- Table structure for sys_global_script
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_global_script`;
+CREATE TABLE `sys_global_script`
+(
+    `script_id`   bigint(20)                                                    NOT NULL AUTO_INCREMENT COMMENT '脚本ID',
+    `name`        varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT NULL COMMENT '脚本名',
+    `description` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '脚本描述',
+    `check_token` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '是否检查token',
+    `check_vip`   char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '是否检查vip',
+    `content`     text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci         NULL COMMENT '脚本内容',
+    `language`    varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT NULL COMMENT '脚本语言',
+    `script_key`  varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT NULL COMMENT '脚本Key',
+    `create_by`   varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '创建者',
+    `create_time` datetime                                                      NULL DEFAULT NULL COMMENT '创建时间',
+    `update_by`   varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '更新者',
+    `update_time` datetime                                                      NULL DEFAULT NULL COMMENT '更新时间',
+    `remark`      varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+    PRIMARY KEY (`script_id`) USING BTREE
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 4
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '全局远程脚本'
+  ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of sys_global_script
+-- ----------------------------
+INSERT INTO `sys_global_script`
+VALUES (1, 'js示例', 'JavaScript需要服务器安装Nodejs服务', 'N', 'N',
+        '//演示函数\r\n\r\n/**\r\n * 扩展Date的Format函数\r\n * 月(M)、日(d)、小时(h)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符， \r\n * 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字) \r\n * @param {[type]} fmt [description]\r\n */\r\nDate.prototype.Format = function(fmt) {\r\n    var o = {\r\n        \"M+\": this.getMonth() + 1, //月份 \r\n        \"d+\": this.getDate(), //日 \r\n        \"h+\": this.getHours(), //小时 \r\n        \"m+\": this.getMinutes(), //分 \r\n        \"s+\": this.getSeconds(), //秒 \r\n        \"S\": this.getMilliseconds() //毫秒 \r\n    };\r\n    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + \"\").substr(4 - RegExp.$1.length));\r\n    for (var k in o)\r\n        if (new RegExp(\"(\" + k + \")\").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : ((\"00\" + o[k]).substr((\"\" + o[k]).length)));\r\n    return fmt;\r\n}\r\n\r\n//字符串连接,例如 $a=\"123\",$b=\"456\",则返回\"123456\"\r\nfunction g_concat(str1,str2){\r\n  return str1 + str2 ;\r\n}\r\n\r\n//数字相加,例如 $a=\"123\",$b=\"456\",则返回 579\r\nfunction g_addition(a, b) {\r\n	return parseInt(a) + parseInt(b);\r\n}\r\n\r\nconsole.log(g_concat(process.argv[2], process.argv[3]));\r\nconsole.log(g_addition(process.argv[2], process.argv[3]));\r\n//获取服务器时间\r\nconsole.log((new Date()).Format(\"yyyy年MM月dd日 hh:mm:ss\"));',
+        '1', 'QRhgAxzkiPJnPDVvygFAvCNFqYHCyNOV', '', '2022-05-19 20:37:04', 'sadmin', '2022-05-21 14:39:52',
+        'JavaScript需要服务器安装Nodejs服务');
+INSERT INTO `sys_global_script`
+VALUES (2, 'php示例', 'PHP需要服务器安装PHP服务', 'N', 'N',
+        '<?php\r\n//演示函数\r\n\r\n//获取服务器时间\r\nfunction g_getTime(){\r\n  return date(\"Y-m-d H:i:s\");\r\n}\r\n\r\n//字符串连接,例如 $a=\"123\",$b=\"456\",则返回\"123456\"\r\nfunction g_concat($str1,$str2){\r\n  return $str1 . $str2 ;\r\n}\r\n\r\n//数字相加,例如 $a=\"123\",$b=\"456\",则返回 579\r\nfunction g_addition($a,$b){\r\n  return $a + $b;\r\n}\r\n\r\necho g_concat($argv[1], $argv[2]);\r\necho g_addition($argv[1], $argv[2]);\r\necho g_getTime();',
+        '4', 'EuJZDgndDCSPefpVFAiXIWGnfgDJYpPG', '', '2022-05-19 22:49:52', 'sadmin', '2022-05-21 14:39:57',
+        'PHP需要服务器安装PHP服务');
+INSERT INTO `sys_global_script`
+VALUES (3, 'python示例', 'Python需要服务器安装Python服务', 'N', 'N',
+        '#!/usr/bin/env python3\r\n# -*- coding: utf-8 -*-\r\n\r\n# 演示函数\r\n\r\nimport sys\r\nimport time\r\n\r\n\r\n# 获取服务器时间\r\ndef g_get_time():\r\n    return time.strftime(\'%Y-%m-%d %H:%M:%S\', time.localtime())\r\n\r\n\r\n# 字符串连接,例如 $a=\"123\",$b=\"456\",则返回\"123456\"\r\ndef g_concat(str1, str2):\r\n    return str(str1) + str(str2)\r\n\r\n\r\n# 数字相加,例如 $a=\"123\",$b=\"456\",则返回 579\r\ndef g_addition(a, b):\r\n    return int(a) + int(b)\r\n\r\n\r\ndef main():\r\n    print(g_concat(sys.argv[1], sys.argv[2]))\r\n    print(g_addition(sys.argv[1], sys.argv[2]))\r\n    print(g_get_time())\r\n\r\n\r\nif __name__ == \'__main__\':\r\n    main()\r\n',
+        '2', 'nKQIxAGxAgSiPYQRGxGDPRSlvcHKoRgH', '', '2022-05-19 22:53:32', 'sadmin', '2022-05-21 14:40:01',
+        'Python需要服务器安装Python服务');
 
 -- ----------------------------
 -- Table structure for sys_login_code
@@ -677,6 +918,7 @@ CREATE TABLE `sys_login_code`
     `charge_time` datetime                                                      NULL DEFAULT NULL COMMENT '充值时间',
     `template_id` bigint(20)                                                    NULL DEFAULT NULL COMMENT '卡类ID',
     `status`      char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '卡密状态',
+    `is_agent`    char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '是否代理制卡',
     `create_by`   varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '创建者',
     `create_time` datetime                                                      NULL DEFAULT NULL COMMENT '创建时间',
     `update_by`   varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '更新者',
@@ -687,7 +929,7 @@ CREATE TABLE `sys_login_code`
     INDEX `card_no` (`card_no`) USING BTREE,
     CONSTRAINT `sys_login_code_ibfk_1` FOREIGN KEY (`app_id`) REFERENCES `sys_app` (`app_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 124
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '登录码表'
   ROW_FORMAT = DYNAMIC;
@@ -727,7 +969,7 @@ CREATE TABLE `sys_login_code_template`
     INDEX `app_id` (`app_id`) USING BTREE,
     CONSTRAINT `sys_login_code_template_ibfk_1` FOREIGN KEY (`app_id`) REFERENCES `sys_app` (`app_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 11
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '登录码类别表'
   ROW_FORMAT = DYNAMIC;
@@ -753,7 +995,7 @@ CREATE TABLE `sys_logininfor`
     `login_time`     datetime                                                      NULL DEFAULT NULL COMMENT '访问时间',
     PRIMARY KEY (`info_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 770
+  AUTO_INCREMENT = 3
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '系统访问记录'
   ROW_FORMAT = DYNAMIC;
@@ -762,11 +1004,9 @@ CREATE TABLE `sys_logininfor`
 -- Records of sys_logininfor
 -- ----------------------------
 INSERT INTO `sys_logininfor`
-VALUES (767, 'sadmin', '127.0.0.1', '内网IP', 'Chrome 8', 'Windows 10', '0', '登录成功', '2022-05-08 11:40:27');
+VALUES (1, 'admin', '127.0.0.1', '内网IP', 'Chrome 8', 'Windows 10', '0', '退出成功', '2022-05-21 18:12:01');
 INSERT INTO `sys_logininfor`
-VALUES (768, 'sadmin', '127.0.0.1', '内网IP', 'Chrome 8', 'Windows 10', '0', '退出成功', '2022-05-08 12:29:08');
-INSERT INTO `sys_logininfor`
-VALUES (769, 'sadmin', '127.0.0.1', '内网IP', 'Chrome 8', 'Windows 10', '0', '登录成功', '2022-05-08 12:29:13');
+VALUES (2, 'admin', '127.0.0.1', '内网IP', 'Chrome 8', 'Windows 10', '0', '登录成功', '2022-05-21 18:12:58');
 
 -- ----------------------------
 -- Table structure for sys_menu
@@ -795,7 +1035,7 @@ CREATE TABLE `sys_menu`
     `remark`      varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`menu_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 2104
+  AUTO_INCREMENT = 2154
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '菜单权限表'
   ROW_FORMAT = DYNAMIC;
@@ -804,14 +1044,14 @@ CREATE TABLE `sys_menu`
 -- Records of sys_menu
 -- ----------------------------
 INSERT INTO `sys_menu`
-VALUES (1, '系统管理', 0, 1, 'system', NULL, '', 1, 0, 'M', '0', '0', '', 'system', 'admin', '2021-10-28 11:33:47', '',
-        NULL, '系统管理目录');
+VALUES (1, '系统管理', 0, 20, 'system', NULL, '', 1, 0, 'M', '0', '0', '', 'system', 'admin', '2021-10-28 11:33:47',
+        'sadmin', '2022-06-16 22:29:11', '系统管理目录');
 INSERT INTO `sys_menu`
-VALUES (2, '系统监控', 0, 5, 'monitor', NULL, '', 1, 0, 'M', '0', '0', '', 'monitor', 'admin', '2021-10-28 11:33:47',
-        'sadmin', '2022-03-22 23:42:51', '系统监控目录');
+VALUES (2, '系统监控', 0, 70, 'monitor', NULL, '', 1, 0, 'M', '0', '0', '', 'monitor', 'admin', '2021-10-28 11:33:47',
+        'sadmin', '2022-06-16 22:28:39', '系统监控目录');
 INSERT INTO `sys_menu`
-VALUES (3, '系统工具', 0, 6, 'tool', NULL, '', 1, 0, 'M', '0', '0', '', 'tool', 'admin', '2021-10-28 11:33:47', 'sadmin',
-        '2022-03-22 23:43:01', '系统工具目录');
+VALUES (3, '系统工具', 0, 80, 'tool', NULL, '', 1, 0, 'M', '0', '0', '', 'tool', 'admin', '2021-10-28 11:33:47', 'sadmin',
+        '2022-06-16 22:28:34', '系统工具目录');
 INSERT INTO `sys_menu`
 VALUES (100, '账号管理', 2006, 2, 'user', 'system/user/index', '', 1, 0, 'C', '0', '0', 'system:user:list', 'user', 'admin',
         '2021-10-28 11:33:47', 'sadmin', '2022-01-23 22:29:27', '用户管理菜单');
@@ -834,11 +1074,11 @@ INSERT INTO `sys_menu`
 VALUES (106, '参数设置', 2094, 10, 'config', 'system/config/index', '', 1, 0, 'C', '0', '0', 'system:config:list', 'edit',
         'admin', '2021-10-28 11:33:47', 'sadmin', '2022-03-25 01:27:01', '参数设置菜单');
 INSERT INTO `sys_menu`
-VALUES (107, '通知公告', 1, 8, 'notice', 'system/notice/index', '', 1, 0, 'C', '0', '0', 'system:notice:list', 'message',
-        'admin', '2021-10-28 11:33:47', '', NULL, '通知公告菜单');
+VALUES (107, '通知公告', 2094, 8, 'notice', 'system/notice/index', '', 1, 0, 'C', '0', '0', 'system:notice:list', 'message',
+        'admin', '2021-10-28 11:33:47', 'sadmin', '2022-05-18 22:31:51', '通知公告菜单');
 INSERT INTO `sys_menu`
-VALUES (108, '日志管理', 2006, 9, 'log', '', '', 1, 0, 'M', '0', '0', '', 'log', 'admin', '2021-10-28 11:33:47', 'sadmin',
-        '2022-01-23 22:23:04', '日志管理菜单');
+VALUES (108, '日志管理', 0, 60, 'log', '', '', 1, 0, 'M', '0', '0', '', 'log', 'admin', '2021-10-28 11:33:47', 'sadmin',
+        '2022-06-16 22:28:26', '日志管理菜单');
 INSERT INTO `sys_menu`
 VALUES (109, '在线用户', 2006, 1, 'online', 'monitor/online/index', '', 1, 0, 'C', '0', '0', 'monitor:online:list',
         'online', 'admin', '2021-10-28 11:33:47', 'sadmin', '2022-01-23 22:29:20', '在线用户菜单');
@@ -1051,11 +1291,11 @@ INSERT INTO `sys_menu`
 VALUES (1060, '生成代码', 115, 5, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:code', '#', 'admin', '2021-10-28 11:33:47',
         '', NULL, '');
 INSERT INTO `sys_menu`
-VALUES (2006, '验证管理', 0, 2, 'verify', NULL, NULL, 1, 0, 'M', '0', '0', '', 'validCode', 'admin', '2021-11-04 18:41:19',
-        'sadmin', '2022-03-12 12:29:24', '');
+VALUES (2006, '验证管理', 0, 30, 'verify', NULL, NULL, 1, 0, 'M', '0', '0', '', 'validCode', 'admin', '2021-11-04 18:41:19',
+        'sadmin', '2022-06-16 22:29:07', '');
 INSERT INTO `sys_menu`
-VALUES (2008, '软件管理', 2006, 3, 'app', 'system/app/index', NULL, 1, 0, 'C', '0', '0', 'system:app:list', 'modular',
-        'admin', '2021-11-05 10:46:41', 'sadmin', '2022-01-23 22:29:46', '软件菜单');
+VALUES (2008, '软件管理', 2006, 1, 'app', 'system/app/index', NULL, 1, 0, 'C', '0', '0', 'system:app:list', 'modular',
+        'admin', '2021-11-05 10:46:41', 'sadmin', '2022-05-21 00:05:43', '软件菜单');
 INSERT INTO `sys_menu`
 VALUES (2009, '软件查询', 2008, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:app:query', '#', 'admin',
         '2021-11-05 10:46:47', '', NULL, '');
@@ -1098,20 +1338,14 @@ INSERT INTO `sys_menu`
 VALUES (2021, '登录日志查询', 2020, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:appLogininfor:query', '#', 'admin',
         '2021-12-29 19:16:32', 'admin', '2021-12-31 12:41:32', '');
 INSERT INTO `sys_menu`
-VALUES (2022, '登录日志新增', 2020, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:appLogininfor:add', '#', 'admin',
-        '2021-12-29 19:16:32', 'admin', '2021-12-31 12:41:37', '');
-INSERT INTO `sys_menu`
-VALUES (2023, '登录日志修改', 2020, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:appLogininfor:edit', '#', 'admin',
-        '2021-12-29 19:16:32', 'admin', '2021-12-31 12:41:43', '');
-INSERT INTO `sys_menu`
 VALUES (2024, '登录日志删除', 2020, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:appLogininfor:remove', '#', 'admin',
         '2021-12-29 19:16:32', 'admin', '2021-12-31 12:41:49', '');
 INSERT INTO `sys_menu`
 VALUES (2025, '登录日志导出', 2020, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:appLogininfor:export', '#', 'admin',
         '2021-12-29 19:16:32', 'admin', '2021-12-31 12:41:54', '');
 INSERT INTO `sys_menu`
-VALUES (2026, '软件版本', 2006, 10, 'appVersion', 'system/appVersion/index', NULL, 1, 0, 'C', '1', '0',
-        'system:appVersion:list', '#', 'admin', '2021-12-31 12:32:33', 'sadmin', '2022-02-01 19:55:42', '软件版本信息菜单');
+VALUES (2026, '软件版本', 2006, 11, 'appVersion', 'system/appVersion/index', NULL, 1, 0, 'C', '1', '0',
+        'system:appVersion:list', '#', 'admin', '2021-12-31 12:32:33', 'sadmin', '2022-05-21 00:06:59', '软件版本信息菜单');
 INSERT INTO `sys_menu`
 VALUES (2027, '软件版本查询', 2026, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:appVersion:query', '#', 'admin',
         '2021-12-31 12:32:33', 'admin', '2021-12-31 12:40:52', '');
@@ -1245,11 +1479,11 @@ INSERT INTO `sys_menu`
 VALUES (2069, '单码模式', 2006, 7, 'cardMode', NULL, NULL, 1, 0, 'M', '0', '0', '', 'input', 'sadmin',
         '2022-01-23 20:58:12', 'sadmin', '2022-01-23 22:30:38', '');
 INSERT INTO `sys_menu`
-VALUES (2070, '授权许可', 1, 10, 'license', 'system/license/index', NULL, 1, 0, 'C', '0', '0', '', 'import', 'sadmin',
-        '2022-01-30 14:55:30', 'sadmin', '2022-05-08 12:29:28', '');
+VALUES (2070, '授权许可', 2094, 11, 'license', 'system/license/index', NULL, 1, 0, 'C', '0', '0', '', 'import', 'sadmin',
+        '2022-01-30 14:55:30', 'sadmin', '2022-05-18 22:32:54', '');
 INSERT INTO `sys_menu`
-VALUES (2071, '销售订单', 2077, 1, 'saleOrder', 'sale/saleOrder/index', NULL, 1, 0, 'C', '0', '0', 'sale:saleOrder:list',
-        'file', 'admin', '2022-02-21 22:49:53', 'sadmin', '2022-02-26 17:49:48', '销售订单菜单');
+VALUES (2071, '交易订单', 2077, 1, 'saleOrder', 'sale/saleOrder/index', NULL, 1, 0, 'C', '0', '0', 'sale:saleOrder:list',
+        'file', 'admin', '2022-02-21 22:49:53', 'sadmin', '2022-06-23 14:25:36', '销售订单菜单');
 INSERT INTO `sys_menu`
 VALUES (2072, '销售订单查询', 2071, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'sale:saleOrder:query', '#', 'admin',
         '2022-02-21 22:49:54', 'sadmin', '2022-02-21 22:51:48', '');
@@ -1266,8 +1500,8 @@ INSERT INTO `sys_menu`
 VALUES (2076, '销售订单导出', 2071, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'sale:saleOrder:export', '#', 'admin',
         '2022-02-21 22:49:54', 'sadmin', '2022-02-21 22:52:19', '');
 INSERT INTO `sys_menu`
-VALUES (2077, '销售管理', 0, 3, 'sale', NULL, NULL, 1, 0, 'M', '0', '0', NULL, 'file', 'sadmin', '2022-02-26 17:49:26', '',
-        NULL, '');
+VALUES (2077, '销售管理', 0, 50, 'sale', NULL, NULL, 1, 0, 'M', '0', '0', '', 'file', 'sadmin', '2022-02-26 17:49:26',
+        'sadmin', '2022-06-16 22:28:59', '');
 INSERT INTO `sys_menu`
 VALUES (2084, '订单商品', 2077, 2, 'saleGoods', 'sale/saleGoods/index', NULL, 1, 0, 'C', '1', '0', 'sale:saleGoods:list',
         'success-filling', 'admin', '2022-03-01 23:38:08', 'sadmin', '2022-03-15 00:48:43', '订单商品菜单');
@@ -1287,11 +1521,14 @@ INSERT INTO `sys_menu`
 VALUES (2089, '订单商品导出', 2084, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'sale:saleGoods:export', '#', 'admin',
         '2022-03-01 23:38:08', '', NULL, '');
 INSERT INTO `sys_menu`
+VALUES (2090, 'index_ori', 3, 999, 'index_ori', 'index_ori', NULL, 1, 0, 'C', '0', '0', '', '#', 'sadmin',
+        '2022-03-17 16:27:23', 'sadmin', '2022-03-17 16:29:57', '');
+INSERT INTO `sys_menu`
 VALUES (2093, '网站设置', 2094, 1, 'website', 'system/website/index', NULL, 1, 0, 'C', '0', '0', '', 'setting-filling',
         'sadmin', '2022-03-22 19:40:27', 'sadmin', '2022-03-25 01:26:45', '');
 INSERT INTO `sys_menu`
-VALUES (2094, '系统配置', 0, 4, 'sysConfig', NULL, NULL, 1, 0, 'M', '0', '0', '', 'setting', 'sadmin',
-        '2022-03-22 23:42:34', 'sadmin', '2022-04-03 14:06:12', '');
+VALUES (2094, '系统配置', 0, 65, 'sysConfig', NULL, NULL, 1, 0, 'M', '0', '0', '', 'setting', 'sadmin',
+        '2022-03-22 23:42:34', 'sadmin', '2022-06-16 22:28:53', '');
 INSERT INTO `sys_menu`
 VALUES (2095, '支付配置', 2094, 2, 'payment', 'system/payment/index', NULL, 1, 0, 'C', '0', '0', 'system:payment:list',
         'money', 'admin', '2022-03-24 21:27:40', 'sadmin', '2022-03-25 01:26:53', '支付配置菜单');
@@ -1319,6 +1556,126 @@ VALUES (2102, '销售数据', 2101, 1, 'saleView', 'system/dashboard/sale/index'
 INSERT INTO `sys_menu`
 VALUES (2103, '软件数据', 2101, 2, 'appView', 'system/dashboard/app/index', NULL, 1, 0, 'C', '0', '0',
         'system:dashboard:app', 'modular', 'sadmin', '2022-04-03 14:03:56', 'sadmin', '2022-04-03 14:05:31', '');
+INSERT INTO `sys_menu`
+VALUES (2105, '全局脚本', 2006, 9, 'globalScript', 'system/globalScript/index', NULL, 1, 0, 'C', '0', '0',
+        'system:globalScript:list', 'code', 'admin', '2022-05-19 20:03:42', 'sadmin', '2022-05-21 00:05:27', '全局脚本菜单');
+INSERT INTO `sys_menu`
+VALUES (2106, '全局脚本查询', 2105, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:globalScript:query', '#', 'admin',
+        '2022-05-19 20:03:43', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2107, '全局脚本新增', 2105, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:globalScript:add', '#', 'admin',
+        '2022-05-19 20:03:43', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2108, '全局脚本修改', 2105, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:globalScript:edit', '#', 'admin',
+        '2022-05-19 20:03:43', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2109, '全局脚本删除', 2105, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:globalScript:remove', '#', 'admin',
+        '2022-05-19 20:03:43', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2110, '全局脚本导出', 2105, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:globalScript:export', '#', 'admin',
+        '2022-05-19 20:03:43', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2111, '全局脚本测试', 2105, 6, '', NULL, NULL, 1, 0, 'F', '0', '0', 'system:globalScript:test', '#', 'sadmin',
+        '2022-05-21 12:12:37', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2118, '代理系统', 0, 40, 'agent', NULL, NULL, 1, 0, 'M', '0', '0', '', 'peoples', 'sadmin', '2022-06-08 15:30:05',
+        'sadmin', '2022-06-16 22:29:03', '');
+INSERT INTO `sys_menu`
+VALUES (2119, '我的代理', 2118, 0, 'agentUser', 'agent/agentUser/index', NULL, 1, 0, 'C', '0', '0', 'agent:agentUser:list',
+        'peoples', 'admin', '2022-06-08 17:26:00', 'sadmin', '2022-06-12 15:08:15', '代理管理菜单');
+INSERT INTO `sys_menu`
+VALUES (2120, '代理用户查询', 2119, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentUser:query', '#', 'admin',
+        '2022-06-08 17:26:00', 'sadmin', '2022-06-08 22:37:20', '');
+INSERT INTO `sys_menu`
+VALUES (2121, '代理用户新增', 2119, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentUser:add', '#', 'admin',
+        '2022-06-08 17:26:00', 'sadmin', '2022-06-08 22:37:26', '');
+INSERT INTO `sys_menu`
+VALUES (2122, '代理用户修改', 2119, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentUser:edit', '#', 'admin',
+        '2022-06-08 17:26:00', 'sadmin', '2022-06-08 22:36:45', '');
+INSERT INTO `sys_menu`
+VALUES (2123, '代理用户删除', 2119, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentUser:remove', '#', 'admin',
+        '2022-06-08 17:26:00', 'sadmin', '2022-06-08 22:37:01', '');
+INSERT INTO `sys_menu`
+VALUES (2124, '代理用户导出', 2119, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentUser:export', '#', 'admin',
+        '2022-06-08 17:26:00', 'sadmin', '2022-06-08 22:37:10', '');
+INSERT INTO `sys_menu`
+VALUES (2126, '代理授权', 2118, 1, 'agentItem', 'agent/agentItem/index', NULL, 1, 0, 'C', '0', '0', 'agent:agentItem:list',
+        'button', 'admin', '2022-06-11 19:56:39', 'sadmin', '2022-06-12 01:32:53', '代理卡类关联菜单');
+INSERT INTO `sys_menu`
+VALUES (2127, '代理卡类关联查询', 2126, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentItem:query', '#', 'admin',
+        '2022-06-11 19:56:39', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2128, '代理卡类关联新增', 2126, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentItem:add', '#', 'admin',
+        '2022-06-11 19:56:39', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2129, '代理卡类关联修改', 2126, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentItem:edit', '#', 'admin',
+        '2022-06-11 19:56:39', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2130, '代理卡类关联删除', 2126, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentItem:remove', '#', 'admin',
+        '2022-06-11 19:56:39', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2131, '代理卡类关联导出', 2126, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentItem:export', '#', 'admin',
+        '2022-06-11 19:56:39', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2132, '代理制卡', 2118, 2, 'agentMake', NULL, NULL, 1, 0, 'M', '0', '0', '', 'add-circle', 'sadmin',
+        '2022-06-12 15:07:55', 'sadmin', '2022-06-12 17:34:39', '');
+INSERT INTO `sys_menu`
+VALUES (2133, '卡密管理', 2132, 0, 'agentCard', 'agent/agentCard/index', NULL, 1, 0, 'C', '0', '0', 'agent:agentCard:list',
+        'copy', 'sadmin', '2022-06-12 15:11:06', 'sadmin', '2022-06-12 15:12:51', '');
+INSERT INTO `sys_menu`
+VALUES (2134, '单码管理', 2132, 1, 'agentLoginCode', 'agent/agentLoginCode/index', NULL, 1, 0, 'C', '0', '0',
+        'agent:agentLoginCode:list', 'file', 'sadmin', '2022-06-12 15:15:31', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2135, '代理卡密查询', 2133, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentCard:query', '#', 'admin',
+        '2022-06-12 17:18:00', 'sadmin', '2022-06-12 17:18:29', '');
+INSERT INTO `sys_menu`
+VALUES (2136, '代理卡密新增', 2133, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentCard:add', '#', 'admin',
+        '2022-06-12 17:18:00', 'sadmin', '2022-06-12 17:18:36', '');
+INSERT INTO `sys_menu`
+VALUES (2137, '代理卡密修改', 2133, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentCard:edit', '#', 'admin',
+        '2022-06-12 17:18:00', 'sadmin', '2022-06-12 17:18:41', '');
+INSERT INTO `sys_menu`
+VALUES (2138, '代理卡密删除', 2133, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentCard:remove', '#', 'admin',
+        '2022-06-12 17:18:00', 'sadmin', '2022-06-12 17:18:46', '');
+INSERT INTO `sys_menu`
+VALUES (2139, '代理卡密导出', 2133, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentCard:export', '#', 'admin',
+        '2022-06-12 17:18:00', 'sadmin', '2022-06-12 17:18:50', '');
+INSERT INTO `sys_menu`
+VALUES (2140, '代理单码查询', 2134, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentLoginCode:query', '#', 'admin',
+        '2022-06-12 17:20:41', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2141, '代理单码新增', 2134, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentLoginCode:add', '#', 'admin',
+        '2022-06-12 17:20:41', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2142, '代理单码修改', 2134, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentLoginCode:edit', '#', 'admin',
+        '2022-06-12 17:20:41', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2143, '代理单码删除', 2134, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentLoginCode:remove', '#', 'admin',
+        '2022-06-12 17:20:41', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2144, '代理单码导出', 2134, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'agent:agentLoginCode:export', '#', 'admin',
+        '2022-06-12 17:20:41', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2145, '个人中心', 0, 10, 'user', NULL, NULL, 1, 0, 'M', '0', '0', '', 'home-filling', 'sadmin',
+        '2022-06-14 23:11:52', 'sadmin', '2022-06-16 22:29:15', '');
+INSERT INTO `sys_menu`
+VALUES (2146, '个人中心', 2145, 0, 'profile', NULL, NULL, 1, 0, 'C', '0', '0', NULL, 'user', 'sadmin',
+        '2022-06-14 23:16:46', '', NULL, '');
+INSERT INTO `sys_menu`
+VALUES (2147, '余额变动', 108, 15, 'balanceLog', 'system/balanceLog/index', NULL, 1, 0, 'C', '0', '0',
+        'system:balanceLog:list', 'money', 'admin', '2022-06-16 22:23:05', 'sadmin', '2022-06-16 22:35:23', '余额变动菜单');
+INSERT INTO `sys_menu`
+VALUES (2148, '余额变动查询', 2147, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:balanceLog:query', '#', 'admin',
+        '2022-06-16 22:23:05', 'sadmin', '2022-06-16 22:31:13', '');
+INSERT INTO `sys_menu`
+VALUES (2151, '余额变动删除', 2147, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:balanceLog:remove', '#', 'admin',
+        '2022-06-16 22:23:06', 'sadmin', '2022-06-16 22:31:50', '');
+INSERT INTO `sys_menu`
+VALUES (2152, '余额变动导出', 2147, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'system:balanceLog:export', '#', 'admin',
+        '2022-06-16 22:23:06', 'sadmin', '2022-06-16 22:32:00', '');
+INSERT INTO `sys_menu`
+VALUES (2153, '我的订单', 2145, 1, 'myOrder', 'sale/saleOrder/self/index', NULL, 1, 0, 'C', '0', '0', NULL, 'file',
+        'sadmin', '2022-06-23 16:10:44', '', NULL, '');
 
 -- ----------------------------
 -- Table structure for sys_notice
@@ -1338,7 +1695,7 @@ CREATE TABLE `sys_notice`
     `remark`         varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`notice_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 6
+  AUTO_INCREMENT = 2
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '通知公告表'
   ROW_FORMAT = DYNAMIC;
@@ -1375,7 +1732,7 @@ CREATE TABLE `sys_oper_log`
     `oper_time`      datetime                                                       NULL DEFAULT NULL COMMENT '操作时间',
     PRIMARY KEY (`oper_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 4465
+  AUTO_INCREMENT = 4
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '操作日志记录'
   ROW_FORMAT = DYNAMIC;
@@ -1383,6 +1740,22 @@ CREATE TABLE `sys_oper_log`
 -- ----------------------------
 -- Records of sys_oper_log
 -- ----------------------------
+INSERT INTO `sys_oper_log`
+VALUES (1, '操作日志', 9, 'com.ruoyi.web.controller.monitor.SysOperlogController.clean()', 'DELETE', 1, 'admin', NULL,
+        '/monitor/operlog/clean', '127.0.0.1', '内网IP', '{}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL,
+        '2022-05-21 17:14:59');
+INSERT INTO `sys_oper_log`
+VALUES (2, '全局脚本', 0, 'com.ruoyi.web.controller.system.SysGlobalScriptController.scriptTest()', 'POST', 1, 'admin',
+        NULL, '/system/globalScript/scriptTest', '127.0.0.1', '内网IP',
+        '{\"description\":\"PHP需要服务器安装PHP服务\",\"language\":\"PHP\",\"remark\":\"PHP需要服务器安装PHP服务\",\"updateTime\":1653115197000,\"checkToken\":\"N\",\"params\":{},\"content\":\"&lt;?php\\r\\n//演示函数\\r\\n\\r\\n//获取服务器时间\\r\\nfunction g_getTime(){\\r\\n  return date(\\\"Y-m-d H:i:s\\\");\\r\\n}\\r\\n\\r\\n//字符串连接,例如 $a=\\\"123\\\",$b=\\\"456\\\",则返回\\\"123456\\\"\\r\\nfunction g_concat($str1,$str2){\\r\\n  return $str1 . $str2 ;\\r\\n}\\r\\n\\r\\n//数字相加,例如 $a=\\\"123\\\",$b=\\\"456\\\",则返回 579\\r\\nfunction g_addition($a,$b){\\r\\n  return $a + $b;\\r\\n}\\r\\n\\r\\necho g_concat($argv[1], $argv[2]);\\r\\necho g_addition($argv[1], $argv[2]);\\r\\necho g_getTime();\",\"checkVip\":\"N\",\"scriptKey\":\"EuJZDgndDCSPefpVFAiXIWGnfgDJYpPG\",\"createBy\":\"\",\"scriptId\":2,\"createTime\":1652971792000,\"updateBy\":\"sadmin\",\"name\":\"php示例\",\"scriptParams\":\"\"}',
+        '{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"error\":\"\",\"exitCode\":0,\"result\":\"&lt;?php\\r\\n//演示函数\\r\\n\\r\\n//获取服务器时间\\r\\nfunction g_getTime(){\\r\\n  return date(\\\"Y-m-d H:i:s\\\");\\r\\n}\\r\\n\\r\\n//字符串连接,例如 $a=\\\"123\\\",$b=\\\"456\\\",则返回\\\"123456\\\"\\r\\nfunction g_concat($str1,$str2){\\r\\n  return $str1 . $str2 ;\\r\\n}\\r\\n\\r\\n//数字相加,例如 $a=\\\"123\\\",$b=\\\"456\\\",则返回 579\\r\\nfunction g_addition($a,$b){\\r\\n  return $a + $b;\\r\\n}\\r\\n\\r\\necho g_concat($argv[1], $argv[2]);\\r\\necho g_addition($argv[1], $argv[2]);\\r\\necho g_getTime();\"}}',
+        0, NULL, '2022-05-21 18:13:07');
+INSERT INTO `sys_oper_log`
+VALUES (3, '全局脚本', 0, 'com.ruoyi.web.controller.system.SysGlobalScriptController.scriptTest()', 'POST', 1, 'admin',
+        NULL, '/system/globalScript/scriptTest', '127.0.0.1', '内网IP',
+        '{\"description\":\"PHP需要服务器安装PHP服务\",\"language\":\"PHP\",\"remark\":\"PHP需要服务器安装PHP服务\",\"updateTime\":1653115197000,\"checkToken\":\"N\",\"params\":{},\"content\":\"<?php\\r\\n//演示函数\\r\\n\\r\\n//获取服务器时间\\r\\nfunction g_getTime(){\\r\\n  return date(\\\"Y-m-d H:i:s\\\");\\r\\n}\\r\\n\\r\\n//字符串连接,例如 $a=\\\"123\\\",$b=\\\"456\\\",则返回\\\"123456\\\"\\r\\nfunction g_concat($str1,$str2){\\r\\n  return $str1 . $str2 ;\\r\\n}\\r\\n\\r\\n//数字相加,例如 $a=\\\"123\\\",$b=\\\"456\\\",则返回 579\\r\\nfunction g_addition($a,$b){\\r\\n  return $a + $b;\\r\\n}\\r\\n\\r\\necho g_concat($argv[1], $argv[2]);\\r\\necho g_addition($argv[1], $argv[2]);\\r\\necho g_getTime();\",\"checkVip\":\"N\",\"scriptKey\":\"EuJZDgndDCSPefpVFAiXIWGnfgDJYpPG\",\"createBy\":\"\",\"scriptId\":2,\"createTime\":1652971792000,\"updateBy\":\"sadmin\",\"name\":\"php示例\",\"scriptParams\":\"\"}',
+        '{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"error\":\"\",\"exitCode\":0,\"result\":\"02022-05-21 18:14:18\"}}',
+        0, NULL, '2022-05-21 18:14:18');
 
 -- ----------------------------
 -- Table structure for sys_payment
@@ -1476,7 +1849,7 @@ CREATE TABLE `sys_role`
     `remark`              varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`role_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 5
+  AUTO_INCREMENT = 6
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '角色信息表'
   ROW_FORMAT = DYNAMIC;
@@ -1485,15 +1858,12 @@ CREATE TABLE `sys_role`
 -- Records of sys_role
 -- ----------------------------
 INSERT INTO `sys_role`
-VALUES (1, '超级管理员', 'admin', 1, '1', 1, 1, '0', '0', 'admin', '2021-10-28 11:33:47', '', NULL, '超级管理员');
+VALUES (1, '超级管理员', 'sadmin', 1, '1', 1, 1, '0', '0', 'admin', '2021-10-28 11:33:47', '', NULL, '超级管理员');
 INSERT INTO `sys_role`
-VALUES (2, '软件作者', 'app_author', 3, '5', 1, 1, '0', '0', 'admin', '2021-10-28 11:33:47', 'sadmin',
-        '2022-02-08 15:15:02', '普通角色');
-INSERT INTO `sys_role`
-VALUES (3, '管理员', 'manager', 2, '1', 1, 1, '0', '0', 'admin', '2021-12-31 12:23:37', 'sadmin', '2022-04-22 22:37:35',
+VALUES (3, '管理员', 'admin', 2, '1', 1, 1, '0', '0', 'admin', '2021-12-31 12:23:37', 'sadmin', '2022-06-23 16:11:11',
         NULL);
 INSERT INTO `sys_role`
-VALUES (4, '软件用户', 'app_user', 4, '5', 1, 1, '0', '0', 'sadmin', '2022-01-18 01:29:00', 'sadmin', '2022-02-07 17:57:43',
+VALUES (5, '代理商', 'agent', 3, '1', 1, 1, '0', '0', 'sadmin', '2022-06-08 19:19:05', 'sadmin', '2022-06-23 16:11:44',
         NULL);
 
 -- ----------------------------
@@ -1531,148 +1901,6 @@ CREATE TABLE `sys_role_menu`
 -- ----------------------------
 -- Records of sys_role_menu
 -- ----------------------------
-INSERT INTO `sys_role_menu`
-VALUES (2, 100);
-INSERT INTO `sys_role_menu`
-VALUES (2, 109);
-INSERT INTO `sys_role_menu`
-VALUES (2, 116);
-INSERT INTO `sys_role_menu`
-VALUES (2, 1001);
-INSERT INTO `sys_role_menu`
-VALUES (2, 1002);
-INSERT INTO `sys_role_menu`
-VALUES (2, 1003);
-INSERT INTO `sys_role_menu`
-VALUES (2, 1004);
-INSERT INTO `sys_role_menu`
-VALUES (2, 1005);
-INSERT INTO `sys_role_menu`
-VALUES (2, 1006);
-INSERT INTO `sys_role_menu`
-VALUES (2, 1007);
-INSERT INTO `sys_role_menu`
-VALUES (2, 1046);
-INSERT INTO `sys_role_menu`
-VALUES (2, 1047);
-INSERT INTO `sys_role_menu`
-VALUES (2, 1048);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2006);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2008);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2009);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2010);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2011);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2012);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2013);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2014);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2015);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2016);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2017);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2018);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2019);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2026);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2027);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2028);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2029);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2030);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2031);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2032);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2033);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2034);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2035);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2036);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2037);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2038);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2039);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2040);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2041);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2042);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2043);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2044);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2045);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2046);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2047);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2048);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2049);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2050);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2051);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2052);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2053);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2054);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2055);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2056);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2057);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2058);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2059);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2060);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2061);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2062);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2063);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2064);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2065);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2066);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2067);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2068);
-INSERT INTO `sys_role_menu`
-VALUES (2, 2069);
-INSERT INTO `sys_role_menu`
-VALUES (3, 1);
 INSERT INTO `sys_role_menu`
 VALUES (3, 2);
 INSERT INTO `sys_role_menu`
@@ -1777,10 +2005,6 @@ INSERT INTO `sys_role_menu`
 VALUES (3, 2020);
 INSERT INTO `sys_role_menu`
 VALUES (3, 2021);
-INSERT INTO `sys_role_menu`
-VALUES (3, 2022);
-INSERT INTO `sys_role_menu`
-VALUES (3, 2023);
 INSERT INTO `sys_role_menu`
 VALUES (3, 2024);
 INSERT INTO `sys_role_menu`
@@ -1911,6 +2135,152 @@ INSERT INTO `sys_role_menu`
 VALUES (3, 2102);
 INSERT INTO `sys_role_menu`
 VALUES (3, 2103);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2105);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2106);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2107);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2108);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2109);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2110);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2111);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2118);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2119);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2120);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2121);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2122);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2123);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2124);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2126);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2127);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2128);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2129);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2130);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2131);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2132);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2133);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2134);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2135);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2136);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2137);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2138);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2139);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2140);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2141);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2142);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2143);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2144);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2145);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2146);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2147);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2148);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2151);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2152);
+INSERT INTO `sys_role_menu`
+VALUES (3, 2153);
+INSERT INTO `sys_role_menu`
+VALUES (5, 108);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2118);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2119);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2120);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2121);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2122);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2123);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2124);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2126);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2127);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2128);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2129);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2130);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2131);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2132);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2133);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2134);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2135);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2136);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2137);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2138);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2139);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2140);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2141);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2142);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2143);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2144);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2145);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2146);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2147);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2148);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2152);
+INSERT INTO `sys_role_menu`
+VALUES (5, 2153);
 
 -- ----------------------------
 -- Table structure for sys_sale_order
@@ -1918,31 +2288,33 @@ VALUES (3, 2103);
 DROP TABLE IF EXISTS `sys_sale_order`;
 CREATE TABLE `sys_sale_order`
 (
-    `order_id`      bigint(20)                                                    NOT NULL AUTO_INCREMENT COMMENT '订单ID',
-    `order_no`      varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单编号',
-    `user_id`       bigint(20)                                                    NULL DEFAULT NULL COMMENT '用户ID',
-    `actual_fee`    decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '应付金额',
-    `total_fee`     decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '总价格（折扣前）',
-    `discount_rule` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '折扣规则',
-    `discount_fee`  decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '折扣金额',
-    `pay_mode`      varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '支付方式',
-    `status`        char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '1未付款2已付款3未发货4已发货5交易成功6交易关闭',
-    `contact`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '联系方式',
-    `query_pass`    varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '查询密码',
-    `create_by`     varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '创建者',
-    `create_time`   datetime                                                      NULL DEFAULT NULL COMMENT '创建时间',
-    `payment_time`  datetime                                                      NULL DEFAULT NULL COMMENT '支付时间',
-    `delivery_time` datetime                                                      NULL DEFAULT NULL COMMENT '发货时间',
-    `finish_time`   datetime                                                      NULL DEFAULT NULL COMMENT '订单完成时间',
-    `close_time`    datetime                                                      NULL DEFAULT NULL COMMENT '订单关闭时间',
-    `update_by`     varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '更新者',
-    `update_time`   datetime                                                      NULL DEFAULT NULL COMMENT '更新时间',
-    `remark`        varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
-    `expire_time`   datetime                                                      NULL DEFAULT NULL COMMENT '订单过期时间',
-    `trade_no`      varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '支付平台交易号',
+    `order_id`        bigint(20)                                                    NOT NULL AUTO_INCREMENT COMMENT '订单ID',
+    `order_no`        varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单编号',
+    `order_type`      char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '订单类型，1购卡订单 2充值订单',
+    `user_id`         bigint(20)                                                    NULL DEFAULT NULL COMMENT '用户ID',
+    `actual_fee`      decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '应付金额',
+    `total_fee`       decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '总价格（折扣前）',
+    `discount_rule`   varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '折扣规则',
+    `discount_fee`    decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '折扣金额',
+    `pay_mode`        varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '支付方式',
+    `manual_delivery` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '是否手动发货',
+    `status`          char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL COMMENT '0未付款1已付款2交易关闭3交易成功4交易结束',
+    `contact`         varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '联系方式',
+    `query_pass`      varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '查询密码',
+    `create_by`       varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '创建者',
+    `create_time`     datetime                                                      NULL DEFAULT NULL COMMENT '创建时间',
+    `payment_time`    datetime                                                      NULL DEFAULT NULL COMMENT '支付时间',
+    `delivery_time`   datetime                                                      NULL DEFAULT NULL COMMENT '发货时间',
+    `finish_time`     datetime                                                      NULL DEFAULT NULL COMMENT '订单完成时间',
+    `close_time`      datetime                                                      NULL DEFAULT NULL COMMENT '订单关闭时间',
+    `update_by`       varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '更新者',
+    `update_time`     datetime                                                      NULL DEFAULT NULL COMMENT '更新时间',
+    `remark`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+    `expire_time`     datetime                                                      NULL DEFAULT NULL COMMENT '订单过期时间',
+    `trade_no`        varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '支付平台交易号',
     PRIMARY KEY (`order_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 245
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '销售订单表'
   ROW_FORMAT = DYNAMIC;
@@ -1970,7 +2342,7 @@ CREATE TABLE `sys_sale_order_item`
     `actual_fee`    decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '应付金额',
     PRIMARY KEY (`item_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 245
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '销售订单详情表'
   ROW_FORMAT = DYNAMIC;
@@ -1990,7 +2362,7 @@ CREATE TABLE `sys_sale_order_item_goods`
     `card_id` bigint(20) NULL DEFAULT NULL COMMENT '卡密ID',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 305
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '订单卡密表'
   ROW_FORMAT = DYNAMIC;
@@ -2029,29 +2401,35 @@ CREATE TABLE `sys_student`
 DROP TABLE IF EXISTS `sys_user`;
 CREATE TABLE `sys_user`
 (
-    `user_id`     bigint(20)                                                    NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-    `dept_id`     bigint(20)                                                    NULL DEFAULT NULL COMMENT '部门ID',
-    `user_name`   varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NOT NULL COMMENT '用户账号',
-    `nick_name`   varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NOT NULL COMMENT '用户昵称',
-    `user_type`   varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci   NULL DEFAULT '00' COMMENT '用户类型（00系统用户）',
-    `email`       varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '用户邮箱',
-    `phonenumber` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '手机号码',
-    `sex`         char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT '0' COMMENT '用户性别（0男 1女 2未知）',
-    `avatar`      varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '头像地址',
-    `password`    varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '密码',
-    `status`      char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT '0' COMMENT '帐号状态（0正常 1停用）',
-    `del_flag`    char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
-    `login_ip`    varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '最后登录IP',
-    `login_date`  datetime                                                      NULL DEFAULT NULL COMMENT '最后登录时间',
-    `create_by`   varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '创建者',
-    `create_time` datetime                                                      NULL DEFAULT NULL COMMENT '创建时间',
-    `update_by`   varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '更新者',
-    `update_time` datetime                                                      NULL DEFAULT NULL COMMENT '更新时间',
-    `remark`      varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+    `user_id`                bigint(20)                                                    NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+    `dept_id`                bigint(20)                                                    NULL DEFAULT NULL COMMENT '部门ID',
+    `user_name`              varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NOT NULL COMMENT '用户账号',
+    `nick_name`              varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NOT NULL COMMENT '用户昵称',
+    `user_type`              varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci   NULL DEFAULT '00' COMMENT '用户类型（00系统用户）',
+    `email`                  varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '用户邮箱',
+    `phonenumber`            varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '手机号码',
+    `sex`                    char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT '0' COMMENT '用户性别（0男 1女 2未知）',
+    `avatar`                 varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '头像地址',
+    `password`               varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '密码',
+    `status`                 char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT '0' COMMENT '帐号状态（0正常 1停用）',
+    `del_flag`               char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+    `login_ip`               varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '最后登录IP',
+    `login_date`             datetime                                                      NULL DEFAULT NULL COMMENT '最后登录时间',
+    `available_pay_balance`  decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '可用支付余额',
+    `freeze_pay_balance`     decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '冻结支付余额',
+    `available_free_balance` decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '可用赠送余额',
+    `freeze_free_balance`    decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '冻结赠送余额',
+    `free_payment`           decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '免费消费',
+    `pay_payment`            decimal(10, 2)                                                NULL DEFAULT NULL COMMENT '支付消费',
+    `create_by`              varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '创建者',
+    `create_time`            datetime                                                      NULL DEFAULT NULL COMMENT '创建时间',
+    `update_by`              varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '更新者',
+    `update_time`            datetime                                                      NULL DEFAULT NULL COMMENT '更新时间',
+    `remark`                 varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`user_id`) USING BTREE,
     INDEX `user_name` (`user_name`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 10
+  AUTO_INCREMENT = 3
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '用户信息表'
   ROW_FORMAT = DYNAMIC;
@@ -2061,11 +2439,12 @@ CREATE TABLE `sys_user`
 -- ----------------------------
 INSERT INTO `sys_user`
 VALUES (1, 100, 'sadmin', '超级管理员', '00', NULL, NULL, '1', '',
-        '$2a$10$xzFG9TaI1Xqh01qktsFkpOYEeaTmtHnqsMsaXUorXnPt5Xt0a9Ir6', '0', '0', '127.0.0.1', '2022-05-08 12:29:12',
-        'admin', '2021-10-28 11:33:46', '', '2022-05-08 12:29:13', '管理员');
+        '$2a$10$7LVj7fbJHv00y214PajsW.X04tUAbj9ZqQwNlJp8amaRE9gql9DbG', '0', '0', '127.0.0.1', '2022-05-08 12:29:12',
+        0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'admin', '2021-10-28 11:33:46', '', '2022-05-08 12:29:13', '管理员');
 INSERT INTO `sys_user`
 VALUES (2, 100, 'admin', '管理员', '00', '', '', '0', NULL, '$2a$10$XcaedIxwIC4hts5waTN22O3R4BFUMEdzcHy.rSITJLkFUQ/BTRR1i',
-        '0', '0', NULL, '2022-05-06 22:58:53', 'admin', '2021-12-31 12:21:59', 'admin', '2022-05-06 22:58:52', NULL);
+        '0', '0', '127.0.0.1', '2022-05-21 18:12:58', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'admin',
+        '2021-12-31 12:21:59', 'admin', '2022-05-21 18:12:58', NULL);
 
 -- ----------------------------
 -- Table structure for sys_user_post
@@ -2115,27 +2494,28 @@ VALUES (2, 3);
 DROP TABLE IF EXISTS `sys_website`;
 CREATE TABLE `sys_website`
 (
-    `id`          bigint(20)                                                    NOT NULL AUTO_INCREMENT,
-    `favicon`     varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-    `logo`        varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-    `name`        varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-    `short_name`  varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT NULL,
-    `shop_name`   varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-    `domain`      varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-    `contact`     varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-    `keywords`    varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-    `description` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-    `status`      char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL,
-    `create_by`   varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '创建者',
-    `create_time` datetime                                                      NULL DEFAULT NULL COMMENT '创建时间',
-    `update_by`   varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '更新者',
-    `update_time` datetime                                                      NULL DEFAULT NULL COMMENT '更新时间',
-    `remark`      varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+    `id`            bigint(20)                                                    NOT NULL AUTO_INCREMENT,
+    `favicon`       varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `logo`          varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `name`          varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `short_name`    varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT NULL,
+    `shop_name`     varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `domain`        varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `contact`       varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `keywords`      varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `description`   varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `status`        char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT NULL,
+    `safe_entrance` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `create_by`     varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '创建者',
+    `create_time`   datetime                                                      NULL DEFAULT NULL COMMENT '创建时间',
+    `update_by`     varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT '' COMMENT '更新者',
+    `update_time`   datetime                                                      NULL DEFAULT NULL COMMENT '更新时间',
+    `remark`        varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 2
   CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci
+  COLLATE = utf8mb4_general_ci COMMENT = '网站配置'
   ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
@@ -2143,6 +2523,43 @@ CREATE TABLE `sys_website`
 -- ----------------------------
 INSERT INTO `sys_website`
 VALUES (1, NULL, NULL, '红叶网络验证与软件管理系统', '红叶网络验证', '红叶在线商城', 'http://hy.coordsoft.com', '1179403448@qq.com',
-        '网络验证,软件管理,云后台', '软件授权管理计费销售一站式解决方案', NULL, '', NULL, 'admin', '2022-05-05 21:59:16', NULL);
+        '网络验证,软件管理,云后台', '软件授权管理计费销售一站式解决方案', NULL, NULL, '', NULL, 'admin', '2022-05-05 21:59:16', NULL);
+
+-- ----------------------------
+-- Table structure for sys_withdraw_cash
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_withdraw_cash`;
+CREATE TABLE `sys_withdraw_cash`
+(
+    `id`                   bigint(20) UNSIGNED                                           NOT NULL AUTO_INCREMENT COMMENT '提现 id',
+    `user_id`              bigint(20) UNSIGNED                                           NOT NULL COMMENT '提现用户 id',
+    `cash_sn`              bigint(20) UNSIGNED                                           NOT NULL COMMENT '提现交易编号',
+    `cash_charge`          decimal(10, 2) UNSIGNED                                       NOT NULL COMMENT '提现手续费',
+    `cash_actual_amount`   decimal(10, 2) UNSIGNED                                       NOT NULL COMMENT '实际提现金额',
+    `cash_apply_amount`    decimal(10, 2) UNSIGNED                                       NOT NULL COMMENT '提现申请金额',
+    `cash_status`          char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NOT NULL DEFAULT '0' COMMENT '提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败',
+    `manual_transfer`      char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NOT NULL DEFAULT '1' COMMENT '是否人工转账',
+    `trade_time`           datetime                                                      NULL     DEFAULT NULL COMMENT '交易时间',
+    `trade_no`             varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  NULL     DEFAULT NULL COMMENT '交易号',
+    `error_code`           varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  NULL     DEFAULT NULL COMMENT '错误代码',
+    `error_message`        varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  NULL     DEFAULT NULL COMMENT '交易失败描述',
+    `refunds_status`       char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NOT NULL DEFAULT '0' COMMENT '返款状态，N未返款，Y已返款',
+    `receive_account_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '收款平台',
+    `receive_account`      varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '收款账号',
+    `create_by`            varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL     DEFAULT '' COMMENT '创建者',
+    `create_time`          datetime                                                      NULL     DEFAULT NULL COMMENT '创建时间',
+    `update_by`            varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL     DEFAULT '' COMMENT '更新者',
+    `update_time`          datetime                                                      NULL     DEFAULT NULL COMMENT '更新时间',
+    `remark`               varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL     DEFAULT NULL COMMENT '备注',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '提现记录表'
+  ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of sys_withdraw_cash
+-- ----------------------------
 
 SET FOREIGN_KEY_CHECKS = 1;
