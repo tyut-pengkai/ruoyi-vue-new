@@ -35,6 +35,15 @@ export function createSaleOrder(data) {
   })
 }
 
+// 创建充值订单
+export function createChargeOrder(data) {
+  return request({
+    url: '/sale/shop/createChargeOrder',
+    method: 'post',
+    data: data
+  })
+}
+
 // 支付成功
 export function notify(data) {
   return request({
@@ -96,4 +105,3 @@ export function getPayStatus(query) {
     params: query
   })
 }
-

@@ -174,6 +174,7 @@ import resetPwd from "./resetPwd";
 import {getUserProfile} from "@/api/system/user";
 import CountTo from "vue-count-to";
 import CardPay from "@/views/sale/shop/card/CardPay";
+import {createChargeOrder, getShopConfig} from "@/api/sale/saleShop";
 
 export default {
   name: "Profile",
@@ -193,15 +194,18 @@ export default {
       payId: null,
       payData: [
         // { id: 0, name: "账户积分", code: "balance", img: "pay-jifen" },
-        {id: 0, name: "支付宝当面付", code: "alipay_qr", img: "pay-alipay"},
-        {id: 1, name: "微信支付", code: "wechat", img: "pay-wechat"},
+        // {id: 0, name: "支付宝当面付", code: "alipay_qr", img: "pay-alipay"},
+        // {id: 1, name: "微信支付", code: "wechat", img: "pay-wechat"},
         // { id: 2, name: "银联支付", code: "yinlian", img: "pay-yinlian" },
         // { id: 3, name: "PayPal", code: "paypal", img: "pay-paypal" },
       ],
+      // 商店配置
+      shopConfig: null,
     };
   },
   created() {
     this.getUser();
+    this.getShopConfig();
   },
   methods: {
     getUser() {
@@ -224,15 +228,47 @@ export default {
     submitFormC: function () {
       this.$refs["formC"].validate((valid) => {
         if (valid) {
-          // rechargeBalance(this.formB).then((response) => {
-          //   this.$modal.msgSuccess("充值成功");
-          //   this.openC = false;
-          // });
+          this.formC["payMode"] = this.payData[this.payId].code;
+          this.$modal.loading("正在提交，请稍后...");
+          createChargeOrder(this.formC)
+            .then((response) => {
+              if (response.code == 200) {
+                this.orderNo = response.orderNo;
+                const newPage = this.$router.resolve({
+                  path: "/billOrder",
+                  query: {
+                    orderNo: this.orderNo,
+                    // payMode: this.payData[this.payId].name
+                  },
+                });
+                window.open(newPage.href, "_blank");
+                this.$modal
+                  .confirm("是否已成功支付？")
+                  .then(() => {
+                  })
+                  .catch(() => {
+                  });
+              }
+            })
+            .finally(() => {
+              this.$modal.closeLoading();
+            });
         }
       });
     },
     handlePaySelect(id) {
       this.payId = id;
+    },
+    /** 获取商店配置 */
+    getShopConfig() {
+      getShopConfig({}).then((response) => {
+        this.shopConfig = response.data;
+        for (var payMode of this.shopConfig["payModeList"]) {
+          this.payData.push(
+            Object.assign({id: this.payData.length}, payMode)
+          );
+        }
+      });
     },
   },
 };

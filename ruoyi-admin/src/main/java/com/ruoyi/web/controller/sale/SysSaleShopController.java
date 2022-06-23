@@ -31,6 +31,7 @@ import com.ruoyi.system.domain.*;
 import com.ruoyi.system.mapper.*;
 import com.ruoyi.system.service.ISysNoticeService;
 import com.ruoyi.system.service.ISysPaymentService;
+import com.ruoyi.web.controller.sale.vo.ChargeOrderVo;
 import com.ruoyi.web.controller.sale.vo.SaleAppVo;
 import com.ruoyi.web.controller.sale.vo.SaleCardTemplateVo;
 import com.ruoyi.web.controller.sale.vo.SaleOrderVo;
@@ -207,7 +208,7 @@ public class SysSaleShopController extends BaseController {
         // 1.检查库存
         checkStock(saleOrderVo);
         // 2.订单生成
-        String orderNo = genOrderNo(saleOrderVo);
+        String orderNo = genOrderNo();
         SysSaleOrder sso = new SysSaleOrder();
         SysSaleOrderItem ssoi = new SysSaleOrderItem();
         sso.setOrderNo(orderNo);
@@ -269,7 +270,49 @@ public class SysSaleShopController extends BaseController {
         return AjaxResult.success().put("orderNo", orderNo);
     }
 
-    private String genOrderNo(SaleOrderVo saleOrderVo) {
+    @PostMapping("/createChargeOrder")
+    @RateLimiter(limitType = LimitType.IP)
+    public AjaxResult createChargeOrder(@RequestBody ChargeOrderVo chargeOrderVo) {
+        Payment payment = PaymentDefine.paymentMap.get(chargeOrderVo.getPayMode());
+        if (payment == null) {
+            throw new ServiceException("支付方式有误，下单失败", 400);
+        }
+        if (chargeOrderVo.getAmount() == null || BigDecimal.ZERO.compareTo(chargeOrderVo.getAmount()) >= 0) {
+            throw new ServiceException("充值金额有误，下单失败", 400);
+        }
+        // 2.订单生成
+        String orderNo = genOrderNo();
+        SysSaleOrder sso = new SysSaleOrder();
+        sso.setOrderNo(orderNo);
+        sso.setUserId(getUserId());
+        // 3.计算金额
+        BigDecimal totalFee = chargeOrderVo.getAmount();
+        sso.setTotalFee(totalFee);
+        // 4.计算优惠
+        sso.setDiscountRule(null);
+        sso.setDiscountFee(null);
+        // 5.计算要支付的金额
+        sso.setActualFee(totalFee);
+        sso.setPayMode(chargeOrderVo.getPayMode());
+        sso.setStatus(SaleOrderStatus.WAIT_PAY);
+        sso.setContact(null);
+        sso.setQueryPass(null);
+        sso.setCreateBy(getUsername());
+        sso.setPaymentTime(null);
+        sso.setDeliveryTime(null);
+        sso.setManualDelivery('0');
+        sso.setFinishTime(null);
+        sso.setCloseTime(null);
+        sso.setRemark(null);
+        sso.setExpireTime(new Date(DateUtils.getNowDate().getTime() + 1000 * 60 * 5));
+        sso.setUpdateBy(null);
+        sso.setUpdateTime(null);
+        sysSaleOrderService.insertSysSaleOrder(sso);
+        redisCache.redisTemplate.opsForZSet().add(Constants.SALE_ORDER_EXPIRE_KEY, sso.getPayMode() + "|" + orderNo, sso.getExpireTime().getTime());
+        return AjaxResult.success().put("orderNo", orderNo);
+    }
+
+    private String genOrderNo() {
         return String.valueOf(sf.nextId());
     }
 
