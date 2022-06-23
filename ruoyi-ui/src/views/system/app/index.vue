@@ -348,7 +348,7 @@
             icon="el-icon-edit-outline"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:cardTemplate:list']"
-            >模板</el-button
+            >卡类</el-button
           > -->
           <el-button
             size="mini"

@@ -590,11 +590,11 @@
               }}
             </template>
           </el-table-column>
-          <!-- <el-table-column label="模板ID" prop="templateId">
+          <!-- <el-table-column label="卡类ID" prop="templateId">
             <template slot-scope="scope">
               <el-input
                 v-model="scope.row.templateId"
-                placeholder="请输入模板ID"
+                placeholder="请输入卡类ID"
               />
             </template>
           </el-table-column> -->

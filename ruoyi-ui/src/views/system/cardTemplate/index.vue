@@ -85,10 +85,10 @@
           />
         </el-select>
       </el-form-item> -->
-      <el-form-item label="模板状态" prop="status">
+      <el-form-item label="卡类状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择模板状态"
+          placeholder="请选择卡类状态"
           clearable
           size="small"
         >
@@ -431,8 +431,8 @@
             </el-col>
           </el-form-item>
         </div>
-        <el-form-item label="模板名称" prop="cardName" label-width="80px">
-          <el-input v-model="form.cardName" placeholder="请输入卡名称" />
+        <el-form-item label="卡类名称" label-width="80px" prop="cardName">
+          <el-input v-model="form.cardName" placeholder="请输入卡名称"/>
         </el-form-item>
         <el-form-item>
           <div v-if="form.templateId == null">
@@ -502,7 +502,7 @@
           </el-col>
         </el-form-item>
         <el-form-item
-          label="模板描述"
+          label="卡类描述"
           prop="cardDescription"
           label-width="80px"
         >
@@ -516,13 +516,14 @@
         <updown>
           <el-form-item>
             <el-col :span="12">
-              <el-form-item label="模板状态" label-width="80px">
+              <el-form-item label="卡类状态" label-width="80px">
                 <el-radio-group v-model="form.status">
                   <el-radio
                     v-for="dict in dict.type.sys_normal_disable"
                     :key="dict.value"
                     :label="dict.value"
-                    >{{ dict.label }}</el-radio
+                  >{{ dict.label }}
+                  </el-radio
                   >
                 </el-radio-group>
               </el-form-item>
@@ -883,7 +884,7 @@ export default {
           { required: true, message: "优先库存不能为空", trigger: "change" },
         ],
         status: [
-          { required: true, message: "模板状态不能为空", trigger: "blur" },
+          {required: true, message: "卡类状态不能为空", trigger: "blur"},
         ],
         effectiveDuration: [
           { required: true, message: "有效时长不能为空", trigger: "blur" },
