@@ -135,7 +135,7 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="ID" prop="id"/>
+      <el-table-column align="center" label="编号" prop="id"/>
       <el-table-column align="center" label="APP ID" prop="appUserId"/>
       <el-table-column align="center" label="设备码" prop="deviceCodeId"/>
       <el-table-column align="center" label="登录次数" prop="loginTimes"/>

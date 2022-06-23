@@ -125,7 +125,8 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="" type="index"/>
+      <!-- <el-table-column align="center" label="" type="index"/> -->
+      <el-table-column align="center" label="编号" prop="deviceCodeId"/>
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"

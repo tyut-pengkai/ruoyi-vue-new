@@ -134,7 +134,8 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="" type="index"/>
+      <!-- <el-table-column align="center" label="" type="index"/> -->
+      <el-table-column align="center" label="编号" prop="appVersionId"/>
       <el-table-column
         align="center"
         :show-overflow-tooltip="true"

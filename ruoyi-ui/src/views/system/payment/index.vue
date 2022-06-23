@@ -73,12 +73,10 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -141,7 +139,8 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="" type="index"/>
+      <!-- <el-table-column align="center" label="" type="index"/> -->
+      <el-table-column align="center" label="编号" prop="payId"/>
       <el-table-column align="center" label="支付名称" prop="name"/>
       <el-table-column align="center" label="支付编码" prop="code"/>
       <el-table-column align="center" label="描述" prop="description"/>

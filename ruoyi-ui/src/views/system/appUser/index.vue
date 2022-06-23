@@ -184,7 +184,8 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column label="" type="index" align="center" />
+      <!-- <el-table-column label="" type="index" align="center" /> -->
+      <el-table-column align="center" label="编号" prop="appUserId"/>
       <el-table-column
         label="所属软件"
         align="center"

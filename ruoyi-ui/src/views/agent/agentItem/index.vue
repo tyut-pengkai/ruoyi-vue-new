@@ -108,7 +108,7 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="ID" prop="id"/>
+      <el-table-column align="center" label="编号" prop="id"/>
       <!-- <el-table-column align="center" label="代理ID" prop="agentId"/> -->
       <el-table-column
         :show-overflow-tooltip="true"

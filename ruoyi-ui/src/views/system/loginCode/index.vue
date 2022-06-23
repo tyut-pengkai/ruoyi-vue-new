@@ -279,8 +279,9 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column label="" type="index" align="center" />
+      <!-- <el-table-column align="center" type="selection" width="55"/> -->
+      <el-table-column align="center" label="编号" prop="cardId"/>
+      <el-table-column align="center" label="" type="index"/>
       <el-table-column
         label="所属软件"
         align="center"

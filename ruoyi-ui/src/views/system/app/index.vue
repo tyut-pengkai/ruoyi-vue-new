@@ -195,7 +195,8 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column label="" type="index" align="center" />
+      <!-- <el-table-column label="" type="index" align="center" /> -->
+      <el-table-column align="center" label="编号" prop="appId"/>
       <!-- <el-table-column label="软件图标" align="center" prop="icon" /> -->
       <el-table-column
         label="软件名称"

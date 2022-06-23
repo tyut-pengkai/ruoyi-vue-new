@@ -229,7 +229,8 @@
         </template>
       </el-table-column>
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="" type="index"/>
+      <!-- <el-table-column align="center" label="" type="index"/> -->
+      <el-table-column align="center" label="编号" prop="orderId"/>
       <!-- <el-table-column label="订单ID" align="center" prop="orderId" /> -->
       <el-table-column
         :show-overflow-tooltip="true"
