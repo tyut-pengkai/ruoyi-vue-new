@@ -80,8 +80,8 @@
           </el-tag>
           <el-divider direction="vertical"></el-divider>
           <el-link type="primary" @click="handleCharge()">充值</el-link>
-          <el-divider direction="vertical"></el-divider>
-          <el-link type="primary">提现</el-link>
+          <!-- <el-divider direction="vertical"></el-divider>
+          <el-link type="primary">提现</el-link> -->
           <el-tag style="margin-left: 50px" type="info">
             账户余额冻结
             <span>
@@ -174,7 +174,7 @@ import resetPwd from "./resetPwd";
 import {getUserProfile} from "@/api/system/user";
 import CountTo from "vue-count-to";
 import CardPay from "@/views/sale/shop/card/CardPay";
-import {createChargeOrder, getShopConfig} from "@/api/sale/saleShop";
+import {createChargeOrder, getPayStatus, getShopConfig,} from "@/api/sale/saleShop";
 
 export default {
   name: "Profile",
@@ -228,27 +228,50 @@ export default {
     submitFormC: function () {
       this.$refs["formC"].validate((valid) => {
         if (valid) {
-          this.formC["payMode"] = this.payData[this.payId].code;
-          this.$modal.loading("正在提交，请稍后...");
-          createChargeOrder(this.formC)
-            .then((response) => {
-              if (response.code == 200) {
-                this.orderNo = response.orderNo;
-                const newPage = this.$router.resolve({
-                  path: "/billOrder",
-                  query: {
-                    orderNo: this.orderNo,
-                    // payMode: this.payData[this.payId].name
-                  },
-                });
-                window.open(newPage.href, "_blank");
-                this.$modal
-                  .confirm("是否已成功支付？")
-                  .then(() => {
-                  })
-                  .catch(() => {
+          this.$modal
+            .confirm("是否确认充值？")
+            .then(() => {
+              // console.log("确认");
+              this.formC["payMode"] = this.payData[this.payId].code;
+              this.$modal.loading("正在提交，请稍后...");
+              createChargeOrder(this.formC).then((response) => {
+                if (response.code == 200) {
+                  this.orderNo = response.orderNo;
+                  const newPage = this.$router.resolve({
+                    path: "/billOrder",
+                    query: {
+                      orderNo: this.orderNo,
+                      // payMode: this.payData[this.payId].name
+                    },
                   });
-              }
+                  window.open(newPage.href, "_blank");
+                  this.$modal
+                    .confirm("是否已成功支付？")
+                    .then(() => {
+                      getPayStatus({orderNo: this.orderNo}).then(
+                        (response) => {
+                          if (response.code == 200 && response.msg === "1") {
+                            this.getUser();
+                          } else {
+                            this.$alert(
+                              "尚未收到您的付款信息（若已支付，请3分钟后在【个人中心】中再次查询您的余额）",
+                              "系统提示",
+                              {
+                                confirmButtonText: "确定",
+                                callback: (action) => {
+                                },
+                              }
+                            );
+                          }
+                        }
+                      );
+                    })
+                    .catch(() => {
+                    });
+                }
+              });
+            })
+            .catch(() => {
             })
             .finally(() => {
               this.$modal.closeLoading();

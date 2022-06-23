@@ -8,10 +8,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
-import com.ruoyi.common.enums.AuthType;
-import com.ruoyi.common.enums.LimitType;
-import com.ruoyi.common.enums.NoticeType;
-import com.ruoyi.common.enums.SaleOrderStatus;
+import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -212,6 +209,7 @@ public class SysSaleShopController extends BaseController {
         SysSaleOrder sso = new SysSaleOrder();
         SysSaleOrderItem ssoi = new SysSaleOrderItem();
         sso.setOrderNo(orderNo);
+        sso.setOrderType(OrderType.SALE);
         sso.setUserId(null);
         // 3.计算金额
         BigDecimal unitPrice = null;
@@ -283,7 +281,9 @@ public class SysSaleShopController extends BaseController {
         // 2.订单生成
         String orderNo = genOrderNo();
         SysSaleOrder sso = new SysSaleOrder();
+        SysSaleOrderItem ssoi = new SysSaleOrderItem();
         sso.setOrderNo(orderNo);
+        sso.setOrderType(OrderType.CHARGE);
         sso.setUserId(getUserId());
         // 3.计算金额
         BigDecimal totalFee = chargeOrderVo.getAmount();
@@ -307,6 +307,19 @@ public class SysSaleShopController extends BaseController {
         sso.setExpireTime(new Date(DateUtils.getNowDate().getTime() + 1000 * 60 * 5));
         sso.setUpdateBy(null);
         sso.setUpdateTime(null);
+        // 6.订单详情
+        ssoi.setTemplateType(null); // 1卡类 2登录码类
+        ssoi.setTemplateId(null);
+        ssoi.setNum(1);
+        ssoi.setTitle("[余额充值]账号：" + getUsername() + "，" + chargeOrderVo.getAmount() + "元");
+        ssoi.setPrice(chargeOrderVo.getAmount());
+        ssoi.setTotalFee(totalFee);
+        ssoi.setDiscountRule(null);
+        ssoi.setDiscountFee(null);
+        ssoi.setActualFee(totalFee);
+        List<SysSaleOrderItem> itemList = new ArrayList<>();
+        itemList.add(ssoi);
+        sso.setSysSaleOrderItemList(itemList);
         sysSaleOrderService.insertSysSaleOrder(sso);
         redisCache.redisTemplate.opsForZSet().add(Constants.SALE_ORDER_EXPIRE_KEY, sso.getPayMode() + "|" + orderNo, sso.getExpireTime().getTime());
         return AjaxResult.success().put("orderNo", orderNo);

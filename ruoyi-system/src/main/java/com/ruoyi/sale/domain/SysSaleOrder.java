@@ -3,6 +3,7 @@ package com.ruoyi.sale.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.enums.OrderType;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -30,6 +31,12 @@ public class SysSaleOrder extends BaseEntity {
      */
     @Excel(name = "订单编号")
     private String orderNo;
+
+    /**
+     * 订单类型
+     */
+    @Excel(name = "订单类型")
+    private OrderType orderType;
 
     /**
      * 用户ID
@@ -286,11 +293,20 @@ public class SysSaleOrder extends BaseEntity {
         this.manualDelivery = manualDelivery;
     }
 
+    public OrderType getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(OrderType orderType) {
+        this.orderType = orderType;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("orderId", getOrderId())
                 .append("orderNo", getOrderNo())
+                .append("orderType", getOrderType())
                 .append("userId", getUserId())
                 .append("actualFee", getActualFee())
                 .append("totalFee", getTotalFee())

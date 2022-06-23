@@ -237,6 +237,14 @@
         label="订单编号"
         prop="orderNo"
       />
+      <el-table-column align="center" label="订单类型" prop="orderType">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_order_type"
+            :value="scope.row.orderType"
+          />
+        </template>
+      </el-table-column>
       <!-- <el-table-column label="用户ID" align="center" prop="userId" /> -->
       <el-table-column align="center" label="总价格" prop="totalFee">
         <template slot-scope="scope">
@@ -528,7 +536,13 @@
               <el-table :data="item.row.goodsList" max-height="300px">
                 <el-table-column align="center" label="" type="index"/>
                 <el-table-column
-                  :label="item.row.templateType == '1' ? '充值卡号' : '登录码'"
+                  :label="
+                    form.orderType == 1
+                      ? item.row.templateType == 1
+                        ? '充值卡'
+                        : '登录码'
+                      : '余额充值'
+                  "
                 >
                   <template slot-scope="scope">
                     {{ scope.row.cardNo }}
@@ -566,7 +580,13 @@
           /> -->
           <el-table-column label="商品类别" prop="templateType">
             <template slot-scope="scope">
-              {{ scope.row.templateType == 1 ? "充值卡" : "登录码" }}
+              {{
+                form.orderType == 1
+                  ? scope.row.templateType == 1
+                    ? "充值卡"
+                    : "登录码"
+                  : "余额充值"
+              }}
             </template>
           </el-table-column>
           <!-- <el-table-column label="模板ID" prop="templateId">
@@ -656,7 +676,13 @@ import {parseMoney} from "@/utils/my";
 
 export default {
   name: "SaleOrder",
-  dicts: ["sale_order_status", "pay_mode", "sys_yes_no", "delivery_type"],
+  dicts: [
+    "sale_order_status",
+    "pay_mode",
+    "sys_yes_no",
+    "delivery_type",
+    "sys_order_type",
+  ],
   data() {
     return {
       // 遮罩层

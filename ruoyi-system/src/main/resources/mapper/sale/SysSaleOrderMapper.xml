@@ -7,6 +7,7 @@
     <resultMap type="SysSaleOrder" id="SysSaleOrderResult">
         <result property="orderId" column="order_id"/>
         <result property="orderNo" column="order_no"/>
+        <result property="orderType" column="order_type"/>
         <result property="userId" column="user_id"/>
         <result property="actualFee" column="actual_fee"/>
         <result property="totalFee" column="total_fee"/>
@@ -52,6 +53,7 @@
     <sql id="selectSysSaleOrderVo">
         select order_id,
                order_no,
+               order_type,
                user_id,
                actual_fee,
                total_fee,
@@ -80,6 +82,7 @@
         <include refid="selectSysSaleOrderVo"/>
         <where>
             <if test="orderNo != null and orderNo != ''">and order_no = #{orderNo}</if>
+            <if test="orderType != null ">and order_type = #{orderType}</if>
             <if test="tradeNo != null and tradeNo != ''">and trade_no = #{tradeNo}</if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="payMode != null and payMode != ''">and pay_mode = #{payMode}</if>
@@ -94,6 +97,7 @@
         <include refid="selectSysSaleOrderVo"/>
         <where>
             <if test="orderNo != null  and orderNo != ''">and order_no = #{orderNo}</if>
+            <if test="orderType != null ">and order_type = #{orderType}</if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="payMode != null  and payMode != ''">and pay_mode = #{payMode}</if>
             <if test="status != null ">and status = #{status}</if>
@@ -107,6 +111,7 @@
     <select id="selectSysSaleOrderByOrderId" parameterType="Long" resultMap="SysSaleOrderSysSaleOrderItemResult">
         select a.order_id,
                a.order_no,
+               a.order_type,
                a.user_id,
                a.actual_fee,
                a.total_fee,
@@ -147,6 +152,7 @@
     <select id="selectSysSaleOrderByOrderNo" parameterType="String" resultMap="SysSaleOrderSysSaleOrderItemResult">
         select a.order_id,
                a.order_no,
+               a.order_type,
                a.user_id,
                a.actual_fee,
                a.total_fee,
@@ -188,6 +194,7 @@
         insert into sys_sale_order
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="orderNo != null">order_no,</if>
+            <if test="orderType != null">order_type,</if>
             <if test="userId != null">user_id,</if>
             <if test="actualFee != null">actual_fee,</if>
             <if test="totalFee != null">total_fee,</if>
@@ -212,6 +219,7 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderNo != null">#{orderNo},</if>
+            <if test="orderType != null">#{orderType},</if>
             <if test="userId != null">#{userId},</if>
             <if test="actualFee != null">#{actualFee},</if>
             <if test="totalFee != null">#{totalFee},</if>
@@ -240,6 +248,7 @@
         update sys_sale_order
         <trim prefix="SET" suffixOverrides=",">
             <if test="orderNo != null">order_no = #{orderNo},</if>
+            <if test="orderType != null">order_type = #{orderType},</if>
             <if test="userId != null">user_id = #{userId},</if>
             <if test="actualFee != null">actual_fee = #{actualFee},</if>
             <if test="totalFee != null">total_fee = #{totalFee},</if>
