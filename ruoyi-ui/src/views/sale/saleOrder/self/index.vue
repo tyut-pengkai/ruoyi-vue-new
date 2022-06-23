@@ -10,8 +10,8 @@
       <el-form-item label="订单编号" prop="orderNo">
         <el-input
           v-model="queryParams.orderNo"
-          placeholder="请输入订单编号"
           clearable
+          placeholder="请输入订单编号"
           size="small"
           @keyup.enter.native="handleQuery"
         />
@@ -19,8 +19,8 @@
       <el-form-item label="交易编号" prop="tradeNo">
         <el-input
           v-model="queryParams.tradeNo"
-          placeholder="请输入交易编号"
           clearable
+          placeholder="请输入交易编号"
           size="small"
           @keyup.enter.native="handleQuery"
         />
@@ -46,8 +46,8 @@
       <el-form-item label="联系方式" prop="contact">
         <el-input
           v-model="queryParams.contact"
-          placeholder="请输入联系方式"
           clearable
+          placeholder="请输入联系方式"
           size="small"
           @keyup.enter.native="handleQuery"
         />
@@ -55,8 +55,8 @@
       <el-form-item label="查询密码" prop="queryPass">
         <el-input
           v-model="queryParams.queryPass"
-          placeholder="请输入查询密码"
           clearable
+          placeholder="请输入查询密码"
           size="small"
           @keyup.enter.native="handleQuery"
         />
@@ -103,24 +103,24 @@
       </el-col> -->
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
           v-hasPermi="['sale:saleOrder:remove']"
+          :disabled="multiple"
+          icon="el-icon-delete"
+          plain
+          size="mini"
+          type="danger"
+          @click="handleDelete"
         >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
           v-hasPermi="['sale:saleOrder:export']"
+          icon="el-icon-download"
+          plain
+          size="mini"
+          type="warning"
+          @click="handleExport"
         >导出
         </el-button>
       </el-col>
@@ -336,11 +336,10 @@
       >
         <template slot-scope="scope">
           <el-button
+            icon="el-icon-view"
             size="mini"
             type="text"
-            icon="el-icon-view"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['sale:saleOrder:edit']"
           >详情
           </el-button>
           <el-button
@@ -357,11 +356,11 @@
           >手动发货
           </el-button>
           <el-button
+            v-hasPermi="['sale:saleOrder:remove']"
+            icon="el-icon-delete"
             size="mini"
             type="text"
-            icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['sale:saleOrder:remove']"
           >删除
           </el-button>
         </template>
@@ -370,9 +369,9 @@
 
     <pagination
       v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
+      :page.sync="queryParams.pageNum"
+      :total="total"
       @pagination="getList"
     />
 
@@ -661,8 +660,8 @@
         </el-table>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+        <!-- <el-button type="primary" @click="submitForm">确 定</el-button> -->
+        <el-button @click="cancel">关 闭</el-button>
       </div>
     </el-dialog>
   </div>
@@ -672,8 +671,8 @@
 import {
   addSaleOrder,
   delSaleOrder,
-  getSaleOrder,
-  listSaleOrder,
+  getSaleOrderSelf,
+  listSaleOrderSelf,
   manualDelivery,
   updateSaleOrder,
 } from "@/api/sale/saleOrder";
@@ -760,7 +759,7 @@ export default {
         this.queryParams.params["endDeliveryTime"] =
           this.daterangeDeliveryTime[1];
       }
-      listSaleOrder(this.queryParams).then((response) => {
+      listSaleOrderSelf(this.queryParams).then((response) => {
         this.saleOrderList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -826,7 +825,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       const orderId = row.orderId || this.ids;
-      getSaleOrder(orderId).then((response) => {
+      getSaleOrderSelf(orderId).then((response) => {
         this.form = response.data;
         this.sysSaleOrderItemList = response.data.sysSaleOrderItemList;
         this.open = true;

@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.sale;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.SaleOrderStatus;
@@ -20,6 +21,7 @@ import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.ISysCardService;
 import com.ruoyi.system.service.ISysLoginCodeService;
+import com.ruoyi.system.service.ISysUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +29,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 销售订单Controller
@@ -47,6 +50,32 @@ public class SysSaleOrderController extends BaseController {
     private ISysLoginCodeService sysLoginCodeService;
     @Resource
     private ISysSaleShopService sysSaleShopService;
+    @Resource
+    private ISysUserService userService;
+
+    /**
+     * 查询销售订单列表
+     */
+    @GetMapping("/self/list")
+    public TableDataInfo listSelf(SysSaleOrder sysSaleOrder) {
+        startPage();
+        sysSaleOrder.setUserId(getUserId());
+        List<SysSaleOrder> list = sysSaleOrderService.selectSysSaleOrderList(sysSaleOrder);
+        return getDataTable(list);
+    }
+
+    /**
+     * 获取销售订单详细信息
+     */
+    @GetMapping(value = "/self/{orderId}")
+    public AjaxResult getInfoSelf(@PathVariable("orderId") Long orderId) {
+        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderId(orderId);
+        if (Objects.equals(sso.getUserId(), getUserId())) {
+            return getInfo(orderId);
+        } else {
+            throw new ServiceException("您没有查看该数据的权限");
+        }
+    }
 
     /**
      * 查询销售订单列表
@@ -78,6 +107,10 @@ public class SysSaleOrderController extends BaseController {
     @GetMapping(value = "/{orderId}")
     public AjaxResult getInfo(@PathVariable("orderId") Long orderId) {
         SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderId(orderId);
+        if (sso.getUserId() != null) {
+            SysUser user = userService.selectUserById(sso.getUserId());
+            sso.setUser(user);
+        }
         List<SysSaleOrderItem> itemList = sso.getSysSaleOrderItemList();
         for (SysSaleOrderItem item : itemList) {
             item.setGoodsList(new ArrayList<>());

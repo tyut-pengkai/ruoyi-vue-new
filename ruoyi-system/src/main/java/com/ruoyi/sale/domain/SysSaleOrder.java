@@ -2,7 +2,9 @@ package com.ruoyi.sale.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
+import com.ruoyi.common.annotation.Excels;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.enums.OrderType;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -140,6 +142,15 @@ public class SysSaleOrder extends BaseEntity {
      * 销售订单详情信息
      */
     private List<SysSaleOrderItem> sysSaleOrderItemList;
+
+    /**
+     * 购买人的信息
+     */
+    @Excels({
+            @Excel(name = "用户账号", targetAttr = "userName", type = Excel.Type.EXPORT),
+            @Excel(name = "用户昵称", targetAttr = "nickName", type = Excel.Type.EXPORT)
+    })
+    private SysUser user;
 
     public Long getOrderId() {
         return orderId;
@@ -299,6 +310,14 @@ public class SysSaleOrder extends BaseEntity {
 
     public void setOrderType(OrderType orderType) {
         this.orderType = orderType;
+    }
+
+    public SysUser getUser() {
+        return user;
+    }
+
+    public void setUser(SysUser user) {
+        this.user = user;
     }
 
     @Override

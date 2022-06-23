@@ -17,6 +17,23 @@ export function getSaleOrder(orderId) {
   })
 }
 
+// 查询销售订单列表
+export function listSaleOrderSelf(query) {
+  return request({
+    url: '/sale/saleOrder/self/list',
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询销售订单详细
+export function getSaleOrderSelf(orderId) {
+  return request({
+    url: '/sale/saleOrder/self/' + orderId,
+    method: 'get'
+  })
+}
+
 // 新增销售订单
 export function addSaleOrder(data) {
   return request({
