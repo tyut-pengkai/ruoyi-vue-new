@@ -2,19 +2,26 @@ package com.ruoyi.api.v1.domain.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ruoyi.common.core.domain.entity.SysApp;
-import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+/**
+ * 用户对象 sys_user
+ *
+ * @author ruoyi
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SysAppUserVo extends SysAppUser {
+public class SysUserVo extends SysUser {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -64,20 +71,6 @@ public class SysAppUserVo extends SysAppUser {
     private Map<String, Object> params;
 
     /**
-     * 删除标志（0代表存在 2代表删除）
-     */
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private String delFlag;
-
-    /**
-     * 软件用户ID
-     */
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private Long appUserId;
-
-    /**
      * 用户ID
      */
     @JSONField(serialize = false)
@@ -85,54 +78,115 @@ public class SysAppUserVo extends SysAppUser {
     private Long userId;
 
     /**
-     * 软件ID
+     * 部门ID
      */
     @JSONField(serialize = false)
     @JsonIgnore
-    private Long appId;
+    private Long deptId;
 
     /**
-     * 密码连续错误次数
+     * 密码
      */
     @JSONField(serialize = false)
     @JsonIgnore
-    private Integer pwdErrorTimes;
+    private String password;
 
     /**
-     * 单码
+     * 盐加密
      */
     @JSONField(serialize = false)
     @JsonIgnore
-    private String loginCode;
+    private String salt;
 
     /**
-     * 所属账号信息
+     * 帐号状态（0正常 1停用）
      */
     @JSONField(serialize = false)
     @JsonIgnore
-    private SysUser user;
+    private String status;
 
     /**
-     * 所属账号信息
-     */
-    private SysUserVo userInfo;
-
-    /**
-     * 所属软件信息
+     * 删除标志（0代表存在 2代表删除）
      */
     @JSONField(serialize = false)
     @JsonIgnore
-    private SysApp app;
+    private String delFlag;
 
     /**
-     * 所属用户用户名称，用户承载搜索参数
+     * 部门对象
      */
     @JSONField(serialize = false)
     @JsonIgnore
-    private String userName;
+    private SysDept dept;
 
-    public SysAppUserVo(SysAppUser v) {
+    /**
+     * 免费余额
+     */
+    @JSONField(serialize = false)
+    @JsonIgnore
+    private BigDecimal availableFreeBalance;
+
+    /**
+     * 免费余额
+     */
+    @JSONField(serialize = false)
+    @JsonIgnore
+    private BigDecimal freezeFreeBalance;
+
+    /**
+     * 支付余额
+     */
+    private BigDecimal availablePayBalance;
+
+    /**
+     * 支付余额
+     */
+    private BigDecimal freezePayBalance;
+
+    /**
+     * 免费消费
+     */
+    @JSONField(serialize = false)
+    @JsonIgnore
+    private BigDecimal freePayment;
+
+    /**
+     * 支付消费
+     */
+    @JSONField(serialize = false)
+    @JsonIgnore
+    private BigDecimal payPayment;
+
+    /**
+     * 角色对象
+     */
+    @JSONField(serialize = false)
+    @JsonIgnore
+    private List<SysRole> roles;
+
+    /**
+     * 角色组
+     */
+    @JSONField(serialize = false)
+    @JsonIgnore
+    private Long[] roleIds;
+
+    /**
+     * 岗位组
+     */
+    @JSONField(serialize = false)
+    @JsonIgnore
+    private Long[] postIds;
+
+    /**
+     * 角色ID
+     */
+    @JSONField(serialize = false)
+    @JsonIgnore
+    private Long roleId;
+
+    public SysUserVo(SysUser v) {
         BeanUtils.copyProperties(v, this);
-        this.userInfo = new SysUserVo(v.getUser());
     }
+
 }

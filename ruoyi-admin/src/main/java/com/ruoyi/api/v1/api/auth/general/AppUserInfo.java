@@ -6,6 +6,7 @@ import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.vo.SysAppUserVo;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.system.service.ISysAppUserService;
+import com.ruoyi.system.service.ISysUserService;
 
 import javax.annotation.Resource;
 
@@ -13,6 +14,8 @@ public class AppUserInfo extends Function {
 
     @Resource
     private ISysAppUserService appUserService;
+    @Resource
+    private ISysUserService userService;
 
     @Override
     public void init() {
@@ -23,6 +26,7 @@ public class AppUserInfo extends Function {
     @Override
     public Object handle() {
         SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(getLoginUser().getAppUser().getAppUserId());
+        appUser.setUser(userService.selectUserById(appUser.getUserId()));
         return new SysAppUserVo(appUser);
     }
 }

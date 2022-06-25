@@ -383,8 +383,20 @@ export default {
       // 商店配置
       shopConfig: null,
       rules: {
-        contact: [{required: true, message: "联系方式是为您售后时的重要依据，不能为空", trigger: "blur"}],
-        queryPass: [{required: true, message: "查询密码是您查询已购商品的重要依据，不能为空", trigger: "blur"}],
+        contact: [
+          {
+            required: true,
+            message: "联系方式是为您售后时的重要依据，不能为空",
+            trigger: "blur",
+          },
+        ],
+        queryPass: [
+          {
+            required: true,
+            message: "查询密码是您查询已购商品的重要依据，不能为空",
+            trigger: "blur",
+          },
+        ],
       },
     };
   },
@@ -492,6 +504,14 @@ export default {
           title: "消息",
           dangerouslyUseHTMLString: true,
           message: "请先选择商品",
+          type: "warning",
+          offset: 100,
+        });
+      } else if (!this.form["contact"] || !this.form["queryPass"]) {
+        this.$notify({
+          title: "消息",
+          dangerouslyUseHTMLString: true,
+          message: "联系方式或查询密码不能为空",
           type: "warning",
           offset: 100,
         });

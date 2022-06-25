@@ -216,8 +216,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="sex != null and sex != ''">#{sex},</if>
         <if test="password != null and password != ''">#{password},</if>
         <if test="status != null and status != ''">#{status},</if>
-        <if test="freeBalance != null">#{freeBalance},</if>
-        <if test="payBalance != null">#{payBalance},</if>
+        <if test="availablePayBalance != null">#{availablePayBalance},</if>
+        <if test="availableFreeBalance != null">#{availableFreeBalance},</if>
+        <if test="freezePayBalance != null">#{freezePayBalance},</if>
+        <if test="freezeFreeBalance != null">#{freezeFreeBalance},</if>
         <if test="freePayment != null">#{freePayment},</if>
         <if test="payPayment != null">#{payPayment},</if>
         <if test="createBy != null and createBy != ''">#{createBy},</if>
