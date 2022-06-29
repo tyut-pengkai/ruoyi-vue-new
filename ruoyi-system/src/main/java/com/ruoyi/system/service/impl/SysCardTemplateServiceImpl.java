@@ -144,7 +144,6 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
             try {
                 sysCard.setCreateBy(SecurityUtils.getUsername());
             } catch (Exception ignored) {
-
             }
             sysCardList.add(sysCard);
         }

@@ -19,6 +19,11 @@ public class PaymentDefine {
     public static Map<String, Payment> paymentMap = new HashMap<>();
 
     static {
+        reloadPayment();
+    }
+
+    public static void reloadPayment() {
+        paymentMap.clear();
         List<Class<?>> classList = MyUtils.getClassesFromPackage(BASE_PACKAGE);
         for (Class<?> clazz : classList) {
             try {

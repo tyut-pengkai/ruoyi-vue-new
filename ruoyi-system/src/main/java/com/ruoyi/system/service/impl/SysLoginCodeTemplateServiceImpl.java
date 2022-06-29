@@ -132,7 +132,10 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
             sysLoginCode.setQuota(loginCodeTpl.getQuota());
             sysLoginCode.setStatus(UserConstants.NORMAL);
             sysLoginCode.setRemark(remark);
-            sysLoginCode.setCreateBy(SecurityUtils.getUsername());
+            try {
+                sysLoginCode.setCreateBy(SecurityUtils.getUsername());
+            } catch (Exception ignore) {
+            }
             sysLoginCodeList.add(sysLoginCode);
         }
         sysLoginCodeService.insertSysLoginCodeBatch(sysLoginCodeList);

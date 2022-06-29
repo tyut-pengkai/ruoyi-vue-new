@@ -63,7 +63,7 @@ public class AlipayF2fPayment extends Payment {
         this.setName("支付宝当面付");
         this.setIcon("pay-alipay");
         this.setShowType(ShowType.QR);
-        if (StringUtils.isBlank(notifyUrl)) {
+//        if (StringUtils.isBlank(notifyUrl)) {
             SysPayment payment = sysPaymentService.selectSysPaymentByPayCode(this.getCode());
             if (payment == null) {
                 throw new ServiceException("支付方式【" + this.getName() + "】未配置参数");
@@ -97,7 +97,7 @@ public class AlipayF2fPayment extends Payment {
             }
             notifyUrl += pathMapping + "/sale/shop/notify/" + this.getCode();
             alipayClient = new DefaultAlipayClient(serverUrl, config.getAppId(), config.getPrivateKey(), "json", "UTF-8", alipayPublicKey, "RSA2");
-        }
+//        }
     }
 
     @Override

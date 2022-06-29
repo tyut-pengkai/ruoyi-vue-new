@@ -6,6 +6,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.payment.constants.PaymentDefine;
 import com.ruoyi.system.domain.SysPayment;
 import com.ruoyi.system.service.ISysPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,9 @@ public class SysPaymentController extends BaseController {
     @PostMapping
     public AjaxResult add(@RequestBody SysPayment sysPayment) {
         sysPayment.setCreateBy(getUsername());
-        return toAjax(sysPaymentService.insertSysPayment(sysPayment));
+        int payment = sysPaymentService.insertSysPayment(sysPayment);
+        PaymentDefine.reloadPayment();
+        return toAjax(payment);
     }
 
     /**
@@ -78,7 +81,9 @@ public class SysPaymentController extends BaseController {
     @PutMapping
     public AjaxResult edit(@RequestBody SysPayment sysPayment) {
         sysPayment.setUpdateBy(getUsername());
-        return toAjax(sysPaymentService.updateSysPayment(sysPayment));
+        int payment = sysPaymentService.updateSysPayment(sysPayment);
+        PaymentDefine.reloadPayment();
+        return toAjax(payment);
     }
 
     /**
@@ -88,6 +93,8 @@ public class SysPaymentController extends BaseController {
     @Log(title = "支付配置", businessType = BusinessType.DELETE)
     @DeleteMapping("/{payIds}")
     public AjaxResult remove(@PathVariable Long[] payIds) {
-        return toAjax(sysPaymentService.deleteSysPaymentByPayIds(payIds));
+        int payment = sysPaymentService.deleteSysPaymentByPayIds(payIds);
+        PaymentDefine.reloadPayment();
+        return toAjax(payment);
     }
 }
