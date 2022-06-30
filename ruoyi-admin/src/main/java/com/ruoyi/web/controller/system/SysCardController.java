@@ -79,13 +79,16 @@ public class SysCardController extends BaseController {
             if (sysCard.getGenQuantity() == null || sysCard.getGenQuantity() < 0) {
                 return AjaxResult.error("制卡数量有误，批量制卡失败");
             }
+            if (sysCard.getGenQuantity() > 10000) {
+                return AjaxResult.error("制卡数量过多，一次性最多制卡10000张");
+            }
             SysCardTemplate sysCardTemplate = sysCardTemplateService.selectSysCardTemplateByTemplateId(sysCard.getTemplateId());
             if (sysCardTemplate == null) {
                 return AjaxResult.error("卡类不存在，批量制卡失败");
             }
-            return toAjax(sysCardTemplateService.genSysCardBatch(sysCardTemplate, sysCard.getGenQuantity(), sysCard.getOnSale(), UserConstants.NO, sysCard.getRemark()).size());
+            new Thread(() -> sysCardTemplateService.genSysCardBatch(sysCardTemplate, sysCard.getGenQuantity(), sysCard.getOnSale(), UserConstants.NO, sysCard.getRemark())).start();
+            return AjaxResult.success("后台生成中，请稍后刷新此页面");
         }
-
     }
 
     /**

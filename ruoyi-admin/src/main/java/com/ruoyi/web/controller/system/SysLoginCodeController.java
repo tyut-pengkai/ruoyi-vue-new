@@ -78,13 +78,16 @@ public class SysLoginCodeController extends BaseController {
             if (sysLoginCode.getGenQuantity() == null || sysLoginCode.getGenQuantity() < 0) {
                 return AjaxResult.error("制卡数量有误，批量制卡失败");
             }
+            if (sysLoginCode.getGenQuantity() > 10000) {
+                return AjaxResult.error("制卡数量过多，一次性最多制卡10000张");
+            }
             SysLoginCodeTemplate sysLoginCodeTemplate = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByTemplateId(sysLoginCode.getTemplateId());
             if (sysLoginCodeTemplate == null) {
                 return AjaxResult.error("卡类不存在，批量制卡失败");
             }
-            return toAjax(sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), sysLoginCode.getOnSale(), UserConstants.NO, sysLoginCode.getRemark()).size());
+            new Thread(() -> sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), sysLoginCode.getOnSale(), UserConstants.NO, sysLoginCode.getRemark())).start();
+            return AjaxResult.success("后台生成中，请稍后刷新此页面");
         }
-
     }
 
     /**

@@ -701,6 +701,13 @@
       append-to-body
       :close-on-click-modal="false"
     >
+      <el-alert
+        :closable="false"
+        show-icon
+        style="margin-bottom: 10px"
+        title="批量制卡任务将在后台执行，如果制卡数量过多可能需要等待后台执行完毕才会在列表中显示，请不要重复操作"
+        type="info"
+      />
       <el-form ref="formBatch" :model="formBatch" :rules="rulesBatch">
         <el-form-item prop="">
           <el-col :span="12">
