@@ -8,7 +8,8 @@
       <div align="center" style="margin-top: 20px">
         <span class="my-font"
         >支付方式：[{{ payMode }}]，请打开APP扫码支付！有效期3分钟</span
-        > <span class="my-discount"> [ {{ remainTimeShow }} ] </span>
+        >
+        <span class="my-discount"> [ {{ remainTimeShow }} ] </span>
       </div>
       <div align="center" style="margin-top: 10px">
         <span class="my-font">订单编号：</span>{{ orderNo }}
@@ -121,6 +122,15 @@ export default {
               }
             } else if (this.showType == "html") {
               this.htmlText = data.body;
+            } else if (this.showType == "free") {
+              clearInterval(this.timer);
+              clearInterval(this.timerPay);
+              this.$alert("支付成功", "系统提示", {
+                confirmButtonText: "确定",
+                callback: (action) => {
+                  window.close();
+                },
+              });
             }
           }
         }
@@ -156,28 +166,32 @@ export default {
       } else {
         clearInterval(this.timer);
         clearInterval(this.timerPay);
-        this.$alert('订单超时未支付，已自动关闭订单（若已支付，请3分钟后在【查询订单】中再次查询）', '系统提示', {
-          confirmButtonText: '确定',
-          callback: action => {
-            window.close();
+        this.$alert(
+          "订单超时未支付，已自动关闭订单（若已支付，请3分钟后在【查询订单】中再次查询）",
+          "系统提示",
+          {
+            confirmButtonText: "确定",
+            callback: (action) => {
+              window.close();
+            },
           }
-        });
+        );
       }
     },
     checkSaleOrderStatus() {
       getPayStatus({orderNo: this.orderNo}).then((response) => {
-        if (response.code == 200 && response.msg === '1') {
+        if (response.code == 200 && response.msg === "1") {
           clearInterval(this.timer);
           clearInterval(this.timerPay);
-          this.$alert('支付成功', '系统提示', {
-            confirmButtonText: '确定',
-            callback: action => {
+          this.$alert("支付成功", "系统提示", {
+            confirmButtonText: "确定",
+            callback: (action) => {
               window.close();
-            }
+            },
           });
         }
       });
-    }
+    },
   },
 };
 </script>

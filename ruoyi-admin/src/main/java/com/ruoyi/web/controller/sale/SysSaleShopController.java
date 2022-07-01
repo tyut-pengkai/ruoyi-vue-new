@@ -73,6 +73,8 @@ public class SysSaleShopController extends BaseController {
     private ISysNoticeService sysNoticeService;
     @Resource
     private ISysPaymentService sysPaymentService;
+    @Resource
+    private SysSaleOrderController sysSaleOrderController;
 
     private static final SnowflakeIdWorker sf = new SnowflakeIdWorker();
 
@@ -351,9 +353,27 @@ public class SysSaleShopController extends BaseController {
         if (payment == null || payment1 == null || !UserConstants.NORMAL.equals(payment1.getStatus())) {
             throw new ServiceException("暂不支持该支付方式", 400);
         }
-        Object payResponse = payment.pay(sso);
-        return AjaxResult.success(payResponse).put("showType", payment.getShowType()) // qr：扫码，html：渲染，forward：跳转
-                .put("actualFee", sso.getActualFee()).put("payMode", payment.getName());
+        if (BigDecimal.ZERO.compareTo(sso.getActualFee()) < 0) {
+            Object payResponse = payment.pay(sso);
+            return AjaxResult.success(payResponse).put("showType", payment.getShowType()) // qr：扫码，html：渲染，forward：跳转
+                    .put("actualFee", sso.getActualFee()).put("payMode", payment.getName());
+        } else {
+            // 0元订单
+            SaleOrderStatus status = sso.getStatus();
+            try {
+                sso.setStatus(SaleOrderStatus.PAID);
+                sysSaleShopService.deliveryGoods(sso);
+                sysSaleOrderService.updateSysSaleOrder(sso);
+            } catch (Exception e) {
+                sso.setStatus(status);
+                sysSaleOrderService.updateSysSaleOrder(sso);
+                throw e;
+            }
+            Map<String, Object> map = new HashMap<>();
+            map.put("success", true);
+            return AjaxResult.success(map).put("showType", "free") // qr：扫码，html：渲染，forward：跳转
+                    .put("actualFee", sso.getActualFee()).put("payMode", payment.getName());
+        }
     }
 
     /**
