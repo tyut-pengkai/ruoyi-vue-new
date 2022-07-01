@@ -147,13 +147,13 @@ public class SysAgentUserController extends BaseController {
     @Log(title = "代理管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAgent sysAgent) {
-        if (sysAgent.getParentAgentId() == null) {
-            sysAgent.setParentAgentId(0L);
+        if (sysAgent.getParentAgentId() == null || sysAgent.getParentAgentId() <= 0) {
+            sysAgent.setParentAgentId(null);
         }
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
             sysAgentService.checkAgent(agent, true);
-            if (sysAgent.getParentAgentId() < 1) {
+            if (sysAgent.getParentAgentId() == null) {
                 sysAgent.setParentAgentId(agent.getAgentId());
             }
         }

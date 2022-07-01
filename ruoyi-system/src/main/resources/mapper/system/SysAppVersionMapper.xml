@@ -20,6 +20,8 @@
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
         <result property="forceUpdate" column="force_update"/>
+        <result property="checkMd5" column="check_md5"/>
+        <result property="downloadUrlDirect" column="download_url_direct"/>
     </resultMap>
 
     <sql id="selectSysAppVersionVo">
@@ -37,7 +39,9 @@
                update_by,
                update_time,
                remark,
-               force_update
+               force_update,
+               check_md5,
+               download_url_direct
         from sys_app_version
     </sql>
 
@@ -54,6 +58,7 @@
             <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
                 and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
             </if>
+            <if test="checkMd5 != null and checkMd5 != ''">and check_md5 = #{checkMd5}</if>
         </where>
     </select>
 
@@ -103,6 +108,8 @@
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
             <if test="forceUpdate != null">force_update,</if>
+            <if test="checkMd5 != null">check_md5,</if>
+            <if test="downloadUrlDirect != null">download_url_direct,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="appId != null">#{appId},</if>
@@ -119,6 +126,8 @@
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
             <if test="forceUpdate != null">#{forceUpdate},</if>
+            <if test="checkMd5 != null">#{checkMd5},</if>
+            <if test="downloadUrlDirect != null">#{downloadUrlDirect},</if>
         </trim>
     </insert>
 
@@ -139,6 +148,8 @@
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="remark != null">remark = #{remark},</if>
             <if test="forceUpdate != null">force_update = #{forceUpdate},</if>
+            <if test="checkMd5 != null">check_md5 = #{checkMd5},</if>
+            <if test="downloadUrlDirect != null">download_url_direct = #{downloadUrlDirect},</if>
         </trim>
         where app_version_id = #{appVersionId}
     </update>

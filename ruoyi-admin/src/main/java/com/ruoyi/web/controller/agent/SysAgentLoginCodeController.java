@@ -164,7 +164,7 @@ public class SysAgentLoginCodeController extends BaseController {
     /**
      * 查询单码类别列表
      */
-    @PreAuthorize("@ss.hasRole('agent')")
+    @PreAuthorize("@ss.hasAnyRoles('agent,admin,sadmin')")
     @GetMapping("/loginCodeTemplate/listAll")
     public TableDataInfo listAll(SysLoginCodeTemplate sysLoginCodeTemplate) {
         List<SysLoginCodeTemplate> list = new ArrayList<>();

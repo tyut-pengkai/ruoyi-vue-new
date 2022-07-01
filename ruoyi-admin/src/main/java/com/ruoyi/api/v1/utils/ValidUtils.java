@@ -147,18 +147,20 @@ public class ValidUtils {
      * 检查md5
      */
     private void checkMd5(SysAppVersion appVersion, Map<String, String> params) {
-        boolean flag = false;
-        String md5 = appVersion.getMd5();
-        if (StringUtils.isNotBlank(md5)) {
-            String[] split = md5.split("\\|");
-            for (String str : split) {
-                if (str.equalsIgnoreCase(params.get("md5"))) {
-                    flag = true;
-                    break;
+        if (UserConstants.YES.equals(appVersion.getCheckMd5())) {
+            boolean flag = false;
+            String md5 = appVersion.getMd5();
+            if (StringUtils.isNotBlank(md5)) {
+                String[] split = md5.split("\\|");
+                for (String str : split) {
+                    if (str.equalsIgnoreCase(params.get("md5"))) {
+                        flag = true;
+                        break;
+                    }
                 }
-            }
-            if (!flag) {
-                throw new ApiException(ErrorCode.ERROR_APP_MD5_MISMATCH);
+                if (!flag) {
+                    throw new ApiException(ErrorCode.ERROR_APP_MD5_MISMATCH);
+                }
             }
         }
     }

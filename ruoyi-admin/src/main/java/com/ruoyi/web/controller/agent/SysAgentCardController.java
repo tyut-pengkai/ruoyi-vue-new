@@ -164,7 +164,7 @@ public class SysAgentCardController extends BaseController {
     /**
      * 查询卡密模板列表
      */
-    @PreAuthorize("@ss.hasRole('agent')")
+    @PreAuthorize("@ss.hasAnyRoles('agent,admin,sadmin')")
     @GetMapping("/cardTemplate/listAll")
     public TableDataInfo list(SysCardTemplate sysCardTemplate) {
         List<SysCardTemplate> list = new ArrayList<>();

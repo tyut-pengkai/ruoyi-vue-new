@@ -67,6 +67,18 @@ public class SysAppVersion extends BaseEntity {
 
     private SysApp app;
 
+    /**
+     * 直链地址
+     */
+    @Excel(name = "是否校验md5", readConverterExp = "Y=是,N=否")
+    private String checkMd5;
+
+    /**
+     * 直链地址
+     */
+    @Excel(name = "直链地址")
+    private String downloadUrlDirect;
+
     public SysApp getApp() {
         return app;
     }
@@ -159,6 +171,22 @@ public class SysAppVersion extends BaseEntity {
         this.forceUpdate = forceUpdate;
     }
 
+    public String getCheckMd5() {
+        return checkMd5;
+    }
+
+    public void setCheckMd5(String checkMd5) {
+        this.checkMd5 = checkMd5;
+    }
+
+    public String getDownloadUrlDirect() {
+        return downloadUrlDirect;
+    }
+
+    public void setDownloadUrlDirect(String downloadUrlDirect) {
+        this.downloadUrlDirect = downloadUrlDirect;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -168,6 +196,7 @@ public class SysAppVersion extends BaseEntity {
                 .append("versionNo", getVersionNo())
                 .append("updateLog", getUpdateLog())
                 .append("downloadUrl", getDownloadUrl())
+                .append("downloadUrlDirect", getDownloadUrlDirect())
                 .append("status", getStatus())
                 .append("delFlag", getDelFlag())
                 .append("md5", getMd5())
@@ -177,6 +206,7 @@ public class SysAppVersion extends BaseEntity {
                 .append("updateTime", getUpdateTime())
                 .append("remark", getRemark())
                 .append("forceUpdate", getForceUpdate())
+                .append("checkMd5", getCheckMd5())
                 .toString();
     }
 }

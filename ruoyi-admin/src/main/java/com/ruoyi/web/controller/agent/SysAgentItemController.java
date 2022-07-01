@@ -27,6 +27,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 代理授权Controller
@@ -100,7 +101,10 @@ public class SysAgentItemController extends BaseController {
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
             sysAgentService.checkAgent(agent, false);
-            sysAgentItemService.checkAgentItem(agent.getAgentId(), sysAgentItem.getTemplateType(), sysAgentItem.getTemplateId());
+            SysAgentItem item = sysAgentItemService.checkAgentItem(agent.getAgentId(), sysAgentItem.getTemplateType(), sysAgentItem.getTemplateId());
+            if (sysAgentItem.getAgentPrice().compareTo(item.getAgentPrice()) < 0) {
+                throw new ServiceException("代理价格设置有误，子代理价格不能低于您的代理价格");
+            }
         }
         SysAgentItem s = new SysAgentItem();
         s.setAgentId(sysAgentItem.getAgentId());
@@ -127,7 +131,10 @@ public class SysAgentItemController extends BaseController {
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
             sysAgentService.checkAgent(agent, false);
-            sysAgentItemService.checkAgentItem(agent.getAgentId(), sysAgentItem.getTemplateType(), sysAgentItem.getTemplateId());
+            SysAgentItem item = sysAgentItemService.checkAgentItem(agent.getAgentId(), sysAgentItem.getTemplateType(), sysAgentItem.getTemplateId());
+            if (sysAgentItem.getAgentPrice().compareTo(item.getAgentPrice()) < 0) {
+                throw new ServiceException("代理价格设置有误，子代理价格不能低于您的代理价格");
+            }
         }
         SysAgentItem s = new SysAgentItem();
         s.setAgentId(sysAgentItem.getAgentId());
@@ -135,10 +142,17 @@ public class SysAgentItemController extends BaseController {
         s.setTemplateId(sysAgentItem.getTemplateId());
         List<SysAgentItem> items = sysAgentItemService.selectSysAgentItemList(s);
         if (items.size() > 0) {
+            for (SysAgentItem item : items) {
+                if (Objects.equals(item.getId(), sysAgentItem.getId())) {
+                    sysAgentItem.setUpdateBy(getUsername());
+                    return toAjax(sysAgentItemService.updateSysAgentItem(sysAgentItem));
+                }
+            }
             throw new ServiceException("此代理已有代理该卡的权限，无法重复授权");
+        } else {
+            sysAgentItem.setUpdateBy(getUsername());
+            return toAjax(sysAgentItemService.updateSysAgentItem(sysAgentItem));
         }
-        sysAgentItem.setUpdateBy(getUsername());
-        return toAjax(sysAgentItemService.updateSysAgentItem(sysAgentItem));
     }
 
     /**

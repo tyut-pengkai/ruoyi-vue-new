@@ -294,6 +294,10 @@
           <el-input v-model="form.downloadUrl" placeholder="请输入内容">
           </el-input>
         </el-form-item>
+        <el-form-item label="下载地址（直链）" prop="downloadUrlDirect">
+          <el-input v-model="form.downloadUrlDirect" placeholder="请输入内容">
+          </el-input>
+        </el-form-item>
         <el-form-item>
           <el-col :span="12">
             <el-form-item label="版本状态">
@@ -319,6 +323,21 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
+        </el-form-item>
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="校验MD5">
+              <el-radio-group v-model="form.checkMd5">
+                <el-radio
+                  v-for="dict in dict.type.sys_yes_no"
+                  :key="dict.value"
+                  :label="dict.value"
+                >{{ dict.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12"></el-col>
         </el-form-item>
         <el-form-item label="软件MD5" prop="md5">
           <el-input v-model="form.md5" placeholder="请输入软件MD5"/>
