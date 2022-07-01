@@ -139,6 +139,11 @@ public class SysSaleOrder extends BaseEntity {
     private String tradeNo;
 
     /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+
+    /**
      * 销售订单详情信息
      */
     private List<SysSaleOrderItem> sysSaleOrderItemList;
@@ -318,6 +323,14 @@ public class SysSaleOrder extends BaseEntity {
 
     public void setUser(SysUser user) {
         this.user = user;
+    }
+
+    public String getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
     }
 
     @Override

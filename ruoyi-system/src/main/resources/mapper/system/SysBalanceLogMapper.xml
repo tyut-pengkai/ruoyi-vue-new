@@ -29,6 +29,7 @@
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
+        <result property="delFlag" column="del_flag"/>
         <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
     </resultMap>
 
@@ -63,6 +64,7 @@
                bl.update_by,
                bl.update_time,
                bl.remark,
+               bl.del_flag,
                u.user_id,
                u.user_name,
                u.nick_name
@@ -72,14 +74,13 @@
 
     <select id="selectSysBalanceLogList" parameterType="SysBalanceLog" resultMap="SysBalanceLogResult">
         <include refid="selectSysBalanceLogVo"/>
-        <where>
-            <if test="userId != null ">and bl.user_id = #{userId}</if>
-            <if test="changeType != null">and bl.change_type = #{changeType}</if>
-            <if test="changeDesc != null  and changeDesc != ''">and bl.change_desc = #{changeDesc}</if>
-            <if test="saleOrderId != null ">and bl.sale_order_id = #{saleOrderId}</if>
-            <if test="withdrawCashId != null ">and bl.withdraw_cash_id = #{withdrawCashId}</if>
-            <if test="createBy != null  and createBy != ''">and bl.create_by = #{createBy}</if>
-        </where>
+        where bl.del_flag = '0'
+        <if test="userId != null ">and bl.user_id = #{userId}</if>
+        <if test="changeType != null">and bl.change_type = #{changeType}</if>
+        <if test="changeDesc != null  and changeDesc != ''">and bl.change_desc = #{changeDesc}</if>
+        <if test="saleOrderId != null ">and bl.sale_order_id = #{saleOrderId}</if>
+        <if test="withdrawCashId != null ">and bl.withdraw_cash_id = #{withdrawCashId}</if>
+        <if test="createBy != null  and createBy != ''">and bl.create_by = #{createBy}</if>
         order by bl.id desc
     </select>
 
@@ -114,6 +115,7 @@
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
@@ -139,6 +141,7 @@
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
         </trim>
     </insert>
 
@@ -169,19 +172,33 @@
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
         </trim>
         where id = #{id}
     </update>
 
+    <!--    <delete id="deleteSysBalanceLogById" parameterType="Long">-->
+    <!--        delete-->
+    <!--        from sys_balance_log-->
+    <!--        where id = #{id}-->
+    <!--    </delete>-->
+
+    <!--    <delete id="deleteSysBalanceLogByIds" parameterType="String">-->
+    <!--        delete from sys_balance_log where id in-->
+    <!--        <foreach item="id" collection="array" open="(" separator="," close=")">-->
+    <!--            #{id}-->
+    <!--        </foreach>-->
+    <!--    </delete>-->
+
     <delete id="deleteSysBalanceLogById" parameterType="Long">
-        delete
-        from sys_balance_log
+        update sys_balance_log
+        set del_flag = '2'
         where id = #{id}
     </delete>
 
     <delete id="deleteSysBalanceLogByIds" parameterType="String">
-        delete from sys_balance_log where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
+        update sys_balance_log set del_flag = '2' where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>

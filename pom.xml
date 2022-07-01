@@ -197,6 +197,8 @@
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
         <module>ruoyi-license-server</module>
+        <module>ruoyi-update</module>
+        <module>ruoyi-install</module>
     </modules>
     <packaging>pom</packaging>
 

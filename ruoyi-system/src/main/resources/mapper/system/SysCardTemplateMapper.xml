@@ -30,6 +30,7 @@
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
+        <result property="delFlag" column="del_flag"/>
         <association property="app"    column="app_id" javaType="SysApp" resultMap="SysAppResult" />
     </resultMap>
 
@@ -67,6 +68,7 @@
                ct.update_by,
                ct.update_time,
                ct.remark,
+               ct.del_flag,
                a.app_id,
                a.app_name,
                a.auth_type,
@@ -83,7 +85,7 @@
             inner join sys_user u on a.create_by = u.user_name
             inner join sys_user u1 on ct.create_by = u1.user_name
         </if>
-        where a.del_flag = '0'
+        where a.del_flag = '0' and ct.del_flag = '0'
         <if test="appId != null ">and ct.app_id = #{appId}</if>
         <if test="cardName != null and cardName != ''">and ct.card_name like concat('%', #{cardName}, '%')</if>
         <if test="chargeRule != null">and ct.charge_rule = #{chargeRule}</if>
@@ -130,6 +132,7 @@
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="appId != null">#{appId},</if>
@@ -156,6 +159,7 @@
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
         </trim>
     </insert>
 
@@ -181,22 +185,36 @@
             <if test="effectiveDuration != null">effective_duration = #{effectiveDuration},</if>
             <if test="status != null">status = #{status},</if>
             <if test="enableAutoGen != null">enable_auto_gen = #{enableAutoGen},</if>
-<!--            <if test="createBy != null">create_by = #{createBy},</if>-->
-<!--            <if test="createTime != null">create_time = #{createTime},</if>-->
+            <!--            <if test="createBy != null">create_by = #{createBy},</if>-->
+            <!--            <if test="createTime != null">create_time = #{createTime},</if>-->
             <if test="updateBy != null">update_by = #{updateBy},</if>
             update_time = sysdate(),
             <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
         </trim>
         where template_id = #{templateId}
     </update>
 
+    <!--    <delete id="deleteSysCardTemplateByTemplateId" parameterType="Long">-->
+    <!--        delete from sys_card_template where template_id = #{templateId}-->
+    <!--    </delete>-->
+
+    <!--    <delete id="deleteSysCardTemplateByTemplateIds" parameterType="String">-->
+    <!--        delete from sys_card_template where template_id in-->
+    <!--        <foreach item="templateId" collection="array" open="(" separator="," close=")">-->
+    <!--            #{templateId}-->
+    <!--        </foreach>-->
+    <!--    </delete>-->
+
     <delete id="deleteSysCardTemplateByTemplateId" parameterType="Long">
-        delete from sys_card_template where template_id = #{templateId}
+        update sys_card_template
+        set del_flag = '2'
+        where template_id = #{templateId}
     </delete>
 
     <delete id="deleteSysCardTemplateByTemplateIds" parameterType="String">
-        delete from sys_card_template where template_id in
-        <foreach item="templateId" collection="array" open="(" separator="," close=")">
+        update sys_card_template set del_flag = '2' where template_id in
+        <foreach collection="array" item="templateId" open="(" separator="," close=")">
             #{templateId}
         </foreach>
     </delete>

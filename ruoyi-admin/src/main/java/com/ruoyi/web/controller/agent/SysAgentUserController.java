@@ -114,13 +114,13 @@ public class SysAgentUserController extends BaseController {
     @Log(title = "代理管理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysAgent sysAgent) {
-        if (sysAgent.getParentAgentId() == null) {
-            sysAgent.setParentAgentId(0L);
+        if (sysAgent.getParentAgentId() == null || sysAgent.getParentAgentId() <= 0) {
+            sysAgent.setParentAgentId(null);
         }
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
             sysAgentService.checkAgent(agent, true);
-            if (sysAgent.getParentAgentId() < 1) {
+            if (sysAgent.getParentAgentId() == null) {
                 sysAgent.setParentAgentId(agent.getAgentId());
             }
         }
@@ -133,7 +133,6 @@ public class SysAgentUserController extends BaseController {
             SysRole sysRole = sysRoleService.selectRoleByKey("agent");
             sysRoleService.insertAuthUsers(sysRole.getRoleId(), new Long[]{sysAgent.getUserId()});
         }
-        sysAgent.setDelFlag("0");
         sysAgent.setCreateBy(getUsername());
         sysAgentService.insertSysAgent(sysAgent);
         checkCircleParentAgentAndFillPath(sysAgent);

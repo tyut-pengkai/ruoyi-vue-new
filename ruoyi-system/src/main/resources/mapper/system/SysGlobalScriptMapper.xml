@@ -18,6 +18,7 @@
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
+        <result property="delFlag" column="del_flag"/>
     </resultMap>
 
     <sql id="selectSysGlobalScriptVo">
@@ -33,20 +34,20 @@
                create_time,
                update_by,
                update_time,
-               remark
+               remark,
+               del_flag
         from sys_global_script
     </sql>
 
     <select id="selectSysGlobalScriptList" parameterType="SysGlobalScript" resultMap="SysGlobalScriptResult">
         <include refid="selectSysGlobalScriptVo"/>
-        <where>
-            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
-            <if test="checkToken != null  and checkToken != ''">and check_token = #{checkToken}</if>
-            <if test="checkVip != null  and checkVip != ''">and check_vip = #{checkVip}</if>
-            <if test="content != null  and content != ''">and content = #{content}</if>
-            <if test="language != null  and language != ''">and language = #{language}</if>
-            <if test="scriptKey != null  and scriptKey != ''">and script_key = #{scriptKey}</if>
-        </where>
+        where del_flag = '0'
+        <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+        <if test="checkToken != null  and checkToken != ''">and check_token = #{checkToken}</if>
+        <if test="checkVip != null  and checkVip != ''">and check_vip = #{checkVip}</if>
+        <if test="content != null  and content != ''">and content = #{content}</if>
+        <if test="language != null  and language != ''">and language = #{language}</if>
+        <if test="scriptKey != null  and scriptKey != ''">and script_key = #{scriptKey}</if>
     </select>
 
     <select id="selectSysGlobalScriptByScriptId" parameterType="Long" resultMap="SysGlobalScriptResult">
@@ -56,12 +57,12 @@
 
     <select id="selectSysGlobalScriptByScriptName" parameterType="String" resultMap="SysGlobalScriptResult">
         <include refid="selectSysGlobalScriptVo"/>
-        where name = #{scriptName}
+        where name = #{scriptName} and del_flag = '0'
     </select>
 
     <select id="selectSysGlobalScriptByScriptKey" parameterType="String" resultMap="SysGlobalScriptResult">
         <include refid="selectSysGlobalScriptVo"/>
-        where script_key = #{scriptKey}
+        where script_key = #{scriptKey} and del_flag = '0'
     </select>
 
     <insert id="insertSysGlobalScript" parameterType="SysGlobalScript" useGeneratedKeys="true" keyProperty="scriptId">
@@ -79,6 +80,7 @@
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null">#{name},</if>
@@ -93,6 +95,7 @@
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
         </trim>
     </insert>
 
@@ -110,20 +113,35 @@
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
         </trim>
         where script_id = #{scriptId}
     </update>
 
+    <!--    <delete id="deleteSysGlobalScriptByScriptId" parameterType="Long">-->
+    <!--        delete-->
+    <!--        from sys_global_script-->
+    <!--        where script_id = #{scriptId}-->
+    <!--    </delete>-->
+
+    <!--    <delete id="deleteSysGlobalScriptByScriptIds" parameterType="String">-->
+    <!--        delete from sys_global_script where script_id in-->
+    <!--        <foreach item="scriptId" collection="array" open="(" separator="," close=")">-->
+    <!--            #{scriptId}-->
+    <!--        </foreach>-->
+    <!--    </delete>-->
+
     <delete id="deleteSysGlobalScriptByScriptId" parameterType="Long">
-        delete
-        from sys_global_script
+        update sys_global_script
+        set del_flag = '2'
         where script_id = #{scriptId}
     </delete>
 
     <delete id="deleteSysGlobalScriptByScriptIds" parameterType="String">
-        delete from sys_global_script where script_id in
-        <foreach item="scriptId" collection="array" open="(" separator="," close=")">
+        update sys_global_script set del_flag = '2' where script_id in
+        <foreach collection="array" item="scriptId" open="(" separator="," close=")">
             #{scriptId}
         </foreach>
     </delete>
+
 </mapper>

@@ -129,6 +129,11 @@ public class SysAppUser extends BaseEntity {
      */
     private String userName;
 
+    /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+
     public Long getAppUserId() {
         return appUserId;
     }
@@ -279,6 +284,14 @@ public class SysAppUser extends BaseEntity {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
     }
 
     @Override

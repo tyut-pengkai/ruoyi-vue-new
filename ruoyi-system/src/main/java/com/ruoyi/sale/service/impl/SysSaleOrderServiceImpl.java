@@ -90,12 +90,11 @@ public class SysSaleOrderServiceImpl implements ISysSaleOrderService {
      * @param sysSaleOrder 销售订单
      * @return 结果
      */
-    @Transactional
     @Override
     public int updateSysSaleOrder(SysSaleOrder sysSaleOrder) {
         sysSaleOrder.setUpdateTime(DateUtils.getNowDate());
-        sysSaleOrderMapper.deleteSysSaleOrderItemByOrderId(sysSaleOrder.getOrderId());
-        insertSysSaleOrderItem(sysSaleOrder);
+//        sysSaleOrderMapper.deleteSysSaleOrderItemByOrderId(sysSaleOrder.getOrderId());
+//        insertSysSaleOrderItem(sysSaleOrder);
         return sysSaleOrderMapper.updateSysSaleOrder(sysSaleOrder);
     }
 
@@ -108,7 +107,7 @@ public class SysSaleOrderServiceImpl implements ISysSaleOrderService {
     @Transactional
     @Override
     public int deleteSysSaleOrderByOrderIds(Long[] orderIds) {
-        sysSaleOrderMapper.deleteSysSaleOrderItemByOrderIds(orderIds);
+//        sysSaleOrderMapper.deleteSysSaleOrderItemByOrderIds(orderIds);
         return sysSaleOrderMapper.deleteSysSaleOrderByOrderIds(orderIds);
     }
 
@@ -121,7 +120,7 @@ public class SysSaleOrderServiceImpl implements ISysSaleOrderService {
     @Transactional
     @Override
     public int deleteSysSaleOrderByOrderId(Long orderId) {
-        sysSaleOrderMapper.deleteSysSaleOrderItemByOrderId(orderId);
+//        sysSaleOrderMapper.deleteSysSaleOrderItemByOrderId(orderId);
         return sysSaleOrderMapper.deleteSysSaleOrderByOrderId(orderId);
     }
 

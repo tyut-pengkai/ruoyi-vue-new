@@ -129,6 +129,11 @@ public class SysCard extends BaseEntity {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Integer genQuantity;
 
+    /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+
     public Integer getGenQuantity() {
         return genQuantity;
     }
@@ -271,6 +276,14 @@ public class SysCard extends BaseEntity {
 
     public void setIsAgent(String isAgent) {
         this.isAgent = isAgent;
+    }
+
+    public String getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
     }
 
     @Override

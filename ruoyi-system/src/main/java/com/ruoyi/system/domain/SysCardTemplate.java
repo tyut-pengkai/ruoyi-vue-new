@@ -148,6 +148,11 @@ public class SysCardTemplate extends BaseEntity {
     @Excel(name = "软件名称", targetAttr = "appName", type = Excel.Type.EXPORT)
     private SysApp app;
 
+    /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+
     public SysApp getApp() {
         return app;
     }
@@ -322,6 +327,14 @@ public class SysCardTemplate extends BaseEntity {
 
     public void setAgentPrice(BigDecimal agentPrice) {
         this.agentPrice = agentPrice;
+    }
+
+    public String getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
     }
 
     @Override

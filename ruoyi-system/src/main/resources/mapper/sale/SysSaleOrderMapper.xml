@@ -29,6 +29,7 @@
         <result property="expireTime" column="expire_time"/>
         <result property="tradeNo" column="trade_no"/>
         <result property="manualDelivery" column="manual_delivery"/>
+        <result property="delFlag" column="del_flag"/>
     </resultMap>
 
     <resultMap id="SysSaleOrderSysSaleOrderItemResult" type="SysSaleOrder" extends="SysSaleOrderResult">
@@ -74,38 +75,37 @@
                remark,
                expire_time,
                trade_no,
-               manual_delivery
+               manual_delivery,
+               del_flag
         from sys_sale_order
     </sql>
 
     <select id="selectSysSaleOrderList" parameterType="SysSaleOrder" resultMap="SysSaleOrderResult">
         <include refid="selectSysSaleOrderVo"/>
-        <where>
-            <if test="orderNo != null and orderNo != ''">and order_no = #{orderNo}</if>
-            <if test="orderType != null ">and order_type = #{orderType}</if>
-            <if test="tradeNo != null and tradeNo != ''">and trade_no = #{tradeNo}</if>
-            <if test="userId != null ">and user_id = #{userId}</if>
-            <if test="payMode != null and payMode != ''">and pay_mode = #{payMode}</if>
-            <if test="status != null ">and status = #{status}</if>
-            <if test="contact != null and contact != ''">and contact = #{contact}</if>
-            <if test="queryPass != null and queryPass != ''">and query_pass = #{queryPass}</if>
-        </where>
+        where del_flag = '0'
+        <if test="orderNo != null and orderNo != ''">and order_no = #{orderNo}</if>
+        <if test="orderType != null ">and order_type = #{orderType}</if>
+        <if test="tradeNo != null and tradeNo != ''">and trade_no = #{tradeNo}</if>
+        <if test="userId != null ">and user_id = #{userId}</if>
+        <if test="payMode != null and payMode != ''">and pay_mode = #{payMode}</if>
+        <if test="status != null ">and status = #{status}</if>
+        <if test="contact != null and contact != ''">and contact = #{contact}</if>
+        <if test="queryPass != null and queryPass != ''">and query_pass = #{queryPass}</if>
         order by order_id desc
     </select>
 
+    <!--suppress SqlResolve -->
     <select id="selectSysSaleOrderQueryLimit5" parameterType="SysSaleOrder" resultMap="SysSaleOrderResult">
         <include refid="selectSysSaleOrderVo"/>
-        <where>
-            <if test="orderNo != null  and orderNo != ''">and order_no = #{orderNo}</if>
-            <if test="orderType != null ">and order_type = #{orderType}</if>
-            <if test="userId != null ">and user_id = #{userId}</if>
-            <if test="payMode != null  and payMode != ''">and pay_mode = #{payMode}</if>
-            <if test="status != null ">and status = #{status}</if>
-            <if test="contact != null  and contact != ''">and contact = #{contact}</if>
-            <if test="queryPass != null  and queryPass != ''">and query_pass = #{queryPass}</if>
-        </where>
-        order by order_id desc
-        limit 5
+        where del_flag = '0'
+        <if test="orderNo != null  and orderNo != ''">and order_no = #{orderNo}</if>
+        <if test="orderType != null ">and order_type = #{orderType}</if>
+        <if test="userId != null ">and user_id = #{userId}</if>
+        <if test="payMode != null  and payMode != ''">and pay_mode = #{payMode}</if>
+        <if test="status != null ">and status = #{status}</if>
+        <if test="contact != null  and contact != ''">and contact = #{contact}</if>
+        <if test="queryPass != null  and queryPass != ''">and query_pass = #{queryPass}</if>
+        order by order_id desc limit 5
     </select>
 
     <select id="selectSysSaleOrderByOrderId" parameterType="Long" resultMap="SysSaleOrderSysSaleOrderItemResult">
@@ -133,6 +133,7 @@
                a.expire_time,
                a.trade_no,
                a.manual_delivery,
+               a.del_flag,
                b.item_id       as sub_item_id,
                b.order_id      as sub_order_id,
                b.template_type as sub_template_type,
@@ -147,6 +148,7 @@
         from sys_sale_order a
                  left join sys_sale_order_item b on b.order_id = a.order_id
         where a.order_id = #{orderId}
+          and a.del_flag = '0'
     </select>
 
     <select id="selectSysSaleOrderByOrderNo" parameterType="String" resultMap="SysSaleOrderSysSaleOrderItemResult">
@@ -174,6 +176,7 @@
                a.expire_time,
                a.trade_no,
                a.manual_delivery,
+               a.del_flag,
                b.item_id       as sub_item_id,
                b.order_id      as sub_order_id,
                b.template_type as sub_template_type,
@@ -188,6 +191,7 @@
         from sys_sale_order a
                  left join sys_sale_order_item b on b.order_id = a.order_id
         where a.order_no = #{orderNo}
+          and a.del_flag = '0'
     </select>
 
     <insert id="insertSysSaleOrder" parameterType="SysSaleOrder" useGeneratedKeys="true" keyProperty="orderId">
@@ -216,6 +220,7 @@
             <if test="expireTime != null">expire_time,</if>
             <if test="tradeNo != null">trade_no,</if>
             <if test="manualDelivery != null">manual_delivery,</if>
+            <if test="delFlag != null">del_flag,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderNo != null">#{orderNo},</if>
@@ -241,6 +246,7 @@
             <if test="expireTime != null">#{expireTime},</if>
             <if test="tradeNo != null">#{tradeNo},</if>
             <if test="manualDelivery != null">#{manualDelivery},</if>
+            <if test="delFlag != null">#{delFlag},</if>
         </trim>
     </insert>
 
@@ -270,19 +276,33 @@
             <if test="expireTime != null">expire_time = #{expireTime},</if>
             <if test="tradeNo != null">trade_no = #{tradeNo},</if>
             <if test="manualDelivery != null">manual_delivery = #{manualDelivery},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
         </trim>
         where order_id = #{orderId}
     </update>
 
+    <!--    <delete id="deleteSysSaleOrderByOrderId" parameterType="Long">-->
+    <!--        delete-->
+    <!--        from sys_sale_order-->
+    <!--        where order_id = #{orderId}-->
+    <!--    </delete>-->
+
+    <!--    <delete id="deleteSysSaleOrderByOrderIds" parameterType="String">-->
+    <!--        delete from sys_sale_order where order_id in-->
+    <!--        <foreach item="orderId" collection="array" open="(" separator="," close=")">-->
+    <!--            #{orderId}-->
+    <!--        </foreach>-->
+    <!--    </delete>-->
+
     <delete id="deleteSysSaleOrderByOrderId" parameterType="Long">
-        delete
-        from sys_sale_order
-        where order_id = #{orderId}
+        update sys_sale_order
+        set del_flag = '2'
+        where order_id = #{appId}
     </delete>
 
     <delete id="deleteSysSaleOrderByOrderIds" parameterType="String">
-        delete from sys_sale_order where order_id in
-        <foreach item="orderId" collection="array" open="(" separator="," close=")">
+        update sys_sale_order set del_flag = '2' where order_id in
+        <foreach collection="array" item="orderId" open="(" separator="," close=")">
             #{orderId}
         </foreach>
     </delete>

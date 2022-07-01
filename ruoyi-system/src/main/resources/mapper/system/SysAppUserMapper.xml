@@ -26,6 +26,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="remark"    column="remark"    />
+        <result property="delFlag" column="del_flag"/>
         <association property="user"    column="user_id" javaType="SysUser" resultMap="SysUserResult" />
         <association property="app"    column="app_id" javaType="SysApp" resultMap="SysAppResult" />
     </resultMap>
@@ -66,6 +67,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                au.update_by,
                au.update_time,
                au.remark,
+               au.del_flag,
                a.app_id,
                a.app_name,
                a.auth_type,
@@ -82,7 +84,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectSysAppUserList" parameterType="SysAppUser" resultMap="SysAppUserResult">
         <include refid="selectSysAppUserVo"/>
-        where a.del_flag = '0'
+        where a.del_flag = '0' and au.del_flag = '0' and u.del_flag = '0'
         <if test="userName != null ">and (u.nick_name like concat('%', #{userName}, '%') or u.user_name like
             concat('%', #{userName}, '%') or au.login_code like concat('%', #{userName}, '%'))
         </if>
@@ -129,6 +131,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
@@ -151,6 +154,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
          </trim>
     </insert>
 
@@ -177,28 +181,42 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             update_time = sysdate(),
             <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
         </trim>
         where app_user_id = #{appUserId}
     </update>
 
+    <!--    <delete id="deleteSysAppUserByAppUserId" parameterType="Long">-->
+    <!--        delete from sys_app_user where app_user_id = #{appUserId}-->
+    <!--    </delete>-->
+
+    <!--    <delete id="deleteSysAppUserByAppUserIds" parameterType="String">-->
+    <!--        delete from sys_app_user where app_user_id in -->
+    <!--        <foreach item="appUserId" collection="array" open="(" separator="," close=")">-->
+    <!--            #{appUserId}-->
+    <!--        </foreach>-->
+    <!--    </delete>-->
+
     <delete id="deleteSysAppUserByAppUserId" parameterType="Long">
-        delete from sys_app_user where app_user_id = #{appUserId}
+        update sys_app_user
+        set del_flag = '2'
+        where app_user_id = #{appUserId}
     </delete>
 
     <delete id="deleteSysAppUserByAppUserIds" parameterType="String">
-        delete from sys_app_user where app_user_id in 
-        <foreach item="appUserId" collection="array" open="(" separator="," close=")">
+        update sys_app_user set del_flag = '2' where app_user_id in
+        <foreach collection="array" item="appUserId" open="(" separator="," close=")">
             #{appUserId}
         </foreach>
     </delete>
 
     <select id="selectSysAppUserByAppIdAndUserId" resultMap="SysAppUserResult">
         <include refid="selectSysAppUserVo"/>
-        where au.app_id = #{appId} and au.user_id = #{userId}
+        where au.app_id = #{appId} and au.user_id = #{userId} and au.del_flag = '0'
     </select>
 
     <select id="selectSysAppUserByAppIdAndLoginCode" resultMap="SysAppUserResult">
         <include refid="selectSysAppUserVo"/>
-        where au.app_id = #{appId} and au.login_code = #{loginCode}
+        where au.app_id = #{appId} and au.login_code = #{loginCode} and au.del_flag = '0'
     </select>
 </mapper>
