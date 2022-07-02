@@ -7,7 +7,6 @@ import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.utils.ValidUtils;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
-import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
@@ -56,7 +55,7 @@ public class GlobalVariableGet extends Function {
         // 检查是否登录
         if (UserConstants.YES.equals(variable.getCheckToken())) {
             try {
-                LoginUser loginUser = tokenService.getLoginUser(request);
+                getLoginUser();
             } catch (Exception e) {
                 throw new ApiException(ErrorCode.ERROR_NOT_LOGIN, "获取此变量需要用户登录");
             }

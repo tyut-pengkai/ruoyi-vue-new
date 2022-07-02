@@ -1,15 +1,5 @@
 package com.ruoyi.system.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.TreeSelect;
@@ -24,6 +14,11 @@ import com.ruoyi.system.mapper.SysMenuMapper;
 import com.ruoyi.system.mapper.SysRoleMapper;
 import com.ruoyi.system.mapper.SysRoleMenuMapper;
 import com.ruoyi.system.service.ISysMenuService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 菜单 业务层处理
@@ -86,14 +81,28 @@ public class SysMenuServiceImpl implements ISysMenuService
      * @return 权限列表
      */
     @Override
-    public Set<String> selectMenuPermsByUserId(Long userId)
-    {
+    public Set<String> selectMenuPermsByUserId(Long userId) {
         List<String> perms = menuMapper.selectMenuPermsByUserId(userId);
         Set<String> permsSet = new HashSet<>();
-        for (String perm : perms)
-        {
-            if (StringUtils.isNotEmpty(perm))
-            {
+        for (String perm : perms) {
+            if (StringUtils.isNotEmpty(perm)) {
+                permsSet.addAll(Arrays.asList(perm.trim().split(",")));
+            }
+        }
+        return permsSet;
+    }
+
+    /**
+     * 根据角色ID查询权限
+     *
+     * @param roleId 角色ID
+     * @return 权限列表
+     */
+    public Set<String> selectMenuPermsByRoleId(Long roleId) {
+        List<String> perms = menuMapper.selectMenuPermsByRoleId(roleId);
+        Set<String> permsSet = new HashSet<>();
+        for (String perm : perms) {
+            if (StringUtils.isNotEmpty(perm)) {
                 permsSet.addAll(Arrays.asList(perm.trim().split(",")));
             }
         }
@@ -102,7 +111,7 @@ public class SysMenuServiceImpl implements ISysMenuService
 
     /**
      * 根据用户ID查询菜单
-     * 
+     *
      * @param userId 用户名称
      * @return 菜单列表
      */
@@ -117,6 +126,11 @@ public class SysMenuServiceImpl implements ISysMenuService
         else
         {
             menus = menuMapper.selectMenuTreeByUserId(userId);
+            // // 添加用户默认权限
+            SysRole common = roleMapper.selectRoleByKey("common");
+            if (common != null) {
+                menus = menuMapper.selectMenuTreeByRoleId(common.getRoleId());
+            }
         }
         return getChildPerms(menus, 0);
     }

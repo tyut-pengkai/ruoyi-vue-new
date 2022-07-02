@@ -1,5 +1,6 @@
 package com.ruoyi.framework.web.service;
 
+import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.system.service.ISysMenuService;
 import com.ruoyi.system.service.ISysRoleService;
@@ -37,9 +38,13 @@ public class SysPermissionService
         {
             roles.add("sadmin");
         }
-        else
-        {
+        else {
             roles.addAll(roleService.selectRolePermissionByUserId(user.getUserId()));
+            // 添加用户默认权限
+            SysRole common = roleService.selectRoleByKey("common");
+            if (common != null) {
+                roles.add(common.getRoleKey());
+            }
         }
         return roles;
     }
@@ -58,9 +63,13 @@ public class SysPermissionService
         {
             perms.add("*:*:*");
         }
-        else
-        {
+        else {
             perms.addAll(menuService.selectMenuPermsByUserId(user.getUserId()));
+            // 添加用户默认权限
+            SysRole common = roleService.selectRoleByKey("common");
+            if (common != null) {
+                perms.addAll(menuService.selectMenuPermsByRoleId(common.getRoleId()));
+            }
         }
         return perms;
     }

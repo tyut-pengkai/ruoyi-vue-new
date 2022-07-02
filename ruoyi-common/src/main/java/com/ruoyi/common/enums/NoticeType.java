@@ -9,8 +9,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum NoticeType implements BaseEnum {
 
-    FRONTEND("0", "前台公告"),
-    BACKEND("1", "后台公告");
+    FRONTEND("0", "商城公告(前台)"),
+    BACKEND("1", "用户公告(后台)"),
+    AGENT("2", "代理公告(后台)");
 
     @EnumValue
     @JsonValue
