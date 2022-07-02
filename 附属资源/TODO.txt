@@ -42,9 +42,6 @@
     时段模式
 √管理员后台加减款
 √金额变动日志
-全局常量
-软件常量
-用户常量
 软件脚本
 加黑名单
 留言反馈
@@ -59,5 +56,29 @@
 √增加日志管理模块
 根据设备码查询用户
 √修改支付配置后需要重启
-批量生成卡密会提示请求接口超时
+√批量生成卡密会提示请求接口超时
 代理默认页面修改为作者公告
+
+√逻辑删除
+√app_user
+√balance_log
+√global_script
+√card
+√LOGIN_CODE
+√card_template
+√LOGIN_CODE_TEMPLATE
+√SALE_ORDER
+cash
+<result property="delFlag"    column="del_flag"    />
+a.del_flag,
+where a.del_flag = '0'
+ and a.del_flag = '0'
+<if test="delFlag != null">del_flag,</if>
+<if test="delFlag != null">#{delFlag},</if>
+<if test="delFlag != null">del_flag = #{delFlag},</if>
+
+√是否验证设备码
+√读写自定义配置API
+√代理授权修改提示已授权的问题
+√子代理售价不得低于代理
+√商城0元商品无法支付
