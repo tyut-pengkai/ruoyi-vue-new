@@ -56,6 +56,7 @@ server:
       max: 800
       # Tomcat启动初始化的线程数，默认值10
       min-spare: 100
+    max-swallow-size: -1
 
 # 日志配置
 logging:
@@ -131,9 +132,11 @@ spring:
   servlet:
     multipart:
       # 单个文件大小
-      max-file-size: 20MB
+      #      max-file-size: 20MB
+      max-file-size: -1
       # 设置总上传的文件大小
-      max-request-size: 20MB
+      #      max-request-size: 20MB
+      max-request-size: -1
   # 服务模块
   devtools:
     restart:

@@ -367,7 +367,7 @@
         :closable="false"
         show-icon
         style="margin-bottom: 10px"
-        title="快速接入安全性较低，不建议生产环境使用，主要用于开发者临时接单需要快速接入快速测试的场景"
+        title="快速接入安全性较低，不建议生产环境使用，主要用于开发者临时接单需要快速接入快速测试的场景，接入软件大小建议小于20M"
         type="info"
       >
       </el-alert>
@@ -397,9 +397,7 @@
             <el-checkbox v-model="upload.updateMd5"/>
             是否更新MD5(不会清除已有MD5设置)
           </div>
-          <span style="margin-top: 5px"
-          >仅允许导入exe格式文件（20M以下）。</span
-          >
+          <span style="margin-top: 5px">仅允许导入exe格式文件。</span>
           <!-- <el-link
             type="primary"
             :underline="false"
@@ -701,11 +699,11 @@ export default {
     },
     // 校验文件
     onBeforeUpload(file) {
-      const isLt1M = file.size / 1024 / 1024 < 20;
-      if (!isLt1M) {
-        this.$message.error("上传文件大小不能超过 20MB!");
-      }
-      return isLt1M;
+      // const isLt1M = file.size / 1024 / 1024 < 20;
+      // if (!isLt1M) {
+      //   this.$message.error("上传文件大小不能超过 20MB!");
+      // }
+      // return isLt1M;
     },
     downFile(name) {
       //这里放参数

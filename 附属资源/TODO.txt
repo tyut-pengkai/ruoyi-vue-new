@@ -56,7 +56,7 @@
 根据设备码查询用户
 √修改支付配置后需要重启
 √批量生成卡密会提示请求接口超时
-代理默认页面修改为作者公告
+√代理默认页面修改为作者公告
 
 √逻辑删除
 √app_user
@@ -67,14 +67,6 @@
 √card_template
 √LOGIN_CODE_TEMPLATE
 √SALE_ORDER
-cash
-<result property="delFlag"    column="del_flag"    />
-a.del_flag,
-where a.del_flag = '0'
- and a.del_flag = '0'
-<if test="delFlag != null">del_flag,</if>
-<if test="delFlag != null">#{delFlag},</if>
-<if test="delFlag != null">del_flag = #{delFlag},</if>
 
 √是否验证设备码
 √读写自定义配置API
