@@ -126,10 +126,16 @@ public class SysMenuServiceImpl implements ISysMenuService
         else
         {
             menus = menuMapper.selectMenuTreeByUserId(userId);
-            // // 添加用户默认权限
+            List<Long> filter = menus.stream().map(SysMenu::getMenuId).collect(Collectors.toList());
+            // 添加用户默认权限
             SysRole common = roleMapper.selectRoleByKey("common");
             if (common != null) {
-                menus = menuMapper.selectMenuTreeByRoleId(common.getRoleId());
+                List<SysMenu> menuList = menuMapper.selectMenuTreeByRoleId(common.getRoleId());
+                for (SysMenu item : menuList) {
+                    if (!filter.contains(item.getMenuId())) {
+                        menus.add(item);
+                    }
+                }
             }
         }
         return getChildPerms(menus, 0);

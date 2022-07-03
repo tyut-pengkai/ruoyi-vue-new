@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
     <groupId>com.coordsoft</groupId>
     <artifactId>hywlyz</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
 
     <description>
         红叶网络验证web服务入口
@@ -197,7 +197,7 @@
                                 <exclude>META-INF/resources/**</exclude>
                             </excludes>
                             <!-- 目标jar存放目录 -->
-                            <targetDir>${project.build.directory}/xJarDir/</targetDir>
+                            <targetDir>${project.build.directory}/output/</targetDir>
                             <!-- 目标jar名称,也可以用表达式（参考官网） -->
                             <targetJar>${project.artifactId}-${project.version}-release.jar</targetJar>
                         </configuration>

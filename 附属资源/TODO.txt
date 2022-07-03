@@ -60,13 +60,13 @@
 
 √逻辑删除
 √app_user
-√balance_log
-√global_script
-√card
-√LOGIN_CODE
-√card_template
-√LOGIN_CODE_TEMPLATE
-√SALE_ORDER
+√balance_log1
+√global_script1
+√card1
+√LOGIN_CODE1
+√card_template1
+√LOGIN_CODE_TEMPLATE1
+√SALE_ORDER1
 
 √是否验证设备码
 √读写自定义配置API
