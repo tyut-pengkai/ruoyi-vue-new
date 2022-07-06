@@ -300,7 +300,7 @@
         </el-form-item>
         <el-form-item>
           <el-col :span="12">
-            <el-form-item label="版本状态">
+            <el-form-item label="版本状态" prop="status">
               <el-radio-group v-model="form.status">
                 <el-radio
                   v-for="dict in dict.type.sys_normal_disable"
@@ -312,7 +312,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="强制更新">
+            <el-form-item label="强制更新" prop="forceUpdate">
               <el-radio-group v-model="form.forceUpdate">
                 <el-radio
                   v-for="dict in dict.type.sys_yes_no"
@@ -326,7 +326,7 @@
         </el-form-item>
         <el-form-item>
           <el-col :span="12">
-            <el-form-item label="校验MD5">
+            <el-form-item label="校验MD5" prop="checkMd5">
               <el-radio-group v-model="form.checkMd5">
                 <el-radio
                   v-for="dict in dict.type.sys_yes_no"
@@ -504,7 +504,13 @@ export default {
         status: [
           {required: true, message: "版本状态不能为空", trigger: "blur"},
         ],
+        forceUpdate: [
+          {required: true, message: "是否强制更新不能为空", trigger: "blur"},
+        ],
         md5: [{required: false, message: "软件MD5不能为空", trigger: "blur"}],
+        checkMd5: [
+          {required: true, message: "是否检查MD5不能为空", trigger: "blur"},
+        ],
       },
       // 快速接入参数
       upload: {
