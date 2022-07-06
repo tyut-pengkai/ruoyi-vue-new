@@ -233,6 +233,11 @@
         label="变动描述"
         prop="changeDesc"
       />
+      <el-table-column align="center" label="变动时间" prop="createTime">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
       <!-- <el-table-column
         align="center"
         label="关联订单记录ID"

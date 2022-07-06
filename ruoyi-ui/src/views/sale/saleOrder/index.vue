@@ -281,6 +281,16 @@
           />
         </template>
       </el-table-column>
+      <el-table-column
+        align="center"
+        label="创建时间"
+        prop="createTime"
+        width="180"
+      >
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
       <!-- <el-table-column label="联系方式" align="center" prop="contact" />
       <el-table-column label="查询密码" align="center" prop="queryPass" /> -->
       <!-- <el-table-column

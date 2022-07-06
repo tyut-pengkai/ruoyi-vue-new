@@ -133,6 +133,8 @@ public class SysAppUserVo extends SysAppUser {
 
     public SysAppUserVo(SysAppUser v) {
         BeanUtils.copyProperties(v, this);
-        this.userInfo = new SysUserVo(v.getUser());
+        if (v.getUserId() != null) {
+            this.userInfo = new SysUserVo(v.getUser());
+        }
     }
 }

@@ -588,6 +588,7 @@ export default {
         md5: undefined,
         remark: undefined,
         forceUpdate: "N",
+        checkMd5: "N",
       };
       this.resetForm("form");
     },

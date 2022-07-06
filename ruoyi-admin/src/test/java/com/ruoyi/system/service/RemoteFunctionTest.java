@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @SpringBootTest
 public class RemoteFunctionTest {
@@ -70,5 +71,10 @@ public class RemoteFunctionTest {
         System.out.println(script.getContent());
         ScriptResultVo scriptResult = exec(script.getContent(), script.getLanguage());
         System.out.println(JSON.toJSONString(scriptResult));
+    }
+
+    @Test
+    public void test2() {
+        System.out.println("你".getBytes(StandardCharsets.UTF_8).length);
     }
 }
