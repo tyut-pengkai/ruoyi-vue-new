@@ -17,20 +17,21 @@
       <div align="center" style="margin-top: 20px; margin-bottom: 20px">
         <div v-if="htmlText">
           <!-- <div v-html="htmlText"></div> -->
-          <iframe
+          <!-- <iframe
             :srcdoc="htmlText"
             border="0"
             frameborder="no"
-            height="300"
+            height="850"
             marginheight="0"
             marginwidth="0"
             scrolling="no"
             style="overflow: hidden"
-            width="300"
+            width="1000"
           >
-          </iframe>
+          </iframe> -->
+          <div ref="htmlText" v-html="htmlText"></div>
         </div>
-        <div>
+        <div v-if="qrText">
           <div
             style="
               width: 300px;
@@ -60,7 +61,6 @@
           </div>
         </div>
       </div>
-
       <!-- <div align="center" style="margin-top: 20px">
         <el-button @click="paySuccess" type="primary">点击模拟支付</el-button>
       </div> -->
@@ -114,14 +114,25 @@ export default {
             this.timer = setInterval(this.countDown, 1000);
             // 获取支付状态
             this.timerPay = setInterval(this.checkSaleOrderStatus, 10000);
-
             if (this.showType == "qr") {
               if (data.qrCode) {
                 this.qrText = data.qrCode;
-                this.loading = false;
               }
             } else if (this.showType == "html") {
               this.htmlText = data.body;
+              let regJs = "";
+              this.htmlText.replace(
+                /<script.*?>([\s\S]+?)<\/script>/gim,
+                (_, js) => {
+                  // 正则匹配出script中的内容
+                  regJs = js;
+                }
+              );
+              this.$nextTick(() => {
+                let script = document.createElement("script");
+                script.innerHTML = regJs;
+                this.$refs.htmlText.append(script);
+              });
             } else if (this.showType == "free") {
               clearInterval(this.timer);
               clearInterval(this.timerPay);
@@ -132,6 +143,7 @@ export default {
                 },
               });
             }
+            this.loading = false;
           }
         }
       })

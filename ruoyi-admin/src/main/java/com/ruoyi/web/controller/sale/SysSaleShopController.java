@@ -396,7 +396,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @RequestMapping("/notify/{payMode}")
-    public void notify_alipay(HttpServletRequest request, HttpServletResponse response, @PathVariable("payMode") String payMode) {
+    public void notify(HttpServletRequest request, HttpServletResponse response, @PathVariable("payMode") String payMode) {
         PaymentDefine.paymentMap.get(payMode).notify(request, response);
     }
 

@@ -13,21 +13,14 @@ import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.payment.domain.AlipayConfig;
 import com.ruoyi.payment.domain.Payment;
 import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.domain.SysSaleOrderItem;
-import com.ruoyi.sale.service.ISysSaleOrderService;
-import com.ruoyi.sale.service.ISysSaleShopService;
 import com.ruoyi.system.domain.SysPayment;
-import com.ruoyi.system.domain.SysWebsite;
 import com.ruoyi.system.service.ISysPaymentService;
-import com.ruoyi.system.service.ISysWebsiteService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -43,19 +36,8 @@ public class AlipayF2fPaymentSandbox extends Payment {
     private static String notifyUrl = "";
     private static String alipayPublicKey = "";
     private static AlipayClient alipayClient;
-    /**
-     * 设置请求的统一前缀
-     */
-    @Value("${swagger.pathMapping}")
-    private String pathMapping;
-    @Resource
-    private ISysSaleOrderService sysSaleOrderService;
-    @Resource
-    private ISysSaleShopService sysSaleShopService;
     @Resource
     private ISysPaymentService sysPaymentService;
-    @Resource
-    private ISysWebsiteService sysWebsiteService;
 
     @Override
     public void init() {
@@ -68,35 +50,16 @@ public class AlipayF2fPaymentSandbox extends Payment {
             if (payment == null) {
                 throw new ServiceException("支付方式【" + this.getName() + "】未配置参数");
             }
-            AlipayConfig config = JSON.parseObject(payment.getConfig(), AlipayConfig.class);
-            // 配置参数
-            String serverUrl = "https://openapi.alipaydev.com/gateway.do";
-            alipayPublicKey = config.getAlipayPublicKey();
-            if (StringUtils.isNotBlank(payment.getIcon())) {
-                this.setIcon(payment.getIcon());
-            }
-            // 回调地址
-            if (StringUtils.isNotBlank(config.getNotifyUrl())) {
-                notifyUrl = config.getNotifyUrl();
-            } else {
-                SysWebsite website = sysWebsiteService.getById(1);
-                if (website != null && StringUtils.isNotBlank(website.getDomain())) {
-                    notifyUrl = website.getDomain();
-                } else {
-                    try {
-                        HttpServletRequest request = ServletUtils.getRequest();
-                        String port = "80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort();
-                        notifyUrl = request.getScheme() + "://" + request.getServerName() + port;
-                    } catch (Exception e) {
-                        throw new ServiceException("支付方式[" + this.getName() + "]未配置支付回调接口，加载失败", 400);
-                    }
-                }
-            }
-            if (notifyUrl.endsWith("/")) {
-                notifyUrl = notifyUrl.substring(0, notifyUrl.length() - 1);
-            }
-            notifyUrl += pathMapping + "/sale/shop/notify/" + this.getCode();
-            alipayClient = new DefaultAlipayClient(serverUrl, config.getAppId(), config.getPrivateKey(), "json", "UTF-8", alipayPublicKey, "RSA2");
+        AlipayConfig config = JSON.parseObject(payment.getConfig(), AlipayConfig.class);
+        // 配置参数
+        String serverUrl = "https://openapi.alipaydev.com/gateway.do";
+        alipayPublicKey = config.getAlipayPublicKey();
+        if (StringUtils.isNotBlank(payment.getIcon())) {
+            this.setIcon(payment.getIcon());
+        }
+        // 回调地址
+        notifyUrl = getNotifyUrl(config.getNotifyUrl());
+        alipayClient = new DefaultAlipayClient(serverUrl, config.getAppId(), config.getPrivateKey(), "json", "UTF-8", alipayPublicKey, "RSA2");
 //        }
     }
 
@@ -147,8 +110,8 @@ public class AlipayF2fPaymentSandbox extends Payment {
         Map<String, String[]> requestParams = request.getParameterMap();
         System.out.println(JSON.toJSONString(requestParams));
         for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
-            String name = (String) iter.next();
-            String[] values = (String[]) requestParams.get(name);
+            String name = iter.next();
+            String[] values = requestParams.get(name);
             String valueStr = "";
             for (int i = 0; i < values.length; i++) {
                 valueStr = (i == values.length - 1) ? valueStr + values[i]
@@ -188,36 +151,8 @@ public class AlipayF2fPaymentSandbox extends Payment {
                 String trade_status = new String(request.getParameter("trade_status").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
                 //付款金额
                 String total_amount = new String(request.getParameter("total_amount").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-                if (trade_status.equals("WAIT_BUYER_PAY")) {
-                    //等待支付
-                } else if (trade_status.equals("TRADE_FINISHED")) {
-                    //判断该笔订单是否在商户网站中已经做过处理
-                    //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
-                    //如果有做过处理，不执行商户的业务程序
-                    //注意： 订单没有退款功能, 这个条件判断是进不来的, 所以此处不必写代码
-                    //退款日期超过可退款期限后（如三个月可退款），支付宝系统发送该交易状态通知
-                } else if (trade_status.equals("TRADE_SUCCESS")) {
-                    //判断该笔订单是否在商户网站中已经做过处理
-                    //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
-                    //如果有做过处理，不执行商户的业务程序
-                    //注意：
-                    //付款完成后，支付宝系统发送该交易状态通知
-                    // 修改订单状态，改为 支付成功，已付款; 同时新增支付流水
-                    SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(out_trade_no);
-                    if (sso == null) {
-                        throw new ServiceException("订单不存在", 400);
-                    }
-                    if (sso.getStatus() == SaleOrderStatus.WAIT_PAY) {
-                        sso.setStatus(SaleOrderStatus.PAID);
-                        sso.setPaymentTime(DateUtils.getNowDate());
-                        sso.setTradeNo(trade_no);
-                        sysSaleOrderService.updateSysSaleOrder(sso);
-                        // 发货
-                        sysSaleShopService.deliveryGoods(sso);
-                        log.info("******************** 支付成功(支付宝异步通知) ********************");
-                        log.info("* 支付宝交易号: {}", trade_no);
-                        log.info("******************** 订单发货(支付宝异步通知) ********************");
-                    }
+                if (trade_status.equals("TRADE_SUCCESS")) {
+                    doDeliveryGoods(out_trade_no, trade_no, true);
                     // 反馈给第三方支付平台
                     response.getWriter().write("success");
                 }
@@ -248,23 +183,14 @@ public class AlipayF2fPaymentSandbox extends Payment {
                 // TRADE_SUCCESS（交易支付成功）、
                 // TRADE_FINISHED（交易结束，不可退款）
                 if ("TRADE_SUCCESS".equals(status)) {
-                    sso.setStatus(SaleOrderStatus.PAID);
-                    sso.setPaymentTime(DateUtils.getNowDate());
-                    sso.setTradeNo(tradeNo);
-                    sysSaleOrderService.updateSysSaleOrder(sso);
-                    // 发货
-                    sysSaleShopService.deliveryGoods(sso);
-                    log.info("******************** 支付成功(主动查询支付宝) ********************");
-                    log.info("* 支付宝交易号: {}", tradeNo);
-                    log.info("******************** 订单发货(主动查询支付宝) ********************");
+                    doDeliveryGoods(sso.getOrderNo(), tradeNo, false);
                 } else {
-                    sso.setStatus(SaleOrderStatus.TRADE_CLOSED);
-                    sso.setCloseTime(DateUtils.getNowDate());
-                    sso.setTradeNo(tradeNo);
-                    sysSaleOrderService.updateSysSaleOrder(sso);
+                    closeSaleOrder(sso.getOrderNo(), tradeNo);
                 }
             } catch (AlipayApiException e) {
-                throw new ServiceException(e.getMessage(), 400);
+//                throw new ServiceException(e.getMessage(), 400);
+                log.error("error:" + e.getMessage());
+                closeSaleOrder(sso.getOrderNo(), null);
             }
         }
     }

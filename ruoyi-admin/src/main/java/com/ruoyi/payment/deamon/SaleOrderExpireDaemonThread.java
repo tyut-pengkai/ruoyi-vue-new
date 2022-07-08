@@ -32,33 +32,38 @@ public class SaleOrderExpireDaemonThread {
                 Set<Object> orderNoSet = redisCache.redisTemplate.opsForZSet().rangeByScore(Constants.SALE_ORDER_EXPIRE_KEY, 0, System.currentTimeMillis());
                 //            System.out.println(JSON.toJSONString(orderNoSet));
                 for (Object orderNoStr : orderNoSet) { // orderNoStr格式：payMode|orderNo
-                    if (orderNoStr != null) {
-                        String[] split = orderNoStr.toString().split("\\|");
-                        if (split.length == 2) {
-                            String payMode = split[0];
-                            String orderNo = split[1];
-                            if (StringUtils.isNotBlank(orderNo)) {
-                                SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
-                                if (sso != null && SaleOrderStatus.WAIT_PAY.equals(sso.getStatus())) {
-                                    Payment payment = PaymentDefine.paymentMap.get(payMode);
-                                    if (payment != null) {
-                                        payment.beforeExpire(sso);
+                    try {
+                        if (orderNoStr != null) {
+                            String[] split = orderNoStr.toString().split("\\|");
+                            if (split.length == 2) {
+                                String payMode = split[0];
+                                String orderNo = split[1];
+                                if (StringUtils.isNotBlank(orderNo)) {
+                                    SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
+                                    if (sso != null && SaleOrderStatus.WAIT_PAY.equals(sso.getStatus())) {
+                                        Payment payment = PaymentDefine.paymentMap.get(payMode);
+                                        if (payment != null) {
+                                            payment.beforeExpire(sso);
+                                        }
                                     }
+                                    sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
+                                    if (sso != null && SaleOrderStatus.WAIT_PAY.equals(sso.getStatus())) {
+                                        sso.setStatus(SaleOrderStatus.TRADE_CLOSED);
+                                        sso.setCloseTime(DateUtils.getNowDate());
+                                        sysSaleOrderService.updateSysSaleOrder(sso);
+                                    }
+                                    redisCache.redisTemplate.opsForZSet().remove(Constants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
                                 }
-                                if (sso != null && SaleOrderStatus.WAIT_PAY.equals(sso.getStatus())) {
-                                    sso.setStatus(SaleOrderStatus.TRADE_CLOSED);
-                                    sso.setCloseTime(DateUtils.getNowDate());
-                                    sysSaleOrderService.updateSysSaleOrder(sso);
-                                }
+                            } else {
                                 redisCache.redisTemplate.opsForZSet().remove(Constants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
                             }
-                        } else {
-                            redisCache.redisTemplate.opsForZSet().remove(Constants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
                         }
+                    } catch (Exception ignored) {
+                        redisCache.redisTemplate.opsForZSet().remove(Constants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
                     }
                 }
                 Thread.sleep(10000);
-            } catch (InterruptedException ignored) {
+            } catch (Exception ignored) {
             }
         }
     }
