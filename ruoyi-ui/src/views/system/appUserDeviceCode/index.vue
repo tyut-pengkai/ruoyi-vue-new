@@ -57,10 +57,10 @@
           icon="el-icon-search"
           size="mini"
           @click="handleQuery"
-        >搜索
+          >搜索
         </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
+          >重置
         </el-button>
       </el-form-item>
     </el-form>
@@ -86,7 +86,7 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:appUserDeviceCode:edit']"
-        >修改
+          >修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -98,7 +98,7 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:appUserDeviceCode:remove']"
-        >删除
+          >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -110,7 +110,7 @@
           :loading="exportLoading"
           @click="handleExport"
           v-hasPermi="['system:appUserDeviceCode:export']"
-        >导出
+          >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -124,9 +124,9 @@
       :data="appUserDeviceCodeList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" type="selection" width="55" />
       <!-- <el-table-column align="center" label="" type="index"/> -->
-      <el-table-column align="center" label="编号" prop="id"/>
+      <el-table-column align="center" label="编号" prop="id" />
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
@@ -146,10 +146,10 @@
       >
         <template slot-scope="scope">
           <span>{{
-              scope.row.lastLoginTime == null
-                ? "从未登录过"
-                : parseTime(scope.row.lastLoginTime)
-            }}</span>
+            scope.row.lastLoginTime == null
+              ? "从未登录过"
+              : parseTime(scope.row.lastLoginTime)
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column label="登录次数" align="center" prop="loginTimes">
@@ -169,7 +169,7 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="备注" prop="remark"/>
+      <el-table-column align="center" label="备注" prop="remark" />
       <el-table-column
         label="操作"
         align="center"
@@ -183,7 +183,7 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:appUserDeviceCode:edit']"
-          >修改
+            >修改
           </el-button>
           <el-button
             size="mini"
@@ -191,7 +191,7 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:appUserDeviceCode:remove']"
-          >删除
+            >删除
           </el-button>
         </template>
       </el-table-column>
@@ -255,7 +255,7 @@
                 {{ form.createBy }}
               </el-form-item>
               <el-form-item label="创建时间" prop="createTime"
-              >{{ form.createTime }}
+                >{{ form.createTime }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -263,7 +263,7 @@
                 {{ form.updateBy }}
               </el-form-item>
               <el-form-item label="更新时间" prop="updateTime"
-              >{{ form.updateTime }}
+                >{{ form.updateTime }}
               </el-form-item>
             </el-col>
           </el-form-item>
@@ -323,7 +323,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         appUserId: null,
         deviceCodeId: null,
         lastLoginTime: null,
@@ -467,8 +467,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -483,8 +482,7 @@ export default {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     // 状态修改
     handleStatusChange(row) {

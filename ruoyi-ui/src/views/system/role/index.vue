@@ -57,13 +57,11 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
-        </el-button
-        >
+          >搜索
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
-        </el-button
-        >
+          >重置
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -76,9 +74,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:role:add']"
-        >新增
-        </el-button
-        >
+          >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -89,9 +86,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:role:edit']"
-        >修改
-        </el-button
-        >
+          >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -102,9 +98,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:role:remove']"
-        >删除
-        </el-button
-        >
+          >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -114,9 +109,8 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:role:export']"
-        >导出
-        </el-button
-        >
+          >导出
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -129,8 +123,8 @@
       :data="roleList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="角色编号" prop="roleId" width="120"/>
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="角色编号" prop="roleId" width="120" />
       <el-table-column
         :show-overflow-tooltip="true"
         label="角色名称"
@@ -143,7 +137,7 @@
         prop="roleKey"
         width="150"
       />
-      <el-table-column label="显示顺序" prop="roleSort" width="100"/>
+      <el-table-column label="显示顺序" prop="roleSort" width="100" />
       <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
@@ -176,18 +170,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:role:edit']"
-          >修改
-          </el-button
-          >
+            >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:role:remove']"
-          >删除
-          </el-button
-          >
+            >删除
+          </el-button>
           <el-dropdown
             v-hasPermi="['system:role:edit']"
             size="mini"
@@ -201,16 +193,14 @@
                 v-hasPermi="['system:role:edit']"
                 command="handleDataScope"
                 icon="el-icon-circle-check"
-              >数据权限
-              </el-dropdown-item
-              >
+                >数据权限
+              </el-dropdown-item>
               <el-dropdown-item
                 v-hasPermi="['system:role:edit']"
                 command="handleAuthUser"
                 icon="el-icon-user"
-              >分配用户
-              </el-dropdown-item
-              >
+                >分配用户
+              </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -256,30 +246,26 @@
               v-for="dict in dict.type.sys_normal_disable"
               :key="dict.value"
               :label="dict.value"
-            >{{ dict.label }}
-            </el-radio
-            >
+              >{{ dict.label }}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="菜单权限">
           <el-checkbox
             v-model="menuExpand"
             @change="handleCheckedTreeExpand($event, 'menu')"
-          >展开/折叠
-          </el-checkbox
-          >
+            >展开/折叠
+          </el-checkbox>
           <el-checkbox
             v-model="menuNodeAll"
             @change="handleCheckedTreeNodeAll($event, 'menu')"
-          >全选/全不选
-          </el-checkbox
-          >
+            >全选/全不选
+          </el-checkbox>
           <el-checkbox
             v-model="form.menuCheckStrictly"
             @change="handleCheckedTreeConnect($event, 'menu')"
-          >父子联动
-          </el-checkbox
-          >
+            >父子联动
+          </el-checkbox>
           <el-tree
             class="tree-border"
             :data="menuOptions"
@@ -314,10 +300,10 @@
     >
       <el-form :model="form" label-width="80px">
         <el-form-item label="角色名称">
-          <el-input v-model="form.roleName" :disabled="true"/>
+          <el-input v-model="form.roleName" :disabled="true" />
         </el-form-item>
         <el-form-item label="权限字符">
-          <el-input v-model="form.roleKey" :disabled="true"/>
+          <el-input v-model="form.roleKey" :disabled="true" />
         </el-form-item>
         <el-form-item label="权限范围">
           <el-select v-model="form.dataScope" @change="dataScopeSelectChange">
@@ -333,21 +319,18 @@
           <el-checkbox
             v-model="deptExpand"
             @change="handleCheckedTreeExpand($event, 'dept')"
-          >展开/折叠
-          </el-checkbox
-          >
+            >展开/折叠
+          </el-checkbox>
           <el-checkbox
             v-model="deptNodeAll"
             @change="handleCheckedTreeNodeAll($event, 'dept')"
-          >全选/全不选
-          </el-checkbox
-          >
+            >全选/全不选
+          </el-checkbox>
           <el-checkbox
             v-model="form.deptCheckStrictly"
             @change="handleCheckedTreeConnect($event, 'dept')"
-          >父子联动
-          </el-checkbox
-          >
+            >父子联动
+          </el-checkbox>
           <el-tree
             class="tree-border"
             :data="deptOptions"
@@ -435,7 +418,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         roleName: undefined,
         roleKey: undefined,
         status: undefined,
@@ -449,13 +432,13 @@ export default {
       // 表单校验
       rules: {
         roleName: [
-          {required: true, message: "角色名称不能为空", trigger: "blur"},
+          { required: true, message: "角色名称不能为空", trigger: "blur" },
         ],
         roleKey: [
-          {required: true, message: "权限字符不能为空", trigger: "blur"},
+          { required: true, message: "权限字符不能为空", trigger: "blur" },
         ],
         roleSort: [
-          {required: true, message: "角色顺序不能为空", trigger: "blur"},
+          { required: true, message: "角色顺序不能为空", trigger: "blur" },
         ],
       },
     };
@@ -726,8 +709,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

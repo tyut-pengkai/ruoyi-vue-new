@@ -86,10 +86,10 @@
               size="mini"
               type="primary"
               @click="handleQuery"
-            >搜索
+              >搜索
             </el-button>
             <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-            >重置
+              >重置
             </el-button>
           </el-form-item>
         </el-form>
@@ -103,7 +103,7 @@
               size="mini"
               @click="handleAdd"
               v-hasPermi="['system:user:add']"
-            >新增
+              >新增
             </el-button>
           </el-col>
           <el-col :span="1.5">
@@ -115,7 +115,7 @@
               :disabled="single"
               @click="handleUpdate"
               v-hasPermi="['system:user:edit']"
-            >修改
+              >修改
             </el-button>
           </el-col>
           <el-col :span="1.5">
@@ -127,7 +127,7 @@
               :disabled="multiple"
               @click="handleDelete"
               v-hasPermi="['system:user:remove']"
-            >删除
+              >删除
             </el-button>
           </el-col>
           <el-col :span="1.5">
@@ -138,7 +138,7 @@
               size="mini"
               @click="handleImport"
               v-hasPermi="['system:user:import']"
-            >导入
+              >导入
             </el-button>
           </el-col>
           <el-col :span="1.5">
@@ -149,7 +149,7 @@
               size="mini"
               @click="handleExport"
               v-hasPermi="['system:user:export']"
-            >导出
+              >导出
             </el-button>
           </el-col>
           <right-toolbar
@@ -164,7 +164,7 @@
           :data="userList"
           @selection-change="handleSelectionChange"
         >
-          <el-table-column align="center" type="selection" width="50"/>
+          <el-table-column align="center" type="selection" width="50" />
           <el-table-column
             v-if="columns[0].visible"
             key="userId"
@@ -243,7 +243,7 @@
                 icon="el-icon-edit"
                 @click="handleUpdate(scope.row)"
                 v-hasPermi="['system:user:edit']"
-              >修改
+                >修改
               </el-button>
               <el-button
                 size="mini"
@@ -251,7 +251,7 @@
                 icon="el-icon-delete"
                 @click="handleDelete(scope.row)"
                 v-hasPermi="['system:user:remove']"
-              >删除
+                >删除
               </el-button>
               <el-dropdown
                 v-hasPermi="['system:user:resetPwd', 'system:user:edit']"
@@ -266,13 +266,13 @@
                     v-hasPermi="['system:user:resetPwd']"
                     command="handleResetPwd"
                     icon="el-icon-key"
-                  >重置密码
+                    >重置密码
                   </el-dropdown-item>
                   <el-dropdown-item
                     v-hasPermi="['system:user:edit']"
                     command="handleAuthRole"
                     icon="el-icon-circle-check"
-                  >分配角色
+                    >分配角色
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -486,7 +486,7 @@
                   v-for="dict in dict.type.sys_normal_disable"
                   :key="dict.value"
                   :label="dict.value"
-                >{{ dict.label }}
+                  >{{ dict.label }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -533,7 +533,7 @@
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip text-center" slot="tip">
           <div class="el-upload__tip" slot="tip">
-            <el-checkbox v-model="upload.updateSupport"/>
+            <el-checkbox v-model="upload.updateSupport" />
             是否更新已经存在的用户数据
           </div>
           <span>仅允许导入xls、xlsx格式文件。</span>
@@ -542,7 +542,7 @@
             style="font-size: 12px; vertical-align: baseline"
             type="primary"
             @click="importTemplate"
-          >下载模板
+            >下载模板
           </el-link>
         </div>
       </el-upload>
@@ -620,7 +620,7 @@ import {parseMoney} from "@/utils/my";
 export default {
   name: "User",
   dicts: ["sys_normal_disable", "sys_user_sex"],
-  components: {Treeselect},
+  components: { Treeselect },
   data() {
     return {
       // 遮罩层
@@ -670,14 +670,14 @@ export default {
         // 是否更新已经存在的用户数据
         updateSupport: 0,
         // 设置上传的请求头部
-        headers: {Authorization: "Bearer " + getToken()},
+        headers: { Authorization: "Bearer " + getToken() },
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/system/user/importData",
       },
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         userName: undefined,
         phonenumber: undefined,
         status: undefined,
@@ -685,18 +685,18 @@ export default {
       },
       // 列信息
       columns: [
-        {key: 0, label: `用户编号`, visible: true},
-        {key: 1, label: `用户名称`, visible: true},
-        {key: 2, label: `用户昵称`, visible: true},
-        {key: 3, label: `部门`, visible: true},
-        {key: 4, label: `手机号码`, visible: true},
-        {key: 5, label: `状态`, visible: true},
-        {key: 6, label: `创建时间`, visible: true},
+        { key: 0, label: `用户编号`, visible: true },
+        { key: 1, label: `用户名称`, visible: true },
+        { key: 2, label: `用户昵称`, visible: true },
+        { key: 3, label: `部门`, visible: true },
+        { key: 4, label: `手机号码`, visible: true },
+        { key: 5, label: `状态`, visible: true },
+        { key: 6, label: `创建时间`, visible: true },
       ],
       // 表单校验
       rules: {
         userName: [
-          {required: true, message: "用户名称不能为空", trigger: "blur"},
+          { required: true, message: "用户名称不能为空", trigger: "blur" },
           {
             min: 2,
             max: 20,
@@ -705,10 +705,10 @@ export default {
           },
         ],
         nickName: [
-          {required: true, message: "用户昵称不能为空", trigger: "blur"},
+          { required: true, message: "用户昵称不能为空", trigger: "blur" },
         ],
         password: [
-          {required: true, message: "用户密码不能为空", trigger: "blur"},
+          { required: true, message: "用户密码不能为空", trigger: "blur" },
           {
             min: 5,
             max: 20,
@@ -731,16 +731,16 @@ export default {
           },
         ],
         freeBalance: [
-          {required: true, message: "赠送余额不能为空", trigger: "blur"},
+          { required: true, message: "赠送余额不能为空", trigger: "blur" },
         ],
         payBalance: [
-          {required: true, message: "支付余额不能为空", trigger: "blur"},
+          { required: true, message: "支付余额不能为空", trigger: "blur" },
         ],
         freePayment: [
-          {required: true, message: "赠送消费不能为空", trigger: "blur"},
+          { required: true, message: "赠送消费不能为空", trigger: "blur" },
         ],
         payPayment: [
-          {required: true, message: "支付消费不能为空", trigger: "blur"},
+          { required: true, message: "支付消费不能为空", trigger: "blur" },
         ],
       },
       // 加减款
@@ -749,13 +749,13 @@ export default {
       formB: {},
       rulesB: {
         operation: [
-          {required: true, message: "调整类型不能为空", trigger: "blur"},
+          { required: true, message: "调整类型不能为空", trigger: "blur" },
         ],
         amount: [
-          {required: true, message: "调整金额不能为空", trigger: "blur"},
+          { required: true, message: "调整金额不能为空", trigger: "blur" },
         ],
         remark: [
-          {required: true, message: "调整原因不能为空", trigger: "blur"},
+          { required: true, message: "调整原因不能为空", trigger: "blur" },
         ],
       },
     };
@@ -910,13 +910,12 @@ export default {
         inputPattern: /^.{5,20}$/,
         inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
       })
-        .then(({value}) => {
+        .then(({ value }) => {
           resetUserPwd(row.userId, value).then((response) => {
             this.$modal.msgSuccess("修改成功，新密码是：" + value);
           });
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 分配角色操作 */
     handleAuthRole: function (row) {
@@ -955,8 +954,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -992,10 +990,10 @@ export default {
       this.$refs.upload.clearFiles();
       this.$alert(
         "<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" +
-        response.msg +
-        "</div>",
+          response.msg +
+          "</div>",
         "导入结果",
-        {dangerouslyUseHTMLString: true}
+        { dangerouslyUseHTMLString: true }
       );
       this.getList();
     },

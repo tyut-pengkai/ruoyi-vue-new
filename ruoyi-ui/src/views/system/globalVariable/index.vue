@@ -49,13 +49,11 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
-        </el-button
-        >
+          >搜索
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
-        </el-button
-        >
+          >重置
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -68,9 +66,8 @@
           size="mini"
           type="primary"
           @click="handleAdd"
-        >新增
-        </el-button
-        >
+          >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -81,9 +78,8 @@
           size="mini"
           type="success"
           @click="handleUpdate"
-        >修改
-        </el-button
-        >
+          >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -94,9 +90,8 @@
           size="mini"
           type="danger"
           @click="handleDelete"
-        >删除
-        </el-button
-        >
+          >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -106,9 +101,8 @@
           size="mini"
           type="warning"
           @click="handleExport"
-        >导出
-        </el-button
-        >
+          >导出
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -121,11 +115,11 @@
       :data="globalVariableList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="变量ID" prop="id"/>
-      <el-table-column align="center" label="变量名" prop="name"/>
-      <el-table-column align="center" label="变量值" prop="value"/>
-      <el-table-column align="center" label="变量描述" prop="description"/>
+      <el-table-column align="center" type="selection" width="55" />
+      <el-table-column align="center" label="变量ID" prop="id" />
+      <el-table-column align="center" label="变量名" prop="name" />
+      <el-table-column align="center" label="变量值" prop="value" />
+      <el-table-column align="center" label="变量描述" prop="description" />
       <el-table-column align="center" label="是否需要登录" prop="checkToken">
         <template slot-scope="scope">
           <dict-tag
@@ -142,7 +136,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="备注" prop="remark"/>
+      <el-table-column align="center" label="备注" prop="remark" />
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -155,18 +149,16 @@
             size="mini"
             type="text"
             @click="handleUpdate(scope.row)"
-          >修改
-          </el-button
-          >
+            >修改
+          </el-button>
           <el-button
             v-hasPermi="['system:globalVariable:remove']"
             icon="el-icon-delete"
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
-          >删除
-          </el-button
-          >
+            >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -183,7 +175,7 @@
     <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
       <el-form ref="form" :model="form" :rules="rules">
         <el-form-item label="变量名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入变量名"/>
+          <el-input v-model="form.name" placeholder="请输入变量名" />
         </el-form-item>
         <el-form-item label="变量值" prop="value">
           <el-input
@@ -270,7 +262,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         name: null,
         value: null,
         description: null,
@@ -281,8 +273,8 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        name: [{required: true, message: "变量名不能为空", trigger: "blur"}],
-        value: [{required: true, message: "变量值不能为空", trigger: "blur"}],
+        name: [{ required: true, message: "变量名不能为空", trigger: "blur" }],
+        value: [{ required: true, message: "变量值不能为空", trigger: "blur" }],
         checkToken: [
           {
             required: true,
@@ -291,7 +283,7 @@ export default {
           },
         ],
         checkVip: [
-          {required: true, message: "是否需要VIP不能为空", trigger: "change"},
+          { required: true, message: "是否需要VIP不能为空", trigger: "change" },
         ],
       },
     };
@@ -395,8 +387,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

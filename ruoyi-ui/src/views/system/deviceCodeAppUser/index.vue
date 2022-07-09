@@ -67,10 +67,10 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
+          >搜索
         </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
+          >重置
         </el-button>
       </el-form-item>
     </el-form>
@@ -84,7 +84,7 @@
           size="mini"
           type="primary"
           @click="handleAdd"
-        >新增
+          >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -96,7 +96,7 @@
           size="mini"
           type="success"
           @click="handleUpdate"
-        >修改
+          >修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -108,7 +108,7 @@
           size="mini"
           type="danger"
           @click="handleDelete"
-        >删除
+          >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -120,7 +120,7 @@
           size="mini"
           type="warning"
           @click="handleExport"
-        >导出
+          >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -134,11 +134,11 @@
       :data="appUserDeviceCodeList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="编号" prop="id"/>
-      <el-table-column align="center" label="APP ID" prop="appUserId"/>
-      <el-table-column align="center" label="设备码" prop="deviceCodeId"/>
-      <el-table-column align="center" label="登录次数" prop="loginTimes"/>
+      <el-table-column align="center" type="selection" width="55" />
+      <el-table-column align="center" label="编号" prop="id" />
+      <el-table-column align="center" label="APP ID" prop="appUserId" />
+      <el-table-column align="center" label="设备码" prop="deviceCodeId" />
+      <el-table-column align="center" label="登录次数" prop="loginTimes" />
       <el-table-column
         align="center"
         label="最后登录时间"
@@ -157,7 +157,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="备注" prop="remark"/>
+      <el-table-column align="center" label="备注" prop="remark" />
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -171,7 +171,7 @@
             size="mini"
             type="text"
             @click="handleUpdate(scope.row)"
-          >修改
+            >修改
           </el-button>
           <el-button
             v-hasPermi="['system:appUserDeviceCode:remove']"
@@ -179,7 +179,7 @@
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
-          >删除
+            >删除
           </el-button>
         </template>
       </el-table-column>
@@ -197,10 +197,10 @@
     <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="APP ID" prop="appUserId">
-          <el-input v-model="form.appUserId" placeholder="请输入APP ID"/>
+          <el-input v-model="form.appUserId" placeholder="请输入APP ID" />
         </el-form-item>
         <el-form-item label="设备码" prop="deviceCodeId">
-          <el-input v-model="form.deviceCodeId" placeholder="请输入设备码"/>
+          <el-input v-model="form.deviceCodeId" placeholder="请输入设备码" />
         </el-form-item>
         <el-form-item label="最后登录时间" prop="lastLoginTime">
           <el-date-picker
@@ -214,7 +214,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="登录次数" prop="loginTimes">
-          <el-input v-model="form.loginTimes" placeholder="请输入登录次数"/>
+          <el-input v-model="form.loginTimes" placeholder="请输入登录次数" />
         </el-form-item>
         <el-form-item label="状态">
           <el-radio-group v-model="form.status">
@@ -222,7 +222,7 @@
               v-for="dict in dict.type.sys_normal_disable"
               :key="dict.value"
               :label="dict.value"
-            >{{ dict.label }}
+              >{{ dict.label }}
             </el-radio>
           </el-radio-group>
         </el-form-item>
@@ -282,7 +282,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         appUserId: null,
         deviceCodeId: null,
         lastLoginTime: null,
@@ -405,8 +405,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -421,8 +420,7 @@ export default {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
   },
 };

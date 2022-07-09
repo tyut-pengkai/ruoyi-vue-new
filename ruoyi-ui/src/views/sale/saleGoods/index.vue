@@ -31,10 +31,10 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
+          >搜索
         </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
+          >重置
         </el-button>
       </el-form-item>
     </el-form>
@@ -48,7 +48,7 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['sale:saleGoods:add']"
-        >新增
+          >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -60,7 +60,7 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['sale:saleGoods:edit']"
-        >修改
+          >修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -72,7 +72,7 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['sale:saleGoods:remove']"
-        >删除
+          >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -83,7 +83,7 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['sale:saleGoods:export']"
-        >导出
+          >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -97,10 +97,10 @@
       :data="saleGoodsList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="编号" prop="id"/>
-      <el-table-column align="center" label="订单详情ID" prop="itemId"/>
-      <el-table-column align="center" label="卡密ID" prop="cardId"/>
+      <el-table-column align="center" type="selection" width="55" />
+      <el-table-column align="center" label="编号" prop="id" />
+      <el-table-column align="center" label="订单详情ID" prop="itemId" />
+      <el-table-column align="center" label="卡密ID" prop="cardId" />
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -113,7 +113,7 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['sale:saleGoods:edit']"
-          >修改
+            >修改
           </el-button>
           <el-button
             size="mini"
@@ -121,7 +121,7 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['sale:saleGoods:remove']"
-          >删除
+            >删除
           </el-button>
         </template>
       </el-table-column>
@@ -181,7 +181,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         itemId: null,
         cardId: null,
       },
@@ -282,8 +282,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

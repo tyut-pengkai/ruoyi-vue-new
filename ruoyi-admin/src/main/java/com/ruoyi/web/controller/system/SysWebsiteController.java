@@ -49,6 +49,12 @@ public class SysWebsiteController extends BaseController {
         } else {
             website.setIsSafeEntrance('0');
         }
+        String pageSize = sysConfigService.selectConfigByKey("sys.view.pageSize");
+        if(StringUtils.isBlank(pageSize)) {
+            pageSize = "10";
+        }
+        website.setPageSize(pageSize);
+
         try {
             getLoginUser();
         } catch (Exception e) { // 未登录不返回安全入口的值

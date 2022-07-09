@@ -28,6 +28,7 @@ const state = {
   websiteShortName: '',
   websiteLogo: '',
   safeEntrance: '',
+  pageSize: '10',
 }
 const mutations = {
   CHANGE_SETTING: (state, {
@@ -46,45 +47,51 @@ const mutations = {
 const actions = {
   // 修改布局设置
   changeSetting({
-                  commit
-                }, data) {
+    commit
+  }, data) {
     commit('CHANGE_SETTING', data)
   },
   // 设置网页标题
   setTitle({
-             commit
-           }, title) {
+    commit
+  }, title) {
     state.title = title
   },
   // 设置网站名称
   setWebsiteName({
-                   commit
-                 }, websiteName) {
+    commit
+  }, websiteName) {
     state.websiteName = websiteName
   },
   // 设置商城名称
   setShopName({
-                commit
-              }, shopName) {
+    commit
+  }, shopName) {
     state.shopName = shopName
   },
   // 设置网站简称
   setWebsiteShortName({
-                        commit
-                      }, websiteShortName) {
+    commit
+  }, websiteShortName) {
     state.websiteShortName = websiteShortName
   },
   // 设置网站Logo
   setWebsiteLogo({
-                   commit
-                 }, websiteLogo) {
+    commit
+  }, websiteLogo) {
     state.websiteLogo = websiteLogo
+  },
+  // 设置默认pageSize
+  setPageSize({
+    commit
+  }, pageSize) {
+    state.pageSize = pageSize
   },
   // 获取安全入口
   GetSafeEntrance({
-                    commit,
-                    state
-                  }) {
+    commit,
+    state
+  }) {
     return new Promise((resolve, reject) => {
       getWebsiteConfig().then(res => {
         commit('SET_SAFE_ENTRANCE', res.data.isSafeEntrance)

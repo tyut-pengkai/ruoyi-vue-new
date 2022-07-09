@@ -194,9 +194,9 @@
       :data="appList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" type="selection" width="55" />
       <!-- <el-table-column label="" type="index" align="center" /> -->
-      <el-table-column align="center" label="编号" prop="appId"/>
+      <el-table-column align="center" label="编号" prop="appId" />
       <!-- <el-table-column label="软件图标" align="center" prop="icon" /> -->
       <el-table-column
         label="软件名称"
@@ -260,9 +260,9 @@
           {{
             scope.row.developer
               ? scope.row.developer.nickName +
-              "(" +
-              scope.row.developer.userName +
-              ")"
+                "(" +
+                scope.row.developer.userName +
+                ")"
               : "[用户不存在]"
           }}
         </template>
@@ -405,7 +405,7 @@
                   command="handleCardTemplate"
                   icon="el-icon-edit-outline"
                   v-hasPermi="['system:cardTemplate:list']"
-                >卡类管理
+                  >卡类管理
                 </el-dropdown-item>
                 <el-dropdown-item
                   command="handleCardManage"
@@ -419,7 +419,7 @@
                   command="handleLoginCodeTemplate"
                   icon="el-icon-edit-outline"
                   v-hasPermi="['system:loginCodeTemplate:list']"
-                >单码类别
+                  >单码类别
                 </el-dropdown-item>
                 <el-dropdown-item
                   command="handleLoginCodeManage"
@@ -973,7 +973,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         appName: null,
         description: null,
         status: null,

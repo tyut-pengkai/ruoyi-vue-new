@@ -1,6 +1,12 @@
 <template>
   <div class="app-container">
-    <el-form ref="queryForm" :inline="true" :model="queryParams" label-width="68px" size="small">
+    <el-form
+      ref="queryForm"
+      :inline="true"
+      :model="queryParams"
+      label-width="68px"
+      size="small"
+    >
       <el-form-item label="登录地址" prop="ipaddr">
         <el-input
           v-model="queryParams.ipaddr"
@@ -18,15 +24,22 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          icon="el-icon-search"
+          size="mini"
+          type="primary"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+          >重置</el-button
+        >
       </el-form-item>
-
     </el-form>
     <el-table
       v-loading="loading"
-      :data="list.slice((pageNum-1)*pageSize,pageNum*pageSize)"
-      style="width: 100%;"
+      :data="list.slice((pageNum - 1) * pageSize, pageNum * pageSize)"
+      style="width: 100%"
     >
       <el-table-column label="序号" type="index" align="center">
         <template slot-scope="scope">
@@ -58,15 +71,15 @@
         label="登录地点"
         prop="loginLocation"
       />
-      <el-table-column align="center" label="浏览器" prop="browser"/>
-      <el-table-column align="center" label="操作系统" prop="os"/>
+      <el-table-column align="center" label="浏览器" prop="browser" />
+      <el-table-column align="center" label="操作系统" prop="os" />
       <el-table-column align="center" label="软件用户" prop="ifApp">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.ifApp"/>
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.ifApp" />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="软件信息" prop="appDesc"/>
-      <el-table-column align="center" label="设备码" prop="deviceCode"/>
+      <el-table-column align="center" label="软件信息" prop="appDesc" />
+      <el-table-column align="center" label="设备码" prop="deviceCode" />
       <el-table-column
         align="center"
         label="登录时间"
@@ -99,7 +112,7 @@
             icon="el-icon-delete"
             @click="handleForceLogout(scope.row)"
             v-hasPermi="['monitor:online:forceLogout']"
-          >强退
+            >强退
           </el-button>
         </template>
       </el-table-column>
@@ -129,7 +142,7 @@ export default {
       // 表格数据
       list: [],
       pageNum: 1,
-      pageSize: 10,
+      pageSize: this.$store.state.settings.pageSize,
       // 查询参数
       queryParams: {
         ipaddr: undefined,
@@ -144,7 +157,7 @@ export default {
     /** 查询登录日志列表 */
     getList() {
       this.loading = true;
-      list(this.queryParams).then(response => {
+      list(this.queryParams).then((response) => {
         this.list = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -171,8 +184,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("强退成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
   },
 };

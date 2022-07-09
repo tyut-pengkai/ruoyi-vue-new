@@ -67,10 +67,10 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
+          >搜索
         </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
+          >重置
         </el-button>
       </el-form-item>
     </el-form>
@@ -110,7 +110,7 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['sale:saleOrder:remove']"
-        >删除
+          >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -121,7 +121,7 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['sale:saleOrder:export']"
-        >导出
+          >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -172,8 +172,8 @@
               <el-col :span="5">
                 <el-form-item label="下单账号">
                   <span>{{
-                      scope.row.userId ? scope.row.userId : "[未登录]"
-                    }}</span>
+                    scope.row.userId ? scope.row.userId : "[未登录]"
+                  }}</span>
                 </el-form-item>
               </el-col>
               <el-col :span="5">
@@ -228,9 +228,9 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" type="selection" width="55" />
       <!-- <el-table-column align="center" label="" type="index"/> -->
-      <el-table-column align="center" label="编号" prop="orderId"/>
+      <el-table-column align="center" label="编号" prop="orderId" />
       <!-- <el-table-column label="订单ID" align="center" prop="orderId" /> -->
       <el-table-column
         :show-overflow-tooltip="true"
@@ -270,7 +270,7 @@
       </el-table-column>
       <el-table-column align="center" label="支付方式" prop="payMode">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.pay_mode" :value="scope.row.payMode"/>
+          <dict-tag :options="dict.type.pay_mode" :value="scope.row.payMode" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="订单状态" prop="status">
@@ -351,7 +351,7 @@
             icon="el-icon-view"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['sale:saleOrder:edit']"
-          >详情
+            >详情
           </el-button>
           <el-button
             v-hasPermi="['sale:saleOrder:edit']"
@@ -364,7 +364,7 @@
             size="mini"
             type="text"
             @click="handleDelivery(scope.row)"
-          >手动发货
+            >手动发货
           </el-button>
           <el-button
             size="mini"
@@ -372,7 +372,7 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['sale:saleOrder:remove']"
-          >删除
+            >删除
           </el-button>
         </template>
       </el-table-column>
@@ -398,10 +398,10 @@
           <el-col :span="12">
             <el-form-item label="下单账号" prop="userId">
               <span>{{
-                  form.userId
-                    ? form.user.nickName + "(" + form.user.userName + ")"
-                    : "[未登录]"
-                }}</span>
+                form.userId
+                  ? form.user.nickName + "(" + form.user.userName + ")"
+                  : "[未登录]"
+              }}</span>
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -447,7 +447,7 @@
         <el-form-item>
           <el-col :span="12">
             <el-form-item label="支付方式" prop="payMode">
-              <dict-tag :options="dict.type.pay_mode" :value="form.payMode"/>
+              <dict-tag :options="dict.type.pay_mode" :value="form.payMode" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -473,12 +473,12 @@
         <el-form-item>
           <el-col :span="12">
             <el-form-item label="联系方式" prop="contact">
-              <el-input v-model="form.contact" placeholder="请输入联系方式"/>
+              <el-input v-model="form.contact" placeholder="请输入联系方式" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="查询密码" prop="queryPass">
-              <el-input v-model="form.queryPass" placeholder="请输入查询密码"/>
+              <el-input v-model="form.queryPass" placeholder="请输入查询密码" />
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -549,7 +549,7 @@
                 {{index}}
               </div> -->
               <el-table :data="item.row.goodsList" max-height="300px">
-                <el-table-column align="center" label="" type="index"/>
+                <el-table-column align="center" label="" type="index" />
                 <el-table-column
                   :label="
                     form.orderType == 1
@@ -729,7 +729,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         orderNo: null,
         userId: null,
         payMode: null,
@@ -876,11 +876,10 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 销售订单详情序号 */
-    rowSysSaleOrderItemIndex({row, rowIndex}) {
+    rowSysSaleOrderItemIndex({ row, rowIndex }) {
       row.index = rowIndex + 1;
     },
     // /** 销售订单详情添加按钮操作 */
@@ -936,7 +935,7 @@ export default {
           "本操作将为用户发货并更改订单状态为交易成功，请确保您已在其他渠道收到货款，避免资金损失，是否继续？"
         )
         .then(() => {
-          var data = {orderNo: row.orderNo};
+          var data = { orderNo: row.orderNo };
           manualDelivery(data)
             .then((response) => {
               if (response.code == 200) {
@@ -944,13 +943,10 @@ export default {
                 this.getList();
               }
             })
-            .finally(() => {
-            });
+            .finally(() => {});
         })
-        .then(() => {
-        })
-        .catch(() => {
-        });
+        .then(() => {})
+        .catch(() => {});
     },
     //在<table>⾥，我们已经设置row的key值设置为每⾏数据id：row-key="cardId"
     handleRowClick(row, column, event) {

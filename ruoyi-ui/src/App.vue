@@ -19,8 +19,8 @@ export default {
         return title ? `${title} - ${this.title}` : this.title;
       },
       meta: [
-        {vmid: "description", name: "description", content: this.description},
-        {vmid: "keywords", name: "keywords", content: this.keywords},
+        { vmid: "description", name: "description", content: this.description },
+        { vmid: "keywords", name: "keywords", content: this.keywords },
       ],
     };
   },
@@ -41,6 +41,8 @@ export default {
         let websiteShortName = res.data.shortName || "";
         let shopName = res.data.shopName || "";
         let websiteLogo = res.data.logo || "";
+        let pageSize = res.data.pageSize || "10";
+        pageSize = Number(pageSize);
         let description = res.data.description || "";
         let keywords = res.data.keywords || "";
         this.title = websiteName;
@@ -51,6 +53,7 @@ export default {
         this.$store.dispatch("settings/setWebsiteShortName", websiteShortName);
         this.$store.dispatch("settings/setShopName", shopName);
         this.$store.dispatch("settings/setWebsiteLogo", websiteLogo);
+        this.$store.dispatch("settings/setPageSize", pageSize);
         if (res.data.favicon) {
           var faviconurl = res.data.favicon; //这里可以是动态的获取的favicon的地址
           var link =

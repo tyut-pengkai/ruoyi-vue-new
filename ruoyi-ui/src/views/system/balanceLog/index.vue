@@ -59,10 +59,10 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
+          >搜索
         </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
+          >重置
         </el-button>
       </el-form-item>
     </el-form>
@@ -77,7 +77,7 @@
           size="mini"
           type="danger"
           @click="handleDelete"
-        >删除
+          >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -88,7 +88,7 @@
           size="mini"
           @click="handleClean"
           v-hasPermi="['system:balanceLog:remove']"
-        >清空
+          >清空
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -99,7 +99,7 @@
           size="mini"
           type="warning"
           @click="handleExport"
-        >导出
+          >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -113,8 +113,8 @@
       :data="balanceLogList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="编号" prop="id"/>
+      <el-table-column align="center" type="selection" width="55" />
+      <el-table-column align="center" label="编号" prop="id" />
       <el-table-column align="center" label="变动用户" prop="userId">
         <template slot-scope="scope">
           {{
@@ -144,9 +144,9 @@
       >
         <template slot-scope="scope">
           <span>{{
-              (scope.row.changeAvailablePayAmount > 0 ? "+" : "") +
-              parseMoney(scope.row.changeAvailablePayAmount)
-            }}</span>
+            (scope.row.changeAvailablePayAmount > 0 ? "+" : "") +
+            parseMoney(scope.row.changeAvailablePayAmount)
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -156,9 +156,9 @@
       >
         <template slot-scope="scope">
           <span>{{
-              (scope.row.changeFreezePayAmount > 0 ? "+" : "") +
-              parseMoney(scope.row.changeFreezePayAmount)
-            }}</span>
+            (scope.row.changeFreezePayAmount > 0 ? "+" : "") +
+            parseMoney(scope.row.changeFreezePayAmount)
+          }}</span>
         </template>
       </el-table-column>
       <!-- <el-table-column
@@ -381,7 +381,7 @@
           />
         </el-form-item>
         <el-form-item label="变动描述" prop="changeDesc">
-          <el-input v-model="form.changeDesc" placeholder="请输入变动描述"/>
+          <el-input v-model="form.changeDesc" placeholder="请输入变动描述" />
         </el-form-item>
         <!-- <el-form-item label="关联订单记录ID" prop="saleOrderId">
           <el-input
@@ -444,7 +444,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         userId: null,
         changeType: null,
         changeDesc: null,
@@ -557,8 +557,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 清空按钮操作 */
     handleClean() {
@@ -571,8 +570,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("清空成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

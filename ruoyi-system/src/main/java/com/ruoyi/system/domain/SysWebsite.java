@@ -86,6 +86,9 @@ public class SysWebsite extends BaseEntity {
     private String safeEntrance;
 
     @TableField(exist = false)
+    private String pageSize;
+
+    @TableField(exist = false)
     private char isSafeEntrance;
 
     public Long getId() {
@@ -190,6 +193,14 @@ public class SysWebsite extends BaseEntity {
 
     public void setIsSafeEntrance(char isSafeEntrance) {
         this.isSafeEntrance = isSafeEntrance;
+    }
+
+    public String getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(String pageSize) {
+        this.pageSize = pageSize;
     }
 
     @Override

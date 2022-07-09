@@ -182,10 +182,10 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
+          >搜索
         </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
+          >重置
         </el-button>
       </el-form-item>
     </el-form>
@@ -199,7 +199,7 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:loginCodeTemplate:add']"
-        >新增
+          >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -211,7 +211,7 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:loginCodeTemplate:edit']"
-        >修改
+          >修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -223,7 +223,7 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:loginCodeTemplate:remove']"
-        >删除
+          >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -234,7 +234,7 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:loginCodeTemplate:export']"
-        >导出
+          >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -248,9 +248,9 @@
       :data="loginCodeTemplateList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" type="selection" width="55" />
       <!-- <el-table-column align="center" label="" type="index"/> -->
-      <el-table-column align="center" label="编号" prop="templateId"/>
+      <el-table-column align="center" label="编号" prop="templateId" />
       <el-table-column
         label="所属软件"
         align="center"
@@ -283,7 +283,7 @@
       <el-table-column label="单码描述" align="center" prop="cardDescription" /> -->
       <el-table-column label="是否上架" align="center" prop="onSale">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale"/>
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale" />
         </template>
       </el-table-column>
       <!-- <el-table-column label="优先库存" align="center" prop="firstStock">
@@ -310,8 +310,8 @@
       <el-table-column align="center" label="单码面值" prop="quota">
         <template slot-scope="scope">
           <span>{{
-              parseSeconds(scope.row.app.billType, scope.row.quota)
-            }}</span>
+            parseSeconds(scope.row.app.billType, scope.row.quota)
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="零售价格" prop="price">
@@ -325,10 +325,10 @@
       <el-table-column label="有效期" align="center" prop="effectiveDuration">
         <template slot-scope="scope">
           <span>{{
-              scope.row.effectiveDuration >= 0
-                ? parseSeconds("0", scope.row.effectiveDuration)
-                : "长期有效"
-            }}</span>
+            scope.row.effectiveDuration >= 0
+              ? parseSeconds("0", scope.row.effectiveDuration)
+              : "长期有效"
+          }}</span>
         </template>
       </el-table-column>
       <!-- <el-table-column
@@ -341,7 +341,7 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column align="center" label="备注" prop="remark"/>
+      <el-table-column align="center" label="备注" prop="remark" />
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -355,7 +355,7 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:loginCodeTemplate:edit']"
-          >修改
+            >修改
           </el-button>
           <el-button
             size="mini"
@@ -363,7 +363,7 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:loginCodeTemplate:remove']"
-          >删除
+            >删除
           </el-button>
         </template>
       </el-table-column>
@@ -751,7 +751,7 @@ import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
 export default {
   name: "LoginCodeTemplate",
   dicts: ["sys_gen_rule", "sys_yes_no", "sys_normal_disable", "sys_bill_type"],
-  components: {DateDuration, Updown},
+  components: { DateDuration, Updown },
   data() {
     return {
       appList: [],
@@ -779,7 +779,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         appId: null,
         cardName: null,
         onSale: null,
@@ -791,32 +791,32 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
+        appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
         cardName: [
-          {required: true, message: "类别名称不能为空", trigger: "blur"},
+          { required: true, message: "类别名称不能为空", trigger: "blur" },
         ],
-        quota: [{required: true, message: "额度不能为空", trigger: "blur"}],
-        price: [{required: true, message: "价格不能为空", trigger: "blur"}],
+        quota: [{ required: true, message: "额度不能为空", trigger: "blur" }],
+        price: [{ required: true, message: "价格不能为空", trigger: "blur" }],
         cardNoLen: [
-          {required: true, message: "单码长度不能为空", trigger: "blur"},
+          { required: true, message: "单码长度不能为空", trigger: "blur" },
         ],
         cardNoGenRule: [
-          {required: true, message: "单码生成规则不能为空", trigger: "blur"},
+          { required: true, message: "单码生成规则不能为空", trigger: "blur" },
         ],
         cardNoRegex: [
-          {required: false, message: "单码正则不能为空", trigger: "blur"},
+          { required: false, message: "单码正则不能为空", trigger: "blur" },
         ],
         onSale: [
-          {required: true, message: "是否上架不能为空", trigger: "change"},
+          { required: true, message: "是否上架不能为空", trigger: "change" },
         ],
         firstStock: [
-          {required: true, message: "优先库存不能为空", trigger: "change"},
+          { required: true, message: "优先库存不能为空", trigger: "change" },
         ],
         effectiveDuration: [
-          {required: true, message: "有效时长不能为空", trigger: "blur"},
+          { required: true, message: "有效时长不能为空", trigger: "blur" },
         ],
         status: [
-          {required: true, message: "单码类别状态不能为空", trigger: "blur"},
+          { required: true, message: "单码类别状态不能为空", trigger: "blur" },
         ],
         enableAutoGen: [
           {
@@ -957,8 +957,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

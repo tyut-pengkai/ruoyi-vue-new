@@ -73,13 +73,11 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
-        </el-button
-        >
+          >搜索
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
-        </el-button
-        >
+          >重置
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -93,9 +91,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['monitor:operlog:remove']"
-        >删除
-        </el-button
-        >
+          >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -105,9 +102,8 @@
           size="mini"
           @click="handleClean"
           v-hasPermi="['monitor:operlog:remove']"
-        >清空
-        </el-button
-        >
+          >清空
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -117,9 +113,8 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['monitor:operlog:export']"
-        >导出
-        </el-button
-        >
+          >导出
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -135,9 +130,9 @@
       @selection-change="handleSelectionChange"
       @sort-change="handleSortChange"
     >
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="日志编号" align="center" prop="operId"/>
-      <el-table-column label="系统模块" align="center" prop="title"/>
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="日志编号" align="center" prop="operId" />
+      <el-table-column label="系统模块" align="center" prop="title" />
       <el-table-column label="操作类型" align="center" prop="businessType">
         <template slot-scope="scope">
           <dict-tag
@@ -146,7 +141,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="请求方式" align="center" prop="requestMethod"/>
+      <el-table-column label="请求方式" align="center" prop="requestMethod" />
       <el-table-column
         :show-overflow-tooltip="true"
         :sort-orders="['descending', 'ascending']"
@@ -201,7 +196,7 @@
             icon="el-icon-view"
             @click="handleView(scope.row, scope.index)"
             v-hasPermi="['monitor:operlog:query']"
-          >详情
+            >详情
           </el-button>
         </template>
       </el-table-column>
@@ -226,20 +221,17 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="操作模块："
-            >{{ form.title }} / {{ typeFormat(form) }}
-            </el-form-item
-            >
+              >{{ form.title }} / {{ typeFormat(form) }}
+            </el-form-item>
             <el-form-item label="登录信息："
-            >{{ form.operName }} / {{ form.operIp }} /
+              >{{ form.operName }} / {{ form.operIp }} /
               {{ form.operLocation }}
-            </el-form-item
-            >
+            </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="请求地址：">{{ form.operUrl }}</el-form-item>
-            <el-form-item label="请求方式：">{{
-                form.requestMethod
-              }}
+            <el-form-item label="请求方式："
+              >{{ form.requestMethod }}
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -249,9 +241,8 @@
             <el-form-item label="请求参数：">{{ form.operParam }}</el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="返回参数：">{{
-                form.jsonResult
-              }}
+            <el-form-item label="返回参数："
+              >{{ form.jsonResult }}
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -261,15 +252,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="操作时间：">{{
-                parseTime(form.operTime)
-              }}
+            <el-form-item label="操作时间："
+              >{{ parseTime(form.operTime) }}
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item v-if="form.status === 1" label="异常信息：">{{
-                form.errorMsg
-              }}
+            <el-form-item v-if="form.status === 1" label="异常信息："
+              >{{ form.errorMsg }}
             </el-form-item>
           </el-col>
         </el-row>
@@ -306,13 +295,13 @@ export default {
       // 日期范围
       dateRange: [],
       // 默认排序
-      defaultSort: {prop: "operTime", order: "descending"},
+      defaultSort: { prop: "operTime", order: "descending" },
       // 表单参数
       form: {},
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         title: undefined,
         operName: undefined,
         businessType: undefined,
@@ -382,8 +371,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 清空按钮操作 */
     handleClean() {
@@ -396,8 +384,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("清空成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

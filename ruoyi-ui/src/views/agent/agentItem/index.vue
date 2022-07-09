@@ -41,10 +41,10 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
+          >搜索
         </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
+          >重置
         </el-button>
       </el-form-item>
     </el-form>
@@ -58,7 +58,7 @@
           size="mini"
           type="primary"
           @click="handleAdd"
-        >新增
+          >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -70,7 +70,7 @@
           size="mini"
           type="success"
           @click="handleUpdate"
-        >修改
+          >修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -82,7 +82,7 @@
           size="mini"
           type="danger"
           @click="handleDelete"
-        >删除
+          >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -93,7 +93,7 @@
           size="mini"
           type="warning"
           @click="handleExport"
-        >导出
+          >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -107,8 +107,8 @@
       :data="agentItemList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="编号" prop="id"/>
+      <el-table-column align="center" type="selection" width="55" />
+      <el-table-column align="center" label="编号" prop="id" />
       <!-- <el-table-column align="center" label="代理ID" prop="agentId"/> -->
       <el-table-column
         :show-overflow-tooltip="true"
@@ -167,7 +167,7 @@
           <span>{{ parseTime(scope.row.expireTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="备注" prop="remark"/>
+      <el-table-column align="center" label="备注" prop="remark" />
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -180,7 +180,7 @@
             size="mini"
             type="text"
             @click="handleUpdate(scope.row)"
-          >修改
+            >修改
           </el-button>
           <el-button
             v-hasPermi="['agent:agentItem:remove']"
@@ -188,7 +188,7 @@
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
-          >删除
+            >删除
           </el-button>
         </template>
       </el-table-column>
@@ -323,7 +323,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         agentId: null,
         templateType: null,
         templateId: null,
@@ -334,7 +334,7 @@ export default {
       // 表单校验
       rules: {
         agentId: [
-          {required: true, message: "代理账号不能为空", trigger: "blur"},
+          { required: true, message: "代理账号不能为空", trigger: "blur" },
         ],
         // templateType: [
         //   {
@@ -343,9 +343,9 @@ export default {
         //     trigger: "change",
         //   },
         // ],
-        tid: [{required: true, message: "代理卡类不能为空", trigger: "blur"}],
+        tid: [{ required: true, message: "代理卡类不能为空", trigger: "blur" }],
         agentPrice: [
-          {required: true, message: "代理价格不能为空", trigger: "blur"},
+          { required: true, message: "代理价格不能为空", trigger: "blur" },
         ],
       },
       // 代理用户树选项
@@ -443,7 +443,7 @@ export default {
         this.agentUserOptions = [];
         const data = {
           agentId: 0,
-          user: {nickName: "根节点", userName: "不可选"},
+          user: { nickName: "根节点", userName: "不可选" },
           children: [],
         };
         data.children = this.handleTree(
@@ -564,8 +564,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

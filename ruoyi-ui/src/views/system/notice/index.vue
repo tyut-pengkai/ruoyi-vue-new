@@ -44,13 +44,11 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
-        </el-button
-        >
+          >搜索
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
-        </el-button
-        >
+          >重置
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -63,9 +61,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:notice:add']"
-        >新增
-        </el-button
-        >
+          >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -76,9 +73,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:notice:edit']"
-        >修改
-        </el-button
-        >
+          >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -89,9 +85,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:notice:remove']"
-        >删除
-        </el-button
-        >
+          >删除
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -104,7 +99,7 @@
       :data="noticeList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column type="selection" width="55" align="center" />
       <el-table-column
         align="center"
         label="序号"
@@ -166,18 +161,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:notice:edit']"
-          >修改
-          </el-button
-          >
+            >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:notice:remove']"
-          >删除
-          </el-button
-          >
+            >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -221,15 +214,14 @@
                   v-for="dict in dict.type.sys_notice_status"
                   :key="dict.value"
                   :label="dict.value"
-                >{{ dict.label }}
-                </el-radio
-                >
+                  >{{ dict.label }}
+                </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="内容">
-              <editor v-model="form.noticeContent" :min-height="192"/>
+              <editor v-model="form.noticeContent" :min-height="192" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -271,7 +263,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         noticeTitle: undefined,
         createBy: undefined,
         status: undefined,
@@ -281,10 +273,10 @@ export default {
       // 表单校验
       rules: {
         noticeTitle: [
-          {required: true, message: "公告标题不能为空", trigger: "blur"},
+          { required: true, message: "公告标题不能为空", trigger: "blur" },
         ],
         noticeType: [
-          {required: true, message: "公告类型不能为空", trigger: "change"},
+          { required: true, message: "公告类型不能为空", trigger: "change" },
         ],
       },
     };
@@ -382,8 +374,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
   },
 };

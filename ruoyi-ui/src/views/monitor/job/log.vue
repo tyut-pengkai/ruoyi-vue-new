@@ -64,13 +64,11 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
-        </el-button
-        >
+          >搜索
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
-        </el-button
-        >
+          >重置
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -84,9 +82,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['monitor:job:remove']"
-        >删除
-        </el-button
-        >
+          >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -96,9 +93,8 @@
           size="mini"
           @click="handleClean"
           v-hasPermi="['monitor:job:remove']"
-        >清空
-        </el-button
-        >
+          >清空
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -108,9 +104,8 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['monitor:job:export']"
-        >导出
-        </el-button
-        >
+          >导出
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -119,9 +114,8 @@
           icon="el-icon-close"
           size="mini"
           @click="handleClose"
-        >关闭
-        </el-button
-        >
+          >关闭
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -134,7 +128,7 @@
       :data="jobLogList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column type="selection" width="55" align="center" />
       <el-table-column
         align="center"
         label="日志编号"
@@ -202,9 +196,8 @@
             icon="el-icon-view"
             @click="handleView(scope.row)"
             v-hasPermi="['monitor:job:query']"
-          >详细
-          </el-button
-          >
+            >详细
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -232,21 +225,18 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="任务分组：">{{ form.jobGroup }}</el-form-item>
-            <el-form-item label="执行时间：">{{
-                form.createTime
-              }}
+            <el-form-item label="执行时间："
+              >{{ form.createTime }}
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="调用方法：">{{
-                form.invokeTarget
-              }}
+            <el-form-item label="调用方法："
+              >{{ form.invokeTarget }}
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="日志信息：">{{
-                form.jobMessage
-              }}
+            <el-form-item label="日志信息："
+              >{{ form.jobMessage }}
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -256,9 +246,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item v-if="form.status == 1" label="异常信息：">{{
-                form.exceptionInfo
-              }}
+            <el-form-item v-if="form.status == 1" label="异常信息："
+              >{{ form.exceptionInfo }}
             </el-form-item>
           </el-col>
         </el-row>
@@ -300,7 +289,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         jobName: undefined,
         jobGroup: undefined,
         status: undefined,
@@ -369,8 +358,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 清空按钮操作 */
     handleClean() {
@@ -383,8 +371,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("清空成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

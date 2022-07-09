@@ -279,8 +279,8 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="编号" prop="cardId"/>
+      <el-table-column align="center" type="selection" width="55" />
+      <el-table-column align="center" label="编号" prop="cardId" />
       <!-- <el-table-column align="center" label="" type="index" /> -->
       <el-table-column
         label="所属软件"
@@ -325,16 +325,16 @@
       >
         <template slot-scope="scope">
           <span>{{
-              !scope.row.expireTime ||
-              scope.row.expireTime == "9999-12-31 23:59:59"
-                ? "永不过期"
-                : parseTime(scope.row.expireTime)
-            }}</span>
+            !scope.row.expireTime ||
+            scope.row.expireTime == "9999-12-31 23:59:59"
+              ? "永不过期"
+              : parseTime(scope.row.expireTime)
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="是否售出" prop="isSold">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold"/>
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold" />
         </template>
       </el-table-column>
       <el-table-column label="是否上架" align="center" prop="onSale">
@@ -760,7 +760,7 @@
       </el-form>
       <div v-show="cardStr">
         <el-divider content-position="left"
-        >本次生成结果如下(下方左侧为详细数据，右侧为简略数据)
+          >本次生成结果如下(下方左侧为详细数据，右侧为简略数据)
         </el-divider>
         <el-row>
           <el-col :span="12">
@@ -838,7 +838,7 @@ import Clipboard from "clipboard";
 export default {
   name: "LoginCode",
   dicts: ["sys_yes_no", "sys_normal_disable", "sys_bill_type"],
-  components: {DateDuration, Updown},
+  components: { DateDuration, Updown },
   data() {
     return {
       batchLoading: false,
@@ -875,7 +875,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         appId: null,
         cardName: null,
         cardNo: null,
@@ -893,21 +893,21 @@ export default {
       formBatch: {},
       // 表单校验
       rules: {
-        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
+        appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
         cardName: [
-          {required: true, message: "单码名称不能为空", trigger: "blur"},
+          { required: true, message: "单码名称不能为空", trigger: "blur" },
         ],
-        cardNo: [{required: true, message: "单码不能为空", trigger: "blur"}],
-        quota: [{required: true, message: "额度不能为空", trigger: "blur"}],
-        price: [{required: true, message: "价格不能为空", trigger: "blur"}],
+        cardNo: [{ required: true, message: "单码不能为空", trigger: "blur" }],
+        quota: [{ required: true, message: "额度不能为空", trigger: "blur" }],
+        price: [{ required: true, message: "价格不能为空", trigger: "blur" }],
         expireTime: [
-          {required: true, message: "过期时间不能为空", trigger: "blur"},
+          { required: true, message: "过期时间不能为空", trigger: "blur" },
         ],
         isSold: [
-          {required: true, message: "是否售出不能为空", trigger: "change"},
+          { required: true, message: "是否售出不能为空", trigger: "change" },
         ],
         onSale: [
-          {required: true, message: "是否上架不能为空", trigger: "change"},
+          { required: true, message: "是否上架不能为空", trigger: "change" },
         ],
         isCharged: [
           { required: true, message: "是否被充值不能为空", trigger: "change" },

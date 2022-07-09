@@ -41,13 +41,11 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
-        </el-button
-        >
+          >搜索
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
-        </el-button
-        >
+          >重置
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -60,9 +58,8 @@
           size="mini"
           @click="handleGenTable"
           v-hasPermi="['tool:gen:code']"
-        >生成
-        </el-button
-        >
+          >生成
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -72,9 +69,8 @@
           size="mini"
           @click="openImportTable"
           v-hasPermi="['tool:gen:import']"
-        >导入
-        </el-button
-        >
+          >导入
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -85,9 +81,8 @@
           :disabled="single"
           @click="handleEditTable"
           v-hasPermi="['tool:gen:edit']"
-        >修改
-        </el-button
-        >
+          >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -98,9 +93,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['tool:gen:remove']"
-        >删除
-        </el-button
-        >
+          >删除
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -121,8 +115,8 @@
       <el-table-column label="序号" type="index" width="50" align="center">
         <template slot-scope="scope">
           <span>{{
-              (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1
-            }}</span>
+            (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -170,45 +164,40 @@
             icon="el-icon-view"
             @click="handlePreview(scope.row)"
             v-hasPermi="['tool:gen:preview']"
-          >预览
-          </el-button
-          >
+            >预览
+          </el-button>
           <el-button
             type="text"
             size="small"
             icon="el-icon-edit"
             @click="handleEditTable(scope.row)"
             v-hasPermi="['tool:gen:edit']"
-          >编辑
-          </el-button
-          >
+            >编辑
+          </el-button>
           <el-button
             type="text"
             size="small"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['tool:gen:remove']"
-          >删除
-          </el-button
-          >
+            >删除
+          </el-button>
           <el-button
             type="text"
             size="small"
             icon="el-icon-refresh"
             @click="handleSynchDb(scope.row)"
             v-hasPermi="['tool:gen:edit']"
-          >同步
-          </el-button
-          >
+            >同步
+          </el-button>
           <el-button
             type="text"
             size="small"
             icon="el-icon-download"
             @click="handleGenTable(scope.row)"
             v-hasPermi="['tool:gen:code']"
-          >生成代码
-          </el-button
-          >
+            >生成代码
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -241,9 +230,8 @@
             :underline="false"
             icon="el-icon-document-copy"
             style="float: right"
-          >复制
-          </el-link
-          >
+            >复制
+          </el-link>
           <pre><code class="hljs" v-html="highlightedCode(value, key)"></code></pre>
         </el-tab-pane>
       </el-tabs>
@@ -296,7 +284,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         tableName: undefined,
         tableComment: undefined,
       },
@@ -366,8 +354,7 @@ export default {
         .then(() => {
           this.$modal.msgSuccess("同步成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 打开导入表弹窗 */
     openImportTable() {
@@ -412,7 +399,7 @@ export default {
     handleEditTable(row) {
       const tableId = row.tableId || this.ids[0];
       const tableName = row.tableName || this.tableNames[0];
-      const params = {pageNum: this.queryParams.pageNum};
+      const params = { pageNum: this.queryParams.pageNum };
       this.$tab.openPage(
         "修改[" + tableName + "]生成配置",
         "/tool/gen-edit/index/" + tableId,
@@ -431,8 +418,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
   },
 };

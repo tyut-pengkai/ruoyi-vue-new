@@ -129,10 +129,10 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
+          >搜索
         </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
+          >重置
         </el-button>
       </el-form-item>
     </el-form>
@@ -172,7 +172,7 @@
           size="mini"
           type="danger"
           @click="handleDelete"
-        >删除
+          >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -183,7 +183,7 @@
           size="mini"
           type="danger"
           @click="handleClean"
-        >清空
+          >清空
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -195,7 +195,7 @@
           size="mini"
           type="warning"
           @click="handleExport"
-        >导出
+          >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -211,8 +211,8 @@
       :default-sort="defaultSort"
       @sort-change="handleSortChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="访问编号" prop="infoId"/>
+      <el-table-column align="center" type="selection" width="55" />
+      <el-table-column align="center" label="访问编号" prop="infoId" />
       <el-table-column
         :show-overflow-tooltip="true"
         :sort-orders="['descending', 'ascending']"
@@ -222,11 +222,11 @@
         sortable="custom"
       />
       <!-- <el-table-column align="center" label="用户ID" prop="appUserId"/> -->
-      <el-table-column align="center" label="APP名" prop="appName"/>
-      <el-table-column align="center" label="登录IP" prop="ipaddr"/>
-      <el-table-column align="center" label="APP版本" prop="appVersion"/>
-      <el-table-column align="center" label="登录地点" prop="loginLocation"/>
-      <el-table-column align="center" label="设备码" prop="deviceCode"/>
+      <el-table-column align="center" label="APP名" prop="appName" />
+      <el-table-column align="center" label="登录IP" prop="ipaddr" />
+      <el-table-column align="center" label="APP版本" prop="appVersion" />
+      <el-table-column align="center" label="登录地点" prop="loginLocation" />
+      <el-table-column align="center" label="设备码" prop="deviceCode" />
       <!-- <el-table-column align="center" label="浏览器类型" prop="browser" />
       <el-table-column align="center" label="操作系统" prop="os" /> -->
       <el-table-column align="center" label="登录状态" prop="status">
@@ -237,7 +237,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="提示消息" prop="msg"/>
+      <el-table-column align="center" label="提示消息" prop="msg" />
       <el-table-column
         :sort-orders="['descending', 'ascending']"
         align="center"
@@ -289,31 +289,31 @@
     <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="用户名" prop="userName">
-          <el-input v-model="form.userName" placeholder="请输入用户名"/>
+          <el-input v-model="form.userName" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="用户ID" prop="appUserId">
-          <el-input v-model="form.appUserId" placeholder="请输入用户ID"/>
+          <el-input v-model="form.appUserId" placeholder="请输入用户ID" />
         </el-form-item>
         <el-form-item label="APP名" prop="appName">
-          <el-input v-model="form.appName" placeholder="请输入APP名"/>
+          <el-input v-model="form.appName" placeholder="请输入APP名" />
         </el-form-item>
         <el-form-item label="APP版本" prop="appVersion">
-          <el-input v-model="form.appVersion" placeholder="请输入APP版本"/>
+          <el-input v-model="form.appVersion" placeholder="请输入APP版本" />
         </el-form-item>
         <el-form-item label="登录IP地址" prop="ipaddr">
-          <el-input v-model="form.ipaddr" placeholder="请输入登录IP地址"/>
+          <el-input v-model="form.ipaddr" placeholder="请输入登录IP地址" />
         </el-form-item>
         <el-form-item label="登录地点" prop="loginLocation">
-          <el-input v-model="form.loginLocation" placeholder="请输入登录地点"/>
+          <el-input v-model="form.loginLocation" placeholder="请输入登录地点" />
         </el-form-item>
         <el-form-item label="设备码" prop="deviceCode">
-          <el-input v-model="form.deviceCode" placeholder="请输入设备码"/>
+          <el-input v-model="form.deviceCode" placeholder="请输入设备码" />
         </el-form-item>
         <el-form-item label="浏览器类型" prop="browser">
-          <el-input v-model="form.browser" placeholder="请输入浏览器类型"/>
+          <el-input v-model="form.browser" placeholder="请输入浏览器类型" />
         </el-form-item>
         <el-form-item label="操作系统" prop="os">
-          <el-input v-model="form.os" placeholder="请输入操作系统"/>
+          <el-input v-model="form.os" placeholder="请输入操作系统" />
         </el-form-item>
         <el-form-item label="登录状态">
           <el-radio-group v-model="form.status">
@@ -321,12 +321,12 @@
               v-for="dict in dict.type.sys_normal_disable"
               :key="dict.value"
               :label="dict.value"
-            >{{ dict.label }}
+              >{{ dict.label }}
             </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="提示消息" prop="msg">
-          <el-input v-model="form.msg" placeholder="请输入提示消息"/>
+          <el-input v-model="form.msg" placeholder="请输入提示消息" />
         </el-form-item>
         <el-form-item label="访问时间" prop="loginTime">
           <el-date-picker
@@ -387,11 +387,11 @@ export default {
       // 访问时间时间范围
       daterangeLoginTime: [],
       // 默认排序
-      defaultSort: {prop: "loginTime", order: "descending"},
+      defaultSort: { prop: "loginTime", order: "descending" },
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         userName: null,
         appUserId: null,
         appName: null,
@@ -524,8 +524,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 清空按钮操作 */
     handleClean() {
@@ -538,8 +537,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("清空成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -554,8 +552,7 @@ export default {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
   },
 };

@@ -197,9 +197,9 @@
       :data="cardTemplateList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" type="selection" width="55" />
       <!-- <el-table-column label="" type="index" align="center" /> -->
-      <el-table-column align="center" label="编号" prop="templateId"/>
+      <el-table-column align="center" label="编号" prop="templateId" />
       <el-table-column
         label="所属软件"
         align="center"
@@ -293,8 +293,8 @@
       <el-table-column label="卡密面值" align="center" prop="quota">
         <template slot-scope="scope">
           <span>{{
-              parseSeconds(scope.row.app.billType, scope.row.quota)
-            }}</span>
+            parseSeconds(scope.row.app.billType, scope.row.quota)
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="零售价格" prop="price">
@@ -305,10 +305,10 @@
       <el-table-column label="有效期" align="center" prop="effectiveDuration">
         <template slot-scope="scope">
           <span>{{
-              scope.row.effectiveDuration >= 0
-                ? parseSeconds("0", scope.row.effectiveDuration)
-                : "长期有效"
-            }}</span>
+            scope.row.effectiveDuration >= 0
+              ? parseSeconds("0", scope.row.effectiveDuration)
+              : "长期有效"
+          }}</span>
         </template>
       </el-table-column>
       <!-- <el-table-column
@@ -432,7 +432,7 @@
           </el-form-item>
         </div>
         <el-form-item label="卡类名称" label-width="80px" prop="cardName">
-          <el-input v-model="form.cardName" placeholder="请输入卡名称"/>
+          <el-input v-model="form.cardName" placeholder="请输入卡名称" />
         </el-form-item>
         <el-form-item>
           <div v-if="form.templateId == null">
@@ -522,9 +522,8 @@
                     v-for="dict in dict.type.sys_normal_disable"
                     :key="dict.value"
                     :label="dict.value"
-                  >{{ dict.label }}
-                  </el-radio
-                  >
+                    >{{ dict.label }}
+                  </el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
@@ -827,7 +826,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         appId: null,
         cardName: null,
         templateName: null,
@@ -842,14 +841,14 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
+        appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
         cardName: [
-          {required: true, message: "卡名称不能为空", trigger: "blur"},
+          { required: true, message: "卡名称不能为空", trigger: "blur" },
         ],
-        quota: [{required: true, message: "额度不能为空", trigger: "blur"}],
-        price: [{required: true, message: "价格不能为空", trigger: "blur"}],
+        quota: [{ required: true, message: "额度不能为空", trigger: "blur" }],
+        price: [{ required: true, message: "价格不能为空", trigger: "blur" }],
         cardNoLen: [
-          {required: true, message: "卡号长度不能为空", trigger: "blur"},
+          { required: true, message: "卡号长度不能为空", trigger: "blur" },
         ],
         cardNoGenRule: [
           {
@@ -884,7 +883,7 @@ export default {
           { required: true, message: "优先库存不能为空", trigger: "change" },
         ],
         status: [
-          {required: true, message: "卡类状态不能为空", trigger: "blur"},
+          { required: true, message: "卡类状态不能为空", trigger: "blur" },
         ],
         effectiveDuration: [
           { required: true, message: "有效时长不能为空", trigger: "blur" },

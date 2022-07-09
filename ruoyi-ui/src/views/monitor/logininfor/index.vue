@@ -58,13 +58,11 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
-        </el-button
-        >
+          >搜索
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
-        </el-button
-        >
+          >重置
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -78,9 +76,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['monitor:logininfor:remove']"
-        >删除
-        </el-button
-        >
+          >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -90,9 +87,8 @@
           size="mini"
           @click="handleClean"
           v-hasPermi="['monitor:logininfor:remove']"
-        >清空
-        </el-button
-        >
+          >清空
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -102,9 +98,8 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['monitor:logininfor:export']"
-        >导出
-        </el-button
-        >
+          >导出
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -120,8 +115,8 @@
       @selection-change="handleSelectionChange"
       @sort-change="handleSortChange"
     >
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="访问编号" align="center" prop="infoId"/>
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="访问编号" align="center" prop="infoId" />
       <el-table-column
         :show-overflow-tooltip="true"
         :sort-orders="['descending', 'ascending']"
@@ -149,7 +144,7 @@
         label="浏览器"
         prop="browser"
       />
-      <el-table-column label="操作系统" align="center" prop="os"/>
+      <el-table-column label="操作系统" align="center" prop="os" />
       <el-table-column label="登录状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag
@@ -158,7 +153,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="操作信息" align="center" prop="msg"/>
+      <el-table-column label="操作信息" align="center" prop="msg" />
       <el-table-column
         :sort-orders="['descending', 'ascending']"
         align="center"
@@ -206,11 +201,11 @@ export default {
       // 日期范围
       dateRange: [],
       // 默认排序
-      defaultSort: {prop: "loginTime", order: "descending"},
+      defaultSort: { prop: "loginTime", order: "descending" },
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         ipaddr: undefined,
         userName: undefined,
         status: undefined,
@@ -267,8 +262,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 清空按钮操作 */
     handleClean() {
@@ -281,8 +275,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("清空成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

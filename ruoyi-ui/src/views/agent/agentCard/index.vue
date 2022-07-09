@@ -142,10 +142,10 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
+          >搜索
         </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
+          >重置
         </el-button>
       </el-form-item>
     </el-form>
@@ -159,7 +159,7 @@
           size="mini"
           type="primary"
           @click="handleBatchAdd"
-        >批量制卡
+          >批量制卡
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -171,7 +171,7 @@
           size="mini"
           type="success"
           @click="handleUpdate"
-        >修改
+          >修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -183,7 +183,7 @@
           size="mini"
           type="danger"
           @click="handleDelete"
-        >删除
+          >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -195,7 +195,7 @@
           size="mini"
           type="warning"
           @click="handleExport"
-        >导出
+          >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -230,8 +230,8 @@
               <el-col :span="5">
                 <el-form-item label="面值">
                   <span>{{
-                      parseSeconds(scope.row.app.billType, scope.row.quota)
-                    }}</span>
+                    parseSeconds(scope.row.app.billType, scope.row.quota)
+                  }}</span>
                 </el-form-item>
               </el-col>
               <el-col :span="5">
@@ -278,9 +278,9 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" type="selection" width="55" />
       <!-- <el-table-column align="center" label="" type="index"/> -->
-      <el-table-column align="center" label="编号" prop="cardId"/>
+      <el-table-column align="center" label="编号" prop="cardId" />
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
@@ -329,12 +329,12 @@
       </el-table-column>
       <el-table-column align="center" label="是否售出" prop="isSold">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold"/>
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="是否上架" prop="onSale">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale"/>
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="是否已用" prop="isCharged">
@@ -380,7 +380,7 @@
             size="mini"
             type="text"
             @click="handleUpdate(scope.row)"
-          >修改
+            >修改
           </el-button>
           <el-button
             v-hasPermi="['agent:agentCard:remove']"
@@ -388,7 +388,7 @@
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
-          >删除
+            >删除
           </el-button>
         </template>
       </el-table-column>
@@ -449,7 +449,7 @@
                   v-for="dict in dict.type.sys_normal_disable"
                   :key="dict.value"
                   :label="dict.value"
-                >{{ dict.label }}
+                  >{{ dict.label }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -555,18 +555,18 @@
           <el-form-item prop="">
             <el-col :span="12">
               <el-form-item label="创建人" prop="createBy"
-              >{{ form.createBy }}
+                >{{ form.createBy }}
               </el-form-item>
               <el-form-item label="创建时间" prop="createTime"
-              >{{ form.createTime }}
+                >{{ form.createTime }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="最后更新" prop="updateBy"
-              >{{ form.updateBy }}
+                >{{ form.updateBy }}
               </el-form-item>
               <el-form-item label="更新时间" prop="updateTime"
-              >{{ form.updateTime }}
+                >{{ form.updateTime }}
               </el-form-item>
             </el-col>
           </el-form-item>
@@ -708,7 +708,7 @@ export default {
     "sys_charge_rule",
     "sys_bill_type",
   ],
-  components: {DateDuration, Updown},
+  components: { DateDuration, Updown },
   data() {
     return {
       appList: [],
@@ -744,7 +744,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         appId: null,
         cardName: null,
         cardNo: null,
@@ -763,45 +763,45 @@ export default {
       formBatch: {},
       // 表单校验
       rules: {
-        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
+        appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
         cardName: [
-          {required: true, message: "卡名称不能为空", trigger: "blur"},
+          { required: true, message: "卡名称不能为空", trigger: "blur" },
         ],
-        cardNo: [{required: true, message: "卡号不能为空", trigger: "blur"}],
+        cardNo: [{ required: true, message: "卡号不能为空", trigger: "blur" }],
         cardPass: [
-          {required: true, message: "密码不能为空", trigger: "blur"},
+          { required: true, message: "密码不能为空", trigger: "blur" },
         ],
-        quota: [{required: true, message: "额度不能为空", trigger: "blur"}],
-        price: [{required: true, message: "价格不能为空", trigger: "blur"}],
+        quota: [{ required: true, message: "额度不能为空", trigger: "blur" }],
+        price: [{ required: true, message: "价格不能为空", trigger: "blur" }],
         expireTime: [
-          {required: true, message: "过期时间不能为空", trigger: "blur"},
+          { required: true, message: "过期时间不能为空", trigger: "blur" },
         ],
         isSold: [
-          {required: true, message: "是否售出不能为空", trigger: "change"},
+          { required: true, message: "是否售出不能为空", trigger: "change" },
         ],
         onSale: [
-          {required: true, message: "是否上架不能为空", trigger: "change"},
+          { required: true, message: "是否上架不能为空", trigger: "change" },
         ],
         isCharged: [
-          {required: true, message: "是否已用不能为空", trigger: "change"},
+          { required: true, message: "是否已用不能为空", trigger: "change" },
         ],
         status: [
-          {required: true, message: "卡密状态不能为空", trigger: "blur"},
+          { required: true, message: "卡密状态不能为空", trigger: "blur" },
         ],
         chargeRule: [
-          {required: true, message: "充值规则不能为空", trigger: "change"},
+          { required: true, message: "充值规则不能为空", trigger: "change" },
         ],
       },
       rulesBatch: {
-        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
+        appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
         templateId: [
-          {required: true, message: "卡类不能为空", trigger: "change"},
+          { required: true, message: "卡类不能为空", trigger: "change" },
         ],
         onSale: [
-          {required: true, message: "是否上架不能为空", trigger: "change"},
+          { required: true, message: "是否上架不能为空", trigger: "change" },
         ],
         genQuantity: [
-          {required: true, message: "制卡数量不能为空", trigger: "blur"},
+          { required: true, message: "制卡数量不能为空", trigger: "blur" },
         ],
       },
       pickerOptions: {
@@ -1019,8 +1019,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -1035,8 +1034,7 @@ export default {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     handleQuota(totalSeconds) {
       this.form.quota = totalSeconds;

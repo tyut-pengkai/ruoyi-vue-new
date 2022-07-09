@@ -124,9 +124,9 @@
       :data="deviceCodeList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" type="selection" width="55" />
       <!-- <el-table-column align="center" label="" type="index"/> -->
-      <el-table-column align="center" label="编号" prop="deviceCodeId"/>
+      <el-table-column align="center" label="编号" prop="deviceCodeId" />
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
@@ -152,8 +152,8 @@
       <el-table-column label="登录次数" align="center" prop="loginTimes">
         <template slot-scope="scope">
           <span>{{
-              scope.row.loginTimes ? scope.row.loginTimes + "次" : "从未登录过"
-            }}</span>
+            scope.row.loginTimes ? scope.row.loginTimes + "次" : "从未登录过"
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status">
@@ -206,7 +206,7 @@
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules">
         <el-form-item label="设备码" prop="deviceCode">
-          <el-input v-model="form.deviceCode" placeholder="请输入设备码"/>
+          <el-input v-model="form.deviceCode" placeholder="请输入设备码" />
         </el-form-item>
         <el-form-item>
           <el-col :span="12">
@@ -229,7 +229,7 @@
               v-for="dict in dict.type.sys_normal_disable"
               :key="dict.value"
               :label="dict.value"
-            >{{ dict.label }}
+              >{{ dict.label }}
             </el-radio>
           </el-radio-group>
         </el-form-item>
@@ -244,18 +244,18 @@
           <el-form-item>
             <el-col :span="12">
               <el-form-item label="创建人" prop="createBy"
-              >{{ form.createBy }}
+                >{{ form.createBy }}
               </el-form-item>
               <el-form-item label="创建时间" prop="createTime"
-              >{{ form.createTime }}
+                >{{ form.createTime }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="最后更新" prop="updateBy"
-              >{{ form.updateBy }}
+                >{{ form.updateBy }}
               </el-form-item>
               <el-form-item label="更新时间" prop="updateTime"
-              >{{ form.updateTime }}
+                >{{ form.updateTime }}
               </el-form-item>
             </el-col>
           </el-form-item>
@@ -310,7 +310,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         deviceCode: null,
         lastLoginTime: null,
         loginTimes: null,

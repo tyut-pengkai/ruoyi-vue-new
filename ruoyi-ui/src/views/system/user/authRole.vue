@@ -10,7 +10,7 @@
         </el-col>
         <el-col :span="8" :offset="2">
           <el-form-item label="登录账号" prop="userName">
-            <el-input v-model="form.userName" disabled/>
+            <el-input v-model="form.userName" disabled />
           </el-form-item>
         </el-col>
       </el-row>
@@ -35,9 +35,9 @@
         type="selection"
         width="55"
       ></el-table-column>
-      <el-table-column label="角色编号" align="center" prop="roleId"/>
-      <el-table-column label="角色名称" align="center" prop="roleName"/>
-      <el-table-column label="权限字符" align="center" prop="roleKey"/>
+      <el-table-column label="角色编号" align="center" prop="roleId" />
+      <el-table-column label="角色名称" align="center" prop="roleName" />
+      <el-table-column label="权限字符" align="center" prop="roleKey" />
       <el-table-column
         align="center"
         label="创建时间"
@@ -80,7 +80,7 @@ export default {
       // 分页信息
       total: 0,
       pageNum: 1,
-      pageSize: 10,
+      pageSize: this.$store.state.settings.pageSize,
       // 选中角色编号
       roleIds: [],
       // 角色信息
@@ -132,7 +132,7 @@ export default {
     },
     /** 关闭按钮 */
     close() {
-      const obj = {path: "/verify/user"};
+      const obj = { path: "/verify/user" };
       this.$tab.closeOpenPage(obj);
     },
   },

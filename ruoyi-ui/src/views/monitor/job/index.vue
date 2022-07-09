@@ -50,13 +50,11 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
-        </el-button
-        >
+          >搜索
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
-        </el-button
-        >
+          >重置
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -69,9 +67,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['monitor:job:add']"
-        >新增
-        </el-button
-        >
+          >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -82,9 +79,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['monitor:job:edit']"
-        >修改
-        </el-button
-        >
+          >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -95,9 +91,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['monitor:job:remove']"
-        >删除
-        </el-button
-        >
+          >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -107,9 +102,8 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['monitor:job:export']"
-        >导出
-        </el-button
-        >
+          >导出
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -119,9 +113,8 @@
           size="mini"
           @click="handleJobLog"
           v-hasPermi="['monitor:job:query']"
-        >日志
-        </el-button
-        >
+          >日志
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -134,7 +127,7 @@
       :data="jobList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column type="selection" width="55" align="center" />
       <el-table-column
         align="center"
         label="任务编号"
@@ -189,18 +182,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['monitor:job:edit']"
-          >修改
-          </el-button
-          >
+            >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['monitor:job:remove']"
-          >删除
-          </el-button
-          >
+            >删除
+          </el-button>
           <el-dropdown
             v-hasPermi="['monitor:job:changeStatus', 'monitor:job:query']"
             size="mini"
@@ -214,23 +205,20 @@
                 v-hasPermi="['monitor:job:changeStatus']"
                 command="handleRun"
                 icon="el-icon-caret-right"
-              >执行一次
-              </el-dropdown-item
-              >
+                >执行一次
+              </el-dropdown-item>
               <el-dropdown-item
                 v-hasPermi="['monitor:job:query']"
                 command="handleView"
                 icon="el-icon-view"
-              >任务详细
-              </el-dropdown-item
-              >
+                >任务详细
+              </el-dropdown-item>
               <el-dropdown-item
                 v-hasPermi="['monitor:job:query']"
                 command="handleJobLog"
                 icon="el-icon-s-operation"
-              >调度日志
-              </el-dropdown-item
-              >
+                >调度日志
+              </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -273,8 +261,8 @@
                 <el-tooltip placement="top">
                   <div slot="content">
                     Bean调用示例：ryTask.ryParams('ry')
-                    <br/>Class类调用示例：com.ruoyi.quartz.task.RyTask.ryParams('ry')
-                    <br/>参数说明：支持字符串，布尔类型，长整型，浮点型，整型
+                    <br />Class类调用示例：com.ruoyi.quartz.task.RyTask.ryParams('ry')
+                    <br />参数说明：支持字符串，布尔类型，长整型，浮点型，整型
                   </div>
                   <i class="el-icon-question"></i>
                 </el-tooltip>
@@ -324,9 +312,8 @@
                   v-for="dict in dict.type.sys_job_status"
                   :key="dict.value"
                   :label="dict.value"
-                >{{ dict.label }}
-                </el-radio
-                >
+                  >{{ dict.label }}
+                </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -366,31 +353,26 @@
             <el-form-item label="任务名称：">{{ form.jobName }}</el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="任务分组：">{{
-                jobGroupFormat(form)
-              }}
+            <el-form-item label="任务分组："
+              >{{ jobGroupFormat(form) }}
             </el-form-item>
-            <el-form-item label="创建时间：">{{
-                form.createTime
-              }}
+            <el-form-item label="创建时间："
+              >{{ form.createTime }}
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="cron表达式：">{{
-                form.cronExpression
-              }}
+            <el-form-item label="cron表达式："
+              >{{ form.cronExpression }}
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="下次执行时间：">{{
-                parseTime(form.nextValidTime)
-              }}
+            <el-form-item label="下次执行时间："
+              >{{ parseTime(form.nextValidTime) }}
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="调用目标方法：">{{
-                form.invokeTarget
-              }}
+            <el-form-item label="调用目标方法："
+              >{{ form.invokeTarget }}
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -427,7 +409,7 @@ import {addJob, changeJobStatus, delJob, getJob, listJob, runJob, updateJob,} fr
 import Crontab from "@/components/Crontab";
 
 export default {
-  components: {Crontab},
+  components: { Crontab },
   name: "Job",
   dicts: ["sys_job_group", "sys_job_status"],
   data() {
@@ -459,7 +441,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         jobName: undefined,
         jobGroup: undefined,
         status: undefined,
@@ -469,7 +451,7 @@ export default {
       // 表单校验
       rules: {
         jobName: [
-          {required: true, message: "任务名称不能为空", trigger: "blur"},
+          { required: true, message: "任务名称不能为空", trigger: "blur" },
         ],
         invokeTarget: [
           {
@@ -581,8 +563,7 @@ export default {
         .then(() => {
           this.$modal.msgSuccess("执行成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 任务详细信息 */
     handleView(row) {
@@ -605,7 +586,7 @@ export default {
       const jobId = row.jobId || 0;
       this.$router.push({
         path: "/monitor/job-log/index",
-        query: {jobId: jobId},
+        query: { jobId: jobId },
       });
     },
     /** 新增按钮操作 */
@@ -656,8 +637,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

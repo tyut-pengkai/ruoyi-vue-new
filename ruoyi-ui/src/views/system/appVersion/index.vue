@@ -66,10 +66,10 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
+          >搜索
         </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
+          >重置
         </el-button>
       </el-form-item>
     </el-form>
@@ -83,7 +83,7 @@
           size="mini"
           type="primary"
           @click="handleAdd"
-        >新增
+          >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -95,7 +95,7 @@
           size="mini"
           type="success"
           @click="handleUpdate"
-        >修改
+          >修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -107,7 +107,7 @@
           size="mini"
           type="danger"
           @click="handleDelete"
-        >删除
+          >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -119,7 +119,7 @@
           size="mini"
           type="warning"
           @click="handleExport"
-        >导出
+          >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -133,9 +133,9 @@
       :data="appVersionList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" type="selection" width="55" />
       <!-- <el-table-column align="center" label="" type="index"/> -->
-      <el-table-column align="center" label="编号" prop="appVersionId"/>
+      <el-table-column align="center" label="编号" prop="appVersionId" />
       <el-table-column
         align="center"
         :show-overflow-tooltip="true"
@@ -172,7 +172,7 @@
         label="软件MD5"
         prop="md5"
       />
-      <el-table-column align="center" label="创建者" prop="createBy"/>
+      <el-table-column align="center" label="创建者" prop="createBy" />
       <el-table-column
         align="center"
         label="创建时间"
@@ -183,7 +183,7 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="备注" prop="remark"/>
+      <el-table-column align="center" label="备注" prop="remark" />
       <el-table-column align="center" label="版本状态" prop="status">
         <template slot-scope="scope">
           <dict-tag
@@ -212,7 +212,7 @@
             size="mini"
             type="text"
             @click="handleImport(scope.row)"
-          >快速接入
+            >快速接入
           </el-button>
           <el-button
             v-hasPermi="['system:appVersion:edit']"
@@ -220,7 +220,7 @@
             size="mini"
             type="text"
             @click="handleUpdate(scope.row)"
-          >修改
+            >修改
           </el-button>
           <el-button
             v-hasPermi="['system:appVersion:remove']"
@@ -228,7 +228,7 @@
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
-          >删除
+            >删除
           </el-button>
         </template>
       </el-table-column>
@@ -306,7 +306,7 @@
                   v-for="dict in dict.type.sys_normal_disable"
                   :key="dict.value"
                   :label="dict.value"
-                >{{ dict.label }}
+                  >{{ dict.label }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -318,7 +318,7 @@
                   v-for="dict in dict.type.sys_yes_no"
                   :key="dict.value"
                   :label="dict.value"
-                >{{ dict.label }}
+                  >{{ dict.label }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -332,7 +332,7 @@
                   v-for="dict in dict.type.sys_yes_no"
                   :key="dict.value"
                   :label="dict.value"
-                >{{ dict.label }}
+                  >{{ dict.label }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -340,7 +340,7 @@
           <el-col :span="12"></el-col>
         </el-form-item>
         <el-form-item label="软件MD5" prop="md5">
-          <el-input v-model="form.md5" placeholder="请输入软件MD5"/>
+          <el-input v-model="form.md5" placeholder="请输入软件MD5" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input
@@ -394,7 +394,7 @@
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div slot="tip" class="el-upload__tip text-center">
           <div slot="tip" class="el-upload__tip">
-            <el-checkbox v-model="upload.updateMd5"/>
+            <el-checkbox v-model="upload.updateMd5" />
             是否更新MD5(不会清除已有MD5设置)
           </div>
           <span style="margin-top: 5px">仅允许导入exe格式文件。</span>
@@ -480,7 +480,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         appId: null,
         versionName: null,
         versionNo: null,
@@ -493,23 +493,23 @@ export default {
       // 表单校验
       rules: {
         versionName: [
-          {required: true, message: "版本名称不能为空", trigger: "blur"},
+          { required: true, message: "版本名称不能为空", trigger: "blur" },
         ],
         versionNo: [
-          {required: true, message: "版本号不能为空", trigger: "blur"},
+          { required: true, message: "版本号不能为空", trigger: "blur" },
         ],
         downloadUrl: [
-          {required: false, message: "下载地址不能为空", trigger: "blur"},
+          { required: false, message: "下载地址不能为空", trigger: "blur" },
         ],
         status: [
-          {required: true, message: "版本状态不能为空", trigger: "blur"},
+          { required: true, message: "版本状态不能为空", trigger: "blur" },
         ],
         forceUpdate: [
-          {required: true, message: "是否强制更新不能为空", trigger: "blur"},
+          { required: true, message: "是否强制更新不能为空", trigger: "blur" },
         ],
-        md5: [{required: false, message: "软件MD5不能为空", trigger: "blur"}],
+        md5: [{ required: false, message: "软件MD5不能为空", trigger: "blur" }],
         checkMd5: [
-          {required: true, message: "是否检查MD5不能为空", trigger: "blur"},
+          { required: true, message: "是否检查MD5不能为空", trigger: "blur" },
         ],
       },
       // 快速接入参数
@@ -521,7 +521,7 @@ export default {
         // 是否禁用上传
         isUploading: false,
         // 设置上传的请求头部
-        headers: {Authorization: "Bearer " + getToken()},
+        headers: { Authorization: "Bearer " + getToken() },
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/system/appVersion/quickAccess",
         // 当前操作的版本ID
@@ -663,8 +663,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -679,8 +678,7 @@ export default {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导入按钮操作 */
     handleImport(row) {
@@ -728,7 +726,7 @@ export default {
           "&delete=false",
         params: param,
         responseType: "blob",
-        headers: {Authorization: "Bearer " + getToken()},
+        headers: { Authorization: "Bearer " + getToken() },
       })
         .then((res) => {
           this.fileDown.loadDialogStatus = false;

@@ -71,10 +71,10 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
+          >搜索
         </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
+          >重置
         </el-button>
       </el-form-item>
     </el-form>
@@ -88,7 +88,7 @@
           size="mini"
           type="primary"
           @click="handleAdd"
-        >新增
+          >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -100,7 +100,7 @@
           size="mini"
           type="success"
           @click="handleUpdate"
-        >修改
+          >修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -112,7 +112,7 @@
           size="mini"
           type="danger"
           @click="handleDelete"
-        >删除
+          >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -123,7 +123,7 @@
           size="mini"
           type="warning"
           @click="handleExport"
-        >导出
+          >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -137,9 +137,9 @@
       :data="globalScriptList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" type="selection" width="55" />
       <!-- <el-table-column align="center" label="" type="index"/> -->
-      <el-table-column align="center" label="编号" prop="scriptId"/>
+      <el-table-column align="center" label="编号" prop="scriptId" />
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
@@ -213,7 +213,7 @@
             size="mini"
             type="text"
             @click="handleUpdate(scope.row)"
-          >修改
+            >修改
           </el-button>
           <el-button
             v-hasPermi="['system:globalScript:remove']"
@@ -221,7 +221,7 @@
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
-          >删除
+            >删除
           </el-button>
         </template>
       </el-table-column>
@@ -246,7 +246,7 @@
               prop="name"
               style="width: 300px"
             >
-              <el-input v-model="form.name" placeholder="请输入脚本名称"/>
+              <el-input v-model="form.name" placeholder="请输入脚本名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -374,7 +374,7 @@
       <div v-if="scriptTestResult">
         <el-form>
           <el-form-item label="脚本退出代码（0为正常）">
-            <el-input :readonly="true" :value="scriptTestResult.exitCode"/>
+            <el-input :readonly="true" :value="scriptTestResult.exitCode" />
           </el-form-item>
           <el-form-item label="执行结果">
             <el-input
@@ -404,7 +404,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogVisible = false"
-        >确 定</el-button
+          >确 定</el-button
         >
       </span>
     </el-dialog>
@@ -451,7 +451,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         name: null,
         checkToken: null,
         checkVip: null,
@@ -463,10 +463,10 @@ export default {
       // 表单校验
       rules: {
         checkToken: [
-          {required: true, message: "是否需要登录不能为空", trigger: "blur"},
+          { required: true, message: "是否需要登录不能为空", trigger: "blur" },
         ],
         checkVip: [
-          {required: true, message: "是否需要VIP不能为空", trigger: "blur"},
+          { required: true, message: "是否需要VIP不能为空", trigger: "blur" },
         ],
       },
       scriptParams: "",
@@ -574,8 +574,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

@@ -183,9 +183,9 @@
       :data="appUserList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" type="selection" width="55" />
       <!-- <el-table-column label="" type="index" align="center" /> -->
-      <el-table-column align="center" label="编号" prop="appUserId"/>
+      <el-table-column align="center" label="编号" prop="appUserId" />
       <el-table-column
         label="所属软件"
         align="center"
@@ -698,7 +698,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         userId: null,
         appId: null,
         status: null,
@@ -712,14 +712,14 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
+        appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
         userId: [
-          {required: true, message: "所属账号不能为空", trigger: "blur"},
+          { required: true, message: "所属账号不能为空", trigger: "blur" },
         ],
         loginCode: [
-          {required: true, message: "单码不能为空", trigger: "blur"},
+          { required: true, message: "单码不能为空", trigger: "blur" },
         ],
-        status: [{required: true, message: "状态不能为空", trigger: "blur"}],
+        status: [{ required: true, message: "状态不能为空", trigger: "blur" }],
         loginLimitU: [
           {
             required: true,
@@ -735,22 +735,22 @@ export default {
           },
         ],
         freeBalance: [
-          {required: true, message: "赠送余额不能为空", trigger: "blur"},
+          { required: true, message: "赠送余额不能为空", trigger: "blur" },
         ],
         payBalance: [
-          {required: true, message: "支付余额不能为空", trigger: "blur"},
+          { required: true, message: "支付余额不能为空", trigger: "blur" },
         ],
         freePayment: [
-          {required: true, message: "赠送消费不能为空", trigger: "blur"},
+          { required: true, message: "赠送消费不能为空", trigger: "blur" },
         ],
         payPayment: [
-          {required: true, message: "支付消费不能为空", trigger: "blur"},
+          { required: true, message: "支付消费不能为空", trigger: "blur" },
         ],
         expireTime: [
-          {required: true, message: "过期时间不能为空", trigger: "blur"},
+          { required: true, message: "过期时间不能为空", trigger: "blur" },
         ],
         point: [
-          {required: true, message: "剩余点数不能为空", trigger: "blur"},
+          { required: true, message: "剩余点数不能为空", trigger: "blur" },
         ],
       },
     };

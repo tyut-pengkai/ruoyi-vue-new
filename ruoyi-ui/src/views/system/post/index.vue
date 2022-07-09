@@ -44,13 +44,11 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-        >搜索
-        </el-button
-        >
+          >搜索
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
-        </el-button
-        >
+          >重置
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -63,9 +61,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:post:add']"
-        >新增
-        </el-button
-        >
+          >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -76,9 +73,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:post:edit']"
-        >修改
-        </el-button
-        >
+          >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -89,9 +85,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:post:remove']"
-        >删除
-        </el-button
-        >
+          >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -101,9 +96,8 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:post:export']"
-        >导出
-        </el-button
-        >
+          >导出
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -116,11 +110,11 @@
       :data="postList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="岗位编号" align="center" prop="postId"/>
-      <el-table-column label="岗位编码" align="center" prop="postCode"/>
-      <el-table-column label="岗位名称" align="center" prop="postName"/>
-      <el-table-column label="岗位排序" align="center" prop="postSort"/>
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="岗位编号" align="center" prop="postId" />
+      <el-table-column label="岗位编码" align="center" prop="postCode" />
+      <el-table-column label="岗位名称" align="center" prop="postName" />
+      <el-table-column label="岗位排序" align="center" prop="postSort" />
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag
@@ -151,18 +145,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:post:edit']"
-          >修改
-          </el-button
-          >
+            >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:post:remove']"
-          >删除
-          </el-button
-          >
+            >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -197,9 +189,8 @@
               v-for="dict in dict.type.sys_normal_disable"
               :key="dict.value"
               :label="dict.value"
-            >{{ dict.label }}
-            </el-radio
-            >
+              >{{ dict.label }}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -247,7 +238,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         postCode: undefined,
         postName: undefined,
         status: undefined,
@@ -257,13 +248,13 @@ export default {
       // 表单校验
       rules: {
         postName: [
-          {required: true, message: "岗位名称不能为空", trigger: "blur"},
+          { required: true, message: "岗位名称不能为空", trigger: "blur" },
         ],
         postCode: [
-          {required: true, message: "岗位编码不能为空", trigger: "blur"},
+          { required: true, message: "岗位编码不能为空", trigger: "blur" },
         ],
         postSort: [
-          {required: true, message: "岗位顺序不能为空", trigger: "blur"},
+          { required: true, message: "岗位顺序不能为空", trigger: "blur" },
         ],
       },
     };
@@ -362,8 +353,7 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
