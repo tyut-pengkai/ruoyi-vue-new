@@ -104,6 +104,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
     </select>
 
+    <select id="selectSysCardNoList" resultType="String">
+        select card_no
+        from sys_card
+    </select>
+
     <select id="selectSysCardByCardId" parameterType="Long" resultMap="SysCardResult">
         <include refid="selectSysCardVo"/>
         where c.card_id = #{cardId}

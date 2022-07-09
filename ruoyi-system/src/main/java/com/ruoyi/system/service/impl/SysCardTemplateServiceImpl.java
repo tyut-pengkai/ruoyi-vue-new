@@ -177,16 +177,17 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
     }
 
     private String genNo(String prefix, String suffix, Integer length, GenRule genRule) {
-        if(StringUtils.isBlank(prefix)){
+        if (StringUtils.isBlank(prefix)) {
             prefix = "";
         }
-        if(StringUtils.isBlank(suffix)){
+        if (StringUtils.isBlank(suffix)) {
             suffix = "";
         }
         String random = prefix + generate(length, genRule) + suffix;
-        while(sysCardService.selectSysCardByCardNo(random) != null) {
-            random = prefix + generate(length, genRule) + suffix;
-        }
+//        while (sysLoginCodeService.selectSysLoginCodeByCardNo(random) != null) {
+//            random = prefix + generate(length, genRule) + suffix;
+//        }
+//      数据库添加了唯一索引保证不重复
         return random;
     }
 

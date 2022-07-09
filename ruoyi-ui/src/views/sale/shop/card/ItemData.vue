@@ -39,9 +39,14 @@
               {{ scope.row.cardPass }}
             </template>
           </el-table-column>
-          <el-table-column label="过期时间">
+          <el-table-column label="充值过期（请在此时间前充值）">
             <template slot-scope="scope">
-              {{ scope.row.expireTime }}
+              {{
+                !scope.row.expireTime ||
+                scope.row.expireTime == "9999-12-31 23:59:59"
+                  ? "永不过期"
+                  : scope.row.expireTime
+              }}
             </template>
           </el-table-column>
           <el-table-column label="充值规则" v-if="item.templateType == '1'">
@@ -172,14 +177,26 @@ export default {
           if (item.templateType == "1") {
             content += "充值卡号：" + goods.cardNo + "\n";
             content += "充值密码：" + goods.cardPass + "\n";
-            content += "有效期至：" + goods.expireTime + "\n";
+            if (goods.expireTime && goods.expireTime != "9999-12-31 23:59:59") {
+              content +=
+                "充值过期（请在此时间前充值）：" +
+                (!goods.expireTime || goods.expireTime == "9999-12-31 23:59:59"
+                  ? "永不过期"
+                  : goods.expireTime) +
+                "\n";
+            }
             if (goods.chargeRule && goods.chargeRule != "0") {
               content +=
                 "充值规则：" + this.chargeRuleFormat(goods.chargeRule) + "\n";
             }
           } else if (item.templateType == "2") {
             content += "登录码：" + goods.cardNo + "\n";
-            content += "有效期至：" + goods.expireTime + "\n";
+            content +=
+              "充值过期（请在此时间前充值）：" +
+              (!goods.expireTime || goods.expireTime == "9999-12-31 23:59:59"
+                ? "永不过期"
+                : goods.expireTime) +
+              "\n";
           }
           content += "\n";
         }

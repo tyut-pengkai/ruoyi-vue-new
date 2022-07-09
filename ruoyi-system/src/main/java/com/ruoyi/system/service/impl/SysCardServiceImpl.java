@@ -56,20 +56,28 @@ public class SysCardServiceImpl implements ISysCardService
      */
     @Override
     @DataScope(deptAlias = "d", userAlias = "u")
-    public List<SysCard> selectSysCardList(SysCard sysCard)
-    {
+    public List<SysCard> selectSysCardList(SysCard sysCard) {
         return sysCardMapper.selectSysCardList(sysCard);
     }
 
     /**
+     * 查询卡密列表
+     *
+     * @return 卡密
+     */
+    @Override
+    public List<String> selectSysCardNoList() {
+        return sysCardMapper.selectSysCardNoList();
+    }
+
+    /**
      * 新增卡密
-     * 
+     *
      * @param sysCard 卡密
      * @return 结果
      */
     @Override
-    public int insertSysCard(SysCard sysCard)
-    {
+    public int insertSysCard(SysCard sysCard) {
         sysCard.setCreateTime(DateUtils.getNowDate());
         return sysCardMapper.insertSysCard(sysCard);
     }

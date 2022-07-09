@@ -6,6 +6,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
@@ -16,7 +17,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 单码Controller
@@ -73,6 +77,7 @@ public class SysLoginCodeController extends BaseController {
     public AjaxResult add(@RequestBody SysLoginCode sysLoginCode) {
         if (sysLoginCode.getTemplateId() == null) {
             sysLoginCode.setCreateBy(getUsername());
+            sysLoginCode.setIsAgent(UserConstants.NO);
             return toAjax(sysLoginCodeService.insertSysLoginCode(sysLoginCode));
         } else {
             if (sysLoginCode.getGenQuantity() == null || sysLoginCode.getGenQuantity() < 0) {
@@ -85,8 +90,16 @@ public class SysLoginCodeController extends BaseController {
             if (sysLoginCodeTemplate == null) {
                 return AjaxResult.error("卡类不存在，批量制卡失败");
             }
-            new Thread(() -> sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), sysLoginCode.getOnSale(), UserConstants.NO, sysLoginCode.getRemark())).start();
-            return AjaxResult.success("后台生成中，请稍后刷新此页面");
+//            new Thread(() -> sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), sysLoginCode.getOnSale(), UserConstants.NO, sysLoginCode.getRemark())).start();
+            List<SysLoginCode> sysLoginCodes = sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), sysLoginCode.getOnSale(), UserConstants.NO, sysLoginCode.getRemark());
+            List<Map<String, String>> resultList = new ArrayList<>();
+            for (SysLoginCode item : sysLoginCodes) {
+                Map<String, String> map = new HashMap<>();
+                map.put("cardNo", item.getCardNo());
+                map.put("expireTime", DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, item.getExpireTime()));
+                resultList.add(map);
+            }
+            return AjaxResult.success("生成完毕", resultList).put("cardName", sysLoginCodeTemplate.getCardName());
         }
     }
 

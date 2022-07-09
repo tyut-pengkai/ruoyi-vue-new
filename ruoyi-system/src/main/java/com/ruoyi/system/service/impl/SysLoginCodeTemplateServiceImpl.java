@@ -175,9 +175,10 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
             suffix = "";
         }
         String random = prefix + generate(length, genRule) + suffix;
-        while (sysLoginCodeService.selectSysLoginCodeByCardNo(random) != null) {
-            random = prefix + generate(length, genRule) + suffix;
-        }
+//        while (sysLoginCodeService.selectSysLoginCodeByCardNo(random) != null) {
+//            random = prefix + generate(length, genRule) + suffix;
+//        }
+//      数据库添加了唯一索引保证不重复
         return random;
     }
 

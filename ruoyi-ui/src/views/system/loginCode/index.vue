@@ -67,7 +67,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item> -->
-      <el-form-item label="过期时间" prop="">
+      <el-form-item label="充值过期" prop="">
         <el-date-picker
           v-model="daterangeExpireTime"
           size="small"
@@ -279,9 +279,9 @@
           </el-form>
         </template>
       </el-table-column>
-      <!-- <el-table-column align="center" type="selection" width="55"/> -->
+      <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="编号" prop="cardId"/>
-      <el-table-column align="center" label="" type="index"/>
+      <!-- <el-table-column align="center" label="" type="index" /> -->
       <el-table-column
         label="所属软件"
         align="center"
@@ -318,13 +318,18 @@
         </template>
       </el-table-column> -->
       <el-table-column
-        label="过期时间"
+        label="充值过期"
         align="center"
         prop="expireTime"
         width="180"
       >
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.expireTime) }}</span>
+          <span>{{
+              !scope.row.expireTime ||
+              scope.row.expireTime == "9999-12-31 23:59:59"
+                ? "永不过期"
+                : parseTime(scope.row.expireTime)
+            }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="是否售出" prop="isSold">
@@ -483,7 +488,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="过期时间" prop="expireTime">
+            <el-form-item label="充值过期" prop="expireTime">
               <el-date-picker
                 v-model="form.expireTime"
                 :picker-options="pickerOptions"
@@ -753,8 +758,61 @@
           />
         </el-form-item>
       </el-form>
+      <div v-show="cardStr">
+        <el-divider content-position="left"
+        >本次生成结果如下(下方左侧为详细数据，右侧为简略数据)
+        </el-divider>
+        <el-row>
+          <el-col :span="12">
+            <el-input
+              v-model="cardStr"
+              :autosize="{ minRows: 2, maxRows: 4 }"
+              placeholder=""
+              type="textarea"
+            >
+            </el-input>
+          </el-col>
+          <el-col :span="12">
+            <el-input
+              v-model="cardSimpleStr"
+              :autosize="{ minRows: 2, maxRows: 4 }"
+              placeholder=""
+              type="textarea"
+            >
+            </el-input>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <div align="right" style="margin-top: 5px">
+              <el-button id="copyButton" plain @click="copy(1)">
+                复制文本
+              </el-button>
+              <el-button id="saveButton" plain @click="save(1)">
+                下载保存
+              </el-button>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div align="right" style="margin-top: 5px">
+              <el-button id="copyButton" plain @click="copy(2)">
+                复制文本
+              </el-button>
+              <el-button id="saveButton" plain @click="save(2)">
+                下载保存
+              </el-button>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitFormBatch">确 定</el-button>
+        <el-button
+          :loading="batchLoading"
+          type="primary"
+          @click="submitFormBatch"
+        >
+          确 定
+        </el-button>
         <el-button @click="cancelBatch">取 消</el-button>
       </div>
     </el-dialog>
@@ -775,6 +833,7 @@ import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
 import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
 import {listLoginCodeTemplateAll} from "@/api/system/loginCodeTemplate";
+import Clipboard from "clipboard";
 
 export default {
   name: "LoginCode",
@@ -782,6 +841,7 @@ export default {
   components: {DateDuration, Updown},
   data() {
     return {
+      batchLoading: false,
       appList: [],
       appMap: [],
       // 类别数据
@@ -919,6 +979,9 @@ export default {
         ],
       },
       expands: [],
+      // cardStr: "天卡 44163416341316313 dawdaefahjfoaf464dawfae 1天 长期有效\n天卡 44163416341316313 dawdaefahjfoaf464dawfae 1天 长期有效",
+      cardStr: "",
+      cardSimpleStr: "",
     };
   },
   created() {
@@ -1043,6 +1106,8 @@ export default {
         this.cardTemplateList = response.rows;
       });
       this.batchOpen = true;
+      this.cardStr = "";
+      this.cardSimpleStr = "";
       this.title = "批量生成单码";
     },
     /** 修改按钮操作 */
@@ -1080,11 +1145,49 @@ export default {
     submitFormBatch() {
       this.$refs["formBatch"].validate((valid) => {
         if (valid) {
+          this.batchLoading = true;
           this.formBatch.appId = this.app.appId;
           addLoginCode(this.formBatch).then((response) => {
             this.$modal.msgSuccess("新增成功");
-            this.batchOpen = false;
+            // this.batchOpen = false;
+            if (
+              response.data &&
+              response.data instanceof Array &&
+              response.data.length > 0
+            ) {
+              var content = "";
+              var contentSimple = "";
+              content +=
+                "========" +
+                response.cardName +
+                "（共" +
+                response.data.length +
+                "张）========\n";
+              contentSimple = content;
+              for (var index in response.data) {
+                var goods = response.data[index];
+                content += "第" + (parseInt(index) + 1) + "张\n";
+                content += "登录码：" + goods.cardNo + "\n";
+                contentSimple += goods.cardNo + "\n";
+                if (
+                  goods.expireTime &&
+                  goods.expireTime != "9999-12-31 23:59:59"
+                ) {
+                  content +=
+                    "充值过期（请在此时间前充值）：" +
+                    (!goods.expireTime ||
+                    goods.expireTime == "9999-12-31 23:59:59"
+                      ? "永不过期"
+                      : goods.expireTime) +
+                    "\n";
+                }
+                content += "\n";
+              }
+              this.cardStr = content;
+              this.cardSimpleStr = contentSimple;
+            }
             this.getList();
+            this.batchLoading = false;
           });
         }
       });
@@ -1179,6 +1282,121 @@ export default {
       } else {
         this.expands.remove(row.cardId);
       }
+    },
+    copy(id) {
+      var clipboard = new Clipboard("#copyButton", {
+        text: () => {
+          // 如果想从其它DOM元素内容复制。应该是target:function(){return: };
+          if (id == 1) {
+            return this.cardStr;
+          } else {
+            return this.cardSimpleStr;
+          }
+        },
+      });
+      clipboard.on("success", (e) => {
+        this.$notify({
+          title: "消息",
+          dangerouslyUseHTMLString: true,
+          message: "已成功复制，请您妥善保存",
+          type: "success",
+          offset: 100,
+        });
+        clipboard.destroy();
+      });
+      clipboard.on("error", (e) => {
+        this.$notify({
+          title: "消息",
+          dangerouslyUseHTMLString: true,
+          message: "复制失败，您的浏览器不支持复制，请自行妥善保存",
+          type: "warning",
+          offset: 100,
+        });
+        clipboard.destroy();
+      });
+    },
+    download(filename, text) {
+      var pom = document.createElement("a");
+      pom.setAttribute(
+        "href",
+        "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+      );
+      pom.setAttribute("download", filename);
+      if (document.createEvent) {
+        var event = document.createEvent("MouseEvents");
+        event.initEvent("click", true, true);
+        pom.dispatchEvent(event);
+      } else {
+        pom.click();
+      }
+    },
+    /** * 对Date的扩展，将 Date 转化为指定格式的String * 月(M)、日(d)、12小时(h)、24小时(H)、分(m)、秒(s)、周(E)、季度(q)
+     可以用 1-2 个占位符 * 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字) * eg: * (new
+     Date()).pattern("yyyy-MM-dd hh:mm:ss.S")==> 2006-07-02 08:09:04.423
+     * (new Date()).pattern("yyyy-MM-dd E HH:mm:ss") ==> 2009-03-10 二 20:09:04
+     * (new Date()).pattern("yyyy-MM-dd EE hh:mm:ss") ==> 2009-03-10 周二 08:09:04
+     * (new Date()).pattern("yyyy-MM-dd EEE hh:mm:ss") ==> 2009-03-10 星期二 08:09:04
+     * (new Date()).pattern("yyyy-M-d h:m:s.S") ==> 2006-7-2 8:9:4.18
+     */
+    dateFormat(date, fmt) {
+      var o = {
+        "M+": date.getMonth() + 1, //月份
+        "d+": date.getDate(), //日
+        "h+": date.getHours() % 12 == 0 ? 12 : date.getHours() % 12, //小时
+        "H+": date.getHours(), //小时
+        "m+": date.getMinutes(), //分
+        "s+": date.getSeconds(), //秒
+        "q+": Math.floor((date.getMonth() + 3) / 3), //季度
+        S: date.getMilliseconds(), //毫秒
+      };
+      var week = {
+        0: "/u65e5",
+        1: "/u4e00",
+        2: "/u4e8c",
+        3: "/u4e09",
+        4: "/u56db",
+        5: "/u4e94",
+        6: "/u516d",
+      };
+      if (/(y+)/.test(fmt)) {
+        fmt = fmt.replace(
+          RegExp.$1,
+          (date.getFullYear() + "").substr(4 - RegExp.$1.length)
+        );
+      }
+      if (/(E+)/.test(fmt)) {
+        fmt = fmt.replace(
+          RegExp.$1,
+          (RegExp.$1.length > 1
+            ? RegExp.$1.length > 2
+              ? "/u661f/u671f"
+              : "/u5468"
+            : "") + week[date.getDay() + ""]
+        );
+      }
+      for (var k in o) {
+        if (new RegExp("(" + k + ")").test(fmt)) {
+          fmt = fmt.replace(
+            RegExp.$1,
+            RegExp.$1.length == 1
+              ? o[k]
+              : ("00" + o[k]).substr(("" + o[k]).length)
+          );
+        }
+      }
+      return fmt;
+    },
+    save(id) {
+      var content = "";
+      if (id == 1) {
+        content = this.cardStr;
+      } else {
+        content = this.cardSimpleStr;
+      }
+      this.download(
+        "save_" + this.dateFormat(new Date(), "yyyyMMddHHmmss") + ".txt",
+        content
+      );
     },
   },
 };

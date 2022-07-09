@@ -36,8 +36,15 @@ public interface ISysCardService {
     public List<SysCard> selectSysCardList(SysCard sysCard);
 
     /**
+     * 查询卡密列表
+     *
+     * @return 卡密集合
+     */
+    public List<String> selectSysCardNoList();
+
+    /**
      * 新增卡密
-     * 
+     *
      * @param sysCard 卡密
      * @return 结果
      */

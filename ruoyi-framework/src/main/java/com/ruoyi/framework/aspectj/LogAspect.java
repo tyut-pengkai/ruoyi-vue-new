@@ -1,9 +1,19 @@
 package com.ruoyi.framework.aspectj;
 
-import java.util.Collection;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.alibaba.fastjson2.JSON;
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.enums.BusinessStatus;
+import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.enums.HttpMethod;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.ServletUtils;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.ip.IpUtils;
+import com.ruoyi.framework.manager.AsyncManager;
+import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.system.domain.SysOperLog;
+import com.ruoyi.system.service.ISysConfigService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -14,29 +24,24 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.HandlerMapping;
-import com.alibaba.fastjson2.JSON;
-import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.domain.model.LoginUser;
-import com.ruoyi.common.enums.BusinessStatus;
-import com.ruoyi.common.enums.HttpMethod;
-import com.ruoyi.common.utils.ServletUtils;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.common.utils.ip.IpUtils;
-import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.framework.manager.AsyncManager;
-import com.ruoyi.framework.manager.factory.AsyncFactory;
-import com.ruoyi.system.domain.SysOperLog;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * 操作日志记录处理
- * 
+ *
  * @author ruoyi
  */
 @Aspect
 @Component
-public class LogAspect
-{
+public class LogAspect {
     private static final Logger log = LoggerFactory.getLogger(LogAspect.class);
+    @Resource
+    private ISysConfigService sysConfigService;
 
     /**
      * 处理完请求后执行
@@ -44,8 +49,7 @@ public class LogAspect
      * @param joinPoint 切点
      */
     @AfterReturning(pointcut = "@annotation(controllerLog)", returning = "jsonResult")
-    public void doAfterReturning(JoinPoint joinPoint, Log controllerLog, Object jsonResult)
-    {
+    public void doAfterReturning(JoinPoint joinPoint, Log controllerLog, Object jsonResult) {
         handleLog(joinPoint, controllerLog, null, jsonResult);
     }
 
@@ -61,10 +65,25 @@ public class LogAspect
         handleLog(joinPoint, controllerLog, e, null);
     }
 
-    protected void handleLog(final JoinPoint joinPoint, Log controllerLog, final Exception e, Object jsonResult)
-    {
-        try
-        {
+    protected void handleLog(final JoinPoint joinPoint, Log controllerLog, final Exception e, Object jsonResult) {
+        try {
+            // API调用日志特殊处理
+            String recordCallLog = sysConfigService.selectConfigByKey("sys.api.recordCallLog");
+            if (recordCallLog == null) {
+                recordCallLog = "0";
+            }
+            if ("0".equals(recordCallLog) && controllerLog.businessType() == BusinessType.CALL_API) { // 不记录
+                return;
+            } else if ("1".equals(recordCallLog)) { // 仅记录失败
+                // 继续向下执行
+            } else if ("2".equals(recordCallLog)) { // 仅记录失败
+                if (e == null) {
+                    return;
+                }
+            } else {
+                return;
+            }
+
             // 获取当前的用户
             LoginUser loginUser = null;
             try {

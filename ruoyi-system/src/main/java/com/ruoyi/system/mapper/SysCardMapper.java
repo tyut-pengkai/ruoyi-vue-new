@@ -78,7 +78,15 @@ public interface SysCardMapper {
 
     /**
      * 新增卡密
+     *
      * @param sysCardList
      */
     public int insertSysCardBatch(List<SysCard> sysCardList);
+
+    /**
+     * 查询卡密列表
+     *
+     * @return 卡密集合
+     */
+    public List<String> selectSysCardNoList();
 }

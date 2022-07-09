@@ -14,6 +14,7 @@ import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.payment.domain.Payment;
 import com.ruoyi.payment.domain.WechatpayConfig;
 import com.ruoyi.sale.domain.SysSaleOrder;
@@ -68,8 +69,7 @@ public class WechatpayNativePayment extends Payment {
 
         String ip;
         try {
-            HttpServletRequest request = ServletUtils.getRequest();
-            ip = request.getRemoteAddr();
+            ip = IpUtils.getIpAddr(ServletUtils.getRequest());
         } catch (Exception e) {
             ip = "0.0.0.0";
         }
