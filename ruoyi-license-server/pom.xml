@@ -9,8 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
-    <groupId>com.coordsoft</groupId>
-    <artifactId>hywlyz-license</artifactId>
+    <artifactId>hywlyz-license-server</artifactId>
     <version>1.0.0</version>
 
     <description>

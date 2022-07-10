@@ -43,7 +43,7 @@ public class LicenseTest {
      * test 生成授权
      */
     @Test
-    public void testGenerateLicense() {
+    public void testGenerateLicense() throws Exception {
         LicenseCreatorParam param = new LicenseCreatorParam();
         param.setSubject("license_sub");
         param.setConsumerAmount(1);

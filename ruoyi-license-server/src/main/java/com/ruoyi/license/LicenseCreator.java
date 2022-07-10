@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.security.auth.x500.X500Principal;
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.prefs.Preferences;
 
 /**
@@ -31,18 +30,11 @@ public class LicenseCreator {
      *
      * @return boolean
      */
-    public boolean generateLicense() {
-        try {
-            LicenseManager licenseManager = new CustomLicenseManager(initLicenseParam());
-            LicenseContent licenseContent = initLicenseContent();
-
-            licenseManager.store(licenseContent, new File(param.getLicensePath()));
-            log.info("License生成成功！");
-            return true;
-        } catch (Exception e) {
-            log.error(MessageFormat.format("License生成失败：{0}", param), e);
-            return false;
-        }
+    public void generateLicense() throws Exception {
+        LicenseManager licenseManager = new CustomLicenseManager(initLicenseParam());
+        LicenseContent licenseContent = initLicenseContent();
+        licenseManager.store(licenseContent, new File(param.getLicensePath()));
+        log.info("License生成成功！license位于{}", param.getLicensePath());
     }
 
     /**
