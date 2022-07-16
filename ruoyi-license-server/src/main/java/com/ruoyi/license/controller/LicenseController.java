@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.license;
+package com.ruoyi.license.controller;
 
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.Constants;
