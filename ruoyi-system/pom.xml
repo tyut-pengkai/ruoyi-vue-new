@@ -26,6 +26,25 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.smali</groupId>
+            <artifactId>dexlib2</artifactId>
+            <version>1.0</version>
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${basedir}/libs/dexlib2.jar</systemPath>-->
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.google</groupId>-->
+<!--            <artifactId>apksigner</artifactId>-->
+<!--            <version>1.0</version>-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${basedir}/libs/apksigner.jar</systemPath>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-exec</artifactId>
+            <version>1.3</version>
+        </dependency>
 
     </dependencies>
 

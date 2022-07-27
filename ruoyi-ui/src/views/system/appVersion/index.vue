@@ -367,7 +367,7 @@
         :closable="false"
         show-icon
         style="margin-bottom: 10px"
-        title="快速接入安全性较低，不建议生产环境使用，主要用于开发者临时接单需要快速接入快速测试的场景，接入软件大小建议小于20M"
+        title="快速接入安全性较低，不建议生产环境使用，主要用于开发者临时接单需要快速接入快速测试的场景，接入软件大小建议小于20M，目前可支持[全部模式]的exe接入与[单码计时]模式的apk接入"
         type="info"
       >
       </el-alert>
@@ -378,7 +378,9 @@
           '?versionId=' +
           upload.quickAccessVersionId +
           '&updateMd5=' +
-          upload.updateMd5
+          upload.updateMd5 +
+          '&signApk=' +
+          upload.signApk
         "
         :auto-upload="false"
         :disabled="upload.isUploading"
@@ -387,17 +389,23 @@
         :before-upload="onBeforeUpload"
         :on-progress="handleFileUploadProgress"
         :on-success="handleFileSuccess"
-        accept=".exe"
+        accept=".apk,.exe"
         drag
       >
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div slot="tip" class="el-upload__tip text-center">
+          <span style="margin-top: 5px">允许导入exe或apk格式文件。</span>
+          <br />
           <div slot="tip" class="el-upload__tip">
             <el-checkbox v-model="upload.updateMd5" />
-            是否更新MD5(不会清除已有MD5设置)
+            是否更新MD5<br />(仅exe生效，会在已有MD5信息基础上累加)
           </div>
-          <span style="margin-top: 5px">仅允许导入exe格式文件。</span>
+          <div slot="tip" class="el-upload__tip">
+            <el-checkbox v-model="upload.signApk" />
+            是否签名APK<br />(仅apk生效，建议将生成的apk加固后再发布)
+          </div>
+          <br />
           <!-- <el-link
             type="primary"
             :underline="false"
@@ -528,6 +536,8 @@ export default {
         quickAccessVersionId: null,
         // 是否自动更新MD5
         updateMd5: true,
+        // 是否自动APK签名
+        signApk: true,
       },
       fileDown: {
         //弹出框控制的状态

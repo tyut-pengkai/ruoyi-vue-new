@@ -38,7 +38,9 @@ public class MimeTypeUtils
             // pdf
             "pdf",
             // exe
-            "exe"};
+            "exe",
+            // apk
+            "apk"};
 
     public static String getExtension(String prefix)
     {

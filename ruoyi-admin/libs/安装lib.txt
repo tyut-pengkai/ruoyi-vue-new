@@ -1,0 +1,1 @@
+mvn install:install-file -DgroupId=org.smali -DartifactId=dexlib2 -Dversion=1.0 -Dpackaging=jar -Dfile=D:\Workspaces\IdeaProjects\RuoYi-Vue\ruoyi-admin\libs\dexlib2.jar
