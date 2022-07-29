@@ -17,6 +17,4 @@ keytool -genkey -v -alias signApk -keyalg RSA -keysize 2048 -validity 36500 -key
 
 // v1+v2
 java -jar apksigner.jar sign --ks signApk.keystore --ks-key-alias signApk 1.apk
-java -jar apksigner.jar sign --ks signApk.keystore --ks-key-alias signApk –ks-pass pass:hy@2022wlyz --out signed.apk unsigned.apk
-
-java -jar "C:\Users\GuZhiwei\AppData\Local\Temp\temp7003650566170222305.temp" sign --ks "C:\Users\GuZhiwei\AppData\Local\Temp\temp1697216959124774114.temp" --ks-key-alias signApk –ks-pass pass:hy@2022wlyz --out "C:\Users\GuZhiwei\AppData\Local\Temp\hyQuickAccessApkTempFileInjected16589353144964559647847519948608.tmp" "C:\Users\GuZhiwei\AppData\Local\Temp\hyQuickAccessApkTempFileInjected16589353144965045922367318515436.tmp"
+java -jar apksigner.jar sign --ks signApk.keystore --ks-key-alias signApk --ks-pass pass:hy@2022wlyz --out signed.apk unsigned.apk

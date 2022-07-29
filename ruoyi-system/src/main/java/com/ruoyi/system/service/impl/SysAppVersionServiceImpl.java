@@ -252,7 +252,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                     try {
                         File tempFileUnsigned = File.createTempFile("hyQuickAccessApkTempFileUnsigned" + System.currentTimeMillis(), null);
                         File tempFileSigned = File.createTempFile("hyQuickAccessApkTempFileSigned" + System.currentTimeMillis(), null);
-                        FileUtils.writeByteArrayToFile(tempFileUnsigned, bytes);
+                        FileUtils.writeByteArrayToFile(tempFileUnsigned, injectedApk);
                         File apksigner = PathUtils.getResourceFile("apksigner.jar");
                         File keystore = PathUtils.getResourceFile("signApk.keystore");
                         String command = "java -jar \"" + apksigner.getCanonicalPath()
