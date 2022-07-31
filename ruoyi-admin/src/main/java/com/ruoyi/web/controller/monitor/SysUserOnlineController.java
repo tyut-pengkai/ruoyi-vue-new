@@ -28,13 +28,12 @@ import static com.ruoyi.framework.aspectj.DataScopeAspect.DATA_SCOPE_SELF;
 
 /**
  * 在线用户监控
- * 
+ *
  * @author ruoyi
  */
 @RestController
 @RequestMapping("/monitor/online")
-public class SysUserOnlineController extends BaseController
-{
+public class SysUserOnlineController extends BaseController {
     @Autowired
     private ISysUserOnlineService userOnlineService;
 
@@ -43,30 +42,33 @@ public class SysUserOnlineController extends BaseController
 
     @PreAuthorize("@ss.hasPermi('monitor:online:list')")
     @GetMapping("/list")
-    public TableDataInfo list(String ipaddr, String userName)
-    {
+    public TableDataInfo list(String ipaddr, String userName) {
         Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
         List<SysUserOnline> userOnlineList = new ArrayList<>();
-        for (String key : keys)
-        {
+        for (String key : keys) {
             LoginUser user = redisCache.getCacheObject(key);
-            if (StringUtils.isNotEmpty(ipaddr) && StringUtils.isNotEmpty(userName))
-            {
-                if (StringUtils.equals(ipaddr, user.getIpaddr()) && StringUtils.equals(userName, user.getUsername()))
-                {
-                    userOnlineList.add(userOnlineService.selectOnlineByInfo(ipaddr, userName, user));
+            if (StringUtils.isNotEmpty(ipaddr) && StringUtils.isNotEmpty(userName)) {
+//                if (StringUtils.equals(ipaddr, user.getIpaddr()) && StringUtils.equals(userName, user.getUsername())) {
+//                    userOnlineList.add(userOnlineService.selectOnlineByInfo(ipaddr, userName, user));
+//                }
+                if (StringUtils.equals(ipaddr, user.getIpaddr()) && user.getUsername().contains(userName)) {
+                    userOnlineList.add(userOnlineService.loginUserToUserOnline(user));
                 }
-            }
-            else if (StringUtils.isNotEmpty(ipaddr))
-            {
-                if (StringUtils.equals(ipaddr, user.getIpaddr()))
-                {
-                    userOnlineList.add(userOnlineService.selectOnlineByIpaddr(ipaddr, user));
+            } else if (StringUtils.isNotEmpty(ipaddr)) {
+//                if (StringUtils.equals(ipaddr, user.getIpaddr())) {
+//                    userOnlineList.add(userOnlineService.selectOnlineByIpaddr(ipaddr, user));
+//                }
+                if (StringUtils.equals(ipaddr, user.getIpaddr())) {
+                    userOnlineList.add(userOnlineService.loginUserToUserOnline(user));
                 }
-            }
-            else if (StringUtils.isNotEmpty(userName) && StringUtils.isNotNull(user.getUser())) {
-                if (StringUtils.equals(userName, user.getUsername())) {
-                    userOnlineList.add(userOnlineService.selectOnlineByUserName(userName, user));
+            } else if (StringUtils.isNotEmpty(userName)) {
+//                if(StringUtils.isNotNull(user.getUser())) {
+//                    if (StringUtils.equals(userName, user.getUsername())) {
+//                        userOnlineList.add(userOnlineService.selectOnlineByUserName(userName, user));
+//                    }
+//                }
+                if (user.getUsername().contains(userName)) {
+                    userOnlineList.add(userOnlineService.loginUserToUserOnline(user));
                 }
             } else {
                 userOnlineList.add(userOnlineService.loginUserToUserOnline(user));

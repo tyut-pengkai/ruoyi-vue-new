@@ -12,7 +12,10 @@ import com.ruoyi.common.enums.BindType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.enums.UserStatus;
 import com.ruoyi.common.exception.ApiException;
-import com.ruoyi.common.utils.*;
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.MessageUtils;
+import com.ruoyi.common.utils.ServletUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
@@ -25,7 +28,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Objects;
 
 @Slf4j
 @Component
@@ -67,19 +69,7 @@ public class SysAppLoginService {
         String appVersionStr = appVersion.getVersionShow();
         SysUser user = userService.selectUserByUserName(username);
         try {
-            if (StringUtils.isNull(user)) {
-                log.info("登录账号：{} 不存在.", username);
-                throw new ApiException(ErrorCode.ERROR_ACCOUNT_NOT_EXIST, "账号：" + username + " 不存在");
-            } else if (UserStatus.DELETED.getCode().equals(user.getDelFlag())) {
-                log.info("登录账号：{} 已被删除.", username);
-                throw new ApiException(ErrorCode.ERROR_ACCOUNT_NOT_EXIST, "账号：" + username + " 已被删除");
-            } else if (UserStatus.DISABLE.getCode().equals(user.getStatus())) {
-                log.info("登录账号：{} 已被停用.", username);
-                throw new ApiException(ErrorCode.ERROR_ACCOUNT_LOCKED, "账号：" + username + " 已停用");
-            } else if (!SecurityUtils.matchesPassword(password, user.getPassword())) {
-                log.info("登录账号：{} 账号或密码错误.", username);
-                throw new ApiException(ErrorCode.ERROR_USERNAME_OR_PASSWORD_ERROR, "账号或密码错误");
-            }
+            validUtils.checkUser(username, password, user);
             appUser = appUserService.selectSysAppUserByAppIdAndUserId(app.getAppId(), user.getUserId());
             if (appUser == null) { // 首次登录
                 appUser = new SysAppUser();
@@ -125,8 +115,8 @@ public class SysAppLoginService {
                     deviceCodeService.insertSysDeviceCode(deviceCode);
                 } else {
                     if (UserStatus.DISABLE.getCode().equals(deviceCode.getStatus())) {
-                        log.info("账号设备：{} 已被停用.", deviceCodeStr);
-                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "账号设备：" + deviceCodeStr + " 已停用");
+                        log.info("用户设备：{} 已被停用所有软件.", deviceCodeStr);
+                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCodeStr + " 已被停用所有软件");
                     }
                 }
                 appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
@@ -149,8 +139,8 @@ public class SysAppLoginService {
                     appUserDeviceCodeService.insertSysAppUserDeviceCode(appUserDeviceCode);
                 } else {
                     if (UserStatus.DISABLE.getCode().equals(appUserDeviceCode.getStatus())) {
-                        log.info("用户设备：{} 已被停用.", deviceCodeStr);
-                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCodeStr + " 已停用");
+                        log.info("用户设备：{} 已被停用当前软件.", deviceCodeStr);
+                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCodeStr + " 已被停用当前软件");
                     }
                 }
             }
@@ -199,22 +189,7 @@ public class SysAppLoginService {
         SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
         String loginCodeShow = "[单码]" + loginCodeStr;
         try {
-            if (StringUtils.isNull(loginCode)) {
-                log.info("单码：{} 不存在.", loginCodeStr);
-                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST, "单码：" + loginCodeStr + " 不存在");
-            } /*else if (UserStatus.DELETED.getCode().equals(loginCode.getDelFlag())) {
-                log.info("单码：{} 已被删除.", loginCodeStr);
-                throw new ApiException(ErrorCode.ERROR_LOGINCODE_NOT_EXIST, "单码：" + loginCodeStr + " 已被删除");
-            }*/ else if (UserStatus.DISABLE.getCode().equals(loginCode.getStatus())) {
-                log.info("单码：{} 已被停用.", loginCodeStr);
-                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_LOCKED, "单码：" + loginCodeStr + " 已停用");
-            } else if (loginCode.getExpireTime().before(DateUtils.getNowDate())) {
-                String expiredTime = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, loginCode.getExpireTime());
-                log.info("单码：{} 有效期至：{}，现已过期", loginCodeStr, expiredTime);
-                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_EXPIRED, "单码：" + loginCodeStr + " 有效期至：" + expiredTime + "，现已过期");
-            } else if (!Objects.equals(loginCode.getAppId(), app.getAppId())) {
-                throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_APP_MISMATCH, "单码：" + loginCodeStr + " 与软件：" + app.getAppName() + "不匹配");
-            }
+            validUtils.checkLoginCode(app, loginCodeStr, loginCode);
             appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(app.getAppId(), loginCodeStr);
             if (appUser == null) { // 首次登录
                 appUser = new SysAppUser();
@@ -266,8 +241,8 @@ public class SysAppLoginService {
                     deviceCodeService.insertSysDeviceCode(deviceCode);
                 } else {
                     if (UserStatus.DISABLE.getCode().equals(deviceCode.getStatus())) {
-                        log.info("账号设备：{} 已被停用.", deviceCodeStr);
-                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "账号设备：" + deviceCodeStr + " 已停用");
+                        log.info("用户设备：{} 已被停用所有软件.", deviceCodeStr);
+                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCodeStr + " 已被停用所有软件");
                     }
                 }
                 appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
@@ -290,8 +265,8 @@ public class SysAppLoginService {
                     appUserDeviceCodeService.insertSysAppUserDeviceCode(appUserDeviceCode);
                 } else {
                     if (UserStatus.DISABLE.getCode().equals(appUserDeviceCode.getStatus())) {
-                        log.info("用户设备：{} 已被停用.", deviceCodeStr);
-                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCodeStr + " 已停用");
+                        log.info("用户设备：{} 已被停用当前软件.", deviceCodeStr);
+                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCodeStr + " 已被停用当前软件");
                     }
                 }
             }

@@ -158,14 +158,14 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      * @return
      */
     @Override
-    public String quickAccess(MultipartFile file, Long versionId, boolean updateMd5, boolean signApk) {
+    public String quickAccess(MultipartFile file, Long versionId, boolean updateMd5, String apkOper) {
         try {
             // 封装
             String originalFilename = file.getOriginalFilename();
             byte[] bytes = file.getBytes();
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(versionId);
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
-            QuickAccessResultVo result = quickAccessHandle(bytes, version, originalFilename, signApk);
+            QuickAccessResultVo result = quickAccessHandle(bytes, version, originalFilename, apkOper);
             bytes = result.getBytes();
             // 生成文件
             String remark = "";
@@ -211,7 +211,14 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         return null;
     }
 
-    private QuickAccessResultVo quickAccessHandle(byte[] bytes, SysAppVersion version, String filename, boolean signApk) {
+    /**
+     * @param bytes
+     * @param version
+     * @param filename
+     * @param apkOper  1注入并加签 2仅注入 3仅加签
+     * @return
+     */
+    private QuickAccessResultVo quickAccessHandle(byte[] bytes, SysAppVersion version, String filename, String apkOper) {
         try {
             log.info("正在快速接入" + filename);
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
@@ -244,10 +251,13 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                 return result;
             } else if(filename.endsWith(".apk")) {
                 QuickAccessResultVo result = new QuickAccessResultVo();
-                log.info("正在整合apk");
-                byte[] injectedApk = QuickAccessApkUtil.doProcess(bytes, apvStr);
-                log.info("整合apk完毕");
-                if(signApk) { // 签名
+                byte[] injectedApk = bytes;
+                if ("1".equals(apkOper) || "2".equals(apkOper)) {
+                    log.info("正在注入apk");
+                    injectedApk = QuickAccessApkUtil.doProcess(bytes, apvStr);
+                    log.info("注入apk完毕");
+                }
+                if ("1".equals(apkOper) || "3".equals(apkOper)) { // 签名
                     log.info("正在apk签名");
                     try {
                         File tempFileUnsigned = File.createTempFile("hyQuickAccessApkTempFileUnsigned" + System.currentTimeMillis(), null);

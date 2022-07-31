@@ -47,19 +47,18 @@
 
     <select id="selectSysAppVersionList" parameterType="SysAppVersion" resultMap="SysAppVersionResult">
         <include refid="selectSysAppVersionVo"/>
-        <where>
-            <if test="appId != null ">and app_id = #{appId}</if>
-            <if test="versionName != null  and versionName != ''">and version_name like concat('%', #{versionName},
-                '%')
-            </if>
-            <if test="versionNo != null ">and version_no = #{versionNo}</if>
-            <if test="status != null  and status != ''">and status = #{status}</if>
-            <if test="md5 != null  and md5 != ''">and md5 like concat('%', #{md5}, '%')</if>
-            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
-                and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
-            </if>
-            <if test="checkMd5 != null and checkMd5 != ''">and check_md5 = #{checkMd5}</if>
-        </where>
+        where del_flag = '0'
+        <if test="appId != null ">and app_id = #{appId}</if>
+        <if test="versionName != null  and versionName != ''">and version_name like concat('%', #{versionName},
+            '%')
+        </if>
+        <if test="versionNo != null ">and version_no = #{versionNo}</if>
+        <if test="status != null  and status != ''">and status = #{status}</if>
+        <if test="md5 != null  and md5 != ''">and md5 like concat('%', #{md5}, '%')</if>
+        <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
+            and create_time between #{params.beginCreateTime} and #{params.endCreateTime}
+        </if>
+        <if test="checkMd5 != null and checkMd5 != ''">and check_md5 = #{checkMd5}</if>
     </select>
 
     <select id="selectSysAppVersionByAppVersionId" parameterType="Long" resultMap="SysAppVersionResult">
@@ -77,6 +76,8 @@
         FROM sys_app_version v1
                  INNER JOIN sys_app_version v2 ON v1.app_id = v2.app_id
         WHERE v1.app_id = #{appId}
+          AND v2.STATUS = 0
+          AND v2.del_flag = 0
         GROUP BY v1.version_no
         HAVING v1.version_no = max(v2.version_no)
     </select>
@@ -86,6 +87,8 @@
         FROM sys_app_version v1
                  INNER JOIN sys_app_version v2 ON v1.app_id = v2.app_id
         WHERE v1.app_id = #{appId}
+          AND v2.STATUS = 0
+          AND v2.del_flag = 0
           AND v2.force_update = 'Y'
         GROUP BY v1.version_no
         HAVING v1.version_no = max(v2.version_no)
@@ -154,15 +157,28 @@
         where app_version_id = #{appVersionId}
     </update>
 
+    <!--    <delete id="deleteSysAppVersionByAppVersionId" parameterType="Long">-->
+    <!--        delete-->
+    <!--        from sys_app_version-->
+    <!--        where app_version_id = #{appVersionId}-->
+    <!--    </delete>-->
+
+    <!--    <delete id="deleteSysAppVersionByAppVersionIds" parameterType="String">-->
+    <!--        delete from sys_app_version where app_version_id in-->
+    <!--        <foreach item="appVersionId" collection="array" open="(" separator="," close=")">-->
+    <!--            #{appVersionId}-->
+    <!--        </foreach>-->
+    <!--    </delete>-->
+
     <delete id="deleteSysAppVersionByAppVersionId" parameterType="Long">
-        delete
-        from sys_app_version
+        update sys_app_version
+        set del_flag = '2'
         where app_version_id = #{appVersionId}
     </delete>
 
     <delete id="deleteSysAppVersionByAppVersionIds" parameterType="String">
-        delete from sys_app_version where app_version_id in
-        <foreach item="appVersionId" collection="array" open="(" separator="," close=")">
+        update sys_app_version set del_flag = '2' where app_version_id in
+        <foreach collection="array" item="appVersionId" open="(" separator="," close=")">
             #{appVersionId}
         </foreach>
     </delete>

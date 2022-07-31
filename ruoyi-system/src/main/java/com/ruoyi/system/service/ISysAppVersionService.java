@@ -87,5 +87,5 @@ public interface ISysAppVersionService {
      * @param versionId
      * @return
      */
-    public String quickAccess(MultipartFile file, Long versionId, boolean updateMd5, boolean signApk);
+    public String quickAccess(MultipartFile file, Long versionId, boolean updateMd5, String apkOper);
 }

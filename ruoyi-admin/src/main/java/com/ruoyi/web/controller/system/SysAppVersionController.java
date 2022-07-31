@@ -102,7 +102,7 @@ public class SysAppVersionController extends BaseController {
     @Log(title = "快速接入", businessType = BusinessType.QUICK_ACCESS)
     // @PreAuthorize("@ss.hasPermi('system:user:import')")
     @PostMapping("/quickAccess")
-    public AjaxResult quickAccess(MultipartFile file, Long versionId, boolean updateMd5, boolean signApk) {
-        return AjaxResult.success(sysAppVersionService.quickAccess(file, versionId, updateMd5, signApk));
+    public AjaxResult quickAccess(MultipartFile file, Long versionId, boolean updateMd5, String apkOper) {
+        return AjaxResult.success(sysAppVersionService.quickAccess(file, versionId, updateMd5, apkOper));
     }
 }

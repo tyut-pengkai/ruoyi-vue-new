@@ -138,7 +138,6 @@
 			<!-- 数据范围过滤 -->
 			${params.dataScope}
 		</if>
-
 	</select>
 
     <select id="selectSysAppByAppId" parameterType="Long" resultMap="SysAppResult">

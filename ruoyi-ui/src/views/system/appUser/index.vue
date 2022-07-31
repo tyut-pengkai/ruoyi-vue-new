@@ -959,13 +959,12 @@ export default {
       this.$modal
         .confirm(
           "确认要" +
-            text +
-            '"' +
-            row.user.nickName +
-            "(" +
-            row.user.userName +
-            ")" +
-            '"吗？'
+          text +
+          '"' +
+          (row.user
+            ? row.user.nickName + "(" + row.user.userName + ")"
+            : row.loginCode) +
+          '"吗？'
         )
         .then(function () {
           return changeAppUserStatus(row.appUserId, row.status);

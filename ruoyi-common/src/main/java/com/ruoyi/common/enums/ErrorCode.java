@@ -35,6 +35,7 @@ public enum ErrorCode {
     ERROR_APP_USER_NOT_EXIST(400090014, "软件用户不存在"),
     ERROR_REGISTER_FAILED(400090015, "注册账号失败"),
     ERROR_DEVICE_CODE_NOT_EXIST(400090016, "设备码不存在"),
+    ERROR_LOGIN_USER_APP_MISMATCH(400090017, "当前登录的软件与接口所在软件不匹配"),
 
     // 400090200~400090999 业务相关
     ERROR_CARD_NOT_EXIST(400090201, "充值卡不存在"),

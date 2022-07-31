@@ -13,18 +13,18 @@ import com.ruoyi.api.v1.utils.encrypt.AesCbcZeroPaddingUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.core.domain.entity.SysApp;
-import com.ruoyi.common.core.domain.entity.SysAppVersion;
+import com.ruoyi.common.core.domain.entity.*;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.ErrorCode;
+import com.ruoyi.common.enums.UserStatus;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.license.anno.LicenceCheck;
 import com.ruoyi.framework.web.service.TokenService;
-import com.ruoyi.system.service.ISysAppService;
-import com.ruoyi.system.service.ISysAppVersionService;
+import com.ruoyi.system.domain.SysLoginCode;
+import com.ruoyi.system.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -42,7 +42,7 @@ public class ApiV1Controller extends BaseController {
     @Resource
     private ISysAppService appService;
     @Resource
-    private ISysAppVersionService appVersionService;
+    private ISysAppUserService appUserService;
     @Resource
     private SysAppLoginService loginService;
     @Resource
@@ -51,6 +51,14 @@ public class ApiV1Controller extends BaseController {
     private SwaggerService swaggerService;
     @Resource
     private TokenService tokenService;
+    @Resource
+    private ISysLoginCodeService loginCodeService;
+    @Resource
+    private ISysDeviceCodeService deviceCodeService;
+    @Resource
+    private ISysAppUserDeviceCodeService appUserDeviceCodeService;
+    @Resource
+    private ISysUserService userService;
 
     @GetMapping("/swagger")
     @ApiIgnore
@@ -102,6 +110,48 @@ public class ApiV1Controller extends BaseController {
             LoginUser loginUser = tokenService.getLoginUser(request);
             if (loginUser == null) {
                 throw new ApiException(ErrorCode.ERROR_UNAUTHORIZED);
+            }
+            // 检测用户状态是否正常
+            if (loginUser.getIfApp()) {
+                // 检查用户是否是当前软件的用户
+                if (!loginUser.getAppUser().getAppId().equals(app.getAppId())) {
+                    throw new ApiException(ErrorCode.ERROR_LOGIN_USER_APP_MISMATCH);
+                }
+                // 检查用户是否过期
+                SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUser().getAppUserId());
+                validUtils.checkAppUserIsExpired(app, appUser);
+                // 检查用户是否被封禁
+                if (loginUser.getApp().getAuthType() == AuthType.ACCOUNT) {
+                    Long userId = loginUser.getUser().getUserId();
+                    SysUser user = userService.selectUserById(userId);
+                    validUtils.checkUser(loginUser.getUsername(), user);
+                } else if (app.getAuthType() == AuthType.LOGIN_CODE) {
+                    String loginCodeStr = loginUser.getAppUser().getLoginCode();
+                    SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
+                    validUtils.checkLoginCode(app, loginCodeStr, loginCode);
+                }
+                // 检查软件用户是否被封禁
+                if (UserStatus.DISABLE.getCode().equals(appUser.getStatus())) {
+                    if (app.getAuthType() == AuthType.ACCOUNT) {
+                        throw new ApiException(ErrorCode.ERROR_APP_USER_LOCKED, "用户：" + appUser.getUserName() + " 已停用");
+                    } else if (app.getAuthType() == AuthType.LOGIN_CODE) {
+                        throw new ApiException(ErrorCode.ERROR_APP_USER_LOCKED, "单码：" + appUser.getLoginCode() + " 已停用");
+                    }
+                }
+                // 检查用户设备是否被禁用
+                SysDeviceCode deviceCode = loginUser.getDeviceCode();
+                if (deviceCode != null && StringUtils.isNotBlank(deviceCode.getDeviceCode())) {
+                    SysDeviceCode code = deviceCodeService.selectSysDeviceCodeByDeviceCode(deviceCode.getDeviceCode());
+                    if (UserStatus.DISABLE.getCode().equals(code.getStatus())) {
+                        log.info("用户设备：{} 已被停用所有软件.", deviceCode.getDeviceCode());
+                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCode.getDeviceCode() + " 已被停用所有软件");
+                    }
+                    SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
+                    if (UserStatus.DISABLE.getCode().equals(appUserDeviceCode.getStatus())) {
+                        log.info("用户设备：{} 已被停用当前软件.", deviceCode.getDeviceCode());
+                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCode.getDeviceCode() + " 已被停用当前软件");
+                    }
+                }
             }
         }
         validUtils.apiCheck(api, app, params, apii.isCheckToken());

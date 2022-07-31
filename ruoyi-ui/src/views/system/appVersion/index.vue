@@ -367,9 +367,20 @@
         :closable="false"
         show-icon
         style="margin-bottom: 10px"
-        title="快速接入安全性较低，不建议生产环境使用，主要用于开发者临时接单需要快速接入快速测试的场景，接入软件大小建议小于20M，目前可支持[全部模式]的exe接入与[单码计时]模式的apk接入"
         type="info"
       >
+        <template slot="title">
+          <span
+          >快速接入安全性较低，不建议生产环境使用。
+            <el-tooltip placement="top">
+              <div slot="content">
+                本功能主要用于开发者临时接单需要快速接入快速测试的场景，接入软件建议小于20M<br/>目前可支持
+                [全部模式] 的exe接入与 [单码计时] 模式的apk接入
+              </div>
+              <el-link type="primary">更多</el-link>
+            </el-tooltip>
+          </span>
+        </template>
       </el-alert>
       <el-upload
         ref="upload"
@@ -379,8 +390,8 @@
           upload.quickAccessVersionId +
           '&updateMd5=' +
           upload.updateMd5 +
-          '&signApk=' +
-          upload.signApk
+          '&apkOper=' +
+          upload.apkOper
         "
         :auto-upload="false"
         :disabled="upload.isUploading"
@@ -391,21 +402,54 @@
         :on-success="handleFileSuccess"
         accept=".apk,.exe"
         drag
+        :on-change="handleFileOnChange"
       >
         <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__text">
+          仅允许拖入或<em>点击上传</em>exe或apk格式文件
+        </div>
         <div slot="tip" class="el-upload__tip text-center">
-          <span style="margin-top: 5px">允许导入exe或apk格式文件。</span>
-          <br />
-          <div slot="tip" class="el-upload__tip">
-            <el-checkbox v-model="upload.updateMd5" />
-            是否更新MD5<br />(仅exe生效，会在已有MD5信息基础上累加)
+          <!-- <span style="margin-top: 5px">允许导入exe或apk格式文件。</span> -->
+          <div v-show="showExe" slot="tip" class="el-upload__tip">
+            <el-checkbox v-model="upload.updateMd5"/>
+            <span>是否更新MD5</span>
+            <span style="margin-left: 15px">
+              <el-tooltip
+                content="仅exe生效，会在已有MD5信息基础上累加"
+                placement="top"
+              >
+                <i
+                  class="el-icon-question"
+                  style="margin-left: -12px; margin-right: 10px"
+                ></i>
+              </el-tooltip>
+            </span>
           </div>
-          <div slot="tip" class="el-upload__tip">
-            <el-checkbox v-model="upload.signApk" />
-            是否签名APK<br />(仅apk生效，建议将生成的apk加固后再发布)
+          <div v-show="showApk" slot="tip" class="el-upload__tip">
+            <span style="margin-right: 10px">接入类别</span>
+            <el-select v-model="upload.apkOper" placeholder="请选择接入类别">
+              <el-option
+                v-for="item in apkOperOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+            <span style="margin-left: 15px">
+              <el-tooltip
+                content="仅apk生效，建议将生成的apk加固后再发布"
+                placement="top"
+              >
+                <i
+                  class="el-icon-question"
+                  style="margin-left: -12px; margin-right: 10px"
+                ></i>
+              </el-tooltip>
+            </span>
+            <!-- <el-checkbox v-model="upload.signApk" />
+            是否签名APK<br />(仅apk生效，建议将生成的apk加固后再发布) -->
           </div>
-          <br />
           <!-- <el-link
             type="primary"
             :underline="false"
@@ -529,7 +573,7 @@ export default {
         // 是否禁用上传
         isUploading: false,
         // 设置上传的请求头部
-        headers: { Authorization: "Bearer " + getToken() },
+        headers: {Authorization: "Bearer " + getToken()},
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/system/appVersion/quickAccess",
         // 当前操作的版本ID
@@ -537,7 +581,7 @@ export default {
         // 是否自动更新MD5
         updateMd5: true,
         // 是否自动APK签名
-        signApk: true,
+        apkOper: "1",
       },
       fileDown: {
         //弹出框控制的状态
@@ -547,6 +591,22 @@ export default {
         //取消下载时的资源对象
         source: {},
       },
+      apkOperOptions: [
+        {
+          value: "1",
+          label: "注入并加签",
+        },
+        {
+          value: "2",
+          label: "仅注入",
+        },
+        {
+          value: "3",
+          label: "仅加签",
+        },
+      ],
+      showExe: false,
+      showApk: false,
     };
   },
   created() {
@@ -719,6 +779,25 @@ export default {
       //   this.$message.error("上传文件大小不能超过 20MB!");
       // }
       // return isLt1M;
+    },
+    // 添加文件
+    handleFileOnChange(file, fileList) {
+      if (file && file.name) {
+        String.prototype.endWith = function (endStr) {
+          var d = this.length - endStr.length;
+          return d >= 0 && this.lastIndexOf(endStr) == d;
+        };
+        if (file.name.endWith(".exe")) {
+          this.showExe = true;
+          this.showApk = false;
+        } else if (file.name.endWith(".apk")) {
+          this.showApk = true;
+          this.showExe = false;
+        }
+      } else {
+        this.showApk = false;
+        this.showExe = false;
+      }
     },
     downFile(name) {
       //这里放参数

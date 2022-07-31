@@ -12,10 +12,12 @@ import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.license.bo.LicenseCheckModel;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.TokenService;
+import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
 import com.ruoyi.system.service.ISysAppVersionService;
 import lombok.extern.slf4j.Slf4j;
@@ -374,6 +376,54 @@ public class ValidUtils {
         Integer maxOnline = ((LicenseCheckModel) Constants.LICENSE_CONTENT.getExtra()).getMaxOnline();
         if (maxOnline != -1 && onlineAppUser.size() >= maxOnline) {
             throw new ApiException("当前在线人数已超出授权上限，请联系管理员升级授权或稍后再试");
+        }
+    }
+
+    public void checkUser(String username, String password, SysUser user) {
+        if (StringUtils.isNull(user)) {
+            log.info("登录账号：{} 不存在.", username);
+            throw new ApiException(ErrorCode.ERROR_ACCOUNT_NOT_EXIST, "账号：" + username + " 不存在");
+        } else if (UserStatus.DELETED.getCode().equals(user.getDelFlag())) {
+            log.info("登录账号：{} 已被删除.", username);
+            throw new ApiException(ErrorCode.ERROR_ACCOUNT_NOT_EXIST, "账号：" + username + " 已被删除");
+        } else if (UserStatus.DISABLE.getCode().equals(user.getStatus())) {
+            log.info("登录账号：{} 已被停用.", username);
+            throw new ApiException(ErrorCode.ERROR_ACCOUNT_LOCKED, "账号：" + username + " 已停用");
+        } else if (!SecurityUtils.matchesPassword(password, user.getPassword())) {
+            log.info("登录账号：{} 账号或密码错误.", username);
+            throw new ApiException(ErrorCode.ERROR_USERNAME_OR_PASSWORD_ERROR, "账号或密码错误");
+        }
+    }
+
+    public void checkUser(String username, SysUser user) {
+        if (StringUtils.isNull(user)) {
+            log.info("登录账号：{} 不存在.", username);
+            throw new ApiException(ErrorCode.ERROR_ACCOUNT_NOT_EXIST, "账号：" + username + " 不存在");
+        } else if (UserStatus.DELETED.getCode().equals(user.getDelFlag())) {
+            log.info("登录账号：{} 已被删除.", username);
+            throw new ApiException(ErrorCode.ERROR_ACCOUNT_NOT_EXIST, "账号：" + username + " 已被删除");
+        } else if (UserStatus.DISABLE.getCode().equals(user.getStatus())) {
+            log.info("登录账号：{} 已被停用.", username);
+            throw new ApiException(ErrorCode.ERROR_ACCOUNT_LOCKED, "账号：" + username + " 已停用");
+        }
+    }
+
+    public void checkLoginCode(SysApp app, String loginCodeStr, SysLoginCode loginCode) {
+        if (StringUtils.isNull(loginCode)) {
+            log.info("单码：{} 不存在.", loginCodeStr);
+            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST, "单码：" + loginCodeStr + " 不存在");
+        } else if (UserStatus.DELETED.getCode().equals(loginCode.getDelFlag())) {
+            log.info("单码：{} 已被删除.", loginCodeStr);
+            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST, "单码：" + loginCodeStr + " 已被删除");
+        } else if (UserStatus.DISABLE.getCode().equals(loginCode.getStatus())) {
+            log.info("单码：{} 已被停用.", loginCodeStr);
+            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_LOCKED, "单码：" + loginCodeStr + " 已停用");
+        } else if (loginCode.getExpireTime().before(DateUtils.getNowDate())) {
+            String expiredTime = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, loginCode.getExpireTime());
+            log.info("单码：{} 有效期至：{}，现已过期", loginCodeStr, expiredTime);
+            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_EXPIRED, "单码：" + loginCodeStr + " 有效期至：" + expiredTime + "，现已过期");
+        } else if (!Objects.equals(loginCode.getAppId(), app.getAppId())) {
+            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_APP_MISMATCH, "单码：" + loginCodeStr + " 与软件：" + app.getAppName() + "不匹配");
         }
     }
 
