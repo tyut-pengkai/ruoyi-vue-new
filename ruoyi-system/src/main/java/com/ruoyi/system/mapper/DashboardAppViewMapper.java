@@ -96,7 +96,7 @@ public interface DashboardAppViewMapper {
             "FROM\n" +
             "\tsys_card c \n" +
             "WHERE\n" +
-            "\tc.create_time BETWEEN #{start} AND #{end} and c.is_charged = 'Y'")
+            "\tc.charge_time BETWEEN #{start} AND #{end} and c.is_charged = 'Y'")
     int queryCardActiveBetween(@Param("start") String start, @Param("end") String end);
 
     @Select("SELECT\n" +
@@ -112,7 +112,7 @@ public interface DashboardAppViewMapper {
             "FROM\n" +
             "\tsys_login_code c \n" +
             "WHERE\n" +
-            "\tc.create_time BETWEEN #{start} AND #{end} and c.is_charged = 'Y'")
+            "\tc.charge_time BETWEEN #{start} AND #{end} and c.is_charged = 'Y'")
     int queryLoginCodeActiveBetween(@Param("start") String start, @Param("end") String end);
 
     @Select("SELECT\n" +

@@ -35,6 +35,8 @@ public interface ISysLoginCodeService {
      */
     public List<SysLoginCode> selectSysLoginCodeList(SysLoginCode SysLoginCode);
 
+    public int countSysLoginCode(SysLoginCode SysLoginCode);
+
     /**
      * 新增单码
      *

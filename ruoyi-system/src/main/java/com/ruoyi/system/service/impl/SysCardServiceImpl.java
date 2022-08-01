@@ -60,6 +60,12 @@ public class SysCardServiceImpl implements ISysCardService
         return sysCardMapper.selectSysCardList(sysCard);
     }
 
+    @Override
+    @DataScope(deptAlias = "d", userAlias = "u")
+    public int countSysCard(SysCard sysCard) {
+        return sysCardMapper.countSysCard(sysCard);
+    }
+
     /**
      * 查询卡密列表
      *

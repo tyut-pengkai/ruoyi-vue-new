@@ -13,7 +13,8 @@ export function getDashboardInfoSaleView(query) {
   return request({
     url: '/common/dashboardInfoSaleView',
     method: 'get',
-    params: query
+    params: query,
+    timeout: 30000
   })
 }
 
@@ -22,6 +23,7 @@ export function getDashboardInfoAppView(query) {
   return request({
     url: '/common/dashboardInfoAppView',
     method: 'get',
-    params: query
+    params: query,
+    timeout: 30000
   })
 }

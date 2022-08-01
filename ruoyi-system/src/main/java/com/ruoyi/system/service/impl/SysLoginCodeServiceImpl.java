@@ -59,6 +59,12 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
         return SysLoginCodeMapper.selectSysLoginCodeList(SysLoginCode);
     }
 
+    @Override
+    @DataScope(deptAlias = "d", userAlias = "u")
+    public int countSysLoginCode(SysLoginCode SysLoginCode) {
+        return SysLoginCodeMapper.countSysLoginCode(SysLoginCode);
+    }
+
     /**
      * 新增单码
      *

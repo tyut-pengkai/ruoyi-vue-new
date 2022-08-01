@@ -35,6 +35,8 @@ public interface ISysCardService {
      */
     public List<SysCard> selectSysCardList(SysCard sysCard);
 
+    public int countSysCard(SysCard sysCard);
+
     /**
      * 查询卡密列表
      *

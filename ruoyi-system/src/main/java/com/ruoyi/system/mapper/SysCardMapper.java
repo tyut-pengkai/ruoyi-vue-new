@@ -37,9 +37,11 @@ public interface SysCardMapper {
      */
     public List<SysCard> selectSysCardList(SysCard sysCard);
 
+    public int countSysCard(SysCard sysCard);
+
     /**
      * 新增卡密
-     * 
+     *
      * @param sysCard 卡密
      * @return 结果
      */

@@ -593,30 +593,30 @@ public class CommonController {
         int onlineTotal = onlineUserList.size();
         map.put("onlineTotal", onlineTotal);
         // 平台充值卡数量
-        int cardTotal = sysCardService.selectSysCardList(new SysCard()).size();
+        int cardTotal = sysCardService.countSysCard(new SysCard());
         map.put("cardTotal", cardTotal);
         // 平台已激活充值卡数量
         SysCard cardActiveObj = new SysCard();
         cardActiveObj.setIsCharged("Y");
-        int cardActive = sysCardService.selectSysCardList(cardActiveObj).size();
+        int cardActive = sysCardService.countSysCard(cardActiveObj);
         map.put("cardActive", cardActive);
         // 平台未激活充值卡数量
         SysCard cardNoActiveObj = new SysCard();
         cardNoActiveObj.setIsCharged("N");
-        int cardNoActive = sysCardService.selectSysCardList(cardNoActiveObj).size();
+        int cardNoActive = sysCardService.countSysCard(cardNoActiveObj);
         map.put("cardNoActive", cardNoActive);
         // 平台登录码数量
-        int loginCodeTotal = sysLoginCodeService.selectSysLoginCodeList(new SysLoginCode()).size();
+        int loginCodeTotal = sysLoginCodeService.countSysLoginCode(new SysLoginCode());
         map.put("loginCodeTotal", loginCodeTotal);
         // 平台已激活登录码数量
         SysLoginCode loginCodeActiveObj = new SysLoginCode();
         loginCodeActiveObj.setIsCharged("Y");
-        int loginCodeActive = sysLoginCodeService.selectSysLoginCodeList(loginCodeActiveObj).size();
+        int loginCodeActive = sysLoginCodeService.countSysLoginCode(loginCodeActiveObj);
         map.put("loginCodeActive", loginCodeActive);
         // 平台未激活登录码数量
         SysLoginCode loginCodeNoActiveObj = new SysLoginCode();
         loginCodeNoActiveObj.setIsCharged("N");
-        int loginCodeNoActive = sysLoginCodeService.selectSysLoginCodeList(loginCodeNoActiveObj).size();
+        int loginCodeNoActive = sysLoginCodeService.countSysLoginCode(loginCodeNoActiveObj);
         map.put("loginCodeNoActive", loginCodeNoActive);
         // 各个软件
         List<Map<String, Object>> mapListAppUser = appViewMapper.queryAppUser();
