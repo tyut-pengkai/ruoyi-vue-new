@@ -121,6 +121,7 @@ public class SysUserOnlineController extends BaseController {
     @DeleteMapping("/{tokenId}")
     public AjaxResult forceLogout(@PathVariable String tokenId) {
         redisCache.deleteObject(Constants.LOGIN_TOKEN_KEY + tokenId);
+        Constants.LAST_ERROR_REASON_MAP.put(tokenId, "您已被系统强制下线");
         return AjaxResult.success();
     }
 }

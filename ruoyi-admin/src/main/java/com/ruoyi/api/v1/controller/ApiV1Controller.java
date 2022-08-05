@@ -11,6 +11,7 @@ import com.ruoyi.api.v1.service.SysAppLoginService;
 import com.ruoyi.api.v1.utils.ValidUtils;
 import com.ruoyi.api.v1.utils.encrypt.AesCbcZeroPaddingUtil;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.*;
@@ -112,7 +113,15 @@ public class ApiV1Controller extends BaseController {
         if (apii.isCheckToken()) {
             LoginUser loginUser = tokenService.getLoginUser(request);
             if (loginUser == null || !loginUser.getIfApp()) {
-                throw new ApiException(ErrorCode.ERROR_UNAUTHORIZED);
+                String token = tokenService.getToken(request);
+                String uuid = tokenService.tokenToUuid(token);
+                if (Constants.LAST_ERROR_REASON_MAP.containsKey(uuid)) {
+                    String tip = Constants.LAST_ERROR_REASON_MAP.get(uuid);
+//                    Constants.LAST_ERROR_REASON_MAP.remove(uuid);
+                    throw new ApiException(ErrorCode.ERROR_UNAUTHORIZED, tip);
+                } else {
+                    throw new ApiException(ErrorCode.ERROR_UNAUTHORIZED);
+                }
             }
             // 检测用户状态是否正常
             if (loginUser.getIfApp()) {

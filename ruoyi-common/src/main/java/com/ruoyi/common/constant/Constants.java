@@ -4,7 +4,9 @@ import de.schlichtherle.license.LicenseContent;
 import de.schlichtherle.util.ObfuscatedString;
 import io.jsonwebtoken.Claims;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 通用常量信息
@@ -12,19 +14,22 @@ import java.util.List;
  * @author ruoyi
  */
 public class Constants {
+
+    /**
+     * 记录软件用户下线原因，key为token
+     */
+    public static final Map<String, String> LAST_ERROR_REASON_MAP = new HashMap<>();
+
     /**
      * 密钥库密码
      */
     public static final String STORE_PASS = new ObfuscatedString(new long[]{0x61FCA6F12D0B529BL, 0xEB31834955913DAL, 0x162A9C12A2B377EEL}).toString() /* => "Rly*05wtyapVZAft" */;
 
     /**
-     *
-     */
-
-    /**
      * 服务器机器码
      */
     public static String SERVER_SN;
+
     /**
      * IP列表
      */

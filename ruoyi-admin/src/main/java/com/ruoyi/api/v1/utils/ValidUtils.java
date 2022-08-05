@@ -389,6 +389,7 @@ public class ValidUtils {
                 loginUser.getApp().getAppName(), loginUser.getAppVersion().getVersionShow(),
                 loginUser.getDeviceCode() != null ? loginUser.getDeviceCode().getDeviceCode() : null,
                 Constants.LOGOUT, "系统强制退出：" + msg));
+        Constants.LAST_ERROR_REASON_MAP.put(loginUser.getToken(), "您的账号/登录码在其他设备上登录");
     }
 
     public void checkLicenseMaxOnline() {
