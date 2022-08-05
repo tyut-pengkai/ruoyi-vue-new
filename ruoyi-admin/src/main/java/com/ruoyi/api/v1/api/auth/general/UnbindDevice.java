@@ -7,6 +7,7 @@ import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ErrorCode;
@@ -39,8 +40,12 @@ public class UnbindDevice extends Function {
     @Override
     @Transactional(noRollbackFor = ApiException.class, rollbackFor = Exception.class)
     public Object handle() {
+        LoginUser loginUser = getLoginUser();
+        if (loginUser.getIfTrial()) {
+            throw new ApiException(ErrorCode.ERROR_TRIAL_USER_NOT_ALLOWED);
+        }
         // 解绑
-        SysAppUserDeviceCode appUserDeviceCode = getLoginUser().getAppUserDeviceCode();
+        SysAppUserDeviceCode appUserDeviceCode = loginUser.getAppUserDeviceCode();
         if (appUserDeviceCode == null) {
             return "成功";
         }
@@ -52,7 +57,7 @@ public class UnbindDevice extends Function {
             return "成功";
         }
         boolean enableNegative = Convert.toBool(this.getParams().get("enableNegative"), false);
-        SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(getLoginUser().getAppUser().getAppUserId());
+        SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUser().getAppUserId());
         if (this.getApp().getBillType() == BillType.TIME) {
             Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), p);
             Date nowDate = DateUtils.getNowDate();

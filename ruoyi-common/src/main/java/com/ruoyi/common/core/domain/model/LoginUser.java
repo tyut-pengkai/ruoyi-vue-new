@@ -1,11 +1,12 @@
 package com.ruoyi.common.core.domain.model;
 
-import java.util.Collection;
-import java.util.Set;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.ruoyi.common.core.domain.entity.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * 登录用户身份权限
@@ -83,13 +84,31 @@ public class LoginUser implements UserDetails
      */
     private SysUser user;
 
-    public Long getUserId()
-    {
+    private SysAppTrialUser appTrialUser;
+
+    private Boolean ifTrial;
+
+    public SysAppTrialUser getAppTrialUser() {
+        return appTrialUser;
+    }
+
+    public void setAppTrialUser(SysAppTrialUser appTrialUser) {
+        this.appTrialUser = appTrialUser;
+    }
+
+    public Boolean getIfTrial() {
+        return ifTrial;
+    }
+
+    public void setIfTrial(Boolean ifTrial) {
+        this.ifTrial = ifTrial;
+    }
+
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId)
-    {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -141,7 +160,7 @@ public class LoginUser implements UserDetails
     @Override
     public String getUsername()
     {
-        return user != null ? user.getUserName() : (appUser != null ? appUser.getUserName() : null);
+        return user != null ? user.getUserName() : (appUser != null ? appUser.getUserName() : appTrialUser != null ? appTrialUser.getUserName() : null);
     }
 
     /**

@@ -71,15 +71,23 @@
         label="登录地点"
         prop="loginLocation"
       />
-      <el-table-column align="center" label="浏览器" prop="browser" />
-      <el-table-column align="center" label="操作系统" prop="os" />
+      <el-table-column align="center" label="浏览器" prop="browser"/>
+      <el-table-column align="center" label="操作系统" prop="os"/>
       <el-table-column align="center" label="软件用户" prop="ifApp">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.ifApp" />
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.ifApp"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="软件信息" prop="appDesc" />
-      <el-table-column align="center" label="设备码" prop="deviceCode" />
+      <el-table-column align="center" label="试用用户" prop="ifTrial">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_yes_no"
+            :value="scope.row.ifTrial"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="软件信息" prop="appDesc"/>
+      <el-table-column align="center" label="设备码" prop="deviceCode"/>
       <el-table-column
         align="center"
         label="登录时间"

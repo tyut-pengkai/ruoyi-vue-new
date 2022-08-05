@@ -53,6 +53,16 @@ public class SysUserOnline
 
     private String deviceCode;
 
+    private char ifTrial;
+
+    public char getIfTrial() {
+        return ifTrial;
+    }
+
+    public void setIfTrial(char ifTrial) {
+        this.ifTrial = ifTrial;
+    }
+
     public String getTokenId() {
         return tokenId;
     }

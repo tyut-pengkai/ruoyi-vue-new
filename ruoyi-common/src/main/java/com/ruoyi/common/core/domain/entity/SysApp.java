@@ -141,6 +141,110 @@ public class SysApp extends BaseEntity
 
     private List<Map<String, String>> enApi;
 
+    /**
+     * 是否开启试用
+     */
+    private String enableTrial;
+
+    /**
+     * 每个ip可试用设备数，-1为不限制
+     */
+    private Integer trialTimesPerIp;
+
+    /**
+     * 每个设备试用时间周期，单位秒，0只能试用一次
+     */
+    private Long trialCycle;
+
+    /**
+     * 每个设备每周期试用次数
+     */
+    private Integer trialTimes;
+
+    /**
+     * 每个设备每次试用时长，单位秒
+     */
+    private Long trialTime;
+
+    /**
+     * 开启按时间段试用
+     */
+    private String enableTrialByTimeQuantum;
+
+    /**
+     * 开启按次数使用
+     */
+    private String enableTrialByTimes;
+
+    /**
+     * 试用时间段，格式 00:00:00-00:00:00
+     */
+    private String trialTimeQuantum;
+
+    public String getEnableTrialByTimeQuantum() {
+        return enableTrialByTimeQuantum;
+    }
+
+    public void setEnableTrialByTimeQuantum(String enableTrialByTimeQuantum) {
+        this.enableTrialByTimeQuantum = enableTrialByTimeQuantum;
+    }
+
+    public String getEnableTrialByTimes() {
+        return enableTrialByTimes;
+    }
+
+    public void setEnableTrialByTimes(String enableTrialByTimes) {
+        this.enableTrialByTimes = enableTrialByTimes;
+    }
+
+    public String getTrialTimeQuantum() {
+        return trialTimeQuantum;
+    }
+
+    public void setTrialTimeQuantum(String trialTimeQuantum) {
+        this.trialTimeQuantum = trialTimeQuantum;
+    }
+
+    public String getEnableTrial() {
+        return enableTrial;
+    }
+
+    public void setEnableTrial(String enableTrial) {
+        this.enableTrial = enableTrial;
+    }
+
+    public Integer getTrialTimesPerIp() {
+        return trialTimesPerIp;
+    }
+
+    public void setTrialTimesPerIp(Integer trialTimesPerIp) {
+        this.trialTimesPerIp = trialTimesPerIp;
+    }
+
+    public Long getTrialCycle() {
+        return trialCycle;
+    }
+
+    public void setTrialCycle(Long trialCycle) {
+        this.trialCycle = trialCycle;
+    }
+
+    public Integer getTrialTimes() {
+        return trialTimes;
+    }
+
+    public void setTrialTimes(Integer trialTimes) {
+        this.trialTimes = trialTimes;
+    }
+
+    public Long getTrialTime() {
+        return trialTime;
+    }
+
+    public void setTrialTime(Long trialTime) {
+        this.trialTime = trialTime;
+    }
+
     public SysUser getDeveloper() {
         return developer;
     }

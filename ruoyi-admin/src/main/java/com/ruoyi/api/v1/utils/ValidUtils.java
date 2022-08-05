@@ -284,12 +284,18 @@ public class ValidUtils {
         }
     }
 
+    public void checkAppTrialUserIsExpired(SysAppTrialUser appUser) {
+        if (appUser.getExpireTime() == null || !appUser.getExpireTime().after(DateUtils.getNowDate())) {
+            throw new ApiException(ErrorCode.ERROR_APP_TRIAL_USER_EXPIRED);
+        }
+    }
+
     public void checkLoginLimit(SysApp app, SysAppUser appUser, SysDeviceCode deviceCode) {
         Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
         List<LoginUser> onlineListU = new ArrayList<>();
         for (String key : keys) {
             LoginUser user = redisCache.getCacheObject(key);
-            if (user.getIfApp() && Objects.equals(appUser.getAppUserId(), user.getAppUser().getAppUserId())) {
+            if (user.getIfApp() && !user.getIfTrial() && Objects.equals(appUser.getAppUserId(), user.getAppUser().getAppUserId())) {
                 onlineListU.add(user);
             }
         }
@@ -339,6 +345,29 @@ public class ValidUtils {
                     // 登录最早的设备退出
                     logoutTheEarliest(onlineListU, "同时在线设备数量超出限制");
                 }
+            }
+        }
+    }
+
+    public void checkTrialLoginLimit(SysApp app, SysAppTrialUser appTrialUser) {
+        Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
+        List<LoginUser> onlineListU = new ArrayList<>();
+        for (String key : keys) {
+            LoginUser user = redisCache.getCacheObject(key);
+            if (user.getIfTrial()
+                    && Objects.equals(appTrialUser.getLoginIp(), user.getAppTrialUser().getLoginIp())
+                    && Objects.equals(appTrialUser.getDeviceCode(), user.getAppTrialUser().getDeviceCode())) {
+                onlineListU.add(user);
+            }
+        }
+        // 检查用户数量
+        Integer userLimitApp = app.getLoginLimitU();
+        if (userLimitApp != -1 && userLimitApp <= onlineListU.size()) {
+            if (app.getLimitOper() == LimitOper.TIPS) {
+                throw new ApiException(ErrorCode.ERROR_LOGIN_USER_LIMIT);
+            } else if (app.getLimitOper() == LimitOper.EARLIEST_LOGOUT) {
+                // 登录最早的退出
+                logoutTheEarliest(onlineListU, "用户同时登录数量超出限制");
             }
         }
     }
@@ -425,6 +454,22 @@ public class ValidUtils {
         } else if (!Objects.equals(loginCode.getAppId(), app.getAppId())) {
             throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_APP_MISMATCH, "单码：" + loginCodeStr + " 与软件：" + app.getAppName() + "不匹配");
         }
+    }
+
+    public boolean checkInTrialQuantum(SysApp app) {
+        if (UserConstants.YES.equals(app.getEnableTrial()) && UserConstants.YES.equals(app.getEnableTrialByTimeQuantum())) {
+            if (app.getTrialTimeQuantum() != null) {
+                String[] split = app.getTrialTimeQuantum().split("-");
+                if (split.length == 2) {
+                    Date now = DateUtils.getNowDate();
+                    String date = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, now);
+                    Date start = DateUtils.parseDate(date + " " + split[0]);
+                    Date end = DateUtils.parseDate(date + " " + split[1]);
+                    return !start.after(now) && !end.before(now);
+                }
+            }
+        }
+        return false;
     }
 
 }

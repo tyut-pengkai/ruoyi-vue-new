@@ -21,6 +21,7 @@ import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.enums.UserStatus;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.license.anno.LicenceCheck;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.domain.SysLoginCode;
@@ -43,6 +44,8 @@ public class ApiV1Controller extends BaseController {
     private ISysAppService appService;
     @Resource
     private ISysAppUserService appUserService;
+    @Resource
+    private ISysAppTrialUserService appTrialUserService;
     @Resource
     private SysAppLoginService loginService;
     @Resource
@@ -108,48 +111,60 @@ public class ApiV1Controller extends BaseController {
         Api apii = ApiDefine.apiMap.get(api);
         if (apii.isCheckToken()) {
             LoginUser loginUser = tokenService.getLoginUser(request);
-            if (loginUser == null) {
+            if (loginUser == null || !loginUser.getIfApp()) {
                 throw new ApiException(ErrorCode.ERROR_UNAUTHORIZED);
             }
             // 检测用户状态是否正常
             if (loginUser.getIfApp()) {
                 // 检查用户是否是当前软件的用户
-                if (!loginUser.getAppUser().getAppId().equals(app.getAppId())) {
-                    throw new ApiException(ErrorCode.ERROR_LOGIN_USER_APP_MISMATCH);
-                }
-                // 检查用户是否过期
-                SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUser().getAppUserId());
-                validUtils.checkAppUserIsExpired(app, appUser);
-                // 检查用户是否被封禁
-                if (loginUser.getApp().getAuthType() == AuthType.ACCOUNT) {
-                    Long userId = loginUser.getUser().getUserId();
-                    SysUser user = userService.selectUserById(userId);
-                    validUtils.checkUser(loginUser.getUsername(), user);
-                } else if (app.getAuthType() == AuthType.LOGIN_CODE) {
-                    String loginCodeStr = loginUser.getAppUser().getLoginCode();
-                    SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
-                    validUtils.checkLoginCode(app, loginCodeStr, loginCode);
-                }
-                // 检查软件用户是否被封禁
-                if (UserStatus.DISABLE.getCode().equals(appUser.getStatus())) {
-                    if (app.getAuthType() == AuthType.ACCOUNT) {
-                        throw new ApiException(ErrorCode.ERROR_APP_USER_LOCKED, "用户：" + appUser.getUserName() + " 已停用");
+                if (loginUser.getIfTrial()) {
+                    SysAppTrialUser appUser = appTrialUserService.selectSysAppTrialUserByAppTrialUserId(loginUser.getAppTrialUser().getAppTrialUserId());
+                    // 检查用户是否过期
+                    if (!validUtils.checkInTrialQuantum(app)) {
+                        validUtils.checkAppTrialUserIsExpired(appUser);
+                    }
+                    // 检查软件用户是否被封禁
+                    if (UserStatus.DISABLE.getCode().equals(appUser.getStatus())) {
+                        throw new ApiException(ErrorCode.ERROR_APP_TRIAL_USER_LOCKED, "您的试用已被停用");
+                    }
+                } else {
+                    if (!loginUser.getAppUser().getAppId().equals(app.getAppId())) {
+                        throw new ApiException(ErrorCode.ERROR_LOGIN_USER_APP_MISMATCH);
+                    }
+                    // 检查用户是否过期
+                    SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUser().getAppUserId());
+                    validUtils.checkAppUserIsExpired(app, appUser);
+                    // 检查用户是否被封禁
+                    if (loginUser.getApp().getAuthType() == AuthType.ACCOUNT) {
+                        Long userId = loginUser.getUser().getUserId();
+                        SysUser user = userService.selectUserById(userId);
+                        validUtils.checkUser(loginUser.getUsername(), user);
                     } else if (app.getAuthType() == AuthType.LOGIN_CODE) {
-                        throw new ApiException(ErrorCode.ERROR_APP_USER_LOCKED, "单码：" + appUser.getLoginCode() + " 已停用");
+                        String loginCodeStr = loginUser.getAppUser().getLoginCode();
+                        SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
+                        validUtils.checkLoginCode(app, loginCodeStr, loginCode);
                     }
-                }
-                // 检查用户设备是否被禁用
-                SysDeviceCode deviceCode = loginUser.getDeviceCode();
-                if (deviceCode != null && StringUtils.isNotBlank(deviceCode.getDeviceCode())) {
-                    SysDeviceCode code = deviceCodeService.selectSysDeviceCodeByDeviceCode(deviceCode.getDeviceCode());
-                    if (UserStatus.DISABLE.getCode().equals(code.getStatus())) {
-                        log.info("用户设备：{} 已被停用所有软件.", deviceCode.getDeviceCode());
-                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCode.getDeviceCode() + " 已被停用所有软件");
+                    // 检查软件用户是否被封禁
+                    if (UserStatus.DISABLE.getCode().equals(appUser.getStatus())) {
+                        if (app.getAuthType() == AuthType.ACCOUNT) {
+                            throw new ApiException(ErrorCode.ERROR_APP_USER_LOCKED, "用户：" + appUser.getUserName() + " 已停用");
+                        } else if (app.getAuthType() == AuthType.LOGIN_CODE) {
+                            throw new ApiException(ErrorCode.ERROR_APP_USER_LOCKED, "单码：" + appUser.getLoginCode() + " 已停用");
+                        }
                     }
-                    SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
-                    if (UserStatus.DISABLE.getCode().equals(appUserDeviceCode.getStatus())) {
-                        log.info("用户设备：{} 已被停用当前软件.", deviceCode.getDeviceCode());
-                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCode.getDeviceCode() + " 已被停用当前软件");
+                    // 检查用户设备是否被禁用
+                    SysDeviceCode deviceCode = loginUser.getDeviceCode();
+                    if (deviceCode != null && StringUtils.isNotBlank(deviceCode.getDeviceCode())) {
+                        SysDeviceCode code = deviceCodeService.selectSysDeviceCodeByDeviceCode(deviceCode.getDeviceCode());
+                        if (UserStatus.DISABLE.getCode().equals(code.getStatus())) {
+                            log.info("用户设备：{} 已被停用所有软件.", deviceCode.getDeviceCode());
+                            throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCode.getDeviceCode() + " 已被停用所有软件");
+                        }
+                        SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
+                        if (UserStatus.DISABLE.getCode().equals(appUserDeviceCode.getStatus())) {
+                            log.info("用户设备：{} 已被停用当前软件.", deviceCode.getDeviceCode());
+                            throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCode.getDeviceCode() + " 已被停用当前软件");
+                        }
                     }
                 }
             }
@@ -183,6 +198,11 @@ public class ApiV1Controller extends BaseController {
                 } else {
                     throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
                 }
+            case "trialLogin.ng":
+                // 检查软件版本是否存在
+                version = validUtils.apiCheckPreLogin(appkey, app, params);
+                String ip = IpUtils.getIpAddr(request);
+                return loginService.appTrialLogin(ip, app, version, deviceCode);
             case "logout.ag":
                 LoginUser loginUser = getLoginUser();
                 return loginService.appLogout(loginUser);

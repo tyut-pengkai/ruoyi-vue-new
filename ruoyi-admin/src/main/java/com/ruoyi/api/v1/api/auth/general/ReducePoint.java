@@ -6,6 +6,7 @@ import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ErrorCode;
@@ -33,6 +34,10 @@ public class ReducePoint extends Function {
 
     @Override
     public Object handle() {
+        LoginUser loginUser = getLoginUser();
+        if (loginUser.getIfTrial()) {
+            throw new ApiException(ErrorCode.ERROR_TRIAL_USER_NOT_ALLOWED);
+        }
         String p = this.getParams().get("point");
         boolean enableNegative = Convert.toBool(this.getParams().get("enableNegative"), false);
         BigDecimal point = null;
@@ -45,7 +50,7 @@ public class ReducePoint extends Function {
         if (point.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ApiException(ErrorCode.ERROR_PARAMETERS_ERROR, "point必须大于0");
         }
-        SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(getLoginUser().getAppUser().getAppUserId());
+        SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUser().getAppUserId());
         if (appUser.getPoint().compareTo(point) >= 0 || enableNegative) {
             appUser.setPoint(MyUtils.getNewPointSub(appUser.getPoint(), point.doubleValue()));
             appUserService.updateSysAppUser(appUser);

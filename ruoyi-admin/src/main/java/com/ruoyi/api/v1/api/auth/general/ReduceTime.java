@@ -6,6 +6,7 @@ import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ErrorCode;
@@ -34,6 +35,10 @@ public class ReduceTime extends Function {
 
     @Override
     public Object handle() {
+        LoginUser loginUser = getLoginUser();
+        if (loginUser.getIfTrial()) {
+            throw new ApiException(ErrorCode.ERROR_TRIAL_USER_NOT_ALLOWED);
+        }
         String s = this.getParams().get("seconds");
         boolean enableNegative = Convert.toBool(this.getParams().get("enableNegative"), false);
         Long seconds = null;
@@ -46,7 +51,7 @@ public class ReduceTime extends Function {
         if (seconds <= 0) {
             throw new ApiException(ErrorCode.ERROR_PARAMETERS_ERROR, "seconds必须大于0");
         }
-        SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(getLoginUser().getAppUser().getAppUserId());
+        SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUser().getAppUserId());
         Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), seconds);
         Date nowDate = DateUtils.getNowDate();
         if ((appUser.getExpireTime().after(nowDate) && newExpiredTime.after(nowDate)) || enableNegative) {

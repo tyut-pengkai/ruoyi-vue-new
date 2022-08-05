@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -49,7 +50,8 @@ public class SysAppLoginService {
     private ISysAppUserDeviceCodeService appUserDeviceCodeService;
     @Resource
     private ValidUtils validUtils;
-
+    @Resource
+    private ISysAppTrialUserService appTrialService;
 
     /**
      * App登录验证
@@ -158,6 +160,7 @@ public class SysAppLoginService {
         AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), username, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
         LoginUser loginUser = new LoginUser();
         loginUser.setIfApp(true);
+        loginUser.setIfTrial(false);
         loginUser.setUserId(user.getUserId());
         loginUser.setApp(app);
         loginUser.setUser(user);
@@ -226,7 +229,6 @@ public class SysAppLoginService {
                     log.info("登录用户：{} 已被停用.", loginCodeStr);
                     throw new ApiException(ErrorCode.ERROR_APP_USER_LOCKED, "用户：" + loginCodeStr + " 已停用");
                 }
-                appUser.setUserName(loginCodeShow);
             }
             appUser.setUserName(loginCodeShow);
             // 自动绑定设备码
@@ -284,6 +286,7 @@ public class SysAppLoginService {
         AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
         LoginUser loginUser = new LoginUser();
         loginUser.setIfApp(true);
+        loginUser.setIfTrial(false);
         loginUser.setUserId(null);
         loginUser.setApp(app);
         loginUser.setUser(null);
@@ -291,6 +294,110 @@ public class SysAppLoginService {
         loginUser.setAppVersion(appVersion);
         loginUser.setDeviceCode(deviceCode);
         loginUser.setAppUserDeviceCode(appUserDeviceCode);
+
+        recordLoginInfo(loginUser);
+        // 生成token
+        return tokenService.createToken(loginUser);
+    }
+
+    /**
+     * App试用登录验证
+     *
+     * @param loginIp 登录的IP地址
+     * @return 结果
+     */
+    public String appTrialLogin(String loginIp, SysApp app, SysAppVersion appVersion, String deviceCodeStr) {
+        // 检查是否开启试用
+        if (!UserConstants.YES.equals(app.getEnableTrial())
+                || (!UserConstants.YES.equals(app.getEnableTrialByTimeQuantum()) && !UserConstants.YES.equals(app.getEnableTrialByTimes()))) {
+            throw new ApiException(ErrorCode.ERROR_APP_TRIAL_NOT_ENABLE);
+        }
+        // 检查在线人数限制
+        validUtils.checkLicenseMaxOnline();
+        // 用户验证
+        SysAppTrialUser appTrialUser = null;
+        String appName = app.getAppName();
+        String appVersionStr = appVersion.getVersionShow();
+        String loginCodeShow = "[试用]" + loginIp + "|" + deviceCodeStr;
+        try {
+            appTrialUser = appTrialService.selectSysAppTrialUserByAppIdAndLoginIpAndDeviceCode(app.getAppId(), loginIp, deviceCodeStr);
+            if (appTrialUser == null) { // 首次登录
+                // 检查同IP下试用设备数限制
+                List<SysAppTrialUser> trialUserList = appTrialService.selectSysAppTrialUserByLoginIp(loginIp);
+                if (app.getTrialTimesPerIp() != -1 && trialUserList.size() >= app.getTrialTimesPerIp()) {
+                    throw new ApiException(ErrorCode.ERROR_TRIAL_OVER_LIMIT_TIMES_PER_IP);
+                }
+                appTrialUser = new SysAppTrialUser();
+                appTrialUser.setAppId(app.getAppId());
+                appTrialUser.setLastLoginTime(null);
+                appTrialUser.setStatus(UserConstants.NORMAL);
+                appTrialUser.setLoginTimes(0L);
+                appTrialUser.setLoginTimesAll(0L);
+                appTrialUser.setNextEnableTime(DateUtils.parseDate(UserConstants.MAX_DATE));
+                appTrialUser.setLoginIp(loginIp);
+                appTrialUser.setDeviceCode(deviceCodeStr);
+                appTrialUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getTrialTime()));
+                appTrialService.insertSysAppTrialUser(appTrialUser);
+            } else {
+                if (UserStatus.DISABLE.getCode().equals(appTrialUser.getStatus())) {
+                    log.info("试用用户：{} 已被停用.", loginCodeShow);
+                    throw new ApiException(ErrorCode.ERROR_APP_TRIAL_USER_LOCKED, "您的试用已被停用");
+                }
+            }
+            appTrialUser.setUserName(loginCodeShow);
+            boolean flag = false;
+            if (validUtils.checkInTrialQuantum(app)) {
+                flag = true;
+            } else {
+                if (!UserConstants.YES.equals(app.getEnableTrialByTimes())) {
+                    throw new ApiException(ErrorCode.ERROR_NOT_IN_APP_TRIAL_TIME_QUANTUM);
+                }
+            }
+            if (!flag && UserConstants.YES.equals(app.getEnableTrialByTimes())) {
+                // 试用时间重置周期
+                if (app.getTrialCycle() != null && app.getTrialCycle() != 0) {
+                    Date now = DateUtils.getNowDate();
+                    if (appTrialUser.getNextEnableTime().before(now) || appTrialUser.getNextEnableTime().equals(DateUtils.parseDate(UserConstants.MAX_DATE))) {
+                        appTrialUser.setLoginTimes(0L);
+                        appTrialUser.setNextEnableTime(MyUtils.getNewExpiredTimeAdd(null, app.getTrialCycle()));
+                        appTrialUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getTrialTime()));
+                    }
+                }
+                // 检查试用次数
+                if (appTrialUser.getLoginTimes() >= app.getTrialTimes()) {
+                    throw new ApiException(ErrorCode.ERROR_TRIAL_OVER_LIMIT_TIMES,
+                            "您已试用本软件" + appTrialUser.getLoginTimes() + "次，已到达试用次数上限"
+                                    + (app.getTrialCycle() != null && app.getTrialCycle() != 0
+                                    ? "，" + DateUtils.parseDateToStr(appTrialUser.getNextEnableTime()) + "后可再次试用" : ""));
+                }
+                appTrialUser.setLoginTimes(appTrialUser.getLoginTimes() + 1);
+                appTrialUser.setLoginTimesAll(appTrialUser.getLoginTimesAll() + 1);
+                appTrialService.updateSysAppTrialUser(appTrialUser);
+                // 检测账号是否过期
+                validUtils.checkAppTrialUserIsExpired(appTrialUser);
+            }
+            // 检查用户数、设备数限制
+            validUtils.checkTrialLoginLimit(app, appTrialUser);
+        } catch (ApiException e) {
+            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appTrialUser != null ? appTrialUser.getAppTrialUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage() + (e.getDetailMessage() != null ? "：" + e.getDetailMessage() : "")));
+            throw e;
+        } catch (Exception e) {
+            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appTrialUser != null ? appTrialUser.getAppTrialUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage()));
+            throw e;
+        }
+        AsyncManager.me().execute(AsyncFactory.recordAppTrialLogininfor(appTrialUser.getAppTrialUserId(), loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        LoginUser loginUser = new LoginUser();
+        loginUser.setIfApp(true);
+        loginUser.setIfTrial(true);
+        loginUser.setUserId(null);
+        loginUser.setApp(app);
+        loginUser.setUser(null);
+        loginUser.setAppTrialUser(appTrialUser);
+        loginUser.setAppVersion(appVersion);
+        SysDeviceCode deviceCode = new SysDeviceCode();
+        deviceCode.setDeviceCode(deviceCodeStr);
+        loginUser.setDeviceCode(deviceCode);
+        loginUser.setAppUserDeviceCode(null);
 
         recordLoginInfo(loginUser);
         // 生成token
@@ -311,13 +418,24 @@ public class SysAppLoginService {
             userService.updateUserProfile(sysUser);
         }
         // 用户信息
-        SysAppUser appUser = new SysAppUser();
-        appUser.setAppUserId(loginUser.getAppUser().getAppUserId());
-        appUser.setLoginTimes(loginUser.getAppUser().getLoginTimes() + 1);
-        appUser.setLastLoginTime(nowDate);
-        appUserService.updateSysAppUser(appUser);
-        if (loginUser.getDeviceCode() != null) {
-            // 设备码信息
+        if (loginUser.getAppUser() != null) {
+            SysAppUser appUser = new SysAppUser();
+            appUser.setAppUserId(loginUser.getAppUser().getAppUserId());
+            appUser.setLoginTimes(loginUser.getAppUser().getLoginTimes() + 1);
+            appUser.setLastLoginTime(nowDate);
+            appUserService.updateSysAppUser(appUser);
+        }
+        // 试用用户信息
+        if (loginUser.getAppTrialUser() != null) {
+            SysAppTrialUser trialUser = new SysAppTrialUser();
+            trialUser.setAppTrialUserId(loginUser.getAppTrialUser().getAppTrialUserId());
+            trialUser.setLoginTimes(loginUser.getAppTrialUser().getLoginTimes());
+            trialUser.setLoginTimesAll(loginUser.getAppTrialUser().getLoginTimesAll());
+            trialUser.setLastLoginTime(nowDate);
+            appTrialService.updateSysAppTrialUser(trialUser);
+        }
+        // 设备码信息
+        if (loginUser.getDeviceCode() != null && loginUser.getDeviceCode().getDeviceCodeId() != null) {
             SysDeviceCode deviceCode = new SysDeviceCode();
             deviceCode.setDeviceCodeId(loginUser.getDeviceCode().getDeviceCodeId());
             deviceCode.setLoginTimes(loginUser.getDeviceCode().getLoginTimes() + 1);

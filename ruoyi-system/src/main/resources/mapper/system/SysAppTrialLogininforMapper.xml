@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysAppTrialLogininforMapper">
+
+    <resultMap type="SysAppTrialLogininfor" id="SysAppTrialLogininforResult">
+        <result property="infoId" column="info_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="appTrialUserId" column="app_trial_user_id"/>
+        <result property="appName" column="app_name"/>
+        <result property="ipaddr" column="ipaddr"/>
+        <result property="appVersion" column="app_version"/>
+        <result property="loginLocation" column="login_location"/>
+        <result property="deviceCode" column="device_code"/>
+        <result property="browser" column="browser"/>
+        <result property="os" column="os"/>
+        <result property="status" column="status"/>
+        <result property="msg" column="msg"/>
+        <result property="loginTime" column="login_time"/>
+    </resultMap>
+
+    <sql id="selectSysAppTrialLogininforVo">
+        select info_id,
+               user_name,
+               app_trial_user_id,
+               app_name,
+               ipaddr,
+               app_version,
+               login_location,
+               device_code,
+               browser,
+               os,
+               status,
+               msg,
+               login_time
+        from sys_app_trial_logininfor
+    </sql>
+
+    <select id="selectSysAppTrialLogininforList" parameterType="SysAppTrialLogininfor"
+            resultMap="SysAppTrialLogininforResult">
+        <include refid="selectSysAppTrialLogininforVo"/>
+        <where>
+            <if test="userName != null  and userName != ''">and user_name like concat('%', #{userName}, '%')</if>
+            <if test="appTrialUserId != null ">and app_trial_user_id = #{appTrialUserId}</if>
+            <if test="appName != null  and appName != ''">and app_name like concat('%', #{appName}, '%')</if>
+            <if test="ipaddr != null  and ipaddr != ''">and ipaddr like concat('%', #{ipaddr}, '%')</if>
+            <if test="appVersion != null  and appVersion != ''">and app_version like concat('%', #{appVersion}, '%')
+            </if>
+            <if test="loginLocation != null  and loginLocation != ''">and login_location like concat('%',
+                #{loginLocation}, '%')
+            </if>
+            <if test="deviceCode != null  and deviceCode != ''">and device_code like concat('%', #{deviceCode}, '%')
+            </if>
+            <if test="browser != null  and browser != ''">and browser like concat('%', #{browser}, '%')</if>
+            <if test="os != null  and os != ''">and os like concat('%', #{os}, '%')</if>
+            <if test="status != null  and status != ''">and status = #{status}</if>
+            <if test="msg != null  and msg != ''">and msg like concat('%', #{msg}, '%')</if>
+            <if test="params.beginLoginTime != null and params.beginLoginTime != '' and params.endLoginTime != null and params.endLoginTime != ''">
+                and login_time between #{params.beginLoginTime} and #{params.endLoginTime}
+            </if>
+        </where>
+        order by info_id desc
+    </select>
+
+    <select id="selectSysAppTrialLogininforByInfoId" parameterType="Long" resultMap="SysAppTrialLogininforResult">
+        <include refid="selectSysAppTrialLogininforVo"/>
+        where info_id = #{infoId}
+    </select>
+
+    <insert id="insertSysAppTrialLogininfor" parameterType="SysAppTrialLogininfor" useGeneratedKeys="true"
+            keyProperty="infoId">
+        insert into sys_app_trial_logininfor
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userName != null">user_name,</if>
+            <if test="appTrialUserId != null">app_trial_user_id,</if>
+            <if test="appName != null">app_name,</if>
+            <if test="ipaddr != null">ipaddr,</if>
+            <if test="appVersion != null">app_version,</if>
+            <if test="loginLocation != null">login_location,</if>
+            <if test="deviceCode != null">device_code,</if>
+            <if test="browser != null">browser,</if>
+            <if test="os != null">os,</if>
+            <if test="status != null">status,</if>
+            <if test="msg != null">msg,</if>
+            login_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userName != null">#{userName},</if>
+            <if test="appTrialUserId != null">#{appTrialUserId},</if>
+            <if test="appName != null">#{appName},</if>
+            <if test="ipaddr != null">#{ipaddr},</if>
+            <if test="appVersion != null">#{appVersion},</if>
+            <if test="loginLocation != null">#{loginLocation},</if>
+            <if test="deviceCode != null">#{deviceCode},</if>
+            <if test="browser != null">#{browser},</if>
+            <if test="os != null">#{os},</if>
+            <if test="status != null">#{status},</if>
+            <if test="msg != null">#{msg},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateSysAppTrialLogininfor" parameterType="SysAppTrialLogininfor">
+        update sys_app_trial_logininfor
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userName != null">user_name = #{userName},</if>
+            <if test="appTrialUserId != null">app_trial_user_id = #{appTrialUserId},</if>
+            <if test="appName != null">app_name = #{appName},</if>
+            <if test="ipaddr != null">ipaddr = #{ipaddr},</if>
+            <if test="appVersion != null">app_version = #{appVersion},</if>
+            <if test="loginLocation != null">login_location = #{loginLocation},</if>
+            <if test="deviceCode != null">device_code = #{deviceCode},</if>
+            <if test="browser != null">browser = #{browser},</if>
+            <if test="os != null">os = #{os},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="msg != null">msg = #{msg},</if>
+            <if test="loginTime != null">login_time = #{loginTime},</if>
+        </trim>
+        where info_id = #{infoId}
+    </update>
+
+    <delete id="deleteSysAppTrialLogininforByInfoId" parameterType="Long">
+        delete
+        from sys_app_trial_logininfor
+        where info_id = #{infoId}
+    </delete>
+
+    <delete id="deleteSysAppTrialLogininforByInfoIds" parameterType="String">
+        delete from sys_app_trial_logininfor where info_id in
+        <foreach item="infoId" collection="array" open="(" separator="," close=")">
+            #{infoId}
+        </foreach>
+    </delete>
+
+    <update id="cleanTrialLogininfor">
+        truncate table sys_app_trial_logininfor
+    </update>
+</mapper>

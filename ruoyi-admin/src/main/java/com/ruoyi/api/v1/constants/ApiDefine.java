@@ -77,6 +77,12 @@ public class ApiDefine {
                                 new Param("appVer", true, "软件版本号"),
                                 new Param("deviceCode", false, "设备码，如果开启设备绑定，则必须提供"),
                                 new Param("md5", false, "软件MD5")
+                        }),
+                new Api("trialLogin.ng", "试用登录", false, Constants.API_TAG_GENERAL, "试用登录接口", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL,
+                        new Param[]{
+                                new Param("appVer", true, "软件版本号"),
+                                new Param("deviceCode", false, "设备码，如果开启设备绑定，则必须提供"),
+                                new Param("md5", false, "软件MD5")
                         }), //
                 // Auth
                 new Api("logout.ag", "注销登录", true, Constants.API_TAG_GENERAL, "注销登录接口", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL), //

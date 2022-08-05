@@ -802,6 +802,157 @@
               </el-select>
             </el-form-item>
           </el-tab-pane>
+          <!-- 试用设置 -->
+          <el-tab-pane label="试用设置">
+            <el-form-item>
+              <el-col :span="12">
+                <el-form-item label="是否开启试用" prop="enableTrial">
+                  <el-switch
+                    v-model="form.enableTrial"
+                    active-value="Y"
+                    inactive-value="N"
+                  >
+                  </el-switch>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="同IP可试用设备数" prop="trialTimesPerIp">
+                  <span>
+                    <el-tooltip
+                      content="每个IP可试用设备数，整数，比如设置为3，则同一局域网内3台设备可各试用一次，-1为不限制，默认为-1"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
+                  <el-input-number
+                    v-model="form.trialTimesPerIp"
+                    :min="-1"
+                    controls-position="right"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+            <el-form-item>
+              <el-row :gutter="5">
+                <el-col :span="11">
+                  <el-card
+                    class="box-card"
+                    shadow="never"
+                    style="height: 223px"
+                  >
+                    <div slot="header" class="clearfix">
+                      <span>按时间试用</span>
+                      <span style="float: right">
+                        是否启用
+                        <el-switch
+                          v-model="form.enableTrialByTimeQuantum"
+                          active-value="Y"
+                          inactive-value="N"
+                        >
+                        </el-switch>
+                      </span>
+                    </div>
+                    <el-form-item label="可试用时间段">
+                      <el-time-picker
+                        v-model="trialTimeQuantum"
+                        end-placeholder="结束时间"
+                        is-range
+                        placeholder="选择时间范围"
+                        range-separator="-"
+                        start-placeholder="开始时间"
+                        style="width: 300px"
+                        @change="handleTrialTimeQuantum"
+                      >
+                      </el-time-picker>
+                    </el-form-item>
+                  </el-card>
+                </el-col>
+                <el-col :span="13">
+                  <el-form-item>
+                    <el-card class="box-card" shadow="never">
+                      <div slot="header" class="clearfix">
+                        <span>按次数试用</span>
+                        <span style="float: right">
+                          是否启用
+                          <el-switch
+                            v-model="form.enableTrialByTimes"
+                            active-value="Y"
+                            inactive-value="N"
+                          >
+                          </el-switch>
+                        </span>
+                      </div>
+                      <el-form-item label="可重复试用周期" prop="trialCycle">
+                        <span>
+                          <el-tooltip
+                            content="每个设备重置试用次数的时间周期，比如设置为2天，则同一设备每2天可试用一次，整数，0为仅允许试用一个周期，默认为0"
+                            placement="top"
+                          >
+                            <i
+                              class="el-icon-question"
+                              style="margin-left: -12px; margin-right: 10px"
+                            ></i>
+                          </el-tooltip>
+                        </span>
+                        <date-duration
+                          :seconds="form.trialCycle"
+                          @totalSeconds="handleTrialCycleQuota"
+                        ></date-duration>
+                      </el-form-item>
+                      <el-form-item
+                        label="每周期试用次数"
+                        prop="trialTimes"
+                        style="margin-top: 10px; margin-bottom: 10px"
+                      >
+                        <span>
+                          <el-tooltip
+                            content="每周期可试用次数，整数，默认为1"
+                            placement="top"
+                          >
+                            <i
+                              class="el-icon-question"
+                              style="margin-left: -12px; margin-right: 10px"
+                            ></i>
+                          </el-tooltip>
+                        </span>
+                        <el-input-number
+                          v-model="form.trialTimes"
+                          :min="0"
+                          controls-position="right"
+                        />
+                      </el-form-item>
+                      <el-form-item label="每次可试用时长" prop="trialTime">
+                        <span>
+                          <el-tooltip
+                            content="每次可试用时长，整数，默认为1小时"
+                            placement="top"
+                          >
+                            <i
+                              class="el-icon-question"
+                              style="margin-left: -12px; margin-right: 10px"
+                            ></i>
+                          </el-tooltip>
+                        </span>
+                        <!-- <el-input-number
+                          v-model="form.trialTime"
+                          controls-position="right"
+                          :min="0"
+                        /> -->
+                        <date-duration
+                          :seconds="form.trialTime"
+                          @totalSeconds="handleTrialTimeQuota"
+                        ></date-duration>
+                      </el-form-item>
+                    </el-card>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form-item>
+          </el-tab-pane>
           <!-- 单码设置 -->
           <!-- <el-tab-pane label="单码设置">
             <el-form-item>
@@ -928,9 +1079,11 @@ import {
 } from "@/api/system/app";
 import appIcon from "./appIcon";
 import Updown from "@/components/Updown";
+import DateDuration from "@/components/DateDuration";
+import {parseTime} from "@/utils/ruoyi";
 
 export default {
-  components: { appIcon, Updown },
+  components: {appIcon, Updown, DateDuration},
   name: "App",
   dicts: [
     "sys_normal_disable",
@@ -1109,6 +1262,7 @@ export default {
           },
         ],
       },
+      trialTimeQuantum: null,
     };
   },
   created() {
@@ -1197,6 +1351,14 @@ export default {
         loginCodeRegex: undefined,
         icon: undefined,
         remark: undefined,
+        trialTimesPerIp: -1,
+        trialCycle: 0,
+        trialTimes: 1,
+        trialTime: 3600,
+        enableTrial: "N",
+        enableTrialByTimeQuantum: "N",
+        enableTrialByTimes: "N",
+        trialTimeQuantum: null,
       };
       this.resetForm("form");
       this.tabIdx = "0";
@@ -1230,6 +1392,19 @@ export default {
       const appId = row.appId || this.ids;
       getApp(appId).then((response) => {
         this.form = response.data;
+        if (this.form.trialTimeQuantum) {
+          let arr = this.form.trialTimeQuantum.split("-");
+          if (arr.length == 2) {
+            this.trialTimeQuantum = [
+              new Date("1970/01/01" + " " + arr[0]),
+              new Date("1970/01/01" + " " + arr[1]),
+            ];
+          } else {
+            this.trialTimeQuantum = null;
+          }
+        } else {
+          this.trialTimeQuantum = null;
+        }
         this.enApiList = response.data.enApi;
         this.open = true;
         this.title = "配置软件";
@@ -1376,6 +1551,19 @@ export default {
         default:
           break;
       }
+    },
+    handleTrialCycleQuota(totalSeconds) {
+      this.form.trialCycle = totalSeconds;
+    },
+    handleTrialTimeQuota(totalSeconds) {
+      this.form.trialTime = totalSeconds;
+    },
+    parseTime(time) {
+      return parseTime(time, "{h}:{i}:{s}");
+    },
+    handleTrialTimeQuantum(timeQuantum) {
+      this.form.trialTimeQuantum =
+        this.parseTime(timeQuantum[0]) + "-" + this.parseTime(timeQuantum[1]);
     },
   },
   watch: {

@@ -8,9 +8,11 @@ import com.ruoyi.common.utils.ip.AddressUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.domain.SysAppLogininfor;
+import com.ruoyi.system.domain.SysAppTrialLogininfor;
 import com.ruoyi.system.domain.SysLogininfor;
 import com.ruoyi.system.domain.SysOperLog;
 import com.ruoyi.system.service.ISysAppLogininforService;
+import com.ruoyi.system.service.ISysAppTrialLogininforService;
 import com.ruoyi.system.service.ISysLogininforService;
 import com.ruoyi.system.service.ISysOperLogService;
 import eu.bitwalker.useragentutils.UserAgent;
@@ -150,6 +152,59 @@ public class AsyncFactory
                 }
                 // 插入数据
                 SpringUtils.getBean(ISysAppLogininforService.class).insertSysAppLogininfor(logininfor);
+            }
+        };
+    }
+
+    /**
+     * 记录登录信息
+     *
+     * @return 任务task
+     */
+    public static TimerTask recordAppTrialLogininfor(final Long appTrialUserId, final String userName, final String appName, final String appVersion, final String deviceCode, final String status, final String message,
+                                                     final Object... args) {
+        final UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtils.getRequest().getHeader("User-Agent"));
+        final String ip = IpUtils.getIpAddr(ServletUtils.getRequest());
+        return new TimerTask() {
+            @Override
+            public void run() {
+                String address = AddressUtils.getRealAddressByIP(ip);
+                StringBuilder s = new StringBuilder();
+                s.append(LogUtils.getBlock(ip));
+                s.append(address);
+                s.append(LogUtils.getBlock(appTrialUserId));
+                s.append(LogUtils.getBlock(userName));
+                s.append(LogUtils.getBlock(deviceCode));
+                s.append(LogUtils.getBlock(appName));
+                s.append(LogUtils.getBlock(appVersion));
+                s.append(LogUtils.getBlock(status));
+                s.append(LogUtils.getBlock(message));
+                // 打印信息到日志
+                sys_user_logger.info(s.toString(), args);
+                // 获取客户端操作系统
+                String os = userAgent.getOperatingSystem().getName();
+                // 获取客户端浏览器
+                String browser = userAgent.getBrowser().getName();
+                // 封装对象
+                SysAppTrialLogininfor logininfor = new SysAppTrialLogininfor();
+                logininfor.setAppTrialUserId(appTrialUserId);
+                logininfor.setUserName(userName);
+                logininfor.setAppName(appName);
+                logininfor.setAppVersion(appVersion);
+                logininfor.setDeviceCode(deviceCode);
+                logininfor.setIpaddr(ip);
+                logininfor.setLoginLocation(address);
+                logininfor.setBrowser(browser);
+                logininfor.setOs(os);
+                logininfor.setMsg(message);
+                // 日志状态
+                if (StringUtils.equalsAny(status, Constants.LOGIN_SUCCESS, Constants.LOGOUT, Constants.REGISTER)) {
+                    logininfor.setStatus(Constants.SUCCESS);
+                } else if (Constants.LOGIN_FAIL.equals(status)) {
+                    logininfor.setStatus(Constants.FAIL);
+                }
+                // 插入数据
+                SpringUtils.getBean(ISysAppTrialLogininforService.class).insertSysAppTrialLogininfor(logininfor);
             }
         };
     }
