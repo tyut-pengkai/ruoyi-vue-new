@@ -473,4 +473,28 @@ public class ValidUtils {
         return false;
     }
 
+    public Date getTrialQuantumStartTime(SysApp app) {
+        if (app.getTrialTimeQuantum() != null) {
+            String[] split = app.getTrialTimeQuantum().split("-");
+            if (split.length == 2) {
+                Date now = DateUtils.getNowDate();
+                String date = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, now);
+                return DateUtils.parseDate(date + " " + split[0]);
+            }
+        }
+        return null;
+    }
+
+    public Date getTrialQuantumEndTime(SysApp app) {
+        if (app.getTrialTimeQuantum() != null) {
+            String[] split = app.getTrialTimeQuantum().split("-");
+            if (split.length == 2) {
+                Date now = DateUtils.getNowDate();
+                String date = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, now);
+                return DateUtils.parseDate(date + " " + split[1]);
+            }
+        }
+        return null;
+    }
+
 }
