@@ -13,6 +13,7 @@ import com.ruoyi.common.enums.BalanceChangeType;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.TemplateType;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysCard;
@@ -29,10 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 卡密Controller
@@ -137,7 +135,16 @@ public class SysAgentCardController extends BaseController {
             // 扣款
             userService.updateUserBalance(change);
         }
-        return toAjax(sysCardTemplateService.genSysCardBatch(sysCardTemplate, sysCard.getGenQuantity(), sysCard.getOnSale(), UserConstants.YES, sysCard.getRemark()).size());
+        List<SysCard> sysCardList = sysCardTemplateService.genSysCardBatch(sysCardTemplate, sysCard.getGenQuantity(), sysCard.getOnSale(), UserConstants.YES, sysCard.getRemark());
+        List<Map<String, String>> resultList = new ArrayList<>();
+        for (SysCard item : sysCardList) {
+            Map<String, String> map = new HashMap<>();
+            map.put("cardNo", item.getCardNo());
+            map.put("cardPass", item.getCardPass());
+            map.put("expireTime", DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, item.getExpireTime()));
+            resultList.add(map);
+        }
+        return AjaxResult.success("生成完毕", resultList).put("cardName", sysCardTemplate.getCardName());
     }
 
     /**

@@ -325,11 +325,11 @@
       >
         <template slot-scope="scope">
           <span>{{
-            !scope.row.expireTime ||
-            scope.row.expireTime == "9999-12-31 23:59:59"
-              ? "永不过期"
-              : parseTime(scope.row.expireTime)
-          }}</span>
+              !scope.row.expireTime ||
+              scope.row.expireTime == "9999-12-31 23:59:59"
+                ? "长期有效"
+                : parseTime(scope.row.expireTime)
+            }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="是否售出" prop="isSold">
@@ -1177,7 +1177,7 @@ export default {
                     "充值过期（请在此时间前充值）：" +
                     (!goods.expireTime ||
                     goods.expireTime == "9999-12-31 23:59:59"
-                      ? "永不过期"
+                      ? "长期有效"
                       : goods.expireTime) +
                     "\n";
                 }

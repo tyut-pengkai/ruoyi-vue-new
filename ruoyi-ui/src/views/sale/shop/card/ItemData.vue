@@ -44,7 +44,7 @@
               {{
                 !scope.row.expireTime ||
                 scope.row.expireTime == "9999-12-31 23:59:59"
-                  ? "永不过期"
+                  ? "长期有效"
                   : scope.row.expireTime
               }}
             </template>
@@ -181,7 +181,7 @@ export default {
               content +=
                 "充值过期（请在此时间前充值）：" +
                 (!goods.expireTime || goods.expireTime == "9999-12-31 23:59:59"
-                  ? "永不过期"
+                  ? "长期有效"
                   : goods.expireTime) +
                 "\n";
             }
@@ -194,7 +194,7 @@ export default {
             content +=
               "充值过期（请在此时间前充值）：" +
               (!goods.expireTime || goods.expireTime == "9999-12-31 23:59:59"
-                ? "永不过期"
+                ? "长期有效"
                 : goods.expireTime) +
               "\n";
           }

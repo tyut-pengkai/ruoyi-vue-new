@@ -13,6 +13,7 @@ import com.ruoyi.common.enums.BalanceChangeType;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.TemplateType;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysLoginCode;
@@ -29,10 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 单码Controller
@@ -137,7 +135,15 @@ public class SysAgentLoginCodeController extends BaseController {
             // 扣款
             userService.updateUserBalance(change);
         }
-        return toAjax(sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), sysLoginCode.getOnSale(), UserConstants.YES, sysLoginCode.getRemark()).size());
+        List<SysLoginCode> sysLoginCodes = sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), sysLoginCode.getOnSale(), UserConstants.YES, sysLoginCode.getRemark());
+        List<Map<String, String>> resultList = new ArrayList<>();
+        for (SysLoginCode item : sysLoginCodes) {
+            Map<String, String> map = new HashMap<>();
+            map.put("cardNo", item.getCardNo());
+            map.put("expireTime", DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, item.getExpireTime()));
+            resultList.add(map);
+        }
+        return AjaxResult.success("生成完毕", resultList).put("cardName", sysLoginCodeTemplate.getCardName());
     }
 
     /**
