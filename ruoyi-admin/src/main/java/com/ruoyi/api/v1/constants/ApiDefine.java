@@ -69,14 +69,16 @@ public class ApiDefine {
                                 new Param("password", true, "密码"), //
                                 new Param("appVer", true, "软件版本号"),
                                 new Param("deviceCode", false, "设备码，如果开启设备绑定，则必须提供"),
-                                new Param("md5", false, "软件MD5")
+                                new Param("md5", false, "软件MD5"),
+                                new Param("autoReducePoint", false, "计点模式下是否登录成功后自动扣除用户点数（扣除1），默认值为true")
                         }), //
                 new Api("login.nc", "单码登录", false, Constants.API_TAG_CODE, "单码登录接口", new AuthType[]{AuthType.LOGIN_CODE}, Constants.BILL_TYPE_ALL,
                         new Param[]{
                                 new Param("loginCode", true, "单码"), //
                                 new Param("appVer", true, "软件版本号"),
                                 new Param("deviceCode", false, "设备码，如果开启设备绑定，则必须提供"),
-                                new Param("md5", false, "软件MD5")
+                                new Param("md5", false, "软件MD5"),
+                                new Param("autoReducePoint", false, "计点模式下是否登录成功后自动扣除用户点数（扣除1），默认值为true")
                         }),
                 new Api("trialLogin.ng", "试用登录", false, Constants.API_TAG_GENERAL, "试用登录接口", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL,
                         new Param[]{

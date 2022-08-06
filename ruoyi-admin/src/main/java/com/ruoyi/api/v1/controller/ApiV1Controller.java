@@ -16,6 +16,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.*;
 import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.ErrorCode;
@@ -192,8 +193,9 @@ public class ApiV1Controller extends BaseController {
                 if (app.getAuthType() == AuthType.ACCOUNT) { // by account
                     String username = params.get("username");
                     String password = params.get("password");
+                    boolean autoReducePoint = Convert.toBool(params.get("autoReducePoint"), true);
                     // 调用登录接口
-                    return loginService.appLogin(username, password, app, version, deviceCode);
+                    return loginService.appLogin(username, password, app, version, deviceCode, autoReducePoint);
                 } else {
                     throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
                 }
@@ -202,8 +204,9 @@ public class ApiV1Controller extends BaseController {
                 version = validUtils.apiCheckPreLogin(appkey, app, params);
                 if (app.getAuthType() == AuthType.LOGIN_CODE) { // by login code
                     String loginCode = params.get("loginCode");
+                    boolean autoReducePoint = Convert.toBool(params.get("autoReducePoint"), true);
                     // 调用登录接口
-                    return loginService.appLogin(loginCode, app, version, deviceCode);
+                    return loginService.appLogin(loginCode, app, version, deviceCode, autoReducePoint);
                 } else {
                     throw new ApiException(ErrorCode.ERROR_API_CALLED_MISMATCH);
                 }

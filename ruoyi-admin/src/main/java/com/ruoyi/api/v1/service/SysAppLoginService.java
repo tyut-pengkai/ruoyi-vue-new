@@ -60,7 +60,7 @@ public class SysAppLoginService {
      * @param password 密码
      * @return 结果
      */
-    public String appLogin(String username, String password, SysApp app, SysAppVersion appVersion, String deviceCodeStr) {
+    public String appLogin(String username, String password, SysApp app, SysAppVersion appVersion, String deviceCodeStr, boolean autoReducePoint) {
         // 检查在线人数限制
         validUtils.checkLicenseMaxOnline();
         // 用户验证
@@ -170,6 +170,14 @@ public class SysAppLoginService {
         loginUser.setAppUserDeviceCode(appUserDeviceCode);
 
         recordLoginInfo(loginUser);
+
+        // 自动扣除点数
+        if (app.getBillType() == BillType.POINT && autoReducePoint) {
+            appUser = appUserService.selectSysAppUserByAppUserId(appUser.getAppUserId());
+            appUser.setPoint(appUser.getPoint().subtract(BigDecimal.valueOf(-1)));
+            appUserService.updateSysAppUser(appUser);
+        }
+
         // 生成token
         return tokenService.createToken(loginUser);
     }
@@ -180,7 +188,7 @@ public class SysAppLoginService {
      * @param loginCodeStr 单码
      * @return 结果
      */
-    public String appLogin(String loginCodeStr, SysApp app, SysAppVersion appVersion, String deviceCodeStr) {
+    public String appLogin(String loginCodeStr, SysApp app, SysAppVersion appVersion, String deviceCodeStr, boolean autoReducePoint) {
         // 检查在线人数限制
         validUtils.checkLicenseMaxOnline();
         // 用户验证
@@ -296,6 +304,14 @@ public class SysAppLoginService {
         loginUser.setAppUserDeviceCode(appUserDeviceCode);
 
         recordLoginInfo(loginUser);
+
+        // 自动扣除点数
+        if (app.getBillType() == BillType.POINT && autoReducePoint) {
+            appUser = appUserService.selectSysAppUserByAppUserId(appUser.getAppUserId());
+            appUser.setPoint(appUser.getPoint().subtract(BigDecimal.valueOf(-1)));
+            appUserService.updateSysAppUser(appUser);
+        }
+
         // 生成token
         return tokenService.createToken(loginUser);
     }
