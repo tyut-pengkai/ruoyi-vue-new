@@ -27,7 +27,7 @@ export function addAppTrialUser(data) {
 }
 
 // 修改试用信息
-export function updateAppTrial(data) {
+export function updateAppTrialUser(data) {
   return request({
     url: '/system/appTrialUser',
     method: 'put',

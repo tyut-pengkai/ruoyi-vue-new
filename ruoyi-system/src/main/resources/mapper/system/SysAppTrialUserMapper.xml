@@ -21,56 +21,81 @@
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
         <result property="delFlag" column="del_flag"/>
+        <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
+    </resultMap>
+
+    <resultMap type="SysApp" id="SysAppResult">
+        <result property="appId" column="app_id"/>
+        <result property="appName" column="app_name"/>
+        <result property="authType" column="auth_type"/>
+        <result property="billType" column="bill_type"/>
+        <result property="description" column="description"/>
     </resultMap>
 
     <sql id="selectSysAppTrialUserVo">
-        select app_trial_user_id,
-               app_id,
-               status,
-               last_login_time,
-               login_times,
-               login_times_all,
-               next_enable_time,
-               expire_time,
-               login_ip,
-               device_code,
-               create_by,
-               create_time,
-               update_by,
-               update_time,
-               remark,
-               del_flag
-        from sys_app_trial_user
+        select atu.app_trial_user_id,
+               atu.app_id,
+               atu.status,
+               atu.last_login_time,
+               atu.login_times,
+               atu.login_times_all,
+               atu.next_enable_time,
+               atu.expire_time,
+               atu.login_ip,
+               atu.device_code,
+               atu.create_by,
+               atu.create_time,
+               atu.update_by,
+               atu.update_time,
+               atu.remark,
+               atu.del_flag,
+               a.app_id,
+               a.app_name,
+               a.auth_type,
+               a.bill_type,
+               a.description
+        from sys_app_trial_user atu
+                 left join sys_app a on atu.app_id = a.app_id
     </sql>
 
     <select id="selectSysAppTrialUserList" parameterType="SysAppTrialUser" resultMap="SysAppTrialUserResult">
         <include refid="selectSysAppTrialUserVo"/>
         <where>
-            <if test="appId != null ">and app_id = #{appId}</if>
-            <if test="status != null  and status != ''">and status = #{status}</if>
-            <if test="lastLoginTime != null ">and last_login_time = #{lastLoginTime}</if>
-            <if test="loginTimes != null ">and login_times = #{loginTimes}</if>
-            <if test="loginTimesAll != null ">and login_times_all = #{loginTimesAll}</if>
-            <if test="nextEnableTime != null ">and next_enable_time = #{nextEnableTime}</if>
-            <if test="expireTime != null ">and expire_time = #{expireTime}</if>
-            <if test="loginIp != null  and loginIp != ''">and login_ip = #{loginIp}</if>
-            <if test="deviceCode != null  and deviceCode != ''">and device_code = #{deviceCode}</if>
+            <if test="appId != null ">and atu.app_id = #{appId}</if>
+            <if test="status != null  and status != ''">and atu.status = #{status}</if>
+            <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''">
+                and atu.last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}
+            </if>
+            <if test="params.beginLoginTimes != null and params.beginLoginTimes != '' and params.endLoginTimes != null and params.endLoginTimes != ''">
+                and atu.login_times between #{params.beginLoginTimes} and #{params.endLoginTimes}
+            </if>
+            <if test="params.beginLoginTimesAll != null and params.beginLoginTimesAll != '' and params.endLoginTimesAll != null and params.endLoginTimesAll != ''">
+                and atu.login_times_all between #{params.beginLoginTimesAll} and #{params.endLoginTimesAll}
+            </if>
+            <if test="params.beginNextEnableTime != null and params.beginNextEnableTime != '' and params.endNextEnableTime != null and params.endNextEnableTime != ''">
+                and atu.next_enable_time between #{params.beginNextEnableTime} and #{params.endNextEnableTime}
+            </if>
+            <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
+                and atu.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
+            </if>
+            <if test="loginIp != null  and loginIp != ''">and atu.login_ip = #{loginIp}</if>
+            <if test="deviceCode != null  and deviceCode != ''">and atu.device_code = #{deviceCode}</if>
         </where>
     </select>
 
     <select id="selectSysAppTrialUserByAppTrialUserId" parameterType="Long" resultMap="SysAppTrialUserResult">
         <include refid="selectSysAppTrialUserVo"/>
-        where app_trial_user_id = #{appTrialUserId}
+        where atu.app_trial_user_id = #{appTrialUserId}
     </select>
 
     <select id="selectSysAppTrialUserByLoginIp" parameterType="String" resultMap="SysAppTrialUserResult">
         <include refid="selectSysAppTrialUserVo"/>
-        where login_ip = #{loginIp}
+        where atu.login_ip = #{loginIp}
     </select>
 
     <select id="selectSysAppTrialUserByAppIdAndLoginIpAndDeviceCode" resultMap="SysAppTrialUserResult">
         <include refid="selectSysAppTrialUserVo"/>
-        where app_id = #{appId} and login_ip = #{loginIp} and device_code = #{deviceCode}
+        where atu.app_id = #{appId} and atu.login_ip = #{loginIp} and atu.device_code = #{deviceCode}
     </select>
 
     <insert id="insertSysAppTrialUser" parameterType="SysAppTrialUser" useGeneratedKeys="true"

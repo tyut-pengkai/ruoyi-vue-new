@@ -13,7 +13,7 @@ spring:
         url: jdbc:mysql://123.206.55.70:3306/ab_app_platform?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
         username: mo
         password: mopwd
-  #        url: jdbc:mysql://123.206.55.70:3306/hywlyz1?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+  #        url: jdbc:mysql://123.206.55.70:3306/hywlyz_online?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
   #        username: mo
   #        password: mopwd
   #      slave:

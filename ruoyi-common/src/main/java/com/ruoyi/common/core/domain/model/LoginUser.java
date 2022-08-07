@@ -86,7 +86,7 @@ public class LoginUser implements UserDetails
 
     private SysAppTrialUser appTrialUser;
 
-    private Boolean ifTrial;
+    private Boolean ifTrial = false;
 
     public SysAppTrialUser getAppTrialUser() {
         return appTrialUser;

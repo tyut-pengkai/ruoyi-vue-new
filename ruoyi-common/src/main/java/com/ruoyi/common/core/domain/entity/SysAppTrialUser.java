@@ -86,6 +86,20 @@ public class SysAppTrialUser extends BaseEntity {
 
     private String userName;
 
+    /**
+     * 所属软件信息
+     */
+    @Excel(name = "软件名称", targetAttr = "appName", type = Excel.Type.EXPORT)
+    private SysApp app;
+
+    public SysApp getApp() {
+        return app;
+    }
+
+    public void setApp(SysApp app) {
+        this.app = app;
+    }
+
     public String getUserName() {
         return userName;
     }
