@@ -3,49 +3,97 @@
     <el-alert :closable="false" title="公告" type="success">
       <p>只支持查询最近5笔订单</p>
     </el-alert>
-    <el-card class="box-card" style="margin-top: 15px">
+    <el-card class="box-card" style="max-width: 90vw; margin-top: 15px">
       <div class="my-title">
         <img src="../../../assets/images/category.svg"/>&nbsp;
         <span>订单查询</span>
       </div>
       <el-tabs style="margin-top: 20px">
         <el-tab-pane label="订单编号查询">
-          <div style="width: 500px;margin: 20px auto">
-            <el-form ref="formQueryByOrderNo" :model="formQueryByOrderNo" :rules="rules" label-width="80px">
+          <div style="max-width: 90vw; width: 500px; margin: 20px auto">
+            <el-form
+              ref="formQueryByOrderNo"
+              :model="formQueryByOrderNo"
+              :rules="rules"
+            >
               <el-form-item label="订单编号" prop="orderNo">
-                <el-input v-model="formQueryByOrderNo.orderNo" clearable maxlength="25" show-word-limit></el-input>
+                <el-input
+                  v-model="formQueryByOrderNo.orderNo"
+                  clearable
+                  maxlength="25"
+                  show-word-limit
+                  style="max-width: 75vw"
+                ></el-input>
               </el-form-item>
               <el-form-item label="查询密码" prop="queryPass">
-                <el-input v-model="formQueryByOrderNo.queryPass" show-password></el-input>
+                <el-input
+                  v-model="formQueryByOrderNo.queryPass"
+                  show-password
+                  style="max-width: 75vw"
+                ></el-input>
               </el-form-item>
               <div align="center">
-                <el-button round type="primary" @click="submitForm('formQueryByOrderNo')">立即查询</el-button>
+                <el-button
+                  round
+                  type="primary"
+                  @click="submitForm('formQueryByOrderNo')"
+                >立即查询
+                </el-button
+                >
                 <!-- <el-button @click="resetForm('formQueryByOrderNo')">清空输入</el-button> -->
               </div>
             </el-form>
           </div>
         </el-tab-pane>
         <el-tab-pane label="联系方式查询">
-          <div style="width: 500px;margin: 20px auto">
-            <el-form ref="formQueryByContact" :model="formQueryByContact" :rules="rules" label-width="80px">
+          <div style="max-width: 90vw; width: 500px; margin: 20px auto">
+            <el-form
+              ref="formQueryByContact"
+              :model="formQueryByContact"
+              :rules="rules"
+            >
               <el-form-item label="联系方式" prop="contact">
-                <el-input v-model="formQueryByContact.contact" clearable></el-input>
+                <el-input
+                  v-model="formQueryByContact.contact"
+                  clearable
+                  style="max-width: 75vw"
+                ></el-input>
               </el-form-item>
               <el-form-item label="查询密码" prop="queryPass">
-                <el-input v-model="formQueryByContact.queryPass" show-password></el-input>
+                <el-input
+                  v-model="formQueryByContact.queryPass"
+                  show-password
+                  style="max-width: 75vw"
+                ></el-input>
               </el-form-item>
               <div align="center">
-                <el-button round type="primary" @click="submitForm('formQueryByContact')">立即查询</el-button>
+                <el-button
+                  round
+                  type="primary"
+                  @click="submitForm('formQueryByContact')"
+                >立即查询
+                </el-button
+                >
                 <!-- <el-button @click="resetForm('formQueryByContact')">清空输入</el-button> -->
               </div>
             </el-form>
           </div>
         </el-tab-pane>
         <el-tab-pane label="浏览器缓存查询">
-          <div style="width: 500px;margin: 20px auto">
-            <el-form ref="formQueryByCookie" :model="formQueryByCookie" :rules="rules" label-width="80px">
+          <div style="max-width: 90vw; width: 500px; margin: 20px auto">
+            <el-form
+              ref="formQueryByCookie"
+              :model="formQueryByCookie"
+              :rules="rules"
+            >
               <div align="center">
-                <el-button round type="primary" @click="submitForm('formQueryByCookie')">立即查询</el-button>
+                <el-button
+                  round
+                  type="primary"
+                  @click="submitForm('formQueryByCookie')"
+                >立即查询
+                </el-button
+                >
                 <!-- <el-button @click="resetForm('formQueryByCookie')">清空输入</el-button> -->
               </div>
             </el-form>
@@ -63,7 +111,7 @@
       :visible.sync="dialogTableVisible"
       custom-class="customClass"
       style="margin-top: 10vh; height: 80%"
-      width="1000px"
+      width="auto"
     >
       <item-data :itemData="itemData"></item-data>
     </el-dialog>
@@ -77,9 +125,9 @@
       custom-class="customClass"
       style="margin-top: 10vh; height: 80%"
       title="您的订单信息如下"
-      width="1000px"
+      width="auto"
     >
-      <el-card style="margin-bottom: 10px">
+      <el-card style="max-width: 90vw; margin-bottom: 10px">
         <el-table :data="saleOrderList" border>
           <el-table-column align="center" label="" type="index"/>
           <el-table-column label="订单编号">
@@ -100,16 +148,28 @@
               />
             </template>
           </el-table-column>
-          <el-table-column
-            label="操作"
-            width="150">
+          <el-table-column label="操作" width="150">
             <template slot-scope="scope">
-              <el-button v-if="scope.row.status == '0' " size="small" type="text" @click="handlePay(scope.row)">立即支付
+              <el-button
+                v-if="scope.row.status == '0'"
+                size="small"
+                type="text"
+                @click="handlePay(scope.row)"
+              >立即支付
               </el-button>
-              <el-button v-if="scope.row.status == '1' " size="small" type="text" @click="handleFetch(scope.row)">尝试提货
+              <el-button
+                v-if="scope.row.status == '1'"
+                size="small"
+                type="text"
+                @click="handleFetch(scope.row)"
+              >尝试提货
               </el-button>
-              <el-button v-if="scope.row.status == '3' || scope.row.status == '4' " size="small" type="text"
-                         @click="handleClick(scope.row)">查看商品
+              <el-button
+                v-if="scope.row.status == '3' || scope.row.status == '4'"
+                size="small"
+                type="text"
+                @click="handleClick(scope.row)"
+              >查看商品
               </el-button>
             </template>
           </el-table-column>
@@ -120,8 +180,8 @@
 </template>
 
 <script>
-import Cookies from 'js-cookie';
-import {fetchGoods, getCardList, querySaleOrderByContact} from "@/api/sale/saleShop";
+import Cookies from "js-cookie";
+import {fetchGoods, getCardList, querySaleOrderByContact,} from "@/api/sale/saleShop";
 import ItemData from "./card/ItemData";
 
 export default {
@@ -144,14 +204,14 @@ export default {
       dialogTableVisible: false,
       rules: {
         orderNo: [
-          {required: true, message: '请输入订单编号', trigger: 'blur'},
-          {min: 25, max: 25, message: '长度为25个字符', trigger: 'blur'}
+          {required: true, message: "请输入订单编号", trigger: "blur"},
+          {min: 25, max: 25, message: "长度为25个字符", trigger: "blur"},
         ],
         queryPass: [
-          {required: true, message: '请输入查询密码', trigger: 'blur'}
+          {required: true, message: "请输入查询密码", trigger: "blur"},
         ],
         contact: [
-          {required: true, message: '请输入联系方式', trigger: 'blur'},
+          {required: true, message: "请输入联系方式", trigger: "blur"},
         ],
       },
       saleOrderList: [],
@@ -182,23 +242,24 @@ export default {
         contact: this.formQueryByContact.contact,
         queryPass: this.formQueryByContact.queryPass,
       };
-      querySaleOrderByContact(data).then((response) => {
-        if (response.code == 200) {
-          // console.log(response)
-          if (response.rows.length > 0) {
-            this.saleOrderList = response.rows;
-            this.dialogTableVisible2 = true;
-          } else {
-            this.$notify({
-              title: "消息",
-              dangerouslyUseHTMLString: true,
-              message: "未查找到有效订单",
-              type: "warning",
-              offset: 100,
-            });
+      querySaleOrderByContact(data)
+        .then((response) => {
+          if (response.code == 200) {
+            // console.log(response)
+            if (response.rows.length > 0) {
+              this.saleOrderList = response.rows;
+              this.dialogTableVisible2 = true;
+            } else {
+              this.$notify({
+                title: "消息",
+                dangerouslyUseHTMLString: true,
+                message: "未查找到有效订单",
+                type: "warning",
+                offset: 300,
+              });
+            }
           }
-        }
-      })
+        })
         .finally(() => {
         });
     },
@@ -209,7 +270,7 @@ export default {
       // }];
 
       // Cookies.set('orderList', JSON.stringify(o));
-      var orderListStr = Cookies.get('orderList');
+      var orderListStr = Cookies.get("orderList");
       if (orderListStr) {
         var orderList = JSON.parse(orderListStr);
         if (orderList.length > 0) {
@@ -222,15 +283,18 @@ export default {
               orderNo: order.orderNo,
               queryPass: order.queryPass,
             };
-            querySaleOrderByContact(data).then((response) => {
-              if (response.code == 200) {
-                // console.log(response)
-                if (response.rows.length > 0) {
-                  this.saleOrderList = this.saleOrderList.concat(response.rows);
-                  this.dialogTableVisible2 = true;
+            querySaleOrderByContact(data)
+              .then((response) => {
+                if (response.code == 200) {
+                  // console.log(response)
+                  if (response.rows.length > 0) {
+                    this.saleOrderList = this.saleOrderList.concat(
+                      response.rows
+                    );
+                    this.dialogTableVisible2 = true;
+                  }
                 }
-              }
-            })
+              })
               .finally(() => {
               });
           }
@@ -256,11 +320,11 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          if (formName == 'formQueryByOrderNo') {
+          if (formName == "formQueryByOrderNo") {
             this.queryByOrderNo();
-          } else if (formName == 'formQueryByContact') {
+          } else if (formName == "formQueryByContact") {
             this.queryByContact();
-          } else if (formName == 'formQueryByCookie') {
+          } else if (formName == "formQueryByCookie") {
             this.queryByCookie();
           }
         } else {
@@ -318,11 +382,24 @@ export default {
         .finally(() => {
         });
     },
-  }
-}
+  },
+};
 </script>
 
 <style>
+body {
+  margin: 0;
+}
+
+a {
+  text-decoration: None;
+}
+
+.home {
+  width: 90vw;
+  max-width: 1100px;
+}
+
 .my-title span {
   font-weight: 600;
   font-size: 18px;
@@ -331,5 +408,9 @@ export default {
 
 .my-title img {
   vertical-align: bottom;
+}
+
+.customClass {
+  max-width: 1000px;
 }
 </style>

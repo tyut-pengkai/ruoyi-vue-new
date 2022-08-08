@@ -1,6 +1,14 @@
 <template>
   <el-row :gutter="10">
-    <el-col v-for="item in data" :key="item.id" :span="4">
+    <el-col
+      v-for="item in data"
+      :key="item.id"
+      :lg="6"
+      :md="8"
+      :sm="12"
+      :xl="6"
+      :xs="12"
+    >
       <div class="my-card-group">
         <el-card
           shadow="hover"

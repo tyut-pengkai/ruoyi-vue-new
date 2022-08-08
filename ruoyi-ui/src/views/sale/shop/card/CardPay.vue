@@ -1,6 +1,14 @@
 <template>
   <el-row :gutter="10">
-    <el-col v-for="item in data" :key="item.id" :span="span">
+    <el-col
+      v-for="item in data"
+      :key="item.id"
+      :lg="5"
+      :md="8"
+      :sm="12"
+      :xl="5"
+      :xs="12"
+    >
       <div class="my-card-group">
         <el-card
           :class="{ 'my-box-card-select': cardKeyOn == item.id }"
@@ -40,10 +48,6 @@ export default {
     addon: {
       type: Boolean,
       default: false,
-    },
-    span: {
-      type: Number,
-      default: 4,
     },
   },
   mounted() {

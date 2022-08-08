@@ -1,6 +1,14 @@
 <template>
   <el-row :gutter="10">
-    <el-col v-for="item in data" :key="item.id" :span="8">
+    <el-col
+      v-for="item in data"
+      :key="item.id"
+      :lg="8"
+      :md="12"
+      :sm="24"
+      :xl="8"
+      :xs="24"
+    >
       <div class="my-card-group">
         <el-card
           shadow="hover"
@@ -12,7 +20,7 @@
             <p>{{ item.name }}</p>
             <span class="my-card-span" v-if="item.max">
               ￥ {{ item.min }} - {{ item.max }}
-              </span>
+            </span>
             <span class="my-card-span" v-else>￥ {{ item.min }}</span>
             <el-tag
               effect="dark"
@@ -28,7 +36,7 @@
                 <p></p>
               </div>
               <span style="margin-left: 100px; font-size: 12px">
-                剩余 {{ item.num >= 1000 ? '999+' : item.num }} 件
+                剩余 {{ item.num >= 1000 ? "999+" : item.num }} 件
               </span>
             </div>
           </div>

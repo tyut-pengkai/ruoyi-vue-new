@@ -4,7 +4,17 @@
       <el-header class="my-header">
         <div style="background-color: #545c64">
           <el-row>
-            <el-col :span="5">
+            <el-col :span="2">
+              <div class="my-class">
+                <hamburger
+                  id="hamburger-container"
+                  :is-active="false"
+                  class="hamburger-container"
+                  @toggleClick="toggleSideBar"
+                />
+              </div>
+            </el-col>
+            <el-col :span="3">
               <div class="grid-content"></div>
             </el-col>
             <el-col :span="14">
@@ -25,21 +35,49 @@
                   </span>
                 </a>
               </div>
-              <el-menu
-                :default-active="activeIndex"
-                active-text-color="#ffd04b"
-                background-color="#545c64"
-                class="my-menu"
-                mode="horizontal"
-                router
-                text-color="#fff"
-                @select="handleSelect"
+
+              <el-drawer
+                :visible.sync="drawer"
+                :withHeader="true"
+                direction="ltr"
+                title="更多"
               >
-                <el-menu-item index="/">购买商品</el-menu-item>
-                <el-menu-item index="queryOrder">查询订单</el-menu-item>
-                <!-- <el-button class="my-button" @click="regShow = true">注册</el-button>
-                                <el-button class="my-button" @click="login">登录</el-button> -->
-              </el-menu>
+                <div class="customClass">
+                  <el-menu
+                    :default-active="activeIndex"
+                    active-text-color="#ffd04b"
+                    background-color="#545c64"
+                    class="my-menu"
+                    mode="vertical"
+                    router
+                    style="width: 100%"
+                    text-color="#fff"
+                    @select="handleSelect"
+                  >
+                    <el-menu-item index="/">购买商品</el-menu-item>
+                    <el-menu-item index="queryOrder">查询订单</el-menu-item>
+                    <!-- <el-button class="my-button" @click="regShow = true">注册</el-button>
+                                      <el-button class="my-button" @click="login">登录</el-button> -->
+                  </el-menu>
+                </div>
+              </el-drawer>
+              <div class="my-class2">
+                <el-menu
+                  :default-active="activeIndex"
+                  active-text-color="#ffd04b"
+                  background-color="#545c64"
+                  class="my-menu"
+                  mode="horizontal"
+                  router
+                  text-color="#fff"
+                  @select="handleSelect"
+                >
+                  <el-menu-item index="/">购买商品</el-menu-item>
+                  <el-menu-item index="queryOrder">查询订单</el-menu-item>
+                  <!-- <el-button class="my-button" @click="regShow = true">注册</el-button>
+                                  <el-button class="my-button" @click="login">登录</el-button> -->
+                </el-menu>
+              </div>
             </el-col>
             <el-col :span="5">
               <div class="grid-content"></div>
@@ -66,8 +104,13 @@
 </template>
 <script>
 import {getSysInfo} from "@/api/common";
+import Hamburger from "@/components/Hamburger";
+import "element-ui/lib/theme-chalk/display.css";
 
 export default {
+  components: {
+    Hamburger,
+  },
   data() {
     return {
       copyright: "",
@@ -75,6 +118,7 @@ export default {
       regShow: false,
       logo: require("../../assets/logo/logo.png"),
       title: "在线商城",
+      drawer: false,
     };
   },
   created() {
@@ -105,8 +149,12 @@ export default {
     },
     handleSelect(key, keyPath) {
       // console.log(key, keyPath);
+      this.drawer = false;
     },
     login() {
+    },
+    toggleSideBar() {
+      this.drawer = true;
     },
   },
 };
@@ -120,7 +168,8 @@ a {
 }
 
 .home {
-  width: 1100px;
+  width: 90vw;
+  max-width: 1100px;
 }
 
 .my-header {
@@ -145,7 +194,7 @@ a {
   float: right;
   max-width: 1140px;
   height: 60px;
-  border-bottom: 0px;
+  border: 0px;
 }
 .grid-content {
   border-radius: 4px;
@@ -190,24 +239,57 @@ a {
 </style>
 
 <style scoped>
-@media screen and (max-width: 1200px) {
-  .my-menu {
-    float: right;
-    max-width: 1140px;
-  }
-
-  .grid-content {
-    border-radius: 4px;
-    min-height: 36px;
-  }
+/* @media screen and (max-width: 1200px) { */
+.my-menu {
+  float: right;
+  max-width: 1140px;
 }
 
-@media screen and (max-width: 576px) {
+.grid-content {
+  border-radius: 4px;
+  min-height: 36px;
+}
+
+/* } */
+
+/* @media screen and (max-width: 576px) {
   .my-menu {
     display: none;
   }
 
   .grid-content {
   }
+} */
+
+@media screen and (min-width: 1200px) {
+  .my-class {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 1199px) {
+  .my-class2 {
+    display: none;
+  }
+}
+
+.hamburger-container {
+  line-height: 46px;
+  height: 100%;
+  float: left;
+  cursor: pointer;
+  transition: background 0.3s;
+  -webkit-tap-highlight-color: transparent;
+  margin-top: 5px;
+}
+
+.hamburger-container :hover {
+  background: rgba(0, 0, 0, 0.025);
+}
+
+.customClass {
+  background-color: #545c64;
+  height: 100%;
+  width: 100%;
 }
 </style>

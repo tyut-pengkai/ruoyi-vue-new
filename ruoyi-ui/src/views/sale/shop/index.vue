@@ -168,7 +168,7 @@
       :visible.sync="dialogFormVisible"
       custom-class="customClass"
       style="margin-top: 10vh"
-      width="500px"
+      width="90vw"
     >
       <el-steps
         :active="activeStep"
@@ -214,17 +214,17 @@
         </el-form-item>
         <el-divider></el-divider>
         <div v-if="orderShow">
-          <el-form-item label="" label-width="120px">
+          <el-form-item label="" label-width="80px">
             <span class="my-discount">[ 订单已提交，请在5分钟内支付 ]</span>
           </el-form-item>
-          <el-form-item label="订单编号" label-width="120px">
+          <el-form-item label="订单编号" label-width="80px">
             {{ orderNo }}
             <span class="my-discount"> [ {{ remainTimeShow }} ] </span>
           </el-form-item>
         </div>
         <el-row>
           <el-col :span="18" :offset="4">
-            <el-form-item label="应付金额" label-width="120px" class="my-total">
+            <el-form-item class="my-total" label="应付金额" label-width="80px">
               <span>￥{{ selectedGoodsData.totalPrice }}</span>
             </el-form-item>
           </el-col>
@@ -458,7 +458,7 @@ export default {
       this.loading = true;
       this.showGoodsDetail = true;
       // 锚点跳转
-      location.href = "#goods";
+      // location.href = "#goods";
       setTimeout(() => {
         this.loading = false;
       }, 1000);
@@ -482,7 +482,7 @@ export default {
     handlePaySelect(id) {
       // 锚点跳转
       // location.href = "#pay";
-      window.scrollTo(0, document.documentElement.clientHeight);
+      // window.scrollTo(0, document.documentElement.clientHeight);
       //这里检查之前表单是否有误，并判断当前环境是否需要验证。
       if (this.showGoodsDetail == false) {
         this.$notify({
@@ -505,7 +505,7 @@ export default {
           dangerouslyUseHTMLString: true,
           message: "请先选择商品",
           type: "warning",
-          offset: 100,
+          offset: 300,
         });
       } else if (!this.form["contact"] || !this.form["queryPass"]) {
         this.$notify({
@@ -513,7 +513,7 @@ export default {
           dangerouslyUseHTMLString: true,
           message: "联系方式或查询密码不能为空",
           type: "warning",
-          offset: 100,
+          offset: 300,
         });
       } else {
         this.orderNo = null;
@@ -550,7 +550,13 @@ export default {
       } else {
         clearInterval(this.timer);
         this.dialogFormVisible = false;
-        this.$modal.alert("订单超时未支付，已自动关闭订单");
+        this.$alert({
+          title: "消息",
+          dangerouslyUseHTMLString: true,
+          message: "订单超时未支付，已自动关闭订单",
+          type: "warning",
+          offset: 300,
+        });
       }
     },
 
@@ -562,7 +568,7 @@ export default {
           dangerouslyUseHTMLString: true,
           message: "请先选择商品",
           type: "warning",
-          offset: 100,
+          offset: 300,
         });
       } else {
         if (this.activeStep == 1) {
@@ -619,8 +625,13 @@ export default {
             clearInterval(this.timer);
           }
           this.dialogFormVisible = false;
-          this.$modal
-            .confirm("是否已成功支付？")
+          this.$confirm({
+            title: "消息",
+            dangerouslyUseHTMLString: true,
+            message: "是否已成功支付？",
+            type: "warning",
+            offset: 300,
+          })
             .then(() => {
               // console.log("确认");
               var data = {
@@ -714,5 +725,9 @@ export default {
 
 .clearfix:after {
   clear: both;
+}
+
+.customClass {
+  max-width: 500px;
 }
 </style>
