@@ -610,25 +610,28 @@ export default {
     };
   },
   created() {
-    // const appId = this.$route.params && this.$route.params.appId;
-    const appId = this.$route.query && this.$route.query.appId;
-    // const appName = this.$route.query && this.$route.query.appName;
-    if (appId != undefined && appId != null) {
-      getApp(appId).then((response) => {
-        this.app = response.data;
-        const title = "版本管理";
-        const appName = this.app.appName;
-        const route = Object.assign({}, this.$route, {
-          title: `${title}-${appName}`,
-        });
-        this.$store.dispatch("tagsView/updateVisitedView", route);
-        this.getList();
-      });
-    } else {
-      this.$modal.alertError("未获取到当前软件信息");
-    }
+    this.init();
   },
   methods: {
+    init() {
+      // const appId = this.$route.params && this.$route.params.appId;
+      const appId = this.$route.query && this.$route.query.appId;
+      // const appName = this.$route.query && this.$route.query.appName;
+      if (appId != undefined && appId != null) {
+        getApp(appId).then((response) => {
+          this.app = response.data;
+          const title = "版本管理";
+          const appName = this.app.appName;
+          const route = Object.assign({}, this.$route, {
+            title: `${title}-${appName}`,
+          });
+          this.$store.dispatch("tagsView/updateVisitedView", route);
+          this.getList();
+        });
+      } else {
+        this.$modal.alertError("未获取到当前软件信息");
+      }
+    },
     /** 查询软件版本信息列表 */
     getList() {
       this.loading = true;
@@ -885,6 +888,22 @@ export default {
         .catch(() => {
           //取消--什么都不做
         });
+    },
+  },
+  watch: {
+    //动态监听路由变化 -以便动态更改导航背景色事件效果等
+    $route(to, from) {
+      // 对路由变化作出响应...
+      // console.log("to.path----", to); //跳转后路由
+      // console.log("from----", from); //跳转前路由
+
+      if (
+        from.path == "/verify/app" &&
+        to.path == "/verify/appVersion" &&
+        to.query.appId != this.app.appId
+      ) {
+        this.init();
+      }
     },
   },
 };
