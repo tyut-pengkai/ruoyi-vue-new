@@ -550,13 +550,7 @@ export default {
       } else {
         clearInterval(this.timer);
         this.dialogFormVisible = false;
-        this.$alert({
-          title: "消息",
-          dangerouslyUseHTMLString: true,
-          message: "订单超时未支付，已自动关闭订单",
-          type: "warning",
-          offset: 300,
-        });
+        this.$modal.alert("订单超时未支付，已自动关闭订单");
       }
     },
 
@@ -625,13 +619,8 @@ export default {
             clearInterval(this.timer);
           }
           this.dialogFormVisible = false;
-          this.$confirm({
-            title: "消息",
-            dangerouslyUseHTMLString: true,
-            message: "是否已成功支付？",
-            type: "warning",
-            offset: 300,
-          })
+          this.$modal
+            .confirm("是否已成功支付？")
             .then(() => {
               // console.log("确认");
               var data = {

@@ -173,7 +173,7 @@ import userInfo from "./userInfo";
 import resetPwd from "./resetPwd";
 import {getUserProfile} from "@/api/system/user";
 import CountTo from "vue-count-to";
-import CardPay from "@/views/sale/shop/card/CardPay";
+import CardPay from "@/views/sale/shop/card/CardPay1";
 import {createChargeOrder, getPayStatus, getShopConfig,} from "@/api/sale/saleShop";
 
 export default {
