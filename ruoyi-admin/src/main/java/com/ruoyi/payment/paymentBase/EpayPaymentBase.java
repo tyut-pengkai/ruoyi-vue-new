@@ -83,7 +83,8 @@ public class EpayPaymentBase extends Payment {
         }
         // 回调地址
         notifyUrl = getNotifyUrl(config.getNotifyUrl());
-        returnUrl = getReturnUrl(notifyUrl);
+//        returnUrl = getReturnUrl(notifyUrl);
+        returnUrl = getReturnUrl(config.getReturnUrl());
     }
 
     @Override

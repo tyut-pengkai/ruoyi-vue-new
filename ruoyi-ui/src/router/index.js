@@ -62,6 +62,11 @@ export const constantRoutes = [{
     hidden: true
   },
   {
+    path: '/sale/shop/return/:code(\\S+)',
+    component: () => import('@/views/sale/shop/returnPage'),
+    hidden: true
+  },
+  {
     path: '',
     component: () => import('@/views/sale/index'),
     hidden: true,

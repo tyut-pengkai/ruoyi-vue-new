@@ -105,3 +105,11 @@ export function getPayStatus(query) {
     params: query
   })
 }
+
+// 支付回调
+export function callReturn(code, paramsStr) {
+  return request({
+    url: '/sale/shop/notify/' + code + paramsStr,
+    method: 'get'
+  })
+}

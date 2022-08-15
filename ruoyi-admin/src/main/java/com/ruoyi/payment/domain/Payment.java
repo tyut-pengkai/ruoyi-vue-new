@@ -141,6 +141,7 @@ public abstract class Payment extends BaseAutoAware {
         if (returnUrl.endsWith("/")) {
             returnUrl = returnUrl.substring(0, returnUrl.length() - 1);
         }
+        returnUrl += "/sale/shop/return/" + getCode();
         return returnUrl;
     }
 
