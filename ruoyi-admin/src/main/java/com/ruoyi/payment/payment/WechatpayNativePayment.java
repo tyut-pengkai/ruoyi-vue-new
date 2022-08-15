@@ -33,7 +33,7 @@ import java.util.Map;
 
 @Slf4j
 public class WechatpayNativePayment extends Payment {
-    private static String notifyUrl = "";
+    private String notifyUrl;
     @Resource
     private ISysPaymentService sysPaymentService;
 

@@ -33,9 +33,9 @@ import java.util.Map;
 
 @Slf4j
 public class AlipayF2fPaymentSandbox extends Payment {
-    private static String notifyUrl = "";
-    private static String alipayPublicKey = "";
-    private static AlipayClient alipayClient;
+    private String notifyUrl;
+    private String alipayPublicKey;
+    private AlipayClient alipayClient;
     @Resource
     private ISysPaymentService sysPaymentService;
 

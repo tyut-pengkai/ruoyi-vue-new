@@ -6,10 +6,10 @@ public class EpayQqpayPayment extends EpayPaymentBase {
 
     @Override
     public void init() {
-        setCode("epay_qq");
-        setName("易支付-QQ钱包");
-        setIcon("pay-qq");
-        setPayType("qqpay");
+        super.setCode("epay_qq");
+        super.setName("易支付-QQ钱包");
+        super.setIcon("pay-qq");
+        super.setPayType("qqpay");
         super.init();
     }
 

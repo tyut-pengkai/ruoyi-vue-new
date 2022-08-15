@@ -1,7 +1,6 @@
 package com.ruoyi.payment.paymentBase;
 
 import com.alibaba.fastjson.JSON;
-import com.alipay.api.AlipayApiException;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
@@ -23,33 +22,29 @@ import java.util.*;
 
 @Slf4j
 public class EpayPaymentBase extends Payment {
-    private static String serverUrl = "";
-    private static String notifyUrl = "";
-    private static String returnUrl = "";
-    private static String pid = "";
-    private static String key = "";
-    private static String payType = "";
+    private String serverUrl;
+    private String notifyUrl;
+    private String returnUrl;
+    private String pid;
+    private String key;
+    private String payType;
     @Resource
     private ISysPaymentService sysPaymentService;
     @Resource
     private RestTemplate restTemplate;
 
-    public static String getPayType() {
-        return payType;
+    public void setPayType(String payType) {
+        this.payType = payType;
     }
 
-    public static void setPayType(String payType) {
-        EpayPaymentBase.payType = payType;
-    }
-
-    public static <K extends Comparable<? super K>, V> Map<K, V> sortByKey(Map<K, V> map) {
+    public <K extends Comparable<? super K>, V> Map<K, V> sortByKey(Map<K, V> map) {
         Map<K, V> result = new LinkedHashMap<>();
         map.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey()).forEachOrdered(e -> result.put(e.getKey(), e.getValue()));
         return result;
     }
 
-    public static String getSign(Map<String, String> params) {
+    public String getSign(Map<String, String> params) {
         //根据key升序排序
         Map<String, String> sign = sortByKey(params);
         StringBuilder signStr = new StringBuilder();
@@ -63,7 +58,7 @@ public class EpayPaymentBase extends Payment {
         signStr = new StringBuilder(signStr.substring(0, signStr.length() - 1));
         //最后拼接上KEY
         signStr.append(key);
-        System.out.println(signStr.toString());
+        System.out.println(signStr);
         //转为MD5
         signStr = new StringBuilder(DigestUtils.md5DigestAsHex(signStr.toString().getBytes()));
         return signStr.toString();
@@ -79,10 +74,10 @@ public class EpayPaymentBase extends Payment {
         }
         EasypayConfig config = JSON.parseObject(payment.getConfig(), EasypayConfig.class);
         // 配置参数
-        serverUrl = config.getServerUrl();
-        returnUrl = config.getReturnUrl();
-        pid = config.getPid();
-        key = config.getKey();
+        this.serverUrl = config.getServerUrl();
+        this.returnUrl = config.getReturnUrl();
+        this.pid = config.getPid();
+        this.key = config.getKey();
         if (StringUtils.isNotBlank(payment.getIcon())) {
             this.setIcon(payment.getIcon());
         }
@@ -96,11 +91,11 @@ public class EpayPaymentBase extends Payment {
 
         //参数存入 map
         Map<String, String> sign = new HashMap<>();
-        sign.put("pid", pid);
-        sign.put("type", payType);
+        sign.put("pid", this.pid);
+        sign.put("type", this.payType);
         sign.put("out_trade_no", sso.getOrderNo());
-        sign.put("notify_url", notifyUrl);
-        sign.put("return_url", returnUrl);
+        sign.put("notify_url", this.notifyUrl);
+        sign.put("return_url", this.returnUrl);
         String subject = sso.getOrderNo();
         List<SysSaleOrderItem> itemList = sso.getSysSaleOrderItemList();
         if (itemList.size() > 0) {
@@ -113,7 +108,7 @@ public class EpayPaymentBase extends Payment {
         sign.put("sign", signStr);
         StringBuilder s = new StringBuilder();
 //        s.append("<form id='paying' action='" + serverUrl + "/submit.php' method='post' target=\"_blank\">"); // 跳转新页面
-        s.append("<form id='paying' action='" + serverUrl + "/submit.php' method='post'>");
+        s.append("<form id='paying' action='" + this.serverUrl + "/submit.php' method='post'>");
         for (Map.Entry<String, String> m : sign.entrySet()) {
             s.append("<input type='hidden' name='" + m.getKey() + "' value='" + m.getValue() + "'/>");
         }
@@ -126,13 +121,12 @@ public class EpayPaymentBase extends Payment {
         return map;
     }
 
-    private boolean verify(HttpServletRequest request) throws AlipayApiException {
+    private boolean verify(HttpServletRequest request) {
         //获取支付宝POST过来反馈信息
         Map<String, String> params = new HashMap<>();
         Map<String, String[]> requestParams = request.getParameterMap();
         System.out.println(JSON.toJSONString(requestParams));
-        for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
-            String name = iter.next();
+        for (String name : requestParams.keySet()) {
             String[] values = requestParams.get(name);
             String valueStr = "";
             for (int i = 0; i < values.length; i++) {
@@ -174,7 +168,7 @@ public class EpayPaymentBase extends Payment {
                 //交易状态
                 String trade_status = new String(request.getParameter("trade_status").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
                 //付款金额
-                String total_amount = new String(request.getParameter("money").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+//                String total_amount = new String(request.getParameter("money").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
                 if (trade_status.equals("TRADE_SUCCESS")) {
                     doDeliveryGoods(out_trade_no, trade_no, true);
                     // 反馈给第三方支付平台
@@ -190,7 +184,7 @@ public class EpayPaymentBase extends Payment {
     public void beforeExpire(SysSaleOrder sso) {
 //        System.out.println("主动查询" + orderNo);
         if (sso != null && SaleOrderStatus.WAIT_PAY.equals(sso.getStatus())) {
-            String request = serverUrl + "/api.php?act=order&pid=" + pid + "&key=" + key + "&out_trade_no=" + sso.getOrderNo();
+            String request = this.serverUrl + "/api.php?act=order&pid=" + this.pid + "&key=" + this.key + "&out_trade_no=" + sso.getOrderNo();
             log.debug(JSON.toJSONString(request));
             try {
                 String responseBody = restTemplate.getForObject(request, String.class);
