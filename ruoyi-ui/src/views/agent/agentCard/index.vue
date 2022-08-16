@@ -997,7 +997,7 @@ export default {
         status: undefined,
         chargeRule: undefined,
         remark: undefined,
-        genQuantity: 100,
+        genQuantity: 1,
       };
       this.resetForm("formBatch");
     },

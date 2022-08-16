@@ -754,7 +754,11 @@
           </el-col>
         </el-form-item>
         <el-form-item label="选择卡类" prop="templateId">
-          <el-select v-model="formBatch.templateId" placeholder="请选择">
+          <el-select
+            v-model="formBatch.templateId"
+            placeholder="请选择"
+            @change="changeSelectedCard"
+          >
             <el-option
               v-for="item in cardTemplateList"
               :key="item.templateId"
@@ -877,7 +881,7 @@ import {getApp, listAppAll} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
 import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
-import {listCardTemplateAll} from "@/api/system/cardTemplate";
+import {getCardTemplate, listCardTemplateAll} from "@/api/system/cardTemplate";
 import Clipboard from "clipboard";
 
 export default {
@@ -1127,7 +1131,7 @@ export default {
         status: undefined,
         chargeRule: undefined,
         remark: undefined,
-        genQuantity: 100,
+        genQuantity: 1,
       };
       this.resetForm("formBatch");
     },
@@ -1327,6 +1331,13 @@ export default {
         queryParams.appId = this.app.appId;
         listCardTemplateAll(queryParams).then((response) => {
           this.cardTemplateList = response.rows;
+        });
+      }
+    },
+    changeSelectedCard(templateId) {
+      if (templateId) {
+        getCardTemplate(templateId).then((response) => {
+          this.formBatch.onSale = response.data.onSale;
         });
       }
     },

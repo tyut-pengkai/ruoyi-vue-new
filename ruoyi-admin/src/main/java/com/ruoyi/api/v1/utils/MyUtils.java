@@ -11,6 +11,8 @@ import org.springframework.util.ClassUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +27,10 @@ public class MyUtils {
         if (quota == null) {
             return oldExpiredTime;
         } else {
-            return DateUtils.addSeconds(oldExpiredTime, quota.intValue());
+//            return DateUtils.addSeconds(oldExpiredTime, quota.intValue());
+            LocalDateTime ldt = DateUtils.toLocalDateTime(oldExpiredTime);
+            ldt = ldt.plus(quota, ChronoUnit.SECONDS);
+            return DateUtils.toDate(ldt);
         }
     }
 
@@ -37,7 +42,10 @@ public class MyUtils {
         if (quota == null) {
             return oldExpiredTime;
         } else {
-            return DateUtils.addSeconds(oldExpiredTime, -quota.intValue());
+//            return DateUtils.addSeconds(oldExpiredTime, -quota.intValue());
+            LocalDateTime ldt = DateUtils.toLocalDateTime(oldExpiredTime);
+            ldt = ldt.minus(quota, ChronoUnit.SECONDS);
+            return DateUtils.toDate(ldt);
         }
     }
 

@@ -15,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -122,7 +124,10 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
             if (loginCodeTpl.getEffectiveDuration() == -1) {
                 sysLoginCode.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE));
             } else {
-                sysLoginCode.setExpireTime(DateUtils.addSeconds(new Date(), loginCodeTpl.getEffectiveDuration().intValue()));
+//                sysLoginCode.setExpireTime(DateUtils.addSeconds(new Date(), loginCodeTpl.getEffectiveDuration().intValue()));
+                LocalDateTime ldt = DateUtils.toLocalDateTime(new Date());
+                ldt = ldt.plus(loginCodeTpl.getEffectiveDuration(), ChronoUnit.SECONDS);
+                sysLoginCode.setExpireTime(DateUtils.toDate(ldt));
             }
             sysLoginCode.setIsCharged(UserConstants.NO);
             sysLoginCode.setIsSold(UserConstants.NO);

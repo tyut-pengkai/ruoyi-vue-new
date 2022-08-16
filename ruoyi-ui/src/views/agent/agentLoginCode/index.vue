@@ -959,7 +959,7 @@ export default {
         templateId: undefined,
         status: undefined,
         remark: undefined,
-        genQuantity: 100,
+        genQuantity: 1,
       };
       this.resetForm("formBatch");
     },

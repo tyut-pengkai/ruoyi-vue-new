@@ -702,7 +702,11 @@
           </el-col>
         </el-form-item>
         <el-form-item label="选择单码类别" prop="templateId">
-          <el-select v-model="formBatch.templateId" placeholder="请选择">
+          <el-select
+            v-model="formBatch.templateId"
+            placeholder="请选择"
+            @change="changeSelectedCard"
+          >
             <el-option
               v-for="item in cardTemplateList"
               :key="item.templateId"
@@ -832,7 +836,7 @@ import {getApp, listAppAll} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
 import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
-import {listLoginCodeTemplateAll} from "@/api/system/loginCodeTemplate";
+import {getLoginCodeTemplate, listLoginCodeTemplateAll,} from "@/api/system/loginCodeTemplate";
 import Clipboard from "clipboard";
 
 export default {
@@ -1067,7 +1071,7 @@ export default {
         templateId: undefined,
         status: undefined,
         remark: undefined,
-        genQuantity: 100,
+        genQuantity: 1,
       };
       this.resetForm("formBatch");
     },
@@ -1257,6 +1261,13 @@ export default {
         queryParams.appId = this.app.appId;
         listLoginCodeTemplateAll(queryParams).then((response) => {
           this.cardTemplateList = response.rows;
+        });
+      }
+    },
+    changeSelectedCard(templateId) {
+      if (templateId) {
+        getLoginCodeTemplate(templateId).then((response) => {
+          this.formBatch.onSale = response.data.onSale;
         });
       }
     },
