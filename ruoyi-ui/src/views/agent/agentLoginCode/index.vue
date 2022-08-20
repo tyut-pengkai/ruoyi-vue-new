@@ -1052,22 +1052,24 @@ export default {
               contentSimple = content;
               for (var index in response.data) {
                 var goods = response.data[index];
-                content += "第" + (parseInt(index) + 1) + "张\n";
-                content += "登录码：" + goods.cardNo + "\n";
-                contentSimple += goods.cardNo + "\n";
-                if (
-                  goods.expireTime &&
-                  goods.expireTime != "9999-12-31 23:59:59"
-                ) {
-                  content +=
-                    "充值过期（请在此时间前充值）：" +
-                    (!goods.expireTime ||
-                    goods.expireTime == "9999-12-31 23:59:59"
-                      ? "长期有效"
-                      : goods.expireTime) +
-                    "\n";
+                if (goods) {
+                  content += "第" + (parseInt(index) + 1) + "张\n";
+                  content += "登录码：" + goods.cardNo + "\n";
+                  contentSimple += goods.cardNo + "\n";
+                  if (
+                    goods.expireTime &&
+                    goods.expireTime != "9999-12-31 23:59:59"
+                  ) {
+                    content +=
+                      "充值过期（请在此时间前充值）：" +
+                      (!goods.expireTime ||
+                      goods.expireTime == "9999-12-31 23:59:59"
+                        ? "长期有效"
+                        : goods.expireTime) +
+                      "\n";
+                  }
+                  content += "\n";
                 }
-                content += "\n";
               }
               this.cardStr = content;
               this.cardSimpleStr = contentSimple;

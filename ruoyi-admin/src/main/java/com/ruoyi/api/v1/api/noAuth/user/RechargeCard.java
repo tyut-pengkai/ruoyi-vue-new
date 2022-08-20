@@ -81,6 +81,9 @@ public class RechargeCard extends Function {
             BigDecimal newPoint = MyUtils.getNewPointAdd(appUser.getPoint(), card.getQuota());
             appUser.setPoint(newPoint);
         }
+        appUser.setCardLoginLimitU(card.getCardLoginLimitU());
+        appUser.setCardLoginLimitM(card.getCardLoginLimitM());
+        appUser.setCardCustomParams(card.getCardCustomParams());
         card.setIsCharged(UserConstants.YES);
         card.setChargeTime(DateUtils.getNowDate());
         card.setOnSale(UserConstants.NO);

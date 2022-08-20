@@ -25,10 +25,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="createTime" column="create_time"/>
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
-        <result property="remark"    column="remark"    />
+        <result property="remark" column="remark"/>
         <result property="delFlag" column="del_flag"/>
-        <association property="user"    column="user_id" javaType="SysUser" resultMap="SysUserResult" />
-        <association property="app"    column="app_id" javaType="SysApp" resultMap="SysAppResult" />
+        <result property="cardLoginLimitU" column="card_login_limit_u"/>
+        <result property="cardLoginLimitM" column="card_login_limit_m"/>
+        <result property="cardCustomParams" column="card_custom_params"/>
+        <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
+        <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
     </resultMap>
 
     <resultMap type="SysUser" id="SysUserResult">
@@ -43,6 +46,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="authType" column="auth_type"/>
         <result property="billType" column="bill_type"/>
         <result property="description" column="description"/>
+        <result property="loginLimitU" column="app_login_limit_u"/>
+        <result property="loginLimitM" column="app_login_limit_m"/>
     </resultMap>
 
     <sql id="selectSysAppUserVo">
@@ -68,11 +73,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                au.update_time,
                au.remark,
                au.del_flag,
+               au.card_login_limit_u,
+               au.card_login_limit_m,
+               au.card_custom_params,
                a.app_id,
                a.app_name,
                a.auth_type,
                a.bill_type,
                a.description,
+               a.login_limit_u as app_login_limit_u,
+               a.login_limit_m as app_login_limit_m,
                u.user_id,
                u.user_name,
                u.nick_name
@@ -132,7 +142,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
             <if test="delFlag != null">del_flag,</if>
-         </trim>
+            <if test="cardLoginLimitU != null">card_login_limit_u,</if>
+            <if test="cardLoginLimitM != null">card_login_limit_m,</if>
+            <if test="cardCustomParams != null">card_custom_params,</if>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
             <if test="appId != null">#{appId},</if>
@@ -155,7 +168,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
             <if test="delFlag != null">#{delFlag},</if>
-         </trim>
+            <if test="cardLoginLimitU != null">#{cardLoginLimitU},</if>
+            <if test="cardLoginLimitM != null">#{cardLoginLimitM},</if>
+            <if test="cardCustomParams != null">#{cardCustomParams},</if>
+        </trim>
     </insert>
 
     <update id="updateSysAppUser" parameterType="SysAppUser">
@@ -182,6 +198,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             update_time = sysdate(),
             <if test="remark != null">remark = #{remark},</if>
             <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="cardLoginLimitU != null">card_login_limit_u = #{cardLoginLimitU},</if>
+            <if test="cardLoginLimitM != null">card_login_limit_m = #{cardLoginLimitM},</if>
+            <if test="cardCustomParams != null">card_custom_params = #{cardCustomParams},</if>
         </trim>
         where app_user_id = #{appUserId}
     </update>

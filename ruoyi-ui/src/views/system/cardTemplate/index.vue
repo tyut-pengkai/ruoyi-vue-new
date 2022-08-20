@@ -227,6 +227,32 @@
           </span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="登录用户数限制(卡)">
+        <template slot-scope="scope">
+          <span>
+            {{
+              scope.row.cardLoginLimitU == -2
+                ? "不生效"
+                : scope.row.cardLoginLimitU == -1
+                  ? "无限制"
+                  : scope.row.cardLoginLimitU
+            }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="登录设备数限制(卡)">
+        <template slot-scope="scope">
+          <span>
+            {{
+              scope.row.cardLoginLimitM == -2
+                ? "不生效"
+                : scope.row.cardLoginLimitM == -1
+                  ? "无限制"
+                  : scope.row.cardLoginLimitM
+            }}
+          </span>
+        </template>
+      </el-table-column>
       <!-- <el-table-column label="卡描述" align="center" prop="cardDescription" /> -->
       <!-- <el-table-column label="卡号长度" align="center" prop="cardNoLen" /> -->
       <!-- <el-table-column label="卡号生成规则" align="center" prop="cardNoGenRule">
@@ -713,12 +739,54 @@
               </el-form-item>
             </el-col>
           </el-form-item>
+          <el-form-item prop="">
+            <el-col :span="12">
+              <el-form-item label="登录用户数限制(卡)" prop="cardLoginLimitU">
+                <span>
+                  <el-tooltip
+                    content="由充值卡/单码生效的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2"
+                    placement="top"
+                  >
+                    <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                    ></i>
+                  </el-tooltip>
+                </span>
+                <el-input-number
+                  v-model="form.cardLoginLimitU"
+                  :min="-2"
+                  controls-position="right"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="登录设备数限制(卡)" prop="cardLoginLimitM">
+                <span>
+                  <el-tooltip
+                    content="由充值卡/单码生效的登录设备数量限制，整数，-1为不限制，-2为不生效，默认为-2"
+                    placement="top"
+                  >
+                    <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                    ></i>
+                  </el-tooltip>
+                </span>
+                <el-input-number
+                  v-model="form.cardLoginLimitM"
+                  :min="-2"
+                  controls-position="right"
+                />
+              </el-form-item>
+            </el-col>
+          </el-form-item>
           <!-- <el-form-item> -->
           <!-- <el-col :span="16"> -->
           <el-form-item label="卡密有效期" prop="effectiveDuration">
             <span>
               <el-tooltip
-                content="卡密有效期，整数，-1为长期有效，默认为-1"
+                content="卡密有效期，即制卡后用户需要在多少时间内充值完毕，过期将无法充值，整数，-1为长期有效，默认为-1"
                 placement="top"
               >
                 <i
@@ -736,6 +804,13 @@
           <!-- </el-col> -->
           <!-- <el-col :span="8"> </el-col> -->
           <!-- </el-form-item> -->
+          <el-form-item label="充值卡自定义参数" prop="cardCustomParams">
+            <el-input
+              v-model="form.cardCustomParams"
+              placeholder="请输入内容"
+              type="textarea"
+            />
+          </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input
               v-model="form.remark"
@@ -886,13 +961,29 @@ export default {
           { required: true, message: "卡类状态不能为空", trigger: "blur" },
         ],
         effectiveDuration: [
-          { required: true, message: "有效时长不能为空", trigger: "blur" },
+          {required: true, message: "有效时长不能为空", trigger: "blur"},
         ],
         enableAutoGen: [
           {
             required: true,
             message: "允许自动生成不能为空",
             trigger: "change",
+          },
+        ],
+        cardLoginLimitU: [
+          {
+            required: true,
+            message:
+              "由充值卡/单码生效的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
+            trigger: "blur",
+          },
+        ],
+        cardLoginLimitM: [
+          {
+            required: true,
+            message:
+              "由充值卡/单码生效的登录设备数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
+            trigger: "blur",
           },
         ],
       },
@@ -960,6 +1051,8 @@ export default {
         status: "0",
         enableAutoGen: "N",
         remark: undefined,
+        cardLoginLimitU: -2,
+        cardLoginLimitM: -2,
       };
       this.resetForm("form");
     },

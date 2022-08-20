@@ -348,8 +348,7 @@
                     :key="dict.value"
                     :label="dict.value"
                   >{{ dict.label }}
-                  </el-radio
-                  >
+                  </el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
@@ -423,7 +422,7 @@
 
 <script>
 import {delAppTrialUser, getAppTrialUser, listAppTrialUser, updateAppTrialUser,} from "@/api/system/appTrialUser";
-import {getApp, listApp} from "@/api/system/app";
+import {getApp, listAppAll} from "@/api/system/app";
 
 export default {
   name: "AppTrialUser",
@@ -555,7 +554,7 @@ export default {
       this.loading = true;
       let queryParams = {};
       queryParams.params = {};
-      listApp(queryParams).then((response) => {
+      listAppAll(queryParams).then((response) => {
         this.appList = response.rows;
         for (let app of this.appList) {
           this.appMap[app["appId"]] = app;

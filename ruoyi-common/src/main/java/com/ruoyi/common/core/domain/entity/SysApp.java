@@ -83,11 +83,11 @@ public class SysApp extends BaseEntity
     private Long dataExpireTime;
 
     /** 登录用户数量限制，整数，-1为不限制，默认为-1 */
-    @Excel(name = "登录用户数量限制，整数，-1为不限制，默认为-1")
+    @Excel(name = "登录用户数量限制，整数，-1为不限制，默认为1")
     private Integer loginLimitU;
 
     /** 登录机器数量限制，整数，-1为不限制，默认为-1 */
-    @Excel(name = "登录机器数量限制，整数，-1为不限制，默认为-1")
+    @Excel(name = "登录机器数量限制，整数，-1为不限制，默认为1")
     private Integer loginLimitM;
 
     /** 达到上限后的操作，默认为TIPS */

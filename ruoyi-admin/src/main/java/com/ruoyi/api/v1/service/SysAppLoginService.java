@@ -79,8 +79,8 @@ public class SysAppLoginService {
                 appUser.setUserId(user.getUserId());
                 appUser.setLastLoginTime(null);
                 appUser.setLoginCode(null);
-                appUser.setLoginLimitM(-1);
-                appUser.setLoginLimitU(-1);
+                appUser.setLoginLimitM(-2);
+                appUser.setLoginLimitU(-2);
                 appUser.setLoginTimes(0L);
                 appUser.setPwdErrorTimes(0);
                 appUser.setStatus(UserConstants.NORMAL);
@@ -208,8 +208,11 @@ public class SysAppLoginService {
                 appUser.setUserId(null);
                 appUser.setLastLoginTime(null);
                 appUser.setLoginCode(loginCodeStr);
-                appUser.setLoginLimitM(-1);
-                appUser.setLoginLimitU(-1);
+                appUser.setLoginLimitM(-2);
+                appUser.setLoginLimitU(-2);
+                appUser.setCardLoginLimitM(loginCode.getCardLoginLimitM());
+                appUser.setCardLoginLimitU(loginCode.getCardLoginLimitU());
+                appUser.setCardCustomParams(loginCode.getCardCustomParams());
                 appUser.setLoginTimes(0L);
                 appUser.setPwdErrorTimes(0);
                 appUser.setStatus(UserConstants.NORMAL);

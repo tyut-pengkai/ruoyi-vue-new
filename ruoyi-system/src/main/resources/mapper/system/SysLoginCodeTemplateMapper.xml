@@ -27,6 +27,9 @@
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
         <result property="delFlag" column="del_flag"/>
+        <result property="cardLoginLimitU" column="card_login_limit_u"/>
+        <result property="cardLoginLimitM" column="card_login_limit_m"/>
+        <result property="cardCustomParams" column="card_custom_params"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
     </resultMap>
 
@@ -61,6 +64,9 @@
                ct.update_time,
                ct.remark,
                ct.del_flag,
+               ct.card_login_limit_u,
+               ct.card_login_limit_m,
+               ct.card_custom_params,
                a.app_id,
                a.app_name,
                a.auth_type,
@@ -130,6 +136,9 @@
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
             <if test="delFlag != null">del_flag,</if>
+            <if test="cardLoginLimitU != null">card_login_limit_u,</if>
+            <if test="cardLoginLimitM != null">card_login_limit_m,</if>
+            <if test="cardCustomParams != null">card_custom_params,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="appId != null">#{appId},</if>
@@ -153,6 +162,9 @@
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
             <if test="delFlag != null">#{delFlag},</if>
+            <if test="cardLoginLimitU != null">#{cardLoginLimitU},</if>
+            <if test="cardLoginLimitM != null">#{cardLoginLimitM},</if>
+            <if test="cardCustomParams != null">#{cardCustomParams},</if>
         </trim>
     </insert>
 
@@ -180,6 +192,9 @@
             update_time = sysdate(),
             <if test="remark != null">remark = #{remark},</if>
             <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="cardLoginLimitU != null">card_login_limit_u = #{cardLoginLimitU},</if>
+            <if test="cardLoginLimitM != null">card_login_limit_m = #{cardLoginLimitM},</if>
+            <if test="cardCustomParams != null">card_custom_params = #{cardCustomParams},</if>
         </trim>
         where template_id = #{templateId}
     </update>

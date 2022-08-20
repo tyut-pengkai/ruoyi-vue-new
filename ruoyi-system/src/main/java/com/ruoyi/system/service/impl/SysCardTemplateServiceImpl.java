@@ -146,6 +146,9 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
             sysCard.setQuota(cardTpl.getQuota());
             sysCard.setStatus(UserConstants.NORMAL);
             sysCard.setRemark(remark);
+            sysCard.setCardLoginLimitU(cardTpl.getCardLoginLimitU());
+            sysCard.setCardLoginLimitM(cardTpl.getCardLoginLimitM());
+            sysCard.setCardCustomParams(cardTpl.getCardCustomParams());
             try {
                 sysCard.setCreateBy(SecurityUtils.getUsername());
             } catch (Exception ignored) {

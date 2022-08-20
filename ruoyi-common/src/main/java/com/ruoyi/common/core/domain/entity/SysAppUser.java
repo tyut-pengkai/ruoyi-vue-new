@@ -134,6 +134,68 @@ public class SysAppUser extends BaseEntity {
      */
     private String delFlag;
 
+    /**
+     * 登录用户数量限制，整数，-1为不限制，默认为-1
+     */
+    @Excel(name = "由卡密继承来的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2")
+    private Integer cardLoginLimitU;
+
+    /**
+     * 登录机器数量限制，整数，-1为不限制，默认为-1
+     */
+    @Excel(name = "由卡密继承来的登录机器数量限制，整数，-1为不限制，-2为不生效，默认为-2")
+    private Integer cardLoginLimitM;
+
+    /**
+     * 卡密自定义参数
+     */
+    @Excel(name = "卡密自定义参数")
+    private String cardCustomParams;
+
+    private Integer effectiveLoginLimitU;
+
+    private Integer effectiveLoginLimitM;
+
+    public Integer getEffectiveLoginLimitU() {
+        return effectiveLoginLimitU;
+    }
+
+    public void setEffectiveLoginLimitU(Integer effectiveLoginLimitU) {
+        this.effectiveLoginLimitU = effectiveLoginLimitU;
+    }
+
+    public Integer getEffectiveLoginLimitM() {
+        return effectiveLoginLimitM;
+    }
+
+    public void setEffectiveLoginLimitM(Integer effectiveLoginLimitM) {
+        this.effectiveLoginLimitM = effectiveLoginLimitM;
+    }
+
+    public Integer getCardLoginLimitU() {
+        return cardLoginLimitU;
+    }
+
+    public void setCardLoginLimitU(Integer cardLoginLimitU) {
+        this.cardLoginLimitU = cardLoginLimitU;
+    }
+
+    public Integer getCardLoginLimitM() {
+        return cardLoginLimitM;
+    }
+
+    public void setCardLoginLimitM(Integer cardLoginLimitM) {
+        this.cardLoginLimitM = cardLoginLimitM;
+    }
+
+    public String getCardCustomParams() {
+        return cardCustomParams;
+    }
+
+    public void setCardCustomParams(String cardCustomParams) {
+        this.cardCustomParams = cardCustomParams;
+    }
+
     public Long getAppUserId() {
         return appUserId;
     }

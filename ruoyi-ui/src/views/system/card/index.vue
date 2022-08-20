@@ -346,6 +346,33 @@
           <span>{{ parseMoney(scope.row.price) }}元 </span>
         </template>
       </el-table-column> -->
+      <el-table-column align="center" label="登录用户数限制(卡)"
+      >
+        <template slot-scope="scope">
+          <span>
+            {{
+              scope.row.cardLoginLimitU == -2
+                ? "不生效"
+                : scope.row.cardLoginLimitU == -1
+                  ? "无限制"
+                  : scope.row.cardLoginLimitU
+            }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="登录设备数限制(卡)">
+        <template slot-scope="scope">
+          <span>
+            {{
+              scope.row.cardLoginLimitM == -2
+                ? "不生效"
+                : scope.row.cardLoginLimitM == -1
+                  ? "无限制"
+                  : scope.row.cardLoginLimitM
+            }}
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column
         label="充值过期"
         align="center"
@@ -611,6 +638,48 @@
         </el-form-item>
         <el-form-item prop="">
           <el-col :span="12">
+            <el-form-item label="登录用户数限制(卡)" prop="cardLoginLimitU">
+              <span>
+                <el-tooltip
+                  content="由充值卡/单码生效的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2"
+                  placement="top"
+                >
+                  <i
+                    class="el-icon-question"
+                    style="margin-left: -12px; margin-right: 10px"
+                  ></i>
+                </el-tooltip>
+              </span>
+              <el-input-number
+                v-model="form.cardLoginLimitU"
+                :min="-2"
+                controls-position="right"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="登录设备数限制(卡)" prop="cardLoginLimitM">
+              <span>
+                <el-tooltip
+                  content="由充值卡/单码生效的登录设备数量限制，整数，-1为不限制，-2为不生效，默认为-2"
+                  placement="top"
+                >
+                  <i
+                    class="el-icon-question"
+                    style="margin-left: -12px; margin-right: 10px"
+                  ></i>
+                </el-tooltip>
+              </span>
+              <el-input-number
+                v-model="form.cardLoginLimitM"
+                :min="-2"
+                controls-position="right"
+              />
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item prop="">
+          <el-col :span="12">
             <el-form-item label="是否上架" prop="onSale">
               <el-select v-model="form.onSale" placeholder="请选择是否上架">
                 <el-option
@@ -663,6 +732,13 @@
               </el-select>
             </el-form-item>
           </el-col>
+        </el-form-item>
+        <el-form-item label="充值卡自定义参数" prop="cardCustomParams">
+          <el-input
+            v-model="form.cardCustomParams"
+            placeholder="请输入内容"
+            type="textarea"
+          />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input
@@ -881,7 +957,7 @@ import {getApp, listAppAll} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
 import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
-import {getCardTemplate, listCardTemplateAll} from "@/api/system/cardTemplate";
+import {getCardTemplate, listCardTemplateAll,} from "@/api/system/cardTemplate";
 import Clipboard from "clipboard";
 
 export default {
@@ -968,13 +1044,29 @@ export default {
           { required: true, message: "是否上架不能为空", trigger: "change" },
         ],
         isCharged: [
-          { required: true, message: "是否已用不能为空", trigger: "change" },
+          {required: true, message: "是否已用不能为空", trigger: "change"},
         ],
         status: [
-          { required: true, message: "卡密状态不能为空", trigger: "blur" },
+          {required: true, message: "卡密状态不能为空", trigger: "blur"},
         ],
         chargeRule: [
-          { required: true, message: "充值规则不能为空", trigger: "change" },
+          {required: true, message: "充值规则不能为空", trigger: "change"},
+        ],
+        cardLoginLimitU: [
+          {
+            required: true,
+            message:
+              "由充值卡/单码生效的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
+            trigger: "blur",
+          },
+        ],
+        cardLoginLimitM: [
+          {
+            required: true,
+            message:
+              "由充值卡/单码生效的登录设备数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
+            trigger: "blur",
+          },
         ],
       },
       rulesBatch: {
@@ -1111,6 +1203,8 @@ export default {
         status: "0",
         chargeRule: "0",
         remark: undefined,
+        cardLoginLimitU: -2,
+        cardLoginLimitM: -2,
       };
       this.resetForm("form");
     },
@@ -1233,29 +1327,31 @@ export default {
               contentSimple = content;
               for (var index in response.data) {
                 var goods = response.data[index];
-                content += "第" + (parseInt(index) + 1) + "张\n";
-                content += "充值卡号：" + goods.cardNo + "\n";
-                content += "充值密码：" + goods.cardPass + "\n";
-                contentSimple += goods.cardNo + " " + goods.cardPass + "\n";
-                if (
-                  goods.expireTime &&
-                  goods.expireTime != "9999-12-31 23:59:59"
-                ) {
-                  content +=
-                    "充值过期（请在此时间前充值）：" +
-                    (!goods.expireTime ||
-                    goods.expireTime == "9999-12-31 23:59:59"
-                      ? "长期有效"
-                      : goods.expireTime) +
-                    "\n";
+                if (goods) {
+                  content += "第" + (parseInt(index) + 1) + "张\n";
+                  content += "充值卡号：" + goods.cardNo + "\n";
+                  content += "充值密码：" + goods.cardPass + "\n";
+                  contentSimple += goods.cardNo + " " + goods.cardPass + "\n";
+                  if (
+                    goods.expireTime &&
+                    goods.expireTime != "9999-12-31 23:59:59"
+                  ) {
+                    content +=
+                      "充值过期（请在此时间前充值）：" +
+                      (!goods.expireTime ||
+                      goods.expireTime == "9999-12-31 23:59:59"
+                        ? "长期有效"
+                        : goods.expireTime) +
+                      "\n";
+                  }
+                  if (goods.chargeRule && goods.chargeRule != "0") {
+                    content +=
+                      "充值规则：" +
+                      this.chargeRuleFormat(goods.chargeRule) +
+                      "\n";
+                  }
+                  content += "\n";
                 }
-                if (goods.chargeRule && goods.chargeRule != "0") {
-                  content +=
-                    "充值规则：" +
-                    this.chargeRuleFormat(goods.chargeRule) +
-                    "\n";
-                }
-                content += "\n";
               }
               this.cardStr = content;
               this.cardSimpleStr = contentSimple;

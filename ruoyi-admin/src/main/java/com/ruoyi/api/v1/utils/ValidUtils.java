@@ -290,6 +290,65 @@ public class ValidUtils {
         }
     }
 
+//    public void checkLoginLimit(SysApp app, SysAppUser appUser, SysDeviceCode deviceCode) {
+//        Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
+//        List<LoginUser> onlineListU = new ArrayList<>();
+//        for (String key : keys) {
+//            LoginUser user = redisCache.getCacheObject(key);
+//            if (user.getIfApp() && !user.getIfTrial() && Objects.equals(appUser.getAppUserId(), user.getAppUser().getAppUserId())) {
+//                onlineListU.add(user);
+//            }
+//        }
+//        // 检查用户数量
+//        Integer userLimitApp = app.getLoginLimitU();
+//        Integer userLimitAppUser = appUser.getLoginLimitU();
+//        Integer mixU;
+//        if (userLimitApp == -1) {
+//            mixU = userLimitAppUser;
+//        } else {
+//            if (userLimitAppUser == -1) {
+//                mixU = userLimitApp;
+//            } else {
+//                mixU = userLimitApp < userLimitAppUser ? userLimitApp : userLimitAppUser;
+//            }
+//        }
+//        if (mixU != -1 && mixU <= onlineListU.size()) {
+//            if (app.getLimitOper() == LimitOper.TIPS) {
+//                throw new ApiException(ErrorCode.ERROR_LOGIN_USER_LIMIT);
+//            } else if (app.getLimitOper() == LimitOper.EARLIEST_LOGOUT) {
+//                // 登录最早的退出
+//                logoutTheEarliest(onlineListU, "用户同时登录数量超出限制");
+//            }
+//        }
+//        // 检查设备数量
+//        if (deviceCode != null) {
+//            List<Long> onlineListM = new ArrayList<>();
+//            for (LoginUser user : onlineListU) {
+//                onlineListM.add(user.getDeviceCode().getDeviceCodeId());
+//            }
+//            Integer machineLimitApp = app.getLoginLimitM();
+//            Integer machineLimitAppUser = appUser.getLoginLimitM();
+//            Integer mixM;
+//            if (machineLimitApp == -1) {
+//                mixM = machineLimitAppUser;
+//            } else {
+//                if (machineLimitAppUser == -1) {
+//                    mixM = machineLimitApp;
+//                } else {
+//                    mixM = machineLimitApp < machineLimitAppUser ? machineLimitApp : machineLimitAppUser;
+//                }
+//            }
+//            if (mixM != -1 && mixM <= onlineListM.size() && !onlineListM.contains(deviceCode.getDeviceCodeId())) {
+//                if (app.getLimitOper() == LimitOper.TIPS) {
+//                    throw new ApiException(ErrorCode.ERROR_LOGIN_MACHINE_LIMIT);
+//                } else if (app.getLimitOper() == LimitOper.EARLIEST_LOGOUT) {
+//                    // 登录最早的设备退出
+//                    logoutTheEarliest(onlineListU, "同时在线设备数量超出限制");
+//                }
+//            }
+//        }
+//    }
+
     public void checkLoginLimit(SysApp app, SysAppUser appUser, SysDeviceCode deviceCode) {
         Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
         List<LoginUser> onlineListU = new ArrayList<>();
@@ -300,18 +359,7 @@ public class ValidUtils {
             }
         }
         // 检查用户数量
-        Integer userLimitApp = app.getLoginLimitU();
-        Integer userLimitAppUser = appUser.getLoginLimitU();
-        Integer mixU;
-        if (userLimitApp == -1) {
-            mixU = userLimitAppUser;
-        } else {
-            if (userLimitAppUser == -1) {
-                mixU = userLimitApp;
-            } else {
-                mixU = userLimitApp < userLimitAppUser ? userLimitApp : userLimitAppUser;
-            }
-        }
+        Integer mixU = MyUtils.getEffectiveLoginLimitU(appUser);
         if (mixU != -1 && mixU <= onlineListU.size()) {
             if (app.getLimitOper() == LimitOper.TIPS) {
                 throw new ApiException(ErrorCode.ERROR_LOGIN_USER_LIMIT);
@@ -326,18 +374,7 @@ public class ValidUtils {
             for (LoginUser user : onlineListU) {
                 onlineListM.add(user.getDeviceCode().getDeviceCodeId());
             }
-            Integer machineLimitApp = app.getLoginLimitM();
-            Integer machineLimitAppUser = appUser.getLoginLimitM();
-            Integer mixM;
-            if (machineLimitApp == -1) {
-                mixM = machineLimitAppUser;
-            } else {
-                if (machineLimitAppUser == -1) {
-                    mixM = machineLimitApp;
-                } else {
-                    mixM = machineLimitApp < machineLimitAppUser ? machineLimitApp : machineLimitAppUser;
-                }
-            }
+            Integer mixM = MyUtils.getEffectiveLoginLimitM(appUser);
             if (mixM != -1 && mixM <= onlineListM.size() && !onlineListM.contains(deviceCode.getDeviceCodeId())) {
                 if (app.getLimitOper() == LimitOper.TIPS) {
                     throw new ApiException(ErrorCode.ERROR_LOGIN_MACHINE_LIMIT);

@@ -1,5 +1,6 @@
 package com.ruoyi.api.v1.utils;
 
+import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -115,5 +116,33 @@ public class MyUtils {
             e.printStackTrace();
         }
         return classList;
+    }
+
+    public static Integer getEffectiveLoginLimitU(SysAppUser appUser) {
+        Integer cardLoginLimit = appUser.getCardLoginLimitU();
+        Integer appUserLoginLimit = appUser.getLoginLimitU();
+        Integer appLoginLimit = appUser.getApp().getLoginLimitU();
+        return getEffectiveLoginLimit(cardLoginLimit, appUserLoginLimit, appLoginLimit);
+    }
+
+    public static Integer getEffectiveLoginLimitM(SysAppUser appUser) {
+        Integer cardLoginLimit = appUser.getCardLoginLimitM();
+        Integer appUserLoginLimit = appUser.getLoginLimitM();
+        Integer appLoginLimit = appUser.getApp().getLoginLimitM();
+        return getEffectiveLoginLimit(cardLoginLimit, appUserLoginLimit, appLoginLimit);
+    }
+
+    public static Integer getEffectiveLoginLimit(Integer cardLoginLimit, Integer appUserLoginLimit, Integer appLoginLimit) {
+        if (cardLoginLimit != -2) {
+            return cardLoginLimit;
+        }
+        if (appUserLoginLimit != -2) {
+            return appUserLoginLimit;
+        }
+        if (appLoginLimit >= -1) {
+            return appLoginLimit;
+        } else {
+            return 1;
+        }
     }
 }

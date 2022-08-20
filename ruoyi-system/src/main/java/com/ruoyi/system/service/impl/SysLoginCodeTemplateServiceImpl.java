@@ -137,6 +137,9 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
             sysLoginCode.setQuota(loginCodeTpl.getQuota());
             sysLoginCode.setStatus(UserConstants.NORMAL);
             sysLoginCode.setRemark(remark);
+            sysLoginCode.setCardLoginLimitU(loginCodeTpl.getCardLoginLimitU());
+            sysLoginCode.setCardLoginLimitM(loginCodeTpl.getCardLoginLimitM());
+            sysLoginCode.setCardCustomParams(loginCodeTpl.getCardCustomParams());
             try {
                 sysLoginCode.setCreateBy(SecurityUtils.getUsername());
             } catch (Exception ignore) {

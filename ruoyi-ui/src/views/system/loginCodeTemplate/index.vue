@@ -278,12 +278,38 @@
           </span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="登录用户数限制(卡)">
+        <template slot-scope="scope">
+          <span>
+            {{
+              scope.row.cardLoginLimitU == -2
+                ? "不生效"
+                : scope.row.cardLoginLimitU == -1
+                  ? "无限制"
+                  : scope.row.cardLoginLimitU
+            }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="登录设备数限制(卡)">
+        <template slot-scope="scope">
+          <span>
+            {{
+              scope.row.cardLoginLimitM == -2
+                ? "不生效"
+                : scope.row.cardLoginLimitM == -1
+                  ? "无限制"
+                  : scope.row.cardLoginLimitM
+            }}
+          </span>
+        </template>
+      </el-table-column>
       <!-- <el-table-column label="单码前缀" align="center" prop="cardNoPrefix" />
       <el-table-column label="单码后缀" align="center" prop="cardNoSuffix" />
       <el-table-column label="单码描述" align="center" prop="cardDescription" /> -->
       <el-table-column label="是否上架" align="center" prop="onSale">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale" />
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale"/>
         </template>
       </el-table-column>
       <!-- <el-table-column label="优先库存" align="center" prop="firstStock">
@@ -662,7 +688,7 @@
               <el-form-item label="单码有效期" prop="effectiveDuration">
                 <span>
                   <el-tooltip
-                    content="单码有效期，整数，-1为长期有效，默认为-1"
+                    content="单码有效期，即制卡后用户需要在多少时间内充值完毕，过期将无法充值，整数，-1为长期有效，默认为-1"
                     placement="top"
                   >
                     <i
@@ -680,13 +706,13 @@
             </el-col>
             <el-col :span="12">
               <el-form-item
-                label="自动生成"
+                label="自动制卡"
                 prop="enableAutoGen"
                 label-width="100px"
               >
                 <el-select
                   v-model="form.enableAutoGen"
-                  placeholder="请选择是否允许自动生成"
+                  placeholder="请选择是否允许自动制卡"
                 >
                   <el-option
                     v-for="dict in dict.type.sys_yes_no"
@@ -697,6 +723,55 @@
                 </el-select>
               </el-form-item>
             </el-col>
+          </el-form-item>
+          <el-form-item prop="">
+            <el-col :span="12">
+              <el-form-item label="登录用户数限制(卡)" prop="cardLoginLimitU">
+                <span>
+                  <el-tooltip
+                    content="由充值卡/单码生效的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2"
+                    placement="top"
+                  >
+                    <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                    ></i>
+                  </el-tooltip>
+                </span>
+                <el-input-number
+                  v-model="form.cardLoginLimitU"
+                  :min="-2"
+                  controls-position="right"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="登录设备数限制(卡)" prop="cardLoginLimitM">
+                <span>
+                  <el-tooltip
+                    content="由充值卡/单码生效的登录设备数量限制，整数，-1为不限制，-2为不生效，默认为-2"
+                    placement="top"
+                  >
+                    <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                    ></i>
+                  </el-tooltip>
+                </span>
+                <el-input-number
+                  v-model="form.cardLoginLimitM"
+                  :min="-2"
+                  controls-position="right"
+                />
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item label="单码自定义参数" prop="cardCustomParams">
+            <el-input
+              v-model="form.cardCustomParams"
+              placeholder="请输入内容"
+              type="textarea"
+            />
           </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input
@@ -816,13 +891,29 @@ export default {
           { required: true, message: "有效时长不能为空", trigger: "blur" },
         ],
         status: [
-          { required: true, message: "单码类别状态不能为空", trigger: "blur" },
+          {required: true, message: "单码类别状态不能为空", trigger: "blur"},
         ],
         enableAutoGen: [
           {
             required: true,
             message: "允许自动生成不能为空",
             trigger: "change",
+          },
+        ],
+        cardLoginLimitU: [
+          {
+            required: true,
+            message:
+              "由充值卡/单码生效的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
+            trigger: "blur",
+          },
+        ],
+        cardLoginLimitM: [
+          {
+            required: true,
+            message:
+              "由充值卡/单码生效的登录设备数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
+            trigger: "blur",
           },
         ],
       },
@@ -886,6 +977,8 @@ export default {
         status: "0",
         enableAutoGen: "N",
         remark: undefined,
+        cardLoginLimitU: -2,
+        cardLoginLimitM: -2,
       };
       this.resetForm("form");
     },

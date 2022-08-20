@@ -210,19 +210,147 @@
         </template>
       </el-table-column>
       <el-table-column label="登录用户数限制" align="center"
+      >
+        <template slot-scope="scope">
+          <span>
+            {{
+              scope.row.effectiveLoginLimitU == -1
+                ? "无限制"
+                : scope.row.effectiveLoginLimitU
+            }}
+          </span>
+          <span>
+            <el-tooltip placement="top">
+              <div slot="content">
+                优先级由高到低<br/>
+                充值卡/单码：
+                {{
+                  scope.row.cardLoginLimitU == -2
+                    ? "不生效"
+                    : scope.row.cardLoginLimitU == -1
+                      ? "无限制"
+                      : scope.row.cardLoginLimitU
+                }}<br/>
+                软件用户：
+                {{
+                  scope.row.loginLimitU == -2
+                    ? "不生效"
+                    : scope.row.loginLimitU == -1
+                      ? "无限制"
+                      : scope.row.loginLimitU
+                }}
+                <br/>
+                软件：{{
+                  scope.row.app.loginLimitU == -1
+                    ? "无限制"
+                    : scope.row.app.loginLimitU
+                }}
+              </div>
+              <i
+                class="el-icon-info"
+                style="margin-left: 0px; margin-right: 10px"
+              ></i>
+            </el-tooltip>
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="登录设备数限制"
+      >
+        <template slot-scope="scope">
+          <span>
+            {{
+              scope.row.effectiveLoginLimitM == -1
+                ? "无限制"
+                : scope.row.effectiveLoginLimitM
+            }}
+          </span>
+          <span>
+            <el-tooltip placement="top">
+              <div slot="content">
+                优先级由高到低<br/>
+                充值卡/单码：
+                {{
+                  scope.row.cardLoginLimitM == -2
+                    ? "不生效"
+                    : scope.row.cardLoginLimitM == -1
+                      ? "无限制"
+                      : scope.row.cardLoginLimitM
+                }}<br/>
+                软件用户：
+                {{
+                  scope.row.loginLimitM == -2
+                    ? "不生效"
+                    : scope.row.loginLimitM == -1
+                      ? "无限制"
+                      : scope.row.loginLimitM
+                }}
+                <br/>
+                软件：{{
+                  scope.row.app.loginLimitM == -1
+                    ? "无限制"
+                    : scope.row.app.loginLimitM
+                }}
+              </div>
+              <i
+                class="el-icon-info"
+                style="margin-left: 0px; margin-right: 10px"
+              ></i>
+            </el-tooltip>
+          </span>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column label="登录用户数限制" align="center"
         ><template slot-scope="scope">
           <span>
-            {{ scope.row.loginLimitU == -1 ? "无限制" : scope.row.loginLimitU }}
+            {{
+              scope.row.loginLimitU == -2
+                ? "不生效"
+                : scope.row.loginLimitU == -1
+                ? "无限制"
+                : scope.row.loginLimitU
+            }}
           </span>
         </template>
       </el-table-column>
       <el-table-column label="登录设备数限制" align="center">
         <template slot-scope="scope">
           <span>
-            {{ scope.row.loginLimitM == -1 ? "无限制" : scope.row.loginLimitM }}
+            {{
+              scope.row.loginLimitM == -2
+                ? "不生效"
+                : scope.row.loginLimitM == -1
+                ? "无限制"
+                : scope.row.loginLimitM
+            }}
           </span>
         </template>
       </el-table-column>
+      <el-table-column label="登录用户数限制(卡)" align="center"
+        ><template slot-scope="scope">
+          <span>
+            {{
+              scope.row.cardLoginLimitU == -2
+                ? "不生效"
+                : scope.row.cardLoginLimitU == -1
+                ? "无限制"
+                : scope.row.cardLoginLimitU
+            }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="登录设备数限制(卡)" align="center">
+        <template slot-scope="scope">
+          <span>
+            {{
+              scope.row.cardLoginLimitM == -2
+                ? "不生效"
+                : scope.row.cardLoginLimitM == -1
+                ? "无限制"
+                : scope.row.cardLoginLimitM
+            }}
+          </span>
+        </template>
+      </el-table-column> -->
       <!-- <el-table-column label="赠送余额" align="center" prop="freeBalance" />
         <el-table-column label="支付余额" align="center" prop="payBalance" />
         <el-table-column label="赠送消费" align="center" prop="freePayment" />
@@ -466,7 +594,7 @@
             <el-form-item label="登录用户数限制" prop="loginLimitU">
               <span>
                 <el-tooltip
-                  content="登录用户数量限制，整数，-1为不限制，默认为-1"
+                  content="登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2"
                   placement="top"
                 >
                   <i
@@ -478,7 +606,7 @@
               <el-input-number
                 v-model="form.loginLimitU"
                 controls-position="right"
-                :min="-1"
+                :min="-2"
               />
             </el-form-item>
           </el-col>
@@ -486,7 +614,7 @@
             <el-form-item label="登录设备数限制" prop="loginLimitM">
               <span>
                 <el-tooltip
-                  content="登录设备数量限制，整数，-1为不限制，默认为-1"
+                  content="登录设备数量限制，整数，-1为不限制，-2为不生效，默认为-2"
                   placement="top"
                 >
                   <i
@@ -498,7 +626,49 @@
               <el-input-number
                 v-model="form.loginLimitM"
                 controls-position="right"
-                :min="-1"
+                :min="-2"
+              />
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item prop="">
+          <el-col :span="12">
+            <el-form-item label="登录用户数限制(卡)" prop="cardLoginLimitU">
+              <span>
+                <el-tooltip
+                  content="由充值卡/单码生效的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2"
+                  placement="top"
+                >
+                  <i
+                    class="el-icon-question"
+                    style="margin-left: -12px; margin-right: 10px"
+                  ></i>
+                </el-tooltip>
+              </span>
+              <el-input-number
+                v-model="form.cardLoginLimitU"
+                :min="-2"
+                controls-position="right"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="登录设备数限制(卡)" prop="cardLoginLimitM">
+              <span>
+                <el-tooltip
+                  content="由充值卡/单码生效的登录设备数量限制，整数，-1为不限制，-2为不生效，默认为-2"
+                  placement="top"
+                >
+                  <i
+                    class="el-icon-question"
+                    style="margin-left: -12px; margin-right: 10px"
+                  ></i>
+                </el-tooltip>
+              </span>
+              <el-input-number
+                v-model="form.cardLoginLimitM"
+                :min="-2"
+                controls-position="right"
               />
             </el-form-item>
           </el-col>
@@ -611,6 +781,13 @@
             </el-col>
           </div>
         </el-form-item>
+        <el-form-item label="充值卡/单码自定义参数" prop="cardCustomParams">
+          <el-input
+            v-model="form.cardCustomParams"
+            placeholder="请输入内容"
+            type="textarea"
+          />
+        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input
             v-model="form.remark"
@@ -657,7 +834,7 @@ import {
   listAppUser,
   updateAppUser,
 } from "@/api/system/appUser";
-import {getApp, listApp} from "@/api/system/app";
+import {getApp, listAppAll} from "@/api/system/app";
 import {listUserByExceptAppid} from "@/api/system/user";
 
 export default {
@@ -723,22 +900,40 @@ export default {
         loginLimitU: [
           {
             required: true,
-            message: "登录用户数量限制，整数，-1为不限制，默认为-1不能为空",
+            message:
+              "登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
             trigger: "blur",
           },
         ],
         loginLimitM: [
           {
             required: true,
-            message: "登录设备数量限制，整数，-1为不限制，默认为-1不能为空",
+            message:
+              "登录设备数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
+            trigger: "blur",
+          },
+        ],
+        cardLoginLimitU: [
+          {
+            required: true,
+            message:
+              "由充值卡/单码生效的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
+            trigger: "blur",
+          },
+        ],
+        cardLoginLimitM: [
+          {
+            required: true,
+            message:
+              "由充值卡/单码生效的登录设备数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
             trigger: "blur",
           },
         ],
         freeBalance: [
-          { required: true, message: "赠送余额不能为空", trigger: "blur" },
+          {required: true, message: "赠送余额不能为空", trigger: "blur"},
         ],
         payBalance: [
-          { required: true, message: "支付余额不能为空", trigger: "blur" },
+          {required: true, message: "支付余额不能为空", trigger: "blur"},
         ],
         freePayment: [
           { required: true, message: "赠送消费不能为空", trigger: "blur" },
@@ -816,8 +1011,10 @@ export default {
         userId: undefined,
         appId: undefined,
         status: "0",
-        loginLimitU: -1,
-        loginLimitM: -1,
+        loginLimitU: -2,
+        loginLimitM: -2,
+        cardLoginLimitU: -2,
+        cardLoginLimitM: -2,
         freeBalance: 0,
         payBalance: 0,
         freePayment: 0,
@@ -980,7 +1177,7 @@ export default {
       this.loading = true;
       let queryParams = {};
       queryParams.params = {};
-      listApp(queryParams).then((response) => {
+      listAppAll(queryParams).then((response) => {
         this.appList = response.rows;
         for (let app of this.appList) {
           this.appMap[app["appId"]] = app;
