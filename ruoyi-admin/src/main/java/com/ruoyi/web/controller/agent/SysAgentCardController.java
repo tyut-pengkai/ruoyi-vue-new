@@ -125,15 +125,17 @@ public class SysAgentCardController extends BaseController {
                 throw new ServiceException("商品未设定价格");
             }
             BigDecimal totalFee = unitPrice.multiply(BigDecimal.valueOf(sysCard.getGenQuantity()));
-            // 扣除余额
-            BalanceChangeVo change = new BalanceChangeVo();
-            change.setUserId(getUserId());
-            change.setUpdateBy(getUsername());
-            change.setType(BalanceChangeType.CONSUME);
-            change.setDescription("批量制卡：[" + sysCardTemplate.getApp().getAppName() + "]" + sysCardTemplate.getCardName() + "，" + sysCard.getGenQuantity() + "张，单价" + unitPrice);
-            change.setAvailablePayBalance(totalFee.negate());
-            // 扣款
-            userService.updateUserBalance(change);
+            synchronized (SysAgentCardController.class) {
+                // 扣除余额
+                BalanceChangeVo change = new BalanceChangeVo();
+                change.setUserId(getUserId());
+                change.setUpdateBy(getUsername());
+                change.setType(BalanceChangeType.CONSUME);
+                change.setDescription("批量制卡：[" + sysCardTemplate.getApp().getAppName() + "]" + sysCardTemplate.getCardName() + "，" + sysCard.getGenQuantity() + "张，单价" + unitPrice);
+                change.setAvailablePayBalance(totalFee.negate());
+                // 扣款
+                userService.updateUserBalance(change);
+            }
         }
         List<SysCard> sysCardList = sysCardTemplateService.genSysCardBatch(sysCardTemplate, sysCard.getGenQuantity(), sysCard.getOnSale(), UserConstants.YES, sysCard.getRemark());
         List<Map<String, String>> resultList = new ArrayList<>();

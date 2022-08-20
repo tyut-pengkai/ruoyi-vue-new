@@ -1021,6 +1021,11 @@ export default {
           updateUserBalance(this.formB).then((response) => {
             getUser(this.formB.userId).then((response) => {
               this.form = response.data;
+              this.postOptions = response.posts;
+              this.roleOptions = response.roles;
+              this.form.postIds = response.postIds;
+              this.form.roleIds = response.roleIds;
+              this.form.password = "";
             });
             this.$modal.msgSuccess("修改成功");
             this.openB = false;
