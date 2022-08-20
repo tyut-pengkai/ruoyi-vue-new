@@ -131,6 +131,14 @@ public class SysAppUserVo extends SysAppUser {
     @JsonIgnore
     private String userName;
 
+    @JSONField(serialize = false)
+    @JsonIgnore
+    private Integer effectiveLoginLimitU;
+
+    @JSONField(serialize = false)
+    @JsonIgnore
+    private Integer effectiveLoginLimitM;
+
     public SysAppUserVo(SysAppUser v) {
         BeanUtils.copyProperties(v, this);
         if (v.getUserId() != null) {
