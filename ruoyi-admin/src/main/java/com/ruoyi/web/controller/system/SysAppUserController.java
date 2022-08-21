@@ -2,11 +2,14 @@ package com.ruoyi.web.controller.system;
 
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -16,7 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.annotation.Resource;
+import java.util.*;
 
 /**
  * 软件用户Controller
@@ -31,6 +35,8 @@ public class SysAppUserController extends BaseController {
     private ISysAppUserService sysAppUserService;
     @Autowired
     private ISysAppService sysAppService;
+    @Resource
+    private RedisCache redisCache;
 
     /**
      * 查询软件用户列表
@@ -40,9 +46,46 @@ public class SysAppUserController extends BaseController {
     public TableDataInfo list(SysAppUser sysAppUser) {
         startPage();
         List<SysAppUser> list = sysAppUserService.selectSysAppUserList(sysAppUser);
+
+        // 统计当前在线用户数
+        Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
+        Map<Long, List<LoginUser>> onlineListUMap = new HashMap<>();
+        for (String key : keys) {
+            LoginUser user = redisCache.getCacheObject(key);
+            if (user.getIfApp() && !user.getIfTrial()) {
+                Long appUserId = user.getAppUser().getAppUserId();
+                if (!onlineListUMap.containsKey(appUserId)) {
+                    onlineListUMap.put(appUserId, new ArrayList<>());
+                }
+                onlineListUMap.get(appUserId).add(user);
+            }
+        }
+        // 统计当前在线设备数
+        Map<Long, Set<Long>> onlineListMMap = new HashMap<>();
+        for (Map.Entry<Long, List<LoginUser>> entry : onlineListUMap.entrySet()) {
+            Long appUserId = entry.getKey();
+            List<LoginUser> onlineUList = entry.getValue();
+            if (!onlineListMMap.containsKey(appUserId)) {
+                onlineListMMap.put(appUserId, new HashSet<>());
+            }
+            for (LoginUser user : onlineUList) {
+                onlineListMMap.get(appUserId).add(user.getDeviceCode().getDeviceCodeId());
+            }
+        }
+
         for (SysAppUser sau : list) {
             sau.setEffectiveLoginLimitU(MyUtils.getEffectiveLoginLimitU(sau));
             sau.setEffectiveLoginLimitM(MyUtils.getEffectiveLoginLimitM(sau));
+            if (onlineListUMap.containsKey(sau.getAppUserId())) {
+                sau.setCurrentOnlineU(onlineListUMap.get(sau.getAppUserId()).size());
+            } else {
+                sau.setCurrentOnlineU(0);
+            }
+            if (onlineListMMap.containsKey(sau.getAppUserId())) {
+                sau.setCurrentOnlineM(onlineListMMap.get(sau.getAppUserId()).size());
+            } else {
+                sau.setCurrentOnlineM(0);
+            }
         }
         return getDataTable(list);
     }

@@ -209,11 +209,10 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="登录用户数限制" align="center"
-      >
+      <el-table-column align="center" label="登录用户数限制">
         <template slot-scope="scope">
           <span>
-            {{
+            {{ scope.row.currentOnlineU }}/{{
               scope.row.effectiveLoginLimitU == -1
                 ? "无限制"
                 : scope.row.effectiveLoginLimitU
@@ -254,11 +253,10 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="登录设备数限制"
-      >
+      <el-table-column align="center" label="登录设备数限制">
         <template slot-scope="scope">
           <span>
-            {{
+            {{ scope.row.currentOnlineM }}/{{
               scope.row.effectiveLoginLimitM == -1
                 ? "无限制"
                 : scope.row.effectiveLoginLimitM

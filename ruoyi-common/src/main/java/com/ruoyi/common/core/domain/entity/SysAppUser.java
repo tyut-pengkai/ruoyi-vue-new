@@ -156,6 +156,26 @@ public class SysAppUser extends BaseEntity {
 
     private Integer effectiveLoginLimitM;
 
+    private Integer currentOnlineU;
+
+    private Integer currentOnlineM;
+
+    public Integer getCurrentOnlineU() {
+        return currentOnlineU;
+    }
+
+    public void setCurrentOnlineU(Integer currentOnlineU) {
+        this.currentOnlineU = currentOnlineU;
+    }
+
+    public Integer getCurrentOnlineM() {
+        return currentOnlineM;
+    }
+
+    public void setCurrentOnlineM(Integer currentOnlineM) {
+        this.currentOnlineM = currentOnlineM;
+    }
+
     public Integer getEffectiveLoginLimitU() {
         return effectiveLoginLimitU;
     }

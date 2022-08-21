@@ -370,7 +370,7 @@ public class ValidUtils {
         }
         // 检查设备数量
         if (deviceCode != null) {
-            List<Long> onlineListM = new ArrayList<>();
+            Set<Long> onlineListM = new HashSet<>();
             for (LoginUser user : onlineListU) {
                 onlineListM.add(user.getDeviceCode().getDeviceCodeId());
             }
