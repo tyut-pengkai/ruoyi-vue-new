@@ -4,6 +4,7 @@ import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
@@ -29,7 +30,8 @@ public class ReduceTime extends Function {
                 new Param[]{
                         new Param("seconds", true, "扣减的秒数，需传入正整数"),
                         new Param("enableNegative", false, "是否允许用户过期，允许传1，不允许传0，默认为0")
-                }
+                },
+                new Resp(Resp.DataType.string, "扣减后到期时间")
         ));
     }
 

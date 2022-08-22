@@ -4,6 +4,7 @@ import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.ErrorCode;
@@ -27,7 +28,7 @@ public class UpdatePassword extends Function {
                         new Param("password", true, "原密码"),
                         new Param("newPassword", true, "新密码"),
                         new Param("newPasswordRepeat", true, "重复新密码"),
-                }));
+                }, new Resp(Resp.DataType.string, "成功返回0")));
     }
 
     @Override
@@ -52,7 +53,7 @@ public class UpdatePassword extends Function {
             user.setPassword(newPasswordEn);
             userService.updateUser(user);
 
-            return "成功";
+            return "0";
         } else {
             throw new ApiException(ErrorCode.ERROR_ACCOUNT_NOT_EXIST);
         }

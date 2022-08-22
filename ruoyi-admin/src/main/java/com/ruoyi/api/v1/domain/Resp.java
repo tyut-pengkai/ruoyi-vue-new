@@ -14,4 +14,8 @@ public class Resp {
     public enum DataType {
         string, integer, number, bool, object, array
     }
+
+    public Resp(DataType dataType, String description) {
+        this(dataType, description, null);
+    }
 }

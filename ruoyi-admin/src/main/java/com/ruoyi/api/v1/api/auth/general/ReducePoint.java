@@ -4,6 +4,7 @@ import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
@@ -28,7 +29,8 @@ public class ReducePoint extends Function {
                 new Param[]{
                         new Param("point", true, "扣减的点数，需传入正数，可精确到两位小数"),
                         new Param("enableNegative", false, "是否允许余额为负数，允许传1，不允许传0，默认为0")
-                }
+                },
+                new Resp(Resp.DataType.number, "扣减后点数余额")
         ));
     }
 

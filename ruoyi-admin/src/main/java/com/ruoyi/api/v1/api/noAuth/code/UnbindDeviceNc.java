@@ -4,6 +4,7 @@ import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
@@ -44,7 +45,7 @@ public class UnbindDeviceNc extends Function {
                         new Param("deviceCode", true, "设备码"),
                         new Param("loginCode", true, "单码"),
                         new Param("enableNegative", false, "是否允许用户过期(计时模式)或余额为负数(计点模式)，允许传1，不允许传0，默认为0")
-                }));
+                }, new Resp(Resp.DataType.string, "成功返回0")));
     }
 
     @Override
@@ -68,13 +69,13 @@ public class UnbindDeviceNc extends Function {
         }
         SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
         if (appUserDeviceCode == null) {
-            return "成功";
+            return "0";
         }
         appUserDeviceCodeService.deleteSysAppUserDeviceCodeById(appUserDeviceCode.getId());
         // 扣减
         Long p = this.getApp().getReduceQuotaUnbind();
         if (p == null || p <= 0) {
-            return "成功";
+            return "0";
         }
         boolean enableNegative = Convert.toBool(this.getParams().get("enableNegative"), false);
 
@@ -96,6 +97,6 @@ public class UnbindDeviceNc extends Function {
                 throw new ApiException(ErrorCode.ERROR_APP_USER_NO_POINT);
             }
         }
-        return "成功";
+        return "0";
     }
 }

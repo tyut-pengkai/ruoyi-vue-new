@@ -296,6 +296,7 @@ public class SwaggerService {
             }
             obj.put("$ref", "#/definitions/" + voName);
             obj.put("originalRef", voName);
+            obj.put("description", desc);
             if (items != null && items.length > 0) {
                 Map<String, Object> defineObj = new HashMap<>();
                 Map<String, Object> propertiesObj = new LinkedHashMap<>();

@@ -4,6 +4,7 @@ import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.api.v1.utils.ValidUtils;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
@@ -34,7 +35,7 @@ public class GlobalVariableSet extends Function {
                 new Param("errorIfNotExist", false, "当变量不存在时是否报错，如果为否则自动创建该名称变量，是传1否传0默认为0"),
                 new Param("checkToken", false, "创建的变量是否需要登录才能读写，是传1否传0默认为0"),
                 new Param("checkVip", false, "创建的变量是否需要VIP才能读写，是传1否传0默认为0"),
-        }));
+        }, new Resp(Resp.DataType.string, "成功返回0")));
     }
 
     @Override
@@ -80,7 +81,7 @@ public class GlobalVariableSet extends Function {
             }
             variable.setValue(variableValue);
             globalVariableService.updateSysGlobalVariable(variable);
-            return "成功";
+            return "0";
         }
     }
 }

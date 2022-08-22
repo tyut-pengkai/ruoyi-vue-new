@@ -4,6 +4,7 @@ import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.api.v1.utils.ScriptUtils;
 import com.ruoyi.api.v1.utils.ValidUtils;
 import com.ruoyi.common.constant.UserConstants;
@@ -31,7 +32,7 @@ public class GlobalScript extends Function {
                 "执行全局脚本", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL, new Param[]{
                 new Param("scriptKey", true, "脚本Key"),
                 new Param("scriptParams", false, "脚本参数"),
-        }));
+        }, new Resp(Resp.DataType.string, "执行结果")));
     }
 
     @Override

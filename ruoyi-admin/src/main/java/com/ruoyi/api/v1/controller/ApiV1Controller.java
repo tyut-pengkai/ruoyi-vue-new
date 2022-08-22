@@ -217,7 +217,7 @@ public class ApiV1Controller extends BaseController {
                 return loginService.appTrialLogin(ip, app, version, deviceCode);
             case "logout.ag":
                 LoginUser loginUser = getLoginUser();
-                return loginService.appLogout(loginUser);
+                return "注销成功".equals(loginService.appLogout(loginUser)) ? "0" : "1";
             default:
                 Function function = ApiDefine.functionMap.get(api);
                 function.setApp(app);

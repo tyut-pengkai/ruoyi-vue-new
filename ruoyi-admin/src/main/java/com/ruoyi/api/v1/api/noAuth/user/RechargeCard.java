@@ -4,6 +4,7 @@ import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysApp;
@@ -49,7 +50,7 @@ public class RechargeCard extends Function {
                         new Param("validPassword", false, "是否验证充值用户密码，防止充错用户，验证传1，不验证传0，默认为0"),
                         new Param("cardNo", true, "充值卡号"),
                         new Param("cardPassword", true, "充值卡密码")
-                }));
+                }, new Resp(Resp.DataType.string, "成功返回新的到期时间或点数")));
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.api.v1.utils.ValidUtils;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
@@ -34,7 +35,7 @@ public class GlobalVariableGet extends Function {
                 "读全局变量", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL, new Param[]{
                 new Param("variableName", true, "变量名称"),
                 new Param("errorIfNotExist", false, "当变量不存在时是否报错，如果为否则返回空文本，是传1否传0默认为0"),
-        }));
+        }, new Resp(Resp.DataType.string, "变量值")));
     }
 
     @Override

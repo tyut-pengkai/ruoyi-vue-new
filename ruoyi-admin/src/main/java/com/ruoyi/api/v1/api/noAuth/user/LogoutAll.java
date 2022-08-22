@@ -4,6 +4,7 @@ import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
@@ -37,7 +38,7 @@ public class LogoutAll extends Function {
                 new Param[]{
                         new Param("username", true, "要注销的账号"),
                         new Param("password", true, "密码")
-                }));
+                }, new Resp(Resp.DataType.string, "成功返回0")));
     }
 
     @Override
@@ -56,7 +57,7 @@ public class LogoutAll extends Function {
 
         SysAppUser appUser = appUserService.selectSysAppUserByAppIdAndUserId(this.getApp().getAppId(), sysUser.getUserId());
         if (appUser == null) {
-            return "成功";
+            return "0";
         }
 
         Collection<String> keys = redisCache.keys(com.ruoyi.common.constant.Constants.LOGIN_TOKEN_KEY + "*");
@@ -79,6 +80,6 @@ public class LogoutAll extends Function {
                                 "用户注销所有登录"));
             }
         }
-        return "成功";
+        return "0";
     }
 }

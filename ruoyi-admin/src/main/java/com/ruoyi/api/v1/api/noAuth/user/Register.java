@@ -4,6 +4,7 @@ import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.common.core.domain.model.RegisterBody;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.ErrorCode;
@@ -26,7 +27,7 @@ public class Register extends Function {
                         new Param("username", true, "账号"),
                         new Param("password", true, "密码"),
                         new Param("passwordRepeat", true, "重复密码"),
-                }));
+                }, new Resp(Resp.DataType.string, "成功返回0")));
     }
 
     @Override
@@ -42,7 +43,7 @@ public class Register extends Function {
         user.setPassword(password);
         String register = registerService.register(user, false);
         if (register.equals("")) {
-            return "成功";
+            return "0";
         }
         throw new ApiException(ErrorCode.ERROR_REGISTER_FAILED, register);
     }
