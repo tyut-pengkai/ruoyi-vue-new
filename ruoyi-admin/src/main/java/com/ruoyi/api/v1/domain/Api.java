@@ -19,6 +19,7 @@ public class Api {
     private AuthType[] authTypes;
     private BillType[] billTypes;
     private List<Param> params;
+    private Resp resp;
 
 //    public Api(String api, String name, boolean checkToken, String description) {
 //        this(api, name, checkToken, Constants.API_TAG_ALL, description, Constants.AUTH_TYPE_ALL,
@@ -45,43 +46,65 @@ public class Api {
 
     public Api(String api, String name, boolean checkToken, String tag, String description, AuthType loginTypes,
                BillType chargeTypes) {
-        this(api, name, checkToken, new String[]{tag}, description, loginTypes, chargeTypes, null);
+        this(api, name, checkToken, new String[]{tag}, description, loginTypes, chargeTypes, null, null);
     }
 
     public Api(String api, String name, boolean checkToken, String[] tags, String description, AuthType loginTypes,
                BillType chargeTypes) {
-        this(api, name, checkToken, tags, description, loginTypes, chargeTypes, null);
+        this(api, name, checkToken, tags, description, loginTypes, chargeTypes, null, null);
     }
 
     public Api(String api, String name, boolean checkToken, String tag, String description, AuthType[] loginTypes,
                BillType[] chargeTypes, Param[] params) {
-        this(api, name, checkToken, new String[]{tag}, description, loginTypes, chargeTypes, params);
+        this(api, name, checkToken, new String[]{tag}, description, loginTypes, chargeTypes, params, null);
     }
 
     public Api(String api, String name, boolean checkToken, String tag, String description, AuthType loginTypes,
                BillType chargeTypes, Param[] params) {
         this(api, name, checkToken, new String[]{tag}, description, new AuthType[]{loginTypes},
-                new BillType[]{chargeTypes}, params);
+                new BillType[]{chargeTypes}, params, null);
     }
 
     public Api(String api, String name, boolean checkToken, String[] tags, String description, AuthType loginTypes,
                BillType chargeTypes, Param[] params) {
         this(api, name, checkToken, tags, description, new AuthType[]{loginTypes}, new BillType[]{chargeTypes},
-                params);
+                params, null);
     }
 
     public Api(String api, String name, boolean checkToken, String tag, String description, AuthType[] loginTypes,
                BillType[] chargeTypes) {
-        this(api, name, checkToken, new String[]{tag}, description, loginTypes, chargeTypes, null);
+        this(api, name, checkToken, new String[]{tag}, description, loginTypes, chargeTypes, null, null);
     }
 
     public Api(String api, String name, boolean checkToken, String[] tags, String description, AuthType[] loginTypes,
                BillType[] chargeTypes) {
-        this(api, name, checkToken, tags, description, loginTypes, chargeTypes, null);
+        this(api, name, checkToken, tags, description, loginTypes, chargeTypes, null, null);
+    }
+
+    public Api(String api, String name, boolean checkToken, String tag, String description, AuthType[] loginTypes,
+               BillType[] chargeTypes, Param[] params, Resp resp) {
+        this(api, name, checkToken, new String[]{tag}, description, loginTypes, chargeTypes, params, resp);
+    }
+
+    public Api(String api, String name, boolean checkToken, String tag, String description, AuthType loginTypes,
+               BillType chargeTypes, Param[] params, Resp resp) {
+        this(api, name, checkToken, new String[]{tag}, description, new AuthType[]{loginTypes},
+                new BillType[]{chargeTypes}, params, resp);
+    }
+
+    public Api(String api, String name, boolean checkToken, String[] tags, String description, AuthType loginTypes,
+               BillType chargeTypes, Param[] params, Resp resp) {
+        this(api, name, checkToken, tags, description, new AuthType[]{loginTypes}, new BillType[]{chargeTypes},
+                params, resp);
     }
 
     public Api(String api, String name, boolean checkToken, String[] tags, String description, AuthType[] loginTypes,
                BillType[] chargeTypes, Param[] params) {
+        this(api, name, checkToken, tags, description, loginTypes, chargeTypes, params, null);
+    }
+
+    public Api(String api, String name, boolean checkToken, String[] tags, String description, AuthType[] loginTypes,
+               BillType[] chargeTypes, Param[] params, Resp resp) {
         this.api = api;
         this.name = name;
         this.checkToken = checkToken;
@@ -90,6 +113,7 @@ public class Api {
         this.authTypes = loginTypes;
         this.billTypes = chargeTypes;
         this.params = params != null ? new ArrayList<>(Arrays.asList(params)) : new ArrayList<>();
+        this.resp = resp;
     }
 
 }

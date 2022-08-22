@@ -1,26 +1,15 @@
 package com.ruoyi.web.controller.tool;
 
+import com.ruoyi.common.core.controller.BaseController;
+import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.utils.StringUtils;
+import io.swagger.annotations.*;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.utils.StringUtils;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
 
 /**
  * swagger 用户测试方法
@@ -101,15 +90,26 @@ public class TestController extends BaseController
     @DeleteMapping("/{userId}")
     public R<String> delete(@PathVariable Integer userId)
     {
-        if (!users.isEmpty() && users.containsKey(userId))
-        {
+        if (!users.isEmpty() && users.containsKey(userId)) {
             users.remove(userId);
             return R.ok();
-        }
-        else
-        {
+        } else {
             return R.fail("用户不存在");
         }
+    }
+
+    @ApiOperation("返回字符串")
+    @ApiImplicitParam(name = "userId", value = "用户ID", required = true, dataType = "int", paramType = "path", dataTypeClass = Integer.class)
+    @DeleteMapping("/returnString/{userId}")
+    public String returnString(@PathVariable Integer userId) {
+        return "123";
+    }
+
+    @ApiOperation("返回数字")
+    @ApiImplicitParam(name = "userId", value = "用户ID", required = true, dataType = "int", paramType = "path", dataTypeClass = Integer.class)
+    @DeleteMapping("/returnNumber/{userId}")
+    public float returnNumber(@PathVariable Integer userId) {
+        return 123.00f;
     }
 }
 
@@ -128,26 +128,33 @@ class UserEntity
     @ApiModelProperty("用户手机")
     private String mobile;
 
-    public UserEntity()
-    {
+    @ApiModelProperty("测试嵌套")
+    private UserEntity user;
+
+    public UserEntity() {
 
     }
 
-    public UserEntity(Integer userId, String username, String password, String mobile)
-    {
+    public UserEntity(Integer userId, String username, String password, String mobile) {
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.mobile = mobile;
     }
 
-    public Integer getUserId()
-    {
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId)
-    {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

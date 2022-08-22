@@ -99,13 +99,6 @@ public class SysAppUserVo extends SysAppUser {
     private Integer pwdErrorTimes;
 
     /**
-     * 单码
-     */
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private String loginCode;
-
-    /**
      * 所属账号信息
      */
     @JSONField(serialize = false)
