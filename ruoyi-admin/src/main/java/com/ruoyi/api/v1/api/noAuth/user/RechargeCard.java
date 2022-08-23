@@ -17,6 +17,7 @@ import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppUserService;
@@ -49,7 +50,7 @@ public class RechargeCard extends Function {
                         new Param("password", false, "充值用户密码"),
                         new Param("validPassword", false, "是否验证充值用户密码，防止充错用户，验证传1，不验证传0，默认为0"),
                         new Param("cardNo", true, "充值卡号"),
-                        new Param("cardPassword", true, "充值卡密码")
+                        new Param("cardPassword", false, "充值卡密码")
                 }, new Resp(Resp.DataType.string, "成功返回新的到期时间或点数")));
     }
 
@@ -128,7 +129,7 @@ public class RechargeCard extends Function {
                 throw new ApiException("软件未指定计费方式");
             }
         }
-        if (!card.getCardPass().equals(cardPwd)) {
+        if (!(StringUtils.isBlank(card.getCardPass()) && StringUtils.isBlank(cardPwd)) && !card.getCardPass().equals(cardPwd)) {
             throw new ApiException(ErrorCode.ERROR_CARD_PASSWORD_MISMATCH);
         }
     }

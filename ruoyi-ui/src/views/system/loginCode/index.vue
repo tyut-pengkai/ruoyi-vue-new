@@ -1262,7 +1262,7 @@ export default {
                 response.data.length +
                 "张）========\n";
               contentSimple = content;
-              for (var index in response.data) {
+              for (var index = 0; index < response.data.length; index++) {
                 var goods = response.data[index];
                 if (goods) {
                   content += "第" + (parseInt(index) + 1) + "张\n";
