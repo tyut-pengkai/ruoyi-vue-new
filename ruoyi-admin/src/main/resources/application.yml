@@ -199,7 +199,7 @@ xss:
   # 过滤开关
   enabled: true
   # 排除链接（多个用逗号分隔）
-  excludes: /system/notice,/system/globalScript/*
+  excludes: /system/notice,/system/globalScript,/system/globalScript/*
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*
 
