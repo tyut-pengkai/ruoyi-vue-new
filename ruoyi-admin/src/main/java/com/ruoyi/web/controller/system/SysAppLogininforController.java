@@ -90,7 +90,7 @@ public class SysAppLogininforController extends BaseController {
         return toAjax(sysAppLogininforService.deleteSysAppLogininforByInfoIds(infoIds));
     }
 
-    @PreAuthorize("@ss.hasPermi('monitor:appLogininfor:remove')")
+    @PreAuthorize("@ss.hasPermi('system:appLogininfor:remove')")
     @Log(title = "系统访问记录", businessType = BusinessType.CLEAN)
     @DeleteMapping("/clean")
     public AjaxResult clean() {
