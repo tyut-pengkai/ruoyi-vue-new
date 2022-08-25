@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.api.v1.utils.ScriptUtils;
+import com.ruoyi.api.v1.utils.ValidUtils;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -29,6 +31,8 @@ import java.util.List;
 public class SysGlobalScriptController extends BaseController {
     @Autowired
     private ISysGlobalScriptService sysGlobalScriptService;
+    @Resource
+    private ValidUtils validUtils;
 
     /**
      * 查询全局脚本列表
@@ -103,7 +107,10 @@ public class SysGlobalScriptController extends BaseController {
     @Log(title = "全局脚本", businessType = BusinessType.TEST)
     @PostMapping("/scriptTest")
     public AjaxResult scriptTest(@RequestBody SysGlobalScript script) {
-        ScriptResultVo scriptResultVo = ScriptUtils.exec(script.getContent(), script.getLanguage(), script.getScriptParams());
+        // 渲染脚本
+        String scriptContent = script.getContent();
+        scriptContent = validUtils.renderScriptContent(scriptContent, null);
+        ScriptResultVo scriptResultVo = ScriptUtils.exec(scriptContent, script.getLanguage(), script.getScriptParams());
         return AjaxResult.success(scriptResultVo);
     }
 

@@ -320,6 +320,32 @@
           />
         </el-form-item>
         <el-form-item label="脚本内容">
+          <el-form-item label-width="0px" prop="">
+            <el-tooltip content="多个脚本参数以空格分隔" placement="top">
+              <template slot="content">
+                可使用内置变量获取相关信息，形如“${对象名.属性名}”，当属性名为“*”时表示获取该对象下所有属性（json格式），目前支持的对象有：
+                <ul>
+                  <li>
+                    app，可获取软件信息，如${app.appName}可获取当前软件名称
+                  </li>
+                  <li>
+                    appUser，可获取用户信息，如${appUser.userInfo.userName}可获取当前登录用户名，${appUser.loginCode}可获取当前登录单码
+                  </li>
+                  <li>
+                    version，可获取版本信息，如${version.versionName}可获取当前版本名称
+                  </li>
+                  <li>
+                    trialUser，可获取试用用户信息，如${trialUser.expireTime}可获取当前试用到期时间
+                  </li>
+                  <li>
+                    deviceCode，可获取设备码信息，如${trialUser.*}可获取当前设备码
+                  </li>
+                </ul>
+                注：当内置变量取值有误时，将返回“ERR_NULL”，脚本调用测试时无法解析内置变量，将全部返回“ERR_NULL”
+              </template>
+              <i class="el-icon-info" style="margin-left: -10px"></i>
+            </el-tooltip>
+          </el-form-item>
           <!-- <editor v-model="form.content" :min-height="192" /> -->
           <div style="margin-bottom: 25px">
             <CodeEditor

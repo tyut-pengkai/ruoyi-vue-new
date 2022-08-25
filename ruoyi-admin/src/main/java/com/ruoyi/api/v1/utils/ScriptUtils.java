@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 public class ScriptUtils {
 
@@ -53,12 +54,34 @@ public class ScriptUtils {
             // 不同操作系统注意编码，否则结果乱码
             String suc = susStream.toString("UTF-8");
             String err = errStream.toString("UTF-8");
+            if (isMessyCode(suc) || isMessyCode(err)) {
+                try {
+                    suc = susStream.toString("GBK");
+                    err = errStream.toString("GBK");
+                } catch (UnsupportedEncodingException ignored) {
+                }
+            }
             return new ScriptResultVo(code, suc, err);
         } catch (ExecuteException e) {
             return new ScriptResultVo(e.getExitValue(), "", e.getMessage());
         } catch (IOException e) {
             throw new ServiceException(e.getMessage());
         }
+    }
+
+    private static boolean isMessyCode(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            // 当从Unicode编码向某个字符集转换时，如果在该字符集中没有对应的编码，则得到0x3f(即问号字符?)
+            //从其他字符集向Unicode编码转换时，如果这个二进制数在该字符集中没有标识任何的字符，则得到的结果是0xfffd
+            //System.out.println("--- " + (int) c);
+            if ((int) c == 0xfffd) {
+                // 存在乱码
+                //System.out.println("存在乱码 " + (int) c);
+                return true;
+            }
+        }
+        return false;
     }
 
 }

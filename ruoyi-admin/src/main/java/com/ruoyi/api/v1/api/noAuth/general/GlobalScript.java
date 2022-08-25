@@ -65,6 +65,10 @@ public class GlobalScript extends Function {
             }
         }
 
-        return ScriptUtils.exec(script.getContent(), script.getLanguage(), scriptParams);
+        // 渲染脚本
+        String scriptContent = script.getContent();
+        scriptContent = validUtils.renderScriptContent(scriptContent, this);
+
+        return ScriptUtils.exec(scriptContent, script.getLanguage(), scriptParams);
     }
 }

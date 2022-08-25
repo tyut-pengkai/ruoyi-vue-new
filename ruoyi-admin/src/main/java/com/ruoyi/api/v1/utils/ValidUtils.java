@@ -1,8 +1,12 @@
 package com.ruoyi.api.v1.utils;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import com.ruoyi.api.v1.api.noAuth.general.GlobalScript;
 import com.ruoyi.api.v1.constants.ApiDefine;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Param;
+import com.ruoyi.api.v1.domain.vo.*;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.*;
@@ -26,6 +30,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 @Slf4j
@@ -532,6 +538,82 @@ public class ValidUtils {
             }
         }
         return null;
+    }
+
+    public String renderScriptContent(String scriptContent, GlobalScript context) {
+        // 渲染内置参数
+        String pattern = "\\$\\{(context|app|appUser|version|trialUser|deviceCode)\\.(.+)}";
+
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(scriptContent);
+
+        while (m.find()) {
+            String group = m.group(0);
+            String object = m.group(1);
+            String item = m.group(2);
+            String replacement = "ERR_NULL";
+            try {
+                JSONObject jsonObject = null;
+                List<String> itemList = new ArrayList<>(Arrays.asList(item.split("\\.")));
+
+                if ("context".equals(object)) {
+                    if (context != null) {
+                        jsonObject = JSON.parseObject(JSON.toJSONString(context));
+                    }
+                } else if ("app".equals(object)) {
+                    if (context != null) {
+                        jsonObject = JSON.parseObject(JSON.toJSONString(new SysAppVo(context.getApp())));
+                    }
+                } else if ("appUser".equals(object)) {
+                    if (context != null) {
+                        jsonObject = JSON.parseObject(JSON.toJSONString(new SysAppUserVo(context.getLoginUser().getAppUser())));
+                    }
+                } else if ("version".equals(object)) {
+                    if (context != null) {
+                        jsonObject = JSON.parseObject(JSON.toJSONString(new SysAppVersionVo(context.getLoginUser().getAppVersion())));
+                    }
+                } else if ("trialUser".equals(object)) {
+                    if (context != null) {
+                        jsonObject = JSON.parseObject(JSON.toJSONString(new SysAppTrialUserVo(context.getLoginUser().getAppTrialUser())));
+                    }
+                } else if ("deviceCode".equals(object)) {
+                    if (context != null) {
+                        jsonObject = JSON.parseObject(JSON.toJSONString(new SysDeviceCodeVo(context.getLoginUser().getDeviceCode())));
+                    }
+                } else {
+                    throw new ApiException(ErrorCode.ERROR_GLOBAL_SCRIPT_INNER_VARIABLE_ANALYTICS_FAILED, "脚本内置变量：" + group + "无法被解析");
+                }
+                replacement = recursion(itemList, jsonObject);
+                if (replacement == null) {
+                    replacement = "ERR_NULL";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            scriptContent = scriptContent.replace(group, replacement);
+        }
+        log.info(scriptContent);
+        return scriptContent;
+    }
+
+    private String recursion(List<String> itemList, JSONObject obj) {
+        try {
+            if (obj == null || itemList == null || itemList.size() == 0) {
+                return null;
+            }
+            if (itemList.size() == 1) {
+                if ("*".equals(itemList.get(0))) {
+                    return obj.toString();
+                }
+                return obj.getString(itemList.get(0));
+            } else {
+                JSONObject object = obj.getJSONObject(itemList.get(0));
+                return recursion(itemList.subList(1, itemList.size()), object);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }
