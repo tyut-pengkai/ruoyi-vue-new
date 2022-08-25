@@ -317,8 +317,7 @@
           <span>{{ parseMoney(scope.row.price) }}元 </span>
         </template>
       </el-table-column> -->
-      <el-table-column align="center" label="登录用户数限制(卡)"
-      >
+      <el-table-column align="center" label="登录用户数限制(卡)">
         <template slot-scope="scope">
           <span>
             {{
@@ -679,6 +678,19 @@
             <!-- <el-form-item label="类别ID" prop="templateId">
               <el-input v-model="form.templateId" placeholder="请输入类别ID" />
             </el-form-item> -->
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="使用日期" prop="chargeTime">
+              <el-date-picker
+                v-model="form.chargeTime"
+                clearable
+                placeholder="选择使用日期"
+                size="small"
+                type="datetime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+              >
+              </el-date-picker>
+            </el-form-item>
           </el-col>
         </el-form-item>
         <el-form-item label="单码自定义参数" prop="cardCustomParams">
@@ -1147,6 +1159,7 @@ export default {
         remark: undefined,
         cardLoginLimitU: -2,
         cardLoginLimitM: -2,
+        chargeTime: undefined,
       };
       this.resetForm("form");
     },

@@ -720,6 +720,21 @@
             </el-form-item> -->
           </el-col>
           <el-col :span="12">
+            <el-form-item label="使用日期" prop="chargeTime">
+              <el-date-picker
+                v-model="form.chargeTime"
+                clearable
+                placeholder="选择使用日期"
+                size="small"
+                type="datetime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+              >
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item prop="">
+          <el-col :span="12">
             <el-form-item label="充值规则" prop="chargeRule">
               <el-select v-model="form.chargeRule" placeholder="请选择充值规则">
                 <el-option
@@ -1204,6 +1219,7 @@ export default {
         remark: undefined,
         cardLoginLimitU: -2,
         cardLoginLimitM: -2,
+        chargeTime: undefined,
       };
       this.resetForm("form");
     },
