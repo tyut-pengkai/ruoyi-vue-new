@@ -45,7 +45,7 @@ public class UnbindDeviceNc extends Function {
                         new Param("deviceCode", true, "设备码"),
                         new Param("loginCode", true, "单码"),
                         new Param("enableNegative", false, "是否允许用户过期(计时模式)或余额为负数(计点模式)，允许传1，不允许传0，默认为0")
-                }, new Resp(Resp.DataType.string, "成功返回0")));
+                }, new Resp(Resp.DataType.string, "成功返回0，设备码不存在返回-1")));
     }
 
     @Override
@@ -69,7 +69,7 @@ public class UnbindDeviceNc extends Function {
         }
         SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
         if (appUserDeviceCode == null) {
-            return "0";
+            return "-1";
         }
         appUserDeviceCodeService.deleteSysAppUserDeviceCodeById(appUserDeviceCode.getId());
         // 扣减

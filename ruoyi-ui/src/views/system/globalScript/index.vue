@@ -338,7 +338,7 @@
                     trialUser，可获取试用用户信息，如${trialUser.expireTime}可获取当前试用到期时间
                   </li>
                   <li>
-                    deviceCode，可获取设备码信息，如${trialUser.*}可获取当前设备码
+                    deviceCode，可获取设备码信息，如${deviceCode.deviceCode}可获取当前设备码
                   </li>
                 </ul>
                 注：当内置变量取值有误时，将返回“ERR_NULL”，脚本调用测试时无法解析内置变量，将全部返回“ERR_NULL”

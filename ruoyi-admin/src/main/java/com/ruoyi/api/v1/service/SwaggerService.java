@@ -70,6 +70,10 @@ public class SwaggerService {
         msgObj.put("type", "string");
         msgObj.put("description", "结果说明");
         resultPropertiesObj.put("msg", msgObj);
+        Map<String, Object> signObj = new HashMap<>();
+        signObj.put("type", "string");
+        signObj.put("description", "数据签名");
+        resultPropertiesObj.put("sign", signObj);
         Map<String, Object> timestampObj = new HashMap<>();
         timestampObj.put("type", "string");
         timestampObj.put("description", "结果生成时间");

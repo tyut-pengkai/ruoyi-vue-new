@@ -88,6 +88,7 @@ public class SysAppLoginService {
                 appUser.setPayBalance(BigDecimal.ZERO);
                 appUser.setFreePayment(BigDecimal.ZERO);
                 appUser.setPayPayment(BigDecimal.ZERO);
+                appUser.setApp(app);
                 if (app.getBillType() == BillType.TIME) {
                     appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg()));
                     appUser.setPoint(null);
@@ -220,6 +221,7 @@ public class SysAppLoginService {
                 appUser.setPayBalance(BigDecimal.ZERO);
                 appUser.setFreePayment(BigDecimal.ZERO);
                 appUser.setPayPayment(BigDecimal.ZERO);
+                appUser.setApp(app);
                 if (app.getBillType() == BillType.TIME) {
                     appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg()));
                     appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(appUser.getExpireTime(), loginCode.getQuota()));
@@ -356,6 +358,7 @@ public class SysAppLoginService {
                 appTrialUser.setLoginIp(loginIp);
                 appTrialUser.setDeviceCode(deviceCodeStr);
                 appTrialUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getTrialTime()));
+                appTrialUser.setApp(app);
                 appTrialService.insertSysAppTrialUser(appTrialUser);
             } else {
                 if (UserStatus.DISABLE.getCode().equals(appTrialUser.getStatus())) {

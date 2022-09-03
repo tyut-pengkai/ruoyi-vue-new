@@ -60,27 +60,26 @@
 
     <select id="selectSysAppTrialUserList" parameterType="SysAppTrialUser" resultMap="SysAppTrialUserResult">
         <include refid="selectSysAppTrialUserVo"/>
-        <where>
-            <if test="appId != null ">and atu.app_id = #{appId}</if>
-            <if test="status != null  and status != ''">and atu.status = #{status}</if>
-            <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''">
-                and atu.last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}
-            </if>
-            <if test="params.beginLoginTimes != null and params.beginLoginTimes != '' and params.endLoginTimes != null and params.endLoginTimes != ''">
-                and atu.login_times between #{params.beginLoginTimes} and #{params.endLoginTimes}
-            </if>
-            <if test="params.beginLoginTimesAll != null and params.beginLoginTimesAll != '' and params.endLoginTimesAll != null and params.endLoginTimesAll != ''">
-                and atu.login_times_all between #{params.beginLoginTimesAll} and #{params.endLoginTimesAll}
-            </if>
-            <if test="params.beginNextEnableTime != null and params.beginNextEnableTime != '' and params.endNextEnableTime != null and params.endNextEnableTime != ''">
-                and atu.next_enable_time between #{params.beginNextEnableTime} and #{params.endNextEnableTime}
-            </if>
-            <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
-                and atu.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
-            </if>
-            <if test="loginIp != null  and loginIp != ''">and atu.login_ip = #{loginIp}</if>
-            <if test="deviceCode != null  and deviceCode != ''">and atu.device_code = #{deviceCode}</if>
-        </where>
+        where atu.del_flag = '0'
+        <if test="appId != null ">and atu.app_id = #{appId}</if>
+        <if test="status != null  and status != ''">and atu.status = #{status}</if>
+        <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''">
+            and atu.last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}
+        </if>
+        <if test="params.beginLoginTimes != null and params.beginLoginTimes != '' and params.endLoginTimes != null and params.endLoginTimes != ''">
+            and atu.login_times between #{params.beginLoginTimes} and #{params.endLoginTimes}
+        </if>
+        <if test="params.beginLoginTimesAll != null and params.beginLoginTimesAll != '' and params.endLoginTimesAll != null and params.endLoginTimesAll != ''">
+            and atu.login_times_all between #{params.beginLoginTimesAll} and #{params.endLoginTimesAll}
+        </if>
+        <if test="params.beginNextEnableTime != null and params.beginNextEnableTime != '' and params.endNextEnableTime != null and params.endNextEnableTime != ''">
+            and atu.next_enable_time between #{params.beginNextEnableTime} and #{params.endNextEnableTime}
+        </if>
+        <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
+            and atu.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
+        </if>
+        <if test="loginIp != null  and loginIp != ''">and atu.login_ip = #{loginIp}</if>
+        <if test="deviceCode != null  and deviceCode != ''">and atu.device_code = #{deviceCode}</if>
     </select>
 
     <select id="selectSysAppTrialUserByAppTrialUserId" parameterType="Long" resultMap="SysAppTrialUserResult">
@@ -90,12 +89,13 @@
 
     <select id="selectSysAppTrialUserByLoginIp" parameterType="String" resultMap="SysAppTrialUserResult">
         <include refid="selectSysAppTrialUserVo"/>
-        where atu.login_ip = #{loginIp}
+        where atu.del_flag = '0' and atu.login_ip = #{loginIp}
     </select>
 
     <select id="selectSysAppTrialUserByAppIdAndLoginIpAndDeviceCode" resultMap="SysAppTrialUserResult">
         <include refid="selectSysAppTrialUserVo"/>
-        where atu.app_id = #{appId} and atu.login_ip = #{loginIp} and atu.device_code = #{deviceCode}
+        where atu.del_flag = '0' and atu.app_id = #{appId} and atu.login_ip = #{loginIp} and atu.device_code =
+        #{deviceCode}
     </select>
 
     <insert id="insertSysAppTrialUser" parameterType="SysAppTrialUser" useGeneratedKeys="true"

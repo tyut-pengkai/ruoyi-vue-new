@@ -1,12 +1,15 @@
 package com.ruoyi.api.v1.handler;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.SwaggerVo;
 import com.ruoyi.api.v1.encrypt.IEncryptType;
 import com.ruoyi.api.v1.encrypt.impl.EncryptAesCbcPKCS5P;
 import com.ruoyi.api.v1.encrypt.impl.EncryptAesCbcZeroP;
 import com.ruoyi.api.v1.encrypt.impl.EncryptBase64;
+import com.ruoyi.api.v1.utils.SignUtil;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.enums.EncrypType;
@@ -87,6 +90,7 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 			// 计算sign
 			Map<String, Object> resultMap = new HashMap<>();
 			resultMap.put("data", handleResult(data));
+			resultMap.put("sign", getResultSign(resultMap.get("data"), app));
 			resultMap.put("timestamp", DateUtils.getNowDate().getTime());
 			resultMap.put("vstr", vstr);
 //			String sign = SignUtil.sign(JSON.toJSONString(resultMap), app.getAppSecret());
@@ -112,6 +116,17 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 				return data.toString().replaceFirst(Constants.PREFIX_TYPE, "");
 			}
 			return data;
+		}
+		return null;
+	}
+
+	private String getResultSign(Object data, SysApp app) {
+		if (data != null) {
+			try {
+				return SignUtil.sign(new ObjectMapper().writeValueAsString(data), app.getAppSecret());
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}

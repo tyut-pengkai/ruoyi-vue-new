@@ -74,8 +74,8 @@ public class SysAppUserController extends BaseController {
         }
 
         for (SysAppUser sau : list) {
-            sau.setEffectiveLoginLimitU(MyUtils.getEffectiveLoginLimitU(sau));
-            sau.setEffectiveLoginLimitM(MyUtils.getEffectiveLoginLimitM(sau));
+            sau.setEffectiveLoginLimitU(MyUtils.getEffectiveLoginLimitU(sau.getApp(), sau));
+            sau.setEffectiveLoginLimitM(MyUtils.getEffectiveLoginLimitM(sau.getApp(), sau));
             if (onlineListUMap.containsKey(sau.getAppUserId())) {
                 sau.setCurrentOnlineU(onlineListUMap.get(sau.getAppUserId()).size());
             } else {

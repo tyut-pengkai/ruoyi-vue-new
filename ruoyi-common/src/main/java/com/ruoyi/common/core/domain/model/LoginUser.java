@@ -67,7 +67,7 @@ public class LoginUser implements UserDetails
      */
     private Set<String> permissions;
 
-    private Boolean ifApp;
+    private Boolean ifApp = false;
 
     private SysApp app;
 
