@@ -10,6 +10,7 @@ import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.mapper.SysCardTemplateMapper;
 import com.ruoyi.system.service.ISysCardService;
 import com.ruoyi.system.service.ISysCardTemplateService;
+import nl.flotsam.xeger.Xeger;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,13 +125,13 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
         for (int i = 0; i < quantity; i++) {
             SysCard sysCard = new SysCard();
             sysCard.setCardName(cardTpl.getCardName());
-            sysCard.setCardNo(genNo(cardTpl.getCardNoPrefix(), cardTpl.getCardNoSuffix(), cardTpl.getCardNoLen(), cardTpl.getCardNoGenRule()));
-            sysCard.setCardPass(genPass(cardTpl.getCardPassLen(), cardTpl.getCardPassGenRule()));
+            sysCard.setCardNo(genNo(cardTpl.getCardNoPrefix(), cardTpl.getCardNoSuffix(), cardTpl.getCardNoLen(), cardTpl.getCardNoGenRule(), cardTpl.getCardNoRegex()));
+            sysCard.setCardPass(genPass(cardTpl.getCardPassLen(), cardTpl.getCardPassGenRule(), cardTpl.getCardPassRegex()));
             sysCard.setApp(cardTpl.getApp());
             sysCard.setTemplateId(cardTpl.getTemplateId());
             sysCard.setAppId(cardTpl.getAppId());
             sysCard.setChargeRule(cardTpl.getChargeRule());
-            if(cardTpl.getEffectiveDuration() == -1){
+            if (cardTpl.getEffectiveDuration() == -1) {
                 sysCard.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE));
             } else {
 //                sysCard.setExpireTime(DateUtils.addSeconds(new Date(), cardTpl.getEffectiveDuration().intValue()));
@@ -159,16 +160,16 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
         return sysCardList;
     }
 
-    private String generate(Integer length, GenRule genRule) {
-        if(length <= 0) {
+    private String generate(Integer length, GenRule genRule, String pattern) {
+        if (length <= 0) {
             return "";
         }
         String random = "";
-        if(genRule == GenRule.LOWERCASE) {
+        if (genRule == GenRule.LOWERCASE) {
             random = RandomStringUtils.randomAlphabetic(length).toLowerCase();
-        }else if(genRule == GenRule.NUM) {
+        } else if (genRule == GenRule.NUM) {
             random = RandomStringUtils.randomNumeric(length);
-        }else if(genRule == GenRule.NUM_LOWERCASE) {
+        } else if (genRule == GenRule.NUM_LOWERCASE) {
             random = RandomStringUtils.randomAlphanumeric(length).toLowerCase();
         }else if(genRule == GenRule.NUM_UPPERCASE) {
             random = RandomStringUtils.randomAlphanumeric(length).toUpperCase();
@@ -179,19 +180,21 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
         }else if(genRule == GenRule.UPPERCASE_LOWERCASE) {
             random = RandomStringUtils.randomAlphabetic(length);
         }else if(genRule == GenRule.REGEX) {
-            random = ("regex"+RandomStringUtils.randomAlphanumeric(length)).substring(0, length);
+//            random = ("regex"+RandomStringUtils.randomAlphanumeric(length)).substring(0, length);
+            Xeger generator = new Xeger(pattern);
+            random = generator.generate();
         }
         return random;
     }
 
-    private String genNo(String prefix, String suffix, Integer length, GenRule genRule) {
+    private String genNo(String prefix, String suffix, Integer length, GenRule genRule, String pattern) {
         if (StringUtils.isBlank(prefix)) {
             prefix = "";
         }
         if (StringUtils.isBlank(suffix)) {
             suffix = "";
         }
-        String random = prefix + generate(length, genRule) + suffix;
+        String random = prefix + generate(length, genRule, pattern) + suffix;
 //        while (sysLoginCodeService.selectSysLoginCodeByCardNo(random) != null) {
 //            random = prefix + generate(length, genRule) + suffix;
 //        }
@@ -199,7 +202,7 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
         return random;
     }
 
-    private String genPass(Integer length, GenRule genRule) {
-        return generate(length, genRule);
+    private String genPass(Integer length, GenRule genRule, String pattern) {
+        return generate(length, genRule, pattern);
     }
 }

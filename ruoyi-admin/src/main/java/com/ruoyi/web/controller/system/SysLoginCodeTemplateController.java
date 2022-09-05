@@ -5,6 +5,9 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.enums.GenRule;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
 import com.ruoyi.system.service.ISysLoginCodeTemplateService;
@@ -77,6 +80,9 @@ public class SysLoginCodeTemplateController extends BaseController {
     @PostMapping
     public AjaxResult add(@RequestBody SysLoginCodeTemplate sysLoginCodeTemplate) {
         sysLoginCodeTemplate.setCreateBy(getUsername());
+        if (sysLoginCodeTemplate.getCardNoGenRule() == GenRule.REGEX && StringUtils.isBlank(sysLoginCodeTemplate.getCardNoRegex())) {
+            throw new ServiceException("正则表达式不能为空");
+        }
         return toAjax(sysLoginCodeTemplateService.insertSysLoginCodeTemplate(sysLoginCodeTemplate));
     }
 
@@ -88,6 +94,9 @@ public class SysLoginCodeTemplateController extends BaseController {
     @PutMapping
     public AjaxResult edit(@RequestBody SysLoginCodeTemplate sysLoginCodeTemplate) {
         sysLoginCodeTemplate.setUpdateBy(getUsername());
+        if (sysLoginCodeTemplate.getCardNoGenRule() == GenRule.REGEX && StringUtils.isBlank(sysLoginCodeTemplate.getCardNoRegex())) {
+            throw new ServiceException("正则表达式不能为空");
+        }
         return toAjax(sysLoginCodeTemplateService.updateSysLoginCodeTemplate(sysLoginCodeTemplate));
     }
 

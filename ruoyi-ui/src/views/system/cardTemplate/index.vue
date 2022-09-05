@@ -681,7 +681,7 @@
                 <el-input
                   v-model="form.cardPassRegex"
                   placeholder="请输入密码正则"
-                  :disabled="form.cardPwdGenRule !== '7'"
+                  :disabled="form.cardPassGenRule !== '7'"
                 />
               </el-form-item>
             </el-col>

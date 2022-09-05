@@ -10,6 +10,7 @@ import com.ruoyi.system.domain.SysLoginCodeTemplate;
 import com.ruoyi.system.mapper.SysLoginCodeTemplateMapper;
 import com.ruoyi.system.service.ISysLoginCodeService;
 import com.ruoyi.system.service.ISysLoginCodeTemplateService;
+import nl.flotsam.xeger.Xeger;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,7 +118,7 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
         for (int i = 0; i < quantity; i++) {
             SysLoginCode sysLoginCode = new SysLoginCode();
             sysLoginCode.setCardName(loginCodeTpl.getCardName());
-            sysLoginCode.setCardNo(genNo(loginCodeTpl.getCardNoPrefix(), loginCodeTpl.getCardNoSuffix(), loginCodeTpl.getCardNoLen(), loginCodeTpl.getCardNoGenRule()));
+            sysLoginCode.setCardNo(genNo(loginCodeTpl.getCardNoPrefix(), loginCodeTpl.getCardNoSuffix(), loginCodeTpl.getCardNoLen(), loginCodeTpl.getCardNoGenRule(), loginCodeTpl.getCardNoRegex()));
             sysLoginCode.setApp(loginCodeTpl.getApp());
             sysLoginCode.setTemplateId(loginCodeTpl.getTemplateId());
             sysLoginCode.setAppId(loginCodeTpl.getAppId());
@@ -150,7 +151,7 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
         return sysLoginCodeList;
     }
 
-    private String generate(Integer length, GenRule genRule) {
+    private String generate(Integer length, GenRule genRule, String pattern) {
         if (length <= 0) {
             return "";
         }
@@ -170,19 +171,21 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
         } else if (genRule == GenRule.UPPERCASE_LOWERCASE) {
             random = RandomStringUtils.randomAlphabetic(length);
         } else if (genRule == GenRule.REGEX) {
-            random = ("regex" + RandomStringUtils.randomAlphanumeric(length)).substring(0, length);
+//            random = ("regex" + RandomStringUtils.randomAlphanumeric(length)).substring(0, length);
+            Xeger generator = new Xeger(pattern);
+            random = generator.generate();
         }
         return random;
     }
 
-    private String genNo(String prefix, String suffix, Integer length, GenRule genRule) {
+    private String genNo(String prefix, String suffix, Integer length, GenRule genRule, String pattern) {
         if (StringUtils.isBlank(prefix)) {
             prefix = "";
         }
         if (StringUtils.isBlank(suffix)) {
             suffix = "";
         }
-        String random = prefix + generate(length, genRule) + suffix;
+        String random = prefix + generate(length, genRule, pattern) + suffix;
 //        while (sysLoginCodeService.selectSysLoginCodeByCardNo(random) != null) {
 //            random = prefix + generate(length, genRule) + suffix;
 //        }

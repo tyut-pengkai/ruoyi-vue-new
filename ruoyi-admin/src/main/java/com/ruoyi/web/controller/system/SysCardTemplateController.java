@@ -5,6 +5,9 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.enums.GenRule;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.service.ISysCardTemplateService;
@@ -77,9 +80,14 @@ public class SysCardTemplateController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:cardTemplate:add')")
     @Log(title = "卡密模板", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody SysCardTemplate sysCardTemplate)
-    {
+    public AjaxResult add(@RequestBody SysCardTemplate sysCardTemplate) {
         sysCardTemplate.setCreateBy(getUsername());
+        if (sysCardTemplate.getCardNoGenRule() == GenRule.REGEX && StringUtils.isBlank(sysCardTemplate.getCardNoRegex())) {
+            throw new ServiceException("卡号正则表达式不能为空");
+        }
+        if (sysCardTemplate.getCardPassGenRule() == GenRule.REGEX && StringUtils.isBlank(sysCardTemplate.getCardPassRegex())) {
+            throw new ServiceException("密码正则表达式不能为空");
+        }
         return toAjax(sysCardTemplateService.insertSysCardTemplate(sysCardTemplate));
     }
 
@@ -89,9 +97,14 @@ public class SysCardTemplateController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:cardTemplate:edit')")
     @Log(title = "卡密模板", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody SysCardTemplate sysCardTemplate)
-    {
+    public AjaxResult edit(@RequestBody SysCardTemplate sysCardTemplate) {
         sysCardTemplate.setUpdateBy(getUsername());
+        if (sysCardTemplate.getCardNoGenRule() == GenRule.REGEX && StringUtils.isBlank(sysCardTemplate.getCardNoRegex())) {
+            throw new ServiceException("卡号正则表达式不能为空");
+        }
+        if (sysCardTemplate.getCardPassGenRule() == GenRule.REGEX && StringUtils.isBlank(sysCardTemplate.getCardPassRegex())) {
+            throw new ServiceException("密码正则表达式不能为空");
+        }
         return toAjax(sysCardTemplateService.updateSysCardTemplate(sysCardTemplate));
     }
 
