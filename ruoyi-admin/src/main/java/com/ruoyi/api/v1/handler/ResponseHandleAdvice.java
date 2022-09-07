@@ -1,8 +1,6 @@
 package com.ruoyi.api.v1.handler;
 
 import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.SwaggerVo;
 import com.ruoyi.api.v1.encrypt.IEncryptType;
@@ -69,30 +67,34 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 			// 是否解密
 			EncrypType encrypTypeIn = app.getDataInEnc();
 			if (encrypTypeIn != null && encrypTypeIn != EncrypType.NONE) {
-                // 开始解密
-                IEncryptType encryptType = null;
+				// 开始解密
+				IEncryptType encryptType = null;
 //				if (encrypTypeIn == EncrypType.AES_CBC_NoPadding) {
 //					encryptType = new EncryptAesCbcNoP();
 //				} else
-                if (encrypTypeIn == EncrypType.AES_CBC_PKCS5Padding) {
-                    encryptType = new EncryptAesCbcPKCS5P();
-                } else if (encrypTypeIn == EncrypType.AES_CBC_ZeroPadding) {
-                    encryptType = new EncryptAesCbcZeroP();
-                } else if (encrypTypeIn == EncrypType.BASE64) {
-                    encryptType = new EncryptBase64();
-                }
-                assert encryptType != null;
-                inputData = encryptType.decrypt(inputData, app.getDataInPwd());
-            }
+				if (encrypTypeIn == EncrypType.AES_CBC_PKCS5Padding) {
+					encryptType = new EncryptAesCbcPKCS5P();
+				} else if (encrypTypeIn == EncrypType.AES_CBC_ZeroPadding) {
+					encryptType = new EncryptAesCbcZeroP();
+				} else if (encrypTypeIn == EncrypType.BASE64) {
+					encryptType = new EncryptBase64();
+				}
+				assert encryptType != null;
+				inputData = encryptType.decrypt(inputData, app.getDataInPwd());
+			}
 			// 转化为MAP
 			HashMap paramMap = JSON.parseObject(inputData, HashMap.class);
 			vstr = paramMap.get("vstr");
+			String v = "";
+			if (vstr != null) {
+				v = String.valueOf(vstr);
+			}
 			// 计算sign
 			Map<String, Object> resultMap = new HashMap<>();
 			resultMap.put("data", handleResult(data));
-			resultMap.put("sign", getResultSign(resultMap.get("data"), app));
-			resultMap.put("timestamp", DateUtils.getNowDate().getTime());
-			resultMap.put("vstr", vstr);
+			resultMap.put("timestamp", String.valueOf(DateUtils.getNowDate().getTime()));
+			resultMap.put("vstr", v);
+			resultMap.put("sign", getResultSign(resultMap, app));
 //			String sign = SignUtil.sign(JSON.toJSONString(resultMap), app.getAppSecret());
 //			resultMap.put("sign", sign);
 			// 将原本的数据包装在RestResponse里
@@ -110,24 +112,22 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 		}
 	}
 
-	private Object handleResult(Object data) {
+	private String handleResult(Object data) {
 		if (data != null) {
 			if (data.toString().startsWith(Constants.PREFIX_TYPE)) {
 				return data.toString().replaceFirst(Constants.PREFIX_TYPE, "");
 			}
-			return data;
+			// return data;
+			if (data instanceof String) {
+				return data.toString();
+			}
+			return JSON.toJSONString(data);
 		}
-		return null;
+		return "";
 	}
 
-	private String getResultSign(Object data, SysApp app) {
-		if (data != null) {
-			try {
-				return SignUtil.sign(new ObjectMapper().writeValueAsString(data), app.getAppSecret());
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
-		}
-		return null;
+	private String getResultSign(Map<String, Object> resultMap, SysApp app) {
+		String s = String.valueOf(resultMap.get("data")) + resultMap.get("timestamp") + resultMap.get("vstr");
+		return SignUtil.sign(s, app.getAppSecret());
 	}
 }
