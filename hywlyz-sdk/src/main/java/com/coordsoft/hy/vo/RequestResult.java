@@ -1,0 +1,14 @@
+
+package com.coordsoft.hy.vo;
+
+import lombok.Data;
+
+@Data
+public class RequestResult {
+    private String msg = "";
+    private int code;
+    private String data = "";
+    private String timestamp = "";
+    private String vstr = "";
+    private String detail = "";
+}

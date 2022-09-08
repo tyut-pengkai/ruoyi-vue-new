@@ -199,6 +199,7 @@
         <module>ruoyi-license-server</module>
         <module>ruoyi-update</module>
         <module>ruoyi-install</module>
+        <module>hywlyz-sdk</module>
     </modules>
     <packaging>pom</packaging>
 
