@@ -55,6 +55,9 @@
               {{ licenseInfo.datetime }}
             </el-descriptions-item>
           </el-descriptions>
+          <div style="margin-top: 10px; text-align: center">
+            <el-button @click="reload">重载授权</el-button>
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -62,7 +65,7 @@
 </template>
 
 <script>
-import { getLicenseInfo } from "@/api/system/license";
+import {getLicenseInfo, loadLicense} from "@/api/system/license";
 
 export default {
   name: "License",
@@ -82,6 +85,14 @@ export default {
       getLicenseInfo().then((response) => {
         this.serverInfo = response.data.serverInfo;
         this.licenseInfo = response.data.licenseInfo;
+        this.loading = false;
+      });
+    },
+    reload() {
+      this.loading = true;
+      loadLicense().then((response) => {
+        this.$modal.msgSuccess(response.msg);
+        this.getInfo();
         this.loading = false;
       });
     },

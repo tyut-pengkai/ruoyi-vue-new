@@ -7,3 +7,11 @@ export function getLicenseInfo() {
     method: 'get'
   })
 }
+
+// 重新载入授权信息
+export function loadLicense() {
+  return request({
+    url: '/system/license/load',
+    method: 'get'
+  })
+}
