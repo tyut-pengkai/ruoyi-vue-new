@@ -6,11 +6,11 @@ import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.api.v1.utils.ScriptUtils;
-import com.ruoyi.api.v1.utils.ValidUtils;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
+import com.ruoyi.framework.api.v1.utils.ValidUtils;
 import com.ruoyi.system.domain.SysGlobalScript;
 import com.ruoyi.system.service.ISysAppUserService;
 import com.ruoyi.system.service.ISysGlobalScriptService;
@@ -67,7 +67,7 @@ public class GlobalScript extends Function {
 
         // 渲染脚本
         String scriptContent = script.getContent();
-        scriptContent = validUtils.renderScriptContent(scriptContent, this);
+        scriptContent = ScriptUtils.renderScriptContent(scriptContent, this);
 
         return ScriptUtils.exec(scriptContent, script.getLanguage(), scriptParams);
     }

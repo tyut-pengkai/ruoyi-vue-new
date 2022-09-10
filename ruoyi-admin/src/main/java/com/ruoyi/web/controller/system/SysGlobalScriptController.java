@@ -1,13 +1,13 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.api.v1.utils.ScriptUtils;
-import com.ruoyi.api.v1.utils.ValidUtils;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.framework.api.v1.utils.ValidUtils;
 import com.ruoyi.system.domain.SysGlobalScript;
 import com.ruoyi.system.domain.vo.ScriptResultVo;
 import com.ruoyi.system.service.ISysGlobalScriptService;
@@ -109,7 +109,7 @@ public class SysGlobalScriptController extends BaseController {
     public AjaxResult scriptTest(@RequestBody SysGlobalScript script) {
         // 渲染脚本
         String scriptContent = script.getContent();
-        scriptContent = validUtils.renderScriptContent(scriptContent, null);
+        scriptContent = ScriptUtils.renderScriptContent(scriptContent, null);
         ScriptResultVo scriptResultVo = ScriptUtils.exec(scriptContent, script.getLanguage(), script.getScriptParams());
         return AjaxResult.success(scriptResultVo);
     }

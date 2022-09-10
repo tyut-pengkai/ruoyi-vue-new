@@ -54,6 +54,11 @@ public class RuoYiConfig {
      */
     private static String captchaType;
 
+    /**
+     * 是否为授权站，授权站前端商城将显示获取授权选项卡
+     */
+    private boolean isLicenseServer;
+
     public String getName() {
         return name;
     }
@@ -182,5 +187,13 @@ public class RuoYiConfig {
 
     public void setShortName(String shortName) {
         this.shortName = shortName;
+    }
+
+    public boolean isIsLicenseServer() {
+        return isLicenseServer;
+    }
+
+    public void setIsLicenseServer(boolean isLicenseServer) {
+        this.isLicenseServer = isLicenseServer;
     }
 }

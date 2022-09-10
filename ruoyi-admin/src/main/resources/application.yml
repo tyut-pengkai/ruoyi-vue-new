@@ -212,5 +212,9 @@ swagger:
 
 # 证书
 license:
+  licenseServer:
+    enable: true
+    appKey: LMudrZH35qeJwSqk81s4ITUfHU0RqSZr
+    appVersionNo: 1
   subject: ${ruoyi.name} #证书主题
   publicAlias: publicCert #公钥别称

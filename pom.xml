@@ -186,6 +186,20 @@
                 <version>${ruoyi.version}</version>
             </dependency>
 
+            <!-- 更新模块-->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>ruoyi-update</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
+
+            <!-- 授权服务-->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>ruoyi-license</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -196,10 +210,10 @@
         <module>ruoyi-quartz</module>
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
-        <module>ruoyi-license-server</module>
         <module>ruoyi-update</module>
         <module>ruoyi-install</module>
         <module>hywlyz-sdk</module>
+        <module>ruoyi-license</module>
     </modules>
     <packaging>pom</packaging>
 

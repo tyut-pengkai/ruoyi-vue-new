@@ -82,6 +82,10 @@ export const constantRoutes = [{
       path: '/billOrder',
       component: () => import('@/views/sale/shop/billOrder'),
       name: 'BillOrder',
+    }, {
+      path: '/getLicense',
+      component: () => import('@/views/sale/license/index'),
+      name: 'GetLicense',
     },]
   },
   {

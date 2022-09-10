@@ -1,4 +1,0 @@
-license:
-  subject: ${ruoyi.name} #证书主题
-  privateAlias: privateKey #私钥别称
-  licensePath: D:/license.lic #license存储目录

@@ -40,7 +40,10 @@ public class MimeTypeUtils
             // exe
             "exe",
             // apk
-            "apk"};
+            "apk",
+            // lic
+            "lic"
+    };
 
     public static String getExtension(String prefix)
     {
