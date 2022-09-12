@@ -155,6 +155,11 @@ public class SysLicenseRecordController extends BaseController {
     @Transactional(rollbackFor = Exception.class)
     public AjaxResult genLicenseFileByWebUrl(String loginCode, String webUrl) {
         try {
+            // 检查兑换码是否使用过
+            SysLoginCode code = sysLoginCodeService.selectSysLoginCodeByCardNo(loginCode);
+            if (UserConstants.YES.equals(code.getIsCharged())) {
+                throw new ServiceException("兑换码已使用");
+            }
             // 验证目标网站
             webUrl = webUrl.endsWith("/") ? webUrl.substring(0, webUrl.length() - 1) : webUrl;
             String response = HttpUtils.sendGet(webUrl + "/prod-api/system/license/info");
@@ -169,11 +174,6 @@ public class SysLicenseRecordController extends BaseController {
             String sn = websiteLicenseInfo.getData().getServerInfo().getSn();
             if (StringUtils.isBlank(sn)) {
                 throw new ServiceException("获取目标网站信息失败，请确认网站域名是否正确：获取服务器设备码失败");
-            }
-            // 检查兑换码是否使用过
-            SysLoginCode code = sysLoginCodeService.selectSysLoginCodeByCardNo(loginCode);
-            if (UserConstants.YES.equals(code.getIsCharged())) {
-                throw new ServiceException("兑换码已使用");
             }
             // 调用登录接口
             SysApp app = sysAppService.selectSysAppByAppKey(appKey);
