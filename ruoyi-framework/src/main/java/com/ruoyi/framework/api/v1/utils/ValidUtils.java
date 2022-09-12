@@ -439,7 +439,7 @@ public class ValidUtils {
         Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
         for (String key : keys) {
             LoginUser user = redisCache.getCacheObject(key);
-            if (user.getIfApp()) {
+            if (user != null && user.getIfApp()) {
                 onlineAppUser.add(key);
             }
         }
