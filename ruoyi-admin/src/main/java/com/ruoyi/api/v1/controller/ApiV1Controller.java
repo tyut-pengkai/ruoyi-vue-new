@@ -24,7 +24,6 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.api.v1.service.SysAppLoginService;
 import com.ruoyi.framework.api.v1.utils.ValidUtils;
-import com.ruoyi.framework.license.anno.LicenceCheck;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.*;
@@ -80,7 +79,7 @@ public class ApiV1Controller extends BaseController {
         return AjaxResult.error("访问有误");
     }
 
-    @LicenceCheck
+//    @LicenceCheck
     @Encrypt(in = true, out = true)
     @PostMapping("/{appkey}")
 //    @ApiOperation(value = "API接口", notes = "API接口")
