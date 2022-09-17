@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <el-alert :closable="false" title="公告" type="success">
+    <el-alert :closable="false" title="公告" type="info">
       <p>只支持查询最近5笔订单</p>
     </el-alert>
     <el-card class="box-card" style="max-width: 90vw; margin-top: 15px">
@@ -38,8 +38,7 @@
                   type="primary"
                   @click="submitForm('formQueryByOrderNo')"
                 >立即查询
-                </el-button
-                >
+                </el-button>
                 <!-- <el-button @click="resetForm('formQueryByOrderNo')">清空输入</el-button> -->
               </div>
             </el-form>
@@ -72,8 +71,7 @@
                   type="primary"
                   @click="submitForm('formQueryByContact')"
                 >立即查询
-                </el-button
-                >
+                </el-button>
                 <!-- <el-button @click="resetForm('formQueryByContact')">清空输入</el-button> -->
               </div>
             </el-form>
@@ -92,8 +90,7 @@
                   type="primary"
                   @click="submitForm('formQueryByCookie')"
                 >立即查询
-                </el-button
-                >
+                </el-button>
                 <!-- <el-button @click="resetForm('formQueryByCookie')">清空输入</el-button> -->
               </div>
             </el-form>

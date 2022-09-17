@@ -71,7 +71,7 @@ public class CommonController {
     private ISysLoginCodeService sysLoginCodeService;
     @Resource
     private RedisCache redisCache;
-    @Value("${license.licenseServer.enable}")
+    @Value("${license.licenseServer.enable:#{false}}")
     private boolean isLicenseServer;
 
     private static final String FILE_DELIMETER = ",";

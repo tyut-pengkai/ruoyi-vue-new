@@ -5,7 +5,7 @@
       :closable="false"
       :title="userNotice['title'] || '用户公告'"
       style="margin-bottom: 20px"
-      type="success"
+      type="info"
     >
       <div class="ql-container ql-bubble">
         <div class="ql-editor">
@@ -24,7 +24,7 @@
         :closable="false"
         :title="agentNotice['title'] || '代理公告'"
         style="margin-bottom: 20px"
-        type="success"
+        type="info"
       >
         <div class="ql-container ql-bubble">
           <div class="ql-editor">

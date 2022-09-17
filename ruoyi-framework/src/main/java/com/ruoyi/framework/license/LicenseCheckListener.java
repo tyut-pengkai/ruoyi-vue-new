@@ -80,7 +80,7 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
         } catch (Exception e) {
             log.info("License载入失败：{}", e.getMessage());
 //                e.printStackTrace();
-            return AjaxResult.error("License载入失败：" + e.getMessage());
+            return AjaxResult.error(e.getMessage());
         }
     }
 

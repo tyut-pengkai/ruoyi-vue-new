@@ -51,3 +51,12 @@ export function genLicenseFileByWebUrl(query) {
     params: query
   })
 }
+
+// 兑换授权文件
+export function genLicenseFileByDeviceCode(query) {
+  return request({
+    url: '/license/licenseRecord/genLicenseFileByDeviceCode',
+    method: 'get',
+    params: query
+  })
+}

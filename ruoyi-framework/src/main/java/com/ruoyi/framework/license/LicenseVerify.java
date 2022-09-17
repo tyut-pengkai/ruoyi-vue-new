@@ -38,7 +38,7 @@ public class LicenseVerify {
         } catch (LicenseContentException lce) {
             if (EXC_LICENSE_HAS_EXPIRED.equals(lce.getMessage())) {
 //                log.error("License载入失败，License已过期！");
-                throw new LicenseException("License载入失败，License已过期");
+                throw new LicenseException("License已过期");
             } else {
 //                log.error("License载入失败！");
                 throw lce;
@@ -46,7 +46,7 @@ public class LicenseVerify {
 //            throw lce;
         } catch (Exception e) {
 //            log.error("License载入失败！");
-            throw new LicenseException("License载入失败：" + e.getMessage());
+            throw new LicenseException(e.getMessage());
         }
         return result;
     }
