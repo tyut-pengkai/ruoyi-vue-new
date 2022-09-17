@@ -417,19 +417,23 @@ public class ValidUtils {
      * @param onlineList
      */
     private void logoutTheEarliest(List<LoginUser> onlineList, String msg) {
-        // 将当前在线用户按照登录时间排序
-        onlineList.sort(Comparator.comparing(LoginUser::getLoginTime));
-        if (onlineList.size() > 0) {
-            LoginUser loginUser = onlineList.get(0);
-            String userName = loginUser.getUsername();
-            // 删除用户缓存记录
-            tokenService.delLoginUser(loginUser.getToken());
-            // 记录用户退出日志
-            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(loginUser.getAppUser().getAppUserId(), userName,
-                    loginUser.getApp().getAppName(), loginUser.getAppVersion().getVersionShow(),
-                    loginUser.getDeviceCode() != null ? loginUser.getDeviceCode().getDeviceCode() : null,
-                    Constants.LOGOUT, "系统强制退出：" + msg));
-            Constants.LAST_ERROR_REASON_MAP.put(loginUser.getToken(), "您的账号/登录码在其他设备上登录");
+        try {
+            // 将当前在线用户按照登录时间排序
+            onlineList.sort(Comparator.comparing(LoginUser::getLoginTime));
+            if (onlineList.size() > 0) {
+                LoginUser loginUser = onlineList.get(0);
+                String userName = loginUser.getUsername();
+                // 删除用户缓存记录
+                tokenService.delLoginUser(loginUser.getToken());
+                // 记录用户退出日志
+                AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(loginUser.getAppUser().getAppUserId(), userName,
+                        loginUser.getApp().getAppName(), loginUser.getAppVersion().getVersionShow(),
+                        loginUser.getDeviceCode() != null ? loginUser.getDeviceCode().getDeviceCode() : null,
+                        Constants.LOGOUT, "系统强制退出：" + msg));
+                Constants.LAST_ERROR_REASON_MAP.put(loginUser.getToken(), "您的账号/登录码在其他设备上登录");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
