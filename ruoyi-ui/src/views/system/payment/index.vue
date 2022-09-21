@@ -222,7 +222,11 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="支付编码" label-width="80px" prop="code">
-              <el-input v-model="form.code" placeholder="请输入支付编码" />
+              <el-input
+                v-model="form.code"
+                :readonly="true"
+                placeholder="请输入支付编码"
+              />
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -274,7 +278,11 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="图标" label-width="80px" prop="icon">
-              <el-input v-model="form.icon" placeholder="请输入图标" />
+              <el-input
+                v-model="form.icon"
+                :readonly="true"
+                placeholder="请输入图标"
+              />
             </el-form-item>
           </el-col>
         </el-form-item>
