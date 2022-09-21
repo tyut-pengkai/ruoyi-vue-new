@@ -94,33 +94,31 @@ public class Hywlyz extends HyUtils {
                 JSONObject jsonObject = JSON.parseObject(string);
                 requestResult.setCode(jsonObject.getInteger("code"));
                 requestResult.setMsg(jsonObject.getString("msg"));
-                JSONObject jsonNew = new JSONObject();
-                String dataStr = jsonObject.getString("data");
-                if (StringUtils.isNotBlank(dataStr)) {
-                    if (gDataOutEnc != EncryptType.NONE) {
-                        dataStr = Hywlyz.generalDataDecrypt(dataStr, gDataOutPwd, gDataOutEnc);
-                    }
-                    if (JSON.isValidObject(dataStr) || JSON.isValidArray(dataStr)) {
-                        requestResult.setData(dataStr);
-                    } else {
-                        jsonNew.put("data", dataStr);
-                        requestResult.setData(Hywlyz.replaceNewLine(jsonNew.toString()));
-                    }
-                } else {
-                    jsonNew.put("data", dataStr);
-                    requestResult.setData(Hywlyz.replaceNewLine(jsonNew.toString()));
-                }
                 requestResult.setVstr(jsonObject.getString("vstr"));
                 requestResult.setDetail(jsonObject.getString("detail"));
-                if (!HyUtils.verifySign(jsonObject, gAppSecret)) {
-                    requestResult.setCode(0);
-                    requestResult.setMsg("sign校验失败，该数据可能被人为篡改");
-                    log.debug("requestServer: " + requestResult.getMsg());
-                }
-                if (requestResult.getCode() == 200 && StringUtils.isNotBlank(vstr) && !vstr.equals(requestResult.getVstr())) {
-                    requestResult.setCode(0);
-                    requestResult.setMsg("vstr校验失败，该数据可能被人为篡改");
-                    log.debug("requestServer: " + requestResult.getMsg());
+                String dataStr = jsonObject.getString("data");
+
+                if (requestResult.getCode() == 200) {
+                    if (HyUtils.verifySign(jsonObject, gAppSecret)) {
+                        if (StringUtils.isBlank(vstr) || vstr.equals(requestResult.getVstr())) {
+                            dataStr = Hywlyz.generalDataDecrypt(dataStr, gDataOutPwd, gDataOutEnc);
+                            if (JSON.isValidObject(dataStr) || JSON.isValidArray(dataStr)) {
+                                requestResult.setData(dataStr);
+                            } else {
+                                JSONObject jsonNew = new JSONObject();
+                                jsonNew.put("data", dataStr);
+                                requestResult.setData(Hywlyz.replaceNewLine(jsonNew.toString()));
+                            }
+                        } else {
+                            requestResult.setCode(0);
+                            requestResult.setMsg("vstr校验失败，该数据可能被人为篡改");
+                            log.debug("requestServer: " + requestResult.getMsg());
+                        }
+                    } else {
+                        requestResult.setCode(0);
+                        requestResult.setMsg("sign校验失败，该数据可能被人为篡改");
+                        log.debug("requestServer: " + requestResult.getMsg());
+                    }
                 }
                 log.debug("requestServer: 请求API：" + api);
                 log.debug("requestServer: 返回数据json解析成功[密文]：" + string);
@@ -480,6 +478,62 @@ public class Hywlyz extends HyUtils {
         try {
             postBody.put("api", "bindDeviceInfo.nc");
             postBody.put("loginCode", loginCode);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (requestServer(postBody, false));
+    }
+
+    public RequestResult userExpireTime_nc(String loginCode) {
+        JSONObject postBody = new JSONObject();
+        try {
+            postBody.put("api", "userExpireTime.nc");
+            postBody.put("loginCode", loginCode);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (requestServer(postBody, false));
+    }
+
+    public RequestResult userPoint_nc(String loginCode) {
+        JSONObject postBody = new JSONObject();
+        try {
+            postBody.put("api", "userPoint.nc");
+            postBody.put("loginCode", loginCode);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (requestServer(postBody, false));
+    }
+
+    public RequestResult userExpireTime_nu(String username) {
+        JSONObject postBody = new JSONObject();
+        try {
+            postBody.put("api", "userExpireTime.nu");
+            postBody.put("username", username);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (requestServer(postBody, false));
+    }
+
+    public RequestResult userPoint_nu(String username) {
+        JSONObject postBody = new JSONObject();
+        try {
+            postBody.put("api", "userPoint.nu");
+            postBody.put("username", username);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (requestServer(postBody, false));
+    }
+
+    public RequestResult rechargeLoginCode_nc(String loginCode, String newLoginCode) {
+        JSONObject postBody = new JSONObject();
+        try {
+            postBody.put("api", "rechargeLoginCode.nc");
+            postBody.put("loginCode", loginCode);
+            postBody.put("newLoginCode", newLoginCode);
         } catch (JSONException e) {
             e.printStackTrace();
         }
