@@ -201,9 +201,9 @@ public class SysAppLoginService {
         SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
         String loginCodeShow = "[单码]" + loginCodeStr;
         try {
-            validUtils.checkLoginCode(app, loginCodeStr, loginCode);
             appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(app.getAppId(), loginCodeStr);
             if (appUser == null) { // 首次登录
+                validUtils.checkLoginCode(app, loginCodeStr, loginCode);
                 appUser = new SysAppUser();
                 appUser.setAppId(app.getAppId());
                 appUser.setUserId(null);

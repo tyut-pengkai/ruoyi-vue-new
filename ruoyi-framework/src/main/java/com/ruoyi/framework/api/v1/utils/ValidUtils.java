@@ -491,6 +491,9 @@ public class ValidUtils {
         if (StringUtils.isNull(loginCode)) {
             log.info("单码：{} 不存在.", loginCodeStr);
             throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST, "单码：" + loginCodeStr + " 不存在");
+        } else if (UserConstants.YES.equals(loginCode.getIsCharged())) {
+            log.info("单码：{} 已被使用.", loginCodeStr);
+            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST, "单码：" + loginCodeStr + " 已被使用");
         } else if (UserStatus.DELETED.getCode().equals(loginCode.getDelFlag())) {
             log.info("单码：{} 已被删除.", loginCodeStr);
             throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST, "单码：" + loginCodeStr + " 已被删除");
