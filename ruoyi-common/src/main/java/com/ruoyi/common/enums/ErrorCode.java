@@ -72,6 +72,8 @@ public enum ErrorCode {
     ERROR_TRIAL_USER_NOT_ALLOWED(400090223, "试用用户无法执行此操作"),
     ERROR_GLOBAL_SCRIPT_INNER_VARIABLE_ANALYTICS_FAILED(400090224, "全局脚本内置变量解析出错"),
 
+    ERROR_LOGIN_CODE_IS_USED(400090225, "新单码已被使用"),
+
     ERROR_OTHER_FAULTS(400099999, "未知错误"),
     ;
 

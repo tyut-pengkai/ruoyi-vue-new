@@ -104,7 +104,7 @@ public class RechargeCard extends Function {
             throw new ApiException(ErrorCode.ERROR_CARD_NOT_EXIST);
         }
         if (!Objects.equals(card.getAppId(), this.getApp().getAppId())) {
-            SysApp cardApp = appService.selectSysAppByAppId(card.getCardId());//当前要消耗的卡
+            SysApp cardApp = appService.selectSysAppByAppId(card.getAppId());//当前要消耗的卡
             throw new ApiException(ErrorCode.ERROR_CARD_APP_MISMATCH, "所选充值卡仅限充值软件 :" + cardApp.getAppName() + " ，不能用于充值软件： " + this.getApp().getAppName());
         }
         if (Objects.equals(card.getIsCharged(), UserConstants.YES)) {

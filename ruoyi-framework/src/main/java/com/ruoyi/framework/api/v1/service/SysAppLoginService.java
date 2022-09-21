@@ -236,6 +236,7 @@ public class SysAppLoginService {
                 appUserService.insertSysAppUser(appUser);
                 loginCode.setIsCharged(UserConstants.YES);
                 loginCode.setChargeTime(DateUtils.getNowDate());
+                loginCode.setOnSale(UserConstants.NO);
                 loginCodeService.updateSysLoginCode(loginCode);
             } else {
                 if (UserStatus.DISABLE.getCode().equals(appUser.getStatus())) {
