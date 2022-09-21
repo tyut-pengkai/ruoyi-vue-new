@@ -32,16 +32,17 @@ public class HyUtils {
     }
 
     private static String createLinkString(JSONObject postBody) {
-        JSONObject postBodyNew = paramFilter(postBody);
-        Set<String> keys = postBodyNew.keySet();
+        Set<String> keys = postBody.keySet();
         List<String> keyList = new ArrayList<>(keys);
         Collections.sort(keyList);
         StringBuilder prestr = new StringBuilder();
         for (int i = 0; i < keyList.size(); i++) {
             if (i == keyList.size() - 1) {
-                prestr.append(keyList.get(i)).append("=").append(postBody.getString(keyList.get(i)));
+                prestr.append(keyList.get(i)).append("=")
+                        .append(postBody.getString(keyList.get(i)));
             } else {
-                prestr.append(keyList.get(i)).append("=").append(postBody.getString(keyList.get(i))).append("&");
+                prestr.append(keyList.get(i)).append("=")
+                        .append(postBody.getString(keyList.get(i))).append("&");
             }
         }
         return prestr.toString();
