@@ -129,6 +129,9 @@ public class SysAppController extends BaseController {
         if (sysApp.getDataOutEnc() != null && sysApp.getDataOutEnc() != EncrypType.NONE && sysApp.getDataOutEnc() != EncrypType.BASE64 && StringUtils.isBlank(sysApp.getDataOutPwd())) {
             return AjaxResult.error("新增软件'" + sysApp.getAppName() + "'失败，您设置了数据输出加密，但是未提供加密密码");
         }
+        if (sysApp.getHeartBeatTime() > -1 && sysApp.getHeartBeatTime() < 30) {
+            return AjaxResult.error("新增软件'" + sysApp.getAppName() + "'失败，心跳间隔最低为30秒");
+        }
         sysApp.setCreateBy(getUsername());
         sysApp.setCreateTime(DateUtils.getNowDate());
         sysApp.setAppKey(RandomStringUtils.randomAlphanumeric(32));
@@ -153,6 +156,9 @@ public class SysAppController extends BaseController {
         }
         if (sysApp.getDataOutEnc() != null && sysApp.getDataOutEnc() != EncrypType.NONE && sysApp.getDataOutEnc() != EncrypType.BASE64 && StringUtils.isBlank(sysApp.getDataOutPwd())) {
             return AjaxResult.error("修改软件'" + sysApp.getAppName() + "'失败，您设置了数据输出加密，但是未提供加密密码");
+        }
+        if (sysApp.getHeartBeatTime() > -1 && sysApp.getHeartBeatTime() < 30) {
+            return AjaxResult.error("修改软件'" + sysApp.getAppName() + "'失败，心跳间隔最低为30秒");
         }
         sysApp.setUpdateBy(getUsername());
         return toAjax(sysAppService.updateSysApp(sysApp));

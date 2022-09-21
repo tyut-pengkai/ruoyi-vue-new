@@ -38,7 +38,7 @@ public class DebugController extends BaseController {
 			@ApiImplicitParam(name = "params", value = "接口需要的参数", paramType = "body", required = true, dataType = "Map")
 	})
 	public AjaxResult getSign(@PathVariable("appkey") String appkey, @RequestBody Map<String, String> params) {
-		log.info("appkey: {}, 请求参数: {}", appkey, JSON.toJSON(params));
+		log.debug("appkey: {}, 请求参数: {}", appkey, JSON.toJSON(params));
 
 		String state = configService.selectConfigByKey("sys.api.devMode");
 		if (StringUtils.isEmpty(state) || !Convert.toBool(state)) {

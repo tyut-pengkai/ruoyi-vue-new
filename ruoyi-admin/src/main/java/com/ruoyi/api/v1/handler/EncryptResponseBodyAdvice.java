@@ -61,14 +61,14 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 								  Class<? extends HttpMessageConverter<?>> aClass, ServerHttpRequest serverHttpRequest,
 								  ServerHttpResponse serverHttpResponse) {
 		try {
-			log.info("开始对返回值进行加密操作!");
+			log.debug("开始对返回值进行加密操作!");
 			// 定义是否解密
 			boolean encode = false;
 			// 获取注解配置的包含和去除字段
 			Encrypt serializedField = methodParameter.getMethodAnnotation(Encrypt.class);
 			// 入参是否需要解密
 			encode = serializedField.out();
-			log.info("对方法method :【" + methodParameter.getMethod().getName() + "】数据进行加密!");
+			log.debug("对方法method :【" + methodParameter.getMethod().getName() + "】数据进行加密!");
 			ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder
 					.getRequestAttributes();
 			HttpServletRequest request = servletRequestAttributes.getRequest();
@@ -89,34 +89,34 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 		// 是否加密
 		EncrypType encrypTypeOut = app.getDataOutEnc();
 		if (!(encode && encrypTypeOut != null && encrypTypeOut != EncrypType.NONE)) {
-			log.info("没有加密标识不进行加密!");
+			log.debug("没有加密标识不进行加密!");
 			return body instanceof String ? Constants.PREFIX_TYPE + body : body;
 		}
-		log.info("对字符串开始加密!");
+		log.debug("对字符串开始加密!");
 		// String result = JSON.toJSONString(body);
 		String result = (new ObjectMapper()).writeValueAsString(body);
 		if (body instanceof String) {
 			result = (String) body;
 		}
-		log.info("原始内容：" + result);
+		log.debug("原始内容：" + result);
 		IEncryptType encryptType = null;
 		try {
 //			if (encrypTypeOut == EncrypType.AES_CBC_NoPadding) {
 //				encryptType = new EncryptAesCbcNoP();
 //			} else
 			if (encrypTypeOut == EncrypType.AES_CBC_PKCS5Padding) {
-                encryptType = new EncryptAesCbcPKCS5P();
-            } else if (encrypTypeOut == EncrypType.AES_CBC_ZeroPadding) {
-                encryptType = new EncryptAesCbcZeroP();
-            } else if (encrypTypeOut == EncrypType.BASE64) {
-                encryptType = new EncryptBase64();
-            }
+				encryptType = new EncryptAesCbcPKCS5P();
+			} else if (encrypTypeOut == EncrypType.AES_CBC_ZeroPadding) {
+				encryptType = new EncryptAesCbcZeroP();
+			} else if (encrypTypeOut == EncrypType.BASE64) {
+				encryptType = new EncryptBase64();
+			}
 //			String outputData = RSAUtils.encryptedDataOnJava(result, Constants.publicKey);
-            String outputData = encryptType.encrypt(result, app.getDataOutPwd());
-            log.info("加密内容：" + outputData);
-            log.info("操作结束!");
-            return body instanceof String ? Constants.PREFIX_TYPE + outputData : outputData;
-        } catch (Exception e) {
+			String outputData = encryptType.encrypt(result, app.getDataOutPwd());
+			log.debug("加密内容：" + outputData);
+			log.debug("操作结束!");
+			return body instanceof String ? Constants.PREFIX_TYPE + outputData : outputData;
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ApiException(ErrorCode.ERROR_RESPONSE_ENCRYPT_EXCEPTION);
 		}

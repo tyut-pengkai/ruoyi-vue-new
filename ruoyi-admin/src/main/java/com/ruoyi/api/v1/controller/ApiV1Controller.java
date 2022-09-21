@@ -89,7 +89,7 @@ public class ApiV1Controller extends BaseController {
 //    })
     @Log(title = "WEB API", businessType = BusinessType.CALL_API)
     public Object api(@PathVariable("appkey") String appkey, @RequestBody Map<String, String> params, HttpServletRequest request) {
-        log.info("appkey: {}, 请求参数: {}", appkey, JSON.toJSON(params));
+        log.debug("appkey: {}, 请求参数: {}", appkey, JSON.toJSON(params));
         // 检查软件是否存在
         if (StringUtils.isBlank(appkey)) {
             throw new ApiException(ErrorCode.ERROR_PARAMETERS_MISSING, "AppKey不能为空");
@@ -166,12 +166,12 @@ public class ApiV1Controller extends BaseController {
                     if (deviceCode != null && StringUtils.isNotBlank(deviceCode.getDeviceCode())) {
                         SysDeviceCode code = deviceCodeService.selectSysDeviceCodeByDeviceCode(deviceCode.getDeviceCode());
                         if (UserStatus.DISABLE.getCode().equals(code.getStatus())) {
-                            log.info("用户设备：{} 已被停用所有软件.", deviceCode.getDeviceCode());
+                            log.debug("用户设备：{} 已被停用所有软件.", deviceCode.getDeviceCode());
                             throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCode.getDeviceCode() + " 已被停用所有软件");
                         }
                         SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
                         if (UserStatus.DISABLE.getCode().equals(appUserDeviceCode.getStatus())) {
-                            log.info("用户设备：{} 已被停用当前软件.", deviceCode.getDeviceCode());
+                            log.debug("用户设备：{} 已被停用当前软件.", deviceCode.getDeviceCode());
                             throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCode.getDeviceCode() + " 已被停用当前软件");
                         }
                     }

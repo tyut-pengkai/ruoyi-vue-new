@@ -60,14 +60,14 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
     @Override
     public HttpInputMessage beforeBodyRead(HttpInputMessage httpInputMessage, MethodParameter methodParameter, Type type, Class<? extends HttpMessageConverter<?>> aClass) {
         try {
-            log.info("开始对接受值进行解密操作");
+            log.debug("开始对接受值进行解密操作");
             // 定义是否解密
             boolean encode = false;
             //获取注解配置的包含和去除字段
             Encrypt serializedField = methodParameter.getMethodAnnotation(Encrypt.class);
             //入参是否需要解密
             encode = serializedField.in();
-            log.info("对方法method :【" + methodParameter.getMethod().getName() + "】数据进行解密!");
+            log.debug("对方法method :【" + methodParameter.getMethod().getName() + "】数据进行解密!");
             ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             HttpServletRequest request = servletRequestAttributes.getRequest();
             Map<String, String> map = (Map) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
@@ -75,7 +75,7 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
             return new MyHttpInputMessage(appkey, httpInputMessage, encode);
         } catch (IOException e) {
             e.printStackTrace();
-            log.error("对方法method :【" + methodParameter.getMethod().getName() + "】数据进行解密出现异常：" + e.getMessage());
+            // log.error("对方法method :【" + methodParameter.getMethod().getName() + "】数据进行解密出现异常：" + e.getMessage());
             throw new ApiException(ErrorCode.ERROR_PARAMETER_DECRYPT_EXCEPTION);
         }
     }
@@ -121,13 +121,13 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
                 // 是否解密
                 EncrypType encrypTypeIn = app.getDataInEnc();
                 if (!(encode && encrypTypeIn != null && encrypTypeIn != EncrypType.NONE)) {
-                    log.info("没有解密标识不进行解密!");
+                    log.debug("没有解密标识不进行解密!");
                     return IOUtils.toInputStream(inputData, "UTF-8");
                 }
 
                 // 开始解密
-                log.info("对加密串开始解密操作!");
-                log.info("原始内容：" + inputData);
+                log.debug("对加密串开始解密操作!");
+                log.debug("原始内容：" + inputData);
                 IEncryptType encryptType = null;
                 try {
 //                    if (encrypTypeIn == EncrypType.AES_CBC_NoPadding) {
@@ -142,8 +142,8 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
                     }
 //                	String decryptBody = RSAUtils.decryptDataOnJava(inputData, Constants.privateKey);
                     String decryptBody = encryptType.decrypt(inputData, app.getDataInPwd());
-                    log.info("解密内容：" + decryptBody);
-                    log.info("操作结束!");
+                    log.debug("解密内容：" + decryptBody);
+                    log.debug("操作结束!");
                     return IOUtils.toInputStream(decryptBody, "UTF-8");
                 } catch (Exception e) {
                     e.printStackTrace();
