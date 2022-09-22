@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.system.domain.SysLoginCode;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -78,6 +79,11 @@ public interface SysLoginCodeMapper {
      * @return
      */
     public SysLoginCode selectSysLoginCodeByCardNo(String cardNo);
+
+    /**
+     * 查询单码
+     */
+    public SysLoginCode selectSysLoginCodeByAppIdAndCardNo(@Param("appId") Long appId, @Param("cardNo") String cardNo);
 
     /**
      * 新增单码

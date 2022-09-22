@@ -123,6 +123,13 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     }
 
     /**
+     * 查询单码
+     */
+    public SysLoginCode selectSysLoginCodeByAppIdAndCardNo(Long appId, String cardNo) {
+        return SysLoginCodeMapper.selectSysLoginCodeByAppIdAndCardNo(appId, cardNo);
+    }
+
+    /**
      * 新增单码
      *
      * @param SysLoginCodeList

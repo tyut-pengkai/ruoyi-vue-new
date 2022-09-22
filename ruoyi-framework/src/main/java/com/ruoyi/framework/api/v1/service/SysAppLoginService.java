@@ -393,6 +393,7 @@ public class SysAppLoginService {
                                     + (app.getTrialCycle() != null && app.getTrialCycle() != 0
                                     ? "，" + DateUtils.parseDateToStr(appTrialUser.getNextEnableTime()) + "后可再次试用" : ""));
                 }
+
                 appTrialUser.setLoginTimes(appTrialUser.getLoginTimes() + 1);
                 appTrialUser.setLoginTimesAll(appTrialUser.getLoginTimesAll() + 1);
                 appTrialService.updateSysAppTrialUser(appTrialUser);

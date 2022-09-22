@@ -168,6 +168,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where c.card_no = #{cardNo} and c.del_flag = '0'
     </select>
 
+    <select id="selectSysCardByAppIdAndCardNo" resultMap="SysCardResult">
+        <include refid="selectSysCardVo"/>
+        where c.del_flag = '0'
+        <if test="appId != null ">and c.app_id = #{appId}</if>
+        <if test="cardNo != null  and cardNo != ''">and c.card_no = #{cardNo}</if>
+    </select>
+
     <insert id="insertSysCard" parameterType="SysCard" useGeneratedKeys="true" keyProperty="cardId">
         insert into sys_card
         <trim prefix="(" suffix=")" suffixOverrides=",">

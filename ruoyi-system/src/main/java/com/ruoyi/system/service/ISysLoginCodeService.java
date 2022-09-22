@@ -78,6 +78,11 @@ public interface ISysLoginCodeService {
     public SysLoginCode selectSysLoginCodeByCardNo(String cardNo);
 
     /**
+     * 查询单码
+     */
+    public SysLoginCode selectSysLoginCodeByAppIdAndCardNo(Long appId, String cardNo);
+
+    /**
      * 新增单码
      *
      * @param SysLoginCodeList

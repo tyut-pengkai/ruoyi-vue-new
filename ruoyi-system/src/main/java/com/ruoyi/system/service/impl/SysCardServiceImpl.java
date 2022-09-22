@@ -127,6 +127,7 @@ public class SysCardServiceImpl implements ISysCardService
 
     /**
      * 查询卡密
+     *
      * @param cardNo
      * @return
      */
@@ -136,7 +137,15 @@ public class SysCardServiceImpl implements ISysCardService
     }
 
     /**
+     * 查询卡密
+     */
+    public SysCard selectSysCardByAppIdAndCardNo(Long appId, String cardNo) {
+        return sysCardMapper.selectSysCardByAppIdAndCardNo(appId, cardNo);
+    }
+
+    /**
      * 新增卡密
+     *
      * @param sysCardList
      */
     @Override

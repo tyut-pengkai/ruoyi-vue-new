@@ -131,7 +131,13 @@ export default {
       appList: [],
       appMap: [],
       loading: true,
-      form: {content: ""},
+      form: {
+        content: "",
+        appId: null,
+        operationValue: "",
+        operationType: "0",
+        operationObject: "0",
+      },
       queryParams: {
         appId: null,
       },

@@ -158,6 +158,13 @@
         where c.card_no = #{cardNo} and c.del_flag = '0'
     </select>
 
+    <select id="selectSysLoginCodeByAppIdAndCardNo" resultMap="SysLoginCodeResult">
+        <include refid="selectSysLoginCodeVo"/>
+        where c.del_flag = '0'
+        <if test="appId != null ">and c.app_id = #{appId}</if>
+        <if test="cardNo != null  and cardNo != ''">and c.card_no = #{cardNo}</if>
+    </select>
+
     <insert id="insertSysLoginCode" parameterType="SysLoginCode" useGeneratedKeys="true" keyProperty="cardId">
         insert into sys_login_code
         <trim prefix="(" suffix=")" suffixOverrides=",">

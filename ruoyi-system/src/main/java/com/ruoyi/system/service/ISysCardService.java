@@ -78,13 +78,20 @@ public interface ISysCardService {
 
     /**
      * 查询卡密
+     *
      * @param cardNo
      * @return
      */
     public SysCard selectSysCardByCardNo(String cardNo);
 
     /**
+     * 查询卡密
+     */
+    public SysCard selectSysCardByAppIdAndCardNo(Long appId, String cardNo);
+
+    /**
      * 新增卡密
+     *
      * @param sysCardList
      */
     public int insertSysCardBatch(List<SysCard> sysCardList);

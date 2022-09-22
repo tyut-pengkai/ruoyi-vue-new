@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.system.domain.SysCard;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -73,10 +74,16 @@ public interface SysCardMapper {
 
     /**
      * 查询卡密
+     *
      * @param cardNo
      * @return
      */
     public SysCard selectSysCardByCardNo(String cardNo);
+
+    /**
+     * 查询卡密
+     */
+    public SysCard selectSysCardByAppIdAndCardNo(@Param("appId") Long appId, @Param("cardNo") String cardNo);
 
     /**
      * 新增卡密
