@@ -122,6 +122,7 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
     @Override
     public List<SysCard> genSysCardBatch(SysCardTemplate cardTpl, Integer quantity, String onSale, String isAgent, String remark) {
         List<SysCard> sysCardList = new ArrayList<>();
+        String batchNo = DateUtils.dateTimeNow();
         for (int i = 0; i < quantity; i++) {
             SysCard sysCard = new SysCard();
             sysCard.setCardName(cardTpl.getCardName());
@@ -150,6 +151,7 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
             sysCard.setCardLoginLimitU(cardTpl.getCardLoginLimitU());
             sysCard.setCardLoginLimitM(cardTpl.getCardLoginLimitM());
             sysCard.setCardCustomParams(cardTpl.getCardCustomParams());
+            sysCard.setBatchNo(batchNo);
             try {
                 sysCard.setCreateBy(SecurityUtils.getUsername());
             } catch (Exception ignored) {

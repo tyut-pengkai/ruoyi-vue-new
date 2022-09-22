@@ -139,6 +139,20 @@ public class SysLoginCode extends BaseEntity {
     @Excel(name = "卡密自定义参数")
     private String cardCustomParams;
 
+    /**
+     * 制卡批次号
+     */
+    @Excel(name = "制卡批次号")
+    private String batchNo;
+
+    public String getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String batchNo) {
+        this.batchNo = batchNo;
+    }
+
     public Integer getCardLoginLimitU() {
         return cardLoginLimitU;
     }

@@ -28,6 +28,7 @@
         <result property="cardLoginLimitU" column="card_login_limit_u"/>
         <result property="cardLoginLimitM" column="card_login_limit_m"/>
         <result property="cardCustomParams" column="card_custom_params"/>
+        <result property="batchNo" column="batch_no"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
     </resultMap>
 
@@ -63,6 +64,7 @@
                c.card_login_limit_u,
                c.card_login_limit_m,
                c.card_custom_params,
+               c.batch_no,
                a.app_id,
                a.app_name,
                a.auth_type,
@@ -99,6 +101,7 @@
         <if test="status != null  and status != ''">and c.status = #{status}</if>
         <if test="isAgent != null  and isAgent != ''">and c.is_agent = #{isAgent}</if>
         <if test="createBy != null  and createBy != ''">and c.create_by = #{createBy}</if>
+        <if test="batchNo != null  and batchNo != ''">and c.batch_no = #{batchNo}</if>
         <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
             <!-- 数据范围过滤 -->
             ${params.dataScope}
@@ -134,6 +137,7 @@
         <if test="status != null  and status != ''">and c.status = #{status}</if>
         <if test="isAgent != null  and isAgent != ''">and c.is_agent = #{isAgent}</if>
         <if test="createBy != null  and createBy != ''">and c.create_by = #{createBy}</if>
+        <if test="batchNo != null  and batchNo != ''">and c.batch_no = #{batchNo}</if>
         <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
             <!-- 数据范围过滤 -->
             ${params.dataScope}
@@ -189,6 +193,7 @@
             <if test="cardLoginLimitU != null">card_login_limit_u,</if>
             <if test="cardLoginLimitM != null">card_login_limit_m,</if>
             <if test="cardCustomParams != null">card_custom_params,</if>
+            <if test="batchNo != null">batch_no,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="appId != null">#{appId},</if>
@@ -212,19 +217,20 @@
             <if test="cardLoginLimitU != null">#{cardLoginLimitU},</if>
             <if test="cardLoginLimitM != null">#{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">#{cardCustomParams},</if>
+            <if test="batchNo != null">#{batchNo},</if>
         </trim>
     </insert>
 
     <insert id="insertSysLoginCodeBatch" useGeneratedKeys="true" keyProperty="cardId">
         insert into sys_login_code(app_id,card_name,card_no,quota,price,expire_time,is_sold,on_sale,is_charged,
         template_id,status,is_agent, create_by,create_time,update_by,update_time,remark,card_login_limit_u,
-        card_login_limit_m,card_custom_params) values
+        card_login_limit_m,card_custom_params,batch_no) values
         <foreach item="item" index="index" collection="list" separator=",">
             (#{item.appId},#{item.cardName},#{item.cardNo},#{item.quota},#{item.price},
             #{item.expireTime},#{item.isSold},#{item.onSale},#{item.isCharged},
             #{item.templateId},#{item.status},#{item.isAgent},#{item.createBy},sysdate(),
             #{item.updateBy},#{item.updateTime},#{item.remark},#{item.cardLoginLimitU},
-            #{item.cardLoginLimitM},#{item.cardCustomParams})
+            #{item.cardLoginLimitM},#{item.cardCustomParams},#{item.batchNo})
         </foreach>
     </insert>
 
@@ -253,6 +259,7 @@
             <if test="cardLoginLimitU != null">card_login_limit_u = #{cardLoginLimitU},</if>
             <if test="cardLoginLimitM != null">card_login_limit_m = #{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">card_custom_params = #{cardCustomParams},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
         </trim>
         where card_id = #{cardId}
     </update>

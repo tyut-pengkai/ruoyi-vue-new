@@ -115,6 +115,7 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
     @Override
     public List<SysLoginCode> genSysLoginCodeBatch(SysLoginCodeTemplate loginCodeTpl, Integer quantity, String onSale, String isAgent, String remark) {
         List<SysLoginCode> sysLoginCodeList = new ArrayList<>();
+        String batchNo = DateUtils.dateTimeNow();
         for (int i = 0; i < quantity; i++) {
             SysLoginCode sysLoginCode = new SysLoginCode();
             sysLoginCode.setCardName(loginCodeTpl.getCardName());
@@ -141,6 +142,7 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
             sysLoginCode.setCardLoginLimitU(loginCodeTpl.getCardLoginLimitU());
             sysLoginCode.setCardLoginLimitM(loginCodeTpl.getCardLoginLimitM());
             sysLoginCode.setCardCustomParams(loginCodeTpl.getCardCustomParams());
+            sysLoginCode.setBatchNo(batchNo);
             try {
                 sysLoginCode.setCreateBy(SecurityUtils.getUsername());
             } catch (Exception ignore) {
