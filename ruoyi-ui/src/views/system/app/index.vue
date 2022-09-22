@@ -947,6 +947,18 @@
                           @totalSeconds="handleTrialTimeQuota"
                         ></date-duration>
                       </el-form-item>
+                      <el-form-item
+                        label="试用有效时间内重复登录不增加试用次数"
+                        prop="notAddTrialTimesInTrialTime"
+                        style="margin-top:5px"
+                      >
+                        <el-switch
+                          v-model="form.notAddTrialTimesInTrialTime"
+                          active-value="Y"
+                          inactive-value="N"
+                        >
+                        </el-switch>
+                      </el-form-item>
                     </el-card>
                   </el-form-item>
                 </el-col>

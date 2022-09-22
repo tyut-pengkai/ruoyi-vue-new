@@ -181,6 +181,17 @@ public class SysApp extends BaseEntity
      */
     private String trialTimeQuantum;
 
+
+    private String notAddTrialTimesInTrialTime;
+
+    public String getNotAddTrialTimesInTrialTime() {
+        return notAddTrialTimesInTrialTime;
+    }
+
+    public void setNotAddTrialTimesInTrialTime(String notAddTrialTimesInTrialTime) {
+        this.notAddTrialTimesInTrialTime = notAddTrialTimesInTrialTime;
+    }
+
     public String getEnableTrialByTimeQuantum() {
         return enableTrialByTimeQuantum;
     }

@@ -46,6 +46,7 @@
         <result property="enableTrialByTimeQuantum" column="enable_trial_by_time_quantum"/>
         <result property="enableTrialByTimes" column="enable_trial_by_times"/>
         <result property="trialTimeQuantum" column="trial_time_quantum"/>
+        <result property="notAddTrialTimesInTrialTime" column="not_add_trial_times_in_trial_time"/>
         <association property="developer" column="create_by" javaType="SysUser" resultMap="SysUserResult"/>
     </resultMap>
 
@@ -57,52 +58,53 @@
 
 	<sql id="selectSysAppVo">
 		select a.app_id,
-               a.app_name,
-               a.description,
-               a.api_url,
-               a.status,
-               a.del_flag,
-               a.bind_type,
-               a.is_charge,
-               a.idx_url,
-               a.free_quota_reg,
-               a.reduce_quota_unbind,
-               a.auth_type,
-               a.bill_type,
-               a.data_in_enc,
-               a.data_in_pwd,
-               a.data_out_enc,
-               a.data_out_pwd,
-               a.data_expire_time,
-               a.login_limit_u,
-               a.login_limit_m,
-               a.limit_oper,
-               a.heart_beat_time,
-               a.app_key,
-               a.app_secret,
-               a.api_pwd,
-               a.welcome_notice,
-               a.off_notice,
-               a.icon,
-               a.create_by,
-               a.create_time,
-               a.update_by,
-               a.update_time,
-               a.remark,
-               a.trial_times_per_ip,
-               a.trial_cycle,
-               a.trial_times,
-               a.trial_time,
-               a.enable_trial,
-               a.enable_trial_by_time_quantum,
-               a.enable_trial_by_times,
-               a.trial_time_quantum,
-               u.user_id,
-               u.user_name,
-               u.nick_name
-        from sys_app a
-                 left join sys_user u on u.user_name = a.create_by
-    </sql>
+			   a.app_name,
+			   a.description,
+			   a.api_url,
+			   a.status,
+			   a.del_flag,
+			   a.bind_type,
+			   a.is_charge,
+			   a.idx_url,
+			   a.free_quota_reg,
+			   a.reduce_quota_unbind,
+			   a.auth_type,
+			   a.bill_type,
+			   a.data_in_enc,
+			   a.data_in_pwd,
+			   a.data_out_enc,
+			   a.data_out_pwd,
+			   a.data_expire_time,
+			   a.login_limit_u,
+			   a.login_limit_m,
+			   a.limit_oper,
+			   a.heart_beat_time,
+			   a.app_key,
+			   a.app_secret,
+			   a.api_pwd,
+			   a.welcome_notice,
+			   a.off_notice,
+			   a.icon,
+			   a.create_by,
+			   a.create_time,
+			   a.update_by,
+			   a.update_time,
+			   a.remark,
+			   a.trial_times_per_ip,
+			   a.trial_cycle,
+			   a.trial_times,
+			   a.trial_time,
+			   a.enable_trial,
+			   a.enable_trial_by_time_quantum,
+			   a.enable_trial_by_times,
+			   a.trial_time_quantum,
+			   a.not_add_trial_times_in_trial_time,
+			   u.user_id,
+			   u.user_name,
+			   u.nick_name
+		from sys_app a
+				 left join sys_user u on u.user_name = a.create_by
+	</sql>
 
 	<!--	<select id="selectSysAppList" parameterType="SysApp" resultMap="SysAppResult">-->
 	<!--		<include refid="selectSysAppVo"/>-->
@@ -210,6 +212,7 @@
             <if test="enableTrialByTimeQuantum != null">enable_trial_by_time_quantum,</if>
             <if test="enableTrialByTimes != null">enable_trial_by_times,</if>
             <if test="trialTimeQuantum != null">trial_time_quantum,</if>
+			<if test="notAddTrialTimesInTrialTime != null">not_add_trial_times_in_trial_time,</if>
         </trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="appId != null">#{appId},</if>
@@ -253,6 +256,7 @@
             <if test="enableTrialByTimeQuantum != null">#{enableTrialByTimeQuantum},</if>
             <if test="enableTrialByTimes != null">#{enableTrialByTimes},</if>
             <if test="trialTimeQuantum != null">#{trialTimeQuantum},</if>
+			<if test="notAddTrialTimesInTrialTime != null">#{notAddTrialTimesInTrialTime},</if>
         </trim>
 	</insert>
 
@@ -285,24 +289,27 @@
             <if test="apiPwd != null">api_pwd = #{apiPwd},</if>
             <if test="welcomeNotice != null">welcome_notice = #{welcomeNotice},</if>
             <if test="offNotice != null">off_notice = #{offNotice},</if>
-            <if test="icon != null">icon = #{icon},</if>
-            <!--			<if test="createBy != null">create_by = #{createBy},</if>-->
-            <!--			<if test="createTime != null">create_time = #{createTime},</if>-->
-            <if test="updateBy != null">update_by = #{updateBy},</if>
-            update_time = sysdate(),
-            <if test="remark != null">remark = #{remark},</if>
-            <if test="trialTimesPerIp != null">trial_times_per_ip = #{trialTimesPerIp},</if>
-            <if test="trialCycle != null">trial_cycle = #{trialCycle},</if>
-            <if test="trialTimes != null">trial_times = #{trialTimes},</if>
-            <if test="trialTime != null">trial_time = #{trialTime},</if>
-            <if test="enableTrial != null">enable_trial = #{enableTrial},
-                <if test="enableTrialByTimeQuantum != null">enable_trial_by_time_quantum =
-                    #{enableTrialByTimeQuantum},
-                </if>
-                <if test="enableTrialByTimes != null">enable_trial_by_times = #{enableTrialByTimes},</if>
-                <if test="trialTimeQuantum != null">trial_time_quantum = #{trialTimeQuantum},</if>
-            </if>
-        </trim>
+			<if test="icon != null">icon = #{icon},</if>
+			<!--			<if test="createBy != null">create_by = #{createBy},</if>-->
+			<!--			<if test="createTime != null">create_time = #{createTime},</if>-->
+			<if test="updateBy != null">update_by = #{updateBy},</if>
+			update_time = sysdate(),
+			<if test="remark != null">remark = #{remark},</if>
+			<if test="trialTimesPerIp != null">trial_times_per_ip = #{trialTimesPerIp},</if>
+			<if test="trialCycle != null">trial_cycle = #{trialCycle},</if>
+			<if test="trialTimes != null">trial_times = #{trialTimes},</if>
+			<if test="trialTime != null">trial_time = #{trialTime},</if>
+			<if test="enableTrial != null">enable_trial = #{enableTrial},
+				<if test="enableTrialByTimeQuantum != null">enable_trial_by_time_quantum =
+					#{enableTrialByTimeQuantum},
+				</if>
+				<if test="enableTrialByTimes != null">enable_trial_by_times = #{enableTrialByTimes},</if>
+				<if test="trialTimeQuantum != null">trial_time_quantum = #{trialTimeQuantum},</if>
+				<if test="notAddTrialTimesInTrialTime != null">not_add_trial_times_in_trial_time =
+					#{notAddTrialTimesInTrialTime},
+				</if>
+			</if>
+		</trim>
 		where app_id = #{appId}
 	</update>
 

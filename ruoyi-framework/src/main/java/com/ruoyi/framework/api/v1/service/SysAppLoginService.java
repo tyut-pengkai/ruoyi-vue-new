@@ -393,8 +393,10 @@ public class SysAppLoginService {
                                     + (app.getTrialCycle() != null && app.getTrialCycle() != 0
                                     ? "，" + DateUtils.parseDateToStr(appTrialUser.getNextEnableTime()) + "后可再次试用" : ""));
                 }
-
-                appTrialUser.setLoginTimes(appTrialUser.getLoginTimes() + 1);
+                // (取反)开启了试用期间不增加试用次数且在有效试用时间内
+                if (!(UserConstants.YES.equals(app.getNotAddTrialTimesInTrialTime()) && DateUtils.getNowDate().before(appTrialUser.getExpireTime()))) {
+                    appTrialUser.setLoginTimes(appTrialUser.getLoginTimes() + 1);
+                }
                 appTrialUser.setLoginTimesAll(appTrialUser.getLoginTimesAll() + 1);
                 appTrialService.updateSysAppTrialUser(appTrialUser);
                 // 检测账号是否过期
