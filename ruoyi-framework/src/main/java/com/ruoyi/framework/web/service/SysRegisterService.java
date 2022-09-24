@@ -88,8 +88,12 @@ public class SysRegisterService
             if (!regFlag) {
                 msg = "注册失败,请联系系统管理人员";
             } else {
-                AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.REGISTER,
-                        MessageUtils.message("user.register.success")));
+                try {
+                    AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.REGISTER,
+                            MessageUtils.message("user.register.success")));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
         return msg;

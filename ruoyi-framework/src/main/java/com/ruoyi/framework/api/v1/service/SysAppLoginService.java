@@ -152,13 +152,25 @@ public class SysAppLoginService {
             // 检查用户数、设备数限制
             validUtils.checkLoginLimit(app, appUser, deviceCode);
         } catch (ApiException e) {
-            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, username, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage() + (e.getDetailMessage() != null ? "：" + e.getDetailMessage() : "")));
+            try {
+                AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, username, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage() + (e.getDetailMessage() != null ? "：" + e.getDetailMessage() : "")));
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
             throw e;
         } catch (Exception e) {
-            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, username, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage()));
+            try {
+                AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, username, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage()));
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
             throw e;
         }
-        AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), username, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        try {
+            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), username, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         LoginUser loginUser = new LoginUser();
         loginUser.setIfApp(true);
         loginUser.setIfTrial(false);
@@ -291,13 +303,25 @@ public class SysAppLoginService {
             // 检查用户数、设备数限制
             validUtils.checkLoginLimit(app, appUser, deviceCode);
         } catch (ApiException e) {
-            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage() + (e.getDetailMessage() != null ? "：" + e.getDetailMessage() : "")));
+            try {
+                AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage() + (e.getDetailMessage() != null ? "：" + e.getDetailMessage() : "")));
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
             throw e;
         } catch (Exception e) {
-            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage()));
+            try {
+                AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage()));
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
             throw e;
         }
-        AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        try {
+            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         LoginUser loginUser = new LoginUser();
         loginUser.setIfApp(true);
         loginUser.setIfTrial(false);
@@ -383,6 +407,7 @@ public class SysAppLoginService {
                     if (appTrialUser.getNextEnableTime().before(now) || appTrialUser.getNextEnableTime().equals(DateUtils.parseDate(UserConstants.MAX_DATE))) {
                         appTrialUser.setLoginTimes(0L);
                         appTrialUser.setNextEnableTime(MyUtils.getNewExpiredTimeAdd(null, app.getTrialCycle()));
+                        appTrialUser.setLoginTimes(appTrialUser.getLoginTimes() + 1);
                         appTrialUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getTrialTime()));
                     }
                 }
@@ -396,6 +421,7 @@ public class SysAppLoginService {
                 // (取反)开启了试用期间不增加试用次数且在有效试用时间内
                 if (!(UserConstants.YES.equals(app.getNotAddTrialTimesInTrialTime()) && DateUtils.getNowDate().before(appTrialUser.getExpireTime()))) {
                     appTrialUser.setLoginTimes(appTrialUser.getLoginTimes() + 1);
+                    appTrialUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getTrialTime()));
                 }
                 appTrialUser.setLoginTimesAll(appTrialUser.getLoginTimesAll() + 1);
                 appTrialService.updateSysAppTrialUser(appTrialUser);
@@ -405,13 +431,25 @@ public class SysAppLoginService {
             // 检查用户数、设备数限制
             validUtils.checkTrialLoginLimit(app, appTrialUser);
         } catch (ApiException e) {
-            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appTrialUser != null ? appTrialUser.getAppTrialUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage() + (e.getDetailMessage() != null ? "：" + e.getDetailMessage() : "")));
+            try {
+                AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appTrialUser != null ? appTrialUser.getAppTrialUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage() + (e.getDetailMessage() != null ? "：" + e.getDetailMessage() : "")));
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
             throw e;
         } catch (Exception e) {
-            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appTrialUser != null ? appTrialUser.getAppTrialUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage()));
+            try {
+                AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appTrialUser != null ? appTrialUser.getAppTrialUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage()));
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
             throw e;
         }
-        AsyncManager.me().execute(AsyncFactory.recordAppTrialLogininfor(appTrialUser.getAppTrialUserId(), loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        try {
+            AsyncManager.me().execute(AsyncFactory.recordAppTrialLogininfor(appTrialUser.getAppTrialUserId(), loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         LoginUser loginUser = new LoginUser();
         loginUser.setIfApp(true);
         loginUser.setIfTrial(true);
@@ -486,8 +524,12 @@ public class SysAppLoginService {
             _deviceCodeStr = deviceCode.getDeviceCode();
         }
         redisCache.deleteObject(Constants.LOGIN_TOKEN_KEY + loginUser.getToken());
-        AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), appUser.getUserName(),
-                app.getAppName(), version.getVersionShow(), _deviceCodeStr, Constants.LOGOUT, "用户注销登录"));
+        try {
+            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), appUser.getUserName(),
+                    app.getAppName(), version.getVersionShow(), _deviceCodeStr, Constants.LOGOUT, "用户注销登录"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return "注销成功";
     }
 }

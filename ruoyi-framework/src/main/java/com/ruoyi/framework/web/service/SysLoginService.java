@@ -98,14 +98,26 @@ public class SysLoginService
                     .authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (Exception e) {
             if (e instanceof BadCredentialsException) {
-                AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.password.not.match")));
+                try {
+                    AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.password.not.match")));
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
                 throw new UserPasswordNotMatchException();
             } else {
-                AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, e.getMessage()));
+                try {
+                    AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, e.getMessage()));
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
                 throw new ServiceException(e.getMessage());
             }
         }
-        AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        try {
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         loginUser.setIfApp(false);
         loginUser.setIfTrial(false);
@@ -122,19 +134,24 @@ public class SysLoginService
      * @param uuid 唯一标识
      * @return 结果
      */
-    public void validateCaptcha(String username, String code, String uuid)
-    {
+    public void validateCaptcha(String username, String code, String uuid) {
         String verifyKey = Constants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");
         String captcha = redisCache.getCacheObject(verifyKey);
         redisCache.deleteObject(verifyKey);
-        if (captcha == null)
-        {
-            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.expire")));
+        if (captcha == null) {
+            try {
+                AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.expire")));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             throw new CaptchaExpireException();
         }
-        if (!code.equalsIgnoreCase(captcha))
-        {
-            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
+        if (!code.equalsIgnoreCase(captcha)) {
+            try {
+                AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             throw new CaptchaException();
         }
     }

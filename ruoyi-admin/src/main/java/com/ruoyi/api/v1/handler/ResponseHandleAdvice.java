@@ -1,6 +1,8 @@
 package com.ruoyi.api.v1.handler;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.api.v1.constants.Constants;
 import com.ruoyi.api.v1.domain.SwaggerVo;
 import com.ruoyi.api.v1.encrypt.IEncryptType;
@@ -103,7 +105,8 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 			assert returnType != null;
 			if (returnType.getGenericParameterType().equals(String.class) || (data instanceof String && data.toString().startsWith(Constants.PREFIX_TYPE))) {
 				// 将数据包装在RestResponse里后，再转换为json字符串响应给前端
-				return JSON.toJSONString(result);
+				// return JSON.toJSONString(result);
+				return new ObjectMapper().writeValueAsString(result);
 			}
 			return result;
 		} catch (Exception e) {
@@ -121,7 +124,12 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 			if (data instanceof String) {
 				return data.toString();
 			}
-			return JSON.toJSONString(data);
+			// return JSON.toJSONString(data);
+			try {
+				return new ObjectMapper().writeValueAsString(data);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
 		}
 		return "";
 	}

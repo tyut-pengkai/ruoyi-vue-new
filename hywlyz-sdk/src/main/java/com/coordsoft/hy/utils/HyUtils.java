@@ -27,10 +27,6 @@ public class HyUtils {
         return Md5Util.hash(textNew);
     }
 
-    public static Boolean verifySign(JSONObject json, String salt) {
-        return signDo(json.getString("data") + json.getString("timestamp") + json.getString("vstr"), salt).equals(json.getString("sign"));
-    }
-
     private static String createLinkString(JSONObject postBody) {
         Set<String> keys = postBody.keySet();
         List<String> keyList = new ArrayList<>(keys);
@@ -186,4 +182,7 @@ public class HyUtils {
         }
     }
 
+    public static Boolean verifySign(JSONObject json, String salt) {
+        return signDo(json.getString("data") + json.getString("timestamp") + json.getString("vstr"), salt).equals(json.getString("sign"));
+    }
 }

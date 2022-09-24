@@ -117,8 +117,12 @@ public class LogAspect {
             operLog.setRequestMethod(ServletUtils.getRequest().getMethod());
             // 处理设置注解上的参数
             getControllerMethodDescription(joinPoint, controllerLog, operLog, jsonResult);
-            // 保存数据库
-            AsyncManager.me().execute(AsyncFactory.recordOper(operLog));
+            try {
+                // 保存数据库
+                AsyncManager.me().execute(AsyncFactory.recordOper(operLog));
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
         }
         catch (Exception exp)
         {
