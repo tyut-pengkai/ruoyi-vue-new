@@ -89,6 +89,7 @@ public class RechargeCard extends Function {
         card.setIsCharged(UserConstants.YES);
         card.setChargeTime(DateUtils.getNowDate());
         card.setOnSale(UserConstants.NO);
+        card.setRemark((StringUtils.isNotBlank(card.getRemark()) ? card.getRemark() + "\n" : "") + "已用于充值用户【" + username + "】");
         cardService.updateSysCard(card);
         appUserService.updateSysAppUser(appUser);
         if (this.getApp().getBillType() == BillType.TIME) {

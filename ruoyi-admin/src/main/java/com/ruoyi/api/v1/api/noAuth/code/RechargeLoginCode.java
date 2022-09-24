@@ -14,6 +14,7 @@ import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppUserService;
@@ -71,6 +72,7 @@ public class RechargeLoginCode extends Function {
         newLoginCode.setIsCharged(UserConstants.YES);
         newLoginCode.setChargeTime(DateUtils.getNowDate());
         newLoginCode.setOnSale(UserConstants.NO);
+        newLoginCode.setRemark((StringUtils.isNotBlank(newLoginCode.getRemark()) ? newLoginCode.getRemark() + "\n" : "") + "已用于充值单码【" + loginCodeStr + "】");
         loginCodeService.updateSysLoginCode(newLoginCode);
         appUserService.updateSysAppUser(appUser);
         if (this.getApp().getBillType() == BillType.TIME) {
