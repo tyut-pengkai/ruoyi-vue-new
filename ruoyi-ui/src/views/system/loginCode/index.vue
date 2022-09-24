@@ -139,13 +139,23 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="批次号" prop="batchNo">
+        <el-input
+          v-model="queryParams.batchNo"
+          clearable
+          placeholder="请输入批次号"
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item prop="">
         <el-button
           type="primary"
           icon="el-icon-search"
           size="mini"
           @click="handleQuery"
-          >搜索</el-button
+        >搜索
+        </el-button
         >
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
           >重置</el-button
@@ -710,17 +720,15 @@
         <div v-if="form.cardId">
           <el-form-item prop="">
             <el-col :span="12">
-              <el-form-item label="制卡批次" prop="batchNo">{{
-                  form.batchNo
-                }}
+              <el-form-item label="制卡批次" prop="batchNo"
+              >{{ form.batchNo }}
               </el-form-item>
             </el-col>
           </el-form-item>
           <el-form-item prop="">
             <el-col :span="12">
-              <el-form-item label="创建人" prop="createBy">{{
-                  form.createBy
-                }}
+              <el-form-item label="创建人" prop="createBy"
+              >{{ form.createBy }}
               </el-form-item>
               <el-form-item label="创建时间" prop="createTime"
               >{{ form.createTime }}
@@ -729,7 +737,8 @@
             <el-col :span="12">
               <el-form-item label="最后更新" prop="updateBy">{{
                   form.updateBy
-                }}</el-form-item>
+                }}
+              </el-form-item>
               <el-form-item label="更新时间" prop="updateTime"
               >{{ form.updateTime }}
               </el-form-item>

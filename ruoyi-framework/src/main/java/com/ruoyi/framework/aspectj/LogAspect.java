@@ -74,7 +74,7 @@ public class LogAspect {
             }
             if ("0".equals(recordCallLog) && controllerLog.businessType() == BusinessType.CALL_API) { // 不记录
                 return;
-            } else if ("1".equals(recordCallLog)) { // 仅记录失败
+            } else if ("1".equals(recordCallLog)) { // 全记录
                 // 继续向下执行
             } else if ("2".equals(recordCallLog)) { // 仅记录失败
                 if (e == null) {

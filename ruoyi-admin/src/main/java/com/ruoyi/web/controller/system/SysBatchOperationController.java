@@ -152,6 +152,29 @@ public class SysBatchOperationController extends BaseController {
                     return AjaxResult.success("卡密无加点操作");
                 } else if (vo.getOperationType() == BatchOperationType.SUB_POINT) {
                     return AjaxResult.success("卡密无扣点操作");
+                } else if (vo.getOperationType() == BatchOperationType.REMARK) {
+                    if (StringUtils.isBlank(vo.getOperationValue())) {
+                        return AjaxResult.error("参数：备注内容，不能为空");
+                    }
+                    String a = "备注成功";
+                    String b = "备注失败";
+                    if (result.size() == 0) {
+                        result.put(a, new ArrayList<>());
+                        result.put(b, new ArrayList<>());
+                    }
+                    if (card == null) {
+                        result.get(b).add(item + "【卡密不存在】");
+                    } else {
+                        try {
+                            SysCard newCard = new SysCard();
+                            newCard.setCardId(card.getCardId());
+                            newCard.setRemark(vo.getOperationValue());
+                            sysCardService.updateSysCard(newCard);
+                            result.get(a).add(item + "【备注成功】");
+                        } catch (Exception e) {
+                            result.get(b).add(item + "【" + e.getMessage() + "】");
+                        }
+                    }
                 } else {
                     return AjaxResult.error("执行操作参数有误");
                 }
@@ -254,6 +277,29 @@ public class SysBatchOperationController extends BaseController {
                     return AjaxResult.success("单码无加点操作");
                 } else if (vo.getOperationType() == BatchOperationType.SUB_POINT) {
                     return AjaxResult.success("单码无扣点操作");
+                } else if (vo.getOperationType() == BatchOperationType.REMARK) {
+                    if (StringUtils.isBlank(vo.getOperationValue())) {
+                        return AjaxResult.error("参数：备注内容，不能为空");
+                    }
+                    String a = "备注成功";
+                    String b = "备注失败";
+                    if (result.size() == 0) {
+                        result.put(a, new ArrayList<>());
+                        result.put(b, new ArrayList<>());
+                    }
+                    if (loginCode == null) {
+                        result.get(b).add(item + "【单码不存在】");
+                    } else {
+                        try {
+                            SysLoginCode newLoginCode = new SysLoginCode();
+                            newLoginCode.setCardId(loginCode.getCardId());
+                            newLoginCode.setRemark(vo.getOperationValue());
+                            sysLoginCodeService.updateSysLoginCode(newLoginCode);
+                            result.get(a).add(item + "【备注成功】");
+                        } catch (Exception e) {
+                            result.get(b).add(item + "【" + e.getMessage() + "】");
+                        }
+                    }
                 } else {
                     return AjaxResult.error("执行操作参数有误");
                 }
@@ -387,7 +433,10 @@ public class SysBatchOperationController extends BaseController {
                             if (appUser.getApp().getBillType() == BillType.TIME) {
                                 Date newExpiredTime = MyUtils.getNewExpiredTimeAdd(appUser.getExpireTime(), Long.parseLong(vo.getOperationValue()));
                                 appUser.setExpireTime(newExpiredTime);
-                                sysAppUserService.updateSysAppUser(appUser);
+                                SysAppUser newAppUser = new SysAppUser();
+                                newAppUser.setAppUserId(appUser.getAppUserId());
+                                newAppUser.setExpireTime(newExpiredTime);
+                                sysAppUserService.updateSysAppUser(newAppUser);
                                 result.get(a).add(item + getAppUserSimpleDesc(appUser));
                             } else {
                                 result.get(b).add(item + "【非计时模式软件用户】");
@@ -413,7 +462,10 @@ public class SysBatchOperationController extends BaseController {
                             if (appUser.getApp().getBillType() == BillType.TIME) {
                                 Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), Long.parseLong(vo.getOperationValue()));
                                 appUser.setExpireTime(newExpiredTime);
-                                sysAppUserService.updateSysAppUser(appUser);
+                                SysAppUser newAppUser = new SysAppUser();
+                                newAppUser.setAppUserId(appUser.getAppUserId());
+                                newAppUser.setExpireTime(newExpiredTime);
+                                sysAppUserService.updateSysAppUser(newAppUser);
                                 result.get(a).add(item + getAppUserSimpleDesc(appUser));
                             } else {
                                 result.get(b).add(item + "【非计时模式软件用户】");
@@ -439,7 +491,10 @@ public class SysBatchOperationController extends BaseController {
                             if (appUser.getApp().getBillType() == BillType.POINT) {
                                 BigDecimal newPoint = MyUtils.getNewPointAdd(appUser.getPoint(), Long.parseLong(vo.getOperationValue()));
                                 appUser.setPoint(newPoint);
-                                sysAppUserService.updateSysAppUser(appUser);
+                                SysAppUser newAppUser = new SysAppUser();
+                                newAppUser.setAppUserId(appUser.getAppUserId());
+                                newAppUser.setPoint(newPoint);
+                                sysAppUserService.updateSysAppUser(newAppUser);
                                 result.get(a).add(item + getAppUserSimpleDesc(appUser));
                             } else {
                                 result.get(b).add(item + "【非计点模式软件用户】");
@@ -465,11 +520,37 @@ public class SysBatchOperationController extends BaseController {
                             if (appUser.getApp().getBillType() == BillType.POINT) {
                                 BigDecimal newPoint = MyUtils.getNewPointSub(appUser.getPoint(), Long.parseLong(vo.getOperationValue()));
                                 appUser.setPoint(newPoint);
-                                sysAppUserService.updateSysAppUser(appUser);
+                                SysAppUser newAppUser = new SysAppUser();
+                                newAppUser.setAppUserId(appUser.getAppUserId());
+                                newAppUser.setPoint(newPoint);
+                                sysAppUserService.updateSysAppUser(newAppUser);
                                 result.get(a).add(item + getAppUserSimpleDesc(appUser));
                             } else {
                                 result.get(b).add(item + "【非计点模式软件用户】");
                             }
+                        } catch (Exception e) {
+                            result.get(b).add(item + "【" + e.getMessage() + "】");
+                        }
+                    }
+                } else if (vo.getOperationType() == BatchOperationType.REMARK) {
+                    if (StringUtils.isBlank(vo.getOperationValue())) {
+                        return AjaxResult.error("参数：备注内容，不能为空");
+                    }
+                    String a = "备注成功";
+                    String b = "备注失败";
+                    if (result.size() == 0) {
+                        result.put(a, new ArrayList<>());
+                        result.put(b, new ArrayList<>());
+                    }
+                    if (appUser == null) {
+                        result.get(b).add(item + "【软件用户不存在】");
+                    } else {
+                        try {
+                            SysAppUser newAppUser = new SysAppUser();
+                            newAppUser.setAppUserId(appUser.getAppUserId());
+                            newAppUser.setRemark(vo.getOperationValue());
+                            sysAppUserService.updateSysAppUser(newAppUser);
+                            result.get(a).add(item + "【备注成功】");
                         } catch (Exception e) {
                             result.get(b).add(item + "【" + e.getMessage() + "】");
                         }
