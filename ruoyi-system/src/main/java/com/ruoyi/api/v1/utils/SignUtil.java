@@ -2,6 +2,7 @@ package com.ruoyi.api.v1.utils;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class SignUtil {
@@ -57,7 +58,7 @@ public class SignUtil {
      */
     public static String sign(String text, String salt) {
         text = text + salt;
-        return DigestUtils.md5Hex(text.getBytes());
+        return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -82,7 +83,7 @@ public class SignUtil {
      */
     public static boolean verify(String text, String sign, String salt) {
         text = text + salt;
-        String mySign = DigestUtils.md5Hex(text.getBytes());
+        String mySign = DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
         return mySign.equals(sign);
     }
 

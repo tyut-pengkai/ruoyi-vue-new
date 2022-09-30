@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @SpringBootTest
 public class QuickAccessTest {
@@ -15,9 +16,9 @@ public class QuickAccessTest {
     @Test
     public void test() {
         try {
-            byte[] split = "||||".getBytes();
-            byte[] apiUrl = "1".getBytes();
-            byte[] appSecret = "2".getBytes();
+            byte[] split = "||||".getBytes(StandardCharsets.UTF_8);
+            byte[] apiUrl = "1".getBytes(StandardCharsets.UTF_8);
+            byte[] appSecret = "2".getBytes(StandardCharsets.UTF_8);
             byte[] bytes = FileUtils.readFileToByteArray(new File(PathUtils.getUserPath() + File.separator + ".." + File.separator + "template.exe"));
             byte[] joinedBytes = ArrayUtil.addAll(bytes, split, apiUrl, split, appSecret);
             FileUtils.writeByteArrayToFile(new File(PathUtils.getUserPath() + File.separator + ".." + File.separator + "template_new.exe"), joinedBytes);

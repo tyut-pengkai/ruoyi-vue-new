@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.ruoyi.payment.domain.EasypayConfig;
 import org.springframework.util.DigestUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class TestPayment {
         //最后拼接上KEY
         signStr.append(key);
         //转为MD5
-        signStr = new StringBuilder(DigestUtils.md5DigestAsHex(signStr.toString().getBytes()));
+        signStr = new StringBuilder(DigestUtils.md5DigestAsHex(signStr.toString().getBytes(StandardCharsets.UTF_8)));
         sign.put("sign_type", signType);
         sign.put("sign", signStr.toString());
         System.out.println("<form id='paying' action='" + url + "/submit.php' method='post'>");

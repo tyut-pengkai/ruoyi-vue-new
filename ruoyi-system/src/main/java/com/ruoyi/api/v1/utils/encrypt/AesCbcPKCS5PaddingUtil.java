@@ -39,10 +39,10 @@ public class AesCbcPKCS5PaddingUtil {
         if (aesKey == null) {
             return data;
         }
-        if (aesKey.getBytes().length != AES_KEY_LENGTH) {
+        if (aesKey.getBytes(UTF_8).length != AES_KEY_LENGTH) {
             aesKey = DigestUtils.md5Hex(aesKey).substring(8, 24);
         }
-        SecretKeySpec keySpec = new SecretKeySpec(aesKey.getBytes(), AES_ALGORITHM);
+        SecretKeySpec keySpec = new SecretKeySpec(aesKey.getBytes(UTF_8), AES_ALGORITHM);
         Cipher cipher = Cipher.getInstance(AES_TRANSFORMATION);
         String ivStr = DigestUtils.md5Hex(aesKey).substring(0, 16);
         IvParameterSpec iv = new IvParameterSpec(ivStr.getBytes(UTF_8));
@@ -67,10 +67,10 @@ public class AesCbcPKCS5PaddingUtil {
         if (aesKey == null) {
             return data;
         }
-        if (aesKey.getBytes().length != AES_KEY_LENGTH) {
+        if (aesKey.getBytes(UTF_8).length != AES_KEY_LENGTH) {
             aesKey = DigestUtils.md5Hex(aesKey).substring(8, 24);
         }
-        SecretKeySpec keySpec = new SecretKeySpec(aesKey.getBytes(), AES_ALGORITHM);
+        SecretKeySpec keySpec = new SecretKeySpec(aesKey.getBytes(UTF_8), AES_ALGORITHM);
         Cipher cipher = Cipher.getInstance(AES_TRANSFORMATION);
         String ivStr = DigestUtils.md5Hex(aesKey).substring(0, 16);
         IvParameterSpec iv = new IvParameterSpec(ivStr.getBytes(UTF_8));
@@ -95,11 +95,11 @@ public class AesCbcPKCS5PaddingUtil {
         if (aesKey == null) {
             return data;
         }
-        if (aesKey.getBytes().length != AES_KEY_LENGTH) {
+        if (aesKey.getBytes(UTF_8).length != AES_KEY_LENGTH) {
             aesKey = DigestUtils.md5Hex(aesKey).substring(8, 24);
         }
-        byte[] decodeBase64 = Base64.decodeBase64(data.getBytes());
-        SecretKeySpec keySpec = new SecretKeySpec(aesKey.getBytes(), AES_ALGORITHM);
+        byte[] decodeBase64 = Base64.decodeBase64(data.getBytes(UTF_8));
+        SecretKeySpec keySpec = new SecretKeySpec(aesKey.getBytes(UTF_8), AES_ALGORITHM);
         Cipher cipher = Cipher.getInstance(AES_TRANSFORMATION);
         String ivStr = DigestUtils.md5Hex(aesKey).substring(0, 16);
         IvParameterSpec iv = new IvParameterSpec(ivStr.getBytes(UTF_8));

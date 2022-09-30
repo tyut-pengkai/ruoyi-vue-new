@@ -7,6 +7,8 @@ import com.ruoyi.common.utils.SecurityUtils;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @Data
@@ -18,6 +20,10 @@ public abstract class Function extends BaseAutoAware {
     private SysApp app;
     @Autowired(required = false)
     private Map<String, String> params;
+    @Autowired(required = false)
+    private HttpServletRequest request;
+    @Autowired(required = false)
+    private HttpServletResponse response;
 
     public Function() {
         super();

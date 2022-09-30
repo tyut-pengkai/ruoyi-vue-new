@@ -60,7 +60,7 @@ public class EpayPaymentBase extends Payment {
         signStr.append(key);
         System.out.println(signStr);
         //转为MD5
-        signStr = new StringBuilder(DigestUtils.md5DigestAsHex(signStr.toString().getBytes()));
+        signStr = new StringBuilder(DigestUtils.md5DigestAsHex(signStr.toString().getBytes(StandardCharsets.UTF_8)));
         return signStr.toString();
     }
 

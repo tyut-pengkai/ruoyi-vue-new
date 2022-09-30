@@ -2,6 +2,8 @@ package com.ruoyi.api.v1.utils.encrypt;
 
 import org.apache.commons.codec.binary.Base64;
 
+import java.nio.charset.StandardCharsets;
+
 public class Base64Util {
 
     /**
@@ -11,7 +13,7 @@ public class Base64Util {
      * @return Base64编码的数据
      */
     public static String encode(String input) {
-        return Base64.encodeBase64String(input.getBytes());
+        return Base64.encodeBase64String(input.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

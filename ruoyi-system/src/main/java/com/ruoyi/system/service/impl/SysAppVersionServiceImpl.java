@@ -32,6 +32,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -223,7 +224,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             log.info("正在快速接入" + filename);
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
             sysAppService.setApiUrl(app);
-            byte[] split = "|*@#||*@#|".getBytes();
+            byte[] split = "|*@#||*@#|".getBytes(StandardCharsets.UTF_8);
             log.info("正在对接参数");
             AppParamVo apv = new AppParamVo();
             apv.setApiUrl(app.getApiUrl());
@@ -242,7 +243,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
 
             if(filename.endsWith(".exe")) {
                 log.info("正在整合exe");
-                byte[] apvBytes = apvStr.getBytes();
+                byte[] apvBytes = apvStr.getBytes(StandardCharsets.UTF_8);
                 byte[] tplBytes = FileUtils.readFileToByteArray(new File(PathUtils.getUserPath() + File.separator + "template" + File.separator + "qat.exe.tpl"));
                 log.info("快速接入成功");
                 byte[] resultBytes = ArrayUtil.addAll(tplBytes, split, apvBytes, split, bytes);

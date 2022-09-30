@@ -7,6 +7,7 @@ import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -336,7 +337,7 @@ public class RSAUtils {
      */
     public static String encryptedDataOnJava(String data, String PUBLICKEY) {
         try {
-            data = Base64.encodeBase64String(encryptByPublicKey(data.getBytes(), PUBLICKEY));
+            data = Base64.encodeBase64String(encryptByPublicKey(data.getBytes(StandardCharsets.UTF_8), PUBLICKEY));
         } catch (Exception e) {
             e.printStackTrace();
         }

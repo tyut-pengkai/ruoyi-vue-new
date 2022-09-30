@@ -30,7 +30,7 @@ public class AesCbcZeroPaddingUtil {
         if (aesKey == null) {
             return data;
         }
-        if (aesKey.getBytes().length != AES_KEY_LENGTH) {
+        if (aesKey.getBytes(UTF_8).length != AES_KEY_LENGTH) {
             aesKey = DigestUtils.md5Hex(aesKey).substring(8, 24);
         }
         String ivStr = DigestUtils.md5Hex(aesKey).substring(0, 16);
@@ -38,7 +38,7 @@ public class AesCbcZeroPaddingUtil {
         byte[] iv = ivStr.getBytes(UTF_8);
         Cipher cipher = Cipher.getInstance(AES_TRANSFORMATION);
         int blockSize = cipher.getBlockSize();
-        byte[] dataBytes = data.getBytes();
+        byte[] dataBytes = data.getBytes(UTF_8);
         int length = dataBytes.length;
         // 计算需填充长度
         if (length % blockSize != 0) {
@@ -47,7 +47,7 @@ public class AesCbcZeroPaddingUtil {
         byte[] plaintext = new byte[length];
         // 填充
         System.arraycopy(dataBytes, 0, plaintext, 0, dataBytes.length);
-        SecretKeySpec keySpec = new SecretKeySpec(aesKey.getBytes(), AES_ALGORITHM);
+        SecretKeySpec keySpec = new SecretKeySpec(aesKey.getBytes(UTF_8), AES_ALGORITHM);
         // 设置偏移量参数
         IvParameterSpec ivSpec = new IvParameterSpec(iv);
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
@@ -60,7 +60,7 @@ public class AesCbcZeroPaddingUtil {
         if (aesKey == null) {
             return data;
         }
-        if (aesKey.getBytes().length != AES_KEY_LENGTH) {
+        if (aesKey.getBytes(UTF_8).length != AES_KEY_LENGTH) {
             aesKey = DigestUtils.md5Hex(aesKey).substring(8, 24);
         }
         String ivStr = DigestUtils.md5Hex(aesKey).substring(0, 16);
@@ -68,7 +68,7 @@ public class AesCbcZeroPaddingUtil {
         byte[] iv = ivStr.getBytes(UTF_8);
         Cipher cipher = Cipher.getInstance(AES_TRANSFORMATION);
         int blockSize = cipher.getBlockSize();
-        byte[] dataBytes = data.getBytes();
+        byte[] dataBytes = data.getBytes(UTF_8);
         int length = dataBytes.length;
         // 计算需填充长度
         if (length % blockSize != 0) {
@@ -77,7 +77,7 @@ public class AesCbcZeroPaddingUtil {
         byte[] plaintext = new byte[length];
         // 填充
         System.arraycopy(dataBytes, 0, plaintext, 0, dataBytes.length);
-        SecretKeySpec keySpec = new SecretKeySpec(aesKey.getBytes(), AES_ALGORITHM);
+        SecretKeySpec keySpec = new SecretKeySpec(aesKey.getBytes(UTF_8), AES_ALGORITHM);
         // 设置偏移量参数
         IvParameterSpec ivSpec = new IvParameterSpec(iv);
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
@@ -90,7 +90,7 @@ public class AesCbcZeroPaddingUtil {
         if (aesKey == null) {
             return data;
         }
-        if (aesKey.getBytes().length != AES_KEY_LENGTH) {
+        if (aesKey.getBytes(UTF_8).length != AES_KEY_LENGTH) {
             aesKey = DigestUtils.md5Hex(aesKey).substring(8, 24);
         }
         String ivStr = DigestUtils.md5Hex(aesKey).substring(0, 16);
@@ -98,7 +98,7 @@ public class AesCbcZeroPaddingUtil {
         byte[] iv = ivStr.getBytes(UTF_8);
         byte[] encryp = Base64.decodeBase64(data);
         Cipher cipher = Cipher.getInstance(AES_TRANSFORMATION);
-        SecretKeySpec keySpec = new SecretKeySpec(aesKey.getBytes(), AES_ALGORITHM);
+        SecretKeySpec keySpec = new SecretKeySpec(aesKey.getBytes(UTF_8), AES_ALGORITHM);
         IvParameterSpec ivSpec = new IvParameterSpec(iv);
         cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
         byte[] original = cipher.doFinal(encryp);
