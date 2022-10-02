@@ -50,12 +50,10 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -69,8 +67,7 @@
           type="primary"
           @click="handleAdd"
         >新增
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -82,8 +79,7 @@
           type="success"
           @click="handleUpdate"
         >修改
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -95,8 +91,7 @@
           type="danger"
           @click="handleDelete"
         >删除
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -107,8 +102,7 @@
           type="warning"
           @click="handleExport"
         >导出
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -156,16 +150,14 @@
             type="text"
             @click="handleUpload(scope.row)"
           >上传
-          </el-button
-          >
+          </el-button>
           <el-button
             icon="el-icon-edit"
             size="mini"
             type="text"
             @click="handleDownload(scope.row)"
           >下载
-          </el-button
-          >
+          </el-button>
           <el-button
             v-hasPermi="['system:globalFile:edit']"
             icon="el-icon-edit"
@@ -173,8 +165,7 @@
             type="text"
             @click="handleUpdate(scope.row)"
           >修改
-          </el-button
-          >
+          </el-button>
           <el-button
             v-hasPermi="['system:globalFile:remove']"
             icon="el-icon-delete"
@@ -182,8 +173,7 @@
             type="text"
             @click="handleDelete(scope.row)"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -460,7 +450,6 @@ export default {
     submitForm() {
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          this.$refs.upload.submit();
           if (this.form.id != null) {
             updateGlobalFile(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");

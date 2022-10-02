@@ -55,22 +55,21 @@ public class GlobalFileUpload extends Function {
 
         String fileName = this.getParams().get("fileName");
         String base64Str = this.getParams().get("base64Str");
-        boolean errorIfNotExist = Convert.toBool(this.getParams().get("overrideIfExist"), true);
+        boolean overrideIfExist = Convert.toBool(this.getParams().get("overrideIfExist"), true);
         boolean checkToken = Convert.toBool(this.getParams().get("checkToken"), false);
         boolean checkVip = Convert.toBool(this.getParams().get("checkVip"), false);
 
         SysGlobalFile globalFile = globalFileService.selectSysGlobalFileByName(fileName);
         if (globalFile == null) {
-            if (errorIfNotExist) {
-                throw new ApiException(ErrorCode.ERROR_GLOBAL_SCRIPT_NOT_EXIST);
-            } else {
-                globalFile = new SysGlobalFile();
-                globalFile.setName(fileName);
-                globalFile.setCheckToken(checkToken ? "Y" : "N");
-                globalFile.setCheckVip(checkVip ? "Y" : "N");
-                globalFileService.insertSysGlobalFile(globalFile);
-            }
+            globalFile = new SysGlobalFile();
+            globalFile.setName(fileName);
+            globalFile.setCheckToken(checkToken ? "Y" : "N");
+            globalFile.setCheckVip(checkVip ? "Y" : "N");
+            globalFileService.insertSysGlobalFile(globalFile);
         } else {
+            if (!overrideIfExist) {
+                throw new ApiException(ErrorCode.ERROR_GLOBAL_FILE_ALREADY_EXIST);
+            }
             // 检查是否登录
             if (UserConstants.YES.equals(globalFile.getCheckToken())) {
                 try {
