@@ -23,10 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -117,6 +114,31 @@ public class CommonController {
             FileUtils.writeBytes(filePath, response.getOutputStream());
             if (delete) {
                 FileUtils.deleteFile(filePath);
+            }
+        } catch (Exception e) {
+            log.error("下载文件失败", e);
+        }
+    }
+
+    /**
+     * 通用下载请求
+     *
+     * @param fileName 文件名称
+     */
+    @GetMapping("/globalFileDownload/{randomPath}/{fileName}")
+    public void globalFileDownload(@PathVariable("randomPath") String randomPath, @PathVariable("fileName") String fileName, HttpServletResponse response) {
+        try {
+            String filePath = RuoYiConfig.getGlobalFilePath() + "/" + randomPath + "/" + fileName;
+            File file = new File(filePath);//读取压缩文件
+            if (file.exists()) {
+                long totalSize = file.length(); //获取文件大小
+                response.setHeader("Content-Length", String.valueOf(totalSize));
+
+                response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+                FileUtils.setAttachmentResponseHeader(response, fileName);
+                FileUtils.writeBytes(filePath, response.getOutputStream());
+                FileUtils.deleteFile(filePath);
+                new File(RuoYiConfig.getGlobalFilePath() + "/" + randomPath + "/").delete();
             }
         } catch (Exception e) {
             log.error("下载文件失败", e);

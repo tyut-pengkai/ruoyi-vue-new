@@ -32,6 +32,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.Objects;
 
@@ -55,8 +56,6 @@ public class ApiV1Controller extends BaseController {
     @Resource
     private TokenService tokenService;
     @Resource
-    private ISysLoginCodeService loginCodeService;
-    @Resource
     private ISysDeviceCodeService deviceCodeService;
     @Resource
     private ISysAppUserDeviceCodeService appUserDeviceCodeService;
@@ -78,7 +77,7 @@ public class ApiV1Controller extends BaseController {
         return AjaxResult.error("访问有误");
     }
 
-//    @LicenceCheck
+    //    @LicenceCheck
     @Encrypt(in = true, out = true)
     @PostMapping("/{appkey}")
 //    @ApiOperation(value = "API接口", notes = "API接口")
@@ -87,7 +86,7 @@ public class ApiV1Controller extends BaseController {
 //            @ApiImplicitParam(name = "params", value = "接口需要的参数", paramType = "body", required = true, dataType = "Map")
 //    })
     @Log(title = "WEB API", businessType = BusinessType.CALL_API)
-    public Object api(@PathVariable("appkey") String appkey, @RequestBody Map<String, String> params, HttpServletRequest request) {
+    public Object api(@PathVariable("appkey") String appkey, @RequestBody Map<String, String> params, HttpServletRequest request, HttpServletResponse response) {
         log.debug("appkey: {}, 请求参数: {}", appkey, JSON.toJSON(params));
         // 检查软件是否存在
         if (StringUtils.isBlank(appkey)) {
@@ -220,6 +219,8 @@ public class ApiV1Controller extends BaseController {
                 Function function = ApiDefine.functionMap.get(api);
                 function.setApp(app);
                 function.setParams(params);
+                function.setRequest(request);
+                function.setResponse(response);
                 return function.handle();
         }
     }

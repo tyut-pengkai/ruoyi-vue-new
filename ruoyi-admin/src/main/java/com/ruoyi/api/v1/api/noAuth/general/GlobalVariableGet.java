@@ -47,7 +47,7 @@ public class GlobalVariableGet extends Function {
         SysGlobalVariable variable = globalVariableService.selectSysGlobalVariableByName(variableName);
         if (variable == null) {
             if (errorIfNotExist) {
-                throw new ApiException(ErrorCode.ERROR_GLOBAL_SCRIPT_NOT_EXIST);
+                throw new ApiException(ErrorCode.ERROR_GLOBAL_VARIABLE_NOT_EXIST);
             } else {
                 return "";
             }

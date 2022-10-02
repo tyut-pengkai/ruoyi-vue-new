@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysGlobalFileMapper">
+
+    <resultMap type="SysGlobalFile" id="SysGlobalFileResult">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="value" column="value"/>
+        <result property="description" column="description"/>
+        <result property="checkToken" column="check_token"/>
+        <result property="checkVip" column="check_vip"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectSysGlobalFileVo">
+        select id,
+               name,
+               value,
+               description,
+               check_token,
+               check_vip,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from sys_global_file
+    </sql>
+
+    <select id="selectSysGlobalFileList" parameterType="SysGlobalFile" resultMap="SysGlobalFileResult">
+        <include refid="selectSysGlobalFileVo"/>
+        <where>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="value != null  and value != ''">and value = #{value}</if>
+            <if test="description != null  and description != ''">and description like concat('%', #{description},
+                '%')
+            </if>
+            <if test="checkToken != null  and checkToken != ''">and check_token = #{checkToken}</if>
+            <if test="checkVip != null  and checkVip != ''">and check_vip = #{checkVip}</if>
+        </where>
+    </select>
+
+    <select id="selectSysGlobalFileById" parameterType="Long" resultMap="SysGlobalFileResult">
+        <include refid="selectSysGlobalFileVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectSysGlobalFileByName" parameterType="String" resultMap="SysGlobalFileResult">
+        <include refid="selectSysGlobalFileVo"/>
+        where name = #{name}
+    </select>
+
+    <insert id="insertSysGlobalFile" parameterType="SysGlobalFile" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_global_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="value != null and value != ''">value,</if>
+            <if test="description != null">description,</if>
+            <if test="checkToken != null and checkToken != ''">check_token,</if>
+            <if test="checkVip != null and checkVip != ''">check_vip,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="value != null and value != ''">#{value},</if>
+            <if test="description != null">#{description},</if>
+            <if test="checkToken != null and checkToken != ''">#{checkToken},</if>
+            <if test="checkVip != null and checkVip != ''">#{checkVip},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysGlobalFile" parameterType="SysGlobalFile">
+        update sys_global_file
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="value != null and value != ''">value = #{value},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="checkToken != null and checkToken != ''">check_token = #{checkToken},</if>
+            <if test="checkVip != null and checkVip != ''">check_vip = #{checkVip},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysGlobalFileById" parameterType="Long">
+        delete
+        from sys_global_file
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteSysGlobalFileByIds" parameterType="String">
+        delete from sys_global_file where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

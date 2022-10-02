@@ -149,6 +149,13 @@ public class RuoYiConfig {
         return getProfile() + "/upload";
     }
 
+    /**
+     * 获取api上传路径
+     */
+    public static String getGlobalFilePath() {
+        return getProfile() + "/global";
+    }
+
     public String getUrl() {
         return url;
     }

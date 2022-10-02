@@ -50,15 +50,15 @@ public class GlobalVariableSet extends Function {
         SysGlobalVariable variable = globalVariableService.selectSysGlobalVariableByName(variableName);
         if (variable == null) {
             if (errorIfNotExist) {
-                throw new ApiException(ErrorCode.ERROR_GLOBAL_SCRIPT_NOT_EXIST);
+                throw new ApiException(ErrorCode.ERROR_GLOBAL_VARIABLE_NOT_EXIST);
             } else {
-                SysGlobalVariable var = new SysGlobalVariable();
-                var.setName(variableName);
-                var.setValue(variableValue);
-                var.setCheckToken(checkToken ? "Y" : "N");
-                var.setCheckVip(checkVip ? "Y" : "N");
-                globalVariableService.insertSysGlobalVariable(var);
-                return "成功";
+                variable = new SysGlobalVariable();
+                variable.setName(variableName);
+                variable.setValue(variableValue);
+                variable.setCheckToken(checkToken ? "Y" : "N");
+                variable.setCheckVip(checkVip ? "Y" : "N");
+                globalVariableService.insertSysGlobalVariable(variable);
+                return "0";
             }
         } else {
             // 检查是否登录
@@ -66,7 +66,7 @@ public class GlobalVariableSet extends Function {
                 try {
                     getLoginUser();
                 } catch (Exception e) {
-                    throw new ApiException(ErrorCode.ERROR_NOT_LOGIN, "获取此变量需要用户登录");
+                    throw new ApiException(ErrorCode.ERROR_NOT_LOGIN, "写此变量需要用户登录");
                 }
             }
             // 检查是否VIP
