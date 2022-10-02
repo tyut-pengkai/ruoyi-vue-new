@@ -36,8 +36,8 @@ public class GlobalFileUpload extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("globalFileUpload.ng", "云端文件上传", false, Constants.API_TAG_GENERAL,
-                "云端文件上传", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL, new Param[]{
+        this.setApi(new Api("globalFileUpload.ng", "远程文件上传", false, Constants.API_TAG_GENERAL,
+                "远程文件上传", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL, new Param[]{
                 new Param("fileName", true, "文件名称"),
                 new Param("base64Str", true, "文件base64编码文本"),
                 new Param("overrideIfExist", false, "当文件已存在时是否覆盖，是传1否传0默认为1"),

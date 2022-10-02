@@ -46,8 +46,8 @@ public class GlobalFileDownload extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("globalFileDownload.ng", "云端文件下载", false, Constants.API_TAG_GENERAL,
-                "读全局变量", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL, new Param[]{
+        this.setApi(new Api("globalFileDownload.ng", "远程文件下载", false, Constants.API_TAG_GENERAL,
+                "远程文件下载", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL, new Param[]{
                 new Param("fileName", true, "文件名称"),
                 new Param("returnUrl", false, "是返回下载链接，否返回文件base64编码文本，是传1否传0默认为0"),
                 new Param("errorIfNotExist", false, "当文件不存在时是否报错，如果为否则返回空，是传1否传0默认为0"),
@@ -75,7 +75,7 @@ public class GlobalFileDownload extends Function {
             try {
                 getLoginUser();
             } catch (Exception e) {
-                throw new ApiException(ErrorCode.ERROR_NOT_LOGIN, "获取此变量需要用户登录");
+                throw new ApiException(ErrorCode.ERROR_NOT_LOGIN, "下载此文件需要用户登录");
             }
         }
         // 检查是否VIP

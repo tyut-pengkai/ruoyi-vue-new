@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "..\\..\\..\\vscode\\vuepress-starter"
 		}
 	],
 	"settings": {}

@@ -31,8 +31,8 @@ public class GlobalVariableGet extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("globalVariableGet.ng", "读全局变量", false, Constants.API_TAG_GENERAL,
-                "读全局变量", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL, new Param[]{
+        this.setApi(new Api("globalVariableGet.ng", "读远程变量", false, Constants.API_TAG_GENERAL,
+                "读远程变量", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL, new Param[]{
                 new Param("variableName", true, "变量名称"),
                 new Param("errorIfNotExist", false, "当变量不存在时是否报错，如果为否则返回空文本，是传1否传0默认为0"),
         }, new Resp(Resp.DataType.string, "变量值")));

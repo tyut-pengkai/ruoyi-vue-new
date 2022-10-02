@@ -28,8 +28,8 @@ public class GlobalVariableSet extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("globalVariableSet.ng", "写全局变量", false, Constants.API_TAG_GENERAL,
-                "写全局变量", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL, new Param[]{
+        this.setApi(new Api("globalVariableSet.ng", "写远程变量", false, Constants.API_TAG_GENERAL,
+                "写远程变量", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL, new Param[]{
                 new Param("variableName", true, "变量名称"),
                 new Param("variableValue", true, "变量值"),
                 new Param("errorIfNotExist", false, "当变量不存在时是否报错，如果为否则自动创建该名称变量，是传1否传0默认为0"),
