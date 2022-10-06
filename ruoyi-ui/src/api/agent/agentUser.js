@@ -53,9 +53,10 @@ export function listAgents(agentId) {
 }
 
 // 获取所有非代理
-export function listNonAgents() {
+export function listNonAgents(query) {
   return request({
     url: '/agent/agentUser/listNonAgents',
-    method: 'get'
+    method: 'get',
+    params: query
   })
 }

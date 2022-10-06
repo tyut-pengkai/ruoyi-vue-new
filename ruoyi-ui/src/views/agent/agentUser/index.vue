@@ -226,8 +226,11 @@
               v-model="form.userId"
               :clearable="true"
               filterable
-              placeholder="请选择"
+              :loading="loading"
+              :remote-method="remoteMethod"
               prop="userId"
+              placeholder="请输入用户名"
+              remote
             >
               <el-option
                 v-for="item in nonAgentList"
@@ -314,7 +317,7 @@ export default {
       // 可选代理列表
       nonAgentList: [],
       // 遮罩层
-      loading: true,
+      loading: false,
       // 显示搜索条件
       showSearch: true,
       // 代理用户表格数据
@@ -503,7 +506,7 @@ export default {
     handleAdd(row) {
       this.reset();
       this.getTreeselect();
-      this.getNonAgentsList();
+      // this.getNonAgentsList();
       if (row != null && row.agentId) {
         this.form.parentAgentId = row.agentId;
       } else {
@@ -567,9 +570,9 @@ export default {
         .catch(() => {
         });
     },
-    getNonAgentsList() {
+    getNonAgentsList(query) {
       this.loading = true;
-      listNonAgents().then((response) => {
+      listNonAgents(query).then((response) => {
         this.nonAgentList = response.rows;
         this.loading = false;
       });
@@ -578,6 +581,13 @@ export default {
       getUserProfile().then((response) => {
         this.user = response.data;
       });
+    },
+    remoteMethod(query) {
+      if (query !== "") {
+        this.getNonAgentsList({username: query});
+      } else {
+        this.nonAgentList = [];
+      }
     },
   },
 };

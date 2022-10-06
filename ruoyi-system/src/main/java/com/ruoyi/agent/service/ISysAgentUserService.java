@@ -73,7 +73,7 @@ public interface ISysAgentUserService {
      *
      * @return
      */
-    public List<AgentInfoVo> getNonAgents();
+    public List<AgentInfoVo> getNonAgents(String username);
 
     /**
      * 获取代理的所有子代理

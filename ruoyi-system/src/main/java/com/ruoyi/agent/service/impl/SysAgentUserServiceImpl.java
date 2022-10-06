@@ -106,8 +106,8 @@ public class SysAgentUserServiceImpl implements ISysAgentUserService {
      *
      * @return
      */
-    public List<AgentInfoVo> getNonAgents() {
-        return sysAgentMapper.getNonAgents();
+    public List<AgentInfoVo> getNonAgents(String username) {
+        return sysAgentMapper.getNonAgents(username);
     }
 
     /**

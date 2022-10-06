@@ -92,8 +92,9 @@ public interface SysAgentUserMapper {
             "\tAND ag.user_id IS NULL \n" +
             "\tAND (\n" +
             "\tr.role_key IS NULL \n" +
-            "\tOR r.role_key NOT IN ( 'sadmin', 'admin' ))")
-    public List<AgentInfoVo> getNonAgents();
+            "\tOR r.role_key NOT IN ( 'sadmin', 'admin' )) AND ( user_name LIKE CONCAT('%',#{username},'%') OR nick_name LIKE CONCAT('%',#{username},'%') ) \n" +
+            "\tLIMIT 10")
+    public List<AgentInfoVo> getNonAgents(@Param("username") String username);
 
     /**
      * 获取代理的所有子代理

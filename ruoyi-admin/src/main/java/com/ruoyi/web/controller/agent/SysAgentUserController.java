@@ -274,8 +274,8 @@ public class SysAgentUserController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('agent:agentUser:list')")
     @GetMapping("/listNonAgents")
-    public TableDataInfo listNonAgents() {
-        List<AgentInfoVo> list = sysAgentService.getNonAgents();
+    public TableDataInfo listNonAgents(String username) {
+        List<AgentInfoVo> list = sysAgentService.getNonAgents(username);
         return getDataTable(list);
     }
 
