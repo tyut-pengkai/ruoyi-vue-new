@@ -37,7 +37,7 @@ public class SysIndexController {
      */
     @RequestMapping("/")
     public String index() {
-        return StringUtils.format("欢迎使用{}，当前版本：v{}，请通过入口地址访问本系统。", ruoyiConfig.getName(), ruoyiConfig.getVersion());
+        return StringUtils.format("欢迎使用{}，当前版本：{}，请通过入口地址访问本系统。", ruoyiConfig.getName(), ruoyiConfig.getVersion());
     }
 
     /**

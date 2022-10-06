@@ -99,7 +99,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             concat('%', #{userName}, '%') or au.login_code like concat('%', #{userName}, '%'))
         </if>
         <if test="appId != null ">and au.app_id = #{appId}</if>
-        <if test="status != null  and status != ''">and au.status = #{status}</if>
+        <if test="status != null and status != ''">and au.status = #{status}</if>
+        <if test="params.isVip != null and params.isVip == 'Y'.toString()">and (au.expire_time &gt; sysdate() or
+            au.point &gt; 0)
+        </if>
+        <if test="params.isVip != null and params.isVip == 'N'.toString()">and (au.expire_time &lt;= sysdate() or
+            au.point &lt;= 0)
+        </if>
         <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''">
             and au.last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}
         </if>

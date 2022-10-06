@@ -64,6 +64,21 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="是否为VIP" prop="status">
+        <el-select
+          v-model="queryParams.isVip"
+          clearable
+          placeholder="请选择是否为VIP"
+          size="small"
+        >
+          <el-option
+            v-for="dict in dict.type.sys_yes_no"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="最后登录时间" prop="lastLoginTime">
         <el-date-picker
           v-model="daterangeLastLoginTime"
@@ -76,31 +91,30 @@
           end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-      <!-- <span v-if="app && app.billType === '0'">
-        <el-form-item label="过期时间">
-          <el-date-picker
-            v-model="daterangeExpireTime"
-            size="small"
-            style="width: 240px"
-            value-format="yyyy-MM-dd"
-            type="daterange"
-            range-separator="-"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-          ></el-date-picker>
-        </el-form-item>
-      </span>
-      <span v-if="app && app.billType === '1'">
-        <el-form-item label="剩余点数" prop="point">
-          <el-input
-            v-model="queryParams.point"
-            placeholder="请输入剩余点数"
-            clearable
-            size="small"
-            @keyup.enter.native="handleQuery"
-          />
-        </el-form-item>
-      </span> -->
+
+      <el-form-item label="过期时间">
+        <el-date-picker
+          v-model="daterangeExpireTime"
+          end-placeholder="结束日期"
+          range-separator="-"
+          size="small"
+          start-placeholder="开始日期"
+          style="width: 240px"
+          type="daterange"
+          value-format="yyyy-MM-dd"
+        ></el-date-picker>
+      </el-form-item>
+
+      <el-form-item label="剩余点数" prop="point">
+        <el-input
+          v-model="queryParams.point"
+          clearable
+          placeholder="请输入剩余点数"
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+
       <!-- <el-form-item label="创建者" prop="createBy">
         <el-input
           v-model="queryParams.createBy"
@@ -837,7 +851,7 @@ import {listUserByExceptAppid} from "@/api/system/user";
 
 export default {
   name: "AppUser",
-  dicts: ["sys_normal_disable", "sys_bill_type"],
+  dicts: ["sys_normal_disable", "sys_bill_type", "sys_yes_no"],
   data() {
     return {
       appList: [],
@@ -974,6 +988,9 @@ export default {
     getList() {
       this.loading = true;
       this.queryParams.params = {};
+      if (this.queryParams["isVip"]) {
+        this.queryParams.params["isVip"] = this.queryParams["isVip"]
+      }
       if (
         null != this.daterangeLastLoginTime &&
         "" != this.daterangeLastLoginTime
