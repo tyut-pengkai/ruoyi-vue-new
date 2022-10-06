@@ -9,8 +9,8 @@ import java.nio.charset.StandardCharsets;
 class EncryptBase64Test {
 
     // private final IEncryptType enc = new EncryptBase64();
-    // private final IEncryptType enc = new EncryptAesCbcPKCS5P();
-    private final IEncryptType enc = new EncryptAesCbcZeroP();
+    private final IEncryptType enc = new EncryptAesCbcPKCS5P();
+//    private final IEncryptType enc = new EncryptAesCbcZeroP();
 
     @Test
     void encrypt() throws Exception {

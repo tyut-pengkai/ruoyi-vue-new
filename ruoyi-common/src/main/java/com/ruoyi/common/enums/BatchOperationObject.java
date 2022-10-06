@@ -13,6 +13,7 @@ public enum BatchOperationObject implements BaseEnum {
     LOGIN_CODE("1", "单码"),
     ACCOUNT_USER("2", "账号用户"),
     LOGIN_CODE_USER("3", "单码用户"),
+    LOGIN_CODE_AND_CODE_USER("4", "单码及单码用户"),
     ;
 
     @EnumValue // 用于dao层序列化与反序列化

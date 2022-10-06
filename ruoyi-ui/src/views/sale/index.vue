@@ -101,6 +101,9 @@
         <div class="my-footer">
           <span>
             {{ copyright }}
+            <!-- (<a href="https://beian.miit.gov.cn/"
+              >蜀ICP备2022018576号</a
+            >) -->
           </span>
         </div>
       </el-link>

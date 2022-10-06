@@ -375,30 +375,7 @@ public class SysBatchOperationController extends BaseController {
                         }
                     }
                 } else if (vo.getOperationType() == BatchOperationType.UNBIND) {
-                    String a = "解绑成功";
-                    String b = "解绑失败";
-                    if (result.size() == 0) {
-                        result.put(a, new ArrayList<>());
-                        result.put(b, new ArrayList<>());
-                    }
-                    if (appUser == null) {
-                        result.get(b).add(item + "【软件用户不存在】");
-                    } else {
-                        List<SysAppUserDeviceCode> deviceCodeList =
-                                sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserId(appUser.getAppUserId());
-                        if (deviceCodeList.size() == 0) {
-                            result.get(a).add(item + "【未绑定任何设备】");
-                        } else {
-                            try {
-                                for (SysAppUserDeviceCode item1 : deviceCodeList) {
-                                    sysAppUserDeviceCodeService.deleteSysAppUserDeviceCodeById(item1.getId());
-                                }
-                                result.get(a).add(item + "【解绑成功】");
-                            } catch (Exception e) {
-                                result.get(b).add(item + "【" + e.getMessage() + "】");
-                            }
-                        }
-                    }
+                    doAppUserUnbind(result, item, appUser);
                 } else if (vo.getOperationType() == BatchOperationType.DELETE) {
                     String a = "删除成功";
                     String b = "删除失败";
@@ -420,118 +397,22 @@ public class SysBatchOperationController extends BaseController {
                     if (vo.getOperationValue() == null || Convert.toLong(vo.getOperationValue(), 0L) <= 0) {
                         return AjaxResult.error("参数必须为整数且大于0");
                     }
-                    String a = "加时成功";
-                    String b = "加时失败";
-                    if (result.size() == 0) {
-                        result.put(a, new ArrayList<>());
-                        result.put(b, new ArrayList<>());
-                    }
-                    if (appUser == null) {
-                        result.get(b).add(item + "【软件用户不存在】");
-                    } else {
-                        try {
-                            if (appUser.getApp().getBillType() == BillType.TIME) {
-                                Date newExpiredTime = MyUtils.getNewExpiredTimeAdd(appUser.getExpireTime(), Long.parseLong(vo.getOperationValue()));
-                                appUser.setExpireTime(newExpiredTime);
-                                SysAppUser newAppUser = new SysAppUser();
-                                newAppUser.setAppUserId(appUser.getAppUserId());
-                                newAppUser.setExpireTime(newExpiredTime);
-                                sysAppUserService.updateSysAppUser(newAppUser);
-                                result.get(a).add(item + getAppUserSimpleDesc(appUser));
-                            } else {
-                                result.get(b).add(item + "【非计时模式软件用户】");
-                            }
-                        } catch (Exception e) {
-                            result.get(b).add(item + "【" + e.getMessage() + "】");
-                        }
-                    }
+                    doAppUserAddTime(result, item, appUser, vo);
                 } else if (vo.getOperationType() == BatchOperationType.SUB_TIME) {
                     if (vo.getOperationValue() == null || Convert.toLong(vo.getOperationValue(), 0L) <= 0) {
                         return AjaxResult.error("参数必须为整数且大于0");
                     }
-                    String a = "扣时成功";
-                    String b = "扣时失败";
-                    if (result.size() == 0) {
-                        result.put(a, new ArrayList<>());
-                        result.put(b, new ArrayList<>());
-                    }
-                    if (appUser == null) {
-                        result.get(b).add(item + "【软件用户不存在】");
-                    } else {
-                        try {
-                            if (appUser.getApp().getBillType() == BillType.TIME) {
-                                Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), Long.parseLong(vo.getOperationValue()));
-                                appUser.setExpireTime(newExpiredTime);
-                                SysAppUser newAppUser = new SysAppUser();
-                                newAppUser.setAppUserId(appUser.getAppUserId());
-                                newAppUser.setExpireTime(newExpiredTime);
-                                sysAppUserService.updateSysAppUser(newAppUser);
-                                result.get(a).add(item + getAppUserSimpleDesc(appUser));
-                            } else {
-                                result.get(b).add(item + "【非计时模式软件用户】");
-                            }
-                        } catch (Exception e) {
-                            result.get(b).add(item + "【" + e.getMessage() + "】");
-                        }
-                    }
+                    doAppUserSubTime(result, item, appUser, vo);
                 } else if (vo.getOperationType() == BatchOperationType.ADD_POINT) {
                     if (vo.getOperationValue() == null || Convert.toLong(vo.getOperationValue(), 0L) <= 0) {
                         return AjaxResult.error("参数必须为整数且大于0");
                     }
-                    String a = "加点成功";
-                    String b = "加点失败";
-                    if (result.size() == 0) {
-                        result.put(a, new ArrayList<>());
-                        result.put(b, new ArrayList<>());
-                    }
-                    if (appUser == null) {
-                        result.get(b).add(item + "【软件用户不存在】");
-                    } else {
-                        try {
-                            if (appUser.getApp().getBillType() == BillType.POINT) {
-                                BigDecimal newPoint = MyUtils.getNewPointAdd(appUser.getPoint(), Long.parseLong(vo.getOperationValue()));
-                                appUser.setPoint(newPoint);
-                                SysAppUser newAppUser = new SysAppUser();
-                                newAppUser.setAppUserId(appUser.getAppUserId());
-                                newAppUser.setPoint(newPoint);
-                                sysAppUserService.updateSysAppUser(newAppUser);
-                                result.get(a).add(item + getAppUserSimpleDesc(appUser));
-                            } else {
-                                result.get(b).add(item + "【非计点模式软件用户】");
-                            }
-                        } catch (Exception e) {
-                            result.get(b).add(item + "【" + e.getMessage() + "】");
-                        }
-                    }
+                    doAppUserAddPoint(result, item, appUser, vo);
                 } else if (vo.getOperationType() == BatchOperationType.SUB_POINT) {
                     if (vo.getOperationValue() == null || Convert.toLong(vo.getOperationValue(), 0L) <= 0) {
                         return AjaxResult.error("参数必须为整数且大于0");
                     }
-                    String a = "扣点成功";
-                    String b = "扣点失败";
-                    if (result.size() == 0) {
-                        result.put(a, new ArrayList<>());
-                        result.put(b, new ArrayList<>());
-                    }
-                    if (appUser == null) {
-                        result.get(b).add(item + "【软件用户不存在】");
-                    } else {
-                        try {
-                            if (appUser.getApp().getBillType() == BillType.POINT) {
-                                BigDecimal newPoint = MyUtils.getNewPointSub(appUser.getPoint(), Long.parseLong(vo.getOperationValue()));
-                                appUser.setPoint(newPoint);
-                                SysAppUser newAppUser = new SysAppUser();
-                                newAppUser.setAppUserId(appUser.getAppUserId());
-                                newAppUser.setPoint(newPoint);
-                                sysAppUserService.updateSysAppUser(newAppUser);
-                                result.get(a).add(item + getAppUserSimpleDesc(appUser));
-                            } else {
-                                result.get(b).add(item + "【非计点模式软件用户】");
-                            }
-                        } catch (Exception e) {
-                            result.get(b).add(item + "【" + e.getMessage() + "】");
-                        }
-                    }
+                    doAppUserSubPoint(result, item, appUser, vo);
                 } else if (vo.getOperationType() == BatchOperationType.REMARK) {
                     if (StringUtils.isBlank(vo.getOperationValue())) {
                         return AjaxResult.error("参数：备注内容，不能为空");
@@ -558,6 +439,243 @@ public class SysBatchOperationController extends BaseController {
                 } else {
                     return AjaxResult.error("执行操作参数有误");
                 }
+            } else if (vo.getOperationObject() == BatchOperationObject.LOGIN_CODE_AND_CODE_USER) {
+                SysLoginCode loginCode = sysLoginCodeService.selectSysLoginCodeByAppIdAndCardNo(vo.getAppId(), item);
+                SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(vo.getAppId(), item);
+                if (vo.getOperationType() == BatchOperationType.QUERY) {
+                    String a = "正常的单码";
+                    String b = "冻结的单码";
+                    String c = "已使用的单码";
+                    String d = "不存在的单码";
+                    if (result.size() == 0) {
+                        result.put(a, new ArrayList<>());
+                        result.put(b, new ArrayList<>());
+                        result.put(c, new ArrayList<>());
+                        result.put(d, new ArrayList<>());
+                    }
+                    String userInfo;
+                    if (appUser == null) {
+                        userInfo = "【软件用户不存在】";
+                    } else {
+                        userInfo = getAppUserSimpleDesc(appUser);
+                    }
+                    if (loginCode == null) {
+                        result.get(d).add(item + "【单码不存在】" + " " + userInfo);
+                    } else if (Objects.equals(loginCode.getIsCharged(), UserConstants.YES)) {
+                        result.get(c).add(item + getLoginCodeSimpleDesc(loginCode) + " " + userInfo);
+                    } else if (Objects.equals(loginCode.getStatus(), UserConstants.NORMAL)) {
+                        result.get(a).add(item + getLoginCodeSimpleDesc(loginCode) + " " + userInfo);
+                    } else {
+                        result.get(b).add(item + getLoginCodeSimpleDesc(loginCode) + " " + userInfo);
+                    }
+                } else if (vo.getOperationType() == BatchOperationType.BAN) {
+                    String a = "冻结成功";
+                    String b = "冻结失败";
+                    if (result.size() == 0) {
+                        result.put(a, new ArrayList<>());
+                        result.put(b, new ArrayList<>());
+                    }
+                    String userInfo;
+                    if (appUser == null) {
+                        userInfo = "【软件用户不存在】";
+                    } else {
+                        userInfo = getAppUserSimpleDesc(appUser);
+                    }
+                    if (loginCode == null) {
+                        result.get(b).add(item + "【单码不存在】" + " 单码用户忽略处理" + userInfo);
+                    } else if (Objects.equals(loginCode.getIsCharged(), UserConstants.YES)) {
+                        if (appUser == null) {
+                            result.get(b).add(item + "【单码已使用】" + " 单码用户冻结失败" + userInfo);
+                        } else if (Objects.equals(appUser.getStatus(), UserConstants.NORMAL)) {
+                            try {
+                                SysAppUser newAppUser = new SysAppUser();
+                                newAppUser.setAppUserId(appUser.getAppUserId());
+                                newAppUser.setStatus(UserConstants.USER_DISABLE);
+                                sysAppUserService.updateSysAppUser(newAppUser);
+                                appUser.setStatus(UserConstants.USER_DISABLE);
+                                userInfo = getAppUserSimpleDesc(appUser);
+                                result.get(a).add(item + "【单码已使用】" + " 单码用户冻结成功" + userInfo);
+                            } catch (Exception e) {
+                                result.get(b).add(item + "【单码已使用】" + " 单码用户冻结失败" + "【" + e.getMessage() + "】" + userInfo);
+                            }
+                        } else {
+                            result.get(a).add(item + "【单码已使用】" + " 单码用户冻结成功" + "【已经是冻结状态】");
+                        }
+                    } else if (Objects.equals(loginCode.getStatus(), UserConstants.NORMAL)) {
+                        try {
+                            SysLoginCode newLoginCode = new SysLoginCode();
+                            newLoginCode.setCardId(loginCode.getCardId());
+                            newLoginCode.setStatus(UserConstants.USER_DISABLE);
+                            sysLoginCodeService.updateSysLoginCode(newLoginCode);
+                            result.get(a).add(item + "【冻结成功】" + " 单码用户忽略处理" + userInfo);
+                        } catch (Exception e) {
+                            result.get(b).add(item + "【" + e.getMessage() + "】" + " 单码用户忽略处理" + userInfo);
+                        }
+                    } else {
+                        result.get(a).add(item + "【已经是冻结状态】" + " 单码用户忽略处理" + userInfo);
+                    }
+                } else if (vo.getOperationType() == BatchOperationType.UNBAN) {
+                    String a = "解冻成功";
+                    String b = "解冻失败";
+                    if (result.size() == 0) {
+                        result.put(a, new ArrayList<>());
+                        result.put(b, new ArrayList<>());
+                    }
+                    String userInfo;
+                    if (appUser == null) {
+                        userInfo = "【软件用户不存在】";
+                    } else {
+                        userInfo = getAppUserSimpleDesc(appUser);
+                    }
+                    if (loginCode == null) {
+                        result.get(b).add(item + "【单码不存在】" + " 单码用户忽略处理" + userInfo);
+                    } else if (Objects.equals(loginCode.getIsCharged(), UserConstants.YES)) {
+                        if (appUser == null) {
+                            result.get(b).add(item + "【单码已使用】" + " 单码用户解冻失败" + userInfo);
+                        } else if (Objects.equals(appUser.getStatus(), UserConstants.NORMAL)) {
+                            result.get(a).add(item + "【单码已使用】" + " 单码用户解冻成功" + "【已经是正常状态】");
+                        } else {
+                            try {
+                                SysAppUser newAppUser = new SysAppUser();
+                                newAppUser.setAppUserId(appUser.getAppUserId());
+                                newAppUser.setStatus(UserConstants.NORMAL);
+                                sysAppUserService.updateSysAppUser(newAppUser);
+                                appUser.setStatus(UserConstants.NORMAL);
+                                userInfo = getAppUserSimpleDesc(appUser);
+                                result.get(a).add(item + "【单码已使用】" + " 单码用户解冻成功" + userInfo);
+                            } catch (Exception e) {
+                                result.get(b).add(item + "【单码已使用】" + " 单码用户解冻失败" + "【" + e.getMessage() + "】" + userInfo);
+                            }
+                        }
+                    } else if (Objects.equals(loginCode.getStatus(), UserConstants.NORMAL)) {
+                        result.get(a).add(item + "【已经是正常状态】" + " 单码用户忽略处理" + userInfo);
+                    } else {
+                        try {
+                            SysLoginCode newLoginCode = new SysLoginCode();
+                            newLoginCode.setCardId(loginCode.getCardId());
+                            newLoginCode.setStatus(UserConstants.NORMAL);
+                            sysLoginCodeService.updateSysLoginCode(newLoginCode);
+                            result.get(a).add(item + "【解冻成功】" + " 单码用户忽略处理" + userInfo);
+                        } catch (Exception e) {
+                            result.get(b).add(item + "【" + e.getMessage() + "】" + " 单码用户忽略处理" + userInfo);
+                        }
+                    }
+                } else if (vo.getOperationType() == BatchOperationType.UNBIND) {
+                    doAppUserUnbind(result, item, appUser);
+                } else if (vo.getOperationType() == BatchOperationType.DELETE) {
+                    String a = "删除成功";
+                    String b = "删除失败";
+                    if (result.size() == 0) {
+                        result.put(a, new ArrayList<>());
+                        result.put(b, new ArrayList<>());
+                    }
+                    String userInfo;
+                    if (appUser == null) {
+                        userInfo = "【软件用户不存在】";
+                    } else {
+                        userInfo = getAppUserSimpleDesc(appUser);
+                    }
+                    if (loginCode == null) {
+                        result.get(b).add(item + "【单码不存在】" + " 单码用户忽略处理" + userInfo);
+                    } else if (Objects.equals(loginCode.getIsCharged(), UserConstants.YES)) {
+                        if (appUser == null) {
+                            result.get(b).add(item + "【单码已使用】" + " " + userInfo);
+                        } else {
+                            try {
+                                sysAppUserService.deleteSysAppUserByAppUserId(appUser.getAppUserId());
+                                result.get(a).add(item + "【单码已使用】" + "单码用户删除成功" + userInfo);
+                            } catch (Exception e) {
+                                result.get(b).add(item + "【单码已使用】" + "单码用户删除失败【" + e.getMessage() + "】" + userInfo);
+                            }
+                        }
+                    } else {
+                        try {
+                            sysLoginCodeService.deleteSysLoginCodeByCardId(loginCode.getCardId());
+                            result.get(a).add(item + "【删除成功】" + " 单码用户忽略处理" + userInfo);
+                        } catch (Exception e) {
+                            result.get(b).add(item + "【" + e.getMessage() + "】" + " 单码用户忽略处理" + userInfo);
+                        }
+                    }
+                } else if (vo.getOperationType() == BatchOperationType.ADD_TIME) {
+                    if (vo.getOperationValue() == null || Convert.toLong(vo.getOperationValue(), 0L) <= 0) {
+                        return AjaxResult.error("参数必须为整数且大于0");
+                    }
+                    doAppUserAddTime(result, item, appUser, vo);
+                } else if (vo.getOperationType() == BatchOperationType.SUB_TIME) {
+                    if (vo.getOperationValue() == null || Convert.toLong(vo.getOperationValue(), 0L) <= 0) {
+                        return AjaxResult.error("参数必须为整数且大于0");
+                    }
+                    doAppUserSubTime(result, item, appUser, vo);
+                } else if (vo.getOperationType() == BatchOperationType.ADD_POINT) {
+                    if (vo.getOperationValue() == null || Convert.toLong(vo.getOperationValue(), 0L) <= 0) {
+                        return AjaxResult.error("参数必须为整数且大于0");
+                    }
+                    doAppUserAddPoint(result, item, appUser, vo);
+                } else if (vo.getOperationType() == BatchOperationType.SUB_POINT) {
+                    if (vo.getOperationValue() == null || Convert.toLong(vo.getOperationValue(), 0L) <= 0) {
+                        return AjaxResult.error("参数必须为整数且大于0");
+                    }
+                    doAppUserSubPoint(result, item, appUser, vo);
+                } else if (vo.getOperationType() == BatchOperationType.REMARK) {
+                    if (StringUtils.isBlank(vo.getOperationValue())) {
+                        return AjaxResult.error("参数：备注内容，不能为空");
+                    }
+                    String a = "备注成功";
+                    String b = "备注失败";
+                    if (result.size() == 0) {
+                        result.put(a, new ArrayList<>());
+                        result.put(b, new ArrayList<>());
+                    }
+                    String userInfo;
+                    if (appUser == null) {
+                        userInfo = "【软件用户不存在】";
+                    } else {
+                        userInfo = getAppUserSimpleDesc(appUser);
+                    }
+                    if (loginCode == null) {
+                        result.get(b).add(item + "【单码不存在】" + " 单码用户忽略处理" + userInfo);
+                    } else {
+                        try {
+                            SysLoginCode newLoginCode = new SysLoginCode();
+                            newLoginCode.setCardId(loginCode.getCardId());
+                            newLoginCode.setRemark(vo.getOperationValue());
+                            sysLoginCodeService.updateSysLoginCode(newLoginCode);
+                            if (appUser == null) {
+                                result.get(a).add(item + "【备注成功】" + " " + userInfo);
+                            } else {
+                                try {
+                                    SysAppUser newAppUser = new SysAppUser();
+                                    newAppUser.setAppUserId(appUser.getAppUserId());
+                                    newAppUser.setRemark(vo.getOperationValue());
+                                    sysAppUserService.updateSysAppUser(newAppUser);
+                                    appUser.setRemark(vo.getOperationValue());
+                                    userInfo = getAppUserSimpleDesc(appUser);
+                                    result.get(a).add(item + "【备注成功】" + " 单码用户备注成功" + userInfo);
+                                } catch (Exception e) {
+                                    result.get(b).add(item + "【备注成功】" + " 单码用户备注失败" + "【" + e.getMessage() + "】" + userInfo);
+                                }
+                            }
+                        } catch (Exception e) {
+                            if (appUser == null) {
+                                result.get(b).add(item + "【" + e.getMessage() + "】" + " " + userInfo);
+                            } else {
+                                try {
+                                    SysAppUser newAppUser = new SysAppUser();
+                                    newAppUser.setAppUserId(appUser.getAppUserId());
+                                    newAppUser.setRemark(vo.getOperationValue());
+                                    sysAppUserService.updateSysAppUser(newAppUser);
+                                    appUser.setRemark(vo.getOperationValue());
+                                    userInfo = getAppUserSimpleDesc(appUser);
+                                    result.get(b).add(item + "【" + e.getMessage() + "】" + " 单码用户备注成功" + userInfo);
+                                } catch (Exception e1) {
+                                    result.get(b).add(item + "【" + e.getMessage() + "】" + " 单码用户备注失败" + "【" + e1.getMessage() + "】" + userInfo);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    return AjaxResult.error("执行操作参数有误");
+                }
             } else {
                 return AjaxResult.error("操作对象参数有误");
             }
@@ -571,6 +689,145 @@ public class SysBatchOperationController extends BaseController {
                     .append("\n\n");
         }
         return AjaxResult.success(resultStr.toString());
+    }
+
+    private void doAppUserSubPoint(LinkedHashMap<String, List<String>> result, String item, SysAppUser appUser, BatchOperationVo vo) {
+        String a = "扣点成功";
+        String b = "扣点失败";
+        if (result.size() == 0) {
+            result.put(a, new ArrayList<>());
+            result.put(b, new ArrayList<>());
+        }
+        if (appUser == null) {
+            result.get(b).add(item + "【软件用户不存在】");
+        } else {
+            try {
+                if (appUser.getApp().getBillType() == BillType.POINT) {
+                    BigDecimal newPoint = MyUtils.getNewPointSub(appUser.getPoint(), Long.parseLong(vo.getOperationValue()));
+                    appUser.setPoint(newPoint);
+                    SysAppUser newAppUser = new SysAppUser();
+                    newAppUser.setAppUserId(appUser.getAppUserId());
+                    newAppUser.setPoint(newPoint);
+                    sysAppUserService.updateSysAppUser(newAppUser);
+                    result.get(a).add(item + getAppUserSimpleDesc(appUser));
+                } else {
+                    result.get(b).add(item + "【非计点模式软件用户】");
+                }
+            } catch (Exception e) {
+                result.get(b).add(item + "【" + e.getMessage() + "】");
+            }
+        }
+    }
+
+    private void doAppUserAddPoint(LinkedHashMap<String, List<String>> result, String item, SysAppUser appUser, BatchOperationVo vo) {
+        String a = "加点成功";
+        String b = "加点失败";
+        if (result.size() == 0) {
+            result.put(a, new ArrayList<>());
+            result.put(b, new ArrayList<>());
+        }
+        if (appUser == null) {
+            result.get(b).add(item + "【软件用户不存在】");
+        } else {
+            try {
+                if (appUser.getApp().getBillType() == BillType.POINT) {
+                    BigDecimal newPoint = MyUtils.getNewPointAdd(appUser.getPoint(), Long.parseLong(vo.getOperationValue()));
+                    appUser.setPoint(newPoint);
+                    SysAppUser newAppUser = new SysAppUser();
+                    newAppUser.setAppUserId(appUser.getAppUserId());
+                    newAppUser.setPoint(newPoint);
+                    sysAppUserService.updateSysAppUser(newAppUser);
+                    result.get(a).add(item + getAppUserSimpleDesc(appUser));
+                } else {
+                    result.get(b).add(item + "【非计点模式软件用户】");
+                }
+            } catch (Exception e) {
+                result.get(b).add(item + "【" + e.getMessage() + "】");
+            }
+        }
+    }
+
+    private void doAppUserSubTime(LinkedHashMap<String, List<String>> result, String item, SysAppUser appUser, BatchOperationVo vo) {
+        String a = "扣时成功";
+        String b = "扣时失败";
+        if (result.size() == 0) {
+            result.put(a, new ArrayList<>());
+            result.put(b, new ArrayList<>());
+        }
+        if (appUser == null) {
+            result.get(b).add(item + "【软件用户不存在】");
+        } else {
+            try {
+                if (appUser.getApp().getBillType() == BillType.TIME) {
+                    Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), Long.parseLong(vo.getOperationValue()));
+                    appUser.setExpireTime(newExpiredTime);
+                    SysAppUser newAppUser = new SysAppUser();
+                    newAppUser.setAppUserId(appUser.getAppUserId());
+                    newAppUser.setExpireTime(newExpiredTime);
+                    sysAppUserService.updateSysAppUser(newAppUser);
+                    result.get(a).add(item + getAppUserSimpleDesc(appUser));
+                } else {
+                    result.get(b).add(item + "【非计时模式软件用户】");
+                }
+            } catch (Exception e) {
+                result.get(b).add(item + "【" + e.getMessage() + "】");
+            }
+        }
+    }
+
+    private void doAppUserAddTime(LinkedHashMap<String, List<String>> result, String item, SysAppUser appUser, BatchOperationVo vo) {
+        String a = "加时成功";
+        String b = "加时失败";
+        if (result.size() == 0) {
+            result.put(a, new ArrayList<>());
+            result.put(b, new ArrayList<>());
+        }
+        if (appUser == null) {
+            result.get(b).add(item + "【软件用户不存在】");
+        } else {
+            try {
+                if (appUser.getApp().getBillType() == BillType.TIME) {
+                    Date newExpiredTime = MyUtils.getNewExpiredTimeAdd(appUser.getExpireTime(), Long.parseLong(vo.getOperationValue()));
+                    appUser.setExpireTime(newExpiredTime);
+                    SysAppUser newAppUser = new SysAppUser();
+                    newAppUser.setAppUserId(appUser.getAppUserId());
+                    newAppUser.setExpireTime(newExpiredTime);
+                    sysAppUserService.updateSysAppUser(newAppUser);
+                    result.get(a).add(item + getAppUserSimpleDesc(appUser));
+                } else {
+                    result.get(b).add(item + "【非计时模式软件用户】");
+                }
+            } catch (Exception e) {
+                result.get(b).add(item + "【" + e.getMessage() + "】");
+            }
+        }
+    }
+
+    private void doAppUserUnbind(LinkedHashMap<String, List<String>> result, String item, SysAppUser appUser) {
+        String a = "解绑成功";
+        String b = "解绑失败";
+        if (result.size() == 0) {
+            result.put(a, new ArrayList<>());
+            result.put(b, new ArrayList<>());
+        }
+        if (appUser == null) {
+            result.get(b).add(item + "【软件用户不存在】");
+        } else {
+            List<SysAppUserDeviceCode> deviceCodeList =
+                    sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserId(appUser.getAppUserId());
+            if (deviceCodeList.size() == 0) {
+                result.get(a).add(item + "【未绑定任何设备】");
+            } else {
+                try {
+                    for (SysAppUserDeviceCode item1 : deviceCodeList) {
+                        sysAppUserDeviceCodeService.deleteSysAppUserDeviceCodeById(item1.getId());
+                    }
+                    result.get(a).add(item + "【解绑成功】");
+                } catch (Exception e) {
+                    result.get(b).add(item + "【" + e.getMessage() + "】");
+                }
+            }
+        }
     }
 
     private String getCardSimpleDesc(SysCard card) {
@@ -589,9 +846,10 @@ public class SysBatchOperationController extends BaseController {
 
     private String getAppUserSimpleDesc(SysAppUser appUser) {
         return "【"
-                + (appUser.getApp().getBillType() == BillType.TIME ?
+                + (UserConstants.NORMAL.equals(appUser.getStatus()) ? "正常的用户" : "冻结的用户")
+                + " " + (appUser.getApp().getBillType() == BillType.TIME ?
                 "到期时间：" + DateUtils.parseDateToStr(appUser.getExpireTime()) : "剩余点数：" + appUser.getPoint()) +
-                "附件自定义参数" + appUser.getCardCustomParams() +
+                " 自定义参数：" + appUser.getCardCustomParams() +
                 " 备注：" + appUser.getRemark() + "】";
     }
 
