@@ -86,6 +86,18 @@ export const constantRoutes = [{
       path: '/getLicense',
       component: () => import('@/views/sale/license/index'),
       name: 'GetLicense',
+    }, {
+      path: '/queryCard',
+      component: () => import('@/views/sale/queryCard/index'),
+      name: 'QueryCard',
+    }, {
+      path: '/chargeCenter',
+      component: () => import('@/views/sale/chargeCenter/index'),
+      name: 'ChargeCenter',
+    }, {
+      path: '/unbindDevice',
+      component: () => import('@/views/sale/unbindDevice/index'),
+      name: 'UnbindDevice',
     },]
   },
   {

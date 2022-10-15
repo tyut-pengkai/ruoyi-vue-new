@@ -48,23 +48,39 @@ public class SysApp extends BaseEntity
     @Excel(name = "软件主页")
     private String idxUrl;
 
-    /** 首次登录赠送免费时间或点数，单位秒或点 */
+    /**
+     * 首次登录赠送免费时间或点数，单位秒或点
+     */
     @Excel(name = "首次登录赠送免费时间或点数，单位秒或点")
     private Long freeQuotaReg;
 
-    /** 换绑设备扣减时间或点数，单位秒或点 */
+    /**
+     * 换绑设备扣减时间或点数，单位秒或点
+     */
     @Excel(name = "换绑设备扣减时间或点数，单位秒或点")
     private Long reduceQuotaUnbind;
 
-    /** 认证类型 */
+    /**
+     * 是否允许用户过期(计时模式)或余额为负数(计点模式)，默认为否
+     */
+    @Excel(name = "是否允许用户过期(计时模式)或余额为负数(计点模式)", readConverterExp = "Y=是,N=否")
+    private String enableNegative;
+
+    /**
+     * 认证类型
+     */
     @Excel(name = "认证类型", dictType = "sys_auth_type")
     private AuthType authType;
 
-    /** 计费类型 */
+    /**
+     * 计费类型
+     */
     @Excel(name = "计费类型", dictType = "sys_bill_type")
     private BillType billType;
 
-    /** 数据输入加密方式 */
+    /**
+     * 数据输入加密方式
+     */
     @Excel(name = "数据输入加密方式", dictType = "sys_encryp_type")
     private EncrypType dataInEnc;
 
@@ -521,6 +537,14 @@ public class SysApp extends BaseEntity
         this.enApi = enApi;
     }
 
+    public String getEnableNegative() {
+        return enableNegative;
+    }
+
+    public void setEnableNegative(String enableNegative) {
+        this.enableNegative = enableNegative;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -535,6 +559,7 @@ public class SysApp extends BaseEntity
                 .append("idxUrl", getIdxUrl())
                 .append("freeQuotaReg", getFreeQuotaReg())
                 .append("reduceQuotaUnbind", getReduceQuotaUnbind())
+                .append("enableNegative", getEnableNegative())
                 .append("authType", getAuthType())
                 .append("billType", getBillType())
                 .append("dataInEnc", getDataInEnc())

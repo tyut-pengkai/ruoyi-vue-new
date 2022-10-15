@@ -70,12 +70,12 @@ public class SysAppUserDeviceCodeVo extends SysAppUserDeviceCode {
     @JsonIgnore
     private String delFlag;
 
-    /**
-     * 软件用户ID
-     */
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private Long id;
+//    /**
+//     * 软件用户ID
+//     */
+//    @JSONField(serialize = false)
+//    @JsonIgnore
+//    private Long id;
 
     @JSONField(serialize = false)
     @JsonIgnore

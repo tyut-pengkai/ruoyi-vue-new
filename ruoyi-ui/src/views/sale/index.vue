@@ -56,8 +56,11 @@
                   >
                     <el-menu-item index="/">购买商品</el-menu-item>
                     <el-menu-item index="queryOrder">查询订单</el-menu-item>
+                    <el-menu-item index="queryCard">查询卡密</el-menu-item>
+                    <el-menu-item index="chargeCenter">充值续费</el-menu-item>
+                    <el-menu-item index="unbindDevice">解绑设备</el-menu-item>
                     <el-menu-item v-if="isLicenseServer" index="getLicense">
-                      获取授权
+                      激活授权
                     </el-menu-item>
                     <!-- <el-button class="my-button" @click="regShow = true">注册</el-button>
                                       <el-button class="my-button" @click="login">登录</el-button> -->
@@ -77,8 +80,11 @@
                 >
                   <el-menu-item index="/">购买商品</el-menu-item>
                   <el-menu-item index="queryOrder">查询订单</el-menu-item>
-                  <el-menu-item v-if="isLicenseServer" index="getLicense"
-                  >获取授权
+                  <el-menu-item index="queryCard">查询卡密</el-menu-item>
+                  <el-menu-item index="chargeCenter">充值续费</el-menu-item>
+                  <el-menu-item index="unbindDevice">解绑设备</el-menu-item>
+                  <el-menu-item v-if="isLicenseServer" index="getLicense">
+                    激活授权
                   </el-menu-item>
                   <!-- <el-button class="my-button" @click="regShow = true">注册</el-button>
                                   <el-button class="my-button" @click="login">登录</el-button> -->

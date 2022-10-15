@@ -1,10 +1,11 @@
 import request from '@/utils/request'
 
 // 查询软件列表
-export function listApp() {
+export function listApp(data) {
   return request({
     url: '/sale/shop/appList',
-    method: 'get'
+    method: 'get',
+    params: data
   })
 }
 
@@ -111,5 +112,41 @@ export function callReturn(code, paramsStr) {
   return request({
     url: '/sale/shop/notify/' + code + paramsStr,
     method: 'get'
+  })
+}
+
+// 查询卡密
+export function queryCard(data) {
+  return request({
+    url: '/sale/shop/queryCard',
+    method: 'get',
+    params: data
+  })
+}
+
+// 充值卡密
+export function chargeCard(data) {
+  return request({
+    url: '/sale/shop/chargeCard',
+    method: 'get',
+    params: data
+  })
+}
+
+// 查询设备列表
+export function queryBindDevice(data) {
+  return request({
+    url: '/sale/shop/queryBindDevice',
+    method: 'get',
+    params: data
+  })
+}
+
+// 解绑设备
+export function unbindDevice(data) {
+  return request({
+    url: '/sale/shop/unbindDevice',
+    method: 'get',
+    params: data
   })
 }

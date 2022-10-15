@@ -3,6 +3,7 @@ package com.ruoyi.sale.domain.vo;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ruoyi.common.core.domain.entity.SysApp;
+import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.system.domain.SysCard;
 import lombok.Data;
@@ -113,6 +114,27 @@ public class SysCardVo extends SysCard {
     private Long templateId;
 
     /**
+     * 是否代理制卡
+     */
+    @JSONField(serialize = false)
+    @JsonIgnore
+    private String isAgent;
+
+    /**
+     * 卡密自定义参数
+     */
+    @JSONField(serialize = false)
+    @JsonIgnore
+    private String cardCustomParams;
+
+    /**
+     * 制卡批次号
+     */
+    @JSONField(serialize = false)
+    @JsonIgnore
+    private String batchNo;
+
+    /**
      * 所属软件信息
      */
     @JSONField(serialize = false)
@@ -121,9 +143,12 @@ public class SysCardVo extends SysCard {
 
     private String appName;
 
+    private BillType billType;
+
     public SysCardVo(SysCard v) {
         BeanUtils.copyProperties(v, this);
         this.appName = v.getApp().getAppName();
+        this.billType = v.getApp().getBillType();
     }
 
     public String getAppName() {

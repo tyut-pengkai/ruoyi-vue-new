@@ -1,11 +1,19 @@
 package com.ruoyi.web.controller.sale;
 
+import com.ruoyi.api.v1.api.noAuth.code.RechargeLoginCode;
+import com.ruoyi.api.v1.api.noAuth.user.RechargeCard;
+import com.ruoyi.api.v1.domain.Function;
+import com.ruoyi.api.v1.domain.vo.SysAppUserDeviceCodeVo;
+import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.annotation.RateLimiter;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
+import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.*;
@@ -26,13 +34,13 @@ import com.ruoyi.sale.service.ISysSaleOrderService;
 import com.ruoyi.sale.service.ISysSaleShopService;
 import com.ruoyi.system.domain.*;
 import com.ruoyi.system.mapper.*;
-import com.ruoyi.system.service.ISysNoticeService;
-import com.ruoyi.system.service.ISysPaymentService;
+import com.ruoyi.system.service.*;
 import com.ruoyi.web.controller.sale.vo.ChargeOrderVo;
 import com.ruoyi.web.controller.sale.vo.SaleAppVo;
 import com.ruoyi.web.controller.sale.vo.SaleCardTemplateVo;
 import com.ruoyi.web.controller.sale.vo.SaleOrderVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -40,6 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 销售Controller
@@ -74,7 +83,13 @@ public class SysSaleShopController extends BaseController {
     @Resource
     private ISysPaymentService sysPaymentService;
     @Resource
-    private SysSaleOrderController sysSaleOrderController;
+    private ISysAppUserService sysAppUserService;
+    @Resource
+    private ISysUserService sysUserService;
+    @Resource
+    private ISysAppUserDeviceCodeService sysAppUserDeviceCodeService;
+    @Resource
+    private ISysDeviceCodeService sysDeviceCodeService;
 
     private static final SnowflakeIdWorker sf = new SnowflakeIdWorker();
 
@@ -82,9 +97,9 @@ public class SysSaleShopController extends BaseController {
      * 查询软件列表
      */
     @GetMapping("/appList")
-    public TableDataInfo appList() {
+    public TableDataInfo appList(SysApp sysApp) {
         List<SaleAppVo> saleAppVoList = new ArrayList<>();
-        List<SysApp> appList = sysAppMapper.selectSysAppList(new SysApp());
+        List<SysApp> appList = sysAppMapper.selectSysAppList(sysApp);
         for (SysApp app : appList) {
             if (app.getAuthType().equals(AuthType.ACCOUNT)) {
                 SysCardTemplate ct = new SysCardTemplate();
@@ -498,4 +513,158 @@ public class SysSaleShopController extends BaseController {
         }
         return AjaxResult.success("0");
     }
+
+    /**
+     * 获取卡密信息
+     *
+     * @param cardNo
+     * @param cardPass
+     * @param queryType 1卡密 2单码
+     * @return
+     */
+    @GetMapping("/queryCard")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
+    public AjaxResult queryCard(@RequestParam("cardNo") String cardNo, @RequestParam(value = "cardPass", required = false) String cardPass, @RequestParam("queryType") int queryType) {
+        if (queryType == 1) {
+            SysCard sysCard = sysCardMapper.selectSysCardByCardNo(cardNo);
+            if (sysCard == null) {
+                throw new ServiceException("卡号或密码有误", 400);
+            }
+            if (!(StringUtils.isBlank(sysCard.getCardPass()) && StringUtils.isBlank(cardPass)) && !sysCard.getCardPass().equals(cardPass)) {
+                throw new ServiceException("卡号或密码有误", 400);
+            }
+            return AjaxResult.success(new SysCardVo(sysCard));
+        } else if (queryType == 2) {
+            SysLoginCode loginCode = sysLoginCodeMapper.selectSysLoginCodeByCardNo(cardNo);
+            if (loginCode == null) {
+                throw new ServiceException("查询的单码不存在", 400);
+            }
+            return AjaxResult.success(new SysLoginCodeVo(loginCode));
+        }
+        throw new ServiceException("未指定查询卡密类型", 400);
+    }
+
+    @GetMapping("/chargeCard")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
+    public AjaxResult chargeCard(@RequestParam("appId") long appId, @RequestParam("username") String username, @RequestParam(value = "password", required = false, defaultValue = "") String password,
+                                 @RequestParam("validPassword") String validPassword, @RequestParam("cardNo") String cardNo, @RequestParam(value = "cardPass", required = false) String cardPass,
+                                 @RequestParam("queryType") int queryType) {
+        SysApp app = sysAppMapper.selectSysAppByAppId(appId);
+        if (app == null) {
+            throw new ServiceException("软件不存在");
+        }
+        Function func = null;
+        if (queryType == 1) {
+            if ("1".equals(validPassword) && StringUtils.isBlank(password)) {
+                throw new ServiceException("您选择了校验密码但是未提供用户账户密码");
+            }
+            func = new RechargeCard();
+            func.setApp(app);
+            Map<String, String> params = new HashMap<>();
+            params.put("username", username);
+            params.put("password", password);
+            params.put("validPassword", validPassword);
+            params.put("cardNo", cardNo);
+            params.put("cardPassword", cardPass);
+            func.setParams(params);
+        } else if (queryType == 2) {
+            func = new RechargeLoginCode();
+            func.setApp(app);
+            Map<String, String> params = new HashMap<>();
+            params.put("loginCode", username);
+            params.put("newLoginCode", cardNo);
+            func.setParams(params);
+        }
+        if (func == null) {
+            throw new ServiceException("未指定充值续费类型", 400);
+        }
+        try {
+            String result = func.handle().toString();
+            if (app.getBillType() == BillType.TIME) {
+                return AjaxResult.success("充值成功，新的到期时间为：" + result);
+            } else if (app.getBillType() == BillType.POINT) {
+                return AjaxResult.success("充值成功，新的点数余额为：" + result);
+            } else {
+                throw new ServiceException("获取软件计费方式出错");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    @GetMapping("/queryBindDevice")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
+    public AjaxResult queryBindDevice(@RequestParam("appId") long appId, @RequestParam("username") String username,
+                                      @RequestParam(value = "password", required = false, defaultValue = "") String password, @RequestParam("queryType") int queryType) {
+        SysApp app = sysAppMapper.selectSysAppByAppId(appId);
+        if (app == null) {
+            throw new ServiceException("软件不存在");
+        }
+        List<SysAppUserDeviceCode> deviceCodeList = new ArrayList<>();
+        if (queryType == 1) {
+            SysUser user = sysUserService.selectUserByUserName(username);
+            if (user == null) {
+                throw new ServiceException("账号不存在");
+            }
+            SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndUserId(appId, user.getUserId());
+            if (appUser == null) {
+                throw new ServiceException("软件用户不存在");
+            }
+            deviceCodeList = sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserId(appUser.getAppUserId());
+        } else if (queryType == 2) {
+            SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(appId, username);
+            if (appUser == null) {
+                throw new ServiceException("软件用户不存在");
+            }
+            deviceCodeList = sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserId(appUser.getAppUserId());
+        }
+        List<SysAppUserDeviceCodeVo> result = deviceCodeList.stream().map(item -> {
+            item.setDeviceCode(sysDeviceCodeService.selectSysDeviceCodeByDeviceCodeId(item.getDeviceCodeId()));
+            return new SysAppUserDeviceCodeVo(item);
+        }).collect(Collectors.toList());
+        return AjaxResult.success(result).put("billType", app.getBillType()).put("reduceQuotaUnbind", app.getReduceQuotaUnbind());
+    }
+
+    @GetMapping("/unbindDevice")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @Transactional(rollbackFor = Exception.class)
+    public AjaxResult unbindDevice(@RequestParam("id") long id) {
+        SysAppUserDeviceCode sysAppUserDeviceCode = sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeById(id);
+        if (sysAppUserDeviceCode == null) {
+            throw new ServiceException("当前用户未绑定该设备码");
+        }
+        sysAppUserDeviceCodeService.deleteSysAppUserDeviceCodeById(id);
+        Long appUserId = sysAppUserDeviceCode.getAppUserId();
+        SysAppUser appUser = sysAppUserService.selectSysAppUserByAppUserId(appUserId);
+        if (appUser == null) {
+            throw new ServiceException("软件用户不存在");
+        }
+        SysApp sysApp = sysAppMapper.selectSysAppByAppId(appUser.getAppId());
+        Long p = sysApp.getReduceQuotaUnbind();
+        if (p == null || p <= 0) {
+            return AjaxResult.success();
+        }
+        boolean enableNegative = UserConstants.YES.equals(sysApp.getEnableNegative());
+        if (sysApp.getBillType() == BillType.TIME) {
+            Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), p);
+            Date nowDate = DateUtils.getNowDate();
+            if ((appUser.getExpireTime().after(nowDate) && newExpiredTime.after(nowDate)) || enableNegative) {
+                appUser.setExpireTime(newExpiredTime);
+                sysAppUserService.updateSysAppUser(appUser);
+            } else {
+                throw new ServiceException("软件用户剩余时间不足");
+            }
+        } else if (sysApp.getBillType() == BillType.POINT) {
+            BigDecimal point = BigDecimal.valueOf(p);
+            if (appUser.getPoint().compareTo(point) >= 0 || enableNegative) {
+                appUser.setPoint(appUser.getPoint().subtract(point));
+                sysAppUserService.updateSysAppUser(appUser);
+            } else {
+                throw new ServiceException("软件用户点数不足");
+            }
+        }
+        return AjaxResult.success();
+    }
+
 }

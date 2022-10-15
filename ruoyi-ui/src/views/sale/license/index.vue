@@ -6,16 +6,16 @@
     <el-card class="box-card" style="max-width: 90vw; margin-top: 15px">
       <div class="my-title">
         <img src="../../../assets/images/category.svg"/>&nbsp;
-        <span>新增授权</span>
+        <span>激活授权</span>
       </div>
       <el-tabs style="margin-top: 20px">
-        <el-tab-pane label="通过网站域名授权（公网）">
+        <el-tab-pane label="通过网站域名激活（公网）">
           <el-alert :closable="false" type="info">
             <p>
-              以下方式可二选一，v0.0.9版本及以上推荐【在线授权】方式，否则请选择【下载授权】方式
+              以下方式可二选一，v0.0.9版本及以上推荐【在线激活】方式，否则请选择【下载授权】方式
             </p>
             <p>
-              点击【在线授权】后您的服务器将自动获得授权（授权绑定服务器，可更换域名）
+              点击【在线激活】后您的服务器将自动获得授权（授权绑定服务器，可更换域名）
             </p>
             <p>
               点击【下载授权】后您将获得授权文件(.lic)，请将授权文件重命名为license.lic并覆盖红叶验证安装目录内的同名文件即可（授权绑定服务器，可更换域名）
@@ -54,14 +54,14 @@
                   type="primary"
                   :loading="injectLoading"
                   @click="submitForm('formByWebUrl', 1)"
-                >在线授权
+                >在线激活(推荐)
                 </el-button>
                 <!-- <el-button @click="resetForm('formByWebUrl')">清空输入</el-button> -->
               </div>
             </el-form>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="通过设备码授权（内网）">
+        <el-tab-pane label="通过设备码激活（内网）">
           <el-alert :closable="false" type="info">
             <p>
               点击【下载授权】后您将获得授权文件(.lic)，请将授权文件重命名为license.lic并覆盖红叶验证安装目录内的同名文件即可（授权绑定服务器，可更换域名）
@@ -158,7 +158,7 @@ export default {
         type: type,
       };
       this.$modal
-        .confirm("是否确认授权？")
+        .confirm("是否确认激活授权？")
         .then(() => {
           if (type == 0) {
             this.exportLoading = true;
@@ -188,7 +188,7 @@ export default {
         deviceCode: this.formByDeviceCode.deviceCode,
       };
       this.$modal
-        .confirm("是否确认授权？")
+        .confirm("是否确认下载授权？")
         .then(() => {
           this.exportLoading = true;
           return genLicenseFileByDeviceCode(queryParams);
