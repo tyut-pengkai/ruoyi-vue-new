@@ -29,6 +29,7 @@ const state = {
   websiteLogo: '',
   safeEntrance: '',
   pageSize: '10',
+  icp: '',
 }
 const mutations = {
   CHANGE_SETTING: (state, {
@@ -91,7 +92,7 @@ const actions = {
   GetSafeEntrance({
     commit,
     state
-  }) {
+                  }) {
     return new Promise((resolve, reject) => {
       getWebsiteConfig().then(res => {
         commit('SET_SAFE_ENTRANCE', res.data.isSafeEntrance)
@@ -100,6 +101,12 @@ const actions = {
         reject(error)
       })
     })
+  },
+  // 设置网站备案号
+  setIcp({
+           commit
+         }, icp) {
+    state.icp = icp
   },
 }
 

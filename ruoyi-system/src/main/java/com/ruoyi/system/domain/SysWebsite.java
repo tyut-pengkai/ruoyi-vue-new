@@ -91,6 +91,12 @@ public class SysWebsite extends BaseEntity {
     @TableField(exist = false)
     private char isSafeEntrance;
 
+    /**
+     * ICP备案
+     */
+    @Excel(name = "备案号")
+    private String icp;
+
     public Long getId() {
         return id;
     }
@@ -203,6 +209,14 @@ public class SysWebsite extends BaseEntity {
         this.pageSize = pageSize;
     }
 
+    public String getIcp() {
+        return icp;
+    }
+
+    public void setIcp(String icp) {
+        this.icp = icp;
+    }
+
     @Override
     public String toString() {
         return "SysWebsite{" +
@@ -219,6 +233,7 @@ public class SysWebsite extends BaseEntity {
                 ", status='" + status + '\'' +
                 ", safeEntrance='" + safeEntrance + '\'' +
                 ", isSafeEntrance=" + isSafeEntrance +
+                ", icp=" + icp +
                 '}';
     }
 }

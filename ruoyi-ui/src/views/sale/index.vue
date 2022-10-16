@@ -107,9 +107,10 @@
         <div class="my-footer">
           <span>
             {{ copyright }}
-            <!-- (<a href="https://beian.miit.gov.cn/"
-              >蜀ICP备2022018576号</a
-            >) -->
+            <span v-show="icp"
+            >(<a href="https://beian.miit.gov.cn/">{{ icp }}</a
+            >)</span
+            >
           </span>
         </div>
       </el-link>
@@ -135,6 +136,7 @@ export default {
       title: "在线商城",
       drawer: false,
       isLicenseServer: false,
+      icp: "",
     };
   },
   created() {
@@ -152,6 +154,9 @@ export default {
       if (this.$store.state.settings.websiteLogo) {
         this.logo =
           process.env.VUE_APP_BASE_API + this.$store.state.settings.websiteLogo;
+      }
+      if (this.$store.state.settings.icp) {
+        this.icp = this.$store.state.settings.icp;
       }
       if (this.$store.state.settings.websiteFavicon) {
         var faviconurl = this.$store.state.settings.websiteFavicon; //这里可以是动态的获取的favicon的地址

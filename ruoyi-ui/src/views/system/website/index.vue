@@ -63,6 +63,9 @@
           <el-form-item label="网站描述">
             <el-input v-model="form.description"></el-input>
           </el-form-item>
+          <el-form-item label="网站备案号">
+            <el-input v-model="form.icp"></el-input>
+          </el-form-item>
           <!-- <el-form-item label="网站状态">
               <el-radio-group v-model="form.status">
               <el-radio
