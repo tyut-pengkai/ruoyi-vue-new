@@ -137,7 +137,7 @@ public class SysAgentCardController extends BaseController {
                 userService.updateUserBalance(change);
             }
         }
-        List<SysCard> sysCardList = sysCardTemplateService.genSysCardBatch(sysCardTemplate, sysCard.getGenQuantity(), sysCard.getOnSale(), UserConstants.YES, sysCard.getRemark());
+        List<SysCard> sysCardList = sysCardTemplateService.genSysCardBatch(sysCardTemplate, sysCard.getGenQuantity(), UserConstants.NO, UserConstants.YES, sysCard.getRemark());
         List<Map<String, String>> resultList = new ArrayList<>();
         for (SysCard item : sysCardList) {
             Map<String, String> map = new HashMap<>();

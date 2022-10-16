@@ -135,7 +135,7 @@ public class SysAgentLoginCodeController extends BaseController {
             // 扣款
             userService.updateUserBalance(change);
         }
-        List<SysLoginCode> sysLoginCodes = sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), sysLoginCode.getOnSale(), UserConstants.YES, sysLoginCode.getRemark());
+        List<SysLoginCode> sysLoginCodes = sysLoginCodeTemplateService.genSysLoginCodeBatch(sysLoginCodeTemplate, sysLoginCode.getGenQuantity(), UserConstants.NO, UserConstants.YES, sysLoginCode.getRemark());
         List<Map<String, String>> resultList = new ArrayList<>();
         for (SysLoginCode item : sysLoginCodes) {
             Map<String, String> map = new HashMap<>();
