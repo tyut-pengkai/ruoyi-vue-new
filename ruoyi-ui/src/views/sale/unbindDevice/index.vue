@@ -78,7 +78,7 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="充值到的登录码" prop="loginCode">
+              <el-form-item label="登录码" prop="loginCode">
                 <el-input
                   v-model="formLoginCode.loginCode"
                   clearable
