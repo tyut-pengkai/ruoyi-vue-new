@@ -16,6 +16,7 @@
 		<result property="idxUrl"    column="idx_url"    />
 		<result property="freeQuotaReg"    column="free_quota_reg"    />
 		<result property="reduceQuotaUnbind"    column="reduce_quota_unbind"    />
+		<result property="enableNegative" column="enable_negative"/>
 		<result property="authType"    column="auth_type"    />
 		<result property="billType"    column="bill_type"    />
 		<result property="dataInEnc"    column="data_in_enc"    />
@@ -68,6 +69,7 @@
 			   a.idx_url,
 			   a.free_quota_reg,
 			   a.reduce_quota_unbind,
+			   a.enable_negative,
 			   a.auth_type,
 			   a.bill_type,
 			   a.data_in_enc,
@@ -182,6 +184,7 @@
 			<if test="idxUrl != null">idx_url,</if>
 			<if test="freeQuotaReg != null">free_quota_reg,</if>
 			<if test="reduceQuotaUnbind != null">reduce_quota_unbind,</if>
+			<if test="enableNegative != null">enable_negative,</if>
 			<if test="authType != null">auth_type,</if>
 			<if test="billType != null">bill_type,</if>
 			<if test="dataInEnc != null">data_in_enc,</if>
@@ -226,6 +229,7 @@
 			<if test="idxUrl != null">#{idxUrl},</if>
 			<if test="freeQuotaReg != null">#{freeQuotaReg},</if>
 			<if test="reduceQuotaUnbind != null">#{reduceQuotaUnbind},</if>
+			<if test="enableNegative != null">#{enableNegative},</if>
 			<if test="authType != null">#{authType},</if>
 			<if test="billType != null">#{billType},</if>
 			<if test="dataInEnc != null">#{dataInEnc},</if>
@@ -273,6 +277,7 @@
 			<if test="idxUrl != null">idx_url = #{idxUrl},</if>
 			<if test="freeQuotaReg != null">free_quota_reg = #{freeQuotaReg},</if>
 			<if test="reduceQuotaUnbind != null">reduce_quota_unbind = #{reduceQuotaUnbind},</if>
+			<if test="enableNegative != null">enable_negative = #{enableNegative},</if>
 <!--			<if test="authType != null">auth_type = #{authType},</if>-->
 <!--			<if test="billType != null">bill_type = #{billType},</if>-->
 			<if test="dataInEnc != null">data_in_enc = #{dataInEnc},</if>

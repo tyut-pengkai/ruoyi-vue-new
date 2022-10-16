@@ -540,20 +540,23 @@
                   </el-form-item>
                 </el-col>
               </el-form-item>
-              <el-form-item label="绑定模式" prop="bindType">
-                <el-select v-model="form.bindType" placeholder="请选择绑定模式">
-                  <el-option
-                    v-for="dict in dict.type.sys_bind_type"
-                    :key="dict.value"
-                    :label="dict.label"
-                    :value="dict.value"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="软件主页" prop="idxUrl">
-                <el-input v-model="form.idxUrl" placeholder="请输入软件主页" />
-              </el-form-item>
+
               <el-form-item>
+                <el-col :span="12">
+                  <el-form-item label="绑定模式" prop="bindType">
+                    <el-select
+                      v-model="form.bindType"
+                      placeholder="请选择绑定模式"
+                    >
+                      <el-option
+                        v-for="dict in dict.type.sys_bind_type"
+                        :key="dict.value"
+                        :label="dict.label"
+                        :value="dict.value"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
                 <el-col :span="12">
                   <el-form-item label="首次登录赠送" prop="freeQuotaReg">
                     <span>
@@ -574,6 +577,11 @@
                     />
                   </el-form-item>
                 </el-col>
+              </el-form-item>
+              <el-form-item label="软件主页" prop="idxUrl">
+                <el-input v-model="form.idxUrl" placeholder="请输入软件主页"/>
+              </el-form-item>
+              <el-form-item>
                 <el-col :span="12">
                   <el-form-item label="换绑设备扣除" prop="reduceQuotaUnbind">
                     <span>
@@ -592,6 +600,32 @@
                       controls-position="right"
                       :min="0"
                     />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="是否允许扣到负数" prop="enableNegative">
+                    <span>
+                      <el-tooltip
+                        content="换绑设备扣减时间或点数，是否允许用户过期(计时模式)或余额为负数(计点模式)"
+                        placement="top"
+                      >
+                        <i
+                          class="el-icon-question"
+                          style="margin-left: -12px; margin-right: 10px"
+                        ></i>
+                      </el-tooltip>
+                    </span>
+                    <el-select
+                      v-model="form.enableNegative"
+                      placeholder="请选择是否允许用户过期(计时模式)或余额为负数(计点模式)"
+                    >
+                      <el-option
+                        v-for="dict in dict.type.sys_yes_no"
+                        :key="dict.value"
+                        :label="dict.label"
+                        :value="dict.value"
+                      ></el-option>
+                    </el-select>
                   </el-form-item>
                 </el-col>
               </el-form-item>
@@ -950,7 +984,7 @@
                       <el-form-item
                         label="试用有效时间内重复登录不增加试用次数"
                         prop="notAddTrialTimesInTrialTime"
-                        style="margin-top:5px"
+                        style="margin-top: 5px"
                       >
                         <el-switch
                           v-model="form.notAddTrialTimesInTrialTime"

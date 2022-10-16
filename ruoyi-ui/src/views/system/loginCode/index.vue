@@ -124,6 +124,21 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="是否代理制卡" prop="isAgent">
+        <el-select
+          v-model="queryParams.isAgent"
+          clearable
+          placeholder="请选择是否代理制卡"
+          size="small"
+        >
+          <el-option
+            v-for="dict in dict.type.sys_yes_no"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="单码状态" prop="status">
         <el-select
           v-model="queryParams.status"
@@ -155,8 +170,7 @@
           size="mini"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
           >重置</el-button
         >
@@ -375,7 +389,7 @@
       </el-table-column>
       <el-table-column label="是否上架" align="center" prop="onSale">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale" />
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale"/>
         </template>
       </el-table-column>
       <el-table-column label="是否已用" align="center" prop="isCharged">
@@ -383,6 +397,14 @@
           <dict-tag
             :options="dict.type.sys_yes_no"
             :value="scope.row.isCharged"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="代理制卡" prop="isAgent">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_yes_no"
+            :value="scope.row.isAgent"
           />
         </template>
       </el-table-column>
@@ -690,6 +712,23 @@
             </el-form-item> -->
           </el-col>
           <el-col :span="12">
+            <el-form-item label="是否代理制卡" prop="isAgent">
+              <el-select
+                v-model="form.isAgent"
+                placeholder="请选择是否代理制卡"
+              >
+                <el-option
+                  v-for="dict in dict.type.sys_yes_no"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item prop="">
+          <el-col :span="12">
             <el-form-item label="使用日期" prop="chargeTime">
               <el-date-picker
                 v-model="form.chargeTime"
@@ -735,9 +774,8 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="最后更新" prop="updateBy">{{
-                  form.updateBy
-                }}
+              <el-form-item label="最后更新" prop="updateBy"
+              >{{ form.updateBy }}
               </el-form-item>
               <el-form-item label="更新时间" prop="updateTime"
               >{{ form.updateTime }}
@@ -995,6 +1033,7 @@ export default {
         isSold: null,
         onSale: null,
         isCharged: null,
+        isAgent: null,
         status: null,
       },
       // 表单参数
@@ -1014,13 +1053,20 @@ export default {
           { required: true, message: "过期时间不能为空", trigger: "blur" },
         ],
         isSold: [
-          { required: true, message: "是否售出不能为空", trigger: "change" },
+          {required: true, message: "是否售出不能为空", trigger: "change"},
         ],
         onSale: [
           {required: true, message: "是否上架不能为空", trigger: "change"},
         ],
         isCharged: [
           {required: true, message: "是否被充值不能为空", trigger: "change"},
+        ],
+        isAgent: [
+          {
+            required: true,
+            message: "是否代理制卡不能为空",
+            trigger: "change",
+          },
         ],
         status: [
           {required: true, message: "单码状态不能为空", trigger: "blur"},
