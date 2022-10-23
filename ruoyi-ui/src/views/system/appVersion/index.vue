@@ -265,6 +265,17 @@
         <el-form-item>
           <el-col :span="12">
             <el-form-item label="版本名称" prop="versionName">
+              <span>
+                <el-tooltip
+                  content="版本名称可随意填写，如测试版v1.0、正式版2.0、国庆特别版等，用于软件显示"
+                  placement="top"
+                >
+                  <i
+                    class="el-icon-question"
+                    style="margin-left: -12px; margin-right: 10px"
+                  ></i>
+                </el-tooltip>
+              </span>
               <el-input
                 v-model="form.versionName"
                 placeholder="请输入版本名称"
@@ -274,6 +285,17 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="版本号" prop="versionNo">
+              <span>
+                <el-tooltip
+                  content="版本号用于升级，只限填写整数，同一软件版本号不可重复，版本越新，数字应该越大，建议使用发布时间，如20220101"
+                  placement="top"
+                >
+                  <i
+                    class="el-icon-question"
+                    style="margin-left: -12px; margin-right: 10px"
+                  ></i>
+                </el-tooltip>
+              </span>
               <el-input-number
                 v-model="form.versionNo"
                 :min="1"
