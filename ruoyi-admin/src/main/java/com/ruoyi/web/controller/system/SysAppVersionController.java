@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
@@ -74,6 +75,9 @@ public class SysAppVersionController extends BaseController {
     @Log(title = "软件版本信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysAppVersion sysAppVersion) {
+        if (UserConstants.NOT_UNIQUE.equals(sysAppVersionService.checkVersionNoUnique(sysAppVersion.getVersionNo(), sysAppVersion.getAppId(), null))) {
+            return AjaxResult.error("新增软件版本'" + sysAppVersion.getVersionName() + "'失败，版本号'" + sysAppVersion.getVersionNo() + "'已存在");
+        }
         sysAppVersion.setCreateBy(getUsername());
         return toAjax(sysAppVersionService.insertSysAppVersion(sysAppVersion));
     }
@@ -85,6 +89,9 @@ public class SysAppVersionController extends BaseController {
     @Log(title = "软件版本信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAppVersion sysAppVersion) {
+        if (UserConstants.NOT_UNIQUE.equals(sysAppVersionService.checkVersionNoUnique(sysAppVersion.getVersionNo(), sysAppVersion.getAppId(), sysAppVersion.getAppVersionId()))) {
+            return AjaxResult.error("新增软件版本'" + sysAppVersion.getVersionName() + "'失败，版本号'" + sysAppVersion.getVersionNo() + "'已存在");
+        }
         sysAppVersion.setUpdateBy(getUsername());
         return toAjax(sysAppVersionService.updateSysAppVersion(sysAppVersion));
     }

@@ -88,4 +88,11 @@ public interface ISysAppVersionService {
      * @return
      */
     public String quickAccess(MultipartFile file, Long versionId, boolean updateMd5, String apkOper);
+
+    /**
+     * 检查软件名称唯一性
+     *
+     * @return
+     */
+    public String checkVersionNoUnique(Long versionNo, Long appId, Long appVersionId);
 }

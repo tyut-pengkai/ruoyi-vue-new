@@ -68,7 +68,7 @@
 
     <select id="selectSysAppVersionByAppIdAndVersion" resultMap="SysAppVersionResult">
         <include refid="selectSysAppVersionVo"/>
-        where app_id = #{appId} and version_no = #{appVersion}
+        where app_id = #{appId} and version_no = #{appVersion} and del_flag = 0
     </select>
 
     <select id="selectLatestVersionByAppId" resultMap="SysAppVersionResult">
@@ -182,4 +182,10 @@
             #{appVersionId}
         </foreach>
     </delete>
+
+    <select id="checkAppVersionNoUnique" resultType="int">
+        select count(1) from sys_app_version where version_no = #{versionNo} and app_id = #{appId} and del_flag = 0
+        <if test="appVersionId != null and appVersionId != ''">and app_version_id != #{appVersionId}</if>
+        limit 1
+    </select>
 </mapper>

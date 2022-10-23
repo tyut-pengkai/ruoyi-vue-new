@@ -4,6 +4,7 @@ import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.RuoYiConfig;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
 import com.ruoyi.common.utils.AesCbcPKCS5PaddingUtil;
@@ -330,6 +331,20 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
 
     private String rename(String appName, String filename, String versionName, String remark) {
         return "__" + appName + "_" + (versionName.replaceAll("\\.", "_")) + (StringUtils.isNotBlank(remark) ? "_" + remark : "") + "." + FileNameUtil.extName(filename);
+    }
+
+    /**
+     * 检查软件名称唯一性
+     *
+     * @return
+     */
+    @Override
+    public String checkVersionNoUnique(Long versionNo, Long appId, Long appVersionId) {
+        int count = sysAppVersionMapper.checkAppVersionNoUnique(versionNo, appId, appVersionId);
+        if (count > 0) {
+            return UserConstants.NOT_UNIQUE;
+        }
+        return UserConstants.UNIQUE;
     }
 
     @Data

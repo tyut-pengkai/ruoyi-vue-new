@@ -167,7 +167,7 @@
 
     <select id="selectSysAppByAppKey" parameterType="String" resultMap="SysAppResult">
         <include refid="selectSysAppVo"/>
-		where a.del_flag = '0' and app_key = #{appKey}
+		where a.del_flag = '0' and app_key = #{appKey} and del_flag = 0
 	</select>
 
     <insert id="insertSysApp" parameterType="SysApp">
@@ -343,7 +343,7 @@
 	</delete>
 
 	<select id="checkAppNameUnique" resultType="int">
-		select count(1) from sys_app where app_name = #{appName}
+		select count(1) from sys_app where app_name = #{appName} and del_flag = 0
 		<if test="appId != null and appId != ''">and app_id != #{appId}</if>
 		limit 1
 	</select>

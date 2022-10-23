@@ -82,4 +82,11 @@ public interface SysAppVersionMapper {
      * @return 强制更新到的最新版本信息
      */
     public SysAppVersion selectLatestVersionForceUpdateByAppId(Long appId);
+
+    /**
+     * 检查软件名称唯一性
+     *
+     * @return
+     */
+    public int checkAppVersionNoUnique(@Param("versionNo") Long versionNo, @Param("appId") Long appId, @Param("appVersionId") Long appVersionId);
 }
