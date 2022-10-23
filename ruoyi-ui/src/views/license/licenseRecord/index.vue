@@ -306,7 +306,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: this.$store.state.settings.pageSize,
         webUrl: null,
         deviceCode: null,
         name: null,

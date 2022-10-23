@@ -374,7 +374,9 @@ public class ValidUtils {
         if (deviceCode != null) {
             Set<Long> onlineListM = new HashSet<>();
             for (LoginUser user : onlineListU) {
-                onlineListM.add(user.getDeviceCode().getDeviceCodeId());
+                if (user.getDeviceCode() != null) {
+                    onlineListM.add(user.getDeviceCode().getDeviceCodeId());
+                }
             }
             Integer mixM = MyUtils.getEffectiveLoginLimitM(app, appUser);
             if (mixM != -1 && mixM <= onlineListM.size() && !onlineListM.contains(deviceCode.getDeviceCodeId())) {

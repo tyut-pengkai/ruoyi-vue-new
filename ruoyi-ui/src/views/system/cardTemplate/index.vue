@@ -85,7 +85,7 @@
           />
         </el-select>
       </el-form-item> -->
-      <el-form-item label="卡类状态" prop="status">
+      <!-- <el-form-item label="卡类状态" prop="status">
         <el-select
           v-model="queryParams.status"
           placeholder="请选择卡类状态"
@@ -99,7 +99,7 @@
             :value="dict.value"
           />
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="自动制卡" prop="enableAutoGen">
         <el-select
           v-model="queryParams.enableAutoGen"
@@ -307,14 +307,14 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="卡类状态" align="center" prop="status">
+      <!-- <el-table-column label="卡类状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_normal_disable"
             :value="scope.row.status"
           />
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <!-- <el-table-column label="创建者" align="center" prop="createBy" /> -->
       <el-table-column label="卡密面值" align="center" prop="quota">
         <template slot-scope="scope">
@@ -541,7 +541,7 @@
         <el-divider></el-divider>
         <updown>
           <el-form-item>
-            <el-col :span="12">
+            <!-- <el-col :span="12">
               <el-form-item label="卡类状态" label-width="80px">
                 <el-radio-group v-model="form.status">
                   <el-radio
@@ -552,7 +552,7 @@
                   </el-radio>
                 </el-radio-group>
               </el-form-item>
-            </el-col>
+            </el-col> -->
             <el-col :span="12">
               <el-form-item label="是否上架" prop="onSale" label-width="80px">
                 <el-select v-model="form.onSale" placeholder="请选择是否上架">
@@ -949,17 +949,17 @@ export default {
           { required: false, message: "密码正则不能为空", trigger: "blur" },
         ],
         chargeRule: [
-          { required: true, message: "充值规则不能为空", trigger: "change" },
+          {required: true, message: "充值规则不能为空", trigger: "change"},
         ],
         onSale: [
-          { required: true, message: "是否上架不能为空", trigger: "change" },
+          {required: true, message: "是否上架不能为空", trigger: "change"},
         ],
         firstStock: [
-          { required: true, message: "优先库存不能为空", trigger: "change" },
+          {required: true, message: "优先库存不能为空", trigger: "change"},
         ],
-        status: [
-          { required: true, message: "卡类状态不能为空", trigger: "blur" },
-        ],
+        // status: [
+        //   { required: true, message: "卡类状态不能为空", trigger: "blur" },
+        // ],
         effectiveDuration: [
           {required: true, message: "有效时长不能为空", trigger: "blur"},
         ],

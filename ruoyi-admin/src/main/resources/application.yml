@@ -213,7 +213,7 @@ swagger:
 # 证书
 license:
   licenseServer:
-    enable: true
+    enable: false
     appKey: LMudrZH35qeJwSqk81s4ITUfHU0RqSZr
     appVersionNo: 1
   subject: ${ruoyi.name} #证书主题

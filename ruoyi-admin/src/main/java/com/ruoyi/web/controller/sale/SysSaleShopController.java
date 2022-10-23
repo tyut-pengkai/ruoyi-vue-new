@@ -127,6 +127,7 @@ public class SysSaleShopController extends BaseController {
         if (app.getAuthType() == AuthType.ACCOUNT) {
             SysCardTemplate sysCardTemplate = new SysCardTemplate();
             sysCardTemplate.setAppId(appId);
+            sysCardTemplate.setOnSale(UserConstants.YES);
             List<SysCardTemplate> list = sysCardTemplateMapper.selectSysCardTemplateList(sysCardTemplate);
             for (SysCardTemplate ct : list) {
                 int cardCount;
@@ -143,6 +144,7 @@ public class SysSaleShopController extends BaseController {
         } else if (app.getAuthType() == AuthType.LOGIN_CODE) {
             SysLoginCodeTemplate sysLoginCodeTemplate = new SysLoginCodeTemplate();
             sysLoginCodeTemplate.setAppId(appId);
+            sysLoginCodeTemplate.setOnSale(UserConstants.YES);
             List<SysLoginCodeTemplate> list = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateList(sysLoginCodeTemplate);
             for (SysLoginCodeTemplate ct : list) {
                 int cardCount;

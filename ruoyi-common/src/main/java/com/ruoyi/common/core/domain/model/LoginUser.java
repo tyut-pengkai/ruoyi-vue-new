@@ -319,6 +319,11 @@ public class LoginUser implements UserDetails
         this.appVersion = appVersion;
     }
 
+    /**
+     * 需要判空
+     *
+     * @return
+     */
     public SysDeviceCode getDeviceCode() {
         return deviceCode;
     }

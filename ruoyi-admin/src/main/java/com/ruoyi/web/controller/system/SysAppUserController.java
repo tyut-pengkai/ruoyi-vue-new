@@ -69,7 +69,9 @@ public class SysAppUserController extends BaseController {
                 onlineListMMap.put(appUserId, new HashSet<>());
             }
             for (LoginUser user : onlineUList) {
-                onlineListMMap.get(appUserId).add(user.getDeviceCode().getDeviceCodeId());
+                if (user.getDeviceCode() != null) {
+                    onlineListMMap.get(appUserId).add(user.getDeviceCode().getDeviceCodeId());
+                }
             }
         }
 

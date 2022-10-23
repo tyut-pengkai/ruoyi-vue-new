@@ -88,7 +88,9 @@ public class SysDeviceCodeVo extends SysDeviceCode {
     private String delFlag;
 
     public SysDeviceCodeVo(SysDeviceCode v) {
-        BeanUtils.copyProperties(v, this);
+        if (v != null) {
+            BeanUtils.copyProperties(v, this);
+        }
     }
 
 }

@@ -146,7 +146,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item> -->
-      <el-form-item label="类别状态" prop="status">
+      <!-- <el-form-item label="类别状态" prop="status">
         <el-select
           v-model="queryParams.status"
           clearable
@@ -160,7 +160,7 @@
             :value="dict.value"
           />
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="自动生成" prop="enableAutoGen">
         <el-select
           v-model="queryParams.enableAutoGen"
@@ -325,14 +325,14 @@
           />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="类别状态" prop="status">
+      <!-- <el-table-column align="center" label="类别状态" prop="status">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_normal_disable"
             :value="scope.row.status"
           />
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column align="center" label="单码面值" prop="quota">
         <template slot-scope="scope">
           <span>{{
@@ -556,7 +556,7 @@
         <el-divider></el-divider>
         <updown>
           <el-form-item>
-            <el-col :span="12">
+            <!-- <el-col :span="12">
               <el-form-item label="类别状态" label-width="80px">
                 <el-radio-group v-model="form.status">
                   <el-radio
@@ -567,7 +567,7 @@
                   >
                 </el-radio-group>
               </el-form-item>
-            </el-col>
+            </el-col> -->
             <el-col :span="12">
               <el-form-item label="是否上架" prop="onSale" label-width="80px">
                 <el-select v-model="form.onSale" placeholder="请选择是否上架">
@@ -882,17 +882,17 @@ export default {
           { required: false, message: "单码正则不能为空", trigger: "blur" },
         ],
         onSale: [
-          { required: true, message: "是否上架不能为空", trigger: "change" },
+          {required: true, message: "是否上架不能为空", trigger: "change"},
         ],
         firstStock: [
-          { required: true, message: "优先库存不能为空", trigger: "change" },
+          {required: true, message: "优先库存不能为空", trigger: "change"},
         ],
         effectiveDuration: [
-          { required: true, message: "有效时长不能为空", trigger: "blur" },
+          {required: true, message: "有效时长不能为空", trigger: "blur"},
         ],
-        status: [
-          {required: true, message: "单码类别状态不能为空", trigger: "blur"},
-        ],
+        // status: [
+        //   { required: true, message: "单码类别状态不能为空", trigger: "blur" },
+        // ],
         enableAutoGen: [
           {
             required: true,
