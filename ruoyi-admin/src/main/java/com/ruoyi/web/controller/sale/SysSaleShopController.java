@@ -90,6 +90,8 @@ public class SysSaleShopController extends BaseController {
     private ISysAppUserDeviceCodeService sysAppUserDeviceCodeService;
     @Resource
     private ISysDeviceCodeService sysDeviceCodeService;
+    @Resource
+    private ISysWebsiteService sysWebsiteService;
 
     private static final SnowflakeIdWorker sf = new SnowflakeIdWorker();
 
@@ -330,7 +332,12 @@ public class SysSaleShopController extends BaseController {
         ssoi.setTemplateType(null); // 1卡类 2登录码类
         ssoi.setTemplateId(null);
         ssoi.setNum(1);
-        ssoi.setTitle("[余额充值]账号：" + getUsername() + "，" + chargeOrderVo.getAmount() + "元");
+        String prefix = "";
+        SysWebsite website = sysWebsiteService.getById(1);
+        if (website != null && website.getShortName() != null) {
+            prefix = website.getShortName() + "-";
+        }
+        ssoi.setTitle("[" + prefix + "余额充值]账号：" + getUsername() + "，" + chargeOrderVo.getAmount() + "元");
         ssoi.setPrice(chargeOrderVo.getAmount());
         ssoi.setTotalFee(totalFee);
         ssoi.setDiscountRule(null);
