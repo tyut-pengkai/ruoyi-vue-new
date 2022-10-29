@@ -177,25 +177,36 @@ public class SysAgentCardController extends BaseController {
     @GetMapping("/cardTemplate/listAll")
     public TableDataInfo list(SysCardTemplate sysCardTemplate) {
         List<SysCardTemplate> list = new ArrayList<>();
-        if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            Set<Long> appIds = new HashSet<>();
-            // 获取我的代理ID
-            SysAgent agent = sysAgentService.selectSysAgentByUserId(getLoginUser().getUserId());
-            // 获取代理的所有卡类
-            List<SysAgentItem> agentItems = sysAgentItemService.selectSysAgentItemByAgentId(agent.getAgentId());
-            // 获取所有卡类信息
-            for (SysAgentItem item : agentItems) {
-                if (item.getTemplateType() == TemplateType.CHARGE_CARD) {
-                    SysCardTemplate template = sysCardTemplateService.selectSysCardTemplateByTemplateId(item.getTemplateId());
-                    if (!appIds.contains(template.getTemplateId())) {
-                        template.setAgentPrice(item.getAgentPrice());
-                        list.add(template);
-                        appIds.add(template.getTemplateId());
+        if (sysCardTemplate.getAppId() != null) {
+            if (!permissionService.hasAnyRoles("sadmin,admin")) {
+                Set<Long> appIds = new HashSet<>();
+                // 获取我的代理ID
+                SysAgent agent = sysAgentService.selectSysAgentByUserId(getLoginUser().getUserId());
+                if (agent != null) {
+                    // 获取代理的所有卡类
+                    List<SysAgentItem> agentItems = sysAgentItemService.selectSysAgentItemByAgentId(agent.getAgentId());
+                    // 获取所有卡类信息
+                    for (SysAgentItem item : agentItems) {
+                        if (item.getTemplateType() == TemplateType.CHARGE_CARD) {
+                            SysCardTemplate template = sysCardTemplateService.selectSysCardTemplateByTemplateId(item.getTemplateId());
+                            if (sysCardTemplate.getAppId() != null && !Objects.equals(template.getAppId(), sysCardTemplate.getAppId())) {
+                                continue;
+                            }
+                            if (!appIds.contains(template.getTemplateId())) {
+                                template.setAgentPrice(item.getAgentPrice());
+                                list.add(template);
+                                appIds.add(template.getTemplateId());
+                            }
+                        }
                     }
                 }
+            } else {
+                List<SysCardTemplate> templates = sysCardTemplateService.selectSysCardTemplateList(sysCardTemplate);
+                for (SysCardTemplate template : templates) {
+                    template.setAgentPrice(BigDecimal.ZERO);
+                }
+                list.addAll(templates);
             }
-        } else {
-            list.addAll(sysCardTemplateService.selectSysCardTemplateList(sysCardTemplate));
         }
         return getDataTable(list);
     }

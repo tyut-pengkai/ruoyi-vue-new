@@ -48,7 +48,7 @@ public class SysAgentAppController extends BaseController {
     /**
      * 查询软件列表
      */
-    @PreAuthorize("@ss.hasRole('agent')")
+    @PreAuthorize("@ss.hasAnyRoles('agent,admin,sadmin')")
     @GetMapping("/listAll")
     public TableDataInfo listAll(SysApp sysApp) {
         List<SysApp> list = new ArrayList<>();

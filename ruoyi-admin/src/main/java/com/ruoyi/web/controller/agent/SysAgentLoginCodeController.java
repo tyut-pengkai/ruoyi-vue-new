@@ -174,25 +174,36 @@ public class SysAgentLoginCodeController extends BaseController {
     @GetMapping("/loginCodeTemplate/listAll")
     public TableDataInfo listAll(SysLoginCodeTemplate sysLoginCodeTemplate) {
         List<SysLoginCodeTemplate> list = new ArrayList<>();
-        if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            Set<Long> appIds = new HashSet<>();
-            // 获取我的代理ID
-            SysAgent agent = sysAgentService.selectSysAgentByUserId(getLoginUser().getUserId());
-            // 获取代理的所有卡类
-            List<SysAgentItem> agentItems = sysAgentItemService.selectSysAgentItemByAgentId(agent.getAgentId());
-            // 获取所有卡类信息
-            for (SysAgentItem item : agentItems) {
-                if (item.getTemplateType() == TemplateType.LOGIN_CODE) {
-                    SysLoginCodeTemplate template = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByTemplateId(item.getTemplateId());
-                    if (!appIds.contains(template.getTemplateId())) {
-                        template.setAgentPrice(item.getAgentPrice());
-                        list.add(template);
-                        appIds.add(template.getTemplateId());
+        if (sysLoginCodeTemplate.getAppId() != null) {
+            if (!permissionService.hasAnyRoles("sadmin,admin")) {
+                Set<Long> appIds = new HashSet<>();
+                // 获取我的代理ID
+                SysAgent agent = sysAgentService.selectSysAgentByUserId(getLoginUser().getUserId());
+                if (agent != null) {
+                    // 获取代理的所有卡类
+                    List<SysAgentItem> agentItems = sysAgentItemService.selectSysAgentItemByAgentId(agent.getAgentId());
+                    // 获取所有卡类信息
+                    for (SysAgentItem item : agentItems) {
+                        if (item.getTemplateType() == TemplateType.LOGIN_CODE) {
+                            SysLoginCodeTemplate template = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByTemplateId(item.getTemplateId());
+                            if (sysLoginCodeTemplate.getAppId() != null && !Objects.equals(template.getAppId(), sysLoginCodeTemplate.getAppId())) {
+                                continue;
+                            }
+                            if (!appIds.contains(template.getTemplateId())) {
+                                template.setAgentPrice(item.getAgentPrice());
+                                list.add(template);
+                                appIds.add(template.getTemplateId());
+                            }
+                        }
                     }
                 }
+            } else {
+                List<SysLoginCodeTemplate> templates = sysLoginCodeTemplateService.selectSysLoginCodeTemplateList(sysLoginCodeTemplate);
+                for (SysLoginCodeTemplate template : templates) {
+                    template.setAgentPrice(BigDecimal.ZERO);
+                }
+                list.addAll(templates);
             }
-        } else {
-            list.addAll(sysLoginCodeTemplateService.selectSysLoginCodeTemplateList(sysLoginCodeTemplate));
         }
         return getDataTable(list);
     }
