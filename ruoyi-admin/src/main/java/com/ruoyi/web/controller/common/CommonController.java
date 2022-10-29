@@ -671,6 +671,9 @@ public class CommonController {
             // 平台今日新增未激活充值卡数量
             int cardNoActiveToday = appViewMapper.queryCardNoActiveBetween(start, end);
             map.put("cardNoActiveToday", cardNoActiveToday);
+            // 平台今日新增登录码数量
+            int loginCodeToday = appViewMapper.queryLoginCodeTotalBetween(start, end);
+            map.put("loginCodeToday", loginCodeToday);
             // 平台今日新增激活登录码数量
             int loginCodeActiveToday = appViewMapper.queryLoginCodeActiveBetween(start, end);
             map.put("loginCodeActiveToday", loginCodeActiveToday);
