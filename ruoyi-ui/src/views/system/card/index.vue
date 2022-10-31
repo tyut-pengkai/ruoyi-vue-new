@@ -1093,18 +1093,18 @@ export default {
       formBatch: {},
       // 表单校验
       rules: {
-        appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
+        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
         cardName: [
-          { required: true, message: "卡名称不能为空", trigger: "blur" },
+          {required: true, message: "卡名称不能为空", trigger: "blur"},
         ],
-        cardNo: [{ required: true, message: "卡号不能为空", trigger: "blur" }],
-        cardPass: [
-          { required: true, message: "密码不能为空", trigger: "blur" },
-        ],
-        quota: [{ required: true, message: "额度不能为空", trigger: "blur" }],
-        price: [{ required: true, message: "价格不能为空", trigger: "blur" }],
+        cardNo: [{required: true, message: "卡号不能为空", trigger: "blur"}],
+        // cardPass: [
+        //   { required: true, message: "密码不能为空", trigger: "blur" },
+        // ],
+        quota: [{required: true, message: "额度不能为空", trigger: "blur"}],
+        price: [{required: true, message: "价格不能为空", trigger: "blur"}],
         expireTime: [
-          { required: true, message: "过期时间不能为空", trigger: "blur" },
+          {required: true, message: "过期时间不能为空", trigger: "blur"},
         ],
         isSold: [
           {required: true, message: "是否售出不能为空", trigger: "change"},

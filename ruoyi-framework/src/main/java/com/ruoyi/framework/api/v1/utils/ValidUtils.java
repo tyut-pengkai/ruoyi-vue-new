@@ -395,7 +395,7 @@ public class ValidUtils {
         List<LoginUser> onlineListU = new ArrayList<>();
         for (String key : keys) {
             LoginUser user = redisCache.getCacheObject(key);
-            if (user.getIfTrial()
+            if (user != null && user.getIfTrial()
                     && Objects.equals(appTrialUser.getLoginIp(), user.getAppTrialUser().getLoginIp())
                     && Objects.equals(appTrialUser.getDeviceCode(), user.getAppTrialUser().getDeviceCode())) {
                 onlineListU.add(user);
