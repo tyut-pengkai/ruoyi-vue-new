@@ -208,8 +208,11 @@ public class SysSaleShopController extends BaseController {
     @RateLimiter(limitType = LimitType.IP)
     public AjaxResult createSaleOrder(@RequestBody SaleOrderVo saleOrderVo) {
 
-        if (StringUtils.isAnyBlank(saleOrderVo.getContact(), saleOrderVo.getQueryPass())) {
-            throw new ServiceException("联系方式或查询密码不能为空", 400);
+//        if (StringUtils.isAnyBlank(saleOrderVo.getContact(), saleOrderVo.getQueryPass())) {
+//            throw new ServiceException("联系方式或查询密码不能为空", 400);
+//        }
+        if (StringUtils.isBlank(saleOrderVo.getContact())) {
+            throw new ServiceException("联系方式不能为空", 400);
         }
         Payment payment = PaymentDefine.paymentMap.get(saleOrderVo.getPayMode());
         if (payment == null) {
@@ -260,7 +263,7 @@ public class SysSaleShopController extends BaseController {
         sso.setPayMode(saleOrderVo.getPayMode());
         sso.setStatus(SaleOrderStatus.WAIT_PAY);
         sso.setContact(saleOrderVo.getContact());
-        sso.setQueryPass(saleOrderVo.getQueryPass());
+//        sso.setQueryPass(saleOrderVo.getQueryPass());
         sso.setCreateBy(null);
         sso.setPaymentTime(null);
         sso.setDeliveryTime(null);
@@ -425,7 +428,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @GetMapping("/getCardList")
-    public AjaxResult getCardList(@RequestParam("orderNo") String orderNo, @RequestParam("queryPass") String queryPass) {
+    public AjaxResult getCardList(@RequestParam("orderNo") String orderNo, @RequestParam(value = "queryPass", required = false) String queryPass) {
         if (orderNo == null) {
             throw new ServiceException("订单不存在", 400);
         }
@@ -436,9 +439,9 @@ public class SysSaleShopController extends BaseController {
         if (sso.getStatus() == null || sso.getStatus() == SaleOrderStatus.WAIT_PAY || sso.getStatus() == SaleOrderStatus.TRADE_CLOSED) {
             throw new ServiceException("订单未支付或已过期", 400);
         }
-        if (!sso.getQueryPass().equals(queryPass)) {
-            throw new ServiceException("查询密码有误", 400);
-        }
+//        if (!sso.getQueryPass().equals(queryPass)) {
+//            throw new ServiceException("查询密码有误", 400);
+//        }
 
         List<SysSaleOrderItem> itemList = sso.getSysSaleOrderItemList();
         List<SysSaleOrderItemVo> itemVoList = new ArrayList<>();

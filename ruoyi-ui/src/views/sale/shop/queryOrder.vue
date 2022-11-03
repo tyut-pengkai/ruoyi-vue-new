@@ -9,6 +9,25 @@
         <span>订单查询</span>
       </div>
       <el-tabs style="margin-top: 20px">
+        <el-tab-pane label="浏览器缓存查询">
+          <div style="max-width: 90vw; width: 500px; margin: 20px auto">
+            <el-form
+              ref="formQueryByCookie"
+              :model="formQueryByCookie"
+              :rules="rules"
+            >
+              <div align="center">
+                <el-button
+                  round
+                  type="primary"
+                  @click="submitForm('formQueryByCookie')"
+                >立即查询
+                </el-button>
+                <!-- <el-button @click="resetForm('formQueryByCookie')">清空输入</el-button> -->
+              </div>
+            </el-form>
+          </div>
+        </el-tab-pane>
         <el-tab-pane label="订单编号查询">
           <div style="max-width: 90vw; width: 500px; margin: 20px auto">
             <el-form
@@ -20,18 +39,18 @@
                 <el-input
                   v-model="formQueryByOrderNo.orderNo"
                   clearable
-                  maxlength="25"
+                  maxlength="18"
                   show-word-limit
                   style="max-width: 75vw"
                 ></el-input>
               </el-form-item>
-              <el-form-item label="查询密码" prop="queryPass">
+              <!-- <el-form-item label="查询密码" prop="queryPass">
                 <el-input
                   v-model="formQueryByOrderNo.queryPass"
                   show-password
                   style="max-width: 75vw"
                 ></el-input>
-              </el-form-item>
+              </el-form-item> -->
               <div align="center">
                 <el-button
                   round
@@ -58,13 +77,13 @@
                   style="max-width: 75vw"
                 ></el-input>
               </el-form-item>
-              <el-form-item label="查询密码" prop="queryPass">
+              <!-- <el-form-item label="查询密码" prop="queryPass">
                 <el-input
                   v-model="formQueryByContact.queryPass"
                   show-password
                   style="max-width: 75vw"
                 ></el-input>
-              </el-form-item>
+              </el-form-item> -->
               <div align="center">
                 <el-button
                   round
@@ -73,25 +92,6 @@
                 >立即查询
                 </el-button>
                 <!-- <el-button @click="resetForm('formQueryByContact')">清空输入</el-button> -->
-              </div>
-            </el-form>
-          </div>
-        </el-tab-pane>
-        <el-tab-pane label="浏览器缓存查询">
-          <div style="max-width: 90vw; width: 500px; margin: 20px auto">
-            <el-form
-              ref="formQueryByCookie"
-              :model="formQueryByCookie"
-              :rules="rules"
-            >
-              <div align="center">
-                <el-button
-                  round
-                  type="primary"
-                  @click="submitForm('formQueryByCookie')"
-                >立即查询
-                </el-button>
-                <!-- <el-button @click="resetForm('formQueryByCookie')">清空输入</el-button> -->
               </div>
             </el-form>
           </div>
@@ -202,11 +202,11 @@ export default {
       rules: {
         orderNo: [
           {required: true, message: "请输入订单编号", trigger: "blur"},
-          {min: 25, max: 25, message: "长度为25个字符", trigger: "blur"},
+          {min: 18, max: 18, message: "长度为18个字符", trigger: "blur"},
         ],
-        queryPass: [
-          {required: true, message: "请输入查询密码", trigger: "blur"},
-        ],
+        // queryPass: [
+        //   {required: true, message: "请输入查询密码", trigger: "blur"},
+        // ],
         contact: [
           {required: true, message: "请输入联系方式", trigger: "blur"},
         ],

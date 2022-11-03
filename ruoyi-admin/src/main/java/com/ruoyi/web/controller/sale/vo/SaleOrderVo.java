@@ -32,13 +32,13 @@ public class SaleOrderVo {
         this.contact = contact;
     }
 
-    public String getQueryPass() {
-        return queryPass;
-    }
-
-    public void setQueryPass(String queryPass) {
-        this.queryPass = queryPass;
-    }
+//    public String getQueryPass() {
+//        return queryPass;
+//    }
+//
+//    public void setQueryPass(String queryPass) {
+//        this.queryPass = queryPass;
+//    }
 
     public Integer getBuyNum() {
         return buyNum;
