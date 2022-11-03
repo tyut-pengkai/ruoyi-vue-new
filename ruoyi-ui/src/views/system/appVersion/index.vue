@@ -119,7 +119,7 @@
           size="mini"
           type="warning"
           @click="handleExport"
-          >导出
+        >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -128,14 +128,27 @@
       ></right-toolbar>
     </el-row>
 
+    <el-alert
+      :closable="false"
+      show-icon
+      style="margin-bottom: 5px"
+      type="info"
+    >
+      <template slot="title">
+        <span>
+          温馨提示：更新版本时请新建一个版本，而不要修改或删除已有的版本，如果版本被删除，那么对应版本的软件将无法使用。
+        </span>
+      </template>
+    </el-alert>
+
     <el-table
       v-loading="loading"
       :data="appVersionList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55" />
+      <el-table-column align="center" type="selection" width="55"/>
       <!-- <el-table-column align="center" label="" type="index"/> -->
-      <el-table-column align="center" label="编号" prop="appVersionId" />
+      <el-table-column align="center" label="编号" prop="appVersionId"/>
       <el-table-column
         align="center"
         :show-overflow-tooltip="true"
