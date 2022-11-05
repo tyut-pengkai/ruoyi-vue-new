@@ -1,12 +1,14 @@
 package com.ruoyi.system.service.impl;
 
 import cn.hutool.core.io.file.FileNameUtil;
-import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
+import com.ruoyi.common.enums.AuthType;
+import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.utils.AesCbcPKCS5PaddingUtil;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.PathUtils;
@@ -18,7 +20,6 @@ import com.ruoyi.system.service.ISysAppVersionService;
 import com.ruoyi.utils.QuickAccessApkUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
@@ -187,25 +188,25 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             assert bytes != null;
             FileUtils.writeByteArrayToFile(desc, bytes);
             // 更新MD5
-            if (updateMd5 && originalFilename.endsWith(".exe")) {
-                String md5 = version.getMd5();
-                String md5New = DigestUtils.md5Hex(bytes);
-                if (StringUtils.isBlank(md5)) {
-                    md5 = md5New;
-                } else {
-                    if (!md5.contains(md5New)) {
-                        if (md5.endsWith("|")) {
-                            md5 += md5New;
-                        } else {
-                            md5 += "|" + md5New;
-                        }
-                    }
-                }
-                SysAppVersion versionNew = new SysAppVersion();
-                versionNew.setAppVersionId(versionId);
-                versionNew.setMd5(md5);
-                updateSysAppVersion(versionNew);
-            }
+//            if (updateMd5 && originalFilename.endsWith(".exe")) {
+//                String md5 = version.getMd5();
+//                String md5New = DigestUtils.md5Hex(bytes);
+//                if (StringUtils.isBlank(md5)) {
+//                    md5 = md5New;
+//                } else {
+//                    if (!md5.contains(md5New)) {
+//                        if (md5.endsWith("|")) {
+//                            md5 += md5New;
+//                        } else {
+//                            md5 += "|" + md5New;
+//                        }
+//                    }
+//                }
+//                SysAppVersion versionNew = new SysAppVersion();
+//                versionNew.setAppVersionId(versionId);
+//                versionNew.setMd5(md5);
+//                updateSysAppVersion(versionNew);
+//            }
             return filename;
         } catch (IOException e) {
             e.printStackTrace();
@@ -236,20 +237,25 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             apv.setDataOutEnc(app.getDataOutEnc().getCode());
             apv.setDataOutPwd(app.getDataOutPwd());
             apv.setApiPwd(app.getApiPwd());
+            apv.setAuthType(app.getAuthType());
+            apv.setBillType(app.getBillType());
 
             // 加密
             log.info("正在加密参数");
             String apvStr = JSON.toJSONString(apv);
             apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");
 
-            if(filename.endsWith(".exe")) {
-                log.info("正在整合exe");
-                byte[] apvBytes = apvStr.getBytes(StandardCharsets.UTF_8);
-                byte[] tplBytes = FileUtils.readFileToByteArray(new File(PathUtils.getUserPath() + File.separator + "template" + File.separator + "qat.exe.tpl"));
-                log.info("快速接入成功");
-                byte[] resultBytes = ArrayUtil.addAll(tplBytes, split, apvBytes, split, bytes);
+            if (filename.endsWith(".exe")) {
+//                log.info("正在整合exe");
+//                byte[] apvBytes = apvStr.getBytes(StandardCharsets.UTF_8);
+//                byte[] tplBytes = FileUtils.readFileToByteArray(new File(PathUtils.getUserPath() + File.separator + "template" + File.separator + "qat.exe.tpl"));
+//                log.info("快速接入成功");
+//                byte[] resultBytes = ArrayUtil.addAll(tplBytes, split, apvBytes, split, bytes);
+//                QuickAccessResultVo result = new QuickAccessResultVo();
+//                result.setBytes(resultBytes);
+//                return result;
                 QuickAccessResultVo result = new QuickAccessResultVo();
-                result.setBytes(resultBytes);
+                result.getData().put("apv", apv);
                 return result;
             } else if(filename.endsWith(".apk")) {
                 QuickAccessResultVo result = new QuickAccessResultVo();
@@ -313,7 +319,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
 //                                tempFileSigned.getCanonicalPath(),
 //                                tempFileUnsigned.getCanonicalPath()
 //                        });
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         log.info("apk签名失败：" + e.getMessage());
                         result.getData().put("signed", false);
@@ -323,7 +329,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                 result.setBytes(injectedApk);
                 return result;
             }
-        } catch (IOException | InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
+        } catch (InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
             e.printStackTrace();
         }
         return null;
@@ -347,6 +353,30 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         return UserConstants.UNIQUE;
     }
 
+    /**
+     * 获取快速接入参数信息
+     *
+     * @param appVersionId
+     */
+    @Override
+    public AjaxResult getQuickAccessParams(Long appVersionId) {
+
+        try {
+            SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(appVersionId);
+            QuickAccessResultVo result = quickAccessHandle(null, version, ".exe", null);
+            AppParamVo apv = (AppParamVo) result.getData().get("apv");
+            String apvStr = JSON.toJSONString(apv);
+            apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");
+            AjaxResult ajax = AjaxResult.success();
+            ajax.putAll(result.getData());
+            ajax.put("apvStr", apvStr);
+            return ajax;
+        } catch (InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Data
     class AppParamVo {
         private String apiUrl;
@@ -357,5 +387,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         private String dataOutEnc;
         private String dataOutPwd;
         private String apiPwd;
+        private AuthType authType;
+        private BillType billType;
     }
 }

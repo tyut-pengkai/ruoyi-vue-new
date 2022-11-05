@@ -1,5 +1,6 @@
 package com.ruoyi.system.service;
 
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -95,4 +96,9 @@ public interface ISysAppVersionService {
      * @return
      */
     public String checkVersionNoUnique(Long versionNo, Long appId, Long appVersionId);
+
+    /**
+     * 获取快速接入参数信息
+     */
+    public AjaxResult getQuickAccessParams(Long appVersionId);
 }

@@ -51,3 +51,11 @@ export function exportAppVersion(query) {
     params: query
   })
 }
+
+// 获取快速接入参数信息
+export function getQuickAccessParams(appVersionId) {
+  return request({
+    url: '/system/appVersion/quickAccessParams/' + appVersionId,
+    method: 'get',
+  })
+}

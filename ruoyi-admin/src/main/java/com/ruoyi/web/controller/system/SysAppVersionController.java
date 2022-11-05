@@ -112,4 +112,13 @@ public class SysAppVersionController extends BaseController {
     public AjaxResult quickAccess(MultipartFile file, Long versionId, boolean updateMd5, String apkOper) {
         return AjaxResult.success(sysAppVersionService.quickAccess(file, versionId, updateMd5, apkOper));
     }
+
+    /**
+     * 获取快速接入参数信息
+     */
+    @Log(title = "快速接入", businessType = BusinessType.QUICK_ACCESS)
+    @GetMapping("/quickAccessParams/{appVersionId}")
+    public AjaxResult getQuickAccessParams(@PathVariable Long appVersionId) {
+        return sysAppVersionService.getQuickAccessParams(appVersionId);
+    }
 }

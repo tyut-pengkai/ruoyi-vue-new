@@ -66,10 +66,10 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-          >搜索
+        >搜索
         </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置
+        >重置
         </el-button>
       </el-form-item>
     </el-form>
@@ -83,7 +83,7 @@
           size="mini"
           type="primary"
           @click="handleAdd"
-          >新增
+        >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -95,7 +95,7 @@
           size="mini"
           type="success"
           @click="handleUpdate"
-          >修改
+        >修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -107,7 +107,7 @@
           size="mini"
           type="danger"
           @click="handleDelete"
-          >删除
+        >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -136,7 +136,7 @@
     >
       <template slot="title">
         <span>
-          温馨提示：如果需要更新版本时请新建一个版本，并设置一个更大的版本号即可，而不要修改或删除已有的版本，如果版本被删除，那么对应版本的软件将无法使用。
+          温馨提示：更新版本时请新建一个版本，而不要修改或删除已有的版本，如果版本被删除，那么对应版本的软件将无法使用。
         </span>
       </template>
     </el-alert>
@@ -150,8 +150,8 @@
       <!-- <el-table-column align="center" label="" type="index"/> -->
       <el-table-column align="center" label="编号" prop="appVersionId"/>
       <el-table-column
-        align="center"
         :show-overflow-tooltip="true"
+        align="center"
         label="软件名称"
       >
         <template slot-scope="scope">
@@ -185,7 +185,7 @@
         label="软件MD5"
         prop="md5"
       />
-      <el-table-column align="center" label="创建者" prop="createBy" />
+      <el-table-column align="center" label="创建者" prop="createBy"/>
       <el-table-column
         align="center"
         label="创建时间"
@@ -196,7 +196,7 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="备注" prop="remark" />
+      <el-table-column align="center" label="备注" prop="remark"/>
       <el-table-column align="center" label="版本状态" prop="status">
         <template slot-scope="scope">
           <dict-tag
@@ -225,7 +225,7 @@
             size="mini"
             type="text"
             @click="handleImport(scope.row)"
-            >快速接入
+          >快速接入
           </el-button>
           <el-button
             v-hasPermi="['system:appVersion:edit']"
@@ -233,7 +233,7 @@
             size="mini"
             type="text"
             @click="handleUpdate(scope.row)"
-            >修改
+          >修改
           </el-button>
           <el-button
             v-hasPermi="['system:appVersion:remove']"
@@ -241,7 +241,7 @@
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
-            >删除
+          >删除
           </el-button>
         </template>
       </el-table-column>
@@ -341,7 +341,7 @@
                   v-for="dict in dict.type.sys_normal_disable"
                   :key="dict.value"
                   :label="dict.value"
-                  >{{ dict.label }}
+                >{{ dict.label }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -353,7 +353,7 @@
                   v-for="dict in dict.type.sys_yes_no"
                   :key="dict.value"
                   :label="dict.value"
-                  >{{ dict.label }}
+                >{{ dict.label }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -367,7 +367,7 @@
                   v-for="dict in dict.type.sys_yes_no"
                   :key="dict.value"
                   :label="dict.value"
-                  >{{ dict.label }}
+                >{{ dict.label }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -375,7 +375,7 @@
           <el-col :span="12"></el-col>
         </el-form-item>
         <el-form-item label="软件MD5" prop="md5">
-          <el-input v-model="form.md5" placeholder="请输入软件MD5" />
+          <el-input v-model="form.md5" placeholder="请输入软件MD5"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input
@@ -396,7 +396,7 @@
       :title="upload.title"
       :visible.sync="upload.open"
       append-to-body
-      width="450px"
+      width="400px"
     >
       <el-alert
         :closable="false"
@@ -405,8 +405,8 @@
         type="info"
       >
         <template slot="title">
-          <span>
-            快速接入安全性较低，建议接入后自行加固或加壳后再发布。
+          <span
+          >快速接入安全性较低，不建议生产环境使用。
             <el-tooltip placement="top">
               <div slot="content">
                 本功能主要用于开发者临时接单需要快速接入快速测试的场景，接入软件建议小于20M<br/>目前可支持
@@ -417,118 +417,83 @@
           </span>
         </template>
       </el-alert>
-      <el-tabs style="width: 400px" type="border-card">
-        <el-tab-pane label="APK一键接入">
-          <el-upload
-            ref="upload"
-            :action="
-              upload.url +
-              '?versionId=' +
-              upload.quickAccessVersionId +
-              '&updateMd5=' +
-              upload.updateMd5 +
-              '&apkOper=' +
-              upload.apkOper
-            "
-            :auto-upload="false"
-            :before-upload="onBeforeUpload"
-            :disabled="upload.isUploading"
-            :headers="upload.headers"
-            :limit="1"
-            :on-change="handleFileOnChange"
-            :on-progress="handleFileUploadProgress"
-            :on-success="handleFileSuccess"
-            accept=".apk"
-            drag
-          >
-            <i class="el-icon-upload"></i>
-            <div class="el-upload__text">
-              仅允许拖入或<em>点击上传</em>apk格式文件
-            </div>
-            <div slot="tip" class="el-upload__tip text-center">
-              <!-- <span style="margin-top: 5px">允许导入exe或apk格式文件。</span> -->
-              <!-- <div v-show="showExe" slot="tip" class="el-upload__tip">
-                <el-checkbox v-model="upload.updateMd5" />
-                <span>是否更新MD5</span>
-                <span style="margin-left: 15px">
-                  <el-tooltip
-                    content="仅exe生效，会在已有MD5信息基础上累加"
-                    placement="top"
-                  >
-                    <i
-                      class="el-icon-question"
-                      style="margin-left: -12px; margin-right: 10px"
-                    ></i>
-                  </el-tooltip>
-                </span>
-              </div>
-              <div v-show="showApk" slot="tip" class="el-upload__tip"> -->
-              <span style="margin-right: 10px">接入类别</span>
-              <el-select v-model="upload.apkOper" placeholder="请选择接入类别">
-                <el-option
-                  v-for="item in apkOperOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                >
-                </el-option>
-              </el-select>
-              <span style="margin-left: 15px">
-                <el-tooltip
-                  content="建议将生成的apk加固后再发布"
-                  placement="top"
-                >
-                  <i
-                    class="el-icon-question"
-                    style="margin-left: -12px; margin-right: 10px"
-                  ></i>
-                </el-tooltip>
-              </span>
-              <!-- <el-checkbox v-model="upload.signApk" />
+      <el-upload
+        ref="upload"
+        :action="
+          upload.url +
+          '?versionId=' +
+          upload.quickAccessVersionId +
+          '&updateMd5=' +
+          upload.updateMd5 +
+          '&apkOper=' +
+          upload.apkOper
+        "
+        :auto-upload="false"
+        :before-upload="onBeforeUpload"
+        :disabled="upload.isUploading"
+        :headers="upload.headers"
+        :limit="1"
+        :on-change="handleFileOnChange"
+        :on-progress="handleFileUploadProgress"
+        :on-success="handleFileSuccess"
+        accept=".apk,.exe"
+        drag
+      >
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">
+          仅允许拖入或<em>点击上传</em>exe或apk格式文件
+        </div>
+        <div slot="tip" class="el-upload__tip text-center">
+          <!-- <span style="margin-top: 5px">允许导入exe或apk格式文件。</span> -->
+          <div v-show="showExe" slot="tip" class="el-upload__tip">
+            <el-checkbox v-model="upload.updateMd5"/>
+            <span>是否更新MD5</span>
+            <span style="margin-left: 15px">
+              <el-tooltip
+                content="仅exe生效，会在已有MD5信息基础上累加"
+                placement="top"
+              >
+                <i
+                  class="el-icon-question"
+                  style="margin-left: -12px; margin-right: 10px"
+                ></i>
+              </el-tooltip>
+            </span>
+          </div>
+          <div v-show="showApk" slot="tip" class="el-upload__tip">
+            <span style="margin-right: 10px">接入类别</span>
+            <el-select v-model="upload.apkOper" placeholder="请选择接入类别">
+              <el-option
+                v-for="item in apkOperOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+            <span style="margin-left: 15px">
+              <el-tooltip
+                content="仅apk生效，建议将生成的apk加固后再发布"
+                placement="top"
+              >
+                <i
+                  class="el-icon-question"
+                  style="margin-left: -12px; margin-right: 10px"
+                ></i>
+              </el-tooltip>
+            </span>
+            <!-- <el-checkbox v-model="upload.signApk" />
             是否签名APK<br />(仅apk生效，建议将生成的apk加固后再发布) -->
-              <!-- </div> -->
-              <!-- <el-link
+          </div>
+          <!-- <el-link
             type="primary"
             :underline="false"
             style="font-size: 12px; vertical-align: baseline"
             @click="importTemplate"
             >下载模板</el-link
           > -->
-            </div>
-          </el-upload>
-        </el-tab-pane>
-        <el-tab-pane label="EXE一键接入">
-          <div style="width: 360px; height: 225px">
-            <el-alert
-              :closable="false"
-              show-icon
-              style="margin-bottom: 10px"
-              type="info"
-            >
-              <template slot="title">
-                <span> 请在官方群共享下载红叶快速接入工具 </span>
-              </template>
-            </el-alert>
-            <div align="center" style="margin-top: 10px">
-              <el-input
-                v-show="apvStr && apvStr != ''"
-                v-model="apvStr"
-                :readonly="true"
-                :rows="6"
-                type="textarea"
-              ></el-input>
-              <el-button
-                id="copyButton"
-                style="margin-top: 10px"
-                type="primary"
-                @click="getQuickAccessParams(upload.quickAccessVersionId)"
-              >
-                一键复制对接参数
-              </el-button>
-            </div>
-          </div>
-        </el-tab-pane>
-      </el-tabs>
+        </div>
+      </el-upload>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitFileForm">确 定</el-button>
         <el-button @click="upload.open = false">取 消</el-button>
@@ -563,14 +528,12 @@ import {
   delAppVersion,
   exportAppVersion,
   getAppVersion,
-  getQuickAccessParams,
   listAppVersion,
   updateAppVersion,
 } from "@/api/system/appVersion";
 import {getToken} from "@/utils/auth";
 import {getApp} from "@/api/system/app";
 import axios from "axios";
-import Clipboard from "clipboard";
 
 export default {
   name: "AppVersion",
@@ -617,23 +580,23 @@ export default {
       // 表单校验
       rules: {
         versionName: [
-          { required: true, message: "版本名称不能为空", trigger: "blur" },
+          {required: true, message: "版本名称不能为空", trigger: "blur"},
         ],
         versionNo: [
-          { required: true, message: "版本号不能为空", trigger: "blur" },
+          {required: true, message: "版本号不能为空", trigger: "blur"},
         ],
         downloadUrl: [
-          { required: false, message: "下载地址不能为空", trigger: "blur" },
+          {required: false, message: "下载地址不能为空", trigger: "blur"},
         ],
         status: [
-          { required: true, message: "版本状态不能为空", trigger: "blur" },
+          {required: true, message: "版本状态不能为空", trigger: "blur"},
         ],
         forceUpdate: [
-          { required: true, message: "是否强制更新不能为空", trigger: "blur" },
+          {required: true, message: "是否强制更新不能为空", trigger: "blur"},
         ],
-        md5: [{ required: false, message: "软件MD5不能为空", trigger: "blur" }],
+        md5: [{required: false, message: "软件MD5不能为空", trigger: "blur"}],
         checkMd5: [
-          { required: true, message: "是否检查MD5不能为空", trigger: "blur" },
+          {required: true, message: "是否检查MD5不能为空", trigger: "blur"},
         ],
       },
       // 快速接入参数
@@ -679,7 +642,6 @@ export default {
       ],
       showExe: false,
       showApk: false,
-      apvStr: "",
     };
   },
   created() {
@@ -769,21 +731,13 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.$modal
-        .confirm(
-          "是否确认修改数据项？温馨提示：如果需要更新版本，请新建一个版本，并设置一个更大的版本号即可，而不要修改已有的版本。"
-        )
-        .then(() => {
-          this.reset();
-          const appVersionId = row.appVersionId || this.ids;
-          getAppVersion(appVersionId).then((response) => {
-            this.form = response.data;
-            this.open = true;
-            this.title = "修改软件版本信息";
-          });
-        })
-        .catch(() => {
-        });
+      this.reset();
+      const appVersionId = row.appVersionId || this.ids;
+      getAppVersion(appVersionId).then((response) => {
+        this.form = response.data;
+        this.open = true;
+        this.title = "修改软件版本信息";
+      });
     },
     /** 提交按钮 */
     submitForm() {
@@ -809,9 +763,7 @@ export default {
     handleDelete(row) {
       const appVersionIds = row.appVersionId || this.ids;
       this.$modal
-        .confirm(
-          "是否确认删除数据项？温馨提示：如果需要版本，请新建一个版本，而不要修改或删除已有的版本，如果版本被删除，那么对应版本的软件将无法使用。"
-        )
+        .confirm("是否确认删除数据项？")
         .then(function () {
           return delAppVersion(appVersionIds);
         })
@@ -819,7 +771,8 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -834,17 +787,14 @@ export default {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     /** 导入按钮操作 */
     handleImport(row) {
       this.upload.title = "快速接入";
       this.upload.open = true;
       this.upload.quickAccessVersionId = row.appVersionId;
-      this.apvStr = "";
-      getQuickAccessParams(row.appVersionId).then((response) => {
-        this.apvStr = response.apvStr;
-      });
     },
     // 文件上传中处理
     handleFileUploadProgress(event, file, fileList) {
@@ -905,7 +855,7 @@ export default {
           "&delete=false",
         params: param,
         responseType: "blob",
-        headers: { Authorization: "Bearer " + getToken() },
+        headers: {Authorization: "Bearer " + getToken()},
       })
         .then((res) => {
           this.fileDown.loadDialogStatus = false;
@@ -975,24 +925,6 @@ export default {
         .catch(() => {
           //取消--什么都不做
         });
-    },
-    getQuickAccessParams(appVersionId) {
-      var clipboard = new Clipboard("#copyButton", {
-        text: () => {
-          // 如果想从其它DOM元素内容复制。应该是target:function(){return: };
-          return this.apvStr;
-        },
-      });
-      clipboard.on("success", (e) => {
-        this.$modal.msgSuccess("已成功复制对接参数");
-        clipboard.destroy();
-      });
-      clipboard.on("error", (e) => {
-        this.$modal.msgError(
-          "复制失败，您的浏览器不支持复制，请自行复制下方的对接参数"
-        );
-        clipboard.destroy();
-      });
     },
   },
   watch: {
