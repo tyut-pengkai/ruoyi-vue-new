@@ -43,6 +43,7 @@
                   clearable
                   show-word-limit
                   style="max-width: 75vw"
+                  type="password"
                 ></el-input>
               </el-form-item>
               <div align="center">

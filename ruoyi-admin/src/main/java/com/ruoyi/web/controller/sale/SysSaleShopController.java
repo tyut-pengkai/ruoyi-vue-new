@@ -19,6 +19,7 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.uuid.SnowflakeIdWorker;
 import com.ruoyi.payment.constants.PaymentDefine;
@@ -618,6 +619,9 @@ public class SysSaleShopController extends BaseController {
             SysUser user = sysUserService.selectUserByUserName(username);
             if (user == null) {
                 throw new ServiceException("账号不存在");
+            }
+            if (!SecurityUtils.matchesPassword(password, user.getPassword())) {
+                throw new ServiceException("账号或密码有误");
             }
             SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndUserId(appId, user.getUserId());
             if (appUser == null) {
