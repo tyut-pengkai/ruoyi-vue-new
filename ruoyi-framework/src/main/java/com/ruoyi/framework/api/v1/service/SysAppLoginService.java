@@ -88,6 +88,7 @@ public class SysAppLoginService {
                 appUser.setPayBalance(BigDecimal.ZERO);
                 appUser.setFreePayment(BigDecimal.ZERO);
                 appUser.setPayPayment(BigDecimal.ZERO);
+                appUser.setUnbindTimes(app.getUnbindTimes());
                 appUser.setApp(app);
                 if (app.getBillType() == BillType.TIME) {
                     appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg()));
@@ -233,6 +234,7 @@ public class SysAppLoginService {
                 appUser.setPayBalance(BigDecimal.ZERO);
                 appUser.setFreePayment(BigDecimal.ZERO);
                 appUser.setPayPayment(BigDecimal.ZERO);
+                appUser.setUnbindTimes(app.getUnbindTimes());
                 appUser.setApp(app);
                 if (app.getBillType() == BillType.TIME) {
                     appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg()));
