@@ -3,6 +3,7 @@ package com.ruoyi.framework.aspectj;
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.BusinessStatus;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.HttpMethod;
@@ -67,6 +68,13 @@ public class LogAspect {
 
     protected void handleLog(final JoinPoint joinPoint, Log controllerLog, final Exception e, Object jsonResult) {
         try {
+
+            // 是否记录系统日志
+            String enableLog = sysConfigService.selectConfigByKey("sys.log.enable");
+            if (!Convert.toBool(enableLog, true)) {
+                return;
+            }
+
             // API调用日志特殊处理
             String recordCallLog = sysConfigService.selectConfigByKey("sys.api.recordCallLog");
             if (recordCallLog == null) {
