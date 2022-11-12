@@ -200,6 +200,55 @@ public class SysApp extends BaseEntity
 
     private String notAddTrialTimesInTrialTime;
 
+    /**
+     * 可解绑次数
+     */
+    private Integer unbindTimes;
+
+    /**
+     * 解绑扣除后最少剩余额度
+     */
+//    private Integer minQuotaUnbind;
+
+    /**
+     * 是否开启解绑
+     */
+    private String enableUnbind;
+
+    private String enableUnbindByQuota;
+
+    public String getEnableUnbindByQuota() {
+        return enableUnbindByQuota;
+    }
+
+    public void setEnableUnbindByQuota(String enableUnbindByQuota) {
+        this.enableUnbindByQuota = enableUnbindByQuota;
+    }
+
+    public String getEnableUnbind() {
+        return enableUnbind;
+    }
+
+    public void setEnableUnbind(String enableUnbind) {
+        this.enableUnbind = enableUnbind;
+    }
+
+    public Integer getUnbindTimes() {
+        return unbindTimes;
+    }
+
+    public void setUnbindTimes(Integer unbindTimes) {
+        this.unbindTimes = unbindTimes;
+    }
+
+    /*public Integer getMinQuotaUnbind() {
+        return minQuotaUnbind;
+    }
+
+    public void setMinQuotaUnbind(Integer minQuotaUnbind) {
+        this.minQuotaUnbind = minQuotaUnbind;
+    }*/
+
     public String getNotAddTrialTimesInTrialTime() {
         return notAddTrialTimesInTrialTime;
     }

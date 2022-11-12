@@ -793,6 +793,18 @@
             </el-col>
           </div>
         </el-form-item>
+        <el-form-item prop="">
+          <el-col :span="12">
+            <el-form-item label="剩余解绑次数" prop="unbindTimes">
+              <el-input-number
+                v-model="form.unbindTimes"
+                :min="0"
+                controls-position="right"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12"></el-col>
+        </el-form-item>
         <el-form-item label="充值卡/单码自定义参数" prop="cardCustomParams">
           <el-input
             v-model="form.cardCustomParams"
@@ -989,7 +1001,7 @@ export default {
       this.loading = true;
       this.queryParams.params = {};
       if (this.queryParams["isVip"]) {
-        this.queryParams.params["isVip"] = this.queryParams["isVip"]
+        this.queryParams.params["isVip"] = this.queryParams["isVip"];
       }
       if (
         null != this.daterangeLastLoginTime &&

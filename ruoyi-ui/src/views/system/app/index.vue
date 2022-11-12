@@ -542,21 +542,7 @@
               </el-form-item>
 
               <el-form-item>
-                <el-col :span="12">
-                  <el-form-item label="绑定模式" prop="bindType">
-                    <el-select
-                      v-model="form.bindType"
-                      placeholder="请选择绑定模式"
-                    >
-                      <el-option
-                        v-for="dict in dict.type.sys_bind_type"
-                        :key="dict.value"
-                        :label="dict.label"
-                        :value="dict.value"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
+                <el-col :span="12"></el-col>
                 <el-col :span="12">
                   <el-form-item label="首次登录赠送" prop="freeQuotaReg">
                     <span>
@@ -581,59 +567,11 @@
               <el-form-item label="软件主页" prop="idxUrl">
                 <el-input v-model="form.idxUrl" placeholder="请输入软件主页"/>
               </el-form-item>
-              <el-form-item>
-                <el-col :span="12">
-                  <el-form-item label="换绑设备扣除" prop="reduceQuotaUnbind">
-                    <span>
-                      <el-tooltip
-                        content="换绑设备扣减时间或点数，单位秒或点"
-                        placement="top"
-                      >
-                        <i
-                          class="el-icon-question"
-                          style="margin-left: -12px; margin-right: 10px"
-                        ></i>
-                      </el-tooltip>
-                    </span>
-                    <el-input-number
-                      v-model="form.reduceQuotaUnbind"
-                      controls-position="right"
-                      :min="0"
-                    />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="是否允许扣到负数" prop="enableNegative">
-                    <span>
-                      <el-tooltip
-                        content="换绑设备扣减时间或点数，是否允许用户过期(计时模式)或余额为负数(计点模式)"
-                        placement="top"
-                      >
-                        <i
-                          class="el-icon-question"
-                          style="margin-left: -12px; margin-right: 10px"
-                        ></i>
-                      </el-tooltip>
-                    </span>
-                    <el-select
-                      v-model="form.enableNegative"
-                      placeholder="请选择是否允许用户过期(计时模式)或余额为负数(计点模式)"
-                    >
-                      <el-option
-                        v-for="dict in dict.type.sys_yes_no"
-                        :key="dict.value"
-                        :label="dict.label"
-                        :value="dict.value"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-              </el-form-item>
               <!-- <el-form-item label="软件图标">
                 <imageUpload v-model="form.icon" :limit="1" /> -->
               <!-- <app-icon /> -->
               <!-- </el-form-item> -->
-              <el-form-item label="欢迎语" prop="welcomeNotice">
+              <el-form-item label="软件公告" prop="welcomeNotice">
                 <el-input
                   v-model="form.welcomeNotice"
                   placeholder="请输入内容"
@@ -775,9 +713,158 @@
               </el-col>
             </el-form-item>
             <el-form-item label="API匿名密码" prop="apiPwd">
-              <el-input v-model="form.apiPwd" placeholder="请输入API匿名密码" />
+              <el-input v-model="form.apiPwd" placeholder="请输入API匿名密码"/>
             </el-form-item>
           </el-tab-pane>
+          <!-- 绑定设置 -->
+          <el-tab-pane label="绑定设置">
+            <el-form-item>
+              <el-col :span="12">
+                <el-form-item label="绑定模式" prop="bindType">
+                  <el-select
+                    v-model="form.bindType"
+                    placeholder="请选择绑定模式"
+                  >
+                    <el-option
+                      v-for="dict in dict.type.sys_bind_type"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="是否允许解绑" prop="enableUnbind">
+                  <el-select
+                    v-model="form.enableUnbind"
+                    placeholder="请选择是否允许解绑"
+                  >
+                    <el-option
+                      v-for="dict in dict.type.sys_yes_no"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+            <el-form-item>
+              <el-col :span="12">
+                <el-form-item label="限制解绑次数" prop="unbindTimes">
+                  <span>
+                    <el-tooltip
+                      content="解绑时优先扣除解绑次数，当解绑次数为0时，将根据[使用余额解绑]来决定是否可以继续解绑"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
+                  <el-input-number
+                    v-model="form.unbindTimes"
+                    :min="0"
+                    controls-position="right"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="使用余额解绑" prop="enableUnbindByQuota">
+                  <span>
+                    <el-tooltip
+                      content="解绑时优先扣除解绑次数，当解绑次数为0时，将根据本选项来决定是否可以继续解绑，如果为否，用户将无法继续解绑，如果为是，系统将根据下方配置扣除对应余额"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
+                  <el-select
+                    v-model="form.enableUnbindByQuota"
+                    placeholder="请选择是否允许使用余额解绑"
+                  >
+                    <el-option
+                      v-for="dict in dict.type.sys_yes_no"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+            <el-form-item>
+              <el-col :span="12">
+                <el-form-item label="换绑设备扣除" prop="reduceQuotaUnbind">
+                  <span>
+                    <el-tooltip
+                      content="换绑设备扣减时间或点数，单位秒或点"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
+                  <el-input-number
+                    v-model="form.reduceQuotaUnbind"
+                    :min="0"
+                    controls-position="right"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <!-- <el-form-item label="扣除后最少剩余" prop="minQuotaUnbind">
+                  <span>
+                    <el-tooltip
+                      content="解绑扣除后最少剩余的时间或点数，如果扣除后低于此额度，将无法解绑，单位秒或点"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
+                  <el-input-number
+                    v-model="form.minQuotaUnbind"
+                    controls-position="right"
+                  />
+                </el-form-item> -->
+                <el-form-item label="允许扣到负数" prop="enableNegative">
+                  <span>
+                    <el-tooltip
+                      content="换绑设备扣减时间或点数，是否允许用户过期(计时模式)或余额为负数(计点模式)"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
+                  <el-select
+                    v-model="form.enableNegative"
+                    placeholder="请选择是否允许用户过期(计时模式)或余额为负数(计点模式)"
+                  >
+                    <el-option
+                      v-for="dict in dict.type.sys_yes_no"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+          </el-tab-pane>
+
           <!-- 限开设置 -->
           <el-tab-pane label="限开设置">
             <el-form-item>
@@ -1307,6 +1394,41 @@ export default {
             trigger: "blur",
           },
         ],
+        unbindTimes: [
+          {
+            required: true,
+            message: "解绑次数不能为空",
+            trigger: "blur",
+          },
+        ],
+        // minQuotaUnbind: [
+        //   {
+        //     required: true,
+        //     message: "解绑后剩余额度不能为空",
+        //     trigger: "blur",
+        //   },
+        // ],
+        enableUnbind: [
+          {
+            required: true,
+            message: "是否允许解绑不能为空",
+            trigger: "blur",
+          },
+        ],
+        enableUnbindByQuota: [
+          {
+            required: true,
+            message: "是否允许使用余额解绑不能为空",
+            trigger: "blur",
+          },
+        ],
+        enableNegative: [
+          {
+            required: true,
+            message: "是否允许扣到负数不能为空",
+            trigger: "blur",
+          },
+        ],
       },
       trialTimeQuantum: null,
     };
@@ -1405,6 +1527,10 @@ export default {
         enableTrialByTimeQuantum: "N",
         enableTrialByTimes: "N",
         trialTimeQuantum: null,
+        enableUnbind: "N",
+        unbindTimes: 0,
+        // minQuotaUnbind: 0,
+        enableUnbindByQuota: "Y",
       };
       this.resetForm("form");
       this.tabIdx = "0";

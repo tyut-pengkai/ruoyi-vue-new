@@ -418,7 +418,7 @@
         </template>
       </el-alert>
       <el-tabs style="width: 400px" type="border-card">
-        <el-tab-pane label="APK一键接入">
+        <el-tab-pane label="APK接入">
           <el-upload
             ref="upload"
             :action="
@@ -497,7 +497,7 @@
             </div>
           </el-upload>
         </el-tab-pane>
-        <el-tab-pane label="EXE一键接入">
+        <el-tab-pane label="EXE接入">
           <div style="width: 360px; height: 225px">
             <el-alert
               :closable="false"

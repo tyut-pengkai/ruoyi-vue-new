@@ -30,6 +30,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="cardLoginLimitU" column="card_login_limit_u"/>
         <result property="cardLoginLimitM" column="card_login_limit_m"/>
         <result property="cardCustomParams" column="card_custom_params"/>
+        <result property="unbindTimes" column="unbind_times"/>
         <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
     </resultMap>
@@ -76,6 +77,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                au.card_login_limit_u,
                au.card_login_limit_m,
                au.card_custom_params,
+               au.unbind_times,
                a.app_id,
                a.app_name,
                a.auth_type,
@@ -151,6 +153,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cardLoginLimitU != null">card_login_limit_u,</if>
             <if test="cardLoginLimitM != null">card_login_limit_m,</if>
             <if test="cardCustomParams != null">card_custom_params,</if>
+            <if test="unbindTimes != null">unbind_times,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
@@ -177,6 +180,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cardLoginLimitU != null">#{cardLoginLimitU},</if>
             <if test="cardLoginLimitM != null">#{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">#{cardCustomParams},</if>
+            <if test="unbindTimes != null">#{unbindTimes},</if>
         </trim>
     </insert>
 
@@ -207,6 +211,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cardLoginLimitU != null">card_login_limit_u = #{cardLoginLimitU},</if>
             <if test="cardLoginLimitM != null">card_login_limit_m = #{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">card_custom_params = #{cardCustomParams},</if>
+            <if test="unbindTimes != null">unbind_times = #{unbindTimes},</if>
         </trim>
         where app_user_id = #{appUserId}
     </update>

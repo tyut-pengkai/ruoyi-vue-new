@@ -160,6 +160,19 @@ public class SysAppUser extends BaseEntity {
 
     private Integer currentOnlineM;
 
+    /**
+     * 可解绑次数
+     */
+    private Integer unbindTimes;
+
+    public Integer getUnbindTimes() {
+        return unbindTimes;
+    }
+
+    public void setUnbindTimes(Integer unbindTimes) {
+        this.unbindTimes = unbindTimes;
+    }
+
     public Integer getCurrentOnlineU() {
         return currentOnlineU;
     }

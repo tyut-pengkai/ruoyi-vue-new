@@ -29,27 +29,31 @@
 		<result property="limitOper" column="limit_oper"/>
 		<result property="heartBeatTime" column="heart_beat_time"/>
 		<result property="appKey" column="app_key"/>
-        <result property="appSecret" column="app_secret"/>
-        <result property="apiPwd" column="api_pwd"/>
-        <result property="welcomeNotice" column="welcome_notice"/>
-        <result property="offNotice" column="off_notice"/>
-        <result property="icon" column="icon"/>
-        <result property="createBy" column="create_by"/>
-        <result property="createTime" column="create_time"/>
-        <result property="updateBy" column="update_by"/>
-        <result property="updateTime" column="update_time"/>
-        <result property="remark" column="remark"/>
-        <result property="trialTimesPerIp" column="trial_times_per_ip"/>
-        <result property="trialCycle" column="trial_cycle"/>
-        <result property="trialTimes" column="trial_times"/>
-        <result property="trialTime" column="trial_time"/>
-        <result property="enableTrial" column="enable_trial"/>
-        <result property="enableTrialByTimeQuantum" column="enable_trial_by_time_quantum"/>
-        <result property="enableTrialByTimes" column="enable_trial_by_times"/>
-        <result property="trialTimeQuantum" column="trial_time_quantum"/>
-        <result property="notAddTrialTimesInTrialTime" column="not_add_trial_times_in_trial_time"/>
-        <association property="developer" column="create_by" javaType="SysUser" resultMap="SysUserResult"/>
-    </resultMap>
+		<result property="appSecret" column="app_secret"/>
+		<result property="apiPwd" column="api_pwd"/>
+		<result property="welcomeNotice" column="welcome_notice"/>
+		<result property="offNotice" column="off_notice"/>
+		<result property="icon" column="icon"/>
+		<result property="createBy" column="create_by"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateBy" column="update_by"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<result property="trialTimesPerIp" column="trial_times_per_ip"/>
+		<result property="trialCycle" column="trial_cycle"/>
+		<result property="trialTimes" column="trial_times"/>
+		<result property="trialTime" column="trial_time"/>
+		<result property="enableTrial" column="enable_trial"/>
+		<result property="enableTrialByTimeQuantum" column="enable_trial_by_time_quantum"/>
+		<result property="enableTrialByTimes" column="enable_trial_by_times"/>
+		<result property="trialTimeQuantum" column="trial_time_quantum"/>
+		<result property="notAddTrialTimesInTrialTime" column="not_add_trial_times_in_trial_time"/>
+		<result property="unbindTimes" column="unbind_times"/>
+		<!--<result property="minQuotaUnbind" column="min_quota_unbind"/>-->
+		<result property="enableUnbind" column="enable_unbind"/>
+		<result property="enableUnbindByQuota" column="enable_unbind_by_quota"/>
+		<association property="developer" column="create_by" javaType="SysUser" resultMap="SysUserResult"/>
+	</resultMap>
 
 	<resultMap type="SysUser" id="SysUserResult">
 		<id     property="userId"       column="user_id"      />
@@ -101,6 +105,10 @@
 			   a.enable_trial_by_times,
 			   a.trial_time_quantum,
 			   a.not_add_trial_times_in_trial_time,
+			   a.unbind_times,
+			/*a.min_quota_unbind,*/
+			   a.enable_unbind,
+			   a.enable_unbind_by_quota,
 			   u.user_id,
 			   u.user_name,
 			   u.nick_name
@@ -158,6 +166,7 @@
 			<!-- 数据范围过滤 -->
 			${params.dataScope}
 		</if>
+		<if test="enableUnbind != null">and a.enable_unbind = #{enableUnbind}</if>
 	</select>
 
     <select id="selectSysAppByAppId" parameterType="Long" resultMap="SysAppResult">
@@ -197,26 +206,30 @@
 			<if test="limitOper != null">limit_oper,</if>
 			<if test="heartBeatTime != null">heart_beat_time,</if>
 			<if test="appKey != null">app_key,</if>
-            <if test="appSecret != null">app_secret,</if>
-            <if test="apiPwd != null">api_pwd,</if>
-            <if test="welcomeNotice != null">welcome_notice,</if>
-            <if test="offNotice != null">off_notice,</if>
-            <if test="icon != null">icon,</if>
-            <if test="createBy != null">create_by,</if>
-            create_time,
-            <if test="updateBy != null">update_by,</if>
-            <if test="updateTime != null">update_time,</if>
-            <if test="remark != null">remark,</if>
-            <if test="trialTimesPerIp != null">trial_times_per_ip,</if>
-            <if test="trialCycle != null">trial_cycle,</if>
-            <if test="trialTimes != null">trial_times,</if>
-            <if test="trialTime != null">trial_time,</if>
-            <if test="enableTrial != null">enable_trial,</if>
-            <if test="enableTrialByTimeQuantum != null">enable_trial_by_time_quantum,</if>
-            <if test="enableTrialByTimes != null">enable_trial_by_times,</if>
-            <if test="trialTimeQuantum != null">trial_time_quantum,</if>
+			<if test="appSecret != null">app_secret,</if>
+			<if test="apiPwd != null">api_pwd,</if>
+			<if test="welcomeNotice != null">welcome_notice,</if>
+			<if test="offNotice != null">off_notice,</if>
+			<if test="icon != null">icon,</if>
+			<if test="createBy != null">create_by,</if>
+			create_time,
+			<if test="updateBy != null">update_by,</if>
+			<if test="updateTime != null">update_time,</if>
+			<if test="remark != null">remark,</if>
+			<if test="trialTimesPerIp != null">trial_times_per_ip,</if>
+			<if test="trialCycle != null">trial_cycle,</if>
+			<if test="trialTimes != null">trial_times,</if>
+			<if test="trialTime != null">trial_time,</if>
+			<if test="enableTrial != null">enable_trial,</if>
+			<if test="enableTrialByTimeQuantum != null">enable_trial_by_time_quantum,</if>
+			<if test="enableTrialByTimes != null">enable_trial_by_times,</if>
+			<if test="trialTimeQuantum != null">trial_time_quantum,</if>
 			<if test="notAddTrialTimesInTrialTime != null">not_add_trial_times_in_trial_time,</if>
-        </trim>
+			<if test="unbindTimes != null">unbind_times,</if>
+			<!--<if test="minQuotaUnbind != null">min_quota_unbind,</if>-->
+			<if test="enableUnbind != null">enable_unbind,</if>
+			<if test="enableUnbindByQuota != null">enable_unbind_by_quota,</if>
+		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="appId != null">#{appId},</if>
 			<if test="appName != null and appName != ''">#{appName},</if>
@@ -242,26 +255,30 @@
 			<if test="limitOper != null">#{limitOper},</if>
 			<if test="heartBeatTime != null">#{heartBeatTime},</if>
 			<if test="appKey != null">#{appKey},</if>
-            <if test="appSecret != null">#{appSecret},</if>
-            <if test="apiPwd != null">#{apiPwd},</if>
-            <if test="welcomeNotice != null">#{welcomeNotice},</if>
-            <if test="offNotice != null">#{offNotice},</if>
-            <if test="icon != null">#{icon},</if>
-            <if test="createBy != null">#{createBy},</if>
-            sysdate(),
-            <if test="updateBy != null">#{updateBy},</if>
-            <if test="updateTime != null">#{updateTime},</if>
-            <if test="remark != null">#{remark},</if>
-            <if test="trialTimesPerIp != null">#{trialTimesPerIp},</if>
-            <if test="trialCycle != null">#{trialCycle},</if>
-            <if test="trialTimes != null">#{trialTimes},</if>
-            <if test="trialTime != null">#{trialTime},</if>
-            <if test="enableTrial != null">#{enableTrial},</if>
-            <if test="enableTrialByTimeQuantum != null">#{enableTrialByTimeQuantum},</if>
-            <if test="enableTrialByTimes != null">#{enableTrialByTimes},</if>
-            <if test="trialTimeQuantum != null">#{trialTimeQuantum},</if>
+			<if test="appSecret != null">#{appSecret},</if>
+			<if test="apiPwd != null">#{apiPwd},</if>
+			<if test="welcomeNotice != null">#{welcomeNotice},</if>
+			<if test="offNotice != null">#{offNotice},</if>
+			<if test="icon != null">#{icon},</if>
+			<if test="createBy != null">#{createBy},</if>
+			sysdate(),
+			<if test="updateBy != null">#{updateBy},</if>
+			<if test="updateTime != null">#{updateTime},</if>
+			<if test="remark != null">#{remark},</if>
+			<if test="trialTimesPerIp != null">#{trialTimesPerIp},</if>
+			<if test="trialCycle != null">#{trialCycle},</if>
+			<if test="trialTimes != null">#{trialTimes},</if>
+			<if test="trialTime != null">#{trialTime},</if>
+			<if test="enableTrial != null">#{enableTrial},</if>
+			<if test="enableTrialByTimeQuantum != null">#{enableTrialByTimeQuantum},</if>
+			<if test="enableTrialByTimes != null">#{enableTrialByTimes},</if>
+			<if test="trialTimeQuantum != null">#{trialTimeQuantum},</if>
 			<if test="notAddTrialTimesInTrialTime != null">#{notAddTrialTimesInTrialTime},</if>
-        </trim>
+			<if test="unbindTimes != null">#{unbindTimes},</if>
+			<!--<if test="minQuotaUnbind != null">#{minQuotaUnbind},</if>-->
+			<if test="enableUnbind != null">#{enableUnbind},</if>
+			<if test="enableUnbindByQuota != null">#{enableUnbindByQuota},</if>
+		</trim>
 	</insert>
 
 	<update id="updateSysApp" parameterType="SysApp">
@@ -304,16 +321,17 @@
 			<if test="trialCycle != null">trial_cycle = #{trialCycle},</if>
 			<if test="trialTimes != null">trial_times = #{trialTimes},</if>
 			<if test="trialTime != null">trial_time = #{trialTime},</if>
-			<if test="enableTrial != null">enable_trial = #{enableTrial},
-				<if test="enableTrialByTimeQuantum != null">enable_trial_by_time_quantum =
-					#{enableTrialByTimeQuantum},
-				</if>
-				<if test="enableTrialByTimes != null">enable_trial_by_times = #{enableTrialByTimes},</if>
-				<if test="trialTimeQuantum != null">trial_time_quantum = #{trialTimeQuantum},</if>
-				<if test="notAddTrialTimesInTrialTime != null">not_add_trial_times_in_trial_time =
-					#{notAddTrialTimesInTrialTime},
-				</if>
+			<if test="enableTrial != null">enable_trial = #{enableTrial},</if>
+			<if test="enableTrialByTimeQuantum != null">enable_trial_by_time_quantum = #{enableTrialByTimeQuantum},</if>
+			<if test="enableTrialByTimes != null">enable_trial_by_times = #{enableTrialByTimes},</if>
+			<if test="trialTimeQuantum != null">trial_time_quantum = #{trialTimeQuantum},</if>
+			<if test="notAddTrialTimesInTrialTime != null">not_add_trial_times_in_trial_time =
+				#{notAddTrialTimesInTrialTime},
 			</if>
+			<if test="unbindTimes != null">unbind_times = #{unbindTimes},</if>
+			<!--<if test="minQuotaUnbind != null">min_quota_unbind = #{minQuotaUnbind},</if>-->
+			<if test="enableUnbind != null">enable_unbind = #{enableUnbind},</if>
+			<if test="enableUnbindByQuota != null">enable_unbind_by_quota = #{enableUnbindByQuota},</if>
 		</trim>
 		where app_id = #{appId}
 	</update>

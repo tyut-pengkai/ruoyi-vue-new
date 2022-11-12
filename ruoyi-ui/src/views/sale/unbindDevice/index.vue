@@ -213,7 +213,7 @@ export default {
   methods: {
     /** 查询软件列表 */
     getAppList(authType) {
-      listApp({authType: authType}).then((response) => {
+      listApp({authType: authType, enableUnbind: "Y"}).then((response) => {
         this.appList = response.rows;
       });
     },
@@ -230,6 +230,8 @@ export default {
           this.deviceCodeList = response.data;
           this.appInfo["billType"] = response.billType;
           this.appInfo["reduceQuotaUnbind"] = response.reduceQuotaUnbind;
+          this.appInfo["unbindTimes"] = response.unbindTimes;
+          this.appInfo["enableUnbindByQuota"] = response.enableUnbindByQuota;
           this.dialogTableVisible = true;
         })
         .finally(() => {
@@ -246,6 +248,10 @@ export default {
       queryBindDevice(queryParams)
         .then((response) => {
           this.deviceCodeList = response.data;
+          this.appInfo["billType"] = response.billType;
+          this.appInfo["reduceQuotaUnbind"] = response.reduceQuotaUnbind;
+          this.appInfo["unbindTimes"] = response.unbindTimes;
+          this.appInfo["enableUnbindByQuota"] = response.enableUnbindByQuota;
           this.dialogTableVisible = true;
         })
         .finally(() => {
@@ -271,20 +277,56 @@ export default {
     tabChange(data) {
       this.getAppList(data.index == 0 ? "0" : "1");
     },
+    makeTip(billType, reduceQuotaUnbind) {
+      var tip = "";
+      tip += "解绑将扣除您剩余";
+      if (billType == 0) {
+        tip += "时长";
+      } else {
+        tip += "点数";
+      }
+      tip += reduceQuotaUnbind;
+      if (billType == 0) {
+        tip += "秒";
+      } else {
+        tip += "点";
+      }
+      return tip;
+    },
     handleUnbind(row) {
       var tip = "";
-      if (this.appInfo["reduceQuotaUnbind"] > 0) {
-        tip = "提示：本次解绑将扣除您剩余";
-        if (this.appInfo["billType"] == 0) {
-          tip += "时长";
+      if (this.appInfo["unbindTimes"] > 0) {
+        tip =
+          "提示：您剩余解绑次数为：" +
+          this.appInfo["unbindTimes"] +
+          "次，次数用完后";
+        if (this.appInfo["enableUnbindByQuota"] == "Y") {
+          tip += "每次";
+          tip += this.makeTip(
+            this.appInfo["billType"],
+            this.appInfo["reduceQuotaUnbind"]
+          );
         } else {
-          tip += "点数";
+          tip += "将无法再次解绑";
         }
-        tip += this.appInfo["reduceQuotaUnbind"];
-        if (this.appInfo["billType"] == 0) {
-          tip += "秒";
+      } else {
+        if (this.appInfo["enableUnbindByQuota"] == "Y") {
+          if (this.appInfo["reduceQuotaUnbind"] > 0) {
+            tip = "提示：本次";
+            tip += this.makeTip(
+              this.appInfo["billType"],
+              this.appInfo["reduceQuotaUnbind"]
+            );
+          } else {
+            tip = "提示：本次解绑将不会扣除您的剩余";
+            if (this.appInfo["billType"] == 0) {
+              tip += "时长";
+            } else {
+              tip += "点数";
+            }
+          }
         } else {
-          tip += "点";
+          tip = "提示：无法再次解绑";
         }
       }
       this.$modal

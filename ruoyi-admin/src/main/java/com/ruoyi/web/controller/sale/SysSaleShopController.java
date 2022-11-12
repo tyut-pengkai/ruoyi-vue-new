@@ -16,6 +16,7 @@ import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
@@ -615,6 +616,7 @@ public class SysSaleShopController extends BaseController {
             throw new ServiceException("软件不存在");
         }
         List<SysAppUserDeviceCode> deviceCodeList = new ArrayList<>();
+        SysAppUser appUser = null;
         if (queryType == 1) {
             SysUser user = sysUserService.selectUserByUserName(username);
             if (user == null) {
@@ -623,13 +625,13 @@ public class SysSaleShopController extends BaseController {
             if (!SecurityUtils.matchesPassword(password, user.getPassword())) {
                 throw new ServiceException("账号或密码有误");
             }
-            SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndUserId(appId, user.getUserId());
+            appUser = sysAppUserService.selectSysAppUserByAppIdAndUserId(appId, user.getUserId());
             if (appUser == null) {
                 throw new ServiceException("软件用户不存在");
             }
             deviceCodeList = sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserId(appUser.getAppUserId());
         } else if (queryType == 2) {
-            SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(appId, username);
+            appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(appId, username);
             if (appUser == null) {
                 throw new ServiceException("软件用户不存在");
             }
@@ -639,7 +641,9 @@ public class SysSaleShopController extends BaseController {
             item.setDeviceCode(sysDeviceCodeService.selectSysDeviceCodeByDeviceCodeId(item.getDeviceCodeId()));
             return new SysAppUserDeviceCodeVo(item);
         }).collect(Collectors.toList());
-        return AjaxResult.success(result).put("billType", app.getBillType()).put("reduceQuotaUnbind", app.getReduceQuotaUnbind());
+        assert appUser != null;
+        return AjaxResult.success(result).put("billType", app.getBillType()).put("reduceQuotaUnbind", app.getReduceQuotaUnbind())
+                .put("unbindTimes", appUser.getUnbindTimes()).put("enableUnbindByQuota", app.getEnableUnbindByQuota());
     }
 
     @GetMapping("/unbindDevice")
@@ -650,36 +654,53 @@ public class SysSaleShopController extends BaseController {
         if (sysAppUserDeviceCode == null) {
             throw new ServiceException("当前用户未绑定该设备码");
         }
-        sysAppUserDeviceCodeService.deleteSysAppUserDeviceCodeById(id);
         Long appUserId = sysAppUserDeviceCode.getAppUserId();
         SysAppUser appUser = sysAppUserService.selectSysAppUserByAppUserId(appUserId);
         if (appUser == null) {
             throw new ServiceException("软件用户不存在");
         }
         SysApp sysApp = sysAppMapper.selectSysAppByAppId(appUser.getAppId());
-        Long p = sysApp.getReduceQuotaUnbind();
-        if (p == null || p <= 0) {
-            return AjaxResult.success();
+        if (sysApp == null) {
+            throw new ServiceException("软件不存在");
         }
-        boolean enableNegative = UserConstants.YES.equals(sysApp.getEnableNegative());
-        if (sysApp.getBillType() == BillType.TIME) {
-            Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), p);
-            Date nowDate = DateUtils.getNowDate();
-            if ((appUser.getExpireTime().after(nowDate) && newExpiredTime.after(nowDate)) || enableNegative) {
-                appUser.setExpireTime(newExpiredTime);
-                sysAppUserService.updateSysAppUser(appUser);
+        // 是否开启解绑
+        Boolean enableUnbind = Convert.toBool(sysApp.getEnableUnbind(), false);
+        if (!enableUnbind) {
+            throw new ServiceException("该软件解绑功能未开启");
+        }
+        // 扣减解绑次数
+        if (appUser.getUnbindTimes() > 0) {
+            appUser.setUnbindTimes(appUser.getUnbindTimes() - 1);
+            sysAppUserService.updateSysAppUser(appUser);
+        } else {
+            if (Convert.toBool(sysApp.getEnableUnbindByQuota(), true)) {
+                Long p = sysApp.getReduceQuotaUnbind();
+                if (p != null && p > 0) {
+                    boolean enableNegative = UserConstants.YES.equals(sysApp.getEnableNegative());
+                    if (sysApp.getBillType() == BillType.TIME) {
+                        Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), p);
+                        Date nowDate = DateUtils.getNowDate();
+                        if ((appUser.getExpireTime().after(nowDate) && newExpiredTime.after(nowDate)) || enableNegative) {
+                            appUser.setExpireTime(newExpiredTime);
+                            sysAppUserService.updateSysAppUser(appUser);
+                        } else {
+                            throw new ServiceException("软件用户剩余时间不足");
+                        }
+                    } else if (sysApp.getBillType() == BillType.POINT) {
+                        BigDecimal point = BigDecimal.valueOf(p);
+                        if (appUser.getPoint().compareTo(point) >= 0 || enableNegative) {
+                            appUser.setPoint(appUser.getPoint().subtract(point));
+                            sysAppUserService.updateSysAppUser(appUser);
+                        } else {
+                            throw new ServiceException("软件用户点数不足");
+                        }
+                    }
+                }
             } else {
-                throw new ServiceException("软件用户剩余时间不足");
-            }
-        } else if (sysApp.getBillType() == BillType.POINT) {
-            BigDecimal point = BigDecimal.valueOf(p);
-            if (appUser.getPoint().compareTo(point) >= 0 || enableNegative) {
-                appUser.setPoint(appUser.getPoint().subtract(point));
-                sysAppUserService.updateSysAppUser(appUser);
-            } else {
-                throw new ServiceException("软件用户点数不足");
+                throw new ServiceException("解绑次数已用尽，无法继续解绑");
             }
         }
+        sysAppUserDeviceCodeService.deleteSysAppUserDeviceCodeById(id);
         return AjaxResult.success();
     }
 

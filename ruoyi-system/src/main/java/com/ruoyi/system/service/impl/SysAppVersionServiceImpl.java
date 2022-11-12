@@ -7,8 +7,6 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
-import com.ruoyi.common.enums.AuthType;
-import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.utils.AesCbcPKCS5PaddingUtil;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.PathUtils;
@@ -237,8 +235,8 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             apv.setDataOutEnc(app.getDataOutEnc().getCode());
             apv.setDataOutPwd(app.getDataOutPwd());
             apv.setApiPwd(app.getApiPwd());
-            apv.setAuthType(app.getAuthType());
-            apv.setBillType(app.getBillType());
+            apv.setAuthType(app.getAuthType().getCode());
+            apv.setBillType(app.getBillType().getCode());
 
             // 加密
             log.info("正在加密参数");
@@ -387,7 +385,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         private String dataOutEnc;
         private String dataOutPwd;
         private String apiPwd;
-        private AuthType authType;
-        private BillType billType;
+        private String authType;
+        private String billType;
     }
 }
