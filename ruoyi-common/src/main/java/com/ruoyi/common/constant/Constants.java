@@ -202,9 +202,14 @@ public class Constants {
             "org.springframework", "org.apache", "com.ruoyi.common.utils.file"};
 
     /**
-     * 销售订单过期前缀
+     * 销售订单 redis key
      */
     public static final String SALE_ORDER_EXPIRE_KEY = "sale_order_expire:";
+
+    /**
+     * IP转换到地址 redis key
+     */
+    public static final String IP_TO_ADDRESS_KEY = "ip_to_address:";
 
     /**
      * 暗桩，标记被破解
