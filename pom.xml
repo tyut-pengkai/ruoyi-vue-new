@@ -24,7 +24,7 @@
         <kaptcha.version>2.3.2</kaptcha.version>
         <mybatis-spring-boot.version>2.2.2</mybatis-spring-boot.version>
         <pagehelper.boot.version>1.4.1</pagehelper.boot.version>
-        <fastjson.version>2.0.4</fastjson.version>
+        <fastjson.version>2.0.16</fastjson.version>
         <oshi.version>6.1.6</oshi.version>
         <commons.io.version>2.11.0</commons.io.version>
         <commons.fileupload.version>1.4</commons.fileupload.version>
@@ -32,6 +32,7 @@
         <poi.version>4.1.2</poi.version>
         <velocity.version>2.3</velocity.version>
         <jwt.version>0.9.1</jwt.version>
+        <!--<jackson.version>2.13.2</jackson.version>-->
     </properties>
 	
     <!-- 依赖声明 -->
@@ -199,6 +200,12 @@
                 <artifactId>ruoyi-license</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
+
+            <!--            <dependency>
+                            <groupId>com.fasterxml.jackson.core</groupId>
+                            <artifactId>jackson-databind</artifactId>
+                            <version>${jackson.version}</version>
+                        </dependency>-->
 
         </dependencies>
     </dependencyManagement>

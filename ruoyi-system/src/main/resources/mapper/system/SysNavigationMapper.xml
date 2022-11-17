@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysNavigationMapper">
+
+    <resultMap type="SysNavigation" id="SysNavigationResult">
+        <result property="navId" column="nav_id"/>
+        <result property="navName" column="nav_name"/>
+        <result property="path" column="path"/>
+        <result property="isFrame" column="is_frame"/>
+        <result property="isIndex" column="is_index"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="navType" column="nav_type"/>
+        <result property="visible" column="visible"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectSysNavigationVo">
+        select nav_id,
+               nav_name,
+               path,
+               is_frame,
+               is_index,
+               parent_id,
+               nav_type,
+               visible,
+               order_num,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from sys_navigation
+    </sql>
+
+    <select id="selectSysNavigationList" parameterType="SysNavigation" resultMap="SysNavigationResult">
+        <include refid="selectSysNavigationVo"/>
+        <where>
+            <if test="navName != null  and navName != ''">and nav_name like concat('%', #{navName}, '%')</if>
+            <if test="path != null  and path != ''">and path like concat('%', #{path}, '%')</if>
+            <if test="isFrame != null ">and is_frame = #{isFrame}</if>
+            <if test="isIndex != null ">and is_index = #{isIndex}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="navType != null  and navType != ''">and nav_type = #{navType}</if>
+            <if test="visible != null  and visible != ''">and visible = #{visible}</if>
+            <if test="orderNum != null ">and order_num = #{orderNum}</if>
+        </where>
+        order by order_num
+    </select>
+
+    <select id="selectSysNavigationByNavId" parameterType="Long" resultMap="SysNavigationResult">
+        <include refid="selectSysNavigationVo"/>
+        where nav_id = #{navId}
+    </select>
+
+    <insert id="insertSysNavigation" parameterType="SysNavigation" useGeneratedKeys="true" keyProperty="navId">
+        insert into sys_navigation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="navName != null and navName != ''">nav_name,</if>
+            <if test="path != null and path != ''">path,</if>
+            <if test="isFrame != null">is_frame,</if>
+            <if test="isIndex != null">is_index,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="navType != null">nav_type,</if>
+            <if test="visible != null">visible,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="navName != null and navName != ''">#{navName},</if>
+            <if test="path != null and path != ''">#{path},</if>
+            <if test="isFrame != null">#{isFrame},</if>
+            <if test="isIndex != null">#{isIndex},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="navType != null">#{navType},</if>
+            <if test="visible != null">#{visible},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysNavigation" parameterType="SysNavigation">
+        update sys_navigation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="navName != null and navName != ''">nav_name = #{navName},</if>
+            <if test="path != null and path != ''">path = #{path},</if>
+            <if test="isFrame != null">is_frame = #{isFrame},</if>
+            <if test="isIndex != null">is_index = #{isIndex},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="navType != null">nav_type = #{navType},</if>
+            <if test="visible != null">visible = #{visible},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where nav_id = #{navId}
+    </update>
+
+    <delete id="deleteSysNavigationByNavId" parameterType="Long">
+        delete
+        from sys_navigation
+        where nav_id = #{navId}
+    </delete>
+
+    <delete id="deleteSysNavigationByNavIds" parameterType="String">
+        delete from sys_navigation where nav_id in
+        <foreach item="navId" collection="array" open="(" separator="," close=")">
+            #{navId}
+        </foreach>
+    </delete>
+</mapper>

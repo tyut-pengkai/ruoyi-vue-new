@@ -49,19 +49,26 @@
                     background-color="#545c64"
                     class="my-menu"
                     mode="vertical"
-                    router
+                    :router="false"
                     style="width: 100%"
                     text-color="#fff"
                     @select="handleSelect"
+                    menu-trigger="click"
                   >
-                    <el-menu-item index="/">购买商品</el-menu-item>
+                    <sidebar-item
+                      v-for="(route, index) in navList"
+                      :key="route.path + index"
+                      :base-path="route.path"
+                      :item="route"
+                    />
+                    <!-- <el-menu-item index="/">购买商品</el-menu-item>
                     <el-menu-item index="queryOrder">查询订单</el-menu-item>
                     <el-menu-item index="queryCard">查询卡密</el-menu-item>
                     <el-menu-item index="chargeCenter">充值续费</el-menu-item>
                     <el-menu-item index="unbindDevice">解绑设备</el-menu-item>
                     <el-menu-item v-if="isLicenseServer" index="getLicense">
                       激活授权
-                    </el-menu-item>
+                    </el-menu-item> -->
                     <!-- <el-button class="my-button" @click="regShow = true">注册</el-button>
                                       <el-button class="my-button" @click="login">登录</el-button> -->
                   </el-menu>
@@ -74,18 +81,34 @@
                   background-color="#545c64"
                   class="my-menu"
                   mode="horizontal"
-                  router
+                  :router="false"
                   text-color="#fff"
                   @select="handleSelect"
+                  menu-trigger="hover"
                 >
-                  <el-menu-item index="/">购买商品</el-menu-item>
+                  <!-- <el-menu-item
+                    v-for="(item, idx) in navList"
+                    :key="idx"
+                    :index="item.path"
+                    v-show="item.visible == '0'"
+                    >{{ item.navName }}</el-menu-item
+                  > -->
+
+                  <sidebar-item
+                    v-for="(route, index) in navList"
+                    :key="route.path + index"
+                    :base-path="route.path"
+                    :item="route"
+                  />
+
+                  <!-- <el-menu-item index="/">购买商品</el-menu-item>
                   <el-menu-item index="queryOrder">查询订单</el-menu-item>
                   <el-menu-item index="queryCard">查询卡密</el-menu-item>
                   <el-menu-item index="chargeCenter">充值续费</el-menu-item>
                   <el-menu-item index="unbindDevice">解绑设备</el-menu-item>
                   <el-menu-item v-if="isLicenseServer" index="getLicense">
                     激活授权
-                  </el-menu-item>
+                  </el-menu-item> -->
                   <!-- <el-button class="my-button" @click="regShow = true">注册</el-button>
                                   <el-button class="my-button" @click="login">登录</el-button> -->
                 </el-menu>
@@ -119,34 +142,72 @@
   </div>
 </template>
 <script>
+import {getNavInfo} from "@/api/sale/saleShop";
 import {getSysInfo} from "@/api/common";
 import Hamburger from "@/components/Hamburger";
+import SidebarItem from "../../layout/components/Sidebar/SidebarItemNav";
 import "element-ui/lib/theme-chalk/display.css";
+import {isExternal} from "@/utils/validate";
 
 export default {
   components: {
     Hamburger,
+    SidebarItem,
   },
   data() {
     return {
       copyright: "",
       activeIndex: "1",
+      activeIndexNum: 1,
       regShow: false,
       logo: require("../../assets/logo/logo.png"),
       title: "在线商城",
       drawer: false,
       isLicenseServer: false,
       icp: "",
+      navList: [
+        // {
+        //   navName: "a",
+        //   path: "b",
+        //   isFrame: 0,
+        //   visible: 1,
+        // },
+      ],
     };
   },
   created() {
-    this.getSysInfo();
+    if (this.$store.state.settings.enableFrontEnd == "Y") {
+      this.getNavigation();
+      this.getSysInfo();
+    } else {
+      this.$router.replace("stop");
+    }
   },
   methods: {
+    getNavigation() {
+      getNavInfo().then((res) => {
+        this.navList = res.data;
+        for (let item of res.data) {
+          if (item.index) {
+            if (isExternal(item.path)) {
+              window.location = item.path;
+            } else {
+              this.$router.replace(item.path);
+            }
+            break;
+          }
+          this.activeIndexNum++;
+          this.activeIndex = this.activeIndexNum.toString();
+        }
+      });
+    },
     getSysInfo() {
       getSysInfo().then((res) => {
         this.copyright = res.copyright;
         this.isLicenseServer = res.isLicenseServer;
+        if (!res.enableFrontEnd) {
+          this.$router.replace("stop");
+        }
       });
       if (this.$store.state.settings.shopName) {
         this.title = this.$store.state.settings.shopName;

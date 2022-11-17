@@ -150,3 +150,11 @@ export function unbindDevice(data) {
     params: data
   })
 }
+
+// 获取首页导航信息
+export function getNavInfo() {
+  return request({
+    url: '/sale/shop/getNavInfo',
+    method: 'get'
+  })
+}

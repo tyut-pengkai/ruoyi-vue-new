@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.common;
 
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
@@ -230,6 +231,7 @@ public class CommonController {
             config.setShortName(website.getShortName());
         }
         config.setIsLicenseServer(isLicenseServer);
+        config.setEnableFrontEnd(UserConstants.YES.equals(website.getEnableFrontEnd()));
         return config;
     }
 

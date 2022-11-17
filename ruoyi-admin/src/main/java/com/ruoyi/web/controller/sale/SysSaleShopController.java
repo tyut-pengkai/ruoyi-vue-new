@@ -22,6 +22,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.tree.TreeUtil;
 import com.ruoyi.common.utils.uuid.SnowflakeIdWorker;
 import com.ruoyi.payment.constants.PaymentDefine;
 import com.ruoyi.payment.domain.Payment;
@@ -37,10 +38,7 @@ import com.ruoyi.sale.service.ISysSaleShopService;
 import com.ruoyi.system.domain.*;
 import com.ruoyi.system.mapper.*;
 import com.ruoyi.system.service.*;
-import com.ruoyi.web.controller.sale.vo.ChargeOrderVo;
-import com.ruoyi.web.controller.sale.vo.SaleAppVo;
-import com.ruoyi.web.controller.sale.vo.SaleCardTemplateVo;
-import com.ruoyi.web.controller.sale.vo.SaleOrderVo;
+import com.ruoyi.web.controller.sale.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -94,6 +92,8 @@ public class SysSaleShopController extends BaseController {
     private ISysDeviceCodeService sysDeviceCodeService;
     @Resource
     private ISysWebsiteService sysWebsiteService;
+    @Resource
+    private ISysNavigationService sysNavigationService;
 
     private static final SnowflakeIdWorker sf = new SnowflakeIdWorker();
 
@@ -702,6 +702,29 @@ public class SysSaleShopController extends BaseController {
         }
         sysAppUserDeviceCodeService.deleteSysAppUserDeviceCodeById(id);
         return AjaxResult.success();
+    }
+
+    @GetMapping("/getNavInfo")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
+    public AjaxResult getNavInfo() {
+        SysNavigation nav = new SysNavigation();
+        nav.setVisible(UserConstants.NORMAL);
+        List<SysNavigation> navList = sysNavigationService.selectSysNavigationList(nav);
+        List<NavVo> navVoList = new ArrayList<>();
+        for (SysNavigation item : navList) {
+            NavVo vo = new NavVo();
+            NavMetaVo mvo = new NavMetaVo();
+            mvo.setTitle(item.getNavName());
+            vo.setMeta(mvo);
+            vo.setPath(item.getPath());
+            vo.setHidden(false);
+            vo.setId(item.getNavId());
+            vo.setParentId(item.getParentId());
+            vo.setIndex(UserConstants.YES.equals(item.getIsIndex()));
+            navVoList.add(vo);
+        }
+        List<NavVo> tree = TreeUtil.build(navVoList);
+        return AjaxResult.success(tree);
     }
 
 }

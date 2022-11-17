@@ -50,12 +50,14 @@ export default {
         this.description = description;
         this.keywords = keywords;
         document.title = websiteName;
+        let enableFrontEnd = res.data.enableFrontEnd || "Y";
         this.$store.dispatch("settings/setWebsiteName", websiteName);
         this.$store.dispatch("settings/setWebsiteShortName", websiteShortName);
         this.$store.dispatch("settings/setShopName", shopName);
         this.$store.dispatch("settings/setWebsiteLogo", websiteLogo);
         this.$store.dispatch("settings/setIcp", icp);
         this.$store.dispatch("settings/setPageSize", pageSize);
+        this.$store.dispatch("settings/setEnableFrontEnd", enableFrontEnd);
         if (res.data.favicon) {
           var faviconurl = res.data.favicon; //这里可以是动态的获取的favicon的地址
           var link =

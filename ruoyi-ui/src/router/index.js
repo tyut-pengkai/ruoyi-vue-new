@@ -67,11 +67,20 @@ export const constantRoutes = [{
     hidden: true
   },
   {
+    path: '/stop',
+    component: () => import('@/views/sale/home/stop'),
+    hidden: true,
+  },
+  {
     path: '',
     component: () => import('@/views/sale/index'),
     hidden: true,
     children: [{
       path: '/',
+      component: () => import('@/views/sale/home/index'),
+      name: 'Home',
+    }, {
+      path: '/shop',
       component: () => import('@/views/sale/shop/index'),
       name: 'Shop',
     }, {

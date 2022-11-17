@@ -48,8 +48,19 @@
           <el-form-item label="网站简称">
             <el-input v-model="form.shortName"></el-input>
           </el-form-item>
-          <el-form-item label="商城名称">
+          <el-form-item label="前台名称">
             <el-input v-model="form.shopName"></el-input>
+          </el-form-item>
+          <el-form-item label="是否开启前台">
+            <el-radio-group v-model="form.enableFrontEnd">
+              <el-radio
+                v-for="dict in dict.type.sys_yes_no"
+                :key="dict.value"
+                :label="dict.value"
+              >{{ dict.label }}
+              </el-radio
+              >
+            </el-radio-group>
           </el-form-item>
           <el-form-item label="网站域名">
             <el-input v-model="form.domain"></el-input>
@@ -110,7 +121,7 @@ import {getWebsiteConfig, updateWebsiteConfig} from "@/api/system/website";
 export default {
   name: "Website",
   components: {ImageUpload, ImagePreview},
-  dicts: ["sys_normal_disable"],
+  dicts: ["sys_normal_disable", "sys_yes_no"],
   data() {
     return {
       form: {

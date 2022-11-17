@@ -92,10 +92,22 @@ public class SysWebsite extends BaseEntity {
     private char isSafeEntrance;
 
     /**
+     * 是否开启前台页面
+     */
+    private String enableFrontEnd;
+    /**
      * ICP备案
      */
     @Excel(name = "备案号")
     private String icp;
+
+    public String getEnableFrontEnd() {
+        return enableFrontEnd;
+    }
+
+    public void setEnableFrontEnd(String enableFrontEnd) {
+        this.enableFrontEnd = enableFrontEnd;
+    }
 
     public Long getId() {
         return id;

@@ -30,6 +30,7 @@ const state = {
   safeEntrance: '',
   pageSize: '10',
   icp: '',
+  enableFrontEnd: 'Y'
 }
 const mutations = {
   CHANGE_SETTING: (state, {
@@ -90,8 +91,8 @@ const actions = {
   },
   // 获取安全入口
   GetSafeEntrance({
-    commit,
-    state
+                    commit,
+                    state
                   }) {
     return new Promise((resolve, reject) => {
       getWebsiteConfig().then(res => {
@@ -107,6 +108,12 @@ const actions = {
            commit
          }, icp) {
     state.icp = icp
+  },
+  // 是否开启前台
+  setEnableFrontEnd({
+                      commit
+                    }, enableFrontEnd) {
+    state.enableFrontEnd = enableFrontEnd
   },
 }
 

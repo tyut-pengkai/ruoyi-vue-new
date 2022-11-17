@@ -59,6 +59,16 @@ public class RuoYiConfig {
      */
     private boolean isLicenseServer;
 
+    private boolean enableFrontEnd;
+
+    public boolean isEnableFrontEnd() {
+        return enableFrontEnd;
+    }
+
+    public void setEnableFrontEnd(boolean enableFrontEnd) {
+        this.enableFrontEnd = enableFrontEnd;
+    }
+
     public String getName() {
         return name;
     }
