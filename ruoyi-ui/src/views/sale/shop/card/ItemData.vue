@@ -64,7 +64,7 @@
       <el-button id="copyButton" type="primary" @click="copy">
         复制文本
       </el-button>
-      <el-button id="saveButton" type="primary" @click="save">
+      <el-button id="saveButton" class="my-class" type="primary" @click="save">
         下载保存
       </el-button>
     </div>
@@ -314,3 +314,10 @@ export default {
   },
 };
 </script>
+<style scoped>
+@media screen and (max-width: 1199px) {
+  .my-class {
+    display: none;
+  }
+}
+</style>
