@@ -50,19 +50,18 @@
 
     <select id="selectSysAgentList" parameterType="SysAgent" resultMap="SysAgentResult">
         <include refid="selectSysAgentVo"/>
-        <where>
-            <if test="parentAgentId != null ">and ag.parent_agent_id = #{parentAgentId}</if>
-            <if test="params.userName != null ">and (u.user_name like concat('%', #{params.userName}, '%') or
-                u.nick_name like concat('%', #{params.userName}, '%'))
-            </if>
-            <if test="enableAddSubagent != null  and enableAddSubagent != ''">and ag.enable_add_subagent =
-                #{enableAddSubagent}
-            </if>
-            <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
-                and ag.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
-            </if>
-            <if test="status != null  and status != ''">and ag.status = #{status}</if>
-        </where>
+        where ag.del_flag = '0'
+        <if test="parentAgentId != null ">and ag.parent_agent_id = #{parentAgentId}</if>
+        <if test="params.userName != null ">and (u.user_name like concat('%', #{params.userName}, '%') or
+            u.nick_name like concat('%', #{params.userName}, '%'))
+        </if>
+        <if test="enableAddSubagent != null  and enableAddSubagent != ''">and ag.enable_add_subagent =
+            #{enableAddSubagent}
+        </if>
+        <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
+            and ag.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
+        </if>
+        <if test="status != null  and status != ''">and ag.status = #{status}</if>
     </select>
 
     <select id="selectSysAgentByAgentId" parameterType="Long" resultMap="SysAgentResult">
@@ -72,7 +71,7 @@
 
     <select id="selectSysAgentByUserId" parameterType="Long" resultMap="SysAgentResult">
         <include refid="selectSysAgentVo"/>
-        where ag.user_id = #{userId}
+        where ag.del_flag = '0' and ag.user_id = #{userId}
     </select>
 
     <insert id="insertSysAgent" parameterType="SysAgent" useGeneratedKeys="true" keyProperty="agentId">
@@ -126,16 +125,30 @@
         where agent_id = #{agentId}
     </update>
 
+    <!--    <delete id="deleteSysAgentByAgentId" parameterType="Long">
+            delete
+            from sys_agent
+            where agent_id = #{agentId}
+        </delete>
+
+        <delete id="deleteSysAgentByAgentIds" parameterType="String">
+            delete from sys_agent where agent_id in
+            <foreach item="agentId" collection="array" open="(" separator="," close=")">
+                #{agentId}
+            </foreach>
+        </delete>-->
+
     <delete id="deleteSysAgentByAgentId" parameterType="Long">
-        delete
-        from sys_agent
+        update sys_agent
+        set del_flag = '2'
         where agent_id = #{agentId}
     </delete>
 
-    <delete id="deleteSysAgentByAgentIds" parameterType="String">
-        delete from sys_agent where agent_id in
-        <foreach item="agentId" collection="array" open="(" separator="," close=")">
+    <delete id="deleteSysAgentByAgentIds" parameterType="Long">
+        update sys_agent set del_flag = '2' where agent_id in
+        <foreach collection="array" item="agentId" open="(" separator="," close=")">
             #{agentId}
         </foreach>
     </delete>
+
 </mapper>

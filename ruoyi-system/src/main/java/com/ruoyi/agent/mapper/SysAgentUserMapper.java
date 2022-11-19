@@ -78,7 +78,7 @@ public interface SysAgentUserMapper {
      * @return
      */
     @Select("SELECT DISTINCT\n" +
-            "\tag.agent_id,\n" +
+//            "\tag.agent_id,\n" +
             "\tu.user_id,\n" +
             "\tu.user_name,\n" +
             "\tu.nick_name\n" +
@@ -89,7 +89,7 @@ public interface SysAgentUserMapper {
             "\tLEFT JOIN sys_role r ON r.role_id = ur.role_id \n" +
             "WHERE\n" +
             "\tu.del_flag = '0' \n" +
-            "\tAND ag.user_id IS NULL \n" +
+            "\tAND (ag.del_flag != 0 or ag.del_flag IS NULL) \n" +
             "\tAND (\n" +
             "\tr.role_key IS NULL \n" +
             "\tOR r.role_key NOT IN ( 'sadmin', 'admin' )) AND ( user_name LIKE CONCAT('%',#{username},'%') OR nick_name LIKE CONCAT('%',#{username},'%') ) \n" +
@@ -101,7 +101,7 @@ public interface SysAgentUserMapper {
      *
      * @return
      */
-    @Select("SELECT ag.agent_id FROM sys_agent ag WHERE ag.path LIKE CONCAT(( SELECT ag.path FROM sys_agent ag WHERE ag.agent_id = #{agentId} ),\n" +
+    @Select("SELECT ag.agent_id FROM sys_agent ag WHERE ag.del_flag = 0 and ag.path LIKE CONCAT(( SELECT ag.path FROM sys_agent ag WHERE ag.del_flag = 0 and ag.agent_id = #{agentId} ),\n" +
             "\t'%' \n" +
             ") \n" +
             "AND ag.path != (\n" +
@@ -109,7 +109,7 @@ public interface SysAgentUserMapper {
             "\t\tag.path \n" +
             "\tFROM\n" +
             "\t\tsys_agent ag \n" +
-            "\tWHERE\n" +
+            "\tWHERE ag.del_flag = 0 and \n" +
             "\tag.agent_id = #{agentId} \n" +
             "\t)")
     public List<Long> getSubAgents(@Param("agentId") Long agentId);
