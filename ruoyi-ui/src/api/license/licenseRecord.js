@@ -43,6 +43,14 @@ export function delLicenseRecord(id) {
   })
 }
 
+// 解除验证授权用户
+export function removeLicenseRecord(id) {
+  return request({
+    url: '/license/licenseRecord/remove/' + id,
+    method: 'delete'
+  })
+}
+
 // 兑换授权文件
 export function genLicenseFileByWebUrl(query) {
   return request({

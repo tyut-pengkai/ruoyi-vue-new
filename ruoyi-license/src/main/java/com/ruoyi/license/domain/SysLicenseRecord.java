@@ -3,6 +3,7 @@ package com.ruoyi.license.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.enums.LicenseStatus;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -47,6 +48,12 @@ public class SysLicenseRecord extends BaseEntity {
     private String contact;
 
     /**
+     * 授权状态
+     */
+    @Excel(name = "授权状态")
+    private LicenseStatus status;
+
+    /**
      * 授权起始时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -65,6 +72,14 @@ public class SysLicenseRecord extends BaseEntity {
      */
     @Excel(name = "使用的单码")
     private String loginCode;
+
+    public LicenseStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(LicenseStatus status) {
+        this.status = status;
+    }
 
     public Long getId() {
         return id;

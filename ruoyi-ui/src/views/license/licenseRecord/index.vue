@@ -39,6 +39,21 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="授权状态" prop="status">
+        <el-select
+          v-model="queryParams.status"
+          clearable
+          placeholder="请选择授权状态"
+          size="small"
+        >
+          <el-option
+            v-for="dict in dict.type.sys_license_status"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="授权起始时间">
         <el-date-picker
           v-model="daterangeStartTime"
@@ -76,12 +91,10 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -95,8 +108,7 @@
           type="primary"
           @click="handleAdd"
         >新增
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -108,8 +120,7 @@
           type="success"
           @click="handleUpdate"
         >修改
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -121,8 +132,7 @@
           type="danger"
           @click="handleDelete"
         >删除
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -133,8 +143,7 @@
           type="warning"
           @click="handleExport"
         >导出
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -153,6 +162,14 @@
       <el-table-column align="center" label="服务器识别码" prop="deviceCode"/>
       <el-table-column align="center" label="姓名" prop="name"/>
       <el-table-column align="center" label="联系方式" prop="contact"/>
+      <el-table-column align="center" label="授权状态" prop="status">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_license_status"
+            :value="scope.row.status"
+          />
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
         label="授权起始时间"
@@ -188,8 +205,15 @@
             type="text"
             @click="handleUpdate(scope.row)"
           >修改
-          </el-button
-          >
+          </el-button>
+          <el-button
+            v-hasPermi="['license:licenseRecord:remove']"
+            icon="el-icon-delete"
+            size="mini"
+            type="text"
+            @click="handleRemove(scope.row)"
+          >解除授权
+          </el-button>
           <el-button
             v-hasPermi="['license:licenseRecord:remove']"
             icon="el-icon-delete"
@@ -197,8 +221,7 @@
             type="text"
             @click="handleDelete(scope.row)"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -213,7 +236,7 @@
 
     <!-- 添加或修改验证授权用户对话框 -->
     <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules">
         <el-form-item label="网站URL" prop="webUrl">
           <el-input v-model="form.webUrl" placeholder="请输入网站URL"/>
         </el-form-item>
@@ -228,6 +251,20 @@
         </el-form-item>
         <el-form-item label="联系方式" prop="contact">
           <el-input v-model="form.contact" placeholder="请输入联系方式"/>
+        </el-form-item>
+        <el-form-item label="授权状态" prop="status">
+          <el-select
+            v-model="form.status"
+            placeholder="请选择授权状态"
+            size="small"
+          >
+            <el-option
+              v-for="dict in dict.type.sys_license_status"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="授权起始时间" prop="startTime">
           <el-date-picker
@@ -274,11 +311,13 @@ import {
   delLicenseRecord,
   getLicenseRecord,
   listLicenseRecord,
+  removeLicenseRecord,
   updateLicenseRecord,
 } from "@/api/license/licenseRecord";
 
 export default {
   name: "LicenseRecord",
+  dicts: ["sys_license_status"],
   data() {
     return {
       // 遮罩层
@@ -432,6 +471,21 @@ export default {
         .then(() => {
           this.getList();
           this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {
+        });
+    },
+    /** 解除授权按钮操作 */
+    handleRemove(row) {
+      const ids = row.id || this.ids;
+      this.$modal
+        .confirm('是否确认解除验证授权用户编号为"' + ids + '"的授权？')
+        .then(function () {
+          return removeLicenseRecord(ids);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("解除授权成功");
         })
         .catch(() => {
         });

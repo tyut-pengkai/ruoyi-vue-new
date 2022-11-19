@@ -4,6 +4,7 @@ import cn.hutool.crypto.digest.MD5;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.license.ServerInfo;
+import com.ruoyi.common.utils.AesCbcPKCS5PaddingUtil;
 import com.ruoyi.common.utils.PathUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.license.LicenseCheckListener;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,6 +70,25 @@ public class SysLicenseController {
                 return AjaxResult.success("添加授权成功，请重新尝试登录您的验证后台");
             }
             return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return AjaxResult.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/remove")
+    public AjaxResult removeLicense(String sign) {
+        try {
+            log.info("remove license：" + sign);
+            String decode = AesCbcPKCS5PaddingUtil.decode(sign, Constants.STORE_PASS);
+            if (System.currentTimeMillis() - Long.parseLong(decode) < 3000) {
+                File file = new File(PathUtils.getUserPath() + File.separator + "license.lic");
+                if (file.exists() && file.length() > 0) {
+                    FileUtils.writeStringToFile(file, "", StandardCharsets.UTF_8);
+                }
+                return AjaxResult.success("授权已移除");
+            }
+            return AjaxResult.success("非法请求");
         } catch (Exception e) {
             e.printStackTrace();
             return AjaxResult.error(e.getMessage());

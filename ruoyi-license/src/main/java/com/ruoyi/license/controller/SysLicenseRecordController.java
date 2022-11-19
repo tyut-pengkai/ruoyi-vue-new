@@ -13,8 +13,10 @@ import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.enums.LicenseStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.license.bo.LicenseCheckModel;
+import com.ruoyi.common.utils.AesCbcPKCS5PaddingUtil;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.PathUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -146,6 +148,43 @@ public class SysLicenseRecordController extends BaseController {
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(sysLicenseRecordService.deleteSysLicenseRecordByIds(ids));
+    }
+
+    /**
+     * 移除验证授权用户授权信息
+     */
+    @PreAuthorize("@ss.hasPermi('license:licenseRecord:remove')")
+    @Log(title = "验证授权用户", businessType = BusinessType.DELETE)
+    @DeleteMapping("/remove/{ids}")
+    public AjaxResult removeLicense(@PathVariable Long[] ids) {
+        if (ids.length != 1) {
+            throw new ServiceException("请选择单个项目进行操作");
+        }
+        try {
+            SysLicenseRecord record = sysLicenseRecordService.selectSysLicenseRecordById(ids[0]);
+            // 置为移除状态
+            record.setStatus(LicenseStatus.REMOVE);
+            SysLicenseRecord record1 = new SysLicenseRecord();
+            record1.setId(record.getId());
+            record1.setStatus(LicenseStatus.REMOVE);
+            sysLicenseRecordService.updateSysLicenseRecord(record1);
+            // 移除注册文件
+            String webUrl = record.getWebUrl();
+            if (StringUtils.isNotBlank(webUrl)) {
+                webUrl = webUrl.endsWith("/") ? webUrl.substring(0, webUrl.length() - 1) : webUrl;
+                String sign = AesCbcPKCS5PaddingUtil.encode(String.valueOf(System.currentTimeMillis()), Constants.STORE_PASS);
+                String response = HttpUtils.sendPost(webUrl + "/prod-api/system/license/remove", "sign=" + sign);
+                AjaxResult result = JSON.parseObject(response, AjaxResult.class);
+                if ((int) result.get(AjaxResult.CODE_TAG) == 200) {
+                    return result;
+                }
+                throw new ServiceException(String.valueOf(result.get(AjaxResult.MSG_TAG)));
+            }
+            throw new ServiceException("目标网站地址未知，未移除远程注册文件");
+        } catch (Exception e) {
+            log.error("", e);
+            throw new ServiceException("License移除失败！" + e.getMessage());
+        }
     }
 
     /**

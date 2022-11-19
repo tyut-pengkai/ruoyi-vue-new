@@ -118,6 +118,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/checkSafeEntrance").permitAll()
                 .antMatchers("/license/**").permitAll()
                 .antMatchers("/system/license/inject").permitAll()
+                .antMatchers("/system/license/remove").permitAll()
                 .antMatchers(HttpMethod.GET, "/common/sysInfo", "/system/website/config").permitAll()
                 .antMatchers(HttpMethod.GET, "/common/download", "/common/globalFileDownload/*/*").permitAll()
                 // 静态资源，可匿名访问
