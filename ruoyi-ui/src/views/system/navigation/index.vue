@@ -75,12 +75,10 @@
           type="primary"
           @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
         >重置
-        </el-button
-        >
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -94,8 +92,7 @@
           type="primary"
           @click="handleAdd"
         >新增
-        </el-button
-        >
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -105,8 +102,7 @@
           type="info"
           @click="toggleExpandAll"
         >展开/折叠
-        </el-button
-        >
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -165,8 +161,7 @@
             type="text"
             @click="handleUpdate(scope.row)"
           >修改
-          </el-button
-          >
+          </el-button>
           <el-button
             v-hasPermi="['system:navigation:add']"
             icon="el-icon-plus"
@@ -174,8 +169,7 @@
             type="text"
             @click="handleAdd(scope.row)"
           >新增
-          </el-button
-          >
+          </el-button>
           <el-button
             v-hasPermi="['system:navigation:remove']"
             icon="el-icon-delete"
@@ -183,8 +177,7 @@
             type="text"
             @click="handleDelete(scope.row)"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -213,8 +206,7 @@
               :key="dict.value"
               :label="dict.value"
             >{{ dict.label }}
-            </el-radio
-            >
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <!-- <el-form-item label="是否为外链">
@@ -233,8 +225,7 @@
               :key="dict.value"
               :label="dict.value"
             >{{ dict.label }}
-            </el-radio
-            >
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="显示顺序" prop="orderNum">
@@ -359,7 +350,7 @@ export default {
         navName: null,
         path: null,
         // isFrame: 0,
-
+        isIndex: "N",
         parentId: null,
         // navType: "0",
 
