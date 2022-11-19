@@ -18,6 +18,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.*;
+import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -663,10 +664,24 @@ public class SysSaleShopController extends BaseController {
         if (sysApp == null) {
             throw new ServiceException("软件不存在");
         }
-        // 是否开启解绑
+        // 软件是否开启解绑
         Boolean enableUnbind = Convert.toBool(sysApp.getEnableUnbind(), false);
         if (!enableUnbind) {
             throw new ServiceException("该软件解绑功能未开启");
+        }
+        // 卡类是否开启解绑
+        if (appUser.getLastChargeTemplateId() != null) {
+            if (sysApp.getAuthType() == AuthType.ACCOUNT) {
+                SysCardTemplate template = sysCardTemplateMapper.selectSysCardTemplateByTemplateId(appUser.getLastChargeTemplateId());
+                if (template != null && UserConstants.NO.equals(template.getEnableUnbind())) {
+                    throw new ApiException(ErrorCode.ERROR_CARD_UNBIND_NOT_ENABLE);
+                }
+            } else if (sysApp.getAuthType() == AuthType.LOGIN_CODE) {
+                SysLoginCodeTemplate template = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateByTemplateId(appUser.getLastChargeTemplateId());
+                if (template != null && UserConstants.NO.equals(template.getEnableUnbind())) {
+                    throw new ApiException(ErrorCode.ERROR_CARD_UNBIND_NOT_ENABLE);
+                }
+            }
         }
         // 扣减解绑次数
         if (appUser.getUnbindTimes() > 0) {

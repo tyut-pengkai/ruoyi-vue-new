@@ -580,6 +580,25 @@
                 </el-select>
               </el-form-item>
             </el-col>
+            <el-col :span="12">
+              <el-form-item
+                label="允许解绑"
+                label-width="80px"
+                prop="enableUnbind"
+              >
+                <el-select
+                  v-model="form.enableUnbind"
+                  placeholder="请选择是否允许解绑"
+                >
+                  <el-option
+                    v-for="dict in dict.type.sys_yes_no"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
           </el-form-item>
           <el-form-item>
             <el-col :span="12">
@@ -916,6 +935,13 @@ export default {
             trigger: "blur",
           },
         ],
+        enableUnbind: [
+          {
+            required: true,
+            message: "是否允许解绑不能为空",
+            trigger: "change",
+          },
+        ],
       },
     };
   },
@@ -979,6 +1005,7 @@ export default {
         remark: undefined,
         cardLoginLimitU: -2,
         cardLoginLimitM: -2,
+        enableUnbind: "Y",
       };
       this.resetForm("form");
     },

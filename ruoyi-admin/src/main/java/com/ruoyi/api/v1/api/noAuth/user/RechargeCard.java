@@ -86,6 +86,7 @@ public class RechargeCard extends Function {
         appUser.setCardLoginLimitU(card.getCardLoginLimitU());
         appUser.setCardLoginLimitM(card.getCardLoginLimitM());
         appUser.setCardCustomParams(card.getCardCustomParams());
+        appUser.setLastChargeTemplateId(card.getTemplateId());
         card.setIsCharged(UserConstants.YES);
         card.setChargeTime(DateUtils.getNowDate());
         card.setOnSale(UserConstants.NO);

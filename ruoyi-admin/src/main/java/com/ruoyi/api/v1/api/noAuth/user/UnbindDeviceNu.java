@@ -6,6 +6,7 @@ import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.api.v1.utils.MyUtils;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
 import com.ruoyi.common.core.domain.entity.SysDeviceCode;
@@ -17,10 +18,8 @@ import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
-import com.ruoyi.system.service.ISysAppUserService;
-import com.ruoyi.system.service.ISysDeviceCodeService;
-import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.domain.SysCardTemplate;
+import com.ruoyi.system.service.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -37,6 +36,8 @@ public class UnbindDeviceNu extends Function {
     private ISysDeviceCodeService deviceCodeService;
     @Resource
     private ISysAppUserDeviceCodeService appUserDeviceCodeService;
+    @Resource
+    private ISysCardTemplateService cardTemplateService;
 
     @Override
     public void init() {
@@ -53,10 +54,10 @@ public class UnbindDeviceNu extends Function {
     @Override
     @Transactional(noRollbackFor = ApiException.class, rollbackFor = Exception.class)
     public Object handle() {
-        // 是否开启解绑
+        // 软件是否开启解绑
         Boolean enableUnbind = Convert.toBool(this.getApp().getEnableUnbind(), false);
         if (!enableUnbind) {
-            throw new ApiException(ErrorCode.ERROR_UNBIND_NOT_ENABLE);
+            throw new ApiException(ErrorCode.ERROR_APP_UNBIND_NOT_ENABLE);
         }
         // 验证账号密码
         String username = this.getParams().get("username");
@@ -72,6 +73,13 @@ public class UnbindDeviceNu extends Function {
         SysAppUser appUser = appUserService.selectSysAppUserByAppIdAndUserId(getApp().getAppId(), user.getUserId());
         if (appUser == null) {
             throw new ApiException(ErrorCode.ERROR_APP_USER_NOT_EXIST);
+        }
+        // 卡类是否开启解绑
+        if (appUser.getLastChargeTemplateId() != null) {
+            SysCardTemplate template = cardTemplateService.selectSysCardTemplateByTemplateId(appUser.getLastChargeTemplateId());
+            if (template != null && UserConstants.NO.equals(template.getEnableUnbind())) {
+                throw new ApiException(ErrorCode.ERROR_CARD_UNBIND_NOT_ENABLE);
+            }
         }
         // 设备码是否存在
         String deviceCodeStr = this.getParams().get("deviceCode");

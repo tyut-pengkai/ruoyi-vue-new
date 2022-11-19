@@ -154,6 +154,20 @@ public class SysLoginCodeTemplate extends BaseEntity {
     @Excel(name = "购卡URL")
     private String shopUrl;
 
+    /**
+     * 允许解绑
+     */
+    @Excel(name = "允许解绑")
+    private String enableUnbind;
+
+    public String getEnableUnbind() {
+        return enableUnbind;
+    }
+
+    public void setEnableUnbind(String enableUnbind) {
+        this.enableUnbind = enableUnbind;
+    }
+
     public String getShopUrl() {
         return shopUrl;
     }

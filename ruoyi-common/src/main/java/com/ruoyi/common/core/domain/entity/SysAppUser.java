@@ -165,6 +165,19 @@ public class SysAppUser extends BaseEntity {
      */
     private Integer unbindTimes;
 
+    /**
+     * 最后充值的卡类ID，用于获取是否可解绑信息
+     */
+    private Long lastChargeTemplateId;
+
+    public Long getLastChargeTemplateId() {
+        return lastChargeTemplateId;
+    }
+
+    public void setLastChargeTemplateId(Long lastChargeTemplateId) {
+        this.lastChargeTemplateId = lastChargeTemplateId;
+    }
+
     public Integer getUnbindTimes() {
         return unbindTimes;
     }

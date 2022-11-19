@@ -31,6 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="cardLoginLimitM" column="card_login_limit_m"/>
         <result property="cardCustomParams" column="card_custom_params"/>
         <result property="unbindTimes" column="unbind_times"/>
+        <result property="lastChargeTemplateId" column="last_charge_template_id"/>
         <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
     </resultMap>
@@ -78,6 +79,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                au.card_login_limit_m,
                au.card_custom_params,
                au.unbind_times,
+               au.last_charge_template_id,
                a.app_id,
                a.app_name,
                a.auth_type,
@@ -154,6 +156,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cardLoginLimitM != null">card_login_limit_m,</if>
             <if test="cardCustomParams != null">card_custom_params,</if>
             <if test="unbindTimes != null">unbind_times,</if>
+            <if test="lastChargeTemplateId != null">last_charge_template_id,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
@@ -181,6 +184,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cardLoginLimitM != null">#{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">#{cardCustomParams},</if>
             <if test="unbindTimes != null">#{unbindTimes},</if>
+            <if test="lastChargeTemplateId != null">#{lastChargeTemplateId},</if>
         </trim>
     </insert>
 
@@ -212,6 +216,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cardLoginLimitM != null">card_login_limit_m = #{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">card_custom_params = #{cardCustomParams},</if>
             <if test="unbindTimes != null">unbind_times = #{unbindTimes},</if>
+            <if test="lastChargeTemplateId != null">last_charge_template_id = #{lastChargeTemplateId},</if>
         </trim>
         where app_user_id = #{appUserId}
     </update>

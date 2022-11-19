@@ -31,6 +31,7 @@
         <result property="cardLoginLimitM" column="card_login_limit_m"/>
         <result property="cardCustomParams" column="card_custom_params"/>
         <result property="shopUrl" column="shop_url"/>
+        <result property="enableUnbind" column="enable_unbind"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
     </resultMap>
 
@@ -69,6 +70,7 @@
                ct.card_login_limit_m,
                ct.card_custom_params,
                ct.shop_url,
+               ct.enable_unbind,
                a.app_id,
                a.app_name,
                a.auth_type,
@@ -142,6 +144,7 @@
             <if test="cardLoginLimitM != null">card_login_limit_m,</if>
             <if test="cardCustomParams != null">card_custom_params,</if>
             <if test="shopUrl != null">shop_url,</if>
+            <if test="enableUnbind != null">enable_unbind,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="appId != null">#{appId},</if>
@@ -169,6 +172,7 @@
             <if test="cardLoginLimitM != null">#{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">#{cardCustomParams},</if>
             <if test="shopUrl != null">#{shopUrl},</if>
+            <if test="enableUnbind != null">#{enableUnbind},</if>
         </trim>
     </insert>
 
@@ -200,6 +204,7 @@
             <if test="cardLoginLimitM != null">card_login_limit_m = #{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">card_custom_params = #{cardCustomParams},</if>
             <if test="shopUrl != null">shop_url = #{shopUrl},</if>
+            <if test="enableUnbind != null">enable_unbind = #{enableUnbind},</if>
         </trim>
         where template_id = #{templateId}
     </update>
