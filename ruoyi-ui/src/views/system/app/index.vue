@@ -567,6 +567,12 @@
               <el-form-item label="软件主页" prop="idxUrl">
                 <el-input v-model="form.idxUrl" placeholder="请输入软件主页"/>
               </el-form-item>
+              <el-form-item label="购卡地址" prop="idxUrl">
+                <el-input
+                  v-model="form.customBuyUrl"
+                  placeholder="请输入购卡地址"
+                />
+              </el-form-item>
               <!-- <el-form-item label="软件图标">
                 <imageUpload v-model="form.icon" :limit="1" /> -->
               <!-- <app-icon /> -->
@@ -1531,6 +1537,7 @@ export default {
         unbindTimes: 0,
         // minQuotaUnbind: 0,
         enableUnbindByQuota: "Y",
+        customBuyUrl: undefined,
       };
       this.resetForm("form");
       this.tabIdx = "0";

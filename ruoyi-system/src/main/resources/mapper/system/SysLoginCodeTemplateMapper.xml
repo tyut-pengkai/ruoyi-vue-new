@@ -30,6 +30,7 @@
         <result property="cardLoginLimitU" column="card_login_limit_u"/>
         <result property="cardLoginLimitM" column="card_login_limit_m"/>
         <result property="cardCustomParams" column="card_custom_params"/>
+        <result property="shopUrl" column="shop_url"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
     </resultMap>
 
@@ -67,6 +68,7 @@
                ct.card_login_limit_u,
                ct.card_login_limit_m,
                ct.card_custom_params,
+               ct.shop_url,
                a.app_id,
                a.app_name,
                a.auth_type,
@@ -139,6 +141,7 @@
             <if test="cardLoginLimitU != null">card_login_limit_u,</if>
             <if test="cardLoginLimitM != null">card_login_limit_m,</if>
             <if test="cardCustomParams != null">card_custom_params,</if>
+            <if test="shopUrl != null">shop_url,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="appId != null">#{appId},</if>
@@ -165,6 +168,7 @@
             <if test="cardLoginLimitU != null">#{cardLoginLimitU},</if>
             <if test="cardLoginLimitM != null">#{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">#{cardCustomParams},</if>
+            <if test="shopUrl != null">#{shopUrl},</if>
         </trim>
     </insert>
 
@@ -195,6 +199,7 @@
             <if test="cardLoginLimitU != null">card_login_limit_u = #{cardLoginLimitU},</if>
             <if test="cardLoginLimitM != null">card_login_limit_m = #{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">card_custom_params = #{cardCustomParams},</if>
+            <if test="shopUrl != null">shop_url = #{shopUrl},</if>
         </trim>
         where template_id = #{templateId}
     </update>

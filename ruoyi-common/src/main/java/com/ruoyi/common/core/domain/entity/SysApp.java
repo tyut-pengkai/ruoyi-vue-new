@@ -217,6 +217,34 @@ public class SysApp extends BaseEntity
 
     private String enableUnbindByQuota;
 
+    /**
+     * 购卡URL
+     */
+    @Excel(name = "购卡URL")
+    private String shopUrl;
+
+    /**
+     * 自定义购卡链接
+     */
+    @Excel(name = "自定义购卡链接")
+    private String customBuyUrl;
+
+    public String getCustomBuyUrl() {
+        return customBuyUrl;
+    }
+
+    public void setCustomBuyUrl(String customBuyUrl) {
+        this.customBuyUrl = customBuyUrl;
+    }
+
+    public String getShopUrl() {
+        return shopUrl;
+    }
+
+    public void setShopUrl(String shopUrl) {
+        this.shopUrl = shopUrl;
+    }
+
     public String getEnableUnbindByQuota() {
         return enableUnbindByQuota;
     }

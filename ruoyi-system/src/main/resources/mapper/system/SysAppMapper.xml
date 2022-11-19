@@ -52,6 +52,8 @@
 		<!--<result property="minQuotaUnbind" column="min_quota_unbind"/>-->
 		<result property="enableUnbind" column="enable_unbind"/>
 		<result property="enableUnbindByQuota" column="enable_unbind_by_quota"/>
+		<result property="customBuyUrl" column="custom_buy_url"/>
+		<result property="shopUrl" column="shop_url"/>
 		<association property="developer" column="create_by" javaType="SysUser" resultMap="SysUserResult"/>
 	</resultMap>
 
@@ -109,6 +111,8 @@
 			/*a.min_quota_unbind,*/
 			   a.enable_unbind,
 			   a.enable_unbind_by_quota,
+			   a.custom_buy_url,
+			   a.shop_url,
 			   u.user_id,
 			   u.user_name,
 			   u.nick_name
@@ -229,6 +233,8 @@
 			<!--<if test="minQuotaUnbind != null">min_quota_unbind,</if>-->
 			<if test="enableUnbind != null">enable_unbind,</if>
 			<if test="enableUnbindByQuota != null">enable_unbind_by_quota,</if>
+			<if test="customBuyUrl != null">custom_buy_url,</if>
+			<if test="shopUrl != null">shop_url,</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="appId != null">#{appId},</if>
@@ -278,6 +284,8 @@
 			<!--<if test="minQuotaUnbind != null">#{minQuotaUnbind},</if>-->
 			<if test="enableUnbind != null">#{enableUnbind},</if>
 			<if test="enableUnbindByQuota != null">#{enableUnbindByQuota},</if>
+			<if test="customBuyUrl != null">#{customBuyUrl},</if>
+			<if test="shopUrl != null">#{shopUrl},</if>
 		</trim>
 	</insert>
 
@@ -332,6 +340,8 @@
 			<!--<if test="minQuotaUnbind != null">min_quota_unbind = #{minQuotaUnbind},</if>-->
 			<if test="enableUnbind != null">enable_unbind = #{enableUnbind},</if>
 			<if test="enableUnbindByQuota != null">enable_unbind_by_quota = #{enableUnbindByQuota},</if>
+			<if test="customBuyUrl != null">custom_buy_url = #{customBuyUrl},</if>
+			<if test="shopUrl != null">shop_url = #{shopUrl},</if>
 		</trim>
 		where app_id = #{appId}
 	</update>

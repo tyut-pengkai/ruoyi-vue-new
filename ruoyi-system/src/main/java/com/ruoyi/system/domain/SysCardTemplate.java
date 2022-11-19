@@ -171,6 +171,20 @@ public class SysCardTemplate extends BaseEntity {
     @Excel(name = "卡密自定义参数")
     private String cardCustomParams;
 
+    /**
+     * 购卡URL
+     */
+    @Excel(name = "购卡URL")
+    private String shopUrl;
+
+    public String getShopUrl() {
+        return shopUrl;
+    }
+
+    public void setShopUrl(String shopUrl) {
+        this.shopUrl = shopUrl;
+    }
+
     public Integer getCardLoginLimitU() {
         return cardLoginLimitU;
     }
