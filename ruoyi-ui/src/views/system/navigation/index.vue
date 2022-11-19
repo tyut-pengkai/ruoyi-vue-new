@@ -5,7 +5,6 @@
       ref="queryForm"
       :inline="true"
       :model="queryParams"
-      label-width="68px"
       size="small"
     >
       <el-form-item label="导航标题" prop="navName">
@@ -24,7 +23,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="是否为外链" prop="isFrame">
+      <!-- <el-form-item label="是否为外链" prop="isFrame">
         <el-select
           v-model="queryParams.isFrame"
           clearable
@@ -37,15 +36,15 @@
             :value="dict.value"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="父菜单ID" prop="parentId">
+      </el-form-item> -->
+      <!-- <el-form-item label="父菜单ID" prop="parentId">
         <el-input
           v-model="queryParams.parentId"
           clearable
           placeholder="请输入父菜单ID"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="导航状态" prop="visible">
         <el-select
           v-model="queryParams.visible"
@@ -60,14 +59,14 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="显示顺序" prop="orderNum">
+      <!-- <el-form-item label="显示顺序" prop="orderNum">
         <el-input
           v-model="queryParams.orderNum"
           clearable
           placeholder="请输入显示顺序"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button
           icon="el-icon-search"
