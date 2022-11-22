@@ -147,7 +147,6 @@ import {getSysInfo} from "@/api/common";
 import Hamburger from "@/components/Hamburger";
 import SidebarItem from "../../layout/components/Sidebar/SidebarItemNav";
 import "element-ui/lib/theme-chalk/display.css";
-import {isExternal} from "@/utils/validate";
 
 export default {
   components: {
@@ -157,8 +156,7 @@ export default {
   data() {
     return {
       copyright: "",
-      activeIndex: "1",
-      activeIndexNum: 1,
+      activeIndex: "0",
       regShow: false,
       logo: require("../../assets/logo/logo.png"),
       title: "在线商城",
@@ -176,29 +174,19 @@ export default {
     };
   },
   created() {
-    if (this.$store.state.settings.enableFrontEnd == "Y") {
-      this.getNavigation();
-      this.getSysInfo();
-    } else {
-      this.$router.replace("stop");
-    }
+    // if (this.$store.state.settings.enableFrontEnd == "Y") {
+    //   this.getNavigation();
+    //   this.getSysInfo();
+    // } else {
+    //   this.$router.replace("stop");
+    // }
+    this.getNavigation();
+    this.getSysInfo();
   },
   methods: {
     getNavigation() {
       getNavInfo().then((res) => {
         this.navList = res.data;
-        for (let item of res.data) {
-          if (item.index) {
-            if (isExternal(item.path)) {
-              window.location = item.path;
-            } else {
-              this.$router.replace(item.path);
-            }
-            break;
-          }
-          this.activeIndexNum++;
-          this.activeIndex = this.activeIndexNum.toString();
-        }
       });
     },
     getSysInfo() {
