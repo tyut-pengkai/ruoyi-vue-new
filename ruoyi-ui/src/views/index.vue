@@ -43,9 +43,18 @@
         <el-col :lg="12" :sm="24" style="padding-left: 20px">
           <h2>红叶网络验证与软件管理系统</h2>
           <p>软件授权管理计费销售一站式解决方案</p>
-          <p>
-            <b>当前版本:</b> <span>{{ version }}</span>
-          </p>
+          <span>
+            <b>主程序版本：</b>
+            <span>{{ version }}</span>
+          </span>
+          <span style="margin-left: 10px">
+            <b>数据库版本：</b>
+            <span>{{ dbVersion }}</span>
+          </span>
+          <el-link style="margin-left: 10px" type="primary" @click="checkUpdate"
+          >检查更新
+          </el-link
+          >
           <!-- <p>
           <el-tag type="danger">&yen; 限时免费</el-tag>
         </p> -->
@@ -499,12 +508,64 @@
       </el-col> -->
       </el-row>
     </div>
+
+    <el-dialog
+      :title="updateTitle"
+      :visible.sync="dialogTableVisible"
+      custom-class="customClass"
+      style="margin-top: 10vh; height: 80%"
+      width="1000px"
+    >
+      <div
+        v-if="update"
+        align="center"
+        style="font-weight: 1000; font-size: large"
+      >
+        <i class="el-icon-warning"></i>发现新的版本，是否立即更新？
+      </div>
+      <div v-else align="center" style="font-weight: 1000; font-size: large">
+        <i class="el-icon-success"></i>恭喜您，当前已是最新版本
+      </div>
+      <div class="update_conter" style="margin-top: 20px">
+        <div class="update_version">
+          <div>
+            最新版本：<a class="hylink">{{ lastestVersion }}</a>
+          </div>
+          <div>更新日期：{{ updateDate }}</div>
+        </div>
+        <div class="update_logs">
+          <div v-html="updateLog"></div>
+        </div>
+      </div>
+      <div v-show="update">
+        <div class="update_conter" style="margin-top: 20px">
+          <span style="color: red"
+          >注意：更新完毕后将自动重启系统，所有功能将会暂停约2~3分钟，可能造成部分软件用户连接异常或掉线，请在非高峰时段进行更新。</span
+          >
+        </div>
+        <div class="hy-form-btn">
+          <el-button
+            class="btn"
+            round
+            style="background-color: #f9f9f9"
+            @click="dialogTableVisible = false"
+          >忽略本次更新
+          </el-button
+          >
+          <el-button class="btn" round type="success" @click="doUpdate"
+          >立即更新
+          </el-button
+          >
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {getSysInfo} from "@/api/common";
 import {getNotice} from "@/api/system/index";
+import {checkUpdate, doUpdate, getStatus} from "@/api/system/update";
 import {checkPermi, checkRole} from "@/utils/permission"; // 权限判断函数
 
 export default {
@@ -513,10 +574,19 @@ export default {
     return {
       // 版本号
       version: null,
+      dbVersion: null,
       // 用户公告
       userNotice: null,
       // 代理公告
       agentNotice: null,
+      dialogTableVisible: false,
+      updateTitle: "",
+      updateLog: "",
+      lastestVersion: "",
+      updateDate: "",
+      update: false,
+      timer: null,
+      remainTime: 300,
     };
   },
   methods: {
@@ -529,7 +599,64 @@ export default {
     getSysInfo() {
       getSysInfo().then((res) => {
         this.version = res.version + "(" + res.versionNo + ")";
+        this.dbVersion = res.dbVersion + "(" + res.dbVersionNo + ")";
       });
+    },
+    checkUpdate() {
+      this.$modal.loading("正在检查更新，请稍后...");
+      checkUpdate()
+        .then((res) => {
+          // console.log(res);
+          this.update = res.data.update || res.data.updateDb; //false; //
+          if (this.update) {
+            this.updateTitle = "检测到新版本";
+          } else {
+            this.updateTitle = "未发现新版本";
+          }
+          let updateInfo = res.data.updateInfo;
+          this.updateLog = updateInfo.updateLog;
+          this.lastestVersion =
+            updateInfo.versionName + "(" + updateInfo.versionNo + ")";
+          this.updateDate = updateInfo.updateDate;
+          this.dialogTableVisible = true;
+        })
+        .finally(() => {
+          this.$modal.closeLoading();
+        });
+    },
+    doUpdate() {
+      this.$modal
+        .confirm("是否确认更新？")
+        .then(() => {
+          this.dialogTableVisible = false;
+          // console.log("确认");
+          doUpdate()
+            .then((res) => {
+              if (this.timer) {
+                clearInterval(this.timer);
+              }
+              this.timer = setInterval(this.getStatus, 2000);
+            })
+            .finally(() => {
+            });
+        })
+        .catch(() => {
+        });
+    },
+    getStatus() {
+      if (this.remainTime >= 0) {
+        getStatus().then((res) => {
+          console.log(res);
+          this.$modal.msg(res.msg);
+          if (res.finish == 1) {
+            clearInterval(this.timer);
+          }
+        });
+        --this.remainTime;
+      } else {
+        clearInterval(this.timer);
+        this.$modal.alert("获取更新结果超时，请登录服务器后台查看");
+      }
     },
   },
   created() {
@@ -614,6 +741,64 @@ export default {
 <style>
 .el-alert__content {
   width: 100%;
+}
+
+.customClass {
+  max-width: 500px;
+}
+
+.update_conter {
+  background: #f9f9f9;
+  border-radius: 4px;
+  padding: 20px;
+  margin: 15px;
+  margin-top: 15px;
+}
+
+.update_version {
+  font-size: 12px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.update_logs {
+  font-size: 12px;
+  color: #555;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.update_conter span {
+  display: block;
+  font-size: 12px;
+  color: #666;
+}
+
+.update_version div {
+  font-size: 13.5px !important;
+  font-weight: 700;
+  text-align: left;
+}
+
+.hylink {
+  color: #20a53a;
+  font-style: inherit;
+}
+
+.hy-form-btn {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.hy-form-btn .btn {
+  display: inline-block;
+  line-height: 38px;
+  height: 40px;
+  border-radius: 20px;
+  width: 140px;
+  padding: 0;
+  margin-right: 30px;
+  font-size: 13.5px;
 }
 </style>
 

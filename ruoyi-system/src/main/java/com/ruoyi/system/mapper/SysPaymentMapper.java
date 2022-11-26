@@ -24,7 +24,7 @@ public interface SysPaymentMapper {
     /**
      * 查询支付配置
      *
-     * @param payId 支付配置主键
+     * @param payCode 支付配置编码
      * @return 支付配置
      */
     public SysPayment selectSysPaymentByPayCode(String payCode);

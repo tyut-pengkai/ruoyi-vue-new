@@ -101,6 +101,32 @@ public class SysWebsite extends BaseEntity {
     @Excel(name = "备案号")
     private String icp;
 
+    /**
+     * 数据库版本
+     */
+    private String dbVersion;
+
+    /**
+     * 数据库版本号
+     */
+    private Long dbVersionNo;
+
+    public String getDbVersion() {
+        return dbVersion;
+    }
+
+    public void setDbVersion(String dbVersion) {
+        this.dbVersion = dbVersion;
+    }
+
+    public Long getDbVersionNo() {
+        return dbVersionNo;
+    }
+
+    public void setDbVersionNo(Long dbVersionNo) {
+        this.dbVersionNo = dbVersionNo;
+    }
+
     public String getEnableFrontEnd() {
         return enableFrontEnd;
     }

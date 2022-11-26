@@ -24,6 +24,10 @@ public class RuoYiConfig {
 
     private Long versionNo;
 
+    private String dbVersion;
+
+    private Long dbVersionNo;
+
     private String url;
 
     private String email;
@@ -60,6 +64,30 @@ public class RuoYiConfig {
     private boolean isLicenseServer;
 
     private boolean enableFrontEnd;
+
+//    public boolean isLicenseServer() {
+//        return isLicenseServer;
+//    }
+//
+//    public void setLicenseServer(boolean licenseServer) {
+//        isLicenseServer = licenseServer;
+//    }
+
+    public String getDbVersion() {
+        return dbVersion;
+    }
+
+    public void setDbVersion(String dbVersion) {
+        this.dbVersion = dbVersion;
+    }
+
+    public Long getDbVersionNo() {
+        return dbVersionNo;
+    }
+
+    public void setDbVersionNo(Long dbVersionNo) {
+        this.dbVersionNo = dbVersionNo;
+    }
 
     public boolean isEnableFrontEnd() {
         return enableFrontEnd;

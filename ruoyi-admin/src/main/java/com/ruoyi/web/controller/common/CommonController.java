@@ -232,6 +232,8 @@ public class CommonController {
         }
         config.setIsLicenseServer(isLicenseServer);
         config.setEnableFrontEnd(UserConstants.YES.equals(website.getEnableFrontEnd()));
+        config.setDbVersion(website.getDbVersion());
+        config.setDbVersionNo(website.getDbVersionNo());
         return config;
     }
 

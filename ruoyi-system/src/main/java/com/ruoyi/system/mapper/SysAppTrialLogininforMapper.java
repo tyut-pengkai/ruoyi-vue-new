@@ -40,7 +40,7 @@ public interface SysAppTrialLogininforMapper {
     /**
      * 修改系统访问记录
      *
-     * @param sysAppLogininfor 系统访问记录
+     * @param sysAppTrialLogininfor 系统访问记录
      * @return 结果
      */
     public int updateSysAppTrialLogininfor(SysAppTrialLogininfor sysAppTrialLogininfor);
