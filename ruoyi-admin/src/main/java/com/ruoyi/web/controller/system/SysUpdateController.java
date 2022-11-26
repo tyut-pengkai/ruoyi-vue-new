@@ -163,7 +163,7 @@ public class SysUpdateController extends BaseController {
                     String saveDirPath = localDir + "tmp";
                     File saveDir = new File(saveDirPath);
                     if (saveDir.exists()) {
-                        FileUtils.deleteDirectory(saveDir);
+                        Utils.forceDelete(saveDir);
                     }
                     List<FileInfo> fileInfoList = updateInfo.getFileInfoList();
                     List<FileInfo> deleteFileInfoList = new ArrayList<>();
@@ -195,7 +195,7 @@ public class SysUpdateController extends BaseController {
                             List<Path> collect = Files.list(Paths.get(saveDirPath)).collect(Collectors.toList());
                             List<File> fileList = collect.stream().map(Path::toFile).collect(Collectors.toList());
                             for (File file : fileList) {
-//                                System.out.println("===" + file.getCanonicalPath());
+                                log.info("正在替换：" + file.getCanonicalPath());
                                 if (file.isFile()) {
                                     FileUtils.copyFileToDirectory(file, new File(localDir));
                                 } else if (file.isDirectory()) {
@@ -386,9 +386,10 @@ public class SysUpdateController extends BaseController {
             try {
                 File file = new File(filePath);
                 if (file.exists()) {
-                    if (file.delete()) {
+                    try {
+                        Utils.forceDelete(file);
                         log.info(filePath + "已删除");
-                    } else {
+                    } catch (IOException e) {
                         log.info(filePath + "删除失败");
                     }
                 } else {

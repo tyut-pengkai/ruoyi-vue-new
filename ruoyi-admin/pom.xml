@@ -141,6 +141,10 @@
                             <groupId>com.ruoyi</groupId>
                             <artifactId>ruoyi-system</artifactId>
                         </include>
+                        <include>
+                            <groupId>com.ruoyi</groupId>
+                            <artifactId>ruoyi-update</artifactId>
+                        </include>
                     </includes>
                     <!-- 包含本地jar -->
                     <includeSystemScope>true</includeSystemScope>

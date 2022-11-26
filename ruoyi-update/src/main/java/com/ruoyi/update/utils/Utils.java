@@ -1,5 +1,6 @@
 package com.ruoyi.update.utils;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
@@ -66,6 +67,27 @@ public class Utils {
         System.out.println(Utils.makePath(path));
         System.out.println(Utils.makePath(path2));
         System.out.println(Utils.makePath(path3));
+    }
+
+    public static void forceDelete(File file) throws IOException {
+        IOException e = new IOException();
+        try {
+            FileUtils.forceDelete(file);
+        } catch (IOException e1) {
+            int tryCount = 0;
+            while (e != null && tryCount++ < 10) {
+                try {
+                    e = null;
+                    System.gc();    //回收资源
+                    FileUtils.forceDelete(file);
+                } catch (IOException e2) {
+                    e = e2;
+                }
+            }
+            if (e != null) {
+                throw e;
+            }
+        }
     }
 
 }

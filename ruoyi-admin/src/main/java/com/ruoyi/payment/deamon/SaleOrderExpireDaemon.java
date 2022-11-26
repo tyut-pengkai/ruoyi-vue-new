@@ -25,6 +25,7 @@ public class SaleOrderExpireDaemon implements ApplicationListener<ContextRefresh
     @Resource
     private ISysSaleOrderService saleOrderService;
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         //root application context 没有parent

@@ -160,7 +160,7 @@ public class UpdateEngine {
         if (dirFilterList != null) {
             for (FileFilter filter : dirFilterList) {
                 if (filter.getHandleStrategy() != defaultHandleStrategy) {
-                    String filterShortPath = Utils.makePath(filter.getShortPath());
+                    String filterShortPath = Utils.makeDirPath(filter.getShortPath());
                     if (fileInfo.getShortPath().startsWith(filterShortPath)) {
                         flagDirIgnore = !flagDirIgnore;
                         break;
@@ -173,7 +173,7 @@ public class UpdateEngine {
             if (fileFilterList != null) {
                 for (FileFilter filter : fileFilterList) {
                     if (filter.getHandleStrategy() != defaultHandleStrategy) {
-                        String filterShortPath = Utils.makeDirPath(filter.getShortPath());
+                        String filterShortPath = Utils.makePath(filter.getShortPath());
                         if (fileInfo.getShortPath().endsWith(filterShortPath)) {
                             flagFileIgnore = !flagFileIgnore;
                             break;
@@ -213,7 +213,9 @@ public class UpdateEngine {
         for (File file : fileList) {
             try {
                 String shortPath = file.getCanonicalPath().replace(dirPath, "");
-                String md5 = DigestUtils.md5Hex(new FileInputStream(file));
+                FileInputStream stream = new FileInputStream(file);
+                String md5 = DigestUtils.md5Hex(stream);
+                stream.close();
                 FileInfo fileInfo = new FileInfo();
 //                fileInfo.setFile(file);
                 fileInfo.setShortPath(shortPath);
