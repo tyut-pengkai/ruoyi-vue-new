@@ -254,6 +254,7 @@ public class UpdateEngine {
     public ArrayList<FileInfo> getDiffFromJson(String localDirPath, String remoteJson) {
         localDirPath = Utils.makeDirPath(localDirPath);
         List<FileInfo> remoteFileInfoList = JSON.parseArray(remoteJson, FileInfo.class);
+        correctShortPath(remoteFileInfoList);
         ArrayList<FileInfo> localFileInfoList = getFileInfoList(localDirPath);
         return getDiff(localFileInfoList, remoteFileInfoList);
     }
@@ -292,6 +293,7 @@ public class UpdateEngine {
             }
         }
         List<FileInfo> remoteFileInfoList = update.getFileInfoList();
+        correctShortPath(remoteFileInfoList);
         ArrayList<FileInfo> localFileInfoList = getFileInfoList(localDirPath);
         ArrayList<FileInfo> fileInfo = getDiff(localFileInfoList, remoteFileInfoList);
         update.setFileInfoList(fileInfo);
@@ -313,6 +315,19 @@ public class UpdateEngine {
 
     private enum Operator {
         EQ, ADD, SUB
+    }
+
+    /**
+     * 纠正shortPath，避免在windows和linux不同环境下文件分隔符的差异
+     *
+     * @param fileInfoList
+     */
+    private void correctShortPath(List<FileInfo> fileInfoList) {
+        if (fileInfoList != null) {
+            for (FileInfo fileInfo : fileInfoList) {
+                fileInfo.setShortPath(Utils.makePath(fileInfo.getShortPath()));
+            }
+        }
     }
 
 }

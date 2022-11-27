@@ -53,8 +53,7 @@
           </span>
           <el-link style="margin-left: 10px" type="primary" @click="checkUpdate"
           >检查更新
-          </el-link
-          >
+          </el-link>
           <!-- <p>
           <el-tag type="danger">&yen; 限时免费</el-tag>
         </p> -->
@@ -540,7 +539,7 @@
       <div v-show="update">
         <div class="update_conter" style="margin-top: 20px">
           <span style="color: red"
-          >注意：更新完毕后将自动重启系统，所有功能将会暂停约2~3分钟，可能造成部分软件用户连接异常或掉线，请在非高峰时段进行更新。</span
+          >注意：更新完毕后如有必要本系统将自动重启，届时所有功能将会暂停约2~3分钟，可能造成部分软件用户连接异常或掉线，请在非高峰时段进行更新。</span
           >
         </div>
         <div class="hy-form-btn">
@@ -550,12 +549,10 @@
             style="background-color: #f9f9f9"
             @click="dialogTableVisible = false"
           >忽略本次更新
-          </el-button
-          >
+          </el-button>
           <el-button class="btn" round type="success" @click="doUpdate"
           >立即更新
-          </el-button
-          >
+          </el-button>
         </div>
       </div>
     </el-dialog>

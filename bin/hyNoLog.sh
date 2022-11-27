@@ -1,6 +1,6 @@
 #!/bin/bash
 #这里可替换为你自己的执行程序，其他代码无需更改
-APP_NAME=hywlyz-1.1.0-release.jar
+APP_NAME=hywlyz-1.0.0-release.jar
  
 #使用说明，用来提示输入参数
 usage() {
@@ -27,7 +27,7 @@ start(){
  echo "${APP_NAME} is already running. pid=${pid} ."
  else
  chmod +x ./bin/hy
- nohup ./bin/hy java -Xmx1024m -Xms256m -Dloader.path=lib -jar $APP_NAME >> nohup.out 2>&1 &
+ nohup ./bin/hy java -Xmx1024m -Xms256m -Dloader.path=lib -jar $APP_NAME >/dev/null 2>&1 &
  echo "${APP_NAME} start success"
  fi
 }

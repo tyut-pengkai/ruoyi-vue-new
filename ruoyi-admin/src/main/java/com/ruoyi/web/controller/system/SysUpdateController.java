@@ -22,6 +22,7 @@ import com.ruoyi.update.support.UpdateInfo;
 import com.ruoyi.update.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.io.FileUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -138,7 +139,7 @@ public class SysUpdateController extends BaseController {
         new Thread(() -> {
             inProgress = true;
             success = true;
-            result = null;
+            result = AjaxResult.success();
             log.info("开始更新");
             try {
                 fillConfigVersion();
@@ -164,14 +165,16 @@ public class SysUpdateController extends BaseController {
                     File saveDir = new File(saveDirPath);
                     if (saveDir.exists()) {
                         Utils.forceDelete(saveDir);
+                    } else {
+                        saveDir.mkdirs();
                     }
                     List<FileInfo> fileInfoList = updateInfo.getFileInfoList();
                     List<FileInfo> deleteFileInfoList = new ArrayList<>();
                     if (fileInfoList != null && fileInfoList.size() > 0) {
                         for (int i = 0; i < fileInfoList.size(); i++) {
                             FileInfo fileInfo = fileInfoList.get(i);
-                            log.info("正在下载(" + (i + 1) + "/" + fileInfoList.size() + ")：" + fileInfo.getShortPath());
                             if (fileInfo.getDiffType() == EnumValue.DiffType.ADD || fileInfo.getDiffType() == EnumValue.DiffType.UPDATE) {
+                                log.info("正在下载(" + (i + 1) + "/" + fileInfoList.size() + ")：" + fileInfo.getShortPath());
                                 String url = ue.getBaseDownloadUrl() + Utils.makeUrl(fileInfo.getShortPath());
                                 String savePath = Utils.makeDirPath(saveDirPath) + fileInfo.getShortPath();
                                 Downloader downloader = new HttpDownloader(url, savePath);
@@ -292,13 +295,15 @@ public class SysUpdateController extends BaseController {
                             log.info("执行重启指令：" + command);
                             CommandLine commandLine = CommandLine.parse(command);
                             DefaultExecutor exec = new DefaultExecutor();
-                            exec.execute(commandLine);
+                            exec.execute(commandLine, new DefaultExecuteResultHandler());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }).start();
+                    result = AjaxResult.success("更新完毕，即将重启，服务将中断2~3分钟");
+                } else {
+                    result = AjaxResult.success("更新完毕，本次更新无需重启");
                 }
-                result = AjaxResult.success("更新完毕，即将重启，服务将中断2~3分钟");
             } catch (Exception e) {
                 e.printStackTrace();
                 log.info("更新出错：" + e.getMessage());
