@@ -1538,6 +1538,7 @@ export default {
         // minQuotaUnbind: 0,
         enableUnbindByQuota: "Y",
         customBuyUrl: undefined,
+        enableNegative: "N"
       };
       this.resetForm("form");
       this.tabIdx = "0";

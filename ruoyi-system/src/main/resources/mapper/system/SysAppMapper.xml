@@ -180,8 +180,8 @@
 
     <select id="selectSysAppByAppKey" parameterType="String" resultMap="SysAppResult">
         <include refid="selectSysAppVo"/>
-		where a.del_flag = '0' and app_key = #{appKey} and del_flag = 0
-	</select>
+        where a.del_flag = '0' and app_key = #{appKey}
+    </select>
 
     <insert id="insertSysApp" parameterType="SysApp">
         insert into sys_app

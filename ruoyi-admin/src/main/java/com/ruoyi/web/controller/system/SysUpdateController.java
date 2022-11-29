@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.PathUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -15,10 +16,7 @@ import com.ruoyi.update.UpdateEngine;
 import com.ruoyi.update.download.Callback;
 import com.ruoyi.update.download.Downloader;
 import com.ruoyi.update.download.impl.HttpDownloader;
-import com.ruoyi.update.support.EnumValue;
-import com.ruoyi.update.support.FileInfo;
-import com.ruoyi.update.support.LatestVersion;
-import com.ruoyi.update.support.UpdateInfo;
+import com.ruoyi.update.support.*;
 import com.ruoyi.update.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
@@ -48,7 +46,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SysUpdateController extends BaseController {
 
-    private static int MAX_THREAD_NUM = 20;
+    private static final int MAX_THREAD_NUM = 20;
     @Resource
     private ISysWebsiteService sysWebsiteService;
     @Resource
@@ -104,18 +102,39 @@ public class SysUpdateController extends BaseController {
             currentVersion.put("dbVersion", config.getDbVersion());
             currentVersion.put("dbVersionNo", config.getDbVersionNo());
             map.put("currentVersion", currentVersion);
-            if (latestVersion.getVersionNo() > config.getVersionNo()) {
+
+            VersionInfo versionInfo = latestVersion.getRelease();
+            if (versionInfo.getVersionNo() > config.getVersionNo()) {
                 map.put("update", true);
             } else {
                 map.put("update", false);
             }
-            if (latestVersion.getVersionNo() > config.getDbVersionNo()) {
+            if (versionInfo.getVersionNo() > config.getDbVersionNo()) {
                 map.put("updateDb", true);
             } else {
                 map.put("updateDb", false);
             }
+
+            // 正式版无更新，检查是否接收内测更新
+            if (!(versionInfo.getVersionNo() > config.getVersionNo() || versionInfo.getVersionNo() > config.getDbVersionNo())) {
+                String updateDev = sysConfigService.selectConfigByKey("sys.update.develop");
+                if (StringUtils.isNotBlank(updateDev) && Convert.toBool(updateDev)) {
+                    versionInfo = latestVersion.getDevelop();
+                    if (versionInfo.getVersionNo() > config.getVersionNo()) {
+                        map.put("update", true);
+                    } else {
+                        map.put("update", false);
+                    }
+                    if (versionInfo.getVersionNo() > config.getDbVersionNo()) {
+                        map.put("updateDb", true);
+                    } else {
+                        map.put("updateDb", false);
+                    }
+                }
+            }
+
             UpdateEngine ue = new UpdateEngine();
-            String remoteJsonUrl = baseUrl + latestVersion.getFullVersion() + ".json";
+            String remoteJsonUrl = baseUrl + versionInfo.getFullVersion() + ".json";
             UpdateInfo updateInfo = ue.getUpdateInfoFromUrl(getLocalDir(), remoteJsonUrl);
             updateInfo.setFileFilterList(null);
             updateInfo.setFileInfoList(null);
@@ -147,14 +166,24 @@ public class SysUpdateController extends BaseController {
                 String localDir = Utils.fillPath(getLocalDir());
                 String latestVersionJson = Utils.readFromUrl(baseUrl + "latestVersion.json");
                 LatestVersion latestVersion = JSON.parseObject(latestVersionJson, LatestVersion.class);
+                VersionInfo versionInfo = latestVersion.getRelease();
+
+                // 正式版无更新，检查是否接收内测更新
+                if (!(versionInfo.getVersionNo() > config.getVersionNo() || versionInfo.getVersionNo() > config.getDbVersionNo())) {
+                    String updateDev = sysConfigService.selectConfigByKey("sys.update.develop");
+                    if (StringUtils.isNotBlank(updateDev) && Convert.toBool(updateDev)) {
+                        versionInfo = latestVersion.getDevelop();
+                    }
+                }
+
                 // 主程序需更新
                 log.info("检查主程序");
                 boolean update = false; // 主程序是否更新，如果主程序更新，则需要重启后台服务
-                if (latestVersion.getVersionNo() > config.getVersionNo()) {
-                    log.info("主程序需更新：{}({})->{}({})", config.getVersion(), config.getVersionNo(), latestVersion.getVersionName(), latestVersion.getVersionNo());
-                    String remoteJsonUrl = baseUrl + latestVersion.getFullVersion() + ".json";
+                if (versionInfo.getVersionNo() > config.getVersionNo()) {
+                    log.info("主程序需更新：{}({})->{}({})", config.getVersion(), config.getVersionNo(), versionInfo.getVersionName(), versionInfo.getVersionNo());
+                    String remoteJsonUrl = baseUrl + versionInfo.getFullVersion() + ".json";
                     UpdateEngine ue = new UpdateEngine();
-                    ue.setBaseDownloadUrl(baseUrl + latestVersion.getFullVersion() + "/");
+                    ue.setBaseDownloadUrl(baseUrl + versionInfo.getFullVersion() + "/");
                     UpdateInfo updateInfo = ue.getUpdateInfoFromUrl(localDir, remoteJsonUrl);
                     log.info("主程序更新：\n" + JSON.toJSONString(updateInfo));
                     log.info("信息获取完毕");
@@ -239,8 +268,8 @@ public class SysUpdateController extends BaseController {
                 }
                 // 数据库需更新
                 log.info("检查数据库");
-                if (latestVersion.getVersionNo() > config.getDbVersionNo()) {
-                    log.info("数据库需更新：{}({})->{}({})", config.getDbVersion(), config.getDbVersionNo(), latestVersion.getVersionName(), latestVersion.getVersionNo());
+                if (versionInfo.getVersionNo() > config.getDbVersionNo()) {
+                    log.info("数据库需更新：{}({})->{}({})", config.getDbVersion(), config.getDbVersionNo(), versionInfo.getVersionName(), versionInfo.getVersionNo());
                     String remoteJson = Utils.readFromUrl(baseUrl + "upgradeSql.json");
                     List<String> sqlList = JSON.parseArray(remoteJson, String.class);
                     List<String> readySqlList = new ArrayList<>();

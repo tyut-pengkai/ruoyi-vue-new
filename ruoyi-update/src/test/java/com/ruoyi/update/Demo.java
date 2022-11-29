@@ -70,9 +70,9 @@ public class Demo {
         String baseUrl = "http://hy-update.coordsoft.com/";
         String latestVersionJson = Utils.readFromUrl(baseUrl + "latestVersion.json");
         LatestVersion latestVersion = JSON.parseObject(latestVersionJson, LatestVersion.class);
-        String remoteJsonUrl = baseUrl + latestVersion.getFullVersion() + ".json";
+        String remoteJsonUrl = baseUrl + latestVersion.getRelease().getFullVersion() + ".json";
         UpdateEngine ue = new UpdateEngine();
-        ue.setBaseDownloadUrl(baseUrl + latestVersion.getFullVersion() + "/");
+        ue.setBaseDownloadUrl(baseUrl + latestVersion.getRelease().getFullVersion() + "/");
 //        String localDirPath = "D:\\网络验证\\红叶\\release\\红叶网络验证系统_v1.0.0_20221018\\upload";
         String localDirPath = "D:\\网络验证\\红叶\\release\\红叶网络验证系统_v1.1.0_20221119\\upload";
         UpdateInfo updateInfo = ue.getUpdateInfoFromUrl(localDirPath, remoteJsonUrl);
