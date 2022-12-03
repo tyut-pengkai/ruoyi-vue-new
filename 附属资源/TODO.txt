@@ -175,3 +175,4 @@ API开关
 新增API接口【unbindDeviceAll.nu】【unbindDeviceAll.nc】，此接口将解绑指定用户所有已绑定设备码
 置用户备注信息api
 SDK云端功能登录问题
+冻结卡同时冻结对应用户

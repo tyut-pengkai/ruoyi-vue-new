@@ -52,7 +52,7 @@ public class SysAppUserController extends BaseController {
         Map<Long, List<LoginUser>> onlineListUMap = new HashMap<>();
         for (String key : keys) {
             LoginUser user = redisCache.getCacheObject(key);
-            if (user.getIfApp() && !user.getIfTrial()) {
+            if (user != null && user.getIfApp() && !user.getIfTrial()) {
                 Long appUserId = user.getAppUser().getAppUserId();
                 if (!onlineListUMap.containsKey(appUserId)) {
                     onlineListUMap.put(appUserId, new ArrayList<>());

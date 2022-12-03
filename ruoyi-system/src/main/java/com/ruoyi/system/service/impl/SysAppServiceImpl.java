@@ -120,12 +120,15 @@ public class SysAppServiceImpl implements ISysAppService {
     @Override
     public int updateSysApp(SysApp sysApp) {
         sysApp.setUpdateTime(DateUtils.getNowDate());
-        sysApp.setUpdateBy(SecurityUtils.getUsername());
+        try {
+            sysApp.setUpdateBy(SecurityUtils.getUsername());
+        } catch (Exception ignored) {
+        }
         sysApp.setAuthType(null);
         sysApp.setBillType(null);
         int i = sysAppMapper.updateSysApp(sysApp);
         if (i > 0) {
-            SysApp app = selectSysAppByAppId(sysApp.getAppId());
+            SysApp app = sysAppMapper.selectSysAppByAppId(sysApp.getAppId());
             redisCache.setCacheObject(Constants.SYS_APP_KEY + app.getAppKey(), app);
         }
         return i;

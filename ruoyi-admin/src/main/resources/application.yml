@@ -51,6 +51,7 @@ server:
     uri-encoding: UTF-8
     # 连接数满后的排队数，默认为100
     accept-count: 1000
+    max-connections: 20000
     threads:
       # tomcat最大线程数，默认为200
       max: 800

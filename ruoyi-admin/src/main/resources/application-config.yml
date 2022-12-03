@@ -10,9 +10,12 @@ spring:
     druid:
       # 主库数据源
       master:
-        url: jdbc:mysql://123.206.55.70:3306/ab_app_platform?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true
-        username: mo
-        password: mopwd
+#        url: jdbc:mysql://123.206.55.70:3306/ab_app_platform?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true
+        #        username: mo
+        #        password: mopwd
+        url: jdbc:mysql://127.0.0.1:3306/hywlyz_dev?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true
+        username: root
+        password: root
   #        url: jdbc:mysql://123.206.55.70:3306/hywlyz_online?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true
   #        username: mo
   #        password: mopwd
@@ -23,9 +26,15 @@ spring:
   #        password: AYfYCE5y3Sp7fszz
   # redis 配置
   redis:
+    #    # 地址
+    #    host: 123.206.55.70
+    #    # 端口，默认为6379
+    #    port: 6379
+    #    # 密码
+    #    password: Gzw@redis!2020$
     # 地址
-    host: 123.206.55.70
+    host: 127.0.0.1
     # 端口，默认为6379
     port: 6379
     # 密码
-    password: Gzw@redis!2020$
+    password:

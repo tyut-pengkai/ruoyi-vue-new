@@ -616,7 +616,7 @@ public class CommonController {
         Collection<String> loginKeys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
         for (String key : loginKeys) {
             LoginUser user = redisCache.getCacheObject(key);
-            if (user.getIfApp()) {
+            if (user != null && user.getIfApp()) {
                 onlineUserList.add(user);
             }
         }

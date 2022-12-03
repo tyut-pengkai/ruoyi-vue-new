@@ -63,7 +63,7 @@ public class LogoutAll extends Function {
         Collection<String> keys = redisCache.keys(com.ruoyi.common.constant.Constants.LOGIN_TOKEN_KEY + "*");
         for (String key : keys) {
             LoginUser loginUser = redisCache.getCacheObject(key);
-            if (loginUser.getIfApp() && Objects.equals(loginUser.getAppUser().getAppUserId(), appUser.getAppUserId())) {
+            if (loginUser != null && loginUser.getIfApp() && Objects.equals(loginUser.getAppUser().getAppUserId(), appUser.getAppUserId())) {
                 String _deviceCodeStr = null;
                 if (loginUser.getDeviceCode() != null) {
                     _deviceCodeStr = loginUser.getDeviceCode().getDeviceCode();

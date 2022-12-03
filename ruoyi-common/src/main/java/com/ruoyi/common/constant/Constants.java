@@ -106,6 +106,11 @@ public class Constants {
     public static final String SYS_APP_KEY = "sys_app:";
 
     /**
+     * APP_USER缓存 SYS_APP_USER_KEY
+     */
+    public static final String SYS_APP_USER_KEY = "sys_app_user:";
+
+    /**
      * 防重提交 redis key
      */
     public static final String REPEAT_SUBMIT_KEY = "repeat_submit:";
