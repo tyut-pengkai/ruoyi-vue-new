@@ -39,7 +39,7 @@ public class UserExpireTime extends Function {
     public Object handle() {
         LoginUser loginUser = getLoginUser();
         if (loginUser.getIfTrial()) {
-            SysAppTrialUser trialUser = appTrialUserService.selectSysAppTrialUserByAppTrialUserId(loginUser.getAppTrialUser().getAppTrialUserId());
+            SysAppTrialUser trialUser = appTrialUserService.selectSysAppTrialUserByAppTrialUserId(loginUser.getAppTrialUserId());
             if (validUtils.checkInTrialQuantum(getApp())) {
                 Date trialQuantumEndTime = validUtils.getTrialQuantumEndTime(getApp());
                 if (trialQuantumEndTime != null && trialQuantumEndTime.after(trialUser.getExpireTime())) {
@@ -48,7 +48,7 @@ public class UserExpireTime extends Function {
             }
             return DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, trialUser.getExpireTime());
         } else {
-            SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUser().getAppUserId());
+            SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUserId());
             return DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, appUser.getExpireTime());
         }
     }

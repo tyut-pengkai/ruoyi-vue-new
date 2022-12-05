@@ -48,12 +48,12 @@ public class SysAppUserController extends BaseController {
         List<SysAppUser> list = sysAppUserService.selectSysAppUserList(sysAppUser);
 
         // 统计当前在线用户数
-        Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
+        Collection<String> keys = redisCache.scan(Constants.LOGIN_TOKEN_KEY + "*");
         Map<Long, List<LoginUser>> onlineListUMap = new HashMap<>();
         for (String key : keys) {
             LoginUser user = redisCache.getCacheObject(key);
             if (user != null && user.getIfApp() && !user.getIfTrial()) {
-                Long appUserId = user.getAppUser().getAppUserId();
+                Long appUserId = user.getAppUserId();
                 if (!onlineListUMap.containsKey(appUserId)) {
                     onlineListUMap.put(appUserId, new ArrayList<>());
                 }

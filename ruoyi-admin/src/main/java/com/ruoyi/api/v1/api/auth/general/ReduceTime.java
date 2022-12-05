@@ -53,7 +53,7 @@ public class ReduceTime extends Function {
         if (seconds <= 0) {
             throw new ApiException(ErrorCode.ERROR_PARAMETERS_ERROR, "seconds必须大于0");
         }
-        SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUser().getAppUserId());
+        SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUserId());
         Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), seconds);
         Date nowDate = DateUtils.getNowDate();
         if ((appUser.getExpireTime().after(nowDate) && newExpiredTime.after(nowDate)) || enableNegative) {

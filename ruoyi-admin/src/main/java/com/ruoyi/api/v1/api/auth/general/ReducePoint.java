@@ -52,7 +52,7 @@ public class ReducePoint extends Function {
         if (point.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ApiException(ErrorCode.ERROR_PARAMETERS_ERROR, "point必须大于0");
         }
-        SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUser().getAppUserId());
+        SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUserId());
         if (appUser.getPoint().compareTo(point) >= 0 || enableNegative) {
             appUser.setPoint(MyUtils.getNewPointSub(appUser.getPoint(), point.doubleValue()));
             appUserService.updateSysAppUser(appUser);

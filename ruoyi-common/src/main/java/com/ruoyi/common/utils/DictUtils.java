@@ -1,20 +1,20 @@
 package com.ruoyi.common.utils;
 
-import java.util.Collection;
-import java.util.List;
 import com.alibaba.fastjson2.JSONArray;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.entity.SysDictData;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.spring.SpringUtils;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * 字典工具类
- * 
+ *
  * @author ruoyi
  */
-public class DictUtils
-{
+public class DictUtils {
     /**
      * 分隔符
      */
@@ -22,7 +22,7 @@ public class DictUtils
 
     /**
      * 设置字典缓存
-     * 
+     *
      * @param key 参数键
      * @param dictDatas 字典数据列表
      */
@@ -169,7 +169,7 @@ public class DictUtils
      */
     public static void clearDictCache()
     {
-        Collection<String> keys = SpringUtils.getBean(RedisCache.class).keys(Constants.SYS_DICT_KEY + "*");
+        Collection<String> keys = SpringUtils.getBean(RedisCache.class).scan(Constants.SYS_DICT_KEY + "*");
         SpringUtils.getBean(RedisCache.class).deleteObject(keys);
     }
 

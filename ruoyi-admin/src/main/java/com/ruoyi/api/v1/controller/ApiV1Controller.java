@@ -125,7 +125,7 @@ public class ApiV1Controller extends BaseController {
             if (loginUser.getIfApp()) {
                 // 检查用户是否是当前软件的用户
                 if (loginUser.getIfTrial()) {
-                    SysAppTrialUser appUser = appTrialUserService.selectSysAppTrialUserByAppTrialUserId(loginUser.getAppTrialUser().getAppTrialUserId());
+                    SysAppTrialUser appUser = appTrialUserService.selectSysAppTrialUserByAppTrialUserId(loginUser.getAppTrialUserId());
                     // 检查用户是否过期
                     if (!validUtils.checkInTrialQuantum(app)) {
                         validUtils.checkAppTrialUserIsExpired(appUser);
@@ -135,15 +135,15 @@ public class ApiV1Controller extends BaseController {
                         throw new ApiException(ErrorCode.ERROR_APP_TRIAL_USER_LOCKED, "您的试用已被停用");
                     }
                 } else {
-                    if (!loginUser.getAppUser().getAppId().equals(app.getAppId())) {
+                    if (!loginUser.getAppId().equals(app.getAppId())) {
                         throw new ApiException(ErrorCode.ERROR_LOGIN_USER_APP_MISMATCH);
                     }
                     // 检查用户是否过期
-                    SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUser().getAppUserId());
+                    SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUserId());
                     validUtils.checkAppUserIsExpired(app, appUser);
                     // 检查用户是否被封禁
-                    if (loginUser.getApp().getAuthType() == AuthType.ACCOUNT) {
-                        Long userId = loginUser.getUser().getUserId();
+                    if (app.getAuthType() == AuthType.ACCOUNT) {
+                        Long userId = loginUser.getUserId();
                         SysUser user = userService.selectUserById(userId);
                         validUtils.checkUser(loginUser.getUsername(), user);
                     } else if (app.getAuthType() == AuthType.LOGIN_CODE) {

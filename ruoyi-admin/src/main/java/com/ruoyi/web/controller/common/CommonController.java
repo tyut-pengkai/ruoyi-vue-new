@@ -769,7 +769,8 @@ public class CommonController {
             // 当前在线
             for (LoginUser user : onlineUserList) {
                 if (user.getIfApp()) {
-                    String appId = user.getApp().getAppId().toString();
+                    SysApp app = sysAppService.selectSysAppByAppKey(user.getAppKey());
+                    String appId = app.getAppId().toString();
                     if (!appDataMap.containsKey(appId)) {
                         appDataMap.put(appId, new HashMap<>());
                     }
@@ -976,7 +977,8 @@ public class CommonController {
             // 当前在线
             for (LoginUser user : onlineUserList) {
                 if (user.getIfApp()) {
-                    String appId = user.getApp().getAppId().toString();
+                    SysApp app = sysAppService.selectSysAppByAppKey(user.getAppKey());
+                    String appId = app.getAppId().toString();
                     if (!appDataMap.containsKey(appId)) {
                         appDataMap.put(appId, new HashMap<>());
                     }

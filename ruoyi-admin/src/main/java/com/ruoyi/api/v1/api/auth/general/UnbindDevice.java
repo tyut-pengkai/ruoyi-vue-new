@@ -63,7 +63,7 @@ public class UnbindDevice extends Function {
             throw new ApiException(ErrorCode.ERROR_TRIAL_USER_NOT_ALLOWED);
         }
         // 用户
-        SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUser().getAppUserId());
+        SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUserId());
         // 卡类是否开启解绑
         if (appUser.getLastChargeTemplateId() != null) {
             if (this.getApp().getAuthType() == AuthType.ACCOUNT) {

@@ -39,7 +39,7 @@ public class UserPoint extends Function {
     public Object handle() {
         LoginUser loginUser = getLoginUser();
         if (loginUser.getIfTrial()) {
-            SysAppTrialUser trialUser = appTrialUserService.selectSysAppTrialUserByAppTrialUserId(loginUser.getAppTrialUser().getAppTrialUserId());
+            SysAppTrialUser trialUser = appTrialUserService.selectSysAppTrialUserByAppTrialUserId(loginUser.getAppTrialUserId());
             if (validUtils.checkInTrialQuantum(getApp())) {
                 Date trialQuantumEndTime = validUtils.getTrialQuantumEndTime(getApp());
                 if (trialQuantumEndTime != null && trialQuantumEndTime.after(trialUser.getExpireTime())) {
@@ -48,7 +48,7 @@ public class UserPoint extends Function {
             }
             return trialUser.getExpireTime().before(DateUtils.getNowDate()) ? 0 : 1;
         } else {
-            SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUser().getAppUserId());
+            SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUserId());
             return appUser.getPoint();
         }
     }

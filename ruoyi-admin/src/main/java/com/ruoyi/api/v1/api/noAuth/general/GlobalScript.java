@@ -58,7 +58,7 @@ public class GlobalScript extends Function {
         if (UserConstants.YES.equals(script.getCheckVip())) {
             try {
                 // 实时从数据库取软件用户状态，避免使用登录时存储的状态造成数据同步不及时
-                SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(getLoginUser().getAppUser().getAppUserId());
+                SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(getLoginUser().getAppUserId());
                 validUtils.checkAppUserIsExpired(getApp(), appUser, true);
             } catch (Exception e) {
                 throw new ApiException(ErrorCode.ERROR_NOT_VIP, e.getMessage());

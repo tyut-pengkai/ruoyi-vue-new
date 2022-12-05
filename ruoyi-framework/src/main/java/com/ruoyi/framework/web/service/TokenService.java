@@ -2,6 +2,7 @@ package com.ruoyi.framework.web.service;
 
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.DateUtils;
@@ -10,6 +11,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.ip.AddressUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.common.utils.uuid.IdUtils;
+import com.ruoyi.system.service.ISysAppService;
 import eu.bitwalker.useragentutils.UserAgent;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +53,8 @@ public class TokenService {
 
     @Autowired
     private RedisCache redisCache;
+    @Resource
+    private ISysAppService appService;
 
     /**
      * 获取用户身份信息
@@ -63,9 +68,12 @@ public class TokenService {
             try {
                 // 解析对应的权限以及用户信息
                 String uuid = tokenToUuid(token);
+                Long appUserId = tokenToAppUserId(token);
                 String userKey = getTokenKey(uuid);
-                LoginUser user = redisCache.getCacheObject(userKey);
-                return user;
+                if (appUserId != null) {
+                    userKey = userKey + "|" + appUserId;
+                }
+                return redisCache.getCacheObject(userKey);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -77,6 +85,21 @@ public class TokenService {
         if (StringUtils.isNotEmpty(token)) {
             Claims claims = parseToken(token);
             return (String) claims.get(Constants.LOGIN_USER_KEY);
+        }
+        return null;
+    }
+
+    public Long tokenToAppUserId(String token) {
+        if (StringUtils.isNotEmpty(token)) {
+            Claims claims = parseToken(token);
+            Object o = claims.get(Constants.APP_USER_ID);
+            if (o != null) {
+                if (o instanceof Long) {
+                    return (Long) o;
+                } else {
+                    return Long.parseLong(o.toString());
+                }
+            }
         }
         return null;
     }
@@ -115,6 +138,13 @@ public class TokenService {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put(Constants.LOGIN_USER_KEY, token);
+        if (loginUser.getIfApp()) {
+            if (loginUser.getIfTrial()) {
+                claims.put(Constants.APP_USER_ID, loginUser.getAppTrialUserId());
+            } else {
+                claims.put(Constants.APP_USER_ID, loginUser.getAppUserId());
+            }
+        }
         return createToken(claims);
     }
 
@@ -128,7 +158,8 @@ public class TokenService {
         long expireTime = loginUser.getExpireTime();
         long currentTime = System.currentTimeMillis();
         if (loginUser.getIfApp()) { // 自动刷新APP token
-            Integer heartBeatTime = loginUser.getApp().getHeartBeatTime();
+            SysApp app = appService.selectSysAppByAppKey(loginUser.getAppKey());
+            Integer heartBeatTime = app.getHeartBeatTime();
             if (heartBeatTime > -1) {
 //                if (expireTime - currentTime <= (heartBeatTime * 0.2) * MILLIS_SECOND) {
                 refreshToken(loginUser);
@@ -149,9 +180,17 @@ public class TokenService {
      */
     public void refreshToken(LoginUser loginUser) {
         if (loginUser.getIfApp()) {
-            Integer heartBeatTime = loginUser.getApp().getHeartBeatTime();
+            SysApp app = appService.selectSysAppByAppKey(loginUser.getAppKey());
+            Integer heartBeatTime = app.getHeartBeatTime();
             // 根据uuid将loginUser缓存
             String userKey = getTokenKey(loginUser.getToken());
+            if (loginUser.getIfApp()) {
+                if (loginUser.getIfTrial()) {
+                    userKey = userKey + "|" + loginUser.getAppTrialUserId();
+                } else {
+                    userKey = userKey + "|" + loginUser.getAppUserId();
+                }
+            }
             if (heartBeatTime > -1) {
                 loginUser.setExpireTime(System.currentTimeMillis() + heartBeatTime * MILLIS_SECOND);
                 redisCache.setCacheObject(userKey, loginUser, heartBeatTime, TimeUnit.SECONDS);

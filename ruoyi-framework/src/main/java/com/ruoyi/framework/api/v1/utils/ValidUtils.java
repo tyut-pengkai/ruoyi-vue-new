@@ -20,6 +20,8 @@ import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.domain.SysLoginCode;
+import com.ruoyi.system.service.ISysAppService;
+import com.ruoyi.system.service.ISysAppTrialUserService;
 import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
 import com.ruoyi.system.service.ISysAppVersionService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,10 @@ public class ValidUtils {
     private TokenService tokenService;
     @Resource
     private ISysAppVersionService appVersionService;
+    @Resource
+    private ISysAppService appService;
+    @Resource
+    private ISysAppTrialUserService appTrialUserService;
 
 
     public void apiCheckApp(String appkey, SysApp app) {
@@ -352,11 +358,11 @@ public class ValidUtils {
 //    }
 
     public void checkLoginLimit(SysApp app, SysAppUser appUser, SysDeviceCode deviceCode) {
-        Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
+        Collection<String> keys = redisCache.scan(Constants.LOGIN_TOKEN_KEY + "*|" + appUser.getAppUserId());
         List<LoginUser> onlineListU = new ArrayList<>();
         for (String key : keys) {
             LoginUser user = redisCache.getCacheObject(key);
-            if (user != null && user.getIfApp() && !user.getIfTrial() && Objects.equals(appUser.getAppUserId(), user.getAppUser().getAppUserId())) {
+            if (user != null && user.getIfApp() && !user.getIfTrial() && Objects.equals(appUser.getAppUserId(), user.getAppUserId())) {
                 onlineListU.add(user);
             }
         }
@@ -391,13 +397,14 @@ public class ValidUtils {
     }
 
     public void checkTrialLoginLimit(SysApp app, SysAppTrialUser appTrialUser) {
-        Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
+        Collection<String> keys = redisCache.scan(Constants.LOGIN_TOKEN_KEY + "*|" + appTrialUser.getAppTrialUserId());
+        SysAppTrialUser trailUser = appTrialUserService.selectSysAppTrialUserByAppTrialUserId(appTrialUser.getAppTrialUserId());
         List<LoginUser> onlineListU = new ArrayList<>();
         for (String key : keys) {
             LoginUser user = redisCache.getCacheObject(key);
-            if (user != null && user.getIfTrial()
-                    && Objects.equals(appTrialUser.getLoginIp(), user.getAppTrialUser().getLoginIp())
-                    && Objects.equals(appTrialUser.getDeviceCode(), user.getAppTrialUser().getDeviceCode())) {
+            if (user != null && trailUser != null && user.getIfTrial()
+                    && Objects.equals(appTrialUser.getLoginIp(), trailUser.getLoginIp())
+                    && Objects.equals(appTrialUser.getDeviceCode(), trailUser.getDeviceCode())) {
                 onlineListU.add(user);
             }
         }
@@ -429,8 +436,9 @@ public class ValidUtils {
                 tokenService.delLoginUser(loginUser.getToken());
                 try {
                     // 记录用户退出日志
-                    AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(loginUser.getAppUser().getAppUserId(), userName,
-                            loginUser.getApp().getAppName(), loginUser.getAppVersion().getVersionShow(),
+                    SysApp app = appService.selectSysAppByAppKey(loginUser.getAppKey());
+                    AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(loginUser.getAppUserId(), userName,
+                            app.getAppName(), loginUser.getAppVersion().getVersionShow(),
                             loginUser.getDeviceCode() != null ? loginUser.getDeviceCode().getDeviceCode() : null,
                             Constants.LOGOUT, "系统强制退出：" + msg));
                 } catch (Exception e) {
@@ -446,19 +454,22 @@ public class ValidUtils {
     public void checkLicenseMaxOnline() {
         // 检查在线人数限制
         List<String> onlineAppUser = new ArrayList<>();
-        Collection<String> keys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
-        for (String key : keys) {
-            LoginUser user = redisCache.getCacheObject(key);
-            if (user != null && user.getIfApp()) {
-                onlineAppUser.add(key);
-            }
-        }
+        Collection<String> keys = redisCache.scan(Constants.LOGIN_TOKEN_KEY + "*|*");
+//        for (String key : keys) {
+//            LoginUser user = redisCache.getCacheObject(key);
+//            if (user != null && user.getIfApp()) {
+//                onlineAppUser.add(key);
+//            }
+//        }
         // -1 表示不限制
         Integer maxOnline = 0;
         if (Constants.LICENSE_CONTENT != null && Constants.LICENSE_CONTENT.getExtra() != null) {
             maxOnline = ((LicenseCheckModel) Constants.LICENSE_CONTENT.getExtra()).getMaxOnline();
         }
-        if (maxOnline != -1 && onlineAppUser.size() >= maxOnline) {
+//        if (maxOnline != -1 && onlineAppUser.size() >= maxOnline) {
+//            throw new ApiException("当前在线人数已超出授权上限，请联系管理员升级授权或稍后再试");
+//        }
+        if (maxOnline != -1 && keys.size() >= maxOnline) {
             throw new ApiException("当前在线人数已超出授权上限，请联系管理员升级授权或稍后再试");
         }
 

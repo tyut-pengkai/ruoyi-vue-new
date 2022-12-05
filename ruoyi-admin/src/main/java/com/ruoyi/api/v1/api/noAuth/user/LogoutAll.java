@@ -15,6 +15,7 @@ import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppUserService;
 import com.ruoyi.system.service.ISysUserService;
 
@@ -26,6 +27,8 @@ public class LogoutAll extends Function {
 
     @Resource
     ISysAppUserService appUserService;
+    @Resource
+    ISysAppService appService;
     @Resource
     private ISysUserService userService;
     @Resource
@@ -60,10 +63,10 @@ public class LogoutAll extends Function {
             return "0";
         }
 
-        Collection<String> keys = redisCache.keys(com.ruoyi.common.constant.Constants.LOGIN_TOKEN_KEY + "*");
+        Collection<String> keys = redisCache.scan(com.ruoyi.common.constant.Constants.LOGIN_TOKEN_KEY + "*|" + appUser.getAppUserId());
         for (String key : keys) {
             LoginUser loginUser = redisCache.getCacheObject(key);
-            if (loginUser != null && loginUser.getIfApp() && Objects.equals(loginUser.getAppUser().getAppUserId(), appUser.getAppUserId())) {
+            if (loginUser != null && loginUser.getIfApp() && Objects.equals(loginUser.getAppUserId(), appUser.getAppUserId())) {
                 String _deviceCodeStr = null;
                 if (loginUser.getDeviceCode() != null) {
                     _deviceCodeStr = loginUser.getDeviceCode().getDeviceCode();
@@ -72,9 +75,9 @@ public class LogoutAll extends Function {
                 try {
                     AsyncManager.me().execute(
                             AsyncFactory.recordAppLogininfor(
-                                    loginUser.getAppUser().getAppUserId(),
-                                    loginUser.getAppUser().getUserName(),
-                                    loginUser.getApp().getAppName(),
+                                    appUser.getAppUserId(),
+                                    appUser.getUserName(),
+                                    getApp().getAppName(),
                                     loginUser.getAppVersion().getVersionShow(),
                                     _deviceCodeStr,
                                     com.ruoyi.common.constant.Constants.LOGOUT,

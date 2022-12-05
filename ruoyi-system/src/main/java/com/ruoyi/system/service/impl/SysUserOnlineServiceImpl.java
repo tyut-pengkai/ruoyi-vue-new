@@ -1,24 +1,31 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysUserOnline;
+import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysUserOnlineService;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 /**
  * 在线用户 服务层处理
- * 
+ *
  * @author ruoyi
  */
 @Service
-public class SysUserOnlineServiceImpl implements ISysUserOnlineService
-{
+public class SysUserOnlineServiceImpl implements ISysUserOnlineService {
+
+    @Resource
+    private ISysAppService appService;
+
     /**
      * 通过登录地址查询信息
-     * 
+     *
      * @param ipaddr 登录地址
-     * @param user 用户信息
+     * @param user   用户信息
      * @return 在线用户信息
      */
     @Override
@@ -90,8 +97,9 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService
         sysUserOnline.setIfApp(user.getIfApp() ? 'Y' : 'N');
         sysUserOnline.setIfTrial(user.getIfTrial() ? 'Y' : 'N');
         if (user.getIfApp()) {
-            sysUserOnline.setAppDesc(user.getApp().getAppName() + "-" + user.getAppVersion().getVersionShow());
-            sysUserOnline.setAppAuthor(user.getApp().getCreateBy());
+            SysApp app = appService.selectSysAppByAppKey(user.getAppKey());
+            sysUserOnline.setAppDesc(app.getAppName() + "-" + user.getAppVersion().getVersionShow());
+            sysUserOnline.setAppAuthor(app.getCreateBy());
             if (user.getDeviceCode() != null) {
                 sysUserOnline.setDeviceCode(user.getDeviceCode().getDeviceCode());
             }

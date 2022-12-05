@@ -1,7 +1,10 @@
 package com.ruoyi.common.core.domain.model;
 
 import com.alibaba.fastjson2.annotation.JSONField;
-import com.ruoyi.common.core.domain.entity.*;
+import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
+import com.ruoyi.common.core.domain.entity.SysAppVersion;
+import com.ruoyi.common.core.domain.entity.SysDeviceCode;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -69,9 +72,13 @@ public class LoginUser implements UserDetails
 
     private Boolean ifApp = false;
 
-    private SysApp app;
+    private Long appId;
 
-    private SysAppUser appUser;
+    private String appKey;
+//    private SysApp app;
+
+    private Long appUserId;
+//    private SysAppUser appUser;
 
     private SysAppVersion appVersion;
 
@@ -84,17 +91,44 @@ public class LoginUser implements UserDetails
      */
     private SysUser user;
 
-    private SysAppTrialUser appTrialUser;
+    private Long appTrialUserId;
+//    private SysAppTrialUser appTrialUser;
 
     private Boolean ifTrial = false;
 
-    public SysAppTrialUser getAppTrialUser() {
-        return appTrialUser;
+    private String userName;
+
+    public Long getAppTrialUserId() {
+        return appTrialUserId;
     }
 
-    public void setAppTrialUser(SysAppTrialUser appTrialUser) {
-        this.appTrialUser = appTrialUser;
+    public void setAppTrialUserId(Long appTrialUserId) {
+        this.appTrialUserId = appTrialUserId;
     }
+
+    public Long getAppUserId() {
+        return appUserId;
+    }
+
+    public void setAppUserId(Long appUserId) {
+        this.appUserId = appUserId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+//    public SysAppTrialUser getAppTrialUser() {
+//        return appTrialUser;
+//    }
+//
+//    public void setAppTrialUser(SysAppTrialUser appTrialUser) {
+//        this.appTrialUser = appTrialUser;
+//    }
 
     public Boolean getIfTrial() {
         return ifTrial;
@@ -160,7 +194,7 @@ public class LoginUser implements UserDetails
     @Override
     public String getUsername()
     {
-        return user != null ? user.getUserName() : (appUser != null ? appUser.getUserName() : appTrialUser != null ? appTrialUser.getUserName() : null);
+        return user != null ? user.getUserName() : (appUserId != null ? getUserName() : appTrialUserId != null ? getUserName() : null);
     }
 
     /**
@@ -284,32 +318,46 @@ public class LoginUser implements UserDetails
         return user;
     }
 
-    public void setUser(SysUser user)
-    {
+    public void setUser(SysUser user) {
         this.user = user;
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities()
-    {
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
 
-    public SysApp getApp() {
-        return app;
+//    public SysApp getApp() {
+//        return app;
+//    }
+//
+//    public void setApp(SysApp app) {
+//        this.app = app;
+//    }
+
+    public Long getAppId() {
+        return appId;
     }
 
-    public void setApp(SysApp app) {
-        this.app = app;
+    public void setAppId(Long appId) {
+        this.appId = appId;
     }
 
-    public SysAppUser getAppUser() {
-        return appUser;
+    public String getAppKey() {
+        return appKey;
     }
 
-    public void setAppUser(SysAppUser appUser) {
-        this.appUser = appUser;
+    public void setAppKey(String appKey) {
+        this.appKey = appKey;
     }
+
+//    public SysAppUser getAppUser() {
+//        return appUser;
+//    }
+//
+//    public void setAppUser(SysAppUser appUser) {
+//        this.appUser = appUser;
+//    }
 
     public SysAppVersion getAppVersion() {
         return appVersion;

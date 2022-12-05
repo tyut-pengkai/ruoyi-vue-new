@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 软件用户Service业务层处理
@@ -37,7 +38,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
         user.setParams(map);
         List<SysAppUser> appUserList = sysAppUserMapper.selectSysAppUserList(user);
         for (SysAppUser appUser : appUserList) {
-            redisCache.setCacheObject(Constants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser);
+            redisCache.setCacheObject(Constants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser, 24, TimeUnit.HOURS);
         }
     }
 
@@ -52,7 +53,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
         SysAppUser appUser = redisCache.getCacheObject(Constants.SYS_APP_USER_KEY + appUserId);
         if (appUser == null) {
             appUser = sysAppUserMapper.selectSysAppUserByAppUserId(appUserId);
-            redisCache.setCacheObject(Constants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser);
+            redisCache.setCacheObject(Constants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser, 24, TimeUnit.HOURS);
         }
         return appUser;
     }
@@ -98,7 +99,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
         int i = sysAppUserMapper.updateSysAppUser(sysAppUser);
         if (i > 0) {
             SysAppUser appUser = sysAppUserMapper.selectSysAppUserByAppUserId(sysAppUser.getAppUserId());
-            redisCache.setCacheObject(Constants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser);
+            redisCache.setCacheObject(Constants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser, 24, TimeUnit.HOURS);
         }
         return i;
     }

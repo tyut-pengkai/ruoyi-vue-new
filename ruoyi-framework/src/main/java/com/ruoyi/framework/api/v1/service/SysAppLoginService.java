@@ -45,6 +45,8 @@ public class SysAppLoginService {
     @Resource
     private ISysAppUserService appUserService;
     @Resource
+    private ISysAppService appService;
+    @Resource
     private ISysDeviceCodeService deviceCodeService;
     @Resource
     private ISysAppUserDeviceCodeService appUserDeviceCodeService;
@@ -176,9 +178,11 @@ public class SysAppLoginService {
         loginUser.setIfApp(true);
         loginUser.setIfTrial(false);
         loginUser.setUserId(user.getUserId());
-        loginUser.setApp(app);
-        loginUser.setUser(user);
-        loginUser.setAppUser(appUser);
+        loginUser.setAppKey(app.getAppKey());
+        loginUser.setAppId(app.getAppId());
+        loginUser.setUser(null);
+        loginUser.setAppUserId(appUser.getAppUserId());
+        loginUser.setUserName(appUser.getUserName());
         loginUser.setAppVersion(appVersion);
         loginUser.setDeviceCode(deviceCode);
         loginUser.setAppUserDeviceCode(appUserDeviceCode);
@@ -328,9 +332,11 @@ public class SysAppLoginService {
         loginUser.setIfApp(true);
         loginUser.setIfTrial(false);
         loginUser.setUserId(null);
-        loginUser.setApp(app);
+        loginUser.setAppKey(app.getAppKey());
+        loginUser.setAppId(app.getAppId());
         loginUser.setUser(null);
-        loginUser.setAppUser(appUser);
+        loginUser.setAppUserId(appUser.getAppUserId());
+        loginUser.setUserName(appUser.getUserName());
         loginUser.setAppVersion(appVersion);
         loginUser.setDeviceCode(deviceCode);
         loginUser.setAppUserDeviceCode(appUserDeviceCode);
@@ -456,9 +462,11 @@ public class SysAppLoginService {
         loginUser.setIfApp(true);
         loginUser.setIfTrial(true);
         loginUser.setUserId(null);
-        loginUser.setApp(app);
+        loginUser.setAppKey(app.getAppKey());
+        loginUser.setAppId(app.getAppId());
         loginUser.setUser(null);
-        loginUser.setAppTrialUser(appTrialUser);
+        loginUser.setAppTrialUserId(appTrialUser.getAppTrialUserId());
+        loginUser.setUserName(appTrialUser.getUserName());
         loginUser.setAppVersion(appVersion);
         SysDeviceCode deviceCode = new SysDeviceCode();
         deviceCode.setDeviceCode(deviceCodeStr);
@@ -484,19 +492,21 @@ public class SysAppLoginService {
             userService.updateUserProfile(sysUser);
         }
         // 用户信息
-        if (loginUser.getAppUser() != null) {
+        if (loginUser.getAppUserId() != null) {
+            SysAppUser user = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUserId());
             SysAppUser appUser = new SysAppUser();
-            appUser.setAppUserId(loginUser.getAppUser().getAppUserId());
-            appUser.setLoginTimes(loginUser.getAppUser().getLoginTimes() + 1);
+            appUser.setAppUserId(user.getAppUserId());
+            appUser.setLoginTimes(user.getLoginTimes() + 1);
             appUser.setLastLoginTime(nowDate);
             appUserService.updateSysAppUser(appUser);
         }
         // 试用用户信息
-        if (loginUser.getAppTrialUser() != null) {
+        if (loginUser.getAppTrialUserId() != null) {
+            SysAppTrialUser user = appTrialService.selectSysAppTrialUserByAppTrialUserId(loginUser.getAppTrialUserId());
             SysAppTrialUser trialUser = new SysAppTrialUser();
-            trialUser.setAppTrialUserId(loginUser.getAppTrialUser().getAppTrialUserId());
-            trialUser.setLoginTimes(loginUser.getAppTrialUser().getLoginTimes());
-            trialUser.setLoginTimesAll(loginUser.getAppTrialUser().getLoginTimesAll());
+            trialUser.setAppTrialUserId(user.getAppTrialUserId());
+            trialUser.setLoginTimes(user.getLoginTimes());
+            trialUser.setLoginTimesAll(user.getLoginTimesAll());
             trialUser.setLastLoginTime(nowDate);
             appTrialService.updateSysAppTrialUser(trialUser);
         }
@@ -517,17 +527,24 @@ public class SysAppLoginService {
     }
 
     public String appLogout(LoginUser loginUser) {
-        SysApp app = loginUser.getApp();
         SysAppVersion version = loginUser.getAppVersion();
-        SysAppUser appUser = loginUser.getAppUser();
         SysDeviceCode deviceCode = loginUser.getDeviceCode();
         String _deviceCodeStr = null;
         if (deviceCode != null) {
             _deviceCodeStr = deviceCode.getDeviceCode();
         }
-        redisCache.deleteObject(Constants.LOGIN_TOKEN_KEY + loginUser.getToken());
+        String userKey = Constants.LOGIN_TOKEN_KEY + loginUser.getToken();
+        if (loginUser.getIfApp()) {
+            if (loginUser.getIfTrial()) {
+                userKey = userKey + "|" + loginUser.getAppTrialUserId();
+            } else {
+                userKey = userKey + "|" + loginUser.getAppUserId();
+            }
+        }
+        redisCache.deleteObject(userKey);
         try {
-            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), appUser.getUserName(),
+            SysApp app = appService.selectSysAppByAppKey(loginUser.getAppKey());
+            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(loginUser.getAppUserId(), loginUser.getUserName(),
                     app.getAppName(), version.getVersionShow(), _deviceCodeStr, Constants.LOGOUT, "用户注销登录"));
         } catch (Exception e) {
             e.printStackTrace();

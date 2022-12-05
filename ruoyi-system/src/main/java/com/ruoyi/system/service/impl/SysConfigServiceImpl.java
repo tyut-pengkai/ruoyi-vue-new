@@ -13,6 +13,7 @@ import com.ruoyi.system.mapper.SysConfigMapper;
 import com.ruoyi.system.service.ISysConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.List;
@@ -181,7 +182,7 @@ public class SysConfigServiceImpl implements ISysConfigService
     @Override
     public void clearConfigCache()
     {
-        Collection<String> keys = redisCache.keys(Constants.SYS_CONFIG_KEY + "*");
+        Collection<String> keys = redisCache.scan(Constants.SYS_CONFIG_KEY + "*");
         redisCache.deleteObject(keys);
     }
 

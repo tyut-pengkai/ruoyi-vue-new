@@ -1,12 +1,10 @@
 package com.ruoyi.common.core.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.BoundSetOperations;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -243,8 +241,37 @@ public class RedisCache {
      * @param pattern 字符串前缀
      * @return 对象列表
      */
-    public Collection<String> keys(final String pattern)
-    {
+    public Collection<String> keys(final String pattern) {
         return redisTemplate.keys(pattern);
     }
+
+    /**
+     * scan 实现
+     *
+     * @param pattern 表达式，如：abc*，找出所有以abc开始的键
+     */
+    public Set<String> scan(String pattern) {
+        return scan(redisTemplate, pattern);
+    }
+
+    /**
+     * scan 实现
+     *
+     * @param redisTemplate redisTemplate
+     * @param pattern       表达式，如：abc*，找出所有以abc开始的键
+     */
+    public Set<String> scan(RedisTemplate<String, Object> redisTemplate, String pattern) {
+        return redisTemplate.execute((RedisCallback<Set<String>>) connection -> {
+            Set<String> keysTmp = new HashSet<>();
+            try (Cursor<byte[]> cursor = connection.scan(new ScanOptions.ScanOptionsBuilder().match(pattern).count(10000).build())) {
+                while (cursor.hasNext()) {
+                    keysTmp.add(new String(cursor.next(), StandardCharsets.UTF_8));
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            return keysTmp;
+        });
+    }
+
 }

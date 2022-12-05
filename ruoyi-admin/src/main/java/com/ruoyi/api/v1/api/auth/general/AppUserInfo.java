@@ -68,10 +68,10 @@ public class AppUserInfo extends Function {
     public Object handle() {
         LoginUser loginUser = getLoginUser();
         if (loginUser.getIfTrial()) {
-            SysAppTrialUser appUser = appTrialUserService.selectSysAppTrialUserByAppTrialUserId(loginUser.getAppTrialUser().getAppTrialUserId());
+            SysAppTrialUser appUser = appTrialUserService.selectSysAppTrialUserByAppTrialUserId(loginUser.getAppTrialUserId());
             return new SysAppTrialUserVo(appUser);
         } else {
-            SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUser().getAppUserId());
+            SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUserId());
             appUser.setUser(userService.selectUserById(appUser.getUserId()));
             return new SysAppUserVo(appUser);
         }

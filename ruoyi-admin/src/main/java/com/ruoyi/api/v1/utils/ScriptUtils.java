@@ -9,7 +9,10 @@ import com.ruoyi.common.enums.ScriptLanguage;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.domain.vo.ScriptResultVo;
+import com.ruoyi.system.service.ISysAppTrialUserService;
+import com.ruoyi.system.service.ISysAppUserService;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
@@ -121,7 +124,10 @@ public class ScriptUtils {
                     }
                 } else if ("appUser".equals(object)) {
                     if (context != null) {
-                        jsonObject = JSON.parseObject(JSON.toJSONString(new SysAppUserVo(context.getLoginUser().getAppUser())));
+                        if (context.getLoginUser().getIfApp() && !context.getLoginUser().getIfTrial()) {
+                            ISysAppUserService userService = SpringUtils.getBean(ISysAppUserService.class);
+                            jsonObject = JSON.parseObject(JSON.toJSONString(new SysAppUserVo(userService.selectSysAppUserByAppUserId(context.getLoginUser().getAppUserId()))));
+                        }
                     }
                 } else if ("version".equals(object)) {
                     if (context != null) {
@@ -129,7 +135,10 @@ public class ScriptUtils {
                     }
                 } else if ("trialUser".equals(object)) {
                     if (context != null) {
-                        jsonObject = JSON.parseObject(JSON.toJSONString(new SysAppTrialUserVo(context.getLoginUser().getAppTrialUser())));
+                        if (context.getLoginUser().getIfApp() && context.getLoginUser().getIfTrial()) {
+                            ISysAppTrialUserService appTrialUserService = SpringUtils.getBean(ISysAppTrialUserService.class);
+                            jsonObject = JSON.parseObject(JSON.toJSONString(new SysAppTrialUserVo(appTrialUserService.selectSysAppTrialUserByAppTrialUserId(context.getLoginUser().getAppTrialUserId()))));
+                        }
                     }
                 } else if ("deviceCode".equals(object)) {
                     if (context != null) {
