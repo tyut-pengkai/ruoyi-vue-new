@@ -95,7 +95,7 @@
           size="small"
         >
           <el-option
-            v-for="dict in dict.type.sys_normal_disable"
+            v-for="dict in dict.type.sys_common_status"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -318,7 +318,7 @@
         <el-form-item label="登录状态">
           <el-radio-group v-model="form.status">
             <el-radio
-              v-for="dict in dict.type.sys_normal_disable"
+              v-for="dict in dict.type.sys_common_status"
               :key="dict.value"
               :label="dict.value"
             >{{ dict.label }}
