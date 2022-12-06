@@ -1,4 +1,4 @@
-package com.ruoyi.payment.deamon;
+package com.ruoyi.payment.daemon;
 
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.redis.RedisCache;

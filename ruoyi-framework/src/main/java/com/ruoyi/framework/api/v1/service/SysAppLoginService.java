@@ -415,19 +415,19 @@ public class SysAppLoginService {
                     if (appTrialUser.getNextEnableTime().before(now) || appTrialUser.getNextEnableTime().equals(DateUtils.parseDate(UserConstants.MAX_DATE))) {
                         appTrialUser.setLoginTimes(0L);
                         appTrialUser.setNextEnableTime(MyUtils.getNewExpiredTimeAdd(null, app.getTrialCycle()));
-                        appTrialUser.setLoginTimes(appTrialUser.getLoginTimes() + 1);
-                        appTrialUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getTrialTime()));
+                        // appTrialUser.setLoginTimes(appTrialUser.getLoginTimes() + 1);
+                        // appTrialUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getTrialTime()));
                     }
-                }
-                // 检查试用次数
-                if (appTrialUser.getLoginTimes() >= app.getTrialTimes()) {
-                    throw new ApiException(ErrorCode.ERROR_TRIAL_OVER_LIMIT_TIMES,
-                            "您已试用本软件" + appTrialUser.getLoginTimes() + "次，已到达试用次数上限"
-                                    + (app.getTrialCycle() != null && app.getTrialCycle() != 0
-                                    ? "，" + DateUtils.parseDateToStr(appTrialUser.getNextEnableTime()) + "后可再次试用" : ""));
                 }
                 // (取反)开启了试用期间不增加试用次数且在有效试用时间内
                 if (!(UserConstants.YES.equals(app.getNotAddTrialTimesInTrialTime()) && DateUtils.getNowDate().before(appTrialUser.getExpireTime()))) {
+                    // 检查试用次数
+                    if (appTrialUser.getLoginTimes() >= app.getTrialTimes()) {
+                        throw new ApiException(ErrorCode.ERROR_TRIAL_OVER_LIMIT_TIMES,
+                                "您已试用本软件" + appTrialUser.getLoginTimes() + "次，已到达试用次数上限"
+                                        + (app.getTrialCycle() != null && app.getTrialCycle() != 0
+                                        ? "，" + DateUtils.parseDateToStr(appTrialUser.getNextEnableTime()) + "后可再次试用" : ""));
+                    }
                     appTrialUser.setLoginTimes(appTrialUser.getLoginTimes() + 1);
                     appTrialUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getTrialTime()));
                 }

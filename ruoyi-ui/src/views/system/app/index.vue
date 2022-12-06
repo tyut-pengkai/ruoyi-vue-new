@@ -1048,7 +1048,7 @@
                         </span>
                         <el-input-number
                           v-model="form.trialTimes"
-                          :min="0"
+                          :min="1"
                           controls-position="right"
                         />
                       </el-form-item>
@@ -1072,6 +1072,7 @@
                         <date-duration
                           :seconds="form.trialTime"
                           @totalSeconds="handleTrialTimeQuota"
+                          :min="1"
                         ></date-duration>
                       </el-form-item>
                       <el-form-item
@@ -1538,7 +1539,7 @@ export default {
         // minQuotaUnbind: 0,
         enableUnbindByQuota: "Y",
         customBuyUrl: undefined,
-        enableNegative: "N"
+        enableNegative: "N",
       };
       this.resetForm("form");
       this.tabIdx = "0";
