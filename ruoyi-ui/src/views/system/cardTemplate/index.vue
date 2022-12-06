@@ -861,6 +861,13 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button
+          v-show="!form.templateId"
+          type="primary"
+          @click="submitForm(1)"
+        >继续添加
+        </el-button
+        >
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -1006,7 +1013,11 @@ export default {
           },
         ],
         enableUnbind: [
-          {required: true, message: "是否允许解绑不能为空", trigger: "change"},
+          {
+            required: true,
+            message: "是否允许解绑不能为空",
+            trigger: "change",
+          },
         ],
       },
     };
@@ -1128,7 +1139,9 @@ export default {
             this.form.appId = this.app.appId;
             addCardTemplate(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
-              this.open = false;
+              if (type != 1) {
+                this.open = false;
+              }
               this.getList();
             });
           }

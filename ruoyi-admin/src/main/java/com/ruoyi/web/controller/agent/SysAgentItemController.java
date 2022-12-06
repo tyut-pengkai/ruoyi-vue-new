@@ -178,6 +178,7 @@ public class SysAgentItemController extends BaseController {
                 info.setTemplateName(item.getCardName());
                 info.setTemplateType(TemplateType.CHARGE_CARD);
                 info.setAppName(item.getApp().getAppName());
+                info.setPrice(item.getPrice());
                 templateList.add(info);
             }
             List<SysLoginCodeTemplate> loginCodeTemplateList = sysLoginCodeTemplateService.selectSysLoginCodeTemplateList(new SysLoginCodeTemplate());
@@ -187,6 +188,7 @@ public class SysAgentItemController extends BaseController {
                 info.setTemplateName(item.getCardName());
                 info.setTemplateType(TemplateType.LOGIN_CODE);
                 info.setAppName(item.getApp().getAppName());
+                info.setPrice(item.getPrice());
                 templateList.add(info);
             }
         } else {

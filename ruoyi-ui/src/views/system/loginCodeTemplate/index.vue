@@ -823,6 +823,13 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button
+          v-show="!form.templateId"
+          type="primary"
+          @click="submitForm(1)"
+        >继续添加
+        </el-button
+        >
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -1045,7 +1052,7 @@ export default {
       });
     },
     /** 提交按钮 */
-    submitForm() {
+    submitForm(type) {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.templateId != null) {
@@ -1058,7 +1065,9 @@ export default {
             this.form.appId = this.app.appId;
             addLoginCodeTemplate(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
-              this.open = false;
+              if (type != 1) {
+                this.open = false;
+              }
               this.getList();
             });
           }

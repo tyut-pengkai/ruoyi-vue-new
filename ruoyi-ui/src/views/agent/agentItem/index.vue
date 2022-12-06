@@ -5,25 +5,24 @@
       ref="queryForm"
       :inline="true"
       :model="queryParams"
-      label-width="68px"
       size="small"
     >
-      <el-form-item label="代理ID" prop="agentId">
+      <el-form-item label="代理名称" prop="agentName">
         <el-input
-          v-model="queryParams.agentId"
+          v-model="queryParams.agentName"
           clearable
-          placeholder="请输入代理ID"
+          placeholder="请输入代理名称"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="卡类ID" prop="templateId">
+      <!-- <el-form-item label="卡类ID" prop="templateId">
         <el-input
           v-model="queryParams.templateId"
           clearable
           placeholder="请输入卡类ID"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="代理该卡过期时间">
         <el-date-picker
           v-model="daterangeExpireTime"
@@ -232,7 +231,15 @@
               v-for="item in templateList"
               :key="item.id"
               :disabled="item.disabled"
-              :label="'[' + item.appName + ']' + item.templateName"
+              :label="
+                '[' +
+                item.appName +
+                ']' +
+                item.templateName +
+                '|零售' +
+                item.price +
+                '元'
+              "
               :value="item.id"
             >
             </el-option>
@@ -417,6 +424,12 @@ export default {
           this.daterangeExpireTime[0];
         this.queryParams.params["endExpireTime"] = this.daterangeExpireTime[1];
       }
+      if (
+        null != this.queryParams.agentName &&
+        "" != this.queryParams.agentName
+      ) {
+        this.queryParams.params["agentName"] = this.queryParams.agentName;
+      }
       listAgentItem(this.queryParams).then((response) => {
         this.agentItemList = response.rows;
         this.total = response.total;
@@ -587,6 +600,7 @@ export default {
             templateType: data.templateType,
             templateName: data.templateName,
             appName: data.appName,
+            price: data.price,
           });
         }
       });

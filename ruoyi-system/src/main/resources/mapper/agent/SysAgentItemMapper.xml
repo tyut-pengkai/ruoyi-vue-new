@@ -59,6 +59,10 @@
                 sys_agent ag WHERE ag.agent_id = #{params._agentId} ), '%')
                 AND ag.path != (SELECT ag.path FROM sys_agent ag WHERE ag.agent_id = #{params._agentId}))
             </if>
+            <if test="params.agentName != null">
+                and (u.user_name LIKE CONCAT('%', #{params.agentName}, '%') or u.nick_name LIKE CONCAT('%',
+                #{params.agentName}, '%'))
+            </if>
         </where>
         order by ai.id
     </select>
