@@ -149,6 +149,19 @@
               <span>更新日志</span>
             </div>
             <el-collapse accordion>
+              <el-collapse-item title="v1.2.0 - 2022-12-07">
+                <ol>
+                  <li>新增：系统自动更新功能</li>
+                  <li>
+                    修复：修复APK快速接入如果版本更新链接为空更新崩溃的问题
+                  </li>
+                  <li>修复：软件试用功能异常的问题</li>
+                  <li>修复：修复试用次数设置为1次时无法正常试用的问题</li>
+                  <li>优化：新建软件时，绑定设置中允许扣到负数提供默认值</li>
+                  <li>优化：新建卡类时，可选择不关闭添加窗口继续添加</li>
+                  <li>优化：新增授权时显示卡类零售价格</li>
+                </ol>
+              </el-collapse-item>
               <el-collapse-item title="v1.1.0 - 2022-11-19">
                 <ol>
                   <li>

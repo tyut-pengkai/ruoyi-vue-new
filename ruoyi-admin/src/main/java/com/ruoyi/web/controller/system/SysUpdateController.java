@@ -138,6 +138,9 @@ public class SysUpdateController extends BaseController {
             UpdateInfo updateInfo = ue.getUpdateInfoFromUrl(getLocalDir(), remoteJsonUrl);
             updateInfo.setFileFilterList(null);
             updateInfo.setFileInfoList(null);
+            if (StringUtils.isNotBlank(updateInfo.getUpdateLog())) {
+                updateInfo.setUpdateLog(updateInfo.getUpdateLog().replaceAll("\r\n", "<br>").replaceAll("\r", "<br>").replaceAll("\n", "<br>"));
+            }
             map.put("updateInfo", updateInfo);
             log.info("获取到信息：\n" + JSON.toJSONString(map));
             log.info("信息获取完毕");

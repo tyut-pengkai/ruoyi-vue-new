@@ -4,7 +4,8 @@ import request from '@/utils/request'
 export function checkUpdate() {
   return request({
     url: '/system/update/checkUpdate',
-    method: 'get'
+    method: 'get',
+    timeout: 30000
   })
 }
 
@@ -13,6 +14,7 @@ export function doUpdate() {
   return request({
     url: '/system/update/doUpdate',
     method: 'get',
+    timeout: 30000
   })
 }
 
@@ -21,5 +23,6 @@ export function getStatus() {
   return request({
     url: '/system/update/status',
     method: 'get',
+    timeout: 30000
   })
 }
