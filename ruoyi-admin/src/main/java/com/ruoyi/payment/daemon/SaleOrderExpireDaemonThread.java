@@ -1,6 +1,6 @@
 package com.ruoyi.payment.daemon;
 
-import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.utils.DateUtils;
@@ -29,7 +29,7 @@ public class SaleOrderExpireDaemonThread {
     public void checkSaleOrderExpire() {
         while (true) {
             try {
-                Set<Object> orderNoSet = redisCache.redisTemplate.opsForZSet().rangeByScore(Constants.SALE_ORDER_EXPIRE_KEY, 0, System.currentTimeMillis());
+                Set<Object> orderNoSet = redisCache.redisTemplate.opsForZSet().rangeByScore(CacheConstants.SALE_ORDER_EXPIRE_KEY, 0, System.currentTimeMillis());
                 //            System.out.println(JSON.toJSONString(orderNoSet));
                 for (Object orderNoStr : orderNoSet) { // orderNoStr格式：payMode|orderNo
                     try {
@@ -52,14 +52,14 @@ public class SaleOrderExpireDaemonThread {
                                         sso.setCloseTime(DateUtils.getNowDate());
                                         sysSaleOrderService.updateSysSaleOrder(sso);
                                     }
-                                    redisCache.redisTemplate.opsForZSet().remove(Constants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
+                                    redisCache.redisTemplate.opsForZSet().remove(CacheConstants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
                                 }
                             } else {
-                                redisCache.redisTemplate.opsForZSet().remove(Constants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
+                                redisCache.redisTemplate.opsForZSet().remove(CacheConstants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
                             }
                         }
                     } catch (Exception ignored) {
-                        redisCache.redisTemplate.opsForZSet().remove(Constants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
+                        redisCache.redisTemplate.opsForZSet().remove(CacheConstants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
                     }
                 }
                 Thread.sleep(10000);

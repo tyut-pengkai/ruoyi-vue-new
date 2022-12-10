@@ -38,20 +38,20 @@ public interface SysMenuMapper
     public List<SysMenu> selectMenuListByUserId(SysMenu menu);
 
     /**
-     * 根据用户ID查询权限
-     *
-     * @param userId 用户ID
-     * @return 权限列表
-     */
-    public List<String> selectMenuPermsByUserId(Long userId);
-
-    /**
      * 根据角色ID查询权限
      *
      * @param roleId 角色ID
      * @return 权限列表
      */
     public List<String> selectMenuPermsByRoleId(Long roleId);
+
+    /**
+     * 根据用户ID查询权限
+     *
+     * @param userId 用户ID
+     * @return 权限列表
+     */
+    public List<String> selectMenuPermsByUserId(Long userId);
 
     /**
      * 根据用户ID查询菜单

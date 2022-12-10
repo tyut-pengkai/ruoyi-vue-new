@@ -2,7 +2,7 @@ package com.ruoyi.web.controller.system;
 
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
@@ -48,7 +48,7 @@ public class SysAppUserController extends BaseController {
         List<SysAppUser> list = sysAppUserService.selectSysAppUserList(sysAppUser);
 
         // 统计当前在线用户数
-        Collection<String> keys = redisCache.scan(Constants.LOGIN_TOKEN_KEY + "*");
+        Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*");
         Map<Long, List<LoginUser>> onlineListUMap = new HashMap<>();
         for (String key : keys) {
             LoginUser user = redisCache.getCacheObject(key);

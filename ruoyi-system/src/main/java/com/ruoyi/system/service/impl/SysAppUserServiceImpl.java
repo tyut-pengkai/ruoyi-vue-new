@@ -1,7 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.annotation.DataScope;
-import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.DateUtils;
@@ -38,7 +38,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
         user.setParams(map);
         List<SysAppUser> appUserList = sysAppUserMapper.selectSysAppUserList(user);
         for (SysAppUser appUser : appUserList) {
-            redisCache.setCacheObject(Constants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser, 24, TimeUnit.HOURS);
+            redisCache.setCacheObject(CacheConstants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser, 24, TimeUnit.HOURS);
         }
     }
 
@@ -50,10 +50,10 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
      */
     @Override
     public SysAppUser selectSysAppUserByAppUserId(Long appUserId) {
-        SysAppUser appUser = redisCache.getCacheObject(Constants.SYS_APP_USER_KEY + appUserId);
+        SysAppUser appUser = redisCache.getCacheObject(CacheConstants.SYS_APP_USER_KEY + appUserId);
         if (appUser == null) {
             appUser = sysAppUserMapper.selectSysAppUserByAppUserId(appUserId);
-            redisCache.setCacheObject(Constants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser, 24, TimeUnit.HOURS);
+            redisCache.setCacheObject(CacheConstants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser, 24, TimeUnit.HOURS);
         }
         return appUser;
     }
@@ -99,7 +99,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
         int i = sysAppUserMapper.updateSysAppUser(sysAppUser);
         if (i > 0) {
             SysAppUser appUser = sysAppUserMapper.selectSysAppUserByAppUserId(sysAppUser.getAppUserId());
-            redisCache.setCacheObject(Constants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser, 24, TimeUnit.HOURS);
+            redisCache.setCacheObject(CacheConstants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser, 24, TimeUnit.HOURS);
         }
         return i;
     }
@@ -113,7 +113,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
     @Override
     public int deleteSysAppUserByAppUserIds(Long[] appUserIds) {
         for (Long appUserId : appUserIds) {
-            redisCache.deleteObject(Constants.SYS_APP_USER_KEY + appUserId);
+            redisCache.deleteObject(CacheConstants.SYS_APP_USER_KEY + appUserId);
         }
         return sysAppUserMapper.deleteSysAppUserByAppUserIds(appUserIds);
     }
@@ -127,7 +127,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
     @Override
     public int deleteSysAppUserByAppUserId(Long appUserId)
     {
-        redisCache.deleteObject(Constants.SYS_APP_USER_KEY + appUserId);
+        redisCache.deleteObject(CacheConstants.SYS_APP_USER_KEY + appUserId);
         return sysAppUserMapper.deleteSysAppUserByAppUserId(appUserId);
     }
 

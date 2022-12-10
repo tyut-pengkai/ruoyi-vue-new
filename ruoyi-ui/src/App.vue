@@ -1,14 +1,17 @@
 <template>
   <div id="app">
     <router-view />
+    <theme-picker/>
   </div>
 </template>
 
 <script>
 import {getWebsiteConfig} from "@/api/system/website";
+import ThemePicker from "@/components/ThemePicker";
 
 export default {
   name: "App",
+  components: {ThemePicker},
   metaInfo() {
     return {
       title:
@@ -73,3 +76,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+#app .theme-picker {
+  display: none;
+}
+</style>

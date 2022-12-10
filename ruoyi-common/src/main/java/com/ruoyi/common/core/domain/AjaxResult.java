@@ -92,31 +92,50 @@ public class AjaxResult extends HashMap<String, Object> {
 
     /**
      * 返回成功消息
-     * 
-     * @param msg 返回内容
+     *
+     * @param msg  返回内容
      * @param data 数据对象
      * @return 成功消息
      */
-    public static AjaxResult success(String msg, Object data)
-    {
+    public static AjaxResult success(String msg, Object data) {
         return new AjaxResult(HttpStatus.SUCCESS, msg, data);
     }
 
     /**
-     * 返回错误消息
-     * 
-     * @return
+     * 返回警告消息
+     *
+     * @param msg 返回内容
+     * @return 警告消息
      */
-    public static AjaxResult error()
-    {
+    public static AjaxResult warn(String msg) {
+        return AjaxResult.warn(msg, null);
+    }
+
+    /**
+     * 返回警告消息
+     *
+     * @param msg  返回内容
+     * @param data 数据对象
+     * @return 警告消息
+     */
+    public static AjaxResult warn(String msg, Object data) {
+        return new AjaxResult(HttpStatus.WARN, msg, data);
+    }
+
+    /**
+     * 返回错误消息
+     *
+     * @return 错误消息
+     */
+    public static AjaxResult error() {
         return AjaxResult.error("操作失败");
     }
 
     /**
      * 返回错误消息
-     * 
+     *
      * @param msg 返回内容
-     * @return 警告消息
+     * @return 错误消息
      */
     public static AjaxResult error(String msg)
     {
@@ -125,10 +144,10 @@ public class AjaxResult extends HashMap<String, Object> {
 
     /**
      * 返回错误消息
-     * 
-     * @param msg 返回内容
+     *
+     * @param msg  返回内容
      * @param data 数据对象
-     * @return 警告消息
+     * @return 错误消息
      */
     public static AjaxResult error(String msg, Object data)
     {
@@ -137,10 +156,10 @@ public class AjaxResult extends HashMap<String, Object> {
 
     /**
      * 返回错误消息
-     * 
+     *
      * @param code 状态码
-     * @param msg 返回内容
-     * @return 警告消息
+     * @param msg  返回内容
+     * @return 错误消息
      */
     public static AjaxResult error(int code, String msg)
     {

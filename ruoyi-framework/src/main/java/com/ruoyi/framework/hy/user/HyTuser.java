@@ -1,5 +1,6 @@
 package com.ruoyi.framework.hy.user;
 
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.redis.RedisCache;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +23,7 @@ public class HyTuser {
     public void forceLogout() {
         if (Constants.IS_CRCD) {
 //            System.out.println("已启动登录暗桩");
-            Collection<String> keys = redisCache.scan(Constants.LOGIN_TOKEN_KEY + "*");
+            Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*");
             //            System.out.println(JSON.toJSONString(orderNoSet));
             for (String key : keys) { // orderNoStr格式：payMode|orderNo
                 if (key != null) {

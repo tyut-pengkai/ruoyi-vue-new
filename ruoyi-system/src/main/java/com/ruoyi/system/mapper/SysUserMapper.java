@@ -114,11 +114,11 @@ public interface SysUserMapper
 
     /**
      * 校验用户名称是否唯一
-     * 
+     *
      * @param userName 用户名称
      * @return 结果
      */
-    public int checkUserNameUnique(String userName);
+    public SysUser checkUserNameUnique(String userName);
 
     /**
      * 校验手机号码是否唯一

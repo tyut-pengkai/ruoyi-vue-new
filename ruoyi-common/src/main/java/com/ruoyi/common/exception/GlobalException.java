@@ -7,7 +7,6 @@ package com.ruoyi.common.exception;
  */
 public class GlobalException extends RuntimeException
 {
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -34,24 +33,21 @@ public class GlobalException extends RuntimeException
         this.message = message;
     }
 
-    public String getDetailMessage()
-    {
+    public String getDetailMessage() {
         return detailMessage;
     }
 
-    public GlobalException setDetailMessage(String detailMessage)
-    {
+    public GlobalException setDetailMessage(String detailMessage) {
         this.detailMessage = detailMessage;
         return this;
     }
 
-    public String getMessage()
-    {
+    @Override
+    public String getMessage() {
         return message;
     }
 
-    public GlobalException setMessage(String message)
-    {
+    public GlobalException setMessage(String message) {
         this.message = message;
         return this;
     }

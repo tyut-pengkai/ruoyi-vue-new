@@ -51,6 +51,11 @@ public class Constants {
     public static final String GBK = "GBK";
 
     /**
+     * www主域
+     */
+    public static final String WWW = "www.";
+
+    /**
      * http请求
      */
     public static final String HTTP = "http://";
@@ -89,36 +94,6 @@ public class Constants {
      * 登录失败
      */
     public static final String LOGIN_FAIL = "Error";
-
-    /**
-     * 验证码 redis key
-     */
-    public static final String CAPTCHA_CODE_KEY = "captcha_codes:";
-
-    /**
-     * 登录用户 redis key
-     */
-    public static final String LOGIN_TOKEN_KEY = "login_tokens:";
-
-    /**
-     * APP缓存 SYS_APP_KEY
-     */
-    public static final String SYS_APP_KEY = "sys_app:";
-
-    /**
-     * APP_USER缓存 SYS_APP_USER_KEY
-     */
-    public static final String SYS_APP_USER_KEY = "sys_app_user:";
-
-    /**
-     * 防重提交 redis key
-     */
-    public static final String REPEAT_SUBMIT_KEY = "repeat_submit:";
-
-    /**
-     * 限流 redis key
-     */
-    public static final String RATE_LIMIT_KEY = "rate_limit:";
 
     /**
      * 验证码有效期（分钟）
@@ -168,16 +143,6 @@ public class Constants {
     public static final String JWT_AUTHORITIES = "authorities";
 
     /**
-     * 参数管理 cache key
-     */
-    public static final String SYS_CONFIG_KEY = "sys_config:";
-
-    /**
-     * 字典管理 cache key
-     */
-    public static final String SYS_DICT_KEY = "sys_dict:";
-
-    /**
      * 资源映射路径 前缀
      */
     public static final String RESOURCE_PREFIX = "/profile";
@@ -206,17 +171,7 @@ public class Constants {
      * 定时任务违规的字符
      */
     public static final String[] JOB_ERROR_STR = {"java.net.URL", "javax.naming.InitialContext", "org.yaml.snakeyaml",
-            "org.springframework", "org.apache", "com.ruoyi.common.utils.file"};
-
-    /**
-     * 销售订单 redis key
-     */
-    public static final String SALE_ORDER_EXPIRE_KEY = "sale_order_expire:";
-
-    /**
-     * IP转换到地址 redis key
-     */
-    public static final String IP_TO_ADDRESS_KEY = "ip_to_address:";
+            "org.springframework", "org.apache", "com.ruoyi.common.utils.file", "com.ruoyi.common.config"};
 
     /**
      * 暗桩，标记被破解

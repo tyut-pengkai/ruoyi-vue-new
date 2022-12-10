@@ -3,6 +3,7 @@ package com.ruoyi.common.utils.ip;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.common.config.RuoYiConfig;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.StringUtils;
@@ -39,7 +40,7 @@ public class AddressUtils {
             try {
                 RedisCache redisCache = SpringUtils.getBean(RedisCache.class);
 //                if (!cache.containsKey(ip)) {
-                String redisKey = Constants.IP_TO_ADDRESS_KEY + ip;
+                String redisKey = CacheConstants.IP_TO_ADDRESS_KEY + ip;
                 if (!redisCache.redisTemplate.hasKey(redisKey)) {
                     String rspStr = HttpUtils.sendGet(IP_URL, "ip=" + ip + "&json=true", Constants.GBK);
                     if (StringUtils.isEmpty(rspStr)) {

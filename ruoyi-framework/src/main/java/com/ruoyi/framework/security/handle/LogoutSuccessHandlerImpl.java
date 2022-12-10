@@ -2,7 +2,6 @@ package com.ruoyi.framework.security.handle;
 
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.constant.Constants;
-import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.utils.ServletUtils;
@@ -52,6 +51,6 @@ public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler
                 e.printStackTrace();
             }
         }
-        ServletUtils.renderString(response, JSON.toJSONString(AjaxResult.error(HttpStatus.SUCCESS, "退出成功")));
+        ServletUtils.renderString(response, JSON.toJSONString(AjaxResult.success("退出成功")));
     }
 }

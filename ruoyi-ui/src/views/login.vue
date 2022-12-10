@@ -36,7 +36,7 @@
           />
         </el-input>
       </el-form-item>
-      <el-form-item prop="code" v-if="captchaOnOff">
+      <el-form-item v-if="captchaEnabled" prop="code">
         <el-input
           v-model="loginForm.code"
           auto-complete="off"
@@ -118,7 +118,7 @@ export default {
       },
       loading: false,
       // 验证码开关
-      captchaOnOff: true,
+      captchaEnabled: true,
       // 注册开关
       register: true,
       redirect: undefined,
@@ -158,10 +158,9 @@ export default {
       });
     },
     getCode() {
-      getCodeImg().then((res) => {
-        this.captchaOnOff =
-          res.captchaOnOff === undefined ? true : res.captchaOnOff;
-        if (this.captchaOnOff) {
+      getCodeImg().then(res => {
+        this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled;
+        if (this.captchaEnabled) {
           this.codeUrl = "data:image/gif;base64," + res.img;
           this.loginForm.uuid = res.uuid;
         }
@@ -196,17 +195,13 @@ export default {
             Cookies.remove("password");
             Cookies.remove("rememberMe");
           }
-          this.$store
-            .dispatch("Login", this.loginForm)
-            .then(() => {
-              this.$router
-                .push({path: this.redirect || "/admin"})
-                .catch(() => {
-                });
-            })
+          this.$store.dispatch("Login", this.loginForm).then(() => {
+            this.$router.push({path: this.redirect || "/admin"}).catch(() => {
+            });
+          })
             .catch(() => {
               this.loading = false;
-              if (this.captchaOnOff) {
+              if (this.captchaEnabled) {
                 this.getCode();
               }
             });

@@ -1,18 +1,18 @@
 package com.ruoyi.system.service;
 
-import java.util.List;
 import com.ruoyi.system.domain.SysConfig;
+
+import java.util.List;
 
 /**
  * 参数配置 服务层
- * 
+ *
  * @author ruoyi
  */
-public interface ISysConfigService
-{
+public interface ISysConfigService {
     /**
      * 查询参数配置信息
-     * 
+     *
      * @param configId 参数配置ID
      * @return 参数配置信息
      */
@@ -28,10 +28,10 @@ public interface ISysConfigService
 
     /**
      * 获取验证码开关
-     * 
+     *
      * @return true开启，false关闭
      */
-    public boolean selectCaptchaOnOff();
+    public boolean selectCaptchaEnabled();
 
     /**
      * 查询参数配置列表

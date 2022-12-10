@@ -164,7 +164,7 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-row>
           <el-col :span="24">
-            <el-form-item label="上级菜单">
+            <el-form-item label="上级菜单" prop="parentId">
               <treeselect
                 v-model="form.parentId"
                 :options="menuOptions"
@@ -229,7 +229,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.menuType != 'F'">
-            <el-form-item>
+            <el-form-item prop="isFrame">
               <span slot="label">
                 <el-tooltip
                   content="选择是外链则路由地址需要以`http(s)://`开头"
@@ -274,12 +274,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.menuType != 'M'">
-            <el-form-item>
-              <el-input
-                v-model="form.perms"
-                maxlength="100"
-                placeholder="请输入权限标识"
-              />
+            <el-form-item prop="perms">
+              <el-input v-model="form.perms" maxlength="100" placeholder="请输入权限标识"/>
               <span slot="label">
                 <el-tooltip
                   content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)"
@@ -292,12 +288,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.menuType == 'C'">
-            <el-form-item>
-              <el-input
-                v-model="form.query"
-                maxlength="255"
-                placeholder="请输入路由参数"
-              />
+            <el-form-item prop="query">
+              <el-input v-model="form.query" maxlength="255" placeholder="请输入路由参数"/>
               <span slot="label">
                 <el-tooltip
                   content='访问路由的默认传递参数，如：`{"id": 1, "name": "ry"}`'
@@ -310,7 +302,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.menuType == 'C'">
-            <el-form-item>
+            <el-form-item prop="isCache">
               <span slot="label">
                 <el-tooltip
                   content="选择是则会被`keep-alive`缓存，需要匹配组件的`name`和地址保持一致"
@@ -327,7 +319,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.menuType != 'F'">
-            <el-form-item>
+            <el-form-item prop="visible">
               <span slot="label">
                 <el-tooltip
                   content="选择隐藏则路由将不会出现在侧边栏，但仍然可以访问"
@@ -349,7 +341,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.menuType != 'F'">
-            <el-form-item>
+            <el-form-item prop="status">
               <span slot="label">
                 <el-tooltip
                   content="选择停用则路由将不会出现在侧边栏，也不能被访问"

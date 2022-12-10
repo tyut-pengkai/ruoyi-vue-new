@@ -5,6 +5,7 @@ import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.domain.Resp;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.system.service.ISysUserService;
 
@@ -26,7 +27,9 @@ public class IsUserNameExist extends Function {
 
     @Override
     public Object handle() {
-        return userService.checkUserNameUnique(getParams().get("username"));
+        SysUser user = new SysUser();
+        user.setUserName(getParams().get("username"));
+        return userService.checkUserNameUnique(user);
     }
 
 }

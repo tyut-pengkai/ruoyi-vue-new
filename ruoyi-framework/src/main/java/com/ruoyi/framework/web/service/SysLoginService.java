@@ -1,5 +1,6 @@
 package com.ruoyi.framework.web.service;
 
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
@@ -16,6 +17,7 @@ import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.hy.HyL;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.framework.security.context.AuthenticationContextHolder;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.system.service.ISysWebsiteService;
@@ -86,16 +88,18 @@ public class SysLoginService
             throw new ServiceException("您修改了默认的登录入口，请使用正确的入口登录", 400);
         }
         // 验证码开关
-        boolean captchaOnOff = configService.selectCaptchaOnOff();
-        if (captchaOnOff) {
+        boolean captchaEnabled = configService.selectCaptchaEnabled();
+        if (captchaEnabled) {
             validateCaptcha(username, code, uuid);
         }
         // 用户验证
         Authentication authentication = null;
         try {
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+            AuthenticationContextHolder.setContext(authenticationToken);
             // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername
             authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+                    .authenticate(authenticationToken);
         } catch (Exception e) {
             if (e instanceof BadCredentialsException) {
                 try {
@@ -112,6 +116,8 @@ public class SysLoginService
                 }
                 throw new ServiceException(e.getMessage());
             }
+        } finally {
+            AuthenticationContextHolder.clearContext();
         }
         try {
             AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
@@ -135,7 +141,7 @@ public class SysLoginService
      * @return 结果
      */
     public void validateCaptcha(String username, String code, String uuid) {
-        String verifyKey = Constants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");
+        String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");
         String captcha = redisCache.getCacheObject(verifyKey);
         redisCache.deleteObject(verifyKey);
         if (captcha == null) {

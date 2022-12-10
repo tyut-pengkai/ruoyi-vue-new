@@ -1,37 +1,34 @@
 package com.ruoyi.common.utils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.springframework.util.AntPathMatcher;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.text.StrFormatter;
 import org.springframework.util.AntPathMatcher;
 
+import java.util.*;
+
 /**
  * 字符串工具类
- * 
+ *
  * @author ruoyi
  */
-public class StringUtils extends org.apache.commons.lang3.StringUtils
-{
-    /** 空字符串 */
+public class StringUtils extends org.apache.commons.lang3.StringUtils {
+    /**
+     * 空字符串
+     */
     private static final String NULLSTR = "";
 
-    /** 下划线 */
+    /**
+     * 下划线
+     */
     private static final char SEPARATOR = '_';
 
     /**
      * 获取参数不为空值
-     * 
+     *
      * @param value defaultValue 要判断的value
      * @return value 返回值
      */
-    public static <T> T nvl(T value, T defaultValue)
-    {
+    public static <T> T nvl(T value, T defaultValue) {
         return value != null ? value : defaultValue;
     }
 
@@ -288,35 +285,29 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
 
     /**
      * 字符串转list
-     * 
-     * @param str 字符串
-     * @param sep 分隔符
+     *
+     * @param str         字符串
+     * @param sep         分隔符
      * @param filterBlank 过滤纯空白
-     * @param trim 去掉首尾空白
+     * @param trim        去掉首尾空白
      * @return list集合
      */
-    public static final List<String> str2List(String str, String sep, boolean filterBlank, boolean trim)
-    {
+    public static final List<String> str2List(String str, String sep, boolean filterBlank, boolean trim) {
         List<String> list = new ArrayList<String>();
-        if (StringUtils.isEmpty(str))
-        {
+        if (StringUtils.isEmpty(str)) {
             return list;
         }
 
         // 过滤空白字符串
-        if (filterBlank && StringUtils.isBlank(str))
-        {
+        if (filterBlank && StringUtils.isBlank(str)) {
             return list;
         }
         String[] split = str.split(sep);
-        for (String string : split)
-        {
-            if (filterBlank && StringUtils.isBlank(string))
-            {
+        for (String string : split) {
+            if (filterBlank && StringUtils.isBlank(string)) {
                 continue;
             }
-            if (trim)
-            {
+            if (trim) {
                 string = string.trim();
             }
             list.add(string);
@@ -326,22 +317,38 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
     }
 
     /**
+     * 判断给定的set列表中是否包含数组array 判断给定的数组array中是否包含给定的元素value
+     *
+     * @param set   给定的集合
+     * @param array 给定的数组
+     * @return boolean 结果
+     */
+    public static boolean containsAny(Collection<String> collection, String... array) {
+        if (isEmpty(collection) || isEmpty(array)) {
+            return false;
+        } else {
+            for (String str : array) {
+                if (collection.contains(str)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    /**
      * 查找指定字符串是否包含指定字符串列表中的任意一个字符串同时串忽略大小写
      *
-     * @param cs 指定字符串
+     * @param cs                  指定字符串
      * @param searchCharSequences 需要检查的字符串数组
      * @return 是否包含任意一个字符串
      */
-    public static boolean containsAnyIgnoreCase(CharSequence cs, CharSequence... searchCharSequences)
-    {
-        if (isEmpty(cs) || isEmpty(searchCharSequences))
-        {
+    public static boolean containsAnyIgnoreCase(CharSequence cs, CharSequence... searchCharSequences) {
+        if (isEmpty(cs) || isEmpty(searchCharSequences)) {
             return false;
         }
-        for (CharSequence testStr : searchCharSequences)
-        {
-            if (containsIgnoreCase(cs, testStr))
-            {
+        for (CharSequence testStr : searchCharSequences) {
+            if (containsIgnoreCase(cs, testStr)) {
                 return true;
             }
         }

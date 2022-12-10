@@ -38,36 +38,31 @@ public final class ServiceException extends RuntimeException
         this.message = message;
     }
 
-    public ServiceException(String message, Integer code)
-    {
+    public ServiceException(String message, Integer code) {
         this.message = message;
         this.code = code;
     }
 
-    public String getDetailMessage()
-    {
+    public String getDetailMessage() {
         return detailMessage;
     }
 
-    public String getMessage()
-    {
+    public ServiceException setDetailMessage(String detailMessage) {
+        this.detailMessage = detailMessage;
+        return this;
+    }
+
+    @Override
+    public String getMessage() {
         return message;
     }
 
-    public Integer getCode()
-    {
-        return code;
-    }
-
-    public ServiceException setMessage(String message)
-    {
+    public ServiceException setMessage(String message) {
         this.message = message;
         return this;
     }
 
-    public ServiceException setDetailMessage(String detailMessage)
-    {
-        this.detailMessage = detailMessage;
-        return this;
+    public Integer getCode() {
+        return code;
     }
 }

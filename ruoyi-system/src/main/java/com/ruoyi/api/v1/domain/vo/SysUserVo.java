@@ -92,13 +92,6 @@ public class SysUserVo extends SysUser {
     private String password;
 
     /**
-     * 盐加密
-     */
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private String salt;
-
-    /**
      * 帐号状态（0正常 1停用）
      */
     @JSONField(serialize = false)

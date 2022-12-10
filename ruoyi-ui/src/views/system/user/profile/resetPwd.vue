@@ -17,12 +17,7 @@
       />
     </el-form-item>
     <el-form-item label="确认密码" prop="confirmPassword">
-      <el-input
-        v-model="user.confirmPassword"
-        placeholder="请确认密码"
-        show-password
-        type="password"
-      />
+      <el-input v-model="user.confirmPassword" placeholder="请确认密码" show-password type="password"/>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" size="mini" @click="submit">保存</el-button>

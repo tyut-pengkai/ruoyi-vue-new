@@ -95,17 +95,13 @@ service.interceptors.response.use(res => {
       }
       return Promise.reject('无效的会话，或者会话已过期，请重新登录。')
     } else if (code === 500) {
-      Message({
-        message: msg,
-        customClass: 'customClass',
-        type: 'error'
-      })
+      Message({message: msg, type: 'error'})
       return Promise.reject(new Error(msg))
+    } else if (code === 601) {
+      Message({message: msg, type: 'warning'})
+      return Promise.reject('error')
     } else if (code !== 200) {
-      Notification.error({
-        title: msg,
-        customClass: 'customClass',
-      })
+      Notification.error({title: msg})
       return Promise.reject('error')
     } else {
       return res.data
@@ -123,18 +119,13 @@ service.interceptors.response.use(res => {
     } else if (message.includes("Request failed with status code")) {
       message = "系统接口" + message.substr(message.length - 3) + "异常";
     }
-    Message({
-      message: message,
-      customClass: 'customClass',
-      type: 'error',
-      duration: 5 * 1000
-    })
+    Message({message: message, type: 'error', duration: 5 * 1000})
     return Promise.reject(error)
   }
 )
 
 // 通用下载方法
-export function download(url, params, filename) {
+export function download(url, params, filename, config) {
   downloadLoadingInstance = Loading.service({
     text: "正在下载数据，请稍候",
     spinner: "el-icon-loading",
@@ -144,10 +135,9 @@ export function download(url, params, filename) {
     transformRequest: [(params) => {
       return tansParams(params)
     }],
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    responseType: 'blob'
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    responseType: 'blob',
+    ...config
   }).then(async (data) => {
     const isLogin = await blobValidate(data);
     if (isLogin) {

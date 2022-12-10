@@ -1,6 +1,7 @@
 package com.ruoyi.framework.api.v1.service;
 
 import com.ruoyi.api.v1.utils.MyUtils;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.*;
@@ -533,7 +534,7 @@ public class SysAppLoginService {
         if (deviceCode != null) {
             _deviceCodeStr = deviceCode.getDeviceCode();
         }
-        String userKey = Constants.LOGIN_TOKEN_KEY + loginUser.getToken();
+        String userKey = CacheConstants.LOGIN_TOKEN_KEY + loginUser.getToken();
         if (loginUser.getIfApp()) {
             if (loginUser.getIfTrial()) {
                 userKey = userKey + "|" + loginUser.getAppTrialUserId();

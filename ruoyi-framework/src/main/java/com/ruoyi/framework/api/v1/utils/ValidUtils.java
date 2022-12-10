@@ -5,6 +5,7 @@ import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.api.v1.utils.SignUtil;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.*;
@@ -358,7 +359,7 @@ public class ValidUtils {
 //    }
 
     public void checkLoginLimit(SysApp app, SysAppUser appUser, SysDeviceCode deviceCode) {
-        Collection<String> keys = redisCache.scan(Constants.LOGIN_TOKEN_KEY + "*|" + appUser.getAppUserId());
+        Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*|" + appUser.getAppUserId());
         List<LoginUser> onlineListU = new ArrayList<>();
         for (String key : keys) {
             LoginUser user = redisCache.getCacheObject(key);
@@ -397,7 +398,7 @@ public class ValidUtils {
     }
 
     public void checkTrialLoginLimit(SysApp app, SysAppTrialUser appTrialUser) {
-        Collection<String> keys = redisCache.scan(Constants.LOGIN_TOKEN_KEY + "*|" + appTrialUser.getAppTrialUserId());
+        Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*|" + appTrialUser.getAppTrialUserId());
         SysAppTrialUser trailUser = appTrialUserService.selectSysAppTrialUserByAppTrialUserId(appTrialUser.getAppTrialUserId());
         List<LoginUser> onlineListU = new ArrayList<>();
         for (String key : keys) {
@@ -454,7 +455,7 @@ public class ValidUtils {
     public void checkLicenseMaxOnline() {
         // 检查在线人数限制
         List<String> onlineAppUser = new ArrayList<>();
-        Collection<String> keys = redisCache.scan(Constants.LOGIN_TOKEN_KEY + "*|*");
+        Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*|*");
 //        for (String key : keys) {
 //            LoginUser user = redisCache.getCacheObject(key);
 //            if (user != null && user.getIfApp()) {

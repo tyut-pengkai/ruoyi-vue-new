@@ -87,7 +87,19 @@
           size="mini"
           @click="handleClean"
           v-hasPermi="['monitor:logininfor:remove']"
-          >清空
+        >清空
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          v-hasPermi="['monitor:logininfor:unlock']"
+          :disabled="single"
+          icon="el-icon-unlock"
+          plain
+          size="mini"
+          type="primary"
+          @click="handleUnlock"
+        >解锁
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -98,7 +110,7 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['monitor:logininfor:export']"
-          >导出
+        >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -179,7 +191,7 @@
 </template>
 
 <script>
-import {cleanLogininfor, delLogininfor, list} from "@/api/monitor/logininfor";
+import {cleanLogininfor, delLogininfor, list, unlockLogininfor} from "@/api/monitor/logininfor";
 
 export default {
   name: "Logininfor",
@@ -190,8 +202,12 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      // 非单个禁用
+      single: true,
       // 非多个禁用
       multiple: true,
+      // 选择用户名
+      selectName: "",
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -201,7 +217,7 @@ export default {
       // 日期范围
       dateRange: [],
       // 默认排序
-      defaultSort: { prop: "loginTime", order: "descending" },
+      defaultSort: {prop: "loginTime", order: "descending"},
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -236,13 +252,15 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.resetForm("queryForm");
+      this.queryParams.pageNum = 1;
       this.$refs.tables.sort(this.defaultSort.prop, this.defaultSort.order);
-      this.handleQuery();
     },
     /** 多选框选中数据 */
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.infoId);
+      this.single = selection.length != 1;
       this.multiple = !selection.length;
+      this.selectName = selection.map(item => item.userName);
     },
     /** 排序触发事件 */
     handleSortChange(column, prop, order) {
@@ -262,20 +280,28 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     /** 清空按钮操作 */
     handleClean() {
-      this.$modal
-        .confirm("是否确认清空所有登录日志数据项？")
-        .then(function () {
-          return cleanLogininfor();
-        })
-        .then(() => {
-          this.getList();
-          this.$modal.msgSuccess("清空成功");
-        })
-        .catch(() => {});
+      this.$modal.confirm('是否确认清空所有登录日志数据项？').then(function () {
+        return cleanLogininfor();
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("清空成功");
+      }).catch(() => {
+      });
+    },
+    /** 解锁按钮操作 */
+    handleUnlock() {
+      const username = this.selectName;
+      this.$modal.confirm('是否确认解锁用户"' + username + '"数据项?').then(function () {
+        return unlockLogininfor(username);
+      }).then(() => {
+        this.$modal.msgSuccess("用户" + username + "解锁成功");
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {

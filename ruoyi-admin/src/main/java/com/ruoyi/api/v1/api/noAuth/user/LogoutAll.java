@@ -5,6 +5,7 @@ import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.domain.Resp;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
@@ -63,7 +64,7 @@ public class LogoutAll extends Function {
             return "0";
         }
 
-        Collection<String> keys = redisCache.scan(com.ruoyi.common.constant.Constants.LOGIN_TOKEN_KEY + "*|" + appUser.getAppUserId());
+        Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*|" + appUser.getAppUserId());
         for (String key : keys) {
             LoginUser loginUser = redisCache.getCacheObject(key);
             if (loginUser != null && loginUser.getIfApp() && Objects.equals(loginUser.getAppUserId(), appUser.getAppUserId())) {
@@ -71,7 +72,7 @@ public class LogoutAll extends Function {
                 if (loginUser.getDeviceCode() != null) {
                     _deviceCodeStr = loginUser.getDeviceCode().getDeviceCode();
                 }
-                redisCache.deleteObject(com.ruoyi.common.constant.Constants.LOGIN_TOKEN_KEY + loginUser.getToken());
+                redisCache.deleteObject(CacheConstants.LOGIN_TOKEN_KEY + loginUser.getToken());
                 try {
                     AsyncManager.me().execute(
                             AsyncFactory.recordAppLogininfor(

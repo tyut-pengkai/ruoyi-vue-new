@@ -6,7 +6,7 @@ import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.vo.SysAppUserDeviceCodeVo;
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.annotation.RateLimiter;
-import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -291,7 +291,7 @@ public class SysSaleShopController extends BaseController {
         itemList.add(ssoi);
         sso.setSysSaleOrderItemList(itemList);
         sysSaleOrderService.insertSysSaleOrder(sso);
-        redisCache.redisTemplate.opsForZSet().add(Constants.SALE_ORDER_EXPIRE_KEY, sso.getPayMode() + "|" + orderNo, sso.getExpireTime().getTime());
+        redisCache.redisTemplate.opsForZSet().add(CacheConstants.SALE_ORDER_EXPIRE_KEY, sso.getPayMode() + "|" + orderNo, sso.getExpireTime().getTime());
         return AjaxResult.success().put("orderNo", orderNo);
     }
 
@@ -353,7 +353,7 @@ public class SysSaleShopController extends BaseController {
         itemList.add(ssoi);
         sso.setSysSaleOrderItemList(itemList);
         sysSaleOrderService.insertSysSaleOrder(sso);
-        redisCache.redisTemplate.opsForZSet().add(Constants.SALE_ORDER_EXPIRE_KEY, sso.getPayMode() + "|" + orderNo, sso.getExpireTime().getTime());
+        redisCache.redisTemplate.opsForZSet().add(CacheConstants.SALE_ORDER_EXPIRE_KEY, sso.getPayMode() + "|" + orderNo, sso.getExpireTime().getTime());
         return AjaxResult.success().put("orderNo", orderNo);
     }
 

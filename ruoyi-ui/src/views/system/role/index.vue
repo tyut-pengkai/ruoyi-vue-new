@@ -170,7 +170,7 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:role:edit']"
-            >修改
+          >修改
           </el-button>
           <el-button
             size="mini"
@@ -178,22 +178,17 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:role:remove']"
-            >删除
+          >删除
           </el-button>
-          <el-dropdown
-            v-hasPermi="['system:role:edit']"
-            size="mini"
-            @command="(command) => handleCommand(command, scope.row)"
-          >
-            <span class="el-dropdown-link">
-              <i class="el-icon-d-arrow-right el-icon--right"></i>更多
-            </span>
+          <el-dropdown v-hasPermi="['system:role:edit']" size="mini"
+                       @command="(command) => handleCommand(command, scope.row)">
+            <el-button icon="el-icon-d-arrow-right" size="mini" type="text">更多</el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item
                 v-hasPermi="['system:role:edit']"
                 command="handleDataScope"
                 icon="el-icon-circle-check"
-                >数据权限
+              >数据权限
               </el-dropdown-item>
               <el-dropdown-item
                 v-hasPermi="['system:role:edit']"
@@ -353,9 +348,17 @@
 </template>
 
 <script>
-import {addRole, changeRoleStatus, dataScope, delRole, getRole, listRole, updateRole,} from "@/api/system/role";
-import {roleMenuTreeselect, treeselect as menuTreeselect,} from "@/api/system/menu";
-import {roleDeptTreeselect, treeselect as deptTreeselect,} from "@/api/system/dept";
+import {
+  addRole,
+  changeRoleStatus,
+  dataScope,
+  delRole,
+  deptTreeSelect,
+  getRole,
+  listRole,
+  updateRole
+} from "@/api/system/role";
+import {roleMenuTreeselect, treeselect as menuTreeselect} from "@/api/system/menu";
 
 export default {
   name: "Role",
@@ -496,8 +499,8 @@ export default {
       });
     },
     /** 根据角色ID查询部门树结构 */
-    getRoleDeptTreeselect(roleId) {
-      return roleDeptTreeselect(roleId).then((response) => {
+    getDeptTree(roleId) {
+      return deptTreeSelect(roleId).then(response => {
         this.deptOptions = response.depts;
         return response;
       });
@@ -647,12 +650,12 @@ export default {
     /** 分配数据权限操作 */
     handleDataScope(row) {
       this.reset();
-      const roleDeptTreeselect = this.getRoleDeptTreeselect(row.roleId);
+      const deptTreeSelect = this.getDeptTree(row.roleId);
       getRole(row.roleId).then((response) => {
         this.form = response.data;
         this.openDataScope = true;
         this.$nextTick(() => {
-          roleDeptTreeselect.then((res) => {
+          deptTreeSelect.then((res) => {
             this.$refs.dept.setCheckedKeys(res.checkedKeys);
           });
         });

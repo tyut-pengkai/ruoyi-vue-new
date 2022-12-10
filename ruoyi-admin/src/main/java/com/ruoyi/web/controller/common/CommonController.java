@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.common;
 
 import com.ruoyi.common.config.RuoYiConfig;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -613,7 +614,7 @@ public class CommonController {
         map.put("appUserVipTotal", appUserVipTotal);
         // 平台当前在线数
         List<LoginUser> onlineUserList = new ArrayList<>();
-        Collection<String> loginKeys = redisCache.keys(Constants.LOGIN_TOKEN_KEY + "*");
+        Collection<String> loginKeys = redisCache.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
         for (String key : loginKeys) {
             LoginUser user = redisCache.getCacheObject(key);
             if (user != null && user.getIfApp()) {

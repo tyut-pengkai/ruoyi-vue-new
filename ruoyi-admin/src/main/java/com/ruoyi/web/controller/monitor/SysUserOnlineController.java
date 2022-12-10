@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.monitor;
 
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -43,7 +44,7 @@ public class SysUserOnlineController extends BaseController {
     @PreAuthorize("@ss.hasPermi('monitor:online:list')")
     @GetMapping("/list")
     public TableDataInfo list(String ipaddr, String userName) {
-        Collection<String> keys = redisCache.scan(Constants.LOGIN_TOKEN_KEY + "*");
+        Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*");
         List<SysUserOnline> userOnlineList = new ArrayList<>();
         for (String key : keys) {
             LoginUser user = redisCache.getCacheObject(key);
@@ -110,6 +111,7 @@ public class SysUserOnlineController extends BaseController {
         return getDataTable(userOnlineListFilted);
     }
 
+    @SuppressWarnings("unchecked")
     public List<SysUserOnline> getOnlineUserList() {
         TableDataInfo list = list(null, null);
         return (List<SysUserOnline>) list.getRows();
@@ -122,7 +124,7 @@ public class SysUserOnlineController extends BaseController {
     @Log(title = "在线用户", businessType = BusinessType.FORCE)
     @DeleteMapping("/{tokenId}")
     public AjaxResult forceLogout(@PathVariable String tokenId) {
-        Collection<String> keys = redisCache.scan(Constants.LOGIN_TOKEN_KEY + tokenId + "*");
+        Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + tokenId + "*");
         for (String key : keys) {
             redisCache.deleteObject(key);
             Constants.LAST_ERROR_REASON_MAP.put(tokenId, "您已被系统强制下线");

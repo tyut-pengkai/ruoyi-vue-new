@@ -369,13 +369,17 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      getDept(row.deptId).then((response) => {
+      getDept(row.deptId).then(response => {
         this.form = response.data;
         this.open = true;
         this.title = "修改部门";
-      });
-      listDeptExcludeChild(row.deptId).then((response) => {
-        this.deptOptions = this.handleTree(response.data, "deptId");
+        listDeptExcludeChild(row.deptId).then(response => {
+          this.deptOptions = this.handleTree(response.data, "deptId");
+          if (this.deptOptions.length == 0) {
+            const noResultsOptions = {deptId: this.form.parentId, deptName: this.form.parentName, children: []};
+            this.deptOptions.push(noResultsOptions);
+          }
+        });
       });
     },
     /** 提交按钮 */

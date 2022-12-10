@@ -1,5 +1,6 @@
 package com.ruoyi.framework.hy.sale;
 
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.SaleOrderStatus;
@@ -29,7 +30,7 @@ public class HyTsale {
     public void checkSaleOrderExpire() {
         if (Constants.IS_CRCD) {
 //            System.out.println("已启动商店暗桩");
-            Set<Object> orderNoSet = redisCache.redisTemplate.opsForZSet().rangeByScore(Constants.SALE_ORDER_EXPIRE_KEY, 0, Long.MAX_VALUE);
+            Set<Object> orderNoSet = redisCache.redisTemplate.opsForZSet().rangeByScore(CacheConstants.SALE_ORDER_EXPIRE_KEY, 0, Long.MAX_VALUE);
             //            System.out.println(JSON.toJSONString(orderNoSet));
             if (orderNoSet != null) {
                 for (Object orderNoStr : orderNoSet) { // orderNoStr格式：payMode|orderNo
@@ -44,7 +45,7 @@ public class HyTsale {
                             sso.setCloseTime(DateUtils.getNowDate());
                             sysSaleOrderService.updateSysSaleOrder(sso);
                         }
-                        redisCache.redisTemplate.opsForZSet().remove(Constants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
+                        redisCache.redisTemplate.opsForZSet().remove(CacheConstants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
                     }
                 }
             }

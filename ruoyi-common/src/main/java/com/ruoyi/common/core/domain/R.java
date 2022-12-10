@@ -1,5 +1,7 @@
 package com.ruoyi.common.core.domain;
 
+import com.ruoyi.common.constant.HttpStatus;
+
 import java.io.Serializable;
 
 /**
@@ -7,15 +9,18 @@ import java.io.Serializable;
  *
  * @author ruoyi
  */
-public class R<T> implements Serializable
-{
+public class R<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /** 成功 */
-    public static final int SUCCESS = 0;
+    /**
+     * 成功
+     */
+    public static final int SUCCESS = HttpStatus.SUCCESS;
 
-    /** 失败 */
-    public static final int FAIL = 500;
+    /**
+     * 失败
+     */
+    public static final int FAIL = HttpStatus.ERROR;
 
     private int code;
 
@@ -23,8 +28,7 @@ public class R<T> implements Serializable
 
     private T data;
 
-    public static <T> R<T> ok()
-    {
+    public static <T> R<T> ok() {
         return restResult(null, SUCCESS, "操作成功");
     }
 
@@ -63,8 +67,7 @@ public class R<T> implements Serializable
         return restResult(null, code, msg);
     }
 
-    private static <T> R<T> restResult(T data, int code, String msg)
-    {
+    private static <T> R<T> restResult(T data, int code, String msg) {
         R<T> apiResult = new R<>();
         apiResult.setCode(code);
         apiResult.setData(data);
@@ -72,33 +75,35 @@ public class R<T> implements Serializable
         return apiResult;
     }
 
-    public int getCode()
-    {
+    public static <T> Boolean isError(R<T> ret) {
+        return !isSuccess(ret);
+    }
+
+    public static <T> Boolean isSuccess(R<T> ret) {
+        return R.SUCCESS == ret.getCode();
+    }
+
+    public int getCode() {
         return code;
     }
 
-    public void setCode(int code)
-    {
+    public void setCode(int code) {
         this.code = code;
     }
 
-    public String getMsg()
-    {
+    public String getMsg() {
         return msg;
     }
 
-    public void setMsg(String msg)
-    {
+    public void setMsg(String msg) {
         this.msg = msg;
     }
 
-    public T getData()
-    {
+    public T getData() {
         return data;
     }
 
-    public void setData(T data)
-    {
+    public void setData(T data) {
         this.data = data;
     }
 }

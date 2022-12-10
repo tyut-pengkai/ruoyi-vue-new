@@ -58,28 +58,27 @@ public class SysProfileController extends BaseController
         SysUser sysUser = loginUser.getUser();
         user.setUserName(sysUser.getUserName());
         if (StringUtils.isNotEmpty(user.getPhonenumber())
-                && UserConstants.NOT_UNIQUE.equals(userService.checkPhoneUnique(user)))
-        {
-            return AjaxResult.error("修改用户'" + user.getUserName() + "'失败，手机号码已存在");
+                && UserConstants.NOT_UNIQUE.equals(userService.checkPhoneUnique(user))) {
+            return error("修改用户'" + user.getUserName() + "'失败，手机号码已存在");
         }
         if (StringUtils.isNotEmpty(user.getEmail())
-                && UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user)))
-        {
-            return AjaxResult.error("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
+                && UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user))) {
+            return error("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
         user.setUserId(sysUser.getUserId());
         user.setPassword(null);
-        if (userService.updateUserProfile(user) > 0)
-        {
+        user.setAvatar(null);
+        user.setDeptId(null);
+        if (userService.updateUserProfile(user) > 0) {
             // 更新缓存用户信息
             sysUser.setNickName(user.getNickName());
             sysUser.setPhonenumber(user.getPhonenumber());
             sysUser.setEmail(user.getEmail());
             sysUser.setSex(user.getSex());
             tokenService.setLoginUser(loginUser);
-            return AjaxResult.success();
+            return success();
         }
-        return AjaxResult.error("修改个人信息异常，请联系管理员");
+        return error("修改个人信息异常，请联系管理员");
     }
 
     /**
@@ -94,20 +93,20 @@ public class SysProfileController extends BaseController
         String password = loginUser.getPassword();
         if (!SecurityUtils.matchesPassword(oldPassword, password))
         {
-            return AjaxResult.error("修改密码失败，旧密码错误");
+            return error("修改密码失败，旧密码错误");
         }
         if (SecurityUtils.matchesPassword(newPassword, password))
         {
-            return AjaxResult.error("新密码不能与旧密码相同");
+            return error("新密码不能与旧密码相同");
         }
         if (userService.resetUserPwd(userName, SecurityUtils.encryptPassword(newPassword)) > 0)
         {
             // 更新缓存用户密码
             loginUser.getUser().setPassword(SecurityUtils.encryptPassword(newPassword));
             tokenService.setLoginUser(loginUser);
-            return AjaxResult.success();
+            return success();
         }
-        return AjaxResult.error("修改密码异常，请联系管理员");
+        return error("修改密码异常，请联系管理员");
     }
 
     /**
@@ -131,6 +130,6 @@ public class SysProfileController extends BaseController
                 return ajax;
             }
         }
-        return AjaxResult.error("上传图片异常，请联系管理员");
+        return error("上传图片异常，请联系管理员");
     }
 }

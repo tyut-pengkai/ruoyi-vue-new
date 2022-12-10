@@ -224,7 +224,7 @@
             <el-option
               v-for="item in listClassOptions"
               :key="item.value"
-              :label="item.label"
+              :label="item.label + '(' + item.value + ')'"
               :value="item.value"
             ></el-option>
           </el-select>
@@ -430,12 +430,14 @@ export default {
         if (valid) {
           if (this.form.dictCode != undefined) {
             updateData(this.form).then((response) => {
+              this.$store.dispatch('dict/removeDict', this.queryParams.dictType);
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
             addData(this.form).then((response) => {
+              this.$store.dispatch('dict/removeDict', this.queryParams.dictType);
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -447,16 +449,14 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const dictCodes = row.dictCode || this.ids;
-      this.$modal
-        .confirm("是否确认删除数据项？")
-        .then(function () {
-          return delData(dictCodes);
-        })
-        .then(() => {
-          this.getList();
-          this.$modal.msgSuccess("删除成功");
-        })
-        .catch(() => {});
+      this.$modal.confirm('是否确认删除字典编码为"' + dictCodes + '"的数据项？').then(function () {
+        return delData(dictCodes);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("删除成功");
+        this.$store.dispatch('dict/removeDict', this.queryParams.dictType);
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
