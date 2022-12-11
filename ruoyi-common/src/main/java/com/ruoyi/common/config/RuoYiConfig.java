@@ -1,11 +1,14 @@
 package com.ruoyi.common.config;
 
+import com.ruoyi.common.utils.PathUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+
 /**
  * 读取项目相关配置
- * 
+ *
  * @author ruoyi
  */
 @Component
@@ -43,10 +46,10 @@ public class RuoYiConfig {
 //     */
 //    private boolean demoEnabled;
 
-    /**
-     * 上传路径
-     */
-    private static String profile;
+//    /**
+//     * 上传路径
+//     */
+//    private static String profile;
 
     /**
      * 获取地址开关
@@ -110,18 +113,21 @@ public class RuoYiConfig {
         return version;
     }
 
-    public void setVersion(String version)
-    {
+    public void setVersion(String version) {
         this.version = version;
     }
 
     public static String getProfile() {
-        return profile;
+        return PathUtils.getUserPath() + File.separator + "uploadPath";
     }
 
-    public void setProfile(String profile) {
-        RuoYiConfig.profile = profile;
-    }
+//    public static String getProfile() {
+//        return profile;
+//    }
+//
+//    public void setProfile(String profile) {
+//        RuoYiConfig.profile = profile;
+//    }
 
 //    public boolean isDemoEnabled()
 //    {

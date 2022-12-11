@@ -16,8 +16,6 @@ ruoyi:
   copyrightYear: 2022
   # 版权
   copyright: Copyright © 2020-${ruoyi.copyrightYear} Coordsoft.Com All Rights Reserved.
-  # 文件路径 示例（ Windows配置D:/hywlyz/uploadPath，Linux配置 /opt/app/hywlyz/uploadPath）
-  profile: /opt/app/hywlyz/uploadPath
   # 获取ip地址开关
   addressEnabled: true
   # 验证码类型 math 数组计算 char 字符验证

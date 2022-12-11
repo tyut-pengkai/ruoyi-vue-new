@@ -1,8 +1,7 @@
 # 项目相关配置
-ruoyi:
-  # 上传的文件存储路径 示例（ Windows配置D:/hywlyz/uploadPath，Linux配置 /opt/app/hywlyz/uploadPath）
-  profile: D:/ruoyi/uploadPath
-
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 8080
 # Spring配置
 spring:
   # 数据源配置

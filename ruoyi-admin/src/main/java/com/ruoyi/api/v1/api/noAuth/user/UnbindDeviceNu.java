@@ -98,7 +98,7 @@ public class UnbindDeviceNu extends Function {
         } else {
             if (Convert.toBool(this.getApp().getEnableUnbindByQuota(), true)) {
                 Long p = this.getApp().getReduceQuotaUnbind();
-                if (p != null || p > 0) {
+                if (p != null && p > 0) {
 //                  boolean enableNegative = Convert.toBool(this.getParams().get("enableNegative"), false);
                     boolean enableNegative = Convert.toBool(this.getApp().getEnableNegative(), false);
                     if (this.getApp().getBillType() == BillType.TIME) {
