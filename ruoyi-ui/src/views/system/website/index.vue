@@ -58,8 +58,7 @@
                 :key="dict.value"
                 :label="dict.value"
               >{{ dict.label }}
-              </el-radio
-              >
+              </el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="网站域名">
