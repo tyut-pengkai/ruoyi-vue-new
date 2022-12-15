@@ -1,6 +1,6 @@
-package com.coordsoft.hy.encrypt;
+package com.coordsoft.hysdk.encrypt;
 
-import com.coordsoft.hy.utils.AesCbcZeroPaddingUtil;
+import com.coordsoft.hysdk.utils.AesCbcZeroPaddingUtil;
 
 public class EncryptAesCbcZeroP {
 

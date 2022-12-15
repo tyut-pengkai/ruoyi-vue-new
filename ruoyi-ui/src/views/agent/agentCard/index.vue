@@ -1071,10 +1071,10 @@ export default {
             },
           },
           {
-            text: "1年后(360天)",
+            text: "1年后(365天)",
             onClick(picker) {
               const date = new Date();
-              date.setTime(date.getTime() + 3600 * 1000 * 24 * 30 * 12);
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 365);
               picker.$emit("pick", date);
             },
           },

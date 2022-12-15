@@ -1,6 +1,6 @@
-package com.coordsoft.hy.encrypt;
+package com.coordsoft.hysdk.encrypt;
 
-import com.coordsoft.hy.utils.AesCbcPKCS5PaddingUtil;
+import com.coordsoft.hysdk.utils.AesCbcPKCS5PaddingUtil;
 
 public class EncryptAesCbcPKCS5P {
 

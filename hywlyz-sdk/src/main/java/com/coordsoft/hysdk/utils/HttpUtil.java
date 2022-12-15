@@ -1,4 +1,4 @@
-package com.coordsoft.hy.utils;
+package com.coordsoft.hysdk.utils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

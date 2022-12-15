@@ -15,9 +15,6 @@ spring:
         url: jdbc:mysql://127.0.0.1:3306/hywlyz_dev?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true
         username: root
         password: root
-  #        url: jdbc:mysql://123.206.55.70:3306/hywlyz_online?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true
-  #        username: mo
-  #        password: mopwd
   #      slave:
   #        enable: true
   #        url: jdbc:mysql://43.138.101.207:3306/hywlyz_test?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true

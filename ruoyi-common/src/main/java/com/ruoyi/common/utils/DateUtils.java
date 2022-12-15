@@ -134,22 +134,27 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     /**
      * 计算相差天数
      */
-    public static int differentDaysByMillisecond(Date date1, Date date2)
-    {
+    public static int differentDaysByMillisecond(Date date1, Date date2) {
         return Math.abs((int) ((date2.getTime() - date1.getTime()) / (1000 * 3600 * 24)));
     }
 
     /**
-     * 计算两个时间差
+     * 计算相差秒数
      */
-    public static String getDatePoor(Date endDate, Date nowDate)
-    {
+    public static long differentSecondsByMillisecond(Date date1, Date date2) {
+        return Math.abs(date2.getTime() - date1.getTime());
+    }
+
+    /**
+     * 计算两个时间差，精确到天
+     */
+    public static String getDatePoor(Date endDate, Date nowDate) {
         long nd = 1000 * 24 * 60 * 60;
         long nh = 1000 * 60 * 60;
         long nm = 1000 * 60;
         // long ns = 1000;
         // 获得两个时间的毫秒时间差异
-        long diff = endDate.getTime() - nowDate.getTime();
+        long diff = Math.abs(endDate.getTime() - nowDate.getTime());
         // 计算差多少天
         long day = diff / nd;
         // 计算差多少小时
@@ -162,10 +167,51 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     }
 
     /**
+     * 计算两个时间差，精确到年
+     */
+    public static String getDatePoor2(Date endDate, Date nowDate) {
+        long ny = 365 * 24 * 60 * 60;
+        long nM = 30 * 24 * 60 * 60;
+        long nd = 24 * 60 * 60;
+        long nh = 60 * 60;
+        long nm = 60;
+        long ns = 1;
+        // 获得两个时间的毫秒时间差异
+        long diff = Math.abs((endDate.getTime() - nowDate.getTime()) / 1000);
+        // 计算差多少年
+        long year = diff / ny;
+        // 计算差多少月
+        long month = diff % ny / nM;
+        // 计算差多少天
+        long day = diff % ny % nM / nd;
+        // 计算差多少小时
+        long hour = diff % ny % nM % nd / nh;
+        // 计算差多少分钟
+        long min = diff % ny % nM % nd % nh / nm;
+        // 计算差多少秒
+        long sec = diff % nd % nh % nm / ns;
+        if (year != 0) {
+            return year + "年" + month + "月" + day + "天" + hour + "小时" + min + "分钟" + sec + "秒";
+        }
+        if (month != 0) {
+            return month + "月" + day + "天" + hour + "小时" + min + "分钟" + sec + "秒";
+        }
+        if (day != 0) {
+            return day + "天" + hour + "小时" + min + "分钟" + sec + "秒";
+        }
+        if (hour != 0) {
+            return hour + "小时" + min + "分钟" + sec + "秒";
+        }
+        if (min != 0) {
+            return min + "分钟" + sec + "秒";
+        }
+        return sec + "秒";
+    }
+
+    /**
      * 增加 LocalDateTime ==> Date
      */
-    public static Date toDate(LocalDateTime temporalAccessor)
-    {
+    public static Date toDate(LocalDateTime temporalAccessor) {
         ZonedDateTime zdt = temporalAccessor.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
     }

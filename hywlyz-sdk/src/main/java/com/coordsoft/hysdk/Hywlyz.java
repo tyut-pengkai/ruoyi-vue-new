@@ -1,19 +1,17 @@
-package com.coordsoft.hy;
+package com.coordsoft.hysdk;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
-import com.coordsoft.hy.encrypt.EncryptType;
-import com.coordsoft.hy.utils.HttpUtil;
-import com.coordsoft.hy.utils.HyUtils;
-import com.coordsoft.hy.utils.RandomUtil;
-import com.coordsoft.hy.vo.RequestResult;
+import com.coordsoft.hysdk.encrypt.EncryptType;
+import com.coordsoft.hysdk.utils.HttpUtil;
+import com.coordsoft.hysdk.utils.HyUtils;
+import com.coordsoft.hysdk.utils.RandomUtil;
+import com.coordsoft.hysdk.vo.RequestResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 public class Hywlyz extends HyUtils {
@@ -27,6 +25,33 @@ public class Hywlyz extends HyUtils {
     private EncryptType gDataOutEnc;
     private String gDataOutPwd = "";
     private String gApiPwd = "";
+    private boolean gLog = false;
+
+    public String getSdkVer() {
+        return "v1.3.0_20221215";
+    }
+
+    public void setShowLog(boolean showLog) {
+        this.gLog = showLog;
+    }
+
+    private void showLogInfo(String str) {
+        if (gLog) {
+            log.info(str);
+        }
+    }
+
+    private void showLogDebug(String str) {
+        if (gLog) {
+            log.debug(str);
+        }
+    }
+
+    private void showLogError(String str) {
+        if (gLog) {
+            log.error(str);
+        }
+    }
 
     public void setToken(String token) {
         this.gToken = token;
@@ -66,11 +91,21 @@ public class Hywlyz extends HyUtils {
                 }
             }
             String sign = generalCalcSign(data, gAppSecret);
-            log.debug("requestServer: " + replaceNewLine(data.toString()) + ", " + sign);
+            showLogDebug("requestServer: " + replaceNewLine(data.toString()) + ", " + sign);
 
             data.put("sign", sign);
-            if (checkToken && (gToken == null || "".equals(gToken))) {
-                log.debug("requestServer: token为空，请先调用【软件_置当前TOKEN】函数设置TOKEN");
+
+            @SuppressWarnings("unchecked")
+            List ignoreList = new ArrayList(Arrays.asList(
+                    "globalScript.ng",
+                    "globalVariableGet.ng",
+                    "globalVariableSet.ng",
+                    "globalFileUpload.ng",
+                    "globalFileDownload.ng"
+            ));
+
+            if (checkToken && (gToken == null || "".equals(gToken)) && !ignoreList.contains(api)) {
+                showLogDebug("requestServer: token为空，请先调用【setToken】函数设置TOKEN");
                 return requestResult;
             }
 
@@ -89,7 +124,7 @@ public class Hywlyz extends HyUtils {
             assert requestContent != null;
             try {
                 String response = HttpUtil.post(gApiUrl, requestContent, headers);
-                log.debug("requestServer: response：" + response);
+                showLogDebug("requestServer: response：" + response);
                 String string = Objects.requireNonNull(response);
                 JSONObject jsonObject = JSON.parseObject(string);
                 requestResult.setCode(jsonObject.getInteger("code"));
@@ -112,18 +147,18 @@ public class Hywlyz extends HyUtils {
                         } else {
                             requestResult.setCode(0);
                             requestResult.setMsg("vstr校验失败，该数据可能被人为篡改");
-                            log.debug("requestServer: " + requestResult.getMsg());
+                            showLogDebug("requestServer: " + requestResult.getMsg());
                         }
                     } else {
                         requestResult.setCode(0);
                         requestResult.setMsg("sign校验失败，该数据可能被人为篡改");
-                        log.debug("requestServer: " + requestResult.getMsg());
+                        showLogDebug("requestServer: " + requestResult.getMsg());
                     }
                 }
-                log.debug("requestServer: 请求API：" + api);
-                log.debug("requestServer: 返回数据json解析成功[密文]：" + string);
-                log.debug("requestServer: data结构[明文]：" + requestResult.getData());
-                log.debug("requestServer: ======================");
+                showLogDebug("requestServer: 请求API：" + api);
+                showLogDebug("requestServer: 返回数据json解析成功[密文]：" + string);
+                showLogDebug("requestServer: data结构[明文]：" + requestResult.getData());
+                showLogDebug("requestServer: ======================");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -133,7 +168,7 @@ public class Hywlyz extends HyUtils {
         return requestResult;
     }
 
-    public RequestResult login_nu(String username, String password, String deviceCode, String md5) {
+    public RequestResult loginNu(String username, String password, String deviceCode, String md5) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "login.nu");
@@ -148,7 +183,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult logoutAll_nu(String username, String password) {
+    public RequestResult logoutAllNu(String username, String password) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("username", username);
@@ -160,7 +195,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult rechargeCard_nu(String username, String password, boolean validPassword, String cardNo, String cardPassword) {
+    public RequestResult rechargeCardNu(String username, String password, boolean validPassword, String cardNo, String cardPassword) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("username", username);
@@ -175,7 +210,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult register_nu(String username, String password, String passwordRepeat) {
+    public RequestResult registerNu(String username, String password, String passwordRepeat) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("username", username);
@@ -188,7 +223,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult updatePassword_nu(String username, String password, String newPassword, String newPasswordRepeat) {
+    public RequestResult updatePasswordNu(String username, String password, String newPassword, String newPasswordRepeat) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("username", username);
@@ -202,7 +237,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult unbindDevice_nu(String deviceCode, String username, String password, boolean enableNegative) {
+    public RequestResult unbindDeviceNu(String deviceCode, String username, String password, boolean enableNegative) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("enableNegative", enableNegative);
@@ -216,7 +251,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult appInfo_ng() {
+    public RequestResult appInfoNg() {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "appInfo.ng");
@@ -226,7 +261,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult appUserInfo_ag() {
+    public RequestResult appUserInfoAg() {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "appUserInfo.ag");
@@ -236,7 +271,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, true));
     }
 
-    public RequestResult heartbeat_ag() {
+    public RequestResult heartbeatAg() {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "heartbeat.ag");
@@ -246,7 +281,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, true));
     }
 
-    public RequestResult isConnected_ng() {
+    public RequestResult isConnectedNg() {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "isConnected.ng");
@@ -256,7 +291,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult isOnline_ag() {
+    public RequestResult isOnlineAg() {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "isOnline.ag");
@@ -266,7 +301,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, true));
     }
 
-    public RequestResult latestVersionInfo_ng() {
+    public RequestResult latestVersionInfoNg() {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "latestVersionInfo.ng");
@@ -276,7 +311,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult versionInfo_ng() {
+    public RequestResult versionInfoNg() {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "versionInfo.ng");
@@ -287,7 +322,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult latestVersionInfoForceUpdate_ng() {
+    public RequestResult latestVersionInfoForceUpdateNg() {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "latestVersionInfoForceUpdate.ng");
@@ -297,7 +332,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult logout_ag() {
+    public RequestResult logoutAg() {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "logout.ag");
@@ -307,7 +342,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, true));
     }
 
-    public RequestResult serverTime_ng() {
+    public RequestResult serverTimeNg() {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "serverTime.ng");
@@ -317,7 +352,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult unbindDevice_ag(boolean enableNegative) {
+    public RequestResult unbindDeviceAg(boolean enableNegative) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("enableNegative", enableNegative);
@@ -328,7 +363,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, true));
     }
 
-    public RequestResult isUserNameExist_nu(String username) {
+    public RequestResult isUserNameExistNu(String username) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("username", username);
@@ -339,7 +374,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult userExpireTime_ag() {
+    public RequestResult userExpireTimeAg() {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "userExpireTime.ag");
@@ -349,7 +384,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, true));
     }
 
-    public RequestResult reduceTime_ag(int seconds, boolean enableNegative) {
+    public RequestResult reduceTimeAg(int seconds, boolean enableNegative) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("seconds", seconds);
@@ -361,7 +396,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, true));
     }
 
-    public RequestResult reducePoint_ag(int point, boolean enableNegative) {
+    public RequestResult reducePointAg(int point, boolean enableNegative) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("point", point);
@@ -373,7 +408,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, true));
     }
 
-    public RequestResult userPoint_ag() {
+    public RequestResult userPointAg() {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "userPoint.ag");
@@ -383,7 +418,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, true));
     }
 
-    public RequestResult login_nc(String loginCode, String deviceCode, String md5) {
+    public RequestResult loginNc(String loginCode, String deviceCode, String md5) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "login.nc");
@@ -397,7 +432,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult unbindDevice_nc(String deviceCode, String loginCode, boolean enableNegative) {
+    public RequestResult unbindDeviceNc(String deviceCode, String loginCode, boolean enableNegative) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "unbindDevice.nc");
@@ -410,7 +445,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult globalScript_ng(String scriptKey, String scriptParams) {
+    public RequestResult globalScriptNg(String scriptKey, String scriptParams) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "globalScript.ng");
@@ -419,10 +454,10 @@ public class Hywlyz extends HyUtils {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return (requestServer(postBody, false));
+        return (requestServer(postBody, true));
     }
 
-    public RequestResult globalVariableGet_ng(String variableName, boolean errorIfNotExist) {
+    public RequestResult globalVariableGetNg(String variableName, boolean errorIfNotExist) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "globalVariableGet.ng");
@@ -431,10 +466,10 @@ public class Hywlyz extends HyUtils {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return (requestServer(postBody, false));
+        return (requestServer(postBody, true));
     }
 
-    public RequestResult globalVariableSet_ng(String variableName, String variableValue, boolean errorIfNotExist, boolean checkToken, boolean checkVip) {
+    public RequestResult globalVariableSetNg(String variableName, String variableValue, boolean errorIfNotExist, boolean checkToken, boolean checkVip) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "globalVariableSet.ng");
@@ -446,10 +481,38 @@ public class Hywlyz extends HyUtils {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return (requestServer(postBody, false));
+        return (requestServer(postBody, true));
     }
 
-    public RequestResult trialLogin_ng(String deviceCode, String md5) {
+    public RequestResult globalFileUploadNg(String fileName, String base64Str, boolean overrideIfExist, boolean checkToken, boolean checkVip) {
+        JSONObject postBody = new JSONObject();
+        try {
+            postBody.put("api", "globalFileUpload.ng");
+            postBody.put("fileName", fileName);
+            postBody.put("base64Str", base64Str);
+            postBody.put("overrideIfExist", overrideIfExist);
+            postBody.put("checkToken", checkToken);
+            postBody.put("checkVip", checkVip);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (requestServer(postBody, true));
+    }
+
+    public RequestResult globalFileDownloadNg(String fileName, boolean returnUrl, boolean errorIfNotExist) {
+        JSONObject postBody = new JSONObject();
+        try {
+            postBody.put("api", "globalFileDownload.ng");
+            postBody.put("fileName", fileName);
+            postBody.put("returnUrl", returnUrl);
+            postBody.put("errorIfNotExist", errorIfNotExist);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (requestServer(postBody, true));
+    }
+
+    public RequestResult trialLoginNg(String deviceCode, String md5) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "trialLogin.ng");
@@ -462,7 +525,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult bindDeviceInfo_nu(String username) {
+    public RequestResult bindDeviceInfoNu(String username) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "bindDeviceInfo.nu");
@@ -473,7 +536,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult bindDeviceInfo_nc(String loginCode) {
+    public RequestResult bindDeviceInfoNc(String loginCode) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "bindDeviceInfo.nc");
@@ -484,7 +547,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult userExpireTime_nc(String loginCode) {
+    public RequestResult userExpireTimeNc(String loginCode) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "userExpireTime.nc");
@@ -495,7 +558,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult userPoint_nc(String loginCode) {
+    public RequestResult userPointNc(String loginCode) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "userPoint.nc");
@@ -506,7 +569,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult userExpireTime_nu(String username) {
+    public RequestResult userExpireTimeNu(String username) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "userExpireTime.nu");
@@ -517,7 +580,7 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult userPoint_nu(String username) {
+    public RequestResult userPointNu(String username) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "userPoint.nu");
@@ -528,12 +591,25 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult rechargeLoginCode_nc(String loginCode, String newLoginCode) {
+    public RequestResult rechargeLoginCodeNc(String loginCode, String newLoginCode) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "rechargeLoginCode.nc");
             postBody.put("loginCode", loginCode);
             postBody.put("newLoginCode", newLoginCode);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (requestServer(postBody, false));
+    }
+
+    public RequestResult timeDiffNg(String time1, String time2, Integer formatType) {
+        JSONObject postBody = new JSONObject();
+        try {
+            postBody.put("api", "timeDiff.ng");
+            postBody.put("time1", time1);
+            postBody.put("time2", time2);
+            postBody.put("formatType", formatType);
         } catch (JSONException e) {
             e.printStackTrace();
         }

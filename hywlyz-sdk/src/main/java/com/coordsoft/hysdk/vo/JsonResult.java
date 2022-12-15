@@ -1,4 +1,4 @@
-package com.coordsoft.hy.vo;
+package com.coordsoft.hysdk.vo;
 
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Data;

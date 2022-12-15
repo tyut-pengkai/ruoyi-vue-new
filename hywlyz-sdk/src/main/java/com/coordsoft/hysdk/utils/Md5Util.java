@@ -1,4 +1,4 @@
-package com.coordsoft.hy.utils;
+package com.coordsoft.hysdk.utils;
 
 import java.security.MessageDigest;
 

@@ -1,6 +1,6 @@
-package com.coordsoft.hy.encrypt;
+package com.coordsoft.hysdk.encrypt;
 
-import com.coordsoft.hy.utils.Base64Util;
+import com.coordsoft.hysdk.utils.Base64Util;
 
 public class EncryptBase64 {
 

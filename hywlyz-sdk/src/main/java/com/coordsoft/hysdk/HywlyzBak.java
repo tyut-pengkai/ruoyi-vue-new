@@ -1,14 +1,14 @@
-package com.coordsoft.hy;
+package com.coordsoft.hysdk;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
-import com.coordsoft.hy.encrypt.EncryptType;
-import com.coordsoft.hy.utils.HttpUtil;
-import com.coordsoft.hy.utils.HyUtils;
-import com.coordsoft.hy.utils.RandomUtil;
-import com.coordsoft.hy.vo.RequestResult;
+import com.coordsoft.hysdk.encrypt.EncryptType;
+import com.coordsoft.hysdk.utils.HttpUtil;
+import com.coordsoft.hysdk.utils.HyUtils;
+import com.coordsoft.hysdk.utils.RandomUtil;
+import com.coordsoft.hysdk.vo.RequestResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 

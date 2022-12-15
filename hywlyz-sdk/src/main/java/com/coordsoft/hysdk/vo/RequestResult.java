@@ -1,5 +1,5 @@
 
-package com.coordsoft.hy.vo;
+package com.coordsoft.hysdk.vo;
 
 import lombok.Data;
 

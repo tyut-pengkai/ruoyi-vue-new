@@ -1,4 +1,4 @@
-package com.coordsoft.hy.encrypt;
+package com.coordsoft.hysdk.encrypt;
 
 public enum EncryptType {
 

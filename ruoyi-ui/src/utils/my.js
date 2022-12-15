@@ -1,4 +1,4 @@
-export const year = 12 * 30 * 24 * 60 * 60;
+export const year = 365 * 24 * 60 * 60;
 export const month = 30 * 24 * 60 * 60;
 export const day = 24 * 60 * 60
 export const hour = 60 * 60;

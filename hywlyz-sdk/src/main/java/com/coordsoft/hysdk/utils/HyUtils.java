@@ -1,14 +1,14 @@
-package com.coordsoft.hy.utils;
+package com.coordsoft.hysdk.utils;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
-import com.coordsoft.hy.encrypt.EncryptAesCbcPKCS5P;
-import com.coordsoft.hy.encrypt.EncryptAesCbcZeroP;
-import com.coordsoft.hy.encrypt.EncryptBase64;
-import com.coordsoft.hy.encrypt.EncryptType;
-import com.coordsoft.hy.vo.JsonResult;
-import com.coordsoft.hy.vo.RequestResult;
+import com.coordsoft.hysdk.encrypt.EncryptAesCbcPKCS5P;
+import com.coordsoft.hysdk.encrypt.EncryptAesCbcZeroP;
+import com.coordsoft.hysdk.encrypt.EncryptBase64;
+import com.coordsoft.hysdk.encrypt.EncryptType;
+import com.coordsoft.hysdk.vo.JsonResult;
+import com.coordsoft.hysdk.vo.RequestResult;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
