@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class HttpUtil {
@@ -38,7 +39,7 @@ public class HttpUtil {
                 DataOutputStream output = new DataOutputStream(connection.getOutputStream());
                 // 传输的内容格式就如同 URL 的规范一样(a=1&b=2)，最好进行一次 URL 编码操作
                 //            String content = URLEncoder.encode(params, "utf-8");
-                output.write(params.getBytes("utf-8"));
+                output.write(params.getBytes(StandardCharsets.UTF_8));
                 // 输出完记得关
                 output.flush();
                 output.close();
