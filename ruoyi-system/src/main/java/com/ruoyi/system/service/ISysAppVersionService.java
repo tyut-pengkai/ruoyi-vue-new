@@ -101,4 +101,11 @@ public interface ISysAppVersionService {
      * 获取快速接入参数信息
      */
     public AjaxResult getQuickAccessParams(Long appVersionId);
+
+    /**
+     * 获取快速接入模板列表
+     *
+     * @return
+     */
+    public AjaxResult getQuickAccessTemplateList();
 }

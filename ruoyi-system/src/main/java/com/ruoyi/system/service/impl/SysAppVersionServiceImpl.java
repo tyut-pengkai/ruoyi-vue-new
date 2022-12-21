@@ -16,12 +16,15 @@ import com.ruoyi.system.mapper.SysAppVersionMapper;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppVersionService;
 import com.ruoyi.utils.QuickAccessApkUtil;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
+import org.ini4j.Ini;
+import org.ini4j.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,7 +39,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 软件版本信息Service业务层处理
@@ -221,11 +229,9 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      */
     private QuickAccessResultVo quickAccessHandle(byte[] bytes, SysAppVersion version, String filename, String apkOper) {
         try {
-            log.info("正在快速接入" + filename);
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
             sysAppService.setApiUrl(app);
             byte[] split = "|*@#||*@#|".getBytes(StandardCharsets.UTF_8);
-            log.info("正在对接参数");
             AppParamVo apv = new AppParamVo();
             apv.setApiUrl(app.getApiUrl());
             apv.setAppSecret(app.getAppSecret());
@@ -237,9 +243,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             apv.setApiPwd(app.getApiPwd());
             apv.setAuthType(app.getAuthType().getCode());
             apv.setBillType(app.getBillType().getCode());
-
             // 加密
-            log.info("正在加密参数");
             String apvStr = JSON.toJSONString(apv);
             apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");
 
@@ -256,6 +260,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                 result.getData().put("apv", apv);
                 return result;
             } else if(filename.endsWith(".apk")) {
+                log.info("正在快速接入" + filename);
                 QuickAccessResultVo result = new QuickAccessResultVo();
                 byte[] injectedApk = bytes;
                 if ("1".equals(apkOper) || "2".equals(apkOper)) {
@@ -387,5 +392,67 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         private String apiPwd;
         private String authType;
         private String billType;
+    }
+
+    /**
+     * 获取快速接入模板列表
+     *
+     * @return
+     */
+    @Override
+    public AjaxResult getQuickAccessTemplateList() {
+
+
+        String templateDirPath = PathUtils.getUserPath() + File.separator + ".." + File.separator + "template";
+        if ("jar".equals(SysAppVersionServiceImpl.class.getResource("").getProtocol())) {
+            // 以 jar 的方式运行
+            templateDirPath = PathUtils.getUserPath() + File.separator + "template";
+        }
+        Collection<File> templateList = FileUtils.listFiles(new File(templateDirPath), new String[]{"apk.tpl"}, false);
+        String regex = "^(.*)\\.apk\\.tpl$";
+        Pattern pattern = Pattern.compile(regex);
+        List<TemplateInfo> result = new ArrayList<>();
+        for (File template : templateList) {
+            try {
+                Matcher matcher = pattern.matcher(template.getName());
+                if (matcher.matches()) {
+                    String fileName = matcher.group(1);
+                    String configFilePath = template.getParentFile().getCanonicalPath() + File.separator + fileName + ".ini";
+                    File configFile = new File(configFilePath);
+                    if (configFile.exists() && configFile.isFile()) {
+                        Ini ini = new Ini();
+                        ini.load(configFile);
+                        Profile.Section section = ini.get("模板信息");
+                        result.add(new TemplateInfo(
+                                fileName,
+                                section.get("模板名称"),
+                                section.get("模板名称"),
+                                section.get("模板版本"),
+                                section.get("模板作者"),
+                                section.get("联系方式"),
+                                section.get("附加信息"),
+                                Arrays.asList(section.get("皮肤列表").split(","))));
+                    } else {
+                        result.add(new TemplateInfo(fileName, fileName, "", "", "", "", "", new ArrayList<>()));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return AjaxResult.success(result);
+    }
+
+    @Data
+    @AllArgsConstructor
+    class TemplateInfo {
+        private String fileName;
+        private String name;
+        private String description;
+        private String version;
+        private String author;
+        private String concat;
+        private String remark;
+        private List<String> skinList;
     }
 }

@@ -494,11 +494,52 @@
             @click="importTemplate"
             >下载模板</el-link
           > -->
+              <div style="margin-top: 10px">
+                <span style="margin-right: 10px">选择模板</span>
+                <el-select
+                  v-model="upload.template"
+                  placeholder="请选择接入模板"
+                  style="width: 86px; margin-right: 10px"
+                >
+                  <el-option
+                    v-for="item in templateOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+                <span style="margin-right: 10px">皮肤</span>
+                <el-select
+                  v-model="upload.skin"
+                  placeholder="请选择接入皮肤"
+                  style="width: 86px"
+                >
+                  <el-option
+                    v-for="item in skinOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+                <span style="margin-left: 15px">
+                  <el-tooltip
+                    content="每个模板里可提供多个皮肤效果"
+                    placement="top"
+                  >
+                    <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                    ></i>
+                  </el-tooltip>
+                </span>
+              </div>
             </div>
           </el-upload>
         </el-tab-pane>
         <el-tab-pane label="EXE接入">
-          <div style="width: 360px; height: 225px">
+          <div style="width: 360px; height: 272px">
             <el-alert
               :closable="false"
               show-icon
@@ -514,7 +555,7 @@
                 v-show="apvStr && apvStr != ''"
                 v-model="apvStr"
                 :readonly="true"
-                :rows="6"
+                :rows="8"
                 type="textarea"
               ></el-input>
               <el-button
@@ -654,6 +695,10 @@ export default {
         updateMd5: true,
         // 是否自动APK签名
         apkOper: "1",
+        // 默认模板
+        template: "0",
+        // 默认皮肤
+        skin: "0",
       },
       fileDown: {
         //弹出框控制的状态
@@ -675,6 +720,18 @@ export default {
         {
           value: "3",
           label: "仅加签",
+        },
+      ],
+      templateOptions: [
+        {
+          value: "0",
+          label: "默认",
+        },
+      ],
+      skinOptions: [
+        {
+          value: "0",
+          label: "默认",
         },
       ],
       showExe: false,

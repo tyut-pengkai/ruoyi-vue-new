@@ -121,4 +121,14 @@ public class SysAppVersionController extends BaseController {
     public AjaxResult getQuickAccessParams(@PathVariable Long appVersionId) {
         return sysAppVersionService.getQuickAccessParams(appVersionId);
     }
+
+    /**
+     * 获取快速接入参数信息
+     */
+    @Log(title = "快速接入", businessType = BusinessType.QUICK_ACCESS)
+    @GetMapping("/quickAccessTemplate/list")
+    public AjaxResult getQuickAccessTemplateList() {
+        return sysAppVersionService.getQuickAccessTemplateList();
+    }
+
 }
