@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -119,8 +120,10 @@ public class TokenService {
      */
     public void delLoginUser(String token) {
         if (StringUtils.isNotEmpty(token)) {
-            String userKey = getTokenKey(token);
-            redisCache.deleteObject(userKey);
+            Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + token + "|*");
+            for (String key : keys) {
+                redisCache.deleteObject(key);
+            }
         }
     }
 
