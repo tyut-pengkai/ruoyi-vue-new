@@ -151,10 +151,41 @@ public class SysAppLoginService {
                     }
                 }
             }
-            // 检测账号是否过期或点数不足
-            validUtils.checkAppUserIsExpired(app, appUser);
-            // 检查用户数、设备数限制
-            validUtils.checkLoginLimit(app, appUser, deviceCode);
+            synchronized (appUser.getAppUserId().toString().intern()) {
+                // 检测账号是否过期或点数不足
+                validUtils.checkAppUserIsExpired(app, appUser);
+                // 检查用户数、设备数限制
+                validUtils.checkLoginLimit(app, appUser, deviceCode);
+                try {
+                    AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), username, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                LoginUser loginUser = new LoginUser();
+                loginUser.setIfApp(true);
+                loginUser.setIfTrial(false);
+                loginUser.setUserId(user.getUserId());
+                loginUser.setAppKey(app.getAppKey());
+                loginUser.setAppId(app.getAppId());
+                loginUser.setUser(null);
+                loginUser.setAppUserId(appUser.getAppUserId());
+                loginUser.setUserName(appUser.getUserName());
+                loginUser.setAppVersion(appVersion);
+                loginUser.setDeviceCode(deviceCode);
+                loginUser.setAppUserDeviceCode(appUserDeviceCode);
+
+                recordLoginInfo(loginUser);
+
+                // 自动扣除点数
+                if (app.getBillType() == BillType.POINT && autoReducePoint) {
+                    appUser = appUserService.selectSysAppUserByAppUserId(appUser.getAppUserId());
+                    appUser.setPoint(appUser.getPoint().subtract(BigDecimal.valueOf(-1)));
+                    appUserService.updateSysAppUser(appUser);
+                }
+
+                // 生成token
+                return tokenService.createToken(loginUser);
+            }
         } catch (ApiException e) {
             try {
                 AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, username, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage() + (e.getDetailMessage() != null ? "：" + e.getDetailMessage() : "")));
@@ -170,35 +201,6 @@ public class SysAppLoginService {
             }
             throw e;
         }
-        try {
-            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), username, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        LoginUser loginUser = new LoginUser();
-        loginUser.setIfApp(true);
-        loginUser.setIfTrial(false);
-        loginUser.setUserId(user.getUserId());
-        loginUser.setAppKey(app.getAppKey());
-        loginUser.setAppId(app.getAppId());
-        loginUser.setUser(null);
-        loginUser.setAppUserId(appUser.getAppUserId());
-        loginUser.setUserName(appUser.getUserName());
-        loginUser.setAppVersion(appVersion);
-        loginUser.setDeviceCode(deviceCode);
-        loginUser.setAppUserDeviceCode(appUserDeviceCode);
-
-        recordLoginInfo(loginUser);
-
-        // 自动扣除点数
-        if (app.getBillType() == BillType.POINT && autoReducePoint) {
-            appUser = appUserService.selectSysAppUserByAppUserId(appUser.getAppUserId());
-            appUser.setPoint(appUser.getPoint().subtract(BigDecimal.valueOf(-1)));
-            appUserService.updateSysAppUser(appUser);
-        }
-
-        // 生成token
-        return tokenService.createToken(loginUser);
     }
 
     /**
@@ -305,10 +307,41 @@ public class SysAppLoginService {
                     }
                 }
             }
-            // 检测账号是否过期或点数不足
-            validUtils.checkAppUserIsExpired(app, appUser);
-            // 检查用户数、设备数限制
-            validUtils.checkLoginLimit(app, appUser, deviceCode);
+            synchronized (appUser.getAppUserId().toString().intern()) {
+                // 检测账号是否过期或点数不足
+                validUtils.checkAppUserIsExpired(app, appUser);
+                // 检查用户数、设备数限制
+                validUtils.checkLoginLimit(app, appUser, deviceCode);
+                try {
+                    AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                LoginUser loginUser = new LoginUser();
+                loginUser.setIfApp(true);
+                loginUser.setIfTrial(false);
+                loginUser.setUserId(null);
+                loginUser.setAppKey(app.getAppKey());
+                loginUser.setAppId(app.getAppId());
+                loginUser.setUser(null);
+                loginUser.setAppUserId(appUser.getAppUserId());
+                loginUser.setUserName(appUser.getUserName());
+                loginUser.setAppVersion(appVersion);
+                loginUser.setDeviceCode(deviceCode);
+                loginUser.setAppUserDeviceCode(appUserDeviceCode);
+
+                recordLoginInfo(loginUser);
+
+                // 自动扣除点数
+                if (app.getBillType() == BillType.POINT && autoReducePoint) {
+                    appUser = appUserService.selectSysAppUserByAppUserId(appUser.getAppUserId());
+                    appUser.setPoint(appUser.getPoint().subtract(BigDecimal.valueOf(-1)));
+                    appUserService.updateSysAppUser(appUser);
+                }
+
+                // 生成token
+                return tokenService.createToken(loginUser);
+            }
         } catch (ApiException e) {
             try {
                 AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser != null ? appUser.getAppUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage() + (e.getDetailMessage() != null ? "：" + e.getDetailMessage() : "")));
@@ -324,35 +357,6 @@ public class SysAppLoginService {
             }
             throw e;
         }
-        try {
-            AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appUser.getAppUserId(), loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        LoginUser loginUser = new LoginUser();
-        loginUser.setIfApp(true);
-        loginUser.setIfTrial(false);
-        loginUser.setUserId(null);
-        loginUser.setAppKey(app.getAppKey());
-        loginUser.setAppId(app.getAppId());
-        loginUser.setUser(null);
-        loginUser.setAppUserId(appUser.getAppUserId());
-        loginUser.setUserName(appUser.getUserName());
-        loginUser.setAppVersion(appVersion);
-        loginUser.setDeviceCode(deviceCode);
-        loginUser.setAppUserDeviceCode(appUserDeviceCode);
-
-        recordLoginInfo(loginUser);
-
-        // 自动扣除点数
-        if (app.getBillType() == BillType.POINT && autoReducePoint) {
-            appUser = appUserService.selectSysAppUserByAppUserId(appUser.getAppUserId());
-            appUser.setPoint(appUser.getPoint().subtract(BigDecimal.valueOf(-1)));
-            appUserService.updateSysAppUser(appUser);
-        }
-
-        // 生成token
-        return tokenService.createToken(loginUser);
     }
 
     /**
@@ -437,8 +441,33 @@ public class SysAppLoginService {
                 // 检测账号是否过期
                 validUtils.checkAppTrialUserIsExpired(appTrialUser);
             }
-            // 检查用户数、设备数限制
-            validUtils.checkTrialLoginLimit(app, appTrialUser);
+            synchronized (appTrialUser.getAppTrialUserId().toString().intern()) {
+                // 检查用户数、设备数限制
+                validUtils.checkTrialLoginLimit(app, appTrialUser);
+                try {
+                    AsyncManager.me().execute(AsyncFactory.recordAppTrialLogininfor(appTrialUser.getAppTrialUserId(), loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                LoginUser loginUser = new LoginUser();
+                loginUser.setIfApp(true);
+                loginUser.setIfTrial(true);
+                loginUser.setUserId(null);
+                loginUser.setAppKey(app.getAppKey());
+                loginUser.setAppId(app.getAppId());
+                loginUser.setUser(null);
+                loginUser.setAppTrialUserId(appTrialUser.getAppTrialUserId());
+                loginUser.setUserName(appTrialUser.getUserName());
+                loginUser.setAppVersion(appVersion);
+                SysDeviceCode deviceCode = new SysDeviceCode();
+                deviceCode.setDeviceCode(deviceCodeStr);
+                loginUser.setDeviceCode(deviceCode);
+                loginUser.setAppUserDeviceCode(null);
+
+                recordLoginInfo(loginUser);
+                // 生成token
+                return tokenService.createToken(loginUser);
+            }
         } catch (ApiException e) {
             try {
                 AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(appTrialUser != null ? appTrialUser.getAppTrialUserId() : null, loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_FAIL, e.getMessage() + (e.getDetailMessage() != null ? "：" + e.getDetailMessage() : "")));
@@ -454,29 +483,6 @@ public class SysAppLoginService {
             }
             throw e;
         }
-        try {
-            AsyncManager.me().execute(AsyncFactory.recordAppTrialLogininfor(appTrialUser.getAppTrialUserId(), loginCodeShow, appName, appVersionStr, deviceCodeStr, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        LoginUser loginUser = new LoginUser();
-        loginUser.setIfApp(true);
-        loginUser.setIfTrial(true);
-        loginUser.setUserId(null);
-        loginUser.setAppKey(app.getAppKey());
-        loginUser.setAppId(app.getAppId());
-        loginUser.setUser(null);
-        loginUser.setAppTrialUserId(appTrialUser.getAppTrialUserId());
-        loginUser.setUserName(appTrialUser.getUserName());
-        loginUser.setAppVersion(appVersion);
-        SysDeviceCode deviceCode = new SysDeviceCode();
-        deviceCode.setDeviceCode(deviceCodeStr);
-        loginUser.setDeviceCode(deviceCode);
-        loginUser.setAppUserDeviceCode(null);
-
-        recordLoginInfo(loginUser);
-        // 生成token
-        return tokenService.createToken(loginUser);
     }
 
     /**

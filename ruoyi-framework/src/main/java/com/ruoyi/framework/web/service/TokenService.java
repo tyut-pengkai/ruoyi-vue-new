@@ -120,7 +120,7 @@ public class TokenService {
      */
     public void delLoginUser(String token) {
         if (StringUtils.isNotEmpty(token)) {
-            Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + token + "|*");
+            Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + token + "*");
             for (String key : keys) {
                 redisCache.deleteObject(key);
             }
