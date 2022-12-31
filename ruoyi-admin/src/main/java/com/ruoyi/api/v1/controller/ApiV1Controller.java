@@ -25,6 +25,7 @@ import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.api.v1.service.SysAppLoginService;
 import com.ruoyi.framework.api.v1.utils.ValidUtils;
 import com.ruoyi.framework.web.service.TokenService;
+import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -61,6 +62,8 @@ public class ApiV1Controller extends BaseController {
     private ISysAppUserDeviceCodeService appUserDeviceCodeService;
     @Resource
     private ISysUserService userService;
+    @Resource
+    private ISysLoginCodeService loginCodeService;
 
     @GetMapping("/swagger")
     @ApiIgnore
@@ -147,9 +150,9 @@ public class ApiV1Controller extends BaseController {
                         SysUser user = userService.selectUserById(userId);
                         validUtils.checkUser(loginUser.getUsername(), user);
                     } else if (app.getAuthType() == AuthType.LOGIN_CODE) {
-//                        String loginCodeStr = loginUser.getAppUser().getLoginCode();
-//                        SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
-//                        validUtils.checkLoginCode(app, loginCodeStr, loginCode);
+                        String loginCodeStr = appUser.getLoginCode();
+                        SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
+                        validUtils.checkLoginCode(app, loginCodeStr, loginCode);
                     }
                     // 检查软件用户是否被封禁
                     if (UserStatus.DISABLE.getCode().equals(appUser.getStatus())) {

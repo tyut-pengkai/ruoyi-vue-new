@@ -509,21 +509,25 @@ public class ValidUtils {
         if (StringUtils.isNull(loginCode)) {
             log.info("单码：{} 不存在.", loginCodeStr);
             throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST, "单码：" + loginCodeStr + " 不存在");
-        } else if (UserConstants.YES.equals(loginCode.getIsCharged())) {
-            log.info("单码：{} 已被使用.", loginCodeStr);
-            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST, "单码：" + loginCodeStr + " 已被使用");
         } else if (UserStatus.DELETED.getCode().equals(loginCode.getDelFlag())) {
             log.info("单码：{} 已被删除.", loginCodeStr);
             throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST, "单码：" + loginCodeStr + " 已被删除");
         } else if (UserStatus.DISABLE.getCode().equals(loginCode.getStatus())) {
             log.info("单码：{} 已被停用.", loginCodeStr);
             throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_LOCKED, "单码：" + loginCodeStr + " 已停用");
+        } else if (!Objects.equals(loginCode.getAppId(), app.getAppId())) {
+            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_APP_MISMATCH, "单码：" + loginCodeStr + " 与软件：" + app.getAppName() + "不匹配");
+        }
+    }
+
+    public void checkLoginCodeNewUser(SysApp app, String loginCodeStr, SysLoginCode loginCode) {
+        if (UserConstants.YES.equals(loginCode.getIsCharged())) {
+            log.info("单码：{} 已被使用.", loginCodeStr);
+            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST, "单码：" + loginCodeStr + " 已被使用");
         } else if (loginCode.getExpireTime().before(DateUtils.getNowDate())) {
             String expiredTime = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, loginCode.getExpireTime());
             log.info("单码：{} 有效期至：{}，现已过期", loginCodeStr, expiredTime);
             throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_EXPIRED, "单码：" + loginCodeStr + " 有效期至：" + expiredTime + "，现已过期");
-        } else if (!Objects.equals(loginCode.getAppId(), app.getAppId())) {
-            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_APP_MISMATCH, "单码：" + loginCodeStr + " 与软件：" + app.getAppName() + "不匹配");
         }
     }
 
