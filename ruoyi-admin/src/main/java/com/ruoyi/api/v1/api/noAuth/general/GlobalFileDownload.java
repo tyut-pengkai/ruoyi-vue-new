@@ -6,8 +6,10 @@ import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.common.config.RuoYiConfig;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
@@ -19,6 +21,7 @@ import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.domain.SysGlobalFile;
 import com.ruoyi.system.domain.SysWebsite;
 import com.ruoyi.system.service.ISysAppUserService;
+import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysGlobalFileService;
 import com.ruoyi.system.service.ISysWebsiteService;
 import org.apache.commons.io.FileUtils;
@@ -28,6 +31,7 @@ import org.springframework.util.Base64Utils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 public class GlobalFileDownload extends Function {
 
@@ -43,6 +47,10 @@ public class GlobalFileDownload extends Function {
     private String pathMapping;
     @Resource
     private ISysWebsiteService sysWebsiteService;
+    @Resource
+    private ISysConfigService configService;
+    @Resource
+    private RedisCache redisCache;
 
     @Override
     public void init() {
@@ -96,6 +104,10 @@ public class GlobalFileDownload extends Function {
                 if (returnUrl) {
                     String randomPath = String.valueOf(new SnowflakeIdWorker().nextId());
                     FileUtils.copyFile(file, new File(RuoYiConfig.getGlobalFilePath() + "/" + randomPath + "/" + fileName));
+                    // 存入redis。默认有效期1小时
+                    String enableTimeStr = configService.selectConfigByKey("sys.api.globalFileUrlEnableTime");
+                    int enableTime = Convert.toInt(enableTimeStr, 3600);
+                    redisCache.setCacheObject(CacheConstants.GLOBAL_FILE_DOWNLOAD_KEY + randomPath + "/" + fileName, null, enableTime, TimeUnit.SECONDS);
                     return getUrlPrefix(randomPath) + fileName;
                 } else {
                     return Base64Utils.encodeToString(FileUtils.readFileToByteArray(file));

@@ -116,7 +116,7 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" type="selection" width="55" />
-      <el-table-column align="center" label="变量ID" prop="id" />
+      <el-table-column align="center" label="序号" prop="id"/>
       <el-table-column align="center" label="变量名" prop="name" />
       <el-table-column align="center" label="变量值" prop="value" />
       <el-table-column align="center" label="变量描述" prop="description" />

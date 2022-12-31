@@ -116,7 +116,7 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="文件ID" prop="id"/>
+      <el-table-column align="center" label="序号" prop="id"/>
       <el-table-column align="center" label="文件名" prop="name"/>
       <!-- <el-table-column label="文件路径" align="center" prop="value" /> -->
       <el-table-column align="center" label="文件描述" prop="description"/>
@@ -251,10 +251,8 @@
         :disabled="upload.isUploading"
         :headers="upload.headers"
         :limit="1"
-        :on-change="handleFileOnChange"
         :on-progress="handleFileUploadProgress"
         :on-success="handleFileSuccess"
-        accept=".apk,.exe"
         drag
       >
         <i class="el-icon-upload"></i>
@@ -528,22 +526,22 @@ export default {
     },
     // 添加文件
     handleFileOnChange(file, fileList) {
-      if (file && file.name) {
-        String.prototype.endWith = function (endStr) {
-          var d = this.length - endStr.length;
-          return d >= 0 && this.lastIndexOf(endStr) == d;
-        };
-        if (file.name.endWith(".exe")) {
-          this.showExe = true;
-          this.showApk = false;
-        } else if (file.name.endWith(".apk")) {
-          this.showApk = true;
-          this.showExe = false;
-        }
-      } else {
-        this.showApk = false;
-        this.showExe = false;
-      }
+      // if (file && file.name) {
+      //   String.prototype.endWith = function (endStr) {
+      //     var d = this.length - endStr.length;
+      //     return d >= 0 && this.lastIndexOf(endStr) == d;
+      //   };
+      //   if (file.name.endWith(".exe")) {
+      //     this.showExe = true;
+      //     this.showApk = false;
+      //   } else if (file.name.endWith(".apk")) {
+      //     this.showApk = true;
+      //     this.showExe = false;
+      //   }
+      // } else {
+      //   this.showApk = false;
+      //   this.showExe = false;
+      // }
     },
     downFile(name) {
       //这里放参数

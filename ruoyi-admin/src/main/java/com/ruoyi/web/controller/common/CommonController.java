@@ -99,7 +99,7 @@ public class CommonController {
      * @param delete   是否删除
      */
     @GetMapping("/download")
-    public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request) {
+    public void fileDownload(String fileName, boolean delete, HttpServletResponse response, HttpServletRequest request) {
         try {
             if (!FileUtils.checkAllowDownload(fileName)) {
                 throw new Exception(StringUtils.format("文件名称({})非法，不允许下载。 ", fileName));
@@ -128,19 +128,22 @@ public class CommonController {
      * @param fileName 文件名称
      */
     @GetMapping("/globalFileDownload/{randomPath}/{fileName}")
-    public void globalFileDownload(@PathVariable("randomPath") String randomPath, @PathVariable("fileName") String fileName, HttpServletResponse response) {
+    public void globalFileDownload(@PathVariable("randomPath") String randomPath, @PathVariable("fileName") String fileName, boolean delete, HttpServletResponse response) {
         try {
             String filePath = RuoYiConfig.getGlobalFilePath() + "/" + randomPath + "/" + fileName;
             File file = new File(filePath);//读取压缩文件
-            if (file.exists()) {
+            if (file.exists() && redisCache.hasKey(CacheConstants.GLOBAL_FILE_DOWNLOAD_KEY + randomPath + "/" + fileName)) {
                 long totalSize = file.length(); //获取文件大小
                 response.setHeader("Content-Length", String.valueOf(totalSize));
-
                 response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
                 FileUtils.setAttachmentResponseHeader(response, fileName);
                 FileUtils.writeBytes(filePath, response.getOutputStream());
-                FileUtils.deleteFile(filePath);
-                new File(RuoYiConfig.getGlobalFilePath() + "/" + randomPath + "/").delete();
+                if (delete) {
+                    FileUtils.deleteFile(filePath);
+                    new File(RuoYiConfig.getGlobalFilePath() + "/" + randomPath + "/").delete();
+                }
+            } else {
+                response.sendError(404, "请求的下载链接无效或已过期");
             }
         } catch (Exception e) {
             log.error("下载文件失败", e);
@@ -151,7 +154,7 @@ public class CommonController {
      * 通用上传请求（单个）
      */
     @PostMapping("/upload")
-    public AjaxResult uploadFile(MultipartFile file) throws Exception {
+    public AjaxResult uploadFile(MultipartFile file) {
         try {
             // 上传文件路径
             String filePath = RuoYiConfig.getUploadPath();
@@ -173,7 +176,7 @@ public class CommonController {
      * 通用上传请求（多个）
      */
     @PostMapping("/uploads")
-    public AjaxResult uploadFiles(List<MultipartFile> files) throws Exception {
+    public AjaxResult uploadFiles(List<MultipartFile> files) {
         try {
             // 上传文件路径
             String filePath = RuoYiConfig.getUploadPath();

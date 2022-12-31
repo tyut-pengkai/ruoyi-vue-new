@@ -60,4 +60,9 @@ public class CacheConstants {
      * IP转换到地址 redis key
      */
     public static final String IP_TO_ADDRESS_KEY = "ip_to_address:";
+
+    /**
+     * 全局文件下载链接
+     */
+    public static final String GLOBAL_FILE_DOWNLOAD_KEY = "global_file_download:";
 }

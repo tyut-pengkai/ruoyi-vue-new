@@ -2,9 +2,11 @@ package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.config.RuoYiConfig;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
@@ -18,10 +20,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 远程文件Controller
@@ -34,6 +38,8 @@ import java.util.List;
 public class SysGlobalFileController extends BaseController {
     @Autowired
     private ISysGlobalFileService sysGlobalFileService;
+    @Resource
+    private RedisCache redisCache;
 
     /**
      * 查询远程文件列表
@@ -133,6 +139,8 @@ public class SysGlobalFileController extends BaseController {
                 try {
                     String randomPath = String.valueOf(new SnowflakeIdWorker().nextId());
                     FileUtils.copyFile(file, new File(RuoYiConfig.getGlobalFilePath() + "/" + randomPath + "/" + globalFile.getName()));
+                    // 存入redis。默认有效期5分钟
+                    redisCache.setCacheObject(CacheConstants.GLOBAL_FILE_DOWNLOAD_KEY + randomPath + "/" + globalFile.getName(), null, 300, TimeUnit.SECONDS);
                     return AjaxResult.success(randomPath + "/" + globalFile.getName());
                 } catch (Exception e) {
                     e.printStackTrace();
