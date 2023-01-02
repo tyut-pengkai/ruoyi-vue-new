@@ -69,6 +69,7 @@ public class RechargeLoginCode extends Function {
         appUser.setCardLoginLimitU(newLoginCode.getCardLoginLimitU());
         appUser.setCardLoginLimitM(newLoginCode.getCardLoginLimitM());
         appUser.setCardCustomParams(newLoginCode.getCardCustomParams());
+        appUser.setLastChargeCardId(newLoginCode.getCardId());
         appUser.setLastChargeTemplateId(newLoginCode.getTemplateId());
         newLoginCode.setIsCharged(UserConstants.YES);
         newLoginCode.setChargeTime(DateUtils.getNowDate());

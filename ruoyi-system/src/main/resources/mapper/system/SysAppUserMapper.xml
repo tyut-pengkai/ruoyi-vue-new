@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="appUserId" column="app_user_id"/>
         <result property="userId" column="user_id"/>
         <result property="appId" column="app_id"/>
+        <result property="agentId" column="agent_id"/>
         <result property="status" column="status"/>
         <result property="loginLimitU" column="login_limit_u"/>
         <result property="loginLimitM" column="login_limit_m"/>
@@ -31,6 +32,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="cardLoginLimitM" column="card_login_limit_m"/>
         <result property="cardCustomParams" column="card_custom_params"/>
         <result property="unbindTimes" column="unbind_times"/>
+        <result property="lastChargeCardId" column="last_charge_card_id"/>
         <result property="lastChargeTemplateId" column="last_charge_template_id"/>
         <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
@@ -79,7 +81,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                au.card_login_limit_m,
                au.card_custom_params,
                au.unbind_times,
+               au.last_charge_card_id,
                au.last_charge_template_id,
+               au.agent_id,
                a.app_id,
                a.app_name,
                a.auth_type,
@@ -103,6 +107,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             concat('%', #{userName}, '%') or au.login_code like concat('%', #{userName}, '%'))
         </if>
         <if test="appId != null ">and au.app_id = #{appId}</if>
+        <if test="agentId != null ">and au.agent_id = #{agentId}</if>
         <if test="status != null and status != ''">and au.status = #{status}</if>
         <if test="params.isVip != null and params.isVip == 'Y'.toString()">and (au.expire_time &gt; sysdate() or
             au.point &gt; 0)
@@ -133,6 +138,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">user_id,</if>
             <if test="appId != null">app_id,</if>
+            <if test="agentId != null">agent_id,</if>
             <if test="status != null and status != ''">status,</if>
             <if test="loginLimitU != null">login_limit_u,</if>
             <if test="loginLimitM != null">login_limit_m,</if>
@@ -156,11 +162,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cardLoginLimitM != null">card_login_limit_m,</if>
             <if test="cardCustomParams != null">card_custom_params,</if>
             <if test="unbindTimes != null">unbind_times,</if>
+            <if test="lastChargeCardId != null">last_charge_card_id,</if>
             <if test="lastChargeTemplateId != null">last_charge_template_id,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
             <if test="appId != null">#{appId},</if>
+            <if test="agentId != null">#{agentId},</if>
             <if test="status != null and status != ''">#{status},</if>
             <if test="loginLimitU != null">#{loginLimitU},</if>
             <if test="loginLimitM != null">#{loginLimitM},</if>
@@ -184,6 +192,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cardLoginLimitM != null">#{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">#{cardCustomParams},</if>
             <if test="unbindTimes != null">#{unbindTimes},</if>
+            <if test="lastChargeCardId != null">#{lastChargeCardId},</if>
             <if test="lastChargeTemplateId != null">#{lastChargeTemplateId},</if>
         </trim>
     </insert>
@@ -193,6 +202,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <!--            <if test="userId != null">user_id = #{userId},</if>-->
             <!--            <if test="appId != null">app_id = #{appId},</if>-->
+            <if test="agentId != null">agent_id = #{agentId},</if>
             <if test="status != null and status != ''">status = #{status},</if>
             <if test="loginLimitU != null">login_limit_u = #{loginLimitU},</if>
             <if test="loginLimitM != null">login_limit_m = #{loginLimitM},</if>
@@ -216,6 +226,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cardLoginLimitM != null">card_login_limit_m = #{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">card_custom_params = #{cardCustomParams},</if>
             <if test="unbindTimes != null">unbind_times = #{unbindTimes},</if>
+            <if test="lastChargeCardId != null">last_charge_card_id = #{lastChargeCardId},</if>
             <if test="lastChargeTemplateId != null">last_charge_template_id = #{lastChargeTemplateId},</if>
         </trim>
         where app_user_id = #{appUserId}
