@@ -40,7 +40,7 @@ public class QuickAccessApkUtil {
     private static String packageName;
     private static String applicationName;
 
-    public static byte[] doProcess(byte[] bytes, String apv) {
+    public static byte[] doProcess(byte[] bytes, String apv, String template) {
         try {
             // 写到临时目录
             File tempFile = File.createTempFile("hyQuickAccessApkTempFile" + System.currentTimeMillis(), null);
@@ -56,7 +56,7 @@ public class QuickAccessApkUtil {
             DexBuilder oriBuilder = new DexBuilder(Opcodes.getDefault());
             // 读入注入文件
 //            String injectPath = PathUtils.getUserPath() + File.separator + "src/test/resources" + File.separator + "data.dat";
-            String injectPath = PathUtils.getUserPath() + File.separator + "template" + File.separator + "qat.apk.tpl";
+            String injectPath = PathUtils.getUserPath() + File.separator + "template" + File.separator + template + ".apk.tpl";
             File injectFile = new File(injectPath);
             // 注入的代码编译器
             DexBuilder injectBuider = new DexBuilder(Opcodes.getDefault());

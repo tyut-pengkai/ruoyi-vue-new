@@ -88,7 +88,7 @@ public interface ISysAppVersionService {
      * @param versionId
      * @return
      */
-    public String quickAccess(MultipartFile file, Long versionId, boolean updateMd5, String apkOper);
+    public String quickAccess(MultipartFile file, Long versionId, boolean updateMd5, String apkOper, String template, String skin);
 
     /**
      * 检查软件名称唯一性

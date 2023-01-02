@@ -167,14 +167,14 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      * @return
      */
     @Override
-    public String quickAccess(MultipartFile file, Long versionId, boolean updateMd5, String apkOper) {
+    public String quickAccess(MultipartFile file, Long versionId, boolean updateMd5, String apkOper, String template, String skin) {
         try {
             // 封装
             String originalFilename = file.getOriginalFilename();
             byte[] bytes = file.getBytes();
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(versionId);
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
-            QuickAccessResultVo result = quickAccessHandle(bytes, version, originalFilename, apkOper);
+            QuickAccessResultVo result = quickAccessHandle(bytes, version, originalFilename, apkOper, template, skin);
             bytes = result.getBytes();
             // 生成文件
             String remark = "";
@@ -227,7 +227,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      * @param apkOper  1注入并加签 2仅注入 3仅加签
      * @return
      */
-    private QuickAccessResultVo quickAccessHandle(byte[] bytes, SysAppVersion version, String filename, String apkOper) {
+    private QuickAccessResultVo quickAccessHandle(byte[] bytes, SysAppVersion version, String filename, String apkOper, String template, String skin) {
         try {
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
             sysAppService.setApiUrl(app);
@@ -243,6 +243,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             apv.setApiPwd(app.getApiPwd());
             apv.setAuthType(app.getAuthType().getCode());
             apv.setBillType(app.getBillType().getCode());
+            apv.setSkin(skin);
             // 加密
             String apvStr = JSON.toJSONString(apv);
             apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");
@@ -265,7 +266,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                 byte[] injectedApk = bytes;
                 if ("1".equals(apkOper) || "2".equals(apkOper)) {
                     log.info("正在注入apk");
-                    injectedApk = QuickAccessApkUtil.doProcess(bytes, apvStr);
+                    injectedApk = QuickAccessApkUtil.doProcess(bytes, apvStr, template);
                     log.info("注入apk完毕");
                 }
                 if ("1".equals(apkOper) || "3".equals(apkOper)) { // 签名
@@ -366,7 +367,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
 
         try {
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(appVersionId);
-            QuickAccessResultVo result = quickAccessHandle(null, version, ".exe", null);
+            QuickAccessResultVo result = quickAccessHandle(null, version, ".exe", null, null, null);
             AppParamVo apv = (AppParamVo) result.getData().get("apv");
             String apvStr = JSON.toJSONString(apv);
             apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");
@@ -380,20 +381,6 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         return null;
     }
 
-    @Data
-    class AppParamVo {
-        private String apiUrl;
-        private String appSecret;
-        private String versionNo;
-        private String dataInEnc;
-        private String dataInPwd;
-        private String dataOutEnc;
-        private String dataOutPwd;
-        private String apiPwd;
-        private String authType;
-        private String billType;
-    }
-
     /**
      * 获取快速接入模板列表
      *
@@ -402,12 +389,12 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     @Override
     public AjaxResult getQuickAccessTemplateList() {
 
-
-        String templateDirPath = PathUtils.getUserPath() + File.separator + ".." + File.separator + "template";
-        if ("jar".equals(SysAppVersionServiceImpl.class.getResource("").getProtocol())) {
-            // 以 jar 的方式运行
-            templateDirPath = PathUtils.getUserPath() + File.separator + "template";
-        }
+//        String templateDirPath = PathUtils.getUserPath() + File.separator + ".." + File.separator + "template";
+//        if ("jar".equals(SysAppVersionServiceImpl.class.getResource("").getProtocol())) {
+//            // 以 jar 的方式运行
+//            templateDirPath = PathUtils.getUserPath() + File.separator + "template";
+//        }
+        String templateDirPath = PathUtils.getUserPath() + File.separator + "template";
         Collection<File> templateList = FileUtils.listFiles(new File(templateDirPath), new String[]{"apk.tpl"}, false);
         String regex = "^(.*)\\.apk\\.tpl$";
         Pattern pattern = Pattern.compile(regex);
@@ -417,7 +404,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                 Matcher matcher = pattern.matcher(template.getName());
                 if (matcher.matches()) {
                     String fileName = matcher.group(1);
-                    String configFilePath = template.getParentFile().getCanonicalPath() + File.separator + fileName + ".ini";
+                    String configFilePath = template.getParentFile().getCanonicalPath() + File.separator + fileName + ".apk.ini";
                     File configFile = new File(configFilePath);
                     if (configFile.exists() && configFile.isFile()) {
                         Ini ini = new Ini();
@@ -444,6 +431,21 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     }
 
     @Data
+    class AppParamVo {
+        private String apiUrl;
+        private String appSecret;
+        private String versionNo;
+        private String dataInEnc;
+        private String dataInPwd;
+        private String dataOutEnc;
+        private String dataOutPwd;
+        private String apiPwd;
+        private String authType;
+        private String billType;
+        private String skin;
+    }
+
+    @Data
     @AllArgsConstructor
     class TemplateInfo {
         private String fileName;
@@ -451,7 +453,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         private String description;
         private String version;
         private String author;
-        private String concat;
+        private String contact;
         private String remark;
         private List<String> skinList;
     }

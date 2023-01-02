@@ -428,7 +428,11 @@
               '&updateMd5=' +
               upload.updateMd5 +
               '&apkOper=' +
-              upload.apkOper
+              upload.apkOper +
+              '&template=' +
+              upload.template +
+              '&skin=' +
+              upload.skin
             "
             :auto-upload="false"
             :before-upload="onBeforeUpload"
@@ -500,6 +504,7 @@
                   v-model="upload.template"
                   placeholder="请选择接入模板"
                   style="width: 86px; margin-right: 10px"
+                  @change="handleChangeTemplate"
                 >
                   <el-option
                     v-for="item in templateOptions"
@@ -524,14 +529,12 @@
                   </el-option>
                 </el-select>
                 <span style="margin-left: 15px">
-                  <el-tooltip
-                    content="每个模板里可提供多个皮肤效果"
-                    placement="top"
-                  >
+                  <el-tooltip placement="top">
                     <i
                       class="el-icon-question"
                       style="margin-left: -12px; margin-right: 10px"
                     ></i>
+                    <div slot="content"><div v-html="templateShow"></div></div>
                   </el-tooltip>
                 </span>
               </div>
@@ -605,6 +608,7 @@ import {
   exportAppVersion,
   getAppVersion,
   getQuickAccessParams,
+  getQuickAccessTemplateList,
   listAppVersion,
   updateAppVersion,
 } from "@/api/system/appVersion";
@@ -696,9 +700,9 @@ export default {
         // 是否自动APK签名
         apkOper: "1",
         // 默认模板
-        template: "0",
+        template: null,
         // 默认皮肤
-        skin: "0",
+        skin: null,
       },
       fileDown: {
         //弹出框控制的状态
@@ -723,20 +727,22 @@ export default {
         },
       ],
       templateOptions: [
-        {
-          value: "0",
-          label: "默认",
-        },
+        // {
+        //   value: "0",
+        //   label: "默认",
+        // },
       ],
       skinOptions: [
-        {
-          value: "0",
-          label: "默认",
-        },
+        // {
+        //   value: "0",
+        //   label: "默认",
+        // },
       ],
       showExe: false,
       showApk: false,
       apvStr: "",
+      templateList: [],
+      templateShow: "",
     };
   },
   created() {
@@ -891,17 +897,69 @@ export default {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     /** 导入按钮操作 */
     handleImport(row) {
       this.upload.title = "快速接入";
-      this.upload.open = true;
       this.upload.quickAccessVersionId = row.appVersionId;
       this.apvStr = "";
       getQuickAccessParams(row.appVersionId).then((response) => {
         this.apvStr = response.apvStr;
       });
+      getQuickAccessTemplateList().then((response) => {
+        this.templateList = response.data;
+        this.templateOptions = [];
+        for (let item of this.templateList) {
+          this.templateOptions.push({
+            value: item.fileName,
+            label: item.name,
+          });
+        }
+        if (this.templateOptions.length > 0) {
+          this.upload.template = this.templateOptions[0].value;
+          this.handleChangeTemplate(this.templateOptions[0].value);
+        }
+      });
+      this.upload.open = true;
+    },
+    /** 注入模板被改变，重新加载对应皮肤列表 */
+    handleChangeTemplate(v) {
+      this.skinOptions = [];
+      this.templateShow = "每个模板中可包含多个皮肤供用户选择";
+      for (let item of this.templateList) {
+        if (item.fileName == v) {
+          for (let skin of item.skinList) {
+            this.skinOptions.push({
+              value: skin,
+              label: skin,
+            });
+          }
+          if (this.skinOptions.length == 0) {
+            this.skinOptions.push({
+              value: "默认",
+              label: "默认",
+            });
+          }
+          this.upload.skin = this.skinOptions[0].value;
+          // 加载模板说明
+          this.templateShow =
+            "模板名称：" +
+            item.name +
+            "<br>模板描述：" +
+            item.description +
+            "<br>模板作者：" +
+            item.author +
+            "<br>模板版本：" +
+            item.version +
+            "<br>联系方式：" +
+            item.contact +
+            "<br>附加信息：" +
+            item.remark;
+          break;
+        }
+      }
     },
     // 文件上传中处理
     handleFileUploadProgress(event, file, fileList) {

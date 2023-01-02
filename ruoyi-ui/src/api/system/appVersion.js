@@ -59,3 +59,11 @@ export function getQuickAccessParams(appVersionId) {
     method: 'get',
   })
 }
+
+// 获取快速接入模板列表
+export function getQuickAccessTemplateList() {
+  return request({
+    url: '/system/appVersion/quickAccessTemplate/list',
+    method: 'get',
+  })
+}
