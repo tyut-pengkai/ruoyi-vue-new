@@ -815,6 +815,13 @@
               >{{ form.batchNo }}
               </el-form-item>
             </el-col>
+            <el-col :span="12">
+              <el-form-item label="所属代理" prop="agentId">
+                <span v-if="form.agentUser">
+                  {{ form.agentUser.nickName }} ({{ form.agentUser.userName }})
+                </span>
+              </el-form-item>
+            </el-col>
           </el-form-item>
           <el-form-item prop="">
             <el-col :span="12">
@@ -1115,13 +1122,13 @@ export default {
         isCharged: [
           {required: true, message: "是否已用不能为空", trigger: "change"},
         ],
-        isAgent: [
-          {
-            required: true,
-            message: "是否代理制卡不能为空",
-            trigger: "change",
-          },
-        ],
+        // isAgent: [
+        //   {
+        //     required: true,
+        //     message: "是否代理制卡不能为空",
+        //     trigger: "change",
+        //   },
+        // ],
         status: [
           {required: true, message: "卡密状态不能为空", trigger: "blur"},
         ],

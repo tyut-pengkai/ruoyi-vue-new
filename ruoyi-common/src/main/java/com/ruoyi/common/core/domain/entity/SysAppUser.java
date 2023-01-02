@@ -177,6 +177,17 @@ public class SysAppUser extends BaseEntity {
 
     private Long agentId;
 
+    @Excel(name = "代理名称", targetAttr = "userName", type = Excel.Type.EXPORT)
+    private SysUser agentUser;
+
+    public SysUser getAgentUser() {
+        return agentUser;
+    }
+
+    public void setAgentUser(SysUser agentUser) {
+        this.agentUser = agentUser;
+    }
+
     public Long getLastChargeCardId() {
         return lastChargeCardId;
     }

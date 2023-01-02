@@ -10,6 +10,7 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ChargeRule;
@@ -19,10 +20,7 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysCard;
-import com.ruoyi.system.service.ISysAppService;
-import com.ruoyi.system.service.ISysAppUserService;
-import com.ruoyi.system.service.ISysCardService;
-import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.service.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -40,6 +38,8 @@ public class RechargeCard extends Function {
     private ISysAppUserService appUserService;
     @Resource
     private ISysCardService cardService;
+    @Resource
+    private ISysConfigService configService;
 
     @Override
     public void init() {
@@ -57,6 +57,10 @@ public class RechargeCard extends Function {
     @Override
     @Transactional(noRollbackFor = ApiException.class, rollbackFor = Exception.class)
     public Object handle() {
+
+        String key = configService.selectConfigByKey("sys.agent.updateAppUser");
+        Integer updateAgentStrategy = Convert.toInt(key, 0);
+
         String username = this.getParams().get("username");
         SysUser user = userService.selectUserByUserName(username);
         if (user == null) {
@@ -88,6 +92,15 @@ public class RechargeCard extends Function {
         appUser.setCardCustomParams(card.getCardCustomParams());
         appUser.setLastChargeCardId(card.getCardId());
         appUser.setLastChargeTemplateId(card.getTemplateId());
+
+        if (updateAgentStrategy == 0) {
+            if (appUser.getAgentId() == null) {
+                appUser.setAgentId(card.getAgentId());
+            }
+        } else {
+            appUser.setAgentId(card.getAgentId());
+        }
+
         card.setIsCharged(UserConstants.YES);
         card.setChargeTime(DateUtils.getNowDate());
         card.setOnSale(UserConstants.NO);

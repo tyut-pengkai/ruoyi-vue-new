@@ -154,6 +154,7 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
             sysCard.setBatchNo(batchNo);
             try {
                 sysCard.setCreateBy(SecurityUtils.getUsername());
+                sysCard.setAgentId(SecurityUtils.getUserId());
             } catch (Exception ignored) {
             }
             sysCardList.add(sysCard);

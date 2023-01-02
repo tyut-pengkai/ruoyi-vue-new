@@ -145,6 +145,7 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
             sysLoginCode.setBatchNo(batchNo);
             try {
                 sysLoginCode.setCreateBy(SecurityUtils.getUsername());
+                sysLoginCode.setAgentId(SecurityUtils.getUserId());
             } catch (Exception ignore) {
             }
             sysLoginCodeList.add(sysLoginCode);

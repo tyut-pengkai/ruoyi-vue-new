@@ -526,11 +526,11 @@
             </el-col>
           </el-form-item>
         </div>
-        <el-form-item label="单码名称" prop="cardName" label-width="100px">
-          <el-input v-model="form.cardName" placeholder="请输入单码名称" />
+        <el-form-item label="单码名称" label-width="80px" prop="cardName">
+          <el-input v-model="form.cardName" placeholder="请输入单码名称"/>
         </el-form-item>
-        <el-form-item label="单码" prop="cardNo" label-width="80px">
-          <el-input v-model="form.cardNo" placeholder="请输入单码" />
+        <el-form-item label="单码内容" label-width="80px" prop="cardNo">
+          <el-input v-model="form.cardNo" placeholder="请输入单码"/>
         </el-form-item>
         <el-form-item prop="">
           <el-col :span="12">
@@ -540,7 +540,8 @@
                   v-for="dict in dict.type.sys_normal_disable"
                   :key="dict.value"
                   :label="dict.value"
-                  >{{ dict.label }}</el-radio
+                >{{ dict.label }}
+                </el-radio
                 >
               </el-radio-group>
             </el-form-item>
@@ -563,12 +564,7 @@
         <el-form-item prop="">
           <div v-if="form.cardId == null">
             <el-col :span="12">
-              <el-form-item
-                label="单码面值"
-                prop="quota"
-                label-width="100px"
-                style="width: 320px"
-              >
+              <el-form-item label="单码面值" prop="quota" style="width: 320px">
                 <div v-if="app">
                   <div v-if="app.billType === '0'">
                     <date-duration
@@ -591,12 +587,7 @@
           </div>
           <div v-if="form.cardId && form.app">
             <el-col :span="12">
-              <el-form-item
-                label="单码面值"
-                prop="quota"
-                label-width="100px"
-                style="width: 320px"
-              >
+              <el-form-item label="单码面值" prop="quota" style="width: 320px">
                 <div v-if="form.app.billType === '0'">
                   <date-duration
                     @totalSeconds="handleQuota"
@@ -761,6 +752,13 @@
             <el-col :span="12">
               <el-form-item label="制卡批次" prop="batchNo"
               >{{ form.batchNo }}
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="所属代理" prop="agentId">
+                <span v-if="form.agentUser">
+                  {{ form.agentUser.nickName }} ({{ form.agentUser.userName }})
+                </span>
               </el-form-item>
             </el-col>
           </el-form-item>
@@ -1061,13 +1059,13 @@ export default {
         isCharged: [
           {required: true, message: "是否被充值不能为空", trigger: "change"},
         ],
-        isAgent: [
-          {
-            required: true,
-            message: "是否代理制卡不能为空",
-            trigger: "change",
-          },
-        ],
+        // isAgent: [
+        //   {
+        //     required: true,
+        //     message: "是否代理制卡不能为空",
+        //     trigger: "change",
+        //   },
+        // ],
         status: [
           {required: true, message: "单码状态不能为空", trigger: "blur"},
         ],

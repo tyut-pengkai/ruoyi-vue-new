@@ -36,6 +36,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="lastChargeTemplateId" column="last_charge_template_id"/>
         <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
+        <association property="agentUser" column="agent_id" javaType="SysUser" resultMap="SysAgentUserResult"/>
     </resultMap>
 
     <resultMap type="SysUser" id="SysUserResult">
@@ -52,6 +53,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="description" column="description"/>
         <result property="loginLimitU" column="app_login_limit_u"/>
         <result property="loginLimitM" column="app_login_limit_m"/>
+    </resultMap>
+
+    <resultMap type="SysUser" id="SysAgentUserResult">
+        <id property="userId" column="agent_user_id"/>
+        <result property="userName" column="agent_user_name"/>
+        <result property="nickName" column="agent_nick_name"/>
     </resultMap>
 
     <sql id="selectSysAppUserVo">
@@ -93,11 +100,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                a.login_limit_m as app_login_limit_m,
                u.user_id,
                u.user_name,
-               u.nick_name
+               u.nick_name,
+               ag.user_id      as agent_user_id,
+               ag.user_name    as agent_user_name,
+               ag.nick_name    as agent_nick_name
         from sys_app_user au
                  left join sys_user u on au.user_id = u.user_id
                  left join sys_app a on au.app_id = a.app_id
-                 left join sys_user u1 on a.create_by = u1.user_name
+                 left join sys_user ag on au.agent_id = ag.user_id
     </sql>
 
     <select id="selectSysAppUserList" parameterType="SysAppUser" resultMap="SysAppUserResult">

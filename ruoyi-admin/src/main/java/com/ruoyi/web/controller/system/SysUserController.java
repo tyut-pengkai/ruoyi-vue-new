@@ -224,7 +224,7 @@ public class SysUserController extends BaseController {
     /**
      * 获取用户列表
      */
-    @PreAuthorize("@ss.hasPermi('system:user:list')")
+    @PreAuthorize("@ss.hasAnyPermi('system:user:list,agent:agentUser:list')")
     @GetMapping("/listByExceptAppId/{appId}")
     public TableDataInfo listByExceptAppId(@PathVariable("appId") Long appId) {
         List<SysUser> list = userService.selectUserByExceptAppId(appId);

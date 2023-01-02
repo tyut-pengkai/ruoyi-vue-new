@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.core.domain.entity.SysApp;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.enums.ChargeRule;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -157,6 +158,27 @@ public class SysCard extends BaseEntity {
      */
     @Excel(name = "制卡批次号")
     private String batchNo;
+
+    private Long agentId;
+
+    @Excel(name = "代理名称", targetAttr = "userName", type = Excel.Type.EXPORT)
+    private SysUser agentUser;
+
+    public SysUser getAgentUser() {
+        return agentUser;
+    }
+
+    public void setAgentUser(SysUser agentUser) {
+        this.agentUser = agentUser;
+    }
+
+    public Long getAgentId() {
+        return agentId;
+    }
+
+    public void setAgentId(Long agentId) {
+        this.agentId = agentId;
+    }
 
     public String getBatchNo() {
         return batchNo;

@@ -459,12 +459,12 @@
         <div v-if="form.cardId">
           <el-form-item prop="">
             <el-col :span="12">
-              <el-form-item label="所属软件" label-width="80px" prop="">
+              <el-form-item label="所属软件" prop="">
                 {{ form.app.appName }}
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="计费类型" label-width="80px" prop="">
+              <el-form-item label="计费类型" prop="">
                 <dict-tag
                   :options="dict.type.sys_bill_type"
                   :value="form.app.billType"
@@ -473,11 +473,11 @@
             </el-col>
           </el-form-item>
         </div>
-        <el-form-item label="单码名称" label-width="100px" prop="cardName">
+        <el-form-item label="单码名称" prop="cardName">
           <!-- <el-input v-model="form.cardName" placeholder="请输入单码名称" /> -->
           {{ form.cardName }}
         </el-form-item>
-        <el-form-item label="单码" label-width="80px" prop="cardNo">
+        <el-form-item label="单码内容" prop="cardNo">
           <!-- <el-input v-model="form.cardNo" placeholder="请输入单码" /> -->
           {{ form.cardNo }}
         </el-form-item>
@@ -513,18 +513,13 @@
         <el-form-item prop="">
           <div v-if="form.cardId && form.app">
             <el-col :span="12">
-              <el-form-item
-                label="单码面值"
-                label-width="100px"
-                prop="quota"
-                style="width: 320px"
-              >
+              <el-form-item label="单码面值" prop="quota" style="width: 320px">
                 {{ parseSeconds(form.app.billType, form.quota) }}
               </el-form-item>
             </el-col>
           </div>
           <el-col :span="12">
-            <el-form-item label="零售价格" label-width="80px" prop="price">
+            <el-form-item label="零售价格" prop="price">
               <el-input-number
                 v-model="form.price"
                 :min="0"
@@ -678,6 +673,13 @@
             <el-col :span="12">
               <el-form-item label="制卡批次" prop="batchNo"
               >{{ form.batchNo }}
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="所属代理" prop="agentId">
+                <span v-if="form.agentUser">
+                  {{ form.agentUser.nickName }} ({{ form.agentUser.userName }})
+                </span>
               </el-form-item>
             </el-col>
           </el-form-item>

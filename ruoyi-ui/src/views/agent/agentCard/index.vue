@@ -711,6 +711,13 @@
               >{{ form.batchNo }}
               </el-form-item>
             </el-col>
+            <el-col :span="12">
+              <el-form-item label="所属代理" prop="agentId">
+                <span v-if="form.agentUser">
+                  {{ form.agentUser.nickName }} ({{ form.agentUser.userName }})
+                </span>
+              </el-form-item>
+            </el-col>
           </el-form-item>
           <el-form-item prop="">
             <el-col :span="12">

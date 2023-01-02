@@ -7,6 +7,7 @@
     <resultMap type="SysLoginCode" id="SysLoginCodeResult">
         <result property="cardId" column="card_id"/>
         <result property="appId" column="app_id"/>
+        <result property="agentId" column="agent_id"/>
         <result property="cardName" column="card_name"/>
         <result property="cardNo" column="card_no"/>
         <result property="quota" column="quota"/>
@@ -30,6 +31,7 @@
         <result property="cardCustomParams" column="card_custom_params"/>
         <result property="batchNo" column="batch_no"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
+        <association property="agentUser" column="agent_id" javaType="SysUser" resultMap="SysUserResult"/>
     </resultMap>
 
     <resultMap type="SysApp" id="SysAppResult">
@@ -38,6 +40,12 @@
         <result property="authType" column="auth_type"/>
         <result property="billType" column="bill_type"/>
         <result property="description" column="description"/>
+    </resultMap>
+
+    <resultMap type="SysUser" id="SysUserResult">
+        <id property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
     </resultMap>
 
     <sql id="selectSysLoginCodeVo">
@@ -65,13 +73,18 @@
                c.card_login_limit_m,
                c.card_custom_params,
                c.batch_no,
+               c.agent_id,
                a.app_id,
                a.app_name,
                a.auth_type,
                a.bill_type,
-               a.description
+               a.description,
+               u.user_id,
+               u.user_name,
+               u.nick_name
         from sys_login_code c
                  left join sys_app a on c.app_id = a.app_id
+                 left join sys_user u on c.agent_id = u.user_id
     </sql>
 
     <select id="selectSysLoginCodeList" parameterType="SysLoginCode" resultMap="SysLoginCodeResult">
@@ -83,6 +96,7 @@
         </if>
         where a.del_flag = '0' and c.del_flag = '0'
         <if test="appId != null ">and c.app_id = #{appId}</if>
+        <if test="agentId != null ">and c.agent_id = #{agentId}</if>
         <if test="templateId != null ">and c.template_id = #{templateId}</if>
         <if test="cardName != null  and cardName != ''">and c.card_name like concat('%', #{cardName}, '%')</if>
         <if test="cardNo != null  and cardNo != ''">and c.card_no like concat('%', #{cardNo}, '%')</if>
@@ -119,6 +133,7 @@
         </if>
         where a.del_flag = '0' and c.del_flag = '0'
         <if test="appId != null ">and c.app_id = #{appId}</if>
+        <if test="agentId != null ">and c.agent_id = #{agentId}</if>
         <if test="templateId != null ">and c.template_id = #{templateId}</if>
         <if test="cardName != null  and cardName != ''">and c.card_name like concat('%', #{cardName}, '%')</if>
         <if test="cardNo != null  and cardNo != ''">and c.card_no like concat('%', #{cardNo}, '%')</if>
@@ -173,6 +188,7 @@
         insert into sys_login_code
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="appId != null">app_id,</if>
+            <if test="agentId != null">agent_id,</if>
             <if test="cardName != null">card_name,</if>
             <if test="cardNo != null">card_no,</if>
             <if test="quota != null">quota,</if>
@@ -197,6 +213,7 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="appId != null">#{appId},</if>
+            <if test="agentId != null">#{agentId},</if>
             <if test="cardName != null">#{cardName},</if>
             <if test="cardNo != null">#{cardNo},</if>
             <if test="quota != null">#{quota},</if>
@@ -222,11 +239,11 @@
     </insert>
 
     <insert id="insertSysLoginCodeBatch" useGeneratedKeys="true" keyProperty="cardId">
-        insert into sys_login_code(app_id,card_name,card_no,quota,price,expire_time,is_sold,on_sale,is_charged,
+        insert into sys_login_code(app_id,agent_id,card_name,card_no,quota,price,expire_time,is_sold,on_sale,is_charged,
         template_id,status,is_agent, create_by,create_time,update_by,update_time,remark,card_login_limit_u,
         card_login_limit_m,card_custom_params,batch_no) values
         <foreach item="item" index="index" collection="list" separator=",">
-            (#{item.appId},#{item.cardName},#{item.cardNo},#{item.quota},#{item.price},
+            (#{item.appId},#{item.agentId},#{item.cardName},#{item.cardNo},#{item.quota},#{item.price},
             #{item.expireTime},#{item.isSold},#{item.onSale},#{item.isCharged},
             #{item.templateId},#{item.status},#{item.isAgent},#{item.createBy},sysdate(),
             #{item.updateBy},#{item.updateTime},#{item.remark},#{item.cardLoginLimitU},
@@ -238,6 +255,7 @@
         update sys_login_code
         <trim prefix="SET" suffixOverrides=",">
             <if test="appId != null">app_id = #{appId},</if>
+            <if test="agentId != null">agent_id = #{agentId},</if>
             <if test="cardName != null">card_name = #{cardName},</if>
             <if test="cardNo != null">card_no = #{cardNo},</if>
             <if test="quota != null">quota = #{quota},</if>

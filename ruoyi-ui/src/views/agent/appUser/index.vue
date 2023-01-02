@@ -1,16 +1,16 @@
 <template>
   <div class="app-container">
     <el-form
-      :model="queryParams"
+      v-show="showSearch"
       ref="queryForm"
       :inline="true"
-      v-show="showSearch"
+      :model="queryParams"
     >
       <el-form-item label="所属软件" prop="appId">
         <el-select
           v-model="queryParams.appId"
-          filterable
           clearable
+          filterable
           placeholder="请选择"
           prop="appId"
           @change="changeSearchApp"
@@ -18,6 +18,7 @@
           <el-option
             v-for="item in appList"
             :key="item.appId"
+            :disabled="item.disabled"
             :label="
               '[' +
               (item.authType == '0' ? '账号' : '单码') +
@@ -26,7 +27,6 @@
               item.appName
             "
             :value="item.appId"
-            :disabled="item.disabled"
           >
           </el-option>
         </el-select>
@@ -34,8 +34,8 @@
       <el-form-item label="用户名称/单码" prop="userName">
         <el-input
           v-model="queryParams.userName"
-          placeholder="请输入用户名称或单码"
           clearable
+          placeholder="请输入用户名称或单码"
           size="small"
           @keyup.enter.native="handleQuery"
         />
@@ -52,8 +52,8 @@
       <el-form-item label="用户状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择用户状态"
           clearable
+          placeholder="请选择用户状态"
           size="small"
         >
           <el-option
@@ -82,13 +82,13 @@
       <el-form-item label="最后登录时间" prop="lastLoginTime">
         <el-date-picker
           v-model="daterangeLastLoginTime"
-          size="small"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
           end-placeholder="结束日期"
+          range-separator="-"
+          size="small"
+          start-placeholder="开始日期"
+          style="width: 240px"
+          type="daterange"
+          value-format="yyyy-MM-dd"
         ></el-date-picker>
       </el-form-item>
 
@@ -126,65 +126,65 @@
       </el-form-item> -->
       <el-form-item prop="">
         <el-button
-          type="primary"
           icon="el-icon-search"
           size="mini"
+          type="primary"
           @click="handleQuery"
-          >搜索</el-button
-        >
+        >搜索
+        </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
-        >
+        >重置
+        </el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="primary"
           plain
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:appUser:add']"
+          v-hasPermi="['agent:appUser:add']"
           >新增</el-button
         >
-      </el-col>
+      </el-col> -->
       <el-col :span="1.5">
         <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
+          v-hasPermi="['agent:appUser:edit']"
           :disabled="single"
+          icon="el-icon-edit"
+          plain
+          size="mini"
+          type="success"
           @click="handleUpdate"
-          v-hasPermi="['system:appUser:edit']"
-          >修改</el-button
-        >
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
+          v-hasPermi="['agent:appUser:remove']"
           :disabled="multiple"
+          icon="el-icon-delete"
+          plain
+          size="mini"
+          type="danger"
           @click="handleDelete"
-          v-hasPermi="['system:appUser:remove']"
-          >删除</el-button
-        >
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
+          v-hasPermi="['agent:appUser:export']"
           :loading="exportLoading"
+          icon="el-icon-download"
+          plain
+          size="mini"
+          type="warning"
           @click="handleExport"
-          v-hasPermi="['system:appUser:export']"
-          >导出</el-button
-        >
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -197,22 +197,22 @@
       :data="appUserList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55" />
+      <el-table-column align="center" type="selection" width="55"/>
       <!-- <el-table-column label="" type="index" align="center" /> -->
-      <el-table-column align="center" label="编号" prop="appUserId" />
+      <el-table-column align="center" label="编号" prop="appUserId"/>
       <el-table-column
-        label="所属软件"
-        align="center"
         :show-overflow-tooltip="true"
+        align="center"
+        label="所属软件"
       >
         <template slot-scope="scope">
           {{ scope.row.app.appName }}
         </template>
       </el-table-column>
       <el-table-column
-        label="账号/单码"
-        align="center"
         :show-overflow-tooltip="true"
+        align="center"
+        label="账号/单码"
       >
         <template slot-scope="scope">
           <div v-if="scope.row.app.authType == '0'">
@@ -367,7 +367,7 @@
         <el-table-column label="支付余额" align="center" prop="payBalance" />
         <el-table-column label="赠送消费" align="center" prop="freePayment" />
         <el-table-column label="支付消费" align="center" prop="payPayment" /> -->
-      <el-table-column label="最后登录时间" align="center" width="180">
+      <el-table-column align="center" label="最后登录时间" width="180">
         <template slot-scope="scope">
           <span>
             {{
@@ -379,15 +379,15 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="登录次数" align="center">
+      <el-table-column align="center" label="登录次数">
         <template slot-scope="scope">
           <span>{{
-            scope.row.loginTimes ? scope.row.loginTimes + "次" : "从未登录过"
-          }}</span>
+              scope.row.loginTimes ? scope.row.loginTimes + "次" : "从未登录过"
+            }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="过期时间/剩余点数" align="center" width="180">
+      <el-table-column align="center" label="过期时间/剩余点数" width="180">
         <template slot-scope="scope">
           <div v-if="scope.row.app.billType == '0'">
             {{ parseTime(scope.row.expireTime) }}
@@ -398,12 +398,12 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="备注"
-        align="center"
-        prop="remark"
         :show-overflow-tooltip="true"
+        align="center"
+        label="备注"
+        prop="remark"
       />
-      <el-table-column label="用户状态" align="center">
+      <el-table-column align="center" label="用户状态">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
@@ -414,32 +414,32 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="操作"
         align="center"
         class-name="small-padding fixed-width"
+        label="操作"
         width="160"
       >
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="text"
+            v-hasPermi="['agent:appUser:edit']"
             icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:appUser:edit']"
-            >修改</el-button
-          >
-          <el-button
             size="mini"
             type="text"
+            @click="handleUpdate(scope.row)"
+          >修改
+          </el-button>
+          <el-button
+            v-hasPermi="['agent:appUser:remove']"
             icon="el-icon-delete"
+            size="mini"
+            type="text"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:appUser:remove']"
-            >删除</el-button
-          >
+          >删除
+          </el-button>
           <el-dropdown
+            v-hasPermi="['system:deviceCode:list']"
             size="mini"
             @command="(command) => handleCommand(command, scope.row)"
-            v-hasPermi="['system:deviceCode:list']"
           >
             <span class="el-dropdown-link">
               <i class="el-icon-d-arrow-right el-icon--right"></i>更多
@@ -448,14 +448,14 @@
               <!-- <el-dropdown-item
                 command="handleDeviceCode"
                 icon="el-icon-monitor"
-                v-hasPermi="['system:deviceCode:list']"
+                v-hasPermi="['agent:deviceCode:list']"
               >
                 设备码管理old
               </el-dropdown-item> -->
               <el-dropdown-item
+                v-hasPermi="['system:appUserDeviceCode:list']"
                 command="handleAppUserDeviceCode"
                 icon="el-icon-monitor"
-                v-hasPermi="['system:appUserDeviceCode:list']"
               >
                 设备码管理
               </el-dropdown-item>
@@ -467,19 +467,19 @@
 
     <pagination
       v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
+      :page.sync="queryParams.pageNum"
+      :total="total"
       @pagination="getList"
     />
 
     <!-- 添加或修改软件用户对话框 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="title"
       :visible.sync="open"
-      width="800px"
       append-to-body
-      :close-on-click-modal="false"
+      width="800px"
     >
       <el-form ref="form" :model="form" :rules="rules">
         <!-- 新增 -->
@@ -497,6 +497,7 @@
                   <el-option
                     v-for="item in appList"
                     :key="item.appId"
+                    :disabled="item.disabled"
                     :label="
                       '[' +
                       (item.authType == '0' ? '账号' : '单码') +
@@ -505,7 +506,6 @@
                       item.appName
                     "
                     :value="item.appId"
-                    :disabled="item.disabled"
                   >
                   </el-option>
                 </el-select>
@@ -535,18 +535,18 @@
                   <el-option
                     v-for="item in userList"
                     :key="item.userId"
+                    :disabled="item.disabled"
                     :label="item.nickName + '(' + item.userName + ')'"
                     :value="item.userId"
-                    :disabled="item.disabled"
                   >
                   </el-option>
                 </el-select>
               </div>
               <div v-if="app.authType === '1'">
                 <el-input
-                  placeholder="请输入单码"
                   v-model="form.loginCode"
                   clearable
+                  placeholder="请输入单码"
                 >
                 </el-input>
               </div>
@@ -615,11 +615,12 @@
                   ></i>
                 </el-tooltip>
               </span>
-              <el-input-number
+              <!-- <el-input-number
                 v-model="form.loginLimitU"
                 controls-position="right"
                 :min="-2"
-              />
+              /> -->
+              <span>{{ form.loginLimitU }}</span>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -635,11 +636,12 @@
                   ></i>
                 </el-tooltip>
               </span>
-              <el-input-number
+              <!-- <el-input-number
                 v-model="form.loginLimitM"
                 controls-position="right"
                 :min="-2"
-              />
+              /> -->
+              <span>{{ form.loginLimitM }}</span>
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -657,11 +659,12 @@
                   ></i>
                 </el-tooltip>
               </span>
-              <el-input-number
+              <!-- <el-input-number
                 v-model="form.cardLoginLimitU"
                 :min="-2"
                 controls-position="right"
-              />
+              /> -->
+              <span>{{ form.cardLoginLimitU }}</span>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -677,15 +680,16 @@
                   ></i>
                 </el-tooltip>
               </span>
-              <el-input-number
+              <!-- <el-input-number
                 v-model="form.cardLoginLimitM"
                 :min="-2"
                 controls-position="right"
-              />
+              /> -->
+              <span>{{ form.cardLoginLimitM }}</span>
             </el-form-item>
           </el-col>
         </el-form-item>
-        <el-form-item prop="">
+        <!-- <el-form-item prop="">
           <el-col :span="12">
             <el-form-item label="赠送余额" prop="freeBalance">
               <el-input-number
@@ -728,7 +732,7 @@
               />
             </el-form-item>
           </el-col>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item prop="">
           <el-col :span="12">
             <el-form-item label="用户状态" prop="status">
@@ -737,8 +741,8 @@
                   v-for="dict in dict.type.sys_normal_disable"
                   :key="dict.value"
                   :label="dict.value"
-                  >{{ dict.label }}</el-radio
-                >
+                >{{ dict.label }}
+                </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -746,7 +750,7 @@
             <el-col :span="12">
               <div v-if="app.billType === '0'">
                 <el-form-item label="过期时间" prop="expireTime">
-                  <el-date-picker
+                  <!-- <el-date-picker
                     clearable
                     size="small"
                     v-model="form.expireTime"
@@ -754,15 +758,17 @@
                     value-format="yyyy-MM-dd HH:mm:ss"
                     placeholder="选择过期时间"
                   >
-                  </el-date-picker>
+                  </el-date-picker> -->
+                  <span>{{ form.expireTime }}</span>
                 </el-form-item>
               </div>
               <div v-if="app.billType === '1'">
                 <el-form-item label="剩余点数" prop="point">
-                  <el-input-number
+                  <!-- <el-input-number
                     v-model="form.point"
                     controls-position="right"
-                  />
+                  /> -->
+                  <span>{{ form.point }}</span>
                 </el-form-item>
               </div>
             </el-col>
@@ -771,7 +777,7 @@
             <el-col :span="12">
               <div v-if="form.app.billType === '0'">
                 <el-form-item label="过期时间" prop="expireTime">
-                  <el-date-picker
+                  <!-- <el-date-picker
                     clearable
                     size="small"
                     v-model="form.expireTime"
@@ -779,15 +785,17 @@
                     value-format="yyyy-MM-dd HH:mm:ss"
                     placeholder="选择过期时间"
                   >
-                  </el-date-picker>
+                  </el-date-picker> -->
+                  <span>{{ form.expireTime }}</span>
                 </el-form-item>
               </div>
               <div v-if="form.app.billType === '1'">
                 <el-form-item label="剩余点数" prop="point">
-                  <el-input-number
+                  <!-- <el-input-number
                     v-model="form.point"
                     controls-position="right"
-                  />
+                  /> -->
+                  <span>{{ form.point }}</span>
                 </el-form-item>
               </div>
             </el-col>
@@ -796,18 +804,20 @@
         <el-form-item prop="">
           <el-col :span="12">
             <el-form-item label="剩余解绑次数" prop="unbindTimes">
-              <el-input-number
+              <!-- <el-input-number
                 v-model="form.unbindTimes"
                 :min="0"
                 controls-position="right"
-              />
+              /> -->
+              <span>{{ form.unbindTimes }}</span>
             </el-form-item>
           </el-col>
           <el-col :span="12"></el-col>
         </el-form-item>
         <el-form-item label="充值卡/单码自定义参数" prop="cardCustomParams">
           <el-input
-            v-model="form.cardCustomParams"
+            :readonly="true"
+            :value="form.cardCustomParams"
             placeholder="请输入内容"
             type="textarea"
           />
@@ -815,8 +825,8 @@
         <el-form-item label="备注" prop="remark">
           <el-input
             v-model="form.remark"
-            type="textarea"
             placeholder="请输入内容"
+            type="textarea"
           />
         </el-form-item>
         <div v-if="form.appUserId">
@@ -866,8 +876,9 @@ import {
   getAppUser,
   listAppUser,
   updateAppUser,
-} from "@/api/system/appUser";
-import {getApp, listAppAll} from "@/api/system/app";
+} from "@/api/agent/appUser";
+// import { getApp } from "@/api/system/app";
+import {listAppAll} from "@/api/agent/agentApp";
 import {listUserByExceptAppid} from "@/api/system/user";
 
 export default {
@@ -922,14 +933,14 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
+        appId: [{required: true, message: "软件不能为空", trigger: "blur"}],
         userId: [
-          { required: true, message: "所属账号不能为空", trigger: "blur" },
+          {required: true, message: "所属账号不能为空", trigger: "blur"},
         ],
         loginCode: [
-          { required: true, message: "单码不能为空", trigger: "blur" },
+          {required: true, message: "单码不能为空", trigger: "blur"},
         ],
-        status: [{ required: true, message: "状态不能为空", trigger: "blur" }],
+        status: [{required: true, message: "状态不能为空", trigger: "blur"}],
         loginLimitU: [
           {
             required: true,
@@ -969,23 +980,23 @@ export default {
           {required: true, message: "支付余额不能为空", trigger: "blur"},
         ],
         freePayment: [
-          { required: true, message: "赠送消费不能为空", trigger: "blur" },
+          {required: true, message: "赠送消费不能为空", trigger: "blur"},
         ],
         payPayment: [
-          { required: true, message: "支付消费不能为空", trigger: "blur" },
+          {required: true, message: "支付消费不能为空", trigger: "blur"},
         ],
         expireTime: [
-          { required: true, message: "过期时间不能为空", trigger: "blur" },
+          {required: true, message: "过期时间不能为空", trigger: "blur"},
         ],
         point: [
-          { required: true, message: "剩余点数不能为空", trigger: "blur" },
+          {required: true, message: "剩余点数不能为空", trigger: "blur"},
         ],
       },
     };
   },
   created() {
     // const appId = this.$route.params && this.$route.params.appId;
-    const appId = this.$route.query && this.$route.query.appId;
+    // const appId = this.$route.query && this.$route.query.appId;
     this.getAppList();
     // const appName = this.$route.query && this.$route.query.appName;
     // const title = "软件用户管理";
@@ -994,15 +1005,15 @@ export default {
     //       title: `${title}`,
     //     });
     //     this.$store.dispatch("tagsView/updateVisitedView", route);
-    if (appId != undefined && appId != null) {
-      getApp(appId).then((response) => {
-        this.app = response.data;
-        this.getList();
-      });
-    } else {
-      this.getList();
-      // this.$modal.alertError("未获取到当前软件信息");
-    }
+    // if (appId != undefined && appId != null) {
+    //   getApp(appId).then((response) => {
+    //     this.app = response.data;
+    //     this.getList();
+    //   });
+    // } else {
+    this.getList();
+    // this.$modal.alertError("未获取到当前软件信息");
+    // }
   },
   methods: {
     /** 查询软件用户列表 */
@@ -1141,7 +1152,8 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -1156,7 +1168,8 @@ export default {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     handleDeviceCode: function (row) {
       const appUserId = row.appUserId;

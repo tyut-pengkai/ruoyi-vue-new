@@ -64,7 +64,7 @@ public class SysAgentCardController extends BaseController {
     public TableDataInfo list(SysCard sysCard) {
         startPage();
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            sysCard.setCreateBy(getUsername());
+            sysCard.setAgentId(getUserId());
         }
         List<SysCard> list = sysCardService.selectSysCardList(sysCard);
         return getDataTable(list);
@@ -78,7 +78,7 @@ public class SysAgentCardController extends BaseController {
     @GetMapping("/export")
     public AjaxResult export(SysCard sysCard) {
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            sysCard.setCreateBy(getUsername());
+            sysCard.setAgentId(getUserId());
         }
         List<SysCard> list = sysCardService.selectSysCardList(sysCard);
         ExcelUtil<SysCard> util = new ExcelUtil<SysCard>(SysCard.class);

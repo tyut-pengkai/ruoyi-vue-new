@@ -9,6 +9,7 @@ import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ErrorCode;
@@ -16,10 +17,7 @@ import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysLoginCode;
-import com.ruoyi.system.service.ISysAppService;
-import com.ruoyi.system.service.ISysAppUserService;
-import com.ruoyi.system.service.ISysLoginCodeService;
-import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.service.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -37,6 +35,8 @@ public class RechargeLoginCode extends Function {
     private ISysAppUserService appUserService;
     @Resource
     private ISysLoginCodeService loginCodeService;
+    @Resource
+    private ISysConfigService configService;
 
     @Override
     public void init() {
@@ -51,6 +51,10 @@ public class RechargeLoginCode extends Function {
     @Override
     @Transactional(noRollbackFor = ApiException.class, rollbackFor = Exception.class)
     public Object handle() {
+
+        String key = configService.selectConfigByKey("sys.agent.updateAppUser");
+        Integer updateAgentStrategy = Convert.toInt(key, 0);
+
         String loginCodeStr = this.getParams().get("loginCode");
         SysAppUser appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(this.getApp().getAppId(), loginCodeStr);
         if (appUser == null) {
@@ -71,6 +75,15 @@ public class RechargeLoginCode extends Function {
         appUser.setCardCustomParams(newLoginCode.getCardCustomParams());
         appUser.setLastChargeCardId(newLoginCode.getCardId());
         appUser.setLastChargeTemplateId(newLoginCode.getTemplateId());
+
+        if (updateAgentStrategy == 0) {
+            if (appUser.getAgentId() == null) {
+                appUser.setAgentId(newLoginCode.getAgentId());
+            }
+        } else {
+            appUser.setAgentId(newLoginCode.getAgentId());
+        }
+
         newLoginCode.setIsCharged(UserConstants.YES);
         newLoginCode.setChargeTime(DateUtils.getNowDate());
         newLoginCode.setOnSale(UserConstants.NO);

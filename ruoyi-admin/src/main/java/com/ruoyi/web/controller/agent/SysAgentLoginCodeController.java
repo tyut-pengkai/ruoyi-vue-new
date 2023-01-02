@@ -64,7 +64,7 @@ public class SysAgentLoginCodeController extends BaseController {
     public TableDataInfo list(SysLoginCode sysLoginCode) {
         startPage();
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            sysLoginCode.setCreateBy(getUsername());
+            sysLoginCode.setAgentId(getUserId());
         }
         List<SysLoginCode> list = sysLoginCodeService.selectSysLoginCodeList(sysLoginCode);
         return getDataTable(list);
@@ -78,7 +78,7 @@ public class SysAgentLoginCodeController extends BaseController {
     @GetMapping("/export")
     public AjaxResult export(SysLoginCode sysLoginCode) {
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            sysLoginCode.setCreateBy(getUsername());
+            sysLoginCode.setAgentId(getUserId());
         }
         List<SysLoginCode> list = sysLoginCodeService.selectSysLoginCodeList(sysLoginCode);
         ExcelUtil<SysLoginCode> util = new ExcelUtil<SysLoginCode>(SysLoginCode.class);
