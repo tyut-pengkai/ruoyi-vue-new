@@ -8,12 +8,16 @@ import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.text.Convert;
+import com.ruoyi.common.enums.AppUserExpireChangeType;
 import com.ruoyi.common.enums.BatchOperationObject;
 import com.ruoyi.common.enums.BatchOperationType;
 import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.framework.manager.AsyncManager;
+import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.system.domain.SysAppUserExpireLog;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.vo.BatchOperationVo;
@@ -703,6 +707,8 @@ public class SysBatchOperationController extends BaseController {
         } else {
             try {
                 if (appUser.getApp().getBillType() == BillType.POINT) {
+                    SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
+                    expireLog.setPointBefore(appUser.getPoint());
                     BigDecimal newPoint = MyUtils.getNewPointSub(appUser.getPoint(), Long.parseLong(vo.getOperationValue()));
                     appUser.setPoint(newPoint);
                     SysAppUser newAppUser = new SysAppUser();
@@ -710,6 +716,17 @@ public class SysBatchOperationController extends BaseController {
                     newAppUser.setPoint(newPoint);
                     sysAppUserService.updateSysAppUser(newAppUser);
                     result.get(a).add(item + getAppUserSimpleDesc(appUser));
+                    expireLog.setPointAfter(newPoint);
+                    // 记录用户时长变更日志
+                    expireLog.setAppUserId(appUser.getAppUserId());
+                    expireLog.setTemplateId(null);
+                    expireLog.setCardId(null);
+                    expireLog.setChangeDesc("批量扣点");
+                    expireLog.setChangeType(AppUserExpireChangeType.ADMIN_UPDATE);
+                    expireLog.setChangeAmount(-Long.parseLong(vo.getOperationValue()));
+                    expireLog.setCardNo(null);
+                    expireLog.setAppId(appUser.getAppId());
+                    AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
                 } else {
                     result.get(b).add(item + "【非计点模式软件用户】");
                 }
@@ -731,6 +748,8 @@ public class SysBatchOperationController extends BaseController {
         } else {
             try {
                 if (appUser.getApp().getBillType() == BillType.POINT) {
+                    SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
+                    expireLog.setPointBefore(appUser.getPoint());
                     BigDecimal newPoint = MyUtils.getNewPointAdd(appUser.getPoint(), Long.parseLong(vo.getOperationValue()));
                     appUser.setPoint(newPoint);
                     SysAppUser newAppUser = new SysAppUser();
@@ -738,6 +757,17 @@ public class SysBatchOperationController extends BaseController {
                     newAppUser.setPoint(newPoint);
                     sysAppUserService.updateSysAppUser(newAppUser);
                     result.get(a).add(item + getAppUserSimpleDesc(appUser));
+                    expireLog.setPointAfter(newPoint);
+                    // 记录用户时长变更日志
+                    expireLog.setAppUserId(appUser.getAppUserId());
+                    expireLog.setTemplateId(null);
+                    expireLog.setCardId(null);
+                    expireLog.setChangeDesc("批量加点");
+                    expireLog.setChangeType(AppUserExpireChangeType.ADMIN_UPDATE);
+                    expireLog.setChangeAmount(Long.parseLong(vo.getOperationValue()));
+                    expireLog.setCardNo(null);
+                    expireLog.setAppId(appUser.getAppId());
+                    AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
                 } else {
                     result.get(b).add(item + "【非计点模式软件用户】");
                 }
@@ -759,6 +789,8 @@ public class SysBatchOperationController extends BaseController {
         } else {
             try {
                 if (appUser.getApp().getBillType() == BillType.TIME) {
+                    SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
+                    expireLog.setExpireTimeBefore(appUser.getExpireTime());
                     Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), Long.parseLong(vo.getOperationValue()));
                     appUser.setExpireTime(newExpiredTime);
                     SysAppUser newAppUser = new SysAppUser();
@@ -766,6 +798,17 @@ public class SysBatchOperationController extends BaseController {
                     newAppUser.setExpireTime(newExpiredTime);
                     sysAppUserService.updateSysAppUser(newAppUser);
                     result.get(a).add(item + getAppUserSimpleDesc(appUser));
+                    expireLog.setExpireTimeAfter(newExpiredTime);
+                    // 记录用户时长变更日志
+                    expireLog.setAppUserId(appUser.getAppUserId());
+                    expireLog.setTemplateId(null);
+                    expireLog.setCardId(null);
+                    expireLog.setChangeDesc("批量扣时");
+                    expireLog.setChangeType(AppUserExpireChangeType.ADMIN_UPDATE);
+                    expireLog.setChangeAmount(-Long.parseLong(vo.getOperationValue()));
+                    expireLog.setCardNo(null);
+                    expireLog.setAppId(appUser.getAppId());
+                    AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
                 } else {
                     result.get(b).add(item + "【非计时模式软件用户】");
                 }
@@ -787,6 +830,8 @@ public class SysBatchOperationController extends BaseController {
         } else {
             try {
                 if (appUser.getApp().getBillType() == BillType.TIME) {
+                    SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
+                    expireLog.setExpireTimeBefore(appUser.getExpireTime());
                     Date newExpiredTime = MyUtils.getNewExpiredTimeAdd(appUser.getExpireTime(), Long.parseLong(vo.getOperationValue()));
                     appUser.setExpireTime(newExpiredTime);
                     SysAppUser newAppUser = new SysAppUser();
@@ -794,6 +839,17 @@ public class SysBatchOperationController extends BaseController {
                     newAppUser.setExpireTime(newExpiredTime);
                     sysAppUserService.updateSysAppUser(newAppUser);
                     result.get(a).add(item + getAppUserSimpleDesc(appUser));
+                    expireLog.setExpireTimeAfter(newExpiredTime);
+                    // 记录用户时长变更日志
+                    expireLog.setAppUserId(appUser.getAppUserId());
+                    expireLog.setTemplateId(null);
+                    expireLog.setCardId(null);
+                    expireLog.setChangeDesc("批量加时");
+                    expireLog.setChangeType(AppUserExpireChangeType.ADMIN_UPDATE);
+                    expireLog.setChangeAmount(Long.parseLong(vo.getOperationValue()));
+                    expireLog.setCardNo(null);
+                    expireLog.setAppId(appUser.getAppId());
+                    AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
                 } else {
                     result.get(b).add(item + "【非计时模式软件用户】");
                 }

@@ -7,10 +7,7 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.*;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
-import com.ruoyi.common.enums.BillType;
-import com.ruoyi.common.enums.BindType;
-import com.ruoyi.common.enums.ErrorCode;
-import com.ruoyi.common.enums.UserStatus;
+import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.MessageUtils;
@@ -21,6 +18,7 @@ import com.ruoyi.framework.api.v1.utils.ValidUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.TokenService;
+import com.ruoyi.system.domain.SysAppUserExpireLog;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.*;
 import lombok.extern.slf4j.Slf4j;
@@ -93,16 +91,35 @@ public class SysAppLoginService {
                 appUser.setPayPayment(BigDecimal.ZERO);
                 appUser.setUnbindTimes(app.getUnbindTimes());
                 appUser.setApp(app);
+                SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
                 if (app.getBillType() == BillType.TIME) {
-                    appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg()));
+                    Date newExpiredTime = MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg());
+                    appUser.setExpireTime(newExpiredTime);
                     appUser.setPoint(null);
+                    expireLog.setExpireTimeBefore(null);
+                    expireLog.setExpireTimeAfter(newExpiredTime);
                 } else if (app.getBillType() == BillType.POINT) {
                     appUser.setExpireTime(null);
-                    appUser.setPoint(MyUtils.getNewPointAdd(null, app.getFreeQuotaReg()));
+                    BigDecimal newPoint = MyUtils.getNewPointAdd(null, app.getFreeQuotaReg());
+                    appUser.setPoint(newPoint);
+                    expireLog.setPointBefore(null);
+                    expireLog.setPointAfter(newPoint);
                 } else {
                     throw new ApiException("软件计费方式有误");
                 }
                 appUserService.insertSysAppUser(appUser);
+                if (app.getFreeQuotaReg() > 0) {
+                    // 记录用户时长变更日志
+                    expireLog.setAppUserId(appUser.getAppUserId());
+                    expireLog.setTemplateId(null);
+                    expireLog.setCardId(null);
+                    expireLog.setChangeDesc("用户首次登录赠送");
+                    expireLog.setChangeType(AppUserExpireChangeType.APP_LOGIN);
+                    expireLog.setChangeAmount(app.getFreeQuotaReg());
+                    expireLog.setCardNo(null);
+                    expireLog.setAppId(app.getAppId());
+                    AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
+                }
             } else {
                 if (UserStatus.DISABLE.getCode().equals(appUser.getStatus())) {
                     log.info("登录用户：{} 已被停用.", username);
@@ -178,9 +195,23 @@ public class SysAppLoginService {
 
                 // 自动扣除点数
                 if (app.getBillType() == BillType.POINT && autoReducePoint) {
+                    SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
                     appUser = appUserService.selectSysAppUserByAppUserId(appUser.getAppUserId());
-                    appUser.setPoint(appUser.getPoint().subtract(BigDecimal.valueOf(-1)));
+                    expireLog.setPointBefore(appUser.getPoint());
+                    BigDecimal newPoint = appUser.getPoint().subtract(BigDecimal.valueOf(-1));
+                    appUser.setPoint(newPoint);
                     appUserService.updateSysAppUser(appUser);
+                    expireLog.setPointAfter(newPoint);
+                    // 记录用户时长变更日志
+                    expireLog.setAppUserId(appUser.getAppUserId());
+                    expireLog.setTemplateId(null);
+                    expireLog.setCardId(null);
+                    expireLog.setChangeDesc("软件登录自动扣点");
+                    expireLog.setChangeType(AppUserExpireChangeType.APP_LOGIN);
+                    expireLog.setChangeAmount(-1L);
+                    expireLog.setCardNo(null);
+                    expireLog.setAppId(appUser.getAppId());
+                    AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
                 }
 
                 // 生成token
@@ -244,14 +275,28 @@ public class SysAppLoginService {
                 appUser.setPayPayment(BigDecimal.ZERO);
                 appUser.setUnbindTimes(app.getUnbindTimes());
                 appUser.setApp(app);
+                SysAppUserExpireLog expireLog1 = new SysAppUserExpireLog();
+                SysAppUserExpireLog expireLog2 = new SysAppUserExpireLog();
                 if (app.getBillType() == BillType.TIME) {
-                    appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg()));
-                    appUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(appUser.getExpireTime(), loginCode.getQuota()));
+                    Date newExpiredTime = MyUtils.getNewExpiredTimeAdd(null, app.getFreeQuotaReg());
+                    appUser.setExpireTime(newExpiredTime);
+                    Date newExpiredTime2 = MyUtils.getNewExpiredTimeAdd(appUser.getExpireTime(), loginCode.getQuota());
+                    appUser.setExpireTime(newExpiredTime2);
                     appUser.setPoint(null);
+                    expireLog1.setExpireTimeBefore(null);
+                    expireLog1.setExpireTimeAfter(newExpiredTime);
+                    expireLog2.setExpireTimeBefore(newExpiredTime);
+                    expireLog2.setExpireTimeAfter(newExpiredTime2);
                 } else if (app.getBillType() == BillType.POINT) {
                     appUser.setExpireTime(null);
-                    appUser.setPoint(MyUtils.getNewPointAdd(null, app.getFreeQuotaReg()));
-                    appUser.setPoint(MyUtils.getNewPointAdd(appUser.getPoint(), loginCode.getQuota()));
+                    BigDecimal newPoint = MyUtils.getNewPointAdd(null, app.getFreeQuotaReg());
+                    appUser.setPoint(newPoint);
+                    BigDecimal newPoint2 = MyUtils.getNewPointAdd(appUser.getPoint(), loginCode.getQuota());
+                    appUser.setPoint(newPoint2);
+                    expireLog1.setPointBefore(null);
+                    expireLog1.setPointAfter(newPoint);
+                    expireLog2.setPointBefore(newPoint);
+                    expireLog2.setPointAfter(newPoint2);
                 } else {
                     throw new ApiException("软件计费方式有误");
                 }
@@ -260,6 +305,28 @@ public class SysAppLoginService {
                 loginCode.setChargeTime(DateUtils.getNowDate());
                 loginCode.setOnSale(UserConstants.NO);
                 loginCodeService.updateSysLoginCode(loginCode);
+                if (app.getFreeQuotaReg() > 0) {
+                    // 记录用户时长变更日志
+                    expireLog1.setAppUserId(appUser.getAppUserId());
+                    expireLog1.setTemplateId(null);
+                    expireLog1.setCardId(null);
+                    expireLog1.setChangeDesc("用户首次登录赠送");
+                    expireLog1.setChangeType(AppUserExpireChangeType.APP_LOGIN);
+                    expireLog1.setChangeAmount(app.getFreeQuotaReg());
+                    expireLog1.setCardNo(null);
+                    expireLog1.setAppId(app.getAppId());
+                    AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog1));
+                }
+                // 记录用户时长变更日志
+                expireLog2.setAppUserId(appUser.getAppUserId());
+                expireLog2.setTemplateId(loginCode.getTemplateId());
+                expireLog2.setCardId(loginCode.getCardId());
+                expireLog2.setChangeDesc("用户首次登录充值卡自动充值");
+                expireLog2.setChangeType(AppUserExpireChangeType.RECHARGE);
+                expireLog2.setChangeAmount(loginCode.getQuota());
+                expireLog2.setCardNo(loginCode.getCardNo());
+                expireLog2.setAppId(app.getAppId());
+                AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog2));
             } else {
                 if (UserStatus.DISABLE.getCode().equals(appUser.getStatus())) {
                     log.info("登录用户：{} 已被停用.", loginCodeStr);
@@ -335,9 +402,23 @@ public class SysAppLoginService {
 
                 // 自动扣除点数
                 if (app.getBillType() == BillType.POINT && autoReducePoint) {
+                    SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
                     appUser = appUserService.selectSysAppUserByAppUserId(appUser.getAppUserId());
-                    appUser.setPoint(appUser.getPoint().subtract(BigDecimal.valueOf(-1)));
+                    expireLog.setPointBefore(appUser.getPoint());
+                    BigDecimal newPoint = appUser.getPoint().subtract(BigDecimal.valueOf(-1));
+                    appUser.setPoint(newPoint);
                     appUserService.updateSysAppUser(appUser);
+                    expireLog.setPointAfter(newPoint);
+                    // 记录用户时长变更日志
+                    expireLog.setAppUserId(appUser.getAppUserId());
+                    expireLog.setTemplateId(null);
+                    expireLog.setCardId(null);
+                    expireLog.setChangeDesc("软件登录自动扣点");
+                    expireLog.setChangeType(AppUserExpireChangeType.APP_LOGIN);
+                    expireLog.setChangeAmount(-1L);
+                    expireLog.setCardNo(null);
+                    expireLog.setAppId(appUser.getAppId());
+                    AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
                 }
 
                 // 生成token

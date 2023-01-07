@@ -10,12 +10,16 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.text.Convert;
+import com.ruoyi.common.enums.AppUserExpireChangeType;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.framework.manager.AsyncManager;
+import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.system.domain.SysAppUserExpireLog;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.*;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,13 +66,18 @@ public class RechargeLoginCode extends Function {
         }
         String newLoginCodeStr = this.getParams().get("newLoginCode");
         SysLoginCode newLoginCode = loginCodeService.selectSysLoginCodeByCardNo(newLoginCodeStr);
+        SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
         checkLoginCode(appUser, newLoginCode);
         if (this.getApp().getBillType() == BillType.TIME) {
+            expireLog.setExpireTimeBefore(appUser.getExpireTime());
             Date newExpiredTime = MyUtils.getNewExpiredTimeAdd(appUser.getExpireTime(), newLoginCode.getQuota());
             appUser.setExpireTime(newExpiredTime);
+            expireLog.setExpireTimeAfter(newExpiredTime);
         } else if (this.getApp().getBillType() == BillType.POINT) {
+            expireLog.setPointBefore(appUser.getPoint());
             BigDecimal newPoint = MyUtils.getNewPointAdd(appUser.getPoint(), newLoginCode.getQuota());
             appUser.setPoint(newPoint);
+            expireLog.setPointAfter(newPoint);
         }
         appUser.setCardLoginLimitU(newLoginCode.getCardLoginLimitU());
         appUser.setCardLoginLimitM(newLoginCode.getCardLoginLimitM());
@@ -76,6 +85,18 @@ public class RechargeLoginCode extends Function {
         appUser.setLastChargeCardId(newLoginCode.getCardId());
         appUser.setLastChargeTemplateId(newLoginCode.getTemplateId());
 
+        // 记录用户时长变更日志
+        expireLog.setAppUserId(appUser.getAppUserId());
+        expireLog.setTemplateId(newLoginCode.getTemplateId());
+        expireLog.setCardId(newLoginCode.getCardId());
+        expireLog.setChangeDesc("充值卡充值");
+        expireLog.setChangeType(AppUserExpireChangeType.RECHARGE);
+        expireLog.setChangeAmount(newLoginCode.getQuota());
+        expireLog.setCardNo(newLoginCodeStr);
+        expireLog.setAppId(this.getApp().getAppId());
+        AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
+
+        // 更新用户所属代理
         if (updateAgentStrategy == 0) {
             if (appUser.getAgentId() == null) {
                 appUser.setAgentId(newLoginCode.getAgentId());

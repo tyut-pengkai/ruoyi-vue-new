@@ -11,11 +11,15 @@ import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
 import com.ruoyi.common.core.domain.entity.SysDeviceCode;
 import com.ruoyi.common.core.text.Convert;
+import com.ruoyi.common.enums.AppUserExpireChangeType;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.framework.manager.AsyncManager;
+import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.system.domain.SysAppUserExpireLog;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
 import com.ruoyi.system.service.*;
@@ -95,24 +99,40 @@ public class UnbindDeviceNc extends Function {
                 if (p != null && p > 0) {
 //                   boolean enableNegative = Convert.toBool(this.getParams().get("enableNegative"), false);
                     boolean enableNegative = Convert.toBool(this.getApp().getEnableNegative(), false);
+                    SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
                     if (this.getApp().getBillType() == BillType.TIME) {
+                        expireLog.setExpireTimeBefore(appUser.getExpireTime());
                         Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), p);
                         Date nowDate = DateUtils.getNowDate();
                         if ((appUser.getExpireTime().after(nowDate) && newExpiredTime.after(nowDate)) || enableNegative) {
                             appUser.setExpireTime(newExpiredTime);
                             appUserService.updateSysAppUser(appUser);
+                            expireLog.setExpireTimeAfter(newExpiredTime);
                         } else {
                             throw new ApiException(ErrorCode.ERROR_APP_USER_NO_TIME);
                         }
                     } else if (this.getApp().getBillType() == BillType.POINT) {
+                        expireLog.setPointBefore(appUser.getPoint());
                         BigDecimal point = BigDecimal.valueOf(p);
+                        BigDecimal newPoint = appUser.getPoint().subtract(point);
                         if (appUser.getPoint().compareTo(point) >= 0 || enableNegative) {
-                            appUser.setPoint(appUser.getPoint().subtract(point));
+                            appUser.setPoint(newPoint);
                             appUserService.updateSysAppUser(appUser);
+                            expireLog.setPointAfter(newPoint);
                         } else {
                             throw new ApiException(ErrorCode.ERROR_APP_USER_NO_POINT);
                         }
                     }
+                    // 记录用户时长变更日志
+                    expireLog.setAppUserId(appUser.getAppUserId());
+                    expireLog.setTemplateId(null);
+                    expireLog.setCardId(null);
+                    expireLog.setChangeDesc("API：" + this.getApi().getApi());
+                    expireLog.setChangeType(AppUserExpireChangeType.UNBIND);
+                    expireLog.setChangeAmount(-p);
+                    expireLog.setCardNo(null);
+                    expireLog.setAppId(this.getApp().getAppId());
+                    AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
                 }
             } else {
                 throw new ApiException(ErrorCode.ERROR_UNBIND_NO_TIMES);

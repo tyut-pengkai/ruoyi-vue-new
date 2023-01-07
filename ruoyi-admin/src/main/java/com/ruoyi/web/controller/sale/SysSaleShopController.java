@@ -25,6 +25,8 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.tree.TreeUtil;
 import com.ruoyi.common.utils.uuid.SnowflakeIdWorker;
+import com.ruoyi.framework.manager.AsyncManager;
+import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.payment.constants.PaymentDefine;
 import com.ruoyi.payment.domain.Payment;
 import com.ruoyi.sale.domain.SysSaleOrder;
@@ -692,24 +694,40 @@ public class SysSaleShopController extends BaseController {
                 Long p = sysApp.getReduceQuotaUnbind();
                 if (p != null && p > 0) {
                     boolean enableNegative = UserConstants.YES.equals(sysApp.getEnableNegative());
+                    SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
                     if (sysApp.getBillType() == BillType.TIME) {
+                        expireLog.setExpireTimeBefore(appUser.getExpireTime());
                         Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), p);
                         Date nowDate = DateUtils.getNowDate();
                         if ((appUser.getExpireTime().after(nowDate) && newExpiredTime.after(nowDate)) || enableNegative) {
                             appUser.setExpireTime(newExpiredTime);
                             sysAppUserService.updateSysAppUser(appUser);
+                            expireLog.setExpireTimeAfter(newExpiredTime);
                         } else {
                             throw new ServiceException("软件用户剩余时间不足");
                         }
                     } else if (sysApp.getBillType() == BillType.POINT) {
+                        expireLog.setPointBefore(appUser.getPoint());
                         BigDecimal point = BigDecimal.valueOf(p);
+                        BigDecimal newPoint = appUser.getPoint().subtract(point);
                         if (appUser.getPoint().compareTo(point) >= 0 || enableNegative) {
-                            appUser.setPoint(appUser.getPoint().subtract(point));
+                            appUser.setPoint(newPoint);
                             sysAppUserService.updateSysAppUser(appUser);
+                            expireLog.setPointAfter(newPoint);
                         } else {
                             throw new ServiceException("软件用户点数不足");
                         }
                     }
+                    // 记录用户时长变更日志
+                    expireLog.setAppUserId(appUser.getAppUserId());
+                    expireLog.setTemplateId(null);
+                    expireLog.setCardId(null);
+                    expireLog.setChangeDesc("前台解绑");
+                    expireLog.setChangeType(AppUserExpireChangeType.UNBIND);
+                    expireLog.setChangeAmount(-p);
+                    expireLog.setCardNo(null);
+                    expireLog.setAppId(sysApp.getAppId());
+                    AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
                 }
             } else {
                 throw new ServiceException("解绑次数已用尽，无法继续解绑");

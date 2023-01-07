@@ -10,9 +10,13 @@ import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.enums.AppUserExpireChangeType;
 import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.framework.manager.AsyncManager;
+import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.system.domain.SysAppUserExpireLog;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,6 +148,28 @@ public class SysAppUserController extends BaseController {
     @PutMapping
     public AjaxResult edit(@RequestBody SysAppUser sysAppUser) {
         sysAppUser.setUpdateBy(getUsername());
+        // 记录用户时长变更日志
+        if (sysAppUser.getExpireTime() != null || sysAppUser.getPoint() != null) {
+            SysAppUser appUser = sysAppUserService.selectSysAppUserByAppUserId(sysAppUser.getAppUserId());
+            SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
+            if (sysAppUser.getExpireTime() != null) {
+                expireLog.setExpireTimeBefore(appUser.getExpireTime());
+                expireLog.setExpireTimeAfter(sysAppUser.getExpireTime());
+                expireLog.setChangeAmount((sysAppUser.getExpireTime().getTime() - appUser.getExpireTime().getTime()) / 1000);
+            } else {
+                expireLog.setPointBefore(appUser.getPoint());
+                expireLog.setPointAfter(sysAppUser.getPoint());
+                expireLog.setChangeAmount(sysAppUser.getPoint().subtract(appUser.getPoint()).longValue());
+            }
+            expireLog.setAppUserId(appUser.getAppUserId());
+            expireLog.setTemplateId(null);
+            expireLog.setCardId(null);
+            expireLog.setChangeDesc("管理员后台修改：" + getUsername());
+            expireLog.setChangeType(AppUserExpireChangeType.ADMIN_UPDATE);
+            expireLog.setCardNo(null);
+            expireLog.setAppId(appUser.getAppId());
+            AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
+        }
         return toAjax(sysAppUserService.updateSysAppUser(sysAppUser));
     }
 

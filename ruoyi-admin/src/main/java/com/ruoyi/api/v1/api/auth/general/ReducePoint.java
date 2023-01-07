@@ -9,9 +9,13 @@ import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.text.Convert;
+import com.ruoyi.common.enums.AppUserExpireChangeType;
 import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
+import com.ruoyi.framework.manager.AsyncManager;
+import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.system.domain.SysAppUserExpireLog;
 import com.ruoyi.system.service.ISysAppUserService;
 
 import javax.annotation.Resource;
@@ -53,9 +57,23 @@ public class ReducePoint extends Function {
             throw new ApiException(ErrorCode.ERROR_PARAMETERS_ERROR, "point必须大于0");
         }
         SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUserId());
+        SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
         if (appUser.getPoint().compareTo(point) >= 0 || enableNegative) {
-            appUser.setPoint(MyUtils.getNewPointSub(appUser.getPoint(), point.doubleValue()));
+            expireLog.setPointBefore(appUser.getPoint());
+            BigDecimal newPoint = MyUtils.getNewPointSub(appUser.getPoint(), point.doubleValue());
+            appUser.setPoint(newPoint);
             appUserService.updateSysAppUser(appUser);
+            expireLog.setPointAfter(newPoint);
+            // 记录用户时长变更日志
+            expireLog.setAppUserId(appUser.getAppUserId());
+            expireLog.setTemplateId(null);
+            expireLog.setCardId(null);
+            expireLog.setChangeDesc("API：" + this.getApi().getApi());
+            expireLog.setChangeType(AppUserExpireChangeType.CALL_API);
+            expireLog.setChangeAmount(-point.longValue());
+            expireLog.setCardNo(null);
+            expireLog.setAppId(this.getApp().getAppId());
+            AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
         } else {
             throw new ApiException(ErrorCode.ERROR_APP_USER_NO_POINT);
         }
