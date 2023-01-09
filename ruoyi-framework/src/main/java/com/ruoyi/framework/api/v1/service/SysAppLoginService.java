@@ -275,6 +275,9 @@ public class SysAppLoginService {
                 appUser.setPayPayment(BigDecimal.ZERO);
                 appUser.setUnbindTimes(app.getUnbindTimes());
                 appUser.setApp(app);
+                appUser.setLastChargeCardId(loginCode.getCardId());
+                appUser.setLastChargeTemplateId(loginCode.getTemplateId());
+                appUser.setAgentId(loginCode.getAgentId());
                 SysAppUserExpireLog expireLog1 = new SysAppUserExpireLog();
                 SysAppUserExpireLog expireLog2 = new SysAppUserExpireLog();
                 if (app.getBillType() == BillType.TIME) {

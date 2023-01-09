@@ -12,19 +12,25 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AppUserExpireChangeType;
 import com.ruoyi.common.enums.AuthType;
+import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.exception.ApiException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysAppUserExpireLog;
+import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppUserService;
+import com.ruoyi.system.service.ISysLoginCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -44,6 +50,8 @@ public class SysAgentAppUserController extends BaseController {
     private RedisCache redisCache;
     @Resource
     private PermissionService permissionService;
+    @Resource
+    private ISysLoginCodeService sysLoginCodeService;
 
     /**
      * 查询软件用户列表
@@ -134,6 +142,7 @@ public class SysAgentAppUserController extends BaseController {
     @PostMapping
     public AjaxResult add(@RequestBody SysAppUser sysAppUser) {
         sysAppUser.setAgentId(getUserId());
+        int i = 0;
         sysAppUser.setCreateBy(getUsername());
         SysApp sysApp = sysAppService.selectSysAppByAppId(sysAppUser.getAppId());
         if (sysApp.getAuthType() == AuthType.ACCOUNT) {
@@ -141,13 +150,103 @@ public class SysAgentAppUserController extends BaseController {
             if (appUser != null) {
                 return AjaxResult.error("当前软件下该账号已拥有软件用户，可直接登录，无需重复添加");
             }
+            SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
+            if (sysApp.getBillType() == BillType.TIME) {
+                Date newExpiredTime = MyUtils.getNewExpiredTimeAdd(null, sysApp.getFreeQuotaReg());
+                sysAppUser.setExpireTime(newExpiredTime);
+                sysAppUser.setPoint(null);
+                expireLog.setExpireTimeBefore(null);
+                expireLog.setExpireTimeAfter(newExpiredTime);
+            } else if (sysApp.getBillType() == BillType.POINT) {
+                sysAppUser.setExpireTime(null);
+                BigDecimal newPoint = MyUtils.getNewPointAdd(null, sysApp.getFreeQuotaReg());
+                sysAppUser.setPoint(newPoint);
+                expireLog.setPointBefore(null);
+                expireLog.setPointAfter(newPoint);
+            } else {
+                throw new ApiException("软件计费方式有误");
+            }
+            i = sysAppUserService.insertSysAppUser(sysAppUser);
+            if (sysApp.getFreeQuotaReg() > 0) {
+                // 记录用户时长变更日志
+                expireLog.setAppUserId(sysAppUser.getAppUserId());
+                expireLog.setTemplateId(null);
+                expireLog.setCardId(null);
+                expireLog.setChangeDesc("用户首次登录赠送");
+                expireLog.setChangeType(AppUserExpireChangeType.APP_LOGIN);
+                expireLog.setChangeAmount(sysApp.getFreeQuotaReg());
+                expireLog.setCardNo(null);
+                expireLog.setAppId(sysApp.getAppId());
+                AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
+            }
         } else {
             SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(sysAppUser.getAppId(), sysAppUser.getLoginCode());
             if (appUser != null) {
                 return AjaxResult.error("当前软件下该单码已拥有软件用户，可直接登录，无需重复添加");
             }
+            SysLoginCode loginCode = sysLoginCodeService.selectSysLoginCodeByCardNo(sysAppUser.getLoginCode());
+            SysAppUserExpireLog expireLog1 = new SysAppUserExpireLog();
+            SysAppUserExpireLog expireLog2 = new SysAppUserExpireLog();
+            if (sysApp.getBillType() == BillType.TIME) {
+                if (sysAppUser.getExpireTime() == null) {
+                    sysAppUser.setExpireTime(DateUtils.getNowDate());
+                }
+                Date newExpiredTime = sysAppUser.getExpireTime();
+                Date newExpiredTime2 = MyUtils.getNewExpiredTimeAdd(sysAppUser.getExpireTime(), sysApp.getFreeQuotaReg());
+                sysAppUser.setExpireTime(newExpiredTime2);
+                sysAppUser.setPoint(null);
+                expireLog1.setExpireTimeBefore(null);
+                expireLog1.setExpireTimeAfter(newExpiredTime);
+                expireLog2.setExpireTimeBefore(newExpiredTime);
+                expireLog2.setExpireTimeAfter(newExpiredTime2);
+            } else if (sysApp.getBillType() == BillType.POINT) {
+                if (sysAppUser.getPoint() == null) {
+                    sysAppUser.setPoint(BigDecimal.ZERO);
+                }
+                sysAppUser.setExpireTime(null);
+                BigDecimal newPoint = sysAppUser.getPoint();
+                BigDecimal newPoint2 = MyUtils.getNewPointAdd(sysAppUser.getPoint(), sysApp.getFreeQuotaReg());
+                sysAppUser.setPoint(newPoint2);
+                expireLog1.setPointBefore(null);
+                expireLog1.setPointAfter(newPoint);
+                expireLog2.setPointBefore(newPoint);
+                expireLog2.setPointAfter(newPoint2);
+            } else {
+                throw new ApiException("软件计费方式有误");
+            }
+            if (loginCode != null) {
+                sysAppUser.setAgentId(loginCode.getAgentId());
+                sysAppUser.setLastChargeCardId(loginCode.getCardId());
+                sysAppUser.setLastChargeTemplateId(loginCode.getTemplateId());
+            }
+            i = sysAppUserService.insertSysAppUser(sysAppUser);
+            if (sysApp.getFreeQuotaReg() > 0) {
+                // 记录用户时长变更日志
+                expireLog2.setAppUserId(sysAppUser.getAppUserId());
+                expireLog2.setTemplateId(null);
+                expireLog2.setCardId(null);
+                expireLog2.setChangeDesc("用户首次登录赠送");
+                expireLog2.setChangeType(AppUserExpireChangeType.APP_LOGIN);
+                expireLog2.setChangeAmount(sysApp.getFreeQuotaReg());
+                expireLog2.setCardNo(null);
+                expireLog2.setAppId(sysApp.getAppId());
+                AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog2));
+            }
+            // 记录用户时长变更日志
+            expireLog1.setAppUserId(sysAppUser.getAppUserId());
+            if (loginCode != null) {
+                expireLog1.setTemplateId(loginCode.getTemplateId());
+                expireLog1.setCardId(loginCode.getCardId());
+
+            }
+            expireLog1.setChangeDesc("管理后台添加用户");
+            expireLog1.setChangeType(AppUserExpireChangeType.RECHARGE);
+            expireLog1.setChangeAmount(0L);
+            expireLog1.setCardNo(sysAppUser.getLoginCode());
+            expireLog1.setAppId(sysApp.getAppId());
+            AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog1));
         }
-        return toAjax(sysAppUserService.insertSysAppUser(sysAppUser));
+        return toAjax(i);
     }
 
     /**

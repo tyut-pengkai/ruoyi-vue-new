@@ -7,15 +7,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum BatchOperationObject implements BaseEnum {
+public enum BatchOperationAppUserType implements BaseEnum {
 
-    //    CARD("0", "卡密"),
-//    LOGIN_CODE("1", "单码"),
-//    ACCOUNT_USER("2", "软件用户"),
-//    LOGIN_CODE_USER("3", "单码用户"),
-//    LOGIN_CODE_AND_CODE_USER("4", "单码及单码用户"),
-    CARD_AND_LOGIN_CODE("5", "卡密/单码"),
-    APP_USER("6", "软件用户"),
+    ALL("0", "全部用户"),
+    VIP("1", "VIP用户"),
+    NO_VIP("2", "非VIP用户"),
     ;
 
     @EnumValue // 用于dao层序列化与反序列化

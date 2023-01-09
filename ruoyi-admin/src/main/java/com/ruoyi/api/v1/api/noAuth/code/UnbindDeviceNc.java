@@ -20,7 +20,6 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.system.domain.SysAppUserExpireLog;
-import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
 import com.ruoyi.system.service.*;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,10 +62,10 @@ public class UnbindDeviceNc extends Function {
         }
         // 验证单码
         String loginCodeStr = this.getParams().get("loginCode");
-        SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
-        if (loginCode == null) {
-            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST);
-        }
+//        SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
+//        if (loginCode == null) {
+//            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST);
+//        }
         // 用户是否存在
         SysAppUser appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(getApp().getAppId(), loginCodeStr);
         if (appUser == null) {

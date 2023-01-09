@@ -132,6 +132,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             and au.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
         </if>
         <if test="point != null  and point != ''">and au.point = #{point}</if>
+        <if test="lastChargeCardId != null ">and au.last_charge_card_id = #{lastChargeCardId}</if>
+        <if test="lastChargeTemplateId != null ">and au.last_charge_template_id = #{lastChargeTemplateId}</if>
         <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
             <!-- 数据范围过滤 -->
             ${params.dataScope}

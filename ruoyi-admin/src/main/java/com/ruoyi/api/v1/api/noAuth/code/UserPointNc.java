@@ -10,7 +10,6 @@ import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.exception.ApiException;
-import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.ISysAppUserService;
 import com.ruoyi.system.service.ISysLoginCodeService;
 
@@ -36,10 +35,10 @@ public class UserPointNc extends Function {
     @Override
     public Object handle() {
         String loginCodeStr = this.getParams().get("loginCode");
-        SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
-        if (loginCode == null) {
-            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST);
-        }
+//        SysLoginCode loginCode = loginCodeService.selectSysLoginCodeByCardNo(loginCodeStr);
+//        if (loginCode == null) {
+//            throw new ApiException(ErrorCode.ERROR_LOGIN_CODE_NOT_EXIST);
+//        }
         SysAppUser appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(getApp().getAppId(), loginCodeStr);
         if (appUser == null) {
             throw new ApiException(ErrorCode.ERROR_APP_USER_NOT_EXIST);

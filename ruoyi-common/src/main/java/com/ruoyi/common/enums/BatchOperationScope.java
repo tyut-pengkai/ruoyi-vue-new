@@ -7,15 +7,15 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum BatchOperationObject implements BaseEnum {
+public enum BatchOperationScope implements BaseEnum {
 
-    //    CARD("0", "卡密"),
-//    LOGIN_CODE("1", "单码"),
-//    ACCOUNT_USER("2", "软件用户"),
-//    LOGIN_CODE_USER("3", "单码用户"),
-//    LOGIN_CODE_AND_CODE_USER("4", "单码及单码用户"),
-    CARD_AND_LOGIN_CODE("5", "卡密/单码"),
-    APP_USER("6", "软件用户"),
+    ALL("0", "全部范围"),
+    //    VIP("1", "未到期或点数＞0"),
+//    NO_VIP("2", "已到期或点数＜=0"),
+    USED("3", "已使用"),
+    UNUSED("4", "未使用"),
+    BANNED("5", "已冻结"),
+    UNBANNED("6", "未冻结"),
     ;
 
     @EnumValue // 用于dao层序列化与反序列化
