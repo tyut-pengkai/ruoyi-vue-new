@@ -182,7 +182,7 @@
     </el-form>
     <el-input
       v-model="result"
-      :rows="20"
+      :rows="40"
       style="max-width: 1400px"
       type="textarea"
     >

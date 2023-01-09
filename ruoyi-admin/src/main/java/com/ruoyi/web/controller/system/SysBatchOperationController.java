@@ -1111,6 +1111,7 @@ public class SysBatchOperationController extends BaseController {
                 + " " + (appUser.getApp().getBillType() == BillType.TIME ?
                 "到期时间：" + DateUtils.parseDateToStr(appUser.getExpireTime()) : "剩余点数：" + appUser.getPoint()) +
                 " 自定义参数：" + appUser.getCardCustomParams() +
+                " 所属代理：" + (appUser.getAgentUser() != null ? appUser.getAgentUser().getNickName() + "(" + appUser.getAgentUser().getUserName() + ")" : "null") +
                 " 备注：" + appUser.getRemark() + "】";
     }
 
