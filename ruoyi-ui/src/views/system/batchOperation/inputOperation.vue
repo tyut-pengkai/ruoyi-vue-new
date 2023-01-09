@@ -189,10 +189,27 @@ export default {
       this.loading = true;
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          batchOperation(this.form).then((response) => {
-            this.result = response.msg;
-            this.loading = false;
-          });
+          if (this.form.operationType === "4") {
+            this.$modal
+              .confirm(
+                "您正在执行删除操作，数据无价，建议备份好全部数据后再进行此操作，是否继续？"
+              )
+              .then(() => {
+                batchOperation(this.form).then((response) => {
+                  this.result = response.msg;
+                });
+              })
+              .catch(() => {
+              })
+              .finally(() => {
+                this.loading = false;
+              });
+          } else {
+            batchOperation(this.form).then((response) => {
+              this.result = response.msg;
+              this.loading = false;
+            });
+          }
         }
       });
     },

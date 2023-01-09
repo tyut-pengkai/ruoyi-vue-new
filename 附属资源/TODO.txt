@@ -171,9 +171,9 @@ API开关
 √卡类不关闭窗口继续添加
 新增API接口【unbindDeviceAll.nu】【unbindDeviceAll.nc】，此接口将解绑指定用户所有已绑定设备码
 置用户备注信息api
-SDK云端功能登录问题
+√SDK云端功能登录问题
 √试用1次无法试用
-批量操作用户可选到期与未到期
+√批量操作用户可选到期与未到期
 批量导入卡密
 
 pagesize

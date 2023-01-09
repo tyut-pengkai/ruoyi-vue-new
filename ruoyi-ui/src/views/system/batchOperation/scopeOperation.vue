@@ -275,7 +275,7 @@ export default {
           appId: appId,
         };
       }
-      if (this.app["authType"] == "0") {
+      if (this.app && this.app["authType"] == "0") {
         listCardTemplate(queryParams).then((response) => {
           this.templateList = response.rows;
           this.templateList.unshift({
@@ -284,7 +284,7 @@ export default {
           });
           this.loading = false;
         });
-      } else if (this.app["authType"] == "1") {
+      } else if (this.app && this.app["authType"] == "1") {
         listLoginCodeTemplate(queryParams).then((response) => {
           this.templateList = response.rows;
           this.templateList.unshift({
@@ -299,10 +299,27 @@ export default {
       this.loading = true;
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          scopeOperation(this.form).then((response) => {
-            this.result = response.msg;
-            this.loading = false;
-          });
+          if (this.form.operationType === "4") {
+            this.$modal
+              .confirm(
+                "您正在执行删除操作，数据无价，建议备份好全部数据后再进行此操作，是否继续？"
+              )
+              .then(() => {
+                scopeOperation(this.form).then((response) => {
+                  this.result = response.msg;
+                });
+              })
+              .catch(() => {
+              })
+              .finally(() => {
+                this.loading = false;
+              });
+          } else {
+            scopeOperation(this.form).then((response) => {
+              this.result = response.msg;
+              this.loading = false;
+            });
+          }
         }
       });
     },
