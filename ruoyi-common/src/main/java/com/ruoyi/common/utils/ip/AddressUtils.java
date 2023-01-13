@@ -12,6 +12,8 @@ import com.ruoyi.common.utils.spring.SpringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * 获取地址类
  *
@@ -52,7 +54,7 @@ public class AddressUtils {
                     String city = obj.getString("city");
 //                    cache.put(ip, String.format("%s %s", region, city));
                     String address = String.format("%s %s", region, city);
-                    redisCache.setCacheObject(redisKey, address);
+                    redisCache.setCacheObject(redisKey, address, 24, TimeUnit.HOURS);
                     return address;
                 } else {
 //                    return cache.get(ip);

@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 软件Service业务层处理
@@ -50,7 +51,7 @@ public class SysAppServiceImpl implements ISysAppService {
         List<SysApp> appList = sysAppMapper.selectSysAppList(new SysApp());
         for (SysApp app : appList) {
             if (StringUtils.isNotBlank(app.getAppKey())) {
-                redisCache.setCacheObject(CacheConstants.SYS_APP_KEY + app.getAppKey(), app);
+                redisCache.setCacheObject(CacheConstants.SYS_APP_KEY + app.getAppKey(), app, 24, TimeUnit.HOURS);
             }
         }
     }
@@ -77,7 +78,7 @@ public class SysAppServiceImpl implements ISysAppService {
         SysApp app = redisCache.getCacheObject(CacheConstants.SYS_APP_KEY + appKey);
         if (app == null) {
             app = sysAppMapper.selectSysAppByAppKey(appKey);
-            redisCache.setCacheObject(CacheConstants.SYS_APP_KEY + appKey, app);
+            redisCache.setCacheObject(CacheConstants.SYS_APP_KEY + appKey, app, 24, TimeUnit.HOURS);
         }
         return app;
     }
@@ -130,7 +131,7 @@ public class SysAppServiceImpl implements ISysAppService {
         int i = sysAppMapper.updateSysApp(sysApp);
         if (i > 0) {
             SysApp app = sysAppMapper.selectSysAppByAppId(sysApp.getAppId());
-            redisCache.setCacheObject(CacheConstants.SYS_APP_KEY + app.getAppKey(), app);
+            redisCache.setCacheObject(CacheConstants.SYS_APP_KEY + app.getAppKey(), app, 24, TimeUnit.HOURS);
         }
         return i;
     }
