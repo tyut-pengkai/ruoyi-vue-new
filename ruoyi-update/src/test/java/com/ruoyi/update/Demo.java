@@ -37,8 +37,8 @@ public class Demo {
     @Test
     public void testGenUpdateInfoJson() {
         try {
-            String versionName = "v1.3.0";
-            Long versionNo = 20230102210200L;
+            String versionName = "v1.4.0";
+            Long versionNo = 20230113153600L;
             String fullVersion = versionName + "_" + versionNo;
             UpdateEngine ue = new UpdateEngine();
             ArrayList<FileInfo> updateList = ue.getFileInfoList("D:\\网络验证\\红叶\\release\\红叶网络验证系统_" + fullVersion + "\\upload");

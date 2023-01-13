@@ -149,6 +149,17 @@
               <span>更新日志</span>
             </div>
             <el-collapse accordion>
+              <el-collapse-item title="v1.4.0 - 2023-01-13">
+                <ol>
+                  <li>
+                    新增：用户过期时间/剩余点数变动日志
+                  </li>
+                  <li>
+                    新增：按条件批量操作单码/卡密/软件用户
+                  </li>
+                  <li>优化：数据库自动升级优化</li>
+                </ol>
+              </el-collapse-item>
               <el-collapse-item title="v1.3.0 - 2023-01-02">
                 <ol>
                   <li>

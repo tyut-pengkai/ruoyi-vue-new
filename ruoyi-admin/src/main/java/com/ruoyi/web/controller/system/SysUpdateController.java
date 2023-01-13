@@ -1,6 +1,6 @@
 package com.ruoyi.web.controller.system;
 
-import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -298,8 +298,23 @@ public class SysUpdateController extends BaseController {
                         for (int i = 0; i < readySqlList.size(); i++) {
                             String sqlName = readySqlList.get(i);
                             log.info("正在执行(" + (i + 1) + "/" + readySqlList.size() + ")：" + sqlName);
-                            String sql = sqlMap.get(sqlName);
-                            publicSqlMapper.nativeSql(sql);
+                            String sqlStr = sqlMap.get(sqlName);
+                            sqlStr = sqlStr.replaceAll("\r\n", "\n");
+                            String[] split = sqlStr.split(";\n");
+                            for (int j = 0; j < split.length; j++) {
+                                String sql = split[j];
+                                if (!sql.endsWith(";")) {
+                                    sql += ";";
+                                }
+                                log.info("正在执行(" + (j + 1) + "/" + split.length + " | " + (i + 1) + "/" + readySqlList.size() + ")：" + sqlName);
+                                if (StringUtils.isNotBlank(sql)) {
+                                    try {
+                                        publicSqlMapper.nativeSql(sql.trim());
+                                    } catch (Exception e) {
+                                        log.warn("数据库执行异常警告：{}，sql：{}", e.getMessage(), sql);
+                                    }
+                                }
+                            }
                         }
                         log.info("数据库升级完毕");
                     } else {

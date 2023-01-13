@@ -1,9 +1,8 @@
-v1.3.0 - 2023-01-02
-修复：修复限开顶号无效的问题（感谢@挽时 摆烂中的摆烂王）
-修复：修复多客户端同时登录可能绕过多开限制的问题（感谢@挽时 摆烂中的摆烂王）
-新增：代理系统新增软件用户管理
-新增：APK快速接入增加模板皮肤选择并增加一个黑白登录皮肤
-优化：系统中的"年"时长由360天更改为365天
-优化：去除配置文件中【文件存储路径】的配置，由系统自动获取
-优化：远程文件下载链接不再限制下载次数，可自定义设置链接有效期，默认为1小时
-优化：单码被停用/删除后，对应软件用户将被停用（旧版本已使用的单码必须在软件用户中停用才生效）
+v1.4.0 - 2023-01-13
+新增：用户过期时间/剩余点数变动日志
+新增：按条件批量操作单码/卡密/软件用户
+优化：数据库自动升级优化
+
+<span style="color: red"><b>※※※注意：更新本版本后查看一下【验证管理】-【批量操作】中【对象】的选项是否为2个，如果不是2个则需要手动清除一下redis缓存，进入宝塔后台，选择【数据库】-【Redis】，右上角输入【sys_dict】并搜索，将搜索出的结果全选删除即可</b></span>
+
+<span style="color: red"><b>※※※注意：为确保自动升级成功，自动更新前请在application-config.yml文件中主库数据源的url配置在原有配置后新增【&allowMultiQueries=true】后手动重启，如原url值为【url: jdbc:mysql://127.0.0.1:3306/hywlyz?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8】，则修改为【url: jdbc:mysql://127.0.0.1:3306/hywlyz?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true】，否则请手动升级</b></span>
