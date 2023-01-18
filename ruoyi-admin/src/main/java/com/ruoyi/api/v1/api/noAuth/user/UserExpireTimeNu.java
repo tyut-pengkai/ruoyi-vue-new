@@ -26,7 +26,7 @@ public class UserExpireTimeNu extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("userExpireTime.nu", "获取用户过期时间", false, Constants.API_TAG_TIME,
+        this.setApi(new Api("userExpireTime.nu", "获取用户过期时间", false, Constants.API_TAG_ACCOUNT_TIME,
                 "获取用户过期时间", new AuthType[]{AuthType.ACCOUNT}, new BillType[]{BillType.TIME},
                 new Param[]{
                         new Param("username", true, "账号"),

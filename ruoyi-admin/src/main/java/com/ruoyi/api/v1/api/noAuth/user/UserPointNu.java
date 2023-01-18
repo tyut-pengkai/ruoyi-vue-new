@@ -25,7 +25,7 @@ public class UserPointNu extends Function {
 
     @Override
     public void init() {
-        this.setApi(new Api("userPoint.nu", "获取用户点数余额", false, Constants.API_TAG_POINT,
+        this.setApi(new Api("userPoint.nu", "获取用户点数余额", false, Constants.API_TAG_ACCOUNT_POINT,
                 "获取用户点数余额", new AuthType[]{AuthType.ACCOUNT}, new BillType[]{BillType.POINT},
                 new Param[]{
                         new Param("username", true, "账号"),
