@@ -180,6 +180,20 @@ public class SysAppUser extends BaseEntity {
     @Excel(name = "代理名称", targetAttr = "userName", type = Excel.Type.EXPORT)
     private SysUser agentUser;
 
+    /**
+     * 最后登录IP
+     */
+    @Excel(name = "最后登录IP", type = Excel.Type.EXPORT)
+    private String loginIp;
+
+    public String getLoginIp() {
+        return loginIp;
+    }
+
+    public void setLoginIp(String loginIp) {
+        this.loginIp = loginIp;
+    }
+
     public SysUser getAgentUser() {
         return agentUser;
     }

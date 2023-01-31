@@ -588,6 +588,7 @@ public class SysAppLoginService {
             SysAppUser user = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUserId());
             SysAppUser appUser = new SysAppUser();
             appUser.setAppUserId(user.getAppUserId());
+            appUser.setLoginIp(IpUtils.getIpAddr(ServletUtils.getRequest()));
             appUser.setLoginTimes(user.getLoginTimes() + 1);
             appUser.setLastLoginTime(nowDate);
             appUserService.updateSysAppUser(appUser);

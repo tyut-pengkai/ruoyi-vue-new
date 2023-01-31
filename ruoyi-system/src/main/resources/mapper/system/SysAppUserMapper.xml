@@ -34,6 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="unbindTimes" column="unbind_times"/>
         <result property="lastChargeCardId" column="last_charge_card_id"/>
         <result property="lastChargeTemplateId" column="last_charge_template_id"/>
+        <result property="loginIp" column="login_ip"/>
         <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
         <association property="agentUser" column="agent_id" javaType="SysUser" resultMap="SysAgentUserResult"/>
@@ -91,6 +92,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                au.last_charge_card_id,
                au.last_charge_template_id,
                au.agent_id,
+               au.login_ip,
                a.app_id,
                a.app_name,
                a.auth_type,
@@ -134,6 +136,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="point != null  and point != ''">and au.point = #{point}</if>
         <if test="lastChargeCardId != null ">and au.last_charge_card_id = #{lastChargeCardId}</if>
         <if test="lastChargeTemplateId != null ">and au.last_charge_template_id = #{lastChargeTemplateId}</if>
+        <if test="loginIp != null ">and au.login_ip = #{loginIp}</if>
         <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
             <!-- 数据范围过滤 -->
             ${params.dataScope}
@@ -176,6 +179,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="unbindTimes != null">unbind_times,</if>
             <if test="lastChargeCardId != null">last_charge_card_id,</if>
             <if test="lastChargeTemplateId != null">last_charge_template_id,</if>
+            <if test="loginIp != null">login_ip,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
@@ -206,6 +210,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="unbindTimes != null">#{unbindTimes},</if>
             <if test="lastChargeCardId != null">#{lastChargeCardId},</if>
             <if test="lastChargeTemplateId != null">#{lastChargeTemplateId},</if>
+            <if test="loginIp != null">#{loginIp},</if>
         </trim>
     </insert>
 
@@ -240,6 +245,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="unbindTimes != null">unbind_times = #{unbindTimes},</if>
             <if test="lastChargeCardId != null">last_charge_card_id = #{lastChargeCardId},</if>
             <if test="lastChargeTemplateId != null">last_charge_template_id = #{lastChargeTemplateId},</if>
+            <if test="loginIp != null">login_ip = #{loginIp},</if>
         </trim>
         where app_user_id = #{appUserId}
     </update>
