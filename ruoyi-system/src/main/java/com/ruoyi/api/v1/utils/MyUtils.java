@@ -2,6 +2,7 @@ package com.ruoyi.api.v1.utils;
 
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.enums.BatchOperationAppUserAddTimeStrategy;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -22,8 +23,12 @@ import java.util.List;
 public class MyUtils {
 
     public static Date getNewExpiredTimeAdd(Date oldExpiredTime, Long quota) {
+        return getNewExpiredTimeAdd(oldExpiredTime, quota, BatchOperationAppUserAddTimeStrategy.REAL_TIME);
+    }
+
+    public static Date getNewExpiredTimeAdd(Date oldExpiredTime, Long quota, BatchOperationAppUserAddTimeStrategy strategy) {
         Date now = DateUtils.getNowDate();
-        if (oldExpiredTime == null || oldExpiredTime.before(now)) {
+        if (oldExpiredTime == null || (oldExpiredTime.before(now) && strategy == BatchOperationAppUserAddTimeStrategy.REAL_TIME)) {
             oldExpiredTime = now;
         }
         if (quota == null) {

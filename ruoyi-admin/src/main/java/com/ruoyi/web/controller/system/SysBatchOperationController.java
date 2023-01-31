@@ -390,11 +390,17 @@ public class SysBatchOperationController extends BaseController {
                         }
                     }
                 } else if (vo.getOperationType() == BatchOperationType.ADD_TIME) {
+                    if (vo.getOperationAppUserAddTimeStrategy() == null) {
+                        return AjaxResult.success("基准时间不能为空");
+                    }
                     if (vo.getOperationValue() == null || Convert.toLong(vo.getOperationValue(), 0L) <= 0) {
                         return AjaxResult.success("参数必须为整数且大于0");
                     }
                     doAppUserAddTime(result, item, appUser, vo);
                 } else if (vo.getOperationType() == BatchOperationType.SUB_TIME) {
+                    if (vo.getOperationAppUserAddTimeStrategy() == null) {
+                        return AjaxResult.success("基准时间不能为空");
+                    }
                     if (vo.getOperationValue() == null || Convert.toLong(vo.getOperationValue(), 0L) <= 0) {
                         return AjaxResult.success("参数必须为整数且大于0");
                     }
@@ -840,11 +846,17 @@ public class SysBatchOperationController extends BaseController {
                         }
                     }
                 } else if (vo.getOperationType() == BatchOperationType.ADD_TIME) {
+                    if (vo.getOperationAppUserType() != BatchOperationAppUserType.VIP && vo.getOperationAppUserAddTimeStrategy() == null) {
+                        return AjaxResult.success("基准时间不能为空");
+                    }
                     if (vo.getOperationValue() == null || Convert.toLong(vo.getOperationValue(), 0L) <= 0) {
                         return AjaxResult.success("参数必须为整数且大于0");
                     }
                     doAppUserAddTime(result, item, appUser, vo);
                 } else if (vo.getOperationType() == BatchOperationType.SUB_TIME) {
+                    if (vo.getOperationAppUserType() != BatchOperationAppUserType.VIP && vo.getOperationAppUserAddTimeStrategy() == null) {
+                        return AjaxResult.success("基准时间不能为空");
+                    }
                     if (vo.getOperationValue() == null || Convert.toLong(vo.getOperationValue(), 0L) <= 0) {
                         return AjaxResult.success("参数必须为整数且大于0");
                     }
@@ -1037,7 +1049,7 @@ public class SysBatchOperationController extends BaseController {
                 if (appUser.getApp().getBillType() == BillType.TIME) {
                     SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
                     expireLog.setExpireTimeBefore(appUser.getExpireTime());
-                    Date newExpiredTime = MyUtils.getNewExpiredTimeAdd(appUser.getExpireTime(), Long.parseLong(vo.getOperationValue()));
+                    Date newExpiredTime = MyUtils.getNewExpiredTimeAdd(appUser.getExpireTime(), Long.parseLong(vo.getOperationValue()), vo.getOperationAppUserAddTimeStrategy());
                     appUser.setExpireTime(newExpiredTime);
                     SysAppUser newAppUser = new SysAppUser();
                     newAppUser.setAppUserId(appUser.getAppUserId());
