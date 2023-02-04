@@ -40,6 +40,7 @@ public class AppUserInfo extends Function {
                                 new RespItem(Resp.DataType.integer, "cardLoginLimitM", "由卡密继承来的同时在线设备数限制"),
                                 new RespItem(Resp.DataType.integer, "loginTimes", "用户登录次数"),
                                 new RespItem(Resp.DataType.string, "lastLoginTime", "最近登录时间"),
+                                new RespItem(Resp.DataType.string, "loginIp", "最近登录IP"),
                                 new RespItem(Resp.DataType.number, "freeBalance", "当前无实际作用"),
                                 new RespItem(Resp.DataType.number, "payBalance", "当前无实际作用"),
                                 new RespItem(Resp.DataType.number, "freePayment", "当前无实际作用"),

@@ -585,15 +585,23 @@
             </el-col>
           </el-form-item>
           <el-form-item prop="">
-            <el-col :span="12">
+            <el-col :span="8">
               <el-form-item label="总登录次数" prop="loginTimes">
                 {{ form.loginTimes ? form.loginTimes + "次" : "从未登录过" }}
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="8">
               <el-form-item label="最近登录时间" prop="lastLoginTime">
                 <div v-if="form.lastLoginTime">
                   {{ form.lastLoginTime }}
+                </div>
+                <div v-else>从未登录过</div>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="最近登录IP" prop="loginIp">
+                <div v-if="form.loginIp">
+                  {{ form.loginIp }}
                 </div>
                 <div v-else>从未登录过</div>
               </el-form-item>
