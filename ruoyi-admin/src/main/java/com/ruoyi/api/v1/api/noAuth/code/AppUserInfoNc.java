@@ -1,0 +1,70 @@
+package com.ruoyi.api.v1.api.noAuth.code;
+
+import com.ruoyi.api.v1.constants.Constants;
+import com.ruoyi.api.v1.domain.*;
+import com.ruoyi.api.v1.domain.vo.SysAppUserVo;
+import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.enums.AuthType;
+import com.ruoyi.common.enums.ErrorCode;
+import com.ruoyi.common.exception.ApiException;
+import com.ruoyi.system.service.ISysAppUserService;
+
+import javax.annotation.Resource;
+
+public class AppUserInfoNc extends Function {
+
+    @Resource
+    private ISysAppUserService appUserService;
+
+    @Override
+    public void init() {
+        this.setApi(new Api("appUserInfo.nc", "获取用户信息", false, Constants.API_TAG_CODE,
+                "获取用户信息", new AuthType[]{AuthType.LOGIN_CODE}, Constants.BILL_TYPE_ALL, new Param[]{
+                new Param("loginCode", true, "单码")
+        },
+                new Resp(Resp.DataType.object, null,
+                        new RespItem[]{
+                                new RespItem(Resp.DataType.string, "expireTime", "用户过期时间，计时模式下有效"),
+                                new RespItem(Resp.DataType.integer, "point", "用户剩余点数，计点模式下有效"),
+                                new RespItem(Resp.DataType.string, "status", "用户状态，0为正常"),
+                                new RespItem(Resp.DataType.integer, "loginLimitU", "同时在线用户数限制"),
+                                new RespItem(Resp.DataType.integer, "loginLimitM", "同时在线设备数限制"),
+                                new RespItem(Resp.DataType.integer, "cardLoginLimitU", "由卡密继承来的同时在线用户数限制"),
+                                new RespItem(Resp.DataType.integer, "cardLoginLimitM", "由卡密继承来的同时在线设备数限制"),
+                                new RespItem(Resp.DataType.integer, "loginTimes", "用户登录次数"),
+                                new RespItem(Resp.DataType.string, "lastLoginTime", "最近登录时间"),
+                                new RespItem(Resp.DataType.string, "loginIp", "最近登录IP"),
+                                new RespItem(Resp.DataType.number, "freeBalance", "当前无实际作用"),
+                                new RespItem(Resp.DataType.number, "payBalance", "当前无实际作用"),
+                                new RespItem(Resp.DataType.number, "freePayment", "当前无实际作用"),
+                                new RespItem(Resp.DataType.number, "payPayment", "当前无实际作用"),
+                                new RespItem(Resp.DataType.string, "cardCustomParams", "由卡密继承来的自定义参数"),
+                                new RespItem(Resp.DataType.string, "remark", "备注信息"),
+//                                new RespItem(Resp.DataType.object, "userInfo", "账号信息，账号模式下有效",
+//                                        new RespItem[]{
+//                                                new RespItem(Resp.DataType.string, "avatar", "头像"),
+//                                                new RespItem(Resp.DataType.string, "userName", "用户名"),
+//                                                new RespItem(Resp.DataType.string, "nickName", "用户昵称"),
+//                                                new RespItem(Resp.DataType.string, "sex", "性别，0男1女2未知"),
+//                                                new RespItem(Resp.DataType.string, "phonenumber", "手机号码"),
+//                                                new RespItem(Resp.DataType.string, "email", "邮箱"),
+//                                                new RespItem(Resp.DataType.bool, "admin", "是否为管理员账号"),
+//                                                new RespItem(Resp.DataType.number, "availablePayBalance", "可用余额"),
+//                                                new RespItem(Resp.DataType.number, "freezePayBalance", "冻结余额"),
+//                                                new RespItem(Resp.DataType.string, "loginDate", "最近登录时间"),
+//                                                new RespItem(Resp.DataType.string, "loginIp", "最近登录IP"),
+//                                        }),
+                                new RespItem(Resp.DataType.string, "loginCode", "单码信息，单码模式下有效"),
+                        })));
+    }
+
+    @Override
+    public Object handle() {
+        String loginCodeStr = this.getParams().get("loginCode");
+        SysAppUser appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(getApp().getAppId(), loginCodeStr);
+        if (appUser == null) {
+            throw new ApiException(ErrorCode.ERROR_APP_USER_NOT_EXIST);
+        }
+        return new SysAppUserVo(appUser);
+    }
+}
