@@ -1,7 +1,6 @@
 package com.ruoyi.common.core.domain.entity;
 
 import com.ruoyi.common.annotation.Excel;
-import com.ruoyi.common.annotation.Excel.ColumnType;
 import com.ruoyi.common.annotation.Excel.Type;
 import com.ruoyi.common.annotation.Excels;
 import com.ruoyi.common.core.domain.BaseEntity;
@@ -27,7 +26,7 @@ public class SysUser extends BaseEntity {
     /**
      * 用户ID
      */
-    @Excel(name = "用户序号", cellType = ColumnType.NUMERIC, prompt = "用户编号")
+//    @Excel(name = "用户序号", cellType = ColumnType.NUMERIC, prompt = "用户编号")
     private Long userId;
 
     /**
@@ -63,7 +62,7 @@ public class SysUser extends BaseEntity {
     /**
      * 用户性别
      */
-    @Excel(name = "用户性别", readConverterExp = "0=男,1=女,2=未知")
+    @Excel(name = "用户性别", readConverterExp = "0=男,1=女,2=未知", combo = {"男", "女", "未知"})
     private String sex;
 
     /**
@@ -77,9 +76,9 @@ public class SysUser extends BaseEntity {
     private String password;
 
     /**
-     * 帐号状态（0正常 1停用）
+     * 账号状态（0正常 1停用）
      */
-    @Excel(name = "帐号状态", readConverterExp = "0=正常,1=停用")
+    @Excel(name = "账号状态", readConverterExp = "0=正常,1=停用", combo = {"正常", "停用"})
     private String status;
 
     /**
@@ -109,39 +108,33 @@ public class SysUser extends BaseEntity {
     private SysDept dept;
 
     /**
-     * 免费余额
+     * 可用免费余额
      */
-    @Excel(name = "可用免费余额")
     private BigDecimal availableFreeBalance;
 
     /**
-     * 免费余额
+     * 冻结免费余额
      */
-    @Excel(name = "冻结免费余额")
     private BigDecimal freezeFreeBalance;
 
     /**
-     * 支付余额
+     * 可用支付余额
      */
-    @Excel(name = "可用支付余额")
     private BigDecimal availablePayBalance;
 
     /**
-     * 支付余额
+     * 冻结支付余额
      */
-    @Excel(name = "冻结支付余额")
     private BigDecimal freezePayBalance;
 
     /**
      * 免费消费
      */
-    @Excel(name = "免费消费")
     private BigDecimal freePayment;
 
     /**
      * 支付消费
      */
-    @Excel(name = "支付消费")
     private BigDecimal payPayment;
 
     /**

@@ -7,16 +7,17 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.service.ISysCardService;
 import com.ruoyi.system.service.ISysCardTemplateService;
+import com.ruoyi.utils.poi.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +58,23 @@ public class SysCardController extends BaseController {
         List<SysCard> list = sysCardService.selectSysCardList(sysCard);
         ExcelUtil<SysCard> util = new ExcelUtil<SysCard>(SysCard.class);
         return util.exportExcel(list, "卡密数据");
+    }
+
+//    @Log(title = "卡密", businessType = BusinessType.IMPORT)
+//    @PreAuthorize("@ss.hasPermi('system:card:import')")
+//    @PostMapping("/importData")
+//    public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception {
+//        ExcelUtil<SysCard> util = new ExcelUtil<SysCard>(SysCard.class);
+//        List<SysCard> cardList = util.importExcel(file.getInputStream());
+//        String operName = getUsername();
+//        String message = sysCardService.importCard(cardList, updateSupport, operName);
+//        return AjaxResult.success(message);
+//    }
+
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response) {
+        ExcelUtil<SysCard> util = new ExcelUtil<SysCard>(SysCard.class);
+        util.importTemplateExcel(response, "卡密数据");
     }
 
     /**

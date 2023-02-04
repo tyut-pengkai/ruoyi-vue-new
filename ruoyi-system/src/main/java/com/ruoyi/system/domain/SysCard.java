@@ -30,7 +30,6 @@ public class SysCard extends BaseEntity {
     /**
      * 软件ID
      */
-    @Excel(name = "软件ID")
     private Long appId;
 
     /**
@@ -73,19 +72,19 @@ public class SysCard extends BaseEntity {
     /**
      * 是否售出
      */
-    @Excel(name = "是否售出")
+    @Excel(name = "是否售出", dictType = "sys_yes_no")
     private String isSold;
 
     /**
      * 是否上架
      */
-    @Excel(name = "是否上架")
+    @Excel(name = "是否上架", dictType = "sys_yes_no")
     private String onSale;
 
     /**
      * 是否被充值
      */
-    @Excel(name = "是否被充值")
+    @Excel(name = "是否被充值", dictType = "sys_yes_no")
     private String isCharged;
 
     /**
@@ -103,25 +102,25 @@ public class SysCard extends BaseEntity {
     /**
      * 卡密状态
      */
-    @Excel(name = "卡密状态")
+    @Excel(name = "卡密状态", dictType = "sys_normal_disable")
     private String status;
 
     /**
      * 充值规则
      */
-    @Excel(name = "充值规则")
+    @Excel(name = "充值规则", dictType = "sys_charge_rule")
     private ChargeRule chargeRule;
 
     /**
-     * 是否被充值
+     * 是否代理制卡
      */
-    @Excel(name = "是否代理制卡")
+    @Excel(name = "是否代理制卡", dictType = "sys_yes_no")
     private String isAgent;
 
     /**
      * 所属软件信息
      */
-    @Excel(name = "软件名称", targetAttr = "appName", type = Excel.Type.EXPORT)
+    @Excel(name = "软件名称", targetAttr = "appName")
     private SysApp app;
 
     /**
@@ -138,13 +137,13 @@ public class SysCard extends BaseEntity {
     /**
      * 登录用户数量限制，整数，-1为不限制，默认为-1
      */
-    @Excel(name = "由卡密继承来的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2")
+    @Excel(name = "登录用户数量限制(卡)", prompt = "由卡密继承来的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2")
     private Integer cardLoginLimitU;
 
     /**
      * 登录机器数量限制，整数，-1为不限制，默认为-1
      */
-    @Excel(name = "由卡密继承来的登录机器数量限制，整数，-1为不限制，-2为不生效，默认为-2")
+    @Excel(name = "登录机器数量限制(卡)", prompt = "由卡密继承来的登录机器数量限制，整数，-1为不限制，-2为不生效，默认为-2")
     private Integer cardLoginLimitM;
 
     /**
@@ -161,7 +160,7 @@ public class SysCard extends BaseEntity {
 
     private Long agentId;
 
-    @Excel(name = "代理名称", targetAttr = "userName", type = Excel.Type.EXPORT)
+    @Excel(name = "所属代理名称", targetAttr = "userName")
     private SysUser agentUser;
 
     public SysUser getAgentUser() {

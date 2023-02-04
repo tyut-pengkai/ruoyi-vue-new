@@ -177,7 +177,7 @@ public class SysAppUser extends BaseEntity {
 
     private Long agentId;
 
-    @Excel(name = "代理名称", targetAttr = "userName", type = Excel.Type.EXPORT)
+    @Excel(name = "代理用户", targetAttr = "userName", type = Excel.Type.EXPORT)
     private SysUser agentUser;
 
     /**
