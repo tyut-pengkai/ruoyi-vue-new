@@ -11,7 +11,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 public class RuoYiServletInitializer extends SpringBootServletInitializer
 {
     @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application)//12345222ddd444
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application)//123452eee22ddd444
     {
         return application.sources(RuoYiApplication.class);
     }
