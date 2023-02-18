@@ -15,6 +15,7 @@ import com.ruoyi.utils.poi.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -60,16 +61,16 @@ public class SysCardController extends BaseController {
         return util.exportExcel(list, "卡密数据");
     }
 
-//    @Log(title = "卡密", businessType = BusinessType.IMPORT)
-//    @PreAuthorize("@ss.hasPermi('system:card:import')")
-//    @PostMapping("/importData")
-//    public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception {
-//        ExcelUtil<SysCard> util = new ExcelUtil<SysCard>(SysCard.class);
-//        List<SysCard> cardList = util.importExcel(file.getInputStream());
-//        String operName = getUsername();
-//        String message = sysCardService.importCard(cardList, updateSupport, operName);
-//        return AjaxResult.success(message);
-//    }
+    @Log(title = "卡密", businessType = BusinessType.IMPORT)
+    @PreAuthorize("@ss.hasPermi('system:card:import')")
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception {
+        ExcelUtil<SysCard> util = new ExcelUtil<>(SysCard.class);
+        List<SysCard> cardList = util.importExcel(file.getInputStream());
+        String operName = getUsername();
+        String message = sysCardService.importCard(cardList, updateSupport, operName);
+        return AjaxResult.success(message);
+    }
 
     @PostMapping("/importTemplate")
     public void importTemplate(HttpServletResponse response) {

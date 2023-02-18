@@ -223,4 +223,15 @@ public class SysAppServiceImpl implements ISysAppService {
         }
         app.setApiUrl(url + pathMapping + "/api/v1/" + app.getAppKey());
     }
+
+    /**
+     * 查询软件
+     *
+     * @param appName 软件名称
+     * @return 软件
+     */
+    @Override
+    public SysApp selectSysAppByAppName(String appName) {
+        return sysAppMapper.selectSysAppByAppName(appName);
+    }
 }

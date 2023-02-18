@@ -97,4 +97,12 @@ public interface ISysAppService {
      * @param app
      */
     public void setApiUrl(SysApp app);
+
+    /**
+     * 查询软件
+     *
+     * @param appName 软件名称
+     * @return 软件
+     */
+    public SysApp selectSysAppByAppName(String appName);
 }

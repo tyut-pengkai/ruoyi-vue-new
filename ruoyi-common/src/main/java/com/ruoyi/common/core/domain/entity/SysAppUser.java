@@ -21,68 +21,62 @@ public class SysAppUser extends BaseEntity {
     /**
      * 用户ID
      */
-    @Excel(name = "用户ID")
     private Long userId;
 
     /**
      * 软件ID
      */
-    @Excel(name = "软件ID")
     private Long appId;
 
     /**
      * 状态（0正常 1停用）
      */
-    @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
+    @Excel(name = "状态", readConverterExp = "0=正常,1=停用", combo = {"正常", "停用"})
     private String status;
 
     /**
      * 登录用户数量限制，整数，-1为不限制，默认为-1
      */
-    @Excel(name = "登录用户数量限制，整数，-1为不限制，默认为-1")
+    @Excel(name = "登录用户数量限制", prompt = "整数，-1为不限制，默认为-1")
     private Integer loginLimitU;
 
     /**
      * 登录机器数量限制，整数，-1为不限制，默认为-1
      */
-    @Excel(name = "登录机器数量限制，整数，-1为不限制，默认为-1")
+    @Excel(name = "登录机器数量限制", prompt = "整数，-1为不限制，默认为-1")
     private Integer loginLimitM;
 
     /**
      * 免费余额
      */
-    @Excel(name = "免费余额")
     private BigDecimal freeBalance;
 
     /**
      * 支付余额
      */
-    @Excel(name = "支付余额")
     private BigDecimal payBalance;
 
     /**
      * 免费消费
      */
-    @Excel(name = "免费消费")
     private BigDecimal freePayment;
 
     /**
      * 支付消费
      */
-    @Excel(name = "支付消费")
     private BigDecimal payPayment;
 
     /**
      * 最后登录时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Excel(name = "最后登录时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "最后登录时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", type = Excel.Type.EXPORT)
     private Date lastLoginTime;
 
     /**
      * 登录次数
      */
-    @Excel(name = "登录次数")
+    @Excel(name = "登录次数", type = Excel.Type.EXPORT)
     private Long loginTimes;
 
     /**
@@ -94,13 +88,13 @@ public class SysAppUser extends BaseEntity {
      * 过期时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Excel(name = "过期时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "用户过期时间", prompt = "对应用户的过期时间，仅计时模式", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date expireTime;
 
     /**
      * 剩余点数
      */
-    @Excel(name = "剩余点数")
+    @Excel(name = "用户剩余点数", prompt = "对应用户的剩余点数，仅计点模式")
     private BigDecimal point;
 
     /**
@@ -113,7 +107,7 @@ public class SysAppUser extends BaseEntity {
      * 所属账号信息
      */
     @Excels({
-            @Excel(name = "用户账号", targetAttr = "userName", type = Excel.Type.EXPORT),
+            @Excel(name = "用户账号", targetAttr = "userName"),
             @Excel(name = "用户昵称", targetAttr = "nickName", type = Excel.Type.EXPORT)
     })
     private SysUser user;
@@ -137,13 +131,13 @@ public class SysAppUser extends BaseEntity {
     /**
      * 登录用户数量限制，整数，-1为不限制，默认为-1
      */
-    @Excel(name = "由卡密继承来的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2")
+    @Excel(name = "登录用户数量限制(卡)", prompt = "由卡密继承来的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2")
     private Integer cardLoginLimitU;
 
     /**
      * 登录机器数量限制，整数，-1为不限制，默认为-1
      */
-    @Excel(name = "由卡密继承来的登录机器数量限制，整数，-1为不限制，-2为不生效，默认为-2")
+    @Excel(name = "登录机器数量限制(卡)", prompt = "由卡密继承来的登录机器数量限制，整数，-1为不限制，-2为不生效，默认为-2")
     private Integer cardLoginLimitM;
 
     /**
@@ -163,6 +157,7 @@ public class SysAppUser extends BaseEntity {
     /**
      * 可解绑次数
      */
+    @Excel(name = "可解绑次数")
     private Integer unbindTimes;
 
     /**
@@ -177,7 +172,7 @@ public class SysAppUser extends BaseEntity {
 
     private Long agentId;
 
-    @Excel(name = "代理用户", targetAttr = "userName", type = Excel.Type.EXPORT)
+    @Excel(name = "所属代理账号", targetAttr = "userName")
     private SysUser agentUser;
 
     /**

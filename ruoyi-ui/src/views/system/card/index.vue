@@ -236,8 +236,20 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:card:remove']"
-          >删除</el-button
+        >删除
+        </el-button
         >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          v-hasPermi="['system:card:import']"
+          icon="el-icon-upload2"
+          plain
+          size="mini"
+          type="info"
+          @click="handleImport"
+        >导入
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -817,7 +829,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="所属代理" prop="agentId">
-                <span v-if="form.agentUser">
+                <span v-if="form.agentUser && form.agentUser.userName">
                   {{ form.agentUser.nickName }} ({{ form.agentUser.userName }})
                 </span>
               </el-form-item>
@@ -1023,6 +1035,48 @@
         <el-button @click="cancelBatch">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 卡密导入对话框 -->
+    <el-dialog
+      :title="upload.title"
+      :visible.sync="upload.open"
+      append-to-body
+      width="400px"
+    >
+      <el-upload
+        ref="upload"
+        :action="upload.url + '?updateSupport=' + upload.updateSupport"
+        :auto-upload="false"
+        :disabled="upload.isUploading"
+        :headers="upload.headers"
+        :limit="1"
+        :on-progress="handleFileUploadProgress"
+        :on-success="handleFileSuccess"
+        accept=".xlsx, .xls"
+        drag
+      >
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div slot="tip" class="el-upload__tip text-center">
+          <!-- <div class="el-upload__tip" slot="tip">
+            <el-checkbox v-model="upload.updateSupport" />
+            是否更新已经存在的用户数据
+          </div> -->
+          <span>仅允许导入xls、xlsx格式文件。</span>
+          <el-link
+            :underline="false"
+            style="font-size: 12px; vertical-align: baseline"
+            type="primary"
+            @click="importTemplate"
+          >下载模板
+          </el-link>
+        </div>
+      </el-upload>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFileForm">确 定</el-button>
+        <el-button @click="upload.open = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -1034,6 +1088,7 @@ import Updown from "@/components/Updown";
 import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
 import {getCardTemplate, listCardTemplateAll,} from "@/api/system/cardTemplate";
 import Clipboard from "clipboard";
+import {getToken} from "@/utils/auth";
 
 export default {
   name: "Card",
@@ -1077,6 +1132,21 @@ export default {
       batchOpen: false,
       // 备注时间范围
       daterangeExpireTime: [],
+      // 卡密导入参数
+      upload: {
+        // 是否显示弹出层（卡密导入）
+        open: false,
+        // 弹出层标题（卡密导入）
+        title: "",
+        // 是否禁用上传
+        isUploading: false,
+        // 是否更新已经存在的卡密数据
+        updateSupport: 0,
+        // 设置上传的请求头部
+        headers: {Authorization: "Bearer " + getToken()},
+        // 上传的地址
+        url: process.env.VUE_APP_BASE_API + "/system/card/importData",
+      },
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -1473,7 +1543,43 @@ export default {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {});
+        .catch(() => {
+        });
+    },
+    /** 导入按钮操作 */
+    handleImport() {
+      this.upload.title = "卡密导入";
+      this.upload.open = true;
+    },
+    /** 下载模板操作 */
+    importTemplate() {
+      this.download(
+        "system/card/importTemplate",
+        {},
+        `card_template_${new Date().getTime()}.xlsx`
+      );
+    },
+    // 文件上传中处理
+    handleFileUploadProgress(event, file, fileList) {
+      this.upload.isUploading = true;
+    },
+    // 文件上传成功处理
+    handleFileSuccess(response, file, fileList) {
+      this.upload.open = false;
+      this.upload.isUploading = false;
+      this.$refs.upload.clearFiles();
+      this.$alert(
+        "<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" +
+        response.msg +
+        "</div>",
+        "导入结果",
+        {dangerouslyUseHTMLString: true}
+      );
+      this.getList();
+    },
+    // 提交上传文件
+    submitFileForm() {
+      this.$refs.upload.submit();
     },
     handleQuota(totalSeconds) {
       this.form.quota = totalSeconds;
@@ -1576,7 +1682,7 @@ export default {
         clipboard.destroy();
       });
     },
-    download(filename, text) {
+    downloadRecords(filename, text) {
       var pom = document.createElement("a");
       pom.setAttribute(
         "href",
@@ -1654,7 +1760,7 @@ export default {
       } else {
         content = this.cardSimpleStr;
       }
-      this.download(
+      this.downloadRecords(
         "save_" + this.dateFormat(new Date(), "yyyyMMddHHmmss") + ".txt",
         content
       );

@@ -208,4 +208,15 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
     private String genPass(Integer length, GenRule genRule, String pattern) {
         return generate(length, genRule, pattern);
     }
+
+    /**
+     * 查询卡密模板
+     *
+     * @param appId        APP主键
+     * @param templateName 卡类名称
+     * @return 卡密模板
+     */
+    public SysCardTemplate selectSysCardTemplateByAppIdAndTemplateName(Long appId, String templateName) {
+        return sysCardTemplateMapper.selectSysCardTemplateByAppIdAndTemplateName(appId, templateName);
+    }
 }

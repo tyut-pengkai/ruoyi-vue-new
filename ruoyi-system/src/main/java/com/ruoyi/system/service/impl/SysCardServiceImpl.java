@@ -1,30 +1,53 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.annotation.DataScope;
+import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.domain.entity.SysApp;
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.system.domain.SysCard;
+import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.mapper.SysCardMapper;
+import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysCardService;
 import com.ruoyi.system.service.ISysCardTemplateService;
+import com.ruoyi.system.service.ISysUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.validation.Validator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 卡密Service业务层处理
- * 
+ *
  * @author zwgu
  * @date 2021-12-03
  */
 @Service
-public class SysCardServiceImpl implements ISysCardService 
-{
+public class SysCardServiceImpl implements ISysCardService {
+    private static final Logger log = LoggerFactory.getLogger(SysCardServiceImpl.class);
+
     @Autowired
     private SysCardMapper sysCardMapper;
+    @Autowired
+    protected Validator validator;
     @Resource
     private ISysCardTemplateService sysCardTemplateService;
+    @Resource
+    private ISysAppService sysAppService;
+    @Resource
+    private ISysUserService sysUserService;
 
     /**
      * 查询卡密
@@ -146,10 +169,119 @@ public class SysCardServiceImpl implements ISysCardService
     /**
      * 新增卡密
      *
-     * @param sysCardList
+     * @param sysCardList 卡密列表
      */
     @Override
     public int insertSysCardBatch(List<SysCard> sysCardList) {
         return sysCardMapper.insertSysCardBatch(sysCardList);
+    }
+
+    /**
+     * 导入卡密数据
+     *
+     * @param cardList        卡密数据列表
+     * @param isUpdateSupport 是否更新支持，如果已存在，则进行更新数据
+     * @param operName        操作用户
+     * @return 结果
+     */
+    public String importCard(List<SysCard> cardList, Boolean isUpdateSupport, String operName) {
+        if (StringUtils.isNull(cardList) || cardList.size() == 0) {
+            throw new ServiceException("导入卡密数据不能为空！");
+        }
+        int successNum = 0;
+        int failureNum = 0;
+        StringBuilder successMsg = new StringBuilder();
+        StringBuilder failureMsg = new StringBuilder();
+        Map<String, SysApp> appMap = new HashMap<>();
+        Map<String, SysCardTemplate> templateMap = new HashMap<>();
+        Date nowDate = DateUtils.getNowDate();
+        for (SysCard card : cardList) {
+            if (card.getExpireTime() == null) {
+                card.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE));
+            }
+            if (!UserConstants.YES.equals(card.getIsCharged())) {
+                card.setChargeTime(null);
+            } else if (card.getChargeTime() == null) {
+                card.setChargeTime(nowDate);
+            }
+            card.setCreateTime(nowDate);
+            card.setCreateBy(SecurityUtils.getUsername());
+            try {
+                // 验证软件是否存在
+                SysApp app;
+                String appName = card.getApp().getAppName();
+                if (StringUtils.isNotBlank(appName)) {
+                    if (appMap.containsKey(appName)) {
+                        app = appMap.get(appName);
+                    } else {
+                        app = sysAppService.selectSysAppByAppName(appName);
+                        if (app != null) {
+                            appMap.put(appName, app);
+                        }
+                    }
+                    if (app != null) {
+                        // 验证卡类是否存在
+                        String templateName = card.getCardName();
+                        SysCardTemplate template;
+                        if (templateMap.containsKey(appName + "|" + templateName)) {
+                            template = templateMap.get(templateName);
+                        } else {
+                            template = sysCardTemplateService.selectSysCardTemplateByAppIdAndTemplateName(app.getAppId(), templateName);
+                            if (template != null) {
+                                templateMap.put(appName + "|" + templateName, template);
+                            }
+                        }
+                        if (template != null) {
+                            // 验证卡密是否存在
+                            SysCard card1 = selectSysCardByAppIdAndCardNo(app.getAppId(), card.getCardNo());
+                            if (card1 == null) {
+                                BeanValidators.validateWithException(validator, card);
+                                card.setTemplateId(template.getTemplateId());
+                                card.setAppId(app.getAppId());
+                                boolean errFlag = false;
+                                if (UserConstants.YES.equals(card.getIsAgent()) && card.getAgentUser() != null && StringUtils.isNotBlank(card.getAgentUser().getUserName())) {
+                                    // 验证代理是否存在
+                                    String agentUserName = card.getAgentUser().getUserName();
+                                    SysUser agentUser = sysUserService.selectUserByUserName(agentUserName);
+                                    if (agentUser != null) {
+                                        card.setAgentId(agentUser.getUserId());
+                                    } else {
+                                        errFlag = true;
+                                        failureNum++;
+                                        failureMsg.append("<br/>" + failureNum + "、卡密[" + card.getCardNo() + "]导入失败：代理[" + agentUserName + "]不存在");
+                                    }
+                                }
+                                if (!errFlag) {
+                                    this.insertSysCard(card);
+                                    successNum++;
+                                    successMsg.append("<br/>" + successNum + "、卡密[" + card.getCardNo() + "]导入成功");
+                                }
+                            } else {
+                                failureNum++;
+                                failureMsg.append("<br/>" + failureNum + "、卡密[" + card.getCardNo() + "]导入失败：卡号已存在");
+                            }
+                        } else {
+                            failureNum++;
+                            failureMsg.append("<br/>" + failureNum + "、卡密[" + card.getCardNo() + "]导入失败：卡类[" + templateName + "]不存在");
+                        }
+                    } else {
+                        failureNum++;
+                        failureMsg.append("<br/>" + failureNum + "、卡密[" + card.getCardNo() + "]导入失败：软件[" + appName + "]不存在");
+                    }
+                }
+            } catch (Exception e) {
+                failureNum++;
+                String msg = "<br/>" + failureNum + "、卡密[" + card.getCardNo() + "]导入失败：";
+                failureMsg.append(msg + e.getMessage());
+                log.error(msg, e);
+            }
+        }
+        if (failureNum > 0) {
+            failureMsg.insert(0, "很抱歉，导入失败！共 " + failureNum + " 条数据不正确，错误如下：");
+            throw new ServiceException(failureMsg.toString());
+        } else {
+            successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
+        }
+        return successMsg.toString();
     }
 }

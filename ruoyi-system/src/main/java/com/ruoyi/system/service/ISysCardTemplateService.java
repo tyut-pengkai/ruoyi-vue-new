@@ -70,4 +70,13 @@ public interface ISysCardTemplateService
      * @return
      */
     public List<SysCard> genSysCardBatch(SysCardTemplate sysCardTemplate, Integer genQuantity, String onSale, String isAgent, String remark);
+
+    /**
+     * 查询卡密模板
+     *
+     * @param appId        APP主键
+     * @param templateName 卡类名称
+     * @return 卡密模板
+     */
+    public SysCardTemplate selectSysCardTemplateByAppIdAndTemplateName(Long appId, String templateName);
 }

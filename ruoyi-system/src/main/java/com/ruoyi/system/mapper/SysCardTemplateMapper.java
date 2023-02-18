@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.system.domain.SysCardTemplate;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -61,4 +62,13 @@ public interface SysCardTemplateMapper
      * @return 结果
      */
     public int deleteSysCardTemplateByTemplateIds(Long[] templateIds);
+
+    /**
+     * 查询卡密模板
+     *
+     * @param appId        APP主键
+     * @param templateName 卡类名称
+     * @return 卡密模板
+     */
+    public SysCardTemplate selectSysCardTemplateByAppIdAndTemplateName(@Param("appId") Long appId, @Param("templateName") String templateName);
 }

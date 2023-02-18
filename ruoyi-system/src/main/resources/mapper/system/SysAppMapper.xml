@@ -375,4 +375,9 @@
 		<if test="appId != null and appId != ''">and app_id != #{appId}</if>
 		limit 1
 	</select>
+
+	<select id="selectSysAppByAppName" parameterType="String" resultMap="SysAppResult">
+		<include refid="selectSysAppVo"/>
+		where app_name = #{appName}
+	</select>
 </mapper>

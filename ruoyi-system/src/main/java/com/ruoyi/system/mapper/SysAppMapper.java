@@ -78,4 +78,12 @@ public interface SysAppMapper
      * @return 软件
      */
     public SysApp selectSysAppByAppKey(String appKey);
+
+    /**
+     * 查询软件
+     *
+     * @param appName 软件名称
+     * @return 软件
+     */
+    public SysApp selectSysAppByAppName(String appName);
 }

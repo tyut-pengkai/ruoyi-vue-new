@@ -243,4 +243,9 @@
             #{templateId}
         </foreach>
     </delete>
+
+    <select id="selectSysCardTemplateByAppIdAndTemplateName" resultMap="SysCardTemplateResult">
+        <include refid="selectSysCardTemplateVo"/>
+        where ct.app_id = #{appId} and ct.card_name = #{templateName}
+    </select>
 </mapper>

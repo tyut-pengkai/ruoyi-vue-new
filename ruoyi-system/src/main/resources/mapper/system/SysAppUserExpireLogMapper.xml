@@ -98,23 +98,23 @@
     <select id="selectSysAppUserExpireLogList" parameterType="SysAppUserExpireLog"
             resultMap="SysAppUserExpireLogResult">
         <include refid="selectSysAppUserExpireLogVo"/>
-        <where>
-            <if test="userName != null ">and (u.nick_name like concat('%', #{userName}, '%') or u.user_name like
-                concat('%', #{userName}, '%') or au.login_code like concat('%', #{userName}, '%'))
-            </if>
-            <if test="appId != null ">and auel.app_id = #{appId}</if>
-            <if test="appUserId != null ">and auel.app_user_id = #{appUserId}</if>
-            <if test="changeAmount != null ">and auel.change_amount = #{changeAmount}</if>
-            <if test="changeType != null">and auel.change_type = #{changeType}</if>
-            <if test="expireTimeAfter != null ">and auel.expire_time_after = #{expireTimeAfter}</if>
-            <if test="expireTimeBefore != null ">and auel.expire_time_before = #{expireTimeBefore}</if>
-            <if test="pointAfter != null ">and auel.point_after = #{pointAfter}</if>
-            <if test="pointBefore != null ">and auel.point_before = #{pointBefore}</if>
-            <if test="changeDesc != null  and changeDesc != ''">and auel.change_desc = #{changeDesc}</if>
-            <if test="templateId != null ">and auel.template_id = #{templateId}</if>
-            <if test="cardId != null ">and auel.card_id = #{cardId}</if>
-            <if test="cardNo != null ">and auel.card_no = #{cardNo}</if>
-        </where>
+        where auel.del_flag = '0'
+        <if test="userName != null ">and (u.nick_name like concat('%', #{userName}, '%') or u.user_name like
+            concat('%', #{userName}, '%') or au.login_code like concat('%', #{userName}, '%'))
+        </if>
+        <if test="appId != null ">and auel.app_id = #{appId}</if>
+        <if test="appUserId != null ">and auel.app_user_id = #{appUserId}</if>
+        <if test="changeAmount != null ">and auel.change_amount = #{changeAmount}</if>
+        <if test="changeType != null">and auel.change_type = #{changeType}</if>
+        <if test="expireTimeAfter != null ">and auel.expire_time_after = #{expireTimeAfter}</if>
+        <if test="expireTimeBefore != null ">and auel.expire_time_before = #{expireTimeBefore}</if>
+        <if test="pointAfter != null ">and auel.point_after = #{pointAfter}</if>
+        <if test="pointBefore != null ">and auel.point_before = #{pointBefore}</if>
+        <if test="changeDesc != null  and changeDesc != ''">and auel.change_desc = #{changeDesc}</if>
+        <if test="templateId != null ">and auel.template_id = #{templateId}</if>
+        <if test="cardId != null ">and auel.card_id = #{cardId}</if>
+        <if test="cardNo != null ">and auel.card_no = #{cardNo}</if>
+        order by auel.id desc
     </select>
 
     <select id="selectSysAppUserExpireLogById" parameterType="Long" resultMap="SysAppUserExpireLogResult">

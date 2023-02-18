@@ -1,19 +1,15 @@
 package com.ruoyi.common.utils.reflect;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Date;
+import com.ruoyi.common.core.text.Convert;
+import com.ruoyi.common.utils.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.ruoyi.common.core.text.Convert;
-import com.ruoyi.common.utils.DateUtils;
+
+import java.lang.reflect.*;
+import java.util.Date;
 
 /**
  * 反射工具类. 提供调用getter/setter方法, 访问私有变量, 调用私有方法, 获取泛型类型Class, 被AOP过的真实类等工具函数.
@@ -204,9 +200,18 @@ public class ReflectUtils
                             args[i] = DateUtil.getJavaDate((Double) args[i]);
                         }
                     }
-                    else if (cs[i] == boolean.class || cs[i] == Boolean.class)
-                    {
+                    else if (cs[i] == boolean.class || cs[i] == Boolean.class) {
                         args[i] = Convert.toBool(args[i]);
+                    } else if (cs[i].isEnum()) {
+                        Object[] enumConstants = cs[i].getEnumConstants();
+                        Method getCode = cs[i].getMethod("getCode");
+                        for (Object item : enumConstants) {
+                            Object code = getCode.invoke(item);
+                            if (code.equals(args[i])) {
+                                args[i] = item;
+                                break;
+                            }
+                        }
                     }
                 }
             }

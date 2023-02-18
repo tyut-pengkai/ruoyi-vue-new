@@ -53,20 +53,20 @@ public class SysCard extends BaseEntity {
     /**
      * 额度
      */
-    @Excel(name = "额度")
+    @Excel(name = "额度", prompt = "单位秒（计时模式）或点（计点模式）")
     private Long quota;
 
     /**
      * 价格
      */
-    @Excel(name = "价格")
+    @Excel(name = "零售价格")
     private BigDecimal price;
 
     /**
      * 过期时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Excel(name = "过期时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "充值过期时间", prompt = "卡允许激活的期限，用户需要在此日期前激活卡密，超过此日期此卡密将无法使用", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date expireTime;
 
     /**
@@ -121,7 +121,7 @@ public class SysCard extends BaseEntity {
      * 所属软件信息
      */
     @Excel(name = "软件名称", targetAttr = "appName")
-    private SysApp app;
+    private SysApp app = new SysApp();
 
     /**
      * 批量制卡数量
@@ -160,8 +160,8 @@ public class SysCard extends BaseEntity {
 
     private Long agentId;
 
-    @Excel(name = "所属代理名称", targetAttr = "userName")
-    private SysUser agentUser;
+    @Excel(name = "所属代理账号", targetAttr = "userName")
+    private SysUser agentUser = new SysUser();
 
     public SysUser getAgentUser() {
         return agentUser;

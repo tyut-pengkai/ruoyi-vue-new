@@ -713,7 +713,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="所属代理" prop="agentId">
-                <span v-if="form.agentUser">
+                <span v-if="form.agentUser && form.agentUser.userName">
                   {{ form.agentUser.nickName }} ({{ form.agentUser.userName }})
                 </span>
               </el-form-item>
