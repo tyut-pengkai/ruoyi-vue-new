@@ -20,4 +20,9 @@ public class TemplateTest {
         System.out.println(JSON.toJSONString(quickAccessTemplateList));
     }
 
+    @Test
+    public void test1() {
+
+    }
+
 }

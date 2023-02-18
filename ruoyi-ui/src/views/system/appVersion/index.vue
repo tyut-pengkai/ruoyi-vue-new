@@ -432,7 +432,13 @@
               '&template=' +
               upload.template +
               '&skin=' +
-              upload.skin
+              upload.skin +
+              '&accessType=' +
+              upload.accessType +
+              '&activity=' +
+              upload.activity +
+              '&method=' +
+              upload.method
             "
             :auto-upload="false"
             :before-upload="onBeforeUpload"
@@ -467,27 +473,39 @@
                 </span>
               </div>
               <div v-show="showApk" slot="tip" class="el-upload__tip"> -->
-              <span style="margin-right: 10px">接入类别</span>
-              <el-select v-model="upload.apkOper" placeholder="请选择接入类别">
-                <el-option
-                  v-for="item in apkOperOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+              <div style="margin-top: 10px">
+                <span style="margin-right: 10px">接入方式</span>
+                <el-radio-group v-model="upload.accessType">
+                  <el-radio :label="1">全局模式</el-radio>
+                  <el-radio :label="2">单例模式</el-radio>
+                </el-radio-group>
+              </div>
+              <div style="margin-top: 10px">
+                <span style="margin-right: 10px">接入类别</span>
+                <el-select
+                  v-model="upload.apkOper"
+                  placeholder="请选择接入类别"
                 >
-                </el-option>
-              </el-select>
-              <span style="margin-left: 15px">
-                <el-tooltip
-                  content="建议将生成的apk加固后再发布"
-                  placement="top"
-                >
-                  <i
-                    class="el-icon-question"
-                    style="margin-left: -12px; margin-right: 10px"
-                  ></i>
-                </el-tooltip>
-              </span>
+                  <el-option
+                    v-for="item in apkOperOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+                <span style="margin-left: 15px">
+                  <el-tooltip
+                    content="建议将生成的apk加固后再发布"
+                    placement="top"
+                  >
+                    <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                    ></i>
+                  </el-tooltip>
+                </span>
+              </div>
               <!-- <el-checkbox v-model="upload.signApk" />
             是否签名APK<br />(仅apk生效，建议将生成的apk加固后再发布) -->
               <!-- </div> -->
@@ -542,7 +560,7 @@
           </el-upload>
         </el-tab-pane>
         <el-tab-pane label="EXE接入">
-          <div style="width: 360px; height: 272px">
+          <div style="width: 360px; height: 303px">
             <el-alert
               :closable="false"
               show-icon
@@ -597,6 +615,23 @@
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="downloadClose">取消下载</el-button>
       </div>
+    </el-dialog>
+
+    <!--activity和method选择列表-->
+    <el-dialog
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
+      :title="
+        '请选择' + upload.activity === null ? '入口Activity' : '注入Method'
+      "
+      :visible.sync="selectActivityMethod.loadDialogStatus"
+      width="20%"
+    >
+      <div style="text-align: center"></div>
+      <!-- <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="downloadClose">取消下载</el-button>
+      </div> -->
     </el-dialog>
   </div>
 </template>
@@ -703,6 +738,12 @@ export default {
         template: null,
         // 默认皮肤
         skin: null,
+        // 接入方式
+        accessType: 1, // 1全局 2单例
+        // activity
+        activity: null,
+        // method
+        method: null,
       },
       fileDown: {
         //弹出框控制的状态
@@ -711,6 +752,10 @@ export default {
         percentage: 0,
         //取消下载时的资源对象
         source: {},
+      },
+      selectActivityMethod: {
+        //弹出框控制的状态
+        loadDialogStatus: false,
       },
       apkOperOptions: [
         {
@@ -967,11 +1012,17 @@ export default {
     },
     // 文件上传成功处理
     handleFileSuccess(response, file, fileList) {
-      // this.$download.name(response.msg);
-      this.downFile(response.msg);
-      this.upload.open = false;
-      this.upload.isUploading = false;
-      this.$refs.upload.clearFiles();
+      console.log(response);
+
+      if (response.data.step === "file") {
+        // this.$download.name(response.msg);
+        this.downFile(response.data.data);
+        this.upload.open = false;
+        this.upload.isUploading = false;
+        this.$refs.upload.clearFiles();
+      } else if (response.data.step === "list") {
+        this.selectActivityMethod.loadDialogStatus = true;
+      }
     },
     // 提交上传文件
     submitFileForm() {

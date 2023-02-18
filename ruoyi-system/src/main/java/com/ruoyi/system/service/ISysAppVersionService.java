@@ -2,9 +2,11 @@ package com.ruoyi.system.service;
 
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
+import com.ruoyi.system.domain.vo.ActivityMethodVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 软件版本信息Service接口
@@ -88,7 +90,7 @@ public interface ISysAppVersionService {
      * @param versionId
      * @return
      */
-    public String quickAccess(MultipartFile file, Long versionId, boolean updateMd5, String apkOper, String template, String skin);
+    public Map<String, Object> quickAccess(String accessType, MultipartFile file, Long versionId, boolean updateMd5, String apkOper, String template, String skin, ActivityMethodVo vo);
 
     /**
      * 检查软件名称唯一性

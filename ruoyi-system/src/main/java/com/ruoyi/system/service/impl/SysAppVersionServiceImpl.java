@@ -7,10 +7,12 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.AesCbcPKCS5PaddingUtil;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.PathUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.system.domain.vo.ActivityMethodVo;
 import com.ruoyi.system.domain.vo.QuickAccessResultVo;
 import com.ruoyi.system.mapper.SysAppVersionMapper;
 import com.ruoyi.system.service.ISysAppService;
@@ -39,10 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -167,33 +166,37 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      * @return
      */
     @Override
-    public String quickAccess(MultipartFile file, Long versionId, boolean updateMd5, String apkOper, String template, String skin) {
+    public Map<String, Object> quickAccess(String accessType, MultipartFile file, Long versionId, boolean updateMd5, String apkOper, String template, String skin, ActivityMethodVo vo) {
+        Map<String, Object> map = new HashMap<>();
         try {
             // 封装
             String originalFilename = file.getOriginalFilename();
             byte[] bytes = file.getBytes();
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(versionId);
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
-            QuickAccessResultVo result = quickAccessHandle(bytes, version, originalFilename, apkOper, template, skin);
-            bytes = result.getBytes();
-            // 生成文件
-            String remark = "";
-            if(originalFilename.endsWith(".apk")) {
-                if(result.getData().containsKey("signed")) {
-                    remark = (boolean)result.getData().get("signed") ? "signed" : "unsigned";
-                } else {
-                    remark = "unsigned";
+            assert originalFilename != null;
+            QuickAccessResultVo result = quickAccessHandle(accessType, bytes, version, originalFilename, apkOper, template, skin, vo);
+
+            if ("1".equals(accessType) || ("2".equals(accessType) && result.getBytes() != null && result.getBytes().length > 0)) {
+                bytes = result.getBytes();
+                // 生成文件
+                String remark = "";
+                if (originalFilename.endsWith(".apk")) {
+                    if (result.getData().containsKey("signed")) {
+                        remark = (boolean) result.getData().get("signed") ? "signed" : "unsigned";
+                    } else {
+                        remark = "unsigned";
+                    }
                 }
-            }
-            String filename = rename(app.getAppName(), originalFilename, version.getVersionName(), remark);
-            String filePath = RuoYiConfig.getDownloadPath() + filename;
-            File desc = new File(filePath);
-            if (!desc.getParentFile().exists()) {
-                desc.getParentFile().mkdirs();
-            }
-            assert bytes != null;
-            FileUtils.writeByteArrayToFile(desc, bytes);
-            // 更新MD5
+                String filename = rename(app.getAppName(), originalFilename, version.getVersionName(), remark);
+                String filePath = RuoYiConfig.getDownloadPath() + filename;
+                File desc = new File(filePath);
+                if (!desc.getParentFile().exists()) {
+                    desc.getParentFile().mkdirs();
+                }
+                assert bytes != null;
+                FileUtils.writeByteArrayToFile(desc, bytes);
+                // 更新MD5
 //            if (updateMd5 && originalFilename.endsWith(".exe")) {
 //                String md5 = version.getMd5();
 //                String md5New = DigestUtils.md5Hex(bytes);
@@ -213,11 +216,20 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
 //                versionNew.setMd5(md5);
 //                updateSysAppVersion(versionNew);
 //            }
-            return filename;
+                map.put("step", "file");
+                map.put("data", filename);
+            } else if ("2".equals(accessType)) {
+                map.put("step", "list");
+                map.put("data", result.getData().get("list"));
+                return map;
+            } else {
+                throw new ServiceException("接入方式参数有误");
+            }
+            return map;
         } catch (IOException e) {
             e.printStackTrace();
+            throw new ServiceException("接入失败：" + e.getMessage());
         }
-        return null;
     }
 
     /**
@@ -227,7 +239,8 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      * @param apkOper  1注入并加签 2仅注入 3仅加签
      * @return
      */
-    private QuickAccessResultVo quickAccessHandle(byte[] bytes, SysAppVersion version, String filename, String apkOper, String template, String skin) {
+    private QuickAccessResultVo quickAccessHandle(String accessType, byte[] bytes, SysAppVersion version, String filename, String apkOper, String template, String skin, ActivityMethodVo vo) {
+        QuickAccessResultVo result = new QuickAccessResultVo();
         try {
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
             sysAppService.setApiUrl(app);
@@ -257,17 +270,43 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
 //                QuickAccessResultVo result = new QuickAccessResultVo();
 //                result.setBytes(resultBytes);
 //                return result;
-                QuickAccessResultVo result = new QuickAccessResultVo();
                 result.getData().put("apv", apv);
-                return result;
             } else if(filename.endsWith(".apk")) {
                 log.info("正在快速接入" + filename);
-                QuickAccessResultVo result = new QuickAccessResultVo();
                 byte[] injectedApk = bytes;
                 if ("1".equals(apkOper) || "2".equals(apkOper)) {
-                    log.info("正在注入apk");
-                    injectedApk = QuickAccessApkUtil.doProcess(bytes, apvStr, template);
-                    log.info("注入apk完毕");
+                    try {
+                        // 写到临时目录
+                        File tempFile = File.createTempFile("hyQuickAccessApkTempFile" + System.currentTimeMillis(), null);
+                        FileUtils.writeByteArrayToFile(tempFile, bytes);
+                        // 读入原文件
+                        // String oriPath = PathUtils.getUserPath() + File.separator + "src/test/resources" + File.separator + "热血合击西瓜辅助（无验证）.apk";
+                        String oriPath = tempFile.getCanonicalPath();
+                        if ("1".equals(accessType)) {
+                            log.info("正在注入apk");
+                            injectedApk = QuickAccessApkUtil.doProcess(oriPath, apvStr, template);
+                            log.info("注入apk完毕");
+                        } else if ("2".equals(accessType)) {
+                            if (StringUtils.isBlank(vo.getActivity())) {
+                                List<String> activityList = QuickAccessApkUtil.parseManifestActivity(oriPath);
+                                result.getData().put("list", activityList);
+                                return result;
+                            } else if (StringUtils.isBlank(vo.getMethod())) {
+                                List<String> methodList = QuickAccessApkUtil.parserMethod(oriPath, vo.getActivity());
+                                result.getData().put("list", methodList);
+                                return result;
+                            } else {
+                                log.info("正在注入apk");
+                                injectedApk = QuickAccessApkUtil.doProcess2(oriPath, apvStr, template, vo);
+                                log.info("注入apk完毕");
+                            }
+                        } else {
+                            throw new ServiceException("接入方式参数有误");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        throw new ServiceException(e.getMessage());
+                    }
                 }
                 if ("1".equals(apkOper) || "3".equals(apkOper)) { // 签名
                     log.info("正在apk签名");
@@ -331,12 +370,12 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                 }
                 log.info("快速接入成功");
                 result.setBytes(injectedApk);
-                return result;
             }
         } catch (InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
             e.printStackTrace();
+            throw new ServiceException(e.getMessage());
         }
-        return null;
+        return result;
     }
 
     private String rename(String appName, String filename, String versionName, String remark) {
@@ -367,7 +406,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
 
         try {
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(appVersionId);
-            QuickAccessResultVo result = quickAccessHandle(null, version, ".exe", null, null, null);
+            QuickAccessResultVo result = quickAccessHandle(null, null, version, ".exe", null, null, null, null);
             AppParamVo apv = (AppParamVo) result.getData().get("apv");
             String apvStr = JSON.toJSONString(apv);
             apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");

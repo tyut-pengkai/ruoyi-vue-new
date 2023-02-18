@@ -7,6 +7,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.system.domain.vo.ActivityMethodVo;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppVersionService;
 import com.ruoyi.utils.poi.ExcelUtil;
@@ -109,8 +110,8 @@ public class SysAppVersionController extends BaseController {
     @Log(title = "快速接入", businessType = BusinessType.QUICK_ACCESS)
     // @PreAuthorize("@ss.hasPermi('system:user:import')")
     @PostMapping("/quickAccess")
-    public AjaxResult quickAccess(MultipartFile file, Long versionId, boolean updateMd5, String apkOper, String template, String skin) {
-        return AjaxResult.success(sysAppVersionService.quickAccess(file, versionId, updateMd5, apkOper, template, skin));
+    public AjaxResult quickAccess(String accessType, MultipartFile file, Long versionId, boolean updateMd5, String apkOper, String template, String skin, String oriPath, String activity, String method) {
+        return AjaxResult.success(sysAppVersionService.quickAccess(accessType, file, versionId, updateMd5, apkOper, template, skin, new ActivityMethodVo(oriPath, activity, method)));
     }
 
     /**
