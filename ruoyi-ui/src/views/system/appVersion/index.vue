@@ -418,7 +418,10 @@
         </template>
       </el-alert>
       <el-tabs style="width: 400px" type="border-card">
-        <el-tab-pane label="APK接入">
+        <el-tab-pane
+          v-if="app && app.authType === '1' && app.billType === '0'"
+          label="APK接入"
+        >
           <el-upload
             ref="upload"
             :action="
@@ -436,9 +439,9 @@
               '&accessType=' +
               upload.accessType +
               '&activity=' +
-              upload.activity +
+              (upload.activity ? upload.activity : '') +
               '&method=' +
-              upload.method
+              (upload.method ? upload.method : '')
             "
             :auto-upload="false"
             :before-upload="onBeforeUpload"
@@ -559,6 +562,9 @@
             </div>
           </el-upload>
         </el-tab-pane>
+        <el-tab-pane v-else label="APK接入" style="height: 300px">
+          <span>APK快速接入目前只支持【单码计时】模式的软件</span>
+        </el-tab-pane>
         <el-tab-pane label="EXE接入">
           <div style="width: 360px; height: 303px">
             <el-alert
@@ -617,21 +623,64 @@
       </div>
     </el-dialog>
 
-    <!--activity和method选择列表-->
+    <!--activity选择列表-->
     <el-dialog
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="false"
-      :title="
-        '请选择' + upload.activity === null ? '入口Activity' : '注入Method'
-      "
-      :visible.sync="selectActivityMethod.loadDialogStatus"
+      :visible.sync="selectActivityMethod.loadActivityDialogStatus"
+      title="请选择入口Activity"
       width="20%"
     >
-      <div style="text-align: center"></div>
-      <!-- <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="downloadClose">取消下载</el-button>
-      </div> -->
+      <div style="text-align: center">
+        <el-select v-model="upload.activity" filterable placeholder="请选择">
+          <el-option
+            v-for="item in selectActivityMethod.activityList || []"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          type="primary"
+          @click="selectActivityMethod.loadActivityDialogStatus = false"
+        >确定
+        </el-button
+        >
+      </div>
+    </el-dialog>
+
+    <!--method选择列表-->
+    <el-dialog
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
+      :visible.sync="selectActivityMethod.loadMethodDialogStatus"
+      title="请选择注入Method"
+      width="20%"
+    >
+      <div style="text-align: center">
+        <el-select v-model="upload.method" filterable placeholder="请选择">
+          <el-option
+            v-for="item in selectActivityMethod.methodList || []"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          type="primary"
+          @click="selectActivityMethod.loadMethodDialogStatus = false"
+        >确定
+        </el-button
+        >
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -642,6 +691,7 @@ import {
   delAppVersion,
   exportAppVersion,
   getAppVersion,
+  getFileResult,
   getQuickAccessParams,
   getQuickAccessTemplateList,
   listAppVersion,
@@ -744,6 +794,10 @@ export default {
         activity: null,
         // method
         method: null,
+        // 文件路径
+        oriPath: null,
+        // 文件名
+        oriName: null,
       },
       fileDown: {
         //弹出框控制的状态
@@ -755,7 +809,11 @@ export default {
       },
       selectActivityMethod: {
         //弹出框控制的状态
-        loadDialogStatus: false,
+        loadActivityDialogStatus: false,
+        loadMethodDialogStatus: false,
+        // 列表内容
+        activityList: [],
+        methodList: [],
       },
       apkOperOptions: [
         {
@@ -1012,21 +1070,59 @@ export default {
     },
     // 文件上传成功处理
     handleFileSuccess(response, file, fileList) {
-      console.log(response);
-
       if (response.data.step === "file") {
         // this.$download.name(response.msg);
         this.downFile(response.data.data);
         this.upload.open = false;
         this.upload.isUploading = false;
         this.$refs.upload.clearFiles();
-      } else if (response.data.step === "list") {
-        this.selectActivityMethod.loadDialogStatus = true;
+      } else if (response.data.step === "activityList") {
+        this.selectActivityMethod.activityList = [];
+        for (let item of response.data.list || []) {
+          this.selectActivityMethod.activityList.push({
+            value: item,
+            label: item,
+          });
+        }
+        this.selectActivityMethod.loadActivityDialogStatus = true;
+        this.upload.oriPath = response.data.oriPath;
+        this.upload.oriName = response.data.oriName;
       }
     },
     // 提交上传文件
     submitFileForm() {
-      this.$refs.upload.submit();
+      if (
+        this.upload.accessType == "1" ||
+        (this.upload.accessType == "2" && !this.upload.activity)
+      ) {
+        this.$refs.upload.submit();
+      } else {
+        this.getFileResult()
+          .then((response) => {
+            if (response.data.step === "methodList") {
+              this.selectActivityMethod.methodList = [];
+              for (let item of response.data.list || []) {
+                this.selectActivityMethod.methodList.push({
+                  value: item,
+                  label: item,
+                });
+              }
+              this.selectActivityMethod.loadMethodDialogStatus = true;
+            } else if (response.data.step === "file") {
+              this.downFile(response.data.data);
+              this.upload.open = false;
+              this.upload.isUploading = false;
+              this.upload.activity = null;
+              this.upload.method = null;
+              this.upload.oriPath = null;
+              this.upload.oriName = null;
+              this.$refs.upload.clearFiles();
+            }
+          })
+          .catch((error) => {
+            console.info(error);
+          });
+      }
     },
     // 校验文件
     onBeforeUpload(file) {
@@ -1159,6 +1255,30 @@ export default {
         );
         clipboard.destroy();
       });
+    },
+    getFileResult() {
+      return getFileResult(
+        "versionId=" +
+        this.upload.quickAccessVersionId +
+        "&updateMd5=" +
+        this.upload.updateMd5 +
+        "&apkOper=" +
+        this.upload.apkOper +
+        "&template=" +
+        this.upload.template +
+        "&skin=" +
+        this.upload.skin +
+        "&accessType=" +
+        this.upload.accessType +
+        "&activity=" +
+        (this.upload.activity ? this.upload.activity : "") +
+        "&method=" +
+        (this.upload.method ? encodeURIComponent(this.upload.method) : "") +
+        "&oriPath=" +
+        (this.upload.oriPath ? encodeURIComponent(this.upload.oriPath) : "") +
+        "&oriName=" +
+        (this.upload.oriName ? encodeURIComponent(this.upload.oriName) : "")
+      );
     },
   },
   watch: {

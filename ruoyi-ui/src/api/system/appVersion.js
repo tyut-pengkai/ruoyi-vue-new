@@ -67,3 +67,11 @@ export function getQuickAccessTemplateList() {
     method: 'get',
   })
 }
+
+// 快速接入
+export function getFileResult(query) {
+  return request({
+    url: '/system/appVersion/quickAccess?' + query,
+    method: 'post',
+  })
+}

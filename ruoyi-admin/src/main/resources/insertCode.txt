@@ -11,6 +11,6 @@ goto :goto_36
 
     :goto_36
     :try_start_36
-    invoke-static {p0}, Lcom/coordsoft/myapplication/MainActivity;->test(Landroid/content/Context;)I
+    invoke-static {p0}, Lcom/App;->show(Landroid/content/Context;)V
     :try_end_54
     .catchall {:try_start_36 .. :try_end_54} :catchall_30

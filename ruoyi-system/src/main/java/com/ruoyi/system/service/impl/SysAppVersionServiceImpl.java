@@ -170,8 +170,16 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         Map<String, Object> map = new HashMap<>();
         try {
             // 封装
-            String originalFilename = file.getOriginalFilename();
-            byte[] bytes = file.getBytes();
+            String originalFilename = null;
+            byte[] bytes = null;
+            if (file == null) {
+                if (StringUtils.isNotBlank(vo.getOriName())) {
+                    originalFilename = vo.getOriName();
+                }
+            } else {
+                originalFilename = file.getOriginalFilename();
+                bytes = file.getBytes();
+            }
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(versionId);
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
             assert originalFilename != null;
@@ -219,8 +227,14 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                 map.put("step", "file");
                 map.put("data", filename);
             } else if ("2".equals(accessType)) {
-                map.put("step", "list");
-                map.put("data", result.getData().get("list"));
+                if (StringUtils.isBlank(vo.getActivity())) {
+                    map.put("step", "activityList");
+                } else if (StringUtils.isBlank(vo.getMethod())) {
+                    map.put("step", "methodList");
+                } else {
+                    map.put("step", "file");
+                }
+                map.putAll(result.getData());
                 return map;
             } else {
                 throw new ServiceException("接入方式参数有误");
@@ -276,9 +290,14 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                 byte[] injectedApk = bytes;
                 if ("1".equals(apkOper) || "2".equals(apkOper)) {
                     try {
-                        // 写到临时目录
-                        File tempFile = File.createTempFile("hyQuickAccessApkTempFile" + System.currentTimeMillis(), null);
-                        FileUtils.writeByteArrayToFile(tempFile, bytes);
+                        File tempFile;
+                        if ("1".equals(accessType) || ("2".equals(accessType) && bytes != null && bytes.length > 0)) {
+                            // 写到临时目录
+                            tempFile = File.createTempFile("hyQuickAccessApkTempFile" + System.currentTimeMillis(), null);
+                            FileUtils.writeByteArrayToFile(tempFile, bytes);
+                        } else {
+                            tempFile = new File(File.createTempFile(String.valueOf(System.currentTimeMillis()), "").getParent() + File.separator + vo.getOriPath());
+                        }
                         // 读入原文件
                         // String oriPath = PathUtils.getUserPath() + File.separator + "src/test/resources" + File.separator + "热血合击西瓜辅助（无验证）.apk";
                         String oriPath = tempFile.getCanonicalPath();
@@ -290,6 +309,8 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                             if (StringUtils.isBlank(vo.getActivity())) {
                                 List<String> activityList = QuickAccessApkUtil.parseManifestActivity(oriPath);
                                 result.getData().put("list", activityList);
+                                result.getData().put("oriPath", tempFile.getName());
+                                result.getData().put("oriName", filename);
                                 return result;
                             } else if (StringUtils.isBlank(vo.getMethod())) {
                                 List<String> methodList = QuickAccessApkUtil.parserMethod(oriPath, vo.getActivity());

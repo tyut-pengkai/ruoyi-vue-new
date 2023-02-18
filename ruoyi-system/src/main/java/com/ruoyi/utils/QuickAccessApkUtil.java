@@ -492,7 +492,7 @@ public class QuickAccessApkUtil {
         return parseManifestActivity(oriFile.getInputStream(XmlEntry));
     }
 
-    public static List<String> parserMethod(String oriPath, String mainActivity) throws IOException {
+    public static List<String> parserMethod(String oriPath, String activity) throws IOException {
         ZipFile oriFile = new ZipFile(oriPath);
         // 获取dex列表
         List<String> dexNameList = new ArrayList<>();
@@ -513,12 +513,12 @@ public class QuickAccessApkUtil {
             DexBackedDexFile cl;
             List<String> methodlist = new ArrayList();
             for (final String dexFile : dexNameList) {
-                if (mainDex != null) {
-                    break;
-                }
+//                if (mainDex != null) {
+//                    break;
+//                }
                 cl = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(dexFile)))));
                 for (DexBackedClassDef h : cl.getClasses()) {
-                    if (h.getType().equals("L" + mainActivity.replace(".", "/") + ";")) {
+                    if (h.getType().equals("L" + activity.replace(".", "/") + ";")) {
                         mainDex = dexFile;
                         for (DexBackedMethod m : h.getMethods()) {
                             methodlist.add(m.getName());
