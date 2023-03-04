@@ -598,7 +598,10 @@
         </el-tab-pane>
       </el-tabs>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitFileForm">确 定</el-button>
+        <el-button :loading="loading" type="primary" @click="submitFileForm"
+        >确 定
+        </el-button
+        >
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -644,10 +647,10 @@
         </el-select>
       </div>
       <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="activityClose">确定</el-button>
         <el-button
-          type="primary"
           @click="selectActivityMethod.loadActivityDialogStatus = false"
-        >确定
+        >取 消
         </el-button
         >
       </div>
@@ -674,10 +677,9 @@
         </el-select>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button
-          type="primary"
-          @click="selectActivityMethod.loadMethodDialogStatus = false"
-        >确定
+        <el-button type="primary" @click="methodClose">确定</el-button>
+        <el-button @click="selectActivityMethod.loadMethodDialogStatus = false"
+        >取 消
         </el-button
         >
       </div>
@@ -798,6 +800,7 @@ export default {
         oriPath: null,
         // 文件名
         oriName: null,
+        uploaded: false,
       },
       fileDown: {
         //弹出框控制的状态
@@ -870,6 +873,17 @@ export default {
       } else {
         this.$modal.alertError("未获取到当前软件信息");
       }
+    },
+    initUpload() {
+      this.upload.isUploading = false;
+      this.upload.activity = null;
+      this.upload.method = null;
+      this.upload.oriPath = null;
+      this.upload.oriName = null;
+      if (this.$refs.upload) {
+        this.$refs.upload.clearFiles();
+      }
+      this.upload.uploaded = false;
     },
     /** 查询软件版本信息列表 */
     getList() {
@@ -1025,6 +1039,7 @@ export default {
           this.handleChangeTemplate(this.templateOptions[0].value);
         }
       });
+      this.initUpload();
       this.upload.open = true;
     },
     /** 注入模板被改变，重新加载对应皮肤列表 */
@@ -1092,14 +1107,30 @@ export default {
     // 提交上传文件
     submitFileForm() {
       if (
-        this.upload.accessType == "1" ||
-        (this.upload.accessType == "2" && !this.upload.activity)
+        // this.upload.accessType == "1" ||
+        // (this.upload.accessType == "2" && !this.upload.activity)
+        !this.upload.uploaded
       ) {
+        this.loading = true;
         this.$refs.upload.submit();
+        this.upload.uploaded = true;
+        this.loading = false;
       } else {
+        this.loading = true;
         this.getFileResult()
           .then((response) => {
-            if (response.data.step === "methodList") {
+            if (response.data.step === "activityList") {
+              this.selectActivityMethod.activityList = [];
+              for (let item of response.data.list || []) {
+                this.selectActivityMethod.activityList.push({
+                  value: item,
+                  label: item,
+                });
+              }
+              this.selectActivityMethod.loadActivityDialogStatus = true;
+              this.upload.oriPath = response.data.oriPath;
+              this.upload.oriName = response.data.oriName;
+            } else if (response.data.step === "methodList") {
               this.selectActivityMethod.methodList = [];
               for (let item of response.data.list || []) {
                 this.selectActivityMethod.methodList.push({
@@ -1111,16 +1142,14 @@ export default {
             } else if (response.data.step === "file") {
               this.downFile(response.data.data);
               this.upload.open = false;
-              this.upload.isUploading = false;
-              this.upload.activity = null;
-              this.upload.method = null;
-              this.upload.oriPath = null;
-              this.upload.oriName = null;
-              this.$refs.upload.clearFiles();
             }
           })
           .catch((error) => {
             console.info(error);
+            this.$modal.alert("上传失败：" + error);
+          })
+          .finally(() => {
+            this.loading = false;
           });
       }
     },
@@ -1200,6 +1229,7 @@ export default {
         .catch((error) => {
           this.fileDown.loadDialogStatus = false;
           console.info(error);
+          this.$modal.alert("下载失败：" + error);
         });
     },
     initInstance() {
@@ -1279,6 +1309,18 @@ export default {
         "&oriName=" +
         (this.upload.oriName ? encodeURIComponent(this.upload.oriName) : "")
       );
+    },
+    activityClose() {
+      this.selectActivityMethod.loadActivityDialogStatus = false;
+      if (this.upload.activity) {
+        this.submitFileForm();
+      }
+    },
+    methodClose() {
+      this.selectActivityMethod.loadMethodDialogStatus = false;
+      if (this.upload.method) {
+        this.submitFileForm();
+      }
     },
   },
   watch: {

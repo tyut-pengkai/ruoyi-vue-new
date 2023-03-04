@@ -350,6 +350,7 @@ public class QuickAccessApkUtil {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             AXMLDoc doc = new AXMLDoc();
             doc.parse(new ByteArrayInputStream(toByteArray(oriFile.getInputStream(oriFile.getEntry("AndroidManifest.xml")))));
+//            doc.parse(oriFile.getInputStream(oriFile.getEntry("AndroidManifest.xml")));
             PermissionEditor permissionEditor = new PermissionEditor(doc);
             permissionEditor.setEditorInfo(new PermissionEditor.EditorInfo()
                     .with(new PermissionEditor.PermissionOpera("android.permission.本验证由红叶网络验证提供").add())
