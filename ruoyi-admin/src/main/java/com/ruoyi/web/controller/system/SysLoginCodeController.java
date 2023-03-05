@@ -15,8 +15,10 @@ import com.ruoyi.utils.poi.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +59,23 @@ public class SysLoginCodeController extends BaseController {
         List<SysLoginCode> list = sysLoginCodeService.selectSysLoginCodeList(sysLoginCode);
         ExcelUtil<SysLoginCode> util = new ExcelUtil<SysLoginCode>(SysLoginCode.class);
         return util.exportExcel(list, "单码数据");
+    }
+
+    @Log(title = "单码", businessType = BusinessType.IMPORT)
+    @PreAuthorize("@ss.hasPermi('system:loginCode:import')")
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception {
+        ExcelUtil<SysLoginCode> util = new ExcelUtil<>(SysLoginCode.class);
+        List<SysLoginCode> cardList = util.importExcel(file.getInputStream());
+        String operName = getUsername();
+        String message = sysLoginCodeService.importLoginCode(cardList, updateSupport, operName);
+        return AjaxResult.success(message);
+    }
+
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response) {
+        ExcelUtil<SysLoginCode> util = new ExcelUtil<>(SysLoginCode.class);
+        util.importTemplateExcel(response, "单码数据");
     }
 
     /**

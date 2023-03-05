@@ -74,7 +74,7 @@ public class SysCardController extends BaseController {
 
     @PostMapping("/importTemplate")
     public void importTemplate(HttpServletResponse response) {
-        ExcelUtil<SysCard> util = new ExcelUtil<SysCard>(SysCard.class);
+        ExcelUtil<SysCard> util = new ExcelUtil<>(SysCard.class);
         util.importTemplateExcel(response, "卡密数据");
     }
 

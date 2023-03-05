@@ -88,4 +88,14 @@ public interface ISysLoginCodeService {
      * @param SysLoginCodeList
      */
     public int insertSysLoginCodeBatch(List<SysLoginCode> SysLoginCodeList);
+
+    /**
+     * 导入卡密数据
+     *
+     * @param cardList        卡密数据列表
+     * @param isUpdateSupport 是否更新支持，如果已存在，则进行更新数据
+     * @param operName        操作用户
+     * @return 结果
+     */
+    public String importLoginCode(List<SysLoginCode> cardList, Boolean isUpdateSupport, String operName);
 }

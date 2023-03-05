@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -60,4 +61,13 @@ public interface SysLoginCodeTemplateMapper {
      * @return 结果
      */
     public int deleteSysLoginCodeTemplateByTemplateIds(Long[] templateIds);
+
+    /**
+     * 查询卡密模板
+     *
+     * @param appId        APP主键
+     * @param templateName 卡类名称
+     * @return 卡密模板
+     */
+    public SysLoginCodeTemplate selectSysLoginCodeTemplateByAppIdAndTemplateName(@Param("appId") Long appId, @Param("templateName") String templateName);
 }

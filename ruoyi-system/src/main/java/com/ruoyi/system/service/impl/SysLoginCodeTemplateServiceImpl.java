@@ -196,4 +196,15 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
         return random;
     }
 
+    /**
+     * 查询卡密模板
+     *
+     * @param appId        APP主键
+     * @param templateName 卡类名称
+     * @return 卡密模板
+     */
+    public SysLoginCodeTemplate selectSysLoginCodeTemplateByAppIdAndTemplateName(Long appId, String templateName) {
+        return sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateByAppIdAndTemplateName(appId, templateName);
+    }
+
 }

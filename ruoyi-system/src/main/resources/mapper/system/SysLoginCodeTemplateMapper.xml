@@ -233,4 +233,9 @@
         </foreach>
     </delete>
 
+    <select id="selectSysLoginCodeTemplateByAppIdAndTemplateName" resultMap="SysLoginCodeTemplateResult">
+        <include refid="selectSysLoginCodeTemplateVo"/>
+        where ct.app_id = #{appId} and ct.card_name = #{templateName}
+    </select>
+
 </mapper>
