@@ -3,7 +3,9 @@ package com.ruoyi.system.service.impl;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysApp;
+import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -12,10 +14,7 @@ import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
 import com.ruoyi.system.mapper.SysLoginCodeMapper;
-import com.ruoyi.system.service.ISysAppService;
-import com.ruoyi.system.service.ISysLoginCodeService;
-import com.ruoyi.system.service.ISysLoginCodeTemplateService;
-import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.validation.Validator;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +47,8 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     private ISysAppService sysAppService;
     @Resource
     private ISysUserService sysUserService;
+    @Resource
+    private ISysAppUserService sysAppUserService;
 
     /**
      * 查询单码
@@ -224,6 +226,7 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
                                 BeanValidators.validateWithException(validator, card);
                                 card.setTemplateId(template.getTemplateId());
                                 card.setAppId(app.getAppId());
+                                SysAppUser appUser = new SysAppUser();
                                 boolean errFlag = false;
                                 if (UserConstants.YES.equals(card.getIsAgent()) && card.getAgentUser() != null && StringUtils.isNotBlank(card.getAgentUser().getUserName())) {
                                     // 验证代理是否存在
@@ -231,6 +234,7 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
                                     SysUser agentUser = sysUserService.selectUserByUserName(agentUserName);
                                     if (agentUser != null) {
                                         card.setAgentId(agentUser.getUserId());
+                                        appUser.setAgentId(agentUser.getUserId());
                                     } else {
                                         errFlag = true;
                                         failureNum++;
@@ -238,9 +242,49 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
                                     }
                                 }
                                 if (!errFlag) {
+                                    // 导入软件用户
+                                    boolean importUser = false;
+                                    if (app.getBillType() == BillType.TIME && card.getUserExpireTime() != null) {
+                                        appUser.setExpireTime(card.getUserExpireTime());
+                                        appUser.setPoint(null);
+                                        importUser = true;
+                                    } else if (app.getBillType() == BillType.POINT && card.getPoint() != null) {
+                                        appUser.setExpireTime(null);
+                                        appUser.setPoint(card.getPoint());
+                                        importUser = true;
+                                    }
+                                    if (importUser) {
+                                        appUser.setAppId(app.getAppId());
+                                        appUser.setUserId(null);
+                                        appUser.setLastLoginTime(null);
+                                        appUser.setLoginCode(card.getCardNo());
+                                        appUser.setLoginLimitM(-2);
+                                        appUser.setLoginLimitU(-2);
+                                        appUser.setCardLoginLimitM(card.getCardLoginLimitM());
+                                        appUser.setCardLoginLimitU(card.getCardLoginLimitU());
+                                        appUser.setCardCustomParams(card.getCardCustomParams());
+                                        appUser.setLoginTimes(0L);
+                                        appUser.setPwdErrorTimes(0);
+                                        appUser.setStatus(UserConstants.NORMAL);
+                                        appUser.setFreeBalance(BigDecimal.ZERO);
+                                        appUser.setPayBalance(BigDecimal.ZERO);
+                                        appUser.setFreePayment(BigDecimal.ZERO);
+                                        appUser.setPayPayment(BigDecimal.ZERO);
+                                        appUser.setUnbindTimes(app.getUnbindTimes());
+                                        appUser.setApp(app);
+                                        appUser.setLastChargeCardId(card.getCardId());
+                                        appUser.setLastChargeTemplateId(card.getTemplateId());
+                                        sysAppUserService.insertSysAppUser(appUser);
+                                        card.setIsCharged(UserConstants.YES);
+                                        card.setChargeTime(DateUtils.getNowDate());
+                                        card.setOnSale(UserConstants.NO);
+                                    }
                                     this.insertSysLoginCode(card);
                                     successNum++;
                                     successMsg.append("<br/>" + successNum + "、单码[" + card.getCardNo() + "]导入成功");
+                                    if (importUser) {
+                                        successMsg.append(";软件用户导入成功");
+                                    }
                                 }
                             } else {
                                 failureNum++;

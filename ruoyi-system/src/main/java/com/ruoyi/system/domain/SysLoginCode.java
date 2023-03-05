@@ -154,13 +154,13 @@ public class SysLoginCode extends BaseEntity {
      * 过期时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Excel(name = "用户过期时间", prompt = "对应用户的过期时间，仅计时模式", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "用户过期时间", prompt = "对应用户的过期时间，仅计时模式生效", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date userExpireTime;
 
     /**
      * 剩余点数
      */
-    @Excel(name = "用户剩余点数", prompt = "对应用户的剩余点数，仅计点模式")
+    @Excel(name = "用户剩余点数", prompt = "对应用户的剩余点数，仅计点模式生效")
     private BigDecimal point;
 
     public Date getUserExpireTime() {
