@@ -311,6 +311,8 @@ public class QuickAccessApkUtil {
             // 原程序dex编译器
             DexBuilder oriBuilder = new DexBuilder(Opcodes.getDefault());
             oriBuilder.setIgnoreMethodAndFieldError(true);
+            DexBuilder oriBuilder2 = new DexBuilder(Opcodes.getDefault());
+            oriBuilder.setIgnoreMethodAndFieldError(true);
             // 读入注入文件
 //            String injectPath = PathUtils.getUserPath() + File.separator + "src/test/resources" + File.separator + "data.dat";
             String injectPath = PathUtils.getUserPath() + File.separator + "template" + File.separator + template + ".apk.tpl";
@@ -318,12 +320,37 @@ public class QuickAccessApkUtil {
             // 抽取的代码编译器
 //            DexBuilder injectBuider = new DexBuilder(Opcodes.getDefault());
 //            injectBuider.setIgnoreMethodAndFieldError(true);
+
+            // 获取dex列表
+            List<String> dexNameList = new ArrayList<>();
+            Enumeration<ZipEntry> e = oriFile.getEntries();
+            while (e.hasMoreElements()) {
+                ZipEntry ze = e.nextElement();
+                if (ze.getName().startsWith("classes") && ze.getName().endsWith("dex")) {
+                    dexNameList.add(ze.getName());
+                }
+            }
+            // 判断dex数量
+            String targetDexName;
+            if (dexNameList.size() == 0) {
+                System.out.println("未找到dex文件");
+                throw new ServiceException("未找到dex文件");
+            } else {
+                if (dexNameList.size() == 1) {
+                    targetDexName = "classes.dex";
+                } else {
+                    targetDexName = "classes" + dexNameList.size() + ".dex";
+                }
+            }
+
             // 分析dex
             DexBackedDexFile oriClasses = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(mainDex)))));
             DexBackedDexFile injectClasses = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new FileInputStream(injectFile)));
             Set<DexBackedClassDef> classesSet = new HashSet<>();
             classesSet.addAll(oriClasses.getClasses());
-            classesSet.addAll(injectClasses.getClasses());
+            if (targetDexName.equals(mainDex)) {
+                classesSet.addAll(injectClasses.getClasses());
+            }
             List<DexBackedClassDef> classesList = new ArrayList<>(classesSet);
 
             // 插入代码
@@ -345,31 +372,43 @@ public class QuickAccessApkUtil {
                 }
                 // 更新进度
             }
+            System.out.println("getMethodReferences.size(): " + oriBuilder.getMethodReferences().size());
 
             // 重组APK
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            AXMLDoc doc = new AXMLDoc();
-            doc.parse(new ByteArrayInputStream(toByteArray(oriFile.getInputStream(oriFile.getEntry("AndroidManifest.xml")))));
+
+//            boolean insertFlag = false;
+            boolean insertFlag = true;
+            try {
+                AXMLDoc doc = new AXMLDoc();
+                doc.parse(new ByteArrayInputStream(toByteArray(oriFile.getInputStream(oriFile.getEntry("AndroidManifest.xml")))));
 //            doc.parse(oriFile.getInputStream(oriFile.getEntry("AndroidManifest.xml")));
-            PermissionEditor permissionEditor = new PermissionEditor(doc);
-            permissionEditor.setEditorInfo(new PermissionEditor.EditorInfo()
-                    .with(new PermissionEditor.PermissionOpera("android.permission.本验证由红叶网络验证提供").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.QQ群.947144396").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.COORDSOFT").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.INTERNET").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_NETWORK_STATE").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_WIFI_STATE").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.READ_PHONE_STATE").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.WRITE_EXTERNAL_STORAGE").add())
-            );
-            permissionEditor.commit();
-            doc.build(byteArrayOutputStream);
-            doc.release();
+                PermissionEditor permissionEditor = new PermissionEditor(doc);
+                permissionEditor.setEditorInfo(new PermissionEditor.EditorInfo()
+                        .with(new PermissionEditor.PermissionOpera("android.permission.本验证由红叶网络验证提供").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.QQ群.947144396").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.COORDSOFT").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.INTERNET").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_NETWORK_STATE").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_WIFI_STATE").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.READ_PHONE_STATE").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.WRITE_EXTERNAL_STORAGE").add())
+                );
+                permissionEditor.commit();
+                doc.build(byteArrayOutputStream);
+                doc.release();
+            } catch (Exception e1) {
+                insertFlag = false;
+                e1.printStackTrace();
+            }
             ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(outputPath));
             zos.setLevel(1);
-            zos.putNextEntry("AndroidManifest.xml");
-            zos.write(byteArrayOutputStream.toByteArray());
-            zos.closeEntry();
+
+            if (insertFlag) {
+                zos.putNextEntry("AndroidManifest.xml");
+                zos.write(byteArrayOutputStream.toByteArray());
+                zos.closeEntry();
+            }
 
             MemoryDataStore store = new MemoryDataStore();
             oriBuilder.writeTo(store);
@@ -377,10 +416,28 @@ public class QuickAccessApkUtil {
             zos.write(Arrays.copyOf(store.getBufferData(), store.getSize()));
             zos.closeEntry();
 
+            if (!targetDexName.equals(mainDex)) {
+                DexBackedDexFile oriClasses2 = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(targetDexName)))));
+                Set<DexBackedClassDef> classesSet2 = new HashSet<>();
+                classesSet2.addAll(oriClasses2.getClasses());
+                classesSet2.addAll(injectClasses.getClasses());
+                List<DexBackedClassDef> classesList2 = new ArrayList<>(classesSet2);
+                for (int i = 0; i < classesList2.size(); i++) {
+                    DexBackedClassDef cl = classesList2.get(i);
+                    oriBuilder2.internClassDef(cl);
+                    // 更新进度
+                }
+                MemoryDataStore store2 = new MemoryDataStore();
+                oriBuilder2.writeTo(store2);
+                zos.putNextEntry(targetDexName);
+                zos.write(Arrays.copyOf(store2.getBufferData(), store2.getSize()));
+                zos.closeEntry();
+            }
+
             Enumeration<ZipEntry> enumeration = oriFile.getEntries();
             while (enumeration.hasMoreElements()) {
                 ZipEntry ze = enumeration.nextElement();
-                if (ze.getName().equals("AndroidManifest.xml") || ze.getName().equals(mainDex))
+                if (ze.getName().equals("AndroidManifest.xml") && insertFlag || ze.getName().equals(mainDex) || ze.getName().equals(targetDexName))
                     continue;
                 zos.copyZipEntry(ze, oriFile);
                 // 更新进度
