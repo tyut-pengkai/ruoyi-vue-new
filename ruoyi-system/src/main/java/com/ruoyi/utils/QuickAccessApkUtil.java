@@ -260,26 +260,36 @@ public class QuickAccessApkUtil {
 
             // 重组APK
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            AXMLDoc doc = new AXMLDoc();
-            doc.parse(new ByteArrayInputStream(xml));
-            PermissionEditor permissionEditor = new PermissionEditor(doc);
-            permissionEditor.setEditorInfo(new PermissionEditor.EditorInfo()
-                    .with(new PermissionEditor.PermissionOpera("android.permission.本验证由红叶网络验证提供").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.QQ群.947144396").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.COORDSOFT").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.INTERNET").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_NETWORK_STATE").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_WIFI_STATE").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.READ_PHONE_STATE").add())
-                    .with(new PermissionEditor.PermissionOpera("android.permission.WRITE_EXTERNAL_STORAGE").add())
-            );
-            permissionEditor.commit();
-            doc.build(byteArrayOutputStream);
-            doc.release();
+            boolean insertFlag = true;
+            try {
+                AXMLDoc doc = new AXMLDoc();
+                doc.parse(new ByteArrayInputStream(xml));
+                PermissionEditor permissionEditor = new PermissionEditor(doc);
+                permissionEditor.setEditorInfo(new PermissionEditor.EditorInfo()
+                        .with(new PermissionEditor.PermissionOpera("android.permission.本验证由红叶网络验证提供").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.QQ群.947144396").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.COORDSOFT").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.INTERNET").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_NETWORK_STATE").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_WIFI_STATE").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.READ_PHONE_STATE").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.WRITE_EXTERNAL_STORAGE").add())
+                );
+                permissionEditor.commit();
+                doc.build(byteArrayOutputStream);
+                doc.release();
+            } catch (Exception e1) {
+                insertFlag = false;
+                e1.printStackTrace();
+            }
             ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(outputPath));
 //            zos.setLevel(1);
             zos.putNextEntry("AndroidManifest.xml");
-            zos.write(byteArrayOutputStream.toByteArray());
+            if (insertFlag) {
+                zos.write(byteArrayOutputStream.toByteArray());
+            } else {
+                zos.write(xml);
+            }
             zos.closeEntry();
 
             MemoryDataStore store = new MemoryDataStore();
@@ -376,7 +386,6 @@ public class QuickAccessApkUtil {
 
             // 重组APK
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
 //            boolean insertFlag = false;
             boolean insertFlag = true;
             try {
