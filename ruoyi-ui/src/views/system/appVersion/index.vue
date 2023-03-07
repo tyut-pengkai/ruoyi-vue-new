@@ -1085,23 +1085,27 @@ export default {
     },
     // 文件上传成功处理
     handleFileSuccess(response, file, fileList) {
-      if (response.data.step === "file") {
-        // this.$download.name(response.msg);
-        this.downFile(response.data.data);
-        this.upload.open = false;
-        this.upload.isUploading = false;
-        this.$refs.upload.clearFiles();
-      } else if (response.data.step === "activityList") {
-        this.selectActivityMethod.activityList = [];
-        for (let item of response.data.list || []) {
-          this.selectActivityMethod.activityList.push({
-            value: item,
-            label: item,
-          });
+      if (response.code == 200) {
+        if (response.data.step === "file") {
+          // this.$download.name(response.msg);
+          this.downFile(response.data.data);
+          this.upload.open = false;
+          this.upload.isUploading = false;
+          this.$refs.upload.clearFiles();
+        } else if (response.data.step === "activityList") {
+          this.selectActivityMethod.activityList = [];
+          for (let item of response.data.list || []) {
+            this.selectActivityMethod.activityList.push({
+              value: item,
+              label: item,
+            });
+          }
+          this.selectActivityMethod.loadActivityDialogStatus = true;
+          this.upload.oriPath = response.data.oriPath;
+          this.upload.oriName = response.data.oriName;
         }
-        this.selectActivityMethod.loadActivityDialogStatus = true;
-        this.upload.oriPath = response.data.oriPath;
-        this.upload.oriName = response.data.oriName;
+      } else {
+        this.$modal.alert("接入失败：" + response.msg);
       }
     },
     // 提交上传文件
