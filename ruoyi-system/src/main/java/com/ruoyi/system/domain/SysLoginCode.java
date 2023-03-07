@@ -108,7 +108,8 @@ public class SysLoginCode extends BaseEntity {
      * 所属软件信息
      */
     @Excel(name = "软件名称", targetAttr = "appName")
-    private SysApp app;
+    private SysApp app = new SysApp();
+    ;
 
     /**
      * 批量生成单码数量
@@ -147,7 +148,7 @@ public class SysLoginCode extends BaseEntity {
 
     private Long agentId;
     @Excel(name = "所属代理账号", targetAttr = "userName")
-    private SysUser agentUser;
+    private SysUser agentUser = new SysUser();
 
     // 以下为批量导入时用于赋值到软件用户的属性
     /**
