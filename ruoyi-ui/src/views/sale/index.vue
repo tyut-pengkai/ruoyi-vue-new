@@ -247,7 +247,7 @@ a {
   top: 0;
   padding: 0;
   position: fixed;
-  z-index: 9999;
+  z-index: 999;
   width: 100%;
 }
 
