@@ -229,6 +229,19 @@ public class SysApp extends BaseEntity
     @Excel(name = "自定义购卡链接")
     private String customBuyUrl;
 
+    /**
+     * 是否开启前台充值
+     */
+    private String enableFeCharge;
+
+    public String getEnableFeCharge() {
+        return enableFeCharge;
+    }
+
+    public void setEnableFeCharge(String enableFeCharge) {
+        this.enableFeCharge = enableFeCharge;
+    }
+
     public String getCustomBuyUrl() {
         return customBuyUrl;
     }

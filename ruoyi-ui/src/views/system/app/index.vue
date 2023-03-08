@@ -251,7 +251,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         :show-overflow-tooltip="true"
         align="center"
         label="软件作者"
@@ -266,7 +266,7 @@
               : "[用户不存在]"
           }}
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <!-- <el-table-column
         label="创建时间"
         align="center"
@@ -542,7 +542,6 @@
               </el-form-item>
 
               <el-form-item>
-                <el-col :span="12"></el-col>
                 <el-col :span="12">
                   <el-form-item label="首次登录赠送" prop="freeQuotaReg">
                     <span>
@@ -561,6 +560,21 @@
                       controls-position="right"
                       :min="0"
                     />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="开启前台充值" prop="enableFeCharge">
+                    <el-select
+                      v-model="form.enableFeCharge"
+                      placeholder="请选择是否开启前台充值"
+                    >
+                      <el-option
+                        v-for="dict in dict.type.sys_yes_no"
+                        :key="dict.value"
+                        :label="dict.label"
+                        :value="dict.value"
+                      ></el-option>
+                    </el-select>
                   </el-form-item>
                 </el-col>
               </el-form-item>
@@ -1436,6 +1450,13 @@ export default {
             trigger: "blur",
           },
         ],
+        enableFeCharge: [
+          {
+            required: true,
+            message: "是否允许前台充值不能为空",
+            trigger: "blur",
+          },
+        ],
       },
       trialTimeQuantum: null,
     };
@@ -1540,6 +1561,7 @@ export default {
         enableUnbindByQuota: "Y",
         customBuyUrl: undefined,
         enableNegative: "N",
+        enableFeCharge: "Y",
       };
       this.resetForm("form");
       this.tabIdx = "0";

@@ -54,6 +54,7 @@
 		<result property="enableUnbindByQuota" column="enable_unbind_by_quota"/>
 		<result property="customBuyUrl" column="custom_buy_url"/>
 		<result property="shopUrl" column="shop_url"/>
+		<result property="enableFeCharge" column="enable_fe_charge"/>
 		<association property="developer" column="create_by" javaType="SysUser" resultMap="SysUserResult"/>
 	</resultMap>
 
@@ -113,6 +114,7 @@
 			   a.enable_unbind_by_quota,
 			   a.custom_buy_url,
 			   a.shop_url,
+			   a.enable_fe_charge,
 			   u.user_id,
 			   u.user_name,
 			   u.nick_name
@@ -171,6 +173,7 @@
 			${params.dataScope}
 		</if>
 		<if test="enableUnbind != null">and a.enable_unbind = #{enableUnbind}</if>
+		<if test="enableFeCharge != null">and a.enable_fe_charge = #{enableFeCharge}</if>
 	</select>
 
     <select id="selectSysAppByAppId" parameterType="Long" resultMap="SysAppResult">
@@ -235,6 +238,7 @@
 			<if test="enableUnbindByQuota != null">enable_unbind_by_quota,</if>
 			<if test="customBuyUrl != null">custom_buy_url,</if>
 			<if test="shopUrl != null">shop_url,</if>
+			<if test="enableFeCharge != null">enable_fe_charge,</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="appId != null">#{appId},</if>
@@ -286,6 +290,7 @@
 			<if test="enableUnbindByQuota != null">#{enableUnbindByQuota},</if>
 			<if test="customBuyUrl != null">#{customBuyUrl},</if>
 			<if test="shopUrl != null">#{shopUrl},</if>
+			<if test="enableFeCharge != null">#{enableFeCharge},</if>
 		</trim>
 	</insert>
 
@@ -342,6 +347,7 @@
 			<if test="enableUnbindByQuota != null">enable_unbind_by_quota = #{enableUnbindByQuota},</if>
 			<if test="customBuyUrl != null">custom_buy_url = #{customBuyUrl},</if>
 			<if test="shopUrl != null">shop_url = #{shopUrl},</if>
+			<if test="enableFeCharge != null">enable_fe_charge = #{enableFeCharge},</if>
 		</trim>
 		where app_id = #{appId}
 	</update>

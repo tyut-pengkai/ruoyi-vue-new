@@ -208,7 +208,7 @@ export default {
   methods: {
     /** 查询软件列表 */
     getAppList(authType) {
-      listApp({authType: authType}).then((response) => {
+      listApp({authType: authType, enableFeCharge: "Y"}).then((response) => {
         this.appList = response.rows;
       });
     },
