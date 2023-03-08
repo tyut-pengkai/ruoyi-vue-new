@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.validation.Validator;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -239,19 +241,43 @@ public class SysCardServiceImpl implements ISysCardService {
                                 card.setTemplateId(template.getTemplateId());
                                 card.setAppId(app.getAppId());
                                 boolean errFlag = false;
-                                if (UserConstants.YES.equals(card.getIsAgent()) && card.getAgentUser() != null && StringUtils.isNotBlank(card.getAgentUser().getUserName())) {
+                                if (card.getAgentUser() != null && StringUtils.isNotBlank(card.getAgentUser().getUserName())) {
                                     // 验证代理是否存在
                                     String agentUserName = card.getAgentUser().getUserName();
                                     SysUser agentUser = sysUserService.selectUserByUserName(agentUserName);
                                     if (agentUser != null) {
                                         card.setAgentId(agentUser.getUserId());
+                                        card.setIsAgent(UserConstants.YES);
                                     } else {
                                         errFlag = true;
                                         failureNum++;
                                         failureMsg.append("<br/>" + failureNum + "、卡密[" + card.getCardNo() + "]导入失败：代理[" + agentUserName + "]不存在");
                                     }
+                                } else {
+                                    card.setIsAgent(UserConstants.NO);
                                 }
                                 if (!errFlag) {
+                                    // card默认值填充
+                                    card.setApp(app);
+                                    card.setChargeRule(template.getChargeRule());
+                                    if (template.getEffectiveDuration() == -1) {
+                                        card.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE));
+                                    } else {
+                                        // sysCard.setExpireTime(DateUtils.addSeconds(new Date(), cardTpl.getEffectiveDuration().intValue()));
+                                        LocalDateTime ldt = DateUtils.toLocalDateTime(new Date());
+                                        ldt = ldt.plus(template.getEffectiveDuration(), ChronoUnit.SECONDS);
+                                        card.setExpireTime(DateUtils.toDate(ldt));
+                                    }
+                                    card.setPrice(template.getPrice());
+                                    card.setQuota(template.getQuota());
+                                    card.setCardLoginLimitU(template.getCardLoginLimitU());
+                                    card.setCardLoginLimitM(template.getCardLoginLimitM());
+                                    card.setCardCustomParams(template.getCardCustomParams());
+                                    try {
+                                        card.setCreateBy(SecurityUtils.getUsername());
+                                    } catch (Exception ignored) {
+                                    }
+                                    // 保存
                                     this.insertSysCard(card);
                                     successNum++;
                                     successMsg.append("<br/>" + successNum + "、卡密[" + card.getCardNo() + "]导入成功");

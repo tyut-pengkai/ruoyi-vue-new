@@ -34,57 +34,57 @@ public class SysLoginCode extends BaseEntity {
     /**
      * 单码名称
      */
-    @Excel(name = "单码名称")
+    @Excel(name = "单码名称", sort = 2)
     private String cardName;
 
     /**
      * 单码
      */
-    @Excel(name = "单码")
+    @Excel(name = "单码", sort = 3)
     private String cardNo;
 
     /**
      * 额度
      */
-    @Excel(name = "额度", prompt = "单位秒（计时模式）或点（计点模式）")
+    @Excel(name = "额度", prompt = "单位秒（计时模式）或点（计点模式）", type = Excel.Type.EXPORT)
     private Long quota;
 
     /**
      * 价格
      */
-    @Excel(name = "零售价格")
+    @Excel(name = "零售价格", type = Excel.Type.EXPORT)
     private BigDecimal price;
 
     /**
      * 过期时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Excel(name = "过期时间", prompt = "卡允许激活的期限，用户需要在此日期前激活卡密，超过此日期此卡密将无法使用", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "过期时间", prompt = "卡允许激活的期限，用户需要在此日期前激活卡密，超过此日期此卡密将无法使用", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", type = Excel.Type.EXPORT)
     private Date expireTime;
 
     /**
      * 是否售出
      */
-    @Excel(name = "是否售出", dictType = "sys_yes_no")
+    @Excel(name = "是否售出", dictType = "sys_yes_no", sort = 5)
     private String isSold;
 
     /**
      * 是否上架
      */
-    @Excel(name = "是否上架", dictType = "sys_yes_no")
+    @Excel(name = "是否上架", dictType = "sys_yes_no", sort = 6)
     private String onSale;
 
     /**
      * 是否被充值
      */
-    @Excel(name = "是否被充值", dictType = "sys_yes_no")
+    @Excel(name = "是否被充值", dictType = "sys_yes_no", sort = 7)
     private String isCharged;
 
     /**
      * 充值时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Excel(name = "充值时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "充值时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", sort = 8)
     private Date chargeTime;
 
     /**
@@ -95,19 +95,19 @@ public class SysLoginCode extends BaseEntity {
     /**
      * 单码状态
      */
-    @Excel(name = "单码状态", dictType = "sys_normal_disable")
+    @Excel(name = "单码状态", dictType = "sys_normal_disable", sort = 4)
     private String status;
 
     /**
-     * 是否被充值
+     * 是否代理制卡
      */
-    @Excel(name = "是否代理制卡", dictType = "sys_yes_no")
+    @Excel(name = "是否代理制卡", dictType = "sys_yes_no", type = Excel.Type.EXPORT)
     private String isAgent;
 
     /**
      * 所属软件信息
      */
-    @Excel(name = "软件名称", targetAttr = "appName")
+    @Excel(name = "软件名称", targetAttr = "appName", sort = 1)
     private SysApp app = new SysApp();
     ;
 
@@ -125,29 +125,29 @@ public class SysLoginCode extends BaseEntity {
     /**
      * 登录用户数量限制，整数，-1为不限制，默认为-1
      */
-    @Excel(name = "登录用户数量限制(卡)", prompt = "由卡密继承来的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2")
+    @Excel(name = "登录用户数量限制(卡)", prompt = "由卡密继承来的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2", type = Excel.Type.EXPORT)
     private Integer cardLoginLimitU;
 
     /**
      * 登录机器数量限制，整数，-1为不限制，默认为-1
      */
-    @Excel(name = "登录机器数量限制(卡)", prompt = "由卡密继承来的登录机器数量限制，整数，-1为不限制，-2为不生效，默认为-2")
+    @Excel(name = "登录机器数量限制(卡)", prompt = "由卡密继承来的登录机器数量限制，整数，-1为不限制，-2为不生效，默认为-2", type = Excel.Type.EXPORT)
     private Integer cardLoginLimitM;
 
     /**
      * 卡密自定义参数
      */
-    @Excel(name = "卡密自定义参数")
+    @Excel(name = "卡密自定义参数", type = Excel.Type.EXPORT)
     private String cardCustomParams;
 
     /**
      * 制卡批次号
      */
-    @Excel(name = "制卡批次号")
+    @Excel(name = "制卡批次号", sort = 9)
     private String batchNo;
 
     private Long agentId;
-    @Excel(name = "所属代理账号", targetAttr = "userName")
+    @Excel(name = "所属代理账号", targetAttr = "userName", sort = 10)
     private SysUser agentUser = new SysUser();
 
     // 以下为批量导入时用于赋值到软件用户的属性
@@ -155,13 +155,13 @@ public class SysLoginCode extends BaseEntity {
      * 过期时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Excel(name = "用户过期时间", prompt = "对应用户的过期时间，仅计时模式生效", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "用户过期时间", prompt = "对应用户的过期时间，仅计时模式生效", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", sort = 11)
     private Date userExpireTime;
 
     /**
      * 剩余点数
      */
-    @Excel(name = "用户剩余点数", prompt = "对应用户的剩余点数，仅计点模式生效")
+    @Excel(name = "用户剩余点数", prompt = "对应用户的剩余点数，仅计点模式生效", sort = 12)
     private BigDecimal point;
 
     public Date getUserExpireTime() {

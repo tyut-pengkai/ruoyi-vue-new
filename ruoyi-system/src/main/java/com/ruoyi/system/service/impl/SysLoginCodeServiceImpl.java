@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.validation.Validator;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -225,23 +227,45 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
                             if (card1 == null) {
                                 BeanValidators.validateWithException(validator, card);
                                 card.setTemplateId(template.getTemplateId());
-                                card.setAppId(app.getAppId());
+                                card.setAppId(template.getAppId());
                                 SysAppUser appUser = new SysAppUser();
                                 boolean errFlag = false;
-                                if (UserConstants.YES.equals(card.getIsAgent()) && card.getAgentUser() != null && StringUtils.isNotBlank(card.getAgentUser().getUserName())) {
+                                if (card.getAgentUser() != null && StringUtils.isNotBlank(card.getAgentUser().getUserName())) {
                                     // 验证代理是否存在
                                     String agentUserName = card.getAgentUser().getUserName();
                                     SysUser agentUser = sysUserService.selectUserByUserName(agentUserName);
                                     if (agentUser != null) {
                                         card.setAgentId(agentUser.getUserId());
                                         appUser.setAgentId(agentUser.getUserId());
+                                        card.setIsAgent(UserConstants.YES);
                                     } else {
                                         errFlag = true;
                                         failureNum++;
                                         failureMsg.append("<br/>" + failureNum + "、单码[" + card.getCardNo() + "]导入失败：代理[" + agentUserName + "]不存在");
                                     }
+                                } else {
+                                    card.setIsAgent(UserConstants.NO);
                                 }
                                 if (!errFlag) {
+                                    // card默认值填充
+                                    card.setApp(app);
+                                    if (template.getEffectiveDuration() == -1) {
+                                        card.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE));
+                                    } else {
+                                        // sysLoginCode.setExpireTime(DateUtils.addSeconds(new Date(), loginCodeTpl.getEffectiveDuration().intValue()));
+                                        LocalDateTime ldt = DateUtils.toLocalDateTime(new Date());
+                                        ldt = ldt.plus(template.getEffectiveDuration(), ChronoUnit.SECONDS);
+                                        card.setExpireTime(DateUtils.toDate(ldt));
+                                    }
+                                    card.setPrice(template.getPrice());
+                                    card.setQuota(template.getQuota());
+                                    card.setCardLoginLimitU(template.getCardLoginLimitU());
+                                    card.setCardLoginLimitM(template.getCardLoginLimitM());
+                                    card.setCardCustomParams(template.getCardCustomParams());
+                                    try {
+                                        card.setCreateBy(SecurityUtils.getUsername());
+                                    } catch (Exception ignore) {
+                                    }
                                     // 导入软件用户
                                     boolean importUser = false;
                                     if (app.getBillType() == BillType.TIME && card.getUserExpireTime() != null) {
@@ -254,36 +278,51 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
                                         importUser = true;
                                     }
                                     if (importUser) {
-                                        appUser.setAppId(app.getAppId());
-                                        appUser.setUserId(null);
-                                        appUser.setLastLoginTime(null);
-                                        appUser.setLoginCode(card.getCardNo());
-                                        appUser.setLoginLimitM(-2);
-                                        appUser.setLoginLimitU(-2);
-                                        appUser.setCardLoginLimitM(card.getCardLoginLimitM());
-                                        appUser.setCardLoginLimitU(card.getCardLoginLimitU());
-                                        appUser.setCardCustomParams(card.getCardCustomParams());
-                                        appUser.setLoginTimes(0L);
-                                        appUser.setPwdErrorTimes(0);
-                                        appUser.setStatus(UserConstants.NORMAL);
-                                        appUser.setFreeBalance(BigDecimal.ZERO);
-                                        appUser.setPayBalance(BigDecimal.ZERO);
-                                        appUser.setFreePayment(BigDecimal.ZERO);
-                                        appUser.setPayPayment(BigDecimal.ZERO);
-                                        appUser.setUnbindTimes(app.getUnbindTimes());
-                                        appUser.setApp(app);
-                                        appUser.setLastChargeCardId(card.getCardId());
-                                        appUser.setLastChargeTemplateId(card.getTemplateId());
-                                        sysAppUserService.insertSysAppUser(appUser);
                                         card.setIsCharged(UserConstants.YES);
-                                        card.setChargeTime(DateUtils.getNowDate());
+                                        if (card.getChargeTime() == null) {
+                                            card.setChargeTime(DateUtils.getNowDate());
+                                        }
                                         card.setOnSale(UserConstants.NO);
                                     }
+                                    // 保存
                                     this.insertSysLoginCode(card);
+                                    boolean doImportUser = false;
+                                    if (importUser) {
+                                        SysAppUser appUser1 = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(app.getAppId(), card.getCardNo());
+                                        if (appUser1 == null) {
+                                            appUser.setAppId(app.getAppId());
+                                            appUser.setUserId(null);
+                                            appUser.setLastLoginTime(null);
+                                            appUser.setLoginCode(card.getCardNo());
+                                            appUser.setLoginLimitM(-2);
+                                            appUser.setLoginLimitU(-2);
+                                            appUser.setCardLoginLimitM(card.getCardLoginLimitM());
+                                            appUser.setCardLoginLimitU(card.getCardLoginLimitU());
+                                            appUser.setCardCustomParams(card.getCardCustomParams());
+                                            appUser.setLoginTimes(0L);
+                                            appUser.setPwdErrorTimes(0);
+                                            appUser.setStatus(UserConstants.NORMAL);
+                                            appUser.setFreeBalance(BigDecimal.ZERO);
+                                            appUser.setPayBalance(BigDecimal.ZERO);
+                                            appUser.setFreePayment(BigDecimal.ZERO);
+                                            appUser.setPayPayment(BigDecimal.ZERO);
+                                            appUser.setUnbindTimes(app.getUnbindTimes());
+                                            appUser.setApp(app);
+                                            appUser.setRemark(card.getRemark());
+                                            appUser.setLastChargeCardId(card.getCardId());
+                                            appUser.setLastChargeTemplateId(card.getTemplateId());
+                                            sysAppUserService.insertSysAppUser(appUser);
+                                            doImportUser = true;
+                                        }
+                                    }
                                     successNum++;
                                     successMsg.append("<br/>" + successNum + "、单码[" + card.getCardNo() + "]导入成功");
                                     if (importUser) {
-                                        successMsg.append(";软件用户导入成功");
+                                        if (doImportUser) {
+                                            successMsg.append(";软件用户导入成功");
+                                        } else {
+                                            successMsg.append(";软件用户导入失败，软件用户已存在");
+                                        }
                                     }
                                 }
                             } else {
