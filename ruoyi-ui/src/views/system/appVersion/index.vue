@@ -396,7 +396,7 @@
       :title="upload.title"
       :visible.sync="upload.open"
       append-to-body
-      width="450px"
+      width="550px"
     >
       <el-alert
         :closable="false"
@@ -417,7 +417,7 @@
           </span>
         </template>
       </el-alert>
-      <el-tabs style="width: 400px" type="border-card">
+      <el-tabs style="width: 500px" type="border-card">
         <el-tab-pane
           v-if="app && app.authType === '1' && app.billType === '0'"
           label="APK接入"
@@ -441,8 +441,11 @@
               '&activity=' +
               (upload.activity ? upload.activity : '') +
               '&method=' +
-              (upload.method ? upload.method : '')
+              (upload.method ? upload.method : '') +
+              '&fullScreen=' +
+              upload.fullScreen
             "
+            align="center"
             :auto-upload="false"
             :before-upload="onBeforeUpload"
             :disabled="upload.isUploading"
@@ -482,12 +485,24 @@
                   <el-radio :label="1">全局模式</el-radio>
                   <el-radio :label="2">单例模式</el-radio>
                 </el-radio-group>
+                <span style="margin-left: 15px">
+                  <el-tooltip
+                    content="全局模式为全自动注入模式，无需人工操作，单例模式为半自动注入模式，需指定要注入的Activity和Method"
+                    placement="top"
+                  >
+                    <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                    ></i>
+                  </el-tooltip>
+                </span>
               </div>
               <div style="margin-top: 10px">
                 <span style="margin-right: 10px">接入类别</span>
                 <el-select
                   v-model="upload.apkOper"
                   placeholder="请选择接入类别"
+                  style="width: 120px; margin-right: 10px"
                 >
                   <el-option
                     v-for="item in apkOperOptions"
@@ -497,9 +512,23 @@
                   >
                   </el-option>
                 </el-select>
+                <span style="margin-right: 10px">是否全屏</span>
+                <el-select
+                  v-model="upload.fullScreen"
+                  placeholder="请选择是否全屏"
+                  style="width: 120px"
+                >
+                  <el-option
+                    v-for="item in fullScreenOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
                 <span style="margin-left: 15px">
                   <el-tooltip
-                    content="建议将生成的apk加固后再发布"
+                    content="可选择弹窗模式还是全屏模式，全屏模式在未登录成功前无法看到APP首页内容"
                     placement="top"
                   >
                     <i
@@ -524,7 +553,7 @@
                 <el-select
                   v-model="upload.template"
                   placeholder="请选择接入模板"
-                  style="width: 86px; margin-right: 10px"
+                  style="width: 120px; margin-right: 10px"
                   @change="handleChangeTemplate"
                 >
                   <el-option
@@ -535,11 +564,11 @@
                   >
                   </el-option>
                 </el-select>
-                <span style="margin-right: 10px">皮肤</span>
+                <span style="margin-right: 10px">选择皮肤</span>
                 <el-select
                   v-model="upload.skin"
                   placeholder="请选择接入皮肤"
-                  style="width: 86px"
+                  style="width: 120px"
                 >
                   <el-option
                     v-for="item in skinOptions"
@@ -566,7 +595,7 @@
           <span>APK快速接入目前只支持【单码计时】模式的软件</span>
         </el-tab-pane>
         <el-tab-pane label="EXE接入">
-          <div style="width: 360px; height: 303px">
+          <div style="width: 466px; height: 303px">
             <el-alert
               :closable="false"
               show-icon
@@ -582,7 +611,7 @@
                 v-show="apvStr && apvStr != ''"
                 v-model="apvStr"
                 :readonly="true"
-                :rows="8"
+                :rows="9"
                 type="textarea"
               ></el-input>
               <el-button
@@ -600,8 +629,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button :loading="loading" type="primary" @click="submitFileForm"
         >确 定
-        </el-button
-        >
+        </el-button>
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -651,8 +679,7 @@
         <el-button
           @click="selectActivityMethod.loadActivityDialogStatus = false"
         >取 消
-        </el-button
-        >
+        </el-button>
       </div>
     </el-dialog>
 
@@ -680,8 +707,7 @@
         <el-button type="primary" @click="methodClose">确定</el-button>
         <el-button @click="selectActivityMethod.loadMethodDialogStatus = false"
         >取 消
-        </el-button
-        >
+        </el-button>
       </div>
     </el-dialog>
   </div>
@@ -801,6 +827,7 @@ export default {
         // 文件名
         oriName: null,
         uploaded: false,
+        fullScreen: false,
       },
       fileDown: {
         //弹出框控制的状态
@@ -843,6 +870,16 @@ export default {
         //   value: "0",
         //   label: "默认",
         // },
+      ],
+      fullScreenOptions: [
+        {
+          value: true,
+          label: "是",
+        },
+        {
+          value: false,
+          label: "否",
+        },
       ],
       showExe: false,
       showApk: false,
@@ -1311,7 +1348,9 @@ export default {
         "&oriPath=" +
         (this.upload.oriPath ? encodeURIComponent(this.upload.oriPath) : "") +
         "&oriName=" +
-        (this.upload.oriName ? encodeURIComponent(this.upload.oriName) : "")
+        (this.upload.oriName ? encodeURIComponent(this.upload.oriName) : "") +
+        "&fullScreen=" +
+        this.upload.fullScreen
       );
     },
     activityClose() {

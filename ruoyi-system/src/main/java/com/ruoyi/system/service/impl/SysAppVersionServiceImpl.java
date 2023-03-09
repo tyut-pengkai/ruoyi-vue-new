@@ -166,7 +166,8 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      * @return
      */
     @Override
-    public Map<String, Object> quickAccess(String accessType, MultipartFile file, Long versionId, boolean updateMd5, String apkOper, String template, String skin, ActivityMethodVo vo) {
+    public Map<String, Object> quickAccess(String accessType, MultipartFile file, Long versionId, boolean updateMd5,
+                                           String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen) {
         Map<String, Object> map = new HashMap<>();
         try {
             // 封装
@@ -183,7 +184,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(versionId);
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
             assert originalFilename != null;
-            QuickAccessResultVo result = quickAccessHandle(accessType, bytes, version, originalFilename, apkOper, template, skin, vo);
+            QuickAccessResultVo result = quickAccessHandle(accessType, bytes, version, originalFilename, apkOper, template, skin, vo, fullScreen);
 
             if ("1".equals(accessType) || ("2".equals(accessType) && result.getBytes() != null && result.getBytes().length > 0)) {
                 bytes = result.getBytes();
@@ -253,7 +254,8 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      * @param apkOper  1注入并加签 2仅注入 3仅加签
      * @return
      */
-    private QuickAccessResultVo quickAccessHandle(String accessType, byte[] bytes, SysAppVersion version, String filename, String apkOper, String template, String skin, ActivityMethodVo vo) {
+    private QuickAccessResultVo quickAccessHandle(String accessType, byte[] bytes, SysAppVersion version, String filename,
+                                                  String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen) {
         QuickAccessResultVo result = new QuickAccessResultVo();
         try {
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
@@ -271,6 +273,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             apv.setAuthType(app.getAuthType().getCode());
             apv.setBillType(app.getBillType().getCode());
             apv.setSkin(skin);
+            apv.setFullScreen(fullScreen);
             // 加密
             String apvStr = JSON.toJSONString(apv);
             apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");
@@ -427,7 +430,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
 
         try {
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(appVersionId);
-            QuickAccessResultVo result = quickAccessHandle(null, null, version, ".exe", null, null, null, null);
+            QuickAccessResultVo result = quickAccessHandle(null, null, version, ".exe", null, null, null, null, false);
             AppParamVo apv = (AppParamVo) result.getData().get("apv");
             String apvStr = JSON.toJSONString(apv);
             apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");
@@ -503,6 +506,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         private String authType;
         private String billType;
         private String skin;
+        private boolean fullScreen;
     }
 
     @Data

@@ -90,7 +90,8 @@ public interface ISysAppVersionService {
      * @param versionId
      * @return
      */
-    public Map<String, Object> quickAccess(String accessType, MultipartFile file, Long versionId, boolean updateMd5, String apkOper, String template, String skin, ActivityMethodVo vo);
+    public Map<String, Object> quickAccess(String accessType, MultipartFile file, Long versionId, boolean updateMd5,
+                                           String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen);
 
     /**
      * 检查软件名称唯一性
