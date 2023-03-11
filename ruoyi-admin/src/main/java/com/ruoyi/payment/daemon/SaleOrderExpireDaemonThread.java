@@ -62,8 +62,11 @@ public class SaleOrderExpireDaemonThread {
                         redisCache.redisTemplate.opsForZSet().remove(CacheConstants.SALE_ORDER_EXPIRE_KEY, orderNoStr);
                     }
                 }
-                Thread.sleep(10000);
             } catch (Exception ignored) {
+            }
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException ignored) {
             }
         }
     }

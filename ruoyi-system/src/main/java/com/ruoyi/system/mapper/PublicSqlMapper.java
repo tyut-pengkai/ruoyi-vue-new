@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public interface PublicSqlMapper {
@@ -13,13 +12,22 @@ public interface PublicSqlMapper {
     @Select("${nativeSql}")
     Object nativeSql(@Param("nativeSql") String nativeSql);
 
+
     /**
      * 通用查询
      *
      * @return
      */
     @Select("${sql}")
-    List<LinkedHashMap<String, Object>> select(Map<String, Object> map);
+    <T> List<LinkedHashMap<String, T>> select(@Param("sql") String sql, Class<T> clazz);
+
+    /**
+     * 通用查询
+     *
+     * @return
+     */
+    @Select("${sql}")
+    <T> List<T> select2(@Param("sql") String sql, Class<T> clazz);
 
     /**
      * 新增
@@ -28,7 +36,7 @@ public interface PublicSqlMapper {
      * @return
      */
     @Insert("${sql}")
-    int insert(Map<String, Object> map);
+    int insert(@Param("sql") String sql);
 
     /**
      * 修改
@@ -37,7 +45,7 @@ public interface PublicSqlMapper {
      * @return
      */
     @Update("${sql}")
-    int update(Map<String, Object> map);
+    int update(@Param("sql") String sql);
 
     /**
      * 删除
@@ -46,6 +54,6 @@ public interface PublicSqlMapper {
      * @return
      */
     @Delete("${sql}")
-    int delete(Map<String, Object> map);
+    int delete(@Param("sql") String sql);
 }
 

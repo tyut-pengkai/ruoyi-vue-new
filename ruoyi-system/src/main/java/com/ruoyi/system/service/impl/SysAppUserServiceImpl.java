@@ -163,6 +163,11 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
      */
     @Override
     public int updateSysDeviceCodeStatus(SysAppUser sysAppUser) {
-        return sysAppUserMapper.updateSysAppUser(sysAppUser);
+        int i = sysAppUserMapper.updateSysAppUser(sysAppUser);
+        if (i > 0) {
+            SysAppUser appUser = sysAppUserMapper.selectSysAppUserByAppUserId(sysAppUser.getAppUserId());
+            redisCache.setCacheObject(CacheConstants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser, 24, TimeUnit.HOURS);
+        }
+        return i;
     }
 }
