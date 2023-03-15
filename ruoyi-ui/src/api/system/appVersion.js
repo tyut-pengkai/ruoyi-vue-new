@@ -73,5 +73,6 @@ export function getFileResult(query) {
   return request({
     url: '/system/appVersion/quickAccess?' + query,
     method: 'post',
+    timeout: 100000
   })
 }

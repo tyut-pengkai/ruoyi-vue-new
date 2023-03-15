@@ -1,8 +1,16 @@
-v1.4.0 - 2023-01-13
-新增：用户过期时间/剩余点数变动日志
-新增：按条件批量操作单码/卡密/软件用户
-优化：数据库自动升级优化
-
-<span style="color: red"><b>※※※注意：更新本版本后查看一下【验证管理】-【批量操作】中【对象】的选项是否为2个，如果不是2个则需要手动清除一下redis缓存，进入宝塔后台，选择【数据库】-【Redis】，右上角输入【sys_dict】并搜索，将搜索出的结果全选删除即可</b></span>
-
-<span style="color: red"><b>※※※注意：为确保自动升级成功，自动更新前请在application-config.yml文件中主库数据源的url配置在原有配置后新增【&allowMultiQueries=true】后手动重启，如原url值为【url: jdbc:mysql://127.0.0.1:3306/hywlyz?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8】，则修改为【url: jdbc:mysql://127.0.0.1:3306/hywlyz?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true】，否则请手动升级</b></span>
+v1.5.0 - 2023-03-11
+修复：更正API文档个别API分类错误的问题
+修复：修复首页系统提示信息被遮挡的问题
+修复：软件用户在用户列表页切换用户状态不生效的问题
+新增：软件用户信息增加最后登录IP字段
+新增：批量增减已过期用户时长支持设置基准时间
+新增：新增不登录获取用户信息API接口【appUserInfo.nc】和【appUserInfo.nu】
+新增：支持批量导入/导出卡密和单码数据
+新增：新增日志自动清理，当日志文件超过1G，日志记录超过10w条将自动执行清理任务，阈值可在【系统配置】-【参数设置】中调整
+优化：扣时扣点日志列表调整为倒序显示
+优化：软件配置新增【开启前台充值】选项，用于设置是否在系统首页【充值续费】模块中显示该软件，默认为开启
+优化：APK快速接入优化
+	支持单例模式接入
+	支持选择弹窗或全屏模式
+	支持有效期内不再弹窗
+优化：默认关闭系统账号注册功能，如需开启请在【系统配置】-【参数设置】中开启
