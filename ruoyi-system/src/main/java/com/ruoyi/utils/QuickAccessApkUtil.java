@@ -33,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class QuickAccessApkUtil {
 
@@ -521,8 +522,8 @@ public class QuickAccessApkUtil {
     }
 
     private static List<String> parseManifestActivity(InputStream is) throws IOException {
-        String PackageName = null;
-        List<String> list = new ArrayList();
+        String packageName = null;
+        List<String> list = new ArrayList<>();
         AXmlDecoder axml = AXmlDecoder.decode(is);
         AXmlResourceParser parser = new AXmlResourceParser();
         parser.open(new ByteArrayInputStream(axml.getData()), axml.mTableStrings);
@@ -534,7 +535,7 @@ public class QuickAccessApkUtil {
                 int size = parser.getAttributeCount();
                 for (int i = 0; i < size; ++i) {
                     if (parser.getAttributeName(i).equals("package")) {
-                        PackageName = parser.getAttributeValue(i);
+                        packageName = parser.getAttributeValue(i);
                     }
                 }
             } else if (parser.getName().equals("activity")) {
@@ -543,14 +544,14 @@ public class QuickAccessApkUtil {
                     if (parser.getAttributeNameResource(i) == 0x01010003) {
                         String name = parser.getAttributeValue(i);
                         if (name.startsWith(".")) {
-                            name = PackageName + name;
+                            name = packageName + name;
                         }
                         list.add(name);
                     }
                 }
             }
         }
-        return list;
+        return list.stream().distinct().collect(Collectors.toList());
     }
 
     public static List<String> parseManifestActivity(String oriPath) throws IOException {
@@ -578,7 +579,7 @@ public class QuickAccessApkUtil {
             throw new ServiceException("未找到dex文件");
         } else {
             DexBackedDexFile cl;
-            List<String> methodlist = new ArrayList();
+            List<String> methodList = new ArrayList<>();
             for (final String dexFile : dexNameList) {
 //                if (mainDex != null) {
 //                    break;
@@ -588,13 +589,13 @@ public class QuickAccessApkUtil {
                     if (h.getType().equals("L" + activity.replace(".", "/") + ";")) {
                         mainDex = dexFile;
                         for (DexBackedMethod m : h.getMethods()) {
-                            methodlist.add(m.getName());
+                            methodList.add(m.getName());
                         }
                         break;
                     }
                 }
             }
-            return methodlist;
+            return methodList.stream().distinct().collect(Collectors.toList());
         }
     }
 

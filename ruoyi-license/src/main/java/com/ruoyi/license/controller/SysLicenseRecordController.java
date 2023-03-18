@@ -45,6 +45,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -97,6 +98,36 @@ public class SysLicenseRecordController extends BaseController {
         startPage();
         List<SysLicenseRecord> list = sysLicenseRecordService.selectSysLicenseRecordList(sysLicenseRecord);
         return getDataTable(list);
+    }
+
+    @GetMapping("/getSystemInfo")
+    public AjaxResult getSystemInfo(final String webUrl) {
+        try {
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            if (StringUtils.isNotBlank(webUrl)) {
+                Future<RuoYiConfig> future = executorService.submit(() -> {
+                    String url = webUrl;
+                    url = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
+                    String response = HttpUtils.sendGet(url + "/prod-api/common/sysInfo");
+                    log.info("getWebsiteSysInfoResponse({}): {}", webUrl, response);
+                    if (StringUtils.isBlank(response)) {
+                        throw new ServiceException("获取目标网站版本信息失败，返回空白信息");
+                    }
+                    return JSON.parseObject(response, RuoYiConfig.class);
+                });
+                executorService.shutdown();
+                RuoYiConfig config = future.get(5, TimeUnit.SECONDS);
+                return AjaxResult.success(config);
+            } else {
+                throw new ServiceException("URL为空");
+            }
+        } catch (ServiceException e) {
+            return AjaxResult.success(e.getMessage());
+        } catch (TimeoutException e) {
+            return AjaxResult.success("探测超时");
+        } catch (Exception e) {
+            return AjaxResult.success(e.getMessage());
+        }
     }
 
     /**

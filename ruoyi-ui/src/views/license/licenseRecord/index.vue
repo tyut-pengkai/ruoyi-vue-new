@@ -15,11 +15,11 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="服务器识别码" prop="deviceCode">
+      <el-form-item label="设备码" prop="deviceCode">
         <el-input
           v-model="queryParams.deviceCode"
           clearable
-          placeholder="请输入服务器识别码"
+          placeholder="请输入设备码"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -155,11 +155,18 @@
       v-loading="loading"
       :data="licenseRecordList"
       @selection-change="handleSelectionChange"
+      :key="isUpdate"
     >
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="编号" prop="id"/>
       <el-table-column align="center" label="网站URL" prop="webUrl"/>
-      <el-table-column align="center" label="服务器识别码" prop="deviceCode"/>
+      <el-table-column align="center" label="设备码" prop="deviceCode"/>
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="当前版本"
+        prop="version"
+      />
       <el-table-column align="center" label="姓名" prop="name"/>
       <el-table-column align="center" label="联系方式" prop="contact"/>
       <el-table-column align="center" label="授权状态" prop="status">
@@ -240,11 +247,8 @@
         <el-form-item label="网站URL" prop="webUrl">
           <el-input v-model="form.webUrl" placeholder="请输入网站URL"/>
         </el-form-item>
-        <el-form-item label="服务器识别码" prop="deviceCode">
-          <el-input
-            v-model="form.deviceCode"
-            placeholder="请输入服务器识别码"
-          />
+        <el-form-item label="设备码" prop="deviceCode">
+          <el-input v-model="form.deviceCode" placeholder="请输入设备码"/>
         </el-form-item>
         <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="请输入姓名"/>
@@ -310,6 +314,7 @@ import {
   addLicenseRecord,
   delLicenseRecord,
   getLicenseRecord,
+  getSystemInfo,
   listLicenseRecord,
   removeLicenseRecord,
   updateLicenseRecord,
@@ -320,6 +325,7 @@ export default {
   dicts: ["sys_license_status"],
   data() {
     return {
+      isUpdate: false,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -377,8 +383,18 @@ export default {
         this.queryParams.params["endEndTime"] = this.daterangeEndTime[1];
       }
       listLicenseRecord(this.queryParams).then((response) => {
-        this.licenseRecordList = response.rows;
         this.total = response.total;
+        for (let i = 0; i < response.rows.length; i++) {
+          getSystemInfo({webUrl: response.rows[i]["webUrl"]}).then((res) => {
+            if (res.data) {
+              response.rows[i]["version"] = res.data.version;
+            } else {
+              response.rows[i]["version"] = res.msg;
+            }
+            this.isUpdate = !this.isUpdate;
+          });
+        }
+        this.licenseRecordList = response.rows;
         this.loading = false;
       });
     },

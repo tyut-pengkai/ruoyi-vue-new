@@ -68,3 +68,12 @@ export function genLicenseFileByDeviceCode(query) {
     params: query
   })
 }
+
+// 获取网站信息
+export function getSystemInfo(query) {
+  return request({
+    url: '/license/licenseRecord/getSystemInfo',
+    method: 'get',
+    params: query
+  })
+}

@@ -73,6 +73,17 @@ public class SysLicenseRecord extends BaseEntity {
     @Excel(name = "使用的单码")
     private String loginCode;
 
+    @Excel(name = "系统版本")
+    private String version;
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
     public LicenseStatus getStatus() {
         return status;
     }

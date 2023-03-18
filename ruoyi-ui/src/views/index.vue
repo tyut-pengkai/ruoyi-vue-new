@@ -149,6 +149,14 @@
               <span>更新日志</span>
             </div>
             <el-collapse accordion>
+              <el-collapse-item title="v1.5.1 - 2023-03-18">
+                <ol>
+                  <li>修复：修复APK全局注入闪退的问题</li>
+                  <li>
+                    修复：修复APK单例注入无法选择&lt;init&gt;、&lt;cinit&gt;等方法的问题
+                  </li>
+                </ol>
+              </el-collapse-item>
               <el-collapse-item title="v1.5.0 - 2023-03-11">
                 <ol>
                   <li>修复：更正API文档个别API分类错误的问题</li>

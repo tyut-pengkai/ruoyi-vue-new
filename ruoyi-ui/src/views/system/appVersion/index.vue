@@ -1187,7 +1187,7 @@ export default {
           })
           .catch((error) => {
             console.info(error);
-            this.$modal.alert("上传失败：" + error);
+            this.$modal.alert("接入失败：" + error);
           })
           .finally(() => {
             this.loading = false;
