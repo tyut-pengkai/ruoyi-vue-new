@@ -118,7 +118,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/system/license/info").permitAll()
                 .antMatchers("/sale/shop/**").permitAll()
                 .antMatchers("/checkSafeEntrance").permitAll()
-//                .antMatchers("/license/**").permitAll()
+                .antMatchers("/license/**").permitAll() // 官网的授权模块
                 .antMatchers("/system/license/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/common/sysInfo", "/system/website/config").permitAll()
                 .antMatchers(HttpMethod.GET, "/common/download", "/common/globalFileDownload/*/*").permitAll()

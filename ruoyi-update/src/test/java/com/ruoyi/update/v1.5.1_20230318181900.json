@@ -1009,14 +1009,14 @@
       "size": 17268
     },
     {
-      "md5": "77dfef8de726e5a344285ba9b5c07bd6",
+      "md5": "bdf842ef86c10ef997d1ee6446bd9cf5",
       "shortPath": "web\\index.html",
       "size": 16956
     },
     {
-      "md5": "91a82858ae3308eb758b08d17facd842",
+      "md5": "58ffae3a3acfe1c0911e520342fbf014",
       "shortPath": "web\\index.html.gz",
-      "size": 5528
+      "size": 5527
     },
     {
       "md5": "3d9eb68a299415af52ad96ac2f648a7a",
@@ -1049,16 +1049,6 @@
       "size": 391
     },
     {
-      "md5": "60593f38bd30a11301d4cbed8fb02622",
-      "shortPath": "web\\static\\css\\chunk-03b0e2e2.01ba09a9.css",
-      "size": 1799
-    },
-    {
-      "md5": "2428039889f095ef7509c2a4212fc41d",
-      "shortPath": "web\\static\\css\\chunk-03b0e2e2.01ba09a9.css.gz",
-      "size": 666
-    },
-    {
       "md5": "c5373b308be371c332c4e56308670d28",
       "shortPath": "web\\static\\css\\chunk-03ffbc7a.b7e17b70.css",
       "size": 826
@@ -1077,6 +1067,16 @@
       "md5": "43530e03c10a3a8b7a37075eeae3161b",
       "shortPath": "web\\static\\css\\chunk-06ef6670.19dd08c8.css.gz",
       "size": 175
+    },
+    {
+      "md5": "51186f7ea39fadf495420a0bf9deba18",
+      "shortPath": "web\\static\\css\\chunk-10652cdb.9dd48a62.css",
+      "size": 1813
+    },
+    {
+      "md5": "2c854588f343cdaf3a206a9cc98b2334",
+      "shortPath": "web\\static\\css\\chunk-10652cdb.9dd48a62.css.gz",
+      "size": 668
     },
     {
       "md5": "6b763bd925442a618c111d90327f3c5a",
@@ -1202,6 +1202,16 @@
       "md5": "2aec424eacec96cfd2f9ae01647fe07f",
       "shortPath": "web\\static\\css\\chunk-44ab456a.f600e4d7.css.gz",
       "size": 2418
+    },
+    {
+      "md5": "c73ad34e3f4161a4b79673420c878ab3",
+      "shortPath": "web\\static\\css\\chunk-4a252d94.489ab559.css",
+      "size": 1626
+    },
+    {
+      "md5": "79dddae1460afb7fbd62680ef3de0789",
+      "shortPath": "web\\static\\css\\chunk-4a252d94.489ab559.css.gz",
+      "size": 641
     },
     {
       "md5": "eee736d5d83127bd39993c37293d628f",
@@ -1414,16 +1424,6 @@
       "size": 646
     },
     {
-      "md5": "c1927420d19ec009c01da83e65496c0d",
-      "shortPath": "web\\static\\css\\chunk-b59957d8.0f915205.css",
-      "size": 1626
-    },
-    {
-      "md5": "325bc6236572a0f179f43921b47fd7de",
-      "shortPath": "web\\static\\css\\chunk-b59957d8.0f915205.css.gz",
-      "size": 640
-    },
-    {
       "md5": "3cbdbbfd3e9780938913fe4514b56c76",
       "shortPath": "web\\static\\css\\chunk-c28ad000.17fbdb6b.css",
       "size": 4748
@@ -1594,13 +1594,13 @@
       "size": 6911
     },
     {
-      "md5": "7b6519e65e8064ed465cc3230d59b796",
-      "shortPath": "web\\static\\js\\app.770dfa80.js",
+      "md5": "ea78ff6045e64602c136c3971627ff68",
+      "shortPath": "web\\static\\js\\app.41f73874.js",
       "size": 464801
     },
     {
-      "md5": "b1cc7f27a2053c744b84ebecbc2e6cdf",
-      "shortPath": "web\\static\\js\\app.770dfa80.js.gz",
+      "md5": "a7a6c1840c6e9121a6cb8ebfde194fc5",
+      "shortPath": "web\\static\\js\\app.41f73874.js.gz",
       "size": 120186
     },
     {
@@ -1632,16 +1632,6 @@
       "md5": "f3b6ab2accb627ae1f18d66b57614382",
       "shortPath": "web\\static\\js\\chunk-00c22341.198f94de.js.gz",
       "size": 13025
-    },
-    {
-      "md5": "88f82d78ce8d2e81863f803907ec0287",
-      "shortPath": "web\\static\\js\\chunk-03b0e2e2.b4320dff.js",
-      "size": 8087
-    },
-    {
-      "md5": "001a67d85dcc2c85c5a0a208bd9d65ab",
-      "shortPath": "web\\static\\js\\chunk-03b0e2e2.b4320dff.js.gz",
-      "size": 2651
     },
     {
       "md5": "21be6a42c273b40c57204dbf629492f4",
@@ -1694,6 +1684,16 @@
       "size": 3316
     },
     {
+      "md5": "0bddb586be5c0064ba7b4fb6df6f2d64",
+      "shortPath": "web\\static\\js\\chunk-10652cdb.63d927bb.js",
+      "size": 8129
+    },
+    {
+      "md5": "baa9f5809025bc35df28d9764d7a71f9",
+      "shortPath": "web\\static\\js\\chunk-10652cdb.63d927bb.js.gz",
+      "size": 2666
+    },
+    {
       "md5": "a30c5d11bb6d978509adbcb86971e9f8",
       "shortPath": "web\\static\\js\\chunk-12184ec2.02fe0c94.js",
       "size": 6008
@@ -1704,14 +1704,14 @@
       "size": 2108
     },
     {
-      "md5": "55e91ff2d35aa48ec14e35655fdf66f1",
-      "shortPath": "web\\static\\js\\chunk-169a3d6c.e5ef51e5.js",
+      "md5": "f6d5d0464dc2246307eb1903db0d49b1",
+      "shortPath": "web\\static\\js\\chunk-169a3d6c.ec617977.js",
       "size": 15335
     },
     {
-      "md5": "f35e3565c1ee532c1b8f451d27309e12",
-      "shortPath": "web\\static\\js\\chunk-169a3d6c.e5ef51e5.js.gz",
-      "size": 3421
+      "md5": "24c16bb0e895ffd66c989e5c6d21bceb",
+      "shortPath": "web\\static\\js\\chunk-169a3d6c.ec617977.js.gz",
+      "size": 3422
     },
     {
       "md5": "9b7be3d4a4d07f0d59b59aaa39e7022f",
@@ -1765,12 +1765,12 @@
     },
     {
       "md5": "d8ff15f50e8ad1abac184fd80ccad67b",
-      "shortPath": "web\\static\\js\\chunk-1ba755bf.f85dbdf5.js",
+      "shortPath": "web\\static\\js\\chunk-1ba755bf.c50ac641.js",
       "size": 34067
     },
     {
       "md5": "e46e892b8b0a1fba2b8eb4ee02ea7a30",
-      "shortPath": "web\\static\\js\\chunk-1ba755bf.f85dbdf5.js.gz",
+      "shortPath": "web\\static\\js\\chunk-1ba755bf.c50ac641.js.gz",
       "size": 8300
     },
     {
@@ -2324,6 +2324,16 @@
       "size": 4845
     },
     {
+      "md5": "fc6029e6acf715ca814e7ca45618f800",
+      "shortPath": "web\\static\\js\\chunk-4a252d94.08e26fbd.js",
+      "size": 25889
+    },
+    {
+      "md5": "fd4b185ae04a7b21ba2a82bd58076880",
+      "shortPath": "web\\static\\js\\chunk-4a252d94.08e26fbd.js.gz",
+      "size": 8629
+    },
+    {
       "md5": "3a3377712c4d3a3c58e2c4f8084fd552",
       "shortPath": "web\\static\\js\\chunk-4b072790.d1cd9cb9.js",
       "size": 9719
@@ -2734,16 +2744,6 @@
       "size": 3542
     },
     {
-      "md5": "bbaa356ad766b51d04cb961c0ece2787",
-      "shortPath": "web\\static\\js\\chunk-b59957d8.1b277095.js",
-      "size": 25750
-    },
-    {
-      "md5": "73a8c60e00b394649840770a3295a603",
-      "shortPath": "web\\static\\js\\chunk-b59957d8.1b277095.js.gz",
-      "size": 8596
-    },
-    {
       "md5": "a83401e815404309a8fab060d583a844",
       "shortPath": "web\\static\\js\\chunk-c1b7e6b4.f66de59a.js",
       "size": 13212
@@ -2964,8 +2964,8 @@
       "size": 162672
     }
   ],
-  "updateDate": "2023-03-18 20:46:04",
-  "updateLog": "v1.5.1 - 2023-03-18\r\n修复：修复APK全局注入闪退的问题\r\n修复：修复APK单例注入无法选择&lt;init&gt;、&lt;cinit&gt;等方法的问题",
+  "updateDate": "2023-03-18 21:40:07",
+  "updateLog": "v1.5.1 - 2023-03-18\r\n修复：修复APK全局注入闪退的问题（感谢@手游大咖）\r\n修复：修复APK单例注入无法选择&lt;init&gt;、&lt;cinit&gt;等方法的问题\r\n修复：修复手机访问首页无法点击导航菜单的问题（感谢@冲你的风）",
   "versionName": "v1.5.1",
   "versionNo": 20230318181900
 }

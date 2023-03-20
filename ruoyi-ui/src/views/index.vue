@@ -151,9 +151,12 @@
             <el-collapse accordion>
               <el-collapse-item title="v1.5.1 - 2023-03-18">
                 <ol>
-                  <li>修复：修复APK全局注入闪退的问题</li>
+                  <li>修复：修复APK全局注入闪退的问题（感谢@手游大咖）</li>
                   <li>
                     修复：修复APK单例注入无法选择&lt;init&gt;、&lt;cinit&gt;等方法的问题
+                  </li>
+                  <li>
+                    修复：修复手机访问首页无法点击导航菜单的问题（感谢@冲你的风）
                   </li>
                 </ol>
               </el-collapse-item>

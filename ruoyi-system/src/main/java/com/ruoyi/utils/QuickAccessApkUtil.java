@@ -218,6 +218,14 @@ public class QuickAccessApkUtil {
 //                    classesNameSet.add(item.getType());
 //                }
 //                System.out.println(classesNameSet.size());
+
+            // 检查原包是否已被红叶注入过
+            for (DexBackedClassDef aClass : oriClasses.getClasses()) {
+                if (aClass.getType().equals(injectConfigActivity)) {
+                    throw new ServiceException("该APK已经被红叶注入过，无法二次注入");
+                }
+            }
+
             classesSet.addAll(oriClasses.getClasses());
             classesSet.addAll(injectClasses.getClasses());
 //                System.out.println(classesSet.size());
@@ -358,6 +366,15 @@ public class QuickAccessApkUtil {
             DexBackedDexFile oriClasses = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(mainDex)))));
             DexBackedDexFile injectClasses = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new FileInputStream(injectFile)));
             Set<DexBackedClassDef> classesSet = new HashSet<>();
+
+            // 检查原包是否已被红叶注入过
+            DexBackedDexFile oriClasses2 = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(targetDexName)))));
+            for (DexBackedClassDef aClass : oriClasses2.getClasses()) {
+                if (aClass.getType().equals(injectConfigActivity)) {
+                    throw new ServiceException("该APK已经被红叶注入过，无法二次注入");
+                }
+            }
+
             classesSet.addAll(oriClasses.getClasses());
             if (targetDexName.equals(mainDex)) {
                 classesSet.addAll(injectClasses.getClasses());
@@ -427,7 +444,7 @@ public class QuickAccessApkUtil {
             zos.closeEntry();
 
             if (!targetDexName.equals(mainDex)) {
-                DexBackedDexFile oriClasses2 = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(targetDexName)))));
+//                DexBackedDexFile oriClasses2 = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(targetDexName)))));
                 Set<DexBackedClassDef> classesSet2 = new HashSet<>();
                 classesSet2.addAll(oriClasses2.getClasses());
                 classesSet2.addAll(injectClasses.getClasses());

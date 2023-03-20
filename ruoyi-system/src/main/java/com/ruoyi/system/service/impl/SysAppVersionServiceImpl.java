@@ -186,6 +186,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             assert originalFilename != null;
             QuickAccessResultVo result = quickAccessHandle(accessType, bytes, version, originalFilename, apkOper, template, skin, vo, fullScreen);
 
+            // 1全局 2单例
             if ("1".equals(accessType) || ("2".equals(accessType) && result.getBytes() != null && result.getBytes().length > 0)) {
                 bytes = result.getBytes();
                 // 生成文件

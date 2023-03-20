@@ -35,12 +35,14 @@
                   </span>
                 </a>
               </div>
-
+              <!-- 手机页面 -->
               <el-drawer
                 :visible.sync="drawer"
                 :withHeader="true"
                 direction="ltr"
                 title="更多"
+                :append-to-body="true"
+                :modal-append-to-body="false"
               >
                 <div class="customClass">
                   <el-menu
@@ -74,6 +76,7 @@
                   </el-menu>
                 </div>
               </el-drawer>
+              <!-- 电脑页面 -->
               <div class="my-class2">
                 <el-menu
                   :default-active="activeIndex"
@@ -362,5 +365,6 @@ a {
   background-color: #545c64;
   height: 100%;
   width: 100%;
+  z-index: 99999;
 }
 </style>
