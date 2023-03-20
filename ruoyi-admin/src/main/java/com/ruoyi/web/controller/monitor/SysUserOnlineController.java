@@ -69,7 +69,7 @@ public class SysUserOnlineController extends BaseController {
 //                        userOnlineList.add(userOnlineService.selectOnlineByUserName(userName, user));
 //                    }
 //                }
-                    if (user.getUsername().contains(userName)) {
+                    if (user.getUsername() != null && user.getUsername().contains(userName)) {
                         userOnlineList.add(userOnlineService.loginUserToUserOnline(user));
                     }
                 } else {

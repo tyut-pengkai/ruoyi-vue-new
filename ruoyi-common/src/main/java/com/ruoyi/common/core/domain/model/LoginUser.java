@@ -1,10 +1,7 @@
 package com.ruoyi.common.core.domain.model;
 
 import com.alibaba.fastjson2.annotation.JSONField;
-import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
-import com.ruoyi.common.core.domain.entity.SysAppVersion;
-import com.ruoyi.common.core.domain.entity.SysDeviceCode;
-import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.entity.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -75,7 +72,10 @@ public class LoginUser implements UserDetails
     private Long appId;
 
     private String appKey;
-//    private SysApp app;
+
+    @Deprecated
+    @JSONField(serialize = false)
+    private SysApp app;
 
     private Long appUserId;
 //    private SysAppUser appUser;
@@ -97,6 +97,14 @@ public class LoginUser implements UserDetails
     private Boolean ifTrial = false;
 
     private String userName;
+
+    @Deprecated
+    private String username;
+
+    @Override
+    public String getUsername() {
+        return user != null ? user.getUserName() : (appUserId != null ? getUserName() : appTrialUserId != null ? getUserName() : username != null ? username : null);
+    }
 
     public Long getAppTrialUserId() {
         return appTrialUserId;
@@ -186,15 +194,13 @@ public class LoginUser implements UserDetails
 
     @JSONField(serialize = false)
     @Override
-    public String getPassword()
-    {
+    public String getPassword() {
         return user.getPassword();
     }
 
-    @Override
-    public String getUsername()
-    {
-        return user != null ? user.getUserName() : (appUserId != null ? getUserName() : appTrialUserId != null ? getUserName() : null);
+    @Deprecated
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     /**
@@ -202,8 +208,7 @@ public class LoginUser implements UserDetails
      */
     @JSONField(serialize = false)
     @Override
-    public boolean isAccountNonExpired()
-    {
+    public boolean isAccountNonExpired() {
         return true;
     }
 
@@ -327,13 +332,15 @@ public class LoginUser implements UserDetails
         return null;
     }
 
-//    public SysApp getApp() {
-//        return app;
-//    }
-//
-//    public void setApp(SysApp app) {
-//        this.app = app;
-//    }
+    @Deprecated
+    public SysApp getApp() {
+        return app;
+    }
+
+    @Deprecated
+    public void setApp(SysApp app) {
+        this.app = app;
+    }
 
     public Long getAppId() {
         return appId;

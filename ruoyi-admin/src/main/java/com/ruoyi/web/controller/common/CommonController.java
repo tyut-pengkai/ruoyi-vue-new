@@ -773,15 +773,21 @@ public class CommonController {
             // 当前在线
             for (LoginUser user : onlineUserList) {
                 if (user.getIfApp()) {
-                    SysApp app = sysAppService.selectSysAppByAppKey(user.getAppKey());
-                    String appId = app.getAppId().toString();
-                    if (!appDataMap.containsKey(appId)) {
-                        appDataMap.put(appId, new HashMap<>());
+                    String appKey = user.getAppKey();
+                    if (appKey == null) {
+                        appKey = user.getApp() != null ? user.getApp().getAppKey() : null;
                     }
-                    if (appDataMap.get(appId).containsKey("online")) {
-                        appDataMap.get(appId).put("online", (int) (appDataMap.get(appId).get("online")) + 1);
-                    } else {
-                        appDataMap.get(appId).put("online", 1);
+                    if (StringUtils.isNotBlank(appKey)) {
+                        SysApp app = sysAppService.selectSysAppByAppKey(appKey);
+                        String appId = app.getAppId().toString();
+                        if (!appDataMap.containsKey(appId)) {
+                            appDataMap.put(appId, new HashMap<>());
+                        }
+                        if (appDataMap.get(appId).containsKey("online")) {
+                            appDataMap.get(appId).put("online", (int) (appDataMap.get(appId).get("online")) + 1);
+                        } else {
+                            appDataMap.get(appId).put("online", 1);
+                        }
                     }
                 }
             }

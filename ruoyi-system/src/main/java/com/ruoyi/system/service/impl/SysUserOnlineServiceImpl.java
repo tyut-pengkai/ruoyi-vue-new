@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.utils.StringUtils;
@@ -97,9 +98,20 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService {
         sysUserOnline.setIfApp(user.getIfApp() ? 'Y' : 'N');
         sysUserOnline.setIfTrial(user.getIfTrial() ? 'Y' : 'N');
         if (user.getIfApp()) {
-            SysApp app = appService.selectSysAppByAppKey(user.getAppKey());
-            sysUserOnline.setAppDesc(app.getAppName() + "-" + user.getAppVersion().getVersionShow());
-            sysUserOnline.setAppAuthor(app.getCreateBy());
+            String appKey = user.getAppKey();
+            if (appKey == null) {
+                appKey = user.getApp() != null ? user.getApp().getAppKey() : null;
+            }
+            if (StringUtils.isNotBlank(appKey)) {
+                SysApp app = appService.selectSysAppByAppKey(appKey);
+                System.out.println(JSON.toJSONString(user));
+                System.out.println(JSON.toJSONString(app));
+                sysUserOnline.setAppDesc(app.getAppName() + "-" + user.getAppVersion().getVersionShow());
+                sysUserOnline.setAppAuthor(app.getCreateBy());
+            } else {
+                sysUserOnline.setAppDesc("未知" + "-" + user.getAppVersion().getVersionShow());
+                sysUserOnline.setAppAuthor("未知");
+            }
             if (user.getDeviceCode() != null) {
                 sysUserOnline.setDeviceCode(user.getDeviceCode().getDeviceCode());
             }
