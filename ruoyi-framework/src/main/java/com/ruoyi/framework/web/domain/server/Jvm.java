@@ -1,16 +1,16 @@
 package com.ruoyi.framework.web.domain.server;
 
-import java.lang.management.ManagementFactory;
 import com.ruoyi.common.utils.Arith;
 import com.ruoyi.common.utils.DateUtils;
 
+import java.lang.management.ManagementFactory;
+
 /**
  * JVM相关信息
- * 
+ *
  * @author ruoyi
  */
-public class Jvm
-{
+public class Jvm {
     /**
      * 当前JVM占用的内存总数(M)
      */
@@ -117,7 +117,7 @@ public class Jvm
      */
     public String getRunTime()
     {
-        return DateUtils.getDatePoor(DateUtils.getNowDate(), DateUtils.getServerStartDate());
+        return DateUtils.timeDistance(DateUtils.getNowDate(), DateUtils.getServerStartDate());
     }
 
     /**

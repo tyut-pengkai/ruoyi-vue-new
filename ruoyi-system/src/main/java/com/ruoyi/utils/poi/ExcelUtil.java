@@ -1167,12 +1167,30 @@ public class ExcelUtil<T>
     }
 
     /**
-     * 编码文件名
+     * 获取Excel2003图片
+     *
+     * @param sheet    当前sheet对象
+     * @param workbook 工作簿对象
+     * @return Map key:图片单元格索引（1_1）String，value:图片流PictureData
      */
-    public String encodingFilename(String filename)
-    {
-        filename = UUID.randomUUID().toString() + "_" + filename + ".xlsx";
-        return filename;
+    public static Map<String, PictureData> getSheetPictures03(HSSFSheet sheet, HSSFWorkbook workbook) {
+        Map<String, PictureData> sheetIndexPicMap = new HashMap<String, PictureData>();
+        List<HSSFPictureData> pictures = workbook.getAllPictures();
+        if (!pictures.isEmpty()) {
+            for (HSSFShape shape : sheet.getDrawingPatriarch().getChildren()) {
+                HSSFClientAnchor anchor = (HSSFClientAnchor) shape.getAnchor();
+                if (shape instanceof HSSFPicture) {
+                    HSSFPicture pic = (HSSFPicture) shape;
+                    int pictureIndex = pic.getPictureIndex() - 1;
+                    HSSFPictureData picData = pictures.get(pictureIndex);
+                    String picIndex = anchor.getRow1() + "_" + anchor.getCol1();
+                    sheetIndexPicMap.put(picIndex, picData);
+                }
+            }
+            return sheetIndexPicMap;
+        } else {
+            return sheetIndexPicMap;
+        }
     }
 
     /**
@@ -1253,44 +1271,11 @@ public class ExcelUtil<T>
     }
 
     /**
-     * 获取字段注解信息
+     * 编码文件名
      */
-    public List<Object[]> getFields() {
-        List<Object[]> fields = new ArrayList<Object[]>();
-        List<Field> tempFields = new ArrayList<>();
-        tempFields.addAll(Arrays.asList(clazz.getSuperclass().getDeclaredFields()));
-        tempFields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-        for (Field field : tempFields) {
-            if (!ArrayUtils.contains(this.excludeFields, field.getName())) {
-                // 单注解
-                if (field.isAnnotationPresent(Excel.class)) {
-                    Excel attr = field.getAnnotation(Excel.class);
-                    if (attr != null && (attr.type() == Type.ALL || attr.type() == type)) {
-                        field.setAccessible(true);
-                        fields.add(new Object[]{field, attr});
-                    }
-                    if (Collection.class.isAssignableFrom(field.getType())) {
-                        subMethod = getSubMethod(field.getName(), clazz);
-                        ParameterizedType pt = (ParameterizedType) field.getGenericType();
-                        Class<?> subClass = (Class<?>) pt.getActualTypeArguments()[0];
-                        this.subFields = FieldUtils.getFieldsListWithAnnotation(subClass, Excel.class);
-                    }
-                }
-
-                // 多注解
-                if (field.isAnnotationPresent(Excels.class)) {
-                    Excels attrs = field.getAnnotation(Excels.class);
-                    Excel[] excels = attrs.value();
-                    for (Excel attr : excels) {
-                        if (attr != null && (attr.type() == Type.ALL || attr.type() == type)) {
-                            field.setAccessible(true);
-                            fields.add(new Object[]{field, attr});
-                        }
-                    }
-                }
-            }
-        }
-        return fields;
+    public String encodingFilename(String filename) {
+        filename = UUID.randomUUID() + "_" + filename + ".xlsx";
+        return filename;
     }
 
     /**
@@ -1419,36 +1404,45 @@ public class ExcelUtil<T>
     }
 
     /**
-     * 获取Excel2003图片
-     *
-     * @param sheet 当前sheet对象
-     * @param workbook 工作簿对象
-     * @return Map key:图片单元格索引（1_1）String，value:图片流PictureData
+     * 获取字段注解信息
      */
-    public static Map<String, PictureData> getSheetPictures03(HSSFSheet sheet, HSSFWorkbook workbook)
-    {
-        Map<String, PictureData> sheetIndexPicMap = new HashMap<String, PictureData>();
-        List<HSSFPictureData> pictures = workbook.getAllPictures();
-        if (!pictures.isEmpty())
-        {
-            for (HSSFShape shape : sheet.getDrawingPatriarch().getChildren())
-            {
-                HSSFClientAnchor anchor = (HSSFClientAnchor) shape.getAnchor();
-                if (shape instanceof HSSFPicture)
-                {
-                    HSSFPicture pic = (HSSFPicture) shape;
-                    int pictureIndex = pic.getPictureIndex() - 1;
-                    HSSFPictureData picData = pictures.get(pictureIndex);
-                    String picIndex = String.valueOf(anchor.getRow1()) + "_" + String.valueOf(anchor.getCol1());
-                    sheetIndexPicMap.put(picIndex, picData);
+    public List<Object[]> getFields() {
+        List<Object[]> fields = new ArrayList<Object[]>();
+        List<Field> tempFields = new ArrayList<>();
+        tempFields.addAll(Arrays.asList(clazz.getSuperclass().getDeclaredFields()));
+        tempFields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+        for (Field field : tempFields) {
+            if (!ArrayUtils.contains(this.excludeFields, field.getName())) {
+                // 单注解
+                if (field.isAnnotationPresent(Excel.class)) {
+                    Excel attr = field.getAnnotation(Excel.class);
+                    if (attr != null && (attr.type() == Type.ALL || attr.type() == type)) {
+                        field.setAccessible(true);
+                        fields.add(new Object[]{field, attr});
+                    }
+                    if (Collection.class.isAssignableFrom(field.getType())) {
+                        subMethod = getSubMethod(field.getName(), clazz);
+                        ParameterizedType pt = (ParameterizedType) field.getGenericType();
+                        Class<?> subClass = (Class<?>) pt.getActualTypeArguments()[0];
+                        this.subFields = FieldUtils.getFieldsListWithAnnotation(subClass, Excel.class);
+                    }
+                }
+
+                // 多注解
+                if (field.isAnnotationPresent(Excels.class)) {
+                    Excels attrs = field.getAnnotation(Excels.class);
+                    Excel[] excels = attrs.value();
+                    for (Excel attr : excels) {
+                        if (!ArrayUtils.contains(this.excludeFields, field.getName() + "." + attr.targetAttr())
+                                && (attr != null && (attr.type() == Type.ALL || attr.type() == type))) {
+                            field.setAccessible(true);
+                            fields.add(new Object[]{field, attr});
+                        }
+                    }
                 }
             }
-            return sheetIndexPicMap;
         }
-        else
-        {
-            return sheetIndexPicMap;
-        }
+        return fields;
     }
 
     /**

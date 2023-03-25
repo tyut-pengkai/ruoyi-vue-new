@@ -69,8 +69,7 @@ public class SysDeptController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysDept dept)
     {
-        if (UserConstants.NOT_UNIQUE.equals(deptService.checkDeptNameUnique(dept)))
-        {
+        if (!deptService.checkDeptNameUnique(dept)) {
             return error("新增部门'" + dept.getDeptName() + "'失败，部门名称已存在");
         }
         dept.setCreateBy(getUsername());
@@ -87,16 +86,11 @@ public class SysDeptController extends BaseController
     {
         Long deptId = dept.getDeptId();
         deptService.checkDeptDataScope(deptId);
-        if (UserConstants.NOT_UNIQUE.equals(deptService.checkDeptNameUnique(dept)))
-        {
+        if (!deptService.checkDeptNameUnique(dept)) {
             return error("修改部门'" + dept.getDeptName() + "'失败，部门名称已存在");
-        }
-        else if (dept.getParentId().equals(deptId))
-        {
+        } else if (dept.getParentId().equals(deptId)) {
             return error("修改部门'" + dept.getDeptName() + "'失败，上级部门不能是自己");
-        }
-        else if (StringUtils.equals(UserConstants.DEPT_DISABLE, dept.getStatus()) && deptService.selectNormalChildrenDeptById(deptId) > 0)
-        {
+        } else if (StringUtils.equals(UserConstants.DEPT_DISABLE, dept.getStatus()) && deptService.selectNormalChildrenDeptById(deptId) > 0) {
             return error("该部门包含未停用的子部门！");
         }
         dept.setUpdateBy(getUsername());

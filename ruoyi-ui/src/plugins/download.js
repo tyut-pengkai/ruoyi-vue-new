@@ -14,10 +14,10 @@ export default {
       method: 'get',
       url: url,
       responseType: 'blob',
-      headers: { 'Authorization': 'Bearer ' + getToken() }
-    }).then(async (res) => {
-      const isLogin = await blobValidate(res.data);
-      if (isLogin) {
+      headers: {'Authorization': 'Bearer ' + getToken()}
+    }).then((res) => {
+      const isBlob = blobValidate(res.data);
+      if (isBlob) {
         const blob = new Blob([res.data])
         this.saveAs(blob, decodeURIComponent(res.headers['download-filename']))
       } else {
@@ -31,10 +31,10 @@ export default {
       method: 'get',
       url: url,
       responseType: 'blob',
-      headers: { 'Authorization': 'Bearer ' + getToken() }
-    }).then(async (res) => {
-      const isLogin = await blobValidate(res.data);
-      if (isLogin) {
+      headers: {'Authorization': 'Bearer ' + getToken()}
+    }).then((res) => {
+      const isBlob = blobValidate(res.data);
+      if (isBlob) {
         const blob = new Blob([res.data])
         this.saveAs(blob, decodeURIComponent(res.headers['download-filename']))
       } else {
@@ -48,11 +48,11 @@ export default {
       method: 'get',
       url: url,
       responseType: 'blob',
-      headers: { 'Authorization': 'Bearer ' + getToken() }
-    }).then(async (res) => {
-      const isLogin = await blobValidate(res.data);
-      if (isLogin) {
-        const blob = new Blob([res.data], { type: 'application/zip' })
+      headers: {'Authorization': 'Bearer ' + getToken()}
+    }).then((res) => {
+      const isBlob = blobValidate(res.data);
+      if (isBlob) {
+        const blob = new Blob([res.data], {type: 'application/zip'})
         this.saveAs(blob, name)
       } else {
         this.printErrMsg(res.data);

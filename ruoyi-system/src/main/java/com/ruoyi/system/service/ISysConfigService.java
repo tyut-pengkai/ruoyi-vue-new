@@ -81,9 +81,9 @@ public interface ISysConfigService {
 
     /**
      * 校验参数键名是否唯一
-     * 
+     *
      * @param config 参数信息
      * @return 结果
      */
-    public String checkConfigKeyUnique(SysConfig config);
+    public boolean checkConfigKeyUnique(SysConfig config);
 }

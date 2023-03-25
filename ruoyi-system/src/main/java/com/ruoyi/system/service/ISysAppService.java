@@ -89,7 +89,7 @@ public interface ISysAppService {
      * @param appName
      * @return
      */
-    String checkAppNameUnique(String appName, Long appId);
+    boolean checkAppNameUnique(String appName, Long appId);
 
     /**
      * 设置ApiUrl

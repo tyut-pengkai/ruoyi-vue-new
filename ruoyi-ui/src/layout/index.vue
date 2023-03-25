@@ -1,43 +1,29 @@
 <template>
-  <div
-    :class="classObj"
-    :style="{ '--current-color': theme }"
-    class="app-wrapper"
-  >
-    <div
-      v-if="device === 'mobile' && sidebar.opened"
-      class="drawer-bg"
-      @click="handleClickOutside"
-    />
-    <sidebar
-      v-if="!sidebar.hide"
-      :logo="logo"
-      :title="shortName"
-      class="sidebar-container"
-    />
-    <div
-      :class="{ hasTagsView: needTagsView, sidebarHide: sidebar.hide }"
-      class="main-container"
-    >
-      <div :class="{ 'fixed-header': fixedHeader }">
-        <navbar/>
-        <tags-view v-if="needTagsView"/>
-      </div>
-      <app-main/>
-      <right-panel>
-        <settings/>
-      </right-panel>
-      <!-- <el-footer> -->
-      <el-link type="info" :underline="false">
-        <div class="my-footer">
-          <span>
-            {{ copyright }}
-          </span>
-          <span style="float: right">{{ version }}</span>
+  <div :class="classObj" :style="{ '--current-color': theme }" class="app-wrapper">
+    <el-scrollbar>
+      <div v-if="device === 'mobile' && sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
+      <sidebar v-if="!sidebar.hide" :logo="logo" :title="shortName" class="sidebar-container"/>
+      <div :class="{ hasTagsView: needTagsView, sidebarHide: sidebar.hide }" class="main-container">
+        <div :class="{ 'fixed-header': fixedHeader }">
+          <navbar/>
+          <tags-view v-if="needTagsView"/>
         </div>
-      </el-link>
-      <!-- </el-footer> -->
-    </div>
+        <app-main/>
+        <right-panel>
+          <settings/>
+        </right-panel>
+        <!-- <el-footer> -->
+        <el-link :underline="false" type="info">
+          <div class="my-footer">
+            <span>
+              {{ copyright }}
+            </span>
+            <span style="float: right">{{ version }}</span>
+          </div>
+        </el-link>
+        <!-- </el-footer> -->
+      </div>
+    </el-scrollbar>
   </div>
 </template>
 
@@ -119,6 +105,14 @@ export default {
   position: relative;
   height: 100%;
   width: 100%;
+
+  .el-scrollbar {
+    height: 100%;
+  }
+
+  ::v-deep .el-scrollbar__wrap {
+    overflow-x: hidden;
+  }
 
   &.mobile.openSidebar {
     position: fixed;

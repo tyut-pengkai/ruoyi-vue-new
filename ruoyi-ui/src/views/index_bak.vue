@@ -9,7 +9,8 @@
             href="https://www.aliyun.com/minisite/goods?userCode=brki8iof"
             type="primary"
             target="_blank"
-            >https://www.aliyun.com/minisite/goods?userCode=brki8iof</el-link
+          >https://www.aliyun.com/minisite/goods?userCode=brki8iof
+          </el-link
           >
           <br />
           领取腾讯云通用云产品2860优惠券
@@ -18,17 +19,21 @@
             href="https://cloud.tencent.com/redirect.php?redirect=1025&cps_key=198c8df2ed259157187173bc7f4f32fd&from=console"
             type="primary"
             target="_blank"
-            >https://cloud.tencent.com/redirect.php?redirect=1025&cps_key=198c8df2ed259157187173bc7f4f32fd&from=console</el-link
+          >https://cloud.tencent.com/redirect.php?redirect=1025&cps_key=198c8df2ed259157187173bc7f4f32fd&from=console
+          </el-link
           >
           <br />
           阿里云服务器折扣区
           <el-link href="http://aly.ruoyi.vip" type="primary" target="_blank"
-            >>☛☛点我进入☚☚</el-link
+          >>☛☛点我进入☚☚
+          </el-link
           >
           &nbsp;&nbsp;&nbsp; 腾讯云服务器秒杀区
           <el-link href="http://txy.ruoyi.vip" type="primary" target="_blank"
-            >>☛☛点我进入☚☚</el-link
-          ><br />
+          >>☛☛点我进入☚☚
+          </el-link
+          >
+          <br/>
           <h4 class="text-danger">
             云产品通用红包，可叠加官网常规优惠使用。(仅限新用户)
           </h4>
@@ -56,14 +61,16 @@
             icon="el-icon-cloudy"
             plain
             @click="goTarget('https://gitee.com/y_project/RuoYi-Vue')"
-            >访问码云</el-button
+          >访问码云
+          </el-button
           >
           <el-button
             size="mini"
             icon="el-icon-s-home"
             plain
             @click="goTarget('http://ruoyi.vip')"
-            >访问主页</el-button
+          >访问主页
+          </el-button
           >
         </p>
       </el-col>
@@ -111,34 +118,35 @@
           </div>
           <div class="body">
             <p>
-              <i class="el-icon-s-promotion"></i> 官网：<el-link
+              <i class="el-icon-s-promotion"></i> 官网：
+              <el-link
                 href="http://www.ruoyi.vip"
                 target="_blank"
-                >http://www.ruoyi.vip</el-link
+              >http://www.ruoyi.vip
+              </el-link
               >
             </p>
             <p>
-              <i class="el-icon-user-solid"></i> QQ群：<s>满937441</s>
-              <s>满887144332</s> <s>满180251782</s> <s>满104180207</s>
-              <s>满186866453</s> <s>满201396349</s> <s>满101456076</s>
-              <s>满101539465</s> <s>满264312783</s> <s>满167385320</s>
-              <s>满104748341</s> <s>满160110482</s>
-              <a href="https://jq.qq.com/?_wv=1027&k=Xnbinl0U" target="_blank">
-                170801498</a
-              >
+              <i class="el-icon-user-solid"></i> QQ群：<s>满937441</s> <s>满887144332</s>
+              <s>满180251782</s> <s>满104180207</s> <s>满186866453</s> <s>满201396349</s>
+              <s>满101456076</s> <s>满101539465</s> <s>满264312783</s> <s>满167385320</s>
+              <s>满104748341</s> <s>满160110482</s> <s>满170801498</s> <a href="https://jq.qq.com/?_wv=1027&k=eCx8eyoJ"
+                                                                       target="_blank">
+              108482800</a
+            >
             </p>
             <p>
               <i class="el-icon-chat-dot-round"></i> 微信：<a
-                href="javascript:;"
-                >/ *若依</a
-              >
+              href="javascript:;"
+            >/ *若依</a
+            >
             </p>
             <p>
               <i class="el-icon-money"></i> 支付宝：<a
-                href="javascript:;"
-                class="支付宝信息"
-                >/ *若依</a
-              >
+              class="支付宝信息"
+              href="javascript:;"
+            >/ *若依</a
+            >
             </p>
           </div>
         </el-card>
@@ -149,6 +157,44 @@
             <span>更新日志</span>
           </div>
           <el-collapse accordion>
+            <el-collapse-item title="v3.8.5 - 2023-01-01">
+              <ol>
+                <li>定时任务违规的字符</li>
+                <li>重置时取消部门选中</li>
+                <li>新增返回警告消息提示</li>
+                <li>忽略不必要的属性数据返回</li>
+                <li>修改参数键名时移除前缓存配置</li>
+                <li>导入更新用户数据前校验数据权限</li>
+                <li>兼容Excel下拉框内容过多无法显示的问题</li>
+                <li>升级echarts到最新版本5.4.0</li>
+                <li>升级core-js到最新版本3.25.3</li>
+                <li>升级oshi到最新版本6.4.0</li>
+                <li>升级kaptcha到最新版2.3.3</li>
+                <li>升级druid到最新版本1.2.15</li>
+                <li>升级fastjson到最新版2.0.20</li>
+                <li>升级pagehelper到最新版1.4.6</li>
+                <li>优化弹窗内容过多展示不全问题</li>
+                <li>优化swagger-ui静态资源使用缓存</li>
+                <li>开启TopNav没有子菜单隐藏侧边栏</li>
+                <li>删除fuse无效选项maxPatternLength</li>
+                <li>优化导出对象的子列表为空会出现[]问题</li>
+                <li>优化编辑头像时透明部分会变成黑色问题</li>
+                <li>优化小屏幕上修改头像界面布局错位的问题</li>
+                <li>修复代码生成勾选属性无效问题</li>
+                <li>修复文件上传组件格式验证问题</li>
+                <li>修复回显数据字典数组异常问题</li>
+                <li>修复sheet超出最大行数异常问题</li>
+                <li>修复Log注解GET请求记录不到参数问题</li>
+                <li>修复调度日志点击多次数据不变化的问题</li>
+                <li>修复主题颜色在Drawer组件不会加载问题</li>
+                <li>修复文件名包含特殊字符的文件无法下载问题</li>
+                <li>修复table中更多按钮切换主题色未生效修复问题</li>
+                <li>修复某些特性的环境生成代码变乱码TXT文件问题</li>
+                <li>修复代码生成图片/文件/单选时选择必填无法校验问题</li>
+                <li>修复某些特性的情况用户编辑对话框中角色和部门无法修改问题</li>
+                <li>其他细节优化</li>
+              </ol>
+            </el-collapse-item>
             <el-collapse-item title="v3.8.4 - 2022-09-26">
               <ol>
                 <li>数据逻辑删除不进行唯一验证</li>
@@ -206,9 +252,7 @@
                 <li>新增获取不带后缀文件名称方法</li>
                 <li>新增获取配置文件中的属性值方法</li>
                 <li>新增内容编码/解码方便插件集成使用</li>
-                <li>
-                  字典类型必须以字母开头，且只能为（小写字母，数字，下滑线）
-                </li>
+                <li>字典类型必须以字母开头，且只能为（小写字母，数字，下滑线）</li>
                 <li>优化设置分页参数默认值</li>
                 <li>优化对空字符串参数处理的过滤</li>
                 <li>优化显示顺序orderNum类型为整型</li>
@@ -412,12 +456,8 @@
                 <li>BLOB下载时清除URL对象引用</li>
                 <li>代码生成导入表按创建时间排序</li>
                 <li>修复代码生成页面数据编辑保存之后总是跳转第一页的问题</li>
-                <li>
-                  修复带safari浏览器无法格式化utc日期格式yyyy-MM-dd'T'HH:mm:ss.SSS问题
-                </li>
-                <li>
-                  多图上传组件移除多余的api地址&验证失败导致图片删除问题&无法删除相应图片修复
-                </li>
+                <li>修复带safari浏览器无法格式化utc日期格式yyyy-MM-dd'T'HH:mm:ss.SSS问题</li>
+                <li>多图上传组件移除多余的api地址&验证失败导致图片删除问题&无法删除相应图片修复</li>
                 <li>其他细节优化</li>
               </ol>
             </el-collapse-item>
@@ -462,9 +502,7 @@
             </el-collapse-item>
             <el-collapse-item title="v3.5.0 - 2021-05-25">
               <ol>
-                <li>
-                  新增菜单导航显示风格TopNav（false为左侧导航菜单，true为顶部导航菜单）
-                </li>
+                <li>新增菜单导航显示风格TopNav（false为左侧导航菜单，true为顶部导航菜单）</li>
                 <li>布局设置支持保存&重置配置</li>
                 <li>修复树表数据显示不全&加载慢问题</li>
                 <li>新增IE浏览器版本过低提示页面</li>
@@ -483,9 +521,7 @@
                 <li>升级druid到最新版本v1.2.6</li>
                 <li>升级mybatis到最新版3.5.6 阻止远程代码执行漏洞</li>
                 <li>升级oshi到最新版本v5.6.0</li>
-                <li>
-                  velocity剔除commons-collections版本，防止3.2.1版本的反序列化漏洞
-                </li>
+                <li>velocity剔除commons-collections版本，防止3.2.1版本的反序列化漏洞</li>
                 <li>数据监控页默认账户密码防止越权访问</li>
                 <li>修复firefox下表单构建拖拽会新打卡一个选项卡</li>
                 <li>修正后端导入表权限标识</li>
@@ -868,7 +904,7 @@
               width="100%"
             />
             <span style="display: inline-block; height: 30px; line-height: 30px"
-              >你可以请作者喝杯咖啡表示鼓励</span
+            >你可以请作者喝杯咖啡表示鼓励</span
             >
           </div>
         </el-card>
@@ -883,14 +919,14 @@ export default {
   data() {
     return {
       // 版本号
-      version: "3.8.4",
+      version: "3.8.5"
     };
   },
   methods: {
     goTarget(href) {
       window.open(href, "_blank");
-    },
-  },
+    }
+  }
 };
 </script>
 

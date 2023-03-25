@@ -100,6 +100,7 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService {
         if (user.getIfApp()) {
             String appKey = user.getAppKey();
             if (appKey == null) {
+                //noinspection deprecation
                 appKey = user.getApp() != null ? user.getApp().getAppKey() : null;
             }
             if (StringUtils.isNotBlank(appKey)) {

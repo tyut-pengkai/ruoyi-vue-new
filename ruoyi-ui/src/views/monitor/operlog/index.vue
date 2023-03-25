@@ -60,11 +60,12 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-          value-format="yyyy-MM-dd"
+          :default-time="['00:00:00', '23:59:59']"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          value-format="yyyy-MM-dd HH:mm:ss"
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -113,7 +114,7 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['monitor:operlog:export']"
-          >导出
+        >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -122,66 +123,36 @@
       ></right-toolbar>
     </el-row>
 
-    <el-table
-      ref="tables"
-      v-loading="loading"
-      :data="list"
-      :default-sort="defaultSort"
-      @selection-change="handleSelectionChange"
-      @sort-change="handleSortChange"
-    >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="日志编号" align="center" prop="operId" />
-      <el-table-column label="系统模块" align="center" prop="title" />
+    <el-table ref="tables" v-loading="loading" :data="list" :default-sort="defaultSort"
+              @selection-change="handleSelectionChange" @sort-change="handleSortChange">
+      <el-table-column align="center" type="selection" width="50"/>
+      <el-table-column label="日志编号" align="center" prop="operId"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="系统模块" prop="title"/>
       <el-table-column label="操作类型" align="center" prop="businessType">
         <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_oper_type"
-            :value="scope.row.businessType"
-          />
+          <dict-tag :options="dict.type.sys_oper_type" :value="scope.row.businessType"/>
         </template>
       </el-table-column>
-      <el-table-column label="请求方式" align="center" prop="requestMethod" />
-      <el-table-column
-        :show-overflow-tooltip="true"
-        :sort-orders="['descending', 'ascending']"
-        align="center"
-        label="操作人员"
-        prop="operName"
-        sortable="custom"
-        width="100"
-      />
-      <el-table-column
-        :show-overflow-tooltip="true"
-        align="center"
-        label="操作地址"
-        prop="operIp"
-        width="130"
-      />
-      <el-table-column
-        :show-overflow-tooltip="true"
-        align="center"
-        label="操作地点"
-        prop="operLocation"
-      />
+      <el-table-column label="请求方式" align="center" prop="requestMethod"/>
+      <el-table-column :show-overflow-tooltip="true" :sort-orders="['descending', 'ascending']" align="center"
+                       label="操作人员" prop="operName" sortable="custom" width="110"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="操作地址" prop="operIp" width="130"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="操作地点" prop="operLocation"/>
       <el-table-column label="操作状态" align="center" prop="status">
         <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_common_status"
-            :value="scope.row.status"
-          />
+          <dict-tag :options="dict.type.sys_common_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
-      <el-table-column
-        :sort-orders="['descending', 'ascending']"
-        align="center"
-        label="操作日期"
-        prop="operTime"
-        sortable="custom"
-        width="180"
-      >
+      <el-table-column :sort-orders="['descending', 'ascending']" align="center" label="操作日期" prop="operTime"
+                       sortable="custom" width="160">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.operTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :show-overflow-tooltip="true" :sort-orders="['descending', 'ascending']" align="center"
+                       label="消耗时间" prop="costTime" sortable="custom" width="110">
+        <template slot-scope="scope">
+          <span>{{ scope.row.costTime }}毫秒</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -242,23 +213,24 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="返回参数："
-              >{{ form.jsonResult }}
+            >{{ form.jsonResult }}
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="6">
             <el-form-item label="操作状态：">
               <div v-if="form.status === 0">正常</div>
               <div v-else-if="form.status === 1">失败</div>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="操作时间："
-              >{{ parseTime(form.operTime) }}
-            </el-form-item>
+          <el-col :span="8">
+            <el-form-item label="消耗时间：">{{ form.costTime }}毫秒</el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item label="操作时间：">{{ parseTime(form.operTime) }}</el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item v-if="form.status === 1" label="异常信息："
-              >{{ form.errorMsg }}
+            >{{ form.errorMsg }}
             </el-form-item>
           </el-col>
         </el-row>

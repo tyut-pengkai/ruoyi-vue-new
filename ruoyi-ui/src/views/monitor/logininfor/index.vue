@@ -45,11 +45,12 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-          value-format="yyyy-MM-dd"
+          :default-time="['00:00:00', '23:59:59']"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          value-format="yyyy-MM-dd HH:mm:ss"
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -156,7 +157,7 @@
         label="浏览器"
         prop="browser"
       />
-      <el-table-column label="操作系统" align="center" prop="os" />
+      <el-table-column label="操作系统" align="center" prop="os"/>
       <el-table-column label="登录状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag
@@ -165,15 +166,9 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="操作信息" align="center" prop="msg" />
-      <el-table-column
-        :sort-orders="['descending', 'ascending']"
-        align="center"
-        label="登录日期"
-        prop="loginTime"
-        sortable="custom"
-        width="180"
-      >
+      <el-table-column :show-overflow-tooltip="true" align="center" label="操作信息" prop="msg"/>
+      <el-table-column :sort-orders="['descending', 'ascending']" align="center"
+                       label="登录日期" prop="loginTime" sortable="custom" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.loginTime) }}</span>
         </template>

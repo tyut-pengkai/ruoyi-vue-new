@@ -190,11 +190,12 @@ public class SysAppServiceImpl implements ISysAppService {
 
     /**
      * 检查软件名称唯一性
+     *
      * @param appName 软件名称
      * @return
      */
     @Override
-    public String checkAppNameUnique(String appName, Long appId) {
+    public boolean checkAppNameUnique(String appName, Long appId) {
         int count = sysAppMapper.checkAppNameUnique(appName, appId);
         if (count > 0) {
             return UserConstants.NOT_UNIQUE;

@@ -98,7 +98,7 @@ public interface ISysAppVersionService {
      *
      * @return
      */
-    public String checkVersionNoUnique(Long versionNo, Long appId, Long appVersionId);
+    public boolean checkVersionNoUnique(Long versionNo, Long appId, Long appVersionId);
 
     /**
      * 获取快速接入参数信息

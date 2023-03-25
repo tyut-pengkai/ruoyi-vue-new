@@ -413,7 +413,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      * @return
      */
     @Override
-    public String checkVersionNoUnique(Long versionNo, Long appId, Long appVersionId) {
+    public boolean checkVersionNoUnique(Long versionNo, Long appId, Long appVersionId) {
         int count = sysAppVersionMapper.checkAppVersionNoUnique(versionNo, appId, appVersionId);
         if (count > 0) {
             return UserConstants.NOT_UNIQUE;

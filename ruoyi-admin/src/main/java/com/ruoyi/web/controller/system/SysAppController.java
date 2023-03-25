@@ -4,7 +4,6 @@ import com.ruoyi.api.v1.constants.ApiDefine;
 import com.ruoyi.api.v1.domain.Api;
 import com.ruoyi.api.v1.utils.encrypt.AesCbcZeroPaddingUtil;
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
@@ -120,7 +119,7 @@ public class SysAppController extends BaseController {
     @Log(title = "软件管理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysApp sysApp) {
-        if (UserConstants.NOT_UNIQUE.equals(sysAppService.checkAppNameUnique(sysApp.getAppName(), null))) {
+        if (!sysAppService.checkAppNameUnique(sysApp.getAppName(), null)) {
             return AjaxResult.error("新增软件'" + sysApp.getAppName() + "'失败，软件名称已存在");
         }
         if (sysApp.getDataInEnc() != null && sysApp.getDataInEnc() != EncrypType.NONE && sysApp.getDataInEnc() != EncrypType.BASE64 && StringUtils.isBlank(sysApp.getDataInPwd())) {
@@ -148,7 +147,7 @@ public class SysAppController extends BaseController {
     @Log(title = "软件管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysApp sysApp) {
-        if (UserConstants.NOT_UNIQUE.equals(sysAppService.checkAppNameUnique(sysApp.getAppName(), sysApp.getAppId()))) {
+        if (!sysAppService.checkAppNameUnique(sysApp.getAppName(), sysApp.getAppId())) {
             return AjaxResult.error("修改软件'" + sysApp.getAppName() + "'失败，软件名称已存在");
         }
         if (sysApp.getDataInEnc() != null && sysApp.getDataInEnc() != EncrypType.NONE && sysApp.getDataInEnc() != EncrypType.BASE64 && StringUtils.isBlank(sysApp.getDataInPwd())) {

@@ -53,18 +53,26 @@ public class UserConstants
     /** 菜单类型（按钮） */
     public static final String TYPE_BUTTON = "F";
 
-    /** Layout组件标识 */
+    /**
+     * Layout组件标识
+     */
     public final static String LAYOUT = "Layout";
-    
-    /** ParentView组件标识 */
+
+    /**
+     * ParentView组件标识
+     */
     public final static String PARENT_VIEW = "ParentView";
 
-    /** InnerLink组件标识 */
+    /**
+     * InnerLink组件标识
+     */
     public final static String INNER_LINK = "InnerLink";
 
-    /** 校验返回结果码 */
-    public final static String UNIQUE = "0";
-    public final static String NOT_UNIQUE = "1";
+    /**
+     * 校验是否唯一的返回标识
+     */
+    public final static boolean UNIQUE = true;
+    public final static boolean NOT_UNIQUE = false;
 
     /**
      * 用户名长度限制
