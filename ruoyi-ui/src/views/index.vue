@@ -149,6 +149,11 @@
               <span>更新日志</span>
             </div>
             <el-collapse accordion>
+              <el-collapse-item title="v1.5.2 - 2023-03-30">
+                <ol>
+                  <li>修复：修复卡密、单码无法批量导入的问题</li>
+                </ol>
+              </el-collapse-item>
               <el-collapse-item title="v1.5.1 - 2023-03-18">
                 <ol>
                   <li>修复：修复APK全局注入闪退的问题（感谢@手游大咖）</li>

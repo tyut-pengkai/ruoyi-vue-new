@@ -5,9 +5,9 @@ ruoyi:
   # 简称
   shortName: 红叶网络验证
   # 版本
-  version: v1.5.1
+  version: v1.5.2
   # 版本号
-  versionNo: 20230318181900
+  versionNo: 20230330200000
   # URL
   url: http://www.coordsoft.com
   # email
