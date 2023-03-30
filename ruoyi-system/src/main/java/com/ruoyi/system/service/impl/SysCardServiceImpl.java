@@ -225,12 +225,13 @@ public class SysCardServiceImpl implements ISysCardService {
                         // 验证卡类是否存在
                         String templateName = card.getCardName();
                         SysCardTemplate template;
-                        if (templateMap.containsKey(appName + "|" + templateName)) {
-                            template = templateMap.get(templateName);
+                        String templateKey = appName + "|" + templateName;
+                        if (templateMap.containsKey(templateKey)) {
+                            template = templateMap.get(templateKey);
                         } else {
                             template = sysCardTemplateService.selectSysCardTemplateByAppIdAndTemplateName(app.getAppId(), templateName);
                             if (template != null) {
-                                templateMap.put(appName + "|" + templateName, template);
+                                templateMap.put(templateKey, template);
                             }
                         }
                         if (template != null) {

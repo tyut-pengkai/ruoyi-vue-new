@@ -213,12 +213,13 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
                         // 验证卡类是否存在
                         String templateName = card.getCardName();
                         SysLoginCodeTemplate template;
-                        if (templateMap.containsKey(appName + "|" + templateName)) {
-                            template = templateMap.get(templateName);
+                        String templateKey = appName + "|" + templateName;
+                        if (templateMap.containsKey(templateKey)) {
+                            template = templateMap.get(templateKey);
                         } else {
                             template = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByAppIdAndTemplateName(app.getAppId(), templateName);
                             if (template != null) {
-                                templateMap.put(appName + "|" + templateName, template);
+                                templateMap.put(templateKey, template);
                             }
                         }
                         if (template != null) {
