@@ -204,6 +204,7 @@
             create_time,
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
+            <if test="chargeTime != null">charge_time,</if>
             <if test="remark != null">remark,</if>
             <if test="delFlag != null">del_flag,</if>
             <if test="cardLoginLimitU != null">card_login_limit_u,</if>
@@ -229,6 +230,7 @@
             sysdate(),
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
+            <if test="chargeTime != null">#{chargeTime},</if>
             <if test="remark != null">#{remark},</if>
             <if test="delFlag != null">#{delFlag},</if>
             <if test="cardLoginLimitU != null">#{cardLoginLimitU},</if>
