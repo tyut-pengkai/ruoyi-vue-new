@@ -18,18 +18,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": ""
 }
 ```
 
@@ -49,6 +41,7 @@
 | 状态码 | 说明 |
 | -------- | -------- | 
 |200|请求完成|
+
 
 **响应参数**:
 
@@ -89,111 +82,43 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    {
-        "expireTime"
-    :
-        "",
-            "point"
-    :
-        0,
-            "status"
-    :
-        "",
-            "loginLimitU"
-    :
-        0,
-            "loginLimitM"
-    :
-        0,
-            "cardLoginLimitU"
-    :
-        0,
-            "cardLoginLimitM"
-    :
-        0,
-            "loginTimes"
-    :
-        0,
-            "lastLoginTime"
-    :
-        "",
-            "loginIp"
-    :
-        "",
-            "freeBalance"
-    :
-        0,
-            "payBalance"
-    :
-        0,
-            "freePayment"
-    :
-        0,
-            "payPayment"
-    :
-        0,
-            "cardCustomParams"
-    :
-        "",
-            "remark"
-    :
-        "",
-            "userInfo"
-    :
-        {
-            "avatar"
-        :
-            "",
-                "userName"
-        :
-            "",
-                "nickName"
-        :
-            "",
-                "sex"
-        :
-            "",
-                "phonenumber"
-        :
-            "",
-                "email"
-        :
-            "",
-                "admin"
-        :
-            "",
-                "availablePayBalance"
-        :
-            0,
-                "freezePayBalance"
-        :
-            0,
-                "loginDate"
-        :
-            "",
-                "loginIp"
-        :
-            ""
-        }
-    }
-,
-    "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": {
+		"expireTime": "",
+		"point": 0,
+		"status": "",
+		"loginLimitU": 0,
+		"loginLimitM": 0,
+		"cardLoginLimitU": 0,
+		"cardLoginLimitM": 0,
+		"loginTimes": 0,
+		"lastLoginTime": "",
+		"loginIp": "",
+		"freeBalance": 0,
+		"payBalance": 0,
+		"freePayment": 0,
+		"payPayment": 0,
+		"cardCustomParams": "",
+		"remark": "",
+		"userInfo": {
+			"avatar": "",
+			"userName": "",
+			"nickName": "",
+			"sex": "",
+			"phonenumber": "",
+			"email": "",
+			"admin": "",
+			"availablePayBalance": 0,
+			"freezePayBalance": 0,
+			"loginDate": "",
+			"loginIp": ""
+		}
+	},
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -213,18 +138,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": ""
 }
 ```
 
@@ -245,6 +162,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -261,41 +179,19 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    {
-        "deviceCodeStr"
-    :
-        "",
-            "lastLoginTime"
-    :
-        "",
-            "loginTimes"
-    :
-        "",
-            "status"
-    :
-        "",
-            "remark"
-    :
-        ""
-    }
-,
-    "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": {
+		"deviceCodeStr": "",
+		"lastLoginTime": "",
+		"loginTimes": "",
+		"status": "",
+		"remark": ""
+	},
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -315,18 +211,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": ""
 }
 ```
 
@@ -347,6 +235,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -358,24 +247,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -395,33 +273,15 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    "",
-        "password"
-:
-    "",
-        "appVer"
-:
-    "",
-        "deviceCode"
-:
-    "",
-        "md5"
-:
-    "",
-        "autoReducePoint"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": "",
+  "password": "",
+  "appVer": "",
+  "deviceCode": "",
+  "md5": "",
+  "autoReducePoint": ""
 }
 ```
 
@@ -447,6 +307,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -458,24 +319,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -495,21 +345,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    "",
-        "password"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": "",
+  "password": ""
 }
 ```
 
@@ -531,6 +371,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -542,24 +383,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -579,30 +409,14 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    "",
-        "password"
-:
-    "",
-        "validPassword"
-:
-    "",
-        "cardNo"
-:
-    "",
-        "cardPassword"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": "",
+  "password": "",
+  "validPassword": "",
+  "cardNo": "",
+  "cardPassword": ""
 }
 ```
 
@@ -627,6 +441,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -638,24 +453,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -675,27 +479,13 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "vstr"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "sign"
-:
-    "",
-        "seconds"
-:
-    "",
-        "enableNegative"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "vstr": "",
+  "timestamp": "",
+  "sign": "",
+  "seconds": "",
+  "enableNegative": ""
 }
 ```
 
@@ -720,6 +510,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -732,27 +523,14 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "vstr"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": "",
+	"vstr": ""
 }
 ```
 
@@ -772,24 +550,12 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    "",
-        "password"
-:
-    "",
-        "passwordRepeat"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": "",
+  "password": "",
+  "passwordRepeat": ""
 }
 ```
 
@@ -812,6 +578,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -823,24 +590,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -860,24 +616,12 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "deviceCode"
-:
-    "",
-        "username"
-:
-    "",
-        "password"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "deviceCode": "",
+  "username": "",
+  "password": ""
 }
 ```
 
@@ -900,6 +644,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -911,24 +656,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -948,27 +682,13 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    "",
-        "password"
-:
-    "",
-        "newPassword"
-:
-    "",
-        "newPasswordRepeat"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": "",
+  "password": "",
+  "newPassword": "",
+  "newPasswordRepeat": ""
 }
 ```
 
@@ -992,6 +712,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -1003,24 +724,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -1040,21 +750,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "vstr"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "vstr": "",
+  "timestamp": "",
+  "sign": ""
 }
 ```
 
@@ -1077,6 +777,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -1089,27 +790,14 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "vstr"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": "",
+	"vstr": ""
 }
 ```
 
@@ -1129,18 +817,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": ""
 }
 ```
 
@@ -1161,6 +841,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -1172,24 +853,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -1211,18 +881,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": ""
 }
 ```
 
@@ -1242,6 +904,7 @@
 | 状态码 | 说明 |
 | -------- | -------- | 
 |200|请求完成|
+
 
 **响应参数**:
 
@@ -1282,111 +945,43 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    {
-        "expireTime"
-    :
-        "",
-            "point"
-    :
-        0,
-            "status"
-    :
-        "",
-            "loginLimitU"
-    :
-        0,
-            "loginLimitM"
-    :
-        0,
-            "cardLoginLimitU"
-    :
-        0,
-            "cardLoginLimitM"
-    :
-        0,
-            "loginTimes"
-    :
-        0,
-            "lastLoginTime"
-    :
-        "",
-            "loginIp"
-    :
-        "",
-            "freeBalance"
-    :
-        0,
-            "payBalance"
-    :
-        0,
-            "freePayment"
-    :
-        0,
-            "payPayment"
-    :
-        0,
-            "cardCustomParams"
-    :
-        "",
-            "remark"
-    :
-        "",
-            "userInfo"
-    :
-        {
-            "avatar"
-        :
-            "",
-                "userName"
-        :
-            "",
-                "nickName"
-        :
-            "",
-                "sex"
-        :
-            "",
-                "phonenumber"
-        :
-            "",
-                "email"
-        :
-            "",
-                "admin"
-        :
-            "",
-                "availablePayBalance"
-        :
-            0,
-                "freezePayBalance"
-        :
-            0,
-                "loginDate"
-        :
-            "",
-                "loginIp"
-        :
-            ""
-        }
-    }
-,
-    "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": {
+		"expireTime": "",
+		"point": 0,
+		"status": "",
+		"loginLimitU": 0,
+		"loginLimitM": 0,
+		"cardLoginLimitU": 0,
+		"cardLoginLimitM": 0,
+		"loginTimes": 0,
+		"lastLoginTime": "",
+		"loginIp": "",
+		"freeBalance": 0,
+		"payBalance": 0,
+		"freePayment": 0,
+		"payPayment": 0,
+		"cardCustomParams": "",
+		"remark": "",
+		"userInfo": {
+			"avatar": "",
+			"userName": "",
+			"nickName": "",
+			"sex": "",
+			"phonenumber": "",
+			"email": "",
+			"admin": "",
+			"availablePayBalance": 0,
+			"freezePayBalance": 0,
+			"loginDate": "",
+			"loginIp": ""
+		}
+	},
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -1406,18 +1001,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": ""
 }
 ```
 
@@ -1438,6 +1025,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -1454,41 +1042,19 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    {
-        "deviceCodeStr"
-    :
-        "",
-            "lastLoginTime"
-    :
-        "",
-            "loginTimes"
-    :
-        "",
-            "status"
-    :
-        "",
-            "remark"
-    :
-        ""
-    }
-,
-    "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": {
+		"deviceCodeStr": "",
+		"lastLoginTime": "",
+		"loginTimes": "",
+		"status": "",
+		"remark": ""
+	},
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -1508,18 +1074,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": ""
 }
 ```
 
@@ -1540,6 +1098,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -1551,24 +1110,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -1588,33 +1136,15 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    "",
-        "password"
-:
-    "",
-        "appVer"
-:
-    "",
-        "deviceCode"
-:
-    "",
-        "md5"
-:
-    "",
-        "autoReducePoint"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": "",
+  "password": "",
+  "appVer": "",
+  "deviceCode": "",
+  "md5": "",
+  "autoReducePoint": ""
 }
 ```
 
@@ -1640,6 +1170,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -1651,24 +1182,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -1688,21 +1208,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    "",
-        "password"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": "",
+  "password": ""
 }
 ```
 
@@ -1724,6 +1234,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -1735,24 +1246,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -1772,30 +1272,14 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    "",
-        "password"
-:
-    "",
-        "validPassword"
-:
-    "",
-        "cardNo"
-:
-    "",
-        "cardPassword"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": "",
+  "password": "",
+  "validPassword": "",
+  "cardNo": "",
+  "cardPassword": ""
 }
 ```
 
@@ -1820,6 +1304,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -1831,24 +1316,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -1868,27 +1342,13 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "vstr"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "sign"
-:
-    "",
-        "point"
-:
-    "",
-        "enableNegative"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "vstr": "",
+  "timestamp": "",
+  "sign": "",
+  "point": "",
+  "enableNegative": ""
 }
 ```
 
@@ -1913,6 +1373,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -1925,27 +1386,14 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    0,
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "vstr"
-:
-    ""
+	"code": 0,
+	"data": 0,
+	"msg": "",
+	"sign": "",
+	"timestamp": "",
+	"vstr": ""
 }
 ```
 
@@ -1965,24 +1413,12 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    "",
-        "password"
-:
-    "",
-        "passwordRepeat"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": "",
+  "password": "",
+  "passwordRepeat": ""
 }
 ```
 
@@ -2005,6 +1441,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -2016,24 +1453,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -2053,24 +1479,12 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "deviceCode"
-:
-    "",
-        "username"
-:
-    "",
-        "password"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "deviceCode": "",
+  "username": "",
+  "password": ""
 }
 ```
 
@@ -2093,6 +1507,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -2104,24 +1519,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -2141,27 +1545,13 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    "",
-        "password"
-:
-    "",
-        "newPassword"
-:
-    "",
-        "newPasswordRepeat"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": "",
+  "password": "",
+  "newPassword": "",
+  "newPasswordRepeat": ""
 }
 ```
 
@@ -2185,6 +1575,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -2196,24 +1587,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -2233,21 +1613,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "vstr"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "vstr": "",
+  "timestamp": "",
+  "sign": ""
 }
 ```
 
@@ -2270,6 +1640,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -2282,27 +1653,14 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "vstr"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": "",
+	"vstr": ""
 }
 ```
 
@@ -2322,18 +1680,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "username"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "username": ""
 }
 ```
 
@@ -2354,6 +1704,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -2365,24 +1716,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -2404,18 +1744,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "loginCode"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "loginCode": ""
 }
 ```
 
@@ -2435,6 +1767,7 @@
 | 状态码 | 说明 |
 | -------- | -------- | 
 |200|请求完成|
+
 
 **响应参数**:
 
@@ -2464,77 +1797,31 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    {
-        "expireTime"
-    :
-        "",
-            "point"
-    :
-        0,
-            "status"
-    :
-        "",
-            "loginLimitU"
-    :
-        0,
-            "loginLimitM"
-    :
-        0,
-            "cardLoginLimitU"
-    :
-        0,
-            "cardLoginLimitM"
-    :
-        0,
-            "loginTimes"
-    :
-        0,
-            "lastLoginTime"
-    :
-        "",
-            "loginIp"
-    :
-        "",
-            "freeBalance"
-    :
-        0,
-            "payBalance"
-    :
-        0,
-            "freePayment"
-    :
-        0,
-            "payPayment"
-    :
-        0,
-            "cardCustomParams"
-    :
-        "",
-            "remark"
-    :
-        "",
-            "loginCode"
-    :
-        ""
-    }
-,
-    "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": {
+		"expireTime": "",
+		"point": 0,
+		"status": "",
+		"loginLimitU": 0,
+		"loginLimitM": 0,
+		"cardLoginLimitU": 0,
+		"cardLoginLimitM": 0,
+		"loginTimes": 0,
+		"lastLoginTime": "",
+		"loginIp": "",
+		"freeBalance": 0,
+		"payBalance": 0,
+		"freePayment": 0,
+		"payPayment": 0,
+		"cardCustomParams": "",
+		"remark": "",
+		"loginCode": ""
+	},
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -2554,18 +1841,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "loginCode"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "loginCode": ""
 }
 ```
 
@@ -2586,6 +1865,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -2602,41 +1882,19 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    {
-        "deviceCodeStr"
-    :
-        "",
-            "lastLoginTime"
-    :
-        "",
-            "loginTimes"
-    :
-        "",
-            "status"
-    :
-        "",
-            "remark"
-    :
-        ""
-    }
-,
-    "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": {
+		"deviceCodeStr": "",
+		"lastLoginTime": "",
+		"loginTimes": "",
+		"status": "",
+		"remark": ""
+	},
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -2656,30 +1914,14 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "loginCode"
-:
-    "",
-        "appVer"
-:
-    "",
-        "deviceCode"
-:
-    "",
-        "md5"
-:
-    "",
-        "autoReducePoint"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "loginCode": "",
+  "appVer": "",
+  "deviceCode": "",
+  "md5": "",
+  "autoReducePoint": ""
 }
 ```
 
@@ -2704,6 +1946,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -2715,24 +1958,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -2752,21 +1984,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "loginCode"
-:
-    "",
-        "newLoginCode"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "loginCode": "",
+  "newLoginCode": ""
 }
 ```
 
@@ -2788,6 +2010,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -2799,24 +2022,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -2836,27 +2048,13 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "vstr"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "sign"
-:
-    "",
-        "seconds"
-:
-    "",
-        "enableNegative"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "vstr": "",
+  "timestamp": "",
+  "sign": "",
+  "seconds": "",
+  "enableNegative": ""
 }
 ```
 
@@ -2881,6 +2079,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -2893,27 +2092,14 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "vstr"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": "",
+	"vstr": ""
 }
 ```
 
@@ -2933,21 +2119,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "deviceCode"
-:
-    "",
-        "loginCode"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "deviceCode": "",
+  "loginCode": ""
 }
 ```
 
@@ -2969,6 +2145,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -2980,24 +2157,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -3017,21 +2183,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "vstr"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "vstr": "",
+  "timestamp": "",
+  "sign": ""
 }
 ```
 
@@ -3054,6 +2210,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -3066,27 +2223,14 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "vstr"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": "",
+	"vstr": ""
 }
 ```
 
@@ -3106,18 +2250,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "loginCode"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "loginCode": ""
 }
 ```
 
@@ -3138,6 +2274,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -3149,24 +2286,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -3188,18 +2314,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "loginCode"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "loginCode": ""
 }
 ```
 
@@ -3219,6 +2337,7 @@
 | 状态码 | 说明 |
 | -------- | -------- | 
 |200|请求完成|
+
 
 **响应参数**:
 
@@ -3248,77 +2367,31 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    {
-        "expireTime"
-    :
-        "",
-            "point"
-    :
-        0,
-            "status"
-    :
-        "",
-            "loginLimitU"
-    :
-        0,
-            "loginLimitM"
-    :
-        0,
-            "cardLoginLimitU"
-    :
-        0,
-            "cardLoginLimitM"
-    :
-        0,
-            "loginTimes"
-    :
-        0,
-            "lastLoginTime"
-    :
-        "",
-            "loginIp"
-    :
-        "",
-            "freeBalance"
-    :
-        0,
-            "payBalance"
-    :
-        0,
-            "freePayment"
-    :
-        0,
-            "payPayment"
-    :
-        0,
-            "cardCustomParams"
-    :
-        "",
-            "remark"
-    :
-        "",
-            "loginCode"
-    :
-        ""
-    }
-,
-    "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": {
+		"expireTime": "",
+		"point": 0,
+		"status": "",
+		"loginLimitU": 0,
+		"loginLimitM": 0,
+		"cardLoginLimitU": 0,
+		"cardLoginLimitM": 0,
+		"loginTimes": 0,
+		"lastLoginTime": "",
+		"loginIp": "",
+		"freeBalance": 0,
+		"payBalance": 0,
+		"freePayment": 0,
+		"payPayment": 0,
+		"cardCustomParams": "",
+		"remark": "",
+		"loginCode": ""
+	},
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -3338,18 +2411,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "loginCode"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "loginCode": ""
 }
 ```
 
@@ -3370,6 +2435,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -3386,41 +2452,19 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    {
-        "deviceCodeStr"
-    :
-        "",
-            "lastLoginTime"
-    :
-        "",
-            "loginTimes"
-    :
-        "",
-            "status"
-    :
-        "",
-            "remark"
-    :
-        ""
-    }
-,
-    "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": {
+		"deviceCodeStr": "",
+		"lastLoginTime": "",
+		"loginTimes": "",
+		"status": "",
+		"remark": ""
+	},
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -3440,30 +2484,14 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "loginCode"
-:
-    "",
-        "appVer"
-:
-    "",
-        "deviceCode"
-:
-    "",
-        "md5"
-:
-    "",
-        "autoReducePoint"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "loginCode": "",
+  "appVer": "",
+  "deviceCode": "",
+  "md5": "",
+  "autoReducePoint": ""
 }
 ```
 
@@ -3488,6 +2516,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -3499,24 +2528,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -3536,21 +2554,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "loginCode"
-:
-    "",
-        "newLoginCode"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "loginCode": "",
+  "newLoginCode": ""
 }
 ```
 
@@ -3572,6 +2580,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -3583,24 +2592,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -3620,27 +2618,13 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "vstr"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "sign"
-:
-    "",
-        "point"
-:
-    "",
-        "enableNegative"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "vstr": "",
+  "timestamp": "",
+  "sign": "",
+  "point": "",
+  "enableNegative": ""
 }
 ```
 
@@ -3665,6 +2649,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -3677,27 +2662,14 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    0,
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "vstr"
-:
-    ""
+	"code": 0,
+	"data": 0,
+	"msg": "",
+	"sign": "",
+	"timestamp": "",
+	"vstr": ""
 }
 ```
 
@@ -3717,21 +2689,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "deviceCode"
-:
-    "",
-        "loginCode"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "deviceCode": "",
+  "loginCode": ""
 }
 ```
 
@@ -3753,6 +2715,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -3764,24 +2727,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -3801,21 +2753,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "vstr"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "vstr": "",
+  "timestamp": "",
+  "sign": ""
 }
 ```
 
@@ -3838,6 +2780,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -3850,27 +2793,14 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "vstr"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": "",
+	"vstr": ""
 }
 ```
 
@@ -3890,18 +2820,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "loginCode"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "loginCode": ""
 }
 ```
 
@@ -3922,6 +2844,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -3933,24 +2856,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -3972,15 +2884,9 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": ""
 }
 ```
 
@@ -3999,6 +2905,7 @@
 | 状态码 | 说明 |
 | -------- | -------- | 
 |200|请求完成|
+
 
 **响应参数**:
 
@@ -4038,107 +2945,41 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    {
-        "appName"
-    :
-        "",
-            "description"
-    :
-        "",
-            "status"
-    :
-        "",
-            "bindType"
-    :
-        "",
-            "isCharge"
-    :
-        "",
-            "idxUrl"
-    :
-        "",
-            "freeQuotaReg"
-    :
-        0,
-            "reduceQuotaUnbind"
-    :
-        0,
-            "authType"
-    :
-        "",
-            "billType"
-    :
-        "",
-            "dataExpireTime"
-    :
-        0,
-            "loginLimitU"
-    :
-        0,
-            "loginLimitM"
-    :
-        0,
-            "limitOper"
-    :
-        "",
-            "heartBeatTime"
-    :
-        0,
-            "welcomeNotice"
-    :
-        "",
-            "offNotice"
-    :
-        "",
-            "icon"
-    :
-        "",
-            "enableTrial"
-    :
-        "",
-            "trialTimesPerIp"
-    :
-        0,
-            "trialCycle"
-    :
-        0,
-            "trialTimes"
-    :
-        0,
-            "trialTime"
-    :
-        0,
-            "enableTrialByTimeQuantum"
-    :
-        "",
-            "enableTrialByTimes"
-    :
-        "",
-            "trialTimeQuantum"
-    :
-        "",
-            "remark"
-    :
-        ""
-    }
-,
-    "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": {
+		"appName": "",
+		"description": "",
+		"status": "",
+		"bindType": "",
+		"isCharge": "",
+		"idxUrl": "",
+		"freeQuotaReg": 0,
+		"reduceQuotaUnbind": 0,
+		"authType": "",
+		"billType": "",
+		"dataExpireTime": 0,
+		"loginLimitU": 0,
+		"loginLimitM": 0,
+		"limitOper": "",
+		"heartBeatTime": 0,
+		"welcomeNotice": "",
+		"offNotice": "",
+		"icon": "",
+		"enableTrial": "",
+		"trialTimesPerIp": 0,
+		"trialCycle": 0,
+		"trialTimes": 0,
+		"trialTime": 0,
+		"enableTrialByTimeQuantum": "",
+		"enableTrialByTimes": "",
+		"trialTimeQuantum": "",
+		"remark": ""
+	},
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -4158,21 +2999,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "vstr"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "vstr": "",
+  "timestamp": "",
+  "sign": ""
 }
 ```
 
@@ -4194,6 +3025,7 @@
 | 状态码 | 说明 |
 | -------- | -------- | 
 |200|请求完成|
+
 
 **响应参数**:
 
@@ -4236,118 +3068,45 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    {
-        "expireTime"
-    :
-        "",
-            "point"
-    :
-        0,
-            "status"
-    :
-        "",
-            "loginLimitU"
-    :
-        0,
-            "loginLimitM"
-    :
-        0,
-            "cardLoginLimitU"
-    :
-        0,
-            "cardLoginLimitM"
-    :
-        0,
-            "loginTimes"
-    :
-        0,
-            "lastLoginTime"
-    :
-        "",
-            "loginIp"
-    :
-        "",
-            "freeBalance"
-    :
-        0,
-            "payBalance"
-    :
-        0,
-            "freePayment"
-    :
-        0,
-            "payPayment"
-    :
-        0,
-            "cardCustomParams"
-    :
-        "",
-            "remark"
-    :
-        "",
-            "userInfo"
-    :
-        {
-            "avatar"
-        :
-            "",
-                "userName"
-        :
-            "",
-                "nickName"
-        :
-            "",
-                "sex"
-        :
-            "",
-                "phonenumber"
-        :
-            "",
-                "email"
-        :
-            "",
-                "admin"
-        :
-            "",
-                "availablePayBalance"
-        :
-            0,
-                "freezePayBalance"
-        :
-            0,
-                "loginDate"
-        :
-            "",
-                "loginIp"
-        :
-            ""
-        }
-    ,
-        "loginCode"
-    :
-        ""
-    }
-,
-    "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "vstr"
-:
-    ""
+	"code": 0,
+	"data": {
+		"expireTime": "",
+		"point": 0,
+		"status": "",
+		"loginLimitU": 0,
+		"loginLimitM": 0,
+		"cardLoginLimitU": 0,
+		"cardLoginLimitM": 0,
+		"loginTimes": 0,
+		"lastLoginTime": "",
+		"loginIp": "",
+		"freeBalance": 0,
+		"payBalance": 0,
+		"freePayment": 0,
+		"payPayment": 0,
+		"cardCustomParams": "",
+		"remark": "",
+		"userInfo": {
+			"avatar": "",
+			"userName": "",
+			"nickName": "",
+			"sex": "",
+			"phonenumber": "",
+			"email": "",
+			"admin": "",
+			"availablePayBalance": 0,
+			"freezePayBalance": 0,
+			"loginDate": "",
+			"loginIp": ""
+		},
+		"loginCode": ""
+	},
+	"msg": "",
+	"sign": "",
+	"timestamp": "",
+	"vstr": ""
 }
 ```
 
@@ -4367,24 +3126,12 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "fileName"
-:
-    "",
-        "returnUrl"
-:
-    "",
-        "errorIfNotExist"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "fileName": "",
+  "returnUrl": "",
+  "errorIfNotExist": ""
 }
 ```
 
@@ -4407,6 +3154,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -4418,24 +3166,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -4455,30 +3192,14 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "fileName"
-:
-    "",
-        "base64Str"
-:
-    "",
-        "overrideIfExist"
-:
-    "",
-        "checkToken"
-:
-    "",
-        "checkVip"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "fileName": "",
+  "base64Str": "",
+  "overrideIfExist": "",
+  "checkToken": "",
+  "checkVip": ""
 }
 ```
 
@@ -4503,6 +3224,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -4514,24 +3236,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -4551,21 +3262,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "scriptKey"
-:
-    "",
-        "scriptParams"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "scriptKey": "",
+  "scriptParams": ""
 }
 ```
 
@@ -4587,6 +3288,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -4598,24 +3300,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -4635,21 +3326,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "variableName"
-:
-    "",
-        "errorIfNotExist"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "variableName": "",
+  "errorIfNotExist": ""
 }
 ```
 
@@ -4671,6 +3352,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -4682,24 +3364,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -4719,30 +3390,14 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "variableName"
-:
-    "",
-        "variableValue"
-:
-    "",
-        "errorIfNotExist"
-:
-    "",
-        "checkToken"
-:
-    "",
-        "checkVip"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "variableName": "",
+  "variableValue": "",
+  "errorIfNotExist": "",
+  "checkToken": "",
+  "checkVip": ""
 }
 ```
 
@@ -4767,6 +3422,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -4778,24 +3434,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -4815,21 +3460,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "vstr"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "vstr": "",
+  "timestamp": "",
+  "sign": ""
 }
 ```
 
@@ -4852,6 +3487,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -4864,27 +3500,14 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "vstr"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": "",
+	"vstr": ""
 }
 ```
 
@@ -4904,15 +3527,9 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": ""
 }
 ```
 
@@ -4932,6 +3549,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -4943,24 +3561,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -4980,21 +3587,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "vstr"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "vstr": "",
+  "timestamp": "",
+  "sign": ""
 }
 ```
 
@@ -5017,6 +3614,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -5029,27 +3627,14 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "vstr"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": "",
+	"vstr": ""
 }
 ```
 
@@ -5069,15 +3654,9 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": ""
 }
 ```
 
@@ -5096,6 +3675,7 @@
 | 状态码 | 说明 |
 | -------- | -------- | 
 |200|请求完成|
+
 
 **响应参数**:
 
@@ -5118,56 +3698,24 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    {
-        "versionName"
-    :
-        "",
-            "versionNo"
-    :
-        0,
-            "updateLog"
-    :
-        "",
-            "downloadUrl"
-    :
-        "",
-            "status"
-    :
-        "",
-            "md5"
-    :
-        "",
-            "forceUpdate"
-    :
-        "",
-            "checkMd5"
-    :
-        "",
-            "downloadUrlDirect"
-    :
-        "",
-            "remark"
-    :
-        ""
-    }
-,
-    "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": {
+		"versionName": "",
+		"versionNo": 0,
+		"updateLog": "",
+		"downloadUrl": "",
+		"status": "",
+		"md5": "",
+		"forceUpdate": "",
+		"checkMd5": "",
+		"downloadUrlDirect": "",
+		"remark": ""
+	},
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -5187,15 +3735,9 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": ""
 }
 ```
 
@@ -5214,6 +3756,7 @@
 | 状态码 | 说明 |
 | -------- | -------- | 
 |200|请求完成|
+
 
 **响应参数**:
 
@@ -5236,56 +3779,24 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    {
-        "versionName"
-    :
-        "",
-            "versionNo"
-    :
-        0,
-            "updateLog"
-    :
-        "",
-            "downloadUrl"
-    :
-        "",
-            "status"
-    :
-        "",
-            "md5"
-    :
-        "",
-            "forceUpdate"
-    :
-        "",
-            "checkMd5"
-    :
-        "",
-            "downloadUrlDirect"
-    :
-        "",
-            "remark"
-    :
-        ""
-    }
-,
-    "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": {
+		"versionName": "",
+		"versionNo": 0,
+		"updateLog": "",
+		"downloadUrl": "",
+		"status": "",
+		"md5": "",
+		"forceUpdate": "",
+		"checkMd5": "",
+		"downloadUrlDirect": "",
+		"remark": ""
+	},
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -5305,21 +3816,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "vstr"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "vstr": "",
+  "timestamp": "",
+  "sign": ""
 }
 ```
 
@@ -5342,6 +3843,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -5354,27 +3856,14 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "vstr"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": "",
+	"vstr": ""
 }
 ```
 
@@ -5394,15 +3883,9 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": ""
 }
 ```
 
@@ -5422,6 +3905,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -5433,24 +3917,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -5470,24 +3943,12 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "time1"
-:
-    "",
-        "time2"
-:
-    "",
-        "formatType"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "time1": "",
+  "time2": "",
+  "formatType": ""
 }
 ```
 
@@ -5510,6 +3971,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -5521,24 +3983,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -5558,24 +4009,12 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "appVer"
-:
-    "",
-        "deviceCode"
-:
-    "",
-        "md5"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "appVer": "",
+  "deviceCode": "",
+  "md5": ""
 }
 ```
 
@@ -5598,6 +4037,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -5609,24 +4049,13 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```
 
@@ -5646,21 +4075,11 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "vstr"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "sign"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "vstr": "",
+  "timestamp": "",
+  "sign": ""
 }
 ```
 
@@ -5683,6 +4102,7 @@
 | -------- | -------- | 
 |200|请求完成|
 
+
 **响应参数**:
 
 | 参数名称 | 参数说明 | 类型 |
@@ -5695,27 +4115,14 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    "",
-        "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    "",
-        "vstr"
-:
-    ""
+	"code": 0,
+	"data": "",
+	"msg": "",
+	"sign": "",
+	"timestamp": "",
+	"vstr": ""
 }
 ```
 
@@ -5735,18 +4142,10 @@
 
 ```javascript
 {
-    "api"
-:
-    "",
-        "appSecret"
-:
-    "",
-        "sign"
-:
-    "",
-        "appVer"
-:
-    ""
+  "api": "",
+  "appSecret": "",
+  "sign": "",
+  "appVer": ""
 }
 ```
 
@@ -5766,6 +4165,7 @@
 | 状态码 | 说明 |
 | -------- | -------- | 
 |200|请求完成|
+
 
 **响应参数**:
 
@@ -5788,55 +4188,23 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-
 ```javascript
 {
-    "code"
-:
-    0,
-        "data"
-:
-    {
-        "versionName"
-    :
-        "",
-            "versionNo"
-    :
-        0,
-            "updateLog"
-    :
-        "",
-            "downloadUrl"
-    :
-        "",
-            "status"
-    :
-        "",
-            "md5"
-    :
-        "",
-            "forceUpdate"
-    :
-        "",
-            "checkMd5"
-    :
-        "",
-            "downloadUrlDirect"
-    :
-        "",
-            "remark"
-    :
-        ""
-    }
-,
-    "msg"
-:
-    "",
-        "sign"
-:
-    "",
-        "timestamp"
-:
-    ""
+	"code": 0,
+	"data": {
+		"versionName": "",
+		"versionNo": 0,
+		"updateLog": "",
+		"downloadUrl": "",
+		"status": "",
+		"md5": "",
+		"forceUpdate": "",
+		"checkMd5": "",
+		"downloadUrlDirect": "",
+		"remark": ""
+	},
+	"msg": "",
+	"sign": "",
+	"timestamp": ""
 }
 ```

@@ -3,11 +3,9 @@
 ## 一、准备工作
 
 ### 1、软件下载
-
 请加入红叶验证官方群下载最新版本软件包：[947144396](https://jq.qq.com/?_wv=1027&k=I2MM7JLa)
 
 ### 2、安装环境
-
 部署本验证系统需要用户自备服务器，Windows/Linux均可，推荐使用Centos服务器，本教程将以Centos7为例进行演示，服务器需安装以下环境：
 
 ```
@@ -17,25 +15,21 @@
 4. Nginx >= 1.20.0
 ```
 
-:::tip 为了简化安装步骤，接下来的步骤将使用宝塔面板安装 宝塔面板下载地址：[https://www.bt.cn/new/download.html](https://www.bt.cn/new/download.html)
+:::tip
+为了简化安装步骤，接下来的步骤将使用宝塔面板安装
+宝塔面板下载地址：[https://www.bt.cn/new/download.html](https://www.bt.cn/new/download.html)
 :::
 
 #### （1）Java环境：JDK
-
 在服务器终端中输入以下命令安装JDK
-
 ```
 yum install -y java-1.8.0-openjdk.x86_64
 ```
-
 安装完毕后执行如下命令查看版本
-
 ```
 java -version
 ```
-
 输出类似下方文字代表安装成功
-
 ```
 [root@bogon ~]# java -version
 openjdk version "1.8.0_232"
@@ -43,36 +37,26 @@ OpenJDK Runtime Environment (build 1.8.0_232-b09)
 OpenJDK 64-Bit Server VM (build 25.232-b09, mixed mode)
 [root@bogon ~]# 
 ```
-
 #### （2）Mysql/Redis/Nginx
-
 Mysql、Redis、Nginx这三个软件可以在宝塔面板软件商店里直接搜索安装，安装完毕如图所示
 ![image](./1.jpg)
 
 #### （3）新建数据库
-
 ##### 1、在安装好的Mysql数据库中新建数据库`hywlyz`，数据库编码选择`utf8mb4`，如图所示：
-
 ![image](./2.jpg)
 
 ##### 2、解压程序压缩包
-
 解压下载的红叶验证程序压缩包，如图：
 ![image](./3.jpg)  
 将解压出来的`hywlyz.sql`文件导入到刚创建的数据库中
 
 ## 二、部署程序
-
 ### 1、上传程序到服务器
-
 将`upload`文件夹的内容上传到服务器，此处上传到`/opt/app/hywlyz`目录为例，后文中出现的此路径均应修改为您使用的路径（建议您使用此路径，后续文中需修改安装路径的指令可无需修改直接复制粘贴）
 
 ### 2、修改配置文件
-
 #### （1）修改数据库连接
-
-编辑`application-config.yml`，将`数据库密码`更改为您的数据库密码，此处请注意`jdbc:mysql://127.0.0.1:3306/hywlyz?useUnicode=`中的`hywlyz`
-为数据库名，若与您不一致请注意修改
+编辑`application-config.yml`，将`数据库密码`更改为您的数据库密码，此处请注意`jdbc:mysql://127.0.0.1:3306/hywlyz?useUnicode=`中的`hywlyz`为数据库名，若与您不一致请注意修改
 
 ```{6-8}
 # 数据源配置
@@ -86,7 +70,6 @@ Mysql、Redis、Nginx这三个软件可以在宝塔面板软件商店里直接�
 ```
 
 如果配置了Redis数据库密码，需要将`Redis密码`处更改为您的密码（如果您未配置过Redis密码，默认密码为空，此处无需修改）
-
 ```{8}
 # redis 配置
   redis:
@@ -99,7 +82,6 @@ Mysql、Redis、Nginx这三个软件可以在宝塔面板软件商店里直接�
 ```
 
 ### 3、启动前端程序
-
 在宝塔面板依次选择`网站`-`PHP项目`-`添加站点`
 ![image](./5.jpg)
 
@@ -110,7 +92,6 @@ PHP版本：选择`纯静态`
 创建完毕后点击网站的`设置`，打开`站点修改`页面，选择`伪静态`
 ![image](./7.jpg)  
 将以下规则填写到右侧框中
-
 ```
 # HTTP反向代理相关配置开始 >>>
 location / {
@@ -133,9 +114,7 @@ location /profile/ {
 ```
 
 ### 4、启动后端程序
-
 服务器终端中输入以下命令启动后端程序（注意其中的`/opt/app/hywlyz`使用自己的实际路径）
-
 ```
 cd /opt/app/hywlyz && chmod 755 bin/hy && sh hy.sh restart && tail -f nohup.out
 ```
@@ -143,18 +122,17 @@ cd /opt/app/hywlyz && chmod 755 bin/hy && sh hy.sh restart && tail -f nohup.out
 如果出现以下提示代表启动成功
 ![image](./4.jpg)
 
-:::tip 请记录此处提示的`机器码`，需要凭此码获取授权信息
+:::tip
+请记录此处提示的`机器码`，需要凭此码获取授权信息
 :::
 
 此时即可通过您的域名尝试访问网站`http://域名/admin`，默认管理员账号密码为：admin/admin123，如果登录时提示未授权说明部署成功
 
 ## 三、购买授权
-
 购买请访问商城：[https://shop.coordsoft.com/](https://shop.coordsoft.com/)
 购买注册码后点击 [激活授权](https://shop.coordsoft.com/getLicense) 为您的网站在线授权
 
 ## 四、登录网站
-
 至此，整个网站部署完成，如果一切正常，您可通过您的域名访问属于您的红叶网络验证系统  
 前台地址：http://域名  
 后台地址：http://域名/admin  
