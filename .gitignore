@@ -46,7 +46,3 @@ nbdist/
 !*/build/*.html
 !*/build/*.xml
 /ruoyi-admin/src/main/resources/templates/
-node_modules/
-/vuepress-starter/docs/.vuepress/.temp/
-/vuepress-starter/docs/.vuepress/.cache/deps/
-/uploadPath/download/
