@@ -1,1 +1,0 @@
-export const data = JSON.parse("{\"key\":\"v-6e33d387\",\"path\":\"/install/init-config.html\",\"title\":\"\",\"lang\":\"en-US\",\"frontmatter\":{},\"excerpt\":\"\",\"headers\":[{\"level\":2,\"title\":\"初始化设置\",\"slug\":\"初始化设置\",\"link\":\"#初始化设置\",\"children\":[]}],\"git\":{},\"filePathRelative\":\"install/init-config.md\"}")
