@@ -109,7 +109,7 @@ export default {
                 collapsible: false,
                 children: [
                     '/guide/getting-started/getting-started.md',
-                    '/guide/quick-access/quick-access.md',
+                    // '/guide/quick-access/quick-access.md',
                     {
                         text: '代码接入',
                         collapsible: true,

@@ -55,12 +55,21 @@
 这个没有固定的选项，Activity和Method列表中所列出的内容为红叶根据您上传的APK自动识别出来的，需要您自行尝试。凭以往的经验，Activity一般选包含MainActivity的，Method一般选择onCreate。  
 
 以下是一些使用特定开发工具开发的APK的选择方式：  
-**按键精灵**  
-    - 全局模式  
-    - 单例模式：com.ds.daisi.activity.ElfinPayActivity、onCreate  
-**AutoJS（Pro）**  
-    - 单例模式：com.stardust.autojs.inrt.SplashActivity、onCreate  
-    - 单例模式：com.stardust.autojs.execution.ScriptExecuteActivity、runScript  
+
+:::: code-group
+::: code-group-item 按键精灵
+```
+全局模式  
+单例模式：com.ds.daisi.activity.ElfinPayActivity、onCreate 
+```
+:::
+::: code-group-item AutoJS（Pro）
+```
+单例模式：com.stardust.autojs.inrt.SplashActivity、onCreate  
+单例模式：com.stardust.autojs.execution.ScriptExecuteActivity、runScript 
+```
+:::
+:::: 
 
 #### 系统提示“JSON parse error”，是什么问题？
 请检查软件客户端对接参数与后台设置是否一致，重点检查**加解密算法**

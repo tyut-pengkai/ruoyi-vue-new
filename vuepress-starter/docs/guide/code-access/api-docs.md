@@ -16,7 +16,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -82,7 +82,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": {
@@ -136,7 +136,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -179,7 +179,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": {
@@ -209,7 +209,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -247,7 +247,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -271,7 +271,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -319,7 +319,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -343,7 +343,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -383,7 +383,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -407,7 +407,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -453,7 +453,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -477,7 +477,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -523,7 +523,7 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -548,7 +548,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -590,7 +590,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -614,7 +614,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -656,7 +656,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -680,7 +680,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -724,7 +724,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -748,7 +748,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -790,7 +790,7 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -815,7 +815,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -853,7 +853,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -879,7 +879,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -945,7 +945,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": {
@@ -999,7 +999,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1042,7 +1042,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": {
@@ -1072,7 +1072,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1110,7 +1110,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -1134,7 +1134,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1182,7 +1182,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -1206,7 +1206,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1246,7 +1246,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -1270,7 +1270,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1316,7 +1316,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -1340,7 +1340,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1386,7 +1386,7 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": 0,
@@ -1411,7 +1411,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1453,7 +1453,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -1477,7 +1477,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1519,7 +1519,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -1543,7 +1543,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1587,7 +1587,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -1611,7 +1611,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1653,7 +1653,7 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -1678,7 +1678,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1716,7 +1716,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -1742,7 +1742,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1797,7 +1797,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": {
@@ -1839,7 +1839,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1882,7 +1882,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": {
@@ -1912,7 +1912,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -1958,7 +1958,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -1982,7 +1982,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2022,7 +2022,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -2046,7 +2046,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2092,7 +2092,7 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -2117,7 +2117,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2157,7 +2157,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -2181,7 +2181,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2223,7 +2223,7 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -2248,7 +2248,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2286,7 +2286,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -2312,7 +2312,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2367,7 +2367,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": {
@@ -2409,7 +2409,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2452,7 +2452,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": {
@@ -2482,7 +2482,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2528,7 +2528,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -2552,7 +2552,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2592,7 +2592,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -2616,7 +2616,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2662,7 +2662,7 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": 0,
@@ -2687,7 +2687,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2727,7 +2727,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -2751,7 +2751,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2793,7 +2793,7 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -2818,7 +2818,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2856,7 +2856,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -2882,7 +2882,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -2945,7 +2945,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": {
@@ -2997,7 +2997,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3068,7 +3068,7 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": {
@@ -3124,7 +3124,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3166,7 +3166,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -3190,7 +3190,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3236,7 +3236,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -3260,7 +3260,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3300,7 +3300,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -3324,7 +3324,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3364,7 +3364,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -3388,7 +3388,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3434,7 +3434,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -3458,7 +3458,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3500,7 +3500,7 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -3525,7 +3525,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3561,7 +3561,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -3585,7 +3585,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3627,7 +3627,7 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -3652,7 +3652,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3698,7 +3698,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": {
@@ -3733,7 +3733,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3779,7 +3779,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": {
@@ -3814,7 +3814,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3856,7 +3856,7 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -3881,7 +3881,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3917,7 +3917,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -3941,7 +3941,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -3983,7 +3983,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -4007,7 +4007,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -4049,7 +4049,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -4073,7 +4073,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -4115,7 +4115,7 @@
 |vstr|用作标记或验证的冗余数据，与输入保持一致|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": "",
@@ -4140,7 +4140,7 @@
 
 **请求示例**:
 
-```javascript
+```json
 {
   "api": "",
   "appSecret": "",
@@ -4188,7 +4188,7 @@
 |timestamp|结果生成时间|string|
 
 **响应示例**:
-```javascript
+```json
 {
 	"code": 0,
 	"data": {
