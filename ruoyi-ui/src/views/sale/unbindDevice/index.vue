@@ -5,7 +5,7 @@
     </el-alert> -->
     <el-card class="box-card" style="max-width: 90vw; margin-top: 15px">
       <div class="my-title">
-        <img src="../../../assets/images/category.svg"/>&nbsp;
+        <img src="../../../assets/images/category.svg" />&nbsp;
         <span>解绑设备</span>
       </div>
       <el-tabs style="margin-top: 20px" @tab-click="tabChange">
@@ -117,7 +117,7 @@
     >
       <el-card style="max-width: 90vw; margin-bottom: 10px">
         <el-table :data="deviceCodeList" border>
-          <el-table-column align="center" label="" type="index"/>
+          <el-table-column align="center" label="" type="index" />
           <el-table-column label="设备码">
             <template slot-scope="scope">
               {{ scope.row.deviceCodeStr }}
@@ -147,7 +147,7 @@
                 size="small"
                 type="text"
                 @click="handleUnbind(scope.row)"
-              >解绑此设备
+                >解绑此设备
               </el-button>
             </template>
           </el-table-column>
@@ -158,7 +158,7 @@
 </template>
 
 <script>
-import {listApp, queryBindDevice, unbindDevice} from "@/api/sale/saleShop";
+import { listApp, queryBindDevice, unbindDevice } from "@/api/sale/saleShop";
 
 export default {
   name: "UnbindDevice",
@@ -182,7 +182,7 @@ export default {
         loginCode: null, //"OSURn3OhatUVX56PpmsH",
       },
       rules: {
-        appId: [{required: true, message: "请选择目标软件", trigger: "blur"}],
+        appId: [{ required: true, message: "请选择目标软件", trigger: "blur" }],
         username: [
           {
             required: true,
@@ -198,7 +198,7 @@ export default {
           },
         ],
         loginCode: [
-          {required: true, message: "请输入要解绑的登录码", trigger: "blur"},
+          { required: true, message: "请输入要解绑的登录码", trigger: "blur" },
         ],
       },
       appInfo: {
@@ -213,7 +213,7 @@ export default {
   methods: {
     /** 查询软件列表 */
     getAppList(authType) {
-      listApp({authType: authType, enableUnbind: "Y"}).then((response) => {
+      listApp({ authType: authType, enableUnbind: "Y" }).then((response) => {
         this.appList = response.rows;
       });
     },
@@ -345,11 +345,9 @@ export default {
                 this.$alert("解绑失败", "系统提示");
               }
             })
-            .finally(() => {
-            });
+            .finally(() => {});
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
   },
 };

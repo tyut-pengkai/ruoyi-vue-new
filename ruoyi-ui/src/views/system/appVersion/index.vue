@@ -119,7 +119,7 @@
           size="mini"
           type="warning"
           @click="handleExport"
-        >导出
+          >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -146,9 +146,9 @@
       :data="appVersionList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" type="selection" width="55" />
       <!-- <el-table-column align="center" label="" type="index"/> -->
-      <el-table-column align="center" label="编号" prop="appVersionId"/>
+      <el-table-column align="center" label="编号" prop="appVersionId" />
       <el-table-column
         align="center"
         :show-overflow-tooltip="true"
@@ -325,7 +325,7 @@
             type="textarea"
           />
         </el-form-item>
-        <el-form-item label="下载地址" prop="downloadUrl">
+        <el-form-item label="下载地址（跳转）" prop="downloadUrl">
           <el-input v-model="form.downloadUrl" placeholder="请输入内容">
           </el-input>
         </el-form-item>
@@ -409,7 +409,7 @@
             快速接入安全性较低，建议接入后自行加固或加壳后再发布。
             <el-tooltip placement="top">
               <div slot="content">
-                本功能主要用于开发者临时接单需要快速接入快速测试的场景，接入软件建议小于20M<br/>目前可支持
+                本功能主要用于开发者临时接单需要快速接入快速测试的场景，接入软件建议小于20M<br />目前可支持
                 [全部模式] 的exe接入与 [单码计时] 模式的apk接入
               </div>
               <el-link type="primary">更多</el-link>
@@ -628,7 +628,7 @@
       </el-tabs>
       <div slot="footer" class="dialog-footer">
         <el-button :loading="loading" type="primary" @click="submitFileForm"
-        >确 定
+          >确 定
         </el-button>
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
@@ -678,7 +678,7 @@
         <el-button type="primary" @click="activityClose">确定</el-button>
         <el-button
           @click="selectActivityMethod.loadActivityDialogStatus = false"
-        >取 消
+          >取 消
         </el-button>
       </div>
     </el-dialog>
@@ -706,7 +706,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="methodClose">确定</el-button>
         <el-button @click="selectActivityMethod.loadMethodDialogStatus = false"
-        >取 消
+          >取 消
         </el-button>
       </div>
     </el-dialog>
@@ -725,8 +725,8 @@ import {
   listAppVersion,
   updateAppVersion,
 } from "@/api/system/appVersion";
-import {getToken} from "@/utils/auth";
-import {getApp} from "@/api/system/app";
+import { getToken } from "@/utils/auth";
+import { getApp } from "@/api/system/app";
 import axios from "axios";
 import Clipboard from "clipboard";
 
@@ -803,7 +803,7 @@ export default {
         // 是否禁用上传
         isUploading: false,
         // 设置上传的请求头部
-        headers: {Authorization: "Bearer " + getToken()},
+        headers: { Authorization: "Bearer " + getToken() },
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/system/appVersion/quickAccess",
         // 当前操作的版本ID
@@ -999,8 +999,7 @@ export default {
             this.title = "修改软件版本信息";
           });
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 提交按钮 */
     submitForm() {
@@ -1051,8 +1050,7 @@ export default {
           this.$download.name(response.msg);
           this.exportLoading = false;
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     /** 导入按钮操作 */
     handleImport(row) {
@@ -1270,7 +1268,26 @@ export default {
         .catch((error) => {
           this.fileDown.loadDialogStatus = false;
           console.info(error);
-          this.$modal.alert("下载失败：" + error);
+          let href =
+            process.env.VUE_APP_BASE_API +
+            "/common/download?fileName=" +
+            encodeURI(name) +
+            "&delete=false";
+          // this.$modal.alert(
+          //   "下载失败：" + error + "；可尝试点击链接重新下载：" + href
+          // );
+          this.$alert(
+            "下载失败：" +
+              error +
+              '<br><a style="text-decoration:underline;color: #FF0000" href="' +
+              href +
+              '"' +
+              ' target="_blank">可尝试点击此处重新下载</a>',
+            "下载失败",
+            {
+              dangerouslyUseHTMLString: true,
+            }
+          );
         });
     },
     initInstance() {
@@ -1330,27 +1347,27 @@ export default {
     getFileResult() {
       return getFileResult(
         "versionId=" +
-        this.upload.quickAccessVersionId +
-        "&updateMd5=" +
-        this.upload.updateMd5 +
-        "&apkOper=" +
-        this.upload.apkOper +
-        "&template=" +
-        this.upload.template +
-        "&skin=" +
-        this.upload.skin +
-        "&accessType=" +
-        this.upload.accessType +
-        "&activity=" +
-        (this.upload.activity ? this.upload.activity : "") +
-        "&method=" +
-        (this.upload.method ? encodeURIComponent(this.upload.method) : "") +
-        "&oriPath=" +
-        (this.upload.oriPath ? encodeURIComponent(this.upload.oriPath) : "") +
-        "&oriName=" +
-        (this.upload.oriName ? encodeURIComponent(this.upload.oriName) : "") +
-        "&fullScreen=" +
-        this.upload.fullScreen
+          this.upload.quickAccessVersionId +
+          "&updateMd5=" +
+          this.upload.updateMd5 +
+          "&apkOper=" +
+          this.upload.apkOper +
+          "&template=" +
+          this.upload.template +
+          "&skin=" +
+          this.upload.skin +
+          "&accessType=" +
+          this.upload.accessType +
+          "&activity=" +
+          (this.upload.activity ? this.upload.activity : "") +
+          "&method=" +
+          (this.upload.method ? encodeURIComponent(this.upload.method) : "") +
+          "&oriPath=" +
+          (this.upload.oriPath ? encodeURIComponent(this.upload.oriPath) : "") +
+          "&oriName=" +
+          (this.upload.oriName ? encodeURIComponent(this.upload.oriName) : "") +
+          "&fullScreen=" +
+          this.upload.fullScreen
       );
     },
     activityClose() {
