@@ -283,6 +283,7 @@ public class QuickAccessApkUtil {
                         .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_WIFI_STATE").add())
                         .with(new PermissionEditor.PermissionOpera("android.permission.READ_PHONE_STATE").add())
                         .with(new PermissionEditor.PermissionOpera("android.permission.WRITE_EXTERNAL_STORAGE").add())
+                        .with(new PermissionEditor.PermissionOpera("android.permission.REQUEST_INSTALL_PACKAGES").add())
                 );
                 permissionEditor.commit();
                 doc.build(byteArrayOutputStream);

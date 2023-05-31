@@ -27,6 +27,7 @@ public class AppInfo extends Function {
                         new RespItem(Resp.DataType.string, "bindType", "绑定模式"),
                         new RespItem(Resp.DataType.string, "isCharge", "是否开启计费"),
                         new RespItem(Resp.DataType.string, "idxUrl", "软件主页"),
+                        new RespItem(Resp.DataType.string, "customBuyUrl", "自定义购卡地址"),
                         new RespItem(Resp.DataType.integer, "freeQuotaReg", "首次登录赠送免费时间或点数，单位秒或点"),
                         new RespItem(Resp.DataType.integer, "reduceQuotaUnbind", "换绑设备扣减时间或点数，单位秒或点"),
                         new RespItem(Resp.DataType.string, "authType", "认证类型"),
