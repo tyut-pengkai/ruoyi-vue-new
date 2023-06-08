@@ -1,6 +1,7 @@
 package com.ruoyi.agent.service;
 
 import com.ruoyi.agent.domain.SysAgentItem;
+import com.ruoyi.agent.domain.vo.TemplateInfoVo;
 import com.ruoyi.common.enums.TemplateType;
 
 import java.util.List;
@@ -76,5 +77,5 @@ public interface ISysAgentItemService {
      * @param templateId
      * @return
      */
-    public SysAgentItem checkAgentItem(Long agentId, TemplateType templateType, Long templateId);
+    public SysAgentItem checkAgentItem(TemplateInfoVo templateInfoVo, Long agentId, TemplateType templateType, Long templateId);
 }

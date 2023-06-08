@@ -153,7 +153,7 @@
       </el-table-column>
       <el-table-column align="center" label="代理价格" prop="agentPrice">
         <template slot-scope="scope">
-          <span>{{ parseMoney(scope.row.agentPrice) }}元</span>
+          <span>{{ scope.row.agentPrice ? parseMoney(scope.row.agentPrice) : '--' }}元</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -238,6 +238,8 @@
                 item.templateName +
                 '|零售' +
                 item.price +
+                '元|提卡' +
+                item.myPrice +
                 '元'
               "
               :value="item.id"
@@ -294,10 +296,10 @@ import {
   listAgentItem,
   updateAgentItem,
 } from "@/api/agent/agentItem";
-import {listAgentUser} from "@/api/agent/agentUser";
+import { listAgentUser } from "@/api/agent/agentUser";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import {parseMoney} from "@/utils/my";
+import { parseMoney } from "@/utils/my";
 
 export default {
   name: "AgentItem",
@@ -590,8 +592,8 @@ export default {
       );
     },
     getGrantableTemplate() {
+      this.templateList = [];
       grantableTemplate().then((response) => {
-        this.templateList = [];
         let dataList = response.data;
         for (let data of dataList) {
           this.templateList.push({
@@ -601,6 +603,7 @@ export default {
             templateName: data.templateName,
             appName: data.appName,
             price: data.price,
+            myPrice: data.myPrice,
           });
         }
       });

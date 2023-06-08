@@ -102,7 +102,7 @@ public class CleanLogDaemonThread {
                                 int o3 = publicSqlMapper.delete(sql3);
                                 log.info("[自动清理]自动清理完毕：数据表：{}，数据量：{}条，清理{}条，剩余{}条", logTable, row, o3, row - o3);
                             } else {
-                                log.info("[自动清理]数据表：{}无需清理", logTable);
+//                                log.info("[自动清理]数据表：{}无需清理", logTable);
                             }
                         }
                     }
@@ -127,7 +127,7 @@ public class CleanLogDaemonThread {
                 log.info("[自动清理]日志文件过大，执行自动清理：文件：{}，大小：{}", logFile.getCanonicalPath(), FileSizeUtils.readableFileSize(logFile.length()));
                 FileUtils.writeStringToFile(logFile, "", StandardCharsets.UTF_8, false);
             } else {
-                log.info("[自动清理]日志文件大小正常，无需清理：文件：{}，大小：{}", logFile.getCanonicalPath(), FileSizeUtils.readableFileSize(logFile.length()));
+//                log.info("[自动清理]日志文件大小正常，无需清理：文件：{}，大小：{}", logFile.getCanonicalPath(), FileSizeUtils.readableFileSize(logFile.length()));
             }
         }
     }

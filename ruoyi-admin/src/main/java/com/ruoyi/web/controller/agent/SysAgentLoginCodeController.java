@@ -117,7 +117,7 @@ public class SysAgentLoginCodeController extends BaseController {
             // 判断是否有代理权限
             sysAgentService.checkAgent(agent, false);
             // 判断是否有代理该卡的权限
-            SysAgentItem agentItem = sysAgentItemService.checkAgentItem(agent.getAgentId(), TemplateType.LOGIN_CODE, sysLoginCode.getTemplateId());
+            SysAgentItem agentItem = sysAgentItemService.checkAgentItem(null, agent.getAgentId(), TemplateType.LOGIN_CODE, sysLoginCode.getTemplateId());
             // 计算金额
             BigDecimal unitPrice = agentItem.getAgentPrice();
             // 获取代理价格

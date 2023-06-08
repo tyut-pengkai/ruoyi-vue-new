@@ -13,6 +13,7 @@ import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.domain.vo.ScriptResultVo;
 import com.ruoyi.system.service.ISysAppTrialUserService;
 import com.ruoyi.system.service.ISysAppUserService;
+import com.ruoyi.system.service.ISysConfigService;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
@@ -32,15 +33,27 @@ import java.util.regex.Pattern;
 public class ScriptUtils {
 
     public static ScriptResultVo exec(String scriptContent, ScriptLanguage language, String params) {
+
+        ISysConfigService configService = SpringUtils.getBean(ISysConfigService.class);
+        String execPrefixJavaScript = configService.selectConfigByKey("sys.globalScript.execPrefix.javaScript");
+        String execPrefixPython2 = configService.selectConfigByKey("sys.globalScript.execPrefix.python2");
+        String execPrefixPython3 = configService.selectConfigByKey("sys.globalScript.execPrefix.python3");
+        String execPrefixPHP = configService.selectConfigByKey("sys.globalScript.execPrefix.php");
+
+        execPrefixJavaScript = StringUtils.isNotBlank(execPrefixJavaScript) ? execPrefixJavaScript : "node";
+        execPrefixPython2 = StringUtils.isNotBlank(execPrefixPython2) ? execPrefixPython2 : "python";
+        execPrefixPython3 = StringUtils.isNotBlank(execPrefixPython3) ? execPrefixPython3 : "python3";
+        execPrefixPHP = StringUtils.isNotBlank(execPrefixPHP) ? execPrefixPHP : "php";
+
         String execPrefix = "";
         if (language == ScriptLanguage.JAVA_SCRIPT) {
-            execPrefix = "node";
+            execPrefix = execPrefixJavaScript;
         } else if (language == ScriptLanguage.PYTHON2) {
-            execPrefix = "python2";
+            execPrefix = execPrefixPython2;
         } else if (language == ScriptLanguage.PYTHON3) {
-            execPrefix = "python";
+            execPrefix = execPrefixPython3;
         } else if (language == ScriptLanguage.PHP) {
-            execPrefix = "php";
+            execPrefix = execPrefixPHP;
         } else {
             throw new ServiceException("暂未支持的脚本语言" + language.getInfo());
         }

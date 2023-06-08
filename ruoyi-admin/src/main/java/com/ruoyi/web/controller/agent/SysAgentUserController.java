@@ -1,7 +1,10 @@
 package com.ruoyi.web.controller.agent;
 
 import com.ruoyi.agent.domain.SysAgent;
+import com.ruoyi.agent.domain.SysAgentItem;
 import com.ruoyi.agent.domain.vo.AgentInfoVo;
+import com.ruoyi.agent.domain.vo.TemplateInfoVo;
+import com.ruoyi.agent.service.ISysAgentItemService;
 import com.ruoyi.agent.service.ISysAgentUserService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
@@ -16,15 +19,14 @@ import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.utils.poi.ExcelUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 代理管理Controller
@@ -43,6 +45,8 @@ public class SysAgentUserController extends BaseController {
     private ISysUserService sysUserService;
     @Resource
     private PermissionService permissionService;
+    @Autowired
+    private ISysAgentItemService sysAgentItemService;
 
     /**
      * 查询代理管理列表
@@ -137,6 +141,21 @@ public class SysAgentUserController extends BaseController {
         sysAgentService.insertSysAgent(sysAgent);
         checkCircleParentAgentAndFillPath(sysAgent);
         sysAgentService.updateSysAgent(sysAgent);
+        // 添加授权
+        List<TemplateInfoVo> templateList = sysAgent.getTemplateList();
+        for (TemplateInfoVo templateInfoVo : templateList) {
+            SysAgentItem agentItem = new SysAgentItem();
+            agentItem.setAgentId(sysAgent.getAgentId());
+            agentItem.setTemplateType(templateInfoVo.getTemplateType());
+            agentItem.setTemplateId(templateInfoVo.getTemplateId());
+            agentItem.setCreateBy(getUsername());
+            // 校验价格
+            checkAgentPrice(templateInfoVo);
+            agentItem.setAgentPrice(templateInfoVo.getAgentPrice());
+            agentItem.setExpireTime(templateInfoVo.getExpireTime());
+            agentItem.setRemark(templateInfoVo.getRemark());
+            sysAgentItemService.insertSysAgentItem(agentItem);
+        }
         return AjaxResult.success();
     }
 
@@ -169,8 +188,65 @@ public class SysAgentUserController extends BaseController {
             agent.setPath(agent.getPath().replace(oldPath, sysAgent.getPath()));
             sysAgentService.updateSysAgent(agent);
         }
+        // 更新代理的代理卡类
+        List<TemplateInfoVo> templateList = sysAgent.getTemplateList();
+        Map<Long, TemplateInfoVo> templateMap = new HashMap<>();
+        templateList.forEach((item->templateMap.put(item.getAgentItemId(), item)));
+        // 获取已经具有授权的卡类，为了兼容旧版本，否则不用引入TemplateInfoVo，类型互转比较麻烦
+        SysAgentItem qSysAgentItem = new SysAgentItem();
+        qSysAgentItem.setAgentId(sysAgent.getAgentId());
+        List<SysAgentItem> list = sysAgentItemService.selectSysAgentItemList(qSysAgentItem);
+        for (SysAgentItem agentItem : list) {
+            Long id = agentItem.getId();
+            if(templateMap.containsKey(id)) {
+                TemplateInfoVo templateInfoVo = templateMap.get(id);
+                templateInfoVo.setHandled(true);
+                // 校验价格
+                if(templateInfoVo.getAgentPrice() == null || templateInfoVo.getAgentPrice().compareTo(agentItem.getAgentPrice()) != 0) { //避免更高等级代理授权低价之后直接代理无法通过价格校验的问题
+                    checkAgentPrice(templateInfoVo);
+                }
+                agentItem.setAgentPrice(templateInfoVo.getAgentPrice());
+                agentItem.setExpireTime(templateInfoVo.getExpireTime());
+                agentItem.setRemark(templateInfoVo.getRemark());
+                sysAgentItemService.updateSysAgentItem(agentItem);
+            } else {
+                sysAgentItemService.deleteSysAgentItemById(id);
+            }
+        }
+        // 添加授权
+        for (TemplateInfoVo templateInfoVo : templateList) {
+            if(!templateInfoVo.isHandled()) {
+                SysAgentItem agentItem = new SysAgentItem();
+                agentItem.setAgentId(sysAgent.getAgentId());
+                agentItem.setTemplateType(templateInfoVo.getTemplateType());
+                agentItem.setTemplateId(templateInfoVo.getTemplateId());
+                agentItem.setCreateBy(getUsername());
+                // 校验价格
+                checkAgentPrice(templateInfoVo);
+                agentItem.setAgentPrice(templateInfoVo.getAgentPrice());
+                agentItem.setExpireTime(templateInfoVo.getExpireTime());
+                agentItem.setRemark(templateInfoVo.getRemark());
+                sysAgentItemService.insertSysAgentItem(agentItem);
+            } else {
+                logger.info("处理过{}", templateInfoVo.getReadableName());
+            }
+        }
         sysAgent.setUpdateBy(getUsername());
         return toAjax(sysAgentService.updateSysAgent(sysAgent));
+    }
+
+    private void checkAgentPrice(TemplateInfoVo templateInfoVo) {
+        if (templateInfoVo.getAgentPrice() == null) {
+            throw new ServiceException(templateInfoVo.getReadableName() + " 代理价格设置有误，子代理价格不能为空");
+        }
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+            sysAgentService.checkAgent(agent, false);
+            SysAgentItem item = sysAgentItemService.checkAgentItem(templateInfoVo, agent.getAgentId(), templateInfoVo.getTemplateType(), templateInfoVo.getTemplateId());
+            if (templateInfoVo.getAgentPrice().compareTo(item.getAgentPrice()) < 0) {
+                throw new ServiceException(templateInfoVo.getReadableName() + " 代理价格设置有误，子代理价格不能低于您的代理价格");
+            }
+        }
     }
 
     /**

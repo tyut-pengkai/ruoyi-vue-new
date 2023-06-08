@@ -1,6 +1,7 @@
 package com.ruoyi.agent.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.agent.domain.vo.TemplateInfoVo;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excels;
 import com.ruoyi.common.core.domain.TreeEntity;
@@ -9,7 +10,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 代理管理对象 sys_agent
@@ -84,6 +87,8 @@ public class SysAgent extends TreeEntity {
             @Excel(name = "上级昵称", targetAttr = "nickName", type = Excel.Type.EXPORT)
     })
     private SysUser parentUser;
+
+    private List<TemplateInfoVo> templateList = new ArrayList<>();
 
     public Long getAgentId() {
         return agentId;
@@ -164,6 +169,14 @@ public class SysAgent extends TreeEntity {
 
     public void setUser(SysUser user) {
         this.user = user;
+    }
+
+    public List<TemplateInfoVo> getTemplateList() {
+        return templateList;
+    }
+
+    public void setTemplateList(List<TemplateInfoVo> templateList) {
+        this.templateList = templateList;
     }
 
     @Override

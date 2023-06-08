@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -58,7 +59,7 @@ public class SysAgentItemController extends BaseController {
         startPage();
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent sysAgent = sysAgentService.selectSysAgentByUserId(getUserId());
-            sysAgentItem.getParams().put("_agentId", sysAgent.getAgentId());
+            sysAgentItem.getParams().put("_agentId", sysAgent.getAgentId());  // 用于查询自己的子代理
         }
         List<SysAgentItem> list = sysAgentItemService.selectSysAgentItemList(sysAgentItem);
         for (SysAgentItem item : list) {
@@ -101,7 +102,7 @@ public class SysAgentItemController extends BaseController {
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
             sysAgentService.checkAgent(agent, false);
-            SysAgentItem item = sysAgentItemService.checkAgentItem(agent.getAgentId(), sysAgentItem.getTemplateType(), sysAgentItem.getTemplateId());
+            SysAgentItem item = sysAgentItemService.checkAgentItem(null, agent.getAgentId(), sysAgentItem.getTemplateType(), sysAgentItem.getTemplateId());
             if (sysAgentItem.getAgentPrice().compareTo(item.getAgentPrice()) < 0) {
                 throw new ServiceException("代理价格设置有误，子代理价格不能低于您的代理价格");
             }
@@ -131,7 +132,7 @@ public class SysAgentItemController extends BaseController {
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
             sysAgentService.checkAgent(agent, false);
-            SysAgentItem item = sysAgentItemService.checkAgentItem(agent.getAgentId(), sysAgentItem.getTemplateType(), sysAgentItem.getTemplateId());
+            SysAgentItem item = sysAgentItemService.checkAgentItem(null, agent.getAgentId(), sysAgentItem.getTemplateType(), sysAgentItem.getTemplateId());
             if (sysAgentItem.getAgentPrice().compareTo(item.getAgentPrice()) < 0) {
                 throw new ServiceException("代理价格设置有误，子代理价格不能低于您的代理价格");
             }
@@ -167,7 +168,7 @@ public class SysAgentItemController extends BaseController {
 
     @PreAuthorize("@ss.hasPermi('agent:agentItem:list')")
     @GetMapping("/grantableTemplate")
-    public AjaxResult getGrantableTemplate() {
+    public AjaxResult getGrantableTemplate(@RequestParam(required = false) Long agentId) {
         List<TemplateInfoVo> templateList = new ArrayList<>();
         LoginUser loginUser = getLoginUser();
         if (permissionService.hasAnyRoles("sadmin,admin")) {
@@ -179,6 +180,7 @@ public class SysAgentItemController extends BaseController {
                 info.setTemplateType(TemplateType.CHARGE_CARD);
                 info.setAppName(item.getApp().getAppName());
                 info.setPrice(item.getPrice());
+                info.setMyPrice(BigDecimal.ZERO);
                 templateList.add(info);
             }
             List<SysLoginCodeTemplate> loginCodeTemplateList = sysLoginCodeTemplateService.selectSysLoginCodeTemplateList(new SysLoginCodeTemplate());
@@ -189,6 +191,7 @@ public class SysAgentItemController extends BaseController {
                 info.setTemplateType(TemplateType.LOGIN_CODE);
                 info.setAppName(item.getApp().getAppName());
                 info.setPrice(item.getPrice());
+                info.setMyPrice(BigDecimal.ZERO);
                 templateList.add(info);
             }
         } else {
@@ -199,6 +202,39 @@ public class SysAgentItemController extends BaseController {
             for (SysAgentItem item : sysAgentItems) {
                 fillTemplateInfo(item);
                 templateList.add(item.getTemplateInfo());
+            }
+        }
+        if(agentId != null) {
+            // 获取已经具有授权的卡类
+            SysAgentItem qSysAgentItem = new SysAgentItem();
+            qSysAgentItem.setAgentId(agentId);
+            List<SysAgentItem> list = sysAgentItemService.selectSysAgentItemList(qSysAgentItem);
+            for (SysAgentItem item : list) {
+                boolean flag = false; // 如果曾经具有授权，则应该加入到选择列表中供用户选择是否取消授权
+                for (TemplateInfoVo templateInfoVo : templateList) {
+                    if (Objects.equals(templateInfoVo.getTemplateId(), item.getTemplateId()) && templateInfoVo.getTemplateType() == item.getTemplateType()) {
+                        templateInfoVo.setAgentItemId(item.getId());
+                        templateInfoVo.setChecked(true);
+                        templateInfoVo.setAgentPrice(item.getAgentPrice());
+                        templateInfoVo.setExpireTime(item.getExpireTime());
+                        templateInfoVo.setRemark(item.getRemark());
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag) {
+                    if(item.getTemplateInfo() == null) {
+                        fillTemplateInfo(item);
+                    }
+                    TemplateInfoVo templateInfoVo = item.getTemplateInfo();
+                    templateInfoVo.setAgentItemId(item.getId());
+                    templateInfoVo.setChecked(true);
+                    templateInfoVo.setAgentPrice(item.getAgentPrice());
+                    templateInfoVo.setExpireTime(item.getExpireTime());
+                    templateInfoVo.setRemark(item.getRemark());
+                    templateInfoVo.setMyPrice(null); // 曾经有代理权限，现在无代理权限
+                    templateList.add(templateInfoVo);
+                }
             }
         }
         return AjaxResult.success(templateList);
@@ -213,14 +249,18 @@ public class SysAgentItemController extends BaseController {
             info.setTemplateName(template.getCardName());
             info.setTemplateType(TemplateType.CHARGE_CARD);
             info.setAppName(template.getApp().getAppName());
+            info.setPrice(template.getPrice());
             item.setPrice(template.getPrice());
+            info.setMyPrice(item.getAgentPrice());
         } else if (item.getTemplateType() == TemplateType.LOGIN_CODE) {
             SysLoginCodeTemplate template = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByTemplateId(templateId);
             info.setTemplateId(template.getTemplateId());
             info.setTemplateName(template.getCardName());
             info.setTemplateType(TemplateType.LOGIN_CODE);
             info.setAppName(template.getApp().getAppName());
+            info.setPrice(template.getPrice());
             item.setPrice(template.getPrice());
+            info.setMyPrice(item.getAgentPrice());
         }
         item.setTemplateInfo(info);
     }
