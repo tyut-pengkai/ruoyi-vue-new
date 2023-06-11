@@ -550,6 +550,7 @@ public class SysSaleShopController extends BaseController {
             if (!(StringUtils.isBlank(sysCard.getCardPass()) && StringUtils.isBlank(cardPass)) && !sysCard.getCardPass().equals(cardPass)) {
                 throw new ServiceException("卡号或密码有误", 400);
             }
+
             return AjaxResult.success(new SysCardVo(sysCard));
         } else if (queryType == 2) {
             SysLoginCode loginCode = sysLoginCodeMapper.selectSysLoginCodeByCardNo(cardNo);

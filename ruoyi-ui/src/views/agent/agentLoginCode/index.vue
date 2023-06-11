@@ -1236,6 +1236,7 @@ export default {
               this.cardSimpleStr = contentSimple;
             }
             this.getList();
+          }).finally(() => {
             this.batchLoading = false;
           });
         }

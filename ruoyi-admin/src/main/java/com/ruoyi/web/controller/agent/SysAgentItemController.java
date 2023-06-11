@@ -59,6 +59,9 @@ public class SysAgentItemController extends BaseController {
         startPage();
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent sysAgent = sysAgentService.selectSysAgentByUserId(getUserId());
+            if(sysAgent == null) {
+                throw new ServiceException("您无代理商权限");
+            }
             sysAgentItem.getParams().put("_agentId", sysAgent.getAgentId());  // 用于查询自己的子代理
         }
         List<SysAgentItem> list = sysAgentItemService.selectSysAgentItemList(sysAgentItem);
@@ -196,6 +199,9 @@ public class SysAgentItemController extends BaseController {
             }
         } else {
             SysAgent sysAgent = sysAgentService.selectSysAgentByUserId(loginUser.getUserId());
+            if(sysAgent == null) {
+                throw new ServiceException("您无代理商权限");
+            }
             SysAgentItem sysAgentItem = new SysAgentItem();
             sysAgentItem.setAgentId(sysAgent.getAgentId());
             List<SysAgentItem> sysAgentItems = sysAgentItemService.selectSysAgentItemList(sysAgentItem);
@@ -232,7 +238,11 @@ public class SysAgentItemController extends BaseController {
                     templateInfoVo.setAgentPrice(item.getAgentPrice());
                     templateInfoVo.setExpireTime(item.getExpireTime());
                     templateInfoVo.setRemark(item.getRemark());
-                    templateInfoVo.setMyPrice(null); // 曾经有代理权限，现在无代理权限
+                    if (permissionService.hasAnyRoles("sadmin,admin")) {
+                        templateInfoVo.setMyPrice(BigDecimal.ZERO); // 曾经有代理权限，现在无代理权限
+                    } else {
+                        templateInfoVo.setMyPrice(null); // 曾经有代理权限，现在无代理权限
+                    }
                     templateList.add(templateInfoVo);
                 }
             }

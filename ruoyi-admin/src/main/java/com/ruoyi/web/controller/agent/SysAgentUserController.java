@@ -59,6 +59,9 @@ public class SysAgentUserController extends BaseController {
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             // 获取我的代理ID
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getLoginUser().getUserId());
+            if(agent == null) {
+                throw new ServiceException("您无代理商权限");
+            }
             List<Long> subAgents = sysAgentService.getSubAgents(agent.getAgentId());
             for (SysAgent item : list) {
                 if (subAgents.contains(item.getAgentId())) {

@@ -8,6 +8,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.TemplateType;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
@@ -56,6 +57,9 @@ public class SysAgentAppController extends BaseController {
             Set<Long> appIds = new HashSet<>();
             // 获取我的代理ID
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getLoginUser().getUserId());
+            if(agent == null) {
+                throw new ServiceException("您无代理商权限");
+            }
             // 获取代理的所有卡类
             List<SysAgentItem> agentItems = sysAgentItemService.selectSysAgentItemByAgentId(agent.getAgentId());
             // 获取所有卡类信息

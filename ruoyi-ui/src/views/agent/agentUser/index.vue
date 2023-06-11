@@ -58,7 +58,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="允许发展下级" align="center" prop="enableAddSubagent">
+      <el-table-column label="允许发展子代理" align="center" prop="enableAddSubagent">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.enableAddSubagent" />
         </template>
@@ -143,7 +143,18 @@
             </el-form-item>
           </el-col>
           <el-col :span="14">
-            <el-form-item label="允许发展下级" prop="enableAddSubagent">
+            <el-form-item label="允许发展子代理" prop="enableAddSubagent">
+              <span>
+                <el-tooltip
+                  content="已经发展的子代不受影响"
+                  placement="top"
+                >
+                  <i
+                    class="el-icon-question"
+                    style="margin-left: -12px; margin-right: 10px"
+                  ></i>
+                </el-tooltip>
+              </span>
               <el-radio-group v-model="form.enableAddSubagent">
                 <el-radio v-for="dict in dict.type.sys_yes_no" :key="dict.value" :label="dict.value">{{ dict.label }}
                 </el-radio>
@@ -161,7 +172,7 @@
               批量：
               <el-select v-model="batchSelectTemplate" multiple filterable collapse-tags
                 style="width:200px;margin-right: 3px;" placeholder="批量选择" size="small">
-                <el-option v-for="item in templateNameFilters" :key="item.value" :label="item.label" :value="item.value">
+                <el-option v-for="item in templateNameFilters2" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
               <el-input-number v-model="batchAgentPrice" :min="0" :precision="2" :step="0.01" controls-position="right"
@@ -197,8 +208,7 @@
             </el-table-column>
             <el-table-column prop="myPrice" label="提卡价格" width="80" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row.myPrice ? scope.row.myPrice : '--' }}
-                  <span>元</span>
+                  {{ scope.row.myPrice ? scope.row.myPrice + '元' : (scope.row.myPrice === 0 ? '0元' : '未授权')}}
                 </template>
               </el-table-column>
             <el-table-column prop="agentPrice" label="代理价格" width="150">
@@ -445,6 +455,24 @@ export default {
       let records = [];
       if (this.templateList) {
         for (let item of this.templateList) {
+          // let value = "[" +
+          //   item.appName +
+          //   "]" +
+          //   item.templateName;
+          let value = item.appName;
+          if (records.indexOf(value) == -1) {
+            records.push(value);
+            arr.push({ "text": value, "value": value });
+          }
+        }
+      }
+      return arr;
+    },
+    templateNameFilters2() {
+      let arr = [];
+      let records = [];
+      if (this.templateList) {
+        for (let item of this.templateList) {
           let value = "[" +
             item.appName +
             "]" +
@@ -666,7 +694,7 @@ export default {
             appName: data.appName,
             price: data.price,
             checked: data.checked,
-            agentPrice: data.agentPrice || 0,
+            agentPrice: data.agentPrice || data.myPrice,
             expireTime: data.expireTime,
             remark: data.remark,
             myPrice: data.myPrice,
@@ -684,10 +712,11 @@ export default {
       });
     },
     filterHandler(value, row, column) {
-      let val = "[" +
-        row.appName +
-        "]" +
-        row.templateName;
+      // let val = "[" +
+      //   row.appName +
+      //   "]" +
+      //   row.templateName;
+      let val = row.appName
       return val === value;
     },
     handleSelectionChange(val) {

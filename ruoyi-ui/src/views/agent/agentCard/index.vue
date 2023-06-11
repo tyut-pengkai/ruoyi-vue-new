@@ -1287,6 +1287,8 @@ export default {
             }
             this.getList();
             this.batchLoading = false;
+          }).finally(() => {
+            this.batchLoading = false;
           });
         }
       });
