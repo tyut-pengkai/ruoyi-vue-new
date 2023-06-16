@@ -2,6 +2,8 @@ package com.ruoyi.license.controller;
 
 import cn.hutool.crypto.digest.MD5;
 import com.alibaba.fastjson2.JSON;
+import com.ruoyi.api.v1.api.noAuth.code.RechargeLoginCode;
+import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.Constants;
@@ -228,9 +230,18 @@ public class SysLicenseRecordController extends BaseController {
     @GetMapping(value = "/genLicenseFileByWebUrl")
     @Transactional(rollbackFor = Exception.class)
     public AjaxResult genLicenseFileByWebUrl(String loginCode, String webUrl, int type) {
+        String resultMsg = "";
         try {
-            checkLoginCode(loginCode);
             // 验证目标网站
+            if(StringUtils.isBlank(webUrl) || StringUtils.isBlank(webUrl.trim())) {
+                throw new ServiceException("获取目标网站信息失败，请确认网站域名是否正确：网站域名无效");
+            }
+            Pattern p = Pattern.compile("(https?://[^/]+/?).*?");
+            Matcher m = p.matcher(webUrl);
+            if(!m.matches()) {
+                throw new ServiceException("获取目标网站信息失败，请确认网站域名是否正确：网站域名无效");
+            }
+            webUrl = m.group(1);
             webUrl = webUrl.endsWith("/") ? webUrl.substring(0, webUrl.length() - 1) : webUrl;
             String response = HttpUtils.sendGet(webUrl + "/prod-api/system/license/info");
             log.info("getWebsiteLicenseInfoResponse: {}", response);
@@ -241,17 +252,18 @@ public class SysLicenseRecordController extends BaseController {
             if (websiteLicenseInfo.getCode() != 200) {
                 throw new ServiceException("获取目标网站授权信息失败，请确认网站域名是否正确：" + response);
             }
-            // 验证目标网站是否未授权或过期授权
-            Date to = websiteLicenseInfo.getData().getLicenseInfo().getTo();
-            if (to != null && to.after(DateUtils.getNowDate())) {
-                throw new ServiceException("目标网站已存在有效授权，请在已有授权过期后再次尝试");
-            }
+//            // 验证目标网站是否未授权或过期授权
+//            Date to = websiteLicenseInfo.getData().getLicenseInfo().getTo();
+//            if (to != null && to.after(DateUtils.getNowDate())) {
+//                throw new ServiceException("目标网站已存在有效授权，请在已有授权过期后再次尝试");
+//            }
             String sn = websiteLicenseInfo.getData().getServerInfo().getSn();
             if (StringUtils.isBlank(sn)) {
                 throw new ServiceException("获取目标网站信息失败，请确认网站域名是否正确：获取服务器设备码失败");
             }
+            checkLoginCode(loginCode, sn);
             String filePath = RuoYiConfig.getDownloadPath() + "license.lic";
-            genLicence(loginCode, sn, webUrl, filePath);
+            resultMsg = genLicence(loginCode, sn, webUrl, filePath);
             if (type == 0) {
                 return AjaxResult.success("license.lic");
             } else {
@@ -278,13 +290,14 @@ public class SysLicenseRecordController extends BaseController {
                 }
                 AjaxResult result = JSON.parseObject(response2, AjaxResult.class);
                 if ((int) result.get(AjaxResult.CODE_TAG) == 200) {
+                    result.put(AjaxResult.MSG_TAG, resultMsg + result.get(AjaxResult.MSG_TAG));
                     return result;
                 }
-                throw new ServiceException(String.valueOf(result.get(AjaxResult.MSG_TAG)));
+                throw new ServiceException(resultMsg + result.get(AjaxResult.MSG_TAG));
             }
         } catch (Exception e) {
             log.error("", e);
-            throw new ServiceException("License生成失败！" + e.getMessage());
+            throw new ServiceException("License生成失败！" + resultMsg + e.getMessage());
         }
     }
 
@@ -299,7 +312,7 @@ public class SysLicenseRecordController extends BaseController {
     @Transactional(rollbackFor = Exception.class)
     public AjaxResult genLicenseFileByDeviceCode(String loginCode, String deviceCode) {
         try {
-            checkLoginCode(loginCode);
+            checkLoginCode(loginCode, deviceCode);
             // 检查设备码格式
             String regex = "(.{4})(-.{4}){7}";
             Pattern pattern = Pattern.compile(regex);
@@ -316,22 +329,63 @@ public class SysLicenseRecordController extends BaseController {
         }
     }
 
-    private void checkLoginCode(String loginCode) {
+    private void checkLoginCode(String loginCode, String deviceCode) {
         // 检查兑换码是否使用过
         SysLoginCode code = sysLoginCodeService.selectSysLoginCodeByCardNo(loginCode);
         if (code == null) {
             throw new ServiceException("授权码无效，请重新核对后重试");
         }
-        if (UserConstants.YES.equals(code.getIsCharged())) {
-            throw new ServiceException("授权码已使用");
+        SysLicenseRecord record = sysLicenseRecordService.selectSysLicenseRecordByLoginCode(loginCode);
+        if(record == null) {
+            if (UserConstants.YES.equals(code.getIsCharged())) {
+                throw new ServiceException("授权码已使用(无授权记录)");
+            }
+        } else {
+            if(!record.getDeviceCode().equals(deviceCode)) {
+                throw new ServiceException("授权码已使用(已有授权与当前网站不符)");
+            }
         }
     }
 
-    private void genLicence(String loginCode, String sn, String webUrl, String filePath) throws Exception {
+    private String genLicence(String loginCode, String sn, String webUrl, String filePath) throws Exception {
+        String format = "yyyy/MM/dd HH:mm:ss";
+        String returnMsg = "";
         // 调用登录接口
         SysApp app = sysAppService.selectSysAppByAppKey(appKey);
         SysAppVersion version = sysAppVersionService.selectSysAppVersionByAppIdAndVersion(app.getAppId(), versionNo);
-        loginService.appLogin(loginCode, app, version, null, false);
+
+        // 根据SN判断网站是否已存在授权
+        SysLicenseRecord record = sysLicenseRecordService.selectSysLicenseRecordByDeviceCode(sn);
+        boolean flagIsNew = false;
+        if(record == null) { // 未授权
+            returnMsg = "操作类型：<b>新增授权</b><br><br>";
+            loginService.appLogin(loginCode, app, version, null, false);
+
+            record = new SysLicenseRecord();
+            record.setDeviceCode(sn);
+            record.setLoginCode(loginCode);
+            record.setWebUrl(webUrl);
+            record.setContact(null);
+            record.setName(null);
+            sysLicenseRecordService.insertSysLicenseRecord(record);
+            flagIsNew = true;
+        } else {
+            if(record.getLoginCode().equals(loginCode)) { // 恢复授权
+                returnMsg = "操作类型：<b>恢复授权</b><br><br>";
+                returnMsg += "原授权时间：" + DateUtils.parseDateToStr(format, record.getCreateTime()) + " - " + DateUtils.parseDateToStr(format, record.getEndTime()) + "<br>";
+            } else { // 续费授权
+                returnMsg = "操作类型：<b>续费授权</b><br><br>";
+                returnMsg += "原授权时间：" + DateUtils.parseDateToStr(format, record.getCreateTime()) + " - " + DateUtils.parseDateToStr(format, record.getEndTime())+ "<br>";
+                Function func = new RechargeLoginCode();
+                func.setApp(app);
+                Map<String, String> params = new HashMap<>();
+                params.put("loginCode", record.getLoginCode());
+                params.put("newLoginCode", loginCode);
+                func.setParams(params);
+                func.handle();
+                loginCode = record.getLoginCode();
+            }
+        }
         // 获取新用户信息
         SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(app.getAppId(), loginCode);
         // 生成授权文件
@@ -364,15 +418,13 @@ public class SysLicenseRecordController extends BaseController {
         LicenseCreator licenseCreator = new LicenseCreator(param);
         licenseCreator.generateLicense();
         // 记录被授权用户
-        SysLicenseRecord record = new SysLicenseRecord();
-        record.setDeviceCode(sn);
-        record.setLoginCode(loginCode);
-        record.setWebUrl(webUrl);
-        record.setContact(null);
-        record.setName(null);
-        record.setStartTime(appUser.getCreateTime());
+        if(flagIsNew) {
+            record.setStartTime(appUser.getCreateTime());
+        }
         record.setEndTime(appUser.getExpireTime());
-        sysLicenseRecordService.insertSysLicenseRecord(record);
+        returnMsg += "新授权时间：" + DateUtils.parseDateToStr(format, record.getStartTime()) + " - " + DateUtils.parseDateToStr(format, record.getEndTime()) + "<br><br>";
+        sysLicenseRecordService.updateSysLicenseRecord(record);
+        return returnMsg;
     }
 
 }

@@ -42,7 +42,7 @@
     <select id="selectSysLicenseRecordList" parameterType="SysLicenseRecord" resultMap="SysLicenseRecordResult">
         <include refid="selectSysLicenseRecordVo"/>
         <where>
-            <if test="webUrl != null  and webUrl != ''">and web_url = #{webUrl}</if>
+            <if test="webUrl != null  and webUrl != ''">and web_url like concat('%', #{webUrl}, '%')</if>
             <if test="deviceCode != null  and deviceCode != ''">and device_code like concat('%', #{deviceCode}, '%')
             </if>
             <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
@@ -61,6 +61,16 @@
     <select id="selectSysLicenseRecordById" parameterType="Long" resultMap="SysLicenseRecordResult">
         <include refid="selectSysLicenseRecordVo"/>
         where id = #{id}
+    </select>
+
+    <select id="selectSysLicenseRecordByLoginCode" parameterType="String" resultMap="SysLicenseRecordResult">
+        <include refid="selectSysLicenseRecordVo"/>
+        where login_code = #{loginCode}
+    </select>
+
+    <select id="selectSysLicenseRecordByDeviceCode" parameterType="String" resultMap="SysLicenseRecordResult">
+        <include refid="selectSysLicenseRecordVo"/>
+        where device_code = #{deviceCode}
     </select>
 
     <insert id="insertSysLicenseRecord" parameterType="SysLicenseRecord">

@@ -31,6 +31,16 @@ public class SysLicenseRecordServiceImpl implements ISysLicenseRecordService {
         return sysLicenseRecordMapper.selectSysLicenseRecordById(id);
     }
 
+    @Override
+    public SysLicenseRecord selectSysLicenseRecordByLoginCode(String loginCode) {
+        return sysLicenseRecordMapper.selectSysLicenseRecordByLoginCode(loginCode);
+    }
+
+    @Override
+    public SysLicenseRecord selectSysLicenseRecordByDeviceCode(String deviceCode) {
+        return sysLicenseRecordMapper.selectSysLicenseRecordByDeviceCode(deviceCode);
+    }
+
     /**
      * 查询验证授权用户列表
      *

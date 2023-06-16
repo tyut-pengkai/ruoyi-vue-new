@@ -5,6 +5,8 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommandTest {
 
@@ -33,5 +35,16 @@ public class CommandTest {
 //        }
 
     }
+
+    @Test
+    public void testUrl() {
+        String url = "http://www.baidu.com/www/88990";
+        Pattern p = Pattern.compile("(https?://[^/]+/?).*?");
+        Matcher matcher = p.matcher(url);
+        if(matcher.matches()) {
+            System.out.println(matcher.group(1));
+        }
+    }
+
 
 }

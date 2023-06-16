@@ -5,13 +5,9 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysApp;
-import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.license.bo.LicenseCheckModel;
-import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.common.utils.ServletUtils;
-import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.*;
 import com.ruoyi.system.domain.SysWebsite;
 import com.ruoyi.system.mapper.SysAppMapper;
 import com.ruoyi.system.service.ISysAppService;
@@ -24,7 +20,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 软件Service业务层处理
@@ -36,8 +31,8 @@ import java.util.concurrent.TimeUnit;
 public class SysAppServiceImpl implements ISysAppService {
     @Autowired
     private SysAppMapper sysAppMapper;
-    @Resource
-    private RedisCache redisCache;
+//    @Resource
+//    private RedisCache redisCache;
     @Resource
     private ISysWebsiteService sysWebsiteService;
     /**
@@ -51,7 +46,7 @@ public class SysAppServiceImpl implements ISysAppService {
         List<SysApp> appList = sysAppMapper.selectSysAppList(new SysApp());
         for (SysApp app : appList) {
             if (StringUtils.isNotBlank(app.getAppKey())) {
-                redisCache.setCacheObject(CacheConstants.SYS_APP_KEY + app.getAppKey(), app, 24, TimeUnit.HOURS);
+                SysCache.set(CacheConstants.SYS_APP_KEY + app.getAppKey(), app);
             }
         }
     }
@@ -75,10 +70,10 @@ public class SysAppServiceImpl implements ISysAppService {
      */
     @Override
     public SysApp selectSysAppByAppKey(String appKey) {
-        SysApp app = redisCache.getCacheObject(CacheConstants.SYS_APP_KEY + appKey);
+        SysApp app = (SysApp) SysCache.get(CacheConstants.SYS_APP_KEY + appKey);
         if (app == null) {
             app = sysAppMapper.selectSysAppByAppKey(appKey);
-            redisCache.setCacheObject(CacheConstants.SYS_APP_KEY + appKey, app, 24, TimeUnit.HOURS);
+            SysCache.set(CacheConstants.SYS_APP_KEY + appKey, app);
         }
         return app;
     }
@@ -131,7 +126,7 @@ public class SysAppServiceImpl implements ISysAppService {
         int i = sysAppMapper.updateSysApp(sysApp);
         if (i > 0) {
             SysApp app = sysAppMapper.selectSysAppByAppId(sysApp.getAppId());
-            redisCache.setCacheObject(CacheConstants.SYS_APP_KEY + app.getAppKey(), app, 24, TimeUnit.HOURS);
+            SysCache.set(CacheConstants.SYS_APP_KEY + app.getAppKey(), app);
         }
         return i;
     }
@@ -146,7 +141,7 @@ public class SysAppServiceImpl implements ISysAppService {
     public int deleteSysAppByAppIds(Long[] appIds) {
         for (Long appId : appIds) {
             SysApp app = selectSysAppByAppId(appId);
-            redisCache.deleteObject(CacheConstants.SYS_APP_KEY + app.getAppKey());
+            SysCache.delete(CacheConstants.SYS_APP_KEY + app.getAppKey());
         }
         return sysAppMapper.deleteSysAppByAppIds(appIds);
     }
@@ -160,7 +155,7 @@ public class SysAppServiceImpl implements ISysAppService {
     @Override
     public int deleteSysAppByAppId(Long appId) {
         SysApp app = selectSysAppByAppId(appId);
-        redisCache.deleteObject(CacheConstants.SYS_APP_KEY + app.getAppKey());
+        SysCache.delete(CacheConstants.SYS_APP_KEY + app.getAppKey());
         return sysAppMapper.deleteSysAppByAppId(appId);
     }
 

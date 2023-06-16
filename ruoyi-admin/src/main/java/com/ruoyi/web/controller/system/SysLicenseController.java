@@ -67,7 +67,7 @@ public class SysLicenseController {
             FileUtils.writeByteArrayToFile(file, bytes);
             AjaxResult result = loadLicense();
             if ((int) result.get(AjaxResult.CODE_TAG) == 200) {
-                return AjaxResult.success("添加授权成功，请重新尝试登录您的验证后台");
+                return AjaxResult.success("添加授权成功，请重新登录您的验证后台");
             }
             return result;
         } catch (Exception e) {

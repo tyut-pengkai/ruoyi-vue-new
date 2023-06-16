@@ -34,8 +34,6 @@ public class RechargeLoginCode extends Function {
     @Resource
     private ISysAppService appService;
     @Resource
-    private ISysUserService userService;
-    @Resource
     private ISysAppUserService appUserService;
     @Resource
     private ISysLoginCodeService loginCodeService;

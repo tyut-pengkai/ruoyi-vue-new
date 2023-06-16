@@ -21,6 +21,10 @@ public interface SysLicenseRecordMapper {
      */
     public SysLicenseRecord selectSysLicenseRecordById(Long id);
 
+    public SysLicenseRecord selectSysLicenseRecordByLoginCode(String loginCode);
+
+    public SysLicenseRecord selectSysLicenseRecordByDeviceCode(String deviceCode);
+
     /**
      * 查询验证授权用户列表
      *
