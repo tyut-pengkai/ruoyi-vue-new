@@ -78,7 +78,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                c.card_custom_params,
                c.batch_no,
                c.agent_id,
-               a.app_id,
                a.app_name,
                a.auth_type,
                a.bill_type,
@@ -103,7 +102,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="agentId != null ">and c.agent_id = #{agentId}</if>
         <if test="templateId != null ">and c.template_id = #{templateId}</if>
         <if test="cardName != null  and cardName != ''">and c.card_name like concat('%', #{cardName}, '%')</if>
-        <if test="cardNo != null  and cardNo != ''">and c.card_no like concat('%', #{cardNo}, '%')</if>
+        <if test="cardNo != null  and cardNo != ''">and BINARY c.card_no like concat('%', #{cardNo}, '%')</if>
         <if test="params.beginQuota != null and params.beginQuota != '' and params.endQuota != null and params.endQuota != ''">
             and c.quota between #{params.beginQuota} and #{params.endQuota}
         </if>
@@ -140,7 +139,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="agentId != null ">and c.agent_id = #{agentId}</if>
         <if test="templateId != null ">and c.template_id = #{templateId}</if>
         <if test="cardName != null  and cardName != ''">and c.card_name like concat('%', #{cardName}, '%')</if>
-        <if test="cardNo != null  and cardNo != ''">and c.card_no like concat('%', #{cardNo}, '%')</if>
+        <if test="cardNo != null  and cardNo != ''">and BINARY c.card_no like concat('%', #{cardNo}, '%')</if>
         <if test="params.beginQuota != null and params.beginQuota != '' and params.endQuota != null and params.endQuota != ''">
             and c.quota between #{params.beginQuota} and #{params.endQuota}
         </if>
@@ -184,14 +183,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectSysCardByCardNo" parameterType="String" resultMap="SysCardResult">
         <include refid="selectSysCardVo"/>
-        where c.card_no = #{cardNo} and c.del_flag = '0'
+        where BINARY c.card_no = #{cardNo} and c.del_flag = '0'
     </select>
 
     <select id="selectSysCardByAppIdAndCardNo" resultMap="SysCardResult">
         <include refid="selectSysCardVo"/>
         where c.del_flag = '0'
         <if test="appId != null ">and c.app_id = #{appId}</if>
-        <if test="cardNo != null  and cardNo != ''">and c.card_no = #{cardNo}</if>
+        <if test="cardNo != null  and cardNo != ''">and BINARY c.card_no = #{cardNo}</if>
     </select>
 
     <insert id="insertSysCard" parameterType="SysCard" useGeneratedKeys="true" keyProperty="cardId">

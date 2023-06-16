@@ -281,6 +281,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectSysAppUserByAppIdAndLoginCode" resultMap="SysAppUserResult">
         <include refid="selectSysAppUserVo"/>
-        where au.app_id = #{appId} and au.login_code = #{loginCode} and au.del_flag = '0'
+        where au.app_id = #{appId} and BINARY au.login_code = #{loginCode} and au.del_flag = '0'
     </select>
 </mapper>
