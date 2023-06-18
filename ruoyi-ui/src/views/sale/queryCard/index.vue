@@ -6,9 +6,34 @@
     <el-card class="box-card" style="max-width: 90vw; margin-top: 15px">
       <div class="my-title">
         <img src="../../../assets/images/category.svg"/>&nbsp;
-        <span>查询卡密</span>
+        <span>查询登录码/卡密</span>
       </div>
       <el-tabs style="margin-top: 20px">
+        <el-tab-pane label="查询登录码">
+          <div style="max-width: 90vw; width: 500px; margin: 20px auto">
+            <el-form ref="formLoginCode" :model="formLoginCode" :rules="rules">
+              <el-form-item label="登录码" prop="loginCode">
+                <el-input
+                  v-model="formLoginCode.loginCode"
+                  clearable
+                  show-word-limit
+                  style="max-width: 75vw"
+                ></el-input>
+              </el-form-item>
+              <div align="center">
+                <el-button
+                  :loading="loading"
+                  round
+                  type="primary"
+                  @click="submitForm('formLoginCode', 2)"
+                >
+                  查询
+                </el-button>
+                <!-- <el-button @click="resetForm('formLoginCode')">清空输入</el-button> -->
+              </div>
+            </el-form>
+          </div>
+        </el-tab-pane>
         <el-tab-pane label="查询卡密">
           <div style="max-width: 90vw; width: 500px; margin: 20px auto">
             <el-form ref="formCard" :model="formCard" :rules="rules">
@@ -38,31 +63,6 @@
                   查询
                 </el-button>
                 <!-- <el-button @click="resetForm('formCard')">清空输入</el-button> -->
-              </div>
-            </el-form>
-          </div>
-        </el-tab-pane>
-        <el-tab-pane label="查询登录码">
-          <div style="max-width: 90vw; width: 500px; margin: 20px auto">
-            <el-form ref="formLoginCode" :model="formLoginCode" :rules="rules">
-              <el-form-item label="登录码" prop="loginCode">
-                <el-input
-                  v-model="formLoginCode.loginCode"
-                  clearable
-                  show-word-limit
-                  style="max-width: 75vw"
-                ></el-input>
-              </el-form-item>
-              <div align="center">
-                <el-button
-                  :loading="loading"
-                  round
-                  type="primary"
-                  @click="submitForm('formLoginCode', 2)"
-                >
-                  查询
-                </el-button>
-                <!-- <el-button @click="resetForm('formLoginCode')">清空输入</el-button> -->
               </div>
             </el-form>
           </div>
@@ -178,6 +178,15 @@
                         : card.cardLoginLimitM
                   }}</span>
               </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item>
+            <el-col :span="24">
+              <div v-show="card.isCharged == 'Y'">
+                <el-form-item label="用户过期时间">
+                  <span>{{ card.userExpireTime ? card.userExpireTime : "无关联用户，如已被使用，则代表此卡已被用于充值其他登录码" }}</span>
+                </el-form-item>
+              </div>
             </el-col>
           </el-form-item>
         </el-form>

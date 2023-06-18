@@ -135,7 +135,7 @@ location /profile/ {
 
 ## 三、购买授权
 购买请访问商城：[https://shop.coordsoft.com/](https://shop.coordsoft.com/)
-购买注册码后点击 [激活授权](https://shop.coordsoft.com/getLicense) 为您的网站在线授权
+购买授权码后点击 [激活授权](https://shop.coordsoft.com/getLicense) 为您的网站在线授权
 
 ## 四、 登录网站
 至此，整个网站部署完成，如果一切正常，您可通过您的域名访问属于您的红叶网络验证系统  

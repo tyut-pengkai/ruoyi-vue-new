@@ -18,10 +18,28 @@ export function doUpdate() {
   })
 }
 
-// 获取状态
+// 获取升级状态
 export function getStatus() {
   return request({
     url: '/system/update/status',
+    method: 'get',
+    timeout: 30000
+  })
+}
+
+// 重启
+export function doRestart() {
+  return request({
+    url: '/system/restart/doRestart',
+    method: 'get',
+    timeout: 30000
+  })
+}
+
+// 获取重启状态
+export function getRestartStatus() {
+  return request({
+    url: '/system/restart/status',
     method: 'get',
     timeout: 30000
   })

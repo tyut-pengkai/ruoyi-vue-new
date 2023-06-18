@@ -48,11 +48,13 @@
       >
         <div class="avatar-wrapper">
           <img :src="avatar" class="user-avatar" />
+          <!-- <span class="user-nickname">{{ nickName }}</span> -->
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item disabled>{{ nickName }}</el-dropdown-item>
           <router-link to="/user/profile">
-            <el-dropdown-item>个人中心</el-dropdown-item>
+            <el-dropdown-item divided>个人中心</el-dropdown-item>
           </router-link>
           <el-dropdown-item @click.native="setting = true">
             <span>布局设置</span>
@@ -91,7 +93,7 @@ export default {
     Home
   },
   computed: {
-    ...mapGetters(["sidebar", "avatar", "device"]),
+    ...mapGetters(["sidebar", "avatar", "device", 'nickName']),
     setting: {
       get() {
         return this.$store.state.settings.showSettings;
@@ -208,7 +210,7 @@ export default {
 
         .el-icon-caret-bottom {
           cursor: pointer;
-          position: absolute;
+          // position: absolute;
           right: -20px;
           top: 25px;
           font-size: 12px;

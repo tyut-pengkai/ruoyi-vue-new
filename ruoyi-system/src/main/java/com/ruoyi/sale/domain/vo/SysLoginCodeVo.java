@@ -145,6 +145,8 @@ public class SysLoginCodeVo extends SysLoginCode {
 
     private BillType billType;
 
+    private Date userExpireTime;
+
     public SysLoginCodeVo(SysLoginCode v) {
         BeanUtils.copyProperties(v, this);
         this.appName = v.getApp().getAppName();

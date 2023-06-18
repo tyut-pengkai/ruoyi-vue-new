@@ -9,6 +9,47 @@
         <span>解绑设备</span>
       </div>
       <el-tabs style="margin-top: 20px" @tab-click="tabChange">
+        <el-tab-pane label="登录码方式登录">
+          <div style="max-width: 90vw; width: 500px; margin: 20px auto">
+            <el-form ref="formLoginCode" :model="formLoginCode" :rules="rules">
+              <el-form-item label="目标软件" prop="appId">
+                <el-select
+                  v-model="formLoginCode.appId"
+                  filterable
+                  placeholder="请选择"
+                  prop="appId"
+                >
+                  <el-option
+                    v-for="item in appList"
+                    :key="item.appId"
+                    :label="item.appName"
+                    :value="item.appId"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="登录码" prop="loginCode">
+                <el-input
+                  v-model="formLoginCode.loginCode"
+                  clearable
+                  show-word-limit
+                  style="max-width: 75vw"
+                ></el-input>
+              </el-form-item>
+              <div align="center">
+                <el-button
+                  :loading="loading"
+                  round
+                  type="primary"
+                  @click="submitForm('formLoginCode', 2)"
+                >
+                  查询设备列表
+                </el-button>
+                <!-- <el-button @click="resetForm('formLoginCode')">清空输入</el-button> -->
+              </div>
+            </el-form>
+          </div>
+        </el-tab-pane>
         <el-tab-pane label="账号方式登录">
           <div style="max-width: 90vw; width: 500px; margin: 20px auto">
             <el-form ref="formCard" :model="formCard" :rules="rules">
@@ -56,47 +97,6 @@
                   查询设备列表
                 </el-button>
                 <!-- <el-button @click="resetForm('formCard')">清空输入</el-button> -->
-              </div>
-            </el-form>
-          </div>
-        </el-tab-pane>
-        <el-tab-pane label="登录码方式登录">
-          <div style="max-width: 90vw; width: 500px; margin: 20px auto">
-            <el-form ref="formLoginCode" :model="formLoginCode" :rules="rules">
-              <el-form-item label="目标软件" prop="appId">
-                <el-select
-                  v-model="formLoginCode.appId"
-                  filterable
-                  placeholder="请选择"
-                  prop="appId"
-                >
-                  <el-option
-                    v-for="item in appList"
-                    :key="item.appId"
-                    :label="item.appName"
-                    :value="item.appId"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="登录码" prop="loginCode">
-                <el-input
-                  v-model="formLoginCode.loginCode"
-                  clearable
-                  show-word-limit
-                  style="max-width: 75vw"
-                ></el-input>
-              </el-form-item>
-              <div align="center">
-                <el-button
-                  :loading="loading"
-                  round
-                  type="primary"
-                  @click="submitForm('formLoginCode', 2)"
-                >
-                  查询设备列表
-                </el-button>
-                <!-- <el-button @click="resetForm('formLoginCode')">清空输入</el-button> -->
               </div>
             </el-form>
           </div>

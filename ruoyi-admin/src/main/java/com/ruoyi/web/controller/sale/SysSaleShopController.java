@@ -550,14 +550,20 @@ public class SysSaleShopController extends BaseController {
             if (!(StringUtils.isBlank(sysCard.getCardPass()) && StringUtils.isBlank(cardPass)) && !sysCard.getCardPass().equals(cardPass)) {
                 throw new ServiceException("卡号或密码有误", 400);
             }
-
             return AjaxResult.success(new SysCardVo(sysCard));
         } else if (queryType == 2) {
             SysLoginCode loginCode = sysLoginCodeMapper.selectSysLoginCodeByCardNo(cardNo);
             if (loginCode == null) {
-                throw new ServiceException("查询的单码不存在", 400);
+                throw new ServiceException("查询的登录码不存在", 400);
             }
-            return AjaxResult.success(new SysLoginCodeVo(loginCode));
+            SysLoginCodeVo loginCodeVo = new SysLoginCodeVo(loginCode);
+            if(UserConstants.YES.equals(loginCode.getIsCharged())) {
+                SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(loginCode.getAppId(), cardNo);
+                if(appUser != null) {
+                    loginCodeVo.setUserExpireTime(appUser.getExpireTime());
+                }
+            }
+            return AjaxResult.success(loginCodeVo);
         }
         throw new ServiceException("未指定查询卡密类型", 400);
     }
