@@ -45,6 +45,7 @@ public class QuickAccessApkUtil {
     private static final String injectApplication = "L" + injectApplicationPath.replaceAll("\\.", "/") + ";";
     private static String packageName;
     private static String applicationName;
+    private static String dexFinalName;
 
     private static String mainDex; //入口所在dex
 
@@ -175,6 +176,7 @@ public class QuickAccessApkUtil {
         // 原程序dex编译器
         DexBuilder oriBuilder = new DexBuilder(Opcodes.getDefault());
 //        oriBuilder.setIgnoreMethodAndFieldError(true);
+        DexBuilder oriFinalBuilder = new DexBuilder(Opcodes.getDefault());
         // 读入注入文件
 //            String injectPath = PathUtils.getUserPath() + File.separator + "src/test/resources" + File.separator + "data.dat";
         String injectPath = PathUtils.getUserPath() + File.separator + "template" + File.separator + template + ".apk.tpl";
@@ -252,6 +254,38 @@ public class QuickAccessApkUtil {
                 applicationName = "L" + applicationName.replace('.', '/') + ";";
                 code = code.replace("Landroid/app/Application;", applicationName);
                 Smali.assembleSmaliFile(code, oriBuilder, new SmaliOptions());
+
+                // 检查被继承的类是否有final
+                if(!"Landroid/app/Application;".equals(applicationName)) {
+                    out: for (String dexName : dexNameList) {
+                        ZipEntry entry = oriFile.getEntry(dexName);
+                        DexBackedDexFile classes = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(entry)));
+                        oriFinalBuilder = new DexBuilder(Opcodes.getDefault());
+                        for (DexBackedClassDef cl : classes.getClasses()) {
+                            if (cl.getType().equals(applicationName)) {
+                                dexFinalName = dexName;
+                                System.out.println("applicationName:" + applicationName);
+                                System.out.println("AccessFlags: " + cl.getAccessFlags());
+                                // 0x10代表final
+                                if ((cl.getAccessFlags() & 0x10) != 0) {
+                                    System.out.println("isFinal: true");
+                                    String classDefString = getClassDefString(cl);
+                                    classDefString = classDefString.replace("final " + applicationName, applicationName);
+                                    Smali.assembleSmaliFile(classDefString, oriFinalBuilder, new SmaliOptions());
+                                } else {
+                                    System.out.println("isFinal: false");
+                                    dexFinalName = null;
+                                    break out;
+                                }
+                            } else {
+                                oriFinalBuilder.internClassDef(cl);
+                            }
+                        }
+                        if (StringUtils.isNotBlank(dexFinalName)) {
+                            break;
+                        }
+                    }
+                }
             }
 
             // 合并dex
@@ -308,10 +342,18 @@ public class QuickAccessApkUtil {
             zos.write(Arrays.copyOf(store.getBufferData(), store.getSize()));
             zos.closeEntry();
 
+            if(StringUtils.isNotBlank(dexFinalName)) {
+                MemoryDataStore store2 = new MemoryDataStore();
+                oriFinalBuilder.writeTo(store2);
+                zos.putNextEntry(dexFinalName);
+                zos.write(Arrays.copyOf(store2.getBufferData(), store2.getSize()));
+                zos.closeEntry();
+            }
+
             Enumeration<ZipEntry> enumeration = oriFile.getEntries();
             while (enumeration.hasMoreElements()) {
                 ZipEntry ze = enumeration.nextElement();
-                if (ze.getName().equals("AndroidManifest.xml") || ze.getName().equals(targetDexName))
+                if (ze.getName().equals("AndroidManifest.xml") || ze.getName().equals(targetDexName) || ze.getName().equals(dexFinalName))
                     continue;
                 zos.copyZipEntry(ze, oriFile);
                 // 更新进度

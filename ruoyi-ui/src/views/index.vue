@@ -2,7 +2,7 @@
   <div class="app-container home">
     <el-card shadow="never" style="margin-bottom: 10px;padding-top: 5px;">
       <span style="font-size: 16px;"><i class="el-icon-user">&nbsp;{{ nickName }}</i></span>
-      <span style="float: right">
+      <span style="float: right" v-if="checkRole(['sadmin', 'admin'])">
         <span>
           <b>主程序版本：</b>
           <span>{{ version }}</span>
