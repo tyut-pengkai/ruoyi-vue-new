@@ -46,7 +46,6 @@ public class QuickAccessApkUtil {
     private static String packageName;
     private static String applicationName;
     private static String dexFinalName;
-
     private static String mainDex; //入口所在dex
 
     private static byte[] parseManifest(InputStream is) throws IOException {
@@ -170,6 +169,7 @@ public class QuickAccessApkUtil {
 
     public static byte[] doProcess(String oriPath, String apv, String template) throws Exception {
         ZipFile oriFile = new ZipFile(oriPath);
+        Set<String> classNameSet = new HashSet<>();
         // 输出文件
 //            String outputPath = oriPath.replace(".apk", "_injected_not_sign.apk");
         String outputPath = oriPath.replace(".tmp", "_injected_not_sign.tmp");
@@ -203,6 +203,16 @@ public class QuickAccessApkUtil {
                 targetDexName = "classes.dex";
             } else {
                 targetDexName = "classes" + dexNameList.size() + ".dex";
+                // 多DEX，可能存在类重复问题
+                for (String dexName : dexNameList) {
+                    if(!dexName.equals(targetDexName)) {
+                        ZipEntry entry = oriFile.getEntry(dexName);
+                        DexBackedDexFile classes = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(entry)));
+                        for (DexBackedClassDef cl : classes.getClasses()) {
+                            classNameSet.add(cl.getType());
+                        }
+                    }
+                }
             }
             // 分析dex
             ZipEntry dexEntry = oriFile.getEntry(targetDexName);
@@ -229,7 +239,7 @@ public class QuickAccessApkUtil {
             }
 
             classesSet.addAll(oriClasses.getClasses());
-            classesSet.addAll(injectClasses.getClasses());
+            classesSet.addAll(injectClasses.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
 //                System.out.println(classesSet.size());
             List<DexBackedClassDef> classesList = new ArrayList<>(classesSet);
 
