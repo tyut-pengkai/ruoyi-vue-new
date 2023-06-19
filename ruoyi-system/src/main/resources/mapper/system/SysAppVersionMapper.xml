@@ -78,9 +78,9 @@
         WHERE v1.app_id = #{appId}
           AND v2.STATUS = 0
           AND v2.del_flag = 0
-          AND V1.STATUS = 0
+          AND v1.STATUS = 0
           AND v1.del_flag = 0
-        GROUP BY v1.version_no
+        GROUP BY v1.app_version_id, v1.version_no
         HAVING v1.version_no = max(v2.version_no)
     </select>
 
@@ -92,7 +92,10 @@
           AND v2.STATUS = 0
           AND v2.del_flag = 0
           AND v2.force_update = 'Y'
-        GROUP BY v1.version_no
+          AND v1.STATUS = 0
+          AND v1.del_flag = 0
+          AND v1.force_update = 'Y'
+        GROUP BY v1.app_version_id, v1.version_no
         HAVING v1.version_no = max(v2.version_no)
     </select>
 

@@ -5,9 +5,9 @@ ruoyi:
   # 简称
   shortName: 红叶网络验证
   # 版本
-  version: v1.5.2
+  version: v1.6.0
   # 版本号
-  versionNo: 20230330200000
+  versionNo: 20230620111900
   # URL
   url: http://www.coordsoft.com
   # email
@@ -182,8 +182,8 @@ token:
   header: Authorization
   # 令牌密钥
   secret: abcdefghijklmnopqrstuvwxyz
-  # 令牌有效期（默认120分钟）
-  expireTime: 120
+  # 令牌有效期（默认720分钟）
+  expireTime: 720
 
 # MyBatis Plus配置
 mybatis-plus:
