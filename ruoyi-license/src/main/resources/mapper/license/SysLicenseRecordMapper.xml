@@ -73,7 +73,7 @@
         where device_code = #{deviceCode}
     </select>
 
-    <insert id="insertSysLicenseRecord" parameterType="SysLicenseRecord">
+    <insert id="insertSysLicenseRecord" parameterType="SysLicenseRecord" useGeneratedKeys="true" keyProperty="cardId">
         insert into sys_license_record
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>

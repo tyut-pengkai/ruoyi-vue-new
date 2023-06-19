@@ -208,7 +208,7 @@ export default {
     };
   },
   created() {
-    this.getAppList(0);
+    this.getAppList(1);
   },
   methods: {
     /** 查询软件列表 */
@@ -275,7 +275,7 @@ export default {
       this.$refs[formName].resetFields();
     },
     tabChange(data) {
-      this.getAppList(data.index == 0 ? "0" : "1");
+      this.getAppList(data.index == 0 ? "1" : "0");
     },
     makeTip(billType, reduceQuotaUnbind) {
       var tip = "";
