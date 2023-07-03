@@ -388,43 +388,51 @@ public class SysLicenseRecordController extends BaseController {
         }
         // 获取新用户信息
         SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(app.getAppId(), loginCode);
-        // 生成授权文件
-        LicenseCreatorParam param = new LicenseCreatorParam();
-        File licenseFile = new File(filePath);
-        if (!licenseFile.getParentFile().exists()) {
-            licenseFile.getParentFile().mkdirs();
+
+        if(appUser != null) {
+            // 生成授权文件
+            LicenseCreatorParam param = new LicenseCreatorParam();
+            File licenseFile = new File(filePath);
+            if (!licenseFile.getParentFile().exists()) {
+                licenseFile.getParentFile().mkdirs();
+            }
+            // 固定参数
+            param.setLicensePath(licenseFile.getCanonicalPath());
+            param.setSubject(subject);
+            param.setPrivateAlias("privateKey");
+            param.setKeyPass(Constants.STORE_PASS);
+            param.setStorePass(Constants.STORE_PASS);
+            param.setPrivateKeysStorePath(PathUtils.getResourceFile("privateKeys.keystore").getCanonicalPath());
+            // 自定义参数
+            if(appUser.getCreateTime() == null) {
+                appUser.setCreateTime(DateUtils.getNowDate());
+            }
+            param.setIssuedTime(appUser.getCreateTime());
+            param.setExpiryTime(appUser.getExpireTime());
+            param.setDescription("官方正式授权");
+            LicenseCheckModel model = new LicenseCheckModel();
+            model.setLicenseTo(webUrl);
+            model.setSn(sn);
+            model.setLicenseType("全功能版");
+            model.setAppLimit(-1);
+            model.setMaxOnline(-1);
+            model.setIpAddress(new ArrayList<>(Arrays.asList("*")));
+            model.setDomainName(new ArrayList<>(Arrays.asList("*")));
+            model.setModuleName(new ArrayList<>(Arrays.asList("*")));
+            param.setLicenseCheckModel(model);
+            LicenseCreator licenseCreator = new LicenseCreator(param);
+            licenseCreator.generateLicense();
+            // 记录被授权用户
+            if (flagIsNew) {
+                record.setStartTime(appUser.getCreateTime());
+            }
+            record.setEndTime(appUser.getExpireTime());
+            returnMsg += "新授权时间：" + DateUtils.parseDateToStr(format, record.getStartTime()) + " - " + DateUtils.parseDateToStr(format, record.getEndTime()) + "<br><br>";
+            sysLicenseRecordService.updateSysLicenseRecord(record);
+            return returnMsg;
+        } else {
+            return "软件用户生成失败";
         }
-        // 固定参数
-        param.setLicensePath(licenseFile.getCanonicalPath());
-        param.setSubject(subject);
-        param.setPrivateAlias("privateKey");
-        param.setKeyPass(Constants.STORE_PASS);
-        param.setStorePass(Constants.STORE_PASS);
-        param.setPrivateKeysStorePath(PathUtils.getResourceFile("privateKeys.keystore").getCanonicalPath());
-        // 自定义参数
-        param.setIssuedTime(appUser.getCreateTime());
-        param.setExpiryTime(appUser.getExpireTime());
-        param.setDescription("官方正式授权");
-        LicenseCheckModel model = new LicenseCheckModel();
-        model.setLicenseTo(webUrl);
-        model.setSn(sn);
-        model.setLicenseType("全功能版");
-        model.setAppLimit(-1);
-        model.setMaxOnline(-1);
-        model.setIpAddress(new ArrayList<>(Arrays.asList("*")));
-        model.setDomainName(new ArrayList<>(Arrays.asList("*")));
-        model.setModuleName(new ArrayList<>(Arrays.asList("*")));
-        param.setLicenseCheckModel(model);
-        LicenseCreator licenseCreator = new LicenseCreator(param);
-        licenseCreator.generateLicense();
-        // 记录被授权用户
-        if(flagIsNew) {
-            record.setStartTime(appUser.getCreateTime());
-        }
-        record.setEndTime(appUser.getExpireTime());
-        returnMsg += "新授权时间：" + DateUtils.parseDateToStr(format, record.getStartTime()) + " - " + DateUtils.parseDateToStr(format, record.getEndTime()) + "<br><br>";
-        sysLicenseRecordService.updateSysLicenseRecord(record);
-        return returnMsg;
     }
 
 }
