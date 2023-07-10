@@ -93,13 +93,13 @@
             <version>2.8.2</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.smali</groupId>
-            <artifactId>dexlib2</artifactId>
-            <version>1.0</version>
-<!--            <scope>system</scope>-->
-<!--            <systemPath>${basedir}/libs/dexlib2.jar</systemPath>-->
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.smali</groupId>-->
+<!--            <artifactId>dexlib2</artifactId>-->
+<!--            <version>1.0</version>-->
+<!--&lt;!&ndash;            <scope>system</scope>&ndash;&gt;-->
+<!--&lt;!&ndash;            <systemPath>${basedir}/libs/dexlib2.jar</systemPath>&ndash;&gt;-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>

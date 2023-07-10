@@ -458,7 +458,7 @@
               <el-input v-model="form.appName" placeholder="请输入软件名称" />
             </el-form-item>
             <el-form-item>
-              <el-alert v-show="!form.appId" title="注：如需快速接入APK请选择单码登录" type="info" :closable="false" style="padding: 0 5px;margin-bottom:5px"></el-alert>
+              <el-alert v-show="!form.appId" title="注：如需快速接入APK请选择：[认证类型]单码登录、[计费类型]计时模式" type="info" :closable="false" style="padding: 0 5px;margin-bottom:5px"></el-alert>
               <el-col :span="12">
                 <el-form-item label="认证类型" prop="authType">
                   <el-select
