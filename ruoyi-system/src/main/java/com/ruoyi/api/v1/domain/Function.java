@@ -1,6 +1,6 @@
 package com.ruoyi.api.v1.domain;
 
-import com.alibaba.fastjson2.annotation.JSONField;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.ruoyi.api.v1.support.BaseAutoAware;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.model.LoginUser;

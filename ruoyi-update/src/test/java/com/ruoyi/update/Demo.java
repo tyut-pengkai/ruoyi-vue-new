@@ -1,6 +1,6 @@
 package com.ruoyi.update;
 
-import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson.JSON;
 import com.ruoyi.update.download.Callback;
 import com.ruoyi.update.download.Downloader;
 import com.ruoyi.update.download.impl.HttpDownloader;

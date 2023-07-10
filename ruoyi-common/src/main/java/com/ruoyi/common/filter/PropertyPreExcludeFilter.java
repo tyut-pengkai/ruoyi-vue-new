@@ -1,6 +1,6 @@
 package com.ruoyi.common.filter;
 
-import com.alibaba.fastjson2.filter.SimplePropertyPreFilter;
+import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 
 /**
  * 排除JSON敏感属性

@@ -1,7 +1,7 @@
 package com.ruoyi.license.controller;
 
 import cn.hutool.crypto.digest.MD5;
-import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson.JSON;
 import com.ruoyi.api.v1.api.noAuth.code.RechargeLoginCode;
 import com.ruoyi.api.v1.domain.Function;
 import com.ruoyi.common.annotation.Log;

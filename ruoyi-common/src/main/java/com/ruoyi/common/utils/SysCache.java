@@ -48,9 +48,9 @@ public class SysCache {
      * @return value
      */
     public static Object get(String key) {
-        if(kv.containsKey(key)) {
-            LOG.info("命中缓存：{}", key);
-        }
+//        if(kv.containsKey(key)) {
+//            LOG.info("命中缓存：{}", key);
+//        }
         return kv.get(key);
     }
 
@@ -61,7 +61,8 @@ public class SysCache {
 
     public static void clear() {
         if(kv.size() > 0) {
-            LOG.info("缓存清空：{}", JSON.toJSONString(kv));
+//            LOG.info("缓存清空：{}", JSON.toJSONString(kv));
+            LOG.info("缓存清空");
             kv = new ConcurrentHashMap<>();
         }
     }

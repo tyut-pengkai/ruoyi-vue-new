@@ -1,6 +1,6 @@
 package com.ruoyi.common.utils;
 
-import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson.JSONArray;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.entity.SysDictData;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -42,7 +42,7 @@ public class DictUtils {
         JSONArray arrayCache = SpringUtils.getBean(RedisCache.class).getCacheObject(getCacheKey(key));
         if (StringUtils.isNotNull(arrayCache))
         {
-            return arrayCache.toList(SysDictData.class);
+            return arrayCache.toJavaList(SysDictData.class);
         }
         return null;
     }

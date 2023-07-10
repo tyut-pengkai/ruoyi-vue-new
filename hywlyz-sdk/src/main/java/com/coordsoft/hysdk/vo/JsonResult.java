@@ -1,6 +1,6 @@
 package com.coordsoft.hysdk.vo;
 
-import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
 @Data
