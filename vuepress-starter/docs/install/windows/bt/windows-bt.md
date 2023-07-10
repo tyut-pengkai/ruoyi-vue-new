@@ -131,3 +131,7 @@ location /profile/ {
 商店地址：http://域名  
 后台地址：http://域名/admin  
 默认管理员账号密码：admin/admin123
+
+## 五、初始化配置
+配置初始参数和系统开机自启动  
+点击跳转 [初始化配置](/install/init-config/init-config.md)
