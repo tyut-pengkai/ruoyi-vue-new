@@ -137,6 +137,12 @@
                   <span>更新日志</span>
                 </div>
                 <el-collapse accordion>
+                  <el-collapse-item title="v1.6.1 - 2023-07-17">
+                      <ol>
+                        <li>修复：修复软件用户信息缓存异常的问题</li>
+                        <li>修复：补充缓存列表页缺失的缓存名称</li>
+                      </ol>
+                    </el-collapse-item>
                   <el-collapse-item title="v1.6.0 - 2023-06-20">
                       <ol>
                         <li>修复：修复卡密、单码使用时间字段不生效的问题</li>

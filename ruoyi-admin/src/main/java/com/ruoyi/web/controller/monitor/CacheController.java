@@ -26,13 +26,18 @@ public class CacheController {
     private final static List<SysCache> caches = new ArrayList<SysCache>();
 
     {
-        caches.add(new SysCache(CacheConstants.LOGIN_TOKEN_KEY, "用户信息"));
+        caches.add(new SysCache(CacheConstants.LOGIN_TOKEN_KEY, "在线用户"));
         caches.add(new SysCache(CacheConstants.SYS_CONFIG_KEY, "配置信息"));
         caches.add(new SysCache(CacheConstants.SYS_DICT_KEY, "数据字典"));
         caches.add(new SysCache(CacheConstants.CAPTCHA_CODE_KEY, "验证码"));
         caches.add(new SysCache(CacheConstants.REPEAT_SUBMIT_KEY, "防重提交"));
         caches.add(new SysCache(CacheConstants.RATE_LIMIT_KEY, "限流处理"));
         caches.add(new SysCache(CacheConstants.PWD_ERR_CNT_KEY, "密码错误次数"));
+        caches.add(new SysCache(CacheConstants.SYS_APP_KEY, "软件信息"));
+        caches.add(new SysCache(CacheConstants.SYS_APP_USER_KEY, "软件用户信息"));
+        caches.add(new SysCache(CacheConstants.SALE_ORDER_EXPIRE_KEY, "销售订单"));
+        caches.add(new SysCache(CacheConstants.IP_TO_ADDRESS_KEY, "IP转换地址"));
+        caches.add(new SysCache(CacheConstants.GLOBAL_FILE_DOWNLOAD_KEY, "全局文件下载链接"));
     }
 
     @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
