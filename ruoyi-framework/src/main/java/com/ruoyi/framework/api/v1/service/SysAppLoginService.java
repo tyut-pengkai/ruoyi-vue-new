@@ -198,7 +198,7 @@ public class SysAppLoginService {
                     SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
                     appUser = appUserService.selectSysAppUserByAppUserId(appUser.getAppUserId());
                     expireLog.setPointBefore(appUser.getPoint());
-                    BigDecimal newPoint = appUser.getPoint().subtract(BigDecimal.valueOf(-1));
+                    BigDecimal newPoint = appUser.getPoint().subtract(BigDecimal.valueOf(1));
                     appUser.setPoint(newPoint);
                     appUserService.updateSysAppUser(appUser);
                     expireLog.setPointAfter(newPoint);
@@ -408,7 +408,7 @@ public class SysAppLoginService {
                     SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
                     appUser = appUserService.selectSysAppUserByAppUserId(appUser.getAppUserId());
                     expireLog.setPointBefore(appUser.getPoint());
-                    BigDecimal newPoint = appUser.getPoint().subtract(BigDecimal.valueOf(-1));
+                    BigDecimal newPoint = appUser.getPoint().subtract(BigDecimal.valueOf(1));
                     appUser.setPoint(newPoint);
                     appUserService.updateSysAppUser(appUser);
                     expireLog.setPointAfter(newPoint);
