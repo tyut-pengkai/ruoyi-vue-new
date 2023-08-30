@@ -3,6 +3,11 @@ import { Message, MessageBox, Notification, Loading } from 'element-ui'
 let loadingInstance;
 
 export default {
+
+  // msg：在页面上方，自动弹出，自动消失
+  // alert：在页面中间，类似alert，需要点击确定
+  // notify：在页面右上角，自动弹出，自动消失
+
   // 消息提示
   msg(content) {
     Message.info(content)

@@ -636,7 +636,8 @@
                   <span>系统公告</span>
                 </div>
                 <el-collapse>
-                  <el-collapse-item name="1">
+                  <div v-if="userNotice && userNotice['content']">
+                    <el-collapse-item name="1">
                     <template slot="title">
                       <el-tag size="mini" style="margin-right: 5px"><i class="el-icon-bell"></i>系统消息</el-tag>{{ userNotice['title'] || '暂无消息' }}
                     </template>
@@ -651,7 +652,8 @@
                       </div>
                     </div>
                   </el-collapse-item>
-                  <div v-if="checkRole(['agent'])">
+                  </div>
+                  <div v-if="checkRole(['agent']) && agentNotice && agentNotice['content']">
                     <el-collapse-item name="2">
                       <template slot="title">
                         <el-tag size="mini" style="margin-right: 5px"><i class="el-icon-bell"></i>系统消息(仅代理可见)</el-tag>{{ agentNotice['title'] || '暂无消息' }}

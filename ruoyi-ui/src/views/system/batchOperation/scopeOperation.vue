@@ -226,8 +226,8 @@
 
 <script>
 import {listAppAll} from "@/api/system/app";
-import {listCardTemplate} from "@/api/system/cardTemplate";
-import {listLoginCodeTemplate} from "@/api/system/loginCodeTemplate";
+import {listCardTemplateAll} from "@/api/system/cardTemplate";
+import {listLoginCodeTemplateAll} from "@/api/system/loginCodeTemplate";
 import {scopeOperation} from "@/api/system/batchOperation";
 
 export default {
@@ -312,7 +312,7 @@ export default {
         };
       }
       if (this.app && this.app["authType"] == "0") {
-        listCardTemplate(queryParams).then((response) => {
+        listCardTemplateAll(queryParams).then((response) => {
           this.templateList = response.rows;
           this.templateList.unshift({
             templateId: 0,
@@ -321,7 +321,7 @@ export default {
           this.loading = false;
         });
       } else if (this.app && this.app["authType"] == "1") {
-        listLoginCodeTemplate(queryParams).then((response) => {
+        listLoginCodeTemplateAll(queryParams).then((response) => {
           this.templateList = response.rows;
           this.templateList.unshift({
             templateId: 0,

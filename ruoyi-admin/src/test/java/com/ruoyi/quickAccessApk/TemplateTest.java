@@ -22,7 +22,10 @@ public class TemplateTest {
 
     @Test
     public void test1() {
-
+        String[] split = "1111".split("&");
+        for (int i = 0; i < split.length; ++i) {
+            System.out.println(split[i].split("-")[0]);
+        }
     }
 
 }
