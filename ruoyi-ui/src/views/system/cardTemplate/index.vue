@@ -1135,7 +1135,7 @@ export default {
       });
     },
     /** 提交按钮 */
-    submitForm() {
+    submitForm(type) {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.templateId != null) {

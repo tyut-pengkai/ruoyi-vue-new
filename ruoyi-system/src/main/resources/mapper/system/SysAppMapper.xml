@@ -385,6 +385,6 @@
 
 	<select id="selectSysAppByAppName" parameterType="String" resultMap="SysAppResult">
 		<include refid="selectSysAppVo"/>
-		where app_name = #{appName}
+		where app_name = #{appName} and a.del_flag = 0
 	</select>
 </mapper>
