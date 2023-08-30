@@ -141,6 +141,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <!-- 数据范围过滤 -->
             ${params.dataScope}
         </if>
+        <if test="remark != null and remark != ''">and au.remark like concat('%', #{remark}, '%')</if>
     </select>
     
     <select id="selectSysAppUserByAppUserId" parameterType="Long" resultMap="SysAppUserResult">

@@ -333,12 +333,12 @@
           <span>{{ parseTime(scope.row.closeTime) }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column
+      <!-- <el-table-column
         :show-overflow-tooltip="true"
         align="center"
         label="备注"
         prop="remark"
-      />
+      /> -->
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -505,13 +505,13 @@
             </el-form-item>
           </el-col>
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
+        <!-- <el-form-item label="备注" prop="remark">
           <el-input
             v-model="form.remark"
             placeholder="请输入内容"
             type="textarea"
           />
-        </el-form-item>
+        </el-form-item> -->
         <el-divider content-position="center">销售订单详情信息</el-divider>
         <!-- <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">

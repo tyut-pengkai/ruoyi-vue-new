@@ -80,6 +80,7 @@
         </if>
         <if test="loginIp != null  and loginIp != ''">and atu.login_ip = #{loginIp}</if>
         <if test="deviceCode != null  and deviceCode != ''">and atu.device_code = #{deviceCode}</if>
+        <if test="remark != null and remark != ''">and atu.remark like concat('%', #{remark}, '%')</if>
     </select>
 
     <select id="selectSysAppTrialUserByAppTrialUserId" parameterType="Long" resultMap="SysAppTrialUserResult">

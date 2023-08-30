@@ -43,6 +43,7 @@
             </if>
             <if test="checkToken != null  and checkToken != ''">and check_token = #{checkToken}</if>
             <if test="checkVip != null  and checkVip != ''">and check_vip = #{checkVip}</if>
+            <if test="remark != null and remark != ''">and remark like concat('%', #{remark}, '%')</if>
         </where>
     </select>
 

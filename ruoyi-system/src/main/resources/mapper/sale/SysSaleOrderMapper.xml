@@ -91,6 +91,7 @@
         <if test="status != null ">and status = #{status}</if>
         <if test="contact != null and contact != ''">and contact = #{contact}</if>
         <if test="queryPass != null and queryPass != ''">and query_pass = #{queryPass}</if>
+        <if test="remark != null and remark != ''">and remark like concat('%', #{remark}, '%')</if>
         order by order_id desc
     </select>
 

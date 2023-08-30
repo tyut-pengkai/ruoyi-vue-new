@@ -46,6 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 and login_times between #{params.beginLoginTimes} and #{params.endLoginTimes}
             </if>
             <if test="status != null  and status != ''">and status = #{status}</if>
+            <if test="remark != null and remark != ''">and sys_device_code.remark like concat('%', #{remark}, '%')</if>
             <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
                 <!-- 数据范围过滤 -->
                 ${params.dataScope}

@@ -48,6 +48,7 @@
         <if test="content != null  and content != ''">and content = #{content}</if>
         <if test="language != null  and language != ''">and language = #{language}</if>
         <if test="scriptKey != null  and scriptKey != ''">and script_key = #{scriptKey}</if>
+        <if test="remark != null and remark != ''">and remark like concat('%', #{remark}, '%')</if>
     </select>
 
     <select id="selectSysGlobalScriptByScriptId" parameterType="Long" resultMap="SysGlobalScriptResult">

@@ -63,6 +63,7 @@
                 and (u.user_name LIKE CONCAT('%', #{params.agentName}, '%') or u.nick_name LIKE CONCAT('%',
                 #{params.agentName}, '%'))
             </if>
+            <if test="remark != null and remark != ''">and ai.remark like concat('%', #{remark}, '%')</if>
         </where>
         order by ai.id
     </select>

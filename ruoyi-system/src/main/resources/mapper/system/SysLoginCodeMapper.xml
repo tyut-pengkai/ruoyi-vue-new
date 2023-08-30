@@ -115,6 +115,7 @@
         <if test="isAgent != null  and isAgent != ''">and c.is_agent = #{isAgent}</if>
         <if test="createBy != null  and createBy != ''">and c.create_by = #{createBy}</if>
         <if test="batchNo != null  and batchNo != ''">and c.batch_no = #{batchNo}</if>
+        <if test="remark != null and remark != ''">and c.remark like concat('%', #{remark}, '%')</if>
         <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
             <!-- 数据范围过滤 -->
             ${params.dataScope}

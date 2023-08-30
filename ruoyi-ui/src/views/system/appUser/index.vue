@@ -124,6 +124,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item> -->
+      <el-form-item label="备注" prop="remark">
+          <el-input
+            v-model="queryParams.remark"
+            placeholder="请输入备注"
+            clearable
+            size="small"
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
       <el-form-item prop="">
         <el-button
           type="primary"
@@ -1128,6 +1137,14 @@ export default {
             });
           } else {
             this.form.appId = this.app.appId;
+            if (this.app.authType === '0' && !this.form.userId) {
+              this.$modal.alertError("软件用户所属账号不能为空");
+              return;
+            }
+            else if (this.app.authType === '1' && !this.form.loginCode) { 
+              this.$modal.alertError("软件用户所属单码不能为空");
+              return;
+            }
             addAppUser(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

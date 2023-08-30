@@ -161,11 +161,11 @@
           />
         </el-select>
       </el-form-item> -->
-      <el-form-item label="自动生成" prop="enableAutoGen">
+      <el-form-item label="自动制卡" prop="enableAutoGen">
         <el-select
           v-model="queryParams.enableAutoGen"
           clearable
-          placeholder="请选择是否允许自动生成"
+          placeholder="请选择是否允许自动制卡"
           size="small"
         >
           <el-option
@@ -175,6 +175,15 @@
             :value="dict.value"
           />
         </el-select>
+      </el-form-item>
+      <el-form-item label="备注" prop="remark">
+        <el-input
+          v-model="queryParams.remark"
+          placeholder="请输入备注"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item>
         <el-button
@@ -317,7 +326,7 @@
           <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.firstStock"/>
         </template>
       </el-table-column> -->
-      <el-table-column label="自动生成" align="center" prop="enableAutoGen">
+      <el-table-column label="自动制卡" align="center" prop="enableAutoGen">
         <template slot-scope="scope">
           <dict-tag
             :options="dict.type.sys_yes_no"

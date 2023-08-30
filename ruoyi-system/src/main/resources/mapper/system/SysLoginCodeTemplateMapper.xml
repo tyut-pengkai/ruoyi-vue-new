@@ -104,6 +104,7 @@
         <if test="effectiveDuration != null ">and ct.effective_duration = #{effectiveDuration}</if>
         <if test="status != null">and ct.status = #{status}</if>
         <if test="enableAutoGen != null">and ct.enable_auto_gen = #{enableAutoGen}</if>
+        <if test="remark != null and remark != ''">and ct.remark like concat('%', #{remark}, '%')</if>
         <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
             <!-- 数据范围过滤 -->
             ${params.dataScope}

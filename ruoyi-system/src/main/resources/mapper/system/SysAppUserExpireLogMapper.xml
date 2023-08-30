@@ -114,6 +114,7 @@
         <if test="templateId != null ">and auel.template_id = #{templateId}</if>
         <if test="cardId != null ">and auel.card_id = #{cardId}</if>
         <if test="cardNo != null ">and auel.card_no = #{cardNo}</if>
+        <if test="remark != null and remark != ''">and auel.remark like concat('%', #{remark}, '%')</if>
         order by auel.id desc
     </select>
 

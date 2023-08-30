@@ -62,6 +62,7 @@
             and ag.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
         </if>
         <if test="status != null  and status != ''">and ag.status = #{status}</if>
+        <if test="remark != null and remark != ''">and ag.remark like concat('%', #{remark}, '%')</if>
     </select>
 
     <select id="selectSysAgentByAgentId" parameterType="Long" resultMap="SysAgentResult">
