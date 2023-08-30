@@ -97,17 +97,17 @@ public class GlobalFileDownload extends Function {
             }
         }
 
-        String filePath = RuoYiConfig.getGlobalFilePath() + "/" + globalFile.getId();
+        String filePath = RuoYiConfig.getGlobalFilePath() + File.separator + globalFile.getId();
         File file = new File(filePath);
         if (file.exists()) {
             try {
                 if (returnUrl) {
                     String randomPath = String.valueOf(new SnowflakeIdWorker().nextId());
-                    FileUtils.copyFile(file, new File(RuoYiConfig.getGlobalFilePath() + "/" + randomPath + "/" + fileName));
+                    FileUtils.copyFile(file, new File(RuoYiConfig.getGlobalFilePath() + File.separator + randomPath + File.separator + fileName));
                     // 存入redis。默认有效期1小时
                     String enableTimeStr = configService.selectConfigByKey("sys.api.globalFileUrlEnableTime");
                     int enableTime = Convert.toInt(enableTimeStr, 3600);
-                    redisCache.setCacheObject(CacheConstants.GLOBAL_FILE_DOWNLOAD_KEY + randomPath + "/" + fileName, null, enableTime, TimeUnit.SECONDS);
+                    redisCache.setCacheObject(CacheConstants.GLOBAL_FILE_DOWNLOAD_KEY + randomPath + File.separator + fileName, null, enableTime, TimeUnit.SECONDS);
                     return getUrlPrefix(randomPath) + fileName;
                 } else {
                     return Base64Utils.encodeToString(FileUtils.readFileToByteArray(file));

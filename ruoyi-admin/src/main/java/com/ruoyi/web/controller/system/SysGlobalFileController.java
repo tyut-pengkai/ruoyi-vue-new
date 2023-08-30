@@ -109,7 +109,7 @@ public class SysGlobalFileController extends BaseController {
     public AjaxResult upload(MultipartFile file, Long globalFileId) {
         SysGlobalFile globalFile = sysGlobalFileService.selectSysGlobalFileById(globalFileId);
         if (globalFile != null) {
-            String filePath = RuoYiConfig.getGlobalFilePath() + "/" + globalFileId;
+            String filePath = RuoYiConfig.getGlobalFilePath() + File.separator + globalFileId;
             File desc = new File(filePath);
             if (!desc.getParentFile().exists()) {
                 desc.getParentFile().mkdirs();
@@ -133,15 +133,15 @@ public class SysGlobalFileController extends BaseController {
     public AjaxResult download(@PathVariable("id") Long id) {
         SysGlobalFile globalFile = sysGlobalFileService.selectSysGlobalFileById(id);
         if (globalFile != null) {
-            String filePath = RuoYiConfig.getGlobalFilePath() + "/" + globalFile.getId();
+            String filePath = RuoYiConfig.getGlobalFilePath() + File.separator + globalFile.getId();
             File file = new File(filePath);
             if (file.exists()) {
                 try {
                     String randomPath = String.valueOf(new SnowflakeIdWorker().nextId());
-                    FileUtils.copyFile(file, new File(RuoYiConfig.getGlobalFilePath() + "/" + randomPath + "/" + globalFile.getName()));
+                    FileUtils.copyFile(file, new File(RuoYiConfig.getGlobalFilePath() + File.separator + randomPath + File.separator + globalFile.getName()));
                     // 存入redis。默认有效期5分钟
-                    redisCache.setCacheObject(CacheConstants.GLOBAL_FILE_DOWNLOAD_KEY + randomPath + "/" + globalFile.getName(), null, 300, TimeUnit.SECONDS);
-                    return AjaxResult.success(randomPath + "/" + globalFile.getName());
+                    redisCache.setCacheObject(CacheConstants.GLOBAL_FILE_DOWNLOAD_KEY + randomPath + File.separator + globalFile.getName(), null, 300, TimeUnit.SECONDS);
+                    return AjaxResult.success(randomPath + File.separator + globalFile.getName());
                 } catch (Exception e) {
                     e.printStackTrace();
                     throw new ApiException(ErrorCode.ERROR_OTHER_FAULTS, e.getMessage());

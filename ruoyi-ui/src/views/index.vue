@@ -17,6 +17,9 @@
         <el-link style="margin-left: 10px" type="primary" @click="doRestart"
         >重启
         </el-link>
+        <el-link style="margin-left: 10px" type="primary" @click="handleExport"
+        >导出日志
+        </el-link>
       </span>
     </el-card>
       <!-- <el-alert
@@ -757,7 +760,7 @@
 <script>
 import {getSysInfo} from "@/api/common";
 import {getNotice} from "@/api/system/index";
-import {checkUpdate, doUpdate, getStatus, doRestart, getRestartStatus } from "@/api/system/update";
+import {checkUpdate, doUpdate, getStatus, doRestart, getRestartStatus, exportErrorLog } from "@/api/system/update";
 import { checkPermi, checkRole } from "@/utils/permission"; // 权限判断函数
 import { mapGetters } from "vuex";
 
@@ -785,6 +788,7 @@ export default {
       remainTime: 300,
       timer2: null,
       remainTime2: 300,
+      exportLoading: false,
     };
   },
   methods: {
@@ -889,6 +893,20 @@ export default {
         clearInterval(this.timer2);
         this.$modal.alert("获取重启结果超时，请登录服务器后台查看");
       }
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      this.$modal
+        .confirm("是否确认导出错误日志？")
+        .then(() => {
+          this.exportLoading = true;
+          return exportErrorLog();
+        })
+        .then((response) => {
+          this.$download.name(response.msg);
+          this.exportLoading = false;
+        })
+        .catch(() => { });
     },
   },
   created() {

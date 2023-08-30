@@ -92,7 +92,7 @@ public class GlobalFileUpload extends Function {
 
         try {
             byte[] bytes = Base64Utils.decodeFromString(base64Str);
-            String filePath = RuoYiConfig.getGlobalFilePath() + "/" + globalFile.getId();
+            String filePath = RuoYiConfig.getGlobalFilePath() + File.separator + globalFile.getId();
             File desc = new File(filePath);
             if (!desc.getParentFile().exists()) {
                 desc.getParentFile().mkdirs();

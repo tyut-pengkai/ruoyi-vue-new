@@ -130,9 +130,9 @@ public class CommonController {
     @GetMapping("/globalFileDownload/{randomPath}/{fileName}")
     public void globalFileDownload(@PathVariable("randomPath") String randomPath, @PathVariable("fileName") String fileName, boolean delete, HttpServletResponse response) {
         try {
-            String filePath = RuoYiConfig.getGlobalFilePath() + "/" + randomPath + "/" + fileName;
+            String filePath = RuoYiConfig.getGlobalFilePath() + File.separator + randomPath + File.separator + fileName;
             File file = new File(filePath);//读取压缩文件
-            if (file.exists() && redisCache.hasKey(CacheConstants.GLOBAL_FILE_DOWNLOAD_KEY + randomPath + "/" + fileName)) {
+            if (file.exists() && redisCache.hasKey(CacheConstants.GLOBAL_FILE_DOWNLOAD_KEY + randomPath + File.separator + fileName)) {
                 long totalSize = file.length(); //获取文件大小
                 response.setHeader("Content-Length", String.valueOf(totalSize));
                 response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
@@ -140,7 +140,7 @@ public class CommonController {
                 FileUtils.writeBytes(filePath, response.getOutputStream());
                 if (delete) {
                     FileUtils.deleteFile(filePath);
-                    new File(RuoYiConfig.getGlobalFilePath() + "/" + randomPath + "/").delete();
+                    new File(RuoYiConfig.getGlobalFilePath() + File.separator+ randomPath + File.separator).delete();
                 }
             } else {
                 response.sendError(404, "请求的下载链接无效或已过期");

@@ -44,3 +44,12 @@ export function getRestartStatus() {
     timeout: 30000
   })
 }
+
+// 导出错误日志
+export function exportErrorLog(query) {
+  return request({
+    url: '/system/exportErrorLog',
+    method: 'get',
+    params: query
+  })
+}
