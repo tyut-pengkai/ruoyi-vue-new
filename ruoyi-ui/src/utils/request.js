@@ -24,6 +24,10 @@ const service = axios.create({
 
 // request拦截器
 service.interceptors.request.use(config => {
+  // export方法延长延长timeout
+  if (config.url && config.url.indexOf("export") != -1) { 
+    config.timeout = 10 * 60000;
+  }
   // 是否需要设置 token
   const isToken = (config.headers || {}).isToken === false
   // 是否需要防止数据重复提交
