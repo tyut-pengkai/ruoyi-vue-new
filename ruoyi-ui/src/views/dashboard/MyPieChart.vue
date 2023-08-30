@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 import resize from './mixins/resize'
 
 require('echarts/theme/macarons') // echarts theme
@@ -70,7 +70,9 @@ export default {
       this.chart.setOption({
         tooltip: {
           trigger: 'item',
-          formatter: '{b} : {c} ({d}%)'
+          formatter: '{b} : {c} ({d}%)',
+          confine: true,  //解决浮窗被截断问题
+          appendToBody: true,
         },
         legend: {
           left: 'center',

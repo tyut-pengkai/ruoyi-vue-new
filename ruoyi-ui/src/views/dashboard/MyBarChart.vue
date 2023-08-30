@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 import resize from './mixins/resize'
 
 require('echarts/theme/macarons') // echarts theme
@@ -82,6 +82,41 @@ export default {
           trigger: 'axis',
           axisPointer: { // 坐标轴指示器，坐标轴触发有效
             type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+          },
+          confine: true,  //解决浮窗被截断问题
+          appendToBody: true,
+          formatter: function (params) {	//数据都包含在params里面
+            var zht;
+            if (params != null && params.length > 0) {
+              zht = "<table>"
+              var count = 0;
+              for (var i = 0; i < params.length; i++) {
+                if (params[i].value > 0) {
+                  count++;
+                }
+              }
+              var devideSize = 1; // 每行显示的个数
+              if (count >= 80) {
+                devideSize = 6;
+              } else if (count >= 60) { 
+                devideSize = 5;
+              } else if (count >= 30) {
+                devideSize = 3;
+              } else if (count >= 10) {
+                devideSize = 2;
+              }
+              zht += "<tr>";
+              for (var i = 0; i < params.length; i++) {
+                if (params[i].value > 0) {
+                  zht += "<td>" + params[i].marker + params[i].seriesName + ": " + params[i].value + "</td>";
+                  if ((i + 1) % devideSize == 0) {						//每行显示5个
+                    zht += '<tr/>';
+                  }
+                }
+              }
+              zht += "</table>";
+            }
+            return zht;					//返回出去
           }
         },
         legend: {

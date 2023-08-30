@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 import resize from './mixins/resize'
 
 require('echarts/theme/macarons') // echarts theme
@@ -74,7 +74,9 @@ export default {
             label: {
               backgroundColor: '#6a7985'
             }
-          }
+          },
+          confine: true,  //解决浮窗被截断问题
+          appendToBody: true,
         },
         grid: {
           left: 10,
