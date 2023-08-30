@@ -29,7 +29,7 @@ public class IsUserNameExist extends Function {
     public Object handle() {
         SysUser user = new SysUser();
         user.setUserName(getParams().get("username"));
-        return userService.checkUserNameUnique(user);
+        return userService.checkUserNameUnique(user) ? "0" : "1";
     }
 
 }

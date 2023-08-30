@@ -11,6 +11,7 @@ import de.schlichtherle.license.LicenseContentException;
 import de.schlichtherle.license.NoLicenseInstalledException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.SQLException;
 
 /**
  * 全局异常处理器
@@ -78,6 +80,16 @@ public class GlobalExceptionHandler {
 //        log.error(e.getMessage(), e.getDetailMessage(), e);
         Integer code = e.getCode();
         return StringUtils.isNotNull(code) ? AjaxResult.error(code, e.getMessage()).put("detail", e.getDetailMessage()) : AjaxResult.error(e.getMessage()).put("detail", e.getDetailMessage());
+    }
+
+    /**
+     * 拦截未知的运行时异常
+     */
+    @ExceptionHandler({SQLException.class, DataAccessException.class})
+    public AjaxResult handleSQLException(Exception e, HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',发生数据库异常.", requestURI, e);
+        return AjaxResult.error(e.getMessage());
     }
 
     /**

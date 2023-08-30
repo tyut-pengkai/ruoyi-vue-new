@@ -77,43 +77,51 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     /**
      * 查询单码列表
      *
-     * @param SysLoginCode 单码
+     * @param sysLoginCode 单码
      * @return 单码
      */
     @Override
     @DataScope(deptAlias = "d", userAlias = "u")
-    public List<SysLoginCode> selectSysLoginCodeList(SysLoginCode SysLoginCode) {
-        return sysLoginCodeMapper.selectSysLoginCodeList(SysLoginCode);
+    public List<SysLoginCode> selectSysLoginCodeList(SysLoginCode sysLoginCode) {
+        return sysLoginCodeMapper.selectSysLoginCodeList(sysLoginCode);
     }
 
     @Override
     @DataScope(deptAlias = "d", userAlias = "u")
-    public int countSysLoginCode(SysLoginCode SysLoginCode) {
-        return sysLoginCodeMapper.countSysLoginCode(SysLoginCode);
+    public int countSysLoginCode(SysLoginCode sysLoginCode) {
+        return sysLoginCodeMapper.countSysLoginCode(sysLoginCode);
     }
 
     /**
      * 新增单码
      *
-     * @param SysLoginCode 单码
+     * @param sysLoginCode 单码
      * @return 结果
      */
     @Override
-    public int insertSysLoginCode(SysLoginCode SysLoginCode) {
-        SysLoginCode.setCreateTime(DateUtils.getNowDate());
-        return sysLoginCodeMapper.insertSysLoginCode(SysLoginCode);
+    public int insertSysLoginCode(SysLoginCode sysLoginCode) {
+        sysLoginCode.setCreateTime(DateUtils.getNowDate());
+        SysLoginCode loginCode = selectSysLoginCodeByCardNo(sysLoginCode.getCardNo());
+        if(loginCode != null) {
+            throw new ServiceException("单码不可重复，此单码已存在");
+        }
+        return sysLoginCodeMapper.insertSysLoginCode(sysLoginCode);
     }
 
     /**
      * 修改单码
      *
-     * @param SysLoginCode 单码
+     * @param sysLoginCode 单码
      * @return 结果
      */
     @Override
-    public int updateSysLoginCode(SysLoginCode SysLoginCode) {
-        SysLoginCode.setUpdateTime(DateUtils.getNowDate());
-        return sysLoginCodeMapper.updateSysLoginCode(SysLoginCode);
+    public int updateSysLoginCode(SysLoginCode sysLoginCode) {
+        sysLoginCode.setUpdateTime(DateUtils.getNowDate());
+        SysLoginCode loginCode = selectSysLoginCodeByCardNo(sysLoginCode.getCardNo());
+        if(loginCode != null) {
+            throw new ServiceException("单码不可重复，此单码已存在");
+        }
+        return sysLoginCodeMapper.updateSysLoginCode(sysLoginCode);
     }
 
     /**
@@ -159,11 +167,11 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     /**
      * 新增单码
      *
-     * @param SysLoginCodeList
+     * @param sysLoginCodeList
      */
     @Override
-    public int insertSysLoginCodeBatch(List<SysLoginCode> SysLoginCodeList) {
-        return sysLoginCodeMapper.insertSysLoginCodeBatch(SysLoginCodeList);
+    public int insertSysLoginCodeBatch(List<SysLoginCode> sysLoginCodeList) {
+        return sysLoginCodeMapper.insertSysLoginCodeBatch(sysLoginCodeList);
     }
 
     /**

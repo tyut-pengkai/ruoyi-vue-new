@@ -7,6 +7,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -23,6 +24,7 @@ import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppUserService;
 import com.ruoyi.system.service.ISysLoginCodeService;
+import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.utils.poi.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,6 +47,8 @@ public class SysAppUserController extends BaseController {
     private ISysAppUserService sysAppUserService;
     @Autowired
     private ISysAppService sysAppService;
+    @Resource
+    private ISysUserService sysUserService;
     @Resource
     private RedisCache redisCache;
     @Resource
@@ -136,6 +140,13 @@ public class SysAppUserController extends BaseController {
         sysAppUser.setCreateBy(getUsername());
         SysApp sysApp = sysAppService.selectSysAppByAppId(sysAppUser.getAppId());
         if (sysApp.getAuthType() == AuthType.ACCOUNT) {
+            if(sysAppUser.getUserId() == null) {
+                return AjaxResult.error("软件用户所属账号不能为空");
+            }
+            SysUser sysUser = sysUserService.selectUserById(sysAppUser.getUserId());
+            if(sysUser == null) {
+                return AjaxResult.error("账号不存在");
+            }
             SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndUserId(sysAppUser.getAppId(), sysAppUser.getUserId());
             if (appUser != null) {
                 return AjaxResult.error("当前软件下该账号已拥有软件用户，可直接登录，无需重复添加");
@@ -170,6 +181,9 @@ public class SysAppUserController extends BaseController {
                 AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
             }
         } else {
+            if(sysAppUser.getLoginCode() == null) {
+                return AjaxResult.error("软件用户所属单码不能为空");
+            }
             SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(sysAppUser.getAppId(), sysAppUser.getLoginCode());
             if (appUser != null) {
                 return AjaxResult.error("当前软件下该单码已拥有软件用户，可直接登录，无需重复添加");
