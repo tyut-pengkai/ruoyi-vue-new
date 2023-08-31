@@ -5,6 +5,7 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.license.ServerInfo;
 import com.ruoyi.common.utils.AesCbcPKCS5PaddingUtil;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.PathUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.license.LicenseCheckListener;
@@ -43,6 +44,16 @@ public class SysLicenseController {
         Map<String, Object> result = new HashMap<>();
         result.put("serverInfo", serverInfo);
         result.put("licenseInfo", licenseInfo);
+        return AjaxResult.success().put("data", result);
+    }
+
+    @GetMapping("/simpleInfo")
+    public AjaxResult simpleInfo(HttpServletRequest request) {
+        LicenseInfo licenseInfo = LicenseInfo.getLicenseInfo();
+        Map<String, Object> result = new HashMap<>();
+        result.put("expireTime", DateUtils.parseDateToStr(licenseInfo.getTo()));
+        result.put("remainTimeReadable", DateUtils.timeDistance(licenseInfo.getTo(), DateUtils.getNowDate()));
+        result.put("remainTimeSeconds", DateUtils.differentSecondsByMillisecond(licenseInfo.getTo(), DateUtils.getNowDate()) / 1000);
         return AjaxResult.success().put("data", result);
     }
 

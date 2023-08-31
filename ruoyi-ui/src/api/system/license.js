@@ -8,6 +8,14 @@ export function getLicenseInfo() {
   })
 }
 
+// 查询授权信息
+export function getSimpleLicenseInfo() {
+  return request({
+    url: '/system/license/simpleInfo',
+    method: 'get'
+  })
+}
+
 // 重新载入授权信息
 export function loadLicense() {
   return request({

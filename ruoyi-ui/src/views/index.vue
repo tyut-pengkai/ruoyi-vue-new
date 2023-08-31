@@ -1,5 +1,16 @@
 <template>
   <div class="app-container home">
+    <span>
+      <el-alert
+        v-show="remainTimeSeconds / 86400 <= 10"
+        style="margin-bottom: 20px"
+        title="您的授权即将到期"
+        :description="'您的授权将于' + expireTime + '到期（剩余 ' + remainTimeReadable + ' 天），请您尽快续费以免影响您的正常使用' + remainTimeSeconds"
+        type="warning"
+        :closable="false"
+        :show-icon="true">
+      </el-alert>
+    </span>
     <el-card shadow="never" style="margin-bottom: 10px;padding-top: 5px;">
       <span style="font-size: 16px;"><i class="el-icon-user">&nbsp;{{ nickName }}</i></span>
       <span style="float: right" v-if="checkRole(['sadmin', 'admin'])">
@@ -758,6 +769,7 @@
 </template>
 
 <script>
+import { getSimpleLicenseInfo } from "@/api/system/license";
 import {getSysInfo} from "@/api/common";
 import {getNotice} from "@/api/system/index";
 import {checkUpdate, doUpdate, getStatus, doRestart, getRestartStatus, exportErrorLog } from "@/api/system/update";
@@ -789,6 +801,9 @@ export default {
       timer2: null,
       remainTime2: 300,
       exportLoading: false,
+      remainTimeReadable: "",
+      remainTimeSeconds: null,
+      expireTime: null,
     };
   },
   methods: {
@@ -908,8 +923,14 @@ export default {
         })
         .catch(() => { });
     },
+    getSimpleLicenseInfo,
   },
   created() {
+    getSimpleLicenseInfo().then((res) => {
+      this.expireTime = res.data.expireTime;
+      this.remainTimeReadable = res.data.remainTimeReadable;
+      this.remainTimeSeconds = res.data.remainTimeSeconds;
+    });
     this.getSysInfo();
     getNotice({type: 1}).then((res) => {
       this.userNotice = res.data;
