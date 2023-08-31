@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 卡密模板Controller
@@ -88,6 +89,10 @@ public class SysCardTemplateController extends BaseController
         if (sysCardTemplate.getCardPassGenRule() == GenRule.REGEX && StringUtils.isBlank(sysCardTemplate.getCardPassRegex())) {
             throw new ServiceException("密码正则表达式不能为空");
         }
+        SysCardTemplate template = sysCardTemplateService.selectSysCardTemplateByAppIdAndTemplateName(sysCardTemplate.getAppId(), sysCardTemplate.getCardName());
+        if(template != null) {
+            throw new ServiceException("卡类不能重名，此软件下已存在名为[" + sysCardTemplate.getCardName() + "]的卡类");
+        }
         return toAjax(sysCardTemplateService.insertSysCardTemplate(sysCardTemplate));
     }
 
@@ -104,6 +109,10 @@ public class SysCardTemplateController extends BaseController
         }
         if (sysCardTemplate.getCardPassGenRule() == GenRule.REGEX && StringUtils.isBlank(sysCardTemplate.getCardPassRegex())) {
             throw new ServiceException("密码正则表达式不能为空");
+        }
+        SysCardTemplate template = sysCardTemplateService.selectSysCardTemplateByAppIdAndTemplateName(sysCardTemplate.getAppId(), sysCardTemplate.getCardName());
+        if(template != null && !Objects.equals(template.getTemplateId(), sysCardTemplate.getTemplateId())) {
+            throw new ServiceException("卡类不能重名，此软件下已存在名为[" + sysCardTemplate.getCardName() + "]的卡类");
         }
         return toAjax(sysCardTemplateService.updateSysCardTemplate(sysCardTemplate));
     }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 单码类别Controller
@@ -83,6 +84,10 @@ public class SysLoginCodeTemplateController extends BaseController {
         if (sysLoginCodeTemplate.getCardNoGenRule() == GenRule.REGEX && StringUtils.isBlank(sysLoginCodeTemplate.getCardNoRegex())) {
             throw new ServiceException("正则表达式不能为空");
         }
+        SysLoginCodeTemplate template = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByAppIdAndTemplateName(sysLoginCodeTemplate.getAppId(), sysLoginCodeTemplate.getCardName());
+        if(template != null) {
+            throw new ServiceException("卡类不能重名，此软件下已存在名为[" + sysLoginCodeTemplate.getCardName() + "]的卡类");
+        }
         return toAjax(sysLoginCodeTemplateService.insertSysLoginCodeTemplate(sysLoginCodeTemplate));
     }
 
@@ -96,6 +101,10 @@ public class SysLoginCodeTemplateController extends BaseController {
         sysLoginCodeTemplate.setUpdateBy(getUsername());
         if (sysLoginCodeTemplate.getCardNoGenRule() == GenRule.REGEX && StringUtils.isBlank(sysLoginCodeTemplate.getCardNoRegex())) {
             throw new ServiceException("正则表达式不能为空");
+        }
+        SysLoginCodeTemplate template = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByAppIdAndTemplateName(sysLoginCodeTemplate.getAppId(), sysLoginCodeTemplate.getCardName());
+        if(template != null && !Objects.equals(template.getTemplateId(), sysLoginCodeTemplate.getTemplateId())) {
+            throw new ServiceException("卡类不能重名，此软件下已存在名为[" + sysLoginCodeTemplate.getCardName() + "]的卡类");
         }
         return toAjax(sysLoginCodeTemplateService.updateSysLoginCodeTemplate(sysLoginCodeTemplate));
     }
