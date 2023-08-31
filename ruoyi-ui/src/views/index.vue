@@ -2,10 +2,10 @@
   <div class="app-container home">
     <span>
       <el-alert
-        v-show="remainTimeSeconds / 86400 <= 10"
+        v-if="remainTimeSeconds / 86400 <= 10"
         style="margin-bottom: 20px"
         title="您的授权即将到期"
-        :description="'您的授权将于' + expireTime + '到期（剩余 ' + remainTimeReadable + ' 天），请您尽快续费以免影响您的正常使用' + remainTimeSeconds"
+        :description="'您的授权将于' + expireTime + '到期（剩余 ' + remainTimeReadable + ' 天），请您尽快续费以免影响您的正常使用'"
         type="warning"
         :closable="false"
         :show-icon="true">
@@ -802,7 +802,7 @@ export default {
       remainTime2: 300,
       exportLoading: false,
       remainTimeReadable: "",
-      remainTimeSeconds: null,
+      remainTimeSeconds: 9999999,
       expireTime: null,
     };
   },
