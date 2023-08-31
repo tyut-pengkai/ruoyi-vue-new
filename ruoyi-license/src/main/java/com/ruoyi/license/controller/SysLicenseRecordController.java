@@ -370,7 +370,7 @@ public class SysLicenseRecordController extends BaseController {
             sysLicenseRecordService.insertSysLicenseRecord(record);
             flagIsNew = true;
         } else {
-            if(record.getLoginCode().equals(loginCode)) { // 恢复授权
+            if(Objects.equals(record.getLoginCode(), loginCode)) { // 恢复授权
                 returnMsg = "操作类型：<b>恢复授权</b><br><br>";
                 returnMsg += "原授权时间：" + DateUtils.parseDateToStr(format, record.getCreateTime()) + " - " + DateUtils.parseDateToStr(format, record.getEndTime()) + "<br>";
             } else { // 续费授权
