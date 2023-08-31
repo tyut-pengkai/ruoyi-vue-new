@@ -247,6 +247,6 @@
 
     <select id="selectSysCardTemplateByAppIdAndTemplateName" resultMap="SysCardTemplateResult">
         <include refid="selectSysCardTemplateVo"/>
-        where ct.app_id = #{appId} and ct.card_name = #{templateName}
+        where ct.app_id = #{appId} and ct.card_name = #{templateName} and ct.del_flag = '0'
     </select>
 </mapper>
