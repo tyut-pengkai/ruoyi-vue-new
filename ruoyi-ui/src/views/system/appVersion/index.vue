@@ -293,6 +293,8 @@
                 v-model="form.versionName"
                 placeholder="请输入版本名称"
                 style="width: 200px"
+                maxlength="30"
+                show-word-limit
               />
             </el-form-item>
           </el-col>
@@ -326,11 +328,11 @@
           />
         </el-form-item>
         <el-form-item label="下载地址（跳转）" prop="downloadUrl">
-          <el-input v-model="form.downloadUrl" placeholder="请输入内容">
+          <el-input v-model="form.downloadUrl" placeholder="请输入内容" maxlength="5000" show-word-limit>
           </el-input>
         </el-form-item>
         <el-form-item label="下载地址（直链）" prop="downloadUrlDirect">
-          <el-input v-model="form.downloadUrlDirect" placeholder="请输入内容">
+          <el-input v-model="form.downloadUrlDirect" placeholder="请输入内容" maxlength="5000" show-word-limit>
           </el-input>
         </el-form-item>
         <el-form-item>
@@ -375,7 +377,7 @@
           <el-col :span="12"></el-col>
         </el-form-item>
         <el-form-item label="软件MD5" prop="md5">
-          <el-input v-model="form.md5" placeholder="请输入软件MD5" />
+          <el-input v-model="form.md5" placeholder="请输入软件MD5" maxlength="500" show-word-limit/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input

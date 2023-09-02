@@ -585,13 +585,13 @@
           </el-form-item>
         </div>
         <el-form-item label="卡密名称" prop="cardName" label-width="80px">
-          <el-input v-model="form.cardName" placeholder="请输入卡密名称" />
+          <el-input v-model="form.cardName" placeholder="请输入卡密名称" maxlength="50" show-word-limit/>
         </el-form-item>
         <el-form-item label="充值卡号" prop="cardNo" label-width="80px">
-          <el-input v-model="form.cardNo" placeholder="请输入卡号" />
+          <el-input v-model="form.cardNo" placeholder="请输入卡号" maxlength="100" show-word-limit/>
         </el-form-item>
         <el-form-item label="充值密码" prop="cardPass" label-width="80px">
-          <el-input v-model="form.cardPass" placeholder="请输入密码" />
+          <el-input v-model="form.cardPass" placeholder="请输入密码" maxlength="100" show-word-limit/>
         </el-form-item>
         <el-form-item prop="">
           <el-col :span="12">
@@ -820,6 +820,7 @@
             v-model="form.cardCustomParams"
             placeholder="请输入内容"
             type="textarea"
+             maxlength="2000" show-word-limit
           />
         </el-form-item>
         <el-form-item label="备注" prop="remark">

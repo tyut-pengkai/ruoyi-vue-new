@@ -562,10 +562,10 @@
           </el-form-item>
         </div>
         <el-form-item label="单码名称" label-width="80px" prop="cardName">
-          <el-input v-model="form.cardName" placeholder="请输入单码名称"/>
+          <el-input v-model="form.cardName" placeholder="请输入单码名称" maxlength="50" show-word-limit/>
         </el-form-item>
         <el-form-item label="单码内容" label-width="80px" prop="cardNo">
-          <el-input v-model="form.cardNo" placeholder="请输入单码"/>
+          <el-input v-model="form.cardNo" placeholder="请输入单码" maxlength="100" show-word-limit/>
         </el-form-item>
         <el-form-item prop="">
           <el-col :span="12">
@@ -772,6 +772,7 @@
             v-model="form.cardCustomParams"
             placeholder="请输入内容"
             type="textarea"
+             maxlength="2000" show-word-limit
           />
         </el-form-item>
         <el-form-item label="备注" prop="remark">

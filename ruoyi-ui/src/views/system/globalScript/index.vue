@@ -255,7 +255,7 @@
               prop="name"
               style="width: 300px"
             >
-              <el-input v-model="form.name" placeholder="请输入脚本名称" />
+              <el-input v-model="form.name" placeholder="请输入脚本名称"  maxlength="30" show-word-limit/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -287,6 +287,7 @@
             v-model="form.description"
             placeholder="请输入内容"
             type="textarea"
+             maxlength="500" show-word-limit
           />
         </el-form-item>
         <el-form-item prop="">

@@ -464,7 +464,7 @@
           <!-- 基本配置 -->
           <el-tab-pane label="基本信息">
             <el-form-item label="软件名称" prop="appName">
-              <el-input v-model="form.appName" placeholder="请输入软件名称" />
+              <el-input v-model="form.appName" placeholder="请输入软件名称" maxlength="30" show-word-limit/>
             </el-form-item>
             <el-form-item>
               <el-alert v-show="!form.appId" title="注：如需快速接入APK请选择：[认证类型]单码登录、[计费类型]计时模式" type="info" :closable="false" style="padding: 0 5px;margin-bottom:5px"></el-alert>
@@ -506,6 +506,8 @@
                 v-model="form.description"
                 type="textarea"
                 placeholder="请输入软件描述"
+                maxlength="500"
+                show-word-limit
               />
             </el-form-item>
             <el-divider></el-divider>
@@ -589,12 +591,14 @@
                 </el-col>
               </el-form-item>
               <el-form-item label="软件主页" prop="idxUrl">
-                <el-input v-model="form.idxUrl" placeholder="请输入软件主页"/>
+                <el-input v-model="form.idxUrl" placeholder="请输入软件主页" maxlength="100" show-word-limit/>
               </el-form-item>
               <el-form-item label="购卡地址" prop="idxUrl">
                 <el-input
                   v-model="form.customBuyUrl"
                   placeholder="请输入购卡地址"
+                  maxlength="100"
+                  show-word-limit
                 />
               </el-form-item>
               <!-- <el-form-item label="软件图标">
@@ -606,6 +610,8 @@
                   v-model="form.welcomeNotice"
                   placeholder="请输入内容"
                   type="textarea"
+                  maxlength="500"
+                  show-word-limit
                 />
               </el-form-item>
               <el-form-item label="停机公告" prop="offNotice">
@@ -613,6 +619,8 @@
                   v-model="form.offNotice"
                   placeholder="请输入内容"
                   type="textarea"
+                  maxlength="500"
+                  show-word-limit
                 />
               </el-form-item>
               <el-form-item label="备注" prop="remark">
@@ -668,6 +676,8 @@
                     v-model="form.dataInPwd"
                     placeholder="请输入加密密码"
                     :disabled="form.dataInEnc === '0' || form.dataInEnc === '1'"
+                     maxlength="20"
+                     show-word-limit
                   />
                 </el-form-item>
               </el-col>
@@ -696,6 +706,8 @@
                     :disabled="
                       form.dataOutEnc === '0' || form.dataOutEnc === '1'
                     "
+                     maxlength="20"
+                     show-word-limit
                   />
                 </el-form-item>
               </el-col>
@@ -743,7 +755,7 @@
               </el-col>
             </el-form-item>
             <el-form-item label="API匿名密码" prop="apiPwd">
-              <el-input v-model="form.apiPwd" placeholder="请输入API匿名密码"/>
+              <el-input v-model="form.apiPwd" placeholder="请输入API匿名密码" maxlength="20" show-word-limit/>
             </el-form-item>
           </el-tab-pane>
           <!-- 绑定设置 -->
@@ -751,6 +763,22 @@
             <el-form-item>
               <el-col :span="12">
                 <el-form-item label="绑定模式" prop="bindType">
+                  <span>
+                    <el-tooltip
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                      <div slot="content">
+                        不绑定/无限制：卡密和设备可随意更换，没有任何限制。<br/>
+                        用户与设备一对一绑定：卡密和设备都不能更换。<br/>
+                        一用户可绑定多个设备：同一卡密可更换设备，但设备不能更换卡密。<br/>
+                        多用户可绑定同一设备【推荐：大多数人的需求】：同一设备可更换卡密，但卡密不能更换设备。
+                      </div>
+                    </el-tooltip>
+                  </span>
                   <el-select
                     v-model="form.bindType"
                     placeholder="请选择绑定模式"
@@ -1533,7 +1561,7 @@ export default {
         description: undefined,
         apiUrl: undefined,
         status: "0",
-        bindType: "0",
+        bindType: "3",
         isCharge: "Y",
         idxUrl: undefined,
         freeQuotaReg: 0,

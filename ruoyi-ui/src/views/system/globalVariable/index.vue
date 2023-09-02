@@ -184,13 +184,14 @@
     <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
       <el-form ref="form" :model="form" :rules="rules">
         <el-form-item label="变量名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入变量名" />
+          <el-input v-model="form.name" placeholder="请输入变量名" maxlength="30" show-word-limit/>
         </el-form-item>
         <el-form-item label="变量值" prop="value">
           <el-input
             v-model="form.value"
             placeholder="请输入内容"
             type="textarea"
+             maxlength="500" show-word-limit
           />
         </el-form-item>
         <el-form-item label="变量描述" prop="description">
@@ -198,6 +199,7 @@
             v-model="form.description"
             placeholder="请输入内容"
             type="textarea"
+             maxlength="500" show-word-limit
           />
         </el-form-item>
         <el-form-item label="是否需要登录" prop="checkToken">

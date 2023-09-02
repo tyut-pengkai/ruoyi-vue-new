@@ -199,7 +199,7 @@
     <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
       <el-form ref="form" :model="form" :rules="rules">
         <el-form-item label="文件名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入文件名"/>
+          <el-input v-model="form.name" placeholder="请输入文件名" maxlength="350" show-word-limit/>
         </el-form-item>
         <!-- <el-form-item label="文件路径" prop="value">
           <el-input v-model="form.value" type="textarea" placeholder="请输入内容" />
@@ -209,6 +209,7 @@
             v-model="form.description"
             placeholder="请输入内容"
             type="textarea"
+             maxlength="500" show-word-limit
           />
         </el-form-item>
         <el-form-item label="是否需要登录" prop="checkToken">
