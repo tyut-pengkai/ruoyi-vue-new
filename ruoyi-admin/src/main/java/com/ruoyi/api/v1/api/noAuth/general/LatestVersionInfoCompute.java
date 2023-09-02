@@ -40,7 +40,7 @@ public class LatestVersionInfoCompute extends Function {
         long appVer = Long.parseLong(getParams().get("appVer"));
         SysAppVersion sysAppVersion = appVersionService.selectLatestVersionByAppId(getApp().getAppId());
         SysAppVersion sysAppVersionForceUpdate = appVersionService.selectLatestVersionForceUpdateByAppId(getApp().getAppId());
-        if(sysAppVersionForceUpdate.getVersionNo() > appVer) {
+        if(sysAppVersionForceUpdate != null && sysAppVersionForceUpdate.getVersionNo() > appVer) {
             sysAppVersion.setForceUpdate(UserConstants.YES);
         }
         return new SysAppVersionVo(sysAppVersion);
