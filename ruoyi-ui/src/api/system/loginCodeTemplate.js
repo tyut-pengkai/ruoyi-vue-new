@@ -35,6 +35,15 @@ export function addLoginCodeTemplate(data) {
   })
 }
 
+// 新增单码类别
+export function addLoginCodeTemplateRapid(data) {
+  return request({
+    url: '/system/loginCodeTemplate/addRapid',
+    method: 'post',
+    data: data
+  })
+}
+
 // 修改单码类别
 export function updateLoginCodeTemplate(data) {
   return request({

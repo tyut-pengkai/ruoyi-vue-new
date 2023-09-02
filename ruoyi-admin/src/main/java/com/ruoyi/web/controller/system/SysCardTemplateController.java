@@ -1,20 +1,25 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.enums.ChargeRule;
 import com.ruoyi.common.enums.GenRule;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.service.ISysCardTemplateService;
 import com.ruoyi.utils.poi.ExcelUtil;
+import com.ruoyi.web.vo.AddTemplateRapidInnerVo;
+import com.ruoyi.web.vo.AddTemplateRapidVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,8 +31,10 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/system/cardTemplate")
-public class SysCardTemplateController extends BaseController
-{
+public class SysCardTemplateController extends BaseController {
+
+    static Long DAY = 86400L; // 86400秒为一天
+
     @Autowired
     private ISysCardTemplateService sysCardTemplateService;
 
@@ -126,5 +133,73 @@ public class SysCardTemplateController extends BaseController
     public AjaxResult remove(@PathVariable Long[] templateIds)
     {
         return toAjax(sysCardTemplateService.deleteSysCardTemplateByTemplateIds(templateIds));
+    }
+
+    /**
+     * 快速新增卡密模板
+     */
+    @PreAuthorize("@ss.hasPermi('system:cardTemplate:add')")
+    @Log(title = "卡密模板", businessType = BusinessType.INSERT)
+    @PostMapping("/addRapid")
+    public AjaxResult addRapid(@RequestBody @Valid AddTemplateRapidVo vo) {
+        List<AddTemplateRapidInnerVo> templateList = vo.getTemplateSelectionList();
+        for (AddTemplateRapidInnerVo t : templateList) {
+            SysCardTemplate template = sysCardTemplateService.selectSysCardTemplateByAppIdAndTemplateName(vo.getAppId(), t.getName());
+            if(template != null) {
+                continue;
+            }
+            SysCardTemplate sysCardTemplate = new SysCardTemplate();
+            sysCardTemplate.setCreateBy(getUsername());
+            sysCardTemplate.setAppId(vo.getAppId());
+            sysCardTemplate.setCardNoLen(20);
+            sysCardTemplate.setCardNoGenRule(GenRule.NUM_UPPERCASE_LOWERCASE);
+            sysCardTemplate.setCardPassLen(20);
+            sysCardTemplate.setCardPassGenRule(GenRule.NUM_UPPERCASE_LOWERCASE);
+            sysCardTemplate.setChargeRule(ChargeRule.NONE);
+            sysCardTemplate.setOnSale(UserConstants.YES);
+            sysCardTemplate.setFirstStock(UserConstants.YES);
+            sysCardTemplate.setEffectiveDuration(-1L);
+            sysCardTemplate.setStatus(UserConstants.NORMAL);
+            sysCardTemplate.setEnableAutoGen(UserConstants.NO);
+            sysCardTemplate.setCardLoginLimitU(-2);
+            sysCardTemplate.setCardLoginLimitM(-2);
+            sysCardTemplate.setEnableUnbind(UserConstants.YES);
+            sysCardTemplate.setCardName(t.getName());
+            sysCardTemplate.setPrice(t.getPrice());
+            sysCardTemplate.setRemark(t.getRemark());
+            switch(t.getId()) {
+                case 1:
+                    sysCardTemplate.setQuota(DAY);
+                    sysCardTemplate.setCardNoPrefix("TK");
+                    break;
+                case 2:
+                    sysCardTemplate.setQuota(DAY*7);
+                    sysCardTemplate.setCardNoPrefix("ZK");
+                    break;
+                case 3:
+                    sysCardTemplate.setQuota(DAY*30);
+                    sysCardTemplate.setCardNoPrefix("YK");
+                    break;
+                case 4:
+                    sysCardTemplate.setQuota(DAY*90);
+                    sysCardTemplate.setCardNoPrefix("JK");
+                    break;
+                case 5:
+                    sysCardTemplate.setQuota(DAY*180);
+                    sysCardTemplate.setCardNoPrefix("BN");
+                    break;
+                case 6:
+                    sysCardTemplate.setQuota(DAY*365);
+                    sysCardTemplate.setCardNoPrefix("NK");
+                    break;
+                case 7:
+                    sysCardTemplate.setQuota(DAY*365*10);
+                    sysCardTemplate.setCardNoPrefix("YJ");
+                    break;
+                default: continue;
+            }
+            sysCardTemplateService.insertSysCardTemplate(sysCardTemplate);
+        }
+        return AjaxResult.success();
     }
 }

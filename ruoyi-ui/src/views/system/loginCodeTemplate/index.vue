@@ -213,6 +213,17 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
+          type="primary"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAddRapid"
+          v-hasPermi="['system:cardTemplate:add']"
+          >快速新增</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
           type="success"
           plain
           icon="el-icon-edit"
@@ -697,6 +708,7 @@
                   v-model="form.cardNoRegex"
                   placeholder="请输入单码正则"
                   :disabled="form.cardNoGenRule !== '7'"
+                  maxlength="50" show-word-limit
                 />
               </el-form-item>
             </el-col>
@@ -846,6 +858,97 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 快速添加类别管理对话框 -->
+    <el-dialog
+      title="快速新增"
+      :visible.sync="openRapid"
+      width="800px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
+        <el-alert
+        style="margin-bottom: 20px;"
+        title="勾选要创建的类别，点击确定即可快速创建对应类别，如果软件下已存在同名类别，将跳过该类别不做处理"
+        type="info"
+        show-icon
+        :closable="false">
+      </el-alert>
+      <el-form ref="formRapid" :model="formRapid" :rules="rulesRapid">
+        <!-- 新增 -->
+        <el-form-item prop="">
+          <el-col :span="12">
+            <el-form-item label="所属软件" prop="appId">
+              <el-select
+                v-model="formRapid.appId"
+                filterable
+                placeholder="请选择"
+                prop="appId"
+                @change="changeSelectedApp"
+              >
+                <el-option
+                  v-for="item in appList"
+                  :key="item.appId"
+                  :label="'[' +
+                    (item.authType == '0' ? '账号' : '单码') +
+                    (item.billType == '0' ? '计时' : '计点') +
+                    '] ' +
+                    item.appName
+                    "
+                  :value="item.appId"
+                  :disabled="item.disabled"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="计费类型" prop="billType">
+              <div v-if="app">
+                <dict-tag
+                  :options="dict.type.sys_bill_type"
+                  :value="app.billType"
+                />
+              </div>
+              <div v-else>请先选择软件</div>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-table ref="templateTable" :data="candidateTemplateList" tooltip-effect="dark" style="width: 100%" max-height="300"
+            :header-row-style="{ height: '30px' }" :header-cell-style="{ background: '#f5f7fa', padding: '0px' }"
+            :row-style="{ height: '30px' }" :cell-style="{ padding: '0px' }" size='mini' border height="300"
+            @selection-change="handleTemplateSelectionChange">
+            <el-table-column type="selection" width="40" fixed> </el-table-column>
+            <el-table-column label="单码类别" width="180" fixed show-overflow-tooltip>
+              <template slot-scope="scope">
+                {{ scope.row.title }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="remark" label="自定义名称" width="180">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.name" placeholder="请输入内容" style="width: 158px;" size="mini" maxlength="50" show-word-limit/>
+                </template>
+              </el-table-column>
+            <el-table-column prop="price" label="零售价格" width="150">
+              <template slot-scope="scope">
+                <el-input-number v-model="scope.row.price" :min="0" :precision="2" :step="0.01"
+                  controls-position="right" style="width: 120px" placeholder="零售价格" size="mini" />
+                <!-- <span>元</span> -->
+              </template>
+            </el-table-column>
+            <el-table-column prop="remark" label="备注信息" width="180">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.remark" placeholder="请输入内容" style="width: 158px;" size="mini" />
+              </template>
+            </el-table-column>
+          </el-table>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFormRapid">确 定</el-button>
+        <el-button @click="cancelRapid">取 消</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -856,6 +959,7 @@ import {
   getLoginCodeTemplate,
   listLoginCodeTemplate,
   updateLoginCodeTemplate,
+  addLoginCodeTemplateRapid,
 } from "@/api/system/loginCodeTemplate";
 import {getApp, listAppAll} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
@@ -890,6 +994,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      openRapid: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -963,6 +1068,56 @@ export default {
           },
         ],
       },
+      rulesRapid: {
+        appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
+      },
+      // TemplateRapid
+      formRapid: {},
+      templateSelectionList: [],
+      candidateTemplateList: [{
+        'id': 1,
+        'title': '日卡(1天)',
+        'name': '日卡(1天)',
+        'price': 10,
+        'remark': '',
+      },
+      {
+        'id': 2,
+        'title': '周卡(7天)',
+        'name': '周卡(7天)',
+        'price': 70,
+        'remark': '',
+      }, {
+        'id': 3,
+        'title': '月卡(30天)',
+        'name': '月卡(30天)',
+        'price': 300,
+        'remark': '',
+      }, {
+        'id': 4,
+        'title': '季卡(90天)',
+        'name': '季卡(90天)',
+        'price': 900,
+        'remark': '',
+      }, {
+        'id': 5,
+        'title': '半年卡(180天)',
+        'name': '半年卡(180天)',
+        'price': 1800,
+        'remark': '',
+      }, {
+        'id': 6,
+        'title': '年卡(365天)',
+        'name': '年卡(365天)',
+        'price': 3650,
+        'remark': '',
+      }, {
+        'id': 7,
+        'title': '永久卡(3650天)',
+        'name': '永久卡(3650天)',
+        'price': 36500,
+        'remark': '',
+      }],
     };
   },
   created() {
@@ -1002,6 +1157,10 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
+    },
+    cancelRapid() {
+      this.openRapid = false;
+      this.templateSelectionList = [];
     },
     // 表单重置
     reset() {
@@ -1054,6 +1213,14 @@ export default {
       this.open = true;
       this.title = "添加单码类别";
     },
+    /** 快速新增按钮操作 */
+    handleAddRapid() {
+      this.templateSelectionList = [];
+      if (this.app) {
+        this.form.appId = this.app.appId;
+      }
+      this.openRapid = true;
+    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
@@ -1084,6 +1251,20 @@ export default {
               this.getList();
             });
           }
+        }
+      });
+    },
+    /** 快速新增提交按钮 */
+    submitFormRapid() {
+      this.$refs["formRapid"].validate((valid) => {
+        if (valid) {
+          this.formRapid.appId = this.app.appId;
+          this.formRapid.templateSelectionList = this.templateSelectionList;
+          addLoginCodeTemplateRapid(this.formRapid).then((response) => {
+            this.$modal.msgSuccess("新增成功");
+            this.open = false;
+            this.getList();
+          });
         }
       });
     },
@@ -1149,6 +1330,9 @@ export default {
       this.app = this.appMap[appId];
       this.getList();
       this.loading = false;
+    },
+    handleTemplateSelectionChange(val) {
+      this.templateSelectionList = val;
     },
   },
 };

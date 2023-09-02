@@ -35,6 +35,15 @@ export function addCardTemplate(data) {
   })
 }
 
+// 新增卡密模板
+export function addCardTemplateRapid(data) {
+  return request({
+    url: '/system/cardTemplate/addRapid',
+    method: 'post',
+    data: data
+  })
+}
+
 // 修改卡密模板
 export function updateCardTemplate(data) {
   return request({

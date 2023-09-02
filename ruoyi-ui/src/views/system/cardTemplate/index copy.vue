@@ -478,7 +478,7 @@
           </el-form-item>
         </div>
         <el-form-item label="卡类名称" label-width="80px" prop="cardName">
-          <el-input v-model="form.cardName" placeholder="请输入卡名称" maxlength="50" show-word-limit/>
+          <el-input v-model="form.cardName" placeholder="请输入卡名称" />
         </el-form-item>
         <el-form-item>
           <div v-if="form.templateId == null">
@@ -556,7 +556,6 @@
             v-model="form.cardDescription"
             type="textarea"
             placeholder="请输入内容"
-             maxlength="500" show-word-limit
           />
         </el-form-item>
         <el-divider></el-divider>
@@ -617,7 +616,6 @@
                 <el-input
                   v-model="form.cardNoPrefix"
                   placeholder="请输入卡号前缀"
-                   maxlength="10" show-word-limit
                 />
               </el-form-item>
             </el-col>
@@ -631,7 +629,6 @@
                 <el-input
                   v-model="form.cardNoSuffix"
                   placeholder="请输入卡号后缀"
-                   maxlength="10" show-word-limit
                 />
               </el-form-item>
             </el-col>
@@ -693,7 +690,6 @@
                   v-model="form.cardNoRegex"
                   placeholder="请输入卡号正则"
                   :disabled="form.cardNoGenRule !== '7'"
-                   maxlength="50" show-word-limit
                 />
               </el-form-item>
             </el-col>
@@ -725,7 +721,6 @@
                   v-model="form.cardPassRegex"
                   placeholder="请输入密码正则"
                   :disabled="form.cardPassGenRule !== '7'"
-                   maxlength="50" show-word-limit
                 />
               </el-form-item>
             </el-col>
@@ -853,7 +848,6 @@
               v-model="form.cardCustomParams"
               placeholder="请输入内容"
               type="textarea"
-               maxlength="2000" show-word-limit
             />
           </el-form-item>
           <el-form-item label="备注" prop="remark">
@@ -908,7 +902,7 @@
       >
          <el-alert
           style="margin-bottom: 20px;"
-          title="勾选要创建的卡类，点击确定即可快速创建对应卡类，如果软件下已存在同名卡类，将跳过该卡类不做处理"
+          title="如果软件下已存在同名类型，将跳过该类不做处理"
           type="info"
           show-icon
           :closable="false">
@@ -953,34 +947,13 @@
               </el-form-item>
             </el-col>
           </el-form-item>
-          <el-table ref="templateTable" :data="candidateTemplateList" tooltip-effect="dark" style="width: 100%" max-height="300"
-              :header-row-style="{ height: '30px' }" :header-cell-style="{ background: '#f5f7fa', padding: '0px' }"
-              :row-style="{ height: '30px' }" :cell-style="{ padding: '0px' }" size='mini' border height="300"
-              @selection-change="handleTemplateSelectionChange">
-              <el-table-column type="selection" width="40" fixed> </el-table-column>
-              <el-table-column label="卡密类别" width="180" fixed show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{scope.row.title}}
-                </template>
-              </el-table-column>
-              <el-table-column prop="remark" label="自定义名称" width="180">
-                  <template slot-scope="scope">
-                    <el-input v-model="scope.row.name" placeholder="请输入内容" style="width: 158px;" size="mini" maxlength="50" show-word-limit/>
-                  </template>
-                </el-table-column>
-              <el-table-column prop="price" label="零售价格" width="150">
-                <template slot-scope="scope">
-                  <el-input-number v-model="scope.row.price" :min="0" :precision="2" :step="0.01"
-                    controls-position="right" style="width: 120px" placeholder="零售价格" size="mini" />
-                  <!-- <span>元</span> -->
-                </template>
-              </el-table-column>
-              <el-table-column prop="remark" label="备注信息" width="180">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.remark" placeholder="请输入内容" style="width: 158px;" size="mini" />
-                </template>
-              </el-table-column>
-            </el-table>
+          <el-form-item prop="">
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+            <div style="margin: 15px 0;"></div>
+            <el-checkbox-group v-model="checkedCandidateTemplates" @change="handleCheckedCandidateTemplatesChange">
+              <el-checkbox v-for="template in candidateTemplates" :label="template" :key="template">{{ template }}</el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="submitFormRapid">确 定</el-button>
@@ -1006,6 +979,7 @@ import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
 import {parseMoney, parseSeconds, parseUnit} from "@/utils/my";
 
+const candidateTemplateOptions = ['日卡(1天)', '周卡(7天)', '月卡(30天)', '季卡(90天)', '半年卡(180天)', '年卡(365天)', '永久卡(3650天)'];
 export default {
   name: "CardTemplate",
   dicts: [
@@ -1142,53 +1116,12 @@ export default {
       rulesRapid: {
         appId: [{ required: true, message: "软件不能为空", trigger: "blur" }],
       },
-      // TemplateRapid
+      // candidateTemplate
       formRapid: {},
-      templateSelectionList: [],
-      candidateTemplateList: [{
-        'id': 1,
-        'title': '日卡(1天)',
-        'name':  '日卡(1天)',
-        'price': 10,
-        'remark': '',
-      },
-      {
-        'id': 2,
-        'title': '周卡(7天)',
-        'name': '周卡(7天)',
-        'price': 70,
-        'remark': '',
-      }, {
-        'id': 3,
-        'title': '月卡(30天)',
-        'name': '月卡(30天)',
-        'price': 300,
-        'remark': '',
-      }, {
-        'id': 4,
-        'title': '季卡(90天)',
-        'name': '季卡(90天)',
-        'price': 900,
-        'remark': '',
-      }, {
-        'id': 5,
-        'title': '半年卡(180天)',
-        'name': '半年卡(180天)',
-        'price': 1800,
-        'remark': '',
-      }, {
-        'id': 6,
-        'title': '年卡(365天)',
-        'name': '年卡(365天)',
-        'price': 3650,
-        'remark': '',
-      }, {
-        'id': 7,
-        'title': '永久卡(3650天)',
-        'name': '永久卡(3650天)',
-        'price': 36500,
-        'remark': '',
-      }],
+      checkAll: false,
+      checkedCandidateTemplates: [],
+      candidateTemplates: candidateTemplateOptions,
+      isIndeterminate: false,
     };
   },
   created() {
@@ -1231,7 +1164,7 @@ export default {
     },
     cancelRapid() {
       this.openRapid = false;
-      this.templateSelectionList = [];
+      this.checkedCandidateTemplates = [];
     },
     // 表单重置
     reset() {
@@ -1290,7 +1223,7 @@ export default {
     },
     /** 快速新增按钮操作 */
     handleAddRapid() {
-      this.templateSelectionList = [];
+      this.checkedCandidateTemplates = [];
       if (this.app) {
         this.form.appId = this.app.appId;
       }
@@ -1334,7 +1267,7 @@ export default {
       this.$refs["formRapid"].validate((valid) => {
         if (valid) {
           this.formRapid.appId = this.app.appId;
-          this.formRapid.templateSelectionList = this.templateSelectionList;
+          this.formRapid.checkedTemplateList = this.checkedCandidateTemplates;
           addCardTemplateRapid(this.formRapid).then((response) => {
             this.$modal.msgSuccess("新增成功");
             this.open = false;
@@ -1411,9 +1344,15 @@ export default {
       this.getList();
       this.loading = false;
     },
-    handleTemplateSelectionChange(val) {
-      this.templateSelectionList = val;
+    handleCheckAllChange(val) {
+      this.checkedCandidateTemplates = val ? candidateTemplateOptions : [];
+      this.isIndeterminate = false;
     },
+    handleCheckedCandidateTemplatesChange(value) {
+      let checkedCount = value.length;
+      this.checkAll = checkedCount === this.candidateTemplates.length;
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.candidateTemplates.length;
+    }
   },
 };
 </script>

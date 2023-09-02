@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -11,11 +12,14 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
 import com.ruoyi.system.service.ISysLoginCodeTemplateService;
 import com.ruoyi.utils.poi.ExcelUtil;
+import com.ruoyi.web.vo.AddTemplateRapidInnerVo;
+import com.ruoyi.web.vo.AddTemplateRapidVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,6 +32,9 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/system/loginCodeTemplate")
 public class SysLoginCodeTemplateController extends BaseController {
+
+    static Long DAY = 86400L; // 86400秒为一天
+
     @Autowired
     private ISysLoginCodeTemplateService sysLoginCodeTemplateService;
 
@@ -117,5 +124,73 @@ public class SysLoginCodeTemplateController extends BaseController {
     @DeleteMapping("/{templateIds}")
     public AjaxResult remove(@PathVariable Long[] templateIds) {
         return toAjax(sysLoginCodeTemplateService.deleteSysLoginCodeTemplateByTemplateIds(templateIds));
+    }
+
+    /**
+     * 快速新增卡密模板
+     */
+    @PreAuthorize("@ss.hasPermi('system:loginCodeTemplate:add')")
+    @Log(title = "单码类别", businessType = BusinessType.INSERT)
+    @PostMapping("/addRapid")
+    public AjaxResult addRapid(@RequestBody @Valid AddTemplateRapidVo vo) {
+        List<AddTemplateRapidInnerVo> templateList = vo.getTemplateSelectionList();
+        for (AddTemplateRapidInnerVo t : templateList) {
+            SysLoginCodeTemplate template = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByAppIdAndTemplateName(vo.getAppId(), t.getName());
+            if(template != null) {
+                continue;
+            }
+            SysLoginCodeTemplate sysLoginCodeTemplate = new SysLoginCodeTemplate();
+            sysLoginCodeTemplate.setCreateBy(getUsername());
+            sysLoginCodeTemplate.setAppId(vo.getAppId());
+            sysLoginCodeTemplate.setCardNoLen(20);
+            sysLoginCodeTemplate.setCardNoGenRule(GenRule.NUM_UPPERCASE_LOWERCASE);
+//            sysLoginCodeTemplate.setCardPassLen(20);
+//            sysLoginCodeTemplate.setCardPassGenRule(GenRule.NUM_UPPERCASE_LOWERCASE);
+//            sysLoginCodeTemplate.setChargeRule(ChargeRule.NONE);
+            sysLoginCodeTemplate.setOnSale(UserConstants.YES);
+            sysLoginCodeTemplate.setFirstStock(UserConstants.YES);
+            sysLoginCodeTemplate.setEffectiveDuration(-1L);
+            sysLoginCodeTemplate.setStatus(UserConstants.NORMAL);
+            sysLoginCodeTemplate.setEnableAutoGen(UserConstants.NO);
+            sysLoginCodeTemplate.setCardLoginLimitU(-2);
+            sysLoginCodeTemplate.setCardLoginLimitM(-2);
+            sysLoginCodeTemplate.setEnableUnbind(UserConstants.YES);
+            sysLoginCodeTemplate.setCardName(t.getName());
+            sysLoginCodeTemplate.setPrice(t.getPrice());
+            sysLoginCodeTemplate.setRemark(t.getRemark());
+            switch(t.getId()) {
+                case 1:
+                    sysLoginCodeTemplate.setQuota(DAY);
+                    sysLoginCodeTemplate.setCardNoPrefix("TK");
+                    break;
+                case 2:
+                    sysLoginCodeTemplate.setQuota(DAY*7);
+                    sysLoginCodeTemplate.setCardNoPrefix("ZK");
+                    break;
+                case 3:
+                    sysLoginCodeTemplate.setQuota(DAY*30);
+                    sysLoginCodeTemplate.setCardNoPrefix("YK");
+                    break;
+                case 4:
+                    sysLoginCodeTemplate.setQuota(DAY*90);
+                    sysLoginCodeTemplate.setCardNoPrefix("JK");
+                    break;
+                case 5:
+                    sysLoginCodeTemplate.setQuota(DAY*180);
+                    sysLoginCodeTemplate.setCardNoPrefix("BN");
+                    break;
+                case 6:
+                    sysLoginCodeTemplate.setQuota(DAY*365);
+                    sysLoginCodeTemplate.setCardNoPrefix("NK");
+                    break;
+                case 7:
+                    sysLoginCodeTemplate.setQuota(DAY*365*10);
+                    sysLoginCodeTemplate.setCardNoPrefix("YJ");
+                    break;
+                default: continue;
+            }
+            sysLoginCodeTemplateService.insertSysLoginCodeTemplate(sysLoginCodeTemplate);
+        }
+        return AjaxResult.success();
     }
 }
