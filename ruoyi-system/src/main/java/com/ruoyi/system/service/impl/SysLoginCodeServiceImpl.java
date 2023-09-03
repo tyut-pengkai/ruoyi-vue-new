@@ -25,10 +25,7 @@ import javax.validation.Validator;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 单码Service业务层处理
@@ -118,7 +115,7 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     public int updateSysLoginCode(SysLoginCode sysLoginCode) {
         sysLoginCode.setUpdateTime(DateUtils.getNowDate());
         SysLoginCode loginCode = selectSysLoginCodeByCardNo(sysLoginCode.getCardNo());
-        if(loginCode != null) {
+        if(loginCode != null && !Objects.equals(loginCode.getCardId(), sysLoginCode.getCardId())) {
             throw new ServiceException("单码不可重复，此单码已存在");
         }
         return sysLoginCodeMapper.updateSysLoginCode(sysLoginCode);

@@ -25,10 +25,7 @@ import javax.annotation.Resource;
 import javax.validation.Validator;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 卡密Service业务层处理
@@ -120,9 +117,12 @@ public class SysCardServiceImpl implements ISysCardService {
      * @return 结果
      */
     @Override
-    public int updateSysCard(SysCard sysCard)
-    {
+    public int updateSysCard(SysCard sysCard) {
         sysCard.setUpdateTime(DateUtils.getNowDate());
+        SysCard card = selectSysCardByCardNo(sysCard.getCardNo());
+        if(card != null && !Objects.equals(card.getCardId(), sysCard.getCardId())) {
+            throw new ServiceException("卡号不可重复，此卡号已存在");
+        }
         return sysCardMapper.updateSysCard(sysCard);
     }
 
