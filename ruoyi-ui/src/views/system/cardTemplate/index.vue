@@ -953,7 +953,7 @@
               </el-form-item>
             </el-col>
           </el-form-item>
-          <el-table ref="templateTable" :data="candidateTemplateList" tooltip-effect="dark" style="width: 100%" max-height="300"
+          <el-table ref="templateTable" :data="candidateTemplateListCompute" tooltip-effect="dark" style="width: 100%" max-height="300"
               :header-row-style="{ height: '30px' }" :header-cell-style="{ background: '#f5f7fa', padding: '0px' }"
               :row-style="{ height: '30px' }" :cell-style="{ padding: '0px' }" size='mini' border height="300"
               @selection-change="handleTemplateSelectionChange">
@@ -1337,7 +1337,7 @@ export default {
           this.formRapid.templateSelectionList = this.templateSelectionList;
           addCardTemplateRapid(this.formRapid).then((response) => {
             this.$modal.msgSuccess("新增成功");
-            this.open = false;
+            this.openRapid = false;
             this.getList();
           });
         }
@@ -1415,5 +1415,14 @@ export default {
       this.templateSelectionList = val;
     },
   },
+  computed: {
+    candidateTemplateListCompute() { 
+      if (this.app && this.app.billType === '0') { 
+        return this.candidateTemplateList;
+      } else {
+        return [];
+      }
+    }
+  }
 };
 </script>

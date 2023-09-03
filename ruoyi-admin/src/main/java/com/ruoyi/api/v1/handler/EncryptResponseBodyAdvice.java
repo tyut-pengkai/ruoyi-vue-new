@@ -43,6 +43,8 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 	private ISysAppService appService;
 	@Resource
 	private ValidUtils validUtils;
+	@Resource
+	private ObjectMapper objectMapper;
 
 	@Override
 	public boolean supports(MethodParameter methodParameter, Class<? extends HttpMessageConverter<?>> aClass) {
@@ -94,7 +96,7 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 		}
 		log.debug("对字符串开始加密!");
 		// String result = JSON.toJSONString(body);
-		String result = (new ObjectMapper()).writeValueAsString(body);
+		String result = objectMapper.writeValueAsString(body);
 		if (body instanceof String) {
 			result = (String) body;
 		}

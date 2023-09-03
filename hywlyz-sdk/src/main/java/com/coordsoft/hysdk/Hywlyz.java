@@ -28,7 +28,7 @@ public class Hywlyz extends HyUtils {
     private boolean gLog = false;
 
     public String getSdkVer() {
-        return "v1.3.0_20221215";
+        return "v1.7.0_20230903";
     }
 
     public void setShowLog(boolean showLog) {
@@ -237,10 +237,9 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult unbindDeviceNu(String deviceCode, String username, String password, boolean enableNegative) {
+    public RequestResult unbindDeviceNu(String deviceCode, String username, String password) {
         JSONObject postBody = new JSONObject();
         try {
-            postBody.put("enableNegative", enableNegative);
             postBody.put("deviceCode", deviceCode);
             postBody.put("username", username);
             postBody.put("password", password);
@@ -352,10 +351,9 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult unbindDeviceAg(boolean enableNegative) {
+    public RequestResult unbindDeviceAg() {
         JSONObject postBody = new JSONObject();
         try {
-            postBody.put("enableNegative", enableNegative);
             postBody.put("api", "unbindDevice.ag");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -432,13 +430,12 @@ public class Hywlyz extends HyUtils {
         return (requestServer(postBody, false));
     }
 
-    public RequestResult unbindDeviceNc(String deviceCode, String loginCode, boolean enableNegative) {
+    public RequestResult unbindDeviceNc(String deviceCode, String loginCode) {
         JSONObject postBody = new JSONObject();
         try {
             postBody.put("api", "unbindDevice.nc");
             postBody.put("deviceCode", deviceCode);
             postBody.put("loginCode", loginCode);
-            postBody.put("enableNegative", enableNegative);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -610,6 +607,39 @@ public class Hywlyz extends HyUtils {
             postBody.put("time1", time1);
             postBody.put("time2", time2);
             postBody.put("formatType", formatType);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (requestServer(postBody, false));
+    }
+
+    public RequestResult appUserInfoNu(String username) {
+        JSONObject postBody = new JSONObject();
+        try {
+            postBody.put("api", "appUserInfo.nu");
+            postBody.put("username", username);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (requestServer(postBody, false));
+    }
+
+    public RequestResult appUserInfoNc(String loginCode) {
+        JSONObject postBody = new JSONObject();
+        try {
+            postBody.put("api", "appUserInfo.nc");
+            postBody.put("loginCode", loginCode);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (requestServer(postBody, false));
+    }
+
+    public RequestResult latestVersionInfoComputeNg() {
+        JSONObject postBody = new JSONObject();
+        try {
+            postBody.put("api", "latestVersionInfoCompute.ng");
+            postBody.put("appVer", gVersionNo);
         } catch (JSONException e) {
             e.printStackTrace();
         }

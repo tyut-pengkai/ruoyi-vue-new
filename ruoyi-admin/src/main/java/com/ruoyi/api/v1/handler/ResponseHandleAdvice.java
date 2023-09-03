@@ -43,6 +43,8 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 
 	@Resource
 	private ISysAppService appService;
+	@Resource
+	private ObjectMapper objectMapper;
 
 	@Override
 	public boolean supports(MethodParameter returnType, @Nullable Class<? extends HttpMessageConverter<?>> aClass) {
@@ -106,7 +108,7 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 			if (returnType.getGenericParameterType().equals(String.class) || (data instanceof String && data.toString().startsWith(Constants.PREFIX_TYPE))) {
 				// 将数据包装在RestResponse里后，再转换为json字符串响应给前端
 				// return JSON.toJSONString(result);
-				return new ObjectMapper().writeValueAsString(result);
+				return objectMapper.writeValueAsString(result);
 			}
 			return result;
 		} catch (Exception e) {
@@ -126,7 +128,8 @@ public class ResponseHandleAdvice implements ResponseBodyAdvice<Object> {
 			}
 			// return JSON.toJSONString(data);
 			try {
-				return new ObjectMapper().writeValueAsString(data);
+				String value = objectMapper.writeValueAsString(data);
+				return value;
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}

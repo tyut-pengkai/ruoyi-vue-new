@@ -5,9 +5,9 @@ ruoyi:
   # 简称
   shortName: 红叶网络验证
   # 版本
-  version: v1.6.1
+  version: v1.7.0
   # 版本号
-  versionNo: 20230717210100
+  versionNo: 20230903004200
   # URL
   url: http://www.coordsoft.com
   # email
@@ -175,6 +175,9 @@ spring:
         max-active: 8
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 
 # token配置
 token:

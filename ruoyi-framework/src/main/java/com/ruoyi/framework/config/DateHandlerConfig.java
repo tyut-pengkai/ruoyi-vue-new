@@ -1,7 +1,6 @@
 package com.ruoyi.framework.config;
 
 import cn.hutool.core.date.DateUtil;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -122,7 +121,7 @@ public class DateHandlerConfig {
         // PrettyPrinter 格式化输出
         objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         // NULL不参与序列化
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        // objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         // 指定时区
         objectMapper.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
         /*
