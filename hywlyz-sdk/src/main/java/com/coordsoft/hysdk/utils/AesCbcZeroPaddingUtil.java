@@ -1,7 +1,7 @@
 package com.coordsoft.hysdk.utils;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.digest.DigestUtils;
+import com.coordsoft.commons.codec.binary.Base64;
+import com.coordsoft.commons.codec.digest.DigestUtils;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
