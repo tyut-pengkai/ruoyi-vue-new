@@ -215,7 +215,10 @@
         :show-overflow-tooltip="true"
       >
         <template slot-scope="scope">
-          {{ scope.row.app.appName }}
+          {{ '[' +
+            (scope.row.app.authType == '0' ? '账号' : '单码') +
+            (scope.row.app.billType == '0' ? '计时' : '计点') +
+            '] ' + scope.row.app.appName }}
         </template>
       </el-table-column>
       <el-table-column

@@ -266,8 +266,8 @@ public class ValidUtils {
         }
     }
 
-    public void checkAppUserIsExpired(SysApp app, SysAppUser appUser) {
-        checkAppUserIsExpired(app, appUser, false);
+    public void checkAppUserIsExpired(SysApp app, SysAppUser appUser, boolean isLoginApi) {
+        checkAppUserIsExpired(app, appUser, false, isLoginApi);
     }
 
     /**
@@ -277,14 +277,18 @@ public class ValidUtils {
      * @param appUser
      * @param checkEvenFree 是否即使软件关闭计费依然检查，否则将不检查直接通过
      */
-    public void checkAppUserIsExpired(SysApp app, SysAppUser appUser, boolean checkEvenFree) {
+    public void checkAppUserIsExpired(SysApp app, SysAppUser appUser, boolean checkEvenFree, boolean isLoginApi) {
         if (Objects.equals(app.getIsCharge(), UserConstants.YES) || checkEvenFree) {
             if (app.getBillType() == BillType.TIME) {
                 if (appUser.getExpireTime() == null || !appUser.getExpireTime().after(DateUtils.getNowDate())) {
                     throw new ApiException(ErrorCode.ERROR_APP_USER_EXPIRED);
                 }
             } else if (app.getBillType() == BillType.POINT) {
-                if (appUser.getPoint() == null || appUser.getPoint().compareTo(BigDecimal.ZERO) <= 0) {
+                BigDecimal limit = BigDecimal.valueOf(-1);
+                if(isLoginApi) {
+                    limit = BigDecimal.ZERO;
+                }
+                if (appUser.getPoint() == null || appUser.getPoint().compareTo(limit) <= 0) {
                     throw new ApiException(ErrorCode.ERROR_APP_USER_NO_POINT);
                 }
             } else {

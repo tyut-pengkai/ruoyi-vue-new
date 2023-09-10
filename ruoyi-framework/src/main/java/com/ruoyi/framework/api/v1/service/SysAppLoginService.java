@@ -170,7 +170,7 @@ public class SysAppLoginService {
             }
             synchronized (appUser.getAppUserId().toString().intern()) {
                 // 检测账号是否过期或点数不足
-                validUtils.checkAppUserIsExpired(app, appUser);
+                validUtils.checkAppUserIsExpired(app, appUser, true);
                 // 检查用户数、设备数限制
                 validUtils.checkLoginLimit(app, appUser, deviceCode);
                 try {
@@ -380,7 +380,7 @@ public class SysAppLoginService {
             }
             synchronized (appUser.getAppUserId().toString().intern()) {
                 // 检测账号是否过期或点数不足
-                validUtils.checkAppUserIsExpired(app, appUser);
+                validUtils.checkAppUserIsExpired(app, appUser, true);
                 // 检查用户数、设备数限制
                 validUtils.checkLoginLimit(app, appUser, deviceCode);
                 try {

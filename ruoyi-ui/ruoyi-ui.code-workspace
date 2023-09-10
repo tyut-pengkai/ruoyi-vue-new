@@ -4,7 +4,10 @@
 			"path": "."
 		},
 		{
-			"path": "..\\..\\..\\vscode\\vuepress-starter"
+			"path": "..\\vuepress-starter"
+		},
+		{
+			"path": "..\\..\\RuoYi-Cloud\\ruoyi-ui"
 		}
 	],
 	"settings": {}

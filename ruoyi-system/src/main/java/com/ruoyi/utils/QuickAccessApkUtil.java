@@ -377,6 +377,7 @@ public class QuickAccessApkUtil {
     public static byte[] doProcess2(String oriPath, String apv, String template, ActivityMethodVo vo) {
         try {
             ZipFile oriFile = new ZipFile(oriPath);
+            Set<String> classNameSet = new HashSet<>();
             // 输出文件
 //            String outputPath = oriPath.replace(".apk", "_injected_not_sign.apk");
             String outputPath = oriPath.replace(".tmp", "_injected_not_sign.tmp");
@@ -412,6 +413,16 @@ public class QuickAccessApkUtil {
                     targetDexName = "classes.dex";
                 } else {
                     targetDexName = "classes" + dexNameList.size() + ".dex";
+                    // 多DEX，可能存在类重复问题
+                    for (String dexName : dexNameList) {
+                        if(!dexName.equals(targetDexName)) {
+                            ZipEntry entry = oriFile.getEntry(dexName);
+                            DexBackedDexFile classes = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(entry)));
+                            for (DexBackedClassDef cl : classes.getClasses()) {
+                                classNameSet.add(cl.getType());
+                            }
+                        }
+                    }
                 }
             }
 
@@ -430,7 +441,7 @@ public class QuickAccessApkUtil {
 
             classesSet.addAll(oriClasses.getClasses());
             if (targetDexName.equals(mainDex)) {
-                classesSet.addAll(injectClasses.getClasses());
+                classesSet.addAll(injectClasses.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
             }
             List<DexBackedClassDef> classesList = new ArrayList<>(classesSet);
 
@@ -500,7 +511,7 @@ public class QuickAccessApkUtil {
 //                DexBackedDexFile oriClasses2 = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(targetDexName)))));
                 Set<DexBackedClassDef> classesSet2 = new HashSet<>();
                 classesSet2.addAll(oriClasses2.getClasses());
-                classesSet2.addAll(injectClasses.getClasses());
+                classesSet2.addAll(injectClasses.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
                 List<DexBackedClassDef> classesList2 = new ArrayList<>(classesSet2);
                 for (int i = 0; i < classesList2.size(); i++) {
                     DexBackedClassDef cl = classesList2.get(i);

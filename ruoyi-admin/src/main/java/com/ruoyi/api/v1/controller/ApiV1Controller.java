@@ -143,7 +143,7 @@ public class ApiV1Controller extends BaseController {
                     }
                     // 检查用户是否过期
                     SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(loginUser.getAppUserId());
-                    validUtils.checkAppUserIsExpired(app, appUser);
+                    validUtils.checkAppUserIsExpired(app, appUser, false);
                     // 检查用户是否被封禁
                     if (app.getAuthType() == AuthType.ACCOUNT) {
                         Long userId = loginUser.getUserId();
@@ -166,12 +166,12 @@ public class ApiV1Controller extends BaseController {
                     SysDeviceCode deviceCode = loginUser.getDeviceCode();
                     if (deviceCode != null && StringUtils.isNotBlank(deviceCode.getDeviceCode())) {
                         SysDeviceCode code = deviceCodeService.selectSysDeviceCodeByDeviceCode(deviceCode.getDeviceCode());
-                        if (UserStatus.DISABLE.getCode().equals(code.getStatus())) {
+                        if (code!= null && UserStatus.DISABLE.getCode().equals(code.getStatus())) {
                             log.debug("用户设备：{} 已被停用所有软件.", deviceCode.getDeviceCode());
                             throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCode.getDeviceCode() + " 已被停用所有软件");
                         }
                         SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(appUser.getAppUserId(), deviceCode.getDeviceCodeId());
-                        if (UserStatus.DISABLE.getCode().equals(appUserDeviceCode.getStatus())) {
+                        if (appUserDeviceCode != null && UserStatus.DISABLE.getCode().equals(appUserDeviceCode.getStatus())) {
                             log.debug("用户设备：{} 已被停用当前软件.", deviceCode.getDeviceCode());
                             throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCode.getDeviceCode() + " 已被停用当前软件");
                         }

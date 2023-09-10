@@ -232,7 +232,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="loginTimes != null">login_times = #{loginTimes},</if>
             <if test="pwdErrorTimes != null">pwd_error_times = #{pwdErrorTimes},</if>
             <if test="expireTime != null">expire_time = #{expireTime},</if>
-            <if test="point != null and point != ''">point = #{point},</if>
+            <if test="point != null">point = #{point},</if>
             <if test="loginCode != null">login_code = #{loginCode},</if>
             <!--            <if test="createBy != null">create_by = #{createBy},</if>-->
             <!--            <if test="createTime != null">create_time = #{createTime},</if>-->
