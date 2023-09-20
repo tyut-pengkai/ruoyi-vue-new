@@ -1,1 +1,5 @@
-D:\Workspaces\IdeaProjects\RuoYi-Vue\hywlyz-sdk\libs>mvn install:install-file -DgroupId=com.coordsoft -DartifactId=commons-codec -Dversion=1.11 -Dpackaging=jar -Dfile=D:\Workspaces\IdeaProjects\RuoYi-Vue\hywlyz-sdk\libs\hy.commons-codec-1.11.jar
+cd hywlyz-sdk
+
+mvn install:install-file -DgroupId='com.coordsoft' -DartifactId='commons-codec' -Dversion='1.11' -Dpackaging='jar' -Dfile='.\libs\hy.commons-codec-1.11.jar'
+
+

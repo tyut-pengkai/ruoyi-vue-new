@@ -87,9 +87,13 @@ public abstract class Payment extends BaseAutoAware {
          */
         public static String QR = "qr";
         /**
-         * 渲染页面
+         * 渲染div页面
          */
         public static String HTML = "html";
+        /**
+         * 渲染表单
+         */
+        public static String FORM = "form";
         /**
          * 跳转页面
          */
@@ -122,9 +126,13 @@ public abstract class Payment extends BaseAutoAware {
     }
 
     public String getReturnUrl(String configReturnUrl) {
+        return getReturnUrl(configReturnUrl, "/sale/shop/return/" + getCode());
+    }
+
+    public String getReturnUrl(String configReturnUrl, String defaultApi) {
         String returnUrl = "";
         if (StringUtils.isNotBlank(configReturnUrl)) {
-            returnUrl = configReturnUrl;
+            return configReturnUrl;
         } else {
             SysWebsite website = sysWebsiteService.getById(1);
             if (website != null && StringUtils.isNotBlank(website.getDomain())) {
@@ -141,7 +149,7 @@ public abstract class Payment extends BaseAutoAware {
         if (returnUrl.endsWith("/")) {
             returnUrl = returnUrl.substring(0, returnUrl.length() - 1);
         }
-        returnUrl += "/sale/shop/return/" + getCode();
+        returnUrl += defaultApi;
         return returnUrl;
     }
 

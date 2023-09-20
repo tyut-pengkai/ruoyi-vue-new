@@ -215,6 +215,15 @@ export default {
       dialogTableVisible2: false,
     };
   },
+  mounted() {
+    if (!!this.$route.query.orderNo) {
+      this.formQueryByOrderNo.orderNo = this.$route.query.orderNo;
+      console.log("带参查询", this.formQueryByOrderNo.orderNo);
+      setTimeout(() => {
+        this.queryByOrderNo();
+      }, 500);
+    }
+  },
   methods: {
     queryByOrderNo() {
       var data = {

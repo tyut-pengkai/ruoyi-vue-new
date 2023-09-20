@@ -3,11 +3,14 @@
     <el-card class="box-card" style="margin-top: 15px">
       <div class="my-title">
         <img src="../../../assets/images/category.svg"/>&nbsp;
-        <span>扫码支付</span>
+        <span v-if="showType == 'qr'">扫码支付</span>
+        <span v-else-if="showType == 'html'">H5支付</span>
+        <span v-else-if="showType == 'form'">跳转支付</span>
+        <span v-else>自定义支付</span>
       </div>
       <div align="center" style="margin-top: 20px">
         <span class="my-font"
-        >支付方式：[{{ payMode }}]，请打开APP扫码支付！有效期3分钟</span
+        >支付方式：[{{ payMode }}]，请在3分钟有效期内支付！</span
         >
         <span class="my-discount"> [ {{ remainTimeShow }} ] </span>
       </div>
@@ -16,48 +19,31 @@
       </div>
       <div align="center" style="margin-top: 20px; margin-bottom: 20px">
         <div v-if="htmlText">
-          <!-- <div v-html="htmlText"></div> -->
-          <!-- <iframe
-            :srcdoc="htmlText"
-            border="0"
-            frameborder="no"
-            height="850"
-            marginheight="0"
-            marginwidth="0"
-            scrolling="no"
-            style="overflow: hidden"
-            width="1000"
-          >
-          </iframe> -->
           <div ref="htmlText" v-html="htmlText"></div>
         </div>
+        <div v-if="form">
+          <form method="post" :action="form.url" ref="form">
+            <input v-for="(value,key,index) in form.data" :name="key" :value="value" readonly hidden>
+            <el-button type="primary" native-type="submit">点击跳转支付</el-button>
+          </form>
+        </div>
         <div v-if="qrText">
-          <div
-            style="
+          <div style="
               width: 300px;
               padding: 15px;
               border-style: solid;
               border-radius: 20px;
               border-color: #3c8ce7;
-            "
-          >
+            ">
             <div>
               应付金额：<span class="my-price">￥{{ actualFee }}</span>
             </div>
             <el-skeleton :loading="loading" animated style="width: 200px">
               <template slot="template">
-                <el-skeleton-item
-                  style="width: 200px; height: 200px"
-                  variant="image"
-                />
+                <el-skeleton-item style="width: 200px; height: 200px" variant="image"/>
               </template>
             </el-skeleton>
-            <vue-qr
-              v-if="qrText"
-              :logoSrc="logoUrl"
-              :size="200"
-              :text="qrText"
-            ></vue-qr>
+            <vue-qr v-if="qrText" :logoSrc="logoUrl" :size="200" :text="qrText"></vue-qr>
           </div>
         </div>
       </div>
@@ -80,10 +66,11 @@ export default {
       orderNo: null,
       actualFee: null,
       payMode: null,
-      htmlText: null,
+      htmlText: null,//div类的界面
+      form: null,//表单
+      qrText: null,//二维码
       showType: null,
       logoUrl: require("../../../assets/logo/logo.png"),
-      qrText: null,
       loading: true,
       remainTime: 180,
       remainTimeShow: "00:03:00",
@@ -96,6 +83,7 @@ export default {
     // this.payMode = this.$route.query && this.$route.query.payMode;
 
     var data = {orderNo: this.orderNo};
+    this.form = null;
     paySaleOrder(data)
       .then((response) => {
         if (response.code == 200) {
@@ -133,6 +121,11 @@ export default {
                 script.innerHTML = regJs;
                 this.$refs.htmlText.append(script);
               });
+            } else if (this.showType == "form") {
+              this.form = {
+                "url": data.url,
+                "data": data.data
+              }
             } else if (this.showType == "free") {
               clearInterval(this.timer);
               clearInterval(this.timerPay);
