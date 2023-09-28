@@ -33,30 +33,35 @@
 <!--            <scope>system</scope>-->
 <!--            <systemPath>${basedir}/libs/dexlib2.jar</systemPath>-->
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.coordsoft</groupId>-->
+<!--            <artifactId>dexlib2</artifactId>-->
+<!--            <version>3.8.5</version>-->
+<!--        </dependency>-->
         <!-- https://www.pangugle.com/lib/maven/view/org.smali/dexlib2.html -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.smali</groupId>-->
-        <!--            <artifactId>dexlib2</artifactId>-->
-        <!--            <version>2.5.2</version>-->
-        <!--        </dependency>-->
-        <!--        &lt;!&ndash; https://www.pangugle.com/lib/maven/view/org.smali/smali.html &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.smali</groupId>-->
-        <!--            <artifactId>smali</artifactId>-->
-        <!--            <version>2.5.2</version>-->
-        <!--        </dependency>-->
-        <!--        &lt;!&ndash; https://www.pangugle.com/lib/maven/view/org.smali/baksmali.html &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.smali</groupId>-->
-        <!--            <artifactId>baksmali</artifactId>-->
-        <!--            <version>2.5.2</version>-->
-        <!--        </dependency>-->
-        <!--        &lt;!&ndash; https://www.pangugle.com/lib/maven/view/org.smali/util.html &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.smali</groupId>-->
-        <!--            <artifactId>util</artifactId>-->
-        <!--            <version>2.5.2</version>-->
-        <!--        </dependency>-->
+<!--                <dependency>-->
+<!--                    <groupId>org.smali</groupId>-->
+<!--                    <artifactId>dexlib2</artifactId>-->
+<!--                    <version>2.5.2</version>-->
+<!--                </dependency>-->
+<!--                &lt;!&ndash; https://www.pangugle.com/lib/maven/view/org.smali/smali.html &ndash;&gt;-->
+<!--                <dependency>-->
+<!--                    <groupId>org.smali</groupId>-->
+<!--                    <artifactId>smali</artifactId>-->
+<!--                    <version>2.5.2</version>-->
+<!--                </dependency>-->
+<!--                &lt;!&ndash; https://www.pangugle.com/lib/maven/view/org.smali/baksmali.html &ndash;&gt;-->
+<!--                <dependency>-->
+<!--                    <groupId>org.smali</groupId>-->
+<!--                    <artifactId>baksmali</artifactId>-->
+<!--                    <version>2.5.2</version>-->
+<!--                </dependency>-->
+<!--                &lt;!&ndash; https://www.pangugle.com/lib/maven/view/org.smali/util.html &ndash;&gt;-->
+<!--                <dependency>-->
+<!--                    <groupId>org.smali</groupId>-->
+<!--                    <artifactId>util</artifactId>-->
+<!--                    <version>2.5.2</version>-->
+<!--                </dependency>-->
 <!--        <dependency>-->
 <!--            <groupId>org.google</groupId>-->
 <!--            <artifactId>apksigner</artifactId>-->

@@ -1,8 +1,10 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -13,8 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -60,7 +61,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
 
     /**
      * 查询软件用户列表
-     * 
+     *
      * @param sysAppUser 软件用户
      * @return 软件用户
      */
@@ -73,7 +74,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
 
     /**
      * 新增软件用户
-     * 
+     *
      * @param sysAppUser 软件用户
      * @return 结果
      */
@@ -85,7 +86,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
 
     /**
      * 修改软件用户
-     * 
+     *
      * @param sysAppUser 软件用户
      * @return 结果
      */
@@ -106,7 +107,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
 
     /**
      * 批量删除软件用户
-     * 
+     *
      * @param appUserIds 需要删除的软件用户主键
      * @return 结果
      */
@@ -120,7 +121,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
 
     /**
      * 删除软件用户信息
-     * 
+     *
      * @param appUserId 软件用户主键
      * @return 结果
      */
@@ -169,5 +170,70 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
             redisCache.setCacheObject(CacheConstants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser, 24, TimeUnit.HOURS);
         }
         return i;
+    }
+
+
+    public Map<String, Object> computeCurrentOnline(Long appUserId) {
+        Map<String, Object> result = new HashMap<>();
+        // 统计当前在线用户数
+        Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*");
+        Map<Long, Set<LoginUser>> onlineListUMap = new HashMap<>();
+        for (String key : keys) {
+            LoginUser user = redisCache.getCacheObject(key);
+            if (user != null && user.getIfApp() && !user.getIfTrial()) {
+                Long aui = user.getAppUserId();
+                if(appUserId == null || appUserId != null && appUserId == aui) {
+                    if (!onlineListUMap.containsKey(aui)) {
+                        onlineListUMap.put(aui, new HashSet<>());
+                    }
+                    onlineListUMap.get(aui).add(user);
+                }
+            }
+        }
+        result.put("u", onlineListUMap);
+        // 统计当前在线设备数
+        Map<Long, Set<Long>> onlineListMMap = new HashMap<>();
+        for (Map.Entry<Long, Set<LoginUser>> entry : onlineListUMap.entrySet()) {
+            Long aui = entry.getKey();
+            Set<LoginUser> onlineUList = entry.getValue();
+            if (!onlineListMMap.containsKey(aui)) {
+                onlineListMMap.put(aui, new HashSet<>());
+            }
+            for (LoginUser user : onlineUList) {
+                if (user.getDeviceCode() != null) {
+                    onlineListMMap.get(aui).add(user.getDeviceCode().getDeviceCodeId());
+                }
+            }
+        }
+        result.put("m", onlineListMMap);
+        return result;
+    }
+
+    public Map<String, Object> computeCurrentOnline() {
+        return computeCurrentOnline(null);
+    }
+
+    public void fillCurrentOnlineInfo(SysAppUser sau, Map<Long, Set<LoginUser>> onlineListUMap, Map<Long, Set<Long>> onlineListMMap) {
+        sau.setEffectiveLoginLimitU(MyUtils.getEffectiveLoginLimitU(sau.getApp(), sau));
+        sau.setEffectiveLoginLimitM(MyUtils.getEffectiveLoginLimitM(sau.getApp(), sau));
+        if (onlineListUMap.containsKey(sau.getAppUserId())) {
+            sau.setCurrentOnlineU(onlineListUMap.get(sau.getAppUserId()).size());
+        } else {
+            sau.setCurrentOnlineU(0);
+        }
+        if (onlineListMMap.containsKey(sau.getAppUserId())) {
+            sau.setCurrentOnlineM(onlineListMMap.get(sau.getAppUserId()).size());
+        } else {
+            sau.setCurrentOnlineM(0);
+        }
+    }
+
+    public void fillCurrentOnlineInfo(SysAppUser sau) {
+        Map<String, Object> map = computeCurrentOnline();
+        // 统计当前在线用户数
+        Map<Long, Set<LoginUser>> onlineListUMap = (Map<Long, Set<LoginUser>>) map.get("u");
+        // 统计当前在线设备数
+        Map<Long, Set<Long>> onlineListMMap = (Map<Long, Set<Long>>) map.get("m");
+        fillCurrentOnlineInfo(sau, onlineListUMap, onlineListMMap);
     }
 }

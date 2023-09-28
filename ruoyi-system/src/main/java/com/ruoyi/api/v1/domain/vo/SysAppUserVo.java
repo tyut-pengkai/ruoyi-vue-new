@@ -124,26 +124,35 @@ public class SysAppUserVo extends SysAppUser {
     @JsonIgnore
     private String userName;
 
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private Integer effectiveLoginLimitU;
+    private Integer appLoginLimitU;
 
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private Integer effectiveLoginLimitM;
+    private Integer appLoginLimitM;
 
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private Integer currentOnlineU;
+//    @JSONField(serialize = false)
+//    @JsonIgnore
+//    private Integer effectiveLoginLimitU;
+//
+//    @JSONField(serialize = false)
+//    @JsonIgnore
+//    private Integer effectiveLoginLimitM;
 
-    @JSONField(serialize = false)
-    @JsonIgnore
-    private Integer currentOnlineM;
+//    @JSONField(serialize = false)
+//    @JsonIgnore
+//    private Integer currentOnlineU;
+//
+//    @JSONField(serialize = false)
+//    @JsonIgnore
+//    private Integer currentOnlineM;
 
     public SysAppUserVo(SysAppUser v) {
         BeanUtils.copyProperties(v, this);
         if (v.getUserId() != null) {
             this.userInfo = new SysUserVo(v.getUser());
+        }
+        if(v.getApp()!=null) {
+            SysApp a = v.getApp();
+            this.appLoginLimitU = a.getLoginLimitU();
+            this.appLoginLimitM = a.getLoginLimitM();
         }
     }
 }

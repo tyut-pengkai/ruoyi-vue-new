@@ -2,7 +2,6 @@ package com.ruoyi.web.controller.system;
 
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
@@ -32,7 +31,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 软件用户Controller
@@ -57,53 +59,21 @@ public class SysAppUserController extends BaseController {
     /**
      * 查询软件用户列表
      */
+    @SuppressWarnings("unchecked")
     @PreAuthorize("@ss.hasPermi('system:appUser:list')")
     @GetMapping("/list")
     public TableDataInfo list(SysAppUser sysAppUser) {
         startPage();
         List<SysAppUser> list = sysAppUserService.selectSysAppUserList(sysAppUser);
 
+        Map<String, Object> map = sysAppUserService.computeCurrentOnline();
         // 统计当前在线用户数
-        Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*");
-        Map<Long, List<LoginUser>> onlineListUMap = new HashMap<>();
-        for (String key : keys) {
-            LoginUser user = redisCache.getCacheObject(key);
-            if (user != null && user.getIfApp() && !user.getIfTrial()) {
-                Long appUserId = user.getAppUserId();
-                if (!onlineListUMap.containsKey(appUserId)) {
-                    onlineListUMap.put(appUserId, new ArrayList<>());
-                }
-                onlineListUMap.get(appUserId).add(user);
-            }
-        }
+        Map<Long, Set<LoginUser>> onlineListUMap = (Map<Long, Set<LoginUser>>) map.get("u");
         // 统计当前在线设备数
-        Map<Long, Set<Long>> onlineListMMap = new HashMap<>();
-        for (Map.Entry<Long, List<LoginUser>> entry : onlineListUMap.entrySet()) {
-            Long appUserId = entry.getKey();
-            List<LoginUser> onlineUList = entry.getValue();
-            if (!onlineListMMap.containsKey(appUserId)) {
-                onlineListMMap.put(appUserId, new HashSet<>());
-            }
-            for (LoginUser user : onlineUList) {
-                if (user.getDeviceCode() != null) {
-                    onlineListMMap.get(appUserId).add(user.getDeviceCode().getDeviceCodeId());
-                }
-            }
-        }
+        Map<Long, Set<Long>> onlineListMMap = (Map<Long, Set<Long>>) map.get("m");
 
         for (SysAppUser sau : list) {
-            sau.setEffectiveLoginLimitU(MyUtils.getEffectiveLoginLimitU(sau.getApp(), sau));
-            sau.setEffectiveLoginLimitM(MyUtils.getEffectiveLoginLimitM(sau.getApp(), sau));
-            if (onlineListUMap.containsKey(sau.getAppUserId())) {
-                sau.setCurrentOnlineU(onlineListUMap.get(sau.getAppUserId()).size());
-            } else {
-                sau.setCurrentOnlineU(0);
-            }
-            if (onlineListMMap.containsKey(sau.getAppUserId())) {
-                sau.setCurrentOnlineM(onlineListMMap.get(sau.getAppUserId()).size());
-            } else {
-                sau.setCurrentOnlineM(0);
-            }
+            sysAppUserService.fillCurrentOnlineInfo(sau, onlineListUMap, onlineListMMap);
         }
         return getDataTable(list);
     }

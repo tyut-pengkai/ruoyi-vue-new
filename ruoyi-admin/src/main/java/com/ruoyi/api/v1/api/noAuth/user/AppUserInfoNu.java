@@ -31,10 +31,16 @@ public class AppUserInfoNu extends Function {
                                 new RespItem(Resp.DataType.string, "expireTime", "用户过期时间，计时模式下有效"),
                                 new RespItem(Resp.DataType.integer, "point", "用户剩余点数，计点模式下有效"),
                                 new RespItem(Resp.DataType.string, "status", "用户状态，0为正常"),
-                                new RespItem(Resp.DataType.integer, "loginLimitU", "同时在线用户数限制"),
-                                new RespItem(Resp.DataType.integer, "loginLimitM", "同时在线设备数限制"),
-                                new RespItem(Resp.DataType.integer, "cardLoginLimitU", "由卡密继承来的同时在线用户数限制"),
-                                new RespItem(Resp.DataType.integer, "cardLoginLimitM", "由卡密继承来的同时在线设备数限制"),
+                                new RespItem(Resp.DataType.integer, "loginLimitU", "用户配置的同时在线用户数限制"),
+                                new RespItem(Resp.DataType.integer, "loginLimitM", "用户配置的同时在线设备数限制"),
+                                new RespItem(Resp.DataType.integer, "appLoginLimitU", "软件配置的同时在线用户数限制"),
+                                new RespItem(Resp.DataType.integer, "appLoginLimitM", "软件配置的同时在线设备数限制"),
+                                new RespItem(Resp.DataType.integer, "cardLoginLimitU", "卡密配置的同时在线用户数限制"),
+                                new RespItem(Resp.DataType.integer, "cardLoginLimitM", "卡密配置的同时在线设备数限制"),
+                                new RespItem(Resp.DataType.integer, "effectiveLoginLimitU", "最终生效的同时在线用户数限制"),
+                                new RespItem(Resp.DataType.integer, "effectiveLoginLimitM", "最终生效的同时在线设备数限制"),
+                                new RespItem(Resp.DataType.integer, "currentOnlineU", "当前在线用户数"),
+                                new RespItem(Resp.DataType.integer, "currentOnlineM", "当前在线设备数"),
                                 new RespItem(Resp.DataType.integer, "loginTimes", "用户登录次数"),
                                 new RespItem(Resp.DataType.string, "lastLoginTime", "最近登录时间"),
                                 new RespItem(Resp.DataType.string, "loginIp", "最近登录IP"),
@@ -72,6 +78,7 @@ public class AppUserInfoNu extends Function {
                 throw new ApiException(ErrorCode.ERROR_APP_USER_NOT_EXIST);
             }
             appUser.setUser(userService.selectUserById(appUser.getUserId()));
+            appUserService.fillCurrentOnlineInfo(appUser);
             return new SysAppUserVo(appUser);
         } else {
             throw new ApiException(ErrorCode.ERROR_ACCOUNT_NOT_EXIST);
