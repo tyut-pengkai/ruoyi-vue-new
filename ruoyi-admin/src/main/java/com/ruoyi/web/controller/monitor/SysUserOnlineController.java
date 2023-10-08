@@ -13,6 +13,7 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.system.domain.SysUserOnline;
 import com.ruoyi.system.service.ISysUserOnlineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,21 +48,28 @@ public class SysUserOnlineController extends BaseController {
         Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*");
         List<SysUserOnline> userOnlineList = new ArrayList<>();
         for (String key : keys) {
-            LoginUser user = redisCache.getCacheObject(key);
-            if (user != null) {
+            LoginUser loginUser = null;
+            try {
+                loginUser = (LoginUser) SysCache.get(key);
+            } catch(Exception ignored) {}
+            if(loginUser == null) {
+                loginUser = redisCache.getCacheObject(key);
+                SysCache.set(key, loginUser);
+            }
+            if (loginUser != null) {
                 if (StringUtils.isNotEmpty(ipaddr) && StringUtils.isNotEmpty(userName)) {
 //                if (StringUtils.equals(ipaddr, user.getIpaddr()) && StringUtils.equals(userName, user.getUsername())) {
 //                    userOnlineList.add(userOnlineService.selectOnlineByInfo(ipaddr, userName, user));
 //                }
-                    if (StringUtils.equals(ipaddr, user.getIpaddr()) && user.getUsername().contains(userName)) {
-                        userOnlineList.add(userOnlineService.loginUserToUserOnline(user));
+                    if (StringUtils.equals(ipaddr, loginUser.getIpaddr()) && loginUser.getUsername().contains(userName)) {
+                        userOnlineList.add(userOnlineService.loginUserToUserOnline(loginUser));
                     }
                 } else if (StringUtils.isNotEmpty(ipaddr)) {
 //                if (StringUtils.equals(ipaddr, user.getIpaddr())) {
 //                    userOnlineList.add(userOnlineService.selectOnlineByIpaddr(ipaddr, user));
 //                }
-                    if (StringUtils.equals(ipaddr, user.getIpaddr())) {
-                        userOnlineList.add(userOnlineService.loginUserToUserOnline(user));
+                    if (StringUtils.equals(ipaddr, loginUser.getIpaddr())) {
+                        userOnlineList.add(userOnlineService.loginUserToUserOnline(loginUser));
                     }
                 } else if (StringUtils.isNotEmpty(userName)) {
 //                if(StringUtils.isNotNull(user.getUser())) {
@@ -69,11 +77,11 @@ public class SysUserOnlineController extends BaseController {
 //                        userOnlineList.add(userOnlineService.selectOnlineByUserName(userName, user));
 //                    }
 //                }
-                    if (user.getUsername() != null && user.getUsername().contains(userName)) {
-                        userOnlineList.add(userOnlineService.loginUserToUserOnline(user));
+                    if (loginUser.getUsername() != null && loginUser.getUsername().contains(userName)) {
+                        userOnlineList.add(userOnlineService.loginUserToUserOnline(loginUser));
                     }
                 } else {
-                    userOnlineList.add(userOnlineService.loginUserToUserOnline(user));
+                    userOnlineList.add(userOnlineService.loginUserToUserOnline(loginUser));
                 }
             }
         }
@@ -127,6 +135,7 @@ public class SysUserOnlineController extends BaseController {
         Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + tokenId + "*");
         for (String key : keys) {
             redisCache.deleteObject(key);
+            SysCache.delete(key);
             Constants.LAST_ERROR_REASON_MAP.put(tokenId, "您已被系统强制下线");
         }
         return AjaxResult.success();

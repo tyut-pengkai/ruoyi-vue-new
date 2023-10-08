@@ -11,6 +11,7 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.framework.config.ServerConfig;
@@ -619,9 +620,16 @@ public class CommonController {
         List<LoginUser> onlineUserList = new ArrayList<>();
         Collection<String> loginKeys = redisCache.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
         for (String key : loginKeys) {
-            LoginUser user = redisCache.getCacheObject(key);
-            if (user != null && user.getIfApp()) {
-                onlineUserList.add(user);
+            LoginUser loginUser = null;
+            try {
+                loginUser = (LoginUser) SysCache.get(key);
+            } catch(Exception ignored) {}
+            if(loginUser == null) {
+                loginUser = redisCache.getCacheObject(key);
+                SysCache.set(key, loginUser);
+            }
+            if (loginUser != null && loginUser.getIfApp()) {
+                onlineUserList.add(loginUser);
             }
         }
         int onlineTotal = onlineUserList.size();

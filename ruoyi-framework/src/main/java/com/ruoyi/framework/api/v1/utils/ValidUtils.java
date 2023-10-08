@@ -17,6 +17,7 @@ import com.ruoyi.common.license.bo.LicenseCheckModel;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.TokenService;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -366,9 +368,16 @@ public class ValidUtils {
         Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*|" + appUser.getAppUserId());
         List<LoginUser> onlineListU = new ArrayList<>();
         for (String key : keys) {
-            LoginUser user = redisCache.getCacheObject(key);
-            if (user != null && user.getIfApp() && !user.getIfTrial() && Objects.equals(appUser.getAppUserId(), user.getAppUserId())) {
-                onlineListU.add(user);
+            LoginUser loginUser = null;
+            try {
+                loginUser = (LoginUser) SysCache.get(key);
+            } catch(Exception ignored) {}
+            if(loginUser == null) {
+                loginUser = redisCache.getCacheObject(key);
+                SysCache.set(key, loginUser);
+            }
+            if (loginUser != null && loginUser.getIfApp() && !loginUser.getIfTrial() && Objects.equals(appUser.getAppUserId(), loginUser.getAppUserId())) {
+                onlineListU.add(loginUser);
             }
         }
         // 检查用户数量
@@ -378,7 +387,7 @@ public class ValidUtils {
                 throw new ApiException(ErrorCode.ERROR_LOGIN_USER_LIMIT);
             } else if (app.getLimitOper() == LimitOper.EARLIEST_LOGOUT) {
                 // 登录最早的退出
-                logoutTheEarliest(onlineListU, "用户同时登录数量超出限制");
+                logoutTheEarliest(onlineListU, UserConstants.YES.equals(app.getEnableFirstLogoutLocalMachine()), deviceCode, "同时在线用户数量超出限制");
             }
         }
         // 检查设备数量
@@ -395,7 +404,7 @@ public class ValidUtils {
                     throw new ApiException(ErrorCode.ERROR_LOGIN_MACHINE_LIMIT);
                 } else if (app.getLimitOper() == LimitOper.EARLIEST_LOGOUT) {
                     // 登录最早的设备退出
-                    logoutTheEarliest(onlineListU, "同时在线设备数量超出限制");
+                    logoutTheEarliest(onlineListU, UserConstants.YES.equals(app.getEnableFirstLogoutLocalMachine()), deviceCode, "同时在线设备数量超出限制");
                 }
             }
         }
@@ -406,11 +415,18 @@ public class ValidUtils {
         SysAppTrialUser trailUser = appTrialUserService.selectSysAppTrialUserByAppTrialUserId(appTrialUser.getAppTrialUserId());
         List<LoginUser> onlineListU = new ArrayList<>();
         for (String key : keys) {
-            LoginUser user = redisCache.getCacheObject(key);
-            if (user != null && trailUser != null && user.getIfTrial()
+            LoginUser loginUser = null;
+            try {
+                loginUser = (LoginUser) SysCache.get(key);
+            } catch(Exception ignored) {}
+            if(loginUser == null) {
+                loginUser = redisCache.getCacheObject(key);
+                SysCache.set(key, loginUser);
+            }
+            if (loginUser != null && trailUser != null && loginUser.getIfTrial()
                     && Objects.equals(appTrialUser.getLoginIp(), trailUser.getLoginIp())
                     && Objects.equals(appTrialUser.getDeviceCode(), trailUser.getDeviceCode())) {
-                onlineListU.add(user);
+                onlineListU.add(loginUser);
             }
         }
         // 检查用户数量
@@ -420,7 +436,7 @@ public class ValidUtils {
                 throw new ApiException(ErrorCode.ERROR_LOGIN_USER_LIMIT);
             } else if (app.getLimitOper() == LimitOper.EARLIEST_LOGOUT) {
                 // 登录最早的退出
-                logoutTheEarliest(onlineListU, "用户同时登录数量超出限制");
+                logoutTheEarliest(onlineListU, false, null, "同时在线用户数量超出限制");
             }
         }
     }
@@ -430,12 +446,20 @@ public class ValidUtils {
      *
      * @param onlineList
      */
-    private void logoutTheEarliest(List<LoginUser> onlineList, String msg) {
+    private void logoutTheEarliest(List<LoginUser> onlineList, boolean firstLocalMachine, SysDeviceCode deviceCode, String msg) {
         try {
             // 将当前在线用户按照登录时间排序
             onlineList.sort(Comparator.comparing(LoginUser::getLoginTime));
-            if (onlineList.size() > 0) {
-                LoginUser loginUser = onlineList.get(0);
+            List<LoginUser> oList = new ArrayList<>(onlineList);
+            if(firstLocalMachine && deviceCode != null) {
+                List<LoginUser> localMachineOnlineList = onlineList.stream().filter(item -> item.getDeviceCode() != null && item.getDeviceCode().getDeviceCodeId().equals(deviceCode.getDeviceCodeId())).collect(Collectors.toList());
+                if(localMachineOnlineList.size() > 0) {
+                    localMachineOnlineList.sort(Comparator.comparing(LoginUser::getLoginTime));
+                    oList = localMachineOnlineList;
+                }
+            }
+            if (oList.size() > 0) {
+                LoginUser loginUser = oList.get(0);
                 String userName = loginUser.getUsername();
                 // 删除用户缓存记录
                 tokenService.delLoginUser(loginUser.getToken());

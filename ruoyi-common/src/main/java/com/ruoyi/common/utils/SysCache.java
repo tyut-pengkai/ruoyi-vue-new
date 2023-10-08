@@ -38,6 +38,9 @@ public class SysCache {
      * @param value 数据
      */
     public static void set(String key, Object value) {
+        if(key == null || value == null) {
+            return;
+        }
         kv.put(key, value);
     }
 

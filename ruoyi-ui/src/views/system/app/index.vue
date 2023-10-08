@@ -967,18 +967,43 @@
                 </el-form-item>
               </el-col>
             </el-form-item>
-            <el-form-item label="达到登录上限后" prop="limitOper">
-              <el-select
-                v-model="form.limitOper"
-                placeholder="请选择达到上限后的操作，默认为提示用户"
-              >
-                <el-option
-                  v-for="dict in dict.type.sys_limit_oper"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
-              </el-select>
+            <el-form-item>
+              <el-col :span="12">
+                <el-form-item label="达到登录上限后" prop="limitOper">
+                  <el-select
+                    v-model="form.limitOper"
+                    placeholder="请选择达到上限后的操作，默认为提示用户"
+                  >
+                    <el-option
+                      v-for="dict in dict.type.sys_limit_oper"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12" v-show="form.limitOper === '1'">
+                <el-form-item label="是否优先注销同一设备的用户" prop="enableFirstLogoutLocalMachine">
+                  <span>
+                    <el-tooltip
+                      content="开启后，超过登录限制后将优先获取当前设备上的登录用户列表并将最早登录的用户注销，如果本设备上没有其他已登录用户，则会获取全局登录用户列表并将最早登录的用户注销"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
+                  <el-switch
+                    v-model="form.enableFirstLogoutLocalMachine"
+                    active-value="Y"
+                    inactive-value="N"
+                  >
+                  </el-switch>
+                </el-form-item>
+              </el-col>
             </el-form-item>
           </el-tab-pane>
           <!-- 试用设置 -->

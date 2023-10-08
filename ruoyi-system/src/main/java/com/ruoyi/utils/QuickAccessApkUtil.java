@@ -195,7 +195,7 @@ public class QuickAccessApkUtil {
         }
         // 判断dex数量
         if (dexNameList.size() == 0) {
-            System.out.println("未找到dex文件");
+//            System.out.println("未找到dex文件");
             throw new ServiceException("未找到dex文件");
         } else {
             String targetDexName;

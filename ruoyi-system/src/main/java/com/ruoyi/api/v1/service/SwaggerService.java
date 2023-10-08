@@ -87,7 +87,11 @@ public class SwaggerService {
             Map<String, Object> pathObj = new HashMap<>();
             Map<String, Object> postObj = new HashMap<>();
             postObj.put("tags", api.getTags());
-            postObj.put("summary", api.getName());
+            if(StringUtils.isNotBlank(api.getApi()) && api.getApi().contains(".")) {
+                postObj.put("summary", api.getName() + "_" + api.getApi().substring(api.getApi().indexOf(".") + 1).toUpperCase());
+            } else {
+                postObj.put("summary", api.getName());
+            }
             postObj.put("description", api.getDescription());
             postObj.put("operationId", api.getApi() + "UsingPOST");
             postObj.put("consumes", new String[]{"application/json"});
@@ -188,6 +192,9 @@ public class SwaggerService {
                     Map<String, Object> paramObj = new HashMap<>();
                     paramObj.put("type", "string");
                     paramObj.put("description", "[公共]" + param.getDescription().replace("${api}", api.getApi()));
+                    if(StringUtils.isNotBlank(param.getExample())) {
+                        paramObj.put("example", param.getExample().replace("${api}", api.getApi()));
+                    }
                     propertiesObj.put(param.getName(), paramObj);
                     if (param.isNecessary()) {
                         requiredList.add(param.getName());
@@ -198,6 +205,9 @@ public class SwaggerService {
                     Map<String, Object> paramObj = new HashMap<>();
                     paramObj.put("type", "string");
                     paramObj.put("description", "[公共]" + param.getDescription().replace("${api}", api.getApi()));
+                    if(StringUtils.isNotBlank(param.getExample())) {
+                        paramObj.put("example", param.getExample().replace("${api}", api.getApi()));
+                    }
                     propertiesObj.put(param.getName(), paramObj);
                     if (param.isNecessary()) {
                         requiredList.add(param.getName());
@@ -208,6 +218,9 @@ public class SwaggerService {
                 Map<String, Object> paramObj = new HashMap<>();
                 paramObj.put("type", "string");
                 paramObj.put("description", "[私有]" + param.getDescription());
+                if(StringUtils.isNotBlank(param.getExample())) {
+                    paramObj.put("example", param.getExample());
+                }
                 propertiesObj.put(param.getName(), paramObj);
                 if (param.isNecessary()) {
                     requiredList.add(param.getName());

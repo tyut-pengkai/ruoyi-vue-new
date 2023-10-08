@@ -14,6 +14,7 @@ import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.enums.UserStatus;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.system.service.ISysAppService;
@@ -66,7 +67,14 @@ public class LogoutAll extends Function {
 
         Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*|" + appUser.getAppUserId());
         for (String key : keys) {
-            LoginUser loginUser = redisCache.getCacheObject(key);
+            LoginUser loginUser = null;
+            try {
+                loginUser = (LoginUser) SysCache.get(key);
+            } catch(Exception ignored) {}
+            if(loginUser == null) {
+                loginUser = redisCache.getCacheObject(key);
+                SysCache.set(key, loginUser);
+            }
             if (loginUser != null && loginUser.getIfApp() && Objects.equals(loginUser.getAppUserId(), appUser.getAppUserId())) {
                 String _deviceCodeStr = null;
                 if (loginUser.getDeviceCode() != null) {

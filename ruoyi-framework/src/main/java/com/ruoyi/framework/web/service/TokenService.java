@@ -9,6 +9,7 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.common.utils.ip.AddressUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.common.utils.uuid.IdUtils;
@@ -71,11 +72,19 @@ public class TokenService {
                 // 解析对应的权限以及用户信息
                 String uuid = tokenToUuid(token);
                 Long appUserId = tokenToAppUserId(token);
-                String userKey = getTokenKey(uuid);
+                String key = getTokenKey(uuid);
                 if (appUserId != null) {
-                    userKey = userKey + "|" + appUserId;
+                    key = key + "|" + appUserId;
                 }
-                return redisCache.getCacheObject(userKey);
+                LoginUser loginUser = null;
+                try {
+                    loginUser = (LoginUser) SysCache.get(key);
+                } catch(Exception ignored) {}
+                if(loginUser == null) {
+                    loginUser = redisCache.getCacheObject(key);
+                    SysCache.set(key, loginUser);
+                }
+                return loginUser;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -202,13 +211,15 @@ public class TokenService {
                 loginUser.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE).getTime());
                 redisCache.setCacheObject(userKey, loginUser);
             }
+            // 存储到本地缓存
+            SysCache.set(userKey, loginUser);
         } else {
             loginUser.setExpireTime(System.currentTimeMillis() + expireTime * MILLIS_MINUTE);
             // 根据uuid将loginUser缓存
             String userKey = getTokenKey(loginUser.getToken());
             redisCache.setCacheObject(userKey, loginUser, expireTime, TimeUnit.MINUTES);
+            SysCache.set(userKey, loginUser);
         }
-
     }
 
     /**

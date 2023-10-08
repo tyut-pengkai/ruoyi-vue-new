@@ -4,8 +4,6 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excels;
 import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.enums.*;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.List;
 import java.util.Map;
@@ -109,6 +107,10 @@ public class SysApp extends BaseEntity
     /** 达到上限后的操作，默认为TIPS */
     @Excel(name = "达到上限后的操作，默认为TIPS", dictType = "sys_limit_oper")
     private LimitOper limitOper;
+
+    /** 达到上限后的操作，如果为注销最早登录，是否优先注销同一台设备上的账号 */
+    @Excel(name = "达到上限后的操作，如果为注销最早登录，是否优先注销同一台设备上的账号", readConverterExp = "Y=是,N=否")
+    private String enableFirstLogoutLocalMachine;
 
     /** 心跳包时间，单位秒，客户端若在此时间范围内无任何操作将自动下线，默认为300秒 */
     @Excel(name = "心跳包时间，单位秒，客户端若在此时间范围内无任何操作将自动下线，默认为300秒")
@@ -635,43 +637,64 @@ public class SysApp extends BaseEntity
         this.enableNegative = enableNegative;
     }
 
+    public String getEnableFirstLogoutLocalMachine() {
+        return enableFirstLogoutLocalMachine;
+    }
+
+    public void setEnableFirstLogoutLocalMachine(String enableFirstLogoutLocalMachine) {
+        this.enableFirstLogoutLocalMachine = enableFirstLogoutLocalMachine;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("appId", getAppId())
-                .append("appName", getAppName())
-                .append("description", getDescription())
-                .append("apiUrl", getApiUrl())
-                .append("status", getStatus())
-                .append("delFlag", getDelFlag())
-                .append("bindType", getBindType())
-                .append("isCharge", getIsCharge())
-                .append("idxUrl", getIdxUrl())
-                .append("freeQuotaReg", getFreeQuotaReg())
-                .append("reduceQuotaUnbind", getReduceQuotaUnbind())
-                .append("enableNegative", getEnableNegative())
-                .append("authType", getAuthType())
-                .append("billType", getBillType())
-                .append("dataInEnc", getDataInEnc())
-                .append("dataInPwd", getDataInPwd())
-                .append("dataOutEnc", getDataOutEnc())
-                .append("dataOutPwd", getDataOutPwd())
-                .append("dataExpireTime", getDataExpireTime())
-                .append("loginLimitU", getLoginLimitU())
-                .append("loginLimitM", getLoginLimitM())
-                .append("limitOper", getLimitOper())
-                .append("heartBeatTime", getHeartBeatTime())
-                .append("appKey", getAppKey())
-                .append("appSecret", getAppSecret())
-                .append("apiPwd", getApiPwd())
-                .append("welcomeNotice", getWelcomeNotice())
-                .append("offNotice", getOffNotice())
-                .append("icon", getIcon())
-                .append("createBy", getCreateBy())
-                .append("createTime", getCreateTime())
-                .append("updateBy", getUpdateBy())
-                .append("updateTime", getUpdateTime())
-                .append("remark", getRemark())
-                .toString();
+        return "SysApp{" +
+                "appId=" + appId +
+                ", appName='" + appName + '\'' +
+                ", description='" + description + '\'' +
+                ", apiUrl='" + apiUrl + '\'' +
+                ", status='" + status + '\'' +
+                ", delFlag='" + delFlag + '\'' +
+                ", bindType=" + bindType +
+                ", isCharge='" + isCharge + '\'' +
+                ", idxUrl='" + idxUrl + '\'' +
+                ", freeQuotaReg=" + freeQuotaReg +
+                ", reduceQuotaUnbind=" + reduceQuotaUnbind +
+                ", enableNegative='" + enableNegative + '\'' +
+                ", authType=" + authType +
+                ", billType=" + billType +
+                ", dataInEnc=" + dataInEnc +
+                ", dataInPwd='" + dataInPwd + '\'' +
+                ", dataOutEnc=" + dataOutEnc +
+                ", dataOutPwd='" + dataOutPwd + '\'' +
+                ", dataExpireTime=" + dataExpireTime +
+                ", loginLimitU=" + loginLimitU +
+                ", loginLimitM=" + loginLimitM +
+                ", limitOper=" + limitOper +
+                ", enableFirstLogoutLocalMachine='" + enableFirstLogoutLocalMachine + '\'' +
+                ", heartBeatTime=" + heartBeatTime +
+                ", appKey='" + appKey + '\'' +
+                ", appSecret='" + appSecret + '\'' +
+                ", apiPwd='" + apiPwd + '\'' +
+                ", welcomeNotice='" + welcomeNotice + '\'' +
+                ", offNotice='" + offNotice + '\'' +
+                ", icon='" + icon + '\'' +
+                ", developer=" + developer +
+                ", enApi=" + enApi +
+                ", enableTrial='" + enableTrial + '\'' +
+                ", trialTimesPerIp=" + trialTimesPerIp +
+                ", trialCycle=" + trialCycle +
+                ", trialTimes=" + trialTimes +
+                ", trialTime=" + trialTime +
+                ", enableTrialByTimeQuantum='" + enableTrialByTimeQuantum + '\'' +
+                ", enableTrialByTimes='" + enableTrialByTimes + '\'' +
+                ", trialTimeQuantum='" + trialTimeQuantum + '\'' +
+                ", notAddTrialTimesInTrialTime='" + notAddTrialTimesInTrialTime + '\'' +
+                ", unbindTimes=" + unbindTimes +
+                ", enableUnbind='" + enableUnbind + '\'' +
+                ", enableUnbindByQuota='" + enableUnbindByQuota + '\'' +
+                ", shopUrl='" + shopUrl + '\'' +
+                ", customBuyUrl='" + customBuyUrl + '\'' +
+                ", enableFeCharge='" + enableFeCharge + '\'' +
+                '}';
     }
 }

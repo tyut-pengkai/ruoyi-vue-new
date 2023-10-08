@@ -65,4 +65,14 @@ public class CacheConstants {
      * 全局文件下载链接
      */
     public static final String GLOBAL_FILE_DOWNLOAD_KEY = "global_file_download:";
+
+    /**
+     * logincode
+     */
+    public static final String SYS_LOGIN_CODE_KEY = "sys_login_code:";
+
+    /**
+     * user
+     */
+    public static final String SYS_USER_KEY = "sys_user:";
 }

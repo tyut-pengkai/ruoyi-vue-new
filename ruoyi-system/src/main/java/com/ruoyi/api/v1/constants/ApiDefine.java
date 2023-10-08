@@ -47,13 +47,13 @@ public class ApiDefine {
     public static Map<String, Function> functionMap = new HashMap<>();
 
     static {
-        publicParamsAuth.add(new Param("api", true, "请求的API接口，此处为${api}"));
+        publicParamsAuth.add(new Param("api", true, "请求的API接口，此处为${api}", "${api}"));
         publicParamsAuth.add(new Param("appSecret", true, "AppSecret"));
         publicParamsAuth.add(new Param("vstr", false, "用作标记或验证的冗余数据，将原样返回"));
         publicParamsAuth.add(new Param("timestamp", true, "13位时间戳（精确到毫秒）"));
         publicParamsAuth.add(new Param("sign", true, "数据签名"));
         // ===================================
-        publicParamsNoAuth.add(new Param("api", true, "请求的API接口，此处为${api}"));
+        publicParamsNoAuth.add(new Param("api", true, "请求的API接口，此处为${api}", "${api}"));
         publicParamsNoAuth.add(new Param("appSecret", true, "AppSecret"));
         publicParamsNoAuth.add(new Param("sign", true, "数据签名"));
     }

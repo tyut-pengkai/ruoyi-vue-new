@@ -8,6 +8,7 @@ import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.system.mapper.SysAppUserMapper;
 import com.ruoyi.system.service.ISysAppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -176,17 +177,28 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
     public Map<String, Object> computeCurrentOnline(Long appUserId) {
         Map<String, Object> result = new HashMap<>();
         // 统计当前在线用户数
-        Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*");
+        String k = CacheConstants.LOGIN_TOKEN_KEY + "*";
+        if(appUserId != null) {
+            k += "|" + appUserId;
+        }
+        Collection<String> keys = redisCache.scan(k);
         Map<Long, Set<LoginUser>> onlineListUMap = new HashMap<>();
         for (String key : keys) {
-            LoginUser user = redisCache.getCacheObject(key);
-            if (user != null && user.getIfApp() && !user.getIfTrial()) {
-                Long aui = user.getAppUserId();
-                if(appUserId == null || appUserId != null && appUserId == aui) {
+            LoginUser loginUser = null;
+            try {
+                loginUser = (LoginUser) SysCache.get(key);
+            } catch(Exception ignored) {}
+            if(loginUser == null) {
+                loginUser = redisCache.getCacheObject(key);
+                SysCache.set(key, loginUser);
+            }
+            if (loginUser != null && loginUser.getIfApp() && !loginUser.getIfTrial()) {
+                Long aui = loginUser.getAppUserId();
+                if(appUserId == null || appUserId.equals(aui)) {
                     if (!onlineListUMap.containsKey(aui)) {
                         onlineListUMap.put(aui, new HashSet<>());
                     }
-                    onlineListUMap.get(aui).add(user);
+                    onlineListUMap.get(aui).add(loginUser);
                 }
             }
         }

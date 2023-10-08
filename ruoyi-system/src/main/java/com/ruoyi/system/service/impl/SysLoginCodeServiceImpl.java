@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.annotation.DataScope;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
@@ -10,6 +11,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
@@ -118,7 +120,12 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
         if(loginCode != null && !Objects.equals(loginCode.getCardId(), sysLoginCode.getCardId())) {
             throw new ServiceException("单码不可重复，此单码已存在");
         }
-        return sysLoginCodeMapper.updateSysLoginCode(sysLoginCode);
+        int i = sysLoginCodeMapper.updateSysLoginCode(sysLoginCode);
+        if (i > 0) {
+            loginCode = sysLoginCodeMapper.selectSysLoginCodeByCardId(sysLoginCode.getCardId());
+            SysCache.set(CacheConstants.SYS_LOGIN_CODE_KEY + loginCode.getCardNo(), loginCode);
+        }
+        return i;
     }
 
     /**
@@ -129,6 +136,10 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
      */
     @Override
     public int deleteSysLoginCodeByCardIds(Long[] cardIds) {
+        for (Long cardId : cardIds) {
+            SysLoginCode loginCode = sysLoginCodeMapper.selectSysLoginCodeByCardId(cardId);
+            SysCache.delete(CacheConstants.SYS_LOGIN_CODE_KEY + loginCode.getCardNo());
+        }
         return sysLoginCodeMapper.deleteSysLoginCodeByCardIds(cardIds);
     }
 
@@ -140,6 +151,8 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
      */
     @Override
     public int deleteSysLoginCodeByCardId(Long cardId) {
+        SysLoginCode loginCode = sysLoginCodeMapper.selectSysLoginCodeByCardId(cardId);
+        SysCache.delete(CacheConstants.SYS_LOGIN_CODE_KEY + loginCode.getCardNo());
         return sysLoginCodeMapper.deleteSysLoginCodeByCardId(cardId);
     }
 
@@ -151,7 +164,15 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
      */
     @Override
     public SysLoginCode selectSysLoginCodeByCardNo(String cardNo) {
-        return sysLoginCodeMapper.selectSysLoginCodeByCardNo(cardNo);
+        if(StringUtils.isBlank(cardNo)) {
+            return null;
+        }
+        SysLoginCode loginCode = (SysLoginCode) SysCache.get(CacheConstants.SYS_LOGIN_CODE_KEY + cardNo);
+        if (loginCode == null) {
+            loginCode = sysLoginCodeMapper.selectSysLoginCodeByCardNo(cardNo);
+            SysCache.set(CacheConstants.SYS_LOGIN_CODE_KEY + cardNo, loginCode);
+        }
+        return loginCode;
     }
 
     /**
