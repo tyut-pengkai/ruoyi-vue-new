@@ -41,8 +41,8 @@ public class QuickAccessApkUtil {
 //    private static final String injectApplication = "Lcom/App;";
 //    private static final String injectApplicationPath = "com.App";
     private static final String injectConfigActivity = "Lcom/c/qat/InjectConfig;";
-    private static final String injectApplicationPath = "com.App";
-    private static final String injectApplication = "L" + injectApplicationPath.replaceAll("\\.", "/") + ";";
+    private static final String injectEntranceClass = "com.App";
+    private static final String injectEntranceType = "L" + injectEntranceClass.replaceAll("\\.", "/") + ";";
     private static String packageName;
     private static String applicationName;
     private static String dexFinalName;
@@ -125,7 +125,7 @@ public class QuickAccessApkUtil {
             throw new IOException();
         ArrayList<String> list = new ArrayList<>(axml.mTableStrings.getSize());
         axml.mTableStrings.getStrings(list);
-        list.add(injectApplicationPath);
+        list.add(injectEntranceClass);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         axml.write(list, baos);
         return baos.toByteArray();
@@ -254,14 +254,14 @@ public class QuickAccessApkUtil {
 
             // 处理自定义applicationName
             if (StringUtils.isNotBlank(applicationName)) {
-                DexBackedClassDef injectApplicationClassDef = (DexBackedClassDef) injectClasspath.getClassDef(injectApplication);
+                DexBackedClassDef injectApplicationClassDef = (DexBackedClassDef) injectClasspath.getClassDef(injectEntranceType);
                 String code = getClassDefString(injectApplicationClassDef);
                 if (applicationName.startsWith(".")) {
                     if (packageName == null)
                         throw new NullPointerException("Package name is null.");
                     applicationName = packageName + applicationName;
                 }
-                applicationName = "L" + applicationName.replace('.', '/') + ";";
+                applicationName = "L" + applicationName.replaceAll("\\.", "/") + ";";
                 code = code.replace("Landroid/app/Application;", applicationName);
                 Smali.assembleSmaliFile(code, oriBuilder, new SmaliOptions());
 
@@ -302,7 +302,7 @@ public class QuickAccessApkUtil {
             for (int i = 0; i < classesList.size(); i++) {
                 DexBackedClassDef cl = classesList.get(i);
                 if (!cl.getType().equals(injectConfigActivity)) {
-                    if (StringUtils.isNotBlank(applicationName) && cl.getType().equals(injectApplication)) {
+                    if (StringUtils.isNotBlank(applicationName) && cl.getType().equals(injectEntranceType)) {
                         continue;
                     } else {
                         oriBuilder.internClassDef(cl);
@@ -315,23 +315,7 @@ public class QuickAccessApkUtil {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             boolean insertFlag = true;
             try {
-                AXMLDoc doc = new AXMLDoc();
-                doc.parse(new ByteArrayInputStream(xml));
-                PermissionEditor permissionEditor = new PermissionEditor(doc);
-                permissionEditor.setEditorInfo(new PermissionEditor.EditorInfo()
-                        .with(new PermissionEditor.PermissionOpera("android.permission.本验证由红叶网络验证提供").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.QQ群.947144396").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.COORDSOFT").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.INTERNET").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_NETWORK_STATE").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_WIFI_STATE").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.READ_PHONE_STATE").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.WRITE_EXTERNAL_STORAGE").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.REQUEST_INSTALL_PACKAGES").add())
-                );
-                permissionEditor.commit();
-                doc.build(byteArrayOutputStream);
-                doc.release();
+                addNecessaryPermission(byteArrayOutputStream, xml);
             } catch (Exception e1) {
                 insertFlag = false;
                 e1.printStackTrace();
@@ -468,26 +452,10 @@ public class QuickAccessApkUtil {
 
             // 重组APK
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//            boolean insertFlag = false;
             boolean insertFlag = true;
             try {
-                AXMLDoc doc = new AXMLDoc();
-                doc.parse(new ByteArrayInputStream(toByteArray(oriFile.getInputStream(oriFile.getEntry("AndroidManifest.xml")))));
-//            doc.parse(oriFile.getInputStream(oriFile.getEntry("AndroidManifest.xml")));
-                PermissionEditor permissionEditor = new PermissionEditor(doc);
-                permissionEditor.setEditorInfo(new PermissionEditor.EditorInfo()
-                        .with(new PermissionEditor.PermissionOpera("android.permission.本验证由红叶网络验证提供").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.QQ群.947144396").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.COORDSOFT").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.INTERNET").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_NETWORK_STATE").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_WIFI_STATE").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.READ_PHONE_STATE").add())
-                        .with(new PermissionEditor.PermissionOpera("android.permission.WRITE_EXTERNAL_STORAGE").add())
-                );
-                permissionEditor.commit();
-                doc.build(byteArrayOutputStream);
-                doc.release();
+                byte[] xml = toByteArray(oriFile.getInputStream(oriFile.getEntry("AndroidManifest.xml")));
+                addNecessaryPermission(byteArrayOutputStream, xml);
             } catch (Exception e1) {
                 insertFlag = false;
                 e1.printStackTrace();
@@ -540,6 +508,25 @@ public class QuickAccessApkUtil {
             e.printStackTrace();
             throw new ServiceException(e.getMessage());
         }
+    }
+
+    private static void addNecessaryPermission(ByteArrayOutputStream byteArrayOutputStream, byte[] xml) throws Exception {
+        AXMLDoc doc = new AXMLDoc();
+        doc.parse(new ByteArrayInputStream(xml));
+        PermissionEditor permissionEditor = new PermissionEditor(doc);
+        permissionEditor.setEditorInfo(new PermissionEditor.EditorInfo()
+                .with(new PermissionEditor.PermissionOpera("android.permission.本验证由红叶网络验证提供").add())
+                .with(new PermissionEditor.PermissionOpera("android.permission.QQ群.947144396").add())
+                .with(new PermissionEditor.PermissionOpera("android.permission.COORDSOFT").add())
+                .with(new PermissionEditor.PermissionOpera("android.permission.INTERNET").add())
+                .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_NETWORK_STATE").add())
+                .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_WIFI_STATE").add())
+                .with(new PermissionEditor.PermissionOpera("android.permission.READ_PHONE_STATE").add())
+                .with(new PermissionEditor.PermissionOpera("android.permission.WRITE_EXTERNAL_STORAGE").add())
+        );
+        permissionEditor.commit();
+        doc.build(byteArrayOutputStream);
+        doc.release();
     }
 
     private static byte[] toByteArray(InputStream in) throws IOException {
