@@ -16,18 +16,21 @@ import com.ruoyi.system.domain.vo.ActivityMethodVo;
 import org.apache.commons.io.FileUtils;
 import org.jf.baksmali.Adaptors.ClassDefinition;
 import org.jf.baksmali.BaksmaliOptions;
+import org.jf.baksmali.formatter.BaksmaliWriter;
+import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.analysis.ClassPath;
 import org.jf.dexlib2.analysis.DexClassProvider;
 import org.jf.dexlib2.dexbacked.DexBackedClassDef;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
 import org.jf.dexlib2.dexbacked.DexBackedMethod;
+import org.jf.dexlib2.iface.ClassDef;
+import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.writer.builder.DexBuilder;
-import org.jf.dexlib2.writer.io.MemoryDataStore;
 import org.jf.smali.Smali;
 import org.jf.smali.SmaliOptions;
-import org.jf.util.IndentingWriter;
 
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -155,16 +158,32 @@ public class QuickAccessApkUtil {
 //        out.close();
 //        code = code.replace("\"" + "Config" + "\"", "\"" + d + "\"");
         code = code.replace("\"" + "Config" + "\"", "\"" + apv + "\"");
-        Smali.assembleSmaliFile(code, builder, new SmaliOptions());
+        assembleSmaliFile(code, builder, new SmaliOptions());
     }
 
     private static String getClassDefString(DexBackedClassDef def) throws IOException {
         StringWriter stringWriter = new StringWriter();
-        IndentingWriter writer = new IndentingWriter(stringWriter);
+        BaksmaliWriter writer = new BaksmaliWriter(stringWriter);
         ClassDefinition classDefinition = new ClassDefinition(new BaksmaliOptions(), def);
         classDefinition.writeTo(writer);
         writer.close();
         return stringWriter.toString();
+    }
+
+    private static Set<? extends DexBackedClassDef> getClassDefFromString(String string) {
+        try {
+            File tempFileO = File.createTempFile("smali_o" + System.currentTimeMillis(), "");
+            File tempFileI = File.createTempFile("smali_i" + System.currentTimeMillis(), "");
+            FileUtils.writeStringToFile(tempFileI, string, StandardCharsets.UTF_8);
+            SmaliOptions so = new SmaliOptions();
+            so.outputDexFile = tempFileO.getCanonicalPath();
+            Smali.assemble(so, tempFileI.getCanonicalPath());
+            DexBackedDexFile dexFile = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new FileInputStream(tempFileO)));
+            return dexFile.getClasses();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new HashSet<>();
     }
 
     public static byte[] doProcess(String oriPath, String apv, String template) throws Exception {
@@ -205,6 +224,7 @@ public class QuickAccessApkUtil {
                 targetDexName = "classes" + dexNameList.size() + ".dex";
                 // 多DEX，可能存在类重复问题
                 for (String dexName : dexNameList) {
+                    // 把除了要备注入的dex的类
                     if(!dexName.equals(targetDexName)) {
                         ZipEntry entry = oriFile.getEntry(dexName);
                         DexBackedDexFile classes = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(entry)));
@@ -216,30 +236,30 @@ public class QuickAccessApkUtil {
             }
             // 分析dex
             ZipEntry dexEntry = oriFile.getEntry(targetDexName);
-            DexBackedDexFile oriClasses = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(dexEntry)));
-            DexBackedDexFile injectClasses = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new FileInputStream(injectFile)));
+            DexBackedDexFile oriTargetDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(dexEntry)));
+            DexBackedDexFile injectDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new FileInputStream(injectFile)));
             Set<DexBackedClassDef> classesSet = new HashSet<>();
 //                Set<String> classesNameSet = new HashSet<>();
-//                for (DexBackedClassDef item : oriClasses.getClasses()) {
+//                for (DexBackedClassDef item : oriTargetDex.getClasses()) {
 ////                    System.out.println(item.getType());
 //                    classesNameSet.add(item.getType());
 //                }
 //                System.out.println(classesNameSet.size());
-//                for (DexBackedClassDef item : injectClasses.getClasses()) {
+//                for (DexBackedClassDef item : injectDex.getClasses()) {
 ////                    System.out.println(item.getType());
 //                    classesNameSet.add(item.getType());
 //                }
 //                System.out.println(classesNameSet.size());
 
             // 检查原包是否已被红叶注入过
-            for (DexBackedClassDef aClass : oriClasses.getClasses()) {
+            for (DexBackedClassDef aClass : oriTargetDex.getClasses()) {
                 if (aClass.getType().equals(injectConfigActivity)) {
                     throw new ServiceException("该APK已经被红叶注入过，无法二次注入");
                 }
             }
 
-            classesSet.addAll(oriClasses.getClasses());
-            classesSet.addAll(injectClasses.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
+            classesSet.addAll(oriTargetDex.getClasses());
+            classesSet.addAll(injectDex.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
 //                System.out.println(classesSet.size());
             List<DexBackedClassDef> classesList = new ArrayList<>(classesSet);
 
@@ -248,7 +268,7 @@ public class QuickAccessApkUtil {
             byte[] xml = parseManifest(oriFile.getInputStream(XmlEntry));
 
             // 注入配置
-            ClassPath injectClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(injectClasses)), false, injectClasses.getClasses().size());
+            ClassPath injectClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(injectDex)), false, injectDex.getClasses().size());
             DexBackedClassDef injectConfigActivityClassDef = (DexBackedClassDef) injectClasspath.getClassDef(injectConfigActivity);
             editConfig(injectConfigActivityClassDef, oriBuilder, apv);
 
@@ -263,7 +283,7 @@ public class QuickAccessApkUtil {
                 }
                 applicationName = "L" + applicationName.replaceAll("\\.", "/") + ";";
                 code = code.replace("Landroid/app/Application;", applicationName);
-                Smali.assembleSmaliFile(code, oriBuilder, new SmaliOptions());
+                assembleSmaliFile(code, oriBuilder, new SmaliOptions());
 
                 // 检查被继承的类是否有final
                 if(!"Landroid/app/Application;".equals(applicationName)) {
@@ -281,14 +301,14 @@ public class QuickAccessApkUtil {
                                     System.out.println("isFinal: true");
                                     String classDefString = getClassDefString(cl);
                                     classDefString = classDefString.replace("final " + applicationName, applicationName);
-                                    Smali.assembleSmaliFile(classDefString, oriFinalBuilder, new SmaliOptions());
+                                    assembleSmaliFile(classDefString, oriFinalBuilder, new SmaliOptions());
                                 } else {
                                     System.out.println("isFinal: false");
                                     dexFinalName = null;
                                     break out;
                                 }
                             } else {
-                                oriFinalBuilder.internClassDef(cl);
+                                internClassDef(oriFinalBuilder, cl);
                             }
                         }
                         if (StringUtils.isNotBlank(dexFinalName)) {
@@ -305,7 +325,7 @@ public class QuickAccessApkUtil {
                     if (StringUtils.isNotBlank(applicationName) && cl.getType().equals(injectEntranceType)) {
                         continue;
                     } else {
-                        oriBuilder.internClassDef(cl);
+                        internClassDef(oriBuilder, cl);
                     }
                 }
                 // 更新进度
@@ -330,25 +350,28 @@ public class QuickAccessApkUtil {
             }
             zos.closeEntry();
 
-            MemoryDataStore store = new MemoryDataStore();
-            oriBuilder.writeTo(store);
+//            MemoryDataStore store = new MemoryDataStore();
+//            oriBuilder.writeTo(store);
             zos.putNextEntry(targetDexName);
-            zos.write(Arrays.copyOf(store.getBufferData(), store.getSize()));
+//            zos.write(store.getData());
+            zos.write(toByteArray(oriBuilder));
             zos.closeEntry();
 
             if(StringUtils.isNotBlank(dexFinalName)) {
-                MemoryDataStore store2 = new MemoryDataStore();
-                oriFinalBuilder.writeTo(store2);
+//                MemoryDataStore store2 = new MemoryDataStore();
+//                oriFinalBuilder.writeTo(store2);
                 zos.putNextEntry(dexFinalName);
-                zos.write(Arrays.copyOf(store2.getBufferData(), store2.getSize()));
+//                zos.write(store2.getData());
+                zos.write(toByteArray(oriFinalBuilder));
                 zos.closeEntry();
             }
 
             Enumeration<ZipEntry> enumeration = oriFile.getEntries();
             while (enumeration.hasMoreElements()) {
                 ZipEntry ze = enumeration.nextElement();
-                if (ze.getName().equals("AndroidManifest.xml") || ze.getName().equals(targetDexName) || ze.getName().equals(dexFinalName))
+                if (ze.getName().equals("AndroidManifest.xml") || ze.getName().equals(targetDexName) || ze.getName().equals(dexFinalName)) {
                     continue;
+                }
                 zos.copyZipEntry(ze, oriFile);
                 // 更新进度
             }
@@ -367,9 +390,9 @@ public class QuickAccessApkUtil {
             String outputPath = oriPath.replace(".tmp", "_injected_not_sign.tmp");
             // 原程序dex编译器
             DexBuilder oriBuilder = new DexBuilder(Opcodes.getDefault());
-            oriBuilder.setIgnoreMethodAndFieldError(true);
+//            oriBuilder.setIgnoreMethodAndFieldError(true);
             DexBuilder oriBuilder2 = new DexBuilder(Opcodes.getDefault());
-            oriBuilder.setIgnoreMethodAndFieldError(true);
+//            oriBuilder.setIgnoreMethodAndFieldError(true);
             // 读入注入文件
 //            String injectPath = PathUtils.getUserPath() + File.separator + "src/test/resources" + File.separator + "data.dat";
             String injectPath = PathUtils.getUserPath() + File.separator + "template" + File.separator + template + ".apk.tpl";
@@ -399,6 +422,7 @@ public class QuickAccessApkUtil {
                     targetDexName = "classes" + dexNameList.size() + ".dex";
                     // 多DEX，可能存在类重复问题
                     for (String dexName : dexNameList) {
+                        // 把除了要备注入的dex的类
                         if(!dexName.equals(targetDexName)) {
                             ZipEntry entry = oriFile.getEntry(dexName);
                             DexBackedDexFile classes = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(entry)));
@@ -411,8 +435,8 @@ public class QuickAccessApkUtil {
             }
 
             // 分析dex
-            DexBackedDexFile oriClasses = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(mainDex)))));
-            DexBackedDexFile injectClasses = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new FileInputStream(injectFile)));
+            DexBackedDexFile oriTargetDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(mainDex)))));
+            DexBackedDexFile injectDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new FileInputStream(injectFile)));
             Set<DexBackedClassDef> classesSet = new HashSet<>();
 
             // 检查原包是否已被红叶注入过
@@ -423,19 +447,19 @@ public class QuickAccessApkUtil {
                 }
             }
 
-            classesSet.addAll(oriClasses.getClasses());
+            classesSet.addAll(oriTargetDex.getClasses());
             if (targetDexName.equals(mainDex)) {
-                classesSet.addAll(injectClasses.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
+                classesSet.addAll(injectDex.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
             }
             List<DexBackedClassDef> classesList = new ArrayList<>(classesSet);
 
             // 插入代码
-            ClassPath oriClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(oriClasses)), false, oriClasses.getClasses().size());
+            ClassPath oriClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(oriTargetDex)), false, oriTargetDex.getClasses().size());
             DexBackedClassDef oriActivityClassDef = (DexBackedClassDef) oriClasspath.getClassDef("L" + vo.getActivity().replace(".", "/") + ";");
             insertCode(oriActivityClassDef, oriBuilder, vo.getMethod());
 
             // 注入配置
-            ClassPath injectClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(injectClasses)), false, injectClasses.getClasses().size());
+            ClassPath injectClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(injectDex)), false, injectDex.getClasses().size());
             DexBackedClassDef injectConfigActivityClassDef = (DexBackedClassDef) injectClasspath.getClassDef(injectConfigActivity);
             editConfig(injectConfigActivityClassDef, oriBuilder, apv);
 
@@ -444,7 +468,7 @@ public class QuickAccessApkUtil {
                 DexBackedClassDef cl = classesList.get(i);
                 if (!cl.getType().equals("L" + vo.getActivity().replace(".", "/") + ";")
                         && !cl.getType().equals(injectConfigActivity)) {
-                    oriBuilder.internClassDef(cl);
+                    internClassDef(oriBuilder, cl);
                 }
                 // 更新进度
             }
@@ -469,35 +493,38 @@ public class QuickAccessApkUtil {
                 zos.closeEntry();
             }
 
-            MemoryDataStore store = new MemoryDataStore();
-            oriBuilder.writeTo(store);
+//            MemoryDataStore store = new MemoryDataStore();
+//            oriBuilder.writeTo(store);
             zos.putNextEntry(mainDex);
-            zos.write(Arrays.copyOf(store.getBufferData(), store.getSize()));
+//            zos.write(store.getData());
+            zos.write(toByteArray(oriBuilder));
             zos.closeEntry();
 
             if (!targetDexName.equals(mainDex)) {
 //                DexBackedDexFile oriClasses2 = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(targetDexName)))));
                 Set<DexBackedClassDef> classesSet2 = new HashSet<>();
                 classesSet2.addAll(oriClasses2.getClasses());
-                classesSet2.addAll(injectClasses.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
+                classesSet2.addAll(injectDex.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
                 List<DexBackedClassDef> classesList2 = new ArrayList<>(classesSet2);
                 for (int i = 0; i < classesList2.size(); i++) {
                     DexBackedClassDef cl = classesList2.get(i);
-                    oriBuilder2.internClassDef(cl);
+                    internClassDef(oriBuilder2, cl);
                     // 更新进度
                 }
-                MemoryDataStore store2 = new MemoryDataStore();
-                oriBuilder2.writeTo(store2);
+//                MemoryDataStore store2 = new MemoryDataStore();
+//                oriBuilder2.writeTo(store2);
                 zos.putNextEntry(targetDexName);
-                zos.write(Arrays.copyOf(store2.getBufferData(), store2.getSize()));
+//                zos.write(store2.getData());
+                zos.write(toByteArray(oriBuilder2));
                 zos.closeEntry();
             }
 
             Enumeration<ZipEntry> enumeration = oriFile.getEntries();
             while (enumeration.hasMoreElements()) {
                 ZipEntry ze = enumeration.nextElement();
-                if (ze.getName().equals("AndroidManifest.xml") && insertFlag || ze.getName().equals(mainDex) || ze.getName().equals(targetDexName))
+                if (ze.getName().equals("AndroidManifest.xml") && insertFlag || ze.getName().equals(mainDex) || ze.getName().equals(targetDexName)) {
                     continue;
+                }
                 zos.copyZipEntry(ze, oriFile);
                 // 更新进度
             }
@@ -541,12 +568,7 @@ public class QuickAccessApkUtil {
 
     //插入代码
     private static void insertCode(DexBackedClassDef def, DexBuilder builder, String method) throws Exception {
-        StringWriter stringWriter = new StringWriter();
-        IndentingWriter writer = new IndentingWriter(stringWriter);
-        ClassDefinition classDefinition = new ClassDefinition(new BaksmaliOptions(), def);
-        classDefinition.writeTo(writer);
-        writer.close();
-        String code = stringWriter.toString();
+        String code = getClassDefString(def);
         String rgex = ".method(.*)" + method + "\\(([\\s\\S]*?)end method{0,1}";
         Pattern p = Pattern.compile(rgex);
         Matcher m = p.matcher(code);
@@ -562,7 +584,7 @@ public class QuickAccessApkUtil {
         String insertCode = FileUtils.readFileToString(insertCodeFile, StandardCharsets.UTF_8);
         String buff2 = r.replace("return", insertCode + "\nreturn");
         code = code.replace(r, buff2);
-        Smali.assembleSmaliFile(editRegister(code), builder, new SmaliOptions());
+        assembleSmaliFile(editRegister(code), builder, new SmaliOptions());
     }
 
     //修改reg
@@ -665,6 +687,49 @@ public class QuickAccessApkUtil {
             }
             return methodList.stream().distinct().collect(Collectors.toList());
         }
+    }
+
+    private static void writeToDexFile(String filePath, List<ClassDef> classes, int opCode) throws IOException {
+        DexFileFactory.writeDexFile(filePath, new DexFile() {
+            @Nonnull
+            @Override
+            public Set<? extends ClassDef> getClasses() {
+                return new AbstractSet<ClassDef>() {
+                    @Nonnull
+                    @Override
+                    public Iterator<ClassDef> iterator() {
+                        return classes.iterator();
+                    }
+
+                    @Override
+                    public int size() {
+                        return classes.size();
+                    }
+                };
+            }
+
+            @Nonnull
+            @Override
+            public Opcodes getOpcodes() {
+                return Opcodes.forApi(opCode);
+            }
+        });
+    }
+
+    private static final Map<DexBuilder, Set<ClassDef>> map = new HashMap<>();
+    private static void assembleSmaliFile(String code, DexBuilder builder, SmaliOptions options) {
+        Set<? extends DexBackedClassDef> classDefSet = getClassDefFromString(code);
+        map.computeIfAbsent(builder, k->new HashSet<>()).addAll(classDefSet);
+    }
+
+    private static void internClassDef(DexBuilder builder, ClassDef classDef) {
+        map.computeIfAbsent(builder, k->new HashSet<>()).add(classDef);
+    }
+
+    private static byte[] toByteArray(DexBuilder builder) throws IOException {
+        File tempFile = File.createTempFile("dex" + System.currentTimeMillis(), null);
+        QuickAccessApkUtil.writeToDexFile(tempFile.getCanonicalPath(), new ArrayList<>(map.get(builder)), Opcodes.getDefault().api);
+        return toByteArray(new BufferedInputStream(new FileInputStream(tempFile)));
     }
 
 }

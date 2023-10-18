@@ -16,24 +16,17 @@
 //import org.apache.commons.io.FileUtils;
 //import org.jf.baksmali.Adaptors.ClassDefinition;
 //import org.jf.baksmali.BaksmaliOptions;
-//import org.jf.baksmali.formatter.BaksmaliWriter;
 //import org.jf.dexlib2.Opcodes;
 //import org.jf.dexlib2.analysis.ClassPath;
 //import org.jf.dexlib2.analysis.DexClassProvider;
-//import org.jf.dexlib2.builder.instruction.BuilderInstruction20bc;
 //import org.jf.dexlib2.dexbacked.DexBackedClassDef;
 //import org.jf.dexlib2.dexbacked.DexBackedDexFile;
 //import org.jf.dexlib2.dexbacked.DexBackedMethod;
-//import org.jf.dexlib2.iface.*;
-//import org.jf.dexlib2.iface.debug.DebugItem;
-//import org.jf.dexlib2.iface.instruction.Instruction;
-//import org.jf.dexlib2.writer.builder.BuilderClassDef;
-//import org.jf.dexlib2.writer.builder.BuilderField;
-//import org.jf.dexlib2.writer.builder.BuilderMethod;
 //import org.jf.dexlib2.writer.builder.DexBuilder;
 //import org.jf.dexlib2.writer.io.MemoryDataStore;
 //import org.jf.smali.Smali;
 //import org.jf.smali.SmaliOptions;
+//import org.jf.util.IndentingWriter;
 //
 //import java.io.*;
 //import java.nio.charset.StandardCharsets;
@@ -48,8 +41,8 @@
 ////    private static final String injectApplication = "Lcom/App;";
 ////    private static final String injectApplicationPath = "com.App";
 //    private static final String injectConfigActivity = "Lcom/c/qat/InjectConfig;";
-//    private static final String injectApplicationPath = "com.App";
-//    private static final String injectApplication = "L" + injectApplicationPath.replaceAll("\\.", "/") + ";";
+//    private static final String injectEntranceClass = "com.App";
+//    private static final String injectEntranceType = "L" + injectEntranceClass.replaceAll("\\.", "/") + ";";
 //    private static String packageName;
 //    private static String applicationName;
 //    private static String dexFinalName;
@@ -132,7 +125,7 @@
 //            throw new IOException();
 //        ArrayList<String> list = new ArrayList<>(axml.mTableStrings.getSize());
 //        axml.mTableStrings.getStrings(list);
-//        list.add(injectApplicationPath);
+//        list.add(injectEntranceClass);
 //        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //        axml.write(list, baos);
 //        return baos.toByteArray();
@@ -150,7 +143,7 @@
 //                | data[off] & 0xFF;
 //    }
 //
-//    private static void editConfig(DexBackedClassDef def, String apv) throws Exception {
+//    private static void editConfig(DexBackedClassDef def, DexBuilder builder, String apv) throws Exception {
 //        String code = getClassDefString(def);
 ////        ByteArrayOutputStream out = new ByteArrayOutputStream();
 ////        Properties conf = new Properties();
@@ -162,15 +155,12 @@
 ////        out.close();
 ////        code = code.replace("\"" + "Config" + "\"", "\"" + d + "\"");
 //        code = code.replace("\"" + "Config" + "\"", "\"" + apv + "\"");
-//        File tempFile = File.createTempFile("hyCode" + System.currentTimeMillis(), null);
-//        FileUtils.writeStringToFile(tempFile, code, StandardCharsets.UTF_8);
-//        SmaliOptions options = new SmaliOptions();
-//        Smali.assemble(options, tempFile.getCanonicalPath());
+//        Smali.assembleSmaliFile(code, builder, new SmaliOptions());
 //    }
 //
 //    private static String getClassDefString(DexBackedClassDef def) throws IOException {
 //        StringWriter stringWriter = new StringWriter();
-//        BaksmaliWriter writer = new BaksmaliWriter(stringWriter);
+//        IndentingWriter writer = new IndentingWriter(stringWriter);
 //        ClassDefinition classDefinition = new ClassDefinition(new BaksmaliOptions(), def);
 //        classDefinition.writeTo(writer);
 //        writer.close();
@@ -260,22 +250,20 @@
 //            // 注入配置
 //            ClassPath injectClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(injectClasses)), false, injectClasses.getClasses().size());
 //            DexBackedClassDef injectConfigActivityClassDef = (DexBackedClassDef) injectClasspath.getClassDef(injectConfigActivity);
-//            editConfig(injectConfigActivityClassDef, apv);
+//            editConfig(injectConfigActivityClassDef, oriBuilder, apv);
 //
 //            // 处理自定义applicationName
 //            if (StringUtils.isNotBlank(applicationName)) {
-//                DexBackedClassDef injectApplicationClassDef = (DexBackedClassDef) injectClasspath.getClassDef(injectApplication);
+//                DexBackedClassDef injectApplicationClassDef = (DexBackedClassDef) injectClasspath.getClassDef(injectEntranceType);
 //                String code = getClassDefString(injectApplicationClassDef);
 //                if (applicationName.startsWith(".")) {
 //                    if (packageName == null)
 //                        throw new NullPointerException("Package name is null.");
 //                    applicationName = packageName + applicationName;
 //                }
-//                applicationName = "L" + applicationName.replace('.', '/') + ";";
+//                applicationName = "L" + applicationName.replaceAll("\\.", "/") + ";";
 //                code = code.replace("Landroid/app/Application;", applicationName);
-//                File tempFile = File.createTempFile("hyCode" + System.currentTimeMillis(), null);
-//                FileUtils.writeStringToFile(tempFile, code, StandardCharsets.UTF_8);
-//                Smali.assemble(new SmaliOptions(), tempFile.getCanonicalPath());
+//                Smali.assembleSmaliFile(code, oriBuilder, new SmaliOptions());
 //
 //                // 检查被继承的类是否有final
 //                if(!"Landroid/app/Application;".equals(applicationName)) {
@@ -293,16 +281,14 @@
 //                                    System.out.println("isFinal: true");
 //                                    String classDefString = getClassDefString(cl);
 //                                    classDefString = classDefString.replace("final " + applicationName, applicationName);
-//                                    File tempFile1 = File.createTempFile("hyCode" + System.currentTimeMillis(), null);
-//                                    FileUtils.writeStringToFile(tempFile, classDefString, StandardCharsets.UTF_8);
-//                                    Smali.assemble(new SmaliOptions(), tempFile1.getCanonicalPath());
+//                                    Smali.assembleSmaliFile(classDefString, oriFinalBuilder, new SmaliOptions());
 //                                } else {
 //                                    System.out.println("isFinal: false");
 //                                    dexFinalName = null;
 //                                    break out;
 //                                }
 //                            } else {
-//                                internClassDef(oriFinalBuilder, cl);
+//                                oriFinalBuilder.internClassDef(cl);
 //                            }
 //                        }
 //                        if (StringUtils.isNotBlank(dexFinalName)) {
@@ -316,10 +302,10 @@
 //            for (int i = 0; i < classesList.size(); i++) {
 //                DexBackedClassDef cl = classesList.get(i);
 //                if (!cl.getType().equals(injectConfigActivity)) {
-//                    if (StringUtils.isNotBlank(applicationName) && cl.getType().equals(injectApplication)) {
+//                    if (StringUtils.isNotBlank(applicationName) && cl.getType().equals(injectEntranceType)) {
 //                        continue;
 //                    } else {
-//                        internClassDef(oriBuilder, cl);
+//                        oriBuilder.internClassDef(cl);
 //                    }
 //                }
 //                // 更新进度
@@ -329,23 +315,7 @@
 //            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 //            boolean insertFlag = true;
 //            try {
-//                AXMLDoc doc = new AXMLDoc();
-//                doc.parse(new ByteArrayInputStream(xml));
-//                PermissionEditor permissionEditor = new PermissionEditor(doc);
-//                permissionEditor.setEditorInfo(new PermissionEditor.EditorInfo()
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.本验证由红叶网络验证提供").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.QQ群.947144396").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.COORDSOFT").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.INTERNET").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_NETWORK_STATE").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_WIFI_STATE").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.READ_PHONE_STATE").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.WRITE_EXTERNAL_STORAGE").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.REQUEST_INSTALL_PACKAGES").add())
-//                );
-//                permissionEditor.commit();
-//                doc.build(byteArrayOutputStream);
-//                doc.release();
+//                addNecessaryPermission(byteArrayOutputStream, xml);
 //            } catch (Exception e1) {
 //                insertFlag = false;
 //                e1.printStackTrace();
@@ -363,14 +333,14 @@
 //            MemoryDataStore store = new MemoryDataStore();
 //            oriBuilder.writeTo(store);
 //            zos.putNextEntry(targetDexName);
-//            zos.write(Arrays.copyOf(store.getData(), store.getSize()));
+//            zos.write(Arrays.copyOf(store.getBufferData(), store.getSize()));
 //            zos.closeEntry();
 //
 //            if(StringUtils.isNotBlank(dexFinalName)) {
 //                MemoryDataStore store2 = new MemoryDataStore();
 //                oriFinalBuilder.writeTo(store2);
 //                zos.putNextEntry(dexFinalName);
-//                zos.write(Arrays.copyOf(store2.getData(), store2.getSize()));
+//                zos.write(Arrays.copyOf(store2.getBufferData(), store2.getSize()));
 //                zos.closeEntry();
 //            }
 //
@@ -397,9 +367,9 @@
 //            String outputPath = oriPath.replace(".tmp", "_injected_not_sign.tmp");
 //            // 原程序dex编译器
 //            DexBuilder oriBuilder = new DexBuilder(Opcodes.getDefault());
-////            oriBuilder.setIgnoreMethodAndFieldError(true);
+//            oriBuilder.setIgnoreMethodAndFieldError(true);
 //            DexBuilder oriBuilder2 = new DexBuilder(Opcodes.getDefault());
-////            oriBuilder.setIgnoreMethodAndFieldError(true);
+//            oriBuilder.setIgnoreMethodAndFieldError(true);
 //            // 读入注入文件
 ////            String injectPath = PathUtils.getUserPath() + File.separator + "src/test/resources" + File.separator + "data.dat";
 //            String injectPath = PathUtils.getUserPath() + File.separator + "template" + File.separator + template + ".apk.tpl";
@@ -467,14 +437,14 @@
 //            // 注入配置
 //            ClassPath injectClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(injectClasses)), false, injectClasses.getClasses().size());
 //            DexBackedClassDef injectConfigActivityClassDef = (DexBackedClassDef) injectClasspath.getClassDef(injectConfigActivity);
-//            editConfig(injectConfigActivityClassDef, apv);
+//            editConfig(injectConfigActivityClassDef, oriBuilder, apv);
 //
 //            // 合并dex
 //            for (int i = 0; i < classesList.size(); i++) {
 //                DexBackedClassDef cl = classesList.get(i);
 //                if (!cl.getType().equals("L" + vo.getActivity().replace(".", "/") + ";")
 //                        && !cl.getType().equals(injectConfigActivity)) {
-//                    internClassDef(oriBuilder, cl);
+//                    oriBuilder.internClassDef(cl);
 //                }
 //                // 更新进度
 //            }
@@ -482,26 +452,10 @@
 //
 //            // 重组APK
 //            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-////            boolean insertFlag = false;
 //            boolean insertFlag = true;
 //            try {
-//                AXMLDoc doc = new AXMLDoc();
-//                doc.parse(new ByteArrayInputStream(toByteArray(oriFile.getInputStream(oriFile.getEntry("AndroidManifest.xml")))));
-////            doc.parse(oriFile.getInputStream(oriFile.getEntry("AndroidManifest.xml")));
-//                PermissionEditor permissionEditor = new PermissionEditor(doc);
-//                permissionEditor.setEditorInfo(new PermissionEditor.EditorInfo()
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.本验证由红叶网络验证提供").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.QQ群.947144396").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.COORDSOFT").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.INTERNET").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_NETWORK_STATE").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_WIFI_STATE").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.READ_PHONE_STATE").add())
-//                        .with(new PermissionEditor.PermissionOpera("android.permission.WRITE_EXTERNAL_STORAGE").add())
-//                );
-//                permissionEditor.commit();
-//                doc.build(byteArrayOutputStream);
-//                doc.release();
+//                byte[] xml = toByteArray(oriFile.getInputStream(oriFile.getEntry("AndroidManifest.xml")));
+//                addNecessaryPermission(byteArrayOutputStream, xml);
 //            } catch (Exception e1) {
 //                insertFlag = false;
 //                e1.printStackTrace();
@@ -518,7 +472,7 @@
 //            MemoryDataStore store = new MemoryDataStore();
 //            oriBuilder.writeTo(store);
 //            zos.putNextEntry(mainDex);
-//            zos.write(Arrays.copyOf(store.getData(), store.getSize()));
+//            zos.write(Arrays.copyOf(store.getBufferData(), store.getSize()));
 //            zos.closeEntry();
 //
 //            if (!targetDexName.equals(mainDex)) {
@@ -529,13 +483,13 @@
 //                List<DexBackedClassDef> classesList2 = new ArrayList<>(classesSet2);
 //                for (int i = 0; i < classesList2.size(); i++) {
 //                    DexBackedClassDef cl = classesList2.get(i);
-//                    internClassDef(oriBuilder2, cl);
+//                    oriBuilder2.internClassDef(cl);
 //                    // 更新进度
 //                }
 //                MemoryDataStore store2 = new MemoryDataStore();
 //                oriBuilder2.writeTo(store2);
 //                zos.putNextEntry(targetDexName);
-//                zos.write(Arrays.copyOf(store2.getData(), store2.getSize()));
+//                zos.write(Arrays.copyOf(store2.getBufferData(), store2.getSize()));
 //                zos.closeEntry();
 //            }
 //
@@ -556,6 +510,25 @@
 //        }
 //    }
 //
+//    private static void addNecessaryPermission(ByteArrayOutputStream byteArrayOutputStream, byte[] xml) throws Exception {
+//        AXMLDoc doc = new AXMLDoc();
+//        doc.parse(new ByteArrayInputStream(xml));
+//        PermissionEditor permissionEditor = new PermissionEditor(doc);
+//        permissionEditor.setEditorInfo(new PermissionEditor.EditorInfo()
+//                .with(new PermissionEditor.PermissionOpera("android.permission.本验证由红叶网络验证提供").add())
+//                .with(new PermissionEditor.PermissionOpera("android.permission.QQ群.947144396").add())
+//                .with(new PermissionEditor.PermissionOpera("android.permission.COORDSOFT").add())
+//                .with(new PermissionEditor.PermissionOpera("android.permission.INTERNET").add())
+//                .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_NETWORK_STATE").add())
+//                .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_WIFI_STATE").add())
+//                .with(new PermissionEditor.PermissionOpera("android.permission.READ_PHONE_STATE").add())
+//                .with(new PermissionEditor.PermissionOpera("android.permission.WRITE_EXTERNAL_STORAGE").add())
+//        );
+//        permissionEditor.commit();
+//        doc.build(byteArrayOutputStream);
+//        doc.release();
+//    }
+//
 //    private static byte[] toByteArray(InputStream in) throws IOException {
 //        ByteArrayOutputStream out = new ByteArrayOutputStream();
 //        byte[] buffer = new byte[1024 * 4];
@@ -569,7 +542,7 @@
 //    //插入代码
 //    private static void insertCode(DexBackedClassDef def, DexBuilder builder, String method) throws Exception {
 //        StringWriter stringWriter = new StringWriter();
-//        BaksmaliWriter writer = new BaksmaliWriter(stringWriter);
+//        IndentingWriter writer = new IndentingWriter(stringWriter);
 //        ClassDefinition classDefinition = new ClassDefinition(new BaksmaliOptions(), def);
 //        classDefinition.writeTo(writer);
 //        writer.close();
@@ -588,10 +561,8 @@
 //        assert insertCodeFile != null;
 //        String insertCode = FileUtils.readFileToString(insertCodeFile, StandardCharsets.UTF_8);
 //        String buff2 = r.replace("return", insertCode + "\nreturn");
-//        code = editRegister(code.replace(r, buff2));
-//        File tempFile = File.createTempFile("hyCode" + System.currentTimeMillis(), null);
-//        FileUtils.writeStringToFile(tempFile, code, StandardCharsets.UTF_8);
-//        Smali.assemble(new SmaliOptions(), tempFile.getCanonicalPath());
+//        code = code.replace(r, buff2);
+//        Smali.assembleSmaliFile(editRegister(code), builder, new SmaliOptions());
 //    }
 //
 //    //修改reg
@@ -695,88 +666,5 @@
 //            return methodList.stream().distinct().collect(Collectors.toList());
 //        }
 //    }
-//
-//    public static BuilderClassDef internClassDef(DexBuilder builder, ClassDef classDef) {
-//        ArrayList<BuilderField> filedList = new ArrayList<>();
-//        ArrayList<BuilderMethod> methodList = new ArrayList<>();
-//        System.out.println("classDef--->" + classDef.getAccessFlags()+ "---" + classDef.getType());
-//        for (Field f : classDef.getFields()) {
-//            try {
-//                filedList.add(builder.internField(f.getDefiningClass(), f.getName(), f.getType(), f.getAccessFlags(), f.getInitialValue(), f.getAnnotations(), f.getHiddenApiRestrictions()));
-//            } catch (RuntimeException e) {
-//                System.err.println("type!!!: " + classDef.getType());
-//                e.printStackTrace();
-//            }
-//        }
-//        for (Method m : classDef.getMethods()) {
-//            try {
-//                methodList.add(builder.internMethod(m.getDefiningClass(), m.getName(), m.getParameters(), m.getReturnType(), m.getAccessFlags(), m.getAnnotations(), m.getHiddenApiRestrictions(), m.getImplementation()));
-////                methodList.add(builder.internMethod(m.getDefiningClass(), m.getName(), m.getParameters(), m.getReturnType(), m.getAccessFlags(), m.getAnnotations(), m.getHiddenApiRestrictions(), copyMethodImplementation(builder, m.getImplementation())));
-//            } catch (RuntimeException e) {
-//                System.err.println("type!!!: " + classDef.getType());
-//                e.printStackTrace();
-//            }
-//        }
-//        return builder.internClassDef(classDef.getType(), classDef.getAccessFlags(), classDef.getSuperclass(), classDef.getInterfaces(), classDef.getSourceFile(), classDef.getAnnotations(), filedList, methodList);
-//    }
-//
-//    private static MethodImplementation copyMethodImplementation(DexBuilder dexBuilder, MethodImplementation var1) {
-//        if (var1 != null) {
-//            final int registerCount = var1.getRegisterCount();
-//            final ArrayList<Instruction> instructionList = new ArrayList<>();
-//            final ArrayList<DebugItem> debugItemList = new ArrayList<>();
-//
-//            Iterator var5;
-//            Instruction instruction;
-//            for(var5 = var1.getInstructions().iterator(); var5.hasNext(); instructionList.add(instruction)) {
-//                instruction = (Instruction)var5.next();
-//                if (isOk(instruction)) {
-////                    ((UpdateReference)instruction).updateReference(dexBuilder);
-//                }
-//            }
-//
-//            List var8 = var1.getTryBlocks();
-//            final ArrayList var10 = new ArrayList(var8.size());
-//            var5 = var8.iterator();
-//
-//            while(var5.hasNext()) {
-////                var10.add(dexBuilder.copyTryBlock((TryBlock)var5.next()));
-//            }
-//
-//            DebugItem debugItem;
-//            for(Iterator var7 = var1.getDebugItems().iterator(); var7.hasNext(); debugItemList.add(debugItem)) {
-//                debugItem = (DebugItem)var7.next();
-//                if (isOk(debugItem)) {
-////                    ((UpdateReference)debugItem).updateReference(dexBuilder);
-//                }
-//            }
-//
-//            var1 = new MethodImplementation() {
-//                public Iterable<? extends DebugItem> getDebugItems() {
-//                    return debugItemList;
-//                }
-//                public Iterable<? extends Instruction> getInstructions() {
-//                    return instructionList;
-//                }
-//                public int getRegisterCount() {
-//                    return registerCount;
-//                }
-//                public List<? extends TryBlock<? extends ExceptionHandler>> getTryBlocks() {
-//                    return var10;
-//                }
-//            };
-//        }
-//
-//        return var1;
-//    }
-//
-//    private static boolean isOk(Object obj) {
-//        if(obj instanceof BuilderInstruction20bc || obj instanceof BuilderInstruction20bc) {
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//
 //
 //}
