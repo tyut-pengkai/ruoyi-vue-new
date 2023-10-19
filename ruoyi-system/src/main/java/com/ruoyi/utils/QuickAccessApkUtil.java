@@ -197,7 +197,6 @@ public class QuickAccessApkUtil {
 //        oriBuilder.setIgnoreMethodAndFieldError(true);
         DexBuilder oriFinalBuilder = new DexBuilder(Opcodes.getDefault());
         // 读入注入文件
-//            String injectPath = PathUtils.getUserPath() + File.separator + "src/test/resources" + File.separator + "data.dat";
         String injectPath = PathUtils.getUserPath() + File.separator + "template" + File.separator + template + ".apk.tpl";
         File injectFile = new File(injectPath);
         // 抽取的代码编译器
@@ -224,7 +223,7 @@ public class QuickAccessApkUtil {
                 targetDexName = "classes" + dexNameList.size() + ".dex";
                 // 多DEX，可能存在类重复问题
                 for (String dexName : dexNameList) {
-                    // 把除了要备注入的dex的类
+                    // 把除了要注入的dex的类
                     if(!dexName.equals(targetDexName)) {
                         ZipEntry entry = oriFile.getEntry(dexName);
                         DexBackedDexFile classes = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(entry)));
@@ -238,26 +237,17 @@ public class QuickAccessApkUtil {
             ZipEntry dexEntry = oriFile.getEntry(targetDexName);
             DexBackedDexFile oriTargetDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(dexEntry)));
             DexBackedDexFile injectDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new FileInputStream(injectFile)));
-            Set<DexBackedClassDef> classesSet = new HashSet<>();
-//                Set<String> classesNameSet = new HashSet<>();
-//                for (DexBackedClassDef item : oriTargetDex.getClasses()) {
-////                    System.out.println(item.getType());
-//                    classesNameSet.add(item.getType());
-//                }
-//                System.out.println(classesNameSet.size());
-//                for (DexBackedClassDef item : injectDex.getClasses()) {
-////                    System.out.println(item.getType());
-//                    classesNameSet.add(item.getType());
-//                }
-//                System.out.println(classesNameSet.size());
 
             // 检查原包是否已被红叶注入过
-            for (DexBackedClassDef aClass : oriTargetDex.getClasses()) {
-                if (aClass.getType().equals(injectConfigActivity)) {
+            Set<String> classNameSetAll = new HashSet<>(classNameSet);
+            classNameSetAll.addAll(oriTargetDex.getClasses().stream().map(DexBackedClassDef::getType).collect(Collectors.toSet()));
+            for (String className : classNameSetAll) {
+                if (className.equals(injectConfigActivity)) {
                     throw new ServiceException("该APK已经被红叶注入过，无法二次注入");
                 }
             }
 
+            Set<DexBackedClassDef> classesSet = new HashSet<>();
             classesSet.addAll(oriTargetDex.getClasses());
             classesSet.addAll(injectDex.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
 //                System.out.println(classesSet.size());
@@ -389,12 +379,11 @@ public class QuickAccessApkUtil {
 //            String outputPath = oriPath.replace(".apk", "_injected_not_sign.apk");
             String outputPath = oriPath.replace(".tmp", "_injected_not_sign.tmp");
             // 原程序dex编译器
-            DexBuilder oriBuilder = new DexBuilder(Opcodes.getDefault());
-//            oriBuilder.setIgnoreMethodAndFieldError(true);
-            DexBuilder oriBuilder2 = new DexBuilder(Opcodes.getDefault());
-//            oriBuilder.setIgnoreMethodAndFieldError(true);
+            DexBuilder oriMainBuilder = new DexBuilder(Opcodes.getDefault());
+//            oriMainBuilder.setIgnoreMethodAndFieldError(true);
+            DexBuilder oriTargetBuilder = new DexBuilder(Opcodes.getDefault());
+//            oriMainBuilder.setIgnoreMethodAndFieldError(true);
             // 读入注入文件
-//            String injectPath = PathUtils.getUserPath() + File.separator + "src/test/resources" + File.separator + "data.dat";
             String injectPath = PathUtils.getUserPath() + File.separator + "template" + File.separator + template + ".apk.tpl";
             File injectFile = new File(injectPath);
             // 抽取的代码编译器
@@ -422,7 +411,7 @@ public class QuickAccessApkUtil {
                     targetDexName = "classes" + dexNameList.size() + ".dex";
                     // 多DEX，可能存在类重复问题
                     for (String dexName : dexNameList) {
-                        // 把除了要备注入的dex的类
+                        // 把除了要注入的dex的类
                         if(!dexName.equals(targetDexName)) {
                             ZipEntry entry = oriFile.getEntry(dexName);
                             DexBackedDexFile classes = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(entry)));
@@ -435,44 +424,46 @@ public class QuickAccessApkUtil {
             }
 
             // 分析dex
-            DexBackedDexFile oriTargetDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(mainDex)))));
+            DexBackedDexFile oriMainDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(mainDex)))));
+            DexBackedDexFile oriTargetDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(targetDexName)))));
             DexBackedDexFile injectDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new FileInputStream(injectFile)));
-            Set<DexBackedClassDef> classesSet = new HashSet<>();
 
             // 检查原包是否已被红叶注入过
-            DexBackedDexFile oriClasses2 = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(targetDexName)))));
-            for (DexBackedClassDef aClass : oriClasses2.getClasses()) {
-                if (aClass.getType().equals(injectConfigActivity)) {
+            Set<String> classNameSetAll = new HashSet<>(classNameSet);
+            classNameSetAll.addAll(oriTargetDex.getClasses().stream().map(DexBackedClassDef::getType).collect(Collectors.toSet()));
+            for (String className : classNameSetAll) {
+                if (className.equals(injectConfigActivity)) {
                     throw new ServiceException("该APK已经被红叶注入过，无法二次注入");
                 }
             }
 
-            classesSet.addAll(oriTargetDex.getClasses());
+            Set<DexBackedClassDef> classesMainSet = new HashSet<>();
+            classesMainSet.addAll(oriMainDex.getClasses());
             if (targetDexName.equals(mainDex)) {
-                classesSet.addAll(injectDex.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
+                classesMainSet.addAll(injectDex.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
             }
-            List<DexBackedClassDef> classesList = new ArrayList<>(classesSet);
+            List<DexBackedClassDef> classesList = new ArrayList<>(classesMainSet);
 
             // 插入代码
-            ClassPath oriClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(oriTargetDex)), false, oriTargetDex.getClasses().size());
-            DexBackedClassDef oriActivityClassDef = (DexBackedClassDef) oriClasspath.getClassDef("L" + vo.getActivity().replace(".", "/") + ";");
-            insertCode(oriActivityClassDef, oriBuilder, vo.getMethod());
+            ClassPath oriClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(oriMainDex)), false, oriMainDex.getClasses().size());
+            DexBackedClassDef oriActivityClassDef = (DexBackedClassDef) oriClasspath.getClassDef("L" + vo.getActivity().replaceAll("\\.", "/") + ";");
+            insertCode(oriActivityClassDef, oriMainBuilder, vo.getMethod());
 
             // 注入配置
             ClassPath injectClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(injectDex)), false, injectDex.getClasses().size());
             DexBackedClassDef injectConfigActivityClassDef = (DexBackedClassDef) injectClasspath.getClassDef(injectConfigActivity);
-            editConfig(injectConfigActivityClassDef, oriBuilder, apv);
+            editConfig(injectConfigActivityClassDef, oriTargetBuilder, apv);
 
             // 合并dex
             for (int i = 0; i < classesList.size(); i++) {
                 DexBackedClassDef cl = classesList.get(i);
                 if (!cl.getType().equals("L" + vo.getActivity().replace(".", "/") + ";")
                         && !cl.getType().equals(injectConfigActivity)) {
-                    internClassDef(oriBuilder, cl);
+                    internClassDef(oriMainBuilder, cl);
                 }
                 // 更新进度
             }
-            System.out.println("getMethodReferences.size(): " + oriBuilder.getMethodReferences().size());
+            System.out.println("getMethodReferences.size(): " + oriMainBuilder.getMethodReferences().size());
 
             // 重组APK
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -494,28 +485,28 @@ public class QuickAccessApkUtil {
             }
 
 //            MemoryDataStore store = new MemoryDataStore();
-//            oriBuilder.writeTo(store);
+//            oriMainBuilder.writeTo(store);
             zos.putNextEntry(mainDex);
 //            zos.write(store.getData());
-            zos.write(toByteArray(oriBuilder));
+            zos.write(toByteArray(oriMainBuilder));
             zos.closeEntry();
 
             if (!targetDexName.equals(mainDex)) {
-//                DexBackedDexFile oriClasses2 = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(targetDexName)))));
-                Set<DexBackedClassDef> classesSet2 = new HashSet<>();
-                classesSet2.addAll(oriClasses2.getClasses());
-                classesSet2.addAll(injectDex.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
-                List<DexBackedClassDef> classesList2 = new ArrayList<>(classesSet2);
-                for (int i = 0; i < classesList2.size(); i++) {
-                    DexBackedClassDef cl = classesList2.get(i);
-                    internClassDef(oriBuilder2, cl);
+//                DexBackedDexFile oriTargetDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(targetDexName)))));
+                Set<DexBackedClassDef> classesTargetSet = new HashSet<>();
+                classesTargetSet.addAll(oriTargetDex.getClasses());
+                classesTargetSet.addAll(injectDex.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
+                List<DexBackedClassDef> classesTargetList = new ArrayList<>(classesTargetSet);
+                for (int i = 0; i < classesTargetList.size(); i++) {
+                    DexBackedClassDef cl = classesTargetList.get(i);
+                    internClassDef(oriTargetBuilder, cl);
                     // 更新进度
                 }
 //                MemoryDataStore store2 = new MemoryDataStore();
-//                oriBuilder2.writeTo(store2);
+//                oriTargetBuilder.writeTo(store2);
                 zos.putNextEntry(targetDexName);
 //                zos.write(store2.getData());
-                zos.write(toByteArray(oriBuilder2));
+                zos.write(toByteArray(oriTargetBuilder));
                 zos.closeEntry();
             }
 
@@ -732,4 +723,32 @@ public class QuickAccessApkUtil {
         return toByteArray(new BufferedInputStream(new FileInputStream(tempFile)));
     }
 
+    public static byte[] doProcess3(String apv, String template) {
+        try {
+            DexBuilder targetBuilder = new DexBuilder(Opcodes.getDefault());
+            // 读入注入文件
+            String injectPath = PathUtils.getUserPath() + File.separator + "template" + File.separator + template + ".apk.tpl";
+            File injectFile = new File(injectPath);
+
+            // 分析dex
+            DexBackedDexFile injectDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new FileInputStream(injectFile)));
+
+            // 注入配置
+            ClassPath injectClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(injectDex)), false, injectDex.getClasses().size());
+            DexBackedClassDef injectConfigActivityClassDef = (DexBackedClassDef) injectClasspath.getClassDef(injectConfigActivity);
+            editConfig(injectConfigActivityClassDef, targetBuilder, apv);
+
+            Set<DexBackedClassDef> classesTargetSet = new HashSet<>(injectDex.getClasses());
+            List<DexBackedClassDef> classesTargetList = new ArrayList<>(classesTargetSet);
+            for (int i = 0; i < classesTargetList.size(); i++) {
+                DexBackedClassDef cl = classesTargetList.get(i);
+                internClassDef(targetBuilder, cl);
+                // 更新进度
+            }
+            return toByteArray(targetBuilder);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
+        }
+    }
 }

@@ -422,7 +422,7 @@
       <el-tabs style="width: 500px" type="border-card">
         <el-tab-pane
           v-if="app && app.authType === '1' && app.billType === '0'"
-          label="APK接入"
+          label="APK(自动)"
         >
           <el-upload
             ref="upload"
@@ -592,11 +592,165 @@
               </div>
             </div>
           </el-upload>
+          <div align="center" style="margin-top: 10px">
+            <el-button :loading="loading" type="primary" @click="submitFileForm"
+            >启动上传并自动接入
+            </el-button>
+          </div>
         </el-tab-pane>
-        <el-tab-pane v-else label="APK接入" style="height: 300px">
+        <el-tab-pane v-else label="APK(自动)" style="height: 300px">
           <span>APK快速接入目前只支持【单码计时】模式的软件</span>
         </el-tab-pane>
-        <el-tab-pane label="EXE接入">
+        <el-tab-pane
+          v-if="app && app.authType === '1' && app.billType === '0'"
+          label="APK(手动)"
+        >
+          <div align="center">
+            <pre align="left">
+    手动接入步骤：
+    1、设置选项
+    2、下载DEX文件
+    3、重命名文件为classes${dex个数}.dex
+    4、将DEX文件添加进APK文件
+    5、找到注入点，将以下代码添加到目标位置
+            </pre>
+            <div style="margin-bottom: 25px">
+              <CodeEditor
+                v-model="insertCode"
+                language="smali"
+              ></CodeEditor>
+            </div>
+            <div style="margin-top: 10px">
+              <span style="margin-right: 10px">接入类别</span>
+              <el-select
+                value="1"
+                placeholder="请选择接入类别"
+                style="width: 120px; margin-right: 10px"
+                :disabled="true"
+              >
+                <el-option
+                  key="1"
+                  label="手动接入"
+                  value="1"
+                >
+                </el-option>
+              </el-select>
+              <span style="margin-right: 10px">是否全屏</span>
+              <el-select
+                v-model="upload.fullScreen"
+                placeholder="请选择是否全屏"
+                style="width: 120px"
+              >
+                <el-option
+                  v-for="item in fullScreenOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+              <span style="margin-left: 15px">
+                <el-tooltip
+                  content="可选择弹窗模式还是全屏模式，全屏模式在未登录成功前无法看到APP首页内容"
+                  placement="top"
+                >
+                  <i
+                    class="el-icon-question"
+                    style="margin-left: -12px; margin-right: 10px"
+                  ></i>
+                </el-tooltip>
+              </span>
+            </div>
+            <div style="margin-top: 10px">
+              <span style="margin-right: 10px">选择模板</span>
+              <el-select
+                v-model="upload.template"
+                placeholder="请选择接入模板"
+                style="width: 120px; margin-right: 10px"
+                @change="handleChangeTemplate"
+              >
+                <el-option
+                  v-for="item in templateOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+              <span style="margin-right: 10px">选择皮肤</span>
+              <el-select
+                v-model="upload.skin"
+                placeholder="请选择接入皮肤"
+                style="width: 120px"
+              >
+                <el-option
+                  v-for="item in skinOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+              <span style="margin-left: 15px">
+                <el-tooltip placement="top">
+                  <i
+                    class="el-icon-question"
+                    style="margin-left: -12px; margin-right: 10px"
+                  ></i>
+                  <div slot="content"><div v-html="templateShow"></div></div>
+                </el-tooltip>
+              </span>
+            </div>
+          </div>
+          <div align="center" style="margin-top: 10px">
+            <el-button :loading="loading" type="primary" @click="downloadDexFile"
+            >开始下载DEX文件
+            </el-button>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane v-else label="APK(手动)" style="height: 300px">
+          <span>APK快速接入目前只支持【单码计时】模式的软件</span>
+        </el-tab-pane>
+        <el-tab-pane
+          v-if="app && app.authType === '1' && app.billType === '0'"
+          label="APK(扫码)"
+        >
+          <div>
+            <el-alert
+              :closable="false"
+              show-icon
+              style="margin-bottom: 10px"
+              type="info"
+            >
+              <template slot="title">
+                <span> 请在官方群共享下载红叶小助手APP </span>
+              </template>
+            </el-alert>
+            <div align="center">
+              <div style="
+                width: 300px;
+                padding: 15px;
+                border-style: solid;
+                border-radius: 20px;
+                border-color: #3c8ce7;
+              ">
+                <div>
+                  请打开APP<span class="my-price">红叶小助手</span>扫一扫
+                </div>
+                <el-skeleton :loading="apvLoading" animated style="width: 200px">
+                  <template slot="template">
+                    <el-skeleton-item style="width: 200px; height: 200px" variant="image"/>
+                  </template>
+                </el-skeleton>
+                <vue-qr v-if="apvStr" :logoSrc="logoUrl" :size="200" :text="apvStr"></vue-qr>
+              </div>
+            </div>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane v-else label="APK(扫码)" style="height: 300px">
+          <span>APK快速接入目前只支持【单码计时】模式的软件</span>
+        </el-tab-pane>
+        <el-tab-pane label="EXE(自动)">
           <div style="width: 466px; height: 303px">
             <el-alert
               :closable="false"
@@ -629,9 +783,6 @@
         </el-tab-pane>
       </el-tabs>
       <div slot="footer" class="dialog-footer">
-        <el-button :loading="loading" type="primary" @click="submitFileForm"
-          >确 定
-        </el-button>
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -726,14 +877,18 @@ import {
   getQuickAccessTemplateList,
   listAppVersion,
   updateAppVersion,
+  downloadDexFile,
 } from "@/api/system/appVersion";
 import { getToken } from "@/utils/auth";
 import { getApp } from "@/api/system/app";
 import axios from "axios";
 import Clipboard from "clipboard";
+import vueQr from "vue-qr";
+import CodeEditor from "@/components/CodeEditor";
 
 export default {
   name: "AppVersion",
+  components: {vueQr, CodeEditor},
   dicts: ["sys_normal_disable", "sys_bill_type", "sys_yes_no"],
   data() {
     return {
@@ -886,8 +1041,22 @@ export default {
       showExe: false,
       showApk: false,
       apvStr: "",
+      apvLoading: false,
       templateList: [],
       templateShow: "",
+      logoUrl: require("../../../assets/logo/logo.png"),
+      insertCode: "goto :goto_36\n" +
+        ":catchall_30\n" +
+        "move-exception v0\n" +
+        "invoke-virtual {v0}, Ljava/lang/Throwable;->getCause()Ljava/lang/Throwable;\n" +
+        "move-result-object v0\n" +
+        "throw v0\n" +
+        ":goto_36\n" +
+        ":try_start_36\n" +
+        "invoke-static {p0}, Lcom/App;->show(Landroid/content/Context;)V\n" +
+        ":try_end_54\n" +
+        ".catchall {:try_start_36 .. :try_end_54}\n" +
+        ":catchall_30",
     };
   },
   created() {
@@ -1059,8 +1228,10 @@ export default {
       this.upload.title = "快速接入";
       this.upload.quickAccessVersionId = row.appVersionId;
       this.apvStr = "";
+      this.apvLoading = true;
       getQuickAccessParams(row.appVersionId).then((response) => {
         this.apvStr = response.apvStr;
+        this.apvLoading = false;
       });
       getQuickAccessTemplateList().then((response) => {
         this.templateList = response.data;
@@ -1384,6 +1555,22 @@ export default {
         this.submitFileForm();
       }
     },
+    downloadDexFile() {
+      this.loading = true;
+      var params = "versionId=" +
+        this.upload.quickAccessVersionId +
+        "&template=" +
+        this.upload.template +
+        "&skin=" +
+        this.upload.skin +
+        "&fullScreen=" +
+        this.upload.fullScreen
+      downloadDexFile(params).then((response) => {
+        this.downFile(response.data.data);
+      }).finally(() => {
+        this.loading = false;
+      });
+    }
   },
   watch: {
     //动态监听路由变化 -以便动态更改导航背景色事件效果等
@@ -1403,3 +1590,14 @@ export default {
   },
 };
 </script>
+<style scoped>
+.my-price {
+  font-weight: 600;
+  color: #3c8ce7;
+  margin-right: 5px;
+  font-size: 18px;
+}
+.echart-pie-wrap {
+  height: 240px;
+}
+</style>

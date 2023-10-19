@@ -111,4 +111,6 @@ public interface ISysAppVersionService {
      * @return
      */
     public AjaxResult getQuickAccessTemplateList();
+
+    public Map<String, Object> downloadDexFile(Long versionId, String template, String skin, boolean fullScreen);
 }

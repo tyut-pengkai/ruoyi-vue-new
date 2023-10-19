@@ -37,7 +37,6 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -259,26 +258,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                                                   String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen) {
         QuickAccessResultVo result = new QuickAccessResultVo();
         try {
-            SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
-            sysAppService.setApiUrl(app);
-            byte[] split = "|*@#||*@#|".getBytes(StandardCharsets.UTF_8);
-            AppParamVo apv = new AppParamVo();
-            apv.setApiUrl(app.getApiUrl());
-            apv.setAppSecret(app.getAppSecret());
-            apv.setVersionNo(version.getVersionNo().toString());
-            apv.setDataInEnc(app.getDataInEnc().getCode());
-            apv.setDataInPwd(app.getDataInPwd());
-            apv.setDataOutEnc(app.getDataOutEnc().getCode());
-            apv.setDataOutPwd(app.getDataOutPwd());
-            apv.setApiPwd(app.getApiPwd());
-            apv.setAuthType(app.getAuthType().getCode());
-            apv.setBillType(app.getBillType().getCode());
-            apv.setSkin(skin);
-            apv.setFullScreen(fullScreen);
-            // 加密
-            String apvStr = JSON.toJSONString(apv);
-            apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");
-
+            String apvStr = getApvString(version, template, skin, fullScreen);
             if (filename.endsWith(".exe")) {
 //                log.info("正在整合exe");
 //                byte[] apvBytes = apvStr.getBytes(StandardCharsets.UTF_8);
@@ -288,7 +268,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
 //                QuickAccessResultVo result = new QuickAccessResultVo();
 //                result.setBytes(resultBytes);
 //                return result;
-                result.getData().put("apv", apv);
+                result.getData().put("apvStr", apvStr);
             } else if(filename.endsWith(".apk")) {
                 log.info("正在快速接入" + filename);
                 byte[] injectedApk = bytes;
@@ -403,6 +383,32 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         return result;
     }
 
+    private String getApvString(SysAppVersion version, String template, String skin, boolean fullScreen) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+        AppParamVo apv = new AppParamVo();
+        SysApp app = version.getApp();
+        if(version.getApp() == null) {
+            app = sysAppService.selectSysAppByAppId(version.getAppId());
+        }
+        sysAppService.setApiUrl(app);
+        apv.setApiUrl(app.getApiUrl());
+        apv.setAppSecret(app.getAppSecret());
+        apv.setVersionNo(version.getVersionNo().toString());
+        apv.setDataInEnc(app.getDataInEnc().getCode());
+        apv.setDataInPwd(app.getDataInPwd());
+        apv.setDataOutEnc(app.getDataOutEnc().getCode());
+        apv.setDataOutPwd(app.getDataOutPwd());
+        apv.setApiPwd(app.getApiPwd());
+        apv.setAuthType(app.getAuthType().getCode());
+        apv.setBillType(app.getBillType().getCode());
+        apv.setTemplate(template);
+        apv.setSkin(skin);
+        apv.setFullScreen(fullScreen);
+        // 加密
+        String apvStr = JSON.toJSONString(apv);
+        apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");
+        return apvStr;
+    }
+
     private String rename(String appName, String filename, String versionName, String remark) {
         return "__" + appName + "_" + (versionName.replaceAll("\\.", "_")) + (StringUtils.isNotBlank(remark) ? "_" + remark : "") + "." + FileNameUtil.extName(filename);
     }
@@ -428,17 +434,10 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      */
     @Override
     public AjaxResult getQuickAccessParams(Long appVersionId) {
-
         try {
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(appVersionId);
-            QuickAccessResultVo result = quickAccessHandle(null, null, version, ".exe", null, null, null, null, false);
-            AppParamVo apv = (AppParamVo) result.getData().get("apv");
-            String apvStr = JSON.toJSONString(apv);
-            apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");
-            AjaxResult ajax = AjaxResult.success();
-            ajax.putAll(result.getData());
-            ajax.put("apvStr", apvStr);
-            return ajax;
+            String apvStr = getApvString(version, null, null, false);
+            return AjaxResult.success().put("apvStr", apvStr);
         } catch (InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
             e.printStackTrace();
         }
@@ -494,6 +493,30 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         return AjaxResult.success(result);
     }
 
+    @Override
+    public Map<String, Object> downloadDexFile(Long versionId, String template, String skin, boolean fullScreen) {
+        Map<String, Object> map = new HashMap<>();
+        try {
+            SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(versionId);
+            SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
+            String apvStr = getApvString(version, template, skin, fullScreen);
+            byte[] dex = QuickAccessApkUtil.doProcess3(apvStr, template);
+            String filename = rename(app.getAppName(), "name.dex", version.getVersionName(), "");
+            String filePath = RuoYiConfig.getDownloadPath() + filename;
+            File desc = new File(filePath);
+            if (!desc.getParentFile().exists()) {
+                desc.getParentFile().mkdirs();
+            }
+            FileUtils.writeByteArrayToFile(desc, dex);
+            map.put("step", "file");
+            map.put("data", filename);
+            return map;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException("生成失败：" + e.getMessage());
+        }
+    }
+
     @Data
     class AppParamVo {
         private String apiUrl;
@@ -506,6 +529,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         private String apiPwd;
         private String authType;
         private String billType;
+        private String template;
         private String skin;
         private boolean fullScreen;
     }

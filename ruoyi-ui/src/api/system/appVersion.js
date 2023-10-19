@@ -76,3 +76,12 @@ export function getFileResult(query) {
     timeout: 100000
   })
 }
+
+// 下载DEX文件
+export function downloadDexFile(query) {
+  return request({
+    url: '/system/appVersion/downloadDexFile?' + query,
+    method: 'post',
+    timeout: 100000
+  })
+}

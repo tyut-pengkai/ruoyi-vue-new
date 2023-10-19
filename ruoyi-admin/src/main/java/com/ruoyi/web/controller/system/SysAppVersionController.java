@@ -114,6 +114,13 @@ public class SysAppVersionController extends BaseController {
         return AjaxResult.success(sysAppVersionService.quickAccess(accessType, file, versionId, updateMd5, apkOper, template, skin, new ActivityMethodVo(oriName, oriPath, activity, method), fullScreen));
     }
 
+    @Log(title = "快速接入", businessType = BusinessType.QUICK_ACCESS)
+    // @PreAuthorize("@ss.hasPermi('system:user:import')")
+    @PostMapping("/downloadDexFile")
+    public AjaxResult downloadDexFile(Long versionId, String template, String skin, boolean fullScreen) {
+        return AjaxResult.success(sysAppVersionService.downloadDexFile(versionId, template, skin, fullScreen));
+    }
+
     /**
      * 获取快速接入参数信息
      */
