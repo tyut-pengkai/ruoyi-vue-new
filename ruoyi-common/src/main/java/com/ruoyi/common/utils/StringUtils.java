@@ -634,4 +634,17 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         }
         return sb.toString();
     }
+
+    /**
+     * 判断是否只包含英文和数字
+     * @param str
+     * @return
+     */
+    public static boolean isLetterDigit(String str) {
+        if(isEmpty(str)){
+            return false;
+        }
+        String regex = "^[a-z0-9A-Z]+$";
+        return str.matches(regex);
+    }
 }

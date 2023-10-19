@@ -86,10 +86,10 @@
               >
               </el-radio-group>
           </el-form-item> -->
-          <el-form-item label="自定义后台登录入口">
+          <el-form-item label="自定义后台登录入口，只支持字母数字">
             <span>
               <el-tooltip
-                content="修改后台登录入口后，您只能通过此地址 [ http(s)://网站域名/login/自定义入口 ] 来登录您的验证管理后台"
+                content="修改后台登录入口后，您只能通过此地址 [ http(s)://网站域名/login/设置的内容 ] 来登录您的验证管理后台，http到/login/无需输入，只输入/login/后的内容即可，输入内容只支持字母数字"
                 placement="top"
               >
                 <i
@@ -100,7 +100,7 @@
             </span>
             <el-input
               v-model="form.safeEntrance"
-              placeholder="修改后台登录入口后，您只能通过此地址 [ http(s)://网站域名/login/自定义入口 ] 来登录您的验证管理后台"
+              placeholder="修改后台登录入口后，您只能通过此地址 [ http(s)://网站域名/login/设置的内容 ] 来登录您的验证管理后台，http到/login/无需输入，只输入/login/后的内容即可，输入内容只支持字母数字"
             ></el-input>
           </el-form-item>
           <el-form-item>

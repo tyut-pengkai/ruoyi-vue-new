@@ -5,6 +5,7 @@ import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysWebsite;
@@ -69,6 +70,9 @@ public class SysWebsiteController extends BaseController {
     @Log(title = "网站配置", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysWebsite sysWebsite) {
+        if(StringUtils.isNotBlank(sysWebsite.getSafeEntrance()) && !StringUtils.isLetterDigit(sysWebsite.getSafeEntrance())) {
+            throw new ServiceException("自定义后台登录入口设置有误，只能包含字母和数字");
+        }
         sysWebsite.setId(1L);
         sysWebsite.setUpdateBy(getUsername());
         sysWebsite.setUpdateTime(DateUtils.getNowDate());
