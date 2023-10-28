@@ -139,6 +139,15 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="所属代理" prop="agentName">
+        <el-input
+          v-model="queryParams.agentName"
+          clearable
+          placeholder="请输入代理名称"
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="卡密状态" prop="status">
         <el-select
           v-model="queryParams.status"
@@ -432,6 +441,14 @@
             }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="卡密状态" prop="status">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_normal_disable"
+            :value="scope.row.status"
+          />
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="是否售出" prop="isSold">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold" />
@@ -458,12 +475,13 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="卡密状态" align="center" prop="status">
+      <el-table-column
+        label="所属代理"
+        align="center"
+        prop="agentUser.nickName"
+        :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_normal_disable"
-            :value="scope.row.status"
-          />
+          {{scope.row.agentUser && scope.row.agentUser.userName ? scope.row.agentUser.nickName + '(' + scope.row.agentUser.userName + ')' : ''}}
         </template>
       </el-table-column>
       <!-- <el-table-column label="充值规则" align="center" prop="chargeRule">
@@ -1325,9 +1343,11 @@ export default {
       this.loading = true;
       this.queryParams.params = {};
       if (null != this.daterangeExpireTime && "" != this.daterangeExpireTime) {
-        this.queryParams.params["beginExpireTime"] =
-          this.daterangeExpireTime[0];
+        this.queryParams.params["beginExpireTime"] = this.daterangeExpireTime[0];
         this.queryParams.params["endExpireTime"] = this.daterangeExpireTime[1];
+      }
+      if (null != this.queryParams.agentName && "" !== this.queryParams.agentName) {
+        this.queryParams.params["agentName"] = this.queryParams.agentName;
       }
       if (this.app) {
         this.queryParams.appId = this.app.appId;
@@ -1543,6 +1563,16 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
+      if (null != this.daterangeExpireTime && "" !== this.daterangeExpireTime) {
+        queryParams.params["beginExpireTime"] = this.daterangeExpireTime[0];
+        queryParams.params["endExpireTime"] = this.daterangeExpireTime[1];
+      }
+      if (null != this.queryParams.agentName && "" !== this.queryParams.agentName) {
+        queryParams.params["agentName"] = this.queryParams.agentName;
+      }
+      if (this.app) {
+        queryParams.appId = this.app.appId;
+      }
       this.$modal
         .confirm("是否确认导出所有卡密数据项？")
         .then(() => {

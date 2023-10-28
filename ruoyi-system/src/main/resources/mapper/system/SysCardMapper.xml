@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.SysCardMapper">
-    
+
     <resultMap type="SysCard" id="SysCardResult">
         <result property="cardId"    column="card_id"    />
         <result property="appId"    column="app_id"    />
@@ -121,6 +121,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="createBy != null  and createBy != ''">and c.create_by = #{createBy}</if>
         <if test="batchNo != null  and batchNo != ''">and c.batch_no = #{batchNo}</if>
         <if test="remark != null and remark != ''">and c.remark like concat('%', #{remark}, '%')</if>
+        <if test="params.agentName != null and params.agentName != ''">and (u.user_name like concat('%', #{params.agentName}, '%') or u.nick_name like concat('%', #{params.agentName}, '%'))</if>
         <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
             <!-- 数据范围过滤 -->
             ${params.dataScope}
