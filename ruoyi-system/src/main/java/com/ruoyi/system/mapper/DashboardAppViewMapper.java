@@ -132,11 +132,18 @@ public interface DashboardAppViewMapper {
     int queryLoginCodeNoActiveBetween(@Param("start") String start, @Param("end") String end);
 
     @Select("SELECT c.app_id, a.app_name, count( 1 ) AS total_count FROM sys_card c join sys_app a on a.app_id = c.app_id\n" +
+            "WHERE c.is_charged = 'Y' AND c.charge_time BETWEEN #{start} AND #{end} GROUP BY c.app_id, a.app_name\n" +
+            "union all \n" +
+            "SELECT c.app_id, a.app_name, count( 1 ) AS total_count FROM sys_login_code c join sys_app a on a.app_id = c.app_id\n" +
             "WHERE c.is_charged = 'Y' AND c.charge_time BETWEEN #{start} AND #{end} GROUP BY c.app_id, a.app_name")
     List<Map<String, Object>> queryAppCardActiveBetween(@Param("start") String start, @Param("end") String end);
 
     @Select("SELECT c.template_id, a.app_name, c.app_id, ct.card_name, count( 1 ) AS total_count FROM sys_card c join sys_app a on a.app_id = c.app_id join sys_card_template ct on ct.template_id = c.template_id\n" +
-            "WHERE c.is_charged = 'Y' AND c.charge_time BETWEEN #{start} AND #{end} GROUP BY c.template_id, a.app_name, c.app_id, ct.card_name")
+            "WHERE c.is_charged = 'Y' AND c.charge_time BETWEEN #{start} AND #{end} GROUP BY c.template_id, a.app_name, c.app_id, ct.card_name\n" +
+            "union all \n" +
+            "SELECT c.template_id, a.app_name, c.app_id, ct.card_name, count( 1 ) AS total_count FROM sys_login_code c join sys_app a on a.app_id = c.app_id join sys_login_code_template ct on ct.template_id = c.template_id\n" +
+            "WHERE c.is_charged = 'Y' AND c.charge_time BETWEEN #{start} AND #{end} GROUP BY c.template_id, a.app_name, c.app_id, ct.card_name\n"
+    )
     List<Map<String, Object>> queryTemplateCardActiveBetween(@Param("start") String start, @Param("end") String end);
 
     @Select("SELECT\n" +
