@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 全局变量Controller
@@ -82,7 +83,7 @@ public class SysGlobalVariableController extends BaseController {
     @PutMapping
     public AjaxResult edit(@RequestBody SysGlobalVariable sysGlobalVariable) {
         SysGlobalVariable variable = sysGlobalVariableService.selectSysGlobalVariableByName(sysGlobalVariable.getName());
-        if (variable != null && variable.getId() != sysGlobalVariable.getId()) {
+        if (variable != null && !Objects.equals(variable.getId(), sysGlobalVariable.getId())) {
             throw new ServiceException("已存在同名变量，请更换变量名称后重试");
         }
         return toAjax(sysGlobalVariableService.updateSysGlobalVariable(sysGlobalVariable));
