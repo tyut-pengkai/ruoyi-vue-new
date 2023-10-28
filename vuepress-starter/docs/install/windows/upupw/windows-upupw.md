@@ -137,12 +137,13 @@ location /profile/ {
 购买请访问商城：[https://shop.coordsoft.com/](https://shop.coordsoft.com/)
 购买授权码后点击 [激活授权](https://shop.coordsoft.com/getLicense) 为您的网站在线授权
 
-## 四、 登录网站
+## 四、初始化配置
+配置初始参数和系统开机自启动  
+点击跳转 [初始化配置](/install/init-config/init-config.md)
+
+## 五、登录网站
 至此，整个网站部署完成，如果一切正常，您可通过您的域名访问属于您的红叶网络验证系统  
 商店地址：http://域名  
 后台地址：http://域名/admin  
 默认管理员账号密码：admin/admin123
 
-## 五、初始化配置
-配置初始参数和系统开机自启动  
-点击跳转 [初始化配置](/install/init-config/init-config.md)
