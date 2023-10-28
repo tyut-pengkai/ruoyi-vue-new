@@ -83,6 +83,14 @@
         <if test="remark != null and remark != ''">and atu.remark like concat('%', #{remark}, '%')</if>
     </select>
 
+    <select id="selectSysAppTrialUserListByAppIds" parameterType="Long" resultMap="SysAppTrialUserResult">
+        <include refid="selectSysAppTrialUserVo"/>
+        where atu.app_id in
+        <foreach collection="array" item="appId" open="(" separator="," close=")">
+            #{appId}
+        </foreach>
+    </select>
+
     <select id="selectSysAppTrialUserByAppTrialUserId" parameterType="Long" resultMap="SysAppTrialUserResult">
         <include refid="selectSysAppTrialUserVo"/>
         where atu.app_trial_user_id = #{appTrialUserId}

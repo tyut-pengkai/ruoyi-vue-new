@@ -37,6 +37,8 @@ public interface ISysAppTrialUserService {
      */
     public List<SysAppTrialUser> selectSysAppTrialUserList(SysAppTrialUser sysAppTrialUser);
 
+    public List<SysAppTrialUser> selectSysAppTrialUserListByAppIds(Long[] appIds);
+
     /**
      * 新增试用信息
      *

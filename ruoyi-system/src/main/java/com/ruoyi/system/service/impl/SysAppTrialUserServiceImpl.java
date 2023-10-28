@@ -58,6 +58,11 @@ public class SysAppTrialUserServiceImpl implements ISysAppTrialUserService {
         return sysAppTrialUserMapper.selectSysAppTrialUserList(sysAppTrialUser);
     }
 
+    @Override
+    public List<SysAppTrialUser> selectSysAppTrialUserListByAppIds(Long[] appIds) {
+        return sysAppTrialUserMapper.selectSysAppTrialUserListByAppIds(appIds);
+    }
+
     /**
      * 新增试用信息
      *

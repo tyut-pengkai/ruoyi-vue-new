@@ -30,6 +30,8 @@ public interface SysAppTrialUserMapper {
      */
     public List<SysAppTrialUser> selectSysAppTrialUserList(SysAppTrialUser sysAppTrialUser);
 
+    public List<SysAppTrialUser> selectSysAppTrialUserListByAppIds(Long[] appIds);
+
     /**
      * 新增试用信息
      *
@@ -71,4 +73,5 @@ public interface SysAppTrialUserMapper {
     public SysAppTrialUser selectSysAppTrialUserByAppIdAndLoginIpAndDeviceCode(@Param("appId") Long appId, @Param("loginIp") String loginIp, @Param("deviceCode") String deviceCode);
 
     public List<SysAppTrialUser> selectSysAppTrialUserByLoginIp(String loginIp);
+
 }

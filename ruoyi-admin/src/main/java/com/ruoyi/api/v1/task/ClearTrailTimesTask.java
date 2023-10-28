@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @EnableAsync
@@ -33,19 +35,16 @@ public class ClearTrailTimesTask {
         appCondition.setEnableTrialByTimes(UserConstants.YES);
         appCondition.setStatus(UserConstants.NORMAL);
         List<SysApp> appList = appMapper.selectSysAppList(appCondition);
-        for (SysApp app : appList) {
-            SysAppTrialUser userCondition = new SysAppTrialUser();
-            userCondition.setAppId(app.getAppId());
-            List<SysAppTrialUser> trialUserList = appTrialUserService.selectSysAppTrialUserList(userCondition);
-            for (SysAppTrialUser appTrialUser : trialUserList) {
-                Long trialCycle = app.getTrialCycle();
-                if (trialCycle != null && trialCycle != 0) {
-                    Date now = DateUtils.getNowDate();
-                    if (appTrialUser.getNextEnableTime().before(now) || appTrialUser.getNextEnableTime().equals(DateUtils.parseDate(UserConstants.MAX_DATE))) {
-                        appTrialUser.setLoginTimes(0L);
-                        appTrialUser.setNextEnableTime(MyUtils.getNewExpiredTimeAdd(null, trialCycle));
-                        appTrialUserService.updateSysAppTrialUser(appTrialUser);
-                    }
+        Map<Long, Long> idToTrialCycle = appList.stream().collect(Collectors.toMap(SysApp::getAppId, SysApp::getTrialCycle));
+        List<SysAppTrialUser> trialUserList = appTrialUserService.selectSysAppTrialUserListByAppIds(appList.stream().map(SysApp::getAppId).toArray(Long[]::new));
+        for (SysAppTrialUser appTrialUser : trialUserList) {
+            Long trialCycle = idToTrialCycle.get(appTrialUser.getAppId());
+            if (trialCycle != null && trialCycle != 0) {
+                Date now = DateUtils.getNowDate();
+                if (appTrialUser.getNextEnableTime().before(now) || appTrialUser.getNextEnableTime().equals(DateUtils.parseDate(UserConstants.MAX_DATE))) {
+                    appTrialUser.setLoginTimes(0L);
+                    appTrialUser.setNextEnableTime(MyUtils.getNewExpiredTimeAdd(null, trialCycle));
+                    appTrialUserService.updateSysAppTrialUser(appTrialUser);
                 }
             }
         }
