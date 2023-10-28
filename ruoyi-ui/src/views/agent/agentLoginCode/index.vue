@@ -240,6 +240,20 @@
       ></right-toolbar>
     </el-row>
 
+    <el-alert
+        :closable="false"
+        show-icon
+        style="margin-bottom: 5px"
+        type="info"
+      >
+        <template slot="title">
+          <span>
+            温馨提示：已被使用的单码会在软件用户管理中生成对应用户，如果需要冻结软件用户，建议到软件用户管理页面进行操作，而不是操作单码。<br>
+            请注意：停用已被使用的单码会同步停用对应软件用户，但是删除已被使用的单码<b>不会</b>影响对应的软件用户。
+          </span>
+        </template>
+      </el-alert>
+
     <el-table
       v-loading="loading"
       :data="cardList"

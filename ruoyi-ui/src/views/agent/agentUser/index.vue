@@ -155,7 +155,7 @@
             <el-form-item label="允许发展子代理" prop="enableAddSubagent">
               <span>
                 <el-tooltip
-                  content="已经发展的子代不受影响"
+                  content="如果由允许修改为不允许，已经发展的子代不受影响"
                   placement="top"
                 >
                   <i
@@ -215,15 +215,15 @@
                 <span>元</span>
               </template>
             </el-table-column>
-            <el-table-column prop="myPrice" label="提卡价格" width="80" show-overflow-tooltip>
+            <el-table-column prop="myPrice" label="我的提卡价格" width="120" show-overflow-tooltip>
                 <template slot-scope="scope">
                   {{ scope.row.myPrice ? scope.row.myPrice + '元' : (scope.row.myPrice === 0 ? '0元' : '未授权')}}
                 </template>
               </el-table-column>
-            <el-table-column prop="agentPrice" label="代理价格" width="150">
+            <el-table-column prop="agentPrice" label="代理提卡价格" width="150">
               <template slot-scope="scope">
                 <el-input-number v-model="scope.row.agentPrice" :min="0" :precision="2" :step="0.01"
-                  controls-position="right" style="width: 120px" placeholder="代理价格" size="mini" />
+                  controls-position="right" style="width: 120px" placeholder="代理提卡价格" size="mini" />
                 <!-- <span>元</span> -->
               </template>
             </el-table-column>
