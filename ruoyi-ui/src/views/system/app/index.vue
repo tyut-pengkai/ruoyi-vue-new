@@ -672,13 +672,25 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item label="密码" prop="dataInPwd" label-width="60px">
-                  <el-input
-                    v-model="form.dataInPwd"
-                    placeholder="请输入加密密码"
-                    :disabled="form.dataInEnc === '0' || form.dataInEnc === '1'"
-                     maxlength="20"
-                     show-word-limit
-                  />
+                  <el-col :span="20">
+                    <el-input
+                      v-model="form.dataInPwd"
+                      placeholder="请输入加密密码"
+                      :disabled="form.dataInEnc === '0' || form.dataInEnc === '1'"
+                       maxlength="20"
+                       show-word-limit
+                    />
+                  </el-col>
+                  <el-col :span="4">
+                    <el-button
+                      size="small"
+                      icon="el-icon-refresh"
+                      circle style="margin-left: 5px"
+                      :disabled="form.dataInEnc === '0' || form.dataInEnc === '1'"
+                      @click="getRandomString('dataInPwd', 20)"
+                    >
+                    </el-button>
+                  </el-col>
                 </el-form-item>
               </el-col>
             </el-form-item>
@@ -700,15 +712,27 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item label="密码" prop="dataOutPwd" label-width="60px">
-                  <el-input
-                    v-model="form.dataOutPwd"
-                    placeholder="请输入加密密码"
-                    :disabled="
-                      form.dataOutEnc === '0' || form.dataOutEnc === '1'
-                    "
-                     maxlength="20"
-                     show-word-limit
-                  />
+                  <el-col :span="20">
+                    <el-input
+                      v-model="form.dataOutPwd"
+                      placeholder="请输入加密密码"
+                      :disabled="
+                        form.dataOutEnc === '0' || form.dataOutEnc === '1'
+                      "
+                       maxlength="20"
+                       show-word-limit
+                    />
+                  </el-col>
+                  <el-col :span="4">
+                    <el-button
+                      size="small"
+                      icon="el-icon-refresh"
+                      circle style="margin-left: 5px"
+                      :disabled="form.dataOutEnc === '0' || form.dataOutEnc === '1'"
+                      @click="getRandomString('dataOutPwd', 20)"
+                    >
+                    </el-button>
+                  </el-col>
                 </el-form-item>
               </el-col>
             </el-form-item>
@@ -754,8 +778,19 @@
                 </el-form-item>
               </el-col>
             </el-form-item>
-            <el-form-item label="API匿名密码" prop="apiPwd">
-              <el-input v-model="form.apiPwd" placeholder="请输入API匿名密码" maxlength="20" show-word-limit/>
+            <el-form-item label="API匿名密码" prop="apiPwd" label-width="100px">
+              <el-col :span="22">
+                <el-input v-model="form.apiPwd" placeholder="请输入API匿名密码" maxlength="20" show-word-limit/>
+              </el-col>
+              <el-col :span="2">
+                <el-button
+                  size="small"
+                  icon="el-icon-refresh"
+                  circle style="margin-left: 5px"
+                  @click="getRandomString('apiPwd', 20)"
+                >
+                </el-button>
+              </el-col>
             </el-form-item>
           </el-tab-pane>
           <!-- 绑定设置 -->
@@ -1230,29 +1265,65 @@
           </el-tab-pane> -->
           <!-- 对接信息 -->
           <el-tab-pane label="接口信息" v-if="form.appId">
-            <el-form-item label="API接口地址" prop="apiUrl">
-              <el-input
-                placeholder="未获取到相关信息"
-                :value="form.apiUrl"
-                :readonly="true"
-              >
-              </el-input>
+            <el-form-item label="API接口地址" prop="apiUrl" label-width="110px">
+              <el-col :span="22">
+                <el-input
+                  placeholder="未获取到相关信息"
+                  :value="form.apiUrl"
+                  :readonly="true"
+                >
+                </el-input>
+              </el-col>
+              <el-col :span="2">
+                <el-button
+                  id="copyButton"
+                  size="small"
+                  icon="el-icon-document-copy"
+                  circle style="margin-left: 5px"
+                  @click="doCopy('apiUrl')"
+                >
+                </el-button>
+              </el-col>
             </el-form-item>
-            <el-form-item label="APP KEY" prop="apiUrl">
-              <el-input
-                placeholder="未获取到相关信息"
-                :value="form.appKey"
-                :readonly="true"
-              >
-              </el-input>
+            <el-form-item label="APP KEY" prop="appKey" label-width="110px">
+              <el-col :span="22">
+                <el-input
+                  placeholder="未获取到相关信息"
+                  :value="form.appKey"
+                  :readonly="true"
+                >
+                </el-input>
+              </el-col>
+              <el-col :span="2">
+                <el-button
+                  id="copyButton"
+                  size="small"
+                  icon="el-icon-document-copy"
+                  circle style="margin-left: 5px"
+                  @click="doCopy('appKey')"
+                >
+                </el-button>
+              </el-col>
             </el-form-item>
-            <el-form-item label="APP SECRET" prop="apiUrl">
-              <el-input
-                placeholder="未获取到相关信息"
-                :value="form.appSecret"
-                :readonly="true"
-              >
-              </el-input>
+            <el-form-item label="APP SECRET" prop="appSecret" label-width="110px">
+              <el-col :span="22">
+                <el-input
+                  placeholder="未获取到相关信息"
+                  :value="form.appSecret"
+                  :readonly="true"
+                >
+                </el-input>
+              </el-col>
+              <el-col :span="2">
+                <el-button
+                  id="copyButton"
+                  size="small"
+                  icon="el-icon-document-copy"
+                  circle style="margin-left: 5px"
+                  @click="doCopy('appSecret')"
+                >
+                </el-button>
+              </el-col>
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane v-if="form.appId" label="API匿名信息">
@@ -1292,12 +1363,14 @@ import {
   exportApp,
   getApp,
   listApp,
-  updateApp,
-} from "@/api/system/app";
-import appIcon from "./appIcon";
-import Updown from "@/components/Updown";
-import DateDuration from "@/components/DateDuration";
-import {parseTime} from "@/utils/ruoyi";
+  updateApp
+} from '@/api/system/app'
+import appIcon from './appIcon'
+import Updown from '@/components/Updown'
+import DateDuration from '@/components/DateDuration'
+import { parseTime } from '@/utils/ruoyi'
+import { randomString } from '@/api/common'
+import Clipboard from "clipboard";
 
 export default {
   components: {appIcon, Updown, DateDuration},
@@ -1830,6 +1903,29 @@ export default {
     handleTrialTimeQuantum(timeQuantum) {
       this.form.trialTimeQuantum =
         this.parseTime(timeQuantum[0]) + "-" + this.parseTime(timeQuantum[1]);
+    },
+    getRandomString(index, length) {
+      randomString(length).then(response => {
+        this.form[index] = response.msg;
+      })
+    },
+    doCopy(index) {
+      var clipboard = new Clipboard("#copyButton", {
+        text: () => {
+          // 如果想从其它DOM元素内容复制。应该是target:function(){return: };
+          return this.form[index];
+        },
+      });
+      clipboard.on("success", (e) => {
+        this.$modal.msgSuccess("已成功复制到剪贴板");
+        clipboard.destroy();
+      });
+      clipboard.on("error", (e) => {
+        this.$modal.msgError(
+          "复制失败，您的浏览器不支持复制，请自行复制对接参数"
+        );
+        clipboard.destroy();
+      });
     },
   },
   watch: {

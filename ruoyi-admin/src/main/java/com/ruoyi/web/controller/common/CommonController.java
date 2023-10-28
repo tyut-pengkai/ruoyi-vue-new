@@ -22,6 +22,7 @@ import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysWebsite;
 import com.ruoyi.system.mapper.DashboardAppViewMapper;
 import com.ruoyi.system.service.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -1091,5 +1092,10 @@ public class CommonController {
 
         }
         return AjaxResult.success(map);
+    }
+
+    @GetMapping("/randomString")
+    public AjaxResult randomString(int length) {
+        return AjaxResult.success(RandomStringUtils.randomAlphanumeric(length));
     }
 }

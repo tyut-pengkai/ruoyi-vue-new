@@ -27,3 +27,10 @@ export function getDashboardInfoAppView(query) {
     timeout: 30000
   })
 }
+
+export function randomString(length) {
+  return request({
+    url: '/common/randomString?length=' + length,
+    method: 'get'
+  })
+}
