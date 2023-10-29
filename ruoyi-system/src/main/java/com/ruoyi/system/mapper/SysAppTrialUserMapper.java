@@ -1,5 +1,6 @@
 package com.ruoyi.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.common.core.domain.entity.SysAppTrialUser;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,7 @@ import java.util.List;
  * @date 2022-08-01
  */
 @Repository
-public interface SysAppTrialUserMapper {
+public interface SysAppTrialUserMapper extends BaseMapper<SysAppTrialUser> {
     /**
      * 查询试用信息
      *
@@ -31,6 +32,8 @@ public interface SysAppTrialUserMapper {
     public List<SysAppTrialUser> selectSysAppTrialUserList(SysAppTrialUser sysAppTrialUser);
 
     public List<SysAppTrialUser> selectSysAppTrialUserListByAppIds(Long[] appIds);
+
+    public List<SysAppTrialUser> selectSysAppTrialUserListByAppIdsAndNextEnableTimeBeforeNow(Long[] appIds);
 
     /**
      * 新增试用信息
@@ -73,5 +76,4 @@ public interface SysAppTrialUserMapper {
     public SysAppTrialUser selectSysAppTrialUserByAppIdAndLoginIpAndDeviceCode(@Param("appId") Long appId, @Param("loginIp") String loginIp, @Param("deviceCode") String deviceCode);
 
     public List<SysAppTrialUser> selectSysAppTrialUserByLoginIp(String loginIp);
-
 }

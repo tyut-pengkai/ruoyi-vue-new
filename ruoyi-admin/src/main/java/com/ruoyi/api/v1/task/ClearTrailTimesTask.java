@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -34,19 +35,22 @@ public class ClearTrailTimesTask {
         appCondition.setEnableTrial(UserConstants.YES);
         appCondition.setEnableTrialByTimes(UserConstants.YES);
         appCondition.setStatus(UserConstants.NORMAL);
-        List<SysApp> appList = appMapper.selectSysAppList(appCondition);
+        // 获取试用周期不为0的软件
+        List<SysApp> appList = appMapper.selectSysAppList(appCondition).stream().filter(item -> item.getTrialCycle() != null && item.getTrialCycle() != 0).collect(Collectors.toList());
         Map<Long, Long> idToTrialCycle = appList.stream().collect(Collectors.toMap(SysApp::getAppId, SysApp::getTrialCycle));
-        List<SysAppTrialUser> trialUserList = appTrialUserService.selectSysAppTrialUserListByAppIds(appList.stream().map(SysApp::getAppId).toArray(Long[]::new));
+        List<SysAppTrialUser> trialUserList = appTrialUserService.selectSysAppTrialUserListByAppIdsAndNextEnableTimeBeforeNow(appList.stream().map(SysApp::getAppId).toArray(Long[]::new));
+        List<SysAppTrialUser> trialUserListBatchList = new ArrayList<>();
         for (SysAppTrialUser appTrialUser : trialUserList) {
-            Long trialCycle = idToTrialCycle.get(appTrialUser.getAppId());
-            if (trialCycle != null && trialCycle != 0) {
-                Date now = DateUtils.getNowDate();
-                if (appTrialUser.getNextEnableTime().before(now) || appTrialUser.getNextEnableTime().equals(DateUtils.parseDate(UserConstants.MAX_DATE))) {
-                    appTrialUser.setLoginTimes(0L);
-                    appTrialUser.setNextEnableTime(MyUtils.getNewExpiredTimeAdd(null, trialCycle));
-                    appTrialUserService.updateSysAppTrialUser(appTrialUser);
-                }
+            Date now = DateUtils.getNowDate();
+            if (appTrialUser.getNextEnableTime().before(now) || appTrialUser.getNextEnableTime().equals(DateUtils.parseDate(UserConstants.MAX_DATE))) {
+                Long trialCycle = idToTrialCycle.get(appTrialUser.getAppId());
+                appTrialUser.setLoginTimes(0L);
+                appTrialUser.setNextEnableTime(MyUtils.getNewExpiredTimeAdd(null, trialCycle));
+                trialUserListBatchList.add(appTrialUser);
             }
+        }
+        if(!trialUserListBatchList.isEmpty()) {
+            appTrialUserService.updateBatchById(trialUserListBatchList);
         }
     }
 

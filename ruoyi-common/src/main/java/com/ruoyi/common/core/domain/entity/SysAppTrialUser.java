@@ -1,5 +1,7 @@
 package com.ruoyi.common.core.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
@@ -20,6 +22,7 @@ public class SysAppTrialUser extends BaseEntity {
     /**
      * ID
      */
+    @TableId
     private Long appTrialUserId;
 
     /**
@@ -84,11 +87,13 @@ public class SysAppTrialUser extends BaseEntity {
      */
     private String delFlag;
 
+    @TableField(exist = false)
     private String userName;
 
     /**
      * 所属软件信息
      */
+    @TableField(exist = false)
     @Excel(name = "软件名称", targetAttr = "appName", type = Excel.Type.EXPORT)
     private SysApp app;
 

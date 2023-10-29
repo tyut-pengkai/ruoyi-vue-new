@@ -91,6 +91,14 @@
         </foreach>
     </select>
 
+    <select id="selectSysAppTrialUserListByAppIdsAndNextEnableTimeBeforeNow" parameterType="Long" resultMap="SysAppTrialUserResult">
+        <include refid="selectSysAppTrialUserVo"/>
+        where (atu.next_enable_time &lt; sysdate() or atu.next_enable_time = '9999-12-31 23:59:59') and atu.app_id in
+        <foreach collection="array" item="appId" open="(" separator="," close=")">
+            #{appId}
+        </foreach>
+    </select>
+
     <select id="selectSysAppTrialUserByAppTrialUserId" parameterType="Long" resultMap="SysAppTrialUserResult">
         <include refid="selectSysAppTrialUserVo"/>
         where atu.app_trial_user_id = #{appTrialUserId}

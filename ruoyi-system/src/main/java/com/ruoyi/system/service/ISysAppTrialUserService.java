@@ -1,5 +1,6 @@
 package com.ruoyi.system.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.ruoyi.common.core.domain.entity.SysAppTrialUser;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * @author zwgu
  * @date 2022-08-01
  */
-public interface ISysAppTrialUserService {
+public interface ISysAppTrialUserService extends IService<SysAppTrialUser> {
     /**
      * 查询试用信息
      *
@@ -38,6 +39,8 @@ public interface ISysAppTrialUserService {
     public List<SysAppTrialUser> selectSysAppTrialUserList(SysAppTrialUser sysAppTrialUser);
 
     public List<SysAppTrialUser> selectSysAppTrialUserListByAppIds(Long[] appIds);
+
+    public List<SysAppTrialUser> selectSysAppTrialUserListByAppIdsAndNextEnableTimeBeforeNow(Long[] appIds);
 
     /**
      * 新增试用信息

@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.common.core.domain.entity.SysAppTrialUser;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.mapper.SysAppTrialUserMapper;
@@ -16,7 +17,7 @@ import java.util.List;
  * @date 2022-08-01
  */
 @Service
-public class SysAppTrialUserServiceImpl implements ISysAppTrialUserService {
+public class SysAppTrialUserServiceImpl extends ServiceImpl<SysAppTrialUserMapper, SysAppTrialUser> implements ISysAppTrialUserService {
     @Autowired
     private SysAppTrialUserMapper sysAppTrialUserMapper;
 
@@ -61,6 +62,10 @@ public class SysAppTrialUserServiceImpl implements ISysAppTrialUserService {
     @Override
     public List<SysAppTrialUser> selectSysAppTrialUserListByAppIds(Long[] appIds) {
         return sysAppTrialUserMapper.selectSysAppTrialUserListByAppIds(appIds);
+    }
+
+    public List<SysAppTrialUser> selectSysAppTrialUserListByAppIdsAndNextEnableTimeBeforeNow(Long[] appIds) {
+        return sysAppTrialUserMapper.selectSysAppTrialUserListByAppIdsAndNextEnableTimeBeforeNow(appIds);
     }
 
     /**
