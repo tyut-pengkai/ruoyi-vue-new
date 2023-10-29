@@ -194,7 +194,10 @@ public class SysAppLoginService {
                 recordLoginInfo(loginUser);
 
                 // 自动扣除点数
-                if (app.getBillType() == BillType.POINT && autoReducePoint) {
+                if (app.getBillType() == BillType.POINT &&
+                        ((autoReducePoint && app.getLoginReducePointStrategy() == LoginReducePointStrategy.PARAMS) ||
+                                app.getLoginReducePointStrategy() == LoginReducePointStrategy.ALWAYS)
+                ) {
                     SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
                     appUser = appUserService.selectSysAppUserByAppUserId(appUser.getAppUserId());
                     expireLog.setPointBefore(appUser.getPoint());
@@ -404,7 +407,10 @@ public class SysAppLoginService {
                 recordLoginInfo(loginUser);
 
                 // 自动扣除点数
-                if (app.getBillType() == BillType.POINT && autoReducePoint) {
+                if (app.getBillType() == BillType.POINT &&
+                        ((autoReducePoint && app.getLoginReducePointStrategy() == LoginReducePointStrategy.PARAMS) ||
+                                app.getLoginReducePointStrategy() == LoginReducePointStrategy.ALWAYS)
+                ) {
                     SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
                     appUser = appUserService.selectSysAppUserByAppUserId(appUser.getAppUserId());
                     expireLog.setPointBefore(appUser.getPoint());

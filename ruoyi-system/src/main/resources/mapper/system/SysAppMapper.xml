@@ -19,6 +19,7 @@
 		<result property="enableNegative" column="enable_negative"/>
 		<result property="authType"    column="auth_type"    />
 		<result property="billType"    column="bill_type"    />
+		<result property="loginReducePointStrategy" column="login_reduce_point_strategy" />
 		<result property="dataInEnc"    column="data_in_enc"    />
 		<result property="dataInPwd"    column="data_in_pwd"    />
 		<result property="dataOutEnc" column="data_out_enc"/>
@@ -80,6 +81,7 @@
 			   a.enable_negative,
 			   a.auth_type,
 			   a.bill_type,
+			   a.login_reduce_point_strategy,
 			   a.data_in_enc,
 			   a.data_in_pwd,
 			   a.data_out_enc,
@@ -161,6 +163,7 @@
 		<if test="isCharge != null  and isCharge != ''">and a.is_charge = #{isCharge}</if>
 		<if test="authType != null">and a.auth_type = #{authType}</if>
 		<if test="billType != null">and a.bill_type = #{billType}</if>
+		<if test="loginReducePointStrategy != null">and a.login_reduce_point_strategy = #{loginReducePointStrategy}</if>
 		<if test="createBy != null  and createBy != ''">and (u.nick_name like concat('%', #{createBy}, '%') or
 			u.user_name like concat('%', #{createBy}, '%'))
 		</if>
@@ -207,6 +210,7 @@
 			<if test="enableNegative != null">enable_negative,</if>
 			<if test="authType != null">auth_type,</if>
 			<if test="billType != null">bill_type,</if>
+			<if test="loginReducePointStrategy != null">login_reduce_point_strategy,</if>
 			<if test="dataInEnc != null">data_in_enc,</if>
 			<if test="dataInPwd != null">data_in_pwd,</if>
 			<if test="dataOutEnc != null">data_out_enc,</if>
@@ -260,6 +264,7 @@
 			<if test="enableNegative != null">#{enableNegative},</if>
 			<if test="authType != null">#{authType},</if>
 			<if test="billType != null">#{billType},</if>
+			<if test="loginReducePointStrategy != null">#{loginReducePointStrategy},</if>
 			<if test="dataInEnc != null">#{dataInEnc},</if>
 			<if test="dataInPwd != null">#{dataInPwd},</if>
 			<if test="dataOutEnc != null">#{dataOutEnc},</if>
@@ -316,6 +321,7 @@
 			<if test="enableNegative != null">enable_negative = #{enableNegative},</if>
 <!--			<if test="authType != null">auth_type = #{authType},</if>-->
 <!--			<if test="billType != null">bill_type = #{billType},</if>-->
+			<if test="loginReducePointStrategy != null">login_reduce_point_strategy = #{loginReducePointStrategy},</if>
 			<if test="dataInEnc != null">data_in_enc = #{dataInEnc},</if>
 			<if test="dataInPwd != null">data_in_pwd = #{dataInPwd},</if>
 			<if test="dataOutEnc != null">data_out_enc = #{dataOutEnc},</if>

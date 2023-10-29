@@ -236,6 +236,20 @@ public class SysApp extends BaseEntity
      */
     private String enableFeCharge;
 
+    /**
+     * 登录点数扣减策略(计点模式有效）
+     */
+    @Excel(name = "登录点数扣减策略(计点模式有效）", dictType = "sys_login_reduce_point_strategy")
+    private LoginReducePointStrategy loginReducePointStrategy;
+
+    public LoginReducePointStrategy getLoginReducePointStrategy() {
+        return loginReducePointStrategy;
+    }
+
+    public void setLoginReducePointStrategy(LoginReducePointStrategy loginReducePointStrategy) {
+        this.loginReducePointStrategy = loginReducePointStrategy;
+    }
+
     public String getEnableFeCharge() {
         return enableFeCharge;
     }

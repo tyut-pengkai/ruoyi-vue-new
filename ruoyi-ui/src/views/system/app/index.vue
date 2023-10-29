@@ -501,6 +501,24 @@
                 </el-form-item>
               </el-col>
             </el-form-item>
+            <el-form-item>
+              <el-col :span="12">
+                <el-form-item label="登录扣点策略" prop="loginReducePointStrategy" v-if="form.billType === '1'">
+                  <el-select
+                    v-model="form.loginReducePointStrategy"
+                    placeholder="请选择登录扣点策略"
+                    :disabled="form.billType !== '1'"
+                  >
+                    <el-option
+                      v-for="dict in dict.type.sys_login_reduce_point_strategy"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-form-item>
             <el-form-item label="软件描述" prop="description">
               <el-input
                 v-model="form.description"
@@ -1384,6 +1402,7 @@ export default {
     "sys_encryp_type",
     "sys_gen_rule",
     "sys_limit_oper",
+    "sys_login_reduce_point_strategy",
   ],
   data() {
     return {
@@ -1466,6 +1485,9 @@ export default {
         ],
         billType: [
           { required: true, message: "计费类型不能为空", trigger: "change" },
+        ],
+        loginReducePointStrategy: [
+          { required: true, message: "登录扣点策略不能为空", trigger: "change" },
         ],
         dataInEnc: [
           {
@@ -1698,6 +1720,7 @@ export default {
         customBuyUrl: undefined,
         enableNegative: "N",
         enableFeCharge: "Y",
+        loginReducePointStrategy: "0"
       };
       this.resetForm("form");
       this.tabIdx = "0";
