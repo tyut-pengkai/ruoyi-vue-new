@@ -291,7 +291,11 @@ public class QuickAccessApkUtil {
                                     System.out.println("isFinal: true");
                                     String classDefString = getClassDefString(cl);
                                     classDefString = classDefString.replace("final " + applicationName, applicationName);
-                                    assembleSmaliFile(classDefString, oriFinalBuilder, new SmaliOptions());
+                                    if(dexFinalName.equals(targetDexName)) {
+                                        assembleSmaliFile(classDefString, oriBuilder, new SmaliOptions());
+                                    } else {
+                                        assembleSmaliFile(classDefString, oriFinalBuilder, new SmaliOptions());
+                                    }
                                 } else {
                                     System.out.println("isFinal: false");
                                     dexFinalName = null;
@@ -347,7 +351,7 @@ public class QuickAccessApkUtil {
             zos.write(toByteArray(oriBuilder));
             zos.closeEntry();
 
-            if(StringUtils.isNotBlank(dexFinalName)) {
+            if(StringUtils.isNotBlank(dexFinalName) && !dexFinalName.equals(targetDexName)) {
 //                MemoryDataStore store2 = new MemoryDataStore();
 //                oriFinalBuilder.writeTo(store2);
                 zos.putNextEntry(dexFinalName);
@@ -492,6 +496,7 @@ public class QuickAccessApkUtil {
             zos.closeEntry();
 
             if (!targetDexName.equals(mainDex)) {
+                // 合并dex
 //                DexBackedDexFile oriTargetDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(targetDexName)))));
                 Set<DexBackedClassDef> classesTargetSet = new HashSet<>();
                 classesTargetSet.addAll(oriTargetDex.getClasses());
@@ -571,7 +576,6 @@ public class QuickAccessApkUtil {
             throw new Exception("没有找到函数头");
         }
         File insertCodeFile = PathUtils.getResourceFile("insertCode.txt");
-        assert insertCodeFile != null;
         String insertCode = FileUtils.readFileToString(insertCodeFile, StandardCharsets.UTF_8);
         String buff2 = r.replace("return", insertCode + "\nreturn");
         code = code.replace(r, buff2);
@@ -627,7 +631,9 @@ public class QuickAccessApkUtil {
                         if (name.startsWith(".")) {
                             name = packageName + name;
                         }
-                        list.add(name);
+                        if(!list.contains(name)) {
+                            list.add(name);
+                        }
                     }
                 }
             }
@@ -670,7 +676,9 @@ public class QuickAccessApkUtil {
                     if (h.getType().equals("L" + activity.replace(".", "/") + ";")) {
                         mainDex = dexFile;
                         for (DexBackedMethod m : h.getMethods()) {
-                            methodList.add(m.getName());
+                            if(!methodList.contains(m.getName())) {
+                                methodList.add(m.getName());
+                            }
                         }
                         break;
                     }
