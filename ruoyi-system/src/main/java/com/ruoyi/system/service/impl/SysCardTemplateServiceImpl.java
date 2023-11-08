@@ -71,6 +71,7 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
     public int insertSysCardTemplate(SysCardTemplate sysCardTemplate)
     {
         sysCardTemplate.setCreateTime(DateUtils.getNowDate());
+        sysCardTemplate.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysCardTemplateMapper.insertSysCardTemplate(sysCardTemplate);
     }
 
@@ -84,6 +85,7 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
     public int updateSysCardTemplate(SysCardTemplate sysCardTemplate)
     {
         sysCardTemplate.setUpdateTime(DateUtils.getNowDate());
+        sysCardTemplate.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysCardTemplateMapper.updateSysCardTemplate(sysCardTemplate);
     }
 
@@ -153,7 +155,7 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
             sysCard.setCardCustomParams(cardTpl.getCardCustomParams());
             sysCard.setBatchNo(batchNo);
             try {
-                sysCard.setCreateBy(SecurityUtils.getUsername());
+                sysCard.setCreateBy(SecurityUtils.getUsernameNoException());
                 sysCard.setAgentId(SecurityUtils.getUserId());
             } catch (Exception ignored) {
             }

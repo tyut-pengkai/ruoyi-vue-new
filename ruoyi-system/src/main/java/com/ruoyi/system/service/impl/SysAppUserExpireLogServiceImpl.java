@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.SysAppUserExpireLog;
 import com.ruoyi.system.mapper.SysAppUserExpireLogMapper;
 import com.ruoyi.system.service.ISysAppUserExpireLogService;
@@ -51,6 +52,7 @@ public class SysAppUserExpireLogServiceImpl implements ISysAppUserExpireLogServi
     @Override
     public int insertSysAppUserExpireLog(SysAppUserExpireLog sysAppUserExpireLog) {
         sysAppUserExpireLog.setCreateTime(DateUtils.getNowDate());
+        sysAppUserExpireLog.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysAppUserExpireLogMapper.insertSysAppUserExpireLog(sysAppUserExpireLog);
     }
 
@@ -63,6 +65,7 @@ public class SysAppUserExpireLogServiceImpl implements ISysAppUserExpireLogServi
     @Override
     public int updateSysAppUserExpireLog(SysAppUserExpireLog sysAppUserExpireLog) {
         sysAppUserExpireLog.setUpdateTime(DateUtils.getNowDate());
+        sysAppUserExpireLog.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysAppUserExpireLogMapper.updateSysAppUserExpireLog(sysAppUserExpireLog);
     }
 

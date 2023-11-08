@@ -2,6 +2,7 @@ package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.mapper.SysAppUserDeviceCodeMapper;
 import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,7 @@ public class SysAppUserDeviceCodeServiceImpl implements ISysAppUserDeviceCodeSer
     @Override
     public int insertSysAppUserDeviceCode(SysAppUserDeviceCode sysAppUserDeviceCode) {
         sysAppUserDeviceCode.setCreateTime(DateUtils.getNowDate());
+        sysAppUserDeviceCode.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysAppUserDeviceCodeMapper.insertSysAppUserDeviceCode(sysAppUserDeviceCode);
     }
 
@@ -63,6 +65,7 @@ public class SysAppUserDeviceCodeServiceImpl implements ISysAppUserDeviceCodeSer
     @Override
     public int updateSysAppUserDeviceCode(SysAppUserDeviceCode sysAppUserDeviceCode) {
         sysAppUserDeviceCode.setUpdateTime(DateUtils.getNowDate());
+        sysAppUserDeviceCode.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysAppUserDeviceCodeMapper.updateSysAppUserDeviceCode(sysAppUserDeviceCode);
     }
 

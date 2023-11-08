@@ -17,7 +17,7 @@ import java.util.TimerTask;
 
 /**
  * 异步工厂（产生任务用）
- * 
+ *
  * @author ruoyi
  */
 public class AsyncFactory
@@ -26,7 +26,7 @@ public class AsyncFactory
 
     /**
      * 记录登录信息
-     * 
+     *
      * @param username 用户名
      * @param status 状态
      * @param message 消息
@@ -81,7 +81,7 @@ public class AsyncFactory
 
     /**
      * 操作日志记录
-     * 
+     *
      * @param operLog 操作日志信息
      * @return 任务task
      */
@@ -108,6 +108,21 @@ public class AsyncFactory
             @Override
             public void run() {
                 SpringUtils.getBean(ISysAppUserExpireLogService.class).insertSysAppUserExpireLog(expireLog);
+            }
+        };
+    }
+
+    /**
+     * 用户解绑记录
+     *
+     * @param unbindLog 解绑日志信息
+     * @return 任务task
+     */
+    public static TimerTask recordDeviceUnbind(final SysUnbindLog unbindLog) {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                SpringUtils.getBean(ISysUnbindLogService.class).insertSysUnbindLog(unbindLog);
             }
         };
     }

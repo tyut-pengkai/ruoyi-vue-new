@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.SysNavigation;
 import com.ruoyi.system.mapper.SysNavigationMapper;
 import com.ruoyi.system.service.ISysNavigationService;
@@ -51,6 +52,7 @@ public class SysNavigationServiceImpl implements ISysNavigationService {
     @Override
     public int insertSysNavigation(SysNavigation sysNavigation) {
         sysNavigation.setCreateTime(DateUtils.getNowDate());
+        sysNavigation.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysNavigationMapper.insertSysNavigation(sysNavigation);
     }
 
@@ -63,6 +65,7 @@ public class SysNavigationServiceImpl implements ISysNavigationService {
     @Override
     public int updateSysNavigation(SysNavigation sysNavigation) {
         sysNavigation.setUpdateTime(DateUtils.getNowDate());
+        sysNavigation.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysNavigationMapper.updateSysNavigation(sysNavigation);
     }
 

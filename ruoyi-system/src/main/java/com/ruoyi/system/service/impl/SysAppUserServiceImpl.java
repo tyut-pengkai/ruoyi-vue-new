@@ -82,6 +82,8 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
     @Override
     public int insertSysAppUser(SysAppUser sysAppUser)
     {
+        sysAppUser.setCreateTime(DateUtils.getNowDate());
+        sysAppUser.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysAppUserMapper.insertSysAppUser(sysAppUser);
     }
 
@@ -94,10 +96,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
     @Override
     public int updateSysAppUser(SysAppUser sysAppUser) {
         sysAppUser.setUpdateTime(DateUtils.getNowDate());
-        try {
-            sysAppUser.setUpdateBy(SecurityUtils.getUsername());
-        } catch (Exception ignored) {
-        }
+        sysAppUser.setUpdateBy(SecurityUtils.getUsernameNoException());
         int i = sysAppUserMapper.updateSysAppUser(sysAppUser);
         if (i > 0) {
             SysAppUser appUser = sysAppUserMapper.selectSysAppUserByAppUserId(sysAppUser.getAppUserId());

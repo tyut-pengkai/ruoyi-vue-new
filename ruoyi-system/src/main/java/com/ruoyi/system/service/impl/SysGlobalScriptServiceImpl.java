@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.SysGlobalScript;
 import com.ruoyi.system.mapper.SysGlobalScriptMapper;
 import com.ruoyi.system.service.ISysGlobalScriptService;
@@ -73,6 +74,7 @@ public class SysGlobalScriptServiceImpl implements ISysGlobalScriptService {
     @Override
     public int insertSysGlobalScript(SysGlobalScript sysGlobalScript) {
         sysGlobalScript.setCreateTime(DateUtils.getNowDate());
+        sysGlobalScript.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysGlobalScriptMapper.insertSysGlobalScript(sysGlobalScript);
     }
 
@@ -85,6 +87,7 @@ public class SysGlobalScriptServiceImpl implements ISysGlobalScriptService {
     @Override
     public int updateSysGlobalScript(SysGlobalScript sysGlobalScript) {
         sysGlobalScript.setUpdateTime(DateUtils.getNowDate());
+        sysGlobalScript.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysGlobalScriptMapper.updateSysGlobalScript(sysGlobalScript);
     }
 

@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.SysBalanceLog;
 import com.ruoyi.system.mapper.SysBalanceLogMapper;
 import com.ruoyi.system.service.ISysBalanceLogService;
@@ -51,6 +52,7 @@ public class SysBalanceLogServiceImpl implements ISysBalanceLogService {
     @Override
     public int insertSysBalanceLog(SysBalanceLog sysBalanceLog) {
         sysBalanceLog.setCreateTime(DateUtils.getNowDate());
+        sysBalanceLog.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysBalanceLogMapper.insertSysBalanceLog(sysBalanceLog);
     }
 
@@ -63,6 +65,7 @@ public class SysBalanceLogServiceImpl implements ISysBalanceLogService {
     @Override
     public int updateSysBalanceLog(SysBalanceLog sysBalanceLog) {
         sysBalanceLog.setUpdateTime(DateUtils.getNowDate());
+        sysBalanceLog.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysBalanceLogMapper.updateSysBalanceLog(sysBalanceLog);
     }
 

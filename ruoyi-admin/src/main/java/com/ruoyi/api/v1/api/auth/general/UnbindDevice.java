@@ -10,10 +10,7 @@ import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.text.Convert;
-import com.ruoyi.common.enums.AppUserExpireChangeType;
-import com.ruoyi.common.enums.AuthType;
-import com.ruoyi.common.enums.BillType;
-import com.ruoyi.common.enums.ErrorCode;
+import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.framework.manager.AsyncManager;
@@ -21,6 +18,7 @@ import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.system.domain.SysAppUserExpireLog;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
+import com.ruoyi.system.domain.SysUnbindLog;
 import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
 import com.ruoyi.system.service.ISysAppUserService;
 import com.ruoyi.system.service.ISysCardTemplateService;
@@ -87,6 +85,22 @@ public class UnbindDevice extends Function {
         if (appUserDeviceCode == null) {
             return "-1";
         }
+        // 解绑日志
+        SysUnbindLog unbindLog = new SysUnbindLog();
+        unbindLog.setAppUserId(appUser.getAppUserId());
+        unbindLog.setAppId(this.getApp().getAppId());
+        unbindLog.setFirstLoginTime(appUserDeviceCode.getCreateTime());
+        unbindLog.setLastLoginTime(appUserDeviceCode.getLastLoginTime());
+        unbindLog.setLoginTimes(appUserDeviceCode.getLoginTimes());
+        unbindLog.setUnbindType(UnbindType.CALL_API_UNBIND);
+        unbindLog.setUnbindDesc("API：" + this.getApi().getApi());
+        unbindLog.setDeviceCode(loginUser.getDeviceCode().getDeviceCode());
+        unbindLog.setDeviceCodeId(appUserDeviceCode.getDeviceCodeId());
+        unbindLog.setChangeAmount(0L);
+        unbindLog.setExpireTimeAfter(null);
+        unbindLog.setExpireTimeBefore(null);
+        unbindLog.setPointAfter(null);
+        unbindLog.setPointBefore(null);
         // 扣减解绑次数
         if (appUser.getUnbindTimes() > 0) {
             appUser.setUnbindTimes(appUser.getUnbindTimes() - 1);
@@ -100,6 +114,7 @@ public class UnbindDevice extends Function {
                     SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
                     if (this.getApp().getBillType() == BillType.TIME) {
                         expireLog.setExpireTimeBefore(appUser.getExpireTime());
+
                         Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), p);
                         Date nowDate = DateUtils.getNowDate();
                         if ((appUser.getExpireTime().after(nowDate) && newExpiredTime.after(nowDate)) || enableNegative) {
@@ -131,6 +146,13 @@ public class UnbindDevice extends Function {
                     expireLog.setCardNo(null);
                     expireLog.setAppId(this.getApp().getAppId());
                     AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
+                    // 记录解绑日志
+                    unbindLog.setChangeAmount(-p);
+                    unbindLog.setExpireTimeAfter(expireLog.getExpireTimeAfter());
+                    unbindLog.setExpireTimeBefore(expireLog.getExpireTimeBefore());
+                    unbindLog.setPointAfter(expireLog.getPointAfter());
+                    unbindLog.setPointBefore(expireLog.getPointBefore());
+                    AsyncManager.me().execute(AsyncFactory.recordDeviceUnbind(unbindLog));
                 }
             } else {
                 throw new ApiException(ErrorCode.ERROR_UNBIND_NO_TIMES);

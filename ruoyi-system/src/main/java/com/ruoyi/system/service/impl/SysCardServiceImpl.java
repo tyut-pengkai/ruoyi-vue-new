@@ -107,18 +107,20 @@ public class SysCardServiceImpl implements ISysCardService {
     @Override
     public int insertSysCard(SysCard sysCard) {
         sysCard.setCreateTime(DateUtils.getNowDate());
+        sysCard.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysCardMapper.insertSysCard(sysCard);
     }
 
     /**
      * 修改卡密
-     * 
+     *
      * @param sysCard 卡密
      * @return 结果
      */
     @Override
     public int updateSysCard(SysCard sysCard) {
         sysCard.setUpdateTime(DateUtils.getNowDate());
+        sysCard.setUpdateBy(SecurityUtils.getUsernameNoException());
         SysCard card = selectSysCardByCardNo(sysCard.getCardNo());
         if(card != null && !Objects.equals(card.getCardId(), sysCard.getCardId())) {
             throw new ServiceException("卡号不可重复，此卡号已存在");
@@ -128,7 +130,7 @@ public class SysCardServiceImpl implements ISysCardService {
 
     /**
      * 批量删除卡密
-     * 
+     *
      * @param cardIds 需要删除的卡密主键
      * @return 结果
      */
@@ -140,7 +142,7 @@ public class SysCardServiceImpl implements ISysCardService {
 
     /**
      * 删除卡密信息
-     * 
+     *
      * @param cardId 卡密主键
      * @return 结果
      */
@@ -207,7 +209,7 @@ public class SysCardServiceImpl implements ISysCardService {
                 card.setChargeTime(nowDate);
             }
             card.setCreateTime(nowDate);
-            card.setCreateBy(SecurityUtils.getUsername());
+            card.setCreateBy(SecurityUtils.getUsernameNoException());
             try {
                 // 验证软件是否存在
                 SysApp app;
@@ -275,7 +277,7 @@ public class SysCardServiceImpl implements ISysCardService {
                                     card.setCardLoginLimitM(template.getCardLoginLimitM());
                                     card.setCardCustomParams(template.getCardCustomParams());
                                     try {
-                                        card.setCreateBy(SecurityUtils.getUsername());
+                                        card.setCreateBy(SecurityUtils.getUsernameNoException());
                                     } catch (Exception ignored) {
                                     }
                                     // 保存

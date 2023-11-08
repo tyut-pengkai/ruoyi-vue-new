@@ -67,6 +67,7 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
     @Override
     public int insertSysLoginCodeTemplate(SysLoginCodeTemplate sysLoginCodeTemplate) {
         sysLoginCodeTemplate.setCreateTime(DateUtils.getNowDate());
+        sysLoginCodeTemplate.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysLoginCodeTemplateMapper.insertSysLoginCodeTemplate(sysLoginCodeTemplate);
     }
 
@@ -79,6 +80,7 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
     @Override
     public int updateSysLoginCodeTemplate(SysLoginCodeTemplate sysLoginCodeTemplate) {
         sysLoginCodeTemplate.setUpdateTime(DateUtils.getNowDate());
+        sysLoginCodeTemplate.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysLoginCodeTemplateMapper.updateSysLoginCodeTemplate(sysLoginCodeTemplate);
     }
 
@@ -144,7 +146,7 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
             sysLoginCode.setCardCustomParams(loginCodeTpl.getCardCustomParams());
             sysLoginCode.setBatchNo(batchNo);
             try {
-                sysLoginCode.setCreateBy(SecurityUtils.getUsername());
+                sysLoginCode.setCreateBy(SecurityUtils.getUsernameNoException());
                 sysLoginCode.setAgentId(SecurityUtils.getUserId());
             } catch (Exception ignore) {
             }

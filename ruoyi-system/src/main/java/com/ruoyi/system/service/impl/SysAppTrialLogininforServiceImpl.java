@@ -1,5 +1,7 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.SysAppTrialLogininfor;
 import com.ruoyi.system.mapper.SysAppTrialLogininforMapper;
 import com.ruoyi.system.service.ISysAppTrialLogininforService;
@@ -49,6 +51,8 @@ public class SysAppTrialLogininforServiceImpl implements ISysAppTrialLogininforS
      */
     @Override
     public int insertSysAppTrialLogininfor(SysAppTrialLogininfor sysAppTrialLogininfor) {
+        sysAppTrialLogininfor.setCreateTime(DateUtils.getNowDate());
+        sysAppTrialLogininfor.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysAppTrialLogininforMapper.insertSysAppTrialLogininfor(sysAppTrialLogininfor);
     }
 
@@ -60,6 +64,8 @@ public class SysAppTrialLogininforServiceImpl implements ISysAppTrialLogininforS
      */
     @Override
     public int updateSysAppTrialLogininfor(SysAppTrialLogininfor sysAppTrialLogininfor) {
+        sysAppTrialLogininfor.setUpdateTime(DateUtils.getNowDate());
+        sysAppTrialLogininfor.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysAppTrialLogininforMapper.updateSysAppTrialLogininfor(sysAppTrialLogininfor);
     }
 

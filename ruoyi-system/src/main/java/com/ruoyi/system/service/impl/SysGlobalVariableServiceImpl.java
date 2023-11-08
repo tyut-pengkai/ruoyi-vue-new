@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.SysGlobalVariable;
 import com.ruoyi.system.mapper.SysGlobalVariableMapper;
 import com.ruoyi.system.service.ISysGlobalVariableService;
@@ -62,6 +63,7 @@ public class SysGlobalVariableServiceImpl implements ISysGlobalVariableService {
     @Override
     public int insertSysGlobalVariable(SysGlobalVariable sysGlobalVariable) {
         sysGlobalVariable.setCreateTime(DateUtils.getNowDate());
+        sysGlobalVariable.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysGlobalVariableMapper.insertSysGlobalVariable(sysGlobalVariable);
     }
 
@@ -74,6 +76,7 @@ public class SysGlobalVariableServiceImpl implements ISysGlobalVariableService {
     @Override
     public int updateSysGlobalVariable(SysGlobalVariable sysGlobalVariable) {
         sysGlobalVariable.setUpdateTime(DateUtils.getNowDate());
+        sysGlobalVariable.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysGlobalVariableMapper.updateSysGlobalVariable(sysGlobalVariable);
     }
 

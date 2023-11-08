@@ -1,5 +1,7 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.SysAppLogininfor;
 import com.ruoyi.system.mapper.SysAppLogininforMapper;
 import com.ruoyi.system.service.ISysAppLogininforService;
@@ -49,6 +51,8 @@ public class SysAppLogininforServiceImpl implements ISysAppLogininforService {
      */
     @Override
     public int insertSysAppLogininfor(SysAppLogininfor sysAppLogininfor) {
+        sysAppLogininfor.setCreateTime(DateUtils.getNowDate());
+        sysAppLogininfor.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysAppLogininforMapper.insertSysAppLogininfor(sysAppLogininfor);
     }
 
@@ -60,6 +64,8 @@ public class SysAppLogininforServiceImpl implements ISysAppLogininforService {
      */
     @Override
     public int updateSysAppLogininfor(SysAppLogininfor sysAppLogininfor) {
+        sysAppLogininfor.setUpdateTime(DateUtils.getNowDate());
+        sysAppLogininfor.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysAppLogininforMapper.updateSysAppLogininfor(sysAppLogininfor);
     }
 

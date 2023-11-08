@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.SysPayment;
 import com.ruoyi.system.mapper.SysPaymentMapper;
 import com.ruoyi.system.service.ISysPaymentService;
@@ -62,6 +63,7 @@ public class SysPaymentServiceImpl implements ISysPaymentService {
     @Override
     public int insertSysPayment(SysPayment sysPayment) {
         sysPayment.setCreateTime(DateUtils.getNowDate());
+        sysPayment.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysPaymentMapper.insertSysPayment(sysPayment);
     }
 
@@ -74,6 +76,7 @@ public class SysPaymentServiceImpl implements ISysPaymentService {
     @Override
     public int updateSysPayment(SysPayment sysPayment) {
         sysPayment.setUpdateTime(DateUtils.getNowDate());
+        sysPayment.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysPaymentMapper.updateSysPayment(sysPayment);
     }
 

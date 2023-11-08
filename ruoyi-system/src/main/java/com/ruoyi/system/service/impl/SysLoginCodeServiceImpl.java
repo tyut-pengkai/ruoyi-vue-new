@@ -100,6 +100,7 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     @Override
     public int insertSysLoginCode(SysLoginCode sysLoginCode) {
         sysLoginCode.setCreateTime(DateUtils.getNowDate());
+        sysLoginCode.setCreateBy(SecurityUtils.getUsernameNoException());
         SysLoginCode loginCode = selectSysLoginCodeByCardNo(sysLoginCode.getCardNo());
         if(loginCode != null) {
             throw new ServiceException("单码不可重复，此单码已存在");
@@ -116,6 +117,7 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     @Override
     public int updateSysLoginCode(SysLoginCode sysLoginCode) {
         sysLoginCode.setUpdateTime(DateUtils.getNowDate());
+        sysLoginCode.setUpdateBy(SecurityUtils.getUsernameNoException());
         SysLoginCode loginCode = selectSysLoginCodeByCardNo(sysLoginCode.getCardNo());
         if(loginCode != null && !Objects.equals(loginCode.getCardId(), sysLoginCode.getCardId())) {
             throw new ServiceException("单码不可重复，此单码已存在");
@@ -221,7 +223,7 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
                 card.setChargeTime(nowDate);
             }
             card.setCreateTime(nowDate);
-            card.setCreateBy(SecurityUtils.getUsername());
+            card.setCreateBy(SecurityUtils.getUsernameNoException());
             try {
                 // 验证软件是否存在
                 SysApp app;
@@ -290,7 +292,7 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
                                     card.setCardLoginLimitM(template.getCardLoginLimitM());
                                     card.setCardCustomParams(template.getCardCustomParams());
                                     try {
-                                        card.setCreateBy(SecurityUtils.getUsername());
+                                        card.setCreateBy(SecurityUtils.getUsernameNoException());
                                     } catch (Exception ignore) {
                                     }
                                     // 导入软件用户

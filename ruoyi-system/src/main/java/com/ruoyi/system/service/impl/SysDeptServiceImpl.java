@@ -8,6 +8,7 @@ import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * 部门管理 服务实现
- * 
+ *
  * @author ruoyi
  */
 @Service
@@ -85,7 +86,7 @@ public class SysDeptServiceImpl implements ISysDeptService
 
     /**
      * 构建前端所需要下拉树结构
-     * 
+     *
      * @param depts 部门列表
      * @return 下拉树结构列表
      */
@@ -98,7 +99,7 @@ public class SysDeptServiceImpl implements ISysDeptService
 
     /**
      * 根据角色ID查询部门树信息
-     * 
+     *
      * @param roleId 角色ID
      * @return 选中部门列表
      */
@@ -111,7 +112,7 @@ public class SysDeptServiceImpl implements ISysDeptService
 
     /**
      * 根据部门ID查询信息
-     * 
+     *
      * @param deptId 部门ID
      * @return 部门信息
      */
@@ -123,7 +124,7 @@ public class SysDeptServiceImpl implements ISysDeptService
 
     /**
      * 根据ID查询所有子部门（正常状态）
-     * 
+     *
      * @param deptId 部门ID
      * @return 子部门数
      */
@@ -135,7 +136,7 @@ public class SysDeptServiceImpl implements ISysDeptService
 
     /**
      * 是否存在子节点
-     * 
+     *
      * @param deptId 部门ID
      * @return 结果
      */
@@ -148,7 +149,7 @@ public class SysDeptServiceImpl implements ISysDeptService
 
     /**
      * 查询部门是否存在用户
-     * 
+     *
      * @param deptId 部门ID
      * @return 结果 true 存在 false 不存在
      */
@@ -177,7 +178,7 @@ public class SysDeptServiceImpl implements ISysDeptService
 
     /**
      * 校验部门是否有数据权限
-     * 
+     *
      * @param deptId 部门id
      */
     @Override
@@ -197,13 +198,15 @@ public class SysDeptServiceImpl implements ISysDeptService
 
     /**
      * 新增保存部门信息
-     * 
+     *
      * @param dept 部门信息
      * @return 结果
      */
     @Override
     public int insertDept(SysDept dept)
     {
+        dept.setCreateTime(DateUtils.getNowDate());
+        dept.setCreateBy(SecurityUtils.getUsernameNoException());
         SysDept info = deptMapper.selectDeptById(dept.getParentId());
         // 如果父节点不为正常状态,则不允许新增子节点
         if (!UserConstants.DEPT_NORMAL.equals(info.getStatus()))
@@ -216,13 +219,15 @@ public class SysDeptServiceImpl implements ISysDeptService
 
     /**
      * 修改保存部门信息
-     * 
+     *
      * @param dept 部门信息
      * @return 结果
      */
     @Override
     public int updateDept(SysDept dept)
     {
+        dept.setUpdateTime(DateUtils.getNowDate());
+        dept.setUpdateBy(SecurityUtils.getUsernameNoException());
         SysDept newParentDept = deptMapper.selectDeptById(dept.getParentId());
         SysDept oldDept = deptMapper.selectDeptById(dept.getDeptId());
         if (StringUtils.isNotNull(newParentDept) && StringUtils.isNotNull(oldDept))
@@ -244,7 +249,7 @@ public class SysDeptServiceImpl implements ISysDeptService
 
     /**
      * 修改该部门的父级部门状态
-     * 
+     *
      * @param dept 当前部门
      */
     private void updateParentDeptStatusNormal(SysDept dept)
@@ -256,7 +261,7 @@ public class SysDeptServiceImpl implements ISysDeptService
 
     /**
      * 修改子元素关系
-     * 
+     *
      * @param deptId 被修改的部门ID
      * @param newAncestors 新的父ID集合
      * @param oldAncestors 旧的父ID集合
@@ -276,7 +281,7 @@ public class SysDeptServiceImpl implements ISysDeptService
 
     /**
      * 删除部门管理信息
-     * 
+     *
      * @param deptId 部门ID
      * @return 结果
      */

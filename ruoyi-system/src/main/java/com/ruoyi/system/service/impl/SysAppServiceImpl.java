@@ -98,6 +98,8 @@ public class SysAppServiceImpl implements ISysAppService {
      */
     @Override
     public int insertSysApp(SysApp sysApp) {
+        sysApp.setCreateTime(DateUtils.getNowDate());
+        sysApp.setCreateBy(SecurityUtils.getUsernameNoException());
         // 检查软件位限制
         List<SysApp> appList = sysAppMapper.selectSysAppList(new SysApp());
         // -1 表示不限制
@@ -117,10 +119,7 @@ public class SysAppServiceImpl implements ISysAppService {
     @Override
     public int updateSysApp(SysApp sysApp) {
         sysApp.setUpdateTime(DateUtils.getNowDate());
-        try {
-            sysApp.setUpdateBy(SecurityUtils.getUsername());
-        } catch (Exception ignored) {
-        }
+        sysApp.setUpdateBy(SecurityUtils.getUsernameNoException());
         sysApp.setAuthType(null);
         sysApp.setBillType(null);
         int i = sysAppMapper.updateSysApp(sysApp);

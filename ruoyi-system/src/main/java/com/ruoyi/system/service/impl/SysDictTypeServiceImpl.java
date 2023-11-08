@@ -4,7 +4,9 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysDictData;
 import com.ruoyi.common.core.domain.entity.SysDictType;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.DictUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.mapper.SysDictDataMapper;
 import com.ruoyi.system.mapper.SysDictTypeMapper;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 
 /**
  * 字典 业务层处理
- * 
+ *
  * @author ruoyi
  */
 @Service
@@ -44,7 +46,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
 
     /**
      * 根据条件分页查询字典类型
-     * 
+     *
      * @param dictType 字典类型信息
      * @return 字典类型集合信息
      */
@@ -56,7 +58,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
 
     /**
      * 根据所有字典类型
-     * 
+     *
      * @return 字典类型集合信息
      */
     @Override
@@ -67,7 +69,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
 
     /**
      * 根据字典类型查询字典数据
-     * 
+     *
      * @param dictType 字典类型
      * @return 字典数据集合信息
      */
@@ -90,7 +92,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
 
     /**
      * 根据字典类型ID查询信息
-     * 
+     *
      * @param dictId 字典类型ID
      * @return 字典类型
      */
@@ -102,7 +104,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
 
     /**
      * 根据字典类型查询信息
-     * 
+     *
      * @param dictType 字典类型
      * @return 字典类型
      */
@@ -114,7 +116,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
 
     /**
      * 批量删除字典类型信息
-     * 
+     *
      * @param dictIds 需要删除的字典ID
      */
     @Override
@@ -168,13 +170,15 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
 
     /**
      * 新增保存字典类型信息
-     * 
+     *
      * @param dict 字典类型信息
      * @return 结果
      */
     @Override
     public int insertDictType(SysDictType dict)
     {
+        dict.setCreateTime(DateUtils.getNowDate());
+        dict.setCreateBy(SecurityUtils.getUsernameNoException());
         int row = dictTypeMapper.insertDictType(dict);
         if (row > 0)
         {
@@ -185,7 +189,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
 
     /**
      * 修改保存字典类型信息
-     * 
+     *
      * @param dict 字典类型信息
      * @return 结果
      */
@@ -193,6 +197,8 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
     @Transactional
     public int updateDictType(SysDictType dict)
     {
+        dict.setUpdateTime(DateUtils.getNowDate());
+        dict.setUpdateBy(SecurityUtils.getUsernameNoException());
         SysDictType oldDict = dictTypeMapper.selectDictTypeById(dict.getDictId());
         dictDataMapper.updateDictDataType(oldDict.getDictType(), dict.getDictType());
         int row = dictTypeMapper.updateDictType(dict);

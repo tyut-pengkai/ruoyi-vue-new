@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysUnbindLogMapper">
+
+    <resultMap type="SysUnbindLog" id="SysUnbindLogResult">
+        <result property="id"    column="id"    />
+        <result property="appUserId"    column="app_user_id"    />
+        <result property="appId"    column="app_id"    />
+        <result property="firstLoginTime"    column="first_login_time"    />
+        <result property="lastLoginTime"    column="last_login_time"    />
+        <result property="loginTimes"    column="login_times"    />
+        <result property="changeAmount"    column="change_amount"    />
+        <result property="unbindType"    column="unbind_type"    />
+        <result property="unbindDesc"    column="unbind_desc"    />
+        <result property="expireTimeAfter"    column="expire_time_after"    />
+        <result property="expireTimeBefore"    column="expire_time_before"    />
+        <result property="pointAfter"    column="point_after"    />
+        <result property="pointBefore"    column="point_before"    />
+        <result property="deviceCode"    column="device_code"    />
+        <result property="deviceCodeId"    column="device_code_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectSysUnbindLogVo">
+        select id, app_user_id, app_id, first_login_time, last_login_time, login_times, change_amount, unbind_type, unbind_desc, expire_time_after, expire_time_before, point_after, point_before, device_code, device_code_id, create_by, create_time, update_by, update_time, remark, del_flag from sys_unbind_log
+    </sql>
+
+    <select id="selectSysUnbindLogList" parameterType="SysUnbindLog" resultMap="SysUnbindLogResult">
+        <include refid="selectSysUnbindLogVo"/>
+        <where>
+            <if test="appUserId != null "> and app_user_id = #{appUserId}</if>
+            <if test="appId != null "> and app_id = #{appId}</if>
+            <if test="params.beginFirstLoginTime != null and params.beginFirstLoginTime != '' and params.endFirstLoginTime != null and params.endFirstLoginTime != ''"> and first_login_time between #{params.beginFirstLoginTime} and #{params.endFirstLoginTime}</if>
+            <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''"> and last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}</if>
+            <if test="params.beginLoginTimes != null and params.beginLoginTimes != '' and params.endLoginTimes != null and params.endLoginTimes != ''"> and login_times between #{params.beginLoginTimes} and #{params.endLoginTimes}</if>
+            <if test="changeAmount != null "> and change_amount = #{changeAmount}</if>
+            <if test="unbindType != null "> and unbind_type = #{unbindType}</if>
+            <if test="unbindDesc != null  and unbindDesc != ''"> and unbind_desc like concat('%', #{unbindDesc}, '%')</if>
+            <if test="deviceCode != null  and deviceCode != ''"> and device_code like concat('%', #{deviceCode}, '%')</if>
+            <if test="remark != null  and remark != ''"> and remark like concat('%', #{remark}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectSysUnbindLogById" parameterType="Long" resultMap="SysUnbindLogResult">
+        <include refid="selectSysUnbindLogVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSysUnbindLog" parameterType="SysUnbindLog">
+        insert into sys_unbind_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="appUserId != null">app_user_id,</if>
+            <if test="appId != null">app_id,</if>
+            <if test="firstLoginTime != null">first_login_time,</if>
+            <if test="lastLoginTime != null">last_login_time,</if>
+            <if test="loginTimes != null">login_times,</if>
+            <if test="changeAmount != null">change_amount,</if>
+            <if test="unbindType != null ">unbind_type,</if>
+            <if test="unbindDesc != null and unbindDesc != ''">unbind_desc,</if>
+            <if test="expireTimeAfter != null">expire_time_after,</if>
+            <if test="expireTimeBefore != null">expire_time_before,</if>
+            <if test="pointAfter != null">point_after,</if>
+            <if test="pointBefore != null">point_before,</if>
+            <if test="deviceCode != null and deviceCode != ''">device_code,</if>
+            <if test="deviceCodeId != null">device_code_id,</if>
+            <if test="createBy != null">create_by,</if>
+            create_time,
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="appUserId != null">#{appUserId},</if>
+            <if test="appId != null">#{appId},</if>
+            <if test="firstLoginTime != null">#{firstLoginTime},</if>
+            <if test="lastLoginTime != null">#{lastLoginTime},</if>
+            <if test="loginTimes != null">#{loginTimes},</if>
+            <if test="changeAmount != null">#{changeAmount},</if>
+            <if test="unbindType != null ">#{unbindType},</if>
+            <if test="unbindDesc != null and unbindDesc != ''">#{unbindDesc},</if>
+            <if test="expireTimeAfter != null">#{expireTimeAfter},</if>
+            <if test="expireTimeBefore != null">#{expireTimeBefore},</if>
+            <if test="pointAfter != null">#{pointAfter},</if>
+            <if test="pointBefore != null">#{pointBefore},</if>
+            <if test="deviceCode != null and deviceCode != ''">#{deviceCode},</if>
+            <if test="deviceCodeId != null">#{deviceCodeId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysUnbindLog" parameterType="SysUnbindLog">
+        update sys_unbind_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="appUserId != null">app_user_id = #{appUserId},</if>
+            <if test="appId != null">app_id = #{appId},</if>
+            <if test="firstLoginTime != null">first_login_time = #{firstLoginTime},</if>
+            <if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
+            <if test="loginTimes != null">login_times = #{loginTimes},</if>
+            <if test="changeAmount != null">change_amount = #{changeAmount},</if>
+            <if test="unbindType != null ">unbind_type = #{unbindType},</if>
+            <if test="unbindDesc != null and unbindDesc != ''">unbind_desc = #{unbindDesc},</if>
+            <if test="expireTimeAfter != null">expire_time_after = #{expireTimeAfter},</if>
+            <if test="expireTimeBefore != null">expire_time_before = #{expireTimeBefore},</if>
+            <if test="pointAfter != null">point_after = #{pointAfter},</if>
+            <if test="pointBefore != null">point_before = #{pointBefore},</if>
+            <if test="deviceCode != null and deviceCode != ''">device_code = #{deviceCode},</if>
+            <if test="deviceCodeId != null">device_code_id = #{deviceCodeId},</if>
+            <!--<if test="createBy != null">create_by = #{createBy},</if>-->
+            <!--<if test="createTime != null">create_time = #{createTime},</if>-->
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysUnbindLogById" parameterType="Long">
+        delete from sys_unbind_log where id = #{id}
+    </delete>
+
+    <delete id="deleteSysUnbindLogByIds" parameterType="String">
+        delete from sys_unbind_log where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

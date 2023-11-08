@@ -15,53 +15,54 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
     </resultMap>
 
     <sql id="selectSysDeviceCodeVo">
-        select device_code_id,
-               device_code,
-               last_login_time,
-               login_times,
-               sys_device_code.status,
-               sys_device_code.create_by,
-               sys_device_code.create_time,
-               sys_device_code.update_by,
-               sys_device_code.update_time,
-               sys_device_code.remark
-        from sys_device_code
+        select dc.device_code_id,
+               dc.device_code,
+               dc.last_login_time,
+               dc.login_times,
+               dc.status,
+               dc.create_by,
+               dc.create_time,
+               dc.update_by,
+               dc.update_time,
+               dc.remark,
+               dc.del_flag
+        from sys_device_code dc
     </sql>
 
     <select id="selectSysDeviceCodeList" parameterType="SysDeviceCode" resultMap="SysDeviceCodeResult">
         <include refid="selectSysDeviceCodeVo"/>
         <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
             <!-- 数据范围过滤 -->
-            inner join sys_user u on sys_device_code.create_by = u.user_name
+            inner join sys_user u on dc.create_by = u.user_name
         </if>
-        <where>
-            <if test="deviceCode != null  and deviceCode != ''">and device_code = #{deviceCode}</if>
-            <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''">
-                and last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}
-            </if>
-            <if test="params.beginLoginTimes != null and params.beginLoginTimes != '' and params.endLoginTimes != null and params.endLoginTimes != ''">
-                and login_times between #{params.beginLoginTimes} and #{params.endLoginTimes}
-            </if>
-            <if test="status != null  and status != ''">and status = #{status}</if>
-            <if test="remark != null and remark != ''">and sys_device_code.remark like concat('%', #{remark}, '%')</if>
-            <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
-                <!-- 数据范围过滤 -->
-                ${params.dataScope}
-            </if>
-        </where>
+        where dc.del_flag = '0'
+        <if test="deviceCode != null  and deviceCode != ''">and dc.device_code = #{deviceCode}</if>
+        <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''">
+            and dc.last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}
+        </if>
+        <if test="params.beginLoginTimes != null and params.beginLoginTimes != '' and params.endLoginTimes != null and params.endLoginTimes != ''">
+            and dc.login_times between #{params.beginLoginTimes} and #{params.endLoginTimes}
+        </if>
+        <if test="status != null  and status != ''">and dc.status = #{status}</if>
+        <if test="remark != null and remark != ''">and dc.remark like concat('%', #{remark}, '%')</if>
+        <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </if>
     </select>
 
     <select id="selectSysDeviceCodeByDeviceCodeId" parameterType="Long" resultMap="SysDeviceCodeResult">
         <include refid="selectSysDeviceCodeVo"/>
-        where device_code_id = #{deviceCodeId}
+        where dc.device_code_id = #{deviceCodeId}
     </select>
 
     <select id="selectSysDeviceCodeByDeviceCode" parameterType="String" resultMap="SysDeviceCodeResult">
         <include refid="selectSysDeviceCodeVo"/>
-        where device_code = #{deviceCode}
+        where dc.del_flag = '0' and dc.device_code = #{deviceCode}
     </select>
 
     <insert id="insertSysDeviceCode" parameterType="SysDeviceCode" useGeneratedKeys="true" keyProperty="deviceCodeId">
@@ -72,7 +73,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="loginTimes != null">login_times,</if>
             <if test="status != null and status != ''">status,</if>
             <if test="createBy != null">create_by,</if>
-            <if test="createTime != null">create_time,</if>
+            create_time,
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
@@ -83,7 +84,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="loginTimes != null">#{loginTimes},</if>
             <if test="status != null and status != ''">#{status},</if>
             <if test="createBy != null">#{createBy},</if>
-            <if test="createTime != null">#{createTime},</if>
+            sysdate(),
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
@@ -97,21 +98,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
             <if test="loginTimes != null">login_times = #{loginTimes},</if>
             <if test="status != null and status != ''">status = #{status},</if>
-            <if test="createBy != null">create_by = #{createBy},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
+            <!--<if test="createBy != null">create_by = #{createBy},</if>-->
+            <!--<if test="createTime != null">create_time = #{createTime},</if>-->
             <if test="updateBy != null">update_by = #{updateBy},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
+            update_time = sysdate(),
             <if test="remark != null">remark = #{remark},</if>
         </trim>
         where device_code_id = #{deviceCodeId}
     </update>
 
     <delete id="deleteSysDeviceCodeByDeviceCodeId" parameterType="Long">
-        delete from sys_device_code where device_code_id = #{deviceCodeId}
+        /*delete from sys_device_code where device_code_id = #{deviceCodeId}*/
+        update sys_device_code set del_flag = '2' where device_code_id = #{deviceCodeId}
     </delete>
 
     <delete id="deleteSysDeviceCodeByDeviceCodeIds" parameterType="String">
-        delete from sys_device_code where device_code_id in
+        update sys_device_code set del_flag = '2' where device_code_id in
+/*        delete from sys_device_code where device_code_id in */
         <foreach item="deviceCodeId" collection="array" open="(" separator="," close=")">
             #{deviceCodeId}
         </foreach>

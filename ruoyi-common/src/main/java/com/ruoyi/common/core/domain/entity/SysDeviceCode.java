@@ -39,48 +39,61 @@ public class SysDeviceCode extends BaseEntity {
     @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
     private String status;
 
+    /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+
+    public String getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
+    }
+
     public void setDeviceCodeId(Long deviceCodeId)
     {
         this.deviceCodeId = deviceCodeId;
     }
 
-    public Long getDeviceCodeId() 
+    public Long getDeviceCodeId()
     {
         return deviceCodeId;
     }
-    public void setDeviceCode(String deviceCode) 
+    public void setDeviceCode(String deviceCode)
     {
         this.deviceCode = deviceCode;
     }
 
-    public String getDeviceCode() 
+    public String getDeviceCode()
     {
         return deviceCode;
     }
-    public void setLastLoginTime(Date lastLoginTime) 
+    public void setLastLoginTime(Date lastLoginTime)
     {
         this.lastLoginTime = lastLoginTime;
     }
 
-    public Date getLastLoginTime() 
+    public Date getLastLoginTime()
     {
         return lastLoginTime;
     }
-    public void setLoginTimes(Long loginTimes) 
+    public void setLoginTimes(Long loginTimes)
     {
         this.loginTimes = loginTimes;
     }
 
-    public Long getLoginTimes() 
+    public Long getLoginTimes()
     {
         return loginTimes;
     }
-    public void setStatus(String status) 
+    public void setStatus(String status)
     {
         this.status = status;
     }
 
-    public String getStatus() 
+    public String getStatus()
     {
         return status;
     }

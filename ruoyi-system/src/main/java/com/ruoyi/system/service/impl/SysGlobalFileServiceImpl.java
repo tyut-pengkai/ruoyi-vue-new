@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.SysGlobalFile;
 import com.ruoyi.system.mapper.SysGlobalFileMapper;
 import com.ruoyi.system.service.ISysGlobalFileService;
@@ -61,6 +62,7 @@ public class SysGlobalFileServiceImpl implements ISysGlobalFileService {
     @Override
     public int insertSysGlobalFile(SysGlobalFile sysGlobalFile) {
         sysGlobalFile.setCreateTime(DateUtils.getNowDate());
+        sysGlobalFile.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysGlobalFileMapper.insertSysGlobalFile(sysGlobalFile);
     }
 
@@ -73,6 +75,7 @@ public class SysGlobalFileServiceImpl implements ISysGlobalFileService {
     @Override
     public int updateSysGlobalFile(SysGlobalFile sysGlobalFile) {
         sysGlobalFile.setUpdateTime(DateUtils.getNowDate());
+        sysGlobalFile.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysGlobalFileMapper.updateSysGlobalFile(sysGlobalFile);
     }
 

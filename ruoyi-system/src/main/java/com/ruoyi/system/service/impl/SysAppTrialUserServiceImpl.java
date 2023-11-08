@@ -3,6 +3,7 @@ package com.ruoyi.system.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.common.core.domain.entity.SysAppTrialUser;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.mapper.SysAppTrialUserMapper;
 import com.ruoyi.system.service.ISysAppTrialUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,7 @@ public class SysAppTrialUserServiceImpl extends ServiceImpl<SysAppTrialUserMappe
     @Override
     public int insertSysAppTrialUser(SysAppTrialUser sysAppTrialUser) {
         sysAppTrialUser.setCreateTime(DateUtils.getNowDate());
+        sysAppTrialUser.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysAppTrialUserMapper.insertSysAppTrialUser(sysAppTrialUser);
     }
 
@@ -89,6 +91,7 @@ public class SysAppTrialUserServiceImpl extends ServiceImpl<SysAppTrialUserMappe
     @Override
     public int updateSysAppTrialUser(SysAppTrialUser sysAppTrialUser) {
         sysAppTrialUser.setUpdateTime(DateUtils.getNowDate());
+        sysAppTrialUser.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysAppTrialUserMapper.updateSysAppTrialUser(sysAppTrialUser);
     }
 

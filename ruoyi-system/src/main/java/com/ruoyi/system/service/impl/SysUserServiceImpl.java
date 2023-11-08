@@ -7,6 +7,7 @@ import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.enums.BalanceChangeType;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.SysCache;
@@ -240,6 +241,8 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     @Transactional
     public int insertUser(SysUser user) {
+        user.setCreateTime(DateUtils.getNowDate());
+        user.setCreateBy(SecurityUtils.getUsernameNoException());
         // 新增用户信息
         int rows = userMapper.insertUser(user);
         // 新增用户岗位关联
@@ -257,6 +260,8 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public boolean registerUser(SysUser user) {
+        user.setCreateTime(DateUtils.getNowDate());
+        user.setCreateBy(SecurityUtils.getUsernameNoException());
         return userMapper.insertUser(user) > 0;
     }
 
@@ -269,6 +274,8 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     @Transactional
     public int updateUser(SysUser user) {
+        user.setUpdateTime(DateUtils.getNowDate());
+        user.setUpdateBy(SecurityUtils.getUsernameNoException());
         Long userId = user.getUserId();
         // 删除用户与角色关联
         userRoleMapper.deleteUserRoleByUserId(userId);
@@ -302,6 +309,8 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public int updateUserStatus(SysUser user) {
+        user.setUpdateTime(DateUtils.getNowDate());
+        user.setUpdateBy(SecurityUtils.getUsernameNoException());
         return updateCache(userMapper.updateUser(user), user.getUserId());
     }
 
@@ -329,6 +338,8 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public int updateUserProfile(SysUser user) {
+        user.setUpdateTime(DateUtils.getNowDate());
+        user.setUpdateBy(SecurityUtils.getUsernameNoException());
         return updateCache(userMapper.updateUser(user), user.getUserId());
     }
 
@@ -400,6 +411,8 @@ public class SysUserServiceImpl implements ISysUserService {
         if (!isNegative(change.getAvailableFreeBalance())) {
             compute.setFreePayment(userNow.getFreePayment().add(change.getAvailableFreeBalance()));
         }
+        compute.setUpdateTime(DateUtils.getNowDate());
+        compute.setUpdateBy(SecurityUtils.getUsernameNoException());
         return updateCache(userMapper.updateUserBalance(compute), compute.getUserId());
     }
 
@@ -431,6 +444,8 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public int resetPwd(SysUser user) {
+        user.setUpdateTime(DateUtils.getNowDate());
+        user.setUpdateBy(SecurityUtils.getUsernameNoException());
         return updateCache(userMapper.updateUser(user),user.getUserId());
     }
 

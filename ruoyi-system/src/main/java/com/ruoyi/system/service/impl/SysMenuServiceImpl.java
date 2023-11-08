@@ -6,6 +6,7 @@ import com.ruoyi.common.core.domain.TreeSelect;
 import com.ruoyi.common.core.domain.entity.SysMenu;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.vo.MetaVo;
@@ -273,6 +274,8 @@ public class SysMenuServiceImpl implements ISysMenuService {
      */
     @Override
     public int insertMenu(SysMenu menu) {
+        menu.setCreateTime(DateUtils.getNowDate());
+        menu.setCreateBy(SecurityUtils.getUsernameNoException());
         return menuMapper.insertMenu(menu);
     }
 
@@ -284,6 +287,8 @@ public class SysMenuServiceImpl implements ISysMenuService {
      */
     @Override
     public int updateMenu(SysMenu menu) {
+        menu.setUpdateTime(DateUtils.getNowDate());
+        menu.setUpdateBy(SecurityUtils.getUsernameNoException());
         return menuMapper.updateMenu(menu);
     }
 

@@ -3,6 +3,7 @@ package com.ruoyi.system.service.impl;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.core.domain.entity.SysDeviceCode;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.mapper.SysDeviceCodeMapper;
 import com.ruoyi.system.service.ISysDeviceCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import java.util.List;
  * @date 2021-12-06
  */
 @Service
-public class SysDeviceCodeServiceImpl implements ISysDeviceCodeService 
+public class SysDeviceCodeServiceImpl implements ISysDeviceCodeService
 {
     @Autowired
     private SysDeviceCodeMapper sysDeviceCodeMapper;
@@ -57,6 +58,7 @@ public class SysDeviceCodeServiceImpl implements ISysDeviceCodeService
     public int insertSysDeviceCode(SysDeviceCode sysDeviceCode)
     {
         sysDeviceCode.setCreateTime(DateUtils.getNowDate());
+        sysDeviceCode.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysDeviceCodeMapper.insertSysDeviceCode(sysDeviceCode);
     }
 
@@ -70,6 +72,7 @@ public class SysDeviceCodeServiceImpl implements ISysDeviceCodeService
     public int updateSysDeviceCode(SysDeviceCode sysDeviceCode)
     {
         sysDeviceCode.setUpdateTime(DateUtils.getNowDate());
+        sysDeviceCode.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysDeviceCodeMapper.updateSysDeviceCode(sysDeviceCode);
     }
 

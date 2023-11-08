@@ -99,6 +99,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     @Override
     public int insertSysAppVersion(SysAppVersion sysAppVersion) {
         sysAppVersion.setCreateTime(DateUtils.getNowDate());
+        sysAppVersion.setCreateBy(SecurityUtils.getUsernameNoException());
         return sysAppVersionMapper.insertSysAppVersion(sysAppVersion);
     }
 
@@ -111,6 +112,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     @Override
     public int updateSysAppVersion(SysAppVersion sysAppVersion) {
         sysAppVersion.setUpdateTime(DateUtils.getNowDate());
+        sysAppVersion.setUpdateBy(SecurityUtils.getUsernameNoException());
         return sysAppVersionMapper.updateSysAppVersion(sysAppVersion);
     }
 
