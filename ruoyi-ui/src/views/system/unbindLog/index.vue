@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
       <el-form-item label="软件用户id" prop="appUserId">
         <el-input
           v-model="queryParams.appUserId"
@@ -55,8 +55,8 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="1：用户前台解绑，2：用户软件解绑(API)，3：管理员后台解绑" prop="unbindType">
-        <el-select v-model="queryParams.unbindType" placeholder="请选择1：用户前台解绑，2：用户软件解绑(API)，3：管理员后台解绑" clearable>
+      <el-form-item label="解绑类型" prop="unbindType">
+        <el-select v-model="queryParams.unbindType" placeholder="请选择解绑类型" clearable>
           <el-option
             v-for="dict in dict.type.sys_unbind_type"
             :key="dict.value"
@@ -88,7 +88,7 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+<!--      <el-col :span="1.5">
         <el-button
           type="primary"
           plain
@@ -97,7 +97,7 @@
           @click="handleAdd"
           v-hasPermi="['system:unbindLog:add']"
         >新增</el-button>
-      </el-col>
+      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="success"
@@ -107,7 +107,7 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:unbindLog:edit']"
-        >修改</el-button>
+        >详情</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -135,41 +135,41 @@
 
     <el-table v-loading="loading" :data="unbindLogList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
-      <el-table-column label="软件用户id" align="center" prop="appUserId" />
-      <el-table-column label="软件id" align="center" prop="appId" />
+      <el-table-column label="序号" align="center" prop="id" />
+      <el-table-column label="所属软件" :show-overflow-tooltip="true" align="center" prop="appId" />
+      <el-table-column label="账号/单码" :show-overflow-tooltip="true" align="center" prop="appUserId" />
+      <el-table-column label="设备码" :show-overflow-tooltip="true" align="center" prop="deviceCode" />
       <el-table-column label="首次登录时间" align="center" prop="firstLoginTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.firstLoginTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.firstLoginTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="最后登录时间" align="center" prop="lastLoginTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.lastLoginTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.lastLoginTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="登录次数" align="center" prop="loginTimes" />
-      <el-table-column label="变动面值" align="center" prop="changeAmount" />
-      <el-table-column label="1：用户前台解绑，2：用户软件解绑(API)，3：管理员后台解绑" align="center" prop="unbindType">
+      <el-table-column label="解绑类型" align="center" prop="unbindType" width="150">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_unbind_type" :value="scope.row.unbindType"/>
         </template>
       </el-table-column>
-      <el-table-column label="解绑描述" align="center" prop="unbindDesc" />
-      <el-table-column label="用户过期时间后" align="center" prop="expireTimeAfter" width="180">
+      <el-table-column label="变动面值" align="center" prop="changeAmount" />
+      <el-table-column label="过期时间(变动前)" align="center" prop="expireTimeBefore" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.expireTimeAfter, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.expireTimeBefore) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户过期时间前" align="center" prop="expireTimeBefore" width="180">
+      <el-table-column label="过期时间(变动后)" align="center" prop="expireTimeAfter" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.expireTimeBefore, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.expireTimeAfter,) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户剩余点数后" align="center" prop="pointAfter" />
-      <el-table-column label="用户剩余点数前" align="center" prop="pointBefore" />
-      <el-table-column label="设备码" align="center" prop="deviceCode" />
-      <el-table-column label="设备码id" align="center" prop="deviceCodeId" />
+      <el-table-column label="剩余点数(变动前)" align="center" prop="pointBefore" />
+      <el-table-column label="剩余点数(变动后)" align="center" prop="pointAfter" />
+      <el-table-column label="解绑描述" :show-overflow-tooltip="true" align="center" prop="unbindDesc" />
+<!--      <el-table-column label="设备码id" align="center" prop="deviceCodeId" />
       <el-table-column label="创建者" align="center" prop="createBy" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
@@ -181,8 +181,8 @@
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
-      </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" />
+      </el-table-column>-->
+      <el-table-column label="备注" :show-overflow-tooltip="true" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -191,18 +191,18 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:unbindLog:edit']"
-          >修改</el-button>
-          <el-button
+          >详情</el-button>
+<!--          <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:unbindLog:remove']"
-          >删除</el-button>
+          >删除</el-button>-->
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -212,8 +212,8 @@
     />
 
     <!-- 添加或修改解绑日志对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules">
         <el-form-item label="软件用户id" prop="appUserId">
           <el-input v-model="form.appUserId" placeholder="请输入软件用户id" />
         </el-form-item>
@@ -242,8 +242,8 @@
         <el-form-item label="变动面值" prop="changeAmount">
           <el-input v-model="form.changeAmount" placeholder="请输入变动面值" />
         </el-form-item>
-        <el-form-item label="1：用户前台解绑，2：用户软件解绑(API)，3：管理员后台解绑" prop="unbindType">
-          <el-select v-model="form.unbindType" placeholder="请选择1：用户前台解绑，2：用户软件解绑(API)，3：管理员后台解绑">
+        <el-form-item label="解绑类型" prop="unbindType">
+          <el-select v-model="form.unbindType" placeholder="请选择解绑类型">
             <el-option
               v-for="dict in dict.type.sys_unbind_type"
               :key="dict.value"
@@ -363,7 +363,7 @@ export default {
           { required: true, message: "变动面值不能为空", trigger: "blur" }
         ],
         unbindType: [
-          { required: true, message: "1：用户前台解绑，2：用户软件解绑(API)，3：管理员后台解绑不能为空", trigger: "change" }
+          { required: true, message: "解绑类型不能为空", trigger: "change" }
         ],
         unbindDesc: [
           { required: true, message: "解绑描述不能为空", trigger: "blur" }

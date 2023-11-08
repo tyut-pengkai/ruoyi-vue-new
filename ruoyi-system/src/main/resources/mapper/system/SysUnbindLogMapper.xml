@@ -46,6 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="deviceCode != null  and deviceCode != ''"> and device_code like concat('%', #{deviceCode}, '%')</if>
             <if test="remark != null  and remark != ''"> and remark like concat('%', #{remark}, '%')</if>
         </where>
+        order by id desc
     </select>
 
     <select id="selectSysUnbindLogById" parameterType="Long" resultMap="SysUnbindLogResult">

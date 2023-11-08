@@ -331,7 +331,7 @@
           >详情
           </el-button
           >
-          <el-button
+<!--          <el-button
             v-hasPermi="['system:appUserExpireLog:remove']"
             icon="el-icon-delete"
             size="mini"
@@ -339,7 +339,7 @@
             @click="handleDelete(scope.row)"
           >删除
           </el-button
-          >
+          >-->
         </template>
       </el-table-column>
     </el-table>
