@@ -81,7 +81,7 @@ public class UnbindDevice extends Function {
             }
         }
         // 设备码是否存在
-        SysAppUserDeviceCode appUserDeviceCode = loginUser.getAppUserDeviceCode();
+        SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeById(loginUser.getAppUserDeviceCode().getId());
         if (appUserDeviceCode == null) {
             return "-1";
         }
