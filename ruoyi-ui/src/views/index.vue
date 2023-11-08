@@ -797,6 +797,7 @@
 <script>
 import { getSimpleLicenseInfo } from "@/api/system/license";
 import {getSysInfo} from "@/api/common";
+import {getWebsiteConfig} from "@/api/system/website";
 import {getNotice} from "@/api/system/index";
 import {checkUpdate, doUpdate, getStatus, doRestart, getRestartStatus, exportErrorLog } from "@/api/system/update";
 import { checkPermi, checkRole } from "@/utils/permission"; // 权限判断函数
@@ -843,6 +844,17 @@ export default {
       getSysInfo().then((res) => {
         this.version = res.version + "(" + res.versionNo + ")";
         this.dbVersion = res.dbVersion + "(" + res.dbVersionNo + ")";
+      });
+      getWebsiteConfig().then((res) => {
+        if(!res.data.domain) {
+          this.$modal
+            .confirm("检测到您尚未配置验证域名，可能影响到验证功能的正常使用，是否立即配置？")
+            .then(() => {
+              this.$tab.openPage("网站设置", "/sysConfig/website");
+            })
+            .catch(() => {
+            });
+        }
       });
     },
     checkUpdate() {

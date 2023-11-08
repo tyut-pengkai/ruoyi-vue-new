@@ -445,7 +445,9 @@
               '&method=' +
               (upload.method ? upload.method : '') +
               '&fullScreen=' +
-              upload.fullScreen
+              upload.fullScreen +
+              '&enableOffline=' +
+              upload.enableOffline
             "
             align="center"
             :auto-upload="false"
@@ -590,9 +592,12 @@
                   </el-tooltip>
                 </span>
               </div>
+              <div style="margin-top: 10px">
+                 <el-checkbox v-model="upload.enableOffline">是否当服务器受到攻击时开启离线使用</el-checkbox>
+              </div>
             </div>
           </el-upload>
-          <div align="center" style="margin-top: 10px">
+          <div align="center" style="margin-top: 20px">
             <el-button :loading="loading" type="primary" @click="submitFileForm"
             >启动上传并自动接入
             </el-button>
@@ -701,8 +706,11 @@
                 </el-tooltip>
               </span>
             </div>
+            <div style="margin-top: 10px">
+              <el-checkbox v-model="upload.enableOffline">是否当服务器受到攻击时开启离线使用</el-checkbox>
+            </div>
           </div>
-          <div align="center" style="margin-top: 10px">
+          <div align="center" style="margin-top: 20px">
             <el-button :loading="loading" type="primary" @click="downloadDexFile"
             >开始下载DEX文件
             </el-button>
@@ -742,7 +750,12 @@
                     <el-skeleton-item style="width: 200px; height: 200px" variant="image"/>
                   </template>
                 </el-skeleton>
-                <vue-qr v-if="apvStr" :logoSrc="logoUrl" :size="200" :text="apvStr"></vue-qr>
+                <div style="cursor: pointer;" @click="getUuid">
+                  <vue-qr v-if="apvStrUrl" :logoSrc="logoUrl" :size="200" :text="apvStrUrl" ></vue-qr>
+                </div>
+                <div>
+                  二维码一次性有效，可点击二维码刷新
+                </div>
               </div>
             </div>
           </div>
@@ -772,7 +785,7 @@
               ></el-input>
               <el-button
                 id="copyButton"
-                style="margin-top: 10px"
+                style="margin-top: 20px"
                 type="primary"
                 @click="getQuickAccessParams(upload.quickAccessVersionId)"
               >
@@ -885,6 +898,7 @@ import axios from "axios";
 import Clipboard from "clipboard";
 import vueQr from "vue-qr";
 import CodeEditor from "@/components/CodeEditor";
+import {getUuid} from "@/api/login";
 
 export default {
   name: "AppVersion",
@@ -985,6 +999,7 @@ export default {
         oriName: null,
         uploaded: false,
         fullScreen: false,
+        enableOffline: false,
       },
       fileDown: {
         //弹出框控制的状态
@@ -1041,6 +1056,7 @@ export default {
       showExe: false,
       showApk: false,
       apvStr: "",
+      apvStrUrl: "",
       apvLoading: false,
       templateList: [],
       templateShow: "",
@@ -1057,6 +1073,7 @@ export default {
         ":try_end_54\n" +
         ".catchall {:try_start_36 .. :try_end_54}\n" +
         ":catchall_30",
+      curAppVersionId: "",
     };
   },
   created() {
@@ -1092,6 +1109,8 @@ export default {
         this.$refs.upload.clearFiles();
       }
       this.upload.uploaded = false;
+      this.upload.fullScreen = false;
+      this.upload.enableOffline = false;
     },
     /** 查询软件版本信息列表 */
     getList() {
@@ -1225,9 +1244,11 @@ export default {
     },
     /** 导入按钮操作 */
     handleImport(row) {
+      this.curAppVersionId = row.appVersionId;
       this.upload.title = "快速接入";
       this.upload.quickAccessVersionId = row.appVersionId;
       this.apvStr = "";
+      this.getUuid();
       this.apvLoading = true;
       getQuickAccessParams(row.appVersionId).then((response) => {
         this.apvStr = response.apvStr;
@@ -1540,7 +1561,9 @@ export default {
           "&oriName=" +
           (this.upload.oriName ? encodeURIComponent(this.upload.oriName) : "") +
           "&fullScreen=" +
-          this.upload.fullScreen
+          this.upload.fullScreen +
+          "&enableOffline=" +
+          this.upload.enableOffline
       );
     },
     activityClose() {
@@ -1564,13 +1587,22 @@ export default {
         "&skin=" +
         this.upload.skin +
         "&fullScreen=" +
-        this.upload.fullScreen
+        this.upload.fullScreen +
+        "&enableOffline=" +
+        this.upload.enableOffline
       downloadDexFile(params).then((response) => {
         this.downFile(response.data.data);
       }).finally(() => {
         this.loading = false;
       });
-    }
+    },
+    getUuid() {
+      getUuid().then(res => {
+        let href = window.location.href;
+        this.apvStrUrl = href.substring(0, href.indexOf('/', 8)) + // 跳过前8个字符：https://
+          "/prod-api/system/appVersion/scan/" + this.curAppVersionId + "/" + res.uuid;
+      });
+    },
   },
   watch: {
     //动态监听路由变化 -以便动态更改导航背景色事件效果等

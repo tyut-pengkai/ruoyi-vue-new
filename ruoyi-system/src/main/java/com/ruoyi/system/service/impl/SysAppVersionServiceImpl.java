@@ -8,10 +8,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.AesCbcPKCS5PaddingUtil;
-import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.PathUtils;
-import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.*;
 import com.ruoyi.system.domain.vo.ActivityMethodVo;
 import com.ruoyi.system.domain.vo.QuickAccessResultVo;
 import com.ruoyi.system.mapper.SysAppVersionMapper;
@@ -166,7 +163,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      */
     @Override
     public Map<String, Object> quickAccess(String accessType, MultipartFile file, Long versionId, boolean updateMd5,
-                                           String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen) {
+                                           String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen, boolean enableOffline) {
         Map<String, Object> map = new HashMap<>();
         try {
             // 封装
@@ -183,7 +180,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(versionId);
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
             assert originalFilename != null;
-            QuickAccessResultVo result = quickAccessHandle(accessType, bytes, version, originalFilename, apkOper, template, skin, vo, fullScreen);
+            QuickAccessResultVo result = quickAccessHandle(accessType, bytes, version, originalFilename, apkOper, template, skin, vo, fullScreen, enableOffline);
 
             // 1全局 2单例
             if ("1".equals(accessType) || ("2".equals(accessType) && result.getBytes() != null && result.getBytes().length > 0)) {
@@ -255,10 +252,10 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      * @return
      */
     private QuickAccessResultVo quickAccessHandle(String accessType, byte[] bytes, SysAppVersion version, String filename,
-                                                  String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen) {
+                                                  String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen, boolean enableOffline) {
         QuickAccessResultVo result = new QuickAccessResultVo();
         try {
-            String apvStr = getApvString(version, template, skin, fullScreen);
+            String apvStr = getApvString(version, template, skin, fullScreen, enableOffline);
             if (filename.endsWith(".exe")) {
 //                log.info("正在整合exe");
 //                byte[] apvBytes = apvStr.getBytes(StandardCharsets.UTF_8);
@@ -383,7 +380,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         return result;
     }
 
-    private String getApvString(SysAppVersion version, String template, String skin, boolean fullScreen) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+    private String getApvString(SysAppVersion version, String template, String skin, boolean fullScreen, boolean enableOffline) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         AppParamVo apv = new AppParamVo();
         SysApp app = version.getApp();
         if(version.getApp() == null) {
@@ -403,6 +400,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         apv.setTemplate(template);
         apv.setSkin(skin);
         apv.setFullScreen(fullScreen);
+        apv.setEnableOffline(enableOffline);
         // 加密
         String apvStr = JSON.toJSONString(apv);
         apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");
@@ -436,7 +434,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     public AjaxResult getQuickAccessParams(Long appVersionId) {
         try {
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(appVersionId);
-            String apvStr = getApvString(version, null, null, false);
+            String apvStr =  getApvString(version, null, null, false, false);
             return AjaxResult.success().put("apvStr", apvStr);
         } catch (InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
             e.printStackTrace();
@@ -481,25 +479,27 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                                 section.get("模板作者"),
                                 section.get("联系方式"),
                                 section.get("附加信息"),
+                                Integer.valueOf(section.get("显示排序")),
                                 Arrays.asList(section.get("皮肤列表").split(","))));
                     } else {
-                        result.add(new TemplateInfo(fileName, fileName, "", "", "", "", "", new ArrayList<>()));
+                        result.add(new TemplateInfo(fileName, fileName, "", "", "", "", "", 999999, new ArrayList<>()));
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        result.sort(Comparator.comparing(TemplateInfo::getIndex));
         return AjaxResult.success(result);
     }
 
     @Override
-    public Map<String, Object> downloadDexFile(Long versionId, String template, String skin, boolean fullScreen) {
+    public Map<String, Object> downloadDexFile(Long versionId, String template, String skin, boolean fullScreen, boolean enableOffline) {
         Map<String, Object> map = new HashMap<>();
         try {
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(versionId);
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
-            String apvStr = getApvString(version, template, skin, fullScreen);
+            String apvStr = getApvString(version, template, skin, fullScreen, enableOffline);
             byte[] dex = QuickAccessApkUtil.doProcess3(apvStr, template);
             String filename = rename(app.getAppName(), "name.dex", version.getVersionName(), "");
             String filePath = RuoYiConfig.getDownloadPath() + filename;
@@ -532,6 +532,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         private String template;
         private String skin;
         private boolean fullScreen;
+        private boolean enableOffline;
     }
 
     @Data
@@ -544,6 +545,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         private String author;
         private String contact;
         private String remark;
+        private Integer index;
         private List<String> skinList;
     }
 }

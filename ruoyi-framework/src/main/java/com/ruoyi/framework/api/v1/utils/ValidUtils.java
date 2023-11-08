@@ -13,19 +13,15 @@ import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ApiException;
+import com.ruoyi.common.exception.user.BlackListException;
 import com.ruoyi.common.license.bo.LicenseCheckModel;
-import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.common.utils.SysCache;
+import com.ruoyi.common.utils.*;
+import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.domain.SysLoginCode;
-import com.ruoyi.system.service.ISysAppService;
-import com.ruoyi.system.service.ISysAppTrialUserService;
-import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
-import com.ruoyi.system.service.ISysAppVersionService;
+import com.ruoyi.system.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -50,6 +46,8 @@ public class ValidUtils {
     private ISysAppService appService;
     @Resource
     private ISysAppTrialUserService appTrialUserService;
+    @Resource
+    private ISysConfigService configService;
 
 
     public void apiCheckApp(String appkey, SysApp app) {
@@ -604,6 +602,15 @@ public class ValidUtils {
             }
         }
         return null;
+    }
+
+    public void checkIpBlackList(String usernameOrLoginCode) {
+        // IP黑名单校验
+        String blackStr = configService.selectConfigByKey("sys.login.blackIPList");
+        if (IpUtils.isMatchedIp(blackStr, IpUtils.getIpAddr())) {
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(usernameOrLoginCode, Constants.LOGIN_FAIL, MessageUtils.message("login.blocked")));
+            throw new BlackListException();
+        }
     }
 
 }

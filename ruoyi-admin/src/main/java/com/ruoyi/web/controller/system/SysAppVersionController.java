@@ -1,10 +1,12 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysAppVersion;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.vo.ActivityMethodVo;
 import com.ruoyi.system.service.ISysAppService;
@@ -15,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -30,6 +33,8 @@ public class SysAppVersionController extends BaseController {
     private ISysAppVersionService sysAppVersionService;
     @Autowired
     private ISysAppService sysAppService;
+    @Resource
+    private RedisCache redisCache;
 
     /**
      * 查询软件版本信息列表
@@ -110,15 +115,15 @@ public class SysAppVersionController extends BaseController {
     // @PreAuthorize("@ss.hasPermi('system:user:import')")
     @PostMapping("/quickAccess")
     public AjaxResult quickAccess(String accessType, MultipartFile file, Long versionId, boolean updateMd5, String apkOper,
-                                  String template, String skin, String oriName, String oriPath, String activity, String method, boolean fullScreen) {
-        return AjaxResult.success(sysAppVersionService.quickAccess(accessType, file, versionId, updateMd5, apkOper, template, skin, new ActivityMethodVo(oriName, oriPath, activity, method), fullScreen));
+                                  String template, String skin, String oriName, String oriPath, String activity, String method, boolean fullScreen, boolean enableOffline) {
+        return AjaxResult.success(sysAppVersionService.quickAccess(accessType, file, versionId, updateMd5, apkOper, template, skin, new ActivityMethodVo(oriName, oriPath, activity, method), fullScreen, enableOffline));
     }
 
     @Log(title = "快速接入", businessType = BusinessType.QUICK_ACCESS)
     // @PreAuthorize("@ss.hasPermi('system:user:import')")
     @PostMapping("/downloadDexFile")
-    public AjaxResult downloadDexFile(Long versionId, String template, String skin, boolean fullScreen) {
-        return AjaxResult.success(sysAppVersionService.downloadDexFile(versionId, template, skin, fullScreen));
+    public AjaxResult downloadDexFile(Long versionId, String template, String skin, boolean fullScreen, boolean enableOffline) {
+        return AjaxResult.success(sysAppVersionService.downloadDexFile(versionId, template, skin, fullScreen, enableOffline));
     }
 
     /**
@@ -137,6 +142,20 @@ public class SysAppVersionController extends BaseController {
     @GetMapping("/quickAccessTemplate/list")
     public AjaxResult getQuickAccessTemplateList() {
         return sysAppVersionService.getQuickAccessTemplateList();
+    }
+
+    /**
+     * 获取快速接入参数信息
+     */
+    @Log(title = "快速接入(扫码)", businessType = BusinessType.QUICK_ACCESS)
+    @RequestMapping("/scan/{appVersionId}/{uuid}")
+    public AjaxResult getQuickAccessParams(@PathVariable Long appVersionId, @PathVariable String uuid) {
+        String verifyKey = CacheConstants.CAPTCHA_UUID_KEY + uuid;
+        if(redisCache.hasKey(verifyKey)) {
+            redisCache.deleteObject(verifyKey);
+            return sysAppVersionService.getQuickAccessParams(appVersionId);
+        }
+        return AjaxResult.error("二维码已过期，请刷新后重新扫描");
     }
 
 }

@@ -91,7 +91,7 @@ public interface ISysAppVersionService {
      * @return
      */
     public Map<String, Object> quickAccess(String accessType, MultipartFile file, Long versionId, boolean updateMd5,
-                                           String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen);
+                                           String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen, boolean enableOffline);
 
     /**
      * 检查软件名称唯一性
@@ -112,5 +112,5 @@ public interface ISysAppVersionService {
      */
     public AjaxResult getQuickAccessTemplateList();
 
-    public Map<String, Object> downloadDexFile(Long versionId, String template, String skin, boolean fullScreen);
+    public Map<String, Object> downloadDexFile(Long versionId, String template, String skin, boolean fullScreen, boolean enableOffline);
 }

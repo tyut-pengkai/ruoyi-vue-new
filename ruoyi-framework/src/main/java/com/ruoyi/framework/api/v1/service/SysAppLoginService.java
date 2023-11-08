@@ -64,6 +64,8 @@ public class SysAppLoginService {
     public String appLogin(String username, String password, SysApp app, SysAppVersion appVersion, String deviceCodeStr, boolean autoReducePoint) {
         // 检查在线人数限制
         validUtils.checkLicenseMaxOnline();
+        // 检查IP黑名单
+        validUtils.checkIpBlackList(username);
         // 用户验证
         SysAppUser appUser = null;
         SysDeviceCode deviceCode = null;
@@ -246,6 +248,8 @@ public class SysAppLoginService {
     public String appLogin(String loginCodeStr, SysApp app, SysAppVersion appVersion, String deviceCodeStr, boolean autoReducePoint) {
         // 检查在线人数限制
         validUtils.checkLicenseMaxOnline();
+        // 检查IP黑名单
+        validUtils.checkIpBlackList(loginCodeStr);
         // 用户验证
         SysAppUser appUser = null;
         SysDeviceCode deviceCode = null;

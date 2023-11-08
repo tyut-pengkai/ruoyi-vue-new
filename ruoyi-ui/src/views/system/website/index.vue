@@ -61,7 +61,7 @@
               </el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="网站域名">
+          <el-form-item label="网站域名，格式如 http://11.22.33.44/、https://www.xxx.com/ 等，注意http和https不能写错，否则会造成验证功能异常">
             <el-input v-model="form.domain"></el-input>
           </el-form-item>
           <el-form-item label="联系方式">

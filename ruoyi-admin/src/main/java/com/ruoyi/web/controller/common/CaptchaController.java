@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 验证码操作处理
- * 
+ *
  * @author ruoyi
  */
 @RestController
@@ -37,7 +37,7 @@ public class CaptchaController
 
     @Autowired
     private RedisCache redisCache;
-    
+
     @Autowired
     private ISysConfigService configService;
 
@@ -91,4 +91,19 @@ public class CaptchaController
         ajax.put("img", Base64.encode(os.toByteArray()));
         return ajax;
     }
+
+    @GetMapping("/uuid")
+    public AjaxResult getUuid(HttpServletResponse response) throws IOException {
+        AjaxResult ajax = AjaxResult.success();
+
+        // 保存验证码信息
+        String uuid = IdUtils.simpleUUID();
+        String verifyKey = CacheConstants.CAPTCHA_UUID_KEY + uuid;
+
+        redisCache.setCacheObject(verifyKey, uuid, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
+
+        ajax.put("uuid", uuid);
+        return ajax;
+    }
+
 }
