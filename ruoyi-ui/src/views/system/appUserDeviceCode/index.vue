@@ -98,7 +98,7 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:appUserDeviceCode:remove']"
-          >删除
+          >解绑
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -191,7 +191,7 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:appUserDeviceCode:remove']"
-            >删除
+            >解绑
           </el-button>
         </template>
       </el-table-column>
@@ -459,13 +459,13 @@ export default {
     handleDelete(row) {
       const ids = row.id || this.ids;
       this.$modal
-        .confirm("是否确认删除数据项？")
+        .confirm("是否确认解绑该设备？")
         .then(function () {
           return delAppUserDeviceCode(ids);
         })
         .then(() => {
           this.getList();
-          this.$modal.msgSuccess("删除成功");
+          this.$modal.msgSuccess("解绑成功");
         })
         .catch(() => {});
     },

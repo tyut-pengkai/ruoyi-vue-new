@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -107,7 +108,7 @@ public class SysAppUserDeviceCodeController extends BaseController {
     @Log(title = "软件用户与设备码关联", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
-        int i = appUserDeviceCodeService.deleteSysAppUserDeviceCodeByIds(ids);
+        List<SysUnbindLog> list = new ArrayList<>();
         for (Long id : ids) {
             SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeById(id);
             SysDeviceCode deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCodeId(appUserDeviceCode.getDeviceCodeId());
@@ -132,6 +133,10 @@ public class SysAppUserDeviceCodeController extends BaseController {
                 unbindLog.setPointAfter(appUser.getPoint());
                 unbindLog.setPointBefore(appUser.getPoint());
             }
+            list.add(unbindLog);
+        }
+        int i = appUserDeviceCodeService.deleteSysAppUserDeviceCodeByIds(ids);
+        for (SysUnbindLog unbindLog : list) {
             AsyncManager.me().execute(AsyncFactory.recordDeviceUnbind(unbindLog));
         }
         return toAjax(i);
