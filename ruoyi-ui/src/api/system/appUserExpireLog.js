@@ -42,3 +42,10 @@ export function delAppUserExpireLog(id) {
     method: 'delete'
   })
 }
+
+export function cleanAppUserExpirelog() {
+  return request({
+    url: '/system/appUserExpireLog/clean',
+    method: 'delete'
+  })
+}

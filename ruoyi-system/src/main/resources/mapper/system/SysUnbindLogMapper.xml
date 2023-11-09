@@ -26,32 +26,101 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
         <result property="delFlag"    column="del_flag"    />
+        <association property="appUser" column="app_user_id" javaType="SysAppUser" resultMap="SysAppUserResult"/>
+        <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
+    </resultMap>
+
+    <resultMap type="SysAppUser" id="SysAppUserResult">
+        <result property="appUserId" column="app_user_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="expireTime" column="expire_time"/>
+        <result property="point" column="point"/>
+        <result property="loginCode" column="login_code"/>
+        <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
+    </resultMap>
+
+    <resultMap type="SysUser" id="SysUserResult">
+        <id property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
+    </resultMap>
+
+    <resultMap type="SysApp" id="SysAppResult">
+        <result property="appId" column="app_id"/>
+        <result property="appName" column="app_name"/>
+        <result property="authType" column="auth_type"/>
+        <result property="billType" column="bill_type"/>
+        <result property="description" column="description"/>
+        <result property="loginLimitU" column="app_login_limit_u"/>
+        <result property="loginLimitM" column="app_login_limit_m"/>
     </resultMap>
 
     <sql id="selectSysUnbindLogVo">
-        select id, app_user_id, app_id, first_login_time, last_login_time, login_times, change_amount, unbind_type, unbind_desc, expire_time_after, expire_time_before, point_after, point_before, device_code, device_code_id, create_by, create_time, update_by, update_time, remark, del_flag from sys_unbind_log
+        select ul.id,
+               ul.app_user_id,
+               ul.app_id,
+               ul.first_login_time,
+               ul.last_login_time,
+               ul.login_times,
+               ul.change_amount,
+               ul.unbind_type,
+               ul.unbind_desc,
+               ul.expire_time_after,
+               ul.expire_time_before,
+               ul.point_after,
+               ul.point_before,
+               ul.device_code,
+               ul.device_code_id,
+               ul.create_by,
+               ul.create_time,
+               ul.update_by,
+               ul.update_time,
+               ul.remark,
+               ul.del_flag,
+               au.app_user_id,
+               au.user_id,
+               au.expire_time,
+               au.point,
+               au.login_code,
+               a.app_id,
+               a.app_name,
+               a.auth_type,
+               a.bill_type,
+               a.description,
+               a.login_limit_u as app_login_limit_u,
+               a.login_limit_m as app_login_limit_m,
+               u.user_id,
+               u.user_name,
+               u.nick_name
+        from sys_unbind_log ul
+             left join sys_app_user au on ul.app_user_id = au.app_user_id
+             left join sys_user u on au.user_id = u.user_id
+             left join sys_app a on ul.app_id = a.app_id
     </sql>
 
     <select id="selectSysUnbindLogList" parameterType="SysUnbindLog" resultMap="SysUnbindLogResult">
         <include refid="selectSysUnbindLogVo"/>
         <where>
-            <if test="appUserId != null "> and app_user_id = #{appUserId}</if>
-            <if test="appId != null "> and app_id = #{appId}</if>
-            <if test="params.beginFirstLoginTime != null and params.beginFirstLoginTime != '' and params.endFirstLoginTime != null and params.endFirstLoginTime != ''"> and first_login_time between #{params.beginFirstLoginTime} and #{params.endFirstLoginTime}</if>
-            <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''"> and last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}</if>
-            <if test="params.beginLoginTimes != null and params.beginLoginTimes != '' and params.endLoginTimes != null and params.endLoginTimes != ''"> and login_times between #{params.beginLoginTimes} and #{params.endLoginTimes}</if>
-            <if test="changeAmount != null "> and change_amount = #{changeAmount}</if>
-            <if test="unbindType != null "> and unbind_type = #{unbindType}</if>
-            <if test="unbindDesc != null  and unbindDesc != ''"> and unbind_desc like concat('%', #{unbindDesc}, '%')</if>
-            <if test="deviceCode != null  and deviceCode != ''"> and device_code like concat('%', #{deviceCode}, '%')</if>
-            <if test="remark != null  and remark != ''"> and remark like concat('%', #{remark}, '%')</if>
+            <if test="userName != null ">and (u.nick_name like concat('%', #{userName}, '%') or u.user_name like
+                concat('%', #{userName}, '%') or au.login_code like concat('%', #{userName}, '%'))
+            </if>
+            <if test="appUserId != null "> and ul.app_user_id = #{appUserId}</if>
+            <if test="appId != null "> and ul.app_id = #{appId}</if>
+            <if test="params.beginFirstLoginTime != null and params.beginFirstLoginTime != '' and params.endFirstLoginTime != null and params.endFirstLoginTime != ''"> and ul.first_login_time between #{params.beginFirstLoginTime} and #{params.endFirstLoginTime}</if>
+            <if test="params.beginLastLoginTime != null and params.beginLastLoginTime != '' and params.endLastLoginTime != null and params.endLastLoginTime != ''"> and ul.last_login_time between #{params.beginLastLoginTime} and #{params.endLastLoginTime}</if>
+            <if test="params.beginLoginTimes != null and params.beginLoginTimes != '' and params.endLoginTimes != null and params.endLoginTimes != ''"> and ul.login_times between #{params.beginLoginTimes} and #{params.endLoginTimes}</if>
+            <if test="changeAmount != null "> and ul.change_amount = #{changeAmount}</if>
+            <if test="unbindType != null "> and ul.unbind_type = #{unbindType}</if>
+            <if test="unbindDesc != null  and unbindDesc != ''"> and ul.unbind_desc like concat('%', #{unbindDesc}, '%')</if>
+            <if test="deviceCode != null  and deviceCode != ''"> and ul.device_code like concat('%', #{deviceCode}, '%')</if>
+            <if test="remark != null  and remark != ''"> and ul.remark like concat('%', #{remark}, '%')</if>
         </where>
-        order by id desc
+        order by ul.id desc
     </select>
 
     <select id="selectSysUnbindLogById" parameterType="Long" resultMap="SysUnbindLogResult">
         <include refid="selectSysUnbindLogVo"/>
-        where id = #{id}
+        where ul.id = #{id}
     </select>
 
     <insert id="insertSysUnbindLog" parameterType="SysUnbindLog">
@@ -141,4 +210,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <update id="cleanUnbindLog">
+        truncate table sys_unbind_log
+    </update>
 </mapper>

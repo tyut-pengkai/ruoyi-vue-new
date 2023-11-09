@@ -42,3 +42,11 @@ export function delUnbindLog(id) {
     method: 'delete'
   })
 }
+
+// 清空操作日志
+export function cleanUnbindlog() {
+  return request({
+    url: '/system/unbindLog/clean',
+    method: 'delete'
+  })
+}

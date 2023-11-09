@@ -97,10 +97,14 @@ public class UnbindDevice extends Function {
         unbindLog.setDeviceCode(loginUser.getDeviceCode().getDeviceCode());
         unbindLog.setDeviceCodeId(appUserDeviceCode.getDeviceCodeId());
         unbindLog.setChangeAmount(0L);
-        unbindLog.setExpireTimeAfter(null);
-        unbindLog.setExpireTimeBefore(null);
-        unbindLog.setPointAfter(null);
-        unbindLog.setPointBefore(null);
+        if (this.getApp().getBillType() == BillType.TIME) {
+            unbindLog.setExpireTimeAfter(appUser.getExpireTime());
+            unbindLog.setExpireTimeBefore(appUser.getExpireTime());
+        }
+        if (this.getApp().getBillType() == BillType.POINT) {
+            unbindLog.setPointAfter(appUser.getPoint());
+            unbindLog.setPointBefore(appUser.getPoint());
+        }
         // 扣减解绑次数
         if (appUser.getUnbindTimes() > 0) {
             appUser.setUnbindTimes(appUser.getUnbindTimes() - 1);
@@ -152,7 +156,6 @@ public class UnbindDevice extends Function {
                     unbindLog.setExpireTimeBefore(expireLog.getExpireTimeBefore());
                     unbindLog.setPointAfter(expireLog.getPointAfter());
                     unbindLog.setPointBefore(expireLog.getPointBefore());
-                    AsyncManager.me().execute(AsyncFactory.recordDeviceUnbind(unbindLog));
                 }
             } else {
                 throw new ApiException(ErrorCode.ERROR_UNBIND_NO_TIMES);
@@ -160,6 +163,7 @@ public class UnbindDevice extends Function {
         }
         // 解绑
         appUserDeviceCodeService.deleteSysAppUserDeviceCodeById(appUserDeviceCode.getId());
+        AsyncManager.me().execute(AsyncFactory.recordDeviceUnbind(unbindLog));
         return "0";
     }
 }

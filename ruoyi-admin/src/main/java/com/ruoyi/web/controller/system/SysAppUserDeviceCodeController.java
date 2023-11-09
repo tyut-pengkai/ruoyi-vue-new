@@ -3,9 +3,16 @@ package com.ruoyi.web.controller.system;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
+import com.ruoyi.common.core.domain.entity.SysDeviceCode;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.enums.UnbindType;
+import com.ruoyi.framework.manager.AsyncManager;
+import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.system.domain.SysUnbindLog;
 import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
 import com.ruoyi.system.service.ISysAppUserService;
 import com.ruoyi.system.service.ISysDeviceCodeService;
@@ -26,11 +33,11 @@ import java.util.List;
 @RequestMapping("/system/appUserDeviceCode")
 public class SysAppUserDeviceCodeController extends BaseController {
     @Autowired
-    private ISysAppUserDeviceCodeService sysAppUserDeviceCodeService;
+    private ISysAppUserDeviceCodeService appUserDeviceCodeService;
     @Autowired
-    private ISysAppUserService sysAppUserService;
+    private ISysAppUserService appUserService;
     @Autowired
-    private ISysDeviceCodeService sysDeviceCodeService;
+    private ISysDeviceCodeService deviceCodeService;
 
     /**
      * 查询软件用户与设备码关联列表
@@ -39,10 +46,10 @@ public class SysAppUserDeviceCodeController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo list(SysAppUserDeviceCode sysAppUserDeviceCode) {
         startPage();
-        List<SysAppUserDeviceCode> list = sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeList(sysAppUserDeviceCode);
+        List<SysAppUserDeviceCode> list = appUserDeviceCodeService.selectSysAppUserDeviceCodeList(sysAppUserDeviceCode);
         for (SysAppUserDeviceCode item : list) {
-            item.setAppUser(sysAppUserService.selectSysAppUserByAppUserId(item.getAppUserId()));
-            item.setDeviceCode(sysDeviceCodeService.selectSysDeviceCodeByDeviceCodeId(item.getDeviceCodeId()));
+            item.setAppUser(appUserService.selectSysAppUserByAppUserId(item.getAppUserId()));
+            item.setDeviceCode(deviceCodeService.selectSysDeviceCodeByDeviceCodeId(item.getDeviceCodeId()));
         }
         return getDataTable(list);
     }
@@ -54,7 +61,7 @@ public class SysAppUserDeviceCodeController extends BaseController {
     @Log(title = "软件用户与设备码关联", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(SysAppUserDeviceCode sysAppUserDeviceCode) {
-        List<SysAppUserDeviceCode> list = sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeList(sysAppUserDeviceCode);
+        List<SysAppUserDeviceCode> list = appUserDeviceCodeService.selectSysAppUserDeviceCodeList(sysAppUserDeviceCode);
         ExcelUtil<SysAppUserDeviceCode> util = new ExcelUtil<SysAppUserDeviceCode>(SysAppUserDeviceCode.class);
         return util.exportExcel(list, "软件用户与设备码关联数据");
     }
@@ -65,9 +72,9 @@ public class SysAppUserDeviceCodeController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:appUserDeviceCode:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
-        SysAppUserDeviceCode sysAppUserDeviceCode = sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeById(id);
-        sysAppUserDeviceCode.setAppUser(sysAppUserService.selectSysAppUserByAppUserId(sysAppUserDeviceCode.getAppUserId()));
-        sysAppUserDeviceCode.setDeviceCode(sysDeviceCodeService.selectSysDeviceCodeByDeviceCodeId(sysAppUserDeviceCode.getDeviceCodeId()));
+        SysAppUserDeviceCode sysAppUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeById(id);
+        sysAppUserDeviceCode.setAppUser(appUserService.selectSysAppUserByAppUserId(sysAppUserDeviceCode.getAppUserId()));
+        sysAppUserDeviceCode.setDeviceCode(deviceCodeService.selectSysDeviceCodeByDeviceCodeId(sysAppUserDeviceCode.getDeviceCodeId()));
         return AjaxResult.success(sysAppUserDeviceCode);
     }
 
@@ -79,7 +86,7 @@ public class SysAppUserDeviceCodeController extends BaseController {
     @PostMapping
     public AjaxResult add(@RequestBody SysAppUserDeviceCode sysAppUserDeviceCode) {
         sysAppUserDeviceCode.setCreateBy(getUsername());
-        return toAjax(sysAppUserDeviceCodeService.insertSysAppUserDeviceCode(sysAppUserDeviceCode));
+        return toAjax(appUserDeviceCodeService.insertSysAppUserDeviceCode(sysAppUserDeviceCode));
     }
 
     /**
@@ -90,7 +97,7 @@ public class SysAppUserDeviceCodeController extends BaseController {
     @PutMapping
     public AjaxResult edit(@RequestBody SysAppUserDeviceCode sysAppUserDeviceCode) {
         sysAppUserDeviceCode.setUpdateBy(getUsername());
-        return toAjax(sysAppUserDeviceCodeService.updateSysAppUserDeviceCode(sysAppUserDeviceCode));
+        return toAjax(appUserDeviceCodeService.updateSysAppUserDeviceCode(sysAppUserDeviceCode));
     }
 
     /**
@@ -100,7 +107,34 @@ public class SysAppUserDeviceCodeController extends BaseController {
     @Log(title = "软件用户与设备码关联", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
-        return toAjax(sysAppUserDeviceCodeService.deleteSysAppUserDeviceCodeByIds(ids));
+        int i = appUserDeviceCodeService.deleteSysAppUserDeviceCodeByIds(ids);
+        for (Long id : ids) {
+            SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeById(id);
+            SysDeviceCode deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCodeId(appUserDeviceCode.getDeviceCodeId());
+            SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(appUserDeviceCode.getAppUserId());
+            // 解绑日志
+            SysUnbindLog unbindLog = new SysUnbindLog();
+            unbindLog.setAppUserId(appUserDeviceCode.getAppUserId());
+            unbindLog.setAppId(appUser.getAppId());
+            unbindLog.setFirstLoginTime(appUserDeviceCode.getCreateTime());
+            unbindLog.setLastLoginTime(appUserDeviceCode.getLastLoginTime());
+            unbindLog.setLoginTimes(appUserDeviceCode.getLoginTimes());
+            unbindLog.setUnbindType(UnbindType.ADMIN_UNBIND);
+            unbindLog.setUnbindDesc("管理员后台解绑");
+            unbindLog.setDeviceCode(deviceCode.getDeviceCode());
+            unbindLog.setDeviceCodeId(appUserDeviceCode.getDeviceCodeId());
+            unbindLog.setChangeAmount(0L);
+            if (appUser.getApp().getBillType() == BillType.TIME) {
+                unbindLog.setExpireTimeAfter(appUser.getExpireTime());
+                unbindLog.setExpireTimeBefore(appUser.getExpireTime());
+            }
+            if (appUser.getApp().getBillType() == BillType.POINT) {
+                unbindLog.setPointAfter(appUser.getPoint());
+                unbindLog.setPointBefore(appUser.getPoint());
+            }
+            AsyncManager.me().execute(AsyncFactory.recordDeviceUnbind(unbindLog));
+        }
+        return toAjax(i);
     }
 
     /**
@@ -111,6 +145,6 @@ public class SysAppUserDeviceCodeController extends BaseController {
     @PutMapping("/changeStatus")
     public AjaxResult changeStatus(@RequestBody SysAppUserDeviceCode appUserDeviceCode) {
         appUserDeviceCode.setUpdateBy(getUsername());
-        return toAjax(sysAppUserDeviceCodeService.updateSysDeviceCodeStatus(appUserDeviceCode));
+        return toAjax(appUserDeviceCodeService.updateSysDeviceCodeStatus(appUserDeviceCode));
     }
 }

@@ -97,4 +97,12 @@ public class SysUnbindLogServiceImpl implements ISysUnbindLogService
     {
         return sysUnbindLogMapper.deleteSysUnbindLogById(id);
     }
+
+    /**
+     * 清空日志
+     */
+    @Override
+    public void cleanUnbindLog() {
+        sysUnbindLogMapper.cleanUnbindLog();
+    }
 }

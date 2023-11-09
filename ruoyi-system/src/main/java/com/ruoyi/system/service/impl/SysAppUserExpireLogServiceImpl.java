@@ -90,4 +90,12 @@ public class SysAppUserExpireLogServiceImpl implements ISysAppUserExpireLogServi
     public int deleteSysAppUserExpireLogById(Long id) {
         return sysAppUserExpireLogMapper.deleteSysAppUserExpireLogById(id);
     }
+
+    /**
+     * 清空日志
+     */
+    @Override
+    public void cleanAppUserExpireLog() {
+        sysAppUserExpireLogMapper.cleanAppUserExpireLog();
+    }
 }

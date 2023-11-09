@@ -181,7 +181,7 @@
           >新增</el-button
         >
       </el-col> -->
-      <el-col :span="1.5">
+<!--      <el-col :span="1.5">
         <el-button
           v-hasPermi="['system:appUserExpireLog:edit']"
           :disabled="single"
@@ -190,10 +190,10 @@
           size="mini"
           type="success"
           @click="handleUpdate"
-        >详情
+        >修改
         </el-button
         >
-      </el-col>
+      </el-col>-->
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['system:appUserExpireLog:remove']"
@@ -206,6 +206,17 @@
         >删除
         </el-button
         >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          icon="el-icon-delete"
+          plain
+          type="danger"
+          size="mini"
+          @click="handleClean"
+          v-hasPermi="['system:appUserExpireLog:remove']"
+        >清空
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -534,6 +545,7 @@ import {
   updateAppUserExpireLog,
 } from "@/api/system/appUserExpireLog";
 import {listAppAll} from "@/api/system/app";
+import { cleanAppUserExpirelog } from '@/api/system/appUserExpireLog'
 
 export default {
   name: "AppUserExpireLog",
@@ -597,9 +609,6 @@ export default {
         ],
         changeDesc: [
           {required: true, message: "变动描述不能为空", trigger: "blur"},
-        ],
-        delFlag: [
-          {required: true, message: "删除标志不能为空", trigger: "blur"},
         ],
       },
     };
@@ -713,6 +722,19 @@ export default {
         .catch(() => {
         });
     },
+    /** 清空按钮操作 */
+    handleClean() {
+      this.$modal
+        .confirm("是否确认清空所有时长或点数变动日志数据项？")
+        .then(function () {
+          return cleanAppUserExpirelog();
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("清空成功");
+        })
+        .catch(() => {});
+    },
     /** 导出按钮操作 */
     handleExport() {
       this.download(
@@ -732,6 +754,7 @@ export default {
         this.loading = false;
       });
     },
+
   },
 };
 </script>

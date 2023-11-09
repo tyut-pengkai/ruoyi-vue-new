@@ -3,6 +3,8 @@ package com.ruoyi.system.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.core.domain.entity.SysApp;
+import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.enums.UnbindType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -85,6 +87,36 @@ public class SysUnbindLog extends BaseEntity
 
     /** 删除标志（0代表存在 2代表删除） */
     private String delFlag;
+
+    private String userName;
+
+    private SysAppUser appUser;
+
+    private SysApp app;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public SysAppUser getAppUser() {
+        return appUser;
+    }
+
+    public void setAppUser(SysAppUser appUser) {
+        this.appUser = appUser;
+    }
+
+    public SysApp getApp() {
+        return app;
+    }
+
+    public void setApp(SysApp app) {
+        this.app = app;
+    }
 
     public void setId(Long id)
     {

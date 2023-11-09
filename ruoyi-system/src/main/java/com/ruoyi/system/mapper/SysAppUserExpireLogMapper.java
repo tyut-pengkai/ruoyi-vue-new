@@ -60,4 +60,9 @@ public interface SysAppUserExpireLogMapper {
      * @return 结果
      */
     public int deleteSysAppUserExpireLogByIds(Long[] ids);
+
+    /**
+     * 清空日志
+     */
+    public void cleanAppUserExpireLog();
 }

@@ -58,4 +58,9 @@ public interface ISysAppUserExpireLogService {
      * @return 结果
      */
     public int deleteSysAppUserExpireLogById(Long id);
+
+    /**
+     * 清空日志
+     */
+    public void cleanAppUserExpireLog();
 }

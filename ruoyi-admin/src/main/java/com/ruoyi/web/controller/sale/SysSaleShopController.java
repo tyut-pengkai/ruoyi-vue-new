@@ -10,10 +10,7 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.core.domain.entity.SysApp;
-import com.ruoyi.common.core.domain.entity.SysAppUser;
-import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
-import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.entity.*;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.core.text.Convert;
@@ -86,7 +83,7 @@ public class SysSaleShopController extends BaseController {
     @Resource
     private ISysPaymentService sysPaymentService;
     @Resource
-    private ISysAppUserService sysAppUserService;
+    private ISysAppUserService appUserService;
     @Resource
     private ISysUserService sysUserService;
     @Resource
@@ -558,7 +555,7 @@ public class SysSaleShopController extends BaseController {
             }
             SysLoginCodeVo loginCodeVo = new SysLoginCodeVo(loginCode);
             if(UserConstants.YES.equals(loginCode.getIsCharged())) {
-                SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(loginCode.getAppId(), cardNo);
+                SysAppUser appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(loginCode.getAppId(), cardNo);
                 if(appUser != null) {
                     loginCodeVo.setUserExpireTime(appUser.getExpireTime());
                 }
@@ -635,13 +632,13 @@ public class SysSaleShopController extends BaseController {
             if (!SecurityUtils.matchesPassword(password, user.getPassword())) {
                 throw new ServiceException("账号或密码有误");
             }
-            appUser = sysAppUserService.selectSysAppUserByAppIdAndUserId(appId, user.getUserId());
+            appUser = appUserService.selectSysAppUserByAppIdAndUserId(appId, user.getUserId());
             if (appUser == null) {
                 throw new ServiceException("软件用户不存在");
             }
             deviceCodeList = sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserId(appUser.getAppUserId());
         } else if (queryType == 2) {
-            appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(appId, username);
+            appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(appId, username);
             if (appUser == null) {
                 throw new ServiceException("软件用户不存在");
             }
@@ -660,66 +657,87 @@ public class SysSaleShopController extends BaseController {
     @RateLimiter(count = 10, limitType = LimitType.IP)
     @Transactional(rollbackFor = Exception.class)
     public AjaxResult unbindDevice(@RequestParam("id") long id) {
-        SysAppUserDeviceCode sysAppUserDeviceCode = sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeById(id);
-        if (sysAppUserDeviceCode == null) {
+        SysAppUserDeviceCode appUserDeviceCode = sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeById(id);
+        if (appUserDeviceCode == null) {
             throw new ServiceException("当前用户未绑定该设备码");
         }
-        Long appUserId = sysAppUserDeviceCode.getAppUserId();
-        SysAppUser appUser = sysAppUserService.selectSysAppUserByAppUserId(appUserId);
+        Long appUserId = appUserDeviceCode.getAppUserId();
+        SysAppUser appUser = appUserService.selectSysAppUserByAppUserId(appUserId);
         if (appUser == null) {
             throw new ServiceException("软件用户不存在");
         }
-        SysApp sysApp = sysAppMapper.selectSysAppByAppId(appUser.getAppId());
-        if (sysApp == null) {
+        SysApp app = sysAppMapper.selectSysAppByAppId(appUser.getAppId());
+        if (app == null) {
             throw new ServiceException("软件不存在");
         }
         // 软件是否开启解绑
-        Boolean enableUnbind = Convert.toBool(sysApp.getEnableUnbind(), false);
+        Boolean enableUnbind = Convert.toBool(app.getEnableUnbind(), false);
         if (!enableUnbind) {
             throw new ServiceException("该软件解绑功能未开启");
         }
         // 卡类是否开启解绑
         if (appUser.getLastChargeTemplateId() != null) {
-            if (sysApp.getAuthType() == AuthType.ACCOUNT) {
+            if (app.getAuthType() == AuthType.ACCOUNT) {
                 SysCardTemplate template = sysCardTemplateMapper.selectSysCardTemplateByTemplateId(appUser.getLastChargeTemplateId());
                 if (template != null && UserConstants.NO.equals(template.getEnableUnbind())) {
                     throw new ApiException(ErrorCode.ERROR_CARD_UNBIND_NOT_ENABLE);
                 }
-            } else if (sysApp.getAuthType() == AuthType.LOGIN_CODE) {
+            } else if (app.getAuthType() == AuthType.LOGIN_CODE) {
                 SysLoginCodeTemplate template = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateByTemplateId(appUser.getLastChargeTemplateId());
                 if (template != null && UserConstants.NO.equals(template.getEnableUnbind())) {
                     throw new ApiException(ErrorCode.ERROR_CARD_UNBIND_NOT_ENABLE);
                 }
             }
         }
+        SysDeviceCode deviceCode = sysDeviceCodeService.selectSysDeviceCodeByDeviceCodeId(appUserDeviceCode.getDeviceCodeId());
+        // 解绑日志
+        SysUnbindLog unbindLog = new SysUnbindLog();
+        unbindLog.setAppUserId(appUser.getAppUserId());
+        unbindLog.setAppId(app.getAppId());
+        unbindLog.setFirstLoginTime(appUserDeviceCode.getCreateTime());
+        unbindLog.setLastLoginTime(appUserDeviceCode.getLastLoginTime());
+        unbindLog.setLoginTimes(appUserDeviceCode.getLoginTimes());
+        unbindLog.setUnbindType(UnbindType.FRONTEND_UNBIND);
+        unbindLog.setUnbindDesc("用户前台解绑");
+        unbindLog.setDeviceCode(deviceCode.getDeviceCode());
+        unbindLog.setDeviceCodeId(appUserDeviceCode.getDeviceCodeId());
+        unbindLog.setChangeAmount(0L);
+        if (app.getBillType() == BillType.TIME) {
+            unbindLog.setExpireTimeAfter(appUser.getExpireTime());
+            unbindLog.setExpireTimeBefore(appUser.getExpireTime());
+        }
+        if (app.getBillType() == BillType.POINT) {
+            unbindLog.setPointAfter(appUser.getPoint());
+            unbindLog.setPointBefore(appUser.getPoint());
+        }
         // 扣减解绑次数
         if (appUser.getUnbindTimes() > 0) {
             appUser.setUnbindTimes(appUser.getUnbindTimes() - 1);
-            sysAppUserService.updateSysAppUser(appUser);
+            appUserService.updateSysAppUser(appUser);
         } else {
-            if (Convert.toBool(sysApp.getEnableUnbindByQuota(), true)) {
-                Long p = sysApp.getReduceQuotaUnbind();
+            if (Convert.toBool(app.getEnableUnbindByQuota(), true)) {
+                Long p = app.getReduceQuotaUnbind();
                 if (p != null && p > 0) {
-                    boolean enableNegative = UserConstants.YES.equals(sysApp.getEnableNegative());
+                    boolean enableNegative = UserConstants.YES.equals(app.getEnableNegative());
                     SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
-                    if (sysApp.getBillType() == BillType.TIME) {
+                    if (app.getBillType() == BillType.TIME) {
                         expireLog.setExpireTimeBefore(appUser.getExpireTime());
                         Date newExpiredTime = MyUtils.getNewExpiredTimeSub(appUser.getExpireTime(), p);
                         Date nowDate = DateUtils.getNowDate();
                         if ((appUser.getExpireTime().after(nowDate) && newExpiredTime.after(nowDate)) || enableNegative) {
                             appUser.setExpireTime(newExpiredTime);
-                            sysAppUserService.updateSysAppUser(appUser);
+                            appUserService.updateSysAppUser(appUser);
                             expireLog.setExpireTimeAfter(newExpiredTime);
                         } else {
                             throw new ServiceException("软件用户剩余时间不足");
                         }
-                    } else if (sysApp.getBillType() == BillType.POINT) {
+                    } else if (app.getBillType() == BillType.POINT) {
                         expireLog.setPointBefore(appUser.getPoint());
                         BigDecimal point = BigDecimal.valueOf(p);
                         BigDecimal newPoint = appUser.getPoint().subtract(point);
                         if (appUser.getPoint().compareTo(point) >= 0 || enableNegative) {
                             appUser.setPoint(newPoint);
-                            sysAppUserService.updateSysAppUser(appUser);
+                            appUserService.updateSysAppUser(appUser);
                             expireLog.setPointAfter(newPoint);
                         } else {
                             throw new ServiceException("软件用户点数不足");
@@ -733,14 +751,21 @@ public class SysSaleShopController extends BaseController {
                     expireLog.setChangeType(AppUserExpireChangeType.UNBIND);
                     expireLog.setChangeAmount(-p);
                     expireLog.setCardNo(null);
-                    expireLog.setAppId(sysApp.getAppId());
+                    expireLog.setAppId(app.getAppId());
                     AsyncManager.me().execute(AsyncFactory.recordAppUserExpire(expireLog));
+                    // 记录解绑日志
+                    unbindLog.setChangeAmount(-p);
+                    unbindLog.setExpireTimeAfter(expireLog.getExpireTimeAfter());
+                    unbindLog.setExpireTimeBefore(expireLog.getExpireTimeBefore());
+                    unbindLog.setPointAfter(expireLog.getPointAfter());
+                    unbindLog.setPointBefore(expireLog.getPointBefore());
                 }
             } else {
                 throw new ServiceException("解绑次数已用尽，无法继续解绑");
             }
         }
         sysAppUserDeviceCodeService.deleteSysAppUserDeviceCodeById(id);
+        AsyncManager.me().execute(AsyncFactory.recordDeviceUnbind(unbindLog));
         return AjaxResult.success();
     }
 

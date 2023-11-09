@@ -95,4 +95,12 @@ public class SysUnbindLogController extends BaseController
     {
         return toAjax(sysUnbindLogService.deleteSysUnbindLogByIds(ids));
     }
+
+    @Log(title = "解绑日志", businessType = BusinessType.CLEAN)
+    @PreAuthorize("@ss.hasPermi('system:unbindLog:remove')")
+    @DeleteMapping("/clean")
+    public AjaxResult clean() {
+        sysUnbindLogService.cleanUnbindLog();
+        return AjaxResult.success();
+    }
 }

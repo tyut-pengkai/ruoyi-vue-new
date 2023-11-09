@@ -88,4 +88,12 @@ public class SysAppUserExpireLogController extends BaseController {
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(sysAppUserExpireLogService.deleteSysAppUserExpireLogByIds(ids));
     }
+
+    @Log(title = "时长或点数变动", businessType = BusinessType.CLEAN)
+    @PreAuthorize("@ss.hasPermi('system:appUserExpireLog:remove')")
+    @DeleteMapping("/clean")
+    public AjaxResult clean() {
+        sysAppUserExpireLogService.cleanAppUserExpireLog();
+        return AjaxResult.success();
+    }
 }

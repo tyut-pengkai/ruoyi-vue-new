@@ -204,4 +204,8 @@
             #{id}
         </foreach>
     </delete>
+
+    <update id="cleanAppUserExpireLog">
+        truncate table sys_app_user_expire_log
+    </update>
 </mapper>
