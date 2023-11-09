@@ -466,13 +466,16 @@ public class SysAppLoginService {
                 || (!UserConstants.YES.equals(app.getEnableTrialByTimeQuantum()) && !UserConstants.YES.equals(app.getEnableTrialByTimes()))) {
             throw new ApiException(ErrorCode.ERROR_APP_TRIAL_NOT_ENABLE);
         }
+        String loginCodeShow = "[试用]" + loginIp + "|" + deviceCodeStr;
+        // 检查IP黑名单
+        validUtils.checkIpBlackList(loginCodeShow);
         // 检查在线人数限制
         validUtils.checkLicenseMaxOnline();
         // 用户验证
         SysAppTrialUser appTrialUser = null;
+        boolean flagNewUser = false;
         String appName = app.getAppName();
         String appVersionStr = appVersion.getVersionShow();
-        String loginCodeShow = "[试用]" + loginIp + "|" + deviceCodeStr;
         try {
             appTrialUser = appTrialService.selectSysAppTrialUserByAppIdAndLoginIpAndDeviceCode(app.getAppId(), loginIp, deviceCodeStr);
             if (appTrialUser == null) { // 首次登录
@@ -481,6 +484,7 @@ public class SysAppLoginService {
                 if (app.getTrialTimesPerIp() != -1 && trialUserList.size() >= app.getTrialTimesPerIp()) {
                     throw new ApiException(ErrorCode.ERROR_TRIAL_OVER_LIMIT_TIMES_PER_IP);
                 }
+                flagNewUser = true;
                 appTrialUser = new SysAppTrialUser();
                 appTrialUser.setAppId(app.getAppId());
                 appTrialUser.setLastLoginTime(null);
@@ -503,6 +507,7 @@ public class SysAppLoginService {
             boolean flag = false;
             if (validUtils.checkInTrialQuantum(app)) {
                 flag = true;
+                appTrialUser.setLoginTimesAll(appTrialUser.getLoginTimesAll() + 1);
             } else {
                 if (!UserConstants.YES.equals(app.getEnableTrialByTimes())) {
                     throw new ApiException(ErrorCode.ERROR_NOT_IN_APP_TRIAL_TIME_QUANTUM);
@@ -518,9 +523,11 @@ public class SysAppLoginService {
                         // appTrialUser.setLoginTimes(appTrialUser.getLoginTimes() + 1);
                         // appTrialUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getTrialTime()));
                     }
+                } else {
+                    appTrialUser.setNextEnableTime(DateUtils.parseDate(UserConstants.MAX_DATE));
                 }
-                // (取反)开启了试用期间不增加试用次数且在有效试用时间内
-                if (!(UserConstants.YES.equals(app.getNotAddTrialTimesInTrialTime()) && DateUtils.getNowDate().before(appTrialUser.getExpireTime()))) {
+                // 未开启试用期间不增加试用次数或不在有效试用时间内
+                if (!UserConstants.YES.equals(app.getNotAddTrialTimesInTrialTime()) || appTrialUser.getExpireTime().before(DateUtils.getNowDate()) || flagNewUser) {
                     // 检查试用次数
                     if (appTrialUser.getLoginTimes() >= app.getTrialTimes()) {
                         throw new ApiException(ErrorCode.ERROR_TRIAL_OVER_LIMIT_TIMES,
@@ -530,12 +537,12 @@ public class SysAppLoginService {
                     }
                     appTrialUser.setLoginTimes(appTrialUser.getLoginTimes() + 1);
                     appTrialUser.setExpireTime(MyUtils.getNewExpiredTimeAdd(null, app.getTrialTime()));
+                    appTrialUser.setLoginTimesAll(appTrialUser.getLoginTimesAll() + 1);
                 }
-                appTrialUser.setLoginTimesAll(appTrialUser.getLoginTimesAll() + 1);
-                appTrialService.updateSysAppTrialUser(appTrialUser);
                 // 检测账号是否过期
                 validUtils.checkAppTrialUserIsExpired(appTrialUser);
             }
+            appTrialService.updateSysAppTrialUser(appTrialUser);
             synchronized (appTrialUser.getAppTrialUserId().toString().intern()) {
                 // 检查用户数、设备数限制
                 validUtils.checkTrialLoginLimit(app, appTrialUser);
@@ -558,7 +565,6 @@ public class SysAppLoginService {
                 deviceCode.setDeviceCode(deviceCodeStr);
                 loginUser.setDeviceCode(deviceCode);
                 loginUser.setAppUserDeviceCode(null);
-
                 recordLoginInfo(loginUser);
                 // 生成token
                 return tokenService.createToken(loginUser);
