@@ -476,7 +476,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                         result.add(new TemplateInfo(
                                 fileName,
                                 section.get("模板名称"),
-                                section.get("模板名称"),
+                                section.get("模板描述"),
                                 section.get("模板版本"),
                                 section.get("模板作者"),
                                 section.get("联系方式"),

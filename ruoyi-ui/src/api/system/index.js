@@ -8,3 +8,10 @@ export function getNotice(query) {
     params: query
   })
 }
+
+export function getDashboard() {
+  return request({
+    url: '/index/getDashboard',
+    method: 'get'
+  })
+}

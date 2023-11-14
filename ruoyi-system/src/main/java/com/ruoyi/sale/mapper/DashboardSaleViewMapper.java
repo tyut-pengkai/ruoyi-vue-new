@@ -1,5 +1,6 @@
 package com.ruoyi.sale.mapper;
 
+import com.ruoyi.system.domain.vo.TbhbVo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
@@ -15,10 +16,14 @@ import java.util.Map;
  * @date 2022-02-21
  */
 @Repository
+@SuppressWarnings("MybatisXMapperMethodInspection")
 public interface DashboardSaleViewMapper {
 
     @Select("select IFNULL(sum(actual_fee),0) from sys_sale_order sso where sso.status in ('1', '3', '4')")
     public BigDecimal queryTotalFee();
+
+    @Select("SELECT count( 1 ) FROM ( SELECT DATE( create_time ) FROM sys_sale_order GROUP BY DATE( create_time )) a")
+    public long queryTotalDays();
 
     @Select("select IFNULL(sum(actual_fee),0) from sys_sale_order sso where create_time BETWEEN #{start} and #{end}")
     public BigDecimal queryTotalFeeAllBetween(@Param("start") String start, @Param("end") String end);
@@ -37,6 +42,10 @@ public interface DashboardSaleViewMapper {
 
     @Select("select count(1) from sys_sale_order sso where sso.status in ('1', '3', '4') and create_time BETWEEN #{start} and #{end}")
     public int queryTotalTradeBetween(@Param("start") String start, @Param("end") String end);
+
+/*    @Select("select date(create_time) date, count(1) num from sys_sale_order sso where sso.status in ('1', '3', '4') " +
+            "and create_time BETWEEN #{start} and #{end} group by date(create_time) ORDER BY date(create_time)")
+    public List<Map<String, Object>> queryTotalTradeBetweenOfDay(@Param("start") String start, @Param("end") String end);*/
 
     @Select("SELECT a.app_id, IFNULL(sum( ssoi.actual_fee ),0) AS total_fee FROM sys_sale_order sso\n" +
             "\tJOIN sys_sale_order_item ssoi ON sso.order_id = ssoi.order_id AND ssoi.template_type = 1\n" +
@@ -69,5 +78,14 @@ public interface DashboardSaleViewMapper {
     @Select("SELECT sso.pay_mode, count(pay_mode) as total_count FROM sys_sale_order sso\n" +
             "WHERE sso.STATUS IN ( '1', '3', '4' ) AND sso.create_time BETWEEN #{start} AND #{end} GROUP BY pay_mode")
     public List<Map<String, Object>> queryPayModeBetween(@Param("start") String start, @Param("end") String end);
+
+    /**
+     * 查询日销售同比环比信息
+     * @return
+     */
+    public List<TbhbVo> queryRtbhb();
+    public List<TbhbVo> queryZtbhb();
+    public List<TbhbVo> queryYtbhb();
+    public List<TbhbVo> queryNtbhb();
 
 }

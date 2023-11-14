@@ -82,62 +82,62 @@
               </el-card>
             </el-col>
             <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px">
-              <show-card
+              <show-card-sale
                 :tag="s[showMode]['feeTodayTag']"
                 :title="s[showMode]['feeToday']"
                 :trade="d['tradeToday']"
                 :value="d['feeToday']"
                 icon="el-icon-coin"
                 type="p"
-              ></show-card>
+              ></show-card-sale>
             </el-col>
             <!-- <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeToday']" :value="d['tradeToday']"
-                           type="s" icon="el-icon-sell"></show-card>
+                <show-card-sale :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeToday']" :value="d['tradeToday']"
+                           type="s" icon="el-icon-sell"></show-card-sale>
               </el-col> -->
             <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px">
-              <show-card
+              <show-card-sale
                 :tag="s[showMode]['feeTodayTag']"
                 :title="s[showMode]['feeTodayAll']"
                 :trade="d['tradeTodayAll'] - d['tradeToday']"
                 :value="d['feeTodayAll'] - d['feeToday']"
                 icon="el-icon-warning-outline"
                 type="p"
-              ></show-card>
+              ></show-card-sale>
             </el-col>
             <!-- <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeTodayAll']"
-                           :value="d['tradeTodayAll']-d['tradeToday']" type="s" icon="el-icon-warning-outline"></show-card>
+                <show-card-sale :tag="s[showMode]['feeTodayTag']" :title="s[showMode]['feeTodayAll']"
+                           :value="d['tradeTodayAll']-d['tradeToday']" type="s" icon="el-icon-warning-outline"></show-card-sale>
               </el-col> -->
           </el-row>
           <el-row :gutter="10">
             <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px">
-              <show-card
+              <show-card-sale
                 :tag="s[showMode]['feeYesterdayTag']"
                 :title="s[showMode]['feeYesterday']"
                 :trade="d['tradeYesterday']"
                 :value="d['feeYesterday']"
                 icon="el-icon-coin"
                 type="p"
-              ></show-card>
+              ></show-card-sale>
             </el-col>
             <!-- <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :tag="s[showMode]['feeYesterdayTag']" :title="s[showMode]['feeYesterday']"
-                           :value="d['tradeYesterday']" type="s" icon="el-icon-sell"></show-card>
+                <show-card-sale :tag="s[showMode]['feeYesterdayTag']" :title="s[showMode]['feeYesterday']"
+                           :value="d['tradeYesterday']" type="s" icon="el-icon-sell"></show-card-sale>
               </el-col> -->
             <el-col :lg="12" :sm="12" :xs="24" style="margin-top: 10px">
-              <show-card
+              <show-card-sale
                 :tag="s[showMode]['feeWeekTag']"
                 :title="s[showMode]['feeWeek']"
                 :trade="d['tradeWeek']"
                 :value="d['feeWeek']"
                 icon="el-icon-coin"
                 type="p"
-              ></show-card>
+              ></show-card-sale>
             </el-col>
             <!-- <el-col :lg="6" :sm="12" :xs="24" style="margin-top: 10px;">
-                <show-card :tag="s[showMode]['feeWeekTag']" :title="s[showMode]['feeWeek']" :value="d['tradeWeek']"
-                           type="s" icon="el-icon-sell"></show-card>
+                <show-card-sale :tag="s[showMode]['feeWeekTag']" :title="s[showMode]['feeWeek']" :value="d['tradeWeek']"
+                           type="s" icon="el-icon-sell"></show-card-sale>
               </el-col> -->
           </el-row>
           <el-row :gutter="10">
@@ -241,22 +241,20 @@
 
 <script>
 import CountTo from "vue-count-to";
-import ShowCard from "@/views/dashboard/ShowCardSale";
+import ShowCardSale from "@/views/dashboard/ShowCardSale";
 import {getDashboardInfoSaleView} from "@/api/common";
 import ShowAppSale from "@/views/dashboard/ShowAppSale";
 import PieChart from "@/views/dashboard/MyPieChart";
 import BarChart from "@/views/dashboard/MyBarChart";
-import LineChart from "@/views/dashboard/MyLineChart";
 
 export default {
   name: "SaleView",
   components: {
     CountTo,
-    ShowCard,
+    ShowCardSale,
     ShowAppSale,
     PieChart,
     BarChart,
-    LineChart,
   },
   data() {
     return {

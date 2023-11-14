@@ -239,7 +239,6 @@
 <script>
 import ShowCardApp from "@/views/dashboard/ShowCardApp";
 import {getDashboardInfoAppView} from "@/api/common";
-import ShowCardSmall from "@/views/dashboard/ShowCardSmall";
 import ShowAppUser from "@/views/dashboard/ShowAppUser";
 import PieChart from "@/views/dashboard/MyPieChart";
 import BarChart from "@/views/dashboard/MyBarChart";
@@ -251,7 +250,6 @@ export default {
   components: {
     CountTo,
     ShowCardApp,
-    ShowCardSmall,
     ShowAppUser,
     PieChart,
     BarChart,

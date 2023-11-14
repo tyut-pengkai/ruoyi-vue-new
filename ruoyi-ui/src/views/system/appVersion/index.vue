@@ -1608,11 +1608,11 @@ export default {
     //动态监听路由变化 -以便动态更改导航背景色事件效果等
     $route(to, from) {
       // 对路由变化作出响应...
-      // console.log("to.path----", to); //跳转后路由
-      // console.log("from----", from); //跳转前路由
+      console.log("to.path----", to); //跳转后路由
+      console.log("from----", from); //跳转前路由
 
       if (
-        from.path == "/verify/app" &&
+        (from.path == "/verify/app" || from.path == "/admin/index") &&
         to.path == "/verify/appVersion" &&
         to.query.appId != this.app.appId
       ) {

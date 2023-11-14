@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.sale.mapper.DashboardSaleViewMapper">
+
+	<resultMap type="TbhbVo" id="TbhbVoResult">
+		<id     property="dateTime"      column="dateTime"      />
+		<result property="sumNum"    column="sumNum"    />
+		<result property="tbSumNum"     column="tbSumNum"     />
+		<result property="hbSumNum"   column="hbSumNum"   />
+		<result property="tbRate"    column="tbRate"    />
+		<result property="hbRate"      column="hbRate"      />
+	</resultMap>
+
+	<select id="queryRtbhb" resultMap="TbhbVoResult">
+		SELECT
+			ta.ymd as dateTime,
+			ta.sumNum,
+			tb.sumNum tbSumNum,
+			tc.sumNum hbSumNum,
+			concat( ifnull( round(( ta.sumNum - tb.sumNum )/ tb.sumNum * 100, 2 ), 0 ), '%' ) AS tbRate,
+			concat( ifnull( round(( ta.sumNum - tc.sumNum )/ tc.sumNum * 100, 2 ), 0 ), '%' ) AS hbRate
+		FROM
+			(
+				SELECT
+					DATE_FORMAT( t.create_time, '%Y-%m-%d' ) ymd,
+					sum( t.actual_fee ) AS sumNum
+				FROM
+					sys_sale_order t
+				WHERE
+					t.STATUS IN ( '1', '3', '4' )
+				GROUP BY
+					ymd
+			) ta -- 同比：上年同期
+				LEFT JOIN (
+				SELECT
+					DATE_FORMAT( t.create_time, '%Y-%m-%d' ) ymd,
+					sum( t.actual_fee ) AS sumNum
+				FROM
+					sys_sale_order t
+				WHERE
+					t.STATUS IN ( '1', '3', '4' )
+				GROUP BY
+					ymd
+			) tb -- 计算上年同期时间
+						  ON ta.ymd = date_add( tb.ymd, INTERVAL 1 YEAR ) -- 环比：上期
+				LEFT JOIN (
+				SELECT
+					DATE_FORMAT( t.create_time, '%Y-%m-%d' ) ymd,
+					sum( t.actual_fee ) AS sumNum
+				FROM
+					sys_sale_order t
+				WHERE
+					t.STATUS IN ( '1', '3', '4' )
+				GROUP BY
+					ymd
+			) tc -- 计算上1天
+						  ON ta.ymd = date_add( tc.ymd, INTERVAL 1 DAY )
+		WHERE
+			ta.ymd = CURRENT_DATE
+		ORDER BY
+			ta.ymd;
+	</select>
+
+	<select id="queryZtbhb" resultMap="TbhbVoResult">
+		SELECT
+			concat( ta.yy, '-', ta.mm, '-', ta.ww ) dateTime,
+			ta.sumNum,
+			tb.sumNum tbSumNum,
+			tc.sumNum hbSumNum,
+			concat( ifnull( round(( ta.sumNum - tb.sumNum )/ tb.sumNum * 100, 2 ), 0 ), '%' ) AS tbRate,
+			concat( ifnull( round(( ta.sumNum - tc.sumNum )/ tc.sumNum * 100, 2 ), 0 ), '%' ) AS hbRate
+		FROM
+			(
+				SELECT YEAR
+						   ( t.create_time ) AS yy,
+					   MONTH ( t.create_time ) AS mm,
+					   WEEK ( t.create_time ) AS ww,
+					   SUM( actual_fee ) AS sumNum
+				FROM
+					sys_sale_order t
+				WHERE
+					t.STATUS IN ( '1', '3', '4' )
+				GROUP BY
+					yy,
+					mm,
+					ww
+			) ta -- 同比：上年同月
+				LEFT JOIN (
+				SELECT YEAR
+						   ( t.create_time ) AS yy,
+					   MONTH ( t.create_time ) AS mm,
+					   WEEK ( t.create_time ) AS ww,
+					   SUM( actual_fee ) AS sumNum
+				FROM
+					sys_sale_order t
+				WHERE
+					t.STATUS IN ( '1', '3', '4' )
+				GROUP BY
+					yy,
+					mm,
+					ww
+			) tb ON tb.mm = ta.mm
+				AND tb.ww = ta.ww
+				AND tb.yy = ta.yy - 1 -- 环比：上一周
+				LEFT JOIN (
+				SELECT YEAR
+						   ( t.create_time ) AS yy,
+					   MONTH ( t.create_time ) AS mm,
+					   WEEK ( t.create_time ) AS ww,
+					   SUM( actual_fee ) AS sumNum
+				FROM
+					sys_sale_order t
+				WHERE
+					t.STATUS IN ( '1', '3', '4' )
+				GROUP BY
+					yy,
+					mm,
+					ww
+			) tc -- 1年有53周
+						  ON (
+								  ( tc.yy = ta.yy AND tc.ww = ta.ww - 1 )
+								  OR ( tc.yy = ta.yy - 1 AND tc.ww = 52 AND ta.ww = 0 )
+							  )
+		WHERE
+			ta.ww = WEEK ( CURRENT_DATE )
+		ORDER BY
+			ta.yy,
+			ta.mm,
+			ta.ww;
+	</select>
+
+	<select id="queryYtbhb" resultMap="TbhbVoResult">
+		SELECT
+			concat( ta.yy, '-', ta.mm ) dateTime,
+			ta.sumNum,
+			tb.sumNum tbSumNum,
+			tc.sumNum hbSumNum,-- 月同比
+			concat( ifnull( round(( ta.sumNum - tb.sumNum )/ tb.sumNum * 100, 2 ), 0 ), '%' ) AS 'tbRate',-- 月环比
+			concat( ifnull( round(( ta.sumNum - tc.sumNum )/ tc.sumNum * 100, 2 ), 0 ), '%' ) AS 'hbRate'
+		FROM
+			(
+				SELECT YEAR
+						   ( t.create_time ) AS yy,
+					   MONTH ( t.create_time ) AS mm,
+					   sum( t.actual_fee ) AS sumNum
+				FROM
+					sys_sale_order t
+				WHERE
+					t.STATUS IN ( '1', '3', '4' )
+				GROUP BY
+					yy,
+					mm
+			) ta -- 同比：上年同月
+				LEFT JOIN (
+				SELECT YEAR
+						   ( t.create_time ) AS yy,
+					   MONTH ( t.create_time ) AS mm,
+					   sum( t.actual_fee ) AS sumNum
+				FROM
+					sys_sale_order t
+				WHERE
+					t.STATUS IN ( '1', '3', '4' )
+				GROUP BY
+					yy,
+					mm
+			) tb ON tb.mm = ta.mm
+				AND tb.yy = ta.yy - 1 -- 环比：上月
+				LEFT JOIN (
+				SELECT YEAR
+						   ( t.create_time ) AS yy,
+					   MONTH ( t.create_time ) AS mm,
+					   sum( t.actual_fee ) AS sumNum
+				FROM
+					sys_sale_order t
+				WHERE
+					t.STATUS IN ( '1', '3', '4' )
+				GROUP BY
+					yy,
+					mm
+			) tc ON (
+					( tc.yy = ta.yy AND tc.mm = ta.mm - 1 )
+					OR ( tc.yy = ta.yy - 1 AND tc.mm = 12 AND ta.mm = 1 )
+				)
+		WHERE
+				concat( ta.yy, '-', ta.mm ) = concat( YEAR ( CURRENT_DATE ), '-', MONTH ( CURRENT_DATE ) )
+		ORDER BY
+			dateTime;
+	</select>
+
+	<select id="queryNtbhb" resultMap="TbhbVoResult">
+		SELECT ta.yy as dateTime,
+		       ta.sumNum,
+			   tb.sumNum tbSumNum,
+			   tb.sumNum hbSumNum,-- 年同比
+		       concat( ifnull( round(( ta.sumNum - tb.sumNum )/ tb.sumNum * 100, 2), 0), '%') AS 'tbRate',
+			   concat( ifnull( round(( ta.sumNum - tb.sumNum )/ tb.sumNum * 100, 2), 0), '%') AS 'hbRate'
+		FROM
+			(-- 内层的按年统计的自查询语句是相同的
+				SELECT YEAR
+						   ( t.create_time ) AS yy,
+					   sum( t.actual_fee ) AS sumNum
+				FROM
+					sys_sale_order t
+				WHERE
+					t.STATUS IN ( '1', '3', '4' )
+				GROUP BY
+					yy
+			) ta -- 上年同月
+				LEFT JOIN (
+				SELECT YEAR
+						   ( t.create_time ) AS yy,
+					   sum( t.actual_fee ) AS sumNum
+				FROM
+					sys_sale_order t
+				WHERE
+					t.STATUS IN ( '1', '3', '4' )
+				GROUP BY
+					yy
+			) tb ON tb.yy = ta.yy - 1
+		WHERE
+			ta.yy = YEAR ( CURRENT_DATE )
+		ORDER BY
+			ta.yy;
+	</select>
+
+</mapper>

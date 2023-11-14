@@ -29,7 +29,7 @@
 import CountTo from 'vue-count-to'
 
 export default {
-  name: "ShowCard",
+  name: "ShowCardSale",
   components: {
     CountTo,
   },

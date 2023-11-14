@@ -131,6 +131,7 @@ export default {
           left: 'center',
           bottom: '0',
           data: this.legend,
+          show: false
         },
         toolbox: {
           show: this.toolbox,
@@ -140,10 +141,10 @@ export default {
           }
         },
         grid: {
-          top: 40,
+          top: 8,
           left: '2%',
-          right: '2%',
-          bottom: 70,
+          right: '4%',
+          bottom: 5,
           containLabel: true
         },
         xAxis: [{
@@ -155,6 +156,7 @@ export default {
         }],
         yAxis: [{
           type: 'value',
+          minInterval: 1,
           axisTick: {
             show: false
           }
