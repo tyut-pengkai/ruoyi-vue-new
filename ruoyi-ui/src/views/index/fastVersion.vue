@@ -3,23 +3,28 @@
     <div slot="header" class="clearfix">
       <span>版本直达</span>
     </div>
-    <el-row :gutter="20">
-      <el-col
-        v-for="(card, key) in toolCardList"
-        :key="key"
-        :span="4"
-        :xs="12"
-        class="quick-entrance-items"
-      >
-        <el-card style="width: 126px;height:126px" shadow="hover" @click.native="toTarget(card.appId)">
-          <div class="quick-entrance-item">
-            <div class="quick-entrance-item-icon" :style="{ backgroundColor: card.bg }">
-              <svg-icon style="width: 24px; height:24px" :icon-class="card.icon" :style="{ color: card.color }" />
+    <el-row :gutter="20" style="min-height:129px">
+      <div v-if="toolCardList.length > 0">
+        <el-col
+          v-for="(card, key) in toolCardList"
+          :key="key"
+          :span="4"
+          :xs="12"
+          class="quick-entrance-items"
+        >
+          <el-card style="width: 126px;height:126px" shadow="hover" @click.native="toTarget(card.appId)">
+            <div class="quick-entrance-item">
+              <div class="quick-entrance-item-icon" :style="{ backgroundColor: card.bg }">
+                <svg-icon style="width: 24px; height:24px" :icon-class="card.icon" :style="{ color: card.color }" />
+              </div>
+              <p>{{ card.label }}</p>
             </div>
-            <p>{{ card.label }}</p>
-          </div>
-        </el-card>
-      </el-col>
+          </el-card>
+        </el-col>
+      </div>
+      <div v-else>
+        <el-empty :image-size="1" description="暂无软件，赶快点击左侧菜单：【验证管理】-【软件管理】来创建你的第一个软件吧"></el-empty>
+      </div>
     </el-row>
   </el-card>
 </template>
@@ -136,5 +141,9 @@ export default {
   align-items: center;
   justify-content: center;
   margin: 0 auto;
+}
+
+.el-empty {
+  padding: 0;
 }
 </style>

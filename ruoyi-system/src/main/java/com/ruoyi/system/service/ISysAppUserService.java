@@ -109,4 +109,8 @@ public interface ISysAppUserService
     public void fillCurrentOnlineInfo(SysAppUser sau, Map<Long, Set<LoginUser>> onlineListUMap, Map<Long, Set<Long>> onlineListMMap);
 
     public void fillCurrentOnlineInfo(SysAppUser sau);
+
+    public List<LoginUser> getCurrentOnline(Long appUserId);
+
+    public List<LoginUser> getCurrentOnline();
 }

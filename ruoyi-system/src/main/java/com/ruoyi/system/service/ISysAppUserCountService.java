@@ -10,4 +10,5 @@ import com.ruoyi.system.domain.SysAppUserCount;
  */
 public interface ISysAppUserCountService extends IService<SysAppUserCount> {
 
+    SysAppUserCount selectAppUserCountByAppIdAndCreateTime(Long appId, String createTime);
 }

@@ -6,6 +6,8 @@ import com.ruoyi.system.mapper.SysAppUserCountMapper;
 import com.ruoyi.system.service.ISysAppUserCountService;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 /**
  * 用户信息统计Service业务层处理
  *
@@ -14,4 +16,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class SysAppUserCountServiceImpl extends ServiceImpl<SysAppUserCountMapper, SysAppUserCount> implements ISysAppUserCountService {
 
+    @Resource
+    private SysAppUserCountMapper appUserCountMapper;
+
+    public SysAppUserCount selectAppUserCountByAppIdAndCreateTime(Long appId, String createTime) {
+        return appUserCountMapper.selectAppUserCountByAppIdAndCreateTime(appId, createTime);
+    }
 }

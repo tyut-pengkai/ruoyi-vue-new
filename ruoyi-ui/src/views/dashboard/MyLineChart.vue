@@ -15,6 +15,10 @@ export default {
       type: String,
       default: 'chart'
     },
+    title: {
+      type: String,
+      default: '100%'
+    },
     width: {
       type: String,
       default: '100%'
@@ -22,6 +26,10 @@ export default {
     height: {
       type: String,
       default: '260px'
+    },
+    toolbox: {
+      type: Boolean,
+      default: true
     },
     autoResize: {
       type: Boolean,
@@ -32,7 +40,13 @@ export default {
       default: function () {
         return [];
       }
-    }
+    },
+    xTitle: {
+      type: Array,
+      default: function () {
+        return [];
+      }
+    },
   },
   data() {
     return {
@@ -67,66 +81,77 @@ export default {
     initChart() {
       this.chart = echarts.init(this.$el, 'macarons')
       this.chart.setOption({
+        title: {
+          text: this.title
+        },
         tooltip: {
           trigger: 'axis',
           axisPointer: {
-            type: 'cross',
-            label: {
-              backgroundColor: '#6a7985'
-            }
+            // Use axis to trigger tooltip
+            type: 'shadow' // 'shadow' as default; can also be 'line' or 'shadow'
           },
           confine: true,  //解决浮窗被截断问题
           appendToBody: true,
+          formatter: function (params) {	//数据都包含在params里面
+            var zht;
+            if (params != null && params.length > 0) {
+              zht = "<table>"
+              var count = 0;
+              for (var i = 0; i < params.length; i++) {
+                if (params[i].value > 0) {
+                  count++;
+                }
+              }
+              var devideSize = 1; // 每行显示的个数
+              if (count >= 80) {
+                devideSize = 6;
+              } else if (count >= 60) {
+                devideSize = 5;
+              } else if (count >= 30) {
+                devideSize = 3;
+              } else if (count >= 10) {
+                devideSize = 2;
+              }
+              zht += "<tr>";
+              for (var i = 0; i < params.length; i++) {
+                if (params[i].value > 0) {
+                  zht += "<td>" + params[i].marker + params[i].seriesName + ": " + params[i].value + "</td>";
+                  if ((i + 1) % devideSize == 0) {						//每行显示5个
+                    zht += '<tr/>';
+                  }
+                }
+              }
+              zht += "</table>";
+            }
+            return zht;					//返回出去
+          }
+        },
+        legend: {
+          data: [],
         },
         grid: {
-          left: 10,
-          right: 10,
-          bottom: 20,
-          top: 30,
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
           containLabel: true
         },
-        xAxis: [
-          {
-            type: 'category',
-            boundaryGap: false,
-            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-          }
-        ],
-        yAxis: [
-          {
-            type: 'value'
-          }
-        ],
-        series: [
-          {
-            type: 'line',
-            stack: 'Total',
-            smooth: true,
-            lineStyle: {
-              width: 0
-            },
-            showSymbol: false,
-            areaStyle: {
-              opacity: 0.8,
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                {
-                  offset: 0,
-                  color: 'rgb(128, 255, 165)'
-                },
-                {
-                  offset: 1,
-                  color: 'rgb(1, 191, 236)'
-                }
-              ])
-            },
-            emphasis: {
-              focus: 'series'
-            },
-            animationDuration: 2600,
-            data: this.data
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+            magicType: {type: ['line', 'bar']},
           },
-        ]
-      })
+          show: this.toolbox
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: this.xTitle,
+        },
+        yAxis: {
+          type: 'value',
+        },
+        series: this.data
+      });
     },
   }
 }

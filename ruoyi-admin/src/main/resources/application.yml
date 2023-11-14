@@ -201,6 +201,8 @@ mybatis-plus:
   # 是否显示mybatis-plus的logo
   global-config:
     banner: false
+    db-config:
+      id-type: auto #id生成规则：数据库id自增
 
 # PageHelper分页插件
 pagehelper:

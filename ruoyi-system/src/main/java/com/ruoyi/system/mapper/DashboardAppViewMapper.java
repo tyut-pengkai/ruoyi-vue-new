@@ -83,6 +83,16 @@ public interface DashboardAppViewMapper {
             "GROUP BY au.app_id")
     List<Map<String, Object>> queryAppUserVip();
 
+    /**
+     * 获取当天登录用户数
+     * @return
+     */
+    @Select("SELECT au.app_id, count( 1 ) AS total_user \n" +
+            "FROM sys_app_user au \n" +
+            "WHERE date(CURRENT_DATE) = date( last_login_time ) \n" +
+            "GROUP BY au.app_id")
+    List<Map<String, Object>> queryAppUserLogin();
+
     @Select("SELECT\n" +
             "\tcount( 1 ) \n" +
             "FROM\n" +

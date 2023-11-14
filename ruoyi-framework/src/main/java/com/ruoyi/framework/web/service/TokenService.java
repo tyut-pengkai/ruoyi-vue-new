@@ -13,7 +13,10 @@ import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.common.utils.ip.AddressUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.common.utils.uuid.IdUtils;
+import com.ruoyi.system.domain.SysAppUserCount;
 import com.ruoyi.system.service.ISysAppService;
+import com.ruoyi.system.service.ISysAppUserCountService;
+import com.ruoyi.system.service.ISysAppUserService;
 import eu.bitwalker.useragentutils.UserAgent;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -26,8 +29,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * token验证处理
@@ -58,6 +63,10 @@ public class TokenService {
     private RedisCache redisCache;
     @Resource
     private ISysAppService appService;
+    @Resource
+    private ISysAppUserCountService appUserCountService;
+    @Resource
+    private ISysAppUserService appUserService;
 
     /**
      * 获取用户身份信息
@@ -158,6 +167,27 @@ public class TokenService {
                 claims.put(Constants.APP_USER_ID, loginUser.getAppUserId());
             }
         }
+
+        // 统计最大在线数
+        if(loginUser.getIfApp()) {
+            new Thread(() -> {
+                Long appId = loginUser.getAppId();
+                SysAppUserCount appUserCount = appUserCountService.selectAppUserCountByAppIdAndCreateTime(appId, DateUtils.getDate());
+                if (appUserCount == null) {
+                    appUserCount = new SysAppUserCount();
+                    appUserCount.setAppId(appId);
+                    appUserCount.setMaxOnlineNum(0L);
+                    appUserCount.setCreateTime(DateUtils.getNowDate());
+                }
+                List<LoginUser> currentOnline = appUserService.getCurrentOnline();
+                Map<Long, List<LoginUser>> collected = currentOnline.stream().collect(Collectors.groupingBy(item -> item.getAppId()));
+                if (collected.containsKey(appId) && collected.get(appId).size() > appUserCount.getMaxOnlineNum()) {
+                    appUserCount.setMaxOnlineNum((long) collected.get(appId).size());
+                    appUserCountService.saveOrUpdate(appUserCount);
+                }
+            }).start();
+        }
+
         return createToken(claims);
     }
 

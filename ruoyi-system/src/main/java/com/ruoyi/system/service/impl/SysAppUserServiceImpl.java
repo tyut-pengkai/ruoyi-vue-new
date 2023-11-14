@@ -173,6 +173,37 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
     }
 
 
+    public List<LoginUser> getCurrentOnline(Long appUserId) {
+        // 统计当前在线用户数
+        String k = CacheConstants.LOGIN_TOKEN_KEY + "*";
+        if(appUserId != null) {
+            k += "|" + appUserId;
+        }
+        Collection<String> keys = redisCache.scan(k);
+        List<LoginUser> onlineList = new ArrayList<>();
+        for (String key : keys) {
+            LoginUser loginUser = null;
+            try {
+                loginUser = (LoginUser) SysCache.get(key);
+            } catch(Exception ignored) {}
+            if(loginUser == null) {
+                loginUser = redisCache.getCacheObject(key);
+                SysCache.set(key, loginUser);
+            }
+            if (loginUser != null && loginUser.getIfApp() && !loginUser.getIfTrial()) {
+                Long aui = loginUser.getAppUserId();
+                if(appUserId == null || appUserId.equals(aui)) {
+                    onlineList.add(loginUser);
+                }
+            }
+        }
+        return onlineList;
+    }
+
+    public List<LoginUser> getCurrentOnline() {
+        return getCurrentOnline(null);
+    }
+
     public Map<String, Object> computeCurrentOnline(Long appUserId) {
         Map<String, Object> result = new HashMap<>();
         // 统计当前在线用户数
