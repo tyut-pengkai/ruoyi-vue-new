@@ -473,6 +473,11 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                         Ini ini = new Ini();
                         ini.load(configFile);
                         Profile.Section section = ini.get("模板信息");
+                        String orderString = section.get("显示排序");
+                        int order = 998;
+                        try {
+                            order = Integer.parseInt(orderString);
+                        } catch(Exception ignored) { }
                         result.add(new TemplateInfo(
                                 fileName,
                                 section.get("模板名称"),
@@ -481,7 +486,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                                 section.get("模板作者"),
                                 section.get("联系方式"),
                                 section.get("附加信息"),
-                                Integer.valueOf(section.get("显示排序")),
+                                order,
                                 Arrays.asList(section.get("皮肤列表").split(","))));
                     } else {
                         result.add(new TemplateInfo(fileName, fileName, "", "", "", "", "", 999999, new ArrayList<>()));
