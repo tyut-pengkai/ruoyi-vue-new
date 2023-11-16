@@ -5,7 +5,7 @@
     </div>
     <div style="height: 758px; overflow:auto">
       <el-collapse accordion>
-        <el-collapse-item title="v1.8.0 - 2023-11-10">
+        <el-collapse-item title="v1.8.0 - 2023-11-15">
           <ol>
             <li>修复：远程文件名长度限制错误问题，由350修改为30</li>
             <li>修复：修复仪表盘软件数据页饼状统计图未统计单码软件的问题</li>
@@ -35,6 +35,7 @@
             <li>优化：未配置网站域名时系统会进行提示</li>
             <li>优化：调整检查更新的超时时间为600秒</li>
             <li>优化：IP黑名单对登录API接口生效</li>
+            <li>优化：系统首页优化，添加快捷入口和版本直达功能</li>
           </ol>
         </el-collapse-item>
         <el-collapse-item title="v1.7.0 - 2023-09-10">

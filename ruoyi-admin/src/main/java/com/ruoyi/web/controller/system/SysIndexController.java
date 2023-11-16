@@ -239,7 +239,7 @@ public class SysIndexController {
         map.put("onlineUserNum", keys.size());
         // 软件版本直达
         ArrayList<SysApp> apps = new ArrayList<>(appList);
-        apps = new ArrayList<>(apps.subList(0, 6));
+        apps = new ArrayList<>(apps.subList(0, Math.min(apps.size(), 6)));
         apps.sort(Comparator.comparingLong(SysApp::getAppId));
         List<Object> collect = apps.stream().map(item -> {
             HashMap<Object, Object> map1 = new HashMap<>();

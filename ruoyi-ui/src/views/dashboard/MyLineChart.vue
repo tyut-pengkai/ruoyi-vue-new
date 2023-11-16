@@ -104,13 +104,13 @@ export default {
               }
               var devideSize = 1; // 每行显示的个数
               if (count >= 80) {
-                devideSize = 6;
+                devideSize = 10;
               } else if (count >= 60) {
-                devideSize = 5;
+                devideSize = 8;
               } else if (count >= 30) {
-                devideSize = 3;
+                devideSize = 6;
               } else if (count >= 10) {
-                devideSize = 2;
+                devideSize = 5;
               }
               zht += "<tr>";
               for (var i = 0; i < params.length; i++) {

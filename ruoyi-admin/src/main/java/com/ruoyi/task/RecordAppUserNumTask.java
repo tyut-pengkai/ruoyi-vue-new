@@ -6,8 +6,9 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.domain.SysAppUserCount;
 import com.ruoyi.system.mapper.DashboardAppViewMapper;
 import com.ruoyi.system.mapper.SysAppMapper;
+import com.ruoyi.system.mapper.SysAppUserMapper;
 import com.ruoyi.system.service.ISysAppUserCountService;
-import com.ruoyi.system.service.ISysAppUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,11 +22,12 @@ import java.util.stream.Collectors;
 
 @Component
 @EnableAsync
+@Slf4j
 public class RecordAppUserNumTask {
     @Resource
     private SysAppMapper appMapper;
     @Resource
-    private ISysAppUserService appUserService;
+    private SysAppUserMapper appUserMapper;
     @Resource
     private DashboardAppViewMapper dashboardAppViewMapper;
     @Resource
@@ -33,9 +35,11 @@ public class RecordAppUserNumTask {
 
     @Async
     @Scheduled(cron = "0 1 0 * * ?") // 每日00点01分执行
+    // @Scheduled(cron = "0 0/1 * * * ?") // 每分钟执行
     public void recordAppUserNum() {
+        log.info("[用户统计]开始统计用户数据");
         // 全部
-        Map<Long, List<SysAppUser>> allMap = appUserService.selectSysAppUserList(new SysAppUser()).stream().collect(Collectors.groupingBy(SysAppUser::getAppId));
+        Map<Long, List<SysAppUser>> allMap = appUserMapper.selectSysAppUserList(new SysAppUser()).stream().collect(Collectors.groupingBy(SysAppUser::getAppId));
         // 登录数量
         Map<Long, Long> loginMap = new HashMap<>();
         List<Map<String, Object>> loginMapList = dashboardAppViewMapper.queryAppUserLogin();
@@ -64,8 +68,10 @@ public class RecordAppUserNumTask {
             }
             appUserCount.setLoginNum(loginMap.getOrDefault(appId, 0L));
             appUserCount.setVipNum(vipMap.getOrDefault(appId, 0L));
+            log.info("[用户统计]软件ID：{} 用户总数：{} 今日登录用户数{} VIP用户数{}", appUserCount.getAppId(), appUserCount.getTotalNum(), appUserCount.getLoginNum(), appUserCount.getVipNum());
             appUserCountService.saveOrUpdate(appUserCount);
         }
+        log.info("[用户统计]用户数据统计完毕");
     }
 
 }
