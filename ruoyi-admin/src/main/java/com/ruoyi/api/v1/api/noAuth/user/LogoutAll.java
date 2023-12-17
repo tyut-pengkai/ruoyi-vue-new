@@ -81,6 +81,7 @@ public class LogoutAll extends Function {
                     _deviceCodeStr = loginUser.getDeviceCode().getDeviceCode();
                 }
                 redisCache.deleteObject(CacheConstants.LOGIN_TOKEN_KEY + loginUser.getToken());
+                SysCache.delete(CacheConstants.LOGIN_TOKEN_KEY + loginUser.getToken());
                 try {
                     AsyncManager.me().execute(
                             AsyncFactory.recordAppLogininfor(

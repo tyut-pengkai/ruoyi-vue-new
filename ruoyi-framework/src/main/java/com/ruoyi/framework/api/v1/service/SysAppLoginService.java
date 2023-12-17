@@ -9,10 +9,7 @@ import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ApiException;
-import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.MessageUtils;
-import com.ruoyi.common.utils.ServletUtils;
-import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.*;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.api.v1.utils.ValidUtils;
 import com.ruoyi.framework.manager.AsyncManager;
@@ -651,6 +648,7 @@ public class SysAppLoginService {
             }
         }
         redisCache.deleteObject(userKey);
+        SysCache.delete(userKey);
         try {
             SysApp app = appService.selectSysAppByAppKey(loginUser.getAppKey());
             AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(loginUser.getAppUserId(), loginUser.getUserName(),

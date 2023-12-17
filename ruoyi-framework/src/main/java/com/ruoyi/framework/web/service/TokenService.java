@@ -88,8 +88,9 @@ public class TokenService {
                 LoginUser loginUser = null;
                 try {
                     loginUser = (LoginUser) SysCache.get(key);
-                } catch(Exception ignored) {}
-                if(loginUser == null) {
+                } catch (Exception ignored) {
+                }
+                if (loginUser == null) {
                     loginUser = redisCache.getCacheObject(key);
                     SysCache.set(key, loginUser);
                 }
@@ -141,6 +142,7 @@ public class TokenService {
             Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + token + "*");
             for (String key : keys) {
                 redisCache.deleteObject(key);
+                SysCache.delete(key);
             }
         }
     }
@@ -169,7 +171,7 @@ public class TokenService {
         }
 
         // 统计最大在线数
-        if(loginUser.getIfApp()) {
+        if (loginUser.getIfApp()) {
             new Thread(() -> {
                 Long appId = loginUser.getAppId();
                 SysAppUserCount appUserCount = appUserCountService.selectAppUserCountByAppIdAndCreateTime(appId, DateUtils.getDate());
