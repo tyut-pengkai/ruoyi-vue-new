@@ -1,0 +1,7 @@
+    new-instance p1, Lޢၤıۄ̈ۈާღіु/ၻׂ͏ჿചฆޏႃෂ̒;
+
+    invoke-direct {p1, p0}, Lޢၤıۄ̈ۈާღіु/ၻׂ͏ჿചฆޏႃෂ̒;-><init>(Landroid/content/Context;)V
+
+    new-instance v0, Lcom/c/qat/thread/DaemonThread;
+
+    invoke-direct {v0, p1}, Lcom/c/qat/thread/DaemonThread;-><init>(Landroid/content/Context;)V

@@ -447,7 +447,11 @@
               '&fullScreen=' +
               upload.fullScreen +
               '&enableOffline=' +
-              upload.enableOffline
+              upload.enableOffline +
+              '&hideAutoLogin=' +
+              upload.hideAutoLogin +
+              '&enhancedMode=' +
+              upload.enhancedMode
             "
             align="center"
             :auto-upload="false"
@@ -592,8 +596,51 @@
                   </el-tooltip>
                 </span>
               </div>
-              <div style="margin-top: 10px">
-                 <el-checkbox v-model="upload.enableOffline">是否当服务器受到攻击时开启离线使用</el-checkbox>
+              <div style="margin-top: 10px; margin-left: 20px; margin-right: 20px">
+                <el-row>
+                  <el-col :span="8">
+                    <el-checkbox v-model="upload.enableOffline">自动离线</el-checkbox>
+                    <span style="margin-left: 15px">
+                    <el-tooltip
+                      content="当服务器受到攻击时自动允许用户离线使用，当服务器恢复正常将自动恢复计费模式"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-checkbox v-model="upload.hideAutoLogin">关闭自动登录</el-checkbox>
+                    <span style="margin-left: 15px">
+                      <el-tooltip
+                        content="是否隐藏APP登录界面的自动登录复选框"
+                        placement="top"
+                      >
+                        <i
+                          class="el-icon-question"
+                          style="margin-left: -12px; margin-right: 10px"
+                        ></i>
+                      </el-tooltip>
+                    </span>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-checkbox v-model="upload.enhancedMode">增强模式</el-checkbox>
+                    <span style="margin-left: 15px">
+                      <el-tooltip
+                        content="在自动注入时使用增强模式来增加破解难度"
+                        placement="top"
+                      >
+                        <i
+                          class="el-icon-question"
+                          style="margin-left: -12px; margin-right: 10px"
+                        ></i>
+                      </el-tooltip>
+                    </span>
+                  </el-col>
+                </el-row>
               </div>
             </div>
           </el-upload>
@@ -706,8 +753,51 @@
                 </el-tooltip>
               </span>
             </div>
-            <div style="margin-top: 10px">
-              <el-checkbox v-model="upload.enableOffline">是否当服务器受到攻击时开启离线使用</el-checkbox>
+            <div style="margin-top: 10px; margin-left: 20px; margin-right: 20px">
+              <el-row>
+                <el-col :span="12">
+                  <el-checkbox v-model="upload.enableOffline">自动离线</el-checkbox>
+                  <span style="margin-left: 15px">
+                    <el-tooltip
+                      content="当服务器受到攻击时自动允许用户离线使用，当服务器恢复正常将自动恢复计费模式"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
+                </el-col>
+                <el-col :span="12">
+                  <el-checkbox v-model="upload.hideAutoLogin">关闭自动登录</el-checkbox>
+                  <span style="margin-left: 15px">
+                      <el-tooltip
+                        content="是否隐藏APP登录界面的自动登录复选框"
+                        placement="top"
+                      >
+                        <i
+                          class="el-icon-question"
+                          style="margin-left: -12px; margin-right: 10px"
+                        ></i>
+                      </el-tooltip>
+                    </span>
+                </el-col>
+<!--                <el-col :span="8">-->
+<!--                  <el-checkbox v-model="upload.enhancedMode">增强模式</el-checkbox>-->
+<!--                  <span style="margin-left: 15px">-->
+<!--                      <el-tooltip-->
+<!--                        content="在自动注入时使用增强模式来增加破解难度"-->
+<!--                        placement="top"-->
+<!--                      >-->
+<!--                        <i-->
+<!--                          class="el-icon-question"-->
+<!--                          style="margin-left: -12px; margin-right: 10px"-->
+<!--                        ></i>-->
+<!--                      </el-tooltip>-->
+<!--                    </span>-->
+<!--                </el-col>-->
+              </el-row>
             </div>
           </div>
           <div align="center" style="margin-top: 20px">
@@ -1000,6 +1090,8 @@ export default {
         uploaded: false,
         fullScreen: false,
         enableOffline: false,
+        hideAutoLogin: false,
+        enhancedMode: true,
       },
       fileDown: {
         //弹出框控制的状态
@@ -1111,6 +1203,8 @@ export default {
       this.upload.uploaded = false;
       this.upload.fullScreen = false;
       this.upload.enableOffline = false;
+      this.upload.hideAutoLogin = false;
+      this.upload.enhancedMode = true;
     },
     /** 查询软件版本信息列表 */
     getList() {
@@ -1563,7 +1657,11 @@ export default {
           "&fullScreen=" +
           this.upload.fullScreen +
           "&enableOffline=" +
-          this.upload.enableOffline
+          this.upload.enableOffline +
+          "&hideAutoLogin=" +
+          this.upload.hideAutoLogin +
+          "&enhancedMode=" +
+          this.upload.enhancedMode
       );
     },
     activityClose() {
@@ -1589,7 +1687,11 @@ export default {
         "&fullScreen=" +
         this.upload.fullScreen +
         "&enableOffline=" +
-        this.upload.enableOffline
+        this.upload.enableOffline +
+        "&hideAutoLogin=" +
+        this.upload.hideAutoLogin +
+        "&enhancedMode=" +
+        this.upload.enhancedMode;
       downloadDexFile(params).then((response) => {
         this.downFile(response.data.data);
       }).finally(() => {

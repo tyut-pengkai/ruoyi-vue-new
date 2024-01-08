@@ -165,7 +165,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      */
     @Override
     public Map<String, Object> quickAccess(String accessType, MultipartFile file, Long versionId, boolean updateMd5,
-                                           String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen, boolean enableOffline) {
+                                           String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen, boolean enableOffline, boolean hideAutoLogin, boolean enhancedMode) {
         Map<String, Object> map = new HashMap<>();
         try {
             // 封装
@@ -182,7 +182,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(versionId);
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
             assert originalFilename != null;
-            QuickAccessResultVo result = quickAccessHandle(accessType, bytes, version, originalFilename, apkOper, template, skin, vo, fullScreen, enableOffline);
+            QuickAccessResultVo result = quickAccessHandle(accessType, bytes, version, originalFilename, apkOper, template, skin, vo, fullScreen, enableOffline, hideAutoLogin, enhancedMode);
 
             // 1全局 2单例
             if ("1".equals(accessType) || ("2".equals(accessType) && result.getBytes() != null && result.getBytes().length > 0)) {
@@ -254,10 +254,10 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      * @return
      */
     private QuickAccessResultVo quickAccessHandle(String accessType, byte[] bytes, SysAppVersion version, String filename,
-                                                  String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen, boolean enableOffline) {
+                                                  String apkOper, String template, String skin, ActivityMethodVo vo, boolean fullScreen, boolean enableOffline, boolean hideAutoLogin, boolean enhancedMode) {
         QuickAccessResultVo result = new QuickAccessResultVo();
         try {
-            String apvStr = getApvString(version, template, skin, fullScreen, enableOffline);
+            String apvStr = getApvString(version, template, skin, fullScreen, enableOffline, hideAutoLogin);
             if (filename.endsWith(".exe")) {
 //                log.info("正在整合exe");
 //                byte[] apvBytes = apvStr.getBytes(StandardCharsets.UTF_8);
@@ -286,7 +286,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                         String oriPath = tempFile.getCanonicalPath();
                         if ("1".equals(accessType)) {
                             log.info("正在注入apk");
-                            injectedApk = QuickAccessApkUtil.doProcess(oriPath, apvStr, template);
+                            injectedApk = QuickAccessApkUtil.doProcess(oriPath, apvStr, template, enhancedMode);
                             log.info("注入apk完毕");
                         } else if ("2".equals(accessType)) {
                             if (StringUtils.isBlank(vo.getActivity())) {
@@ -301,7 +301,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
                                 return result;
                             } else {
                                 log.info("正在注入apk");
-                                injectedApk = QuickAccessApkUtil.doProcess2(oriPath, apvStr, template, vo);
+                                injectedApk = QuickAccessApkUtil.doProcess2(oriPath, apvStr, template, vo, enhancedMode);
                                 log.info("注入apk完毕");
                             }
                         } else {
@@ -382,7 +382,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         return result;
     }
 
-    private String getApvString(SysAppVersion version, String template, String skin, boolean fullScreen, boolean enableOffline) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+    private String getApvString(SysAppVersion version, String template, String skin, boolean fullScreen, boolean enableOffline, boolean hideAutoLogin) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         AppParamVo apv = new AppParamVo();
         SysApp app = version.getApp();
         if(version.getApp() == null) {
@@ -403,6 +403,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         apv.setSkin(skin);
         apv.setFullScreen(fullScreen);
         apv.setEnableOffline(enableOffline);
+        apv.setHideAutoLogin(hideAutoLogin);
         // 加密
         String apvStr = JSON.toJSONString(apv);
         apvStr = AesCbcPKCS5PaddingUtil.encode(apvStr, "quickAccess");
@@ -436,7 +437,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     public AjaxResult getQuickAccessParams(Long appVersionId) {
         try {
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(appVersionId);
-            String apvStr =  getApvString(version, null, null, false, false);
+            String apvStr =  getApvString(version, null, null, false, false, false);
             return AjaxResult.success().put("apvStr", apvStr);
         } catch (InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
             e.printStackTrace();
@@ -501,12 +502,12 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     }
 
     @Override
-    public Map<String, Object> downloadDexFile(Long versionId, String template, String skin, boolean fullScreen, boolean enableOffline) {
+    public Map<String, Object> downloadDexFile(Long versionId, String template, String skin, boolean fullScreen, boolean enableOffline, boolean hideAutoLogin) {
         Map<String, Object> map = new HashMap<>();
         try {
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(versionId);
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
-            String apvStr = getApvString(version, template, skin, fullScreen, enableOffline);
+            String apvStr = getApvString(version, template, skin, fullScreen, enableOffline, hideAutoLogin);
             byte[] dex = QuickAccessApkUtil.doProcess3(apvStr, template);
             String filename = rename(app.getAppName(), "name.dex", version.getVersionName(), "");
             String filePath = RuoYiConfig.getDownloadPath() + filename;
@@ -540,6 +541,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         private String skin;
         private boolean fullScreen;
         private boolean enableOffline;
+        private boolean hideAutoLogin;
     }
 
     @Data

@@ -115,15 +115,15 @@ public class SysAppVersionController extends BaseController {
     // @PreAuthorize("@ss.hasPermi('system:user:import')")
     @PostMapping("/quickAccess")
     public AjaxResult quickAccess(String accessType, MultipartFile file, Long versionId, boolean updateMd5, String apkOper,
-                                  String template, String skin, String oriName, String oriPath, String activity, String method, boolean fullScreen, boolean enableOffline) {
-        return AjaxResult.success(sysAppVersionService.quickAccess(accessType, file, versionId, updateMd5, apkOper, template, skin, new ActivityMethodVo(oriName, oriPath, activity, method), fullScreen, enableOffline));
+                                  String template, String skin, String oriName, String oriPath, String activity, String method, boolean fullScreen, boolean enableOffline, boolean hideAutoLogin, boolean enhancedMode) {
+        return AjaxResult.success(sysAppVersionService.quickAccess(accessType, file, versionId, updateMd5, apkOper, template, skin, new ActivityMethodVo(oriName, oriPath, activity, method), fullScreen, enableOffline, hideAutoLogin, enhancedMode));
     }
 
     @Log(title = "快速接入", businessType = BusinessType.QUICK_ACCESS)
     // @PreAuthorize("@ss.hasPermi('system:user:import')")
     @PostMapping("/downloadDexFile")
-    public AjaxResult downloadDexFile(Long versionId, String template, String skin, boolean fullScreen, boolean enableOffline) {
-        return AjaxResult.success(sysAppVersionService.downloadDexFile(versionId, template, skin, fullScreen, enableOffline));
+    public AjaxResult downloadDexFile(Long versionId, String template, String skin, boolean fullScreen, boolean enableOffline, boolean hideAutoLogin) {
+        return AjaxResult.success(sysAppVersionService.downloadDexFile(versionId, template, skin, fullScreen, enableOffline, hideAutoLogin));
     }
 
     /**

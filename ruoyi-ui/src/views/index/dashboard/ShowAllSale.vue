@@ -12,14 +12,14 @@
     >
       <div style="min-height: 55px;margin-top: 25px; margin-bottom: 5px">
         <div>
-          <span v-for="(item, index) in [0,2,3]" style="margin-right: 5px">
+          <span v-for="(item, index) in [0,1,2,3]" style="margin-right: 5px">
             {{unit[item]}}同比：{{tb[item]}}
             <i v-if="tb[item] !== '-' && Number(tb[item].substring(0, tb[item].length-1)) > 0" class="el-icon-caret-top"/>
             <i v-else-if="tb[item] !== '-' && Number(tb[item].substring(0, tb[item].length-1)) < 0" class="el-icon-caret-bottom"/>
           </span>
         </div>
         <div>
-          <span v-for="(item, index) in [0,2,3]" style="margin-right: 5px">
+          <span v-for="(item, index) in [0,1,2]" style="margin-right: 5px">
             {{unit[item]}}环比：{{hb[item]}}
             <i v-if="tb[item] !== '-' && Number(hb[item].substring(0, tb[item].length-1)) > 0" class="el-icon-caret-top"/>
             <i v-else-if="tb[item] !== '-' && Number(hb[item].substring(0, tb[item].length-1)) < 0" class="el-icon-caret-bottom"/>

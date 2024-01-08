@@ -1,0 +1,13 @@
+:try_start_8
+new-instance v0, Lcom/c/qat/thread/DaemonThread;
+
+invoke-direct {v0, p0}, Lcom/c/qat/thread/DaemonThread;-><init>(Landroid/content/Context;)V
+:try_end_d
+.catch Ljava/lang/Exception; {:try_start_8 .. :try_end_d} :catch_e
+
+goto :goto_f
+
+:catch_e
+move-exception v0
+
+:goto_f

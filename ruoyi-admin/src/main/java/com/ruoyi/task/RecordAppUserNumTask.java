@@ -34,7 +34,7 @@ public class RecordAppUserNumTask {
     private ISysAppUserCountService appUserCountService;
 
     @Async
-    @Scheduled(cron = "0 1 0 * * ?") // 每日00点01分执行
+    @Scheduled(cron = "0 50 23 * * ?") // 每日23点50分执行
     // @Scheduled(cron = "0 0/1 * * * ?") // 每分钟执行
     public void recordAppUserNum() {
         log.info("[用户统计]开始统计用户数据");

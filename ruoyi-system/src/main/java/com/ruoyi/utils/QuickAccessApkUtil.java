@@ -200,6 +200,7 @@ public class QuickAccessApkUtil {
         // 抽取的代码编译器
 //        DexBuilder injectBuider = new DexBuilder(Opcodes.getDefault());
 //        injectBuider.setIgnoreMethodAndFieldError(true);
+
         // 分析Axml及编辑 获取activity列表
         ZipEntry xmlEntry = oriFile.getEntry("AndroidManifest.xml");
         byte[] xml = parseManifest(oriFile.getInputStream(xmlEntry));
@@ -414,6 +415,7 @@ public class QuickAccessApkUtil {
         String userSelectedDexName = null; //入口所在dex
         ZipFile oriFile = new ZipFile(oriPath);
         Set<String> classNameSet = new HashSet<>();
+        Map<String, DexBuilder> dexBuilderMap = new HashMap<>();
         // 输出文件
 //        String outputPath = oriPath.replace(".apk", "_injected_not_sign.apk");
         String outputPath = oriPath.replace(".tmp", "_injected_not_sign.tmp");
@@ -429,6 +431,16 @@ public class QuickAccessApkUtil {
 //         DexBuilder injectBuider = new DexBuilder(Opcodes.getDefault());
 //         injectBuider.setIgnoreMethodAndFieldError(true);
 
+        // 分析Axml及编辑 获取activity列表
+        ZipEntry xmlEntry = oriFile.getEntry("AndroidManifest.xml");
+        byte[] xml = toByteArray(oriFile.getInputStream(xmlEntry));
+
+        Set<String> activityTypeSet = new HashSet<>();
+        if(enhancedMode) { // 增强模式，将在每一个activity中注入daemon检测代码
+            List<String> activityList = parseManifestActivity(oriFile.getInputStream(xmlEntry));
+            activityTypeSet.addAll(activityList.stream().map(QuickAccessApkUtil::classNameToTypeName).collect(Collectors.toSet()));
+        }
+
         // 获取dex列表
         List<String> dexNameList = new ArrayList<>();
         Enumeration<ZipEntry> e = oriFile.getEntries();
@@ -440,6 +452,7 @@ public class QuickAccessApkUtil {
         }
         // 判断dex数量
         if (dexNameList.isEmpty()) {
+//            System.out.println("未找到dex文件");
             throw new ServiceException("未找到dex文件");
         } else {
             String targetDexName;
@@ -449,14 +462,35 @@ public class QuickAccessApkUtil {
                 targetDexName = "classes" + dexNameList.size() + ".dex";
             }
 
+            // 计算用户选择的是哪个dex
+            for (String dexName : dexNameList) {
+                ZipEntry entry = oriFile.getEntry(dexName);
+                DexBackedDexFile classes = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(entry)));
+                for (DexBackedClassDef cl : classes.getClasses()) {
+                    if (cl.getType().equals(classNameToTypeName(vo.getActivity()))) {
+                        userSelectedDexName = dexName;
+                    }
+                }
+            }
             // 多DEX，可能存在类重复问题
             for (String dexName : dexNameList) {
                 ZipEntry entry = oriFile.getEntry(dexName);
                 DexBackedDexFile classes = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(entry)));
                 for (DexBackedClassDef cl : classes.getClasses()) {
                     classNameSet.add(cl.getType());
-                    if (cl.getType().equals(classNameToTypeName(vo.getActivity()))) {
-                        userSelectedDexName = dexName;
+                    if(!dexName.equals(targetDexName) && !dexName.equals((userSelectedDexName))) {
+                        dexBuilderMap.computeIfAbsent(dexName, k->new DexBuilder(Opcodes.getDefault()));
+                        if(activityTypeSet.contains(cl.getType())) {
+                            try {
+                                insertCodeActivity(cl, dexBuilderMap.get(dexName), "onCreate");
+                                System.out.println("注入activity成功：" + cl.getType());
+                            } catch (Exception ignored) {
+                                internClassDef(dexBuilderMap.get(dexName), cl);
+                                System.out.println("注入activity失败：" + cl.getType());
+                            }
+                        } else {
+                            internClassDef(dexBuilderMap.get(dexName), cl);
+                        }
                     }
                 }
             }
@@ -469,8 +503,9 @@ public class QuickAccessApkUtil {
             }
 
             // 分析dex
-            DexBackedDexFile oriTargetDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(targetDexName)))));
-            DexBackedDexFile injectDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new FileInputStream(injectFile)));
+            ZipEntry dexEntry = oriFile.getEntry(targetDexName);
+            DexBackedDexFile oriTargetDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(dexEntry)));
+            DexBackedDexFile injectDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(Files.newInputStream(injectFile.toPath())));
 
             List<DexBackedClassDef> classesList = new ArrayList<>();
             classesList.addAll(oriTargetDex.getClasses());
@@ -488,7 +523,17 @@ public class QuickAccessApkUtil {
                     if(cl.getType().equals(classNameToTypeName(vo.getActivity()))) { // 假设用户所选dex为target dex
                         insertCode(cl, oriTargetBuilder, vo.getMethod());
                     } else {
-                        internClassDef(oriTargetBuilder, cl);
+                        if(activityTypeSet.contains(cl.getType())) {
+                            try {
+                                insertCodeActivity(cl, oriTargetBuilder, "onCreate");
+                                System.out.println("注入activity成功：" + cl.getType());
+                            } catch (Exception ignored) {
+                                internClassDef(oriTargetBuilder, cl);
+                                System.out.println("注入activity失败：" + cl.getType());
+                            }
+                        } else {
+                            internClassDef(oriTargetBuilder, cl);
+                        }
                     }
                 }
                 // 更新进度
@@ -497,13 +542,13 @@ public class QuickAccessApkUtil {
             // 重组APK
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             boolean insertFlag = true;
-            byte[] xml = toByteArray(oriFile.getInputStream(oriFile.getEntry("AndroidManifest.xml")));
             try {
                 addNecessaryPermission(byteArrayOutputStream, xml);
             } catch (Exception e1) {
                 insertFlag = false;
                 e1.printStackTrace();
             }
+
             ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(outputPath));
             zos.setLevel(1);
             zos.putNextEntry("AndroidManifest.xml");
@@ -521,7 +566,13 @@ public class QuickAccessApkUtil {
             zos.write(toByteArray(oriTargetBuilder));
             zos.closeEntry();
 
-            if (!targetDexName.equals(userSelectedDexName)) {
+            for (Map.Entry<String, DexBuilder> entry : dexBuilderMap.entrySet()) {
+                zos.putNextEntry(entry.getKey());
+                zos.write(toByteArray(entry.getValue()));
+                zos.closeEntry();
+            }
+
+            if (!targetDexName.equals(userSelectedDexName) && !dexBuilderMap.containsKey(userSelectedDexName)) {
                 // 合并dex
                 DexBackedDexFile userSelectedDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(userSelectedDexName)))));
                 List<DexBackedClassDef> classesSelectedList = new ArrayList<>(userSelectedDex.getClasses());
@@ -531,7 +582,17 @@ public class QuickAccessApkUtil {
                         if(cl.getType().equals(classNameToTypeName(vo.getActivity()))) {
                             insertCode(cl, oriUserSelectedBuilder, vo.getMethod());
                         } else {
-                            internClassDef(oriUserSelectedBuilder, cl);
+                            if(activityTypeSet.contains(cl.getType())) {
+                                try {
+                                    insertCodeActivity(cl, oriUserSelectedBuilder, "onCreate");
+                                    System.out.println("注入activity成功：" + cl.getType());
+                                } catch (Exception ignored) {
+                                    internClassDef(oriUserSelectedBuilder, cl);
+                                    System.out.println("注入activity失败：" + cl.getType());
+                                }
+                            } else {
+                                internClassDef(oriUserSelectedBuilder, cl);
+                            }
                         }
                     }
                     // 更新进度
@@ -547,7 +608,10 @@ public class QuickAccessApkUtil {
             Enumeration<ZipEntry> enumeration = oriFile.getEntries();
             while (enumeration.hasMoreElements()) {
                 ZipEntry ze = enumeration.nextElement();
-                if (ze.getName().equals("AndroidManifest.xml") || ze.getName().equals(userSelectedDexName) || ze.getName().equals(targetDexName)) {
+                if (ze.getName().equals("AndroidManifest.xml") || ze.getName().equals(targetDexName) || ze.getName().equals(userSelectedDexName)) {
+                    continue;
+                }
+                if(dexBuilderMap.containsKey(ze.getName())) {
                     continue;
                 }
                 zos.copyZipEntry(ze, oriFile);
