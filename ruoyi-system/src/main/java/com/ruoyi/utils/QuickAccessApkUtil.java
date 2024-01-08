@@ -46,7 +46,6 @@ public class QuickAccessApkUtil {
     private static final String injectEntranceType = classNameToTypeName(injectEntranceClass);
     private static String packageName;
     private static String applicationName;
-    private static String userSelectedDexName; //入口所在dex
 
     private static byte[] parseManifest(InputStream is) throws IOException {
         AXmlDecoder axml = AXmlDecoder.decode(is);
@@ -412,6 +411,7 @@ public class QuickAccessApkUtil {
     }
 
     public static byte[] doProcess2(String oriPath, String apv, String template, ActivityMethodVo vo, boolean enhancedMode) throws Exception {
+        String userSelectedDexName = null; //入口所在dex
         ZipFile oriFile = new ZipFile(oriPath);
         Set<String> classNameSet = new HashSet<>();
         // 输出文件
@@ -455,6 +455,9 @@ public class QuickAccessApkUtil {
                 DexBackedDexFile classes = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(entry)));
                 for (DexBackedClassDef cl : classes.getClasses()) {
                     classNameSet.add(cl.getType());
+                    if (cl.getType().equals(classNameToTypeName(vo.getActivity()))) {
+                        userSelectedDexName = dexName;
+                    }
                 }
             }
 
@@ -716,13 +719,9 @@ public class QuickAccessApkUtil {
             DexBackedDexFile cl;
             List<String> methodList = new ArrayList<>();
             for (final String dexFile : dexNameList) {
-//                if (userSelectedDex != null) {
-//                    break;
-//                }
                 cl = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(dexFile)))));
                 for (DexBackedClassDef h : cl.getClasses()) {
-                    if (h.getType().equals("L" + activity.replace(".", "/") + ";")) {
-                        userSelectedDexName = dexFile;
+                    if (h.getType().equals(classNameToTypeName(activity))) {
                         for (DexBackedMethod m : h.getMethods()) {
                             if(!methodList.contains(m.getName())) {
                                 methodList.add(m.getName());
