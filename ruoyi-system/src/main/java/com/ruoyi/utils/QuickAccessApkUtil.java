@@ -46,7 +46,7 @@ public class QuickAccessApkUtil {
     private static final String injectEntranceType = classNameToTypeName(injectEntranceClass);
     private static String packageName;
     private static String applicationName;
-    private static String userSelectedDex; //入口所在dex
+    private static String userSelectedDexName; //入口所在dex
 
     private static byte[] parseManifest(InputStream is) throws IOException {
         AXmlDecoder axml = AXmlDecoder.decode(is);
@@ -418,8 +418,8 @@ public class QuickAccessApkUtil {
 //        String outputPath = oriPath.replace(".apk", "_injected_not_sign.apk");
         String outputPath = oriPath.replace(".tmp", "_injected_not_sign.tmp");
         // 原程序dex编译器
-//        DexBuilder oriMainBuilder = new DexBuilder(Opcodes.getDefault());
-//         oriMainBuilder.setIgnoreMethodAndFieldError(true);
+        DexBuilder oriUserSelectedBuilder = new DexBuilder(Opcodes.getDefault());
+//         oriUserSelectedBuilder.setIgnoreMethodAndFieldError(true);
         DexBuilder oriTargetBuilder = new DexBuilder(Opcodes.getDefault());
 //         oriTargetBuilder.setIgnoreMethodAndFieldError(true);
         // 读入注入文件
@@ -485,7 +485,7 @@ public class QuickAccessApkUtil {
                     if(cl.getType().equals(classNameToTypeName(vo.getActivity()))) { // 假设用户所选dex为target dex
                         insertCode(cl, oriTargetBuilder, vo.getMethod());
                     } else {
-//                        internClassDef(oriTargetBuilder, cl);
+                        internClassDef(oriTargetBuilder, cl);
                     }
                 }
                 // 更新进度
@@ -518,30 +518,33 @@ public class QuickAccessApkUtil {
             zos.write(toByteArray(oriTargetBuilder));
             zos.closeEntry();
 
-            if (!targetDexName.equals(userSelectedDex)) {
+            if (!targetDexName.equals(userSelectedDexName)) {
                 // 合并dex
-//                DexBackedDexFile oriTargetDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(targetDexName)))));
-                Set<DexBackedClassDef> classesTargetSet = new HashSet<>();
-                classesTargetSet.addAll(oriTargetDex.getClasses());
-                classesTargetSet.addAll(injectDex.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
-                List<DexBackedClassDef> classesTargetList = new ArrayList<>(classesTargetSet);
-                for (int i = 0; i < classesTargetList.size(); i++) {
-                    DexBackedClassDef cl = classesTargetList.get(i);
-                    internClassDef(oriTargetBuilder, cl);
+                DexBackedDexFile userSelectedDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(userSelectedDexName)))));
+                List<DexBackedClassDef> classesSelectedList = new ArrayList<>(userSelectedDex.getClasses());
+                for (int i = 0; i < classesSelectedList.size(); i++) {
+                    DexBackedClassDef cl = classesSelectedList.get(i);
+                    if (!cl.getType().equals(injectConfigClass)) {
+                        if(cl.getType().equals(classNameToTypeName(vo.getActivity()))) {
+                            insertCode(cl, oriUserSelectedBuilder, vo.getMethod());
+                        } else {
+                            internClassDef(oriUserSelectedBuilder, cl);
+                        }
+                    }
                     // 更新进度
                 }
 //                MemoryDataStore store2 = new MemoryDataStore();
 //                oriTargetBuilder.writeTo(store2);
-                zos.putNextEntry(targetDexName);
+                zos.putNextEntry(userSelectedDexName);
 //                zos.write(store2.getData());
-                zos.write(toByteArray(oriTargetBuilder));
+                zos.write(toByteArray(oriUserSelectedBuilder));
                 zos.closeEntry();
             }
 
             Enumeration<ZipEntry> enumeration = oriFile.getEntries();
             while (enumeration.hasMoreElements()) {
                 ZipEntry ze = enumeration.nextElement();
-                if (ze.getName().equals("AndroidManifest.xml") || ze.getName().equals(userSelectedDex) || ze.getName().equals(targetDexName)) {
+                if (ze.getName().equals("AndroidManifest.xml") || ze.getName().equals(userSelectedDexName) || ze.getName().equals(targetDexName)) {
                     continue;
                 }
                 zos.copyZipEntry(ze, oriFile);
@@ -719,7 +722,7 @@ public class QuickAccessApkUtil {
                 cl = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(new BufferedInputStream(oriFile.getInputStream(oriFile.getEntry(dexFile)))));
                 for (DexBackedClassDef h : cl.getClasses()) {
                     if (h.getType().equals("L" + activity.replace(".", "/") + ";")) {
-                        userSelectedDex = dexFile;
+                        userSelectedDexName = dexFile;
                         for (DexBackedMethod m : h.getMethods()) {
                             if(!methodList.contains(m.getName())) {
                                 methodList.add(m.getName());
