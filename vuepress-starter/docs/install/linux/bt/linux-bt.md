@@ -1,5 +1,11 @@
 # 宝塔面板部署文档
 
+:::tip
+点击查看视频讲解
+:::
+<iframe src="//player.bilibili.com/player.html?aid=1051642686&bvid=BV1RH4y157XA&cid=1464585474&p=1&autoplay=false" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+<hr/>
+
 ## 一、准备工作
 
 ### 1、软件下载
