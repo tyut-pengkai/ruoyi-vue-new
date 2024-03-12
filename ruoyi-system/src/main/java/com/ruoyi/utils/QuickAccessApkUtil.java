@@ -13,6 +13,7 @@ import com.ruoyi.common.utils.apk.zip.ZipEntry;
 import com.ruoyi.common.utils.apk.zip.ZipFile;
 import com.ruoyi.common.utils.apk.zip.ZipOutputStream;
 import com.ruoyi.system.domain.vo.ActivityMethodVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.jf.baksmali.Adaptors.ClassDefinition;
 import org.jf.baksmali.BaksmaliOptions;
@@ -39,6 +40,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class QuickAccessApkUtil {
 
     private static final String injectConfigClass = "Lcom/c/qat/InjectConfig;";
@@ -183,6 +185,7 @@ public class QuickAccessApkUtil {
     }
 
     public static byte[] doProcess(String oriPath, String apv, String template, boolean enhancedMode) throws Exception {
+        log.info("[注入]启动全局注入");
         String dexFinalName = null;
         ZipFile oriFile = new ZipFile(oriPath);
         Set<String> classNameSet = new HashSet<>();
@@ -194,7 +197,9 @@ public class QuickAccessApkUtil {
         DexBuilder oriTargetBuilder = new DexBuilder(Opcodes.getDefault());
 //        oriTargetBuilder.setIgnoreMethodAndFieldError(true);
         DexBuilder oriFinalBuilder = new DexBuilder(Opcodes.getDefault());
+
         // 读入注入文件
+        log.info("[注入]正在读入注入文件");
         String injectPath = PathUtils.getUserPath() + File.separator + "template" + File.separator + template + ".apk.tpl";
         File injectFile = new File(injectPath);
         // 抽取的代码编译器
@@ -202,16 +207,20 @@ public class QuickAccessApkUtil {
 //        injectBuider.setIgnoreMethodAndFieldError(true);
 
         // 分析Axml及编辑 获取activity列表
+        log.info("[注入]正在分析Axml");
         ZipEntry xmlEntry = oriFile.getEntry("AndroidManifest.xml");
         byte[] xml = parseManifest(oriFile.getInputStream(xmlEntry));
 
         Set<String> activityTypeSet = new HashSet<>();
+        log.info("[注入]是否开启增强模式：{}", enhancedMode);
         if(enhancedMode) { // 增强模式，将在每一个activity中注入daemon检测代码
             List<String> activityList = parseManifestActivity(oriFile.getInputStream(xmlEntry));
+            log.info("[注入][增强模式]获取到activity数量：{}个", activityList.size());
             activityTypeSet.addAll(activityList.stream().map(QuickAccessApkUtil::classNameToTypeName).collect(Collectors.toSet()));
         }
 
         // 获取dex列表
+        log.info("[注入]正在获取dex列表");
         List<String> dexNameList = new ArrayList<>();
         Enumeration<ZipEntry> e = oriFile.getEntries();
         while (e.hasMoreElements()) {
@@ -220,9 +229,10 @@ public class QuickAccessApkUtil {
                 dexNameList.add(ze.getName());
             }
         }
+        log.info("[注入]获取到dex数量：{}个", dexNameList.size());
         // 判断dex数量
         if (dexNameList.isEmpty()) {
-//            System.out.println("未找到dex文件");
+            log.info("[注入]未找到dex文件");
             throw new ServiceException("未找到dex文件");
         } else {
             String targetDexName;
@@ -231,11 +241,12 @@ public class QuickAccessApkUtil {
             } else {
                 targetDexName = "classes" + dexNameList.size() + ".dex";
             }
-
+            log.info("[注入]targetDex：{}", targetDexName);
             // 多DEX，可能存在类重复问题
             for (String dexName : dexNameList) {
                 ZipEntry entry = oriFile.getEntry(dexName);
                 DexBackedDexFile classes = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(entry)));
+                log.info("[注入]dex：{}，classes：{}", dexName, classes.getClasses().size());
                 for (DexBackedClassDef cl : classes.getClasses()) {
                     classNameSet.add(cl.getType());
                     if(!dexName.equals(targetDexName)) {
@@ -243,10 +254,10 @@ public class QuickAccessApkUtil {
                         if(activityTypeSet.contains(cl.getType())) {
                             try {
                                 insertCodeActivity(cl, dexBuilderMap.get(dexName), "onCreate");
-                                System.out.println("注入activity成功：" + cl.getType());
+                                log.info("[注入][增强模式]注入activity成功：{}", cl.getType());
                             } catch (Exception ignored) {
                                 internClassDef(dexBuilderMap.get(dexName), cl);
-                                System.out.println("注入activity失败：" + cl.getType());
+                                log.warn("[注入][增强模式]注入activity失败：{}", cl.getType());
                             }
                         } else {
                             internClassDef(dexBuilderMap.get(dexName), cl);
@@ -256,13 +267,16 @@ public class QuickAccessApkUtil {
             }
 
             // 检查原包是否已被红叶注入过
+            log.info("[注入]正在检查原包是否已被红叶注入过");
             for (String className : classNameSet) {
                 if (className.equals(injectConfigClass)) {
+                    log.info("[注入]该APK已经被红叶注入过，无法二次注入");
                     throw new ServiceException("该APK已经被红叶注入过，无法二次注入");
                 }
             }
 
             // 分析dex
+            log.info("[注入]正在分析dex");
             ZipEntry dexEntry = oriFile.getEntry(targetDexName);
             DexBackedDexFile oriTargetDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(dexEntry)));
             DexBackedDexFile injectDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(Files.newInputStream(injectFile.toPath())));
@@ -272,12 +286,15 @@ public class QuickAccessApkUtil {
             classesList.addAll(injectDex.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
 
             // 注入配置
+            log.info("[注入]正在注入配置");
             ClassPath injectClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(injectDex)), false, injectDex.getClasses().size());
             DexBackedClassDef injectConfigActivityClassDef = (DexBackedClassDef) injectClasspath.getClassDef(injectConfigClass);
             editConfig(injectConfigActivityClassDef, oriTargetBuilder, apv);
 
             // 处理自定义applicationName
+            log.info("[注入]正在处理自定义applicationName");
             if (StringUtils.isNotBlank(applicationName)) {
+                log.info("[注入]处理自定义applicationName：{}", applicationName);
                 DexBackedClassDef injectApplicationClassDef = (DexBackedClassDef) injectClasspath.getClassDef(injectEntranceType);
                 String code = getClassDefString(injectApplicationClassDef);
                 if (applicationName.startsWith(".")) {
@@ -298,11 +315,9 @@ public class QuickAccessApkUtil {
                         for (DexBackedClassDef cl : classes.getClasses()) {
                             if (cl.getType().equals(applicationName)) {
                                 dexFinalName = dexName;
-                                System.out.println("applicationName:" + applicationName);
-                                System.out.println("AccessFlags: " + cl.getAccessFlags());
                                 // 0x10代表final
                                 if ((cl.getAccessFlags() & 0x10) != 0) {
-                                    System.out.println("isFinal: true");
+                                    log.info("[注入]处理isFinal：{}", true);
                                     String classDefString = getClassDefString(cl);
                                     classDefString = classDefString.replace("final " + applicationName, applicationName);
                                     if(dexFinalName.equals(targetDexName)) {
@@ -313,7 +328,7 @@ public class QuickAccessApkUtil {
                                         assembleSmaliFile(classDefString, dexBuilder, new SmaliOptions());
                                     }
                                 } else {
-                                    System.out.println("isFinal: false");
+                                    log.info("[注入]处理isFinal：{}", false);
                                     dexFinalName = null;
                                     break out;
                                 }
@@ -329,6 +344,7 @@ public class QuickAccessApkUtil {
             }
 
             // 合并target dex
+            log.info("[注入]正在合并targetDex");
             for (int i = 0; i < classesList.size(); i++) {
                 DexBackedClassDef cl = classesList.get(i);
                 if (!cl.getType().equals(injectConfigClass)) {
@@ -338,10 +354,10 @@ public class QuickAccessApkUtil {
                         if(activityTypeSet.contains(cl.getType())) {
                             try {
                                 insertCodeActivity(cl, oriTargetBuilder, "onCreate");
-                                System.out.println("注入activity成功：" + cl.getType());
+                                log.info("[注入][增强模式]注入activity成功：{}", cl.getType());
                             } catch (Exception ignored) {
                                 internClassDef(oriTargetBuilder, cl);
-                                System.out.println("注入activity失败：" + cl.getType());
+                                log.warn("[注入][增强模式]注入activity失败：{}", cl.getType());
                             }
                         } else {
                             internClassDef(oriTargetBuilder, cl);
@@ -352,6 +368,7 @@ public class QuickAccessApkUtil {
             }
 
             // 重组APK
+            log.info("[注入]正在重组APK");
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             boolean insertFlag = true;
             try {
@@ -365,12 +382,15 @@ public class QuickAccessApkUtil {
             zos.setLevel(1);
             zos.putNextEntry("AndroidManifest.xml");
             if (insertFlag) {
+                log.info("[注入]添加标记信息成功");
                 zos.write(byteArrayOutputStream.toByteArray());
             } else {
+                log.warn("[注入]添加标记信息失败");
                 zos.write(xml);
             }
             zos.closeEntry();
 
+            log.info("[注入]编译targetDex：{}，classes：{}", targetDexName, map.get(oriTargetBuilder).size());
 //            MemoryDataStore store = new MemoryDataStore();
 //            oriTargetBuilder.writeTo(store);
             zos.putNextEntry(targetDexName);
@@ -379,12 +399,14 @@ public class QuickAccessApkUtil {
             zos.closeEntry();
 
             for (Map.Entry<String, DexBuilder> entry : dexBuilderMap.entrySet()) {
+                log.info("[注入]编译dex：{}，classes：{}", entry.getKey(), map.get(entry.getValue()).size());
                 zos.putNextEntry(entry.getKey());
                 zos.write(toByteArray(entry.getValue()));
                 zos.closeEntry();
             }
 
             if(StringUtils.isNotBlank(dexFinalName) && !dexFinalName.equals(targetDexName) && !dexBuilderMap.containsKey(dexFinalName)) {
+                log.info("[注入]编译finalDex：{}，classes：{}", dexFinalName, map.get(oriFinalBuilder).size());
 //                MemoryDataStore store2 = new MemoryDataStore();
 //                oriFinalBuilder.writeTo(store2);
                 zos.putNextEntry(dexFinalName);
@@ -393,6 +415,7 @@ public class QuickAccessApkUtil {
                 zos.closeEntry();
             }
 
+            log.info("[注入]正在编译最终apk");
             Enumeration<ZipEntry> enumeration = oriFile.getEntries();
             while (enumeration.hasMoreElements()) {
                 ZipEntry ze = enumeration.nextElement();
@@ -412,6 +435,7 @@ public class QuickAccessApkUtil {
     }
 
     public static byte[] doProcess2(String oriPath, String apv, String template, ActivityMethodVo vo, boolean enhancedMode) throws Exception {
+        log.info("[注入]启动单例注入");
         String userSelectedDexName = null; //入口所在dex
         ZipFile oriFile = new ZipFile(oriPath);
         Set<String> classNameSet = new HashSet<>();
@@ -424,7 +448,9 @@ public class QuickAccessApkUtil {
 //         oriUserSelectedBuilder.setIgnoreMethodAndFieldError(true);
         DexBuilder oriTargetBuilder = new DexBuilder(Opcodes.getDefault());
 //         oriTargetBuilder.setIgnoreMethodAndFieldError(true);
+
         // 读入注入文件
+        log.info("[注入]正在读入注入文件");
         String injectPath = PathUtils.getUserPath() + File.separator + "template" + File.separator + template + ".apk.tpl";
         File injectFile = new File(injectPath);
         // 抽取的代码编译器
@@ -432,16 +458,20 @@ public class QuickAccessApkUtil {
 //         injectBuider.setIgnoreMethodAndFieldError(true);
 
         // 分析Axml及编辑 获取activity列表
+        log.info("[注入]正在分析Axml");
         ZipEntry xmlEntry = oriFile.getEntry("AndroidManifest.xml");
         byte[] xml = toByteArray(oriFile.getInputStream(xmlEntry));
 
         Set<String> activityTypeSet = new HashSet<>();
+        log.info("[注入]是否开启增强模式：{}", enhancedMode);
         if(enhancedMode) { // 增强模式，将在每一个activity中注入daemon检测代码
             List<String> activityList = parseManifestActivity(oriFile.getInputStream(xmlEntry));
+            log.info("[注入][增强模式]获取到activity数量：{}个", activityList.size());
             activityTypeSet.addAll(activityList.stream().map(QuickAccessApkUtil::classNameToTypeName).collect(Collectors.toSet()));
         }
 
         // 获取dex列表
+        log.info("[注入]正在获取dex列表");
         List<String> dexNameList = new ArrayList<>();
         Enumeration<ZipEntry> e = oriFile.getEntries();
         while (e.hasMoreElements()) {
@@ -450,9 +480,10 @@ public class QuickAccessApkUtil {
                 dexNameList.add(ze.getName());
             }
         }
+        log.info("[注入]获取到dex数量：{}个", dexNameList.size());
         // 判断dex数量
         if (dexNameList.isEmpty()) {
-//            System.out.println("未找到dex文件");
+            log.info("[注入]未找到dex文件");
             throw new ServiceException("未找到dex文件");
         } else {
             String targetDexName;
@@ -461,7 +492,7 @@ public class QuickAccessApkUtil {
             } else {
                 targetDexName = "classes" + dexNameList.size() + ".dex";
             }
-
+            log.info("[注入]targetDex：{}", targetDexName);
             // 计算用户选择的是哪个dex
             for (String dexName : dexNameList) {
                 ZipEntry entry = oriFile.getEntry(dexName);
@@ -469,6 +500,7 @@ public class QuickAccessApkUtil {
                 for (DexBackedClassDef cl : classes.getClasses()) {
                     if (cl.getType().equals(classNameToTypeName(vo.getActivity()))) {
                         userSelectedDexName = dexName;
+                        log.info("[注入]userSelectedDexName：{}", userSelectedDexName);
                     }
                 }
             }
@@ -476,6 +508,7 @@ public class QuickAccessApkUtil {
             for (String dexName : dexNameList) {
                 ZipEntry entry = oriFile.getEntry(dexName);
                 DexBackedDexFile classes = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(entry)));
+                log.info("[注入]dex：{}，classes：{}", dexName, classes.getClasses().size());
                 for (DexBackedClassDef cl : classes.getClasses()) {
                     classNameSet.add(cl.getType());
                     if(!dexName.equals(targetDexName) && !dexName.equals((userSelectedDexName))) {
@@ -483,10 +516,10 @@ public class QuickAccessApkUtil {
                         if(activityTypeSet.contains(cl.getType())) {
                             try {
                                 insertCodeActivity(cl, dexBuilderMap.get(dexName), "onCreate");
-                                System.out.println("注入activity成功：" + cl.getType());
+                                log.info("[注入][增强模式]注入activity成功：{}", cl.getType());
                             } catch (Exception ignored) {
                                 internClassDef(dexBuilderMap.get(dexName), cl);
-                                System.out.println("注入activity失败：" + cl.getType());
+                                log.warn("[注入][增强模式]注入activity失败：{}", cl.getType());
                             }
                         } else {
                             internClassDef(dexBuilderMap.get(dexName), cl);
@@ -496,13 +529,16 @@ public class QuickAccessApkUtil {
             }
 
             // 检查原包是否已被红叶注入过
+            log.info("[注入]正在检查原包是否已被红叶注入过");
             for (String className : classNameSet) {
                 if (className.equals(injectConfigClass)) {
+                    log.info("[注入]该APK已经被红叶注入过，无法二次注入");
                     throw new ServiceException("该APK已经被红叶注入过，无法二次注入");
                 }
             }
 
             // 分析dex
+            log.info("[注入]正在分析dex");
             ZipEntry dexEntry = oriFile.getEntry(targetDexName);
             DexBackedDexFile oriTargetDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(oriFile.getInputStream(dexEntry)));
             DexBackedDexFile injectDex = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(Files.newInputStream(injectFile.toPath())));
@@ -512,11 +548,13 @@ public class QuickAccessApkUtil {
             classesList.addAll(injectDex.getClasses().stream().filter(o -> !classNameSet.contains(o.getType())).collect(Collectors.toList()));
 
             // 注入配置
+            log.info("[注入]正在注入配置");
             ClassPath injectClasspath = new ClassPath(Lists.newArrayList(new DexClassProvider(injectDex)), false, injectDex.getClasses().size());
             DexBackedClassDef injectConfigActivityClassDef = (DexBackedClassDef) injectClasspath.getClassDef(injectConfigClass);
             editConfig(injectConfigActivityClassDef, oriTargetBuilder, apv);
 
             // 合并target dex
+            log.info("[注入]正在合并targetDex");
             for (int i = 0; i < classesList.size(); i++) {
                 DexBackedClassDef cl = classesList.get(i);
                 if (!cl.getType().equals(injectConfigClass)) {
@@ -526,10 +564,10 @@ public class QuickAccessApkUtil {
                         if(activityTypeSet.contains(cl.getType())) {
                             try {
                                 insertCodeActivity(cl, oriTargetBuilder, "onCreate");
-                                System.out.println("注入activity成功：" + cl.getType());
+                                log.info("[注入][增强模式]注入activity成功：{}", cl.getType());
                             } catch (Exception ignored) {
                                 internClassDef(oriTargetBuilder, cl);
-                                System.out.println("注入activity失败：" + cl.getType());
+                                log.warn("[注入][增强模式]注入activity失败：{}", cl.getType());
                             }
                         } else {
                             internClassDef(oriTargetBuilder, cl);
@@ -540,6 +578,7 @@ public class QuickAccessApkUtil {
             }
 
             // 重组APK
+            log.info("[注入]正在重组APK");
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             boolean insertFlag = true;
             try {
@@ -553,12 +592,15 @@ public class QuickAccessApkUtil {
             zos.setLevel(1);
             zos.putNextEntry("AndroidManifest.xml");
             if (insertFlag) {
+                log.info("[注入]添加标记信息成功");
                 zos.write(byteArrayOutputStream.toByteArray());
             } else {
+                log.warn("[注入]添加标记信息失败");
                 zos.write(xml);
             }
             zos.closeEntry();
 
+            log.info("[注入]编译targetDex：{}，classes：{}", targetDexName, map.get(oriTargetBuilder).size());
     //        MemoryDataStore store = new MemoryDataStore();
     //        oriMainBuilder.writeTo(store);
             zos.putNextEntry(targetDexName);
@@ -567,6 +609,7 @@ public class QuickAccessApkUtil {
             zos.closeEntry();
 
             for (Map.Entry<String, DexBuilder> entry : dexBuilderMap.entrySet()) {
+                log.info("[注入]编译dex：{}，classes：{}", entry.getKey(), map.get(entry.getValue()).size());
                 zos.putNextEntry(entry.getKey());
                 zos.write(toByteArray(entry.getValue()));
                 zos.closeEntry();
@@ -585,10 +628,10 @@ public class QuickAccessApkUtil {
                             if(activityTypeSet.contains(cl.getType())) {
                                 try {
                                     insertCodeActivity(cl, oriUserSelectedBuilder, "onCreate");
-                                    System.out.println("注入activity成功：" + cl.getType());
+                                    log.info("[注入][增强模式]注入activity成功：{}", cl.getType());
                                 } catch (Exception ignored) {
                                     internClassDef(oriUserSelectedBuilder, cl);
-                                    System.out.println("注入activity失败：" + cl.getType());
+                                    log.warn("[注入][增强模式]注入activity失败：{}", cl.getType());
                                 }
                             } else {
                                 internClassDef(oriUserSelectedBuilder, cl);
@@ -597,6 +640,8 @@ public class QuickAccessApkUtil {
                     }
                     // 更新进度
                 }
+
+                log.info("[注入]编译userSelectedDex：{}，classes：{}", userSelectedDexName, map.get(oriUserSelectedBuilder).size());
 //                MemoryDataStore store2 = new MemoryDataStore();
 //                oriTargetBuilder.writeTo(store2);
                 zos.putNextEntry(userSelectedDexName);
@@ -605,6 +650,7 @@ public class QuickAccessApkUtil {
                 zos.closeEntry();
             }
 
+            log.info("[注入]正在编译最终apk");
             Enumeration<ZipEntry> enumeration = oriFile.getEntries();
             while (enumeration.hasMoreElements()) {
                 ZipEntry ze = enumeration.nextElement();
