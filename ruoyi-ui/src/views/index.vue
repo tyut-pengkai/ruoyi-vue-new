@@ -1,12 +1,12 @@
 <template>
   <div class="app-container home">
     <!--  授权过期提示  -->
-    <span>
+    <span class="index-page">
       <el-alert
         v-if="remainTimeSeconds / 86400 <= 10"
         style="margin-bottom: 20px"
         title="您的授权即将到期"
-        :description="'您的授权将于' + expireTime + '到期（剩余 ' + remainTimeReadable + ' 天），请您尽快续费以免影响您的正常使用'"
+        :description="'您的授权将于' + expireTime + '到期（剩余 ' + remainTimeReadable + '），请您尽快续费以免影响您的正常使用'"
         type="warning"
         :closable="false"
         :show-icon="true">
@@ -414,7 +414,6 @@ export default {
   border-radius: 4px;
   padding: 20px;
   margin: 15px;
-  margin-top: 15px;
 }
 
 .update_version {
@@ -463,6 +462,22 @@ export default {
   font-size: 13.5px;
 }
 
+.index-page .el-alert__title {
+  font-size: 18px;
+}
 
+.index-page .el-alert .el-alert__description {
+  font-size: 15px;
+  margin: 5px 0 0 0;
+}
+
+.index-page .el-alert__icon.is-big {
+  font-size: 32px;
+  width: 32px;
+}
+
+.index-page .el-alert {
+  padding: 12px 20px;
+}
 </style>
 

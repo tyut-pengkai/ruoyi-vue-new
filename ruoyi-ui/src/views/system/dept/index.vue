@@ -7,10 +7,10 @@
       :model="queryParams"
       size="small"
     >
-      <el-form-item label="部门名称" prop="deptName">
+      <el-form-item label="分组名称" prop="deptName">
         <el-input
           v-model="queryParams.deptName"
-          placeholder="请输入部门名称"
+          placeholder="请输入分组名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -19,7 +19,7 @@
         <el-select
           v-model="queryParams.status"
           clearable
-          placeholder="部门状态"
+          placeholder="分组状态"
         >
           <el-option
             v-for="dict in dict.type.sys_normal_disable"
@@ -84,7 +84,7 @@
       :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
     >
       <el-table-column
-        label="部门名称"
+        label="分组名称"
         prop="deptName"
         width="260"
       ></el-table-column>
@@ -149,25 +149,25 @@
       </el-table-column>
     </el-table>
 
-    <!-- 添加或修改部门对话框 -->
+    <!-- 添加或修改分组对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="24" v-if="form.parentId !== 0">
-            <el-form-item label="上级部门" prop="parentId">
+            <el-form-item label="上级分组" prop="parentId">
               <treeselect
                 v-model="form.parentId"
                 :normalizer="normalizer"
                 :options="deptOptions"
-                placeholder="选择上级部门"
+                placeholder="选择上级分组"
               />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="部门名称" prop="deptName">
-              <el-input v-model="form.deptName" placeholder="请输入部门名称" />
+            <el-form-item label="分组名称" prop="deptName">
+              <el-input v-model="form.deptName" placeholder="请输入分组名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -211,7 +211,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="部门状态">
+            <el-form-item label="分组状态">
               <el-radio-group v-model="form.status">
                 <el-radio
                   v-for="dict in dict.type.sys_normal_disable"
@@ -250,7 +250,7 @@ export default {
       showSearch: true,
       // 表格树数据
       deptList: [],
-      // 部门树选项
+      // 分组树选项
       deptOptions: [],
       // 弹出层标题
       title: "",
@@ -270,10 +270,10 @@ export default {
       // 表单校验
       rules: {
         parentId: [
-          {required: true, message: "上级部门不能为空", trigger: "blur"},
+          {required: true, message: "上级分组不能为空", trigger: "blur"},
         ],
         deptName: [
-          {required: true, message: "部门名称不能为空", trigger: "blur"},
+          {required: true, message: "分组名称不能为空", trigger: "blur"},
         ],
         orderNum: [
           {required: true, message: "显示排序不能为空", trigger: "blur"},
@@ -299,7 +299,7 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询部门列表 */
+    /** 查询分组列表 */
     getList() {
       this.loading = true;
       listDept(this.queryParams).then((response) => {
@@ -307,7 +307,7 @@ export default {
         this.loading = false;
       });
     },
-    /** 转换部门数据结构 */
+    /** 转换分组数据结构 */
     normalizer(node) {
       if (node.children && !node.children.length) {
         delete node.children;
@@ -353,7 +353,7 @@ export default {
         this.form.parentId = row.deptId;
       }
       this.open = true;
-      this.title = "添加部门";
+      this.title = "添加分组";
       listDept().then((response) => {
         this.deptOptions = this.handleTree(response.data, "deptId");
       });
@@ -372,7 +372,7 @@ export default {
       getDept(row.deptId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改部门";
+        this.title = "修改分组";
         listDeptExcludeChild(row.deptId).then(response => {
           this.deptOptions = this.handleTree(response.data, "deptId");
           if (this.deptOptions.length == 0) {

@@ -94,6 +94,7 @@
                   :key="dict.value"
                   :label="dict.label"
                   :value="dict.value"
+                  :disabled="form.operationObject === '6' && ['3', '4'].includes(dict.value)"
                 />
               </el-select>
             </el-form-item>
@@ -139,6 +140,9 @@
                   :key="dict.value"
                   :label="dict.label"
                   :value="dict.value"
+                  :disabled="form.operationObject === '5' && ['3', '5','6','7','8'].includes(dict.value)
+                  || app && app['billType']==='0' && ['7','8'].includes(dict.value)
+                  || app && app['billType']==='1' && ['5','6'].includes(dict.value)"
                 />
               </el-select>
             </el-form-item>
@@ -283,6 +287,7 @@ export default {
         // ],
       },
       result: "",
+      app: null
     };
   },
   created() {

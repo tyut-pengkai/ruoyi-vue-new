@@ -53,12 +53,12 @@
       :default-expand-all="isExpandAll" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
       <!--      <el-table-column label="上级代理ID" prop="parentAgentId" />-->
       <!--      <el-table-column label="用户ID" align="center" prop="userId" />-->
-      <el-table-column :show-overflow-tooltip="true" align="center" label="代理名称" prop="userId">
+      <el-table-column :show-overflow-tooltip="true" align="left" label="代理名称" prop="userId">
         <template slot-scope="scope">
           {{ scope.row.user.nickName }}({{ scope.row.user.userName }})
         </template>
       </el-table-column>
-      <el-table-column label="上级代理" align="center" prop="parentAgentId" :show-overflow-tooltip="true">
+      <el-table-column label="上级代理" align="left" prop="parentAgentId" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <div v-if="scope.row.parentUser">
             {{ scope.row.parentUser.nickName }}({{

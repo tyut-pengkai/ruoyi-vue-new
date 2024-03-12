@@ -58,7 +58,7 @@
         label="登录名称"
         prop="userName"
       />
-      <!-- <el-table-column label="部门名称" align="center" prop="deptName" /> -->
+      <!-- <el-table-column label="分组名称" align="center" prop="deptName" /> -->
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
