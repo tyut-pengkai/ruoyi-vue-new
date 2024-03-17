@@ -11,7 +11,7 @@
       :bottomText= "bottomText"
     >
       <div style="min-height: 332px;margin-top: 10px">
-        <my-pie-chart2 :data="data" height="320px" style="margin-bottom: 10px"></my-pie-chart2>
+        <my-pie-chart2 :data="data" height="463px" style="margin-bottom: 10px"></my-pie-chart2>
       </div>
     </show-card-index>
   </div>

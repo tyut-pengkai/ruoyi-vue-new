@@ -1,29 +1,37 @@
 package com.ruoyi.web.controller.system;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.NoticeType;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.SysCache;
+import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.sale.mapper.DashboardSaleViewMapper;
 import com.ruoyi.system.domain.SysAppUserCount;
 import com.ruoyi.system.domain.SysNotice;
 import com.ruoyi.system.domain.vo.TbhbVo;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppUserCountService;
+import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysNoticeService;
+import com.ruoyi.update.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -38,8 +46,9 @@ import java.util.stream.Collectors;
  *
  * @author ruoyi
  */
+@Slf4j
 @RestController
-public class SysIndexController {
+public class SysIndexController extends BaseController {
     DecimalFormat df = new DecimalFormat("#.00");
     /**
      * 系统基础配置
@@ -56,6 +65,10 @@ public class SysIndexController {
     private ISysAppService sysAppService;
     @Autowired
     private RedisCache redisCache;
+    @Resource
+    private PermissionService permissionService;
+    @Resource
+    private ISysConfigService sysConfigService;
 
     /**
      * 访问首页，提示语
@@ -71,19 +84,63 @@ public class SysIndexController {
      * @param type 公告类型
      * @return
      */
+    @SuppressWarnings("unchecked")
     @GetMapping("/system/getNotice")
-    public AjaxResult getNotice(@RequestParam("type") NoticeType type) {
-        Map<String, Object> map = new HashMap<>();
-        // 公告
+    public TableDataInfo getNotice() {
+//        Map<String, Object> map = new HashMap<>();
+//        // 公告
+//        SysNotice sysNotice = new SysNotice();
+//        sysNotice.setNoticeType(NoticeType.valueOf(type.name()).getCode());
+//        sysNotice.setStatus(UserConstants.NORMAL);
+//        SysNotice latestNotice = sysNoticeService.selectLatestNotice(sysNotice);
+//        if (latestNotice != null) {
+//            map.put("content", latestNotice.getNoticeContent());
+//            map.put("title", latestNotice.getNoticeTitle());
+//        }
+//        return AjaxResult.success(map);
+        List<SysNotice> allNoticeList = new ArrayList<>();
+        // 获取所有人的本地公告
         SysNotice sysNotice = new SysNotice();
-        sysNotice.setNoticeType(NoticeType.valueOf(type.name()).getCode());
-        sysNotice.setStatus(UserConstants.NORMAL);
-        SysNotice latestNotice = sysNoticeService.selectLatestNotice(sysNotice);
-        if (latestNotice != null) {
-            map.put("content", latestNotice.getNoticeContent());
-            map.put("title", latestNotice.getNoticeTitle());
+        sysNotice.setNoticeType(NoticeType.BACKEND.getCode());
+        List<SysNotice> noticeList = sysNoticeService.selectNoticeList(sysNotice);
+        if(!noticeList.isEmpty()) {
+            allNoticeList.addAll(noticeList);
         }
-        return AjaxResult.success(map);
+        // 获取代理的本地公告
+        if(permissionService.hasRole("agent")) {
+            sysNotice.setNoticeType(NoticeType.AGENT.getCode());
+           noticeList = sysNoticeService.selectNoticeList(sysNotice);
+            if(!noticeList.isEmpty()) {
+                allNoticeList.addAll(noticeList);
+            }
+        }
+        // 获取官方服务器的全局用户公告
+        if(permissionService.hasAnyRoles("sadmin,admin")) { // 只给系统管理员显示官方公告
+            try {
+                String baseUrl = sysConfigService.selectConfigByKey("sys.hyUrl.shop");
+                if (StringUtils.isBlank(baseUrl)) {
+                    baseUrl = "https://shop.coordsoft.com/";
+                }
+                baseUrl = Utils.fillUrl(baseUrl);
+                String url = baseUrl + "prod-api/system/notice/listAllForUser";
+                String remoteJson = Utils.readFromUrl(url);
+                AjaxResult noticeTableData = JSON.parseObject(remoteJson, AjaxResult.class);
+                JSONArray objectList = (JSONArray) noticeTableData.get(AjaxResult.DATA_TAG);
+                noticeList = objectList.toJavaList(SysNotice.class);
+                for (SysNotice notice : noticeList) {
+                    if (notice.getNoticeContent().contains("\"/prod-api/")) {
+                        String s = notice.getNoticeContent().replaceAll("\"/prod-api/", "\"" + baseUrl + "prod-api/");
+                        notice.setNoticeContent(s);
+                    }
+                }
+                allNoticeList.addAll(noticeList);
+            } catch (Exception e) {
+                log.warn("获取官方公告失败");
+                e.printStackTrace();
+            }
+        }
+        allNoticeList.sort(Comparator.comparing(BaseEntity::getCreateTime).reversed());
+        return getDataTable(allNoticeList);
     }
 
     /**
@@ -131,7 +188,9 @@ public class SysIndexController {
         // 用户统计
         List<DataVo> dataVoList = new ArrayList<>();
         // 用户总数量
-        List<SysApp> appList = sysAppService.selectSysAppList(new SysApp());
+        SysApp sysApp = new SysApp();
+        sysApp.setStatus(UserConstants.NORMAL);
+        List<SysApp> appList = sysAppService.selectSysAppList(sysApp);
         List<List<SysAppUserCount>> appUserCountListList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             LambdaQueryWrapper<SysAppUserCount> dataVoWrapper = new LambdaQueryWrapper<>();
@@ -200,8 +259,8 @@ public class SysIndexController {
                 String appName = map1.get("appName").toString();
                 ArrayList<Long> data = (ArrayList<Long>) map1.get("data");
                 for (Long datum : data) {
-                    if(datum != null && datum != 0) {
-                        dataVoList.add(new DataVo("[" + appName + "]" + numTypeName[Arrays.asList(numType).indexOf(key)], "line", key, data));
+                    if(datum != null) {
+                        dataVoList.add(new DataVo(appName, "line", false, key, data));
                         break;
                     }
                 }
@@ -260,6 +319,7 @@ public class SysIndexController {
     class DataVo {
         private String name; // APP名称
         private String type = "line"; // bar Or line
+        private boolean smooth = false;
         private String stack; // 堆叠组名称
         private List<Long> data; // 数值
     }

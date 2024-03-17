@@ -57,8 +57,7 @@ export default {
     data: {
       deep: true,
       handler(newValue, oldValue) {
-        if (oldValue !== newValue) {
-          this.beforeDestroy()
+        if (oldValue != newValue) {
           this.$nextTick(() => {
             this.initChart()
           })
@@ -67,7 +66,6 @@ export default {
     }
   },
   mounted() {
-    this.beforeDestroy()
     this.$nextTick(() => {
       this.initChart()
     })
@@ -80,13 +78,6 @@ export default {
     this.chart = null
   },
   methods: {
-    beforeDestroy() {
-      if (!this.chart) {
-        return
-      }
-      this.chart.dispose()
-      this.chart = null
-    },
     initChart() {
       this.chart = echarts.init(this.$el, 'macarons')
       this.chart.setOption({
@@ -123,10 +114,9 @@ export default {
               }
               zht += "<tr>";
               for (var i = 0; i < params.length; i++) {
-                // console.log(params[i])
                 if (params[i].value > 0) {
                   zht += "<td>" + params[i].marker + params[i].seriesName + ": " + params[i].value + "</td>";
-                  if ((i + 1) % devideSize === 0) {						//每行显示5个
+                  if ((i + 1) % devideSize == 0) {						//每行显示5个
                     zht += '<tr/>';
                   }
                 }
@@ -137,7 +127,7 @@ export default {
           }
         },
         legend: {
-          left: '80px',
+          data: [],
         },
         grid: {
           left: '3%',
@@ -148,7 +138,7 @@ export default {
         toolbox: {
           feature: {
             saveAsImage: {},
-            // magicType: {type: ['line', 'bar']},
+            magicType: {type: ['line', 'bar']},
           },
           show: this.toolbox
         },

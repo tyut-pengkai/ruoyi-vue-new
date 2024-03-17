@@ -10,8 +10,8 @@
       icon=""
       :bottomText="'全部订单数量：' + totalTradeAll + ' 转化率：' + transRate + '%'"
     >
-      <div style="min-height: 55px;">
-        <my-bar-chart2 :data="data" :xTitle="xTitle" height="80px" :toolbox="true" style="margin-top: 5px" bar-width="60%"></my-bar-chart2>
+      <div style="min-height: 55px; margin-top: -35px">
+        <my-bar-chart2 :data="data" :xTitle="xTitle" height="155px" :toolbox="true" style="margin-top: 5px" bar-width="60%"></my-bar-chart2>
       </div>
     </show-card-index>
   </div>

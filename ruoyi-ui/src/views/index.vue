@@ -40,56 +40,57 @@
     <div>
       <el-row :gutter="10" style="margin-top: 10px">
         <el-col :lg="18" :md="24" :sm="24" :xs="24">
-          <el-card style="margin-bottom: 10px" shadow="never">
-            <div slot="header" class="clearfix">
-              <span>系统公告</span>
-            </div>
-            <el-collapse>
-              <div v-if="userNotice && userNotice['content']">
-                <el-collapse-item name="1">
-                  <template slot="title">
-                    <el-tag size="mini" style="margin-right: 5px"><i class="el-icon-bell"></i>系统消息</el-tag>{{ userNotice['title'] || '暂无消息' }}
-                  </template>
-                  <div class="ql-container ql-bubble">
-                    <div class="ql-editor">
-                      <div>
-                        <div v-if="userNotice && userNotice['content']">
-                          <span v-html="userNotice['content']"></span>
-                        </div>
-                        <!-- <div v-else>暂无公告</div> -->
-                      </div>
-                    </div>
-                  </div>
-                </el-collapse-item>
-              </div>
-              <div v-if="checkRole(['agent']) && agentNotice && agentNotice['content']">
-                <el-collapse-item name="2">
-                  <template slot="title">
-                    <el-tag size="mini" style="margin-right: 5px"><i class="el-icon-bell"></i>系统消息(仅代理可见)</el-tag>{{ agentNotice['title'] || '暂无消息' }}
-                  </template>
-                  <div class="ql-container ql-bubble">
-                    <div class="ql-editor">
-                      <div>
-                        <div v-if="agentNotice && agentNotice['content']">
-                          <span v-html="agentNotice['content']"></span>
-                        </div>
-                        <!-- <div v-else>暂无公告</div> -->
-                      </div>
-                    </div>
-                  </div>
-                </el-collapse-item>
-              </div>
-            </el-collapse>
-          </el-card>
+<!--          <el-card style="margin-bottom: 10px" shadow="never">-->
+<!--            <div slot="header" class="clearfix">-->
+<!--              <span>系统公告</span>-->
+<!--            </div>-->
+<!--            <el-collapse>-->
+<!--              <div v-if="userNotice && userNotice['content']">-->
+<!--                <el-collapse-item name="1">-->
+<!--                  <template slot="title">-->
+<!--                    <el-tag size="mini" style="margin-right: 5px"><i class="el-icon-bell"></i>系统消息</el-tag>{{ userNotice['title'] || '暂无消息' }}-->
+<!--                  </template>-->
+<!--                  <div class="ql-container ql-bubble">-->
+<!--                    <div class="ql-editor">-->
+<!--                      <div>-->
+<!--                        <div v-if="userNotice && userNotice['content']">-->
+<!--                          <span v-html="userNotice['content']"></span>-->
+<!--                        </div>-->
+<!--                        &lt;!&ndash; <div v-else>暂无公告</div> &ndash;&gt;-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </el-collapse-item>-->
+<!--              </div>-->
+<!--              <div v-if="checkRole(['agent']) && agentNotice && agentNotice['content']">-->
+<!--                <el-collapse-item name="2">-->
+<!--                  <template slot="title">-->
+<!--                    <el-tag size="mini" style="margin-right: 5px"><i class="el-icon-bell"></i>系统消息(仅代理可见)</el-tag>{{ agentNotice['title'] || '暂无消息' }}-->
+<!--                  </template>-->
+<!--                  <div class="ql-container ql-bubble">-->
+<!--                    <div class="ql-editor">-->
+<!--                      <div>-->
+<!--                        <div v-if="agentNotice && agentNotice['content']">-->
+<!--                          <span v-html="agentNotice['content']"></span>-->
+<!--                        </div>-->
+<!--                        &lt;!&ndash; <div v-else>暂无公告</div> &ndash;&gt;-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </el-collapse-item>-->
+<!--              </div>-->
+<!--            </el-collapse>-->
+<!--          </el-card>-->
           <div v-if="checkRole(['admin', 'sadmin'])">
             <fast-entrance/>
             <dashboard/>
           </div>
         </el-col>
         <el-col :lg="6" :md="24" :sm="24" :xs="24">
+          <announcement style="margin-bottom: 10px;"/>
           <div v-if="checkRole(['admin', 'sadmin'])">
-            <update-log/>
-            <contract-info style="margin-top: 10px;"/>
+            <update-log style="margin-bottom: 10px;"/>
+            <contract-info/>
           </div>
         </el-col>
       </el-row>
@@ -150,7 +151,6 @@ import { getWeatherInfo } from '@/utils/weather'
 import { getSimpleLicenseInfo } from "@/api/system/license";
 import {getSysInfo} from "@/api/common";
 import {getWebsiteConfig} from "@/api/system/website";
-import {getNotice} from "@/api/system/index";
 import {checkUpdate, doUpdate, getStatus, doRestart, getRestartStatus, exportErrorLog } from "@/api/system/update";
 import { checkPermi, checkRole } from "@/utils/permission"; // 权限判断函数
 import { mapGetters } from "vuex";
@@ -158,11 +158,12 @@ import UpdateLog from '@/views/index/updateLog';
 import FastEntrance from '@/views/index/fastEntrance';
 import ContractInfo from '@/views/index/contractInfo';
 import Dashboard from '@/views/index/dashboard'
+import Announcement from '@/views/index/announcement'
 
 
 export default {
   name: "Index",
-  components: { Dashboard, FastEntrance, UpdateLog, ContractInfo },
+  components: { Announcement, Dashboard, FastEntrance, UpdateLog, ContractInfo },
   computed: {
     ...mapGetters(['nickName']),
   },
@@ -171,10 +172,6 @@ export default {
       // 版本号
       version: null,
       dbVersion: null,
-      // 用户公告
-      userNotice: null,
-      // 代理公告
-      agentNotice: null,
       dialogTableVisible: false,
       updateTitle: "",
       updateLog: "",
@@ -195,7 +192,6 @@ export default {
   methods: {
     checkPermi,
     checkRole,
-    getNotice,
     goTarget(href) {
       window.open(href, "_blank");
     },
@@ -332,14 +328,6 @@ export default {
       this.remainTimeSeconds = res.data.remainTimeSeconds;
     });
     this.getSysInfo();
-    getNotice({type: 1}).then((res) => {
-      this.userNotice = res.data;
-    });
-    if (checkRole(["agent"])) {
-      getNotice({type: 2}).then((res) => {
-        this.agentNotice = res.data;
-      });
-    }
   },
 };
 </script>

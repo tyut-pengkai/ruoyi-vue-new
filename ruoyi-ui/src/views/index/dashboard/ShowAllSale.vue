@@ -10,7 +10,7 @@
       icon=""
       :bottomText="'日均销售额： ¥' + feePerDay"
     >
-      <div style="min-height: 55px;margin-top: 25px; margin-bottom: 5px">
+      <div style="min-height: 75px;margin-top: 45px; margin-bottom: 5px">
         <div>
           <span v-for="(item, index) in [0,1,2,3]" style="margin-right: 5px">
             {{unit[item]}}同比：{{tb[item]}}

@@ -1,11 +1,10 @@
 import request from '@/utils/request'
 
 // 查询软件列表
-export function getNotice(query) {
+export function getNotice() {
   return request({
     url: '/system/getNotice',
-    method: 'get',
-    params: query
+    method: 'get'
   })
 }
 

@@ -141,9 +141,9 @@ export default {
           }
         },
         grid: {
-          top: 8,
+          top: 50,
           left: '2%',
-          right: '4%',
+          right: '2%',
           bottom: 5,
           containLabel: true
         },
@@ -176,22 +176,22 @@ export default {
           barWidth: this.barWidth,
           data: item['data'],
           animationDuration,
-          lineStyle: {
-            width: 0.1
-          },
-          areaStyle: {
-            opacity: 0.8,
-            // color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            //   {
-            //     offset: 0,
-            //     color: 'rgb(128, 255, 165)'
-            //   },
-            //   {
-            //     offset: 1,
-            //     color: 'rgb(1, 191, 236)'
-            //   }
-            // ])
-          },
+          // lineStyle: {
+          //   width: 0.1
+          // },
+          // areaStyle: {
+          //   opacity: 0.8,
+          //   // color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          //   //   {
+          //   //     offset: 0,
+          //   //     color: 'rgb(128, 255, 165)'
+          //   //   },
+          //   //   {
+          //   //     offset: 1,
+          //   //     color: 'rgb(1, 191, 236)'
+          //   //   }
+          //   // ])
+          // },
         });
       }
       // data.push({

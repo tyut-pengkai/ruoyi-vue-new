@@ -123,6 +123,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers(HttpMethod.GET, "/common/sysInfo", "/system/website/config").permitAll()
                 .antMatchers(HttpMethod.GET, "/common/download", "/common/globalFileDownload/*/*").permitAll()
                 .antMatchers("/system/appVersion/scan/*/*").permitAll()
+                .antMatchers("/system/notice/listAllForUser").permitAll()
                 // 静态资源，可匿名访问
                 .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**").permitAll()
                 .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs", "/druid/**").permitAll()
