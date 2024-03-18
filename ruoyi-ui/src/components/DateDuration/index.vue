@@ -8,6 +8,7 @@
         @blur="handleChange"
         :min="min"
         style="width: 142px"
+        :disabled="disabled"
       >
       </el-input-number>
     </span>
@@ -18,6 +19,7 @@
         @change="handleChange"
         @blur="handleChange"
         style="width: 75px; margin-left: 2px"
+        :disabled="disabled"
       >
         <el-option
           v-for="item in options"
@@ -35,7 +37,19 @@ import {day, hour, minute, month, parseSeconds, second, year,} from "@/utils/my"
 
 export default {
   name: "DateDuration",
-  props: { seconds: { type: Number }, min: { type: Number, default: 0 } },
+  props: {
+    seconds: {
+      type: Number
+    },
+    min: {
+      type: Number,
+      default: 0
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
   created: function () {
     this.initSelf();
   },

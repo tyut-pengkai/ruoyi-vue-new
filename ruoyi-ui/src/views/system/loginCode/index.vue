@@ -590,10 +590,10 @@
           </el-form-item>
         </div>
         <el-form-item label="单码名称" label-width="80px" prop="cardName">
-          <el-input v-model="form.cardName" placeholder="请输入单码名称" maxlength="50" show-word-limit/>
+          <el-input v-model="form.cardName" placeholder="请输入单码名称" maxlength="50" show-word-limit :disabled="form.isCharged === 'Y'"/>
         </el-form-item>
         <el-form-item label="单码内容" label-width="80px" prop="cardNo">
-          <el-input v-model="form.cardNo" placeholder="请输入单码" maxlength="100" show-word-limit/>
+          <el-input v-model="form.cardNo" placeholder="请输入单码" maxlength="100" show-word-limit :disabled="form.isCharged === 'Y'"/>
         </el-form-item>
         <el-form-item prop="">
           <el-col :span="12">
@@ -618,6 +618,7 @@
                 size="small"
                 type="datetime"
                 value-format="yyyy-MM-dd HH:mm:ss"
+                :disabled="form.isCharged === 'Y'"
               >
               </el-date-picker>
             </el-form-item>
@@ -632,6 +633,7 @@
                     <date-duration
                       @totalSeconds="handleQuota"
                       :seconds="form.quota"
+                      :disabled="form.isCharged === 'Y'"
                     ></date-duration>
                   </div>
                   <div v-if="app.billType === '1'">
@@ -639,6 +641,7 @@
                       v-model="form.quota"
                       controls-position="right"
                       :min="0"
+                      :disabled="form.isCharged === 'Y'"
                     />
                     <span style="margin-left: 6px">点</span>
                   </div>
@@ -654,6 +657,7 @@
                   <date-duration
                     @totalSeconds="handleQuota"
                     :seconds="form.quota"
+                    :disabled="form.isCharged === 'Y'"
                   ></date-duration>
                 </div>
                 <div v-if="form.app.billType === '1'">
@@ -661,6 +665,7 @@
                     v-model="form.quota"
                     controls-position="right"
                     :min="0"
+                    :disabled="form.isCharged === 'Y'"
                   />
                   <span style="margin-left: 6px">点</span>
                 </div>
@@ -675,6 +680,7 @@
                 :precision="2"
                 :step="0.01"
                 :min="0"
+                :disabled="form.isCharged === 'Y'"
               />
               <span>元</span>
             </el-form-item>
@@ -698,6 +704,7 @@
                 v-model="form.cardLoginLimitU"
                 :min="-2"
                 controls-position="right"
+                :disabled="form.isCharged === 'Y'"
               />
             </el-form-item>
           </el-col>
@@ -718,6 +725,7 @@
                 v-model="form.cardLoginLimitM"
                 :min="-2"
                 controls-position="right"
+                :disabled="form.isCharged === 'Y'"
               />
             </el-form-item>
           </el-col>
@@ -725,7 +733,7 @@
         <el-form-item prop="">
           <el-col :span="12">
             <el-form-item label="是否上架" prop="onSale">
-              <el-select v-model="form.onSale" placeholder="请选择是否上架">
+              <el-select v-model="form.onSale" placeholder="请选择是否上架" :disabled="form.isCharged === 'Y'">
                 <el-option
                   v-for="dict in dict.type.sys_yes_no"
                   :key="dict.value"
@@ -737,7 +745,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="是否售出" prop="isSold">
-              <el-select v-model="form.isSold" placeholder="请选择是否售出">
+              <el-select v-model="form.isSold" placeholder="请选择是否售出" :disabled="form.isCharged === 'Y'">
                 <el-option
                   v-for="dict in dict.type.sys_yes_no"
                   :key="dict.value"
@@ -765,23 +773,6 @@
             </el-form-item> -->
           </el-col>
           <el-col :span="12">
-            <el-form-item label="是否代理制卡" prop="isAgent">
-              <el-select
-                v-model="form.isAgent"
-                placeholder="请选择是否代理制卡"
-              >
-                <el-option
-                  v-for="dict in dict.type.sys_yes_no"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-form-item>
-        <el-form-item prop="">
-          <el-col :span="12">
             <el-form-item label="使用日期" prop="chargeTime">
               <el-date-picker
                 v-model="form.chargeTime"
@@ -795,12 +786,40 @@
             </el-form-item>
           </el-col>
         </el-form-item>
+        <el-form-item prop="">
+          <el-col :span="12">
+            <el-form-item label="是否代理制卡" prop="isAgent">
+              <el-select
+                v-model="form.isAgent"
+                placeholder="请选择是否代理制卡"
+                :disabled="form.isCharged === 'Y'"
+              >
+                <el-option
+                  v-for="dict in dict.type.sys_yes_no"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <div v-if="form.cardId">
+              <el-form-item label="所属代理" prop="agentId">
+                <span v-if="form.agentUser && form.agentUser.userName">
+                  {{ form.agentUser.nickName }} ({{ form.agentUser.userName }})
+                </span>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-form-item>
         <el-form-item label="单码自定义参数" prop="cardCustomParams">
           <el-input
             v-model="form.cardCustomParams"
             placeholder="请输入内容"
             type="textarea"
              maxlength="2000" show-word-limit
+            :disabled="form.isCharged === 'Y'"
           />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
