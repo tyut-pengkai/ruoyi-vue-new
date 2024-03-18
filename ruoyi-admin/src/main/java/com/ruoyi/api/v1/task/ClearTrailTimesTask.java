@@ -33,7 +33,7 @@ public class ClearTrailTimesTask {
     @Async
     @Scheduled(cron = "0 0/1 * * * ?")
     public void clearTrailTimes() {
-        log.info("[软件试用]开始重置试用周期");
+//        log.info("[软件试用]开始重置试用周期");
         SysApp appCondition = new SysApp();
         appCondition.setEnableTrial(UserConstants.YES);
         appCondition.setEnableTrialByTimes(UserConstants.YES);
@@ -59,7 +59,7 @@ public class ClearTrailTimesTask {
         if(!trialUserListBatchList.isEmpty()) {
             appTrialUserService.updateBatchById(trialUserListBatchList);
         }
-        log.info("[软件试用]试用周期重置完毕");
+//        log.info("[软件试用]试用周期重置完毕");
     }
 
 }
