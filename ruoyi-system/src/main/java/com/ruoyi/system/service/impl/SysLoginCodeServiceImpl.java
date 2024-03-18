@@ -15,6 +15,7 @@ import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
+import com.ruoyi.system.domain.vo.BatchNoVo;
 import com.ruoyi.system.mapper.SysLoginCodeMapper;
 import com.ruoyi.system.service.*;
 import org.slf4j.Logger;
@@ -381,5 +382,15 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
             successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
         }
         return successMsg.toString();
+    }
+
+    /**
+     * 获取批次号列表
+     *
+     * @return
+     */
+    @Override
+    public List<BatchNoVo> selectBatchNoList() {
+        return sysLoginCodeMapper.selectBatchNoList();
     }
 }

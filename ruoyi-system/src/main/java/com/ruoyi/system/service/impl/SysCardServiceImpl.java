@@ -11,6 +11,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
+import com.ruoyi.system.domain.vo.BatchNoVo;
 import com.ruoyi.system.mapper.SysCardMapper;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysCardService;
@@ -312,5 +313,15 @@ public class SysCardServiceImpl implements ISysCardService {
             successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
         }
         return successMsg.toString();
+    }
+
+    /**
+     * 获取批次号列表
+     *
+     * @return
+     */
+    @Override
+    public List<BatchNoVo> selectBatchNoList() {
+        return sysCardMapper.selectBatchNoList();
     }
 }

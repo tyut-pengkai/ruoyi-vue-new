@@ -9,6 +9,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
+import com.ruoyi.system.domain.vo.BatchNoVo;
 import com.ruoyi.system.service.ISysLoginCodeService;
 import com.ruoyi.system.service.ISysLoginCodeTemplateService;
 import com.ruoyi.utils.poi.ExcelUtil;
@@ -141,5 +142,17 @@ public class SysLoginCodeController extends BaseController {
     @DeleteMapping("/{cardIds}")
     public AjaxResult remove(@PathVariable Long[] cardIds) {
         return toAjax(sysLoginCodeService.deleteSysLoginCodeByCardIds(cardIds));
+    }
+
+    /**
+     * 获取批次号列表
+     *
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('system:loginCode:list')")
+    @GetMapping("/selectBatchNoList")
+    public AjaxResult selectBatchNoList() {
+        List<BatchNoVo> batchNoList = sysLoginCodeService.selectBatchNoList();
+        return AjaxResult.success(batchNoList);
     }
 }

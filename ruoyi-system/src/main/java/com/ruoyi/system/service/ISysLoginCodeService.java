@@ -1,6 +1,7 @@
 package com.ruoyi.system.service;
 
 import com.ruoyi.system.domain.SysLoginCode;
+import com.ruoyi.system.domain.vo.BatchNoVo;
 
 import java.util.List;
 
@@ -98,4 +99,10 @@ public interface ISysLoginCodeService {
      * @return 结果
      */
     public String importLoginCode(List<SysLoginCode> cardList, Boolean isUpdateSupport, String operName);
+
+    /**
+     * 获取批次号列表
+     * @return
+     */
+    public List<BatchNoVo> selectBatchNoList();
 }

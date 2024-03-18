@@ -51,3 +51,11 @@ export function exportLoginCode(query) {
     params: query
   })
 }
+
+// 查询卡密列表
+export function getBatchNoList() {
+  return request({
+    url: '/system/loginCode/selectBatchNoList',
+    method: 'get',
+  })
+}

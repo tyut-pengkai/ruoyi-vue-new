@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.system.domain.SysCard;
+import com.ruoyi.system.domain.vo.BatchNoVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 /**
  * 卡密Mapper接口
- * 
+ *
  * @author zwgu
  * @date 2021-12-03
  */
@@ -50,7 +51,7 @@ public interface SysCardMapper {
 
     /**
      * 修改卡密
-     * 
+     *
      * @param sysCard 卡密
      * @return 结果
      */
@@ -58,7 +59,7 @@ public interface SysCardMapper {
 
     /**
      * 删除卡密
-     * 
+     *
      * @param cardId 卡密主键
      * @return 结果
      */
@@ -66,7 +67,7 @@ public interface SysCardMapper {
 
     /**
      * 批量删除卡密
-     * 
+     *
      * @param cardIds 需要删除的数据主键集合
      * @return 结果
      */
@@ -98,4 +99,10 @@ public interface SysCardMapper {
      * @return 卡密集合
      */
     public List<String> selectSysCardNoList();
+
+    /**
+     * 获取批次号列表
+     * @return
+     */
+    public List<BatchNoVo> selectBatchNoList();
 }

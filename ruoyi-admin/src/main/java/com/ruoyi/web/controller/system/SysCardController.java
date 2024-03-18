@@ -9,6 +9,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
+import com.ruoyi.system.domain.vo.BatchNoVo;
 import com.ruoyi.system.service.ISysCardService;
 import com.ruoyi.system.service.ISysCardTemplateService;
 import com.ruoyi.utils.poi.ExcelUtil;
@@ -142,5 +143,17 @@ public class SysCardController extends BaseController {
     @DeleteMapping("/{cardIds}")
     public AjaxResult remove(@PathVariable Long[] cardIds) {
         return toAjax(sysCardService.deleteSysCardByCardIds(cardIds));
+    }
+
+    /**
+     * 获取批次号列表
+     *
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('system:card:list')")
+    @GetMapping("/selectBatchNoList")
+    public AjaxResult selectBatchNoList() {
+        List<BatchNoVo> batchNoList = sysCardService.selectBatchNoList();
+        return AjaxResult.success(batchNoList);
     }
 }

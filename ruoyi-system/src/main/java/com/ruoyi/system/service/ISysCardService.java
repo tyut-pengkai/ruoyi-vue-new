@@ -1,12 +1,13 @@
 package com.ruoyi.system.service;
 
 import com.ruoyi.system.domain.SysCard;
+import com.ruoyi.system.domain.vo.BatchNoVo;
 
 import java.util.List;
 
 /**
  * 卡密Service接口
- * 
+ *
  * @author zwgu
  * @date 2021-12-03
  */
@@ -54,7 +55,7 @@ public interface ISysCardService {
 
     /**
      * 修改卡密
-     * 
+     *
      * @param sysCard 卡密
      * @return 结果
      */
@@ -62,7 +63,7 @@ public interface ISysCardService {
 
     /**
      * 批量删除卡密
-     * 
+     *
      * @param cardIds 需要删除的卡密主键集合
      * @return 结果
      */
@@ -70,7 +71,7 @@ public interface ISysCardService {
 
     /**
      * 删除卡密信息
-     * 
+     *
      * @param cardId 卡密主键
      * @return 结果
      */
@@ -105,4 +106,10 @@ public interface ISysCardService {
      * @return 结果
      */
     public String importCard(List<SysCard> cardList, Boolean isUpdateSupport, String operName);
+
+    /**
+     * 获取批次号列表
+     * @return
+     */
+    public List<BatchNoVo> selectBatchNoList();
 }

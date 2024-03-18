@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.system.domain.SysLoginCode;
+import com.ruoyi.system.domain.vo.BatchNoVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -91,4 +92,10 @@ public interface SysLoginCodeMapper {
      * @param SysLoginCodeList
      */
     public int insertSysLoginCodeBatch(List<SysLoginCode> SysLoginCodeList);
+
+    /**
+     * 获取批次号列表
+     * @return
+     */
+    public List<BatchNoVo> selectBatchNoList();
 }

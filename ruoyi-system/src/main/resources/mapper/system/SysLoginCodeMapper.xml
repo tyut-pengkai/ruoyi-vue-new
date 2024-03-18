@@ -48,6 +48,12 @@
         <result property="nickName" column="nick_name"/>
     </resultMap>
 
+    <resultMap type="BatchNoVo" id="BatchNoVoResult">
+        <result property="batchNo" column="batch_no"/>
+        <result property="createTime" column="create_time"/>
+        <result property="num" column="num"/>
+    </resultMap>
+
     <sql id="selectSysLoginCodeVo">
         select c.card_id,
                c.app_id,
@@ -308,4 +314,9 @@
             #{cardId}
         </foreach>
     </delete>
+
+    <select id="selectBatchNoList" resultMap="BatchNoVoResult">
+        select c.batch_no, count(1) as num from sys_login_code c left join sys_app a on c.app_id = a.app_id
+        where c.batch_no is not null and c.del_flag = 0 and a.del_flag = 0 group by c.batch_no ORDER BY batch_no desc
+    </select>
 </mapper>

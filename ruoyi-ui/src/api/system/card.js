@@ -51,3 +51,11 @@ export function exportCard(query) {
     params: query
   })
 }
+
+// 查询卡密列表
+export function getBatchNoList() {
+  return request({
+    url: '/system/card/selectBatchNoList',
+    method: 'get',
+  })
+}
