@@ -75,7 +75,8 @@ export default {
           appendToBody: true,
         },
         legend: {
-          left: 'center',
+          type: 'scroll', // 设置图例分页类型为滚动
+          // left: 'center',
           bottom: '0',
           data: this.legend
         },

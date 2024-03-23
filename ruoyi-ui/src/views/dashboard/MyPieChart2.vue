@@ -79,6 +79,7 @@ export default {
           appendToBody: true,
         },
         legend: {
+          type: 'scroll', // 设置图例分页类型为滚动
           top: 'bottom',
           padding: [20, 0, 0, 0],
           //type: 'scroll',

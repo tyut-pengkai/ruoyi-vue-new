@@ -137,7 +137,9 @@ export default {
           }
         },
         legend: {
-          left: '80px',
+          type: 'scroll', // 设置图例分页类型为滚动
+          left: '20px',
+          top: '25px',
         },
         grid: {
           left: '3%',

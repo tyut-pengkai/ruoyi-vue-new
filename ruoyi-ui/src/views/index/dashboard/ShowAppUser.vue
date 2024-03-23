@@ -14,7 +14,7 @@
               <el-radio-button label="totalNum" >全部用户数</el-radio-button>
               <el-radio-button label="vipNum">VIP用户数</el-radio-button>
               <el-radio-button label="loginNum">登录用户数</el-radio-button>
-              <!--          <el-radio-button label="maxOnlineNum">最高在线数</el-radio-button>-->
+              <el-radio-button label="maxOnlineNum">最高在线数</el-radio-button>
             </el-radio-group>
           </el-col>
           <el-col :span="10" :pull="0">

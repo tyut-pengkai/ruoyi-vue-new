@@ -180,6 +180,7 @@ public class TokenService {
                     appUserCount.setAppId(appId);
                     appUserCount.setMaxOnlineNum(0L);
                     appUserCount.setCreateTime(DateUtils.getNowDate());
+                    appUserCountService.saveOrUpdate(appUserCount);
                 }
                 List<LoginUser> currentOnline = appUserService.getCurrentOnline();
                 Map<Long, List<LoginUser>> collected = currentOnline.stream().collect(Collectors.groupingBy(item -> item.getAppId()));
