@@ -30,9 +30,9 @@ public class SysUser extends BaseEntity {
     private Long userId;
 
     /**
-     * 部门ID
+     * 分组ID
      */
-    @Excel(name = "部门编号", type = Type.IMPORT)
+    @Excel(name = "分组编号", type = Type.IMPORT)
     private Long deptId;
 
     /**
@@ -99,11 +99,11 @@ public class SysUser extends BaseEntity {
     private Date loginDate;
 
     /**
-     * 部门对象
+     * 分组对象
      */
     @Excels({
-            @Excel(name = "部门名称", targetAttr = "deptName", type = Type.EXPORT),
-            @Excel(name = "部门负责人", targetAttr = "leader", type = Type.EXPORT)
+            @Excel(name = "分组名称", targetAttr = "deptName", type = Type.EXPORT),
+            @Excel(name = "分组负责人", targetAttr = "leader", type = Type.EXPORT)
     })
     private SysDept dept;
 

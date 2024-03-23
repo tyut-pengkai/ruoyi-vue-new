@@ -306,11 +306,11 @@
           />
         </template>
       </el-table-column> -->
-      <el-table-column label="是否上架" align="center" prop="onSale">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale" />
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="是否上架" align="center" prop="onSale">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale" />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <!-- <el-table-column label="优先销售库存" align="center" prop="firstStock">
         <template slot-scope="scope">
           <dict-tag
@@ -319,14 +319,14 @@
           />
         </template>
       </el-table-column> -->
-      <el-table-column label="自动制卡" align="center" prop="enableAutoGen">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_yes_no"
-            :value="scope.row.enableAutoGen"
-          />
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="自动制卡" align="center" prop="enableAutoGen">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_yes_no"-->
+<!--            :value="scope.row.enableAutoGen"-->
+<!--          />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <!-- <el-table-column label="卡类状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag
@@ -373,6 +373,26 @@
         prop="remark"
         :show-overflow-tooltip="true"
       />
+      <el-table-column label="是否上架" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.onSale"
+            active-value="Y"
+            inactive-value="N"
+            @change="handleOnSaleChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="自动制卡" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.enableAutoGen"
+            active-value="Y"
+            inactive-value="N"
+            @change="handleEnableAutoGenChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
       <el-table-column
         label="操作"
         align="center"
@@ -1414,10 +1434,39 @@ export default {
     handleTemplateSelectionChange(val) {
       this.templateSelectionList = val;
     },
+    // 状态修改
+    handleOnSaleChange(row) {
+      let text = row.status === "Y" ? "上架" : "下架";
+      this.$modal
+        .confirm("确认要" + text + '"[' + row.app.appName + ']' + row.cardName + '"吗？')
+        .then(function () {
+          return updateCardTemplate({'templateId': row.templateId, 'onSale': row.onSale});
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.onSale = row.onSale === "Y" ? "N" : "Y";
+        });
+    },
+    handleEnableAutoGenChange(row) {
+      let text = row.enableAutoGen === "Y" ? "开启" : "关闭";
+      this.$modal
+        .confirm("确认要" + text + '"[' + row.app.appName + ']' + row.cardName + '"的自动制卡吗？')
+        .then(function () {
+          return updateCardTemplate({'templateId': row.templateId, 'enableAutoGen': row.enableAutoGen});
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.enableAutoGen = row.enableAutoGen === "Y" ? "N" : "Y";
+        });
+    },
   },
   computed: {
-    candidateTemplateListCompute() { 
-      if (this.app && this.app.billType === '0') { 
+    candidateTemplateListCompute() {
+      if (this.app && this.app.billType === '0') {
         return this.candidateTemplateList;
       } else {
         return [];

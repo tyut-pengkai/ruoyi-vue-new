@@ -2,7 +2,7 @@ package com.ruoyi.common.constant;
 
 /**
  * 用户常量信息
- * 
+ *
  * @author ruoyi
  */
 public class UserConstants
@@ -24,10 +24,10 @@ public class UserConstants
     /** 角色封禁状态 */
     public static final String ROLE_DISABLE = "1";
 
-    /** 部门正常状态 */
+    /** 分组正常状态 */
     public static final String DEPT_NORMAL = "0";
 
-    /** 部门停用状态 */
+    /** 分组停用状态 */
     public static final String DEPT_DISABLE = "1";
 
     /** 字典正常状态 */

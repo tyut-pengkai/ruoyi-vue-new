@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 部门管理 服务实现
+ * 分组管理 服务实现
  *
  * @author ruoyi
  */
@@ -38,10 +38,10 @@ public class SysDeptServiceImpl implements ISysDeptService
     private SysRoleMapper roleMapper;
 
     /**
-     * 查询部门管理数据
+     * 查询分组管理数据
      *
-     * @param dept 部门信息
-     * @return 部门信息集合
+     * @param dept 分组信息
+     * @return 分组信息集合
      */
     @Override
     @DataScope(deptAlias = "d")
@@ -50,10 +50,10 @@ public class SysDeptServiceImpl implements ISysDeptService
     }
 
     /**
-     * 查询部门树结构信息
+     * 查询分组树结构信息
      *
-     * @param dept 部门信息
-     * @return 部门树信息集合
+     * @param dept 分组信息
+     * @return 分组树信息集合
      */
     @Override
     public List<TreeSelect> selectDeptTreeList(SysDept dept) {
@@ -64,7 +64,7 @@ public class SysDeptServiceImpl implements ISysDeptService
     /**
      * 构建前端所需要树结构
      *
-     * @param depts 部门列表
+     * @param depts 分组列表
      * @return 树结构列表
      */
     @Override
@@ -87,7 +87,7 @@ public class SysDeptServiceImpl implements ISysDeptService
     /**
      * 构建前端所需要下拉树结构
      *
-     * @param depts 部门列表
+     * @param depts 分组列表
      * @return 下拉树结构列表
      */
     @Override
@@ -98,10 +98,10 @@ public class SysDeptServiceImpl implements ISysDeptService
     }
 
     /**
-     * 根据角色ID查询部门树信息
+     * 根据角色ID查询分组树信息
      *
      * @param roleId 角色ID
-     * @return 选中部门列表
+     * @return 选中分组列表
      */
     @Override
     public List<Long> selectDeptListByRoleId(Long roleId)
@@ -111,10 +111,10 @@ public class SysDeptServiceImpl implements ISysDeptService
     }
 
     /**
-     * 根据部门ID查询信息
+     * 根据分组ID查询信息
      *
-     * @param deptId 部门ID
-     * @return 部门信息
+     * @param deptId 分组ID
+     * @return 分组信息
      */
     @Override
     public SysDept selectDeptById(Long deptId)
@@ -123,10 +123,10 @@ public class SysDeptServiceImpl implements ISysDeptService
     }
 
     /**
-     * 根据ID查询所有子部门（正常状态）
+     * 根据ID查询所有子分组（正常状态）
      *
-     * @param deptId 部门ID
-     * @return 子部门数
+     * @param deptId 分组ID
+     * @return 子分组数
      */
     @Override
     public int selectNormalChildrenDeptById(Long deptId)
@@ -137,7 +137,7 @@ public class SysDeptServiceImpl implements ISysDeptService
     /**
      * 是否存在子节点
      *
-     * @param deptId 部门ID
+     * @param deptId 分组ID
      * @return 结果
      */
     @Override
@@ -148,9 +148,9 @@ public class SysDeptServiceImpl implements ISysDeptService
     }
 
     /**
-     * 查询部门是否存在用户
+     * 查询分组是否存在用户
      *
-     * @param deptId 部门ID
+     * @param deptId 分组ID
      * @return 结果 true 存在 false 不存在
      */
     @Override
@@ -161,9 +161,9 @@ public class SysDeptServiceImpl implements ISysDeptService
     }
 
     /**
-     * 校验部门名称是否唯一
+     * 校验分组名称是否唯一
      *
-     * @param dept 部门信息
+     * @param dept 分组信息
      * @return 结果
      */
     @Override
@@ -177,9 +177,9 @@ public class SysDeptServiceImpl implements ISysDeptService
     }
 
     /**
-     * 校验部门是否有数据权限
+     * 校验分组是否有数据权限
      *
-     * @param deptId 部门id
+     * @param deptId 分组id
      */
     @Override
     public void checkDeptDataScope(Long deptId)
@@ -191,15 +191,15 @@ public class SysDeptServiceImpl implements ISysDeptService
             List<SysDept> depts = SpringUtils.getAopProxy(this).selectDeptList(dept);
             if (StringUtils.isEmpty(depts))
             {
-                throw new ServiceException("没有权限访问部门数据！");
+                throw new ServiceException("没有权限访问分组数据！");
             }
         }
     }
 
     /**
-     * 新增保存部门信息
+     * 新增保存分组信息
      *
-     * @param dept 部门信息
+     * @param dept 分组信息
      * @return 结果
      */
     @Override
@@ -211,16 +211,16 @@ public class SysDeptServiceImpl implements ISysDeptService
         // 如果父节点不为正常状态,则不允许新增子节点
         if (!UserConstants.DEPT_NORMAL.equals(info.getStatus()))
         {
-            throw new ServiceException("部门停用，不允许新增");
+            throw new ServiceException("分组停用，不允许新增");
         }
         dept.setAncestors(info.getAncestors() + "," + dept.getParentId());
         return deptMapper.insertDept(dept);
     }
 
     /**
-     * 修改保存部门信息
+     * 修改保存分组信息
      *
-     * @param dept 部门信息
+     * @param dept 分组信息
      * @return 结果
      */
     @Override
@@ -241,16 +241,16 @@ public class SysDeptServiceImpl implements ISysDeptService
         if (UserConstants.DEPT_NORMAL.equals(dept.getStatus()) && StringUtils.isNotEmpty(dept.getAncestors())
                 && !StringUtils.equals("0", dept.getAncestors()))
         {
-            // 如果该部门是启用状态，则启用该部门的所有上级部门
+            // 如果该分组是启用状态，则启用该分组的所有上级分组
             updateParentDeptStatusNormal(dept);
         }
         return result;
     }
 
     /**
-     * 修改该部门的父级部门状态
+     * 修改该分组的父级分组状态
      *
-     * @param dept 当前部门
+     * @param dept 当前分组
      */
     private void updateParentDeptStatusNormal(SysDept dept)
     {
@@ -262,7 +262,7 @@ public class SysDeptServiceImpl implements ISysDeptService
     /**
      * 修改子元素关系
      *
-     * @param deptId 被修改的部门ID
+     * @param deptId 被修改的分组ID
      * @param newAncestors 新的父ID集合
      * @param oldAncestors 旧的父ID集合
      */
@@ -280,9 +280,9 @@ public class SysDeptServiceImpl implements ISysDeptService
     }
 
     /**
-     * 删除部门管理信息
+     * 删除分组管理信息
      *
-     * @param deptId 部门ID
+     * @param deptId 分组ID
      * @return 结果
      */
     @Override

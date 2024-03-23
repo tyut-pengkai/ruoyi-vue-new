@@ -269,7 +269,6 @@ public class SysAgentAppUserController extends BaseController {
     @Log(title = "设备码管理", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
     public AjaxResult changeStatus(@RequestBody SysAppUser sysAppUser) {
-        sysAppUser.setUpdateBy(getUsername());
-        return toAjax(sysAppUserService.updateSysDeviceCodeStatus(sysAppUser));
+        return toAjax(sysAppUserService.updateSysAppUser(sysAppUser));
     }
 }

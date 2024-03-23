@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Tree基类
- * 
+ *
  * @author ruoyi
  */
 public class TreeEntity extends BaseEntity
@@ -24,7 +24,7 @@ public class TreeEntity extends BaseEntity
     /** 祖级列表 */
     private String ancestors;
 
-    /** 子部门 */
+    /** 子分组 */
     private List<?> children = new ArrayList<>();
 
     public String getParentName()

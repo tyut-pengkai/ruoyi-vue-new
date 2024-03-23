@@ -193,7 +193,7 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="ID" prop="appTrialUserId"/>
+      <el-table-column align="center" label="编号" prop="appTrialUserId"/>
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
@@ -203,14 +203,14 @@
           {{ scope.row.app.appName }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="状态" prop="status">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_normal_disable"
-            :value="scope.row.status"
-          />
-        </template>
-      </el-table-column>
+<!--      <el-table-column align="center" label="状态" prop="status">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_normal_disable"-->
+<!--            :value="scope.row.status"-->
+<!--          />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column
         align="center"
         label="最后登录时间"
@@ -252,13 +252,23 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="登录IP" prop="loginIp"/>
-      <el-table-column align="center" label="设备码" prop="deviceCode"/>
+      <el-table-column align="center" label="设备码" prop="deviceCode" :show-overflow-tooltip="true"/>
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
         label="备注"
         prop="remark"
       />
+      <el-table-column label="用户状态" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            active-value="0"
+            inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -430,7 +440,7 @@
 </template>
 
 <script>
-import {delAppTrialUser, getAppTrialUser, listAppTrialUser, updateAppTrialUser,} from "@/api/system/appTrialUser";
+import {delAppTrialUser, getAppTrialUser, listAppTrialUser, updateAppTrialUser, changeAppTrialUserStatus} from "@/api/system/appTrialUser";
 import {getApp, listAppAll} from "@/api/system/app";
 
 export default {
@@ -558,6 +568,27 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    // 状态修改
+    handleStatusChange(row) {
+      let text = row.status === "0" ? "启用" : "停用";
+      this.$modal
+        .confirm(
+          "确认要" +
+          text +
+          '编号为"' +
+          row.appTrialUserId +
+          '"的试用用户吗？'
+        )
+        .then(function () {
+          return changeAppTrialUserStatus(row.appTrialUserId, row.status);
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.status = row.status === "0" ? "1" : "0";
+        });
     },
     getAppList() {
       this.loading = true;

@@ -42,3 +42,16 @@ export function delAppTrialUser(appTrialUserId) {
     method: 'delete'
   })
 }
+
+// 状态修改
+export function changeAppTrialUserStatus(appTrialUserId, status) {
+  const data = {
+    appTrialUserId,
+    status
+  }
+  return request({
+    url: '/system/appTrialUser/changeStatus',
+    method: 'put',
+    data: data
+  })
+}

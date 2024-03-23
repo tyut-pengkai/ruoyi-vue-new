@@ -269,10 +269,9 @@ public class SysAppUserController extends BaseController {
      * 状态修改
      */
     @PreAuthorize("@ss.hasPermi('system:appUser:edit')")
-    @Log(title = "设备码管理", businessType = BusinessType.UPDATE)
+    @Log(title = "软件用户", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
     public AjaxResult changeStatus(@RequestBody SysAppUser sysAppUser) {
-        sysAppUser.setUpdateBy(getUsername());
-        return toAjax(sysAppUserService.updateSysDeviceCodeStatus(sysAppUser));
+        return toAjax(sysAppUserService.updateSysAppUser(sysAppUser));
     }
 }

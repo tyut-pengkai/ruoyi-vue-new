@@ -88,4 +88,14 @@ public class SysAppTrialUserController extends BaseController {
     public AjaxResult remove(@PathVariable Long[] appTrialUserIds) {
         return toAjax(sysAppTrialUserService.deleteSysAppTrialUserByAppTrialUserIds(appTrialUserIds));
     }
+
+    /**
+     * 状态修改
+     */
+    @PreAuthorize("@ss.hasPermi('system:appTrialUser:edit')")
+    @Log(title = "试用信息", businessType = BusinessType.UPDATE)
+    @PutMapping("/changeStatus")
+    public AjaxResult changeStatus(@RequestBody SysAppTrialUser sysAppTrialUser) {
+        return toAjax(sysAppTrialUserService.updateSysAppTrialUser(sysAppTrialUser));
+    }
 }

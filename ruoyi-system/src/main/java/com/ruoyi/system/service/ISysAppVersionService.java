@@ -113,4 +113,14 @@ public interface ISysAppVersionService {
     public AjaxResult getQuickAccessTemplateList();
 
     public Map<String, Object> downloadDexFile(Long versionId, String template, String skin, boolean fullScreen, boolean enableOffline, boolean hideAutoLogin);
+
+    /**
+     * 状态修改
+     */
+    int updateSysVersionStatus(SysAppVersion version);
+
+    /**
+     * 强制更新状态修改
+     */
+    int updateForceUpdateStatus(SysAppVersion version);
 }

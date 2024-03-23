@@ -180,9 +180,7 @@ public class SysAppController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:app:edit')")
     @Log(title = "软件管理", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
-    public AjaxResult changeStatus(@RequestBody SysApp app)
-    {
-        app.setUpdateBy(getUsername());
+    public AjaxResult changeStatus(@RequestBody SysApp app) {
         return toAjax(sysAppService.updateSysAppStatus(app));
     }
 
@@ -193,7 +191,6 @@ public class SysAppController extends BaseController {
     @Log(title = "软件管理", businessType = BusinessType.UPDATE)
     @PutMapping("/changeChargeStatus")
     public AjaxResult changeChargeStatus(@RequestBody SysApp app) {
-        app.setUpdateBy(getUsername());
         return toAjax(sysAppService.updateSysAppChargeStatus(app));
     }
 }

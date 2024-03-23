@@ -50,3 +50,16 @@ export function delDept(deptId) {
     method: 'delete'
   })
 }
+
+// 状态修改
+export function changeDeptStatus(deptId, status) {
+  const data = {
+    deptId,
+    status
+  }
+  return request({
+    url: '/system/dept/changeStatus',
+    method: 'put',
+    data: data
+  })
+}

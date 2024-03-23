@@ -82,14 +82,6 @@ public interface ISysAppUserService
     SysAppUser selectSysAppUserByAppIdAndLoginCode(Long appId, String loginCode);
 
     /**
-     * 修改状态
-     *
-     * @param sysAppUser 信息
-     * @return 结果
-     */
-    public int updateSysDeviceCodeStatus(SysAppUser sysAppUser);
-
-    /**
      * 计算当前实时在线数量
      * @param appUserId 不为空时取特定appUserId的统计数据
      * @return 返回两个key, u->Map&lt;Long, Set&lt;LoginUser&gt;，m->Map&lt;Long, Set&lt;Long&gt;，其中Set&lt;Long&gt;为设备码ID

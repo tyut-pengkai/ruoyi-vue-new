@@ -215,6 +215,17 @@
             width="120"
           />
           <el-table-column
+          v-if="columns[6].visible"
+          align="center"
+          label="创建时间"
+          prop="createTime"
+          width="160"
+        >
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.createTime) }}</span>
+          </template>
+        </el-table-column>
+          <el-table-column
             v-if="columns[5].visible"
             key="status"
             align="center"
@@ -227,17 +238,6 @@
                 inactive-value="1"
                 @change="handleStatusChange(scope.row)"
               ></el-switch>
-            </template>
-          </el-table-column>
-          <el-table-column
-            v-if="columns[6].visible"
-            align="center"
-            label="创建时间"
-            prop="createTime"
-            width="160"
-          >
-            <template slot-scope="scope">
-              <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
           </el-table-column>
           <el-table-column

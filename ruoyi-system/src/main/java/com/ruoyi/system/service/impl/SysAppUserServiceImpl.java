@@ -156,22 +156,6 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
         return sysAppUserMapper.selectSysAppUserByAppIdAndLoginCode(appId, loginCode);
     }
 
-    /**
-     * 修改状态
-     *
-     * @param sysAppUser 信息
-     * @return 结果
-     */
-    @Override
-    public int updateSysDeviceCodeStatus(SysAppUser sysAppUser) {
-        int i = sysAppUserMapper.updateSysAppUser(sysAppUser);
-        if (i > 0) {
-            SysAppUser appUser = sysAppUserMapper.selectSysAppUserByAppUserId(sysAppUser.getAppUserId());
-            redisCache.setCacheObject(CacheConstants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser, 24, TimeUnit.HOURS);
-        }
-        return i;
-    }
-
 
     public List<LoginUser> getCurrentOnline(Long appUserId) {
         // 统计当前在线用户数

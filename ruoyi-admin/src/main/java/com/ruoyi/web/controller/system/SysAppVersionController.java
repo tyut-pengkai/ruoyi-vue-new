@@ -158,4 +158,24 @@ public class SysAppVersionController extends BaseController {
         return AjaxResult.error("二维码已过期，请刷新后重新扫描");
     }
 
+    /**
+     * 状态修改
+     */
+    @PreAuthorize("@ss.hasPermi('system:appVersion:edit')")
+    @Log(title = "软件版本信息", businessType = BusinessType.UPDATE)
+    @PutMapping("/changeStatus")
+    public AjaxResult changeStatus(@RequestBody SysAppVersion version) {
+        return toAjax(sysAppVersionService.updateSysVersionStatus(version));
+    }
+
+    /**
+     * 强制更新状态修改
+     */
+    @PreAuthorize("@ss.hasPermi('system:appVersion:edit')")
+    @Log(title = "软件版本信息", businessType = BusinessType.UPDATE)
+    @PutMapping("/changeForceUpdateStatus")
+    public AjaxResult changeForceUpdateStatus(@RequestBody SysAppVersion version) {
+        return toAjax(sysAppVersionService.updateForceUpdateStatus(version));
+    }
+
 }

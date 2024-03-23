@@ -198,19 +198,35 @@
       </el-table-column>
       <el-table-column align="center" label="备注" prop="remark" />
       <el-table-column align="center" label="版本状态" prop="status">
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_normal_disable"-->
+<!--            :value="scope.row.status"-->
+<!--          />-->
+<!--        </template>-->
         <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_normal_disable"
-            :value="scope.row.status"
-          />
+          <el-switch
+            v-model="scope.row.status"
+            active-value="0"
+            inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
         </template>
       </el-table-column>
       <el-table-column align="center" label="强制更新" prop="forceUpdate">
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_yes_no"-->
+<!--            :value="scope.row.forceUpdate"-->
+<!--          />-->
+<!--        </template>-->
         <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_yes_no"
-            :value="scope.row.forceUpdate"
-          />
+          <el-switch
+            v-model="scope.row.forceUpdate"
+            active-value="Y"
+            inactive-value="N"
+            @change="handleForceUpdateStatusChange(scope.row)"
+          ></el-switch>
         </template>
       </el-table-column>
       <el-table-column
@@ -398,7 +414,7 @@
       :title="upload.title"
       :visible.sync="upload.open"
       append-to-body
-      width="550px"
+      width="600px"
     >
       <el-alert
         :closable="false"
@@ -419,7 +435,7 @@
           </span>
         </template>
       </el-alert>
-      <el-tabs style="width: 500px" type="border-card">
+      <el-tabs style="width: 550px" type="border-card">
         <el-tab-pane
           v-if="app && app.authType === '1' && app.billType === '0'"
           label="APK(自动)"
@@ -854,7 +870,7 @@
           <span>APK快速接入目前只支持【单码计时】模式的软件</span>
         </el-tab-pane>
         <el-tab-pane label="EXE(自动)">
-          <div style="width: 466px; height: 303px">
+          <div style="width: 516px; height: 303px">
             <el-alert
               :closable="false"
               show-icon
@@ -883,6 +899,18 @@
               </el-button>
             </div>
           </div>
+        </el-tab-pane>
+        <el-tab-pane disabled>
+          <slot slot="label">
+            <el-button
+              type="text"
+              icon="el-icon-setting"
+              size="mini"
+              @click="handleExport"
+              style="margin-left: 5px"
+            >模板管理</el-button
+            >
+          </slot>
         </el-tab-pane>
       </el-tabs>
       <div slot="footer" class="dialog-footer">
@@ -981,6 +1009,8 @@ import {
   listAppVersion,
   updateAppVersion,
   downloadDexFile,
+  changeVersionForceUpdateStatus,
+  changeVersionStatus,
 } from "@/api/system/appVersion";
 import { getToken } from "@/utils/auth";
 import { getApp } from "@/api/system/app";
@@ -1221,6 +1251,36 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    // 版本状态修改
+    handleStatusChange(row) {
+      let text = row.status === "0" ? "启用" : "停用";
+      this.$modal
+        .confirm('确认要' + text + '"' + row.versionName + '"版本吗？')
+        .then(function () {
+          return changeVersionStatus(row.appVersionId, row.status);
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.status = row.status === "0" ? "1" : "0";
+        });
+    },
+    // 版本强制更新状态修改
+    handleForceUpdateStatusChange(row) {
+      let text = row.forceUpdate === "Y" ? "开启" : "关闭";
+      this.$modal
+        .confirm('确认要' + text + '"' + row.versionName + '"版本的强制更新吗？')
+        .then(function () {
+          return changeVersionForceUpdateStatus(row.appVersionId, row.forceUpdate);
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.forceUpdate = row.forceUpdate === "Y" ? "N" : "Y";
+        });
     },
     // 取消按钮
     cancel() {

@@ -525,6 +525,26 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
         }
     }
 
+    /**
+     * 状态修改
+     *
+     * @param version
+     */
+    @Override
+    public int updateSysVersionStatus(SysAppVersion version) {
+        return updateSysAppVersion(version);
+    }
+
+    /**
+     * 强制更新状态修改
+     *
+     * @param version
+     */
+    @Override
+    public int updateForceUpdateStatus(SysAppVersion version) {
+        return updateSysAppVersion(version);
+    }
+
     @Data
     class AppParamVo {
         private String apiUrl;

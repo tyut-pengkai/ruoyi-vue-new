@@ -93,14 +93,14 @@
         prop="orderNum"
         width="200"
       ></el-table-column>
-      <el-table-column prop="status" label="状态" width="100">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_normal_disable"
-            :value="scope.row.status"
-          />
-        </template>
-      </el-table-column>
+<!--      <el-table-column prop="status" label="状态" width="100">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_normal_disable"-->
+<!--            :value="scope.row.status"-->
+<!--          />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column
         align="center"
         label="创建时间"
@@ -109,6 +109,16 @@
       >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="分组状态" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            active-value="0"
+            inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
         </template>
       </el-table-column>
       <el-table-column
@@ -234,7 +244,7 @@
 </template>
 
 <script>
-import {addDept, delDept, getDept, listDept, listDeptExcludeChild, updateDept,} from "@/api/system/dept";
+import {addDept, delDept, getDept, listDept, listDeptExcludeChild, updateDept, changeDeptStatus} from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -414,6 +424,27 @@ export default {
           this.$modal.msgSuccess("删除成功");
         })
         .catch(() => {
+        });
+    },
+    // 状态修改
+    handleStatusChange(row) {
+      let text = row.status === "0" ? "启用" : "停用";
+      this.$modal
+        .confirm(
+          "确认要" +
+          text +
+          '"' +
+          row.deptName +
+          '"吗？'
+        )
+        .then(function () {
+          return changeDeptStatus(row.deptId, row.status);
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.status = row.status === "0" ? "1" : "0";
         });
     },
   },

@@ -436,32 +436,32 @@
             }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="单码状态" align="center" prop="status">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_normal_disable"
-            :value="scope.row.status"
-          />
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="是否售出" prop="isSold">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold" />
-        </template>
-      </el-table-column>
-      <el-table-column label="是否上架" align="center" prop="onSale">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="是否已用" align="center" prop="isCharged">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_yes_no"
-            :value="scope.row.isCharged"
-          />
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="单码状态" align="center" prop="status">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_normal_disable"-->
+<!--            :value="scope.row.status"-->
+<!--          />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column align="center" label="是否售出" prop="isSold">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold" />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="是否上架" align="center" prop="onSale">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale"/>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="是否已用" align="center" prop="isCharged">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_yes_no"-->
+<!--            :value="scope.row.isCharged"-->
+<!--          />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column align="center" label="代理制卡" prop="isAgent">
         <template slot-scope="scope">
           <dict-tag
@@ -485,6 +485,46 @@
         prop="remark"
         :show-overflow-tooltip="true"
       />
+      <el-table-column label="单码状态" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            active-value="0"
+            inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否售出" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.isSold"
+            active-value="Y"
+            inactive-value="N"
+            @change="handleIsSoldChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否上架" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.onSale"
+            active-value="Y"
+            inactive-value="N"
+            @change="handleOnSaleChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否已用" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.isCharged"
+            active-value="Y"
+            inactive-value="N"
+            @change="handleIsChargedChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
       <el-table-column
         label="操作"
         align="center"
@@ -1774,6 +1814,63 @@ export default {
         "save_" + this.dateFormat(new Date(), "yyyyMMddHHmmss") + ".txt",
         content
       );
+    },
+    // 状态修改
+    handleStatusChange(row) {
+      let text = row.status === "0" ? "启用" : "停用";
+      this.$modal
+        .confirm("确认要" + text + '"' + row.cardNo + '"吗？')
+        .then(function () {
+          return updateLoginCode({'cardId': row.cardId, 'status': row.status});
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.status = row.status === "0" ? "1" : "0";
+        });
+    },
+    handleIsSoldChange(row) {
+      let text = row.isSold === "Y" ? "售出" : "非售出";
+      this.$modal
+        .confirm("确认要将\"" + row.cardNo + "\"置为" + text + '吗？')
+        .then(function () {
+          return updateLoginCode({'cardId': row.cardId, 'isSold': row.isSold});
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.isSold = row.isSold === "Y" ? "N" : "Y";
+        });
+    },
+    handleOnSaleChange(row) {
+      let text = row.onSale === "Y" ? "上架" : "下架";
+      this.$modal
+        .confirm("确认要" + text + '"' + row.cardNo + '"吗？')
+        .then(function () {
+          return updateLoginCode({'cardId': row.cardId, 'onSale': row.onSale});
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.onSale = row.onSale === "Y" ? "N" : "Y";
+        });
+    },
+    handleIsChargedChange(row) {
+      let text = row.isCharged === "Y" ? "已使用" : "未使用";
+      this.$modal
+        .confirm("确认要将\"" + row.cardNo + "\"置为" + text + '吗？')
+        .then(function () {
+          return updateLoginCode({'cardId': row.cardId, 'isCharged': row.isCharged});
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.isCharged = row.isCharged === "Y" ? "N" : "Y";
+        });
     },
   },
 };

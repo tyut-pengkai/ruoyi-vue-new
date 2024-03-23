@@ -85,3 +85,29 @@ export function downloadDexFile(query) {
     timeout: 100000
   })
 }
+
+// 版本状态修改
+export function changeVersionStatus(appVersionId, status) {
+  const data = {
+    appVersionId,
+    status
+  }
+  return request({
+    url: '/system/appVersion/changeStatus',
+    method: 'put',
+    data: data
+  })
+}
+
+// 版本强制更新状态修改
+export function changeVersionForceUpdateStatus(appVersionId, forceUpdate) {
+  const data = {
+    appVersionId,
+    forceUpdate
+  }
+  return request({
+    url: '/system/appVersion/changeForceUpdateStatus',
+    method: 'put',
+    data: data
+  })
+}

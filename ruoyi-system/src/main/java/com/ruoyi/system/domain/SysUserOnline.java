@@ -2,7 +2,7 @@ package com.ruoyi.system.domain;
 
 /**
  * 当前在线会话
- * 
+ *
  * @author ruoyi
  */
 public class SysUserOnline
@@ -10,7 +10,7 @@ public class SysUserOnline
     /** 会话编号 */
     private String tokenId;
 
-    /** 部门名称 */
+    /** 分组名称 */
     private String deptName;
 
     /** 用户名称 */

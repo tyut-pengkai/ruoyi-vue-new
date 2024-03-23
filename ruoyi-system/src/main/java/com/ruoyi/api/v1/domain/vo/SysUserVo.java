@@ -78,7 +78,7 @@ public class SysUserVo extends SysUser {
     private Long userId;
 
     /**
-     * 部门ID
+     * 分组ID
      */
     @JSONField(serialize = false)
     @JsonIgnore
@@ -106,7 +106,7 @@ public class SysUserVo extends SysUser {
     private String delFlag;
 
     /**
-     * 部门对象
+     * 分组对象
      */
     @JSONField(serialize = false)
     @JsonIgnore

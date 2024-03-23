@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * web层通用数据处理
- * 
+ *
  * @author ruoyi
  */
 public class BaseController
@@ -147,7 +147,7 @@ public class BaseController
 
     /**
      * 响应返回结果
-     * 
+     *
      * @param result 结果
      * @return 操作结果
      */
@@ -181,7 +181,7 @@ public class BaseController
     }
 
     /**
-     * 获取登录部门id
+     * 获取登录分组id
      */
     public Long getDeptId()
     {

@@ -76,6 +76,9 @@
                   :key="dict.value"
                   :label="dict.label"
                   :value="dict.value"
+                  :disabled="form.operationObject === '5' && ['3', '5','6','7','8'].includes(dict.value)
+                  || app && app['billType']==='0' && ['7','8'].includes(dict.value)
+                  || app && app['billType']==='1' && ['5','6'].includes(dict.value)"
                 />
               </el-select>
             </el-form-item>
@@ -199,6 +202,7 @@ export default {
         ],
       },
       result: "",
+      app: null
     };
   },
   created() {
@@ -218,9 +222,9 @@ export default {
       });
     },
     changeSearchApp(appId) {
-      // this.loading = true;
-      // this.app = this.appMap[appId];
-      // this.loading = false;
+      this.loading = true;
+      this.app = this.appMap[appId];
+      this.loading = false;
     },
     submitForm() {
       this.loading = true;
