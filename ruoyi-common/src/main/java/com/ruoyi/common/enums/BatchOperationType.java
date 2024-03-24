@@ -18,7 +18,9 @@ public enum BatchOperationType implements BaseEnum {
     SUB_TIME("6", "扣时"),
     ADD_POINT("7", "加点"),
     SUB_POINT("8", "扣点"),
-    REMARK("9", "备注");
+    REMARK("9", "备注"),
+    ON_SALE("10", "上架"),
+    OFF_SALE("11", "下架");
 
     @EnumValue // 用于dao层序列化与反序列化
     @JsonValue // 用于controller层序列化

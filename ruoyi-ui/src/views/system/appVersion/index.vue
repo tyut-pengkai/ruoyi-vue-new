@@ -1294,7 +1294,7 @@ export default {
         appId: this.app.appId,
         versionName: undefined,
         versionNo: undefined,
-        updateLog: undefined,
+        updateLog: '优化了一些内容',
         downloadUrl: undefined,
         status: "0",
         delFlag: undefined,

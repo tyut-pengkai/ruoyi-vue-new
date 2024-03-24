@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.SysAppUserMapper">
-    
+
     <resultMap type="SysAppUser" id="SysAppUserResult">
         <result property="appUserId" column="app_user_id"/>
         <result property="userId" column="user_id"/>
@@ -143,12 +143,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
         <if test="remark != null and remark != ''">and au.remark like concat('%', #{remark}, '%')</if>
     </select>
-    
+
     <select id="selectSysAppUserByAppUserId" parameterType="Long" resultMap="SysAppUserResult">
         <include refid="selectSysAppUserVo"/>
         where au.app_user_id = #{appUserId}
     </select>
-        
+
     <insert id="insertSysAppUser" parameterType="SysAppUser" useGeneratedKeys="true" keyProperty="appUserId">
         insert into sys_app_user
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -166,7 +166,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="loginTimes != null">login_times,</if>
             <if test="pwdErrorTimes != null">pwd_error_times,</if>
             <if test="expireTime != null">expire_time,</if>
-            <if test="point != null and point != ''">point,</if>
+            <if test="point != null">point,</if>
             <if test="loginCode != null">login_code,</if>
             <if test="createBy != null">create_by,</if>
             create_time,
@@ -197,7 +197,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="loginTimes != null">#{loginTimes},</if>
             <if test="pwdErrorTimes != null">#{pwdErrorTimes},</if>
             <if test="expireTime != null">#{expireTime},</if>
-            <if test="point != null and point != ''">#{point},</if>
+            <if test="point != null">#{point},</if>
             <if test="loginCode != null">#{loginCode},</if>
             <if test="createBy != null">#{createBy},</if>
             sysdate(),

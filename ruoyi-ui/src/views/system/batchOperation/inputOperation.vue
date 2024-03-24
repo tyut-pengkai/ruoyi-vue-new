@@ -78,7 +78,8 @@
                   :value="dict.value"
                   :disabled="form.operationObject === '5' && ['3', '5','6','7','8'].includes(dict.value)
                   || app && app['billType']==='0' && ['7','8'].includes(dict.value)
-                  || app && app['billType']==='1' && ['5','6'].includes(dict.value)"
+                  || app && app['billType']==='1' && ['5','6'].includes(dict.value)
+                  || form.operationObject === '6' && ['10', '11'].includes(dict.value)"
                 />
               </el-select>
             </el-form-item>

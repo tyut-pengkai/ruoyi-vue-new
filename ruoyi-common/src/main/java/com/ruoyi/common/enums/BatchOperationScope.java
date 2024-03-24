@@ -16,6 +16,8 @@ public enum BatchOperationScope implements BaseEnum {
     UNUSED("4", "未使用"),
     BANNED("5", "已冻结"),
     UNBANNED("6", "未冻结"),
+    ON_SALE("7", "已上架"),
+    OFF_SALE("8", "未上架"),
     ;
 
     @EnumValue // 用于dao层序列化与反序列化

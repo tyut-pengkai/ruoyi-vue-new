@@ -176,6 +176,10 @@ public class SysBatchOperationController extends BaseController {
                                 result.get(b).add(item + "【" + e.getMessage() + "】");
                             }
                         }
+                    } else if (vo.getOperationType() == BatchOperationType.ON_SALE) {
+                        doOnSaleCard(item, result, card);
+                    } else if (vo.getOperationType() == BatchOperationType.OFF_SALE) {
+                        doOffSaleCard(item, result, card);
                     } else {
                         return AjaxResult.success("执行操作参数有误");
                     }
@@ -295,6 +299,10 @@ public class SysBatchOperationController extends BaseController {
                                 result.get(b).add(item + "【" + e.getMessage() + "】");
                             }
                         }
+                    } else if (vo.getOperationType() == BatchOperationType.ON_SALE) {
+                        doOnSaleLoginCode(item, result, loginCode);
+                    } else if (vo.getOperationType() == BatchOperationType.OFF_SALE) {
+                        doOffSaleLoginCode(item, result, loginCode);
                     } else {
                         return AjaxResult.success("执行操作参数有误");
                     }
@@ -438,6 +446,10 @@ public class SysBatchOperationController extends BaseController {
                             result.get(b).add(item + "【" + e.getMessage() + "】");
                         }
                     }
+                } else if (vo.getOperationType() == BatchOperationType.ON_SALE) {
+                    return AjaxResult.success("软件用户无上架操作");
+                } else if (vo.getOperationType() == BatchOperationType.OFF_SALE) {
+                    return AjaxResult.success("软件用户无下架操作");
                 } else {
                     return AjaxResult.success("执行操作参数有误");
                 }
@@ -454,6 +466,110 @@ public class SysBatchOperationController extends BaseController {
                     .append("\n\n");
         }
         return AjaxResult.success(resultStr.toString());
+    }
+
+    private void doOnSaleLoginCode(String item, LinkedHashMap<String, List<String>> result, SysLoginCode loginCode) {
+        String a = "上架成功";
+        String b = "上架失败";
+        if (result.isEmpty()) {
+            result.put(a, new ArrayList<>());
+            result.put(b, new ArrayList<>());
+        }
+        if (loginCode == null) {
+            result.get(b).add(item + "【卡密不存在】");
+        } else if (Objects.equals(loginCode.getOnSale(), UserConstants.YES)) {
+            result.get(a).add(item + "【已经是上架状态】");
+        } else if (Objects.equals(loginCode.getIsSold(), UserConstants.YES)) {
+            result.get(b).add(item + "【卡已售出无法上架】");
+        } else if (Objects.equals(loginCode.getIsCharged(), UserConstants.YES)) {
+            result.get(b).add(item + "【卡已使用无法上架】");
+        } else {
+            try {
+                SysLoginCode newLoginCode = new SysLoginCode();
+                newLoginCode.setCardId(loginCode.getCardId());
+                newLoginCode.setOnSale(UserConstants.YES);
+                sysLoginCodeService.updateSysLoginCode(newLoginCode);
+                result.get(a).add(item + "【上架成功】");
+            } catch (Exception e) {
+                result.get(b).add(item + "【" + e.getMessage() + "】");
+            }
+        }
+    }
+
+    private void doOffSaleCard(String item, LinkedHashMap<String, List<String>> result, SysCard card) {
+        String a = "下架成功";
+        String b = "下架失败";
+        if (result.isEmpty()) {
+            result.put(a, new ArrayList<>());
+            result.put(b, new ArrayList<>());
+        }
+        if (card == null) {
+            result.get(b).add(item + "【卡密不存在】");
+        } else if (Objects.equals(card.getOnSale(), UserConstants.NO)) {
+            result.get(a).add(item + "【已经是下架状态】");
+        } else {
+            try {
+                SysCard newCard = new SysCard();
+                newCard.setCardId(card.getCardId());
+                newCard.setOnSale(UserConstants.NO);
+                sysCardService.updateSysCard(newCard);
+                result.get(a).add(item + "【下架成功】");
+            } catch (Exception e) {
+                result.get(b).add(item + "【" + e.getMessage() + "】");
+            }
+        }
+    }
+
+    private void doOnSaleCard(String item, LinkedHashMap<String, List<String>> result, SysCard card) {
+        String a = "上架成功";
+        String b = "上架失败";
+        if (result.isEmpty()) {
+            result.put(a, new ArrayList<>());
+            result.put(b, new ArrayList<>());
+        }
+        if (card == null) {
+            result.get(b).add(item + "【卡密不存在】");
+        } else if (Objects.equals(card.getOnSale(), UserConstants.YES)) {
+            result.get(a).add(item + "【已经是上架状态】");
+        } else if (Objects.equals(card.getIsSold(), UserConstants.YES)) {
+            result.get(b).add(item + "【卡已售出无法上架】");
+        } else if (Objects.equals(card.getIsCharged(), UserConstants.YES)) {
+            result.get(b).add(item + "【卡已使用无法上架】");
+        } else {
+            try {
+                SysCard newCard = new SysCard();
+                newCard.setCardId(card.getCardId());
+                newCard.setOnSale(UserConstants.YES);
+                sysCardService.updateSysCard(newCard);
+                result.get(a).add(item + "【上架成功】");
+            } catch (Exception e) {
+                result.get(b).add(item + "【" + e.getMessage() + "】");
+            }
+        }
+    }
+
+    private void doOffSaleLoginCode(String item, LinkedHashMap<String, List<String>> result, SysLoginCode loginCode) {
+        String a = "下架成功";
+        String b = "下架失败";
+        if (result.isEmpty()) {
+            result.put(a, new ArrayList<>());
+            result.put(b, new ArrayList<>());
+        }
+        if (loginCode == null) {
+            result.get(b).add(item + "【卡密不存在】");
+        } else if (Objects.equals(loginCode.getOnSale(), UserConstants.NO)) {
+            result.get(a).add(item + "【已经是下架状态】");
+        } else {
+            try {
+                SysLoginCode newLoginCode = new SysLoginCode();
+                newLoginCode.setCardId(loginCode.getCardId());
+                newLoginCode.setOnSale(UserConstants.NO);
+                sysLoginCodeService.updateSysLoginCode(newLoginCode);
+                result.get(a).add(item + "【下架成功】");
+            } catch (Exception e) {
+                result.get(b).add(item + "【" + e.getMessage() + "】");
+            }
+        }
     }
 
     @GetMapping("/scopeOperation")
@@ -588,6 +704,10 @@ public class SysBatchOperationController extends BaseController {
                         } catch (Exception e) {
                             result.get(b).add(item + "【" + e.getMessage() + "】");
                         }
+                    } else if (vo.getOperationType() == BatchOperationType.ON_SALE) {
+                        doOnSaleCard(item, result, card);
+                    } else if (vo.getOperationType() == BatchOperationType.OFF_SALE) {
+                       doOffSaleCard(item, result, card);
                     } else {
                         return AjaxResult.success("执行操作参数有误");
                     }
@@ -612,6 +732,10 @@ public class SysBatchOperationController extends BaseController {
                     sCode.setStatus(UserConstants.USER_DISABLE);
                 } else if (vo.getOperationScope() == BatchOperationScope.UNBANNED) {
                     sCode.setStatus(UserConstants.NORMAL);
+                } else if (vo.getOperationScope() == BatchOperationScope.ON_SALE) {
+                    sCode.setOnSale(UserConstants.YES);
+                } else if (vo.getOperationScope() == BatchOperationScope.OFF_SALE) {
+                    sCode.setOnSale(UserConstants.NO);
                 }
                 List<SysLoginCode> sysLoginCodeList = sysLoginCodeService.selectSysLoginCodeList(sCode);
                 for (SysLoginCode loginCode : sysLoginCodeList) {
@@ -716,6 +840,10 @@ public class SysBatchOperationController extends BaseController {
                         } catch (Exception e) {
                             result.get(b).add(item + "【" + e.getMessage() + "】");
                         }
+                    } else if (vo.getOperationType() == BatchOperationType.ON_SALE) {
+                        doOnSaleLoginCode(item, result, loginCode);
+                    } else if (vo.getOperationType() == BatchOperationType.OFF_SALE) {
+                        doOffSaleLoginCode(item, result, loginCode);
                     } else {
                         return AjaxResult.success("执行操作参数有误");
                     }
@@ -894,6 +1022,10 @@ public class SysBatchOperationController extends BaseController {
                             result.get(b).add(item + "【" + e.getMessage() + "】");
                         }
                     }
+                } else if (vo.getOperationType() == BatchOperationType.ON_SALE) {
+                    return AjaxResult.success("软件用户无上架操作");
+                } else if (vo.getOperationType() == BatchOperationType.OFF_SALE) {
+                    return AjaxResult.success("软件用户无下架操作");
                 } else {
                     return AjaxResult.success("执行操作参数有误");
                 }
