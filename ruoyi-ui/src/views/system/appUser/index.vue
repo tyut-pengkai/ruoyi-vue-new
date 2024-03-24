@@ -1144,7 +1144,7 @@ export default {
               this.$modal.alertError("软件用户所属账号不能为空");
               return;
             }
-            else if (this.app.authType === '1' && !this.form.loginCode) { 
+            else if (this.app.authType === '1' && !this.form.loginCode) {
               this.$modal.alertError("软件用户所属单码不能为空");
               return;
             }
@@ -1266,3 +1266,12 @@ export default {
   },
 };
 </script>
+<style>
+.el-dropdown-link {
+  cursor: pointer;
+  color: #409EFF;
+}
+.el-icon-d-arrow-right {
+  font-size: 12px;
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <fast-version :toolCards="appList"/>
+    <fast-version :toolCards="appList" :toolCardsMore="appListMore"/>
     <el-row :gutter="10">
       <el-col :lg="16" :md="24" :sm="24" :xs="24">
         <el-row :gutter="10" style="margin-bottom: 10px">
@@ -48,6 +48,7 @@ export default {
       onlineUser: [],
       onlineUserNum: 0,
       appList: [],
+      appListMore: [],
     }
   },
   created() {
@@ -69,6 +70,7 @@ export default {
         this.onlineUser = res.data.onlineUser;
         this.onlineUserNum = res.data.onlineUserNum;
         this.appList = res.data.appList;
+        this.appListMore = res.data.appListMore;
       });
     }
   }

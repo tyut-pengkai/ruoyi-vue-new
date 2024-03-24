@@ -307,6 +307,21 @@ public class SysIndexController extends BaseController {
             return map1;
         }).collect(Collectors.toList());
         map.put("appList", collect);
+        // 软件版本直达更多
+        ArrayList<SysApp> apps2 = new ArrayList<>(appList);
+        if(appList.size()>6) {
+            apps2 = new ArrayList<>(apps2.subList(6, apps2.size()));
+            apps2.sort(Comparator.comparingLong(SysApp::getAppId));
+            List<Object> collect2 = apps2.stream().map(item -> {
+                HashMap<Object, Object> map1 = new HashMap<>();
+                map1.put("appId", item.getAppId());
+                map1.put("appName", item.getAppName());
+                return map1;
+            }).collect(Collectors.toList());
+            map.put("appListMore", collect2);
+        } else {
+            map.put("appListMore", new ArrayList<>());
+        }
         return AjaxResult.success(map);
     }
 

@@ -2,6 +2,24 @@
   <el-card style="margin-bottom: 10px" shadow="never">
     <div slot="header" class="clearfix">
       <span>版本直达</span>
+      <el-dropdown
+        @command="(command) => handleCommand(command)"
+        style="float: right; padding: 3px 0"
+        v-if="toolCardMoreList.length > 0"
+      >
+        <span class="el-dropdown-link">
+          <i class="el-icon-arrow-down el-icon--right"></i>更多软件
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item
+            :command="card.appId"
+            icon="el-icon-menu"
+            v-for="(card, key) in toolCardMoreList"
+          >
+            {{ card.label }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
     </div>
     <el-row :gutter="20" style="min-height:129px">
       <div v-if="toolCardList.length > 0">
@@ -37,6 +55,10 @@ export default {
       type: Array,
       default: [],
     },
+    toolCardsMore: {
+      type: Array,
+      default: [],
+    },
   },
   computed: {
     toolCardList() {
@@ -48,6 +70,16 @@ export default {
           appId: toolCard["appId"],
           color: '#5cdbd3',
           bg: 'rgba(92, 219, 211,.3)'
+        });
+      }
+      return arr;
+    },
+    toolCardMoreList() {
+      let arr = [];
+      for (let toolCard of this.toolCardsMore) {
+        arr.push({
+          label: toolCard["appName"],
+          appId: toolCard["appId"],
         });
       }
       return arr;
@@ -111,7 +143,11 @@ export default {
           appId: appId,
         },
       });
-    }
+    },
+    // 更多操作触发
+    handleCommand(command) {
+      this.toTarget(command)
+    },
   }
 }
 </script>
@@ -145,5 +181,14 @@ export default {
 
 .el-empty {
   padding: 0;
+}
+</style>
+<style>
+.el-dropdown-link {
+  cursor: pointer;
+  color: #409EFF;
+}
+.el-icon-arrow-down {
+  font-size: 12px;
 }
 </style>
