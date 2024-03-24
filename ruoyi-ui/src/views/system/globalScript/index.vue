@@ -174,22 +174,22 @@
         prop="description"
         :show-overflow-tooltip="true"
       /> -->
-      <el-table-column align="center" label="是否需要登录" prop="checkToken">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_yes_no"
-            :value="scope.row.checkToken"
-          />
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="是否需要VIP" prop="checkVip">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_yes_no"
-            :value="scope.row.checkVip"
-          />
-        </template>
-      </el-table-column>
+<!--      <el-table-column align="center" label="是否需要登录" prop="checkToken">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_yes_no"-->
+<!--            :value="scope.row.checkToken"-->
+<!--          />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column align="center" label="是否需要VIP" prop="checkVip">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_yes_no"-->
+<!--            :value="scope.row.checkVip"-->
+<!--          />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
@@ -210,6 +210,26 @@
         label="备注"
         prop="remark"
       />
+      <el-table-column label="是否需要登录" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.checkToken"
+            active-value="Y"
+            inactive-value="N"
+            @change="handleCheckTokenChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否需要VIP" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.checkVip"
+            active-value="Y"
+            inactive-value="N"
+            @change="handleCheckVipChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -634,6 +654,34 @@ export default {
         this.scriptTestResult = response.data;
         this.dialogVisible = true;
       });
+    },
+    handleCheckTokenChange(row) {
+      let text = row.checkToken === "Y" ? "需要登录才可调用" : "无需登录即可调用";
+      this.$modal
+        .confirm("确认要将\"" + row.name + "\"置为" + text + '吗？')
+        .then(function () {
+          return updateGlobalScript({'scriptId': row.scriptId, 'checkToken': row.checkToken});
+        })
+        .then(() => {
+          this.$modal.msgSuccess("置为" + text + "成功");
+        })
+        .catch(function () {
+          row.checkToken = row.checkToken === "Y" ? "N" : "Y";
+        });
+    },
+    handleCheckVipChange(row) {
+      let text = row.checkVip === "Y" ? "需要VIP用户才可调用" : "无需VIP用户即可调用";
+      this.$modal
+        .confirm("确认要将\"" + row.name + "\"置为" + text + '吗？')
+        .then(function () {
+          return updateGlobalScript({'scriptId': row.scriptId, 'checkVip': row.checkVip});
+        })
+        .then(() => {
+          this.$modal.msgSuccess("置为" + text + "成功");
+        })
+        .catch(function () {
+          row.checkVip = row.checkVip === "Y" ? "N" : "Y";
+        });
     },
   },
   computed: {

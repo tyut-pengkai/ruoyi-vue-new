@@ -67,22 +67,42 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="允许发展子代理" align="center" prop="enableAddSubagent">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.enableAddSubagent" />
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="允许发展子代理" align="center" prop="enableAddSubagent">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.enableAddSubagent" />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column label="代理过期时间" align="center" prop="expireTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.expireTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="代理状态" prop="status">
+<!--      <el-table-column align="center" label="代理状态" prop="status">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status" />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+      <el-table-column align="center" label="备注" prop="remark" />
+      <el-table-column label="卡密状态" align="center">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status" />
+          <el-switch
+            v-model="scope.row.status"
+            active-value="0"
+            inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="备注" prop="remark" />
+      <el-table-column label="允许发展子代理" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.enableAddSubagent"
+            active-value="Y"
+            inactive-value="N"
+            @change="handleEnableAddSubagentChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini" type="text" v-hasPermi="['agent:agentUser:edit']" @click="handleUpdate(scope.row)"
@@ -754,7 +774,36 @@ export default {
           this.$refs.templateTable.toggleRowSelection(row, true);
         }
       });
-    }
+    },
+    // 状态修改
+    handleStatusChange(row) {
+      let text = row.status === "0" ? "启用" : "停用";
+      this.$modal
+        .confirm("确认要" + text + '"' + row.user.userName + '"吗？')
+        .then(function () {
+          return updateAgentUser({'agentId': row.agentId, 'status': row.status});
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.status = row.status === "0" ? "1" : "0";
+        });
+    },
+    handleEnableAddSubagentChange(row) {
+      let text = row.enableAddSubagent === "Y" ? "允许" : "不允许";
+      this.$modal
+        .confirm("确认要" + text + "\"" + row.user.userName + "\"发展子代理吗？")
+        .then(function () {
+          return updateAgentUser({'agentId': row.agentId, 'enableAddSubagent': row.enableAddSubagent});
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.enableAddSubagent = row.enableAddSubagent === "Y" ? "N" : "Y";
+        });
+    },
   },
 };
 </script>

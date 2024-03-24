@@ -156,14 +156,14 @@
       </el-table-column> -->
       <el-table-column align="center" label="图标" prop="icon" />
       <!-- <el-table-column align="center" label="配置" prop="config"/> -->
-      <el-table-column align="center" label="状态" prop="status">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_normal_disable"
-            :value="scope.row.status"
-          />
-        </template>
-      </el-table-column>
+<!--      <el-table-column align="center" label="状态" prop="status">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_normal_disable"-->
+<!--            :value="scope.row.status"-->
+<!--          />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <!-- <el-table-column align="center" label="创建者" prop="createBy"/>
       <el-table-column align="center" label="创建时间" prop="createTime" width="180">
         <template slot-scope="scope">
@@ -177,6 +177,16 @@
         </template>
       </el-table-column> -->
       <el-table-column align="center" label="备注" prop="remark" />
+      <el-table-column label="状态" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            active-value="0"
+            inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -517,6 +527,21 @@ export default {
     },
     change(e) {
       this.$forceUpdate();
+    },
+    // 状态修改
+    handleStatusChange(row) {
+      let text = row.status === "0" ? "启用" : "停用";
+      this.$modal
+        .confirm("确认要" + text + '"' + row.name + '"吗？')
+        .then(function () {
+          return updatePayment({'payId': row.payId, 'status': row.status});
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.status = row.status === "0" ? "1" : "0";
+        });
     },
   },
 };

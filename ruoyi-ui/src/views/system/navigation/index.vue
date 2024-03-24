@@ -119,14 +119,14 @@
     >
       <el-table-column label="导航标题" prop="navName"/>
       <el-table-column align="center" label="路由地址" prop="path"/>
-      <el-table-column align="center" label="是否首页" prop="isIndex">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_yes_no"
-            :value="scope.row.isIndex"
-          />
-        </template>
-      </el-table-column>
+<!--      <el-table-column align="center" label="是否首页" prop="isIndex">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_yes_no"-->
+<!--            :value="scope.row.isIndex"-->
+<!--          />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <!-- <el-table-column label="是否为外链" align="center" prop="isFrame">
         <template slot-scope="scope">
           <dict-tag
@@ -137,16 +137,36 @@
       </el-table-column> -->
       <!-- <el-table-column label="父菜单ID" align="center" prop="parentId" /> -->
       <!-- <el-table-column label="导航类型" align="center" prop="navType" /> -->
-      <el-table-column align="center" label="导航状态" prop="visible">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_normal_disable"
-            :value="scope.row.visible"
-          />
-        </template>
-      </el-table-column>
+<!--      <el-table-column align="center" label="导航状态" prop="visible">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_normal_disable"-->
+<!--            :value="scope.row.visible"-->
+<!--          />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column align="center" label="显示顺序" prop="orderNum"/>
       <el-table-column align="center" label="备注" prop="remark"/>
+      <el-table-column label="是否显示" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.visible"
+            active-value="0"
+            inactive-value="1"
+            @change="handleVisibleChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否首页" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.isIndex"
+            active-value="Y"
+            inactive-value="N"
+            @change="handleIsIndexChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -438,6 +458,34 @@ export default {
           this.$modal.msgSuccess("删除成功");
         })
         .catch(() => {
+        });
+    },
+    handleVisibleChange(row) {
+      let text = row.visible === "0" ? "显示" : "隐藏";
+      this.$modal
+        .confirm("确认要" + text + '"' + row.navName + '"吗？')
+        .then(function () {
+          return updateNavigation({'navId': row.navId, 'visible': row.visible});
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.visible = row.visible === "0" ? "1" : "0";
+        });
+    },
+    handleIsIndexChange(row) {
+      let text = row.isIndex === "Y" ? "首页" : "非首页";
+      this.$modal
+        .confirm("确认要将\"" + row.navName + "\"置为" + text + '吗？')
+        .then(function () {
+          return updateNavigation({'navId': row.navId, 'isIndex': row.isIndex});
+        })
+        .then(() => {
+          this.$modal.msgSuccess("设置为" + text + "成功");
+        })
+        .catch(function () {
+          row.isIndex = row.isIndex === "Y" ? "N" : "Y";
         });
     },
   },

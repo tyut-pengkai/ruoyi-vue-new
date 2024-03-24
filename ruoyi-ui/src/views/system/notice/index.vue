@@ -102,7 +102,7 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column
         align="center"
-        label="序号"
+        label="编号"
         prop="noticeId"
         width="100"
       />
@@ -116,7 +116,6 @@
         align="center"
         label="公告类型"
         prop="noticeType"
-        width="100"
       >
         <template slot-scope="scope">
           <dict-tag
@@ -125,28 +124,36 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" prop="status" width="100">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_notice_status"
-            :value="scope.row.status"
-          />
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="状态" align="center" prop="status" width="100">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_notice_status"-->
+<!--            :value="scope.row.status"-->
+<!--          />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column
         align="center"
         label="创建者"
         prop="createBy"
-        width="100"
       />
       <el-table-column
         align="center"
         label="创建时间"
         prop="createTime"
-        width="100"
       >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            active-value="0"
+            inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
         </template>
       </el-table-column>
       <el-table-column
@@ -375,6 +382,21 @@ export default {
           this.$modal.msgSuccess("删除成功");
         })
         .catch(() => {});
+    },
+    // 状态修改
+    handleStatusChange(row) {
+      let text = row.status === "0" ? "启用" : "停用";
+      this.$modal
+        .confirm("确认要" + text + '"' + row.noticeTitle + '"吗？')
+        .then(function () {
+          return updateNotice({'noticeTitle': row.noticeTitle, 'noticeId': row.noticeId, 'status': row.status});
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + "成功");
+        })
+        .catch(function () {
+          row.status = row.status === "0" ? "1" : "0";
+        });
     },
   },
 };
