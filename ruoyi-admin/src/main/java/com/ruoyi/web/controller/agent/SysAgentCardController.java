@@ -18,6 +18,7 @@ import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.domain.vo.BalanceChangeVo;
+import com.ruoyi.system.domain.vo.BatchNoVo;
 import com.ruoyi.system.service.ISysBalanceLogService;
 import com.ruoyi.system.service.ISysCardService;
 import com.ruoyi.system.service.ISysCardTemplateService;
@@ -209,5 +210,21 @@ public class SysAgentCardController extends BaseController {
             }
         }
         return getDataTable(list);
+    }
+
+    /**
+     * 获取批次号列表
+     *
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('agent:agentCard:list')")
+    @GetMapping("/selectBatchNoList")
+    public AjaxResult selectBatchNoList() {
+        Long agentId = null;
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            agentId = getUserId();
+        }
+        List<BatchNoVo> batchNoList = sysCardService.selectBatchNoList(agentId);
+        return AjaxResult.success(batchNoList);
     }
 }

@@ -321,7 +321,7 @@ public class SysCardServiceImpl implements ISysCardService {
      * @return
      */
     @Override
-    public List<BatchNoVo> selectBatchNoList() {
-        return sysCardMapper.selectBatchNoList();
+    public List<BatchNoVo> selectBatchNoList(Long agentId) {
+        return sysCardMapper.selectBatchNoList(agentId);
     }
 }

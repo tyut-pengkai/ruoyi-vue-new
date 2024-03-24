@@ -60,3 +60,11 @@ export function listLoginCodeTemplateAll(query) {
     params: query
   })
 }
+
+// 查询卡密列表
+export function getBatchNoList() {
+  return request({
+    url: '/agent/agentLoginCode/selectBatchNoList',
+    method: 'get',
+  })
+}

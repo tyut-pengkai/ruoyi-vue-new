@@ -111,5 +111,5 @@ public interface ISysCardService {
      * 获取批次号列表
      * @return
      */
-    public List<BatchNoVo> selectBatchNoList();
+    public List<BatchNoVo> selectBatchNoList(Long agentId);
 }

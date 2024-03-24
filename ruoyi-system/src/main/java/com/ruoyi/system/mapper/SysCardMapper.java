@@ -104,5 +104,5 @@ public interface SysCardMapper {
      * 获取批次号列表
      * @return
      */
-    public List<BatchNoVo> selectBatchNoList();
+    public List<BatchNoVo> selectBatchNoList(@Param("agentId")Long agentId);
 }

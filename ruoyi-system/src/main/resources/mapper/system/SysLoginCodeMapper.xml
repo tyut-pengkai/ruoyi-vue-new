@@ -315,8 +315,10 @@
         </foreach>
     </delete>
 
-    <select id="selectBatchNoList" resultMap="BatchNoVoResult">
+    <select id="selectBatchNoList" parameterType="Long" resultMap="BatchNoVoResult">
         select c.batch_no, count(1) as num from sys_login_code c left join sys_app a on c.app_id = a.app_id
-        where c.batch_no is not null and c.del_flag = 0 and a.del_flag = 0 group by c.batch_no ORDER BY batch_no desc
+        where c.batch_no is not null and c.del_flag = 0 and a.del_flag = 0
+        <if test="agentId != null ">and c.agent_id = #{agentId}</if>
+        group by c.batch_no ORDER BY batch_no desc
     </select>
 </mapper>

@@ -390,7 +390,7 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
      * @return
      */
     @Override
-    public List<BatchNoVo> selectBatchNoList() {
-        return sysLoginCodeMapper.selectBatchNoList();
+    public List<BatchNoVo> selectBatchNoList(Long agentId) {
+        return sysLoginCodeMapper.selectBatchNoList(agentId);
     }
 }

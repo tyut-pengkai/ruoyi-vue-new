@@ -164,13 +164,23 @@
         </el-select>
       </el-form-item>
       <el-form-item label="批次号" prop="batchNo">
-        <el-input
-          v-model="queryParams.batchNo"
-          clearable
-          placeholder="请输入批次号"
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+<!--        <el-input-->
+<!--          v-model="queryParams.batchNo"-->
+<!--          clearable-->
+<!--          placeholder="请输入批次号"-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+        <el-select v-model="queryParams.batchNo" clearable placeholder="请选择">
+          <el-option
+            v-for="item in batchNoList"
+            :key="item.batchNo"
+            :label="item.batchNo"
+            :value="item.batchNo">
+            <span style="float: left">{{ item.batchNo }}</span>
+            <span style="float: right; color: #8492a6; font-size: 13px"> 共 {{ item.num }} 个</span>
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
         <el-input
@@ -938,6 +948,7 @@ import {
   listLoginCode,
   listLoginCodeTemplateAll,
   updateLoginCode,
+  getBatchNoList
 } from "@/api/agent/agentLoginCode";
 import {listAppAll} from "@/api/agent/agentApp";
 import DateDuration from "@/components/DateDuration";
@@ -1092,13 +1103,19 @@ export default {
       // cardStr: "天卡 44163416341316313 dawdaefahjfoaf464dawfae 1天 长期有效\n天卡 44163416341316313 dawdaefahjfoaf464dawfae 1天 长期有效",
       cardStr: "",
       cardSimpleStr: "",
+      batchNoList: [],
     };
   },
   created() {
     this.getAppList();
     this.getList();
+    getBatchNoList().then((response) => {
+      this.batchNoList = response.data;
+    });
   },
   methods: {
+    /** 获取批次号列表 **/
+    getBatchNoList,
     /** 查询单码列表 */
     getList() {
       this.loading = true;

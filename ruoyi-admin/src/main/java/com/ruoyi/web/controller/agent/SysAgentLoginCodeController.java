@@ -18,6 +18,7 @@ import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
 import com.ruoyi.system.domain.vo.BalanceChangeVo;
+import com.ruoyi.system.domain.vo.BatchNoVo;
 import com.ruoyi.system.service.ISysBalanceLogService;
 import com.ruoyi.system.service.ISysLoginCodeService;
 import com.ruoyi.system.service.ISysLoginCodeTemplateService;
@@ -206,5 +207,21 @@ public class SysAgentLoginCodeController extends BaseController {
             }
         }
         return getDataTable(list);
+    }
+
+    /**
+     * 获取批次号列表
+     *
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('agent:agentLoginCode:list')")
+    @GetMapping("/selectBatchNoList")
+    public AjaxResult selectBatchNoList() {
+        Long agentId = null;
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            agentId = getUserId();
+        }
+        List<BatchNoVo> batchNoList = sysLoginCodeService.selectBatchNoList(agentId);
+        return AjaxResult.success(batchNoList);
     }
 }

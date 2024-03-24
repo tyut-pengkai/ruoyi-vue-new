@@ -152,7 +152,7 @@ public class SysLoginCodeController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:loginCode:list')")
     @GetMapping("/selectBatchNoList")
     public AjaxResult selectBatchNoList() {
-        List<BatchNoVo> batchNoList = sysLoginCodeService.selectBatchNoList();
+        List<BatchNoVo> batchNoList = sysLoginCodeService.selectBatchNoList(null);
         return AjaxResult.success(batchNoList);
     }
 }

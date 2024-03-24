@@ -153,7 +153,7 @@ public class SysCardController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:card:list')")
     @GetMapping("/selectBatchNoList")
     public AjaxResult selectBatchNoList() {
-        List<BatchNoVo> batchNoList = sysCardService.selectBatchNoList();
+        List<BatchNoVo> batchNoList = sysCardService.selectBatchNoList(null);
         return AjaxResult.success(batchNoList);
     }
 }
