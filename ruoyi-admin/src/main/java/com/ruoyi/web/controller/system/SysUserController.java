@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -241,6 +242,16 @@ public class SysUserController extends BaseController {
         BalanceChangeVo change = new BalanceChangeVo();
         change.setUserId(vo.getUserId());
         change.setUpdateBy(getUsername());
+        if(Objects.equals(vo.getOperation(), "3")) {
+            SysUser sysUser = userService.selectUserById(vo.getUserId());
+            if(vo.getAmount().compareTo(sysUser.getAvailablePayBalance()) >= 0) {
+                vo.setOperation("1");
+                vo.setAmount(vo.getAmount().subtract(sysUser.getAvailablePayBalance()));
+            } else {
+                vo.setOperation("2");
+                vo.setAmount(vo.getAmount().subtract(sysUser.getAvailablePayBalance()).negate());
+            }
+        }
         change.setType("1".equals(vo.getOperation()) ? BalanceChangeType.OTHOR_IN : BalanceChangeType.OTHOR_OUT);
         change.setDescription("管理员后台" + ("1".equals(vo.getOperation()) ? "加款" : "扣款") + "：" + vo.getAmount() + "，附加信息：" + vo.getRemark());
         change.setAvailablePayBalance("1".equals(vo.getOperation()) ? vo.getAmount() : vo.getAmount().negate());

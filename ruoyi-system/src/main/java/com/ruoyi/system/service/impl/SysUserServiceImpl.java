@@ -13,7 +13,10 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.common.utils.spring.SpringUtils;
-import com.ruoyi.system.domain.*;
+import com.ruoyi.system.domain.SysBalanceLog;
+import com.ruoyi.system.domain.SysPost;
+import com.ruoyi.system.domain.SysUserPost;
+import com.ruoyi.system.domain.SysUserRole;
 import com.ruoyi.system.domain.vo.BalanceChangeVo;
 import com.ruoyi.system.mapper.*;
 import com.ruoyi.system.service.ISysBalanceLogService;
@@ -22,6 +25,7 @@ import com.ruoyi.system.service.ISysUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -31,6 +35,7 @@ import javax.validation.Validator;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -58,6 +63,8 @@ public class SysUserServiceImpl implements ISysUserService {
     protected Validator validator;
     @Resource
     private ISysBalanceLogService sysBalanceLogService;
+    @Resource
+    private RedisTemplate redisTemplate;
 
     /**
      * 根据条件分页查询用户列表
@@ -352,68 +359,89 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateUserBalance(BalanceChangeVo change) {
-        // 获取当前余额
-        SysUser userNow = selectUserById(change.getUserId());
-        // 检查余额是否足够
-        if (isNegative(change.getAvailablePayBalance())) {
-            if (isLessThan(userNow.getAvailablePayBalance(), change.getAvailablePayBalance().abs())) {
-                throw new ServiceException("可用余额不足");
+        // 使用Redis锁来避免多线程并发更新
+        String lockKey = "account_lock_" + change.getUserId();
+        Boolean lock = redisTemplate.opsForValue().setIfAbsent(lockKey, "lock", 10, TimeUnit.SECONDS);
+        if (lock != null && lock) {
+            try {
+                // 获取锁后再次检查账户余额，防止其他线程已修改
+                SysUser userNow = selectUserById(change.getUserId());
+                if (userNow != null) {
+                    // 检查余额是否足够
+                    if (isNegative(change.getAvailablePayBalance())) {
+                        if (isLessThan(userNow.getAvailablePayBalance(), change.getAvailablePayBalance().abs())) {
+                            throw new ServiceException("可用余额不足");
+                        }
+                    }
+                    if (isNegative(change.getAvailableFreeBalance())) {
+                        if (isLessThan(userNow.getAvailableFreeBalance(), change.getAvailableFreeBalance().abs())) {
+                            throw new ServiceException("冻结余额不足");
+                        }
+                    }
+                    if (isNegative(change.getFreezePayBalance())) {
+                        if (isLessThan(userNow.getFreezePayBalance(), change.getFreezePayBalance().abs())) {
+                            throw new ServiceException("可用赠送余额不足");
+                        }
+                    }
+                    if (isNegative(change.getFreezeFreeBalance())) {
+                        if (isLessThan(userNow.getFreezeFreeBalance(), change.getFreezeFreeBalance().abs())) {
+                            throw new ServiceException("冻结赠送余额不足");
+                        }
+                    }
+                    // 记录金额变动日志
+                    SysBalanceLog balanceLog = new SysBalanceLog();
+                    balanceLog.setUserId(change.getUserId());
+                    balanceLog.setChangeType(change.getType());
+                    balanceLog.setSourceUserId(change.getSourceUserId());
+                    balanceLog.setChangeAvailablePayAmount(change.getAvailablePayBalance());
+                    balanceLog.setChangeFreezePayAmount(change.getFreezePayBalance());
+                    balanceLog.setChangeAvailableFreeAmount(change.getAvailableFreeBalance());
+                    balanceLog.setChangeFreezeFreeAmount(change.getFreezeFreeBalance());
+                    balanceLog.setAvailablePayBefore(userNow.getAvailablePayBalance());
+                    balanceLog.setAvailablePayAfter(userNow.getAvailablePayBalance().add(change.getAvailablePayBalance()));
+                    balanceLog.setFreezePayBefore(userNow.getFreezePayBalance());
+                    balanceLog.setFreezePayAfter(userNow.getFreezePayBalance().add(change.getFreezePayBalance()));
+                    balanceLog.setAvailableFreeBefore(userNow.getAvailableFreeBalance());
+                    balanceLog.setAvailableFreeAfter(userNow.getAvailableFreeBalance().add(change.getAvailableFreeBalance()));
+                    balanceLog.setFreezeFreeBefore(userNow.getFreezeFreeBalance());
+                    balanceLog.setFreezeFreeAfter(userNow.getFreezeFreeBalance().add(change.getFreezeFreeBalance()));
+                    balanceLog.setChangeDesc(change.getDescription());
+                    balanceLog.setSaleOrderId(change.getSaleOrderId());
+                    balanceLog.setWithdrawCashId(change.getWithdrawCashId());
+                    balanceLog.setCreateBy(change.getUpdateBy());
+                    sysBalanceLogService.insertSysBalanceLog(balanceLog);
+                    // 扣除
+                    SysUser compute = new SysUser();
+                    compute.setUserId(change.getUserId());
+                    compute.setUpdateBy(change.getUpdateBy());
+                    compute.setAvailablePayBalance(balanceLog.getAvailablePayAfter());
+                    compute.setFreezePayBalance(balanceLog.getFreezePayAfter());
+                    compute.setAvailableFreeBalance(balanceLog.getAvailableFreeAfter());
+                    compute.setFreezeFreeBalance(balanceLog.getFreezeFreeAfter());
+                    if (change.getType() == BalanceChangeType.RECHARGE && !isNegative(change.getAvailablePayBalance())) {
+                        compute.setPayPayment(userNow.getPayPayment().add(change.getAvailablePayBalance()));
+                    }
+                    if (!isNegative(change.getAvailableFreeBalance())) {
+                        compute.setFreePayment(userNow.getFreePayment().add(change.getAvailableFreeBalance()));
+                    }
+                    compute.setUpdateTime(DateUtils.getNowDate());
+                    compute.setUpdateBy(SecurityUtils.getUsernameNoException());
+                    return updateCache(userMapper.updateUserBalance(compute), compute.getUserId());
+                }
+            } finally {
+                // 无论成功与否，最终释放锁
+                redisTemplate.delete(lockKey);
+            }
+        } else {
+            // 如果未能获取锁，则等待一段时间后重试或处理错误
+            try {
+                Thread.sleep(100); // 等待100毫秒后重试
+                return updateUserBalance(change);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
-        if (isNegative(change.getAvailableFreeBalance())) {
-            if (isLessThan(userNow.getAvailableFreeBalance(), change.getAvailableFreeBalance().abs())) {
-                throw new ServiceException("冻结余额不足");
-            }
-        }
-        if (isNegative(change.getFreezePayBalance())) {
-            if (isLessThan(userNow.getFreezePayBalance(), change.getFreezePayBalance().abs())) {
-                throw new ServiceException("可用赠送余额不足");
-            }
-        }
-        if (isNegative(change.getFreezeFreeBalance())) {
-            if (isLessThan(userNow.getFreezeFreeBalance(), change.getFreezeFreeBalance().abs())) {
-                throw new ServiceException("冻结赠送余额不足");
-            }
-        }
-        // 记录金额变动日志
-        SysBalanceLog balanceLog = new SysBalanceLog();
-        balanceLog.setUserId(change.getUserId());
-        balanceLog.setChangeType(change.getType());
-        balanceLog.setSourceUserId(change.getSourceUserId());
-        balanceLog.setChangeAvailablePayAmount(change.getAvailablePayBalance());
-        balanceLog.setChangeFreezePayAmount(change.getFreezePayBalance());
-        balanceLog.setChangeAvailableFreeAmount(change.getAvailableFreeBalance());
-        balanceLog.setChangeFreezeFreeAmount(change.getFreezeFreeBalance());
-        balanceLog.setAvailablePayBefore(userNow.getAvailablePayBalance());
-        balanceLog.setAvailablePayAfter(userNow.getAvailablePayBalance().add(change.getAvailablePayBalance()));
-        balanceLog.setFreezePayBefore(userNow.getFreezePayBalance());
-        balanceLog.setFreezePayAfter(userNow.getFreezePayBalance().add(change.getFreezePayBalance()));
-        balanceLog.setAvailableFreeBefore(userNow.getAvailableFreeBalance());
-        balanceLog.setAvailableFreeAfter(userNow.getAvailableFreeBalance().add(change.getAvailableFreeBalance()));
-        balanceLog.setFreezeFreeBefore(userNow.getFreezeFreeBalance());
-        balanceLog.setFreezeFreeAfter(userNow.getFreezeFreeBalance().add(change.getFreezeFreeBalance()));
-        balanceLog.setChangeDesc(change.getDescription());
-        balanceLog.setSaleOrderId(change.getSaleOrderId());
-        balanceLog.setWithdrawCashId(change.getWithdrawCashId());
-        balanceLog.setCreateBy(change.getUpdateBy());
-        sysBalanceLogService.insertSysBalanceLog(balanceLog);
-        // 扣除
-        SysUser compute = new SysUser();
-        compute.setUserId(change.getUserId());
-        compute.setUpdateBy(change.getUpdateBy());
-        compute.setAvailablePayBalance(balanceLog.getAvailablePayAfter());
-        compute.setFreezePayBalance(balanceLog.getFreezePayAfter());
-        compute.setAvailableFreeBalance(balanceLog.getAvailableFreeAfter());
-        compute.setFreezeFreeBalance(balanceLog.getFreezeFreeAfter());
-        if (change.getType() == BalanceChangeType.RECHARGE && !isNegative(change.getAvailablePayBalance())) {
-            compute.setPayPayment(userNow.getPayPayment().add(change.getAvailablePayBalance()));
-        }
-        if (!isNegative(change.getAvailableFreeBalance())) {
-            compute.setFreePayment(userNow.getFreePayment().add(change.getAvailableFreeBalance()));
-        }
-        compute.setUpdateTime(DateUtils.getNowDate());
-        compute.setUpdateBy(SecurityUtils.getUsernameNoException());
-        return updateCache(userMapper.updateUserBalance(compute), compute.getUserId());
+        return 0;
     }
 
     private boolean isNegative(BigDecimal amount) {

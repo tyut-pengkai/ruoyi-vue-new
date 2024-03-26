@@ -565,12 +565,31 @@
       width="600px"
     >
       <el-form ref="formB" :model="formB" :rules="rulesB" label-width="80px">
+        <div style="margin-bottom: 20px">
+          <el-descriptions :column="2" border>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-wallet"></i>
+                余额
+              </template>
+              {{ parseMoney(form.availablePayBalance) }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-wallet"></i>
+                冻结余额
+              </template>
+              {{ parseMoney(form.freezeFreeBalance) }}
+            </el-descriptions-item>
+          </el-descriptions>
+        </div>
         <el-row>
           <el-col :span="12">
             <el-form-item label="调整操作" prop="operation">
               <el-select v-model="formB.operation" placeholder="请选择">
                 <el-option key="1" label="增加余额" value="1"></el-option>
                 <el-option key="2" label="减少余额" value="2"></el-option>
+                <el-option key="3" label="等于余额" value="3"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
