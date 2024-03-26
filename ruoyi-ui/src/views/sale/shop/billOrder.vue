@@ -119,7 +119,7 @@ export default {
               this.$nextTick(() => {
                 let script = document.createElement("script");
                 script.innerHTML = regJs;
-                this.$refs.htmlText.append(script);
+                this.$refs.htmlText && this.$refs.htmlText.append(script);
               });
             } else if (this.showType == "form") {
               this.form = {

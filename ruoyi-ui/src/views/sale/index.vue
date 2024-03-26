@@ -174,6 +174,7 @@ export default {
         //   visible: 1,
         // },
       ],
+      stopFlag: true, // 为了避免当关闭前台时从个人中心支付被拦截，加此flag，flag为false时即使关闭前台也不跳转stop页
     };
   },
   created() {
@@ -193,10 +194,11 @@ export default {
       });
     },
     getSysInfo() {
+      console.log('fe test');
       getSysInfo().then((res) => {
         this.copyright = res.copyright;
         this.isLicenseServer = res.isLicenseServer;
-        if (!res.enableFrontEnd) {
+        if (this.stopFlag && !res.enableFrontEnd) {
           this.$router.replace("stop");
         }
       });
@@ -230,6 +232,18 @@ export default {
     toggleSideBar() {
       this.drawer = true;
     },
+  },
+  beforeRouteEnter(to, from, next) {
+    // console.log("fe2 to.path----", to); //跳转后路由
+    // console.log("fe2 from----", from); //跳转前路由
+    next(vm => {
+      // 通过 `vm` 访问组件实例
+      if(to.path === '/billOrder') {
+        vm.stopFlag = false;
+      } else {
+        vm.stopFlag = true;
+      }
+    });
   },
 };
 </script>
