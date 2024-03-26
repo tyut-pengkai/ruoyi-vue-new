@@ -2,6 +2,7 @@ package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.CacheConstants;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
@@ -360,7 +361,7 @@ public class SysUserServiceImpl implements ISysUserService {
     @Transactional(rollbackFor = Exception.class)
     public int updateUserBalance(BalanceChangeVo change) {
         // 使用Redis锁来避免多线程并发更新
-        String lockKey = "account_lock_" + change.getUserId();
+        String lockKey = Constants.LOCK_USER_CHANGE + change.getUserId();
         Boolean lock = redisTemplate.opsForValue().setIfAbsent(lockKey, "lock", 10, TimeUnit.SECONDS);
         if (lock != null && lock) {
             try {
