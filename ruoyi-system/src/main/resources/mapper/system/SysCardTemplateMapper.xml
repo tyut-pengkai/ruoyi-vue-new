@@ -36,6 +36,7 @@
         <result property="cardCustomParams" column="card_custom_params"/>
         <result property="shopUrl" column="shop_url"/>
         <result property="enableUnbind" column="enable_unbind"/>
+        <result property="minBuyNum" column="min_buy_num"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
     </resultMap>
 
@@ -79,6 +80,7 @@
                ct.card_custom_params,
                ct.shop_url,
                ct.enable_unbind,
+               ct.min_buy_num,
                a.app_id,
                a.app_name,
                a.auth_type,
@@ -149,6 +151,7 @@
             <if test="cardCustomParams != null">card_custom_params,</if>
             <if test="shopUrl != null">shop_url,</if>
             <if test="enableUnbind != null">enable_unbind,</if>
+            <if test="minBuyNum != null">min_buy_num,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="appId != null">#{appId},</if>
@@ -181,6 +184,7 @@
             <if test="cardCustomParams != null">#{cardCustomParams},</if>
             <if test="shopUrl != null">#{shopUrl},</if>
             <if test="enableUnbind != null">#{enableUnbind},</if>
+            <if test="minBuyNum != null">#{minBuyNum},</if>
         </trim>
     </insert>
 
@@ -217,6 +221,7 @@
             <if test="cardCustomParams != null">card_custom_params = #{cardCustomParams},</if>
             <if test="shopUrl != null">shop_url = #{shopUrl},</if>
             <if test="enableUnbind != null">enable_unbind = #{enableUnbind},</if>
+            <if test="minBuyNum != null">min_buy_num = #{minBuyNum},</if>
         </trim>
         where template_id = #{templateId}
     </update>

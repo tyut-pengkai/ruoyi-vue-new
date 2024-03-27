@@ -133,37 +133,74 @@ public class SysSaleShopController extends BaseController {
             sysCardTemplate.setAppId(appId);
             sysCardTemplate.setOnSale(UserConstants.YES);
             List<SysCardTemplate> list = sysCardTemplateMapper.selectSysCardTemplateList(sysCardTemplate);
-            for (SysCardTemplate ct : list) {
-                int cardCount;
-                if (UserConstants.YES.equals(ct.getEnableAutoGen())) {
-                    cardCount = 1000;
-                } else {
-                    cardCount = sysSaleShopService.getSaleableCard(ct.getTemplateId()).size();
-                    if (cardCount > 1000) {
+            Map<Long, Long> cardSize = sysSaleShopService.getSaleableCardSizeAll();
+            list.parallelStream().map(
+                ct -> {
+                    long cardCount = 0;
+                    if (UserConstants.YES.equals(ct.getEnableAutoGen())) {
                         cardCount = 1000;
+                    } else {
+//                        cardCount = sysSaleShopService.getSaleableCardSize(ct.getTemplateId());
+                        if(cardSize.containsKey(ct.getTemplateId())) {
+                            cardCount = cardSize.get(ct.getTemplateId());
+                            if (cardCount > 1000) {
+                                cardCount = 1000;
+                            }
+                        }
                     }
+                    saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount, ct.getMinBuyNum()));
+                    return null;
                 }
-                saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount));
-            }
+            ).collect(Collectors.toList());
+//            for (SysCardTemplate ct : list) {
+//                int cardCount;
+//                if (UserConstants.YES.equals(ct.getEnableAutoGen())) {
+//                    cardCount = 1000;
+//                } else {
+//                    cardCount = sysSaleShopService.getSaleableCardSize(ct.getTemplateId());
+//                    if (cardCount > 1000) {
+//                        cardCount = 1000;
+//                    }
+//                }
+//                saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount, ct.getMinBuyNum()));
+//            }
         } else if (app.getAuthType() == AuthType.LOGIN_CODE) {
             SysLoginCodeTemplate sysLoginCodeTemplate = new SysLoginCodeTemplate();
             sysLoginCodeTemplate.setAppId(appId);
             sysLoginCodeTemplate.setOnSale(UserConstants.YES);
             List<SysLoginCodeTemplate> list = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateList(sysLoginCodeTemplate);
-            for (SysLoginCodeTemplate ct : list) {
-                int cardCount;
+            Map<Long, Long> cardSize = sysSaleShopService.getSaleableLoginCodeSizeAll();
+            list.parallelStream().map(ct -> {
+                long cardCount = 0;
                 if (UserConstants.YES.equals(ct.getEnableAutoGen())) {
                     cardCount = 1000;
                 } else {
-                    cardCount = sysSaleShopService.getSaleableLoginCode(ct.getTemplateId()).size();
-                    if (cardCount > 1000) {
-                        cardCount = 1000;
+//                    cardCount = sysSaleShopService.getSaleableLoginCodeSize(ct.getTemplateId());
+                    if(cardSize.containsKey(ct.getTemplateId())) {
+                        cardCount = cardSize.get(ct.getTemplateId());
+                        if (cardCount > 1000) {
+                            cardCount = 1000;
+                        }
                     }
                 }
-                saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount));
-            }
+                saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount, ct.getMinBuyNum()));
+                return null;
+            }).collect(Collectors.toList());
+//            for (SysLoginCodeTemplate ct : list) {
+//                int cardCount;
+//                if (UserConstants.YES.equals(ct.getEnableAutoGen())) {
+//                    cardCount = 1000;
+//                } else {
+//                    cardCount = sysSaleShopService.getSaleableLoginCodeSize(ct.getTemplateId());
+//                    if (cardCount > 1000) {
+//                        cardCount = 1000;
+//                    }
+//                }
+//                saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount, ct.getMinBuyNum()));
+//            }
         }
-        return getDataTable(saleCardTemplateVoList);
+        List<SaleCardTemplateVo> collect = saleCardTemplateVoList.stream().sorted(Comparator.comparing(SaleCardTemplateVo::getTemplateId)).collect(Collectors.toList());
+        return getDataTable(collect);
     }
 
     @PostMapping("/checkStock")
@@ -187,8 +224,11 @@ public class SysSaleShopController extends BaseController {
             if (!UserConstants.YES.equals(tpl.getOnSale())) {
                 throw new ServiceException("商品已下架", 400);
             }
+            if(saleOrderVo.getBuyNum() < tpl.getMinBuyNum()) {
+                throw new ServiceException("不满足最少购买数量：" + tpl.getMinBuyNum() + "，请增加购买数量", 400);
+            }
             if (!UserConstants.YES.equals(tpl.getEnableAutoGen())) { // 非自动制卡
-                if (sysSaleShopService.getSaleableCard(tpl.getTemplateId()).size() < saleOrderVo.getBuyNum()) {
+                if (sysSaleShopService.getSaleableCardSize(tpl.getTemplateId()) < saleOrderVo.getBuyNum()) {
                     throw new ServiceException("库存不足，请稍后再试", 400);
                 }
             }
@@ -197,8 +237,11 @@ public class SysSaleShopController extends BaseController {
             if (!UserConstants.YES.equals(tpl.getOnSale())) {
                 throw new ServiceException("商品已下架", 400);
             }
+            if(saleOrderVo.getBuyNum() < tpl.getMinBuyNum()) {
+                throw new ServiceException("不满足最少购买数量：" + tpl.getMinBuyNum() + "，请增加购买数量", 400);
+            }
             if (!UserConstants.YES.equals(tpl.getEnableAutoGen())) { // 非自动制卡
-                if (sysSaleShopService.getSaleableLoginCode(tpl.getTemplateId()).size() < saleOrderVo.getBuyNum()) {
+                if (sysSaleShopService.getSaleableLoginCodeSize(tpl.getTemplateId()) < saleOrderVo.getBuyNum()) {
                     throw new ServiceException("库存不足，请稍后再试", 400);
                 }
             }

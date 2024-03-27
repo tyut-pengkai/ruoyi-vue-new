@@ -765,22 +765,23 @@
                   ></el-option>
                 </el-select>
               </el-form-item> -->
-              <el-form-item
-                label="充值规则"
-                prop="chargeRule"
-                label-width="80px"
-              >
-                <el-select
-                  v-model="form.chargeRule"
-                  placeholder="请选择充值规则"
-                >
-                  <el-option
-                    v-for="dict in dict.type.sys_charge_rule"
-                    :key="dict.value"
-                    :label="dict.label"
-                    :value="dict.value"
-                  ></el-option>
-                </el-select>
+              <el-form-item label="卡密有效期" prop="effectiveDuration">
+                <span>
+                  <el-tooltip
+                    content="卡密有效期，即制卡后用户需要在多少时间内充值完毕，过期将无法充值，整数，-1为长期有效，默认为-1"
+                    placement="top"
+                  >
+                    <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                    ></i>
+                  </el-tooltip>
+                </span>
+                <date-duration
+                  @totalSeconds="handleEffectiveDuration"
+                  :seconds="form.effectiveDuration"
+                  :min="-1"
+                ></date-duration>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -845,29 +846,52 @@
               </el-form-item>
             </el-col>
           </el-form-item>
-          <!-- <el-form-item> -->
-          <!-- <el-col :span="16"> -->
-          <el-form-item label="卡密有效期" prop="effectiveDuration">
-            <span>
-              <el-tooltip
-                content="卡密有效期，即制卡后用户需要在多少时间内充值完毕，过期将无法充值，整数，-1为长期有效，默认为-1"
-                placement="top"
+           <el-form-item>
+             <el-col :span="12">
+               <el-form-item
+                 label="起拍张数"
+                 prop="minBuyNum"
+                 label-width="80px"
+               >
+                 <span>
+                  <el-tooltip
+                    content="一次性最少购买的数量，默认为1"
+                    placement="top"
+                  >
+                    <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                    ></i>
+                  </el-tooltip>
+                </span>
+                 <el-input-number
+                   v-model="form.minBuyNum"
+                   controls-position="right"
+                   :min="1"
+                   :max="1000"
+                 />
+               </el-form-item>
+             </el-col>
+             <el-col :span="12">
+              <el-form-item
+                label="充值规则"
+                prop="chargeRule"
+                label-width="80px"
               >
-                <i
-                  class="el-icon-question"
-                  style="margin-left: -12px; margin-right: 10px"
-                ></i>
-              </el-tooltip>
-            </span>
-            <date-duration
-              @totalSeconds="handleEffectiveDuration"
-              :seconds="form.effectiveDuration"
-              :min="-1"
-            ></date-duration>
-          </el-form-item>
-          <!-- </el-col> -->
-          <!-- <el-col :span="8"> </el-col> -->
-          <!-- </el-form-item> -->
+                <el-select
+                  v-model="form.chargeRule"
+                  placeholder="请选择充值规则"
+                >
+                  <el-option
+                    v-for="dict in dict.type.sys_charge_rule"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+             </el-col>
+           </el-form-item>
           <el-form-item label="充值卡自定义参数" prop="cardCustomParams">
             <el-input
               v-model="form.cardCustomParams"
@@ -1156,6 +1180,13 @@ export default {
             required: true,
             message: "是否允许解绑不能为空",
             trigger: "change",
+          },
+        ],
+        minBuyNum: [
+          {
+            required: true,
+            message: "起拍张数不能为空",
+            trigger: "blur",
           },
         ],
       },

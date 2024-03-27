@@ -521,7 +521,7 @@
               <el-form-item
                 label="单码面值"
                 prop="quota"
-                label-width="100px"
+                label-width="80px"
                 style="width: 320px"
               >
                 <div v-if="app">
@@ -549,7 +549,7 @@
               <el-form-item
                 label="单码面值"
                 prop="quota"
-                label-width="100px"
+                label-width="80px"
                 style="width: 320px"
               >
                 <div v-if="form.app.billType === '0'">
@@ -646,7 +646,7 @@
               <el-form-item
                 label="单码前缀"
                 prop="cardNoPrefix"
-                label-width="100px"
+                label-width="80px"
                 style="width: 300px"
               >
                 <el-input
@@ -660,7 +660,7 @@
               <el-form-item
                 label="单码后缀"
                 prop="cardNoSuffix"
-                label-width="100px"
+                label-width="80px"
                 style="width: 300px"
               >
                 <el-input
@@ -676,7 +676,7 @@
               <el-form-item
                 label="单码长度"
                 prop="cardNoLen"
-                label-width="100px"
+                label-width="80px"
               >
                 <el-input-number
                   v-model="form.cardNoLen"
@@ -721,7 +721,7 @@
               <el-form-item
                 label="单码正则"
                 prop="cardNoRegex"
-                label-width="100px"
+                label-width="80px"
                 style="width: 300px"
               >
                 <el-input
@@ -771,7 +771,7 @@
               <el-form-item
                 label="自动制卡"
                 prop="enableAutoGen"
-                label-width="100px"
+                label-width="80px"
               >
                 <el-select
                   v-model="form.enableAutoGen"
@@ -825,6 +825,33 @@
                   v-model="form.cardLoginLimitM"
                   :min="-2"
                   controls-position="right"
+                />
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item>
+            <el-col :span="12">
+              <el-form-item
+                label="起拍张数"
+                prop="minBuyNum"
+                label-width="80px"
+              >
+                 <span>
+                  <el-tooltip
+                    content="一次性最少购买的数量，默认为1"
+                    placement="top"
+                  >
+                    <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                    ></i>
+                  </el-tooltip>
+                </span>
+                <el-input-number
+                  v-model="form.minBuyNum"
+                  controls-position="right"
+                  :min="1"
+                  :max="1000"
                 />
               </el-form-item>
             </el-col>
@@ -1085,6 +1112,13 @@ export default {
             required: true,
             message: "是否允许解绑不能为空",
             trigger: "change",
+          },
+        ],
+        minBuyNum: [
+          {
+            required: true,
+            message: "起拍张数不能为空",
+            trigger: "blur",
           },
         ],
       },

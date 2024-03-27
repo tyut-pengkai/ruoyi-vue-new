@@ -5,6 +5,7 @@ import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysLoginCode;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ISysSaleShopService {
 
@@ -18,6 +19,10 @@ public interface ISysSaleShopService {
      */
     public List<SysCard> getSaleableCard(Long templateId);
 
+    public int getSaleableCardSize(Long templateId);
+
+    public Map<Long, Long> getSaleableCardSizeAll();
+
     /**
      * 获取可售卖的卡，满足条件：卡上架，卡未过期，卡未使用，卡未售出，卡状态正常
      *
@@ -25,4 +30,8 @@ public interface ISysSaleShopService {
      * @return
      */
     public List<SysLoginCode> getSaleableLoginCode(Long templateId);
+
+    public int getSaleableLoginCodeSize(Long templateId);
+
+    public Map<Long, Long> getSaleableLoginCodeSizeAll();
 }

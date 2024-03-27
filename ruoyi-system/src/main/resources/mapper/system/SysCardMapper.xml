@@ -171,6 +171,49 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
     </select>
 
+    <resultMap id="cardCount" type="java.util.HashMap">
+        <result column="template_id" property="templateId" javaType="java.lang.Long"/>
+        <result column="size" property="size" javaType="java.lang.Long"/>
+    </resultMap>
+
+    <select id="countSysCardAll" parameterType="SysCard" resultMap="cardCount">
+        select c.template_id, count(1) as size from sys_card c
+        left join sys_app a on c.app_id = a.app_id
+        <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
+            <!-- 数据范围过滤 -->
+            inner join sys_user u on a.create_by = u.user_name
+            inner join sys_user u1 on c.create_by = u1.user_name
+        </if>
+        where a.del_flag = '0' and c.del_flag = '0'
+        <if test="appId != null ">and c.app_id = #{appId}</if>
+        <if test="agentId != null ">and c.agent_id = #{agentId}</if>
+        <if test="templateId != null ">and c.template_id = #{templateId}</if>
+        <if test="cardName != null  and cardName != ''">and c.card_name like concat('%', #{cardName}, '%')</if>
+        <if test="cardNo != null  and cardNo != ''">and BINARY c.card_no like concat('%', #{cardNo}, '%')</if>
+        <if test="params.beginQuota != null and params.beginQuota != '' and params.endQuota != null and params.endQuota != ''">
+            and c.quota between #{params.beginQuota} and #{params.endQuota}
+        </if>
+        <if test="params.beginPrice != null and params.beginPrice != '' and params.endPrice != null and params.endPrice != ''">
+            and c.price between #{params.beginPrice} and #{params.endPrice}
+        </if>
+        <if test="params.beginExpireTime != null and params.beginExpireTime != '' and params.endExpireTime != null and params.endExpireTime != ''">
+            and c.expire_time between #{params.beginExpireTime} and #{params.endExpireTime}
+        </if>
+        <if test="isSold != null  and isSold != ''">and c.is_sold = #{isSold}</if>
+        <if test="onSale != null  and onSale != ''">and c.on_sale = #{onSale}</if>
+        <if test="isCharged != null  and isCharged != ''">and c.is_charged = #{isCharged}</if>
+        <if test="status != null  and status != ''">and c.status = #{status}</if>
+        <if test="chargeRule != null">and c.charge_rule = #{chargeRule}</if>
+        <if test="isAgent != null  and isAgent != ''">and c.is_agent = #{isAgent}</if>
+        <if test="createBy != null  and createBy != ''">and c.create_by = #{createBy}</if>
+        <if test="batchNo != null  and batchNo != ''">and c.batch_no = #{batchNo}</if>
+        <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </if>
+        group by c.template_id
+    </select>
+
     <select id="selectSysCardNoList" resultType="String">
         select card_no
         from sys_card

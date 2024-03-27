@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 单码Mapper接口
@@ -98,4 +99,6 @@ public interface SysLoginCodeMapper {
      * @return
      */
     public List<BatchNoVo> selectBatchNoList(@Param("agentId") Long agentId);
+
+    public List<Map<String, Long>> countSysLoginCodeAll(SysLoginCode card);
 }

@@ -110,9 +110,12 @@
                 <el-input-number
                   v-model="form.buyNum"
                   @change="handleBuyNumChange"
-                  :min="1"
+                  :min="selectedGoodsData.minBuyNum"
                   :max="selectedGoodsData.num"
                 ></el-input-number>
+                <span style="margin-left: 10px" v-show="selectedGoodsData.minBuyNum > 1">
+                  <el-tag>本商品{{selectedGoodsData.minBuyNum}}件起拍</el-tag>
+                </span>
               </el-form-item>
               <el-form-item label="联系方式" prop="contact">
                 <el-input
@@ -447,6 +450,7 @@ export default {
             min: ct.price,
             // tags: ["多件优惠"],
             num: ct.cardCount,
+            minBuyNum: ct.minBuyNum,
             wholesale: [], //批发
           });
         }
@@ -469,6 +473,9 @@ export default {
       this.selectedGoodsData = this.goodsData[id];
       if (this.selectedGoodsData.num >= 1000) {
         this.selectedGoodsData.num = 1000;
+      }
+      if(this.selectedGoodsData.minBuyNum > this.form.buyNum) {
+        this.form.buyNum = this.selectedGoodsData.minBuyNum;
       }
       this.selectedGoodsData.price = this.goodsData[id].min;
       this.selectedGoodsData.totalPrice = this.selectedGoodsData.price;

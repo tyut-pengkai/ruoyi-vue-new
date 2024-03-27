@@ -160,6 +160,17 @@ public class SysLoginCodeTemplate extends BaseEntity {
     @Excel(name = "允许解绑")
     private String enableUnbind;
 
+    @Excel(name = "最少购买数量")
+    private Integer minBuyNum;
+
+    public Integer getMinBuyNum() {
+        return minBuyNum;
+    }
+
+    public void setMinBuyNum(Integer minBuyNum) {
+        this.minBuyNum = minBuyNum;
+    }
+
     public String getEnableUnbind() {
         return enableUnbind;
     }

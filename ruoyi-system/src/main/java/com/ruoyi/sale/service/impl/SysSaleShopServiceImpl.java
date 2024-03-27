@@ -30,10 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -176,8 +173,44 @@ public class SysSaleShopServiceImpl implements ISysSaleShopService {
         card.setIsSold(UserConstants.NO);
         card.setIsAgent(UserConstants.NO);
         card.setStatus(UserConstants.NORMAL);
-        return sysCardMapper.selectSysCardList(card)
-                .stream().filter(c -> c.getExpireTime().after(DateUtils.getNowDate())).collect(Collectors.toList());
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("beginExpireTime", DateUtils.getTime());
+        params.put("endExpireTime", "9999-12-31 23:59:59");
+        card.setParams(params);
+        return sysCardMapper.selectSysCardList(card);
+                //.stream().filter(c -> c.getExpireTime().after(DateUtils.getNowDate())).collect(Collectors.toList());
+    }
+
+    @Override
+    public int getSaleableCardSize(Long templateId) {
+        SysCard card = new SysCard();
+        card.setTemplateId(templateId);
+        card.setOnSale(UserConstants.YES);
+        card.setIsCharged(UserConstants.NO);
+        card.setIsSold(UserConstants.NO);
+        card.setIsAgent(UserConstants.NO);
+        card.setStatus(UserConstants.NORMAL);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("beginExpireTime", DateUtils.getTime());
+        params.put("endExpireTime", "9999-12-31 23:59:59");
+        card.setParams(params);
+        return sysCardMapper.countSysCard(card);
+    }
+
+    @Override
+    public Map<Long, Long> getSaleableCardSizeAll() {
+        SysCard card = new SysCard();
+        card.setOnSale(UserConstants.YES);
+        card.setIsCharged(UserConstants.NO);
+        card.setIsSold(UserConstants.NO);
+        card.setIsAgent(UserConstants.NO);
+        card.setStatus(UserConstants.NORMAL);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("beginExpireTime", DateUtils.getTime());
+        params.put("endExpireTime", "9999-12-31 23:59:59");
+        card.setParams(params);
+        List<Map<String, Long>> mapList = sysCardMapper.countSysCardAll(card);
+        return mapListToMap(mapList, "templateId");
     }
 
     /**
@@ -195,8 +228,61 @@ public class SysSaleShopServiceImpl implements ISysSaleShopService {
         card.setIsSold(UserConstants.NO);
         card.setIsAgent(UserConstants.NO);
         card.setStatus(UserConstants.NORMAL);
-        return sysLoginCodeMapper.selectSysLoginCodeList(card)
-                .stream().filter(c -> c.getExpireTime().after(DateUtils.getNowDate())).collect(Collectors.toList());
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("beginExpireTime", DateUtils.getTime());
+        params.put("endExpireTime", "9999-12-31 23:59:59");
+        card.setParams(params);
+        return sysLoginCodeMapper.selectSysLoginCodeList(card);
+//                .stream().filter(c -> c.getExpireTime().after(DateUtils.getNowDate())).collect(Collectors.toList());
+    }
+
+    @Override
+    public int getSaleableLoginCodeSize(Long templateId) {
+        SysLoginCode card = new SysLoginCode();
+        card.setTemplateId(templateId);
+        card.setOnSale(UserConstants.YES);
+        card.setIsCharged(UserConstants.NO);
+        card.setIsSold(UserConstants.NO);
+        card.setIsAgent(UserConstants.NO);
+        card.setStatus(UserConstants.NORMAL);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("beginExpireTime", DateUtils.getTime());
+        params.put("endExpireTime", "9999-12-31 23:59:59");
+        card.setParams(params);
+        return sysLoginCodeMapper.countSysLoginCode(card);
+    }
+
+    @Override
+    public Map<Long, Long> getSaleableLoginCodeSizeAll() {
+        SysLoginCode card = new SysLoginCode();
+        card.setOnSale(UserConstants.YES);
+        card.setIsCharged(UserConstants.NO);
+        card.setIsSold(UserConstants.NO);
+        card.setIsAgent(UserConstants.NO);
+        card.setStatus(UserConstants.NORMAL);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("beginExpireTime", DateUtils.getTime());
+        params.put("endExpireTime", "9999-12-31 23:59:59");
+        card.setParams(params);
+        List<Map<String, Long>> mapList = sysLoginCodeMapper.countSysLoginCodeAll(card);
+        return mapListToMap(mapList, "templateId");
+    }
+
+    private Map<Long, Long> mapListToMap(List<Map<String, Long>> mapList, String keyName) {
+        Map<Long, Long> result = new HashMap<>();
+        for (Map<String, Long> kv : mapList) {
+            Long key = null;
+            Long value = null;
+            for (Map.Entry<String, Long> entry : kv.entrySet()) {
+                if (entry.getKey().equals(keyName)) {
+                    key = entry.getValue();
+                } else {
+                    value = entry.getValue();
+                }
+            }
+            result.put(key, value);
+        }
+        return result;
     }
 
 }

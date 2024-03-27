@@ -53,7 +53,7 @@ public class ClearTrailTimesTask {
                 appTrialUser.setLoginTimes(0L);
                 appTrialUser.setNextEnableTime(MyUtils.getNewExpiredTimeAdd(null, trialCycle));
                 trialUserListBatchList.add(appTrialUser);
-                log.info("[软件试用]试用软件ID：{} 试用用户：{} 试用周期已重置", appTrialUser.getAppId(), appTrialUser.getUserName());
+                log.info("[软件试用]试用软件ID：{} 试用用户：{}-{} 试用周期已重置", appTrialUser.getAppId(), appTrialUser.getLoginIp(), appTrialUser.getDeviceCode());
             }
         }
         if(!trialUserListBatchList.isEmpty()) {

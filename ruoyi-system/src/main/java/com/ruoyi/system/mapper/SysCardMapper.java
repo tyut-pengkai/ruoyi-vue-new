@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 卡密Mapper接口
@@ -105,4 +106,6 @@ public interface SysCardMapper {
      * @return
      */
     public List<BatchNoVo> selectBatchNoList(@Param("agentId")Long agentId);
+
+    public List<Map<String, Long>> countSysCardAll(SysCard card);
 }
