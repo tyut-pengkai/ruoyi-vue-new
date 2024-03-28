@@ -900,18 +900,18 @@
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane disabled>
-          <slot slot="label">
-            <el-button
-              type="text"
-              icon="el-icon-setting"
-              size="mini"
-              @click="handleExport"
-              style="margin-left: 5px"
-            >模板管理</el-button
-            >
-          </slot>
-        </el-tab-pane>
+<!--        <el-tab-pane disabled>-->
+<!--          <slot slot="label">-->
+<!--            <el-button-->
+<!--              type="text"-->
+<!--              icon="el-icon-setting"-->
+<!--              size="mini"-->
+<!--              @click="handleExport"-->
+<!--              style="margin-left: 5px"-->
+<!--            >模板管理</el-button-->
+<!--            >-->
+<!--          </slot>-->
+<!--        </el-tab-pane>-->
       </el-tabs>
       <div slot="footer" class="dialog-footer">
         <el-button @click="upload.open = false">取 消</el-button>

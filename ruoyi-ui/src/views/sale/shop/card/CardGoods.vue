@@ -17,7 +17,7 @@
           @click.native="handleSelect(item.id)"
         >
           <div class="my-card-title">
-            <p>{{ item.name }}</p>
+            <p>{{ item.name }}<el-tag size="mini" v-show="item.minBuyNum>1" style="margin-left: 10px">{{item.minBuyNum}}件起拍</el-tag></p>
             <span class="my-card-span" v-if="item.max">
               ￥ {{ item.min }} - {{ item.max }}
             </span>
