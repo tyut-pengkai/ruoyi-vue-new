@@ -3,6 +3,7 @@ package com.ruoyi.framework.hy.user;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.utils.SysCache;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -28,6 +29,7 @@ public class HyTuser {
             for (String key : keys) { // orderNoStr格式：payMode|orderNo
                 if (key != null) {
                     redisCache.deleteObject(key);
+                    SysCache.delete(key);
                 }
             }
         }
