@@ -140,11 +140,11 @@
         </el-form-item>
         <el-row>
           <el-col :span="10">
-            <el-form-item label="代理名称" prop="userId">
+            <el-form-item label="代理账号" prop="userId">
               <!--          <el-input v-model="form.userId" placeholder="请输入用户ID" />-->
               <div v-if="form.agentId == null">
                 <el-select v-model="form.userId" :clearable="true" filterable :loading="loading"
-                  :remote-method="remoteMethod" prop="userId" placeholder="请输入用户名" remote>
+                  :remote-method="remoteMethod" prop="userId" placeholder="请输入账号" remote>
                   <el-option v-for="item in nonAgentList" :key="item.userId" :disabled="item.disabled"
                     :label="item.nickName + '(' + item.userName + ')'" :value="item.userId">
                   </el-option>

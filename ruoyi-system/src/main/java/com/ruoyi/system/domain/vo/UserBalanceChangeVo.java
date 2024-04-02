@@ -6,11 +6,14 @@ import java.math.BigDecimal;
 public class UserBalanceChangeVo {
 
     private Long userId;
+    /**
+     * 1增加余额 2减少余额 3等于余额
+     */
     private String operation;
     private BigDecimal amount;
     private String remark;
 
-    @NotNull(message = "用户ID不能为空")
+    @NotNull(message = "账号不能为空")
     public Long getUserId() {
         return userId;
     }

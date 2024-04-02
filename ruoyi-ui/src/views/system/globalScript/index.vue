@@ -359,7 +359,7 @@
                     app，可获取软件信息，如${app.appName}可获取当前软件名称
                   </li>
                   <li>
-                    appUser，可获取用户信息，如${appUser.userInfo.userName}可获取当前登录用户名，${appUser.loginCode}可获取当前登录单码
+                    appUser，可获取用户信息，如${appUser.userInfo.userName}可获取当前登录用户账号，${appUser.loginCode}可获取当前登录单码
                   </li>
                   <li>
                     version，可获取版本信息，如${version.versionName}可获取当前版本名称

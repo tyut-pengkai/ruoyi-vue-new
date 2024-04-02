@@ -6,11 +6,11 @@
       :inline="true"
       :model="queryParams"
     >
-      <el-form-item label="用户名" prop="userName">
+      <el-form-item label="用户账号" prop="userName">
         <el-input
           v-model="queryParams.userName"
           clearable
-          placeholder="请输入用户名"
+          placeholder="请输入用户账号"
           size="small"
           @keyup.enter.native="handleQuery"
         />
@@ -217,7 +217,7 @@
         :show-overflow-tooltip="true"
         :sort-orders="['descending', 'ascending']"
         align="center"
-        label="用户名称"
+        label="用户账号"
         prop="userName"
         sortable="custom"
       />
@@ -288,8 +288,8 @@
     <!-- 添加或修改系统访问记录对话框 -->
     <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户名" prop="userName">
-          <el-input v-model="form.userName" placeholder="请输入用户名" />
+        <el-form-item label="用户账号" prop="userName">
+          <el-input v-model="form.userName" placeholder="请输入用户账号" />
         </el-form-item>
         <el-form-item label="用户ID" prop="appUserId">
           <el-input v-model="form.appUserId" placeholder="请输入用户ID" />

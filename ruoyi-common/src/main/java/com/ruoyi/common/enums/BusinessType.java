@@ -68,6 +68,11 @@ public enum BusinessType
     QUICK_ACCESS,
 
     /**
+     * 转账
+     */
+    TRANSFER_BALANCE,
+
+    /**
      * 测试
      */
     TEST,

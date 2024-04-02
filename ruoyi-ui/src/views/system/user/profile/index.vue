@@ -12,7 +12,7 @@
             </div>
             <ul class="list-group list-group-striped">
               <li class="list-group-item">
-                <svg-icon icon-class="user" />用户名称
+                <svg-icon icon-class="user" />用户账号
                 <div class="pull-right">{{ user.userName }}</div>
               </li>
               <li class="list-group-item">
@@ -80,8 +80,10 @@
           </el-tag>
           <el-divider direction="vertical"></el-divider>
           <el-link type="primary" @click="handleCharge()">充值</el-link>
-          <!-- <el-divider direction="vertical"></el-divider>
-          <el-link type="primary">提现</el-link> -->
+          <el-divider direction="vertical"></el-divider>
+          <el-link type="primary" @click="handleTransfer()">转账</el-link>
+          <el-divider direction="vertical"></el-divider>
+          <el-link type="primary" disabled>提现</el-link>
           <el-tag style="margin-left: 50px" type="info">
             账户余额冻结
             <span>
@@ -164,6 +166,59 @@
         <el-button @click="cancelC">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!-- 转账对话框 -->
+    <el-dialog
+      :visible.sync="openT"
+      append-to-body
+      title="账号转账"
+      width="800px"
+    >
+      <el-form ref="formT" :model="formT" :rules="rulesT" label-width="80px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="转账金额" prop="amount">
+              <el-input-number
+                v-model="formT.amount"
+                :min="0.01"
+                :precision="2"
+                :step="0.01"
+                controls-position="right"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="目的账号" prop="toUserId">
+              <el-select v-model="formT.toUserId" :clearable="true" filterable :loading="loading"
+                         :remote-method="remoteMethod" prop="toUserId" placeholder="请输入账号" remote>
+                <el-option v-for="item in userList" :key="item.userId" :disabled="item.disabled"
+                           :label="item.nickName + '(' + item.userName + ')'" :value="item.userId">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="转账原因" prop="remark">
+              <el-input
+                v-model="formT.remark"
+                placeholder="请输入内容"
+                type="textarea"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFormT">提 交</el-button>
+        <el-button @click="cancelT">取 消</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -171,7 +226,7 @@
 import userAvatar from "./userAvatar";
 import userInfo from "./userInfo";
 import resetPwd from "./resetPwd";
-import {getUserProfile} from "@/api/system/user";
+import {listUser, transferUserBalance, getUserProfile} from "@/api/system/user";
 import CountTo from "vue-count-to";
 import CardPay from "@/views/sale/shop/card/CardPay1";
 import {createChargeOrder, getPayStatus, getShopConfig,} from "@/api/sale/saleShop";
@@ -201,6 +256,16 @@ export default {
       ],
       // 商店配置
       shopConfig: null,
+      // 转账
+      loading: false,
+      openT: false,
+      formT: {amount: 100},
+      rulesT: {
+        amount: [{required: true, message: "金额不能为空", trigger: "blur"}],
+        toUserId: [{required: true, message: "目的账号不能为空", trigger: "blur"}],
+        remark: [{ required: true, message: "转账原因不能为空", trigger: "blur" }],
+      },
+      userList: [],
     };
   },
   created() {
@@ -214,6 +279,17 @@ export default {
         this.roleGroup = response.roleGroup;
         this.postGroup = response.postGroup;
       });
+    },
+    remoteMethod(query) {
+      if (query !== "") {
+        this.loading = true;
+        listUser({ userName: query }).then((response) => {
+          this.userList = response.rows;
+          this.loading = false;
+        });
+      } else {
+        this.userList = [];
+      }
     },
     // 充值
     /** 充值按钮操作 */
@@ -290,6 +366,27 @@ export default {
           this.payData.push(
             Object.assign({id: this.payData.length}, payMode)
           );
+        }
+      });
+    },
+    // 转账
+    /** 充值按钮操作 */
+    handleTransfer() {
+      this.openT = true;
+    },
+    // 取消按钮
+    cancelT() {
+      this.openT = false;
+    },
+    /** 提交按钮 */
+    submitFormT: function () {
+      this.$refs["formT"].validate((valid) => {
+        if (valid) {
+          transferUserBalance(this.formT).then((response) => {
+            this.getUser();
+            this.$modal.msgSuccess("转账成功");
+            this.openT = false;
+          });
         }
       });
     },

@@ -31,11 +31,11 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="用户名称/单码" prop="userName">
+      <el-form-item label="用户账号/单码" prop="userName">
         <el-input
           v-model="queryParams.userName"
           clearable
-          placeholder="请输入用户名称或单码"
+          placeholder="请输入用户账号或单码"
           size="small"
           @keyup.enter.native="handleQuery"
         />

@@ -8,10 +8,10 @@
     append-to-body
   >
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true">
-      <el-form-item label="用户名称" prop="userName">
+      <el-form-item label="用户账号" prop="userName">
         <el-input
           v-model="queryParams.userName"
-          placeholder="请输入用户名称"
+          placeholder="请输入用户账号"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -47,7 +47,7 @@
       >
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column
-          label="用户名称"
+          label="用户账号"
           prop="userName"
           :show-overflow-tooltip="true"
         />

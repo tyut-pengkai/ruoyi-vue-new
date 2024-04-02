@@ -37,10 +37,10 @@
           label-width="68px"
           size="small"
         >
-          <el-form-item label="用户名称" prop="userName">
+          <el-form-item label="用户账号" prop="userName">
             <el-input
               v-model="queryParams.userName"
-              placeholder="请输入用户名称"
+              placeholder="请输入用户账号"
               clearable
               style="width: 240px"
               @keyup.enter.native="handleQuery"
@@ -187,7 +187,7 @@
             key="userName"
             :show-overflow-tooltip="true"
             align="center"
-            label="用户名称"
+            label="用户账号"
             prop="userName"
           />
           <el-table-column
@@ -343,13 +343,13 @@
           <el-col :span="12">
             <el-form-item
               v-if="form.userId == undefined"
-              label="用户名称"
+              label="用户账号"
               prop="userName"
             >
               <el-input
                 v-model="form.userName"
                 maxlength="30"
-                placeholder="请输入用户名称"
+                placeholder="请输入用户账号"
               />
             </el-form-item>
           </el-col>
@@ -710,7 +710,7 @@ export default {
       // 列信息
       columns: [
         { key: 0, label: `用户编号`, visible: true },
-        { key: 1, label: `用户名称`, visible: true },
+        { key: 1, label: `用户账号`, visible: true },
         { key: 2, label: `用户昵称`, visible: true },
         { key: 3, label: `分组`, visible: true },
         { key: 4, label: `手机号码`, visible: true },
@@ -720,11 +720,11 @@ export default {
       // 表单校验
       rules: {
         userName: [
-          { required: true, message: "用户名称不能为空", trigger: "blur" },
+          { required: true, message: "用户账号不能为空", trigger: "blur" },
           {
             min: 2,
             max: 20,
-            message: "用户名称长度必须介于 2 和 20 之间",
+            message: "用户账号长度必须介于 2 和 20 之间",
             trigger: "blur",
           },
         ],

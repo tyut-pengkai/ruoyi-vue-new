@@ -7,12 +7,11 @@ import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.enums.BalanceChangeType;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.system.domain.vo.BalanceChangeVo;
 import com.ruoyi.system.domain.vo.UserBalanceChangeVo;
+import com.ruoyi.system.domain.vo.UserBalanceTransferVo;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
@@ -28,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -234,28 +232,21 @@ public class SysUserController extends BaseController {
     /**
      * 修改用户余额
      */
-    @PreAuthorize("@ss.hasPermi('system:user:edit')")
-    @Log(title = "用户管理", businessType = BusinessType.UPDATE)
-    @PutMapping("/balance")
+    @PreAuthorize("@ss.hasPermi('system:user:transferBalance')")
+    @Log(title = "用户管理", businessType = BusinessType.TRANSFER_BALANCE)
+    @PutMapping("/editBalance")
     public AjaxResult editBalance(@Validated @RequestBody UserBalanceChangeVo vo) {
-        userService.checkUserDataScope(vo.getUserId());
-        BalanceChangeVo change = new BalanceChangeVo();
-        change.setUserId(vo.getUserId());
-        change.setUpdateBy(getUsername());
-        if(Objects.equals(vo.getOperation(), "3")) {
-            SysUser sysUser = userService.selectUserById(vo.getUserId());
-            if(vo.getAmount().compareTo(sysUser.getAvailablePayBalance()) >= 0) {
-                vo.setOperation("1");
-                vo.setAmount(vo.getAmount().subtract(sysUser.getAvailablePayBalance()));
-            } else {
-                vo.setOperation("2");
-                vo.setAmount(vo.getAmount().subtract(sysUser.getAvailablePayBalance()).negate());
-            }
-        }
-        change.setType("1".equals(vo.getOperation()) ? BalanceChangeType.OTHOR_IN : BalanceChangeType.OTHOR_OUT);
-        change.setDescription("管理员后台" + ("1".equals(vo.getOperation()) ? "加款" : "扣款") + "：" + vo.getAmount() + "，附加信息：" + vo.getRemark());
-        change.setAvailablePayBalance("1".equals(vo.getOperation()) ? vo.getAmount() : vo.getAmount().negate());
-        return toAjax(userService.updateUserBalance(change));
+        return toAjax(userService.editBalance(vo));
+    }
+
+    /**
+     * 修改用户余额
+     */
+    @PreAuthorize("@ss.hasPermi('system:user:transferBalance')")
+    @Log(title = "用户管理", businessType = BusinessType.TRANSFER_BALANCE)
+    @PutMapping("/transferBalance")
+    public AjaxResult transferBalance(@Validated @RequestBody UserBalanceTransferVo vo) {
+        return toAjax(userService.transferBalance(vo));
     }
 
     /**

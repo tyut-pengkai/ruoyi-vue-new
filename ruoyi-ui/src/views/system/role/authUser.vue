@@ -7,10 +7,10 @@
       :inline="true"
       v-show="showSearch"
     >
-      <el-form-item label="用户名称" prop="userName">
+      <el-form-item label="用户账号" prop="userName">
         <el-input
           v-model="queryParams.userName"
-          placeholder="请输入用户名称"
+          placeholder="请输入用户账号"
           clearable
           style="width: 240px"
           @keyup.enter.native="handleQuery"
@@ -86,7 +86,7 @@
     >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column
-        label="用户名称"
+        label="用户账号"
         prop="userName"
         :show-overflow-tooltip="true"
       />

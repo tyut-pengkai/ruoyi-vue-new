@@ -384,7 +384,7 @@
                 <li>代码生成点击预览重置激活tab</li>
                 <li>AjaxResult重写put方法，以方便链式调用</li>
                 <li>优化登录/验证码请求headers不设置token</li>
-                <li>优化用户个人信息接口防止修改用户名</li>
+                <li>优化用户个人信息接口防止修改用户账号</li>
                 <li>优化Cron表达式生成器关闭时销毁避免缓存</li>
                 <li>优化注册成功提示消息类型success</li>
                 <li>优化aop语法，使用spring自动注入注解</li>
@@ -777,7 +777,7 @@
                 <li>swagger添加enable参数控制是否启用</li>
                 <li>只对json类型请求构建可重复读取inputStream的request</li>
                 <li>修改代码生成字典字段int类型没有自动选中问题</li>
-                <li>vuex用户名取值修正</li>
+                <li>vuex用户账号取值修正</li>
                 <li>表格树模板去掉多余的)</li>
                 <li>代码生成序号修正</li>
                 <li>全屏情况下不调整上外边距</li>
@@ -785,7 +785,7 @@
                 <li>用户管理角色选择权限控制</li>
                 <li>修复路由懒加载报错问题</li>
                 <li>模板sql.vm添加菜单状态</li>
-                <li>设置用户名称不能修改</li>
+                <li>设置用户账号不能修改</li>
                 <li>dialog添加append-to-body属性，防止ie遮罩</li>
                 <li>菜单区分状态和显示隐藏功能</li>
                 <li>升级fastjson到最新版1.2.68 修复安全加固</li>

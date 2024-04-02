@@ -19,6 +19,8 @@ import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.domain.SysUserPost;
 import com.ruoyi.system.domain.SysUserRole;
 import com.ruoyi.system.domain.vo.BalanceChangeVo;
+import com.ruoyi.system.domain.vo.UserBalanceChangeVo;
+import com.ruoyi.system.domain.vo.UserBalanceTransferVo;
 import com.ruoyi.system.mapper.*;
 import com.ruoyi.system.service.ISysBalanceLogService;
 import com.ruoyi.system.service.ISysConfigService;
@@ -36,6 +38,7 @@ import javax.validation.Validator;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -443,6 +446,60 @@ public class SysUserServiceImpl implements ISysUserService {
             }
         }
         return 0;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int editBalance(UserBalanceChangeVo vo) {
+        if(BigDecimal.ZERO.compareTo(vo.getAmount()) >= 0) {
+            throw new ServiceException("调整金额应该大于0");
+        }
+        checkUserDataScope(vo.getUserId());
+        BalanceChangeVo change = new BalanceChangeVo();
+        change.setUserId(vo.getUserId());
+        change.setUpdateBy(SecurityUtils.getUsername());
+        if(Objects.equals(vo.getOperation(), "3")) {
+            SysUser sysUser = selectUserById(vo.getUserId());
+            if(vo.getAmount().compareTo(sysUser.getAvailablePayBalance()) >= 0) {
+                vo.setOperation("1");
+                vo.setAmount(vo.getAmount().subtract(sysUser.getAvailablePayBalance()));
+            } else {
+                vo.setOperation("2");
+                vo.setAmount(vo.getAmount().subtract(sysUser.getAvailablePayBalance()).negate());
+            }
+        }
+        change.setType("1".equals(vo.getOperation()) ? BalanceChangeType.OTHOR_IN : BalanceChangeType.OTHOR_OUT);
+        change.setDescription("管理员后台" + ("1".equals(vo.getOperation()) ? "加款" : "扣款") + "：" + vo.getAmount() + "，附加信息：" + vo.getRemark());
+        change.setAvailablePayBalance("1".equals(vo.getOperation()) ? vo.getAmount() : vo.getAmount().negate());
+        return updateUserBalance(change);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int transferBalance(UserBalanceTransferVo vo) {
+        if(BigDecimal.ZERO.compareTo(vo.getAmount()) >= 0) {
+            throw new ServiceException("转账金额应该大于0");
+        }
+        if(vo.getToUserId() == SecurityUtils.getUserId()) {
+            throw new ServiceException("不能给自己转账");
+        }
+        SysUser toUser = selectUserById(vo.getToUserId());
+        if(toUser == null) {
+            throw new ServiceException("目标账号不存在");
+        }
+        BalanceChangeVo changeFrom = new BalanceChangeVo();
+        changeFrom.setUserId(SecurityUtils.getUserId());
+        changeFrom.setUpdateBy(SecurityUtils.getUsername());
+        changeFrom.setType(BalanceChangeType.TRANSFER_OUT);
+        changeFrom.setDescription("转账到账号[" + toUser.getUserName() + "]" + "：" + vo.getAmount() + "，附加信息：" + vo.getRemark());
+        changeFrom.setAvailablePayBalance(vo.getAmount().negate());
+        BalanceChangeVo changeTo = new BalanceChangeVo();
+        changeTo.setUserId(vo.getToUserId());
+        changeTo.setUpdateBy(SecurityUtils.getUsername());
+        changeTo.setType(BalanceChangeType.TRANSFER_IN);
+        changeTo.setDescription("收到账号[" + toUser.getUserName() + "]转账" + "：" + vo.getAmount() + "，附加信息：" + vo.getRemark());
+        changeTo.setAvailablePayBalance(vo.getAmount());
+        return updateUserBalance(changeFrom) & updateUserBalance(changeTo);
     }
 
     private boolean isNegative(BigDecimal amount) {

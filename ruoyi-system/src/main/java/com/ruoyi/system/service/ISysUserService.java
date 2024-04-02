@@ -2,6 +2,8 @@ package com.ruoyi.system.service;
 
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.system.domain.vo.BalanceChangeVo;
+import com.ruoyi.system.domain.vo.UserBalanceChangeVo;
+import com.ruoyi.system.domain.vo.UserBalanceTransferVo;
 
 import java.util.List;
 
@@ -161,6 +163,11 @@ public interface ISysUserService
      * @return 结果
      */
     public int updateUserBalance(BalanceChangeVo change);
+
+
+    public int editBalance(UserBalanceChangeVo vo);
+
+    public int transferBalance(UserBalanceTransferVo vo);
 
     /**
      * 修改用户头像

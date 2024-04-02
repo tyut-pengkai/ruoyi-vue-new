@@ -17,10 +17,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="用户名称" prop="userName">
+      <el-form-item label="用户账号" prop="userName">
         <el-input
           v-model="queryParams.userName"
-          placeholder="请输入用户名称"
+          placeholder="请输入用户账号"
           clearable
           style="width: 240px"
           @keyup.enter.native="handleQuery"
@@ -134,7 +134,7 @@
         :show-overflow-tooltip="true"
         :sort-orders="['descending', 'ascending']"
         align="center"
-        label="用户名称"
+        label="用户账号"
         prop="userName"
         sortable="custom"
       />
@@ -201,7 +201,7 @@ export default {
       single: true,
       // 非多个禁用
       multiple: true,
-      // 选择用户名
+      // 选择用户账号
       selectName: "",
       // 显示搜索条件
       showSearch: true,

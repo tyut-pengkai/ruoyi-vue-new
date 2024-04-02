@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 
 /**
  * 注册校验方法
- * 
+ *
  * @author ruoyi
  */
 @Component
@@ -64,6 +64,8 @@ public class SysRegisterService
 
         if (StringUtils.isEmpty(username)) {
             msg = "用户名不能为空";
+        } else if(username.contains(" ")) {
+            msg = "用户名不能包含空格";
         } else if (StringUtils.isEmpty(password)) {
             msg = "用户密码不能为空";
         } else if (username.length() < UserConstants.USERNAME_MIN_LENGTH
@@ -100,7 +102,7 @@ public class SysRegisterService
 
     /**
      * 校验验证码
-     * 
+     *
      * @param username 用户名
      * @param code 验证码
      * @param uuid 唯一标识
