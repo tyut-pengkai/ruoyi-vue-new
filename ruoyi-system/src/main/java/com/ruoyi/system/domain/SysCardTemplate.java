@@ -186,6 +186,28 @@ public class SysCardTemplate extends BaseEntity {
     @Excel(name = "最少购买数量")
     private Integer minBuyNum;
 
+    @Excel(name = "允许换卡")
+    private String enableReplace;
+
+    @Excel(name = "换卡至少剩余额度，0不限制 -1未使用")
+    private Long replaceThreshold;
+
+    public String getEnableReplace() {
+        return enableReplace;
+    }
+
+    public void setEnableReplace(String enableReplace) {
+        this.enableReplace = enableReplace;
+    }
+
+    public Long getReplaceThreshold() {
+        return replaceThreshold;
+    }
+
+    public void setReplaceThreshold(Long replaceThreshold) {
+        this.replaceThreshold = replaceThreshold;
+    }
+
     public Integer getMinBuyNum() {
         return minBuyNum;
     }

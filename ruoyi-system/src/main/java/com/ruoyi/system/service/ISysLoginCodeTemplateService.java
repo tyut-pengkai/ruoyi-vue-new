@@ -2,6 +2,7 @@ package com.ruoyi.system.service;
 
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
+import com.ruoyi.system.domain.vo.BatchReplaceVo;
 
 import java.util.List;
 
@@ -78,4 +79,15 @@ public interface ISysLoginCodeTemplateService {
      * @return 卡密模板
      */
     public SysLoginCodeTemplate selectSysLoginCodeTemplateByAppIdAndTemplateName(Long appId, String templateName);
+
+    /**
+     * 批量换卡
+     *
+     * @param template
+     * @param loginCode
+     * @param vo
+     * @param batchNo
+     * @return
+     */
+    public SysLoginCode genSysLoginCodeReplace(SysLoginCodeTemplate loginCodeTpl, SysLoginCode loginCode, BatchReplaceVo vo, String batchNo);
 }

@@ -49,7 +49,7 @@ public class SysBatchOperationController extends BaseController {
     public AjaxResult batchOperation(BatchOperationVo vo) {
         String[] split = vo.getContent().split("\n");
         Set<String> set = new HashSet<>(Arrays.asList(split));
-        if (set.size() == 0) {
+        if (set.isEmpty()) {
             return AjaxResult.success("请输入要操作的内容，每行一个");
         }
         List<String> list = set.stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());
@@ -67,7 +67,7 @@ public class SysBatchOperationController extends BaseController {
                         String b = "冻结的卡密";
                         String c = "已使用的卡密";
                         String d = "不存在的卡密";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                             result.put(c, new ArrayList<>());
@@ -85,7 +85,7 @@ public class SysBatchOperationController extends BaseController {
                     } else if (vo.getOperationType() == BatchOperationType.BAN) {
                         String a = "冻结成功";
                         String b = "冻结失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -107,7 +107,7 @@ public class SysBatchOperationController extends BaseController {
                     } else if (vo.getOperationType() == BatchOperationType.UNBAN) {
                         String a = "解冻成功";
                         String b = "解冻失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -131,7 +131,7 @@ public class SysBatchOperationController extends BaseController {
                     } else if (vo.getOperationType() == BatchOperationType.DELETE) {
                         String a = "删除成功";
                         String b = "删除失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -159,7 +159,7 @@ public class SysBatchOperationController extends BaseController {
                         }
                         String a = "备注成功";
                         String b = "备注失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -190,7 +190,7 @@ public class SysBatchOperationController extends BaseController {
                         String b = "冻结的单码";
                         String c = "已使用的单码";
                         String d = "不存在的单码";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                             result.put(c, new ArrayList<>());
@@ -208,7 +208,7 @@ public class SysBatchOperationController extends BaseController {
                     } else if (vo.getOperationType() == BatchOperationType.BAN) {
                         String a = "冻结成功";
                         String b = "冻结失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -230,7 +230,7 @@ public class SysBatchOperationController extends BaseController {
                     } else if (vo.getOperationType() == BatchOperationType.UNBAN) {
                         String a = "解冻成功";
                         String b = "解冻失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -254,7 +254,7 @@ public class SysBatchOperationController extends BaseController {
                     } else if (vo.getOperationType() == BatchOperationType.DELETE) {
                         String a = "删除成功";
                         String b = "删除失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -282,7 +282,7 @@ public class SysBatchOperationController extends BaseController {
                         }
                         String a = "备注成功";
                         String b = "备注失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -322,7 +322,7 @@ public class SysBatchOperationController extends BaseController {
                     String a = "正常的用户";
                     String b = "冻结的用户";
                     String d = "不存在的用户";
-                    if (result.size() == 0) {
+                    if (result.isEmpty()) {
                         result.put(a, new ArrayList<>());
                         result.put(b, new ArrayList<>());
                         result.put(d, new ArrayList<>());
@@ -337,7 +337,7 @@ public class SysBatchOperationController extends BaseController {
                 } else if (vo.getOperationType() == BatchOperationType.BAN) {
                     String a = "冻结成功";
                     String b = "冻结失败";
-                    if (result.size() == 0) {
+                    if (result.isEmpty()) {
                         result.put(a, new ArrayList<>());
                         result.put(b, new ArrayList<>());
                     }
@@ -359,7 +359,7 @@ public class SysBatchOperationController extends BaseController {
                 } else if (vo.getOperationType() == BatchOperationType.UNBAN) {
                     String a = "解冻成功";
                     String b = "解冻失败";
-                    if (result.size() == 0) {
+                    if (result.isEmpty()) {
                         result.put(a, new ArrayList<>());
                         result.put(b, new ArrayList<>());
                     }
@@ -383,7 +383,7 @@ public class SysBatchOperationController extends BaseController {
                 } else if (vo.getOperationType() == BatchOperationType.DELETE) {
                     String a = "删除成功";
                     String b = "删除失败";
-                    if (result.size() == 0) {
+                    if (result.isEmpty()) {
                         result.put(a, new ArrayList<>());
                         result.put(b, new ArrayList<>());
                     }
@@ -429,7 +429,7 @@ public class SysBatchOperationController extends BaseController {
                     }
                     String a = "备注成功";
                     String b = "备注失败";
-                    if (result.size() == 0) {
+                    if (result.isEmpty()) {
                         result.put(a, new ArrayList<>());
                         result.put(b, new ArrayList<>());
                     }
@@ -609,7 +609,7 @@ public class SysBatchOperationController extends BaseController {
                         String b = "冻结的卡密";
                         String c = "已使用的卡密";
                         String d = "不存在的卡密";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                             result.put(c, new ArrayList<>());
@@ -625,7 +625,7 @@ public class SysBatchOperationController extends BaseController {
                     } else if (vo.getOperationType() == BatchOperationType.BAN) {
                         String a = "冻结成功";
                         String b = "冻结失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -645,7 +645,7 @@ public class SysBatchOperationController extends BaseController {
                     } else if (vo.getOperationType() == BatchOperationType.UNBAN) {
                         String a = "解冻成功";
                         String b = "解冻失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -667,7 +667,7 @@ public class SysBatchOperationController extends BaseController {
                     } else if (vo.getOperationType() == BatchOperationType.DELETE) {
                         String a = "删除成功";
                         String b = "删除失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -691,7 +691,7 @@ public class SysBatchOperationController extends BaseController {
                         }
                         String a = "备注成功";
                         String b = "备注失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -745,7 +745,7 @@ public class SysBatchOperationController extends BaseController {
                         String b = "冻结的单码";
                         String c = "已使用的单码";
                         String d = "不存在的单码";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                             result.put(c, new ArrayList<>());
@@ -761,7 +761,7 @@ public class SysBatchOperationController extends BaseController {
                     } else if (vo.getOperationType() == BatchOperationType.BAN) {
                         String a = "冻结成功";
                         String b = "冻结失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -781,7 +781,7 @@ public class SysBatchOperationController extends BaseController {
                     } else if (vo.getOperationType() == BatchOperationType.UNBAN) {
                         String a = "解冻成功";
                         String b = "解冻失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -803,7 +803,7 @@ public class SysBatchOperationController extends BaseController {
                     } else if (vo.getOperationType() == BatchOperationType.DELETE) {
                         String a = "删除成功";
                         String b = "删除失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -827,7 +827,7 @@ public class SysBatchOperationController extends BaseController {
                         }
                         String a = "备注成功";
                         String b = "备注失败";
-                        if (result.size() == 0) {
+                        if (result.isEmpty()) {
                             result.put(a, new ArrayList<>());
                             result.put(b, new ArrayList<>());
                         }
@@ -900,7 +900,7 @@ public class SysBatchOperationController extends BaseController {
                     String a = "正常的用户";
                     String b = "冻结的用户";
                     String d = "不存在的用户";
-                    if (result.size() == 0) {
+                    if (result.isEmpty()) {
                         result.put(a, new ArrayList<>());
                         result.put(b, new ArrayList<>());
                         result.put(d, new ArrayList<>());
@@ -913,7 +913,7 @@ public class SysBatchOperationController extends BaseController {
                 } else if (vo.getOperationType() == BatchOperationType.BAN) {
                     String a = "冻结成功";
                     String b = "冻结失败";
-                    if (result.size() == 0) {
+                    if (result.isEmpty()) {
                         result.put(a, new ArrayList<>());
                         result.put(b, new ArrayList<>());
                     }
@@ -935,7 +935,7 @@ public class SysBatchOperationController extends BaseController {
                 } else if (vo.getOperationType() == BatchOperationType.UNBAN) {
                     String a = "解冻成功";
                     String b = "解冻失败";
-                    if (result.size() == 0) {
+                    if (result.isEmpty()) {
                         result.put(a, new ArrayList<>());
                         result.put(b, new ArrayList<>());
                     }
@@ -959,7 +959,7 @@ public class SysBatchOperationController extends BaseController {
                 } else if (vo.getOperationType() == BatchOperationType.DELETE) {
                     String a = "删除成功";
                     String b = "删除失败";
-                    if (result.size() == 0) {
+                    if (result.isEmpty()) {
                         result.put(a, new ArrayList<>());
                         result.put(b, new ArrayList<>());
                     }
@@ -1005,7 +1005,7 @@ public class SysBatchOperationController extends BaseController {
                     }
                     String a = "备注成功";
                     String b = "备注失败";
-                    if (result.size() == 0) {
+                    if (result.isEmpty()) {
                         result.put(a, new ArrayList<>());
                         result.put(b, new ArrayList<>());
                     }
@@ -1047,7 +1047,7 @@ public class SysBatchOperationController extends BaseController {
     private void doAppUserSubPoint(LinkedHashMap<String, List<String>> result, String item, SysAppUser appUser, BatchOperationVo vo) {
         String a = "扣点成功";
         String b = "扣点失败";
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result.put(a, new ArrayList<>());
             result.put(b, new ArrayList<>());
         }
@@ -1088,7 +1088,7 @@ public class SysBatchOperationController extends BaseController {
     private void doAppUserAddPoint(LinkedHashMap<String, List<String>> result, String item, SysAppUser appUser, BatchOperationVo vo) {
         String a = "加点成功";
         String b = "加点失败";
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result.put(a, new ArrayList<>());
             result.put(b, new ArrayList<>());
         }
@@ -1129,7 +1129,7 @@ public class SysBatchOperationController extends BaseController {
     private void doAppUserSubTime(LinkedHashMap<String, List<String>> result, String item, SysAppUser appUser, BatchOperationVo vo) {
         String a = "扣时成功";
         String b = "扣时失败";
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result.put(a, new ArrayList<>());
             result.put(b, new ArrayList<>());
         }
@@ -1170,7 +1170,7 @@ public class SysBatchOperationController extends BaseController {
     private void doAppUserAddTime(LinkedHashMap<String, List<String>> result, String item, SysAppUser appUser, BatchOperationVo vo) {
         String a = "加时成功";
         String b = "加时失败";
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result.put(a, new ArrayList<>());
             result.put(b, new ArrayList<>());
         }
@@ -1211,7 +1211,7 @@ public class SysBatchOperationController extends BaseController {
     private void doAppUserUnbind(LinkedHashMap<String, List<String>> result, String item, SysAppUser appUser) {
         String a = "解绑成功";
         String b = "解绑失败";
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result.put(a, new ArrayList<>());
             result.put(b, new ArrayList<>());
         }
@@ -1220,7 +1220,7 @@ public class SysBatchOperationController extends BaseController {
         } else {
             List<SysAppUserDeviceCode> deviceCodeList =
                     sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserId(appUser.getAppUserId());
-            if (deviceCodeList.size() == 0) {
+            if (deviceCodeList.isEmpty()) {
                 result.get(a).add(item + "【未绑定任何设备】");
             } else {
                 try {

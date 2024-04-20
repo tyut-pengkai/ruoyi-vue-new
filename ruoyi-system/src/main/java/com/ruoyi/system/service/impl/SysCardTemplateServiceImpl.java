@@ -3,10 +3,13 @@ package com.ruoyi.system.service.impl;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.enums.GenRule;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
+import com.ruoyi.system.domain.vo.BatchReplaceVo;
 import com.ruoyi.system.mapper.SysCardTemplateMapper;
 import com.ruoyi.system.service.ISysCardService;
 import com.ruoyi.system.service.ISysCardTemplateService;
@@ -220,5 +223,35 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
      */
     public SysCardTemplate selectSysCardTemplateByAppIdAndTemplateName(Long appId, String templateName) {
         return sysCardTemplateMapper.selectSysCardTemplateByAppIdAndTemplateName(appId, templateName);
+    }
+
+    /**
+     * 批量换卡
+     *
+     * @param template
+     * @param card
+     * @param vo
+     * @param batchNo
+     * @return
+     */
+    @Override
+    public SysCard genCardReplace(SysCardTemplate cardTpl, SysCard card, BatchReplaceVo vo, String batchNo) {
+        SysCard sysCard = new SysCard();
+        BeanUtils.copyProperties(card, sysCard);
+        sysCard.setCardId(null);
+        sysCard.setCardNo(genNo(cardTpl.getCardNoPrefix(), cardTpl.getCardNoSuffix(), cardTpl.getCardNoLen(), cardTpl.getCardNoGenRule(), cardTpl.getCardNoRegex()));
+        sysCard.setCardPass(genPass(cardTpl.getCardPassLen(), cardTpl.getCardPassGenRule(), cardTpl.getCardPassRegex()));
+        sysCard.setRemark("此卡用于替换旧卡：" + card.getCardNo()
+                + (StringUtils.isNotBlank(vo.getRemark())? "\n换卡备注：" + vo.getRemark() : "")
+                + (StringUtils.isNotBlank(card.getRemark())? "\n旧卡备注：" + card.getRemark() : ""));
+        sysCard.setBatchNo(batchNo);
+        try {
+            sysCard.setCreateBy(SecurityUtils.getUsernameNoException());
+        } catch (Exception ignore) {
+        }
+        if(sysCardService.insertSysCard(sysCard)>0) {
+            return sysCard;
+        }
+        throw new ServiceException("保存新卡失败");
     }
 }

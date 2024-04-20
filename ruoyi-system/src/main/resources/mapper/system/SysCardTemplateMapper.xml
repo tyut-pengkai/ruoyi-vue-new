@@ -37,6 +37,8 @@
         <result property="shopUrl" column="shop_url"/>
         <result property="enableUnbind" column="enable_unbind"/>
         <result property="minBuyNum" column="min_buy_num"/>
+        <result property="enableReplace" column="enable_replace"/>
+        <result property="replaceThreshold" column="replace_threshold"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
     </resultMap>
 
@@ -81,6 +83,8 @@
                ct.shop_url,
                ct.enable_unbind,
                ct.min_buy_num,
+               ct.enable_replace,
+               ct.replace_threshold,
                a.app_id,
                a.app_name,
                a.auth_type,
@@ -107,6 +111,7 @@
         <if test="enableAutoGen != null">and ct.enable_auto_gen = #{enableAutoGen}</if>
         <if test="createBy != null  and createBy != ''">and ct.create_by like concat('%', #{createBy}, '%')</if>
         <if test="remark != null and remark != ''">and ct.remark like concat('%', #{remark}, '%')</if>
+        <if test="enableReplace != null">and ct.enable_replace = #{enableReplace}</if>
         <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
             <!-- 数据范围过滤 -->
             ${params.dataScope}
@@ -152,6 +157,8 @@
             <if test="shopUrl != null">shop_url,</if>
             <if test="enableUnbind != null">enable_unbind,</if>
             <if test="minBuyNum != null">min_buy_num,</if>
+            <if test="enableReplace != null">enable_replace,</if>
+            <if test="replaceThreshold != null">replace_threshold,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="appId != null">#{appId},</if>
@@ -185,6 +192,8 @@
             <if test="shopUrl != null">#{shopUrl},</if>
             <if test="enableUnbind != null">#{enableUnbind},</if>
             <if test="minBuyNum != null">#{minBuyNum},</if>
+            <if test="enableReplace != null">#{enableReplace},</if>
+            <if test="replaceThreshold != null">#{replaceThreshold},</if>
         </trim>
     </insert>
 
@@ -222,6 +231,8 @@
             <if test="shopUrl != null">shop_url = #{shopUrl},</if>
             <if test="enableUnbind != null">enable_unbind = #{enableUnbind},</if>
             <if test="minBuyNum != null">min_buy_num = #{minBuyNum},</if>
+            <if test="enableReplace != null">enable_replace = #{enableReplace},</if>
+            <if test="replaceThreshold != null">replace_threshold = #{replaceThreshold},</if>
         </trim>
         where template_id = #{templateId}
     </update>

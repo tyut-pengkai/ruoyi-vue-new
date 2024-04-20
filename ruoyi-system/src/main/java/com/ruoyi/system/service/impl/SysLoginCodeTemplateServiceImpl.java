@@ -3,10 +3,13 @@ package com.ruoyi.system.service.impl;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.enums.GenRule;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
+import com.ruoyi.system.domain.vo.BatchReplaceVo;
 import com.ruoyi.system.mapper.SysLoginCodeTemplateMapper;
 import com.ruoyi.system.service.ISysLoginCodeService;
 import com.ruoyi.system.service.ISysLoginCodeTemplateService;
@@ -207,6 +210,35 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
      */
     public SysLoginCodeTemplate selectSysLoginCodeTemplateByAppIdAndTemplateName(Long appId, String templateName) {
         return sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateByAppIdAndTemplateName(appId, templateName);
+    }
+
+    /**
+     * 批量换卡
+     *
+     * @param template
+     * @param loginCode
+     * @param vo
+     * @param batchNo
+     * @return
+     */
+    @Override
+    public SysLoginCode genSysLoginCodeReplace(SysLoginCodeTemplate loginCodeTpl, SysLoginCode loginCode, BatchReplaceVo vo, String batchNo) {
+        SysLoginCode sysLoginCode = new SysLoginCode();
+        BeanUtils.copyProperties(loginCode, sysLoginCode);
+        sysLoginCode.setCardId(null);
+        sysLoginCode.setCardNo(genNo(loginCodeTpl.getCardNoPrefix(), loginCodeTpl.getCardNoSuffix(), loginCodeTpl.getCardNoLen(), loginCodeTpl.getCardNoGenRule(), loginCodeTpl.getCardNoRegex()));
+        sysLoginCode.setRemark("此卡用于替换旧卡：" + loginCode.getCardNo()
+                + (StringUtils.isNotBlank(vo.getRemark())? "\n换卡备注：" + vo.getRemark() : "")
+                + (StringUtils.isNotBlank(loginCode.getRemark())? "\n旧卡备注：" + loginCode.getRemark() : ""));
+        sysLoginCode.setBatchNo(batchNo);
+        try {
+            sysLoginCode.setCreateBy(SecurityUtils.getUsernameNoException());
+        } catch (Exception ignore) {
+        }
+        if(sysLoginCodeService.insertSysLoginCode(sysLoginCode)>0) {
+            return sysLoginCode;
+        }
+        throw new ServiceException("保存新卡失败");
     }
 
 }

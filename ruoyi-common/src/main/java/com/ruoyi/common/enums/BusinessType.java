@@ -73,6 +73,11 @@ public enum BusinessType
     TRANSFER_BALANCE,
 
     /**
+     * 换卡
+     */
+    REPLACE,
+
+    /**
      * 测试
      */
     TEST,

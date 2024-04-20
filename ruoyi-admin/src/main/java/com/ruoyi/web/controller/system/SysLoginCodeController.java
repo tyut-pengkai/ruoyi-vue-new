@@ -4,12 +4,17 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
 import com.ruoyi.system.domain.vo.BatchNoVo;
+import com.ruoyi.system.domain.vo.BatchReplaceVo;
+import com.ruoyi.system.service.ISysAppService;
+import com.ruoyi.system.service.ISysAppUserService;
 import com.ruoyi.system.service.ISysLoginCodeService;
 import com.ruoyi.system.service.ISysLoginCodeTemplateService;
 import com.ruoyi.utils.poi.ExcelUtil;
@@ -20,10 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 单码Controller
@@ -38,6 +41,10 @@ public class SysLoginCodeController extends BaseController {
     private ISysLoginCodeService sysLoginCodeService;
     @Resource
     private ISysLoginCodeTemplateService sysLoginCodeTemplateService;
+    @Resource
+    private ISysAppService sysAppService;
+    @Resource
+    private ISysAppUserService sysAppUserService;
 
     /**
      * 查询单码列表
@@ -155,4 +162,102 @@ public class SysLoginCodeController extends BaseController {
         List<BatchNoVo> batchNoList = sysLoginCodeService.selectBatchNoList(null);
         return AjaxResult.success(batchNoList);
     }
+
+    /**
+     * 批量换卡
+     */
+    @PreAuthorize("@ss.hasPermi('system:loginCode:replace')")
+    @Log(title = "单码", businessType = BusinessType.REPLACE)
+    @PostMapping("/batchReplace")
+    public AjaxResult batchReplace(@RequestBody BatchReplaceVo vo) {
+        String[] split = vo.getContent().split("\n");
+        Set<String> set = new HashSet<>(Arrays.asList(split));
+        if (set.isEmpty()) {
+            return AjaxResult.success("请输入要操作的内容，每行一个");
+        }
+        List<String> list = set.stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        LinkedHashMap<String, List<String>> result = new LinkedHashMap<>();
+        String a = "成功替换的单码";
+        String b = "非所选软件的单码";
+        String c = "不符合换卡条件的单码";
+        String d = "不存在的单码";
+        String e = "生成新单码异常";
+        result.put(a, new ArrayList<>());
+        result.put(b, new ArrayList<>());
+        result.put(c, new ArrayList<>());
+        result.put(d, new ArrayList<>());
+        result.put(e, new ArrayList<>());
+        SysApp sysApp = null;
+        if(vo.getAppId() != 0) {
+            sysApp = sysAppService.selectSysAppByAppId(vo.getAppId());
+            if (sysApp == null) {
+                return AjaxResult.success("软件不存在");
+            }
+        }
+        String batchNo = DateUtils.dateTimeNow();
+        for (String item : list) {
+            SysLoginCode loginCode = sysLoginCodeService.selectSysLoginCodeByCardNo(item);
+            if (loginCode == null) {
+                result.get(d).add(item + "【单码不存在】");
+            } else {
+                if (sysApp != null && !Objects.equals(loginCode.getAppId(), sysApp.getAppId())) {
+                    result.get(b).add(item + "【所属软件：" + loginCode.getApp().getAppName() + "】【" + loginCode.getCardName() + "】");
+                } else {
+                    // 检查换卡开关
+                    Long templateId = loginCode.getTemplateId();
+                    SysLoginCodeTemplate template = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByTemplateId(templateId);
+                    if(templateId == null) {
+                        result.get(c).add(item + "【此单码类别不存在】");
+                    } else if(!template.getEnableReplace().equals(UserConstants.YES)) {
+                        result.get(c).add(item + "【此单码类别未开启换卡】");
+                    } else {
+                        // 换卡条件：未过期
+                        if(loginCode.getExpireTime().before(DateUtils.getNowDate())) {
+                            result.get(c).add(item + "【单码已过期】");
+                        } else {
+                            // 检查阈值
+                            if(loginCode.getIsCharged().equals(UserConstants.YES)) {
+                                if(template.getReplaceThreshold() == -1) {
+                                    result.get(c).add(item + "【单码已使用】");
+                                } else if(DateUtils.differentSecondsByMillisecond(DateUtils.getNowDate(), loginCode.getChargeTime()) > template.getReplaceThreshold()){
+                                    result.get(c).add(item + "【单码已使用且已超过可换卡条件】");
+                                } else {
+                                    // 符合换卡条件
+                                    doReplace(vo, item, template, loginCode, batchNo, result, a, e);
+                                }
+                            } else {
+                                // 符合换卡条件
+                                doReplace(vo, item, template, loginCode, batchNo, result, a, e);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        StringBuilder resultStr = new StringBuilder();
+        for (Map.Entry<String, List<String>> entry : result.entrySet()) {
+            resultStr.append("--------------------------【")
+                    .append(entry.getKey()).append("】").append(entry.getValue().size())
+                    .append("个--------------------------").append("\n\n")
+                    .append(String.join("\n", entry.getValue()))
+                    .append("\n\n");
+        }
+        return AjaxResult.success(resultStr.toString());
+    }
+
+    private void doReplace(BatchReplaceVo vo, String item, SysLoginCodeTemplate template, SysLoginCode loginCode, String batchNo, LinkedHashMap<String, List<String>> result, String a, String e) {
+        try {
+            SysLoginCode newLoginCode = sysLoginCodeTemplateService.genSysLoginCodeReplace(template, loginCode, vo, batchNo);
+            SysLoginCode update = new SysLoginCode();
+            update.setCardId(loginCode.getCardId());
+            String remark = "此卡已被【" + newLoginCode.getCardNo() + "】替换";
+            update.setRemark(StringUtils.isNotBlank(loginCode.getRemark()) ? loginCode.getRemark() + "\n" + remark : remark);
+            update.setDelFlag("2"); // 删除
+            sysLoginCodeService.updateSysLoginCode(update);
+            result.get(a).add(item + " => " + newLoginCode.getCardNo());
+        } catch (Exception ex) {
+            result.get(e).add(item + "【异常信息：" + ex.getMessage() + "】");
+        }
+    }
+
 }

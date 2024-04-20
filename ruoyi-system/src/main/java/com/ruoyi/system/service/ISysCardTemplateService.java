@@ -2,6 +2,7 @@ package com.ruoyi.system.service;
 
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
+import com.ruoyi.system.domain.vo.BatchReplaceVo;
 
 import java.util.List;
 
@@ -79,4 +80,14 @@ public interface ISysCardTemplateService
      * @return 卡密模板
      */
     public SysCardTemplate selectSysCardTemplateByAppIdAndTemplateName(Long appId, String templateName);
+
+    /**
+     * 批量换卡
+     * @param template
+     * @param card
+     * @param vo
+     * @param batchNo
+     * @return
+     */
+    public SysCard genCardReplace(SysCardTemplate template, SysCard card, BatchReplaceVo vo, String batchNo);
 }

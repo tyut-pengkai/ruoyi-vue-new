@@ -60,3 +60,5 @@ export function delLoginCodeTemplate(templateId) {
     method: 'delete'
   })
 }
+
+

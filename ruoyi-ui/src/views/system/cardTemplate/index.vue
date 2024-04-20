@@ -892,6 +892,48 @@
               </el-form-item>
              </el-col>
            </el-form-item>
+          <el-form-item>
+            <el-col :span="12">
+              <el-form-item
+                label="允许换卡"
+                prop="enableReplace"
+                label-width="80px"
+              >
+                <el-select
+                  v-model="form.enableReplace"
+                  placeholder="请选择是否允许换卡"
+                >
+                  <el-option
+                    v-for="dict in dict.type.sys_yes_no"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="换卡额度限制" prop="replaceThreshold">
+                <span>
+                  <el-tooltip
+                    content="换卡至少剩余额度，0不限制 -1未使用，默认为-1"
+                    placement="top"
+                  >
+                    <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                    ></i>
+                  </el-tooltip>
+                </span>
+                <el-input-number
+                  v-model="form.replaceThreshold"
+                  :min="-1"
+                  controls-position="right"
+                  :disabled="form.enableReplace === 'N'"
+                />
+              </el-form-item>
+            </el-col>
+          </el-form-item>
           <el-form-item label="充值卡自定义参数" prop="cardCustomParams">
             <el-input
               v-model="form.cardCustomParams"
@@ -1163,7 +1205,7 @@ export default {
           {
             required: true,
             message:
-              "由充值卡/单码生效的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
+              "由充值卡/单码生效的登录用户数量限制不能为空",
             trigger: "blur",
           },
         ],
@@ -1171,7 +1213,7 @@ export default {
           {
             required: true,
             message:
-              "由充值卡/单码生效的登录设备数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
+              "由充值卡/单码生效的登录设备数量限制不能为空",
             trigger: "blur",
           },
         ],
@@ -1186,6 +1228,21 @@ export default {
           {
             required: true,
             message: "起拍张数不能为空",
+            trigger: "blur",
+          },
+        ],
+        enableReplace: [
+          {
+            required: true,
+            message: "是否允许换卡不能为空",
+            trigger: "change",
+          },
+        ],
+        replaceThreshold: [
+          {
+            required: true,
+            message:
+              "换卡至少剩余额度不能为空",
             trigger: "blur",
           },
         ],

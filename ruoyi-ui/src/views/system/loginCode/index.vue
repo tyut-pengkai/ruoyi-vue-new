@@ -200,8 +200,7 @@
         >搜索
         </el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
-        >
+          >重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -214,8 +213,7 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:loginCode:add']"
-          >新增</el-button
-        >
+          >新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -225,8 +223,17 @@
           size="mini"
           @click="handleBatchAdd"
           v-hasPermi="['system:loginCode:add']"
-          >批量生成</el-button
-        >
+          >批量生成</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="el-icon-refresh"
+          size="mini"
+          @click="handleReplace"
+          v-hasPermi="['system:loginCode:replace']"
+        >批量换卡</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -1126,6 +1133,110 @@
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 批量换卡对话框 -->
+    <el-dialog
+      title="批量换卡"
+      :visible.sync="batchReplaceOpen"
+      width="800px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
+      <el-alert
+          :closable="false"
+          show-icon
+          style="margin-bottom: 10px"
+          title="换卡成功后将自动生成一张与旧卡所有参数完全一致的新卡，旧卡将被删除，如果旧卡已被使用，将从对应用户中扣除旧卡面值"
+          type="info"
+      />
+      <el-form ref="formReplace" :model="formReplace" :rules="rulesReplace" >
+        <el-form-item prop="">
+          <el-col :span="12">
+            <el-form-item label="所属软件" prop="appId">
+              <el-select
+                v-model="formReplace.appId"
+                filterable
+                placeholder="请选择"
+                prop="appId"
+                @change="changeSelectedAppReplace"
+              >
+                <el-option label="自动检测所属软件" :value="0">自动检测所属软件</el-option>
+                <el-option
+                  v-for="item in appList"
+                  :key="item.appId"
+                  :disabled="item.disabled"
+                  :label="
+                    '[' +
+                    (item.authType == '0' ? '账号' : '单码') +
+                    (item.billType == '0' ? '计时' : '计点') +
+                    '] ' +
+                    item.appName
+                  "
+                  :value="item.appId"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="计费类型" prop="billType">
+              <div v-if="app">
+                <dict-tag
+                  :options="dict.type.sys_bill_type"
+                  :value="app.billType"
+                />
+              </div>
+              <div v-else-if="formReplace.appId === 0">自动检测</div>
+              <div v-else>请先选择软件</div>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="操作内容（输入格式：每行一条数据）" prop="content">
+          <el-input
+            v-model="formReplace.content"
+            :rows="10"
+            placeholder="输入格式：每行一条数据"
+            type="textarea"
+          />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input
+            v-model="formReplace.remark"
+            type="textarea"
+            placeholder="请输入内容"
+          />
+        </el-form-item>
+      </el-form>
+      <div v-show="result">
+        <el-divider content-position="left">以下为换卡结果，新卡请自行复制保存</el-divider>
+        <el-input
+          v-model="result"
+          :rows="20"
+          style="max-width: 1400px"
+          type="textarea"
+        >
+        </el-input>
+        <div align="right" style="margin-top: 5px">
+          <el-button id="copyButton" plain @click="copy(3)">
+            复制文本
+          </el-button>
+          <el-button id="saveButton" plain @click="save(3)">
+            下载保存
+          </el-button>
+        </div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          :loading="batchLoading"
+          type="primary"
+          @click="submitFormReplace"
+        >
+          确 定
+        </el-button>
+        <el-button @click="cancelReplace">取 消</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -1137,7 +1248,8 @@ import {
   getLoginCode,
   listLoginCode,
   updateLoginCode,
-  getBatchNoList
+  getBatchNoList,
+  batchReplace
 } from "@/api/system/loginCode";
 import {getApp, listAppAll} from "@/api/system/app";
 import DateDuration from "@/components/DateDuration";
@@ -1334,6 +1446,17 @@ export default {
       cardStr: "",
       cardSimpleStr: "",
       batchNoList: [],
+      // 批量换卡
+      formReplace: {
+        appId: 0,
+      },
+      batchReplaceOpen: false,
+      rulesReplace:{
+        content: [
+          {required: true, message: "操作内容不能为空", trigger: "blur"},
+        ],
+      },
+      result: ""
     };
   },
   created() {
@@ -1706,8 +1829,10 @@ export default {
           // 如果想从其它DOM元素内容复制。应该是target:function(){return: };
           if (id == 1) {
             return this.cardStr;
-          } else {
+          } else if (id == 2) {
             return this.cardSimpleStr;
+          } else {
+            return this.result;
           }
         },
       });
@@ -1807,8 +1932,10 @@ export default {
       var content = "";
       if (id == 1) {
         content = this.cardStr;
-      } else {
+      } else if(id == 2) {
         content = this.cardSimpleStr;
+      } else {
+        content = this.result;
       }
       this.downloadRecords(
         "save_" + this.dateFormat(new Date(), "yyyyMMddHHmmss") + ".txt",
@@ -1871,6 +1998,51 @@ export default {
         .catch(function () {
           row.isCharged = row.isCharged === "Y" ? "N" : "Y";
         });
+    },
+    /**批量换卡按钮操作 */
+    handleReplace() {
+      this.resetReplace();
+      // let queryParams = {};
+      if (this.app) {
+        // queryParams.appId = this.app.appId;
+        this.formReplace.appId = this.app.appId;
+      }
+      // listLoginCodeTemplateAll(queryParams).then((response) => {
+      //   this.cardTemplateList = response.rows;
+      // });
+      this.batchReplaceOpen = true;
+    },
+    resetReplace() {
+      this.formReplace = {
+        appId: 0,
+      };
+      this.resetForm("formReplace");
+    },
+    submitFormReplace() {
+      this.$refs["formReplace"].validate((valid) => {
+        if (valid) {
+          this.batchLoading = true;
+          this.formReplace.appId = this.app ? this.app.appId : 0;
+          batchReplace(this.formReplace).then((response) => {
+            this.result = response.msg;
+            this.getList();
+          }).catch(() => {
+          }).finally(() => {
+            this.batchLoading = false;
+          });
+        }
+      })
+    },
+    cancelReplace() {
+      this.batchReplaceOpen = false;
+      this.resetReplace();
+    },
+    changeSelectedAppReplace(appId) {
+      if(appId !== 0) {
+        this.app = this.appMap[appId];
+      } else {
+        this.app = null;
+      }
     },
   },
 };
