@@ -137,7 +137,7 @@ public class Hywlyz extends HyUtils {
                     if (HyUtils.verifySign(jsonObject, gAppSecret)) {
                         if (StringUtils.isBlank(vstr) || vstr.equals(requestResult.getVstr())) {
                             dataStr = Hywlyz.generalDataDecrypt(dataStr, gDataOutPwd, gDataOutEnc);
-                            if (JSON.isValidObject(dataStr) || JSON.isValidArray(dataStr)) {
+                            if ((JSON.isValidObject(dataStr) || JSON.isValidArray(dataStr)) && !api.equals("globalVariableGet.ng")) {
                                 requestResult.setData(dataStr);
                             } else {
                                 JSONObject jsonNew = new JSONObject();
