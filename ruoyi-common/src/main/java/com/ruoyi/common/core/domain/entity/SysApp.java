@@ -242,6 +242,19 @@ public class SysApp extends BaseEntity
     @Excel(name = "登录点数扣减策略(计点模式有效）", dictType = "sys_login_reduce_point_strategy")
     private LoginReducePointStrategy loginReducePointStrategy;
 
+    /**
+     * 用户解绑时间周期，单位秒，0只能解绑一次
+     */
+    private Long unbindCycle;
+
+    public Long getUnbindCycle() {
+        return unbindCycle;
+    }
+
+    public void setUnbindCycle(Long unbindCycle) {
+        this.unbindCycle = unbindCycle;
+    }
+
     public LoginReducePointStrategy getLoginReducePointStrategy() {
         return loginReducePointStrategy;
     }

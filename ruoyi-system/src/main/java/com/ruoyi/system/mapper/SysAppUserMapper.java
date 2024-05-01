@@ -79,5 +79,7 @@ public interface SysAppUserMapper
      * @param loginCode 单码
      * @return 软件用户
      */
-    SysAppUser selectSysAppUserByAppIdAndLoginCode(@Param("appId") Long appId, @Param("loginCode") String loginCode);
+    public SysAppUser selectSysAppUserByAppIdAndLoginCode(@Param("appId") Long appId, @Param("loginCode") String loginCode);
+
+    public List<SysAppUser> selectSysAppUserListByAppIdsAndNextEnableUnbindTimeBeforeNow(Long[] appIds);
 }

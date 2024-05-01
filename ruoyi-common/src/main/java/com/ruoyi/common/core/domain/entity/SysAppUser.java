@@ -181,6 +181,16 @@ public class SysAppUser extends BaseEntity {
     @Excel(name = "最后登录IP", type = Excel.Type.EXPORT)
     private String loginIp;
 
+    private Date nextEnableUnbindTime;
+
+    public Date getNextEnableUnbindTime() {
+        return nextEnableUnbindTime;
+    }
+
+    public void setNextEnableUnbindTime(Date nextEnableUnbindTime) {
+        this.nextEnableUnbindTime = nextEnableUnbindTime;
+    }
+
     public String getLoginIp() {
         return loginIp;
     }

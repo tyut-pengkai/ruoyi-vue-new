@@ -862,133 +862,168 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="是否允许解绑" prop="enableUnbind">
-                  <el-select
-                    v-model="form.enableUnbind"
-                    placeholder="请选择是否允许解绑"
-                  >
-                    <el-option
-                      v-for="dict in dict.type.sys_yes_no"
-                      :key="dict.value"
-                      :label="dict.label"
-                      :value="dict.value"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
+<!--                <el-form-item label="是否允许解绑" prop="enableUnbind">-->
+<!--                  <el-select-->
+<!--                    v-model="form.enableUnbind"-->
+<!--                    placeholder="请选择是否允许解绑"-->
+<!--                  >-->
+<!--                    <el-option-->
+<!--                      v-for="dict in dict.type.sys_yes_no"-->
+<!--                      :key="dict.value"-->
+<!--                      :label="dict.label"-->
+<!--                      :value="dict.value"-->
+<!--                    ></el-option>-->
+<!--                  </el-select>-->
+<!--                </el-form-item>-->
               </el-col>
             </el-form-item>
             <el-form-item>
-              <el-col :span="12">
-                <el-form-item label="限制解绑次数" prop="unbindTimes">
+              <el-card class="box-card" shadow="never">
+                <div slot="header" class="clearfix">
                   <span>
-                    <el-tooltip
-                      content="解绑时优先扣除解绑次数，当解绑次数为0时，将根据[使用余额解绑]来决定是否可以继续解绑"
-                      placement="top"
+                    是否允许解绑
+                    <el-switch
+                      v-model="form.enableUnbind"
+                      active-value="Y"
+                      inactive-value="N"
                     >
-                      <i
-                        class="el-icon-question"
-                        style="margin-left: -12px; margin-right: 10px"
-                      ></i>
-                    </el-tooltip>
+                    </el-switch>
                   </span>
-                  <el-input-number
-                    v-model="form.unbindTimes"
-                    :min="0"
-                    controls-position="right"
-                  />
+                </div>
+                <el-form-item>
+                  <el-row :gutter="5">
+                    <el-col :span="14">
+                      <el-card class="box-card" shadow="never" style="height: 240px">
+                        <div slot="header" class="clearfix">
+                          <span>重置周期</span>
+                        </div>
+                        <el-form-item label="可重复解绑周期" prop="unbindCycle">
+                          <span>
+                            <el-tooltip
+                                content="每个用户重置解绑次数的时间周期，比如设置为2天，则同一用户每2天可解绑一次，整数，0为不重置，默认为0，最小生效周期为1分钟"
+                                placement="top"
+                            >
+                              <i
+                                  class="el-icon-question"
+                                  style="margin-left: -12px; margin-right: 10px"
+                              ></i>
+                            </el-tooltip>
+                          </span>
+                          <date-duration
+                              :seconds="form.unbindCycle"
+                              @totalSeconds="handleUnbindCycleQuota"
+                          ></date-duration>
+                        </el-form-item>
+                        <el-form-item
+                            label="每周期解绑次数"
+                            prop="trialTimes"
+                            style="margin-top: 10px; margin-bottom: 10px"
+                        >
+                          <span>
+                            <el-tooltip
+                                content="每周期可解绑次数，整数，默认为1，解绑时优先扣除解绑次数，当解绑次数为0时，将根据[允许使用剩余时间/点数解绑]来决定是否可以继续解绑"
+                                placement="top"
+                            >
+                              <i
+                                  class="el-icon-question"
+                                  style="margin-left: -12px; margin-right: 10px"
+                              ></i>
+                            </el-tooltip>
+                          </span>
+                          <el-input-number
+                              v-model="form.unbindTimes"
+                              :min="1"
+                              controls-position="right"
+                          />
+                        </el-form-item>
+                      </el-card>
+                   </el-col>
+                    <el-col :span="10">
+                      <el-card class="box-card" shadow="never">
+                        <div slot="header" class="clearfix">
+                          <span>
+                            允许使用剩余时间/点数解绑
+                            <el-tooltip
+                                content="解绑时优先扣除解绑次数，当解绑次数为0时，将根据本选项来决定是否可以继续解绑，如果为否，用户将无法继续解绑，如果为是，系统将根据下方配置扣除对应时间/点数"
+                                placement="top"
+                            >
+                              <i
+                                  class="el-icon-question"
+                                  style="margin-left: -12px; margin-right: 10px"
+                              ></i>
+                            </el-tooltip>
+                            </span>
+                          <el-switch
+                              v-model="form.enableUnbindByQuota"
+                              active-value="Y"
+                              inactive-value="N"
+                          >
+                          </el-switch>
+                        </div>
+                        <el-form-item label="换绑设备扣除" prop="reduceQuotaUnbind">
+                          <span>
+                            <el-tooltip
+                                content="换绑设备扣减时间或点数，单位秒或点"
+                                placement="top"
+                            >
+                              <i
+                                  class="el-icon-question"
+                                  style="margin-left: -12px; margin-right: 10px"
+                              ></i>
+                            </el-tooltip>
+                          </span>
+                          <el-input-number
+                              v-model="form.reduceQuotaUnbind"
+                              :min="0"
+                              controls-position="right"
+                          />
+                        </el-form-item>
+                        <!-- <el-form-item label="扣除后最少剩余" prop="minQuotaUnbind">
+                        <span>
+                          <el-tooltip
+                            content="解绑扣除后最少剩余的时间或点数，如果扣除后低于此额度，将无法解绑，单位秒或点"
+                            placement="top"
+                          >
+                            <i
+                              class="el-icon-question"
+                              style="margin-left: -12px; margin-right: 10px"
+                            ></i>
+                          </el-tooltip>
+                        </span>
+                        <el-input-number
+                          v-model="form.minQuotaUnbind"
+                          controls-position="right"
+                        />
+                        </el-form-item> -->
+                        <el-form-item label="允许扣到负数" prop="enableNegative">
+                        <span>
+                          <el-tooltip
+                              content="换绑设备扣减时间或点数，是否允许用户过期(计时模式)或点数为负数(计点模式)，用户过期或点数为负数后无法再次解绑"
+                              placement="top"
+                          >
+                            <i
+                                class="el-icon-question"
+                                style="margin-left: -12px; margin-right: 10px"
+                            ></i>
+                          </el-tooltip>
+                        </span>
+                          <el-select
+                              v-model="form.enableNegative"
+                              placeholder="请选择是否允许用户过期(计时模式)或点数为负数(计点模式)"
+                          >
+                            <el-option
+                                v-for="dict in dict.type.sys_yes_no"
+                                :key="dict.value"
+                                :label="dict.label"
+                                :value="dict.value"
+                            ></el-option>
+                          </el-select>
+                        </el-form-item>
+                      </el-card>
+                    </el-col>
+                  </el-row>
                 </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="使用余额解绑" prop="enableUnbindByQuota">
-                  <span>
-                    <el-tooltip
-                      content="解绑时优先扣除解绑次数，当解绑次数为0时，将根据本选项来决定是否可以继续解绑，如果为否，用户将无法继续解绑，如果为是，系统将根据下方配置扣除对应余额"
-                      placement="top"
-                    >
-                      <i
-                        class="el-icon-question"
-                        style="margin-left: -12px; margin-right: 10px"
-                      ></i>
-                    </el-tooltip>
-                  </span>
-                  <el-select
-                    v-model="form.enableUnbindByQuota"
-                    placeholder="请选择是否允许使用余额解绑"
-                  >
-                    <el-option
-                      v-for="dict in dict.type.sys_yes_no"
-                      :key="dict.value"
-                      :label="dict.label"
-                      :value="dict.value"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-form-item>
-            <el-form-item>
-              <el-col :span="12">
-                <el-form-item label="换绑设备扣除" prop="reduceQuotaUnbind">
-                  <span>
-                    <el-tooltip
-                      content="换绑设备扣减时间或点数，单位秒或点"
-                      placement="top"
-                    >
-                      <i
-                        class="el-icon-question"
-                        style="margin-left: -12px; margin-right: 10px"
-                      ></i>
-                    </el-tooltip>
-                  </span>
-                  <el-input-number
-                    v-model="form.reduceQuotaUnbind"
-                    :min="0"
-                    controls-position="right"
-                  />
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <!-- <el-form-item label="扣除后最少剩余" prop="minQuotaUnbind">
-                  <span>
-                    <el-tooltip
-                      content="解绑扣除后最少剩余的时间或点数，如果扣除后低于此额度，将无法解绑，单位秒或点"
-                      placement="top"
-                    >
-                      <i
-                        class="el-icon-question"
-                        style="margin-left: -12px; margin-right: 10px"
-                      ></i>
-                    </el-tooltip>
-                  </span>
-                  <el-input-number
-                    v-model="form.minQuotaUnbind"
-                    controls-position="right"
-                  />
-                </el-form-item> -->
-                <el-form-item label="允许扣到负数" prop="enableNegative">
-                  <span>
-                    <el-tooltip
-                      content="换绑设备扣减时间或点数，是否允许用户过期(计时模式)或余额为负数(计点模式)"
-                      placement="top"
-                    >
-                      <i
-                        class="el-icon-question"
-                        style="margin-left: -12px; margin-right: 10px"
-                      ></i>
-                    </el-tooltip>
-                  </span>
-                  <el-select
-                    v-model="form.enableNegative"
-                    placeholder="请选择是否允许用户过期(计时模式)或余额为负数(计点模式)"
-                  >
-                    <el-option
-                      v-for="dict in dict.type.sys_yes_no"
-                      :key="dict.value"
-                      :label="dict.label"
-                      :value="dict.value"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
+              </el-card>
             </el-form-item>
           </el-tab-pane>
 
@@ -1115,7 +1150,7 @@
                   <el-card
                     class="box-card"
                     shadow="never"
-                    style="height: 223px"
+                    style="height: 264px"
                   >
                     <div slot="header" class="clearfix">
                       <span>按时间试用</span>
@@ -1162,7 +1197,7 @@
                       <el-form-item label="可重复试用周期" prop="trialCycle">
                         <span>
                           <el-tooltip
-                            content="每个设备重置试用次数的时间周期，比如设置为2天，则同一设备每2天可试用一次，整数，0为仅允许试用一个周期，默认为0"
+                            content="每个设备重置试用次数的时间周期，比如设置为2天，则同一设备每2天可试用一次，整数，0为不重置，默认为0，最小生效周期为1分钟"
                             placement="top"
                           >
                             <i
@@ -1613,7 +1648,7 @@ export default {
         enableUnbindByQuota: [
           {
             required: true,
-            message: "是否允许使用余额解绑不能为空",
+            message: "是否允许使用剩余时间/点数解绑不能为空",
             trigger: "blur",
           },
         ],
@@ -1732,11 +1767,12 @@ export default {
         enableUnbind: "N",
         unbindTimes: 0,
         // minQuotaUnbind: 0,
-        enableUnbindByQuota: "Y",
+        enableUnbindByQuota: "N",
         customBuyUrl: undefined,
         enableNegative: "N",
         enableFeCharge: "Y",
-        loginReducePointStrategy: "0"
+        loginReducePointStrategy: "0",
+        unbindCycle: 0,
       };
       this.resetForm("form");
       this.tabIdx = "0";
@@ -1965,6 +2001,9 @@ export default {
         );
         clipboard.destroy();
       });
+    },
+    handleUnbindCycleQuota(totalSeconds) {
+      this.form.unbindCycle = totalSeconds;
     },
   },
   watch: {

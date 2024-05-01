@@ -35,6 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="lastChargeCardId" column="last_charge_card_id"/>
         <result property="lastChargeTemplateId" column="last_charge_template_id"/>
         <result property="loginIp" column="login_ip"/>
+        <result property="nextEnableUnbindTime" column="next_enable_unbind_time"/>
         <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
         <association property="agentUser" column="agent_id" javaType="SysUser" resultMap="SysAgentUserResult"/>
@@ -181,6 +182,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="lastChargeCardId != null">last_charge_card_id,</if>
             <if test="lastChargeTemplateId != null">last_charge_template_id,</if>
             <if test="loginIp != null">login_ip,</if>
+            <if test="nextEnableUnbindTime != null">next_enable_unbind_time,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
@@ -212,6 +214,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="lastChargeCardId != null">#{lastChargeCardId},</if>
             <if test="lastChargeTemplateId != null">#{lastChargeTemplateId},</if>
             <if test="loginIp != null">#{loginIp},</if>
+            <if test="nextEnableUnbindTime != null">#{nextEnableUnbindTime},</if>
         </trim>
     </insert>
 
@@ -247,6 +250,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="lastChargeCardId != null">last_charge_card_id = #{lastChargeCardId},</if>
             <if test="lastChargeTemplateId != null">last_charge_template_id = #{lastChargeTemplateId},</if>
             <if test="loginIp != null">login_ip = #{loginIp},</if>
+            <if test="nextEnableUnbindTime != null">next_enable_unbind_time = #{nextEnableUnbindTime},</if>
         </trim>
         where app_user_id = #{appUserId}
     </update>
@@ -283,5 +287,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectSysAppUserByAppIdAndLoginCode" resultMap="SysAppUserResult">
         <include refid="selectSysAppUserVo"/>
         where au.app_id = #{appId} and BINARY au.login_code = #{loginCode} and au.del_flag = '0'
+    </select>
+
+    <select id="selectSysAppUserListByAppIdsAndNextEnableUnbindTimeBeforeNow" parameterType="Long" resultMap="SysAppUserResult">
+        <include refid="selectSysAppUserVo"/>
+        where (au.next_enable_unbind_time is null or au.next_enable_unbind_time &lt; sysdate() or au.next_enable_unbind_time = '9999-12-31 23:59:59' ) and au.app_id in
+        <foreach collection="array" item="appId" open="(" separator="," close=")">
+            #{appId}
+        </foreach>
     </select>
 </mapper>

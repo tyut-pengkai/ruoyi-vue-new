@@ -43,17 +43,20 @@ public class ClearTrailTimesTask {
         if(appList.isEmpty()) {
             return;
         }
-        Map<Long, Long> idToTrialCycle = appList.stream().collect(Collectors.toMap(SysApp::getAppId, SysApp::getTrialCycle));
+        Map<Long, SysApp> idToApp = appList.stream().collect(Collectors.toMap(SysApp::getAppId, item->item));
         List<SysAppTrialUser> trialUserList = appTrialUserService.selectSysAppTrialUserListByAppIdsAndNextEnableTimeBeforeNow(appList.stream().map(SysApp::getAppId).toArray(Long[]::new));
         List<SysAppTrialUser> trialUserListBatchList = new ArrayList<>();
         for (SysAppTrialUser appTrialUser : trialUserList) {
             Date now = DateUtils.getNowDate();
             if (appTrialUser.getNextEnableTime().before(now) || appTrialUser.getNextEnableTime().equals(DateUtils.parseDate(UserConstants.MAX_DATE))) {
-                Long trialCycle = idToTrialCycle.get(appTrialUser.getAppId());
-                appTrialUser.setLoginTimes(0L);
-                appTrialUser.setNextEnableTime(MyUtils.getNewExpiredTimeAdd(null, trialCycle));
-                trialUserListBatchList.add(appTrialUser);
-                log.info("[软件试用]试用软件ID：{} 试用用户：{}-{} 试用周期已重置", appTrialUser.getAppId(), appTrialUser.getLoginIp(), appTrialUser.getDeviceCode());
+                SysApp app = idToApp.get(appTrialUser.getAppId());
+                Long trialCycle = app.getTrialCycle();
+                SysAppTrialUser updateUser = new SysAppTrialUser();
+                updateUser.setAppTrialUserId(appTrialUser.getAppTrialUserId());
+                updateUser.setLoginTimes(0L);
+                updateUser.setNextEnableTime(MyUtils.getNewExpiredTimeAdd(null, trialCycle));
+                trialUserListBatchList.add(updateUser);
+                log.info("[软件试用]软件：{}-{} 试用用户：{}-{} 试用周期已重置", app.getAppId(), app.getAppName(), appTrialUser.getLoginIp(), appTrialUser.getDeviceCode());
             }
         }
         if(!trialUserListBatchList.isEmpty()) {

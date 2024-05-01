@@ -188,6 +188,11 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
         return getCurrentOnline(null);
     }
 
+    @Override
+    public List<SysAppUser> selectSysAppUserListByAppIdsAndNextEnableUnbindTimeBeforeNow(Long[] appIds) {
+        return sysAppUserMapper.selectSysAppUserListByAppIdsAndNextEnableUnbindTimeBeforeNow(appIds);
+    }
+
     public Map<String, Object> computeCurrentOnline(Long appUserId) {
         Map<String, Object> result = new HashMap<>();
         // 统计当前在线用户数

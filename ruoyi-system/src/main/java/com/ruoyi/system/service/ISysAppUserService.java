@@ -105,4 +105,6 @@ public interface ISysAppUserService
     public List<LoginUser> getCurrentOnline(Long appUserId);
 
     public List<LoginUser> getCurrentOnline();
+
+    public List<SysAppUser> selectSysAppUserListByAppIdsAndNextEnableUnbindTimeBeforeNow(Long[] appIds);
 }

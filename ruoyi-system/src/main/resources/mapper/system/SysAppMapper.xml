@@ -57,6 +57,7 @@
 		<result property="shopUrl" column="shop_url"/>
 		<result property="enableFeCharge" column="enable_fe_charge"/>
 		<result property="enableFirstLogoutLocalMachine" column="enable_first_logout_local_machine"/>
+		<result property="unbindCycle" column="unbind_cycle"/>
 		<association property="developer" column="create_by" javaType="SysUser" resultMap="SysUserResult"/>
 	</resultMap>
 
@@ -119,6 +120,7 @@
 			   a.shop_url,
 			   a.enable_fe_charge,
 			   a.enable_first_logout_local_machine,
+			   a.unbind_cycle,
 			   u.user_id,
 			   u.user_name,
 			   u.nick_name
@@ -248,6 +250,7 @@
 			<if test="shopUrl != null">shop_url,</if>
 			<if test="enableFeCharge != null">enable_fe_charge,</if>
 			<if test="enableFirstLogoutLocalMachine != null">enable_first_logout_local_machine,</if>
+			<if test="unbindCycle != null">unbind_cycle,</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="appId != null">#{appId},</if>
@@ -302,6 +305,7 @@
 			<if test="shopUrl != null">#{shopUrl},</if>
 			<if test="enableFeCharge != null">#{enableFeCharge},</if>
 			<if test="enableFirstLogoutLocalMachine != null">#{enableFirstLogoutLocalMachine},</if>
+			<if test="unbindCycle != null">#{unbindCycle},</if>
 		</trim>
 	</insert>
 
@@ -361,6 +365,7 @@
 			<if test="shopUrl != null">shop_url = #{shopUrl},</if>
 			<if test="enableFeCharge != null">enable_fe_charge = #{enableFeCharge},</if>
 			<if test="enableFirstLogoutLocalMachine != null">enable_first_logout_local_machine = #{enableFirstLogoutLocalMachine},</if>
+			<if test="unbindCycle != null">unbind_cycle = #{unbindCycle},</if>
 		</trim>
 		where app_id = #{appId}
 	</update>
