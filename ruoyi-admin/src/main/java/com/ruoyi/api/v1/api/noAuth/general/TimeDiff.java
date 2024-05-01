@@ -16,7 +16,7 @@ public class TimeDiff extends Function {
     @Override
     public void init() {
         this.setApi(new Api("timeDiff.ng", "获取时间差", false, Constants.API_TAG_GENERAL,
-                "获取时间差，格式yyyy-MM-dd HH:mm:ss", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL,
+                "获取时间差，time2-time1，格式yyyy-MM-dd HH:mm:ss", Constants.AUTH_TYPE_ALL, Constants.BILL_TYPE_ALL,
                 new Param[]{
                         new Param("time1", false, "时间1，默认为当前时间"),
                         new Param("time2", false, "时间2，默认为当前时间"),
@@ -43,12 +43,12 @@ public class TimeDiff extends Function {
         assert date2 != null;
         switch (formatType) {
             case 1:
-                return DateUtils.differentDaysByMillisecond(date1, date2);
+                return DateUtils.differentDays(date1, date2);
             case 2:
                 return DateUtils.getDatePoor2(date2, date1);
             case 0:
             default:
-                return DateUtils.differentSecondsByMillisecond(date1, date2);
+                return DateUtils.differentMillisecond(date1, date2);
         }
     }
 

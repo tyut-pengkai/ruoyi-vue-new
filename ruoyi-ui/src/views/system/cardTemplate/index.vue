@@ -916,7 +916,7 @@
               <el-form-item label="换卡额度限制" prop="replaceThreshold">
                 <span>
                   <el-tooltip
-                    content="换卡至少剩余额度，0不限制 -1未使用，默认为-1"
+                    content="换卡至少剩余额度，0不限制 -1未使用，默认为-1，账号登录模式暂不支持调整"
                     placement="top"
                   >
                     <i
@@ -929,7 +929,7 @@
                   v-model="form.replaceThreshold"
                   :min="-1"
                   controls-position="right"
-                  :disabled="form.enableReplace === 'N'"
+                  disabled
                 />
               </el-form-item>
             </el-col>
@@ -1368,6 +1368,9 @@ export default {
         cardLoginLimitU: -2,
         cardLoginLimitM: -2,
         enableUnbind: "Y",
+        minBuyNum: 1,
+        enableReplace: "N",
+        replaceThreshold: "-1",
       };
       this.resetForm("form");
     },

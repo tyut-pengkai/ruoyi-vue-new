@@ -172,7 +172,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
             } catch(Exception ignored) {}
             if(loginUser == null) {
                 loginUser = redisCache.getCacheObject(key);
-                SysCache.set(key, loginUser);
+                SysCache.set(key, loginUser, redisCache.getExpire(key));
             }
             if (loginUser != null && loginUser.getIfApp() && !loginUser.getIfTrial()) {
                 Long aui = loginUser.getAppUserId();
@@ -204,7 +204,7 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
             } catch(Exception ignored) {}
             if(loginUser == null) {
                 loginUser = redisCache.getCacheObject(key);
-                SysCache.set(key, loginUser);
+                SysCache.set(key, loginUser, redisCache.getExpire(key));
             }
             if (loginUser != null && loginUser.getIfApp() && !loginUser.getIfTrial()) {
                 Long aui = loginUser.getAppUserId();

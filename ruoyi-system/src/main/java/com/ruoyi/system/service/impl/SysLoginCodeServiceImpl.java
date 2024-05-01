@@ -7,6 +7,7 @@ import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.enums.BillType;
+import com.ruoyi.common.enums.ChargeType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -126,7 +127,7 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
         int i = sysLoginCodeMapper.updateSysLoginCode(sysLoginCode);
         if (i > 0) {
             loginCode = sysLoginCodeMapper.selectSysLoginCodeByCardId(sysLoginCode.getCardId());
-            SysCache.set(CacheConstants.SYS_LOGIN_CODE_KEY + loginCode.getCardNo(), loginCode);
+            SysCache.set(CacheConstants.SYS_LOGIN_CODE_KEY + loginCode.getCardNo(), loginCode, 86400000);
         }
         return i;
     }
@@ -173,7 +174,7 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
         SysLoginCode loginCode = (SysLoginCode) SysCache.get(CacheConstants.SYS_LOGIN_CODE_KEY + cardNo);
         if (loginCode == null) {
             loginCode = sysLoginCodeMapper.selectSysLoginCodeByCardNo(cardNo);
-            SysCache.set(CacheConstants.SYS_LOGIN_CODE_KEY + cardNo, loginCode);
+            SysCache.set(CacheConstants.SYS_LOGIN_CODE_KEY + cardNo, loginCode, 86400000);
         }
         return loginCode;
     }
@@ -315,7 +316,6 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
                                         card.setOnSale(UserConstants.NO);
                                     }
                                     // 保存
-                                    this.insertSysLoginCode(card);
                                     boolean doImportUser = false;
                                     if (importUser) {
                                         SysAppUser appUser1 = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(app.getAppId(), card.getCardNo());
@@ -343,8 +343,11 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
                                             appUser.setLastChargeTemplateId(card.getTemplateId());
                                             sysAppUserService.insertSysAppUser(appUser);
                                             doImportUser = true;
+                                            card.setChargeType(ChargeType.LOGIN);
+                                            card.setChargeTo(appUser.getAppUserId());
                                         }
                                     }
+                                    this.insertSysLoginCode(card);
                                     successNum++;
                                     successMsg.append("<br/>" + successNum + "、单码[" + card.getCardNo() + "]导入成功");
                                     if (importUser) {

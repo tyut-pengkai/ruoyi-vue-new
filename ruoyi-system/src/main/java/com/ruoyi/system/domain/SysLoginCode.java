@@ -191,6 +191,8 @@ public class SysLoginCode extends BaseEntity {
         this.chargeTo = chargeTo;
     }
 
+    // 以下为批量导入时用于赋值到软件用户的属性
+
     public Date getUserExpireTime() {
         return userExpireTime;
     }

@@ -132,17 +132,17 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     }
 
     /**
-     * 计算相差天数
+     * 计算相差天数 date2-date1
      */
-    public static int differentDaysByMillisecond(Date date1, Date date2) {
-        return Math.abs((int) ((date2.getTime() - date1.getTime()) / (1000 * 3600 * 24)));
+    public static int differentDays(Date date1, Date date2) {
+        return (int) ((date2.getTime() - date1.getTime()) / (1000 * 3600 * 24));
     }
 
     /**
-     * 计算相差秒数
+     * 计算相差毫秒数 date2-date1
      */
-    public static long differentSecondsByMillisecond(Date date1, Date date2) {
-        return Math.abs(date2.getTime() - date1.getTime());
+    public static long differentMillisecond(Date date1, Date date2) {
+        return date2.getTime() - date1.getTime();
     }
 
     /**

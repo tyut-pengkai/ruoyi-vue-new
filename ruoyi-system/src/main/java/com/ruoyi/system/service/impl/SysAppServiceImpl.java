@@ -46,7 +46,7 @@ public class SysAppServiceImpl implements ISysAppService {
         List<SysApp> appList = sysAppMapper.selectSysAppList(new SysApp());
         for (SysApp app : appList) {
             if (StringUtils.isNotBlank(app.getAppKey())) {
-                SysCache.set(CacheConstants.SYS_APP_KEY + app.getAppKey(), app);
+                SysCache.set(CacheConstants.SYS_APP_KEY + app.getAppKey(), app, 86400000);
             }
         }
     }
@@ -73,7 +73,7 @@ public class SysAppServiceImpl implements ISysAppService {
         SysApp app = (SysApp) SysCache.get(CacheConstants.SYS_APP_KEY + appKey);
         if (app == null) {
             app = sysAppMapper.selectSysAppByAppKey(appKey);
-            SysCache.set(CacheConstants.SYS_APP_KEY + appKey, app);
+            SysCache.set(CacheConstants.SYS_APP_KEY + appKey, app, 86400000);
         }
         return app;
     }
@@ -125,7 +125,7 @@ public class SysAppServiceImpl implements ISysAppService {
         int i = sysAppMapper.updateSysApp(sysApp);
         if (i > 0) {
             SysApp app = sysAppMapper.selectSysAppByAppId(sysApp.getAppId());
-            SysCache.set(CacheConstants.SYS_APP_KEY + app.getAppKey(), app);
+            SysCache.set(CacheConstants.SYS_APP_KEY + app.getAppKey(), app, 86400000);
         }
         return i;
     }

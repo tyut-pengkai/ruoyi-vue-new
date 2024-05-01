@@ -131,7 +131,7 @@ public class SysUserServiceImpl implements ISysUserService {
         SysUser sysUser = (SysUser) SysCache.get(CacheConstants.SYS_USER_KEY + userId);
         if (sysUser == null) {
             sysUser = userMapper.selectUserById(userId);
-            SysCache.set(CacheConstants.SYS_USER_KEY + userId, sysUser);
+            SysCache.set(CacheConstants.SYS_USER_KEY + userId, sysUser, 86400000);
         }
         return sysUser;
     }
@@ -328,7 +328,7 @@ public class SysUserServiceImpl implements ISysUserService {
     private int updateCache(int i, Long userId) {
         if(i > 0) {
             SysUser sysUser = userMapper.selectUserById(userId);
-            SysCache.set(CacheConstants.SYS_USER_KEY + userId, sysUser);
+            SysCache.set(CacheConstants.SYS_USER_KEY + userId, sysUser, 86400000);
         }
         return i;
     }
@@ -336,7 +336,7 @@ public class SysUserServiceImpl implements ISysUserService {
     private int updateCache(int i, String userName) {
         if(i > 0) {
             SysUser sysUser = userMapper.selectUserByUserName(userName);
-            SysCache.set(CacheConstants.SYS_USER_KEY + sysUser.getUserId(), sysUser);
+            SysCache.set(CacheConstants.SYS_USER_KEY + sysUser.getUserId(), sysUser, 86400000);
         }
         return i;
     }

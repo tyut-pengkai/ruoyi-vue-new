@@ -5,8 +5,13 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
+import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.enums.ChargeType;
+import com.ruoyi.common.enums.UserStatus;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysLoginCode;
@@ -25,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -187,10 +193,10 @@ public class SysLoginCodeController extends BaseController {
         result.put(c, new ArrayList<>());
         result.put(d, new ArrayList<>());
         result.put(e, new ArrayList<>());
-        SysApp sysApp = null;
+        SysApp app = null;
         if(vo.getAppId() != 0) {
-            sysApp = sysAppService.selectSysAppByAppId(vo.getAppId());
-            if (sysApp == null) {
+            app = sysAppService.selectSysAppByAppId(vo.getAppId());
+            if (app == null) {
                 return AjaxResult.success("软件不存在");
             }
         }
@@ -200,9 +206,10 @@ public class SysLoginCodeController extends BaseController {
             if (loginCode == null) {
                 result.get(d).add(item + "【单码不存在】");
             } else {
-                if (sysApp != null && !Objects.equals(loginCode.getAppId(), sysApp.getAppId())) {
-                    result.get(b).add(item + "【所属软件：" + loginCode.getApp().getAppName() + "】【" + loginCode.getCardName() + "】");
+                if (app != null && !Objects.equals(loginCode.getAppId(), app.getAppId())) {
+                    result.get(b).add(item + "【所属软件：" + app.getAppName() + "】【" + loginCode.getCardName() + "】");
                 } else {
+                    app = loginCode.getApp();
                     // 检查换卡开关
                     Long templateId = loginCode.getTemplateId();
                     SysLoginCodeTemplate template = sysLoginCodeTemplateService.selectSysLoginCodeTemplateByTemplateId(templateId);
@@ -211,19 +218,49 @@ public class SysLoginCodeController extends BaseController {
                     } else if(!template.getEnableReplace().equals(UserConstants.YES)) {
                         result.get(c).add(item + "【此单码类别未开启换卡】");
                     } else {
-                        // 换卡条件：未过期
-                        if(loginCode.getExpireTime().before(DateUtils.getNowDate())) {
+                        // 换卡条件：未过期， 未冻结
+                        if(UserStatus.DELETED.getCode().equals(loginCode.getDelFlag())) {
+                            result.get(c).add(item + "【单码已被删除】");
+                        } else if(UserStatus.DISABLE.getCode().equals(loginCode.getStatus())) {
+                            result.get(c).add(item + "【单码已停用】");
+                        } else if(loginCode.getExpireTime().before(DateUtils.getNowDate())) {
                             result.get(c).add(item + "【单码已过期】");
                         } else {
                             // 检查阈值
                             if(loginCode.getIsCharged().equals(UserConstants.YES)) {
+                                SysAppUser appUser = null;
+                                if(loginCode.getChargeTo() != null) {
+                                    appUser = sysAppUserService.selectSysAppUserByAppUserId(loginCode.getChargeTo());
+                                } else {
+                                    appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(loginCode.getAppId(), item);
+                                }
                                 if(template.getReplaceThreshold() == -1) {
                                     result.get(c).add(item + "【单码已使用】");
-                                } else if(DateUtils.differentSecondsByMillisecond(DateUtils.getNowDate(), loginCode.getChargeTime()) > template.getReplaceThreshold()){
-                                    result.get(c).add(item + "【单码已使用且已超过可换卡条件】");
+                                } else if(loginCode.getChargeType() == ChargeType.CHARGE || appUser == null) {
+                                    result.get(c).add(item + "【单码已使用且已经以卡充卡到软件用户】");
                                 } else {
-                                    // 符合换卡条件
-                                    doReplace(vo, item, template, loginCode, batchNo, result, a, e);
+                                    if(app.getBillType() == BillType.TIME) {
+                                        long second = DateUtils.differentMillisecond(DateUtils.getNowDate(), appUser.getExpireTime()) / 1000;
+                                        if(second < template.getReplaceThreshold() || second <= 0) {
+                                            result.get(c).add(item + "【单码已使用且不满足可换卡条件或单码已无剩余时间】");
+                                        } else {
+                                            // 符合换卡条件
+                                            doReplace(vo, item, template, loginCode, batchNo, result, a, e);
+                                        }
+                                    }  else if(app.getBillType() == BillType.POINT) {
+                                        if(appUser.getPoint().compareTo(BigDecimal.valueOf(template.getReplaceThreshold())) < 0 || appUser.getPoint().compareTo(BigDecimal.ZERO) < 0) {
+                                            result.get(c).add(item + "【单码已使用且不满足可换卡条件或单码已无剩余点数】");
+                                        } else {
+                                            // 符合换卡条件
+                                            doReplace(vo, item, template, loginCode, batchNo, result, a, e);
+                                        }
+                                    } else {
+                                        throw new ServiceException("软件计费方式设置有误");
+                                    }
+                                    SysAppUser updateUser = new SysAppUser();
+                                    updateUser.setAppUserId(appUser.getAppUserId());
+                                    updateUser.setStatus(UserStatus.DISABLE.getCode());
+                                    sysAppUserService.updateSysAppUser(updateUser);
                                 }
                             } else {
                                 // 符合换卡条件
@@ -256,7 +293,7 @@ public class SysLoginCodeController extends BaseController {
             sysLoginCodeService.updateSysLoginCode(update);
             result.get(a).add(item + " => " + newLoginCode.getCardNo());
         } catch (Exception ex) {
-            result.get(e).add(item + "【异常信息：" + ex.getMessage() + "】");
+            result.get(e).add(item + "【" + ex.getMessage() + "】");
         }
     }
 

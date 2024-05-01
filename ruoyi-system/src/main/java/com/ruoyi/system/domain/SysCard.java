@@ -7,6 +7,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.enums.ChargeRule;
+import com.ruoyi.common.enums.ChargeType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -159,6 +160,32 @@ public class SysCard extends BaseEntity {
     private String batchNo;
 
     private Long agentId;
+
+    /**
+     * 使用方式
+     */
+    private ChargeType chargeType;
+
+    /**
+     * 充值到的软件用户
+     */
+    private Long chargeTo;
+
+    public ChargeType getChargeType() {
+        return chargeType;
+    }
+
+    public void setChargeType(ChargeType chargeType) {
+        this.chargeType = chargeType;
+    }
+
+    public Long getChargeTo() {
+        return chargeTo;
+    }
+
+    public void setChargeTo(Long chargeTo) {
+        this.chargeTo = chargeTo;
+    }
 
     @Excel(name = "所属代理账号", targetAttr = "userName", sort = 11)
     private SysUser agentUser = new SysUser();

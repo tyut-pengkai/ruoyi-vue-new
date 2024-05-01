@@ -672,6 +672,22 @@
           </el-tab-pane>
           <!-- 通信安全 -->
           <el-tab-pane label="通信安全">
+            <el-alert
+              :closable="false"
+              show-icon
+              title="注意：请在软件发布前设置好本页的加密方式及密码，请自行备份密码，密码一旦遗失无法找回"
+              type="info"
+              style="margin-bottom: 5px"
+            >
+            </el-alert>
+            <el-alert
+              :closable="false"
+              show-icon
+              title="注意：加密方式及密码设定好后请谨慎修改，修改后使用旧密码的软件将无法与系统正常通信"
+              type="info"
+              style="margin-bottom: 10px"
+            >
+            </el-alert>
             <el-form-item>
               <el-col :span="12">
                 <el-form-item label="数据输入加密" prop="dataInEnc">

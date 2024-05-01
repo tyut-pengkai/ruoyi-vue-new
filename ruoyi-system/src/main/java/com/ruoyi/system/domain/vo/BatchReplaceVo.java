@@ -11,6 +11,7 @@ public class BatchReplaceVo {
 
     private String content;
     private Long appId;
+    private String changeMode; // 是否换整卡 Y/N
     private String remark;
 
 }

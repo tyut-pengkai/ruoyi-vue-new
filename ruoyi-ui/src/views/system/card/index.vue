@@ -1199,7 +1199,7 @@
           :closable="false"
           show-icon
           style="margin-bottom: 10px"
-          title="换卡成功后将自动生成一张与旧卡所有参数完全一致的新卡，旧卡将被删除，如果旧卡已被使用，将从对应用户中扣除旧卡面值"
+          title="换卡成功后将自动生成一张新卡，旧卡将被删除，换卡仅限未激活使用的卡，如果已经激活使用，则无法换卡"
           type="info"
       />
       <el-form ref="formReplace" :model="formReplace" :rules="rulesReplace" >
@@ -1241,6 +1241,31 @@
               </div>
               <div v-else-if="formReplace.appId === 0">自动检测</div>
               <div v-else>请先选择软件</div>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="换卡模式" prop="changeMode">
+              <span>
+                <el-tooltip
+                    content="账号登录模式只支持整卡更换，如果卡已经被使用，则不支持换卡"
+                    placement="top"
+                >
+                  <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                  ></i>
+                </el-tooltip>
+              </span>
+              <el-radio-group v-model="formReplace.changeMode" disabled>
+                <el-radio
+                    v-for="dict in dict.type.sys_yes_no"
+                    :key="dict.value"
+                    :label="dict.value"
+                >{{ dict.label === '是' ? '换整卡' : '换残卡' }}
+                </el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -1504,11 +1529,15 @@ export default {
       // 批量换卡
       formReplace: {
         appId: 0,
+        changeMode: 'Y',
       },
       batchReplaceOpen: false,
       rulesReplace:{
         content: [
           {required: true, message: "操作内容不能为空", trigger: "blur"},
+        ],
+        changeMode: [
+          {required: true, message: "换卡模式不能为空", trigger: "blur"},
         ],
       },
       result: ""
@@ -2084,6 +2113,7 @@ export default {
     resetReplace() {
       this.formReplace = {
         appId: 0,
+        changeMode: 'Y',
       };
       this.resetForm("formReplace");
     },

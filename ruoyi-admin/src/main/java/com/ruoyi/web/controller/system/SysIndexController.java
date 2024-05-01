@@ -277,7 +277,7 @@ public class SysIndexController extends BaseController {
             } catch(Exception ignored) {}
             if(loginUser == null) {
                 loginUser = redisCache.getCacheObject(key);
-                SysCache.set(key, loginUser);
+                SysCache.set(key, loginUser, redisCache.getExpire(key));
             }
             if (loginUser != null && loginUser.getIfApp() && !loginUser.getIfTrial()) {
                 onlineListU.add(loginUser);

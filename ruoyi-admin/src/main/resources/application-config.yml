@@ -9,16 +9,16 @@ spring:
     druid:
       # 主库数据源
       master:
-#        url: jdbc:mysql://123.206.55.70:3306/ab_app_platform?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true
+#        url: jdbc:mysql://123.206.55.70:3306/ab_app_platform?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true&rewriteBatchedStatements=true
         #        username: mo
         #        password: mopwd
-        url: jdbc:mysql://127.0.0.1:3306/hywlyz_dev?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true
-#        url: jdbc:mysql://127.0.0.1:3306/hywlyz_sydk?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true
+        url: jdbc:mysql://127.0.0.1:3306/hywlyz_dev?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true&rewriteBatchedStatements=true
+#        url: jdbc:mysql://127.0.0.1:3306/hywlyz_sydk?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true&rewriteBatchedStatements=true
         username: root
         password: root
   #      slave:
   #        enable: true
-  #        url: jdbc:mysql://43.138.101.207:3306/hywlyz_test?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true
+  #        url: jdbc:mysql://43.138.101.207:3306/hywlyz_test?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true&rewriteBatchedStatements=true
   #        username: hywlyz_test
   #        password: AYfYCE5y3Sp7fszz
   # redis 配置

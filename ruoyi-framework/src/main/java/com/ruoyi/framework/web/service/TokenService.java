@@ -92,7 +92,7 @@ public class TokenService {
                 }
                 if (loginUser == null) {
                     loginUser = redisCache.getCacheObject(key);
-                    SysCache.set(key, loginUser);
+                    SysCache.set(key, loginUser, redisCache.getExpire(key));
                 }
                 return loginUser;
             } catch (Exception e) {
@@ -245,13 +245,13 @@ public class TokenService {
                 redisCache.setCacheObject(userKey, loginUser);
             }
             // 存储到本地缓存
-            SysCache.set(userKey, loginUser);
+            SysCache.set(userKey, loginUser, redisCache.getExpire(userKey));
         } else {
             loginUser.setExpireTime(System.currentTimeMillis() + expireTime * MILLIS_MINUTE);
             // 根据uuid将loginUser缓存
             String userKey = getTokenKey(loginUser.getToken());
             redisCache.setCacheObject(userKey, loginUser, expireTime, TimeUnit.MINUTES);
-            SysCache.set(userKey, loginUser);
+            SysCache.set(userKey, loginUser, redisCache.getExpire(userKey));
         }
     }
 

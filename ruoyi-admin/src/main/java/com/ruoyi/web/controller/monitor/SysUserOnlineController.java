@@ -54,7 +54,7 @@ public class SysUserOnlineController extends BaseController {
             } catch(Exception ignored) {}
             if(loginUser == null) {
                 loginUser = redisCache.getCacheObject(key);
-                SysCache.set(key, loginUser);
+                SysCache.set(key, loginUser, redisCache.getExpire(key));
             }
             if (loginUser != null) {
                 if (StringUtils.isNotEmpty(ipaddr) && StringUtils.isNotEmpty(userName)) {

@@ -7,6 +7,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.enums.UserStatus;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysCard;
@@ -188,10 +189,10 @@ public class SysCardController extends BaseController {
         result.put(c, new ArrayList<>());
         result.put(d, new ArrayList<>());
         result.put(e, new ArrayList<>());
-        SysApp sysApp = null;
+        SysApp app = null;
         if(vo.getAppId() != 0) {
-            sysApp = sysAppService.selectSysAppByAppId(vo.getAppId());
-            if (sysApp == null) {
+            app = sysAppService.selectSysAppByAppId(vo.getAppId());
+            if (app == null) {
                 return AjaxResult.success("软件不存在");
             }
         }
@@ -201,9 +202,10 @@ public class SysCardController extends BaseController {
             if (card == null) {
                 result.get(d).add(item + "【卡密不存在】");
             } else {
-                if (sysApp != null && !Objects.equals(card.getAppId(), sysApp.getAppId())) {
-                    result.get(b).add(item + "【所属软件：" + card.getApp().getAppName() + "】【" + card.getCardName() + "】");
+                if (app != null && !Objects.equals(card.getAppId(), app.getAppId())) {
+                    result.get(b).add(item + "【所属软件：" + app.getAppName() + "】【" + card.getCardName() + "】");
                 } else {
+                    app = card.getApp();
                     // 检查换卡开关
                     Long templateId = card.getTemplateId();
                     SysCardTemplate template = sysCardTemplateService.selectSysCardTemplateByTemplateId(templateId);
@@ -212,20 +214,51 @@ public class SysCardController extends BaseController {
                     } else if(!template.getEnableReplace().equals(UserConstants.YES)) {
                         result.get(c).add(item + "【此卡类未开启换卡】");
                     } else {
-                        // 换卡条件：未过期
-                        if(card.getExpireTime().before(DateUtils.getNowDate())) {
+                        // 换卡条件：未过期， 未冻结
+                        if(UserStatus.DELETED.getCode().equals(card.getDelFlag())) {
+                            result.get(c).add(item + "【卡密已被删除】");
+                        } else if(UserStatus.DISABLE.getCode().equals(card.getStatus())) {
+                            result.get(c).add(item + "【卡密已停用】");
+                        } else if(card.getExpireTime().before(DateUtils.getNowDate())) {
                             result.get(c).add(item + "【卡密已过期】");
                         } else {
                             // 检查阈值
                             if(card.getIsCharged().equals(UserConstants.YES)) {
-                                if(template.getReplaceThreshold() == -1) {
-                                    result.get(c).add(item + "【卡密已使用】");
-                                } else if(DateUtils.differentSecondsByMillisecond(DateUtils.getNowDate(), card.getChargeTime()) > template.getReplaceThreshold()){
-                                    result.get(c).add(item + "【卡密已使用且已超过可换卡条件】");
-                                } else {
-                                    // 符合换卡条件
-                                    doReplace(vo, item, template, card, batchNo, result, a, e);
-                                }
+                                result.get(c).add(item + "【卡密已使用】");
+//                                SysAppUser appUser = null;
+//                                if(card.getChargeTo() != null) {
+//                                    appUser = sysAppUserService.selectSysAppUserByAppUserId(card.getChargeTo());
+//                                }
+//                                if(template.getReplaceThreshold() == -1) {
+//                                    result.get(c).add(item + "【卡密已使用】");
+//                                } else if(card.getChargeType() == ChargeType.CHARGE) {
+//                                    result.get(c).add(item + "【卡密已使用且已经以卡充卡到软件用户】");
+//                                } else if(card.getChargeTo() == null || appUser == null) {
+//                                    result.get(c).add(item + "【v1.8.2及之前版本使用的卡密，无法关联到软件用户，不支持换卡】");
+//                                } else {
+//                                    if(app.getBillType() == BillType.TIME) {
+//                                        long second = DateUtils.differentMillisecond(DateUtils.getNowDate(), appUser.getExpireTime()) / 1000;
+//                                        if(second < template.getReplaceThreshold() || second <= 0) {
+//                                            result.get(c).add(item + "【卡密已使用且不满足可换卡条件或单码已无剩余时间】");
+//                                        } else {
+//                                            // 符合换卡条件
+//                                            doReplace(vo, item, template, card, batchNo, result, a, e);
+//                                        }
+//                                    }  else if(app.getBillType() == BillType.POINT) {
+//                                        if(appUser.getPoint().compareTo(BigDecimal.valueOf(template.getReplaceThreshold())) < 0 || appUser.getPoint().compareTo(BigDecimal.ZERO) < 0) {
+//                                            result.get(c).add(item + "【卡密已使用且不满足可换卡条件或单码已无剩余点数】");
+//                                        } else {
+//                                            // 符合换卡条件
+//                                            doReplace(vo, item, template, card, batchNo, result, a, e);
+//                                        }
+//                                    } else {
+//                                        throw new ServiceException("软件计费方式设置有误");
+//                                    }
+    //                                SysAppUser updateUser = new SysAppUser();
+    //                                updateUser.setAppUserId(appUser.getAppUserId());
+    //                                updateUser.setStatus(UserStatus.DISABLE.getCode());
+    //                                sysAppUserService.updateSysAppUser(updateUser);
+//                                }
                             } else {
                                 // 符合换卡条件
                                 doReplace(vo, item, template, card, batchNo, result, a, e);
@@ -257,7 +290,7 @@ public class SysCardController extends BaseController {
             sysCardService.updateSysCard(update);
             result.get(a).add(item + " => " + newCard.getCardNo() + " " + newCard.getCardPass());
         } catch (Exception ex) {
-            result.get(e).add(item + "【异常信息：" + ex.getMessage() + "】");
+            result.get(e).add(item + "【" + ex.getMessage() + "】");
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.annotation.DataScope;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysUser;
@@ -8,6 +9,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
@@ -126,7 +128,12 @@ public class SysCardServiceImpl implements ISysCardService {
         if(card != null && !Objects.equals(card.getCardId(), sysCard.getCardId())) {
             throw new ServiceException("卡号不可重复，此卡号已存在");
         }
-        return sysCardMapper.updateSysCard(sysCard);
+        int i = sysCardMapper.updateSysCard(sysCard);
+        if (i > 0) {
+            card = sysCardMapper.selectSysCardByCardId(sysCard.getCardId());
+            SysCache.set(CacheConstants.SYS_CARD_KEY + card.getCardNo(), card, 86400000);
+        }
+        return i;
     }
 
     /**
@@ -161,7 +168,15 @@ public class SysCardServiceImpl implements ISysCardService {
      */
     @Override
     public SysCard selectSysCardByCardNo(String cardNo) {
-        return sysCardMapper.selectSysCardByCardNo(cardNo);
+        if(StringUtils.isBlank(cardNo)) {
+            return null;
+        }
+        SysCard card = (SysCard) SysCache.get(CacheConstants.SYS_CARD_KEY + cardNo);
+        if (card == null) {
+            card = sysCardMapper.selectSysCardByCardNo(cardNo);
+            SysCache.set(CacheConstants.SYS_CARD_KEY + cardNo, card, 86400000);
+        }
+        return card;
     }
 
     /**

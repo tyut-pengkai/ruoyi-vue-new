@@ -2,6 +2,10 @@ package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.domain.entity.SysApp;
+import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.enums.BillType;
+import com.ruoyi.common.enums.ChargeType;
 import com.ruoyi.common.enums.GenRule;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
@@ -11,6 +15,7 @@ import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
 import com.ruoyi.system.domain.vo.BatchReplaceVo;
 import com.ruoyi.system.mapper.SysLoginCodeTemplateMapper;
+import com.ruoyi.system.service.ISysAppUserService;
 import com.ruoyi.system.service.ISysLoginCodeService;
 import com.ruoyi.system.service.ISysLoginCodeTemplateService;
 import nl.flotsam.xeger.Xeger;
@@ -19,11 +24,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 单码类别Service业务层处理
@@ -37,6 +45,8 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
     private SysLoginCodeTemplateMapper sysLoginCodeTemplateMapper;
     @Autowired
     private ISysLoginCodeService sysLoginCodeService;
+    @Resource
+    private ISysAppUserService appUserService;
 
     /**
      * 查询单码类别
@@ -223,20 +233,54 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
      */
     @Override
     public SysLoginCode genSysLoginCodeReplace(SysLoginCodeTemplate loginCodeTpl, SysLoginCode loginCode, BatchReplaceVo vo, String batchNo) {
-        SysLoginCode sysLoginCode = new SysLoginCode();
-        BeanUtils.copyProperties(loginCode, sysLoginCode);
-        sysLoginCode.setCardId(null);
-        sysLoginCode.setCardNo(genNo(loginCodeTpl.getCardNoPrefix(), loginCodeTpl.getCardNoSuffix(), loginCodeTpl.getCardNoLen(), loginCodeTpl.getCardNoGenRule(), loginCodeTpl.getCardNoRegex()));
-        sysLoginCode.setRemark("此卡用于替换旧卡：" + loginCode.getCardNo()
+        SysLoginCode newLoginCode = new SysLoginCode();
+        BeanUtils.copyProperties(loginCode, newLoginCode);
+        newLoginCode.setCardId(null);
+        if( Objects.equals(UserConstants.YES, loginCode.getIsCharged())) { // 换残卡
+            SysApp app = loginCode.getApp();
+            SysAppUser appUser = null;
+            if(loginCode.getChargeTo() != null) {
+                appUser = appUserService.selectSysAppUserByAppUserId(loginCode.getChargeTo());
+            } else {
+                appUser = appUserService.selectSysAppUserByAppIdAndLoginCode(loginCode.getAppId(), loginCode.getCardNo());
+            }
+            if(loginCode.getChargeType() == ChargeType.CHARGE || appUser == null) {
+                throw new ServiceException("单码已使用且已经以卡充卡到软件用户");
+            }
+            if(app.getBillType() == BillType.TIME) {
+                long second = DateUtils.differentMillisecond(DateUtils.getNowDate(), appUser.getExpireTime()) / 1000;
+                if(second > 0) {
+                    if(!Objects.equals(UserConstants.YES, vo.getChangeMode())) {
+                        newLoginCode.setQuota(second);
+                    }
+                } else {
+                    throw new ServiceException("单码已无剩余时间");
+                }
+            } else if(app.getBillType() == BillType.POINT) {
+                if(appUser.getPoint().compareTo(BigDecimal.ZERO) > 0) {
+                    if(!Objects.equals(UserConstants.YES, vo.getChangeMode())) {
+                        newLoginCode.setQuota(appUser.getPoint().longValue());
+                    }
+                } else {
+                    throw new ServiceException("单码已无剩余点数");
+                }
+            } else {
+                throw new ServiceException("软件计费方式设置有误");
+            }
+        }
+        newLoginCode.setCardNo(genNo(loginCodeTpl.getCardNoPrefix(), loginCodeTpl.getCardNoSuffix(), loginCodeTpl.getCardNoLen(), loginCodeTpl.getCardNoGenRule(), loginCodeTpl.getCardNoRegex()));
+        newLoginCode.setIsCharged(UserConstants.NO);
+        newLoginCode.setChargeTime(null);
+        newLoginCode.setRemark("此卡用于替换旧卡：" + loginCode.getCardNo()
                 + (StringUtils.isNotBlank(vo.getRemark())? "\n换卡备注：" + vo.getRemark() : "")
                 + (StringUtils.isNotBlank(loginCode.getRemark())? "\n旧卡备注：" + loginCode.getRemark() : ""));
-        sysLoginCode.setBatchNo(batchNo);
+        newLoginCode.setBatchNo(batchNo);
         try {
-            sysLoginCode.setCreateBy(SecurityUtils.getUsernameNoException());
+            newLoginCode.setCreateBy(SecurityUtils.getUsernameNoException());
         } catch (Exception ignore) {
         }
-        if(sysLoginCodeService.insertSysLoginCode(sysLoginCode)>0) {
-            return sysLoginCode;
+        if(sysLoginCodeService.insertSysLoginCode(newLoginCode)>0) {
+            return newLoginCode;
         }
         throw new ServiceException("保存新卡失败");
     }

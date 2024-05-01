@@ -627,7 +627,7 @@ public class CommonController {
             } catch(Exception ignored) {}
             if(loginUser == null) {
                 loginUser = redisCache.getCacheObject(key);
-                SysCache.set(key, loginUser);
+                SysCache.set(key, loginUser, redisCache.getExpire(key));
             }
             if (loginUser != null && loginUser.getIfApp()) {
                 onlineUserList.add(loginUser);

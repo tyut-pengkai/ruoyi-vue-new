@@ -1296,6 +1296,9 @@ export default {
         cardLoginLimitU: -2,
         cardLoginLimitM: -2,
         enableUnbind: "Y",
+        minBuyNum: 1,
+        enableReplace: "N",
+        replaceThreshold: "-1",
       };
       this.resetForm("form");
     },

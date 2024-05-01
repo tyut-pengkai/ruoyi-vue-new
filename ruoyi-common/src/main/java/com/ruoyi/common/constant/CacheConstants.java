@@ -77,6 +77,11 @@ public class CacheConstants {
     public static final String SYS_LOGIN_CODE_KEY = "sys_login_code:";
 
     /**
+     * card
+     */
+    public static final String SYS_CARD_KEY = "sys_card:";
+
+    /**
      * user
      */
     public static final String SYS_USER_KEY = "sys_user:";

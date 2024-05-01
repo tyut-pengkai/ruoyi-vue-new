@@ -11,6 +11,7 @@ import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.domain.vo.BatchReplaceVo;
 import com.ruoyi.system.mapper.SysCardTemplateMapper;
+import com.ruoyi.system.service.ISysAppUserService;
 import com.ruoyi.system.service.ISysCardService;
 import com.ruoyi.system.service.ISysCardTemplateService;
 import nl.flotsam.xeger.Xeger;
@@ -19,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
     private SysCardTemplateMapper sysCardTemplateMapper;
     @Autowired
     private ISysCardService sysCardService;
+    @Resource
+    private ISysAppUserService appUserService;
 
     /**
      * 查询卡密模板
@@ -236,21 +240,57 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
      */
     @Override
     public SysCard genCardReplace(SysCardTemplate cardTpl, SysCard card, BatchReplaceVo vo, String batchNo) {
-        SysCard sysCard = new SysCard();
-        BeanUtils.copyProperties(card, sysCard);
-        sysCard.setCardId(null);
-        sysCard.setCardNo(genNo(cardTpl.getCardNoPrefix(), cardTpl.getCardNoSuffix(), cardTpl.getCardNoLen(), cardTpl.getCardNoGenRule(), cardTpl.getCardNoRegex()));
-        sysCard.setCardPass(genPass(cardTpl.getCardPassLen(), cardTpl.getCardPassGenRule(), cardTpl.getCardPassRegex()));
-        sysCard.setRemark("此卡用于替换旧卡：" + card.getCardNo()
+        SysCard newCard = new SysCard();
+        BeanUtils.copyProperties(card, newCard);
+        newCard.setCardId(null);
+//        if( Objects.equals(UserConstants.YES, card.getIsCharged())) { // 换残卡
+//            SysApp app = card.getApp();
+//            SysAppUser appUser = null;
+//            if(card.getChargeTo() != null) {
+//                appUser = appUserService.selectSysAppUserByAppUserId(card.getChargeTo());
+//            }
+//            if(card.getChargeType() == ChargeType.CHARGE) {
+//                throw new ServiceException("卡密已使用且已经以卡充卡到软件用户");
+//            } else if(appUser == null) {
+//                throw new ServiceException("v1.8.2及之前版本使用的卡密，无法关联到软件用户，不支持换卡");
+//            }
+//            if(app.getBillType() == BillType.TIME) {
+//                long second = DateUtils.differentMillisecond(DateUtils.getNowDate(), appUser.getExpireTime()) / 1000;
+//                if(second > 0) {
+//                    if(!Objects.equals(UserConstants.YES, vo.getChangeMode())) {
+//                        newCard.setQuota(second);
+//                    }
+//                } else {
+//                    throw new ServiceException("单码已无剩余时间");
+//                }
+//            } else if(app.getBillType() == BillType.POINT) {
+//                if(appUser.getPoint().compareTo(BigDecimal.ZERO) > 0) {
+//                    if(!Objects.equals(UserConstants.YES, vo.getChangeMode())) {
+//                        newCard.setQuota(appUser.getPoint().longValue());
+//                    }
+//                } else {
+//                    throw new ServiceException("单码已无剩余点数");
+//                }
+//            } else {
+//                throw new ServiceException("软件计费方式设置有误");
+//            }
+//        }
+        newCard.setCardNo(genNo(cardTpl.getCardNoPrefix(), cardTpl.getCardNoSuffix(), cardTpl.getCardNoLen(), cardTpl.getCardNoGenRule(), cardTpl.getCardNoRegex()));
+        newCard.setCardPass(genPass(cardTpl.getCardPassLen(), cardTpl.getCardPassGenRule(), cardTpl.getCardPassRegex()));
+        newCard.setIsCharged(UserConstants.NO);
+        newCard.setChargeTime(null);
+        newCard.setChargeType(null);
+        newCard.setChargeTo(null);
+        newCard.setRemark("此卡用于替换旧卡：" + card.getCardNo()
                 + (StringUtils.isNotBlank(vo.getRemark())? "\n换卡备注：" + vo.getRemark() : "")
                 + (StringUtils.isNotBlank(card.getRemark())? "\n旧卡备注：" + card.getRemark() : ""));
-        sysCard.setBatchNo(batchNo);
+        newCard.setBatchNo(batchNo);
         try {
-            sysCard.setCreateBy(SecurityUtils.getUsernameNoException());
+            newCard.setCreateBy(SecurityUtils.getUsernameNoException());
         } catch (Exception ignore) {
         }
-        if(sysCardService.insertSysCard(sysCard)>0) {
-            return sysCard;
+        if(sysCardService.insertSysCard(newCard)>0) {
+            return newCard;
         }
         throw new ServiceException("保存新卡失败");
     }

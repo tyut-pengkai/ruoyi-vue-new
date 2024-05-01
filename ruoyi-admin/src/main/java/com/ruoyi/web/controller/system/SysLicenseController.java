@@ -53,7 +53,7 @@ public class SysLicenseController {
         Map<String, Object> result = new HashMap<>();
         result.put("expireTime", DateUtils.parseDateToStr(licenseInfo.getTo()));
         result.put("remainTimeReadable", DateUtils.timeDistance(licenseInfo.getTo(), DateUtils.getNowDate()));
-        result.put("remainTimeSeconds", DateUtils.differentSecondsByMillisecond(licenseInfo.getTo(), DateUtils.getNowDate()) / 1000);
+        result.put("remainTimeSeconds", DateUtils.differentMillisecond(DateUtils.getNowDate(), licenseInfo.getTo()) / 1000);
         return AjaxResult.success().put("data", result);
     }
 

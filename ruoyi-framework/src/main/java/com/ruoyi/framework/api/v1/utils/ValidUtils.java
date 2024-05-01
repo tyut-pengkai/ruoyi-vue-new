@@ -372,7 +372,7 @@ public class ValidUtils {
             } catch(Exception ignored) {}
             if(loginUser == null) {
                 loginUser = redisCache.getCacheObject(key);
-                SysCache.set(key, loginUser);
+                SysCache.set(key, loginUser, redisCache.getExpire(key));
             }
             if (loginUser != null && loginUser.getIfApp() && !loginUser.getIfTrial() && Objects.equals(appUser.getAppUserId(), loginUser.getAppUserId())) {
                 onlineListU.add(loginUser);
@@ -419,7 +419,7 @@ public class ValidUtils {
             } catch(Exception ignored) {}
             if(loginUser == null) {
                 loginUser = redisCache.getCacheObject(key);
-                SysCache.set(key, loginUser);
+                SysCache.set(key, loginUser, redisCache.getExpire(key));
             }
             if (loginUser != null && trailUser != null && loginUser.getIfTrial()
                     && Objects.equals(appTrialUser.getLoginIp(), trailUser.getLoginIp())

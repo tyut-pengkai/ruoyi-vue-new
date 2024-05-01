@@ -311,6 +311,8 @@ public class SysAppLoginService {
                 loginCode.setIsCharged(UserConstants.YES);
                 loginCode.setChargeTime(DateUtils.getNowDate());
                 loginCode.setOnSale(UserConstants.NO);
+                loginCode.setChargeType(ChargeType.LOGIN);
+                loginCode.setChargeTo(appUser.getAppUserId());
                 loginCodeService.updateSysLoginCode(loginCode);
                 if (app.getFreeQuotaReg() > 0) {
                     // 记录用户时长变更日志
