@@ -3,10 +3,7 @@ package com.coordsoft.hysdk.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.coordsoft.hysdk.encrypt.EncryptAesCbcPKCS5P;
-import com.coordsoft.hysdk.encrypt.EncryptAesCbcZeroP;
-import com.coordsoft.hysdk.encrypt.EncryptBase64;
-import com.coordsoft.hysdk.encrypt.EncryptType;
+import com.coordsoft.hysdk.enums.EncryptType;
 import com.coordsoft.hysdk.vo.JsonResult;
 import com.coordsoft.hysdk.vo.RequestResult;
 import org.apache.commons.lang.StringUtils;
@@ -59,7 +56,7 @@ public class HyUtils {
 
     private static String encryptBase64(String text) {
         try {
-            return EncryptBase64.encrypt(text, null);
+            return Base64Util.encode(text);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -68,7 +65,7 @@ public class HyUtils {
 
     private static String decryptBase64(String text) {
         try {
-            return EncryptBase64.decrypt(text, null);
+            return Base64Util.decode(text);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -80,26 +77,26 @@ public class HyUtils {
             return text;
         }
         try {
-            return EncryptAesCbcPKCS5P.encrypt(text, password);
+            return AesCbcPKCS5PaddingUtil.encode(text, password);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    private static String rg_decrypt_AES_CBC_PKCS5Padding(String text, String password) {
+    private static String decryptAesCbcPKCS5Padding(String text, String password) {
         if ("".equals(password)) {
             return text;
         }
         try {
-            return EncryptAesCbcPKCS5P.decrypt(text, password);
+            return AesCbcPKCS5PaddingUtil.decode(text, password);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    private static String rgEncryptAESCBCZeroPadding(String text, String password) {
+    private static String encryptAesCbcZeroPadding(String text, String password) {
         if ("".equals(password)) {
             return (text);
         }
@@ -116,7 +113,7 @@ public class HyUtils {
             return (text);
         }
         try {
-            return EncryptAesCbcZeroP.decrypt(text, password);
+            return AesCbcZeroPaddingUtil.decode(text, password);
         } catch (Exception e) {
             e.printStackTrace();
             return (null);
@@ -124,7 +121,7 @@ public class HyUtils {
     }
 
     protected static String calcAnonApi(String text, String password) {
-        return (rgEncryptAESCBCZeroPadding(text, password));
+        return (encryptAesCbcZeroPadding(text, password));
     }
 
     //=====================================以上为私有方法====================================
@@ -162,7 +159,7 @@ public class HyUtils {
         } else if (encryptType == EncryptType.AES_CBC_PKCS5Padding) {
             return (encryptAesCbcPKCS5Padding(text, password));
         } else if (encryptType == EncryptType.AES_CBC_ZeroPadding) {
-            return (rgEncryptAESCBCZeroPadding(text, password));
+            return (encryptAesCbcZeroPadding(text, password));
         } else {
             return (text);
         }
@@ -174,7 +171,7 @@ public class HyUtils {
         } else if (encryptType == EncryptType.BASE64) {
             return (decryptBase64(text));
         } else if (encryptType == EncryptType.AES_CBC_PKCS5Padding) {
-            return (rg_decrypt_AES_CBC_PKCS5Padding(text, password));
+            return (decryptAesCbcPKCS5Padding(text, password));
         } else if (encryptType == EncryptType.AES_CBC_ZeroPadding) {
             return (decryptAesCbcZeroPadding(text, password));
         } else {

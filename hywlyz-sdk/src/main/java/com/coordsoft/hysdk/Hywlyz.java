@@ -3,7 +3,7 @@ package com.coordsoft.hysdk;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.coordsoft.hysdk.encrypt.EncryptType;
+import com.coordsoft.hysdk.enums.EncryptType;
 import com.coordsoft.hysdk.utils.HttpUtil;
 import com.coordsoft.hysdk.utils.HyUtils;
 import com.coordsoft.hysdk.utils.RandomUtil;
@@ -28,26 +28,27 @@ public class Hywlyz extends HyUtils {
     private boolean gLog = false;
 
     public String getSdkVer() {
-        return "v1.7.0_20230903";
+        // 共计41个API
+        return "v1.9.0_20240503";
     }
 
     public void setShowLog(boolean showLog) {
         this.gLog = showLog;
     }
 
-    private void showLogInfo(String str) {
+    public void showLogInfo(String str) {
         if (gLog) {
             log.info(str);
         }
     }
 
-    private void showLogDebug(String str) {
+    public void showLogDebug(String str) {
         if (gLog) {
             log.debug(str);
         }
     }
 
-    private void showLogError(String str) {
+    public void showLogError(String str) {
         if (gLog) {
             log.error(str);
         }
@@ -80,12 +81,12 @@ public class Hywlyz extends HyUtils {
             }
             if (checkToken) {
                 vstr = data.getString("vstr");
-                if ("".equals(vstr)) {
+                if (StringUtils.isBlank(vstr)) {
                     vstr = RandomUtil.getNumLargeSmallLetter(8);
                     data.put("vstr", vstr);
                 }
                 String timestamp = data.getString("timestamp");
-                if ("".equals(timestamp)) {
+                if (StringUtils.isBlank(timestamp)) {
                     timestamp = String.valueOf(System.currentTimeMillis());
                     data.put("timestamp", timestamp);
                 }
@@ -104,7 +105,7 @@ public class Hywlyz extends HyUtils {
                     "globalFileDownload.ng"
             ));
 
-            if (checkToken && (gToken == null || "".equals(gToken)) && !ignoreList.contains(api)) {
+            if (checkToken && StringUtils.isBlank(gToken) && !ignoreList.contains(api)) {
                 showLogDebug("requestServer: token为空，请先调用【setToken】函数设置TOKEN");
                 return requestResult;
             }
@@ -117,7 +118,7 @@ public class Hywlyz extends HyUtils {
 
             String requestContent = null;
             try {
-                requestContent = Hywlyz.generalDataEncrypt(Hywlyz.replaceNewLine(data.toString()), gDataInPwd, gDataInEnc);
+                requestContent = generalDataEncrypt(replaceNewLine(data.toString()), gDataInPwd, gDataInEnc);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -136,7 +137,7 @@ public class Hywlyz extends HyUtils {
                 if (requestResult.getCode() == 200) {
                     if (HyUtils.verifySign(jsonObject, gAppSecret)) {
                         if (StringUtils.isBlank(vstr) || vstr.equals(requestResult.getVstr())) {
-                            dataStr = Hywlyz.generalDataDecrypt(dataStr, gDataOutPwd, gDataOutEnc);
+                            dataStr = generalDataDecrypt(dataStr, gDataOutPwd, gDataOutEnc);
                             if ((JSON.isValidObject(dataStr) || JSON.isValidArray(dataStr)) && !api.equals("globalVariableGet.ng")) {
                                 requestResult.setData(dataStr);
                             } else {
