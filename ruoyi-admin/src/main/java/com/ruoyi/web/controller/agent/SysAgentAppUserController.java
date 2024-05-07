@@ -1,11 +1,14 @@
 package com.ruoyi.web.controller.agent;
 
+import com.ruoyi.agent.domain.SysAgent;
+import com.ruoyi.agent.service.ISysAgentUserService;
 import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -14,7 +17,9 @@ import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ApiException;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.PermissionService;
@@ -23,6 +28,7 @@ import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppUserService;
 import com.ruoyi.system.service.ISysLoginCodeService;
+import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.utils.poi.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,10 +36,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 软件用户Controller
@@ -54,6 +57,10 @@ public class SysAgentAppUserController extends BaseController {
     private PermissionService permissionService;
     @Resource
     private ISysLoginCodeService sysLoginCodeService;
+    @Resource
+    private ISysUserService sysUserService;
+    @Resource
+    private ISysAgentUserService sysAgentService;
 
     /**
      * 查询软件用户列表
@@ -63,9 +70,9 @@ public class SysAgentAppUserController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo list(SysAppUser sysAppUser) {
         startPage();
-        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+//        if (!permissionService.hasAnyRoles("sadmin,admin")) {
             sysAppUser.setAgentId(getUserId());
-        }
+//        }
         List<SysAppUser> list = sysAppUserService.selectSysAppUserList(sysAppUser);
 
         Map<String, Object> map = sysAppUserService.computeCurrentOnline();
@@ -87,9 +94,9 @@ public class SysAgentAppUserController extends BaseController {
     @Log(title = "软件用户", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(SysAppUser sysAppUser) {
-        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+//        if (!permissionService.hasAnyRoles("sadmin,admin")) {
             sysAppUser.setAgentId(getUserId());
-        }
+//        }
         List<SysAppUser> list = sysAppUserService.selectSysAppUserList(sysAppUser);
         ExcelUtil<SysAppUser> util = new ExcelUtil<SysAppUser>(SysAppUser.class);
         return util.exportExcel(list, "软件用户数据");
@@ -266,9 +273,36 @@ public class SysAgentAppUserController extends BaseController {
      * 状态修改
      */
     @PreAuthorize("@ss.hasPermi('agent:appUser:edit')")
-    @Log(title = "设备码管理", businessType = BusinessType.UPDATE)
+    @Log(title = "软件用户", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
     public AjaxResult changeStatus(@RequestBody SysAppUser sysAppUser) {
         return toAjax(sysAppUserService.updateSysAppUser(sysAppUser));
+    }
+
+    /**
+     * 重置密码
+     */
+    @PreAuthorize("@ss.hasPermi('agent:agentUser:resetPwd')")
+    @Log(title = "软件用户", businessType = BusinessType.UPDATE)
+    @PutMapping("/resetPwd")
+    public AjaxResult resetPwd(@RequestBody SysUser user) {
+        sysUserService.checkUserAllowed(user);
+        SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndUserId(user.getDeptId(), user.getUserId());// 此处使用dept id传递app id
+        if(appUser == null) {
+            throw new ServiceException("软件用户不存在", 400);
+        }
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            SysAgent myAgent = sysAgentService.selectSysAgentByUserId(SecurityUtils.getUserId());
+            if(myAgent == null) {
+                throw new ServiceException("您的代理信息缺失", 400);
+            }
+            sysAgentService.checkAgent(myAgent, false);
+            if(!Objects.equals(appUser.getAgentId(), myAgent.getAgentId())) {
+                throw new ServiceException("所选软件用户不是您的代理用户", 400);
+            }
+        }
+        user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
+        user.setUpdateBy(getUsername());
+        return toAjax(sysUserService.resetPwd(user));
     }
 }

@@ -64,9 +64,9 @@ public class SysAgentLoginCodeController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo list(SysLoginCode sysLoginCode) {
         startPage();
-        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+//        if (!permissionService.hasAnyRoles("sadmin,admin")) {
             sysLoginCode.setAgentId(getUserId());
-        }
+//        }
         List<SysLoginCode> list = sysLoginCodeService.selectSysLoginCodeList(sysLoginCode);
         return getDataTable(list);
     }
@@ -78,9 +78,9 @@ public class SysAgentLoginCodeController extends BaseController {
     @Log(title = "单码", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(SysLoginCode sysLoginCode) {
-        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+//        if (!permissionService.hasAnyRoles("sadmin,admin")) {
             sysLoginCode.setAgentId(getUserId());
-        }
+//        }
         List<SysLoginCode> list = sysLoginCodeService.selectSysLoginCodeList(sysLoginCode);
         ExcelUtil<SysLoginCode> util = new ExcelUtil<SysLoginCode>(SysLoginCode.class);
         return util.exportExcel(list, "单码数据");

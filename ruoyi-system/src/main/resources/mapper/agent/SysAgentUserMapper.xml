@@ -18,6 +18,31 @@
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
+        <result property="enableUpdateSubagentPassword"    column="enable_update_subagent_password"    />
+        <result property="enableUpdateSubagentStatus"    column="enable_update_subagent_status"    />
+        <result property="enableUnbindAppUser"    column="enable_unbind_app_user"    />
+        <result property="enableUpdateAppUserStatus0"    column="enable_update_app_user_status_0"    />
+        <result property="enableUpdateAppUserStatus1"    column="enable_update_app_user_status_1"    />
+        <result property="enableUpdateAppUserTime"    column="enable_update_app_user_time"    />
+        <result property="enableUpdateAppUserPoint"    column="enable_update_app_user_point"    />
+        <result property="enableUpdateAppUserLoginLimitU"    column="enable_update_app_user_login_limit_u"    />
+        <result property="enableUpdateAppUserLoginLimitM"    column="enable_update_app_user_login_limit_m"    />
+        <result property="enbaleUpdateAppUserCustomParams"    column="enbale_update_app_user_custom_params"    />
+        <result property="enableUpdateAppUserRemark"    column="enable_update_app_user_remark"    />
+        <result property="enbaleViewUserContact"    column="enbale_view_user_contact"    />
+        <result property="enableUpdateUserContact"    column="enable_update_user_contact"    />
+        <result property="enableUpdateUserPassword"    column="enable_update_user_password"    />
+        <result property="enableUpdateUserRemark"    column="enable_update_user_remark"    />
+        <result property="enableUpdateCardTime"    column="enable_update_card_time"    />
+        <result property="enableUpdateCardPoint"    column="enable_update_card_point"    />
+        <result property="enableUpdateCardLoginLimitU"    column="enable_update_card_login_limit_u"    />
+        <result property="enableUpdateCardLoginLimitM"    column="enable_update_card_login_limit_m"    />
+        <result property="enableUpdateCardCustomParams"    column="enable_update_card_custom_params"    />
+        <result property="enableUpdateCardRemark"    column="enable_update_card_remark"    />
+        <result property="enableUpdateCardStatus0"    column="enable_update_card_status_0"    />
+        <result property="enableUpdateCardStatus1"    column="enable_update_card_status_1"    />
+        <result property="enableBatchCardReplace"    column="enable_batch_card_replace"    />
+        <result property="enableAddCard"    column="enable_add_card"    />
         <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
     </resultMap>
 
@@ -41,6 +66,11 @@
                ag.update_by,
                ag.update_time,
                ag.remark,
+               ag.enable_update_subagent_password, ag.enable_update_subagent_status, ag.enable_unbind_app_user, ag.enable_update_app_user_status_0, ag.enable_update_app_user_status_1,
+               ag.enable_update_app_user_time, ag.enable_update_app_user_point, ag.enable_update_app_user_login_limit_u, ag.enable_update_app_user_login_limit_m, ag.enbale_update_app_user_custom_params,
+               ag.enable_update_app_user_remark, ag.enbale_view_user_contact, ag.enable_update_user_contact, ag.enable_update_user_password, ag.enable_update_user_remark, ag.enable_update_card_time,
+               ag.enable_update_card_point, ag.enable_update_card_login_limit_u, ag.enable_update_card_login_limit_m, ag.enable_update_card_custom_params, ag.enable_update_card_remark,
+               ag.enable_update_card_status_0, ag.enable_update_card_status_1, ag.enable_batch_card_replace, ag.enable_add_card,
                u.user_id,
                u.user_name,
                u.nick_name
@@ -63,6 +93,31 @@
         </if>
         <if test="status != null  and status != ''">and ag.status = #{status}</if>
         <if test="remark != null and remark != ''">and ag.remark like concat('%', #{remark}, '%')</if>
+        <if test="enableUpdateSubagentPassword != null  and enableUpdateSubagentPassword != ''"> and enable_update_subagent_password = #{enableUpdateSubagentPassword}</if>
+        <if test="enableUpdateSubagentStatus != null  and enableUpdateSubagentStatus != ''"> and enable_update_subagent_status = #{enableUpdateSubagentStatus}</if>
+        <if test="enableUnbindAppUser != null  and enableUnbindAppUser != ''"> and enable_unbind_app_user = #{enableUnbindAppUser}</if>
+        <if test="enableUpdateAppUserStatus0 != null  and enableUpdateAppUserStatus0 != ''"> and enable_update_app_user_status_0 = #{enableUpdateAppUserStatus0}</if>
+        <if test="enableUpdateAppUserStatus1 != null  and enableUpdateAppUserStatus1 != ''"> and enable_update_app_user_status_1 = #{enableUpdateAppUserStatus1}</if>
+        <if test="enableUpdateAppUserTime != null  and enableUpdateAppUserTime != ''"> and enable_update_app_user_time = #{enableUpdateAppUserTime}</if>
+        <if test="enableUpdateAppUserPoint != null  and enableUpdateAppUserPoint != ''"> and enable_update_app_user_point = #{enableUpdateAppUserPoint}</if>
+        <if test="enableUpdateAppUserLoginLimitU != null  and enableUpdateAppUserLoginLimitU != ''"> and enable_update_app_user_login_limit_u = #{enableUpdateAppUserLoginLimitU}</if>
+        <if test="enableUpdateAppUserLoginLimitM != null  and enableUpdateAppUserLoginLimitM != ''"> and enable_update_app_user_login_limit_m = #{enableUpdateAppUserLoginLimitM}</if>
+        <if test="enbaleUpdateAppUserCustomParams != null  and enbaleUpdateAppUserCustomParams != ''"> and enbale_update_app_user_custom_params = #{enbaleUpdateAppUserCustomParams}</if>
+        <if test="enableUpdateAppUserRemark != null  and enableUpdateAppUserRemark != ''"> and enable_update_app_user_remark = #{enableUpdateAppUserRemark}</if>
+        <if test="enbaleViewUserContact != null  and enbaleViewUserContact != ''"> and enbale_view_user_contact = #{enbaleViewUserContact}</if>
+        <if test="enableUpdateUserContact != null  and enableUpdateUserContact != ''"> and enable_update_user_contact = #{enableUpdateUserContact}</if>
+        <if test="enableUpdateUserPassword != null  and enableUpdateUserPassword != ''"> and enable_update_user_password = #{enableUpdateUserPassword}</if>
+        <if test="enableUpdateUserRemark != null  and enableUpdateUserRemark != ''"> and enable_update_user_remark = #{enableUpdateUserRemark}</if>
+        <if test="enableUpdateCardTime != null  and enableUpdateCardTime != ''"> and enable_update_card_time = #{enableUpdateCardTime}</if>
+        <if test="enableUpdateCardPoint != null  and enableUpdateCardPoint != ''"> and enable_update_card_point = #{enableUpdateCardPoint}</if>
+        <if test="enableUpdateCardLoginLimitU != null  and enableUpdateCardLoginLimitU != ''"> and enable_update_card_login_limit_u = #{enableUpdateCardLoginLimitU}</if>
+        <if test="enableUpdateCardLoginLimitM != null  and enableUpdateCardLoginLimitM != ''"> and enable_update_card_login_limit_m = #{enableUpdateCardLoginLimitM}</if>
+        <if test="enableUpdateCardCustomParams != null  and enableUpdateCardCustomParams != ''"> and enable_update_card_custom_params = #{enableUpdateCardCustomParams}</if>
+        <if test="enableUpdateCardRemark != null  and enableUpdateCardRemark != ''"> and enable_update_card_remark = #{enableUpdateCardRemark}</if>
+        <if test="enableUpdateCardStatus0 != null  and enableUpdateCardStatus0 != ''"> and enable_update_card_status_0 = #{enableUpdateCardStatus0}</if>
+        <if test="enableUpdateCardStatus1 != null  and enableUpdateCardStatus1 != ''"> and enable_update_card_status_1 = #{enableUpdateCardStatus1}</if>
+        <if test="enableBatchCardReplace != null  and enableBatchCardReplace != ''"> and enable_batch_card_replace = #{enableBatchCardReplace}</if>
+        <if test="enableAddCard != null  and enableAddCard != ''"> and enable_add_card = #{enableAddCard}</if>
     </select>
 
     <select id="selectSysAgentByAgentId" parameterType="Long" resultMap="SysAgentResult">
@@ -90,6 +145,31 @@
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
+            <if test="enableUpdateSubagentPassword != null and enableUpdateSubagentPassword != ''">enable_update_subagent_password,</if>
+            <if test="enableUpdateSubagentStatus != null and enableUpdateSubagentStatus != ''">enable_update_subagent_status,</if>
+            <if test="enableUnbindAppUser != null and enableUnbindAppUser != ''">enable_unbind_app_user,</if>
+            <if test="enableUpdateAppUserStatus0 != null and enableUpdateAppUserStatus0 != ''">enable_update_app_user_status_0,</if>
+            <if test="enableUpdateAppUserStatus1 != null and enableUpdateAppUserStatus1 != ''">enable_update_app_user_status_1,</if>
+            <if test="enableUpdateAppUserTime != null and enableUpdateAppUserTime != ''">enable_update_app_user_time,</if>
+            <if test="enableUpdateAppUserPoint != null and enableUpdateAppUserPoint != ''">enable_update_app_user_point,</if>
+            <if test="enableUpdateAppUserLoginLimitU != null and enableUpdateAppUserLoginLimitU != ''">enable_update_app_user_login_limit_u,</if>
+            <if test="enableUpdateAppUserLoginLimitM != null and enableUpdateAppUserLoginLimitM != ''">enable_update_app_user_login_limit_m,</if>
+            <if test="enbaleUpdateAppUserCustomParams != null and enbaleUpdateAppUserCustomParams != ''">enbale_update_app_user_custom_params,</if>
+            <if test="enableUpdateAppUserRemark != null and enableUpdateAppUserRemark != ''">enable_update_app_user_remark,</if>
+            <if test="enbaleViewUserContact != null and enbaleViewUserContact != ''">enbale_view_user_contact,</if>
+            <if test="enableUpdateUserContact != null and enableUpdateUserContact != ''">enable_update_user_contact,</if>
+            <if test="enableUpdateUserPassword != null and enableUpdateUserPassword != ''">enable_update_user_password,</if>
+            <if test="enableUpdateUserRemark != null and enableUpdateUserRemark != ''">enable_update_user_remark,</if>
+            <if test="enableUpdateCardTime != null and enableUpdateCardTime != ''">enable_update_card_time,</if>
+            <if test="enableUpdateCardPoint != null and enableUpdateCardPoint != ''">enable_update_card_point,</if>
+            <if test="enableUpdateCardLoginLimitU != null and enableUpdateCardLoginLimitU != ''">enable_update_card_login_limit_u,</if>
+            <if test="enableUpdateCardLoginLimitM != null and enableUpdateCardLoginLimitM != ''">enable_update_card_login_limit_m,</if>
+            <if test="enableUpdateCardCustomParams != null and enableUpdateCardCustomParams != ''">enable_update_card_custom_params,</if>
+            <if test="enableUpdateCardRemark != null and enableUpdateCardRemark != ''">enable_update_card_remark,</if>
+            <if test="enableUpdateCardStatus0 != null and enableUpdateCardStatus0 != ''">enable_update_card_status_0,</if>
+            <if test="enableUpdateCardStatus1 != null and enableUpdateCardStatus1 != ''">enable_update_card_status_1,</if>
+            <if test="enableBatchCardReplace != null and enableBatchCardReplace != ''">enable_batch_card_replace,</if>
+            <if test="enableAddCard != null and enableAddCard != ''">enable_add_card,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="parentAgentId != null">#{parentAgentId},</if>
@@ -104,6 +184,31 @@
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
+            <if test="enableUpdateSubagentPassword != null and enableUpdateSubagentPassword != ''">#{enableUpdateSubagentPassword},</if>
+            <if test="enableUpdateSubagentStatus != null and enableUpdateSubagentStatus != ''">#{enableUpdateSubagentStatus},</if>
+            <if test="enableUnbindAppUser != null and enableUnbindAppUser != ''">#{enableUnbindAppUser},</if>
+            <if test="enableUpdateAppUserStatus0 != null and enableUpdateAppUserStatus0 != ''">#{enableUpdateAppUserStatus0},</if>
+            <if test="enableUpdateAppUserStatus1 != null and enableUpdateAppUserStatus1 != ''">#{enableUpdateAppUserStatus1},</if>
+            <if test="enableUpdateAppUserTime != null and enableUpdateAppUserTime != ''">#{enableUpdateAppUserTime},</if>
+            <if test="enableUpdateAppUserPoint != null and enableUpdateAppUserPoint != ''">#{enableUpdateAppUserPoint},</if>
+            <if test="enableUpdateAppUserLoginLimitU != null and enableUpdateAppUserLoginLimitU != ''">#{enableUpdateAppUserLoginLimitU},</if>
+            <if test="enableUpdateAppUserLoginLimitM != null and enableUpdateAppUserLoginLimitM != ''">#{enableUpdateAppUserLoginLimitM},</if>
+            <if test="enbaleUpdateAppUserCustomParams != null and enbaleUpdateAppUserCustomParams != ''">#{enbaleUpdateAppUserCustomParams},</if>
+            <if test="enableUpdateAppUserRemark != null and enableUpdateAppUserRemark != ''">#{enableUpdateAppUserRemark},</if>
+            <if test="enbaleViewUserContact != null and enbaleViewUserContact != ''">#{enbaleViewUserContact},</if>
+            <if test="enableUpdateUserContact != null and enableUpdateUserContact != ''">#{enableUpdateUserContact},</if>
+            <if test="enableUpdateUserPassword != null and enableUpdateUserPassword != ''">#{enableUpdateUserPassword},</if>
+            <if test="enableUpdateUserRemark != null and enableUpdateUserRemark != ''">#{enableUpdateUserRemark},</if>
+            <if test="enableUpdateCardTime != null and enableUpdateCardTime != ''">#{enableUpdateCardTime},</if>
+            <if test="enableUpdateCardPoint != null and enableUpdateCardPoint != ''">#{enableUpdateCardPoint},</if>
+            <if test="enableUpdateCardLoginLimitU != null and enableUpdateCardLoginLimitU != ''">#{enableUpdateCardLoginLimitU},</if>
+            <if test="enableUpdateCardLoginLimitM != null and enableUpdateCardLoginLimitM != ''">#{enableUpdateCardLoginLimitM},</if>
+            <if test="enableUpdateCardCustomParams != null and enableUpdateCardCustomParams != ''">#{enableUpdateCardCustomParams},</if>
+            <if test="enableUpdateCardRemark != null and enableUpdateCardRemark != ''">#{enableUpdateCardRemark},</if>
+            <if test="enableUpdateCardStatus0 != null and enableUpdateCardStatus0 != ''">#{enableUpdateCardStatus0},</if>
+            <if test="enableUpdateCardStatus1 != null and enableUpdateCardStatus1 != ''">#{enableUpdateCardStatus1},</if>
+            <if test="enableBatchCardReplace != null and enableBatchCardReplace != ''">#{enableBatchCardReplace},</if>
+            <if test="enableAddCard != null and enableAddCard != ''">#{enableAddCard},</if>
         </trim>
     </insert>
 
@@ -122,6 +227,31 @@
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="remark != null">remark = #{remark},</if>
+            <if test="enableUpdateSubagentPassword != null and enableUpdateSubagentPassword != ''">enable_update_subagent_password = #{enableUpdateSubagentPassword},</if>
+            <if test="enableUpdateSubagentStatus != null and enableUpdateSubagentStatus != ''">enable_update_subagent_status = #{enableUpdateSubagentStatus},</if>
+            <if test="enableUnbindAppUser != null and enableUnbindAppUser != ''">enable_unbind_app_user = #{enableUnbindAppUser},</if>
+            <if test="enableUpdateAppUserStatus0 != null and enableUpdateAppUserStatus0 != ''">enable_update_app_user_status_0 = #{enableUpdateAppUserStatus0},</if>
+            <if test="enableUpdateAppUserStatus1 != null and enableUpdateAppUserStatus1 != ''">enable_update_app_user_status_1 = #{enableUpdateAppUserStatus1},</if>
+            <if test="enableUpdateAppUserTime != null and enableUpdateAppUserTime != ''">enable_update_app_user_time = #{enableUpdateAppUserTime},</if>
+            <if test="enableUpdateAppUserPoint != null and enableUpdateAppUserPoint != ''">enable_update_app_user_point = #{enableUpdateAppUserPoint},</if>
+            <if test="enableUpdateAppUserLoginLimitU != null and enableUpdateAppUserLoginLimitU != ''">enable_update_app_user_login_limit_u = #{enableUpdateAppUserLoginLimitU},</if>
+            <if test="enableUpdateAppUserLoginLimitM != null and enableUpdateAppUserLoginLimitM != ''">enable_update_app_user_login_limit_m = #{enableUpdateAppUserLoginLimitM},</if>
+            <if test="enbaleUpdateAppUserCustomParams != null and enbaleUpdateAppUserCustomParams != ''">enbale_update_app_user_custom_params = #{enbaleUpdateAppUserCustomParams},</if>
+            <if test="enableUpdateAppUserRemark != null and enableUpdateAppUserRemark != ''">enable_update_app_user_remark = #{enableUpdateAppUserRemark},</if>
+            <if test="enbaleViewUserContact != null and enbaleViewUserContact != ''">enbale_view_user_contact = #{enbaleViewUserContact},</if>
+            <if test="enableUpdateUserContact != null and enableUpdateUserContact != ''">enable_update_user_contact = #{enableUpdateUserContact},</if>
+            <if test="enableUpdateUserPassword != null and enableUpdateUserPassword != ''">enable_update_user_password = #{enableUpdateUserPassword},</if>
+            <if test="enableUpdateUserRemark != null and enableUpdateUserRemark != ''">enable_update_user_remark = #{enableUpdateUserRemark},</if>
+            <if test="enableUpdateCardTime != null and enableUpdateCardTime != ''">enable_update_card_time = #{enableUpdateCardTime},</if>
+            <if test="enableUpdateCardPoint != null and enableUpdateCardPoint != ''">enable_update_card_point = #{enableUpdateCardPoint},</if>
+            <if test="enableUpdateCardLoginLimitU != null and enableUpdateCardLoginLimitU != ''">enable_update_card_login_limit_u = #{enableUpdateCardLoginLimitU},</if>
+            <if test="enableUpdateCardLoginLimitM != null and enableUpdateCardLoginLimitM != ''">enable_update_card_login_limit_m = #{enableUpdateCardLoginLimitM},</if>
+            <if test="enableUpdateCardCustomParams != null and enableUpdateCardCustomParams != ''">enable_update_card_custom_params = #{enableUpdateCardCustomParams},</if>
+            <if test="enableUpdateCardRemark != null and enableUpdateCardRemark != ''">enable_update_card_remark = #{enableUpdateCardRemark},</if>
+            <if test="enableUpdateCardStatus0 != null and enableUpdateCardStatus0 != ''">enable_update_card_status_0 = #{enableUpdateCardStatus0},</if>
+            <if test="enableUpdateCardStatus1 != null and enableUpdateCardStatus1 != ''">enable_update_card_status_1 = #{enableUpdateCardStatus1},</if>
+            <if test="enableBatchCardReplace != null and enableBatchCardReplace != ''">enable_batch_card_replace = #{enableBatchCardReplace},</if>
+            <if test="enableAddCard != null and enableAddCard != ''">enable_add_card = #{enableAddCard},</if>
         </trim>
         where agent_id = #{agentId}
     </update>

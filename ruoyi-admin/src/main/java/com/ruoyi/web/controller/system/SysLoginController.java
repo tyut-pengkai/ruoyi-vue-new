@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.system;
 
+import com.ruoyi.agent.service.ISysAgentUserService;
 import com.ruoyi.common.annotation.RateLimiter;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -14,6 +15,7 @@ import com.ruoyi.system.service.ISysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +34,9 @@ public class SysLoginController {
 
     @Autowired
     private SysPermissionService permissionService;
+
+    @Resource
+    private ISysAgentUserService agentUserService;
 
     /**
      * 检查安全入口
@@ -76,10 +81,13 @@ public class SysLoginController {
         Set<String> roles = permissionService.getRolePermission(user);
         // 权限集合
         Set<String> permissions = permissionService.getMenuPermission(user);
+        // 代理权限
+        Set<String> agentPerms = agentUserService.getAgentPermission(user);
         AjaxResult ajax = AjaxResult.success();
         ajax.put("user", user);
         ajax.put("roles", roles);
         ajax.put("permissions", permissions);
+        ajax.put("agentPerms", agentPerms);
         return ajax;
     }
 

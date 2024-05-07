@@ -2,8 +2,10 @@ package com.ruoyi.agent.service;
 
 import com.ruoyi.agent.domain.SysAgent;
 import com.ruoyi.agent.domain.vo.AgentInfoVo;
+import com.ruoyi.common.core.domain.entity.SysUser;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 代理管理Service接口
@@ -76,7 +78,7 @@ public interface ISysAgentUserService {
     public List<AgentInfoVo> getNonAgents(String username);
 
     /**
-     * 获取代理的所有子代理
+     * 获取代理的所有子代理，包括非子集代理
      *
      * @return
      */
@@ -89,5 +91,12 @@ public interface ISysAgentUserService {
      * @param checkEnableAddSubagent 添加代理、添加授权和制卡操作用的是同一个函数，添加授权和制卡操作时不需要检查是否可发展下级代理
      */
     public void checkAgent(SysAgent agent, boolean checkEnableAddSubagent);
+
+    /**
+     * 获取代理
+     * @param userId
+     * @return
+     */
+    public Set<String> getAgentPermission(SysUser user);
 
 }

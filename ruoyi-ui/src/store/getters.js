@@ -16,6 +16,7 @@ const getters = {
   topbarRouters: state => state.permission.topbarRouters,
   defaultRoutes: state => state.permission.defaultRoutes,
   sidebarRouters: state => state.permission.sidebarRouters,
-  safeEntrance: state => state.settings.safeEntrance
+  safeEntrance: state => state.settings.safeEntrance,
+  agentPerms: state => state.user.agentPerms,
 }
 export default getters

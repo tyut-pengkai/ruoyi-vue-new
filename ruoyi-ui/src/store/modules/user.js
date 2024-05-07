@@ -8,7 +8,8 @@ const user = {
     nickName: '',
     avatar: '',
     roles: [],
-    permissions: []
+    permissions: [],
+    agentPerms: [],
   },
 
   mutations: {
@@ -29,6 +30,9 @@ const user = {
     },
     SET_PERMISSIONS: (state, permissions) => {
       state.permissions = permissions
+    },
+    SET_AGENT_PERMS: (state, permissions) => {
+      state.agentPerms = permissions
     }
   },
 
@@ -69,6 +73,9 @@ const user = {
           } else {
             commit('SET_ROLES', ['ROLE_DEFAULT'])
           }
+          if (res.agentPerms && res.agentPerms.length > 0) {
+            commit('SET_AGENT_PERMS', res.agentPerms);
+          }
           commit('SET_NAME', user.userName)
           commit('SET_AVATAR', avatar)
           commit('SET_NICKNAME', user.nickName)
@@ -89,6 +96,7 @@ const user = {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           commit('SET_PERMISSIONS', [])
+          commit('SET_AGENT_PERMS', [])
           removeToken()
           resolve()
         }).catch(error => {

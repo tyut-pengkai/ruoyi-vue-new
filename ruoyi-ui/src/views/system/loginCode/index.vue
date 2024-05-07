@@ -223,7 +223,7 @@
           size="mini"
           @click="handleBatchAdd"
           v-hasPermi="['system:loginCode:add']"
-          >批量生成</el-button>
+          >批量制卡</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button

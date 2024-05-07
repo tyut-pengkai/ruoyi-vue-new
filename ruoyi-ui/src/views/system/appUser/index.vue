@@ -441,6 +441,13 @@
             >修改</el-button
           >
           <el-button
+            v-hasPermi="['system:appUser:resetPwd']"
+            icon="el-icon-key"
+            size="mini" type="text"
+            @click="handleResetPwd(scope.row)"
+            v-if="scope.row.user">重置密码
+          </el-button>
+          <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
@@ -886,6 +893,7 @@ import {
   getAppUser,
   listAppUser,
   updateAppUser,
+  resetAppUserPwd
 } from "@/api/system/appUser";
 import {getApp, listAppAll} from "@/api/system/app";
 import {listUserByExceptAppid} from "@/api/system/user";
@@ -1262,6 +1270,22 @@ export default {
       this.app = this.appMap[appId];
       this.getList();
       this.loading = false;
+    },
+    /** 重置密码按钮操作 */
+    handleResetPwd(row) {
+      this.$prompt('请输入"' + row.user.userName + '"的新密码', "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        closeOnClickModal: false,
+        inputPattern: /^.{5,20}$/,
+        inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
+      })
+      .then(({ value }) => {
+        resetAppUserPwd(row.userId, row.appId, value).then((response) => {
+          this.$modal.msgSuccess("修改成功，新密码是：" + value);
+        });
+      })
+      .catch(() => {});
     },
   },
 };

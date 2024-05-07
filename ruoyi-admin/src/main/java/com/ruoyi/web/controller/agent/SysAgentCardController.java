@@ -64,9 +64,9 @@ public class SysAgentCardController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo list(SysCard sysCard) {
         startPage();
-        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+//        if (!permissionService.hasAnyRoles("sadmin,admin")) {
             sysCard.setAgentId(getUserId());
-        }
+//        }
         List<SysCard> list = sysCardService.selectSysCardList(sysCard);
         return getDataTable(list);
     }
@@ -78,9 +78,9 @@ public class SysAgentCardController extends BaseController {
     @Log(title = "卡密", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(SysCard sysCard) {
-        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+//        if (!permissionService.hasAnyRoles("sadmin,admin")) {
             sysCard.setAgentId(getUserId());
-        }
+//        }
         List<SysCard> list = sysCardService.selectSysCardList(sysCard);
         ExcelUtil<SysCard> util = new ExcelUtil<SysCard>(SysCard.class);
         return util.exportExcel(list, "卡密数据");

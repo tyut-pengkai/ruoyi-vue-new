@@ -419,6 +419,7 @@
             active-value="0"
             inactive-value="1"
             @change="handleStatusChange(scope.row)"
+            :disabled="!$auth.hasAgentPermiOr(['enableUpdateAppUserStatus0', 'enableUpdateAppUserStatus1'])"
           ></el-switch>
         </template>
       </el-table-column>
@@ -426,7 +427,7 @@
         align="center"
         class-name="small-padding fixed-width"
         label="操作"
-        width="160"
+        width="260"
       >
         <template slot-scope="scope">
           <el-button
@@ -436,6 +437,14 @@
             type="text"
             @click="handleUpdate(scope.row)"
           >修改
+          </el-button>
+          <el-button
+              v-hasPermi="['agent:appUser:resetPwd']"
+              icon="el-icon-key"
+              size="mini" type="text"
+              @click="handleResetPwd(scope.row)"
+              v-if="scope.row.user"
+              :disabled="!$auth.hasAgentPermi('enableUpdateUserPassword')">重置密码
           </el-button>
           <el-button
             v-hasPermi="['agent:appUser:remove']"
@@ -632,12 +641,13 @@
                   ></i>
                 </el-tooltip>
               </span>
-              <!-- <el-input-number
+               <el-input-number
                 v-model="form.loginLimitU"
                 controls-position="right"
                 :min="-2"
-              /> -->
-              <span>{{ form.loginLimitU }}</span>
+                :disabled="!$auth.hasAgentPermi('enableUpdateAppUserLoginLimitU')"
+              />
+<!--              <span>{{ form.loginLimitU }}</span>-->
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -653,12 +663,13 @@
                   ></i>
                 </el-tooltip>
               </span>
-              <!-- <el-input-number
+               <el-input-number
                 v-model="form.loginLimitM"
                 controls-position="right"
                 :min="-2"
-              /> -->
-              <span>{{ form.loginLimitM }}</span>
+                :disabled="!$auth.hasAgentPermi('enableUpdateAppUserLoginLimitM')"
+              />
+<!--              <span>{{ form.loginLimitM }}</span>-->
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -676,12 +687,13 @@
                   ></i>
                 </el-tooltip>
               </span>
-              <!-- <el-input-number
+               <el-input-number
                 v-model="form.cardLoginLimitU"
                 :min="-2"
                 controls-position="right"
-              /> -->
-              <span>{{ form.cardLoginLimitU }}</span>
+                :disabled="!$auth.hasAgentPermi('enableUpdateCardLoginLimitU')"
+              />
+<!--              <span>{{ form.cardLoginLimitU }}</span>-->
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -697,12 +709,13 @@
                   ></i>
                 </el-tooltip>
               </span>
-              <!-- <el-input-number
+               <el-input-number
                 v-model="form.cardLoginLimitM"
                 :min="-2"
                 controls-position="right"
-              /> -->
-              <span>{{ form.cardLoginLimitM }}</span>
+                :disabled="!$auth.hasAgentPermi('enableUpdateCardLoginLimitM')"
+              />
+<!--              <span>{{ form.cardLoginLimitM }}</span>-->
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -753,7 +766,7 @@
         <el-form-item prop="">
           <el-col :span="12">
             <el-form-item label="用户状态" prop="status">
-              <el-radio-group v-model="form.status">
+              <el-radio-group v-model="form.status" :disabled="!$auth.hasAgentPermiOr(['enableUpdateAppUserStatus0', 'enableUpdateAppUserStatus1'])">
                 <el-radio
                   v-for="dict in dict.type.sys_normal_disable"
                   :key="dict.value"
@@ -767,25 +780,27 @@
             <el-col :span="12">
               <div v-if="app.billType === '0'">
                 <el-form-item label="过期时间" prop="expireTime">
-                  <!-- <el-date-picker
+                   <el-date-picker
                     clearable
                     size="small"
                     v-model="form.expireTime"
                     type="datetime"
                     value-format="yyyy-MM-dd HH:mm:ss"
                     placeholder="选择过期时间"
+                    :disabled="!$auth.hasAgentPermi('enableUpdateAppUserTime')"
                   >
-                  </el-date-picker> -->
-                  <span>{{ form.expireTime }}</span>
+                  </el-date-picker>
+<!--                  <span>{{ form.expireTime }}</span>-->
                 </el-form-item>
               </div>
               <div v-if="app.billType === '1'">
                 <el-form-item label="剩余点数" prop="point">
-                  <!-- <el-input-number
+                   <el-input-number
                     v-model="form.point"
                     controls-position="right"
-                  /> -->
-                  <span>{{ form.point }}</span>
+                    :disabled="!$auth.hasAgentPermi('enableUpdateAppUserPoint')"
+                  />
+<!--                  <span>{{ form.point }}</span>-->
                 </el-form-item>
               </div>
             </el-col>
@@ -794,25 +809,27 @@
             <el-col :span="12">
               <div v-if="form.app.billType === '0'">
                 <el-form-item label="过期时间" prop="expireTime">
-                  <!-- <el-date-picker
+                   <el-date-picker
                     clearable
                     size="small"
                     v-model="form.expireTime"
                     type="datetime"
                     value-format="yyyy-MM-dd HH:mm:ss"
                     placeholder="选择过期时间"
+                    :disabled="!$auth.hasAgentPermi('enableUpdateAppUserTime')"
                   >
-                  </el-date-picker> -->
-                  <span>{{ form.expireTime }}</span>
+                  </el-date-picker>
+<!--                  <span>{{ form.expireTime }}</span>-->
                 </el-form-item>
               </div>
               <div v-if="form.app.billType === '1'">
                 <el-form-item label="剩余点数" prop="point">
-                  <!-- <el-input-number
+                   <el-input-number
                     v-model="form.point"
                     controls-position="right"
-                  /> -->
-                  <span>{{ form.point }}</span>
+                    :disabled="!$auth.hasAgentPermi('enableUpdateAppUserPoint')"
+                  />
+<!--                  <span>{{ form.point }}</span>-->
                 </el-form-item>
               </div>
             </el-col>
@@ -833,10 +850,10 @@
         </el-form-item>
         <el-form-item label="充值卡/单码自定义参数" prop="cardCustomParams">
           <el-input
-            :readonly="true"
             :value="form.cardCustomParams"
             placeholder="请输入内容"
             type="textarea"
+            :disabled="!$auth.hasAgentPermi('enbaleUpdateAppUserCustomParams')"
           />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -844,6 +861,7 @@
             v-model="form.remark"
             placeholder="请输入内容"
             type="textarea"
+            :disabled="!$auth.hasAgentPermi('enableUpdateAppUserRemark')"
           />
         </el-form-item>
         <div v-if="form.appUserId">
@@ -893,6 +911,7 @@ import {
   getAppUser,
   listAppUser,
   updateAppUser,
+  resetAppUserPwd
 } from "@/api/agent/appUser";
 // import { getApp } from "@/api/system/app";
 import {listAppAll} from "@/api/agent/agentApp";
@@ -1264,6 +1283,22 @@ export default {
       this.app = this.appMap[appId];
       this.getList();
       this.loading = false;
+    },
+    /** 重置密码按钮操作 */
+    handleResetPwd(row) {
+      this.$prompt('请输入"' + row.user.userName + '"的新密码', "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        closeOnClickModal: false,
+        inputPattern: /^.{5,20}$/,
+        inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
+      })
+      .then(({ value }) => {
+        resetAppUserPwd(row.userId, row.appId, value).then((response) => {
+          this.$modal.msgSuccess("修改成功，新密码是：" + value);
+        });
+      })
+      .catch(() => {});
     },
   },
 };

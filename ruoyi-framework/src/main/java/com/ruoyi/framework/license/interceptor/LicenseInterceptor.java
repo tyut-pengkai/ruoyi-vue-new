@@ -1,6 +1,7 @@
 package com.ruoyi.framework.license.interceptor;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.framework.license.LicenseCheckListener;
@@ -38,7 +39,7 @@ public class LicenseInterceptor implements HandlerInterceptor {
                 //校验证书是否有效
                 LicenseVerify licenseVerify = new LicenseVerify();
                 if (!licenseVerify.verify()) {
-                    AjaxResult ajaxResult = AjaxResult.error("您的授权证书无效，请核查服务器是否取得授权或重新申请证书！");
+                    AjaxResult ajaxResult = AjaxResult.error("您的授权证书无效或已过期，请检查服务器是否取得授权或重新申请证书！您的设备码为（用于激活授权，请自行复制）：" + Constants.SERVER_SN);
                     ServletUtils.renderString(response, JSONObject.toJSONString(ajaxResult));
                     return false;
                 }

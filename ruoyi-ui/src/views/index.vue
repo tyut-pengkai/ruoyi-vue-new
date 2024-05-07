@@ -28,9 +28,9 @@
             </span>
           </div>
           <div style="float: right; margin-top: 24px;" v-if="checkRole(['admin', 'sadmin'])">
-            <el-link style="margin-left: 10px" type="primary" @click="checkUpdate">更新</el-link>
-            <el-link style="margin-left: 10px" type="primary" @click="doRestart">重启</el-link>
-            <el-link style="margin-left: 10px" type="primary" @click="handleExport">导出日志</el-link>
+            <el-link style="margin-left: 20px" type="primary" @click="checkUpdate" icon="el-icon-refresh">检查更新</el-link>
+            <el-link style="margin-left: 20px" type="primary" @click="doRestart" icon="el-icon-switch-button">重启验证</el-link>
+            <el-link style="margin-left: 20px" type="primary" @click="handleExport" icon="el-icon-download">导出日志</el-link>
           </div>
         </span>
       </div>

@@ -64,3 +64,17 @@ export function changeAppUserStatus(appUserId, status) {
     data: data
   })
 }
+
+// 用户密码重置
+export function resetAppUserPwd(userId, appId, password) {
+  const data = {
+    userId,
+    "deptId": appId,
+    password
+  }
+  return request({
+    url: '/system/appUser/resetPwd',
+    method: 'put',
+    data: data
+  })
+}

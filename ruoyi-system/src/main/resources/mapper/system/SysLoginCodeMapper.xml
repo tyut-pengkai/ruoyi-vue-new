@@ -30,6 +30,8 @@
         <result property="cardLoginLimitM" column="card_login_limit_m"/>
         <result property="cardCustomParams" column="card_custom_params"/>
         <result property="batchNo" column="batch_no"/>
+        <result property="chargeType"    column="charge_type"    />
+        <result property="chargeTo"    column="charge_to"    />
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
         <association property="agentUser" column="agent_id" javaType="SysUser" resultMap="SysUserResult"/>
     </resultMap>
@@ -80,6 +82,8 @@
                c.card_custom_params,
                c.batch_no,
                c.agent_id,
+               c.charge_type,
+               c.charge_to,
                a.app_name,
                a.auth_type,
                a.bill_type,
@@ -122,6 +126,8 @@
         <if test="createBy != null  and createBy != ''">and c.create_by = #{createBy}</if>
         <if test="batchNo != null  and batchNo != ''">and c.batch_no = #{batchNo}</if>
         <if test="remark != null and remark != ''">and c.remark like concat('%', #{remark}, '%')</if>
+        <if test="chargeType != null "> and charge_type = #{chargeType}</if>
+        <if test="chargeTo != null "> and charge_to = #{chargeTo}</if>
         <if test="params.agentName != null and params.agentName != ''">and (u.user_name like concat('%', #{params.agentName}, '%') or u.nick_name like concat('%', #{params.agentName}, '%'))</if>
         <if test="params.dataScope != null and params.dataScope != ''"><!-- 数据范围过滤 -->
             <!-- 数据范围过滤 -->
@@ -261,6 +267,8 @@
             <if test="cardLoginLimitM != null">card_login_limit_m,</if>
             <if test="cardCustomParams != null">card_custom_params,</if>
             <if test="batchNo != null">batch_no,</if>
+            <if test="chargeType != null">charge_type,</if>
+            <if test="chargeTo != null">charge_to,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="appId != null">#{appId},</if>
@@ -287,19 +295,21 @@
             <if test="cardLoginLimitM != null">#{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">#{cardCustomParams},</if>
             <if test="batchNo != null">#{batchNo},</if>
+            <if test="chargeType != null">#{chargeType},</if>
+            <if test="chargeTo != null">#{chargeTo},</if>
         </trim>
     </insert>
 
     <insert id="insertSysLoginCodeBatch" useGeneratedKeys="true" keyProperty="cardId">
         insert into sys_login_code(app_id,agent_id,card_name,card_no,quota,price,expire_time,is_sold,on_sale,is_charged,
         template_id,status,is_agent, create_by,create_time,update_by,update_time,remark,card_login_limit_u,
-        card_login_limit_m,card_custom_params,batch_no) values
+        card_login_limit_m,card_custom_params,batch_no,charge_type,charge_to) values
         <foreach item="item" index="index" collection="list" separator=",">
             (#{item.appId},#{item.agentId},#{item.cardName},#{item.cardNo},#{item.quota},#{item.price},
             #{item.expireTime},#{item.isSold},#{item.onSale},#{item.isCharged},
             #{item.templateId},#{item.status},#{item.isAgent},#{item.createBy},sysdate(),
             #{item.updateBy},#{item.updateTime},#{item.remark},#{item.cardLoginLimitU},
-            #{item.cardLoginLimitM},#{item.cardCustomParams},#{item.batchNo})
+            #{item.cardLoginLimitM},#{item.cardCustomParams},#{item.batchNo},#{item.chargeType},#{item.chargeTo})
         </foreach>
     </insert>
 
@@ -330,6 +340,8 @@
             <if test="cardLoginLimitM != null">card_login_limit_m = #{cardLoginLimitM},</if>
             <if test="cardCustomParams != null">card_custom_params = #{cardCustomParams},</if>
             <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="chargeType != null">charge_type = #{chargeType},</if>
+            <if test="chargeTo != null">charge_to = #{chargeTo},</if>
         </trim>
         where card_id = #{cardId}
     </update>

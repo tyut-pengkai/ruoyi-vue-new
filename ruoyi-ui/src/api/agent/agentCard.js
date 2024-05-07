@@ -68,3 +68,12 @@ export function getBatchNoList() {
     method: 'get',
   })
 }
+
+// 批量换卡
+export function batchReplace(data) {
+  return request({
+    url: '/system/card/batchReplace',
+    method: 'post',
+    data: data
+  })
+}

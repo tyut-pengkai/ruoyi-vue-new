@@ -14,6 +14,7 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.service.ISysRoleService;
@@ -60,7 +61,7 @@ public class SysAgentUserController extends BaseController {
             // 获取我的代理ID
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getLoginUser().getUserId());
             if(agent == null) {
-                throw new ServiceException("您无代理商权限");
+                throw new ServiceException("您无代理权限");
             }
             List<Long> subAgents = sysAgentService.getSubAgents(agent.getAgentId());
             for (SysAgent item : list) {
@@ -356,6 +357,34 @@ public class SysAgentUserController extends BaseController {
     public TableDataInfo listNonAgents(String username) {
         List<AgentInfoVo> list = sysAgentService.getNonAgents(username);
         return getDataTable(list);
+    }
+
+    /**
+     * 重置密码
+     */
+    @PreAuthorize("@ss.hasPermi('agent:agentUser:resetPwd')")
+    @Log(title = "代理管理", businessType = BusinessType.UPDATE)
+    @PutMapping("/resetPwd")
+    public AjaxResult resetPwd(@RequestBody SysUser user) {
+        sysUserService.checkUserAllowed(user);
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            SysAgent myAgent = sysAgentService.selectSysAgentByUserId(SecurityUtils.getUserId());
+            sysAgentService.checkAgent(myAgent, false);
+            SysAgent subAgent = sysAgentService.selectSysAgentByUserId(user.getUserId());
+            if(myAgent == null) {
+                throw new ServiceException("您的代理信息缺失", 400);
+            }
+            if(subAgent == null) {
+                throw new ServiceException("被操作的代理信息缺失", 400);
+            }
+            List<Long> subAgents = sysAgentService.getSubAgents(myAgent.getAgentId());
+            if(!subAgents.contains(subAgent.getAgentId())) {
+                throw new ServiceException("操作的代理非您的子代理", 400);
+            }
+        }
+        user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
+        user.setUpdateBy(getUsername());
+        return toAjax(sysUserService.resetPwd(user));
     }
 
 }

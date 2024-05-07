@@ -5,12 +5,17 @@ import com.ruoyi.agent.domain.vo.AgentInfoVo;
 import com.ruoyi.agent.mapper.SysAgentUserMapper;
 import com.ruoyi.agent.service.ISysAgentUserService;
 import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 代理管理Service业务层处理
@@ -20,6 +25,14 @@ import java.util.List;
  */
 @Service
 public class SysAgentUserServiceImpl implements ISysAgentUserService {
+
+    private static final Set<String> agentPerms;
+
+    static {
+        Field[] fields = SysAgent.class.getDeclaredFields();
+        agentPerms = Arrays.stream(fields).map(Field::getName).filter(name -> name.startsWith("enable")).collect(Collectors.toSet());
+    }
+
     @Autowired
     private SysAgentUserMapper sysAgentMapper;
 
@@ -142,5 +155,38 @@ public class SysAgentUserServiceImpl implements ISysAgentUserService {
             throw new ServiceException("代理信息缺失", 400);
         }
 
+    }
+
+    /**
+     * 获取代理
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public Set<String> getAgentPermission(SysUser user) {
+        Set<String> perms = new HashSet<>();
+        // 管理员拥有所有权限
+        if (user.isAdmin())
+        {
+            perms.add("*:*:*");
+        }
+        else {
+            SysAgent agent = selectSysAgentByUserId(user.getUserId());
+            if(agent != null) {
+                for (String agentPerm : agentPerms) {
+                    try {
+                        Method method = SysAgent.class.getDeclaredMethod("get" + StringUtils.capitalize(agentPerm));
+                        String invoke = method.invoke(agent).toString();
+                        if(Objects.equals(UserConstants.YES, invoke)) {
+                            perms.add(agentPerm);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return perms;
     }
 }

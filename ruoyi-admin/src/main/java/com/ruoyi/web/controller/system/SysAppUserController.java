@@ -15,9 +15,12 @@ import com.ruoyi.common.enums.AuthType;
 import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ApiException;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysAppUserExpireLog;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.service.ISysAppService;
@@ -55,6 +58,8 @@ public class SysAppUserController extends BaseController {
     private RedisCache redisCache;
     @Resource
     private ISysLoginCodeService sysLoginCodeService;
+    @Resource
+    private PermissionService permissionService;
 
     /**
      * 查询软件用户列表
@@ -273,5 +278,23 @@ public class SysAppUserController extends BaseController {
     @PutMapping("/changeStatus")
     public AjaxResult changeStatus(@RequestBody SysAppUser sysAppUser) {
         return toAjax(sysAppUserService.updateSysAppUser(sysAppUser));
+    }
+
+    /**
+     * 重置密码
+     */
+    @PreAuthorize("@ss.hasPermi('system:agentUser:resetPwd')")
+    @Log(title = "软件用户", businessType = BusinessType.UPDATE)
+    @PutMapping("/resetPwd")
+    public AjaxResult resetPwd(@RequestBody SysUser user) {
+        sysUserService.checkUserAllowed(user);
+        SysAppUser appUser = sysAppUserService.selectSysAppUserByAppIdAndUserId(user.getDeptId(), user.getUserId());// 此处使用dept id传递app id
+        if(appUser == null) {
+            throw new ServiceException("软件用户不存在", 400);
+        }
+        sysUserService.checkUserDataScope(user.getUserId());
+        user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
+        user.setUpdateBy(getUsername());
+        return toAjax(sysUserService.resetPwd(user));
     }
 }

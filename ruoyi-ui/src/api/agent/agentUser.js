@@ -60,3 +60,16 @@ export function listNonAgents(query) {
     params: query
   })
 }
+
+// 用户密码重置
+export function resetAgentUserPwd(userId, password) {
+  const data = {
+    userId,
+    password
+  }
+  return request({
+    url: '/agent/agentUser/resetPwd',
+    method: 'put',
+    data: data
+  })
+}

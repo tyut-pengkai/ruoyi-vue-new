@@ -4,11 +4,6 @@
       <el-form-item label="代理名称" prop="userName">
         <el-input v-model="queryParams.userName" clearable placeholder="请输入代理名称" @keyup.enter.native="handleQuery" />
       </el-form-item>
-      <el-form-item label="允许发展下级" prop="enableAddSubagent">
-        <el-select v-model="queryParams.enableAddSubagent" placeholder="请选择允许发展下级" clearable>
-          <el-option v-for="dict in dict.type.sys_yes_no" :key="dict.value" :label="dict.label" :value="dict.value" />
-        </el-select>
-      </el-form-item>
       <el-form-item label="代理过期时间">
         <el-date-picker v-model="daterangeExpireTime" end-placeholder="结束日期" style="width: 240px" type="daterange"
           range-separator="-" start-placeholder="开始日期" value-format="yyyy-MM-dd"></el-date-picker>
@@ -19,6 +14,251 @@
             :value="dict.value" />
         </el-select>
       </el-form-item>
+      <el-form-item label="允许发展下级" prop="enableAddSubagent">
+        <el-select v-model="queryParams.enableAddSubagent" placeholder="请选择允许发展下级" clearable>
+          <el-option v-for="dict in dict.type.sys_yes_no" :key="dict.value" :label="dict.label" :value="dict.value" />
+        </el-select>
+      </el-form-item>
+<!--      <el-form-item label="修改下级代理密码" prop="enableUpdateSubagentPassword">-->
+<!--        <el-select v-model="queryParams.enableUpdateSubagentPassword" placeholder="请选择修改下级代理密码" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改下级代理状态" prop="enableUpdateSubagentStatus">-->
+<!--        <el-select v-model="queryParams.enableUpdateSubagentStatus" placeholder="请选择修改下级代理状态" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="给下级代理加款" prop="enableUnbindAppUser">-->
+<!--        <el-select v-model="queryParams.enableUnbindAppUser" placeholder="请选择给下级代理加款" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="用户解冻" prop="enableUpdateAppUserStatus0">-->
+<!--        <el-select v-model="queryParams.enableUpdateAppUserStatus0" placeholder="请选择用户解冻" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="用户冻结" prop="enableUpdateAppUserStatus1">-->
+<!--        <el-select v-model="queryParams.enableUpdateAppUserStatus1" placeholder="请选择用户冻结" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改用户时间" prop="enableUpdateAppUserTime">-->
+<!--        <el-select v-model="queryParams.enableUpdateAppUserTime" placeholder="请选择修改用户时间" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改用户点数" prop="enableUpdateAppUserPoint">-->
+<!--        <el-select v-model="queryParams.enableUpdateAppUserPoint" placeholder="请选择修改用户点数" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改登录用户数量限制" prop="enableUpdateAppUserLoginLimitU">-->
+<!--        <el-select v-model="queryParams.enableUpdateAppUserLoginLimitU" placeholder="请选择修改登录用户数量限制" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改登录机器数量限制" prop="enableUpdateAppUserLoginLimitM">-->
+<!--        <el-select v-model="queryParams.enableUpdateAppUserLoginLimitM" placeholder="请选择修改登录机器数量限制" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改软件用户自定义参数" prop="enbaleUpdateAppUserCustomParams">-->
+<!--        <el-select v-model="queryParams.enbaleUpdateAppUserCustomParams" placeholder="请选择修改软件用户自定义参数" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改软件用户备注" prop="enableUpdateAppUserRemark">-->
+<!--        <el-select v-model="queryParams.enableUpdateAppUserRemark" placeholder="请选择修改软件用户备注" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="查看用户联系方式" prop="enbaleViewUserContact">-->
+<!--        <el-select v-model="queryParams.enbaleViewUserContact" placeholder="请选择查看用户联系方式" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改用户联系方式" prop="enableUpdateUserContact">-->
+<!--        <el-select v-model="queryParams.enableUpdateUserContact" placeholder="请选择修改用户联系方式" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改用户密码" prop="enableUpdateUserPassword">-->
+<!--        <el-select v-model="queryParams.enableUpdateUserPassword" placeholder="请选择修改用户密码" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改用户备注" prop="enableUpdateUserRemark">-->
+<!--        <el-select v-model="queryParams.enableUpdateUserRemark" placeholder="请选择修改用户备注" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改卡密时间" prop="enableUpdateCardTime">-->
+<!--        <el-select v-model="queryParams.enableUpdateCardTime" placeholder="请选择修改卡密时间" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改卡密点数" prop="enableUpdateCardPoint">-->
+<!--        <el-select v-model="queryParams.enableUpdateCardPoint" placeholder="请选择修改卡密点数" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改卡密登录用户数量限制" prop="enableUpdateCardLoginLimitU">-->
+<!--        <el-select v-model="queryParams.enableUpdateCardLoginLimitU" placeholder="请选择修改卡密登录用户数量限制" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改卡密机器数量限制" prop="enableUpdateCardLoginLimitM">-->
+<!--        <el-select v-model="queryParams.enableUpdateCardLoginLimitM" placeholder="请选择修改卡密机器数量限制" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改卡密自定义参数" prop="enableUpdateCardCustomParams">-->
+<!--        <el-select v-model="queryParams.enableUpdateCardCustomParams" placeholder="请选择修改卡密自定义参数" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="修改卡密备注" prop="enableUpdateCardRemark">-->
+<!--        <el-select v-model="queryParams.enableUpdateCardRemark" placeholder="请选择修改卡密备注" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="卡密解冻" prop="enableUpdateCardStatus0">-->
+<!--        <el-select v-model="queryParams.enableUpdateCardStatus0" placeholder="请选择卡密解冻" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="卡密冻结" prop="enableUpdateCardStatus1">-->
+<!--        <el-select v-model="queryParams.enableUpdateCardStatus1" placeholder="请选择卡密冻结" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="批量换卡" prop="enableBatchCardReplace">-->
+<!--        <el-select v-model="queryParams.enableBatchCardReplace" placeholder="请选择批量换卡" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in dict.type.sys_yes_no"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
       <el-form-item label="备注" prop="remark">
         <el-input
           v-model="queryParams.remark"
@@ -38,8 +278,14 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button v-hasPermi="['agent:agentUser:add']" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-          type="primary">新增
+        <el-button
+          v-hasPermi="['agent:agentUser:add']"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          type="primary"
+          :disabled="!$auth.hasAgentPermi('enableAddSubagent')">新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -49,7 +295,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-if="refreshTable" v-loading="loading" :data="agentUserList" row-key="agentId"
+    <el-table v-if="refreshTable" v-loading="loading" :data="agentUserList" row-key="agentId" border
       :default-expand-all="isExpandAll" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
       <!--      <el-table-column label="上级代理ID" prop="parentAgentId" />-->
       <!--      <el-table-column label="用户ID" align="center" prop="userId" />-->
@@ -83,17 +329,18 @@
 <!--        </template>-->
 <!--      </el-table-column>-->
       <el-table-column align="center" label="备注" prop="remark" />
-      <el-table-column label="卡密状态" align="center">
+      <el-table-column label="代理状态" align="center">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
             active-value="0"
             inactive-value="1"
             @change="handleStatusChange(scope.row)"
+            :disabled="!$auth.hasAgentPermi('enableUpdateSubagentStatus')"
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="允许发展子代理" align="center">
+      <el-table-column label="允许添加下级代理" align="center">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.enableAddSubagent"
@@ -105,6 +352,14 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-button
+              v-hasPermi="['agent:agentUser:add']"
+              v-hasRole="['sadmin', 'admin']"
+              icon="el-icon-plus"
+              size="mini" type="text"
+              @click="handleAdd(scope.row)"
+              :disabled="!$auth.hasAgentPermi('enableAddSubagent')">新增
+          </el-button>
           <el-button size="mini" type="text" v-hasPermi="['agent:agentUser:edit']" @click="handleUpdate(scope.row)"
             icon="el-icon-edit">修改
           </el-button>
@@ -116,8 +371,12 @@
             @click="handleGrant(scope.row)"
             >授权
           </el-button> -->
-          <el-button v-hasPermi="['agent:agentUser:add']" v-hasRole="['sadmin', 'admin']" icon="el-icon-plus" size="mini" type="text"
-            @click="handleAdd(scope.row)">新增
+          <el-button
+              v-hasPermi="['agent:agentUser:resetPwd']"
+              icon="el-icon-key"
+              size="mini" type="text"
+              @click="handleResetPwd(scope.row)"
+              :disabled="!$auth.hasAgentPermi('enableUpdateSubagentPassword')">重置密码
           </el-button>
           <el-button size="mini" type="text" v-hasPermi="['agent:agentUser:remove']" @click="handleDelete(scope.row)"
             icon="el-icon-delete">删除
@@ -127,142 +386,161 @@
     </el-table>
 
     <!-- 添加或修改代理用户对话框 -->
-    <el-dialog :title="title" :visible.sync="open" append-to-body width="800px">
+    <el-dialog :title="title" :visible.sync="open" append-to-body width="850px">
       <el-form ref="form" :model="form" :rules="rules">
-        <el-form-item label="上级代理" prop="parentAgentId">
-          <div v-if="checkRole(['sadmin', 'admin'])">
-            <treeselect v-model="form.parentAgentId" :normalizer="normalizer" :options="agentUserOptions"
-              placeholder="请选择上级代理" />
-          </div>
-          <div v-else>
-            {{ user.nickName + "(" + user.userName + ")" }}
-          </div>
-        </el-form-item>
-        <el-row>
-          <el-col :span="10">
-            <el-form-item label="代理账号" prop="userId">
-              <!--          <el-input v-model="form.userId" placeholder="请输入用户ID" />-->
-              <div v-if="form.agentId == null">
-                <el-select v-model="form.userId" :clearable="true" filterable :loading="loading"
-                  :remote-method="remoteMethod" prop="userId" placeholder="请输入账号" remote>
-                  <el-option v-for="item in nonAgentList" :key="item.userId" :disabled="item.disabled"
-                    :label="item.nickName + '(' + item.userName + ')'" :value="item.userId">
-                  </el-option>
-                </el-select>
+        <el-tabs type="border-card">
+          <el-tab-pane label="基本信息">
+            <el-form-item label="上级代理" prop="parentAgentId">
+              <div v-if="checkRole(['sadmin', 'admin'])">
+                <treeselect v-model="form.parentAgentId" :normalizer="normalizer" :options="agentUserOptions"
+                            placeholder="请选择上级代理" />
               </div>
-              <div v-else>{{ form.user.nickName }}({{ form.user.userName }})</div>
+              <div v-else>
+                {{ user.nickName + "(" + user.userName + ")" }}
+              </div>
             </el-form-item>
-          </el-col>
-          <el-col :span="14">
-            <el-form-item label="代理过期时间(留空长期)" prop="expireTime">
-              <el-date-picker clearable v-model="form.expireTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
-                placeholder="选择代理过期时间" :picker-options="pickerOptions">
-              </el-date-picker>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="10">
-            <el-form-item label="代理状态">
-              <el-radio-group v-model="form.status">
-                <el-radio v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.value">{{ dict.label
-                }}
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="14">
-            <el-form-item label="允许发展子代理" prop="enableAddSubagent">
+            <el-row>
+              <el-col :span="10">
+                <el-form-item label="代理账号" prop="userId">
+                  <!--          <el-input v-model="form.userId" placeholder="请输入用户ID" />-->
+                  <div v-if="form.agentId == null">
+                    <el-select v-model="form.userId" :clearable="true" filterable :loading="loading"
+                               :remote-method="remoteMethod" prop="userId" placeholder="请输入账号" remote>
+                      <el-option v-for="item in nonAgentList" :key="item.userId" :disabled="item.disabled"
+                                 :label="item.nickName + '(' + item.userName + ')'" :value="item.userId">
+                      </el-option>
+                    </el-select>
+                  </div>
+                  <div v-else>{{ form.user.nickName }}({{ form.user.userName }})</div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="14">
+                <el-form-item label="代理过期时间(留空长期)" prop="expireTime">
+                  <el-date-picker clearable v-model="form.expireTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
+                                  placeholder="选择代理过期时间" :picker-options="pickerOptions">
+                  </el-date-picker>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <el-form-item label="代理状态">
+                  <el-radio-group v-model="form.status" :disabled="!$auth.hasAgentPermi('enableUpdateSubagentStatus')">
+                    <el-radio v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.value">{{ dict.label
+                      }}
+                    </el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
+              <el-col :span="14">
+                <el-form-item label="允许添加下级代理" prop="enableAddSubagent">
               <span>
                 <el-tooltip
-                  content="如果由允许修改为不允许，已经发展的子代不受影响"
-                  placement="top"
+                    content="如果由允许修改为不允许，已经添加的子代理不受影响"
+                    placement="top"
                 >
                   <i
-                    class="el-icon-question"
-                    style="margin-left: -12px; margin-right: 10px"
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
                   ></i>
                 </el-tooltip>
               </span>
-              <el-radio-group v-model="form.enableAddSubagent">
-                <el-radio v-for="dict in dict.type.sys_yes_no" :key="dict.value" :label="dict.value">{{ dict.label }}
-                </el-radio>
-              </el-radio-group>
+                  <el-radio-group v-model="form.enableAddSubagent">
+                    <el-radio v-for="dict in dict.type.sys_yes_no" :key="dict.value" :label="dict.value">{{ dict.label }}
+                    </el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
             </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="代理卡密类别/单码类别">
-          <el-row>
-            <el-col :span="24">
-              <!-- 批量操作： -->
-              批量：
-              <el-select v-model="batchSelectTemplate" multiple filterable collapse-tags
-                style="width:200px;margin-right: 3px;" placeholder="批量选择" size="small">
-                <el-option v-for="item in templateNameFilters2" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-              <el-input-number v-model="batchAgentPrice" :min="0" :precision="2" :step="0.01" controls-position="right"
-                style="width: 120px;margin-right: 3px;" placeholder="代理价格" size="small" />
-              <el-date-picker v-model="batchExpireTime" clearable placeholder="过期时间" :picker-options="pickerOptions"
-                value-format="yyyy-MM-dd HH:mm:ss" type="datetime" style="width: 180px;margin-right: 3px;" size="small">
-              </el-date-picker>
-              <el-input v-model="batchRemark" placeholder="备注" style="width: 120px;margin-right: 3px;" size="small" />
-              <el-button type="primary" size="small" @click="handleBatchSet">批量填充</el-button>
-            </el-col>
-          </el-row>
-          <el-table ref="templateTable" :data="templateList" tooltip-effect="dark" style="width: 100%" max-height="300"
-            :header-row-style="{ height: '30px' }" :header-cell-style="{ background: '#f5f7fa', padding: '0px' }"
-            :row-style="{ height: '30px' }" :cell-style="{ padding: '0px' }" size='mini' border height="300"
-            @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="40" fixed> </el-table-column>
-            <el-table-column label="卡密类别/单码类别名称" width="180" fixed show-overflow-tooltip :filters="templateNameFilters"
-              :filter-method="filterHandler">
-              <template slot-scope="scope">
-                {{
-                  "[" +
-                  scope.row.appName +
-                  "]" +
-                  scope.row.templateName
-                }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="price" label="零售价格" width="80" show-overflow-tooltip>
-              <template slot-scope="scope">
-                {{ scope.row.price }}
-                <span>元</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="myPrice" label="我的提卡价格" width="120" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row.myPrice ? scope.row.myPrice + '元' : (scope.row.myPrice === 0 ? '0元' : '未授权')}}
-                </template>
-              </el-table-column>
-            <el-table-column prop="agentPrice" label="代理提卡价格" width="150">
-              <template slot-scope="scope">
-                <el-input-number v-model="scope.row.agentPrice" :min="0" :precision="2" :step="0.01"
-                  controls-position="right" style="width: 120px" placeholder="代理提卡价格" size="mini" />
-                <!-- <span>元</span> -->
-              </template>
-            </el-table-column>
-            <el-table-column prop="expireTime" label="代理该卡过期时间(留空长期)" width="210">
-              <template slot-scope="scope">
-                <el-date-picker v-model="scope.row.expireTime" clearable placeholder="请选择时间"
-                  :picker-options="pickerOptions" value-format="yyyy-MM-dd HH:mm:ss" type="datetime" style="width: 180px"
-                  size="mini">
-                </el-date-picker>
-              </template>
-            </el-table-column>
-            <el-table-column prop="remark" label="备注信息" width="130">
-              <template slot-scope="scope">
-                <el-input v-model="scope.row.remark" placeholder="请输入内容" style="width: 100px;" size="mini" />
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-form-item>
-
+          </el-tab-pane>
+          <el-tab-pane label="代理权限配置">
+            <div style="text-align: center">
+              <el-transfer
+                  ref="transfer"
+                  style="text-align: left; display: inline-block"
+                  filterable
+                  :filter-method="filterMethod"
+                  filter-placeholder="请输入权限名称"
+                  :titles="['未允许权限', '已允许权限']"
+                  v-model="permValue"
+                  :data="permData">
+              </el-transfer>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="代理卡类配置">
+            <el-form-item label="代理卡密类别/单码类别">
+              <el-row>
+                <el-col :span="24">
+                  <!-- 批量操作： -->
+                  批量：
+                  <el-select v-model="batchSelectTemplate" multiple filterable collapse-tags
+                             style="width:200px;margin-right: 3px;" placeholder="批量选择" size="small">
+                    <el-option v-for="item in templateNameFilters2" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                  </el-select>
+                  <el-input-number v-model="batchAgentPrice" :min="0" :precision="2" :step="0.01" controls-position="right"
+                                   style="width: 120px;margin-right: 3px;" placeholder="代理价格" size="small" />
+                  <el-date-picker v-model="batchExpireTime" clearable placeholder="过期时间" :picker-options="pickerOptions"
+                                  value-format="yyyy-MM-dd HH:mm:ss" type="datetime" style="width: 180px;margin-right: 3px;" size="small">
+                  </el-date-picker>
+                  <el-input v-model="batchRemark" placeholder="备注" style="width: 120px;margin-right: 3px;" size="small" />
+                  <el-button type="primary" size="small" @click="handleBatchSet">批量填充</el-button>
+                </el-col>
+              </el-row>
+              <el-table ref="templateTable" :data="templateList" tooltip-effect="dark" style="width: 100%" max-height="300"
+                        :header-row-style="{ height: '30px' }" :header-cell-style="{ background: '#f5f7fa', padding: '0px' }"
+                        :row-style="{ height: '30px' }" :cell-style="{ padding: '0px' }" size='mini' border height="300"
+                        @selection-change="handleSelectionChange">
+                <el-table-column type="selection" width="40" fixed> </el-table-column>
+                <el-table-column label="卡密类别/单码类别名称" width="180" fixed show-overflow-tooltip :filters="templateNameFilters"
+                                 :filter-method="filterHandler">
+                  <template slot-scope="scope">
+                    {{
+                      "[" +
+                      scope.row.appName +
+                      "]" +
+                      scope.row.templateName
+                    }}
+                  </template>
+                </el-table-column>
+                <el-table-column prop="price" label="零售价格" width="80" show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    {{ scope.row.price }}
+                    <span>元</span>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="myPrice" label="我的提卡价格" width="120" show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    {{ scope.row.myPrice ? scope.row.myPrice + '元' : (scope.row.myPrice === 0 ? '0元' : '未授权')}}
+                  </template>
+                </el-table-column>
+                <el-table-column prop="agentPrice" label="代理提卡价格" width="150">
+                  <template slot-scope="scope">
+                    <el-input-number v-model="scope.row.agentPrice" :min="0" :precision="2" :step="0.01"
+                                     controls-position="right" style="width: 120px" placeholder="代理提卡价格" size="mini" />
+                    <!-- <span>元</span> -->
+                  </template>
+                </el-table-column>
+                <el-table-column prop="expireTime" label="代理该卡过期时间(留空长期)" width="210">
+                  <template slot-scope="scope">
+                    <el-date-picker v-model="scope.row.expireTime" clearable placeholder="请选择时间"
+                                    :picker-options="pickerOptions" value-format="yyyy-MM-dd HH:mm:ss" type="datetime" style="width: 180px"
+                                    size="mini">
+                    </el-date-picker>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="remark" label="备注信息" width="130">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.remark" placeholder="请输入内容" style="width: 100px;" size="mini" />
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-tab-pane>
+        </el-tabs>
         <!-- <el-form-item label="代理卡密类别/单码类别">
           <el-checkbox-group v-model="checkList">
             <el-checkbox
@@ -358,6 +636,7 @@ import {
   listAgentUser,
   listNonAgents,
   updateAgentUser,
+  resetAgentUserPwd
 } from "@/api/agent/agentUser";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -476,6 +755,29 @@ export default {
       batchAgentPrice: null,
       batchExpireTime: null,
       batchRemark: null,
+      perms: [
+        '[默认]添加下级代理', '[默认]修改下级代理密码', '[默认]修改下级代理状态',
+        '解绑用户设备', '[默认]冻结用户', '[默认]解冻用户',
+        '修改用户时间', '修改用户点数', '修改用户登录用户数限制', '修改用户登录设备数限制', '修改用户自定义数据', '[默认]修改用户备注',
+        '修改用户密码', /* '查看用户联系方式', '修改用户联系方式', '修改用户账号备注', */
+        '[默认]冻结卡密', '[默认]解冻卡密', '[默认]批量换卡', '[默认]生成卡密',
+        '修改卡密时间', '修改卡密点数', '修改卡密登录用户数限制', '修改卡密登录设备数限制', '修改卡密自定义参数', '[默认]修改卡密备注'
+      ],
+      codes: [
+        'enableAddSubagent', 'enableUpdateSubagentPassword', 'enableUpdateSubagentStatus',
+        'enableUnbindAppUser', 'enableUpdateAppUserStatus1', 'enableUpdateAppUserStatus0',
+        'enableUpdateAppUserTime', 'enableUpdateAppUserPoint', 'enableUpdateAppUserLoginLimitU', 'enableUpdateAppUserLoginLimitM', 'enbaleUpdateAppUserCustomParams', 'enableUpdateAppUserRemark',
+        'enableUpdateUserPassword', /* 'enbaleViewUserContact', 'enableUpdateUserContact', 'enableUpdateUserRemark', */
+        'enableUpdateCardStatus1', 'enableUpdateCardStatus0', 'enableBatchCardReplace', 'enableAddCard',
+        'enableUpdateCardTime', 'enableUpdateCardPoint', 'enableUpdateCardLoginLimitU', 'enableUpdateCardLoginLimitM', 'enableUpdateCardCustomParams', 'enableUpdateCardRemark'
+      ],
+      defaultPerms: [
+        'enableAddSubagent', 'enableUpdateSubagentPassword', 'enableUpdateSubagentStatus',
+        'enableUpdateAppUserStatus1', 'enableUpdateAppUserStatus0',
+        'enableUpdateAppUserRemark',
+        'enableUpdateCardStatus1', 'enableUpdateCardStatus0', 'enableBatchCardReplace', 'enableAddCard', 'enableUpdateCardRemark'
+      ],
+      permValue: [],
     };
   },
   computed: {
@@ -513,6 +815,16 @@ export default {
         }
       }
       return arr;
+    },
+    permData() {
+      const data = [];
+      this.perms.forEach((perm, index) => {
+        data.push({
+          label: perm,
+          key: this.codes[index]
+        });
+      });
+      return data;
     }
   },
   created() {
@@ -597,6 +909,7 @@ export default {
       };
       this.resetForm("form");
       this.templateList = [];
+      this.permValue = [];
       if (this.$refs.templateTable) {
         this.$refs.templateTable.clearSelection();
       }
@@ -618,11 +931,15 @@ export default {
       this.getGrantableTemplate({ 'agentId': row.agentId });
       // this.getNonAgentsList();
       this.user = this.userBak;
+      this.permValue = [].concat(this.defaultPerms);
       if (row != null && row.agentId) {
         this.form.parentAgentId = row.agentId;
       } else {
         this.form.parentAgentId = 0;
       }
+      this.$nextTick(function () {
+        this.$refs.transfer.$el.querySelectorAll('div.el-transfer-panel').forEach(p=>p.style.width='260px');
+      });
       this.open = true;
       this.title = "添加代理用户";
     },
@@ -646,7 +963,15 @@ export default {
         this.form = response.data;
         if (row != null) {
           this.user = response.data.parentUser;
+          for (let code of this.codes) {
+            if(response.data[code] === 'Y') {
+              this.permValue.push(code);
+            }
+          }
         }
+        this.$nextTick(function () {
+          this.$refs.transfer.$el.querySelectorAll('div.el-transfer-panel').forEach(p=>p.style.width='260px');
+        });
         this.open = true;
         this.title = "修改代理用户";
       });
@@ -656,6 +981,16 @@ export default {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           this.form.templateList = this.templateSelectionList;
+          // console.log(this.permValue);
+          for (let code of this.codes) {
+            if(this.permValue.indexOf(code) !== -1) {
+              // console.log('Y ---- ' + code);
+              this.form[code] = 'Y';
+            } else {
+              // console.log('N ---- ' + code);
+              this.form[code] = 'N';
+            }
+          }
           if (this.form.agentId != null) {
             updateAgentUser(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
@@ -803,6 +1138,25 @@ export default {
         .catch(function () {
           row.enableAddSubagent = row.enableAddSubagent === "Y" ? "N" : "Y";
         });
+    },
+    filterMethod(query, item) {
+      return item.label.indexOf(query) > -1;
+    },
+    /** 重置密码按钮操作 */
+    handleResetPwd(row) {
+      this.$prompt('请输入"' + row.user.userName + '"的新密码', "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        closeOnClickModal: false,
+        inputPattern: /^.{5,20}$/,
+        inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
+      })
+      .then(({ value }) => {
+        resetAgentUserPwd(row.userId, value).then((response) => {
+          this.$modal.msgSuccess("修改成功，新密码是：" + value);
+        });
+      })
+      .catch(() => {});
     },
   },
 };

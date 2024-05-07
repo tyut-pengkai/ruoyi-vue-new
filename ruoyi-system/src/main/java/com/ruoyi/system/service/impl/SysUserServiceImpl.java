@@ -497,7 +497,7 @@ public class SysUserServiceImpl implements ISysUserService {
         changeTo.setUserId(vo.getToUserId());
         changeTo.setUpdateBy(SecurityUtils.getUsername());
         changeTo.setType(BalanceChangeType.TRANSFER_IN);
-        changeTo.setDescription("收到账号[" + toUser.getUserName() + "]转账" + "：" + vo.getAmount() + "，附加信息：" + vo.getRemark());
+        changeTo.setDescription("收到账号[" + SecurityUtils.getUsername() + "]转账" + "：" + vo.getAmount() + "，附加信息：" + vo.getRemark());
         changeTo.setAvailablePayBalance(vo.getAmount());
         return updateUserBalance(changeFrom) & updateUserBalance(changeTo);
     }

@@ -205,6 +205,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
+          :disabled="!$auth.hasAgentPermi('enableAddCard')"
           v-hasPermi="['agent:agentCard:add']"
           icon="el-icon-plus"
           plain
@@ -213,6 +214,17 @@
           @click="handleBatchAdd"
           >批量制卡
         </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          :disabled="!$auth.hasAgentPermi('enableBatchCardReplace')"
+          type="primary"
+          plain
+          icon="el-icon-refresh"
+          size="mini"
+          @click="handleReplace"
+          v-hasPermi="['agent:agentCard:replace']"
+        >批量换卡</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -410,32 +422,32 @@
             }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="卡密状态" prop="status">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_normal_disable"
-            :value="scope.row.status"
-          />
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="是否售出" prop="isSold">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold" />
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="是否上架" prop="onSale">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale"/>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="是否已用" prop="isCharged">
-        <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_yes_no"
-            :value="scope.row.isCharged"
-          />
-        </template>
-      </el-table-column>
+<!--      <el-table-column align="center" label="卡密状态" prop="status">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_normal_disable"-->
+<!--            :value="scope.row.status"-->
+<!--          />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column align="center" label="是否售出" prop="isSold">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold" />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column align="center" label="是否上架" prop="onSale">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale"/>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column align="center" label="是否已用" prop="isCharged">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag-->
+<!--            :options="dict.type.sys_yes_no"-->
+<!--            :value="scope.row.isCharged"-->
+<!--          />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column align="center" label="代理制卡" prop="isAgent">
         <template slot-scope="scope">
           <dict-tag
@@ -467,6 +479,32 @@
         label="备注"
         prop="remark"
       />
+      <el-table-column align="center" label="卡密状态" prop="status">
+        <template slot-scope="scope">
+          <dict-tag
+              :options="dict.type.sys_normal_disable"
+              :value="scope.row.status"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="是否售出" prop="isSold">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.isSold" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="是否上架" prop="onSale">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.onSale"/>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="是否已用" prop="isCharged">
+        <template slot-scope="scope">
+          <dict-tag
+              :options="dict.type.sys_yes_no"
+              :value="scope.row.isCharged"
+          />
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
         class-name="small-padding fixed-width"
@@ -544,7 +582,8 @@
         <el-form-item prop="">
           <el-col :span="12">
             <el-form-item label="卡密状态" prop="status">
-              <el-radio-group v-model="form.status">
+              <el-radio-group v-model="form.status"
+                :disabled="!$auth.hasAgentPermiOr(['enableUpdateCardStatus0', 'enableUpdateCardStatus1'])">
                 <el-radio
                   v-for="dict in dict.type.sys_normal_disable"
                   :key="dict.value"
@@ -579,22 +618,40 @@
                 prop="quota"
                 style="width: 300px"
               >
-                {{ parseSeconds(form.app.billType, form.quota) }}
+<!--                {{ parseSeconds(form.app.billType, form.quota) }}-->
+                <div v-if="form.app">
+                  <div v-if="form.app.billType === '0'">
+                    <date-duration
+                      @totalSeconds="handleQuota"
+                      :seconds="form.quota"
+                      :disabled="form.isCharged === 'Y' || !$auth.hasAgentPermi('enableUpdateCardTime')"
+                    ></date-duration>
+                  </div>
+                  <div v-if="form.app.billType === '1'">
+                    <el-input-number
+                      v-model="form.quota"
+                      controls-position="right"
+                      :min="0"
+                      :disabled="form.isCharged === 'Y' || !$auth.hasAgentPermi('enableUpdateCardPoint')"
+                    />
+                    <span style="margin-left: 6px">点</span>
+                  </div>
+                </div>
               </el-form-item>
             </el-col>
           </div>
-          <el-col :span="12">
-            <el-form-item label="零售价格" label-width="80px" prop="price">
-              <el-input-number
-                v-model="form.price"
-                :min="0"
-                :precision="2"
-                :step="0.01"
-                controls-position="right"
-              />
-              <span>元</span>
-            </el-form-item>
-          </el-col>
+<!--          <el-col :span="12">-->
+<!--            <el-form-item label="零售价格" label-width="80px" prop="price">-->
+<!--              <el-input-number-->
+<!--                v-model="form.price"-->
+<!--                :min="0"-->
+<!--                :precision="2"-->
+<!--                :step="0.01"-->
+<!--                controls-position="right"-->
+<!--              />-->
+<!--              <span>元</span>-->
+<!--            </el-form-item>-->
+<!--          </el-col>-->
         </el-form-item>
         <el-form-item prop="">
           <el-col :span="12">
@@ -610,12 +667,13 @@
                   ></i>
                 </el-tooltip>
               </span>
-              {{ form.cardLoginLimitU }}
-              <!-- <el-input-number
+<!--              {{ form.cardLoginLimitU }}-->
+              <el-input-number
                 v-model="form.cardLoginLimitU"
                 :min="-2"
                 controls-position="right"
-              /> -->
+                :disabled="form.isCharged === 'Y' || !$auth.hasAgentPermi('enableUpdateCardLoginLimitU')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -631,29 +689,30 @@
                   ></i>
                 </el-tooltip>
               </span>
-              {{ form.cardLoginLimitM }}
-              <!-- <el-input-number
+<!--              {{ form.cardLoginLimitM }}-->
+              <el-input-number
                 v-model="form.cardLoginLimitM"
                 :min="-2"
                 controls-position="right"
-              /> -->
+                :disabled="form.isCharged === 'Y' || !$auth.hasAgentPermi('enableUpdateCardLoginLimitM')"
+              />
             </el-form-item>
           </el-col>
         </el-form-item>
         <el-form-item prop="">
-          <el-col :span="12">
-            <el-form-item label="是否上架" prop="onSale">
-              <dict-tag :options="dict.type.sys_yes_no" :value="form.onSale"/>
-              <!-- <el-select v-model="form.onSale" placeholder="请选择是否上架">
-                <el-option
-                  v-for="dict in dict.type.sys_yes_no"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
-              </el-select> -->
-            </el-form-item>
-          </el-col>
+<!--          <el-col :span="12">-->
+<!--            <el-form-item label="是否上架" prop="onSale">-->
+<!--              <dict-tag :options="dict.type.sys_yes_no" :value="form.onSale"/>-->
+<!--              &lt;!&ndash; <el-select v-model="form.onSale" placeholder="请选择是否上架">-->
+<!--                <el-option-->
+<!--                  v-for="dict in dict.type.sys_yes_no"-->
+<!--                  :key="dict.value"-->
+<!--                  :label="dict.label"-->
+<!--                  :value="dict.value"-->
+<!--                ></el-option>-->
+<!--              </el-select> &ndash;&gt;-->
+<!--            </el-form-item>-->
+<!--          </el-col>-->
           <el-col :span="12">
             <el-form-item label="是否售出" prop="isSold">
               <!-- <dict-tag :options="dict.type.sys_yes_no" :value="form.isSold" /> -->
@@ -686,6 +745,32 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
+            <el-form-item label="使用日期" prop="chargeTime">
+              {{ form.chargeTime }}
+              <!-- <el-date-picker
+                v-model="form.chargeTime"
+                clearable
+                placeholder="选择使用日期"
+                size="small"
+                type="datetime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+              >
+              </el-date-picker> -->
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item prop="">
+          <el-col :span="12">
+            <el-form-item label="充值规则" prop="chargeRule">
+              <dict-tag
+                  :options="dict.type.sys_charge_rule"
+                  :value="form.chargeRule"
+              />
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item>
+          <el-col :span="12">
             <el-form-item label="是否代理制卡" prop="isAgent">
               <dict-tag :options="dict.type.sys_yes_no" :value="form.isAgent"/>
               <!-- <el-select
@@ -701,37 +786,23 @@
               </el-select> -->
             </el-form-item>
           </el-col>
-        </el-form-item>
-        <el-form-item>
           <el-col :span="12">
-            <el-form-item label="充值规则" prop="chargeRule">
-              <dict-tag
-                :options="dict.type.sys_charge_rule"
-                :value="form.chargeRule"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="使用日期" prop="chargeTime">
-              {{ form.chargeTime }}
-              <!-- <el-date-picker
-                v-model="form.chargeTime"
-                clearable
-                placeholder="选择使用日期"
-                size="small"
-                type="datetime"
-                value-format="yyyy-MM-dd HH:mm:ss"
-              >
-              </el-date-picker> -->
-            </el-form-item>
+            <div v-if="form.cardId">
+              <el-form-item label="所属代理" prop="agentId">
+                <span v-if="form.agentUser && form.agentUser.userName">
+                  {{ form.agentUser.nickName }} ({{ form.agentUser.userName }})
+                </span>
+              </el-form-item>
+            </div>
           </el-col>
         </el-form-item>
         <el-form-item label="充值卡自定义参数" prop="cardCustomParams">
           <el-input
-            v-model="form.cardCustomParams"
-            :readonly="true"
-            placeholder=""
-            type="textarea"
+              v-model="form.cardCustomParams"
+              placeholder="请输入内容"
+              type="textarea"
+              maxlength="2000" show-word-limit
+              :disabled="form.isCharged === 'Y' || !$auth.hasAgentPermi('enableUpdateCardCustomParams')"
           />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -739,6 +810,7 @@
             v-model="form.remark"
             placeholder="请输入内容"
             type="textarea"
+            :disabled="!$auth.hasAgentPermi('enableUpdateCardRemark')"
           />
         </el-form-item>
         <div v-if="form.cardId">
@@ -958,11 +1030,139 @@
         <el-button @click="cancelBatch">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 批量换卡对话框 -->
+    <el-dialog
+        title="批量换卡"
+        :visible.sync="batchReplaceOpen"
+        width="800px"
+        append-to-body
+        :close-on-click-modal="false"
+    >
+      <el-alert
+          :closable="false"
+          show-icon
+          style="margin-bottom: 10px"
+          title="换卡成功后将自动生成一张新卡，旧卡将被删除，换卡仅限未激活使用的卡，如果已经激活使用，则无法换卡"
+          type="info"
+      />
+      <el-form ref="formReplace" :model="formReplace" :rules="rulesReplace" >
+        <el-form-item prop="">
+          <el-col :span="12">
+            <el-form-item label="所属软件" prop="appId">
+              <el-select
+                  v-model="formReplace.appId"
+                  filterable
+                  placeholder="请选择"
+                  prop="appId"
+                  @change="changeSelectedAppReplace"
+              >
+                <el-option label="自动检测所属软件" :value="0">自动检测所属软件</el-option>
+                <el-option
+                    v-for="item in appList"
+                    :key="item.appId"
+                    :disabled="item.disabled"
+                    :label="
+                    '[' +
+                    (item.authType == '0' ? '账号' : '单码') +
+                    (item.billType == '0' ? '计时' : '计点') +
+                    '] ' +
+                    item.appName
+                  "
+                    :value="item.appId"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="计费类型" prop="billType">
+              <div v-if="app">
+                <dict-tag
+                    :options="dict.type.sys_bill_type"
+                    :value="app.billType"
+                />
+              </div>
+              <div v-else-if="formReplace.appId === 0">自动检测</div>
+              <div v-else>请先选择软件</div>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item>
+          <el-col :span="12">
+            <el-form-item label="换卡模式" prop="changeMode">
+              <span>
+                <el-tooltip
+                    content="账号登录模式只支持整卡更换，如果卡已经被使用，则不支持换卡"
+                    placement="top"
+                >
+                  <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                  ></i>
+                </el-tooltip>
+              </span>
+              <el-radio-group v-model="formReplace.changeMode" disabled>
+                <el-radio
+                    v-for="dict in dict.type.sys_yes_no"
+                    :key="dict.value"
+                    :label="dict.value"
+                >{{ dict.label === '是' ? '换整卡' : '换残卡' }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="操作内容（输入格式：每行一条数据）" prop="content">
+          <el-input
+              v-model="formReplace.content"
+              :rows="10"
+              placeholder="输入格式：每行一条数据"
+              type="textarea"
+          />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input
+              v-model="formReplace.remark"
+              type="textarea"
+              placeholder="请输入内容"
+          />
+        </el-form-item>
+      </el-form>
+      <div v-show="result">
+        <el-divider content-position="left">以下为换卡结果，新卡请自行复制保存</el-divider>
+        <el-input
+            v-model="result"
+            :rows="20"
+            style="max-width: 1400px"
+            type="textarea"
+        >
+        </el-input>
+        <div align="right" style="margin-top: 5px">
+          <el-button id="copyButton" plain @click="copy(3)">
+            复制文本
+          </el-button>
+          <el-button id="saveButton" plain @click="save(3)">
+            下载保存
+          </el-button>
+        </div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+            :loading="batchLoading"
+            type="primary"
+            @click="submitFormReplace"
+        >
+          确 定
+        </el-button>
+        <el-button @click="cancelReplace">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import {addCard, delCard, exportCard, getCard, listCard, listCardTemplateAll, updateCard, getBatchNoList} from "@/api/agent/agentCard";
+import {addCard, delCard, exportCard, getCard, listCard, listCardTemplateAll, updateCard, getBatchNoList, batchReplace} from "@/api/agent/agentCard";
 import {listAppAll} from "@/api/agent/agentApp";
 import DateDuration from "@/components/DateDuration";
 import Updown from "@/components/Updown";
@@ -1024,6 +1224,7 @@ export default {
         isSold: null,
         onSale: null,
         isCharged: null,
+        isAgent: null,
         status: null,
         chargeRule: null,
       },
@@ -1060,6 +1261,22 @@ export default {
         ],
         // chargeRule: [
         //   { required: true, message: "充值规则不能为空", trigger: "change" },
+        // ],
+        // cardLoginLimitU: [
+        //   {
+        //     required: true,
+        //     message:
+        //         "由充值卡/单码生效的登录用户数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
+        //     trigger: "blur",
+        //   },
+        // ],
+        // cardLoginLimitM: [
+        //   {
+        //     required: true,
+        //     message:
+        //         "由充值卡/单码生效的登录设备数量限制，整数，-1为不限制，-2为不生效，默认为-2不能为空",
+        //     trigger: "blur",
+        //   },
         // ],
       },
       rulesBatch: {
@@ -1128,6 +1345,21 @@ export default {
       cardStr: "",
       cardSimpleStr: "",
       batchNoList: [],
+      // 批量换卡
+      formReplace: {
+        appId: 0,
+        changeMode: 'Y',
+      },
+      batchReplaceOpen: false,
+      rulesReplace:{
+        content: [
+          {required: true, message: "操作内容不能为空", trigger: "blur"},
+        ],
+        changeMode: [
+          {required: true, message: "换卡模式不能为空", trigger: "blur"},
+        ],
+      },
+      result: ""
     };
   },
   created() {
@@ -1188,6 +1420,9 @@ export default {
         status: "0",
         chargeRule: "0",
         remark: undefined,
+        cardLoginLimitU: -2,
+        cardLoginLimitM: -2,
+        chargeTime: undefined,
       };
       this.resetForm("form");
     },
@@ -1445,8 +1680,10 @@ export default {
           // 如果想从其它DOM元素内容复制。应该是target:function(){return: };
           if (id == 1) {
             return this.cardStr;
-          } else {
+          } else if (id == 2) {
             return this.cardSimpleStr;
+          } else {
+            return this.result;
           }
         },
       });
@@ -1471,7 +1708,7 @@ export default {
         clipboard.destroy();
       });
     },
-    download(filename, text) {
+    downloadRecords(filename, text) {
       var pom = document.createElement("a");
       pom.setAttribute(
         "href",
@@ -1546,13 +1783,61 @@ export default {
       var content = "";
       if (id == 1) {
         content = this.cardStr;
-      } else {
+      } else if(id == 2) {
         content = this.cardSimpleStr;
+      } else {
+        content = this.result;
       }
-      this.download(
+      this.downloadRecords(
         "save_" + this.dateFormat(new Date(), "yyyyMMddHHmmss") + ".txt",
         content
       );
+    },
+    /**批量换卡按钮操作 */
+    handleReplace() {
+      this.resetReplace();
+      // let queryParams = {};
+      if (this.app) {
+        // queryParams.appId = this.app.appId;
+        this.formReplace.appId = this.app.appId;
+      }
+      // listLoginCodeTemplateAll(queryParams).then((response) => {
+      //   this.cardTemplateList = response.rows;
+      // });
+      this.batchReplaceOpen = true;
+    },
+    resetReplace() {
+      this.formReplace = {
+        appId: 0,
+        changeMode: 'Y',
+      };
+      this.resetForm("formReplace");
+    },
+    submitFormReplace() {
+      this.$refs["formReplace"].validate((valid) => {
+        if (valid) {
+          this.batchLoading = true;
+          this.formReplace.appId = this.app ? this.app.appId : 0;
+          batchReplace(this.formReplace).then((response) => {
+            this.result = response.msg;
+            this.getList();
+          }).catch(() => {
+          }).finally(() => {
+            this.batchLoading = false;
+          });
+        }
+      })
+    },
+    cancelReplace() {
+      this.batchReplaceOpen = false;
+      this.resetReplace();
+    },
+    changeSelectedAppReplace(appId) {
+      if(appId !== 0) {
+        this.app = this.appMap[appId];
+      } else {
+        this.app = null;
+      }
     },
   },
 };
