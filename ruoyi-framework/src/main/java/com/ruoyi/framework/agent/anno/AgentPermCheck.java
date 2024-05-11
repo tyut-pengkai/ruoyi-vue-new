@@ -1,4 +1,4 @@
-package com.ruoyi.framework.license.anno;
+package com.ruoyi.framework.agent.anno;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

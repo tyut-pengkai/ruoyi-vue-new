@@ -13,7 +13,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.TemplateType;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.framework.license.anno.AgentPermCheck;
+import com.ruoyi.framework.agent.anno.AgentPermCheck;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;

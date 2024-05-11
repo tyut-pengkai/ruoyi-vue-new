@@ -4,7 +4,7 @@ import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.framework.interceptor.DemoInterceptor;
 import com.ruoyi.framework.interceptor.RepeatSubmitInterceptor;
-import com.ruoyi.framework.license.interceptor.AgentPermInterceptor;
+import com.ruoyi.framework.agent.interceptor.AgentPermInterceptor;
 import com.ruoyi.framework.license.interceptor.LicenseInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

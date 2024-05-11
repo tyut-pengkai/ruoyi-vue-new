@@ -1,11 +1,11 @@
-package com.ruoyi.framework.license.interceptor;
+package com.ruoyi.framework.agent.interceptor;
 
 import com.ruoyi.agent.domain.SysAgent;
 import com.ruoyi.agent.service.ISysAgentUserService;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.framework.license.anno.AgentPermCheck;
+import com.ruoyi.framework.agent.anno.AgentPermCheck;
 import com.ruoyi.framework.web.service.PermissionService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;

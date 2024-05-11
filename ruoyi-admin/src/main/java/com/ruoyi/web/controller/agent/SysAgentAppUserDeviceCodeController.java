@@ -14,7 +14,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.UnbindType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.framework.license.anno.AgentPermCheck;
+import com.ruoyi.framework.agent.anno.AgentPermCheck;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.PermissionService;
