@@ -4,6 +4,7 @@ import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.framework.interceptor.DemoInterceptor;
 import com.ruoyi.framework.interceptor.RepeatSubmitInterceptor;
+import com.ruoyi.framework.license.interceptor.AgentPermInterceptor;
 import com.ruoyi.framework.license.interceptor.LicenseInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +32,8 @@ public class ResourcesConfig implements WebMvcConfigurer {
     private LicenseInterceptor licenseInterceptor;
     @Autowired
     private DemoInterceptor demoInterceptor;
+    @Autowired
+    private AgentPermInterceptor agentPermInterceptor;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -53,6 +56,7 @@ public class ResourcesConfig implements WebMvcConfigurer {
     {
         registry.addInterceptor(licenseInterceptor).addPathPatterns("/**");
         registry.addInterceptor(demoInterceptor).addPathPatterns("/**");
+        registry.addInterceptor(agentPermInterceptor).addPathPatterns("/**");
         registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
     }
 

@@ -429,7 +429,7 @@
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
-        width="160"
+        width="260"
       >
         <template slot-scope="scope">
           <el-button

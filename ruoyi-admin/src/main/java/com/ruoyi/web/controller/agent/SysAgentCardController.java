@@ -14,6 +14,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.TemplateType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.framework.license.anno.AgentPermCheck;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
@@ -61,11 +62,13 @@ public class SysAgentCardController extends BaseController {
      * 查询卡密列表
      */
     @PreAuthorize("@ss.hasPermi('agent:agentCard:list')")
+    @AgentPermCheck
     @GetMapping("/list")
     public TableDataInfo list(SysCard sysCard) {
         startPage();
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            sysCard.setAgentId(getUserId());
+        SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        sysCard.setAgentId(agent.getAgentId());
 //        }
         List<SysCard> list = sysCardService.selectSysCardList(sysCard);
         return getDataTable(list);
@@ -75,11 +78,13 @@ public class SysAgentCardController extends BaseController {
      * 导出卡密列表
      */
     @PreAuthorize("@ss.hasPermi('agent:agentCard:export')")
+    @AgentPermCheck
     @Log(title = "卡密", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(SysCard sysCard) {
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            sysCard.setAgentId(getUserId());
+        SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        sysCard.setAgentId(agent.getAgentId());
 //        }
         List<SysCard> list = sysCardService.selectSysCardList(sysCard);
         ExcelUtil<SysCard> util = new ExcelUtil<SysCard>(SysCard.class);
@@ -90,6 +95,7 @@ public class SysAgentCardController extends BaseController {
      * 获取卡密详细信息
      */
     @PreAuthorize("@ss.hasPermi('agent:agentCard:query')")
+    @AgentPermCheck
     @GetMapping(value = "/{cardId}")
     public AjaxResult getInfo(@PathVariable("cardId") Long cardId) {
         return AjaxResult.success(sysCardService.selectSysCardByCardId(cardId));
@@ -99,6 +105,7 @@ public class SysAgentCardController extends BaseController {
      * 新增卡密
      */
     @PreAuthorize("@ss.hasPermi('agent:agentCard:add')")
+    @AgentPermCheck
     @Log(title = "卡密", businessType = BusinessType.INSERT)
     @PostMapping
     @Transactional(rollbackFor = Exception.class)
@@ -115,8 +122,6 @@ public class SysAgentCardController extends BaseController {
         }
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
-            // 判断是否有代理权限
-            sysAgentService.checkAgent(agent, false);
             // 判断是否有代理该卡的权限
             SysAgentItem agentItem = sysAgentItemService.checkAgentItem(null, agent.getAgentId(), TemplateType.CHARGE_CARD, sysCard.getTemplateId());
             // 计算金额
@@ -154,6 +159,7 @@ public class SysAgentCardController extends BaseController {
      * 修改卡密
      */
     @PreAuthorize("@ss.hasPermi('agent:agentCard:edit')")
+    @AgentPermCheck
     @Log(title = "卡密", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysCard sysCard) {
@@ -165,6 +171,7 @@ public class SysAgentCardController extends BaseController {
      * 删除卡密
      */
     @PreAuthorize("@ss.hasPermi('agent:agentCard:remove')")
+    @AgentPermCheck
     @Log(title = "卡密", businessType = BusinessType.DELETE)
     @DeleteMapping("/{cardIds}")
     public AjaxResult remove(@PathVariable Long[] cardIds) {
@@ -175,6 +182,7 @@ public class SysAgentCardController extends BaseController {
      * 查询卡密模板列表
      */
     @PreAuthorize("@ss.hasAnyRoles('agent,admin,sadmin')")
+    @AgentPermCheck
     @GetMapping("/cardTemplate/listAll")
     public TableDataInfo list(SysCardTemplate sysCardTemplate) {
         List<SysCardTemplate> list = new ArrayList<>();
@@ -218,6 +226,7 @@ public class SysAgentCardController extends BaseController {
      * @return
      */
     @PreAuthorize("@ss.hasPermi('agent:agentCard:list')")
+    @AgentPermCheck
     @GetMapping("/selectBatchNoList")
     public AjaxResult selectBatchNoList() {
         Long agentId = null;

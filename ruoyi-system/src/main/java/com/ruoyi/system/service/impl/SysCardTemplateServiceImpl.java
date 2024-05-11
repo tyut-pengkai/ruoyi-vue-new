@@ -1,5 +1,7 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.agent.domain.SysAgent;
+import com.ruoyi.agent.service.ISysAgentUserService;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.enums.GenRule;
@@ -42,6 +44,8 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
     private ISysCardService sysCardService;
     @Resource
     private ISysAppUserService appUserService;
+    @Resource
+    private ISysAgentUserService sysAgentService;
 
     /**
      * 查询卡密模板
@@ -163,7 +167,8 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
             sysCard.setBatchNo(batchNo);
             try {
                 sysCard.setCreateBy(SecurityUtils.getUsernameNoException());
-                sysCard.setAgentId(SecurityUtils.getUserId());
+                SysAgent agent = sysAgentService.selectSysAgentByUserId(SecurityUtils.getUserId());
+                sysCard.setAgentId(agent.getAgentId());
             } catch (Exception ignored) {
             }
             sysCardList.add(sysCard);

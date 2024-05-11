@@ -455,7 +455,6 @@
           >删除
           </el-button>
           <el-dropdown
-            v-hasPermi="['system:deviceCode:list']"
             size="mini"
             @command="(command) => handleCommand(command, scope.row)"
           >
@@ -471,7 +470,7 @@
                 设备码管理old
               </el-dropdown-item> -->
               <el-dropdown-item
-                v-hasPermi="['system:appUserDeviceCode:list']"
+                v-hasPermi="['agent:appUserDeviceCode:list']"
                 command="handleAppUserDeviceCode"
                 icon="el-icon-monitor"
               >
@@ -1216,7 +1215,7 @@ export default {
     handleAppUserDeviceCode: function (row) {
       const appUserId = row.appUserId;
       this.$router.push({
-        path: "/verify/appUserDeviceCode",
+        path: "/agent/appUserDeviceCode",
         query: {
           appUserId: appUserId,
         },

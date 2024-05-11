@@ -12,14 +12,12 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
-import com.ruoyi.common.enums.AppUserExpireChangeType;
-import com.ruoyi.common.enums.AuthType;
-import com.ruoyi.common.enums.BillType;
-import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ApiException;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.framework.license.anno.AgentPermCheck;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.web.service.PermissionService;
@@ -67,11 +65,13 @@ public class SysAgentAppUserController extends BaseController {
      */
     @SuppressWarnings("unchecked")
     @PreAuthorize("@ss.hasPermi('agent:appUser:list')")
+    @AgentPermCheck
     @GetMapping("/list")
     public TableDataInfo list(SysAppUser sysAppUser) {
         startPage();
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            sysAppUser.setAgentId(getUserId());
+        SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        sysAppUser.setAgentId(agent.getAgentId());
 //        }
         List<SysAppUser> list = sysAppUserService.selectSysAppUserList(sysAppUser);
 
@@ -91,11 +91,13 @@ public class SysAgentAppUserController extends BaseController {
      * 导出软件用户列表
      */
     @PreAuthorize("@ss.hasPermi('agent:appUser:export')")
+    @AgentPermCheck
     @Log(title = "软件用户", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(SysAppUser sysAppUser) {
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            sysAppUser.setAgentId(getUserId());
+        SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        sysAppUser.setAgentId(agent.getAgentId());
 //        }
         List<SysAppUser> list = sysAppUserService.selectSysAppUserList(sysAppUser);
         ExcelUtil<SysAppUser> util = new ExcelUtil<SysAppUser>(SysAppUser.class);
@@ -106,6 +108,7 @@ public class SysAgentAppUserController extends BaseController {
      * 获取软件用户详细信息
      */
     @PreAuthorize("@ss.hasPermi('agent:appUser:query')")
+    @AgentPermCheck
     @GetMapping(value = "/{appUserId}")
     public AjaxResult getInfo(@PathVariable("appUserId") Long appUserId) {
         return AjaxResult.success(sysAppUserService.selectSysAppUserByAppUserId(appUserId));
@@ -115,6 +118,7 @@ public class SysAgentAppUserController extends BaseController {
      * 新增软件用户
      */
     @PreAuthorize("@ss.hasPermi('agent:appUser:add')")
+    @AgentPermCheck
     @Log(title = "软件用户", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysAppUser sysAppUser) {
@@ -216,7 +220,7 @@ public class SysAgentAppUserController extends BaseController {
                 expireLog1.setCardId(loginCode.getCardId());
 
             }
-            expireLog1.setChangeDesc("管理后台添加用户");
+            expireLog1.setChangeDesc("代理台添加用户");
             expireLog1.setChangeType(AppUserExpireChangeType.RECHARGE);
             expireLog1.setChangeAmount(0L);
             expireLog1.setCardNo(sysAppUser.getLoginCode());
@@ -230,13 +234,31 @@ public class SysAgentAppUserController extends BaseController {
      * 修改软件用户
      */
     @PreAuthorize("@ss.hasPermi('agent:appUser:edit')")
+    @AgentPermCheck
     @Log(title = "软件用户", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAppUser sysAppUser) {
+        // 检查是否有变更状态权限
+        if(sysAppUser.getStatus() != null) {
+            if (Objects.equals(sysAppUser.getStatus(), UserStatus.OK)) {
+                if (!permissionService.hasAgentPermi("enableUpdateAppUserStatus0")) {
+                    throw new ServiceException("您没有该操作的权限（代理系统）");
+                }
+            }
+            if (Objects.equals(sysAppUser.getStatus(), UserStatus.DISABLE)) {
+                if (!permissionService.hasAgentPermi("enableUpdateAppUserStatus1")) {
+                    throw new ServiceException("您没有该操作的权限（代理系统）");
+                }
+            }
+        }
+        SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        SysAppUser appUser = sysAppUserService.selectSysAppUserByAppUserId(sysAppUser.getAppUserId());
+        if(!Objects.equals(appUser.getAgentId(), agent.getAgentId())) {
+            throw new ServiceException("所选软件用户不是您的用户", 400);
+        }
         sysAppUser.setUpdateBy(getUsername());
         // 记录用户时长变更日志
         if (sysAppUser.getExpireTime() != null || sysAppUser.getPoint() != null) {
-            SysAppUser appUser = sysAppUserService.selectSysAppUserByAppUserId(sysAppUser.getAppUserId());
             SysAppUserExpireLog expireLog = new SysAppUserExpireLog();
             if (sysAppUser.getExpireTime() != null) {
                 expireLog.setExpireTimeBefore(appUser.getExpireTime());
@@ -263,6 +285,7 @@ public class SysAgentAppUserController extends BaseController {
      * 删除软件用户
      */
     @PreAuthorize("@ss.hasPermi('agent:appUser:remove')")
+    @AgentPermCheck
     @Log(title = "软件用户", businessType = BusinessType.DELETE)
     @DeleteMapping("/{appUserIds}")
     public AjaxResult remove(@PathVariable Long[] appUserIds) {
@@ -273,9 +296,21 @@ public class SysAgentAppUserController extends BaseController {
      * 状态修改
      */
     @PreAuthorize("@ss.hasPermi('agent:appUser:edit')")
+    @AgentPermCheck
     @Log(title = "软件用户", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
     public AjaxResult changeStatus(@RequestBody SysAppUser sysAppUser) {
+        // 检查是否有变更状态权限
+        if(Objects.equals(sysAppUser.getStatus(), UserStatus.OK)) {
+            if(!permissionService.hasAgentPermi("enableUpdateAppUserStatus0")) {
+                throw new ServiceException("您没有该操作的权限（代理系统）");
+            }
+        }
+        if(Objects.equals(sysAppUser.getStatus(), UserStatus.DISABLE)) {
+            if(!permissionService.hasAgentPermi("enableUpdateAppUserStatus1")) {
+                throw new ServiceException("您没有该操作的权限（代理系统）");
+            }
+        }
         return toAjax(sysAppUserService.updateSysAppUser(sysAppUser));
     }
 
@@ -283,6 +318,7 @@ public class SysAgentAppUserController extends BaseController {
      * 重置密码
      */
     @PreAuthorize("@ss.hasPermi('agent:agentUser:resetPwd')")
+    @AgentPermCheck
     @Log(title = "软件用户", businessType = BusinessType.UPDATE)
     @PutMapping("/resetPwd")
     public AjaxResult resetPwd(@RequestBody SysUser user) {
@@ -293,12 +329,8 @@ public class SysAgentAppUserController extends BaseController {
         }
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent myAgent = sysAgentService.selectSysAgentByUserId(SecurityUtils.getUserId());
-            if(myAgent == null) {
-                throw new ServiceException("您的代理信息缺失", 400);
-            }
-            sysAgentService.checkAgent(myAgent, false);
             if(!Objects.equals(appUser.getAgentId(), myAgent.getAgentId())) {
-                throw new ServiceException("所选软件用户不是您的代理用户", 400);
+                throw new ServiceException("所选软件用户不是您的用户", 400);
             }
         }
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));

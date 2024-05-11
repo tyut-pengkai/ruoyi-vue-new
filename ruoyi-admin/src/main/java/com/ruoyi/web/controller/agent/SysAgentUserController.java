@@ -16,6 +16,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.framework.license.anno.AgentPermCheck;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
@@ -53,6 +54,7 @@ public class SysAgentUserController extends BaseController {
      * 查询代理管理列表
      */
     @PreAuthorize("@ss.hasPermi('agent:agentUser:list')")
+    @AgentPermCheck
     @GetMapping("/list")
     public AjaxResult list(SysAgent sysAgent) {
         List<SysAgent> list = sysAgentService.selectSysAgentList(sysAgent);
@@ -60,9 +62,6 @@ public class SysAgentUserController extends BaseController {
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             // 获取我的代理ID
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getLoginUser().getUserId());
-            if(agent == null) {
-                throw new ServiceException("您无代理权限");
-            }
             List<Long> subAgents = sysAgentService.getSubAgents(agent.getAgentId());
             for (SysAgent item : list) {
                 if (subAgents.contains(item.getAgentId())) {
@@ -95,6 +94,7 @@ public class SysAgentUserController extends BaseController {
      * 导出代理管理列表
      */
     @PreAuthorize("@ss.hasPermi('agent:agentUser:export')")
+    @AgentPermCheck
     @Log(title = "代理管理", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysAgent sysAgent) {
@@ -107,6 +107,7 @@ public class SysAgentUserController extends BaseController {
      * 获取代理管理详细信息
      */
     @PreAuthorize("@ss.hasPermi('agent:agentUser:query')")
+    @AgentPermCheck
     @GetMapping(value = "/{agentId}")
     public AjaxResult getInfo(@PathVariable("agentId") Long agentId) {
         SysAgent agent = sysAgentService.selectSysAgentByAgentId(agentId);
@@ -119,6 +120,7 @@ public class SysAgentUserController extends BaseController {
      * 新增代理管理
      */
     @PreAuthorize("@ss.hasPermi('agent:agentUser:add')")
+    @AgentPermCheck(value = "enableAddSubagent", checkEnableAddSubagent = true)
     @Log(title = "代理管理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysAgent sysAgent) {
@@ -127,7 +129,6 @@ public class SysAgentUserController extends BaseController {
         }
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
-            sysAgentService.checkAgent(agent, true);
             if (sysAgent.getParentAgentId() == null) {
                 sysAgent.setParentAgentId(agent.getAgentId());
             }
@@ -167,15 +168,19 @@ public class SysAgentUserController extends BaseController {
      * 修改代理管理
      */
     @PreAuthorize("@ss.hasPermi('agent:agentUser:edit')")
+    @AgentPermCheck(value = "enableAddSubagent", checkEnableAddSubagent = true)
     @Log(title = "代理管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAgent sysAgent) {
+        // 检查是否有变更状态权限
+        if(sysAgent.getStatus() != null && !permissionService.hasAgentPermi("enableUpdateSubagentStatus")) {
+            throw new ServiceException("您没有该操作的权限（代理系统）");
+        }
         if (sysAgent.getParentAgentId() == null || sysAgent.getParentAgentId() <= 0) {
             sysAgent.setParentAgentId(null);
         }
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
-            sysAgentService.checkAgent(agent, true);
             if (sysAgent.getParentAgentId() == null) {
                 sysAgent.setParentAgentId(agent.getAgentId());
             }
@@ -245,7 +250,6 @@ public class SysAgentUserController extends BaseController {
         }
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
-            sysAgentService.checkAgent(agent, false);
             SysAgentItem item = sysAgentItemService.checkAgentItem(templateInfoVo, agent.getAgentId(), templateInfoVo.getTemplateType(), templateInfoVo.getTemplateId());
             if (templateInfoVo.getAgentPrice().compareTo(item.getAgentPrice()) < 0) {
                 throw new ServiceException(templateInfoVo.getReadableName() + " 代理价格设置有误，子代理价格不能低于您的代理价格");
@@ -300,6 +304,7 @@ public class SysAgentUserController extends BaseController {
      * 删除代理管理
      */
     @PreAuthorize("@ss.hasPermi('agent:agentUser:remove')")
+    @AgentPermCheck
     @Log(title = "代理管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{agentIds}")
     public AjaxResult remove(@PathVariable Long[] agentIds) {
@@ -328,6 +333,7 @@ public class SysAgentUserController extends BaseController {
      * @return
      */
     @PreAuthorize("@ss.hasPermi('agent:agentUser:list')")
+    @AgentPermCheck
     @GetMapping("/listAgents/{agentId}")
     public TableDataInfo listDevelopersAndAgents(@PathVariable("agentId") Long agentId) {
         List<SysAgent> list = sysAgentService.selectSysAgentList(new SysAgent());
@@ -353,6 +359,7 @@ public class SysAgentUserController extends BaseController {
      * @return
      */
     @PreAuthorize("@ss.hasPermi('agent:agentUser:list')")
+    @AgentPermCheck
     @GetMapping("/listNonAgents")
     public TableDataInfo listNonAgents(String username) {
         List<AgentInfoVo> list = sysAgentService.getNonAgents(username);
@@ -363,17 +370,14 @@ public class SysAgentUserController extends BaseController {
      * 重置密码
      */
     @PreAuthorize("@ss.hasPermi('agent:agentUser:resetPwd')")
+    @AgentPermCheck("enableUpdateSubagentPassword")
     @Log(title = "代理管理", businessType = BusinessType.UPDATE)
     @PutMapping("/resetPwd")
     public AjaxResult resetPwd(@RequestBody SysUser user) {
         sysUserService.checkUserAllowed(user);
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent myAgent = sysAgentService.selectSysAgentByUserId(SecurityUtils.getUserId());
-            sysAgentService.checkAgent(myAgent, false);
             SysAgent subAgent = sysAgentService.selectSysAgentByUserId(user.getUserId());
-            if(myAgent == null) {
-                throw new ServiceException("您的代理信息缺失", 400);
-            }
             if(subAgent == null) {
                 throw new ServiceException("被操作的代理信息缺失", 400);
             }

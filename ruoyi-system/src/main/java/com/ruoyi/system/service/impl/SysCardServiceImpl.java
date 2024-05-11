@@ -1,5 +1,7 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.agent.domain.SysAgent;
+import com.ruoyi.agent.service.ISysAgentUserService;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.UserConstants;
@@ -50,6 +52,8 @@ public class SysCardServiceImpl implements ISysCardService {
     private ISysAppService sysAppService;
     @Resource
     private ISysUserService sysUserService;
+    @Resource
+    private ISysAgentUserService sysAgentService;
 
     /**
      * 查询卡密
@@ -264,13 +268,20 @@ public class SysCardServiceImpl implements ISysCardService {
                                     // 验证代理是否存在
                                     String agentUserName = card.getAgentUser().getUserName();
                                     SysUser agentUser = sysUserService.selectUserByUserName(agentUserName);
-                                    if (agentUser != null) {
-                                        card.setAgentId(agentUser.getUserId());
-                                        card.setIsAgent(UserConstants.YES);
+                                    if(agentUser != null) {
+                                        SysAgent agent = sysAgentService.selectSysAgentByUserId(agentUser.getUserId());
+                                        if (agent != null) {
+                                            card.setAgentId(agent.getAgentId());
+                                            card.setIsAgent(UserConstants.YES);
+                                        } else {
+                                            errFlag = true;
+                                            failureNum++;
+                                            failureMsg.append("<br/>" + failureNum + "、卡密[" + card.getCardNo() + "]导入失败：代理[" + agentUserName + "]不存在");
+                                        }
                                     } else {
                                         errFlag = true;
                                         failureNum++;
-                                        failureMsg.append("<br/>" + failureNum + "、卡密[" + card.getCardNo() + "]导入失败：代理[" + agentUserName + "]不存在");
+                                        failureMsg.append("<br/>" + failureNum + "、卡密[" + card.getCardNo() + "]导入失败：代理账号[" + agentUserName + "]不存在");
                                     }
                                 } else {
                                     card.setIsAgent(UserConstants.NO);

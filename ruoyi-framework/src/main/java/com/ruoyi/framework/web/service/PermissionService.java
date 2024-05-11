@@ -1,5 +1,8 @@
 package com.ruoyi.framework.web.service;
 
+import com.ruoyi.agent.domain.SysAgent;
+import com.ruoyi.agent.service.ISysAgentUserService;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
@@ -12,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -27,6 +32,8 @@ public class PermissionService {
     private ISysUserService sysUserService;
     @Resource
     private ISysRoleService sysRoleService;
+    @Resource
+    private ISysAgentUserService agentUserService;
 
     /** 所有权限标识 */
     private static final String ALL_PERMISSION = "*:*:*";
@@ -206,5 +213,33 @@ public class PermissionService {
     private boolean hasPermissions(Set<String> permissions, String permission)
     {
         return permissions.contains(ALL_PERMISSION) || permissions.contains(StringUtils.trim(permission));
+    }
+
+    /**
+     * 验证用户是否具备某权限
+     *
+     * @param permission 权限字符串
+     * @return 用户是否具备某权限
+     */
+    public boolean hasAgentPermi(String permission)
+    {
+        if (StringUtils.isEmpty(permission)) {
+            return false;
+        }
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        if (StringUtils.isNull(loginUser)) {
+            return false;
+        }
+        SysAgent agent = agentUserService.selectSysAgentByUserId(loginUser.getUserId());
+        if(agent == null) {
+            return false;
+        }
+        try {
+            Method declaredMethod = SysAgent.class.getDeclaredMethod("get" + StringUtils.capitalize(permission));
+            return Objects.equals(declaredMethod.invoke(agent).toString(), UserConstants.YES);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

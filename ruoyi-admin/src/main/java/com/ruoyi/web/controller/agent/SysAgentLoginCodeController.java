@@ -14,6 +14,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.TemplateType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.framework.license.anno.AgentPermCheck;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
@@ -61,11 +62,13 @@ public class SysAgentLoginCodeController extends BaseController {
      * 查询单码列表
      */
     @PreAuthorize("@ss.hasPermi('agent:agentLoginCode:list')")
+    @AgentPermCheck
     @GetMapping("/list")
     public TableDataInfo list(SysLoginCode sysLoginCode) {
         startPage();
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            sysLoginCode.setAgentId(getUserId());
+        SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        sysLoginCode.setAgentId(agent.getAgentId());
 //        }
         List<SysLoginCode> list = sysLoginCodeService.selectSysLoginCodeList(sysLoginCode);
         return getDataTable(list);
@@ -75,11 +78,13 @@ public class SysAgentLoginCodeController extends BaseController {
      * 导出单码列表
      */
     @PreAuthorize("@ss.hasPermi('agent:agentLoginCode:export')")
+    @AgentPermCheck
     @Log(title = "单码", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(SysLoginCode sysLoginCode) {
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            sysLoginCode.setAgentId(getUserId());
+        SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        sysLoginCode.setAgentId(agent.getAgentId());
 //        }
         List<SysLoginCode> list = sysLoginCodeService.selectSysLoginCodeList(sysLoginCode);
         ExcelUtil<SysLoginCode> util = new ExcelUtil<SysLoginCode>(SysLoginCode.class);
@@ -90,6 +95,7 @@ public class SysAgentLoginCodeController extends BaseController {
      * 获取单码详细信息
      */
     @PreAuthorize("@ss.hasPermi('agent:agentLoginCode:query')")
+    @AgentPermCheck
     @GetMapping(value = "/{cardId}")
     public AjaxResult getInfo(@PathVariable("cardId") Long cardId) {
         return AjaxResult.success(sysLoginCodeService.selectSysLoginCodeByCardId(cardId));
@@ -99,6 +105,7 @@ public class SysAgentLoginCodeController extends BaseController {
      * 新增单码
      */
     @PreAuthorize("@ss.hasPermi('agent:agentLoginCode:add')")
+    @AgentPermCheck
     @Log(title = "单码", businessType = BusinessType.INSERT)
     @PostMapping
     @Transactional(rollbackFor = Exception.class)
@@ -115,8 +122,6 @@ public class SysAgentLoginCodeController extends BaseController {
         }
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
-            // 判断是否有代理权限
-            sysAgentService.checkAgent(agent, false);
             // 判断是否有代理该卡的权限
             SysAgentItem agentItem = sysAgentItemService.checkAgentItem(null, agent.getAgentId(), TemplateType.LOGIN_CODE, sysLoginCode.getTemplateId());
             // 计算金额
@@ -151,6 +156,7 @@ public class SysAgentLoginCodeController extends BaseController {
      * 修改单码
      */
     @PreAuthorize("@ss.hasPermi('agent:agentLoginCode:edit')")
+    @AgentPermCheck
     @Log(title = "单码", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysLoginCode sysLoginCode) {
@@ -162,6 +168,7 @@ public class SysAgentLoginCodeController extends BaseController {
      * 删除单码
      */
     @PreAuthorize("@ss.hasPermi('agent:agentLoginCode:remove')")
+    @AgentPermCheck
     @Log(title = "单码", businessType = BusinessType.DELETE)
     @DeleteMapping("/{cardIds}")
     public AjaxResult remove(@PathVariable Long[] cardIds) {
@@ -172,6 +179,7 @@ public class SysAgentLoginCodeController extends BaseController {
      * 查询单码类别列表
      */
     @PreAuthorize("@ss.hasAnyRoles('agent,admin,sadmin')")
+    @AgentPermCheck
     @GetMapping("/loginCodeTemplate/listAll")
     public TableDataInfo listAll(SysLoginCodeTemplate sysLoginCodeTemplate) {
         List<SysLoginCodeTemplate> list = new ArrayList<>();
@@ -215,6 +223,7 @@ public class SysAgentLoginCodeController extends BaseController {
      * @return
      */
     @PreAuthorize("@ss.hasPermi('agent:agentLoginCode:list')")
+    @AgentPermCheck
     @GetMapping("/selectBatchNoList")
     public AjaxResult selectBatchNoList() {
         Long agentId = null;

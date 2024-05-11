@@ -387,6 +387,12 @@
 
     <!-- 添加或修改代理用户对话框 -->
     <el-dialog :title="title" :visible.sync="open" append-to-body width="850px">
+      <el-steps :active="4" style="margin-bottom: 20px">
+        <el-step title="1、注册账号" description="可由管理创建或代理自行注册账号" icon="el-icon-user"></el-step>
+        <el-step title="2、输入账号" description="输入并选择代理账号" icon="el-icon-edit"></el-step>
+        <el-step title="3、设置权限" description="设置代理相关管理权限" icon="el-icon-key"></el-step>
+        <el-step title="4、设置卡类" description="设置代理可售卡类及价格" icon="el-icon-tickets"></el-step>
+      </el-steps>
       <el-form ref="form" :model="form" :rules="rules">
         <el-tabs type="border-card">
           <el-tab-pane label="基本信息">

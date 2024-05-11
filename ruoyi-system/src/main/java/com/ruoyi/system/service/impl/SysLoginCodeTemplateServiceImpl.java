@@ -1,5 +1,7 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.agent.domain.SysAgent;
+import com.ruoyi.agent.service.ISysAgentUserService;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysApp;
@@ -47,6 +49,8 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
     private ISysLoginCodeService sysLoginCodeService;
     @Resource
     private ISysAppUserService appUserService;
+    @Resource
+    private ISysAgentUserService sysAgentService;
 
     /**
      * 查询单码类别
@@ -160,7 +164,8 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
             sysLoginCode.setBatchNo(batchNo);
             try {
                 sysLoginCode.setCreateBy(SecurityUtils.getUsernameNoException());
-                sysLoginCode.setAgentId(SecurityUtils.getUserId());
+                SysAgent agent = sysAgentService.selectSysAgentByUserId(SecurityUtils.getUserId());
+                sysLoginCode.setAgentId(agent.getAgentId());
             } catch (Exception ignore) {
             }
             sysLoginCodeList.add(sysLoginCode);

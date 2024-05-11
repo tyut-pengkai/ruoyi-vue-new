@@ -13,6 +13,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.TemplateType;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.framework.license.anno.AgentPermCheck;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
@@ -54,14 +55,12 @@ public class SysAgentItemController extends BaseController {
      * 查询代理授权列表
      */
     @PreAuthorize("@ss.hasPermi('agent:agentItem:list')")
+    @AgentPermCheck
     @GetMapping("/list")
     public TableDataInfo list(SysAgentItem sysAgentItem) {
         startPage();
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent sysAgent = sysAgentService.selectSysAgentByUserId(getUserId());
-            if(sysAgent == null) {
-                throw new ServiceException("您无代理商权限");
-            }
             sysAgentItem.getParams().put("_agentId", sysAgent.getAgentId());  // 用于查询自己的子代理
         }
         List<SysAgentItem> list = sysAgentItemService.selectSysAgentItemList(sysAgentItem);
@@ -75,6 +74,7 @@ public class SysAgentItemController extends BaseController {
      * 导出代理授权列表
      */
     @PreAuthorize("@ss.hasPermi('agent:agentItem:export')")
+    @AgentPermCheck
     @Log(title = "代理授权", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysAgentItem sysAgentItem) {
@@ -87,6 +87,7 @@ public class SysAgentItemController extends BaseController {
      * 获取代理授权详细信息
      */
     @PreAuthorize("@ss.hasPermi('agent:agentItem:query')")
+    @AgentPermCheck
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(sysAgentItemService.selectSysAgentItemById(id));
@@ -96,6 +97,7 @@ public class SysAgentItemController extends BaseController {
      * 新增代理授权
      */
     @PreAuthorize("@ss.hasPermi('agent:agentItem:add')")
+    @AgentPermCheck
     @Log(title = "代理授权", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysAgentItem sysAgentItem) {
@@ -104,7 +106,6 @@ public class SysAgentItemController extends BaseController {
         }
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
-            sysAgentService.checkAgent(agent, false);
             SysAgentItem item = sysAgentItemService.checkAgentItem(null, agent.getAgentId(), sysAgentItem.getTemplateType(), sysAgentItem.getTemplateId());
             if (sysAgentItem.getAgentPrice().compareTo(item.getAgentPrice()) < 0) {
                 throw new ServiceException("代理价格设置有误，子代理价格不能低于您的代理价格");
@@ -126,6 +127,7 @@ public class SysAgentItemController extends BaseController {
      * 修改代理授权
      */
     @PreAuthorize("@ss.hasPermi('agent:agentItem:edit')")
+    @AgentPermCheck
     @Log(title = "代理授权", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAgentItem sysAgentItem) {
@@ -134,7 +136,6 @@ public class SysAgentItemController extends BaseController {
         }
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
-            sysAgentService.checkAgent(agent, false);
             SysAgentItem item = sysAgentItemService.checkAgentItem(null, agent.getAgentId(), sysAgentItem.getTemplateType(), sysAgentItem.getTemplateId());
             if (sysAgentItem.getAgentPrice().compareTo(item.getAgentPrice()) < 0) {
                 throw new ServiceException("代理价格设置有误，子代理价格不能低于您的代理价格");
@@ -163,6 +164,7 @@ public class SysAgentItemController extends BaseController {
      * 删除代理授权
      */
     @PreAuthorize("@ss.hasPermi('agent:agentItem:remove')")
+    @AgentPermCheck
     @Log(title = "代理授权", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
@@ -170,6 +172,7 @@ public class SysAgentItemController extends BaseController {
     }
 
     @PreAuthorize("@ss.hasPermi('agent:agentItem:list')")
+    @AgentPermCheck
     @GetMapping("/grantableTemplate")
     public AjaxResult getGrantableTemplate(@RequestParam(required = false) Long agentId) {
         List<TemplateInfoVo> templateList = new ArrayList<>();

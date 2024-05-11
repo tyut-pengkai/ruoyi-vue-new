@@ -85,6 +85,18 @@
             <fast-entrance/>
             <dashboard/>
           </div>
+          <div v-else>
+            <el-card shadow="never">
+              <div slot="header" class="clearfix">
+                <span></span>
+              </div>
+              <el-empty :image-size="120" style="height: 126px;">
+                <div slot="description">
+                  <span></span>
+                </div>
+              </el-empty>
+            </el-card>
+          </div>
         </el-col>
         <el-col :lg="6" :md="24" :sm="24" :xs="24">
           <announcement style="margin-bottom: 10px;"/>
