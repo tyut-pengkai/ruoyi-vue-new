@@ -289,6 +289,10 @@
         </el-button>
       </el-col>
       <el-col :span="1.5">
+        <el-button icon="el-icon-key" plain type="success" size="mini" @click="handleViewMyPerm">我的权限
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
         <el-button icon="el-icon-sort" plain type="info" size="mini" @click="toggleExpandAll">展开/折叠
         </el-button>
       </el-col>
@@ -387,11 +391,11 @@
 
     <!-- 添加或修改代理用户对话框 -->
     <el-dialog :title="title" :visible.sync="open" append-to-body width="850px">
-      <el-steps :active="4" style="margin-bottom: 20px">
-        <el-step title="1、注册账号" description="可由管理创建或代理自行注册账号" icon="el-icon-user"></el-step>
-        <el-step title="2、输入账号" description="输入并选择代理账号" icon="el-icon-edit"></el-step>
-        <el-step title="3、设置权限" description="设置代理相关管理权限" icon="el-icon-key"></el-step>
-        <el-step title="4、设置卡类" description="设置代理可售卡类及价格" icon="el-icon-tickets"></el-step>
+      <el-steps :active="4" style="margin-bottom: 10px" v-show="form.agentId == null">
+        <el-step title="注册账号" description="可由管理创建或代理自行注册账号" icon="el-icon-user"></el-step>
+        <el-step title="输入账号" description="输入并选择代理账号" icon="el-icon-edit"></el-step>
+        <el-step title="设置权限" description="设置代理相关管理权限" icon="el-icon-key"></el-step>
+        <el-step title="设置卡类" description="设置代理可售卡类及价格" icon="el-icon-tickets"></el-step>
       </el-steps>
       <el-form ref="form" :model="form" :rules="rules">
         <el-tabs type="border-card">
@@ -631,6 +635,36 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <el-dialog title="代理信息" :visible.sync="openMyPerm" append-to-body width="850px">
+      <el-table
+        :data="tableData"
+        :span-method="objectSpanMethod"
+        border
+        size="mini"
+        height="500">
+        <el-table-column
+          prop="object"
+          label="操作对象">
+        </el-table-column>
+        <el-table-column
+          prop="perm"
+          label="操作权限">
+        </el-table-column>
+        <el-table-column
+          prop="bool"
+          label="已有权限">
+          <template slot-scope="scope">
+            <i class="el-icon-check" v-if="scope.row.bool"></i>
+            <i class="el-icon-close" v-else="scope.row.bool"></i>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="cancelMyPerm">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -762,28 +796,39 @@ export default {
       batchExpireTime: null,
       batchRemark: null,
       perms: [
-        '[默认]添加下级代理', '[默认]修改下级代理密码', '[默认]修改下级代理状态', '删除下级代理',
-        '解绑用户设备', '[默认]冻结用户', '[默认]解冻用户', '删除用户',
-        '修改用户时间', '修改用户点数', '修改用户登录用户数限制', '修改用户登录设备数限制', '修改用户自定义数据', '[默认]修改用户备注',
-        '修改用户密码', /* '查看用户联系方式', '修改用户联系方式', '修改用户账号备注', */
-        '[默认]冻结卡密', '[默认]解冻卡密', '[默认]批量换卡', '[默认]生成卡密', '删除卡密',
-        '修改卡密时间', '修改卡密点数', '修改卡密登录用户数限制', '修改卡密登录设备数限制', '修改卡密自定义参数', '[默认]修改卡密备注'
-      ],
-      codes: [
-        'enableAddSubagent', 'enableUpdateSubagentPassword', 'enableUpdateSubagentStatus', 'enableDeleteSubagent',
-        'enableUnbindAppUser', 'enableUpdateAppUserStatus1', 'enableUpdateAppUserStatus0', 'enableDeleteAppUser',
-        'enableUpdateAppUserTime', 'enableUpdateAppUserPoint', 'enableUpdateAppUserLoginLimitU', 'enableUpdateAppUserLoginLimitM', 'enbaleUpdateAppUserCustomParams', 'enableUpdateAppUserRemark',
-        'enableUpdateUserPassword', /* 'enbaleViewUserContact', 'enableUpdateUserContact', 'enableUpdateUserRemark', */
-        'enableUpdateCardStatus1', 'enableUpdateCardStatus0', 'enableBatchCardReplace', 'enableAddCard', 'enableDeleteCard',
-        'enableUpdateCardTime', 'enableUpdateCardPoint', 'enableUpdateCardLoginLimitU', 'enableUpdateCardLoginLimitM', 'enableUpdateCardCustomParams', 'enableUpdateCardRemark'
-      ],
-      defaultPerms: [
-        'enableAddSubagent', 'enableUpdateSubagentPassword', 'enableUpdateSubagentStatus',
-        'enableUpdateAppUserStatus1', 'enableUpdateAppUserStatus0',
-        'enableUpdateAppUserRemark',
-        'enableUpdateCardStatus1', 'enableUpdateCardStatus0', 'enableBatchCardReplace', 'enableAddCard', 'enableUpdateCardRemark'
+        {'object': '代理', 'name': '[默认]添加下级代理', 'code': 'enableAddSubagent', 'default': true },
+        {'object': '代理', 'name': '[默认]修改下级代理密码', 'code': 'enableUpdateSubagentPassword', 'default': true },
+        {'object': '代理', 'name': '[默认]修改下级代理状态', 'code': 'enableUpdateSubagentStatus', 'default': true },
+        {'object': '代理', 'name': '删除下级代理', 'code': 'enableDeleteSubagent', 'default': false },
+        {'object': '用户', 'name': '解绑用户设备', 'code': 'enableUnbindAppUser', 'default': false },
+        {'object': '用户', 'name': '[默认]冻结用户', 'code': 'enableUpdateAppUserStatus1', 'default': true },
+        {'object': '用户', 'name': '[默认]解冻用户', 'code': 'enableUpdateAppUserStatus0', 'default': true },
+        {'object': '用户', 'name': '删除用户', 'code': 'enableDeleteAppUser', 'default': false },
+        {'object': '用户', 'name': '修改用户时间', 'code': 'enableUpdateAppUserTime', 'default': false },
+        {'object': '用户', 'name': '修改用户点数', 'code': 'enableUpdateAppUserPoint', 'default': false },
+        {'object': '用户', 'name': '修改用户登录用户数限制', 'code': 'enableUpdateAppUserLoginLimitU', 'default': false },
+        {'object': '用户', 'name': '修改用户登录设备数限制', 'code': 'enableUpdateAppUserLoginLimitM', 'default': false },
+        {'object': '用户', 'name': '修改用户自定义数据', 'code': 'enbaleUpdateAppUserCustomParams', 'default': false },
+        {'object': '用户', 'name': '[默认]修改用户备注', 'code': 'enableUpdateAppUserRemark', 'default': true },
+        {'object': '用户', 'name': '修改用户密码', 'code': 'enableUpdateUserPassword', 'default': false },
+        // {'object': '用户', 'name': '查看用户联系方式', 'code': 'enbaleViewUserContact', 'default': false },
+        // {'object': '用户', 'name': '修改用户联系方式', 'code': 'enableUpdateUserContact', 'default': false },
+        // {'object': '用户', 'name': '修改用户账号备注', 'code': 'enableUpdateUserRemark', 'default': false },
+        {'object': '卡密', 'name': '[默认]冻结卡密', 'code': 'enableUpdateCardStatus1', 'default': true },
+        {'object': '卡密', 'name': '[默认]解冻卡密', 'code': 'enableUpdateCardStatus0', 'default': true },
+        {'object': '卡密', 'name': '[默认]批量换卡', 'code': 'enableBatchCardReplace', 'default': true },
+        {'object': '卡密', 'name': '[默认]生成卡密', 'code': 'enableAddCard', 'default': true },
+        {'object': '卡密', 'name': '删除卡密', 'code': 'enableDeleteCard', 'default': false },
+        {'object': '卡密', 'name': '修改卡密时间', 'code': 'enableUpdateCardTime', 'default': false },
+        {'object': '卡密', 'name': '修改卡密点数', 'code': 'enableUpdateCardPoint', 'default': false },
+        {'object': '卡密', 'name': '修改卡密登录用户数限制', 'code': 'enableUpdateCardLoginLimitU', 'default': false },
+        {'object': '卡密', 'name': '修改卡密登录设备数限制', 'code': 'enableUpdateCardLoginLimitM', 'default': false },
+        {'object': '卡密', 'name': '修改卡密自定义参数', 'code': 'enableUpdateCardCustomParams', 'default': false },
+        {'object': '卡密', 'name': '[默认]修改卡密备注', 'code': 'enableUpdateCardRemark', 'default': true },
       ],
       permValue: [],
+      openMyPerm: false,
+      spanArr: [],
     };
   },
   computed: {
@@ -825,9 +870,22 @@ export default {
     permData() {
       const data = [];
       this.perms.forEach((perm, index) => {
+        if(this.$auth.hasAgentPermi(perm['code'])) {
+          data.push({
+            label: perm['name'],
+            key: perm['code']
+          });
+        }
+      });
+      return data;
+    },
+    tableData() {
+      const data = [];
+      this.perms.forEach((perm, index) => {
         data.push({
-          label: perm,
-          key: this.codes[index]
+          object: perm['object'],
+          perm: perm['name'],
+          bool: this.$auth.hasAgentPermi(perm['code'])
         });
       });
       return data;
@@ -836,6 +894,9 @@ export default {
   created() {
     this.getList();
     this.getUser();
+  },
+  mounted() {
+    this.getSpanArr(this.tableData)
   },
   methods: {
     checkPermi,
@@ -937,7 +998,7 @@ export default {
       this.getGrantableTemplate({ 'agentId': row.agentId });
       // this.getNonAgentsList();
       this.user = this.userBak;
-      this.permValue = [].concat(this.defaultPerms);
+      this.permValue = [].concat(this.perms.filter(i=>i.default).map(i=>i.code));
       if (row != null && row.agentId) {
         this.form.parentAgentId = row.agentId;
       } else {
@@ -1164,6 +1225,43 @@ export default {
       })
       .catch(() => {});
     },
+    handleViewMyPerm() {
+      this.openMyPerm = true;
+    },
+    cancelMyPerm() {
+      this.openMyPerm = false;
+    },
+    getSpanArr(data) {
+      // data就是我们从后台拿到的数据
+      for (var i = 0; i < data.length; i++) {
+        if (i === 0) {
+          this.spanArr.push(1);
+          this.pos = 0;
+        } else {
+          // 判断当前元素与上一个元素是否相同
+          if (data[i]['object'] === data[i - 1]['object']) {
+            this.spanArr[this.pos] += 1;
+            this.spanArr.push(0);
+          } else {
+            this.spanArr.push(1);
+            this.pos = i;
+          }
+        }
+        // console.log(this.spanArr);
+      }
+    },
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 0) {
+        const _row = this.spanArr[rowIndex];
+        const _col = _row > 0 ? 1 : 0;
+        // console.log(`rowspan:${_row} colspan:${_col}`);
+        return {
+          // [0,0] 表示这一行不显示， [2,1]表示行的合并数
+          rowspan: _row,
+          colspan: _col
+        };
+      }
+    }
   },
 };
 </script>
