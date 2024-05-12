@@ -241,7 +241,7 @@
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['agent:agentCard:remove']"
-          :disabled="multiple"
+          :disabled="multiple || !$auth.hasAgentPermi('enableDeleteCard')"
           icon="el-icon-delete"
           plain
           size="mini"
@@ -526,6 +526,7 @@
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
+            :disabled="!$auth.hasAgentPermi('enableDeleteCard')"
             >删除
           </el-button>
         </template>

@@ -190,6 +190,42 @@ public class SysAgent extends TreeEntity {
     @Excel(name = "生成卡密")
     private String enableAddCard;
 
+    /** 删除下级代理 */
+    @Excel(name = "删除下级代理")
+    private String enableDeleteSubagent;
+
+    /** 删除软件用户 */
+    @Excel(name = "删除软件用户")
+    private String enableDeleteAppUser;
+
+    /** 删除卡密 */
+    @Excel(name = "删除卡密")
+    private String enableDeleteCard;
+
+    public String getEnableDeleteSubagent() {
+        return enableDeleteSubagent;
+    }
+
+    public void setEnableDeleteSubagent(String enableDeleteSubagent) {
+        this.enableDeleteSubagent = enableDeleteSubagent;
+    }
+
+    public String getEnableDeleteAppUser() {
+        return enableDeleteAppUser;
+    }
+
+    public void setEnableDeleteAppUser(String enableDeleteAppUser) {
+        this.enableDeleteAppUser = enableDeleteAppUser;
+    }
+
+    public String getEnableDeleteCard() {
+        return enableDeleteCard;
+    }
+
+    public void setEnableDeleteCard(String enableDeleteCard) {
+        this.enableDeleteCard = enableDeleteCard;
+    }
+
     public String getEnableUpdateSubagentPassword() {
         return enableUpdateSubagentPassword;
     }

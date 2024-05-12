@@ -304,7 +304,7 @@ public class SysAgentUserController extends BaseController {
      * 删除代理管理
      */
     @PreAuthorize("@ss.hasPermi('agent:agentUser:remove')")
-    @AgentPermCheck
+    @AgentPermCheck("enableDeleteSubagent")
     @Log(title = "代理管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{agentIds}")
     public AjaxResult remove(@PathVariable Long[] agentIds) {

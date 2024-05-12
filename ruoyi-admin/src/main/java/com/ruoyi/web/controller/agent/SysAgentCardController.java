@@ -8,29 +8,32 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.enums.BalanceChangeType;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.enums.TemplateType;
+import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.agent.anno.AgentPermCheck;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.domain.vo.BalanceChangeVo;
 import com.ruoyi.system.domain.vo.BatchNoVo;
+import com.ruoyi.system.domain.vo.BatchReplaceVo;
 import com.ruoyi.system.service.ISysBalanceLogService;
 import com.ruoyi.system.service.ISysCardService;
 import com.ruoyi.system.service.ISysCardTemplateService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.utils.poi.ExcelUtil;
+import com.ruoyi.web.controller.system.SysCardController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -57,6 +60,8 @@ public class SysAgentCardController extends BaseController {
     private ISysUserService userService;
     @Resource
     private ISysBalanceLogService sysBalanceLogService;
+    @Resource
+    private SysCardController cardController;
 
     /**
      * 查询卡密列表
@@ -105,7 +110,7 @@ public class SysAgentCardController extends BaseController {
      * 新增卡密
      */
     @PreAuthorize("@ss.hasPermi('agent:agentCard:add')")
-    @AgentPermCheck
+    @AgentPermCheck("enableAddCard")
     @Log(title = "卡密", businessType = BusinessType.INSERT)
     @PostMapping
     @Transactional(rollbackFor = Exception.class)
@@ -163,15 +168,63 @@ public class SysAgentCardController extends BaseController {
     @Log(title = "卡密", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysCard sysCard) {
+        // 检查是否有变更面值权限
+        if(sysCard.getQuota() != null) {
+            SysCard card = sysCardService.selectSysCardByCardId(sysCard.getCardId());
+            if(card.getApp().getBillType() == BillType.TIME) {
+                if(!permissionService.hasAgentPermi("enableUpdateCardTime")) {
+                    throw new ServiceException("您没有该操作的权限（代理系统）");
+                }
+            } else if(card.getApp().getBillType() == BillType.POINT) {
+                if(!permissionService.hasAgentPermi("enableUpdateCardPoint")) {
+                    throw new ServiceException("您没有该操作的权限（代理系统）");
+                }
+            }
+        }
+        // 检查是否有变更状态权限
+        if(sysCard.getStatus() != null) {
+            if (Objects.equals(sysCard.getStatus(), UserStatus.OK.getCode())) {
+                if (!permissionService.hasAgentPermi("enableUpdateCardStatus0")) {
+                    throw new ServiceException("您没有该操作的权限（代理系统）");
+                }
+            }
+            if (Objects.equals(sysCard.getStatus(), UserStatus.DISABLE.getCode())) {
+                if (!permissionService.hasAgentPermi("enableUpdateCardStatus1")) {
+                    throw new ServiceException("您没有该操作的权限（代理系统）");
+                }
+            }
+        }
+        // 检查是否有变更权限
+        checkAgentEditCardPerm(sysCard);
         sysCard.setUpdateBy(getUsername());
         return toAjax(sysCardService.updateSysCard(sysCard));
+    }
+
+    private void checkAgentEditCardPerm(SysCard card) {
+        Map<String, String> map =  new HashMap<>();
+        map.put("CardLoginLimitU", "enableUpdateCardLoginLimitU");
+        map.put("CardLoginLimitM", "enableUpdateCardLoginLimitM");
+        map.put("CardCustomParams", "enableUpdateCardCustomParams");
+        map.put("Remark", "enableUpdateCardRemark");
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            try {
+                Method declaredMethod = SysAppUser.class.getDeclaredMethod("get" + StringUtils.capitalize(entry.getKey()));
+                Object value = declaredMethod.invoke(card);
+                if (value != null && !permissionService.hasAgentPermi(entry.getValue())) {
+                    throw new ServiceException("您没有该操作的权限（代理系统）");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new ServiceException(e.getMessage());
+            }
+        }
     }
 
     /**
      * 删除卡密
      */
     @PreAuthorize("@ss.hasPermi('agent:agentCard:remove')")
-    @AgentPermCheck
+    @AgentPermCheck("enableDeleteCard")
     @Log(title = "卡密", businessType = BusinessType.DELETE)
     @DeleteMapping("/{cardIds}")
     public AjaxResult remove(@PathVariable Long[] cardIds) {
@@ -236,4 +289,16 @@ public class SysAgentCardController extends BaseController {
         List<BatchNoVo> batchNoList = sysCardService.selectBatchNoList(agentId);
         return AjaxResult.success(batchNoList);
     }
+
+    /**
+     * 批量换卡
+     */
+    @PreAuthorize("@ss.hasPermi('agent:agentCard:replace')")
+    @AgentPermCheck("enableBatchCardReplace")
+    @Log(title = "卡密", businessType = BusinessType.REPLACE)
+    @PostMapping("/batchReplace")
+    public AjaxResult batchReplace(@RequestBody BatchReplaceVo vo) {
+        return cardController.batchReplace(vo);
+    }
+
 }

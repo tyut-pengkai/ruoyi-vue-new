@@ -72,7 +72,7 @@ export function getBatchNoList() {
 // 批量换卡
 export function batchReplace(data) {
   return request({
-    url: '/system/loginCode/batchReplace',
+    url: '/agent/agentLoginCode/batchReplace',
     method: 'post',
     data: data
   })

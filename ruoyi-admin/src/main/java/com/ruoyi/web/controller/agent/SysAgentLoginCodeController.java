@@ -8,29 +8,32 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.enums.BalanceChangeType;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.enums.TemplateType;
+import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.agent.anno.AgentPermCheck;
 import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysLoginCode;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
 import com.ruoyi.system.domain.vo.BalanceChangeVo;
 import com.ruoyi.system.domain.vo.BatchNoVo;
+import com.ruoyi.system.domain.vo.BatchReplaceVo;
 import com.ruoyi.system.service.ISysBalanceLogService;
 import com.ruoyi.system.service.ISysLoginCodeService;
 import com.ruoyi.system.service.ISysLoginCodeTemplateService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.utils.poi.ExcelUtil;
+import com.ruoyi.web.controller.system.SysLoginCodeController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -57,6 +60,8 @@ public class SysAgentLoginCodeController extends BaseController {
     private ISysUserService userService;
     @Resource
     private ISysBalanceLogService sysBalanceLogService;
+    @Resource
+    private SysLoginCodeController loginCodeController;
 
     /**
      * 查询单码列表
@@ -105,7 +110,7 @@ public class SysAgentLoginCodeController extends BaseController {
      * 新增单码
      */
     @PreAuthorize("@ss.hasPermi('agent:agentLoginCode:add')")
-    @AgentPermCheck
+    @AgentPermCheck("enableAddCard")
     @Log(title = "单码", businessType = BusinessType.INSERT)
     @PostMapping
     @Transactional(rollbackFor = Exception.class)
@@ -160,15 +165,63 @@ public class SysAgentLoginCodeController extends BaseController {
     @Log(title = "单码", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysLoginCode sysLoginCode) {
+        // 检查是否有变更面值权限
+        if(sysLoginCode.getQuota() != null) {
+            SysLoginCode card = sysLoginCodeService.selectSysLoginCodeByCardId(sysLoginCode.getCardId());
+            if(card.getApp().getBillType() == BillType.TIME) {
+                if(!permissionService.hasAgentPermi("enableUpdateCardTime")) {
+                    throw new ServiceException("您没有该操作的权限（代理系统）");
+                }
+            } else if(card.getApp().getBillType() == BillType.POINT) {
+                if(!permissionService.hasAgentPermi("enableUpdateCardPoint")) {
+                    throw new ServiceException("您没有该操作的权限（代理系统）");
+                }
+            }
+        }
+        // 检查是否有变更状态权限
+        if(sysLoginCode.getStatus() != null) {
+            if (Objects.equals(sysLoginCode.getStatus(), UserStatus.OK.getCode())) {
+                if (!permissionService.hasAgentPermi("enableUpdateCardStatus0")) {
+                    throw new ServiceException("您没有该操作的权限（代理系统）");
+                }
+            }
+            if (Objects.equals(sysLoginCode.getStatus(), UserStatus.DISABLE.getCode())) {
+                if (!permissionService.hasAgentPermi("enableUpdateCardStatus1")) {
+                    throw new ServiceException("您没有该操作的权限（代理系统）");
+                }
+            }
+        }
+        // 检查是否有变更权限
+        checkAgentEditCardPerm(sysLoginCode);
         sysLoginCode.setUpdateBy(getUsername());
         return toAjax(sysLoginCodeService.updateSysLoginCode(sysLoginCode));
+    }
+
+    private void checkAgentEditCardPerm(SysLoginCode loginCode) {
+        Map<String, String> map =  new HashMap<>();
+        map.put("CardLoginLimitU", "enableUpdateCardLoginLimitU");
+        map.put("CardLoginLimitM", "enableUpdateCardLoginLimitM");
+        map.put("CardCustomParams", "enableUpdateCardCustomParams");
+        map.put("Remark", "enableUpdateCardRemark");
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            try {
+                Method declaredMethod = SysAppUser.class.getDeclaredMethod("get" + StringUtils.capitalize(entry.getKey()));
+                Object value = declaredMethod.invoke(loginCode);
+                if (value != null && !permissionService.hasAgentPermi(entry.getValue())) {
+                    throw new ServiceException("您没有该操作的权限（代理系统）");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new ServiceException(e.getMessage());
+            }
+        }
     }
 
     /**
      * 删除单码
      */
     @PreAuthorize("@ss.hasPermi('agent:agentLoginCode:remove')")
-    @AgentPermCheck
+    @AgentPermCheck("enableDeleteCard")
     @Log(title = "单码", businessType = BusinessType.DELETE)
     @DeleteMapping("/{cardIds}")
     public AjaxResult remove(@PathVariable Long[] cardIds) {
@@ -232,5 +285,18 @@ public class SysAgentLoginCodeController extends BaseController {
         }
         List<BatchNoVo> batchNoList = sysLoginCodeService.selectBatchNoList(agentId);
         return AjaxResult.success(batchNoList);
+    }
+
+    /**
+     * 批量换卡
+     */
+    @PreAuthorize("@ss.hasPermi('agent:agentLoginCode:replace')")
+    @Log(title = "单码", businessType = BusinessType.REPLACE)
+    @PostMapping("/batchReplace")
+    public AjaxResult batchReplace(@RequestBody BatchReplaceVo vo) {
+        if(!Objects.equals(UserConstants.NO, vo.getChangeMode())) {
+            vo.setChangeMode(UserConstants.NO); // 代理只能换残卡
+        }
+        return loginCodeController.batchReplace(vo);
     }
 }

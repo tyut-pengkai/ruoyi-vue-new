@@ -379,7 +379,7 @@
               :disabled="!$auth.hasAgentPermi('enableUpdateSubagentPassword')">重置密码
           </el-button>
           <el-button size="mini" type="text" v-hasPermi="['agent:agentUser:remove']" @click="handleDelete(scope.row)"
-            icon="el-icon-delete">删除
+            icon="el-icon-delete" :disabled="!$auth.hasAgentPermi('enableDeleteSubagent')">删除
           </el-button>
         </template>
       </el-table-column>
@@ -762,19 +762,19 @@ export default {
       batchExpireTime: null,
       batchRemark: null,
       perms: [
-        '[默认]添加下级代理', '[默认]修改下级代理密码', '[默认]修改下级代理状态',
-        '解绑用户设备', '[默认]冻结用户', '[默认]解冻用户',
+        '[默认]添加下级代理', '[默认]修改下级代理密码', '[默认]修改下级代理状态', '删除下级代理',
+        '解绑用户设备', '[默认]冻结用户', '[默认]解冻用户', '删除用户',
         '修改用户时间', '修改用户点数', '修改用户登录用户数限制', '修改用户登录设备数限制', '修改用户自定义数据', '[默认]修改用户备注',
         '修改用户密码', /* '查看用户联系方式', '修改用户联系方式', '修改用户账号备注', */
-        '[默认]冻结卡密', '[默认]解冻卡密', '[默认]批量换卡', '[默认]生成卡密',
+        '[默认]冻结卡密', '[默认]解冻卡密', '[默认]批量换卡', '[默认]生成卡密', '删除卡密',
         '修改卡密时间', '修改卡密点数', '修改卡密登录用户数限制', '修改卡密登录设备数限制', '修改卡密自定义参数', '[默认]修改卡密备注'
       ],
       codes: [
-        'enableAddSubagent', 'enableUpdateSubagentPassword', 'enableUpdateSubagentStatus',
-        'enableUnbindAppUser', 'enableUpdateAppUserStatus1', 'enableUpdateAppUserStatus0',
+        'enableAddSubagent', 'enableUpdateSubagentPassword', 'enableUpdateSubagentStatus', 'enableDeleteSubagent',
+        'enableUnbindAppUser', 'enableUpdateAppUserStatus1', 'enableUpdateAppUserStatus0', 'enableDeleteAppUser',
         'enableUpdateAppUserTime', 'enableUpdateAppUserPoint', 'enableUpdateAppUserLoginLimitU', 'enableUpdateAppUserLoginLimitM', 'enbaleUpdateAppUserCustomParams', 'enableUpdateAppUserRemark',
         'enableUpdateUserPassword', /* 'enbaleViewUserContact', 'enableUpdateUserContact', 'enableUpdateUserRemark', */
-        'enableUpdateCardStatus1', 'enableUpdateCardStatus0', 'enableBatchCardReplace', 'enableAddCard',
+        'enableUpdateCardStatus1', 'enableUpdateCardStatus0', 'enableBatchCardReplace', 'enableAddCard', 'enableDeleteCard',
         'enableUpdateCardTime', 'enableUpdateCardPoint', 'enableUpdateCardLoginLimitU', 'enableUpdateCardLoginLimitM', 'enableUpdateCardCustomParams', 'enableUpdateCardRemark'
       ],
       defaultPerms: [

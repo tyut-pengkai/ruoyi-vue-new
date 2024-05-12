@@ -244,7 +244,7 @@
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['agent:agentLoginCode:remove']"
-          :disabled="multiple"
+          :disabled="multiple || !$auth.hasAgentPermi('enableDeleteCard')"
           icon="el-icon-delete"
           plain
           size="mini"
@@ -521,6 +521,7 @@
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
+            :disabled="!$auth.hasAgentPermi('enableDeleteCard')"
             >删除
           </el-button>
         </template>
@@ -1069,7 +1070,7 @@
             <el-form-item label="换卡模式" prop="changeMode">
               <span>
                 <el-tooltip
-                    content="如果卡已经被使用，是否按照完整面值时间/点数生成新卡，如果选择【残卡】，将按照卡剩余有效时间/点数生成新卡"
+                    content="如果卡已经被使用，是否按照完整面值时间/点数生成新卡，如果选择【残卡】，将按照卡剩余有效时间/点数生成新卡，代理仅可换残卡"
                     placement="top"
                 >
                   <i
@@ -1078,7 +1079,7 @@
                   ></i>
                 </el-tooltip>
               </span>
-              <el-radio-group v-model="formReplace.changeMode">
+              <el-radio-group v-model="formReplace.changeMode" disabled>
                 <el-radio
                     v-for="dict in dict.type.sys_yes_no"
                     :key="dict.value"
@@ -1323,7 +1324,7 @@ export default {
       // 批量换卡
       formReplace: {
         appId: 0,
-        changeMode: null,
+        changeMode: 'N',
       },
       batchReplaceOpen: false,
       rulesReplace:{
@@ -1772,7 +1773,7 @@ export default {
     resetReplace() {
       this.formReplace = {
         appId: 0,
-        changeMode: null,
+        changeMode: 'N',
       };
       this.resetForm("formReplace");
     },

@@ -1,5 +1,7 @@
 package com.ruoyi.web.controller.system;
 
+import com.ruoyi.agent.domain.SysAgent;
+import com.ruoyi.agent.service.ISysAgentUserService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -10,6 +12,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.UserStatus;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.domain.vo.BatchNoVo;
@@ -46,6 +49,10 @@ public class SysCardController extends BaseController {
     private ISysAppService sysAppService;
     @Resource
     private ISysAppUserService sysAppUserService;
+    @Resource
+    private PermissionService permissionService;
+    @Resource
+    private ISysAgentUserService sysAgentService;
 
     /**
      * 查询卡密列表
@@ -184,11 +191,13 @@ public class SysCardController extends BaseController {
         String c = "不符合换卡条件的卡密";
         String d = "不存在的卡密";
         String e = "生成新卡密异常";
+        String f = "非您代理的卡密";
         result.put(a, new ArrayList<>());
         result.put(b, new ArrayList<>());
         result.put(c, new ArrayList<>());
         result.put(d, new ArrayList<>());
         result.put(e, new ArrayList<>());
+        result.put(f, new ArrayList<>());
         SysApp app = null;
         if(vo.getAppId() != 0) {
             app = sysAppService.selectSysAppByAppId(vo.getAppId());
@@ -202,6 +211,14 @@ public class SysCardController extends BaseController {
             if (card == null) {
                 result.get(d).add(item + "【卡密不存在】");
             } else {
+                if(!permissionService.hasAnyRoles("sadmin,admin")) {
+                    // 检查是否自己代理的卡
+                    SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+                    if(!Objects.equals(card.getAgentId(), agent.getAgentId())) {
+                        result.get(f).add(item + "【非您代理的卡密】");
+                        continue;
+                    }
+                }
                 if (app != null && !Objects.equals(card.getAppId(), app.getAppId())) {
                     result.get(b).add(item + "【所属软件：" + app.getAppName() + "】【" + card.getCardName() + "】");
                 } else {

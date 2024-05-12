@@ -96,8 +96,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                u.user_name,
                u.nick_name
         from sys_card c
-                 left join sys_app a on c.app_id = a.app_id
-                 left join sys_user u on c.agent_id = u.user_id
+             left join sys_app a on c.app_id = a.app_id
+             left join sys_agent ag on ag.agent_id = c.agent_id
+             left join sys_user u on ag.user_id = u.user_id
     </sql>
 
     <select id="selectSysCardList" parameterType="SysCard" resultMap="SysCardResult">

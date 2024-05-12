@@ -174,7 +174,7 @@
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['agent:appUser:remove']"
-          :disabled="multiple"
+          :disabled="multiple || !$auth.hasAgentPermi('enableDeleteAppUser')"
           icon="el-icon-delete"
           plain
           size="mini"
@@ -452,7 +452,7 @@
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
-          >删除
+            :disabled="!$auth.hasAgentPermi('enableDeleteAppUser')">删除
           </el-button>
           <el-dropdown
             size="mini"
