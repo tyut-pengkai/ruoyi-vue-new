@@ -13,6 +13,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.agent.anno.AgentPermCheck;
 import com.ruoyi.framework.web.service.PermissionService;
@@ -131,6 +132,7 @@ public class SysAgentCardController extends BaseController {
 
         SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
         BigDecimal unitPrice;
+        String username = SecurityUtils.getUsernameNoException();
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             // 判断是否有代理该卡的权限
             SysAgentItem agentItem = sysAgentItemService.checkAgentItem(null, agent.getAgentId(), TemplateType.CHARGE_CARD, sysCard.getTemplateId());
@@ -145,7 +147,7 @@ public class SysAgentCardController extends BaseController {
                 // 扣除余额
                 BalanceChangeVo change = new BalanceChangeVo();
                 change.setUserId(getUserId());
-                change.setUpdateBy(getUsername());
+                change.setUpdateBy(username);
                 change.setType(BalanceChangeType.CONSUME);
                 change.setDescription("批量制卡：[" + sysCardTemplate.getApp().getAppName() + "]" + sysCardTemplate.getCardName() + "，" + sysCard.getGenQuantity() + "张，单价" + unitPrice);
                 change.setAvailablePayBalance(totalFee.negate());
@@ -169,7 +171,7 @@ public class SysAgentCardController extends BaseController {
                     if (sAgent == null) {
                         sAgent = sysAgentService.selectSysAgentByAgentId(sAgentId);
                     }
-                    SysAgent pAgent = sysAgentService.selectSysAgentByUserId(pAgentId);
+                    SysAgent pAgent = sysAgentService.selectSysAgentByAgentId(pAgentId);
                     if (sAgent == null || pAgent == null) {
                         log.error("代理分成失败，子代理：{}，父代理：{}，卡类：{}", sAgent != null ? (sAgent.getUser().getNickName() + "(" + sAgent.getUser().getUserName() + ")") : null,
                                 pAgent != null ? (pAgent.getUser().getNickName() + "(" + pAgent.getUser().getUserName() + ")") : null,
@@ -194,11 +196,11 @@ public class SysAgentCardController extends BaseController {
                         BigDecimal profit = sAgentItem.getAgentPrice().subtract(pAgentItem.getAgentPrice());
                         if (profit.compareTo(BigDecimal.ZERO) > 0) {
                             BigDecimal totalFee = profit.multiply(BigDecimal.valueOf(sysCard.getGenQuantity()));
-                            synchronized (SysAgentLoginCodeController.class) {
-                                // 扣除余额
+                            synchronized (SysAgentCardController.class) {
+                                // 增加余额
                                 BalanceChangeVo change = new BalanceChangeVo();
                                 change.setUserId(pAgent.getUserId());
-                                change.setUpdateBy(getUsername());
+                                change.setUpdateBy(username);
                                 change.setType(BalanceChangeType.AGENT);
                                 change.setDescription("子代理[" + sAgent.getUser().getNickName() + "(" + sAgent.getUser().getUserName() + ")]" +
                                         "批量制卡：[" + sysCardTemplate.getApp().getAppName() + "]" + sysCardTemplate.getCardName() + "，" + sysCard.getGenQuantity() + "张，单价" + unitPrice + "元，" +
