@@ -114,6 +114,20 @@ public class SysAgentAppUserDeviceCodeController extends BaseController {
     @Log(title = "软件用户与设备码关联", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAppUserDeviceCode sysAppUserDeviceCode) {
+//        SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeById(sysAppUserDeviceCode.getId());
+//        // 检查是否有变更状态权限
+//        if(sysAppUserDeviceCode.getStatus() != null && !Objects.equals(sysAppUserDeviceCode.getStatus(), appUserDeviceCode.getStatus())) {
+//            if (Objects.equals(sysAppUserDeviceCode.getStatus(), UserStatus.OK.getCode())) {
+//                if (!permissionService.hasAgentPermi("enableUpdateAppUserStatus0")) {
+//                    throw new ServiceException("您没有该操作的权限（代理系统）");
+//                }
+//            }
+//            if (Objects.equals(sysAppUserDeviceCode.getStatus(), UserStatus.DISABLE.getCode())) {
+//                if (!permissionService.hasAgentPermi("enableUpdateAppUserStatus1")) {
+//                    throw new ServiceException("您没有该操作的权限（代理系统）");
+//                }
+//            }
+//        }
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent myAgent = sysAgentService.selectSysAgentByUserId(SecurityUtils.getUserId());
             SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeById(sysAppUserDeviceCode.getId());

@@ -482,6 +482,16 @@
           </el-tab-pane>
           <el-tab-pane label="代理卡类配置">
             <el-form-item label="代理卡密类别/单码类别">
+              <el-alert
+                :closable="false"
+                show-icon
+                style="margin-bottom: 10px; margin-top: 10px; line-height: normal"
+                type="info"
+              >
+                <template slot="title">
+                  <span> 左侧选择框处于勾选状态时代表具有该制卡权限 </span>
+                </template>
+              </el-alert>
               <el-row>
                 <el-col :span="24">
                   <!-- 批量操作： -->
@@ -1020,20 +1030,17 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
+      // console.log(row);
       this.reset();
       this.getTreeselect();
       this.getGrantableTemplate({ 'agentId': row.agentId });
-      if (row != null) {
-        this.form.parentAgentId = row.agentId;
-      }
+      this.form.parentAgentId = row.agentId;
       getAgentUser(row.agentId).then((response) => {
         this.form = response.data;
-        if (row != null) {
-          this.user = response.data.parentUser;
-          for (let code of this.codes) {
-            if(response.data[code] === 'Y') {
-              this.permValue.push(code);
-            }
+        this.user = response.data.parentUser;
+        for (let perm of this.perms) {
+          if(response.data[perm['code']] === 'Y') {
+            this.permValue.push(perm['code']);
           }
         }
         this.$nextTick(function () {
@@ -1049,13 +1056,13 @@ export default {
         if (valid) {
           this.form.templateList = this.templateSelectionList;
           // console.log(this.permValue);
-          for (let code of this.codes) {
-            if(this.permValue.indexOf(code) !== -1) {
+          for (let perm of this.perms) {
+            if(this.permValue.indexOf(perm['code']) !== -1) {
               // console.log('Y ---- ' + code);
-              this.form[code] = 'Y';
+              this.form[perm['code']] = 'Y';
             } else {
               // console.log('N ---- ' + code);
-              this.form[code] = 'N';
+              this.form[perm['code']] = 'N';
             }
           }
           if (this.form.agentId != null) {

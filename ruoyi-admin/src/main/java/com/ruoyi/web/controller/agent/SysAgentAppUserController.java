@@ -236,8 +236,9 @@ public class SysAgentAppUserController extends BaseController {
     @Log(title = "软件用户", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysAppUser sysAppUser) {
+        SysAppUser appUser = sysAppUserService.selectSysAppUserByAppUserId(sysAppUser.getAppUserId());
         // 检查是否有变更状态权限
-        if(sysAppUser.getStatus() != null) {
+        if(sysAppUser.getStatus() != null && !Objects.equals(sysAppUser.getStatus(), appUser.getStatus())) {
             if (Objects.equals(sysAppUser.getStatus(), UserStatus.OK.getCode())) {
                 if (!permissionService.hasAgentPermi("enableUpdateAppUserStatus0")) {
                     throw new ServiceException("您没有该操作的权限（代理系统）");
@@ -250,10 +251,9 @@ public class SysAgentAppUserController extends BaseController {
             }
         }
         // 检查是否有变更权限
-        checkAgentEditAppUserPerm(sysAppUser);
+        checkAgentEditAppUserPerm(sysAppUser, appUser);
 
         SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
-        SysAppUser appUser = sysAppUserService.selectSysAppUserByAppUserId(sysAppUser.getAppUserId());
         if(!Objects.equals(appUser.getAgentId(), agent.getAgentId())) {
             throw new ServiceException("所选软件用户不是您的用户", 400);
         }
@@ -282,7 +282,7 @@ public class SysAgentAppUserController extends BaseController {
         return toAjax(sysAppUserService.updateSysAppUser(sysAppUser));
     }
 
-    private void checkAgentEditAppUserPerm(SysAppUser appUser) {
+    private void checkAgentEditAppUserPerm(SysAppUser appUser, SysAppUser oAppUser) {
         Map<String, String> map =  new HashMap<>();
         map.put("ExpireTime", "enableUpdateAppUserTime");
         map.put("Point", "enableUpdateAppUserPoint");
@@ -297,7 +297,8 @@ public class SysAgentAppUserController extends BaseController {
             try {
                 Method declaredMethod = SysAppUser.class.getDeclaredMethod("get" + StringUtils.capitalize(entry.getKey()));
                 Object value = declaredMethod.invoke(appUser);
-                if (value != null && !permissionService.hasAgentPermi(entry.getValue())) {
+                Object oValue = declaredMethod.invoke(oAppUser);
+                if (value != null && !Objects.equals(value, oValue) && !permissionService.hasAgentPermi(entry.getValue())) {
                     throw new ServiceException("您没有该操作的权限（代理系统）");
                 }
             } catch (Exception e) {

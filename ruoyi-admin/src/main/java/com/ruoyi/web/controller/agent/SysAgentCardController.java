@@ -27,6 +27,7 @@ import com.ruoyi.system.service.ISysCardTemplateService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.system.SysCardController;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,7 @@ import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 卡密Controller
@@ -43,6 +45,7 @@ import java.util.*;
  * @author zwgu
  * @date 2021-12-03
  */
+@Slf4j
 @RestController
 @RequestMapping("/agent/agentCard")
 public class SysAgentCardController extends BaseController {
@@ -125,12 +128,14 @@ public class SysAgentCardController extends BaseController {
         if (sysCardTemplate == null) {
             return AjaxResult.error("卡类不存在，批量制卡失败");
         }
+
+        SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        BigDecimal unitPrice;
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
-            SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
             // 判断是否有代理该卡的权限
             SysAgentItem agentItem = sysAgentItemService.checkAgentItem(null, agent.getAgentId(), TemplateType.CHARGE_CARD, sysCard.getTemplateId());
             // 计算金额
-            BigDecimal unitPrice = agentItem.getAgentPrice();
+            unitPrice = agentItem.getAgentPrice();
             // 获取代理价格
             if (unitPrice == null) {
                 throw new ServiceException("商品未设定价格");
@@ -147,7 +152,74 @@ public class SysAgentCardController extends BaseController {
                 // 扣款
                 userService.updateUserBalance(change);
             }
+        } else {
+            unitPrice = null;
         }
+        // 利润分成
+        new Thread(() -> {
+            try {
+                // 获取代理路径
+                String path = agent.getPath();
+                List<String> agentIdList = Arrays.stream(path.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+                SysAgent sAgent = null;
+                SysAgentItem sAgentItem = null;
+                for (int i = agentIdList.size() - 1; i > 0; i--) {
+                    Long sAgentId = Long.parseLong(agentIdList.get(i));
+                    Long pAgentId = Long.parseLong(agentIdList.get(i - 1));
+                    if (sAgent == null) {
+                        sAgent = sysAgentService.selectSysAgentByAgentId(sAgentId);
+                    }
+                    SysAgent pAgent = sysAgentService.selectSysAgentByUserId(pAgentId);
+                    if (sAgent == null || pAgent == null) {
+                        log.error("代理分成失败，子代理：{}，父代理：{}，卡类：{}", sAgent != null ? (sAgent.getUser().getNickName() + "(" + sAgent.getUser().getUserName() + ")") : null,
+                                pAgent != null ? (pAgent.getUser().getNickName() + "(" + pAgent.getUser().getUserName() + ")") : null,
+                                "[" + sysCardTemplate.getApp().getAppName() + "]" + sysCardTemplate.getCardName());
+                        continue;
+                    }
+                    // 获取子代理价格
+                    SysAgentItem pAgentItem = null;
+                    try {
+                        if (sAgentItem == null) {
+                            sAgentItem = sysAgentItemService.checkAgentItem(null, sAgent.getAgentId(), TemplateType.LOGIN_CODE, sysCard.getTemplateId());
+                        }
+                        pAgentItem = sysAgentItemService.checkAgentItem(null, pAgent.getAgentId(), TemplateType.LOGIN_CODE, sysCard.getTemplateId());
+                    } catch (ServiceException e) {
+                        sAgent = null;
+                        sAgentItem = null;
+                        log.error("代理分成失败，子代理id：{}，父代理id：{}，卡类：{}", sAgentId, pAgentId, "[" + sysCardTemplate.getApp().getAppName() + "]" + sysCardTemplate.getCardName(), e);
+                        continue;
+                    }
+                    // 计算差价即利润
+                    if (sAgentItem != null && pAgentItem != null && sAgentItem.getAgentPrice() != null && pAgentItem.getAgentPrice() != null) {
+                        BigDecimal profit = sAgentItem.getAgentPrice().subtract(pAgentItem.getAgentPrice());
+                        if (profit.compareTo(BigDecimal.ZERO) > 0) {
+                            BigDecimal totalFee = profit.multiply(BigDecimal.valueOf(sysCard.getGenQuantity()));
+                            synchronized (SysAgentLoginCodeController.class) {
+                                // 扣除余额
+                                BalanceChangeVo change = new BalanceChangeVo();
+                                change.setUserId(pAgent.getUserId());
+                                change.setUpdateBy(getUsername());
+                                change.setType(BalanceChangeType.AGENT);
+                                change.setDescription("子代理[" + sAgent.getUser().getNickName() + "(" + sAgent.getUser().getUserName() + ")]" +
+                                        "批量制卡：[" + sysCardTemplate.getApp().getAppName() + "]" + sysCardTemplate.getCardName() + "，" + sysCard.getGenQuantity() + "张，单价" + unitPrice + "元，" +
+                                        "，每张分成" + profit + "元");
+                                change.setAvailablePayBalance(totalFee);
+                                // 扣款
+                                userService.updateUserBalance(change);
+                            }
+                        }
+                        sAgent = pAgent;
+                        sAgentItem = pAgentItem;
+                    } else {
+                        sAgent = null;
+                        sAgentItem = null;
+                        log.error("代理分成失败，子代理id：{}，父代理id：{}，卡类：{}", sAgentId, pAgentId, "[" + sysCardTemplate.getApp().getAppName() + "]" + sysCardTemplate.getCardName());
+                    }
+                }
+            } catch(Exception e) {
+                log.error("代理分成异常", e);
+            }
+        }).start();
         List<SysCard> sysCardList = sysCardTemplateService.genSysCardBatch(sysCardTemplate, sysCard.getGenQuantity(), UserConstants.NO, UserConstants.YES, sysCard.getRemark());
         List<Map<String, String>> resultList = new ArrayList<>();
         for (SysCard item : sysCardList) {
@@ -168,9 +240,9 @@ public class SysAgentCardController extends BaseController {
     @Log(title = "卡密", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysCard sysCard) {
+        SysCard card = sysCardService.selectSysCardByCardId(sysCard.getCardId());
         // 检查是否有变更面值权限
-        if(sysCard.getQuota() != null) {
-            SysCard card = sysCardService.selectSysCardByCardId(sysCard.getCardId());
+        if(sysCard.getQuota() != null && !Objects.equals(sysCard.getQuota(), card.getQuota())) {
             if(card.getApp().getBillType() == BillType.TIME) {
                 if(!permissionService.hasAgentPermi("enableUpdateCardTime")) {
                     throw new ServiceException("您没有该操作的权限（代理系统）");
@@ -182,7 +254,7 @@ public class SysAgentCardController extends BaseController {
             }
         }
         // 检查是否有变更状态权限
-        if(sysCard.getStatus() != null) {
+        if(sysCard.getStatus() != null && !Objects.equals(sysCard.getStatus(), card.getStatus())) {
             if (Objects.equals(sysCard.getStatus(), UserStatus.OK.getCode())) {
                 if (!permissionService.hasAgentPermi("enableUpdateCardStatus0")) {
                     throw new ServiceException("您没有该操作的权限（代理系统）");
@@ -195,12 +267,12 @@ public class SysAgentCardController extends BaseController {
             }
         }
         // 检查是否有变更权限
-        checkAgentEditCardPerm(sysCard);
+        checkAgentEditCardPerm(sysCard, card);
         sysCard.setUpdateBy(getUsername());
         return toAjax(sysCardService.updateSysCard(sysCard));
     }
 
-    private void checkAgentEditCardPerm(SysCard card) {
+    private void checkAgentEditCardPerm(SysCard card, SysCard oCard) {
         Map<String, String> map =  new HashMap<>();
         map.put("CardLoginLimitU", "enableUpdateCardLoginLimitU");
         map.put("CardLoginLimitM", "enableUpdateCardLoginLimitM");
@@ -210,7 +282,8 @@ public class SysAgentCardController extends BaseController {
             try {
                 Method declaredMethod = SysAppUser.class.getDeclaredMethod("get" + StringUtils.capitalize(entry.getKey()));
                 Object value = declaredMethod.invoke(card);
-                if (value != null && !permissionService.hasAgentPermi(entry.getValue())) {
+                Object oValue = declaredMethod.invoke(oCard);
+                if (value != null && !Objects.equals(value, oValue) && !permissionService.hasAgentPermi(entry.getValue())) {
                     throw new ServiceException("您没有该操作的权限（代理系统）");
                 }
             } catch (Exception e) {

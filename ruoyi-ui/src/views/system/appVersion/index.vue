@@ -467,7 +467,11 @@
               '&hideAutoLogin=' +
               upload.hideAutoLogin +
               '&enhancedMode=' +
-              upload.enhancedMode
+              upload.enhancedMode +
+              '&ignoreSplashActivity=' +
+              upload.ignoreSplashActivity +
+              '&ignoreActivityKeywords=' +
+              upload.ignoreActivityKeywords
             "
             align="center"
             :auto-upload="false"
@@ -615,7 +619,7 @@
               <div style="margin-top: 10px; margin-left: 20px; margin-right: 20px">
                 <el-row>
                   <el-col :span="8">
-                    <el-checkbox v-model="upload.enableOffline">自动离线</el-checkbox>
+                    <el-checkbox v-model="upload.enableOffline">攻击自动离线</el-checkbox>
                     <span style="margin-left: 15px">
                     <el-tooltip
                       content="当服务器受到攻击时自动允许用户离线使用，当服务器恢复正常将自动恢复计费模式"
@@ -629,7 +633,7 @@
                   </span>
                   </el-col>
                   <el-col :span="8">
-                    <el-checkbox v-model="upload.hideAutoLogin">关闭自动登录</el-checkbox>
+                    <el-checkbox v-model="upload.hideAutoLogin">隐藏自动登录</el-checkbox>
                     <span style="margin-left: 15px">
                       <el-tooltip
                         content="是否隐藏APP登录界面的自动登录复选框"
@@ -643,10 +647,40 @@
                     </span>
                   </el-col>
                   <el-col :span="8">
-                    <el-checkbox v-model="upload.enhancedMode">增强模式</el-checkbox>
+                    <el-checkbox v-model="upload.enhancedMode" :disabled="upload.accessType !== 1">增强模式</el-checkbox>
                     <span style="margin-left: 15px">
                       <el-tooltip
-                        content="在自动注入时使用增强模式来增加破解难度"
+                        content="[仅对全局注入生效] 建议开启，开启后将尝试在每一个Activity中添加验证逻辑来增加破解难度"
+                        placement="top"
+                      >
+                        <i
+                          class="el-icon-question"
+                          style="margin-left: -12px; margin-right: 10px"
+                        ></i>
+                      </el-tooltip>
+                    </span>
+                  </el-col>
+                </el-row>
+                <el-row style="margin-top: 10px">
+                  <el-col :span="8">
+                    <el-checkbox v-model="upload.ignoreSplashActivity" :disabled="upload.accessType !== 1">忽略SPLASH</el-checkbox>
+                    <span style="margin-left: 15px">
+                      <el-tooltip
+                        content="[仅对全局注入生效] 是否忽略注入Splash Activity，建议开启，如果注入后登录窗口闪退，请尝试开启此选项；如果注入后不显示登录窗口，请尝试关闭此选项"
+                        placement="top"
+                      >
+                        <i
+                          class="el-icon-question"
+                          style="margin-left: -12px; margin-right: 10px"
+                        ></i>
+                      </el-tooltip>
+                    </span>
+                  </el-col>
+                  <el-col :span="16">
+                    自定义忽略：<el-input v-model="upload.ignoreActivityKeywords" size="mini" placeholder="关键字，多个逗号分隔" style="width: 166px" :disabled="upload.accessType !== 1"></el-input>
+                    <span style="margin-left: 15px">
+                      <el-tooltip
+                        content="[仅对全局注入生效] 自定义跳过的Activity，填写关键字即可，多个以英文逗号分隔"
                         placement="top"
                       >
                         <i
@@ -786,7 +820,7 @@
                   </span>
                 </el-col>
                 <el-col :span="12">
-                  <el-checkbox v-model="upload.hideAutoLogin">关闭自动登录</el-checkbox>
+                  <el-checkbox v-model="upload.hideAutoLogin">隐藏自动登录</el-checkbox>
                   <span style="margin-left: 15px">
                       <el-tooltip
                         content="是否隐藏APP登录界面的自动登录复选框"
@@ -1122,6 +1156,8 @@ export default {
         enableOffline: false,
         hideAutoLogin: false,
         enhancedMode: true,
+        ignoreSplashActivity: true,
+        ignoreActivityKeywords: null,
       },
       fileDown: {
         //弹出框控制的状态
@@ -1235,6 +1271,8 @@ export default {
       this.upload.enableOffline = false;
       this.upload.hideAutoLogin = false;
       this.upload.enhancedMode = true;
+      this.upload.ignoreSplashActivity = true;
+      this.upload.ignoreActivityKeywords = null;
     },
     /** 查询软件版本信息列表 */
     getList() {
@@ -1721,7 +1759,11 @@ export default {
           "&hideAutoLogin=" +
           this.upload.hideAutoLogin +
           "&enhancedMode=" +
-          this.upload.enhancedMode
+          this.upload.enhancedMode +
+          "&ignoreSplashActivity=" +
+          this.upload.ignoreSplashActivity +
+          "&ignoreActivityKeywords=" +
+          this.upload.ignoreActivityKeywords
       );
     },
     activityClose() {

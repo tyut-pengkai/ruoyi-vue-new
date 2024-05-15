@@ -173,7 +173,8 @@ public class SysAgentUserController extends BaseController {
     @PutMapping
     public AjaxResult edit(@RequestBody SysAgent sysAgent) {
         // 检查是否有变更状态权限
-        if(sysAgent.getStatus() != null && !permissionService.hasAgentPermi("enableUpdateSubagentStatus")) {
+        SysAgent oAgent = sysAgentService.selectSysAgentByAgentId(sysAgent.getAgentId());
+        if(sysAgent.getStatus() != null && !Objects.equals(sysAgent.getStatus(), oAgent.getStatus()) && !permissionService.hasAgentPermi("enableUpdateSubagentStatus")) {
             throw new ServiceException("您没有该操作的权限（代理系统）");
         }
         if (sysAgent.getParentAgentId() == null || sysAgent.getParentAgentId() <= 0) {
@@ -190,7 +191,7 @@ public class SysAgentUserController extends BaseController {
         }
         checkCircleParentAgentAndFillPath(sysAgent);
         // 更新代理的所有下级代理
-        String oldPath = sysAgentService.selectSysAgentByAgentId(sysAgent.getAgentId()).getPath();
+        String oldPath = oAgent.getPath();
         List<Long> subAgentIds = sysAgentService.getSubAgents(sysAgent.getAgentId());
         for (Long subAgentId : subAgentIds) {
             SysAgent agent = sysAgentService.selectSysAgentByAgentId(subAgentId);

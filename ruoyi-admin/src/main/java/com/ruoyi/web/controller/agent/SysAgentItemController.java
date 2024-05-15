@@ -177,7 +177,7 @@ public class SysAgentItemController extends BaseController {
     public AjaxResult getGrantableTemplate(@RequestParam(required = false) Long agentId) {
         List<TemplateInfoVo> templateList = new ArrayList<>();
         LoginUser loginUser = getLoginUser();
-        if (permissionService.hasAnyRoles("sadmin,admin")) {
+        if (permissionService.hasAnyRoles("sadmin,admin")) { // 列出所有卡类
             List<SysCardTemplate> cardTemplateList = sysCardTemplateService.selectSysCardTemplateList(new SysCardTemplate());
             for (SysCardTemplate item : cardTemplateList) {
                 TemplateInfoVo info = new TemplateInfoVo();
@@ -200,7 +200,7 @@ public class SysAgentItemController extends BaseController {
                 info.setMyPrice(BigDecimal.ZERO);
                 templateList.add(info);
             }
-        } else {
+        } else { // 列出当前用户具有权限的卡类
             SysAgent sysAgent = sysAgentService.selectSysAgentByUserId(loginUser.getUserId());
             if(sysAgent == null) {
                 throw new ServiceException("您无代理商权限");
@@ -213,7 +213,7 @@ public class SysAgentItemController extends BaseController {
                 templateList.add(item.getTemplateInfo());
             }
         }
-        if(agentId != null) {
+        if(agentId != null) { // 获取当前所选的下级代理所具有的卡类
             // 获取已经具有授权的卡类
             SysAgentItem qSysAgentItem = new SysAgentItem();
             qSysAgentItem.setAgentId(agentId);
@@ -231,7 +231,7 @@ public class SysAgentItemController extends BaseController {
                         break;
                     }
                 }
-                if (!flag) {
+                if (!flag) { // 下级有此卡类当前用户却没有的
                     if(item.getTemplateInfo() == null) {
                         fillTemplateInfo(item);
                     }

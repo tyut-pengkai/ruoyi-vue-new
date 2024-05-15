@@ -117,11 +117,14 @@ public class SysAgentItemServiceImpl implements ISysAgentItemService {
         s.setTemplateType(templateType);
         s.setTemplateId(templateId);
         List<SysAgentItem> items = selectSysAgentItemList(s);
-        if (items.size() == 0) {
+        if (items.isEmpty()) {
             throw new ServiceException(prefix + "您没有代理该卡的权限");
         } else if (items.size() == 1) {
             if (items.get(0).getExpireTime() != null && !items.get(0).getExpireTime().after(DateUtils.getNowDate())) {
                 throw new ServiceException(prefix + "您代理该卡的权限已过期");
+            }
+            if(items.get(0).getAgentPrice() == null) {
+                throw new ServiceException(prefix + "未配置代理价格");
             }
         } else {
             throw new ServiceException(prefix + "代理信息有误");
