@@ -18,17 +18,20 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.agent.anno.AgentPermCheck;
 import com.ruoyi.framework.web.service.PermissionService;
+import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.utils.poi.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 代理管理Controller
@@ -49,6 +52,8 @@ public class SysAgentUserController extends BaseController {
     private PermissionService permissionService;
     @Autowired
     private ISysAgentItemService sysAgentItemService;
+    @Resource
+    private ISysConfigService configService;
 
     /**
      * 查询代理管理列表
@@ -123,6 +128,7 @@ public class SysAgentUserController extends BaseController {
     @AgentPermCheck(value = "enableAddSubagent", checkEnableAddSubagent = true)
     @Log(title = "代理管理", businessType = BusinessType.INSERT)
     @PostMapping
+    @Transactional(rollbackFor = Exception.class)
     public AjaxResult add(@Validated @RequestBody SysAgent sysAgent) {
         if (sysAgent.getParentAgentId() == null || sysAgent.getParentAgentId() <= 0) {
             sysAgent.setParentAgentId(null);
@@ -171,6 +177,7 @@ public class SysAgentUserController extends BaseController {
     @AgentPermCheck(value = "enableAddSubagent", checkEnableAddSubagent = true)
     @Log(title = "代理管理", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Transactional(rollbackFor = Exception.class)
     public AjaxResult edit(@RequestBody SysAgent sysAgent) {
         // 检查是否有变更状态权限
         SysAgent oAgent = sysAgentService.selectSysAgentByAgentId(sysAgent.getAgentId());
@@ -279,6 +286,19 @@ public class SysAgentUserController extends BaseController {
                             path = parentAgent.getPath() + "/" + sysAgent.getAgentId() + "/";
                         }
                     }
+                }
+                int maxSubAgentLevel = 3;
+                try {
+                    String s = configService.selectConfigByKey("sys.agent.maxSubAgentLevel");
+                    if(StringUtils.isNotBlank(s)) {
+                        maxSubAgentLevel = Integer.parseInt(s);
+                    }
+                    List<String> agentIdList = Arrays.stream(path.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+                    if(agentIdList.size() > maxSubAgentLevel) {
+                        throw new ServiceException("系统限制代理层级最高为" + maxSubAgentLevel + "级，该代理所处层级已超过该层级，无法继续添加代理");
+                    }
+                } catch (NumberFormatException e) {
+                    throw new ServiceException("【代理系统-最高代理层级】配置有误，请检查您的【参数设置】，" + e.getMessage() );
                 }
             } else {
                 throw new ServiceException("上级代理设置失败，指定的上级非代理商");

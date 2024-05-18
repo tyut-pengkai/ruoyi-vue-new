@@ -182,9 +182,9 @@ public class SysAgentCardController extends BaseController {
                     SysAgentItem pAgentItem = null;
                     try {
                         if (sAgentItem == null) {
-                            sAgentItem = sysAgentItemService.checkAgentItem(null, sAgent.getAgentId(), TemplateType.LOGIN_CODE, sysCard.getTemplateId());
+                            sAgentItem = sysAgentItemService.checkAgentItem(null, sAgent.getAgentId(), TemplateType.CHARGE_CARD, sysCard.getTemplateId());
                         }
-                        pAgentItem = sysAgentItemService.checkAgentItem(null, pAgent.getAgentId(), TemplateType.LOGIN_CODE, sysCard.getTemplateId());
+                        pAgentItem = sysAgentItemService.checkAgentItem(null, pAgent.getAgentId(), TemplateType.CHARGE_CARD, sysCard.getTemplateId());
                     } catch (ServiceException e) {
                         sAgent = null;
                         sAgentItem = null;
@@ -203,7 +203,7 @@ public class SysAgentCardController extends BaseController {
                                 change.setUpdateBy(username);
                                 change.setType(BalanceChangeType.AGENT);
                                 change.setDescription("子代理[" + sAgent.getUser().getNickName() + "(" + sAgent.getUser().getUserName() + ")]" +
-                                        "批量制卡：[" + sysCardTemplate.getApp().getAppName() + "]" + sysCardTemplate.getCardName() + "，" + sysCard.getGenQuantity() + "张，单价" + unitPrice + "元，" +
+                                        "批量制卡：[" + sysCardTemplate.getApp().getAppName() + "]" + sysCardTemplate.getCardName() + "，" + sysCard.getGenQuantity() + "张，进价：" + pAgentItem.getAgentPrice() + "元，售价：" + unitPrice + "元，" +
                                         "，每张分成" + profit + "元");
                                 change.setAvailablePayBalance(totalFee);
                                 // 扣款

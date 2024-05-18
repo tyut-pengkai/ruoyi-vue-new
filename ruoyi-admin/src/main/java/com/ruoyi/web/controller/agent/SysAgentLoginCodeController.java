@@ -203,7 +203,7 @@ public class SysAgentLoginCodeController extends BaseController {
                                 change.setUpdateBy(username);
                                 change.setType(BalanceChangeType.AGENT);
                                 change.setDescription("子代理[" + sAgent.getUser().getNickName() + "(" + sAgent.getUser().getUserName() + ")]" +
-                                        "批量制卡：[" + sysLoginCodeTemplate.getApp().getAppName() + "]" + sysLoginCodeTemplate.getCardName() + "，" + sysLoginCode.getGenQuantity() + "张，单价" + unitPrice + "元，" +
+                                        "批量制卡：[" + sysLoginCodeTemplate.getApp().getAppName() + "]" + sysLoginCodeTemplate.getCardName() + "，" + sysLoginCode.getGenQuantity() + "张，进价：" + pAgentItem.getAgentPrice() + "元，售价：" + unitPrice + "元，" +
                                         "，每张分成" + profit + "元");
                                 change.setAvailablePayBalance(totalFee);
                                 // 扣款
