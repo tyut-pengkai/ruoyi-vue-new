@@ -8,10 +8,10 @@ import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.license.bo.LicenseCheckModel;
 import com.ruoyi.common.utils.*;
-import com.ruoyi.system.domain.SysWebsite;
+import com.ruoyi.system.domain.SysConfigWebsite;
 import com.ruoyi.system.mapper.SysAppMapper;
 import com.ruoyi.system.service.ISysAppService;
-import com.ruoyi.system.service.ISysWebsiteService;
+import com.ruoyi.system.service.ISysConfigWebsiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class SysAppServiceImpl implements ISysAppService {
 //    @Resource
 //    private RedisCache redisCache;
     @Resource
-    private ISysWebsiteService sysWebsiteService;
+    private ISysConfigWebsiteService sysConfigWebsiteService;
     /**
      * 设置请求的统一前缀
      */
@@ -207,7 +207,7 @@ public class SysAppServiceImpl implements ISysAppService {
         String port = "80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort();
         port = pathMapping.contains("dev") ? "" : port;
         String url = "";
-        SysWebsite website = sysWebsiteService.getById(1);
+        SysConfigWebsite website = sysConfigWebsiteService.getById(1);
         if (website != null && StringUtils.isNotBlank(website.getDomain())) {
             url = website.getDomain();
         } else {

@@ -19,7 +19,7 @@ import com.ruoyi.payment.constants.PaymentDefine;
 import com.ruoyi.sale.mapper.DashboardSaleViewMapper;
 import com.ruoyi.system.domain.SysCard;
 import com.ruoyi.system.domain.SysLoginCode;
-import com.ruoyi.system.domain.SysWebsite;
+import com.ruoyi.system.domain.SysConfigWebsite;
 import com.ruoyi.system.mapper.DashboardAppViewMapper;
 import com.ruoyi.system.service.*;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -53,7 +53,7 @@ public class CommonController {
     @Resource
     private ServerConfig serverConfig;
     @Resource
-    private ISysWebsiteService sysWebsiteService;
+    private ISysConfigWebsiteService sysConfigWebsiteService;
     @Resource
     private RuoYiConfig config;
     @Resource
@@ -232,7 +232,7 @@ public class CommonController {
 
     @GetMapping("/sysInfo")
     public RuoYiConfig sysInfo() {
-        SysWebsite website = sysWebsiteService.getById(1);
+        SysConfigWebsite website = sysConfigWebsiteService.getById(1);
         if (StringUtils.isNotBlank(website.getShortName())) {
             config.setShortName(website.getShortName());
         }

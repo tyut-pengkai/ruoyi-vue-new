@@ -91,7 +91,7 @@ public class SysSaleShopController extends BaseController {
     @Resource
     private ISysDeviceCodeService sysDeviceCodeService;
     @Resource
-    private ISysWebsiteService sysWebsiteService;
+    private ISysConfigWebsiteService sysConfigWebsiteService;
     @Resource
     private ISysNavigationService sysNavigationService;
 
@@ -381,7 +381,7 @@ public class SysSaleShopController extends BaseController {
         ssoi.setTemplateId(null);
         ssoi.setNum(1);
         String prefix = "";
-        SysWebsite website = sysWebsiteService.getById(1);
+        SysConfigWebsite website = sysConfigWebsiteService.getById(1);
         if (website != null && website.getShortName() != null) {
             prefix = website.getShortName() + "-";
         }

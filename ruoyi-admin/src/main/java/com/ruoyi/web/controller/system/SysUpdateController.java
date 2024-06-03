@@ -8,10 +8,10 @@ import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.PathUtils;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.system.domain.SysWebsite;
+import com.ruoyi.system.domain.SysConfigWebsite;
 import com.ruoyi.system.mapper.PublicSqlMapper;
 import com.ruoyi.system.service.ISysConfigService;
-import com.ruoyi.system.service.ISysWebsiteService;
+import com.ruoyi.system.service.ISysConfigWebsiteService;
 import com.ruoyi.update.UpdateEngine;
 import com.ruoyi.update.download.Callback;
 import com.ruoyi.update.download.Downloader;
@@ -48,7 +48,7 @@ public class SysUpdateController extends BaseController {
 
     private static final int MAX_THREAD_NUM = 20;
     @Resource
-    private ISysWebsiteService sysWebsiteService;
+    private ISysConfigWebsiteService sysConfigWebsiteService;
     @Resource
     private RuoYiConfig config;
     @Resource
@@ -62,7 +62,7 @@ public class SysUpdateController extends BaseController {
 
     public void fillConfigVersion() {
         if (StringUtils.isBlank(config.getDbVersion())) {
-            SysWebsite website = sysWebsiteService.getById(1);
+            SysConfigWebsite website = sysConfigWebsiteService.getById(1);
             config.setDbVersion(website.getDbVersion());
             config.setDbVersionNo(website.getDbVersionNo());
         }

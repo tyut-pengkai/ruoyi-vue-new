@@ -18,7 +18,7 @@ import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.security.context.AuthenticationContextHolder;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
-import com.ruoyi.system.service.ISysWebsiteService;
+import com.ruoyi.system.service.ISysConfigWebsiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -48,7 +48,7 @@ public class SysLoginService
     @Autowired
     private ISysConfigService configService;
     @Autowired
-    private ISysWebsiteService websiteService;
+    private ISysConfigWebsiteService websiteService;
     @Autowired
     private HyL hyL;
 

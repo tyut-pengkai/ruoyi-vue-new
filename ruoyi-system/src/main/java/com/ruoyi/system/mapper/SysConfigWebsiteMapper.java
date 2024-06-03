@@ -1,7 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ruoyi.system.domain.SysWebsite;
+import com.ruoyi.system.domain.SysConfigWebsite;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
  * @author ruoyi
  */
 @Repository
-public interface SysWebsiteMapper extends BaseMapper<SysWebsite> {
+public interface SysConfigWebsiteMapper extends BaseMapper<SysConfigWebsite> {
 
 }

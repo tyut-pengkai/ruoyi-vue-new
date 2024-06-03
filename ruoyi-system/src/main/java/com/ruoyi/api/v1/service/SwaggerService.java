@@ -6,8 +6,8 @@ import com.ruoyi.api.v1.domain.*;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.system.domain.SysWebsite;
-import com.ruoyi.system.service.ISysWebsiteService;
+import com.ruoyi.system.domain.SysConfigWebsite;
+import com.ruoyi.system.service.ISysConfigWebsiteService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public class SwaggerService {
     @Resource
     private RuoYiConfig config;
     @Resource
-    private ISysWebsiteService sysWebsiteService;
+    private ISysConfigWebsiteService sysConfigWebsiteService;
 
     public SwaggerVo getSwaggerInfo(HttpServletRequest request) {
         SwaggerVo<String, Object> swagger = new SwaggerVo<>();
@@ -292,7 +292,7 @@ public class SwaggerService {
         String port = "80".equals(String.valueOf(request.getServerPort())) ? "" : ":" + request.getServerPort();
         port = pathMapping.contains("dev") ? "" : port;
         String url = "";
-        SysWebsite website = sysWebsiteService.getById(1);
+        SysConfigWebsite website = sysConfigWebsiteService.getById(1);
         if (website != null && StringUtils.isNotBlank(website.getDomain())) {
             url = website.getDomain();
         } else {

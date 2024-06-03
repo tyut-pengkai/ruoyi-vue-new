@@ -19,11 +19,11 @@ import com.ruoyi.common.utils.uuid.SnowflakeIdWorker;
 import com.ruoyi.framework.api.v1.utils.ValidUtils;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.domain.SysGlobalFile;
-import com.ruoyi.system.domain.SysWebsite;
+import com.ruoyi.system.domain.SysConfigWebsite;
 import com.ruoyi.system.service.ISysAppUserService;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysGlobalFileService;
-import com.ruoyi.system.service.ISysWebsiteService;
+import com.ruoyi.system.service.ISysConfigWebsiteService;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Base64Utils;
@@ -46,7 +46,7 @@ public class GlobalFileDownload extends Function {
     @Value("${swagger.pathMapping}")
     private String pathMapping;
     @Resource
-    private ISysWebsiteService sysWebsiteService;
+    private ISysConfigWebsiteService sysConfigWebsiteService;
     @Resource
     private ISysConfigService configService;
     @Resource
@@ -128,7 +128,7 @@ public class GlobalFileDownload extends Function {
 
     private String getUrlPrefix(String randomPath) {
         String notifyUrl;
-        SysWebsite website = sysWebsiteService.getById(1);
+        SysConfigWebsite website = sysConfigWebsiteService.getById(1);
         if (website != null && StringUtils.isNotBlank(website.getDomain())) {
             notifyUrl = website.getDomain();
         } else {

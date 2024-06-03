@@ -9,8 +9,8 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.service.ISysSaleOrderService;
 import com.ruoyi.sale.service.ISysSaleShopService;
-import com.ruoyi.system.domain.SysWebsite;
-import com.ruoyi.system.service.ISysWebsiteService;
+import com.ruoyi.system.domain.SysConfigWebsite;
+import com.ruoyi.system.service.ISysConfigWebsiteService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +24,7 @@ public abstract class Payment extends BaseAutoAware {
 
     @Value("${swagger.pathMapping}")
     private String pathMapping;
-    private ISysWebsiteService sysWebsiteService;
+    private ISysConfigWebsiteService sysConfigWebsiteService;
     private ISysSaleOrderService sysSaleOrderService;
     private ISysSaleShopService sysSaleShopService;
 
@@ -105,7 +105,7 @@ public abstract class Payment extends BaseAutoAware {
         if (StringUtils.isNotBlank(configNotifyUrl)) {
             notifyUrl = configNotifyUrl;
         } else {
-            SysWebsite website = sysWebsiteService.getById(1);
+            SysConfigWebsite website = sysConfigWebsiteService.getById(1);
             if (website != null && StringUtils.isNotBlank(website.getDomain())) {
                 notifyUrl = website.getDomain();
             } else {
@@ -134,7 +134,7 @@ public abstract class Payment extends BaseAutoAware {
         if (StringUtils.isNotBlank(configReturnUrl)) {
             return configReturnUrl;
         } else {
-            SysWebsite website = sysWebsiteService.getById(1);
+            SysConfigWebsite website = sysConfigWebsiteService.getById(1);
             if (website != null && StringUtils.isNotBlank(website.getDomain())) {
                 returnUrl = website.getDomain();
             } else {

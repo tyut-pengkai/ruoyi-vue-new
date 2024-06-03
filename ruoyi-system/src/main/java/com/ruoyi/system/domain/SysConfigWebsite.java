@@ -10,7 +10,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * @author zwgu
  * @date 2022-03-22
  */
-public class SysWebsite extends BaseEntity {
+public class SysConfigWebsite extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**

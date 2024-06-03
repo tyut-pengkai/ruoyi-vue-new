@@ -8,9 +8,9 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.system.domain.SysWebsite;
+import com.ruoyi.system.domain.SysConfigWebsite;
 import com.ruoyi.system.service.ISysConfigService;
-import com.ruoyi.system.service.ISysWebsiteService;
+import com.ruoyi.system.service.ISysConfigWebsiteService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -23,10 +23,10 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/system/website/config")
-public class SysWebsiteController extends BaseController {
+public class SysConfigWebsiteController extends BaseController {
 
     @Resource
-    private ISysWebsiteService sysWebsiteService;
+    private ISysConfigWebsiteService sysWebsiteService;
     @Resource
     private ISysConfigService sysConfigService;
     @Resource
@@ -38,7 +38,7 @@ public class SysWebsiteController extends BaseController {
     @GetMapping
     public AjaxResult getConfig() {
 
-        SysWebsite website = sysWebsiteService.getById(1);
+        SysConfigWebsite website = sysWebsiteService.getById(1);
         if (StringUtils.isBlank(website.getName())) {
             website.setName(config.getName());
         }
@@ -69,7 +69,7 @@ public class SysWebsiteController extends BaseController {
      */
     @Log(title = "网站配置", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody SysWebsite sysWebsite) {
+    public AjaxResult edit(@RequestBody SysConfigWebsite sysWebsite) {
         if(StringUtils.isNotBlank(sysWebsite.getSafeEntrance()) && !StringUtils.isLetterDigit(sysWebsite.getSafeEntrance())) {
             throw new ServiceException("自定义后台登录入口设置有误，只能包含字母和数字");
         }
