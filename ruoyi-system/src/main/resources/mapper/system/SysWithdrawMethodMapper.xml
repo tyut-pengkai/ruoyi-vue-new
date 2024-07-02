@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysWithdrawMethodMapper">
+    
+    <resultMap type="SysWithdrawMethod" id="SysWithdrawMethodResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="receiveMethod"    column="receive_method"    />
+        <result property="receiveAccount"    column="receive_account"    />
+        <result property="realName"    column="real_name"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectSysWithdrawMethodVo">
+        select id, user_id, receive_method, receive_account, real_name, create_by, create_time, update_by, update_time, remark, del_flag from sys_withdraw_method
+    </sql>
+
+    <select id="selectSysWithdrawMethodList" parameterType="SysWithdrawMethod" resultMap="SysWithdrawMethodResult">
+        <include refid="selectSysWithdrawMethodVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="receiveMethod != null  and receiveMethod != ''"> and receive_method = #{receiveMethod}</if>
+            <if test="receiveAccount != null  and receiveAccount != ''"> and receive_account like concat('%', #{receiveAccount}, '%')</if>
+            <if test="realName != null  and realName != ''"> and real_name like concat('%', #{realName}, '%')</if>
+            <if test="remark != null  and remark != ''"> and remark like concat('%', #{remark}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectSysWithdrawMethodById" parameterType="Long" resultMap="SysWithdrawMethodResult">
+        <include refid="selectSysWithdrawMethodVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSysWithdrawMethod" parameterType="SysWithdrawMethod" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_withdraw_method
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="receiveMethod != null">receive_method,</if>
+            <if test="receiveAccount != null">receive_account,</if>
+            <if test="realName != null">real_name,</if>
+            <if test="createBy != null">create_by,</if>
+            create_time,
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="receiveMethod != null">#{receiveMethod},</if>
+            <if test="receiveAccount != null">#{receiveAccount},</if>
+            <if test="realName != null">#{realName},</if>
+            <if test="createBy != null">#{createBy},</if>
+            sysdate(),
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysWithdrawMethod" parameterType="SysWithdrawMethod">
+        update sys_withdraw_method
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="receiveMethod != null">receive_method = #{receiveMethod},</if>
+            <if test="receiveAccount != null">receive_account = #{receiveAccount},</if>
+            <if test="realName != null">real_name = #{realName},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysWithdrawMethodById" parameterType="Long">
+        delete from sys_withdraw_method where id = #{id}
+    </delete>
+
+    <delete id="deleteSysWithdrawMethodByIds" parameterType="String">
+        delete from sys_withdraw_method where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

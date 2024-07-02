@@ -1,0 +1,516 @@
+<template>
+  <div class="app-container">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="提现用户 id" prop="userId">
+        <el-input
+          v-model="queryParams.userId"
+          placeholder="请输入提现用户 id"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="提现交易编号" prop="orderNo">
+        <el-input
+          v-model="queryParams.orderNo"
+          placeholder="请输入提现交易编号"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="提现手续费" prop="handlingFee">
+        <el-input
+          v-model="queryParams.handlingFee"
+          placeholder="请输入提现手续费"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="提现申请金额" prop="applyFee">
+        <el-input
+          v-model="queryParams.applyFee"
+          placeholder="请输入提现申请金额"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="实际提现金额" prop="actualFee">
+        <el-input
+          v-model="queryParams.actualFee"
+          placeholder="请输入实际提现金额"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败" prop="withdrawStatus">
+        <el-select v-model="queryParams.withdrawStatus" placeholder="请选择提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败" clearable>
+          <el-option
+            v-for="dict in dict.type.sys_cash_status"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="是否人工转账" prop="manualTransfer">
+        <el-select v-model="queryParams.manualTransfer" placeholder="请选择是否人工转账" clearable>
+          <el-option
+            v-for="dict in dict.type.sys_yes_no"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="交易时间">
+        <el-date-picker
+          v-model="daterangeTradeTime"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
+      </el-form-item>
+      <el-form-item label="交易号" prop="tradeNo">
+        <el-input
+          v-model="queryParams.tradeNo"
+          placeholder="请输入交易号"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="错误代码" prop="errorCode">
+        <el-input
+          v-model="queryParams.errorCode"
+          placeholder="请输入错误代码"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="交易失败描述" prop="errorMessage">
+        <el-input
+          v-model="queryParams.errorMessage"
+          placeholder="请输入交易失败描述"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="收款平台" prop="receiveMethod">
+        <el-select v-model="queryParams.receiveMethod" placeholder="请选择收款平台" clearable>
+          <el-option
+            v-for="dict in dict.type.sys_receive_method"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="收款账号" prop="receiveAccount">
+        <el-input
+          v-model="queryParams.receiveAccount"
+          placeholder="请输入收款账号"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:withdrawOrder:add']"
+        >新增</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="single"
+          @click="handleUpdate"
+          v-hasPermi="['system:withdrawOrder:edit']"
+        >修改</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
+          :disabled="multiple"
+          @click="handleDelete"
+          v-hasPermi="['system:withdrawOrder:remove']"
+        >删除</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          @click="handleExport"
+          v-hasPermi="['system:withdrawOrder:export']"
+        >导出</el-button>
+      </el-col>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+    </el-row>
+
+    <el-table v-loading="loading" :data="withdrawOrderList" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="提现 id" align="center" prop="id" />
+      <el-table-column label="提现用户 id" align="center" prop="userId" />
+      <el-table-column label="提现交易编号" align="center" prop="orderNo" />
+      <el-table-column label="提现手续费" align="center" prop="handlingFee" />
+      <el-table-column label="提现申请金额" align="center" prop="applyFee" />
+      <el-table-column label="实际提现金额" align="center" prop="actualFee" />
+      <el-table-column label="提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败" align="center" prop="withdrawStatus">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.sys_cash_status" :value="scope.row.withdrawStatus"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否人工转账" align="center" prop="manualTransfer">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.manualTransfer"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="交易时间" align="center" prop="tradeTime" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.tradeTime, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="交易号" align="center" prop="tradeNo" />
+      <el-table-column label="错误代码" align="center" prop="errorCode" />
+      <el-table-column label="交易失败描述" align="center" prop="errorMessage" />
+      <el-table-column label="收款平台" align="center" prop="receiveMethod">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.sys_receive_method" :value="scope.row.receiveMethod"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="收款账号" align="center" prop="receiveAccount" />
+      <el-table-column label="备注" align="center" prop="remark" />
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:withdrawOrder:edit']"
+          >修改</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:withdrawOrder:remove']"
+          >删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
+
+    <!-- 添加或修改提现记录对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="提现用户 id" prop="userId">
+          <el-input v-model="form.userId" placeholder="请输入提现用户 id" />
+        </el-form-item>
+        <el-form-item label="提现交易编号" prop="orderNo">
+          <el-input v-model="form.orderNo" placeholder="请输入提现交易编号" />
+        </el-form-item>
+        <el-form-item label="提现手续费" prop="handlingFee">
+          <el-input v-model="form.handlingFee" placeholder="请输入提现手续费" />
+        </el-form-item>
+        <el-form-item label="提现申请金额" prop="applyFee">
+          <el-input v-model="form.applyFee" placeholder="请输入提现申请金额" />
+        </el-form-item>
+        <el-form-item label="实际提现金额" prop="actualFee">
+          <el-input v-model="form.actualFee" placeholder="请输入实际提现金额" />
+        </el-form-item>
+        <el-form-item label="提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败" prop="withdrawStatus">
+          <el-select v-model="form.withdrawStatus" placeholder="请选择提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败">
+            <el-option
+              v-for="dict in dict.type.sys_cash_status"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="是否人工转账" prop="manualTransfer">
+          <el-select v-model="form.manualTransfer" placeholder="请选择是否人工转账">
+            <el-option
+              v-for="dict in dict.type.sys_yes_no"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="交易时间" prop="tradeTime">
+          <el-date-picker clearable
+            v-model="form.tradeTime"
+            type="date"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            placeholder="请选择交易时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="交易号" prop="tradeNo">
+          <el-input v-model="form.tradeNo" placeholder="请输入交易号" />
+        </el-form-item>
+        <el-form-item label="错误代码" prop="errorCode">
+          <el-input v-model="form.errorCode" placeholder="请输入错误代码" />
+        </el-form-item>
+        <el-form-item label="交易失败描述" prop="errorMessage">
+          <el-input v-model="form.errorMessage" placeholder="请输入交易失败描述" />
+        </el-form-item>
+        <el-form-item label="收款平台" prop="receiveMethod">
+          <el-select v-model="form.receiveMethod" placeholder="请选择收款平台">
+            <el-option
+              v-for="dict in dict.type.sys_receive_method"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="收款账号" prop="receiveAccount">
+          <el-input v-model="form.receiveAccount" placeholder="请输入收款账号" />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="删除标志" prop="delFlag">
+          <el-input v-model="form.delFlag" placeholder="请输入删除标志" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import { listWithdrawOrder, getWithdrawOrder, delWithdrawOrder, addWithdrawOrder, updateWithdrawOrder } from "@/api/system/withdrawOrder";
+
+export default {
+  name: "WithdrawOrder",
+  dicts: ['sys_yes_no', 'sys_receive_method', 'sys_cash_status'],
+  data() {
+    return {
+      // 遮罩层
+      loading: true,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 显示搜索条件
+      showSearch: true,
+      // 总条数
+      total: 0,
+      // 提现记录表格数据
+      withdrawOrderList: [],
+      // 弹出层标题
+      title: "",
+      // 是否显示弹出层
+      open: false,
+      // 删除标志时间范围
+      daterangeTradeTime: [],
+      // 查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        userId: null,
+        orderNo: null,
+        handlingFee: null,
+        applyFee: null,
+        actualFee: null,
+        withdrawStatus: null,
+        manualTransfer: null,
+        tradeTime: null,
+        tradeNo: null,
+        errorCode: null,
+        errorMessage: null,
+        receiveMethod: null,
+        receiveAccount: null,
+      },
+      // 表单参数
+      form: {},
+      // 表单校验
+      rules: {
+        userId: [
+          { required: true, message: "提现用户 id不能为空", trigger: "blur" }
+        ],
+        orderNo: [
+          { required: true, message: "提现交易编号不能为空", trigger: "blur" }
+        ],
+        handlingFee: [
+          { required: true, message: "提现手续费不能为空", trigger: "blur" }
+        ],
+        applyFee: [
+          { required: true, message: "提现申请金额不能为空", trigger: "blur" }
+        ],
+        actualFee: [
+          { required: true, message: "实际提现金额不能为空", trigger: "blur" }
+        ],
+        withdrawStatus: [
+          { required: true, message: "提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败不能为空", trigger: "change" }
+        ],
+        manualTransfer: [
+          { required: true, message: "是否人工转账不能为空", trigger: "change" }
+        ],
+        receiveMethod: [
+          { required: true, message: "收款平台不能为空", trigger: "change" }
+        ],
+        receiveAccount: [
+          { required: true, message: "收款账号不能为空", trigger: "blur" }
+        ],
+        delFlag: [
+          { required: true, message: "删除标志不能为空", trigger: "blur" }
+        ]
+      }
+    };
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+    /** 查询提现记录列表 */
+    getList() {
+      this.loading = true;
+      this.queryParams.params = {};
+      if (null != this.daterangeTradeTime && '' != this.daterangeTradeTime) {
+        this.queryParams.params["beginTradeTime"] = this.daterangeTradeTime[0];
+        this.queryParams.params["endTradeTime"] = this.daterangeTradeTime[1];
+      }
+      listWithdrawOrder(this.queryParams).then(response => {
+        this.withdrawOrderList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+      });
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    // 表单重置
+    reset() {
+      this.form = {
+        id: null,
+        userId: null,
+        orderNo: null,
+        handlingFee: null,
+        applyFee: null,
+        actualFee: null,
+        withdrawStatus: null,
+        manualTransfer: null,
+        tradeTime: null,
+        tradeNo: null,
+        errorCode: null,
+        errorMessage: null,
+        receiveMethod: null,
+        receiveAccount: null,
+        createBy: null,
+        createTime: null,
+        updateBy: null,
+        updateTime: null,
+        remark: null,
+        delFlag: null
+      };
+      this.resetForm("form");
+    },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
+      this.getList();
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.daterangeTradeTime = [];
+      this.resetForm("queryForm");
+      this.handleQuery();
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map(item => item.id)
+      this.single = selection.length!==1
+      this.multiple = !selection.length
+    },
+    /** 新增按钮操作 */
+    handleAdd() {
+      this.reset();
+      this.open = true;
+      this.title = "添加提现记录";
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const id = row.id || this.ids
+      getWithdrawOrder(id).then(response => {
+        this.form = response.data;
+        this.open = true;
+        this.title = "修改提现记录";
+      });
+    },
+    /** 提交按钮 */
+    submitForm() {
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          if (this.form.id != null) {
+            updateWithdrawOrder(this.form).then(response => {
+              this.$modal.msgSuccess("修改成功");
+              this.open = false;
+              this.getList();
+            });
+          } else {
+            addWithdrawOrder(this.form).then(response => {
+              this.$modal.msgSuccess("新增成功");
+              this.open = false;
+              this.getList();
+            });
+          }
+        }
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const ids = row.id || this.ids;
+      this.$modal.confirm('是否确认删除提现记录编号为"' + ids + '"的数据项？').then(function() {
+        return delWithdrawOrder(ids);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("删除成功");
+      }).catch(() => {});
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      this.download('system/withdrawOrder/export', {
+        ...this.queryParams
+      }, `withdrawOrder_${new Date().getTime()}.xlsx`)
+    }
+  }
+};
+</script>

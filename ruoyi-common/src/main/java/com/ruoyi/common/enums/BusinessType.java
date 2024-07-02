@@ -81,4 +81,9 @@ public enum BusinessType
      * 测试
      */
     TEST,
+
+    /**
+     * 提现
+     */
+    WITHDRAW_CASH,
 }

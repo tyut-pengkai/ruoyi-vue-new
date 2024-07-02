@@ -83,7 +83,7 @@
           <el-divider direction="vertical"></el-divider>
           <el-link type="primary" @click="handleTransfer()">转账</el-link>
           <el-divider direction="vertical"></el-divider>
-          <el-link type="primary" disabled>提现</el-link>
+          <el-link type="primary" @click="handleWithdraw()">提现</el-link>
           <el-tag style="margin-left: 50px" type="info">
             账户余额冻结
             <span>
@@ -219,6 +219,91 @@
       </div>
     </el-dialog>
 
+
+    <!-- 提现对话框 -->
+    <el-dialog
+      :visible.sync="openW"
+      append-to-body
+      title="申请提现"
+      width="800px"
+    >
+      <el-alert title="提现规则" type="info" show-icon :closable="false" style="margin-bottom: 10px">
+        <ul>
+          <li>最低提现金额为{{ configWithdraw.withdrawCashMin }}元，最高提现金额为{{ configWithdraw.withdrawCashMax }}元</li>
+          <li>提现收取手续费{{ configWithdraw.handlingFeeRate }}%，最低收取{{ configWithdraw.handlingFeeMin }}元，最高收取{{ configWithdraw.handlingFeeMax }}元</li>
+          <li>提现支持以下方式：{{getWithdrawTypeList}}<!--，{{ configWithdraw.enableAlipay }}，{{ configWithdraw.enableWechat }}，{{ configWithdraw.enableQq }}，{{ configWithdraw.enableBankCard }}--></li>
+        </ul>
+      </el-alert>
+      <el-form ref="formW" :model="formW" :rules="rulesW">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="账户余额" prop="">
+              <el-tag>
+                <span>￥ {{ user.availablePayBalance }}</span>
+              </el-tag>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="提现金额" prop="applyFee">
+              <el-input-number
+                v-model="formW.applyFee"
+                :min="configWithdraw.withdrawCashMin || 0.01"
+                :max="configWithdraw.withdrawCashMax > user.availablePayBalance ? user.availablePayBalance : (configWithdraw.withdrawCashMax || user.availablePayBalance)"
+                :precision="2"
+                :step="0.01"
+                controls-position="right"
+                @change="handleApplyFeeChange"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item :label="'手续费(' + configWithdraw.handlingFeeRate + '%)'" prop="handlingFee">
+              <el-tag>
+                <span>￥ {{ handlingFee }}</span>
+              </el-tag>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="预计到账" prop="actualFee">
+              <el-tag>
+                <span>￥ {{ expectActualFee }}</span>
+              </el-tag>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="收款账号" prop="receiveAccountId">
+              <el-select v-model="formW.receiveAccountId" :clearable="true" filterable :loading="loading" prop="receiveAccountId" placeholder="请选择收款账号">
+                <el-option v-for="item in receiveAccountList" :key="item.id" :label="item.receiveAccount + '|' + item.realName" :value="item.id">
+                  <dict-tag :options="dict.type.sys_receive_method" :value="item.receiveMethod" style="display:inline;margin-right:10px"/>
+                  <span>{{ item.receiveAccount }} <el-divider direction="vertical"></el-divider> {{ item.realName }}</span>
+                </el-option>
+              </el-select>
+              <el-link type="primary" style="margin-left: 10px; line-height: normal" @click="handleReceiveAccount">收款账号管理</el-link>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="备注信息" prop="remark">
+              <el-input
+                v-model="formW.remark"
+                placeholder="请输入内容"
+                type="textarea"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFormW">提 交</el-button>
+        <el-button @click="cancelW">取 消</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -230,10 +315,14 @@ import {listUser, transferUserBalance, getUserProfile} from "@/api/system/user";
 import CountTo from "vue-count-to";
 import CardPay from "@/views/sale/shop/card/CardPay1";
 import {createChargeOrder, getPayStatus, getShopConfig,} from "@/api/sale/saleShop";
+import {getWithdrawConfig,} from "@/api/system/configWithdraw";
+import { listWithdrawMethod } from "@/api/system/withdrawMethod";
+
 
 export default {
   name: "Profile",
   components: {userAvatar, userInfo, resetPwd, CountTo, CardPay},
+  dicts: ['sys_receive_method'],
   data() {
     return {
       user: {},
@@ -266,6 +355,18 @@ export default {
         remark: [{ required: true, message: "转账原因不能为空", trigger: "blur" }],
       },
       userList: [],
+      openW: false,
+      formW: {
+        applyFee: 0.01
+      },
+      rulesW: {
+        applyFee: [{required: true, message: "金额不能为空", trigger: "blur"}],
+        receiveAccountId: [{required: true, message: "收款账号不能为空", trigger: "blur"}],
+      },
+      receiveAccountList: [],
+      configWithdraw: {},
+      handlingFee: null,
+      expectActualFee: null,
     };
   },
   created() {
@@ -390,6 +491,92 @@ export default {
         }
       });
     },
+    // 提现
+    /** 提现按钮操作 */
+    handleWithdraw() {
+      this.loading = true;
+      getWithdrawConfig().then((response) => {
+        this.configWithdraw = response.data;
+        if(this.configWithdraw.enableWithdrawCash === 'Y') {
+          this.formW.applyFee = response.data.withdrawCashMin || 0.01;
+          this.handleApplyFeeChange(this.formW.applyFee, 0);
+          this.loading = true;
+          listWithdrawMethod().then(response => {
+            this.receiveAccountList = response.rows;
+            this.loading = false;
+          });
+          this.openW = true;
+        } else {
+          this.$modal.msgError("管理员未开启提现功能");
+        }
+        this.loading = false;
+      });
+    },
+    // 取消按钮
+    cancelW() {
+      this.openW = false;
+    },
+    /** 提交按钮 */
+    submitFormW: function () {
+      this.$refs["formW"].validate((valid) => {
+        if (valid) {
+          // transferUserBalance(this.formT).then((response) => {
+          //   this.getUser();
+          //   this.$modal.msgSuccess("转账成功");
+          //   this.openT = false;
+          // });
+        }
+      });
+    },
+    // 下划线转驼峰
+    convertToCamelCase(str) {
+      return str.replace(/_(.)/g, function(match, group) {
+        return group.toUpperCase();
+      });
+    },
+    // 首字母大写
+    capitalizeFirstLetter(str) {
+      return str.substring(0, 1).toUpperCase() + str.substring(1);
+    },
+    handleReceiveAccount() {
+      this.cancelW();
+      this.$router.push({
+        path: "/more/withdrawMethod",
+        query: {
+
+        },
+      });
+    },
+    handleApplyFeeChange(currentValue, oldValue) {
+      let fee = currentValue * this.configWithdraw.handlingFeeRate;
+      fee = Math.round(fee) / 100;
+      fee = fee < this.configWithdraw.handlingFeeMin ? this.configWithdraw.handlingFeeMin : fee;
+      fee = fee > this.configWithdraw.handlingFeeMax ? this.configWithdraw.handlingFeeMax : fee;
+      this.handlingFee = fee;
+      if(this.user.availablePayBalance >= currentValue + fee) {
+        this.expectActualFee = currentValue;
+      } else {
+        this.expectActualFee = this.user.availablePayBalance - fee;
+      }
+    }
   },
+  computed: {
+    getWithdrawTypeList() {
+      let types = "";
+      for(let dict of this.dict.type.sys_receive_method) {
+        // console.log(dict);
+        // console.log(this.convertToCamelCase(dict.value));
+        // console.log('enable' + this.capitalizeFirstLetter(this.convertToCamelCase(dict.value)));
+        if(this.configWithdraw['enable' + this.capitalizeFirstLetter(this.convertToCamelCase(dict.value))] === 'Y') {
+          types += dict.label + "、";
+        }
+      }
+      types = types.slice(0, types.length - 1);
+      if(types.length === 0) {
+        types = '暂无支持的收款平台';
+      }
+      return types;
+    },
+  }
 };
 </script>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysWithdrawOrderMapper">
+    
+    <resultMap type="SysWithdrawOrder" id="SysWithdrawOrderResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="handlingFee"    column="handling_fee"    />
+        <result property="applyFee"    column="apply_fee"    />
+        <result property="actualFee"    column="actual_fee"    />
+        <result property="withdrawStatus"    column="withdraw_status"    />
+        <result property="manualTransfer"    column="manual_transfer"    />
+        <result property="tradeTime"    column="trade_time"    />
+        <result property="tradeNo"    column="trade_no"    />
+        <result property="errorCode"    column="error_code"    />
+        <result property="errorMessage"    column="error_message"    />
+        <result property="receiveMethod"    column="receive_method"    />
+        <result property="receiveAccount"    column="receive_account"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectSysWithdrawOrderVo">
+        select id, user_id, order_no, handling_fee, apply_fee, actual_fee, withdraw_status, manual_transfer, trade_time, trade_no, error_code, error_message, receive_method, receive_account, create_by, create_time, update_by, update_time, remark, del_flag from sys_withdraw_order
+    </sql>
+
+    <select id="selectSysWithdrawOrderList" parameterType="SysWithdrawOrder" resultMap="SysWithdrawOrderResult">
+        <include refid="selectSysWithdrawOrderVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="orderNo != null "> and order_no like concat('%', #{orderNo}, '%')</if>
+            <if test="params.beginHandlingFee != null and params.beginHandlingFee != '' and params.endHandlingFee != null and params.endHandlingFee != ''"> and handling_fee between #{params.beginHandlingFee} and #{params.endHandlingFee}</if>
+            <if test="params.beginApplyFee != null and params.beginApplyFee != '' and params.endApplyFee != null and params.endApplyFee != ''"> and apply_fee between #{params.beginApplyFee} and #{params.endApplyFee}</if>
+            <if test="params.beginActualFee != null and params.beginActualFee != '' and params.endActualFee != null and params.endActualFee != ''"> and actual_fee between #{params.beginActualFee} and #{params.endActualFee}</if>
+            <if test="withdrawStatus != null  and withdrawStatus != ''"> and withdraw_status = #{withdrawStatus}</if>
+            <if test="manualTransfer != null  and manualTransfer != ''"> and manual_transfer = #{manualTransfer}</if>
+            <if test="params.beginTradeTime != null and params.beginTradeTime != '' and params.endTradeTime != null and params.endTradeTime != ''"> and trade_time between #{params.beginTradeTime} and #{params.endTradeTime}</if>
+            <if test="tradeNo != null  and tradeNo != ''"> and trade_no like concat('%', #{tradeNo}, '%')</if>
+            <if test="errorCode != null  and errorCode != ''"> and error_code like concat('%', #{errorCode}, '%')</if>
+            <if test="errorMessage != null  and errorMessage != ''"> and error_message like concat('%', #{errorMessage}, '%')</if>
+            <if test="receiveMethod != null  and receiveMethod != ''"> and receive_method = #{receiveMethod}</if>
+            <if test="receiveAccount != null  and receiveAccount != ''"> and receive_account like concat('%', #{receiveAccount}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectSysWithdrawOrderById" parameterType="Long" resultMap="SysWithdrawOrderResult">
+        <include refid="selectSysWithdrawOrderVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSysWithdrawOrder" parameterType="SysWithdrawOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_withdraw_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="orderNo != null">order_no,</if>
+            <if test="handlingFee != null">handling_fee,</if>
+            <if test="applyFee != null">apply_fee,</if>
+            <if test="actualFee != null">actual_fee,</if>
+            <if test="withdrawStatus != null and withdrawStatus != ''">withdraw_status,</if>
+            <if test="manualTransfer != null and manualTransfer != ''">manual_transfer,</if>
+            <if test="tradeTime != null">trade_time,</if>
+            <if test="tradeNo != null">trade_no,</if>
+            <if test="errorCode != null">error_code,</if>
+            <if test="errorMessage != null">error_message,</if>
+            <if test="receiveMethod != null and receiveMethod != ''">receive_method,</if>
+            <if test="receiveAccount != null and receiveAccount != ''">receive_account,</if>
+            <if test="createBy != null">create_by,</if>
+            create_time,
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="orderNo != null">#{orderNo},</if>
+            <if test="handlingFee != null">#{handlingFee},</if>
+            <if test="applyFee != null">#{applyFee},</if>
+            <if test="actualFee != null">#{actualFee},</if>
+            <if test="withdrawStatus != null and withdrawStatus != ''">#{withdrawStatus},</if>
+            <if test="manualTransfer != null and manualTransfer != ''">#{manualTransfer},</if>
+            <if test="tradeTime != null">#{tradeTime},</if>
+            <if test="tradeNo != null">#{tradeNo},</if>
+            <if test="errorCode != null">#{errorCode},</if>
+            <if test="errorMessage != null">#{errorMessage},</if>
+            <if test="receiveMethod != null and receiveMethod != ''">#{receiveMethod},</if>
+            <if test="receiveAccount != null and receiveAccount != ''">#{receiveAccount},</if>
+            <if test="createBy != null">#{createBy},</if>
+            sysdate(),
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysWithdrawOrder" parameterType="SysWithdrawOrder">
+        update sys_withdraw_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="orderNo != null">order_no = #{orderNo},</if>
+            <if test="handlingFee != null">handling_fee = #{handlingFee},</if>
+            <if test="applyFee != null">apply_fee = #{applyFee},</if>
+            <if test="actualFee != null">actual_fee = #{actualFee},</if>
+            <if test="withdrawStatus != null and withdrawStatus != ''">withdraw_status = #{withdrawStatus},</if>
+            <if test="manualTransfer != null and manualTransfer != ''">manual_transfer = #{manualTransfer},</if>
+            <if test="tradeTime != null">trade_time = #{tradeTime},</if>
+            <if test="tradeNo != null">trade_no = #{tradeNo},</if>
+            <if test="errorCode != null">error_code = #{errorCode},</if>
+            <if test="errorMessage != null">error_message = #{errorMessage},</if>
+            <if test="receiveMethod != null and receiveMethod != ''">receive_method = #{receiveMethod},</if>
+            <if test="receiveAccount != null and receiveAccount != ''">receive_account = #{receiveAccount},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysWithdrawOrderById" parameterType="Long">
+        delete from sys_withdraw_order where id = #{id}
+    </delete>
+
+    <delete id="deleteSysWithdrawOrderByIds" parameterType="String">
+        delete from sys_withdraw_order where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
