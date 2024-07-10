@@ -3,6 +3,7 @@ package com.ruoyi.system.service.impl;
 import cn.hutool.core.io.file.FileNameUtil;
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.RuoYiConfig;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysApp;
@@ -27,6 +28,7 @@ import org.ini4j.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -56,6 +58,14 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     @Resource
     private ISysAppService sysAppService;
 
+    @PostConstruct
+    public void init() {
+        List<SysAppVersion> appVersionList = sysAppVersionMapper.selectSysAppVersionList(new SysAppVersion());
+        for (SysAppVersion appVersion : appVersionList) {
+                SysCache.set(CacheConstants.SYS_APP_VERSION_KEY + appVersion.getAppVersionId(), appVersion, 86400000);
+        }
+    }
+
     /**
      * 查询软件版本信息
      *
@@ -64,7 +74,12 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      */
     @Override
     public SysAppVersion selectSysAppVersionByAppVersionId(Long appVersionId) {
-        return sysAppVersionMapper.selectSysAppVersionByAppVersionId(appVersionId);
+        SysAppVersion appVersion = (SysAppVersion) SysCache.get(CacheConstants.SYS_APP_VERSION_KEY + appVersionId);
+        if (appVersion == null) {
+            appVersion = sysAppVersionMapper.selectSysAppVersionByAppVersionId(appVersionId);
+            SysCache.set(CacheConstants.SYS_APP_VERSION_KEY + appVersionId, appVersion, 86400000);
+        }
+        return appVersion;
     }
 
     /**
@@ -113,7 +128,12 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     public int updateSysAppVersion(SysAppVersion sysAppVersion) {
         sysAppVersion.setUpdateTime(DateUtils.getNowDate());
         sysAppVersion.setUpdateBy(SecurityUtils.getUsernameNoException());
-        return sysAppVersionMapper.updateSysAppVersion(sysAppVersion);
+        int i = sysAppVersionMapper.updateSysAppVersion(sysAppVersion);
+        if (i > 0) {
+            SysAppVersion appVersion = sysAppVersionMapper.selectSysAppVersionByAppVersionId(sysAppVersion.getAppVersionId());
+            SysCache.set(CacheConstants.SYS_APP_VERSION_KEY + sysAppVersion.getAppVersionId(), appVersion, 86400000);
+        }
+        return i;
     }
 
     /**
@@ -124,6 +144,9 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      */
     @Override
     public int deleteSysAppVersionByAppVersionIds(Long[] appVersionIds) {
+        for (Long appVersionId : appVersionIds) {
+            SysCache.delete(CacheConstants.SYS_APP_VERSION_KEY + appVersionId);
+        }
         return sysAppVersionMapper.deleteSysAppVersionByAppVersionIds(appVersionIds);
     }
 
@@ -135,6 +158,7 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
      */
     @Override
     public int deleteSysAppVersionByAppVersionId(Long appVersionId) {
+        SysCache.delete(CacheConstants.SYS_APP_VERSION_KEY + appVersionId);
         return sysAppVersionMapper.deleteSysAppVersionByAppVersionId(appVersionId);
     }
 

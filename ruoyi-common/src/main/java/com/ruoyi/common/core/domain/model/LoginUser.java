@@ -80,11 +80,13 @@ public class LoginUser implements UserDetails
     private Long appUserId;
 //    private SysAppUser appUser;
 
-    private SysAppVersion appVersion;
+    private Long appVersionId;
+//    private SysAppVersion appVersion;
 
-    private SysDeviceCode deviceCode;
+    private Long deviceCodeId;
+//    private SysDeviceCode deviceCode;
 
-    private SysAppUserDeviceCode appUserDeviceCode;
+//    private SysAppUserDeviceCode appUserDeviceCode;
 
     /**
      * 用户信息
@@ -366,12 +368,20 @@ public class LoginUser implements UserDetails
 //        this.appUser = appUser;
 //    }
 
-    public SysAppVersion getAppVersion() {
-        return appVersion;
+//    public SysAppVersion getAppVersion() {
+//        return appVersion;
+//    }
+//
+//    public void setAppVersion(SysAppVersion appVersion) {
+//        this.appVersion = appVersion;
+//    }
+
+    public Long getAppVersionId() {
+        return appVersionId;
     }
 
-    public void setAppVersion(SysAppVersion appVersion) {
-        this.appVersion = appVersion;
+    public void setAppVersionId(Long appVersionId) {
+        this.appVersionId = appVersionId;
     }
 
     /**
@@ -379,12 +389,20 @@ public class LoginUser implements UserDetails
      *
      * @return
      */
-    public SysDeviceCode getDeviceCode() {
-        return deviceCode;
+//    public SysDeviceCode getDeviceCode() {
+//        return deviceCode;
+//    }
+//
+//    public void setDeviceCode(SysDeviceCode deviceCode) {
+//        this.deviceCode = deviceCode;
+//    }
+
+    public Long getDeviceCodeId() {
+        return deviceCodeId;
     }
 
-    public void setDeviceCode(SysDeviceCode deviceCode) {
-        this.deviceCode = deviceCode;
+    public void setDeviceCodeId(Long deviceCodeId) {
+        this.deviceCodeId = deviceCodeId;
     }
 
     public Boolean getIfApp() {
@@ -395,11 +413,11 @@ public class LoginUser implements UserDetails
         this.ifApp = ifApp;
     }
 
-    public SysAppUserDeviceCode getAppUserDeviceCode() {
-        return appUserDeviceCode;
-    }
-
-    public void setAppUserDeviceCode(SysAppUserDeviceCode appUserDeviceCode) {
-        this.appUserDeviceCode = appUserDeviceCode;
-    }
+//    public SysAppUserDeviceCode getAppUserDeviceCode() {
+//        return appUserDeviceCode;
+//    }
+//
+//    public void setAppUserDeviceCode(SysAppUserDeviceCode appUserDeviceCode) {
+//        this.appUserDeviceCode = appUserDeviceCode;
+//    }
 }

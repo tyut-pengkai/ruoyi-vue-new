@@ -1,11 +1,14 @@
 package com.ruoyi.system.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.core.domain.entity.SysApp;
+import com.ruoyi.common.core.domain.entity.SysAppVersion;
+import com.ruoyi.common.core.domain.entity.SysDeviceCode;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysUserOnline;
 import com.ruoyi.system.service.ISysAppService;
+import com.ruoyi.system.service.ISysAppVersionService;
+import com.ruoyi.system.service.ISysDeviceCodeService;
 import com.ruoyi.system.service.ISysUserOnlineService;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,10 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService {
 
     @Resource
     private ISysAppService appService;
+    @Resource
+    private ISysAppVersionService versionService;
+    @Resource
+    private ISysDeviceCodeService deviceCodeService;
 
     /**
      * 通过登录地址查询信息
@@ -103,18 +110,20 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService {
                 //noinspection deprecation
                 appKey = user.getApp() != null ? user.getApp().getAppKey() : null;
             }
+            SysAppVersion appVersion = versionService.selectSysAppVersionByAppVersionId(user.getAppVersionId());
             if (StringUtils.isNotBlank(appKey)) {
                 SysApp app = appService.selectSysAppByAppKey(appKey);
 //                System.out.println(JSON.toJSONString(user));
 //                System.out.println(JSON.toJSONString(app));
-                sysUserOnline.setAppDesc(app.getAppName() + "-" + user.getAppVersion().getVersionShow());
+                sysUserOnline.setAppDesc(app.getAppName() + "-" + appVersion.getVersionShow());
                 sysUserOnline.setAppAuthor(app.getCreateBy());
             } else {
-                sysUserOnline.setAppDesc("未知" + "-" + user.getAppVersion().getVersionShow());
+                sysUserOnline.setAppDesc("未知" + "-" + appVersion.getVersionShow());
                 sysUserOnline.setAppAuthor("未知");
             }
-            if (user.getDeviceCode() != null) {
-                sysUserOnline.setDeviceCode(user.getDeviceCode().getDeviceCode());
+            if (user.getDeviceCodeId() != null) {
+                SysDeviceCode deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCodeId(user.getDeviceCodeId());
+                sysUserOnline.setDeviceCode(deviceCode.getDeviceCode());
             }
         }
         if (user.getUser() != null && StringUtils.isNotNull(user.getUser().getDept())) {

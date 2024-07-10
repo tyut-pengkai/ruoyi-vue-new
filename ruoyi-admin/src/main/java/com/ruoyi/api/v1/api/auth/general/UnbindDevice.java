@@ -8,6 +8,7 @@ import com.ruoyi.api.v1.utils.MyUtils;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysAppUserDeviceCode;
+import com.ruoyi.common.core.domain.entity.SysDeviceCode;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.*;
@@ -19,10 +20,7 @@ import com.ruoyi.system.domain.SysAppUserExpireLog;
 import com.ruoyi.system.domain.SysCardTemplate;
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
 import com.ruoyi.system.domain.SysUnbindLog;
-import com.ruoyi.system.service.ISysAppUserDeviceCodeService;
-import com.ruoyi.system.service.ISysAppUserService;
-import com.ruoyi.system.service.ISysCardTemplateService;
-import com.ruoyi.system.service.ISysLoginCodeTemplateService;
+import com.ruoyi.system.service.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -39,6 +37,8 @@ public class UnbindDevice extends Function {
     private ISysCardTemplateService cardTemplateService;
     @Resource
     private ISysLoginCodeTemplateService loginCodeTemplateService;
+    @Resource
+    private ISysDeviceCodeService deviceCodeService;
 
     @Override
     public void init() {
@@ -81,7 +81,12 @@ public class UnbindDevice extends Function {
             }
         }
         // 设备码是否存在
-        SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeById(loginUser.getAppUserDeviceCode().getId());
+        SysDeviceCode deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCodeId(loginUser.getDeviceCodeId());
+        if (deviceCode == null) {
+            return "-1";
+        }
+//        SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeById(loginUser.getAppUserDeviceCode().getId());
+        SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(loginUser.getAppUserId(), loginUser.getDeviceCodeId());
         if (appUserDeviceCode == null) {
             return "-1";
         }
@@ -94,7 +99,7 @@ public class UnbindDevice extends Function {
         unbindLog.setLoginTimes(appUserDeviceCode.getLoginTimes());
         unbindLog.setUnbindType(UnbindType.CALL_API_UNBIND);
         unbindLog.setUnbindDesc("API：" + this.getApi().getApi());
-        unbindLog.setDeviceCode(loginUser.getDeviceCode().getDeviceCode());
+        unbindLog.setDeviceCode(deviceCode.getDeviceCode());
         unbindLog.setDeviceCodeId(appUserDeviceCode.getDeviceCodeId());
         unbindLog.setChangeAmount(0L);
         if (this.getApp().getBillType() == BillType.TIME) {

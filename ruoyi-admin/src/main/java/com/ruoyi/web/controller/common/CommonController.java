@@ -619,7 +619,7 @@ public class CommonController {
         map.put("appUserVipTotal", appUserVipTotal);
         // 平台当前在线数
         List<LoginUser> onlineUserList = new ArrayList<>();
-        Collection<String> loginKeys = redisCache.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
+        Collection<String> loginKeys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + "*");
         for (String key : loginKeys) {
             LoginUser loginUser = null;
             try {

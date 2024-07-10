@@ -7,6 +7,8 @@ import com.ruoyi.api.v1.domain.Param;
 import com.ruoyi.api.v1.domain.Resp;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.entity.SysAppUser;
+import com.ruoyi.common.core.domain.entity.SysAppVersion;
+import com.ruoyi.common.core.domain.entity.SysDeviceCode;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -17,9 +19,7 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
-import com.ruoyi.system.service.ISysAppService;
-import com.ruoyi.system.service.ISysAppUserService;
-import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.service.*;
 
 import javax.annotation.Resource;
 import java.util.Collection;
@@ -34,7 +34,11 @@ public class LogoutAll extends Function {
     @Resource
     private ISysUserService userService;
     @Resource
+    private ISysAppVersionService versionService;
+    @Resource
     private RedisCache redisCache;
+    @Resource
+    private ISysDeviceCodeService deviceCodeService;
 
     @Override
     public void init() {
@@ -77,18 +81,20 @@ public class LogoutAll extends Function {
             }
             if (loginUser != null && loginUser.getIfApp() && Objects.equals(loginUser.getAppUserId(), appUser.getAppUserId())) {
                 String _deviceCodeStr = null;
-                if (loginUser.getDeviceCode() != null) {
-                    _deviceCodeStr = loginUser.getDeviceCode().getDeviceCode();
+                if (loginUser.getDeviceCodeId() != null) {
+                    SysDeviceCode deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCodeId(loginUser.getDeviceCodeId());
+                    _deviceCodeStr = deviceCode.getDeviceCode();
                 }
                 redisCache.deleteObject(CacheConstants.LOGIN_TOKEN_KEY + loginUser.getToken());
                 SysCache.delete(CacheConstants.LOGIN_TOKEN_KEY + loginUser.getToken());
                 try {
+                    SysAppVersion appVersion = versionService.selectSysAppVersionByAppVersionId(loginUser.getAppVersionId());
                     AsyncManager.me().execute(
                             AsyncFactory.recordAppLogininfor(
                                     appUser.getAppUserId(),
                                     appUser.getUserName(),
                                     getApp().getAppName(),
-                                    loginUser.getAppVersion().getVersionShow(),
+                                    appVersion.getVersionShow(),
                                     _deviceCodeStr,
                                     com.ruoyi.common.constant.Constants.LOGOUT,
                                     "用户注销所有登录"));

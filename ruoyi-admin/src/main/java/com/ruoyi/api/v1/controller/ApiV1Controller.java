@@ -163,7 +163,7 @@ public class ApiV1Controller extends BaseController {
                         }
                     }
                     // 检查用户设备是否被禁用
-                    SysDeviceCode deviceCode = loginUser.getDeviceCode();
+                    SysDeviceCode deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCodeId(loginUser.getDeviceCodeId());
                     if (deviceCode != null && StringUtils.isNotBlank(deviceCode.getDeviceCode())) {
                         SysDeviceCode code = deviceCodeService.selectSysDeviceCodeByDeviceCode(deviceCode.getDeviceCode());
                         if (code!= null && UserStatus.DISABLE.getCode().equals(code.getStatus())) {

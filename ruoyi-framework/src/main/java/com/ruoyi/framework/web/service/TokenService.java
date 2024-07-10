@@ -88,9 +88,8 @@ public class TokenService {
                 LoginUser loginUser = null;
                 try {
                     loginUser = (LoginUser) SysCache.get(key);
-                } catch (Exception ignored) {
-                }
-                if (loginUser == null) {
+                } catch(Exception ignored) {}
+                if(loginUser == null) {
                     loginUser = redisCache.getCacheObject(key);
                     SysCache.set(key, loginUser, redisCache.getExpire(key));
                 }
@@ -183,7 +182,7 @@ public class TokenService {
                     appUserCountService.saveOrUpdate(appUserCount);
                 }
                 List<LoginUser> currentOnline = appUserService.getCurrentOnline();
-                Map<Long, List<LoginUser>> collected = currentOnline.stream().collect(Collectors.groupingBy(item -> item.getAppId()));
+                Map<Long, List<LoginUser>> collected = currentOnline.stream().collect(Collectors.groupingBy(LoginUser::getAppId));
                 if (collected.containsKey(appId) && collected.get(appId).size() > appUserCount.getMaxOnlineNum()) {
                     appUserCount.setMaxOnlineNum((long) collected.get(appId).size());
                     appUserCountService.saveOrUpdate(appUserCount);

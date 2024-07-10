@@ -52,6 +52,11 @@ public class CacheConstants {
     public static final String SYS_APP_KEY = "sys_app:";
 
     /**
+     * APP版本缓存 SYS_APP_VERSION_KEY
+     */
+    public static final String SYS_APP_VERSION_KEY = "sys_app_version:";
+
+    /**
      * APP_USER缓存 SYS_APP_USER_KEY
      */
     public static final String SYS_APP_USER_KEY = "sys_app_user:";

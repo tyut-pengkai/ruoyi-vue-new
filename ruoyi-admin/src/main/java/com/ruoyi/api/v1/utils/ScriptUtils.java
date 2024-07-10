@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.api.v1.api.noAuth.general.GlobalScript;
 import com.ruoyi.api.v1.domain.vo.*;
+import com.ruoyi.common.core.domain.entity.SysAppVersion;
+import com.ruoyi.common.core.domain.entity.SysDeviceCode;
 import com.ruoyi.common.enums.ErrorCode;
 import com.ruoyi.common.enums.ScriptLanguage;
 import com.ruoyi.common.exception.ApiException;
@@ -11,9 +13,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.domain.vo.ScriptResultVo;
-import com.ruoyi.system.service.ISysAppTrialUserService;
-import com.ruoyi.system.service.ISysAppUserService;
-import com.ruoyi.system.service.ISysConfigService;
+import com.ruoyi.system.service.*;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
@@ -144,7 +144,9 @@ public class ScriptUtils {
                     }
                 } else if ("version".equals(object)) {
                     if (context != null) {
-                        jsonObject = JSON.parseObject(JSON.toJSONString(new SysAppVersionVo(context.getLoginUser().getAppVersion())));
+                        ISysAppVersionService versionService = SpringUtils.getBean(ISysAppVersionService.class);
+                        SysAppVersion appVersion = versionService.selectSysAppVersionByAppVersionId(context.getLoginUser().getAppVersionId());
+                        jsonObject = JSON.parseObject(JSON.toJSONString(new SysAppVersionVo(appVersion)));
                     }
                 } else if ("trialUser".equals(object)) {
                     if (context != null) {
@@ -155,7 +157,9 @@ public class ScriptUtils {
                     }
                 } else if ("deviceCode".equals(object)) {
                     if (context != null) {
-                        jsonObject = JSON.parseObject(JSON.toJSONString(new SysDeviceCodeVo(context.getLoginUser().getDeviceCode())));
+                        ISysDeviceCodeService deviceCodeService = SpringUtils.getBean(ISysDeviceCodeService.class);
+                        SysDeviceCode deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCodeId(context.getLoginUser().getDeviceCodeId());
+                        jsonObject = JSON.parseObject(JSON.toJSONString(new SysDeviceCodeVo(deviceCode)));
                     }
                 } else {
                     throw new ApiException(ErrorCode.ERROR_GLOBAL_SCRIPT_INNER_VARIABLE_ANALYTICS_FAILED, "脚本内置变量：" + group + "无法被解析");

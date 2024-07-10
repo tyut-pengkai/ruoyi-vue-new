@@ -392,8 +392,8 @@ public class ValidUtils {
         if (deviceCode != null) {
             Set<Long> onlineListM = new HashSet<>();
             for (LoginUser user : onlineListU) {
-                if (user.getDeviceCode() != null) {
-                    onlineListM.add(user.getDeviceCode().getDeviceCodeId());
+                if (user.getDeviceCodeId() != null) {
+                    onlineListM.add(user.getDeviceCodeId());
                 }
             }
             Integer mixM = MyUtils.getEffectiveLoginLimitM(app, appUser);
@@ -450,7 +450,7 @@ public class ValidUtils {
             onlineList.sort(Comparator.comparing(LoginUser::getLoginTime));
             List<LoginUser> oList = new ArrayList<>(onlineList);
             if(firstLocalMachine && deviceCode != null) {
-                List<LoginUser> localMachineOnlineList = onlineList.stream().filter(item -> item.getDeviceCode() != null && item.getDeviceCode().getDeviceCodeId().equals(deviceCode.getDeviceCodeId())).collect(Collectors.toList());
+                List<LoginUser> localMachineOnlineList = onlineList.stream().filter(item -> item.getDeviceCodeId().equals(deviceCode.getDeviceCodeId())).collect(Collectors.toList());
                 if(localMachineOnlineList.size() > 0) {
                     localMachineOnlineList.sort(Comparator.comparing(LoginUser::getLoginTime));
                     oList = localMachineOnlineList;
@@ -464,9 +464,10 @@ public class ValidUtils {
                 try {
                     // 记录用户退出日志
                     SysApp app = appService.selectSysAppByAppKey(loginUser.getAppKey());
+                    SysAppVersion appVersion = appVersionService.selectSysAppVersionByAppVersionId(loginUser.getAppVersionId());
                     AsyncManager.me().execute(AsyncFactory.recordAppLogininfor(loginUser.getAppUserId(), userName,
-                            app.getAppName(), loginUser.getAppVersion().getVersionShow(),
-                            loginUser.getDeviceCode() != null ? loginUser.getDeviceCode().getDeviceCode() : null,
+                            app.getAppName(), appVersion.getVersionShow(),
+                            deviceCode != null ? deviceCode.getDeviceCode() : null,
                             Constants.LOGOUT, "系统强制退出：" + msg));
                 } catch (Exception e) {
                     e.printStackTrace();

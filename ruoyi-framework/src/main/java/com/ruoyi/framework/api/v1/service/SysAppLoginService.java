@@ -50,6 +50,8 @@ public class SysAppLoginService {
     private ValidUtils validUtils;
     @Resource
     private ISysAppTrialUserService appTrialService;
+    @Resource
+    private ISysAppVersionService versionService;
 
     /**
      * App登录验证
@@ -186,9 +188,11 @@ public class SysAppLoginService {
                 loginUser.setUser(null);
                 loginUser.setAppUserId(appUser.getAppUserId());
                 loginUser.setUserName(appUser.getUserName());
-                loginUser.setAppVersion(appVersion);
-                loginUser.setDeviceCode(deviceCode);
-                loginUser.setAppUserDeviceCode(appUserDeviceCode);
+                loginUser.setAppVersionId(appVersion.getAppVersionId());
+                if (deviceCode != null) {
+                    loginUser.setDeviceCodeId(deviceCode.getDeviceCodeId());
+                }
+//                loginUser.setAppUserDeviceCode(appUserDeviceCode);
 
                 recordLoginInfo(loginUser);
 
@@ -403,9 +407,11 @@ public class SysAppLoginService {
                 loginUser.setUser(null);
                 loginUser.setAppUserId(appUser.getAppUserId());
                 loginUser.setUserName(appUser.getUserName());
-                loginUser.setAppVersion(appVersion);
-                loginUser.setDeviceCode(deviceCode);
-                loginUser.setAppUserDeviceCode(appUserDeviceCode);
+                loginUser.setAppVersionId(appVersion.getAppVersionId());
+                if (deviceCode != null) {
+                    loginUser.setDeviceCodeId(deviceCode.getDeviceCodeId());
+                }
+//                loginUser.setAppUserDeviceCode(appUserDeviceCode);
 
                 recordLoginInfo(loginUser);
 
@@ -472,6 +478,7 @@ public class SysAppLoginService {
         validUtils.checkLicenseMaxOnline();
         // 用户验证
         SysAppTrialUser appTrialUser = null;
+        SysDeviceCode deviceCode = null;
         boolean flagNewUser = false;
         String appName = app.getAppName();
         String appVersionStr = appVersion.getVersionShow();
@@ -503,6 +510,23 @@ public class SysAppLoginService {
                 }
             }
             appTrialUser.setUserName(loginCodeShow);
+            // 自动绑定设备码
+            if (StringUtils.isNotBlank(deviceCodeStr)) {
+                deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCode(deviceCodeStr);
+                if (deviceCode == null) {
+                    deviceCode = new SysDeviceCode();
+                    deviceCode.setDeviceCode(deviceCodeStr);
+                    deviceCode.setLoginTimes(0L);
+                    deviceCode.setStatus(UserConstants.NORMAL);
+                    deviceCode.setCreateBy(loginCodeShow);
+                    deviceCodeService.insertSysDeviceCode(deviceCode);
+                } else {
+                    if (UserStatus.DISABLE.getCode().equals(deviceCode.getStatus())) {
+                        log.info("用户设备：{} 已被停用所有软件.", deviceCodeStr);
+                        throw new ApiException(ErrorCode.ERROR_DEVICE_CODE_LOCKED, "用户设备：" + deviceCodeStr + " 已被停用所有软件");
+                    }
+                }
+            }
             boolean flag = false;
             if (validUtils.checkInTrialQuantum(app)) {
                 flag = true;
@@ -559,11 +583,9 @@ public class SysAppLoginService {
                 loginUser.setUser(null);
                 loginUser.setAppTrialUserId(appTrialUser.getAppTrialUserId());
                 loginUser.setUserName(appTrialUser.getUserName());
-                loginUser.setAppVersion(appVersion);
-                SysDeviceCode deviceCode = new SysDeviceCode();
-                deviceCode.setDeviceCode(deviceCodeStr);
-                loginUser.setDeviceCode(deviceCode);
-                loginUser.setAppUserDeviceCode(null);
+                loginUser.setAppVersionId(appVersion.getAppVersionId());
+                loginUser.setDeviceCodeId(deviceCode.getDeviceCodeId());
+//                loginUser.setAppUserDeviceCode(null);
                 recordLoginInfo(loginUser);
                 // 生成token
                 return tokenService.createToken(loginUser);
@@ -619,24 +641,26 @@ public class SysAppLoginService {
             appTrialService.updateSysAppTrialUser(trialUser);
         }
         // 设备码信息
-        if (loginUser.getDeviceCode() != null && loginUser.getDeviceCode().getDeviceCodeId() != null) {
+        if (loginUser.getDeviceCodeId() != null) {
+            SysDeviceCode code = deviceCodeService.selectSysDeviceCodeByDeviceCodeId(loginUser.getDeviceCodeId());
             SysDeviceCode deviceCode = new SysDeviceCode();
-            deviceCode.setDeviceCodeId(loginUser.getDeviceCode().getDeviceCodeId());
-            deviceCode.setLoginTimes(loginUser.getDeviceCode().getLoginTimes() + 1);
+            deviceCode.setDeviceCodeId(code.getDeviceCodeId());
+            deviceCode.setLoginTimes(code.getLoginTimes() + 1);
             deviceCode.setLastLoginTime(nowDate);
             deviceCodeService.updateSysDeviceCode(deviceCode);
             // 用户设备码信息
-            SysAppUserDeviceCode appUserDeviceCode = new SysAppUserDeviceCode();
-            appUserDeviceCode.setId(loginUser.getAppUserDeviceCode().getId());
-            appUserDeviceCode.setLoginTimes(loginUser.getAppUserDeviceCode().getLoginTimes() + 1);
-            appUserDeviceCode.setLastLoginTime(nowDate);
-            appUserDeviceCodeService.updateSysAppUserDeviceCode(appUserDeviceCode);
+            SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(loginUser.getAppUserId(), loginUser.getDeviceCodeId());
+            SysAppUserDeviceCode uAppUserDeviceCode = new SysAppUserDeviceCode();
+            uAppUserDeviceCode.setId(appUserDeviceCode.getId());
+            uAppUserDeviceCode.setLoginTimes(appUserDeviceCode.getLoginTimes() + 1);
+            uAppUserDeviceCode.setLastLoginTime(nowDate);
+            appUserDeviceCodeService.updateSysAppUserDeviceCode(uAppUserDeviceCode);
         }
     }
 
     public String appLogout(LoginUser loginUser) {
-        SysAppVersion version = loginUser.getAppVersion();
-        SysDeviceCode deviceCode = loginUser.getDeviceCode();
+        SysAppVersion version = versionService.selectSysAppVersionByAppVersionId(loginUser.getAppVersionId());
+        SysDeviceCode deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCodeId(loginUser.getDeviceCodeId());
         String _deviceCodeStr = null;
         if (deviceCode != null) {
             _deviceCodeStr = deviceCode.getDeviceCode();
