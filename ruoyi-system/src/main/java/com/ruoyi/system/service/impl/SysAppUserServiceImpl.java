@@ -11,7 +11,6 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.system.mapper.SysAppUserMapper;
 import com.ruoyi.system.service.ISysAppUserService;
-import com.ruoyi.system.service.ISysDeviceCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +31,6 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
     private SysAppUserMapper sysAppUserMapper;
     @Resource
     private RedisCache redisCache;
-    @Resource
-    private ISysDeviceCodeService deviceCodeService;
 
     @PostConstruct
     public void init() {
@@ -158,23 +155,6 @@ public class SysAppUserServiceImpl implements ISysAppUserService {
     public SysAppUser selectSysAppUserByAppIdAndLoginCode(Long appId, String loginCode) {
         return sysAppUserMapper.selectSysAppUserByAppIdAndLoginCode(appId, loginCode);
     }
-
-    /**
-     * 修改状态
-     *
-     * @param sysAppUser 信息
-     * @return 结果
-     */
-    @Override
-    public int updateSysDeviceCodeStatus(SysAppUser sysAppUser) {
-        int i = sysAppUserMapper.updateSysAppUser(sysAppUser);
-        if (i > 0) {
-            SysAppUser appUser = sysAppUserMapper.selectSysAppUserByAppUserId(sysAppUser.getAppUserId());
-            redisCache.setCacheObject(CacheConstants.SYS_APP_USER_KEY + appUser.getAppUserId(), appUser, 24, TimeUnit.HOURS);
-        }
-        return i;
-    }
-
 
     public List<LoginUser> getCurrentOnline(Long appUserId) {
         // 统计当前在线用户数

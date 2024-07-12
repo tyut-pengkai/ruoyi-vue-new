@@ -96,7 +96,7 @@ public class SysWithdrawOrderController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:withdrawOrder:withdrawCash')")
     @Log(title = "提现记录", businessType = BusinessType.WITHDRAW_CASH)
-    @PutMapping
+    @PutMapping("/createWithdrawOrder")
     public AjaxResult createWithdrawOrder(@Validated @RequestBody WithdrawCashVo vo) {
         return sysWithdrawOrderService.createWithdrawOrder(vo);
     }

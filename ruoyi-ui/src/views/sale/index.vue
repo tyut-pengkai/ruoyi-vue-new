@@ -194,7 +194,6 @@ export default {
       });
     },
     getSysInfo() {
-      console.log('fe test');
       getSysInfo().then((res) => {
         this.copyright = res.copyright;
         this.isLicenseServer = res.isLicenseServer;
