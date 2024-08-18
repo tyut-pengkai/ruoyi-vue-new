@@ -126,14 +126,16 @@ public class SysIndexController extends BaseController {
                 String remoteJson = Utils.readFromUrl(url);
                 AjaxResult noticeTableData = JSON.parseObject(remoteJson, AjaxResult.class);
                 JSONArray objectList = (JSONArray) noticeTableData.get(AjaxResult.DATA_TAG);
-                noticeList = objectList.toJavaList(SysNotice.class);
-                for (SysNotice notice : noticeList) {
-                    if (notice.getNoticeContent().contains("\"/prod-api/")) {
-                        String s = notice.getNoticeContent().replaceAll("\"/prod-api/", "\"" + baseUrl + "prod-api/");
-                        notice.setNoticeContent(s);
+                if(objectList != null) {
+                    noticeList = objectList.toJavaList(SysNotice.class);
+                    for (SysNotice notice : noticeList) {
+                        if (notice.getNoticeContent().contains("\"/prod-api/")) {
+                            String s = notice.getNoticeContent().replaceAll("\"/prod-api/", "\"" + baseUrl + "prod-api/");
+                            notice.setNoticeContent(s);
+                        }
                     }
+                    allNoticeList.addAll(noticeList);
                 }
-                allNoticeList.addAll(noticeList);
             } catch (Exception e) {
                 log.warn("获取官方公告失败");
                 e.printStackTrace();

@@ -19,6 +19,7 @@ public class SysAppUserCountServiceImpl extends ServiceImpl<SysAppUserCountMappe
     @Resource
     private SysAppUserCountMapper appUserCountMapper;
 
+    @Override
     public SysAppUserCount selectAppUserCountByAppIdAndCreateTime(Long appId, String createTime) {
         return appUserCountMapper.selectAppUserCountByAppIdAndCreateTime(appId, createTime);
     }

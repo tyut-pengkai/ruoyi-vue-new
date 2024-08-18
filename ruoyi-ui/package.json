@@ -6,11 +6,11 @@
   "author": "coordsoft.com",
   "license": "MIT",
   "scripts": {
-    "dev": "vue-cli-service serve",
-    "build:prod": "vue-cli-service build",
-    "build:stage": "vue-cli-service build --mode staging",
-    "preview": "node build/index.js --preview",
-    "lint": "eslint --ext .js,.vue src"
+    "dev": "SET NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve",
+    "build:prod": "SET NODE_OPTIONS=--openssl-legacy-provider &&  && vue-cli-service build",
+    "build:stage": "SET NODE_OPTIONS=--openssl-legacy-provider &&  && vue-cli-service build --mode staging",
+    "preview": "SET NODE_OPTIONS=--openssl-legacy-provider &&  && node build/index.js --preview",
+    "lint": "SET NODE_OPTIONS=--openssl-legacy-provider &&  && eslint --ext .js,.vue src"
   },
   "husky": {
     "hooks": {

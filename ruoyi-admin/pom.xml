@@ -132,10 +132,10 @@
                             <groupId>com.ruoyi</groupId>
                             <artifactId>ruoyi-framework</artifactId>
                         </include>
-                        <!--                        <include>-->
-                        <!--                            <groupId>com.ruoyi</groupId>-->
-                        <!--                            <artifactId>ruoyi-quartz</artifactId>-->
-                        <!--                        </include>-->
+                        <include>
+                            <groupId>com.ruoyi</groupId>
+                            <artifactId>ruoyi-quartz</artifactId>
+                        </include>
                         <include>
                             <groupId>com.ruoyi</groupId>
                             <artifactId>ruoyi-system</artifactId>

@@ -57,6 +57,7 @@ public class CleanLogDaemonThread {
         tablePkMap.put("sys_logininfor", "info_id");
         tablePkMap.put("sys_app_logininfor", "info_id");
         tablePkMap.put("sys_app_trial_logininfor", "info_id");
+        tablePkMap.put("sys_job_log", "job_log_id");
 //        tablePkMap.put("test", "info_id");
 
         while (true) {
