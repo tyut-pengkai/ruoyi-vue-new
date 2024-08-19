@@ -24,6 +24,7 @@ import com.ruoyi.system.domain.vo.UserBalanceTransferVo;
 import com.ruoyi.system.mapper.*;
 import com.ruoyi.system.service.ISysBalanceLogService;
 import com.ruoyi.system.service.ISysConfigService;
+import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,10 @@ public class SysUserServiceImpl implements ISysUserService {
     private SysUserPostMapper userPostMapper;
     @Autowired
     private ISysConfigService configService;
+
+    @Autowired
+    private ISysDeptService deptService;
+
     @Autowired
     protected Validator validator;
     @Resource
@@ -651,8 +656,8 @@ public class SysUserServiceImpl implements ISysUserService {
         int failureNum = 0;
         StringBuilder successMsg = new StringBuilder();
         StringBuilder failureMsg = new StringBuilder();
-        String password = configService.selectConfigByKey("sys.user.initPassword");
-        for (SysUser user : userList) {
+        for (SysUser user : userList)
+        {
             user.setAvailableFreeBalance(BigDecimal.ZERO);
             user.setAvailablePayBalance(BigDecimal.ZERO);
             user.setFreezeFreeBalance(BigDecimal.ZERO);
@@ -664,17 +669,21 @@ public class SysUserServiceImpl implements ISysUserService {
                 SysUser u = userMapper.selectUserByUserName(user.getUserName());
                 if (StringUtils.isNull(u)) {
                     BeanValidators.validateWithException(validator, user);
+                    deptService.checkDeptDataScope(user.getDeptId());
+                    String password = configService.selectConfigByKey("sys.user.initPassword");
                     user.setPassword(SecurityUtils.encryptPassword(password));
                     user.setCreateBy(operName);
-                    this.insertUser(user);
+                    userMapper.insertUser(user);
                     successNum++;
                     successMsg.append("<br/>" + successNum + "、账号[" + user.getUserName() + "]导入成功");
                 } else if (isUpdateSupport) {
                     BeanValidators.validateWithException(validator, user);
-                    checkUserAllowed(user);
-                    checkUserDataScope(user.getUserId());
+                    checkUserAllowed(u);
+                    checkUserDataScope(u.getUserId());
+                    deptService.checkDeptDataScope(user.getDeptId());
+                    user.setUserId(u.getUserId());
                     user.setUpdateBy(operName);
-                    this.updateUser(user);
+                    userMapper.updateUser(user);
                     successNum++;
                     successMsg.append("<br/>" + successNum + "、账号[" + user.getUserName() + "]更新成功");
                 } else {

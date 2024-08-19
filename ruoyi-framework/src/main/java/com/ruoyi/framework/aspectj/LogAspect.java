@@ -2,6 +2,7 @@ package com.ruoyi.framework.aspectj;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.BusinessStatus;
@@ -131,6 +132,11 @@ public class LogAspect {
             if (loginUser != null)
             {
                 operLog.setOperName(loginUser.getUsername());
+                SysUser currentUser = loginUser.getUser();
+                if (StringUtils.isNotNull(currentUser) && StringUtils.isNotNull(currentUser.getDept()))
+                {
+                    operLog.setDeptName(currentUser.getDept().getDeptName());
+                }
             }
 
             if (e != null)

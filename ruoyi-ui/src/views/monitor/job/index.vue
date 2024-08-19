@@ -1,13 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form
-      v-show="showSearch"
-      ref="queryForm"
-      :inline="true"
-      :model="queryParams"
-      label-width="68px"
-      size="small"
-    >
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="任务名称" prop="jobName">
         <el-input
           v-model="queryParams.jobName"
@@ -17,11 +10,7 @@
         />
       </el-form-item>
       <el-form-item label="任务组名" prop="jobGroup">
-        <el-select
-          v-model="queryParams.jobGroup"
-          clearable
-          placeholder="请选择任务组名"
-        >
+        <el-select v-model="queryParams.jobGroup" placeholder="请选择任务组名" clearable>
           <el-option
             v-for="dict in dict.type.sys_job_group"
             :key="dict.value"
@@ -31,11 +20,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="任务状态" prop="status">
-        <el-select
-          v-model="queryParams.status"
-          clearable
-          placeholder="请选择任务状态"
-        >
+        <el-select v-model="queryParams.status" placeholder="请选择任务状态" clearable>
           <el-option
             v-for="dict in dict.type.sys_job_status"
             :key="dict.value"
@@ -45,16 +30,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button
-          icon="el-icon-search"
-          size="mini"
-          type="primary"
-          @click="handleQuery"
-          >搜索
-        </el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置
-        </el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -67,8 +44,7 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['monitor:job:add']"
-          >新增
-        </el-button>
+        >新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -79,8 +55,7 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['monitor:job:edit']"
-          >修改
-        </el-button>
+        >修改</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -91,8 +66,7 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['monitor:job:remove']"
-          >删除
-        </el-button>
+        >删除</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -102,8 +76,7 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['monitor:job:export']"
-          >导出
-        </el-button>
+        >导出</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -113,53 +86,22 @@
           size="mini"
           @click="handleJobLog"
           v-hasPermi="['monitor:job:query']"
-          >日志
-        </el-button>
+        >日志</el-button>
       </el-col>
-      <right-toolbar
-        :showSearch.sync="showSearch"
-        @queryTable="getList"
-      ></right-toolbar>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table
-      v-loading="loading"
-      :data="jobList"
-      @selection-change="handleSelectionChange"
-    >
+    <el-table v-loading="loading" :data="jobList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column
-        align="center"
-        label="任务编号"
-        prop="jobId"
-        width="100"
-      />
-      <el-table-column
-        :show-overflow-tooltip="true"
-        align="center"
-        label="任务名称"
-        prop="jobName"
-      />
+      <el-table-column label="任务编号" width="100" align="center" prop="jobId" />
+      <el-table-column label="任务名称" align="center" prop="jobName" :show-overflow-tooltip="true" />
       <el-table-column label="任务组名" align="center" prop="jobGroup">
         <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_job_group"
-            :value="scope.row.jobGroup"
-          />
+          <dict-tag :options="dict.type.sys_job_group" :value="scope.row.jobGroup"/>
         </template>
       </el-table-column>
-      <el-table-column
-        :show-overflow-tooltip="true"
-        align="center"
-        label="调用目标字符串"
-        prop="invokeTarget"
-      />
-      <el-table-column
-        :show-overflow-tooltip="true"
-        align="center"
-        label="cron执行表达式"
-        prop="cronExpression"
-      />
+      <el-table-column label="调用目标字符串" align="center" prop="invokeTarget" :show-overflow-tooltip="true" />
+      <el-table-column label="cron执行表达式" align="center" prop="cronExpression" :show-overflow-tooltip="true" />
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">
           <el-switch
@@ -170,11 +112,7 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        class-name="small-padding fixed-width"
-        label="操作"
-      >
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -182,38 +120,23 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['monitor:job:edit']"
-          >修改
-          </el-button>
+          >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['monitor:job:remove']"
-          >删除
-          </el-button>
-          <el-dropdown v-hasPermi="['monitor:job:changeStatus', 'monitor:job:query']" size="mini"
-                       @command="(command) => handleCommand(command, scope.row)">
-            <el-button icon="el-icon-d-arrow-right" size="mini" type="text">更多</el-button>
+          >删除</el-button>
+          <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)" v-hasPermi="['monitor:job:changeStatus', 'monitor:job:query']">
+            <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item
-                v-hasPermi="['monitor:job:changeStatus']"
-                command="handleRun"
-                icon="el-icon-caret-right"
-              >执行一次
-              </el-dropdown-item>
-              <el-dropdown-item
-                v-hasPermi="['monitor:job:query']"
-                command="handleView"
-                icon="el-icon-view"
-                >任务详细
-              </el-dropdown-item>
-              <el-dropdown-item
-                v-hasPermi="['monitor:job:query']"
-                command="handleJobLog"
-                icon="el-icon-s-operation"
-                >调度日志
-              </el-dropdown-item>
+              <el-dropdown-item command="handleRun" icon="el-icon-caret-right"
+                v-hasPermi="['monitor:job:changeStatus']">执行一次</el-dropdown-item>
+              <el-dropdown-item command="handleView" icon="el-icon-view"
+                v-hasPermi="['monitor:job:query']">任务详细</el-dropdown-item>
+              <el-dropdown-item command="handleJobLog" icon="el-icon-s-operation"
+                v-hasPermi="['monitor:job:query']">调度日志</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -221,7 +144,7 @@
     </el-table>
 
     <pagination
-      v-show="total > 0"
+      v-show="total>0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -262,18 +185,12 @@
                   <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
-              <el-input
-                v-model="form.invokeTarget"
-                placeholder="请输入调用目标字符串"
-              />
+              <el-input v-model="form.invokeTarget" placeholder="请输入调用目标字符串" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="cron表达式" prop="cronExpression">
-              <el-input
-                v-model="form.cronExpression"
-                placeholder="请输入cron执行表达式"
-              >
+              <el-input v-model="form.cronExpression" placeholder="请输入cron执行表达式">
                 <template slot="append">
                   <el-button type="primary" @click="handleShowCron">
                     生成表达式
@@ -283,7 +200,18 @@
               </el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="24">
+          <el-col :span="24" v-if="form.jobId !== undefined">
+            <el-form-item label="状态">
+              <el-radio-group v-model="form.status">
+                <el-radio
+                  v-for="dict in dict.type.sys_job_status"
+                  :key="dict.value"
+                  :label="dict.value"
+                >{{dict.label}}</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="执行策略" prop="misfirePolicy">
               <el-radio-group v-model="form.misfirePolicy" size="small">
                 <el-radio-button label="1">立即执行</el-radio-button>
@@ -300,18 +228,6 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in dict.type.sys_job_status"
-                  :key="dict.value"
-                  :label="dict.value"
-                  >{{ dict.label }}
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -320,27 +236,12 @@
       </div>
     </el-dialog>
 
-    <el-dialog
-      :visible.sync="openCron"
-      append-to-body
-      class="scrollbar"
-      destroy-on-close
-      title="Cron表达式生成器"
-    >
-      <crontab
-        :expression="expression"
-        @fill="crontabFill"
-        @hide="openCron = false"
-      ></crontab>
+    <el-dialog title="Cron表达式生成器" :visible.sync="openCron" append-to-body destroy-on-close class="scrollbar">
+      <crontab @hide="openCron=false" @fill="crontabFill" :expression="expression"></crontab>
     </el-dialog>
 
     <!-- 任务日志详细 -->
-    <el-dialog
-      :visible.sync="openView"
-      append-to-body
-      title="任务详细"
-      width="700px"
-    >
+    <el-dialog title="任务详细" :visible.sync="openView" width="700px" append-to-body>
       <el-form ref="form" :model="form" label-width="120px" size="mini">
         <el-row>
           <el-col :span="12">
@@ -348,32 +249,22 @@
             <el-form-item label="任务名称：">{{ form.jobName }}</el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="任务分组："
-              >{{ jobGroupFormat(form) }}
-            </el-form-item>
-            <el-form-item label="创建时间："
-              >{{ form.createTime }}
-            </el-form-item>
+            <el-form-item label="任务分组：">{{ jobGroupFormat(form) }}</el-form-item>
+            <el-form-item label="创建时间：">{{ form.createTime }}</el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="cron表达式："
-              >{{ form.cronExpression }}
-            </el-form-item>
+            <el-form-item label="cron表达式：">{{ form.cronExpression }}</el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="下次执行时间："
-              >{{ parseTime(form.nextValidTime) }}
-            </el-form-item>
+            <el-form-item label="下次执行时间：">{{ parseTime(form.nextValidTime) }}</el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="调用目标方法："
-              >{{ form.invokeTarget }}
-            </el-form-item>
+            <el-form-item label="调用目标方法：">{{ form.invokeTarget }}</el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="任务状态：">
               <div v-if="form.status == 0">正常</div>
-              <div v-else-if="form.status == 1">失败</div>
+              <div v-else-if="form.status == 1">暂停</div>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -400,13 +291,13 @@
 </template>
 
 <script>
-import {addJob, changeJobStatus, delJob, getJob, listJob, runJob, updateJob,} from "@/api/monitor/job";
-import Crontab from "@/components/Crontab";
+import { listJob, getJob, delJob, addJob, updateJob, runJob, changeJobStatus } from "@/api/monitor/job";
+import Crontab from '@/components/Crontab'
 
 export default {
   components: { Crontab },
   name: "Job",
-  dicts: ["sys_job_group", "sys_job_status"],
+  dicts: ['sys_job_group', 'sys_job_status'],
   data() {
     return {
       // 遮罩层
@@ -449,20 +340,12 @@ export default {
           { required: true, message: "任务名称不能为空", trigger: "blur" },
         ],
         invokeTarget: [
-          {
-            required: true,
-            message: "调用目标字符串不能为空",
-            trigger: "blur",
-          },
+          { required: true, message: "调用目标字符串不能为空", trigger: "blur" },
         ],
         cronExpression: [
-          {
-            required: true,
-            message: "cron执行表达式不能为空",
-            trigger: "blur",
-          },
-        ],
-      },
+          { required: true, message: "cron执行表达式不能为空", trigger: "blur" },
+        ]
+      }
     };
   },
   created() {
@@ -536,33 +419,25 @@ export default {
     // 任务状态修改
     handleStatusChange(row) {
       let text = row.status === "0" ? "启用" : "停用";
-      this.$modal
-        .confirm('确认要"' + text + '""' + row.jobName + '"任务吗？')
-        .then(function () {
-          return changeJobStatus(row.jobId, row.status);
-        })
-        .then(() => {
-          this.$modal.msgSuccess(text + "成功");
-        })
-        .catch(function () {
-          row.status = row.status === "0" ? "1" : "0";
-        });
+      this.$modal.confirm('确认要"' + text + '""' + row.jobName + '"任务吗？').then(function() {
+        return changeJobStatus(row.jobId, row.status);
+      }).then(() => {
+        this.$modal.msgSuccess(text + "成功");
+      }).catch(function() {
+        row.status = row.status === "0" ? "1" : "0";
+      });
     },
     /* 立即执行一次 */
     handleRun(row) {
-      this.$modal
-        .confirm('确认要立即执行一次"' + row.jobName + '"任务吗？')
-        .then(function () {
-          return runJob(row.jobId, row.jobGroup);
-        })
-        .then(() => {
-          this.$modal.msgSuccess("执行成功");
-        })
-        .catch(() => {});
+      this.$modal.confirm('确认要立即执行一次"' + row.jobName + '"任务吗？').then(function() {
+        return runJob(row.jobId, row.jobGroup);
+      }).then(() => {
+        this.$modal.msgSuccess("执行成功");
+      }).catch(() => {});
     },
     /** 任务详细信息 */
     handleView(row) {
-      getJob(row.jobId).then((response) => {
+      getJob(row.jobId).then(response => {
         this.form = response.data;
         this.openView = true;
       });
@@ -620,27 +495,19 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const jobIds = row.jobId || this.ids;
-      this.$modal
-        .confirm("是否确认删除数据项？")
-        .then(function () {
-          return delJob(jobIds);
-        })
-        .then(() => {
-          this.getList();
-          this.$modal.msgSuccess("删除成功");
-        })
-        .catch(() => {});
+      this.$modal.confirm('是否确认删除定时任务编号为"' + jobIds + '"的数据项？').then(function() {
+        return delJob(jobIds);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("删除成功");
+      }).catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download(
-        "monitor/job/export",
-        {
-          ...this.queryParams,
-        },
-        `job_${new Date().getTime()}.xlsx`
-      );
-    },
-  },
+      this.download('monitor/job/export', {
+        ...this.queryParams
+      }, `job_${new Date().getTime()}.xlsx`)
+    }
+  }
 };
 </script>

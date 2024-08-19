@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import {getCache} from "@/api/monitor/cache";
+import { getCache } from "@/api/monitor/cache";
 import * as echarts from "echarts";
 
 export default {
@@ -132,6 +132,10 @@ export default {
               ]
             }
           ]
+        });
+        window.addEventListener("resize", () => {
+          this.commandstats.resize();
+          this.usedmemory.resize();
         });
       });
     },

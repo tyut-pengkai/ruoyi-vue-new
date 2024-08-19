@@ -26,7 +26,7 @@ public class SysUser extends BaseEntity {
     /**
      * 用户ID
      */
-//    @Excel(name = "用户序号", cellType = ColumnType.NUMERIC, prompt = "用户编号")
+    @Excel(name = "用户序号", type = Type.EXPORT, cellType = ColumnType.NUMERIC, prompt = "用户编号")
     private Long userId;
 
     /**
@@ -56,7 +56,7 @@ public class SysUser extends BaseEntity {
     /**
      * 手机号码
      */
-    @Excel(name = "手机号码")
+    @Excel(name = "手机号码", cellType = ColumnType.TEXT)
     private String phonenumber;
 
     /**

@@ -1,16 +1,26 @@
 package com.ruoyi.web.controller.monitor;
 
-import com.ruoyi.common.constant.CacheConstants;
-import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.system.domain.SysCache;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import com.ruoyi.common.constant.CacheConstants;
+import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.system.domain.SysCache;
 
 /**
  * 缓存监控
@@ -24,9 +34,8 @@ public class CacheController {
     private RedisTemplate<String, String> redisTemplate;
 
     private final static List<SysCache> caches = new ArrayList<SysCache>();
-
     {
-        caches.add(new SysCache(CacheConstants.LOGIN_TOKEN_KEY, "在线用户"));
+        caches.add(new SysCache(CacheConstants.LOGIN_TOKEN_KEY, "用户信息"));
         caches.add(new SysCache(CacheConstants.SYS_CONFIG_KEY, "配置信息"));
         caches.add(new SysCache(CacheConstants.SYS_DICT_KEY, "数据字典"));
         caches.add(new SysCache(CacheConstants.CAPTCHA_CODE_KEY, "验证码"));
@@ -73,7 +82,7 @@ public class CacheController {
     @GetMapping("/getKeys/{cacheName}")
     public AjaxResult getCacheKeys(@PathVariable String cacheName) {
         Set<String> cacheKeys = redisTemplate.keys(cacheName + "*");
-        return AjaxResult.success(cacheKeys);
+        return AjaxResult.success(new TreeSet<>(cacheKeys));
     }
 
     @PreAuthorize("@ss.hasPermi('monitor:cache:list')")

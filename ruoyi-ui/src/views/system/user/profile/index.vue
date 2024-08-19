@@ -8,7 +8,7 @@
           </div>
           <div>
             <div class="text-center">
-              <userAvatar :user="user" />
+              <userAvatar />
             </div>
             <ul class="list-group list-group-striped">
               <li class="list-group-item">
@@ -24,20 +24,15 @@
                 <div class="pull-right">{{ user.email }}</div>
               </li>
               <li class="list-group-item">
-                <svg-icon icon-class="tree"/>
-                所属分组
-                <div v-if="user.dept" class="pull-right">
-                  {{ user.dept.deptName }} / {{ postGroup }}
-                </div>
+                <svg-icon icon-class="tree" />所属分组
+                <div class="pull-right" v-if="user.dept">{{ user.dept.deptName }} / {{ postGroup }}</div>
               </li>
               <li class="list-group-item">
-                <svg-icon icon-class="peoples"/>
-                所属角色
+                <svg-icon icon-class="peoples" />所属角色
                 <div class="pull-right">{{ roleGroup }}</div>
               </li>
               <li class="list-group-item">
-                <svg-icon icon-class="date"/>
-                创建日期
+                <svg-icon icon-class="date" />创建日期
                 <div class="pull-right">{{ user.createTime }}</div>
               </li>
               <li class="list-group-item">
@@ -116,10 +111,10 @@
           </div>
           <el-tabs v-model="activeTab">
             <el-tab-pane label="基本资料" name="userinfo">
-              <userInfo :user="user"/>
+              <userInfo :user="user" />
             </el-tab-pane>
             <el-tab-pane label="修改密码" name="resetPwd">
-              <resetPwd/>
+              <resetPwd />
             </el-tab-pane>
           </el-tabs>
         </el-card>

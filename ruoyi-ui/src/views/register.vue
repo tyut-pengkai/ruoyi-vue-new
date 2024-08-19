@@ -1,24 +1,10 @@
 <template>
   <div class="register">
-    <el-form
-      ref="registerForm"
-      :model="registerForm"
-      :rules="registerRules"
-      class="register-form"
-    >
-      <h3 class="title">{{ name }}</h3>
+    <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form">
+      <h3 class="title">{{ name }</h3>
       <el-form-item prop="username">
-        <el-input
-          v-model="registerForm.username"
-          auto-complete="off"
-          placeholder="账号"
-          type="text"
-        >
-          <svg-icon
-            slot="prefix"
-            class="el-input__icon input-icon"
-            icon-class="user"
-          />
+        <el-input v-model="registerForm.username" type="text" auto-complete="off" placeholder="账号">
+          <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -29,11 +15,7 @@
           placeholder="密码"
           @keyup.enter.native="handleRegister"
         >
-          <svg-icon
-            slot="prefix"
-            class="el-input__icon input-icon"
-            icon-class="password"
-          />
+          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="confirmPassword">
@@ -44,14 +26,10 @@
           placeholder="确认密码"
           @keyup.enter.native="handleRegister"
         >
-          <svg-icon
-            slot="prefix"
-            class="el-input__icon input-icon"
-            icon-class="password"
-          />
+          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
-      <el-form-item v-if="captchaEnabled" prop="code">
+      <el-form-item prop="code" v-if="captchaEnabled">
         <el-input
           v-model="registerForm.code"
           auto-complete="off"
@@ -59,32 +37,25 @@
           style="width: 63%"
           @keyup.enter.native="handleRegister"
         >
-          <svg-icon
-            slot="prefix"
-            class="el-input__icon input-icon"
-            icon-class="validCode"
-          />
+          <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
         </el-input>
         <div class="register-code">
-          <img :src="codeUrl" class="register-code-img" @click="getCode"/>
+          <img :src="codeUrl" @click="getCode" class="register-code-img"/>
         </div>
       </el-form-item>
-      <el-form-item style="width: 100%">
+      <el-form-item style="width:100%;">
         <el-button
           :loading="loading"
           size="medium"
           type="primary"
-          style="width: 100%"
+          style="width:100%;"
           @click.native.prevent="handleRegister"
         >
           <span v-if="!loading">注 册</span>
           <span v-else>注 册 中...</span>
         </el-button>
-        <div style="float: right">
-          <router-link :to="'/login'" class="link-type"
-          >使用已有账户登录
-          </router-link
-          >
+        <div style="float: right;">
+          <router-link class="link-type" :to="'/login'">使用已有账户登录</router-link>
         </div>
       </el-form-item>
     </el-form>
@@ -123,28 +94,19 @@ export default {
       },
       registerRules: {
         username: [
-          {required: true, trigger: "blur", message: "请输入您的账号"},
-          {
-            min: 2,
-            max: 20,
-            message: "用户账号长度必须介于 2 和 20 之间",
-            trigger: "blur",
-          },
+          { required: true, trigger: "blur", message: "请输入您的账号" },
+          { min: 2, max: 20, message: '用户账号长度必须介于 2 和 20 之间', trigger: 'blur' }
         ],
         password: [
-          {required: true, trigger: "blur", message: "请输入您的密码"},
-          {
-            min: 5,
-            max: 20,
-            message: "用户密码长度必须介于 5 和 20 之间",
-            trigger: "blur",
-          },
+          { required: true, trigger: "blur", message: "请输入您的密码" },
+          { min: 5, max: 20, message: "用户密码长度必须介于 5 和 20 之间", trigger: "blur" },
+          { pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur" }
         ],
         confirmPassword: [
-          {required: true, trigger: "blur", message: "请再次输入您的密码"},
-          {required: true, validator: equalToPassword, trigger: "blur"},
+          { required: true, trigger: "blur", message: "请再次输入您的密码" },
+          { required: true, validator: equalToPassword, trigger: "blur" }
         ],
-        code: [{required: true, trigger: "change", message: "请输入验证码"}],
+        code: [{ required: true, trigger: "change", message: "请输入验证码" }]
       },
       loading: false,
       captchaEnabled: true
@@ -183,8 +145,7 @@ export default {
               type: "success",
             }).then(() => {
               this.$router.push("/login");
-            }).catch(() => {
-            });
+            }).catch(() => {});
           }).catch(() => {
             this.loading = false;
             if (this.captchaEnabled) {

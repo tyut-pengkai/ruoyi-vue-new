@@ -10,57 +10,34 @@
         </el-col>
         <el-col :span="8" :offset="2">
           <el-form-item label="登录账号" prop="userName">
-            <el-input v-model="form.userName" disabled />
+            <el-input  v-model="form.userName" disabled />
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
 
     <h4 class="form-header h4">角色信息</h4>
-    <el-table
-      ref="table"
-      v-loading="loading"
-      :data="roles.slice((pageNum - 1) * pageSize, pageNum * pageSize)"
-      :row-key="getRowKey"
-      @row-click="clickRow"
-      @selection-change="handleSelectionChange"
-    >
+    <el-table v-loading="loading" :row-key="getRowKey" @row-click="clickRow" ref="table" @selection-change="handleSelectionChange" :data="roles.slice((pageNum-1)*pageSize,pageNum*pageSize)">
       <el-table-column label="序号" type="index" align="center">
         <template slot-scope="scope">
-          <span>{{ (pageNum - 1) * pageSize + scope.$index + 1 }}</span>
+          <span>{{(pageNum - 1) * pageSize + scope.$index + 1}}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        :reserve-selection="true"
-        type="selection"
-        width="55"
-      ></el-table-column>
+      <el-table-column type="selection" :reserve-selection="true" width="55"></el-table-column>
       <el-table-column label="角色编号" align="center" prop="roleId" />
       <el-table-column label="角色名称" align="center" prop="roleName" />
       <el-table-column label="权限字符" align="center" prop="roleKey" />
-      <el-table-column
-        align="center"
-        label="创建时间"
-        prop="createTime"
-        width="180"
-      >
+      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :limit.sync="pageSize"
-      :page.sync="pageNum"
-      :total="total"
-    />
+    <pagination v-show="total>0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" />
 
     <el-form label-width="100px">
-      <el-form-item
-        style="text-align: center; margin-left: -120px; margin-top: 30px"
-      >
+      <el-form-item style="text-align: center;margin-left:-120px;margin-top:30px;">
         <el-button type="primary" @click="submitForm()">提交</el-button>
         <el-button @click="close()">返回</el-button>
       </el-form-item>
@@ -69,7 +46,7 @@
 </template>
 
 <script>
-import {getAuthRole, updateAuthRole} from "@/api/system/user";
+import { getAuthRole, updateAuthRole } from "@/api/system/user";
 
 export default {
   name: "AuthRole",
@@ -82,7 +59,7 @@ export default {
       pageNum: 1,
       pageSize: this.$store.state.settings.pageSize,
       // 选中角色编号
-      roleIds: [],
+      roleIds:[],
       // 角色信息
       roles: [],
       // 用户信息

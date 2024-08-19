@@ -17,6 +17,8 @@ public class FastJson2JsonRedisSerializer<T> implements RedisSerializer<T>
 {
     public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
+    static final Filter AUTO_TYPE_FILTER = JSONReader.autoTypeFilter(Constants.JSON_WHITELIST_STR);
+
     private Class<T> clazz;
 
     static
@@ -49,6 +51,7 @@ public class FastJson2JsonRedisSerializer<T> implements RedisSerializer<T>
         }
         String str = new String(bytes, DEFAULT_CHARSET);
 
-        return JSON.parseObject(str, clazz);
+        // return JSON.parseObject(str, clazz);
+        return JSON.parseObject(str, clazz, AUTO_TYPE_FILTER);
     }
 }

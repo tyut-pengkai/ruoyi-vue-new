@@ -2,10 +2,10 @@
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
       <keep-alive :include="cachedViews">
-        <router-view v-if="!$route.meta.link" :key="key"/>
+        <router-view v-if="!$route.meta.link" :key="key" />
       </keep-alive>
     </transition>
-    <iframe-toggle/>
+    <iframe-toggle />
   </section>
 </template>
 
@@ -14,10 +14,10 @@ import iframeToggle from "./IframeToggle/index"
 
 export default {
   name: 'AppMain',
-  components: {iframeToggle},
+  components: { iframeToggle },
   computed: {
     cachedViews() {
-      return this.$store.state.tagsView.cachedViews;
+      return this.$store.state.tagsView.cachedViews
     },
     key() {
       return this.$route.path;
@@ -59,5 +59,19 @@ export default {
   .fixed-header {
     padding-right: 17px;
   }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #c0c0c0;
+  border-radius: 3px;
 }
 </style>

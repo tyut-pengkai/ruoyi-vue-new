@@ -15,7 +15,7 @@
       :headers="headers"
       :file-list="fileList"
       :on-preview="handlePictureCardPreview"
-      :class="{ hide: this.fileList.length >= this.limit }"
+      :class="{hide: this.fileList.length >= this.limit}"
     >
       <i class="el-icon-plus"></i>
     </el-upload>
@@ -23,12 +23,8 @@
     <!-- 上传提示 -->
     <div class="el-upload__tip" slot="tip" v-if="showTip">
       请上传
-      <template v-if="fileSize">
-        大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b>
-      </template>
-      <template v-if="fileType">
-        格式为 <b style="color: #f56c6c">{{ fileType.join("/") }}</b>
-      </template>
+      <template v-if="fileSize"> 大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b> </template>
+      <template v-if="fileType"> 格式为 <b style="color: #f56c6c">{{ fileType.join("/") }}</b> </template>
       的文件
     </div>
 
@@ -47,7 +43,7 @@
 </template>
 
 <script>
-import {getToken} from "@/utils/auth";
+import { getToken } from "@/utils/auth";
 
 export default {
   props: {
@@ -59,7 +55,7 @@ export default {
     },
     // 大小限制(MB)
     fileSize: {
-      type: Number,
+       type: Number,
       default: 5,
     },
     // 文件类型, 例如['png', 'jpg', 'jpeg']
@@ -70,8 +66,8 @@ export default {
     // 是否显示提示
     isShowTip: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
   data() {
     return {
@@ -93,14 +89,14 @@ export default {
       handler(val) {
         if (val) {
           // 首先将值转为数组
-          const list = Array.isArray(val) ? val : this.value.split(",");
+          const list = Array.isArray(val) ? val : this.value.split(',');
           // 然后将数组转为对象数组
           this.fileList = list.map((item) => {
             if (typeof item === "string") {
               if (item.indexOf(this.baseUrl) === -1) {
-                item = { name: this.baseUrl + item, url: this.baseUrl + item };
+                  item = { name: this.baseUrl + item, url: this.baseUrl + item };
               } else {
-                item = { name: item, url: item };
+                  item = { name: item, url: item };
               }
             }
             return item;
@@ -159,7 +155,7 @@ export default {
     // 上传成功回调
     handleUploadSuccess(res, file) {
       if (res.code === 200) {
-        this.uploadList.push({name: res.fileName, url: res.fileName});
+        this.uploadList.push({ name: res.fileName, url: res.fileName });
         this.uploadedSuccessfully();
       } else {
         this.number--;
@@ -172,7 +168,7 @@ export default {
     // 删除图片
     handleDelete(file) {
       const findex = this.fileList.map(f => f.name).indexOf(file.name);
-      if (findex > -1) {
+      if(findex > -1) {
         this.fileList.splice(findex, 1);
         this.$emit("input", this.listToString(this.fileList));
       }
@@ -206,26 +202,25 @@ export default {
           strs += list[i].url.replace(this.baseUrl, "") + separator;
         }
       }
-      return strs != "" ? strs.substr(0, strs.length - 1) : "";
-    },
-  },
+      return strs != '' ? strs.substr(0, strs.length - 1) : '';
+    }
+  }
 };
 </script>
 <style scoped lang="scss">
 // .el-upload--picture-card 控制加号部分
 ::v-deep.hide .el-upload--picture-card {
-  display: none;
+    display: none;
 }
 // 去掉动画效果
 ::v-deep .el-list-enter-active,
 ::v-deep .el-list-leave-active {
-  transition: all 0s;
+    transition: all 0s;
 }
 
-::v-deep .el-list-enter,
-.el-list-leave-active {
-  opacity: 0;
-  transform: translateY(0);
+::v-deep .el-list-enter, .el-list-leave-active {
+    opacity: 0;
+    transform: translateY(0);
 }
 </style>
 

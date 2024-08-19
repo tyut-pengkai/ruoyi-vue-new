@@ -1,9 +1,10 @@
-import {getInfo, login, logout} from '@/api/login'
-import {getToken, removeToken, setToken} from '@/utils/auth'
+import { login, logout, getInfo } from '@/api/login'
+import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
   state: {
     token: getToken(),
+    id: '',
     name: '',
     nickName: '',
     avatar: '',
@@ -15,6 +16,9 @@ const user = {
   mutations: {
     SET_TOKEN: (state, token) => {
       state.token = token
+    },
+    SET_ID: (state, id) => {
+      state.id = id
     },
     SET_NAME: (state, name) => {
       state.name = name
@@ -38,9 +42,7 @@ const user = {
 
   actions: {
     // 登录
-    Login({
-            commit
-          }, userInfo) {
+    Login({ commit }, userInfo) {
       const username = userInfo.username.trim()
       const password = userInfo.password
       const code = userInfo.code
@@ -58,10 +60,7 @@ const user = {
     },
 
     // 获取用户信息
-    GetInfo({
-              commit,
-              state
-            }) {
+    GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         getInfo().then(res => {
           const user = res.user
@@ -76,6 +75,7 @@ const user = {
           if (res.agentPerms && res.agentPerms.length > 0) {
             commit('SET_AGENT_PERMS', res.agentPerms);
           }
+          commit('SET_ID', user.userId)
           commit('SET_NAME', user.userName)
           commit('SET_AVATAR', avatar)
           commit('SET_NICKNAME', user.nickName)
@@ -87,10 +87,7 @@ const user = {
     },
 
     // 退出系统
-    LogOut({
-             commit,
-             state
-           }) {
+    LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
           commit('SET_TOKEN', '')
@@ -106,9 +103,7 @@ const user = {
     },
 
     // 前端 登出
-    FedLogOut({
-                commit
-              }) {
+    FedLogOut({ commit }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
         removeToken()
