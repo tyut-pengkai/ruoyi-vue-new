@@ -15,6 +15,7 @@
             :command="card.appId"
             icon="el-icon-menu"
             v-for="(card, key) in toolCardMoreList"
+            :key="key"
           >
             {{ card.label }}
           </el-dropdown-item>
