@@ -31,6 +31,8 @@ public class PermissionService {
     private ISysUserService sysUserService;
     @Resource
     private ISysAgentUserService agentUserService;
+    @Resource
+    private SysPermissionService sysPermissionService;
 
     /**
      * 验证用户是否具备某权限
@@ -76,7 +78,7 @@ public class PermissionService {
      * @return 用户是否不具备某权限
      */
     public boolean lacksPermi(String permission) {
-        return hasPermi(permission) != true;
+        return !hasPermi(permission);
     }
 
     /**
@@ -124,7 +126,7 @@ public class PermissionService {
         }
         for (SysRole sysRole : user.getRoles()) {
             String roleKey = sysRole.getRoleKey();
-            if (SUPER_ADMIN.equals(roleKey) || roleKey.equals(StringUtils.trim(role))) {
+            if (Constants.SUPER_ADMIN.equals(roleKey) || roleKey.equals(StringUtils.trim(role))) {
                 return true;
             }
         }
@@ -161,7 +163,7 @@ public class PermissionService {
      * @return 用户是否不具备某角色
      */
     public boolean lacksRole(String role) {
-        return hasRole(role) != true;
+        return !hasRole(role);
     }
 
     /**
