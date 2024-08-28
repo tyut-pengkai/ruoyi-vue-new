@@ -95,6 +95,8 @@ public class SysWithdrawOrderServiceImpl implements ISysWithdrawOrderService {
 
     @Override
     public AjaxResult createWithdrawOrder(WithdrawCashVo vo) {
-        return null;
+        SysWithdrawOrder order = new SysWithdrawOrder();
+        order.set
+
     }
 }

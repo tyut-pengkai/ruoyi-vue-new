@@ -4,6 +4,7 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.system.domain.vo.BalanceChangeVo;
 import com.ruoyi.system.domain.vo.UserBalanceChangeVo;
 import com.ruoyi.system.domain.vo.UserBalanceTransferVo;
+import com.ruoyi.system.domain.vo.UserBalanceWithdrawVo;
 
 import java.util.List;
 
@@ -227,5 +228,7 @@ public interface ISysUserService
      * @param appId appID
      * @return 用户对象信息
      */
-    List<SysUser> selectUserByExceptAppId(Long appId);
+    public List<SysUser> selectUserByExceptAppId(Long appId);
+
+    public int withdrawBalance(UserBalanceWithdrawVo vo);
 }

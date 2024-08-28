@@ -306,7 +306,7 @@
 import userAvatar from "./userAvatar";
 import userInfo from "./userInfo";
 import resetPwd from "./resetPwd";
-import {listUser, transferUserBalance, getUserProfile} from "@/api/system/user";
+import {listUser, transferUserBalance, getUserProfile, withdrawUserBalance} from "@/api/system/user";
 import CountTo from "vue-count-to";
 import CardPay from "@/views/sale/shop/card/CardPay1";
 import {createChargeOrder, getPayStatus, getShopConfig,} from "@/api/sale/saleShop";
@@ -515,11 +515,11 @@ export default {
     submitFormW: function () {
       this.$refs["formW"].validate((valid) => {
         if (valid) {
-          // transferUserBalance(this.formT).then((response) => {
-          //   this.getUser();
-          //   this.$modal.msgSuccess("转账成功");
-          //   this.openT = false;
-          // });
+          withdrawUserBalance(this.formW).then((response) => {
+            this.getUser();
+            this.$modal.msgSuccess("提交申请成功，请等待打款");
+            this.openW = false;
+          });
         }
       });
     },

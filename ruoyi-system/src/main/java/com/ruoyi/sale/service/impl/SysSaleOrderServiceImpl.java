@@ -138,7 +138,7 @@ public class SysSaleOrderServiceImpl implements ISysSaleOrderService {
                 sysSaleOrderItem.setOrderId(orderId);
                 list.add(sysSaleOrderItem);
             }
-            if (list.size() > 0) {
+            if (!list.isEmpty()) {
                 sysSaleOrderMapper.batchSysSaleOrderItem(list);
             }
         }

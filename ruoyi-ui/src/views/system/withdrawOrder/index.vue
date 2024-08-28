@@ -1,15 +1,15 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="提现用户 id" prop="userId">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="80px">
+      <el-form-item label="提现账号" prop="userId">
         <el-input
           v-model="queryParams.userId"
-          placeholder="请输入提现用户 id"
+          placeholder="请输入提现账号"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="提现交易编号" prop="orderNo">
+      <el-form-item label="交易编号" prop="orderNo">
         <el-input
           v-model="queryParams.orderNo"
           placeholder="请输入提现交易编号"
@@ -17,7 +17,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="提现手续费" prop="handlingFee">
+      <el-form-item label="手续费" prop="handlingFee">
         <el-input
           v-model="queryParams.handlingFee"
           placeholder="请输入提现手续费"
@@ -25,7 +25,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="提现申请金额" prop="applyFee">
+      <el-form-item label="申请金额" prop="applyFee">
         <el-input
           v-model="queryParams.applyFee"
           placeholder="请输入提现申请金额"
@@ -33,7 +33,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="实际提现金额" prop="actualFee">
+      <el-form-item label="实际金额" prop="actualFee">
         <el-input
           v-model="queryParams.actualFee"
           placeholder="请输入实际提现金额"
@@ -41,8 +41,8 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败" prop="withdrawStatus">
-        <el-select v-model="queryParams.withdrawStatus" placeholder="请选择提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败" clearable>
+      <el-form-item label="提现状态" prop="withdrawStatus">
+        <el-select v-model="queryParams.withdrawStatus" placeholder="请选择提现状态" clearable>
           <el-option
             v-for="dict in dict.type.sys_cash_status"
             :key="dict.value"
@@ -51,7 +51,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="是否人工转账" prop="manualTransfer">
+      <el-form-item label="是否人工" prop="manualTransfer">
         <el-select v-model="queryParams.manualTransfer" placeholder="请选择是否人工转账" clearable>
           <el-option
             v-for="dict in dict.type.sys_yes_no"
@@ -60,17 +60,6 @@
             :value="dict.value"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="交易时间">
-        <el-date-picker
-          v-model="daterangeTradeTime"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
       </el-form-item>
       <el-form-item label="交易号" prop="tradeNo">
         <el-input
@@ -88,7 +77,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="交易失败描述" prop="errorMessage">
+      <el-form-item label="失败描述" prop="errorMessage">
         <el-input
           v-model="queryParams.errorMessage"
           placeholder="请输入交易失败描述"
@@ -113,6 +102,17 @@
           clearable
           @keyup.enter.native="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="交易时间">
+        <el-date-picker
+          v-model="daterangeTradeTime"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -168,30 +168,30 @@
 
     <el-table v-loading="loading" :data="withdrawOrderList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="提现 id" align="center" prop="id" />
-      <el-table-column label="提现用户 id" align="center" prop="userId" />
-      <el-table-column label="提现交易编号" align="center" prop="orderNo" />
-      <el-table-column label="提现手续费" align="center" prop="handlingFee" />
-      <el-table-column label="提现申请金额" align="center" prop="applyFee" />
-      <el-table-column label="实际提现金额" align="center" prop="actualFee" />
-      <el-table-column label="提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败" align="center" prop="withdrawStatus">
+      <el-table-column label="编号" align="center" prop="id" />
+      <el-table-column label="提现账号" align="center" prop="userId" />
+      <el-table-column label="交易编号" align="center" prop="orderNo" />
+      <el-table-column label="手续费" align="center" prop="handlingFee" />
+      <el-table-column label="申请金额" align="center" prop="applyFee" />
+      <el-table-column label="实际金额" align="center" prop="actualFee" />
+      <el-table-column label="提现状态" align="center" prop="withdrawStatus">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_cash_status" :value="scope.row.withdrawStatus"/>
         </template>
       </el-table-column>
-      <el-table-column label="是否人工转账" align="center" prop="manualTransfer">
+      <el-table-column label="是否人工" align="center" prop="manualTransfer">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.manualTransfer"/>
         </template>
       </el-table-column>
       <el-table-column label="交易时间" align="center" prop="tradeTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.tradeTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.tradeTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="交易号" align="center" prop="tradeNo" />
       <el-table-column label="错误代码" align="center" prop="errorCode" />
-      <el-table-column label="交易失败描述" align="center" prop="errorMessage" />
+      <el-table-column label="失败描述" align="center" prop="errorMessage" />
       <el-table-column label="收款平台" align="center" prop="receiveMethod">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_receive_method" :value="scope.row.receiveMethod"/>
@@ -218,7 +218,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -230,22 +230,22 @@
     <!-- 添加或修改提现记录对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="提现用户 id" prop="userId">
+        <el-form-item label="提现账号" prop="userId">
           <el-input v-model="form.userId" placeholder="请输入提现用户 id" />
         </el-form-item>
-        <el-form-item label="提现交易编号" prop="orderNo">
+        <el-form-item label="交易编号" prop="orderNo">
           <el-input v-model="form.orderNo" placeholder="请输入提现交易编号" />
         </el-form-item>
-        <el-form-item label="提现手续费" prop="handlingFee">
+        <el-form-item label="手续费" prop="handlingFee">
           <el-input v-model="form.handlingFee" placeholder="请输入提现手续费" />
         </el-form-item>
-        <el-form-item label="提现申请金额" prop="applyFee">
+        <el-form-item label="申请金额" prop="applyFee">
           <el-input v-model="form.applyFee" placeholder="请输入提现申请金额" />
         </el-form-item>
-        <el-form-item label="实际提现金额" prop="actualFee">
+        <el-form-item label="实际金额" prop="actualFee">
           <el-input v-model="form.actualFee" placeholder="请输入实际提现金额" />
         </el-form-item>
-        <el-form-item label="提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败" prop="withdrawStatus">
+        <el-form-item label="提现状态" prop="withdrawStatus">
           <el-select v-model="form.withdrawStatus" placeholder="请选择提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败">
             <el-option
               v-for="dict in dict.type.sys_cash_status"
@@ -255,7 +255,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="是否人工转账" prop="manualTransfer">
+        <el-form-item label="是否人工" prop="manualTransfer">
           <el-select v-model="form.manualTransfer" placeholder="请选择是否人工转账">
             <el-option
               v-for="dict in dict.type.sys_yes_no"
@@ -279,7 +279,7 @@
         <el-form-item label="错误代码" prop="errorCode">
           <el-input v-model="form.errorCode" placeholder="请输入错误代码" />
         </el-form-item>
-        <el-form-item label="交易失败描述" prop="errorMessage">
+        <el-form-item label="失败描述" prop="errorMessage">
           <el-input v-model="form.errorMessage" placeholder="请输入交易失败描述" />
         </el-form-item>
         <el-form-item label="收款平台" prop="receiveMethod">
@@ -297,9 +297,6 @@
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="删除标志" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标志" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -361,7 +358,7 @@ export default {
       // 表单校验
       rules: {
         userId: [
-          { required: true, message: "提现用户 id不能为空", trigger: "blur" }
+          { required: true, message: "提现账号不能为空", trigger: "blur" }
         ],
         orderNo: [
           { required: true, message: "提现交易编号不能为空", trigger: "blur" }
@@ -376,7 +373,7 @@ export default {
           { required: true, message: "实际提现金额不能为空", trigger: "blur" }
         ],
         withdrawStatus: [
-          { required: true, message: "提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败不能为空", trigger: "change" }
+          { required: true, message: "提现状态不能为空", trigger: "change" }
         ],
         manualTransfer: [
           { required: true, message: "是否人工转账不能为空", trigger: "change" }
@@ -387,9 +384,6 @@ export default {
         receiveAccount: [
           { required: true, message: "收款账号不能为空", trigger: "blur" }
         ],
-        delFlag: [
-          { required: true, message: "删除标志不能为空", trigger: "blur" }
-        ]
       }
     };
   },
@@ -401,7 +395,7 @@ export default {
     getList() {
       this.loading = true;
       this.queryParams.params = {};
-      if (null != this.daterangeTradeTime && '' != this.daterangeTradeTime) {
+      if (null != this.daterangeTradeTime && '' !== this.daterangeTradeTime) {
         this.queryParams.params["beginTradeTime"] = this.daterangeTradeTime[0];
         this.queryParams.params["endTradeTime"] = this.daterangeTradeTime[1];
       }

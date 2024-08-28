@@ -14,18 +14,13 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.common.utils.spring.SpringUtils;
-import com.ruoyi.system.domain.SysBalanceLog;
-import com.ruoyi.system.domain.SysPost;
-import com.ruoyi.system.domain.SysUserPost;
-import com.ruoyi.system.domain.SysUserRole;
+import com.ruoyi.system.domain.*;
 import com.ruoyi.system.domain.vo.BalanceChangeVo;
 import com.ruoyi.system.domain.vo.UserBalanceChangeVo;
 import com.ruoyi.system.domain.vo.UserBalanceTransferVo;
+import com.ruoyi.system.domain.vo.UserBalanceWithdrawVo;
 import com.ruoyi.system.mapper.*;
-import com.ruoyi.system.service.ISysBalanceLogService;
-import com.ruoyi.system.service.ISysConfigService;
-import com.ruoyi.system.service.ISysDeptService;
-import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -709,5 +704,76 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     public List<SysUser> selectUserByExceptAppId(Long appId) {
         return userMapper.selectUserByExceptAppId(appId);
+    }
+
+    @Resource
+    private ISysWithdrawMethodService withdrawMethodService;
+    @Resource
+    private ISysConfigWithdrawService configWithdrawService;
+    @Resource
+    private ISysWithdrawOrderService withdrawOrderService;
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int withdrawBalance(UserBalanceWithdrawVo vo) {
+        if(BigDecimal.ZERO.compareTo(vo.getApplyFee()) >= 0) {
+            throw new ServiceException("提现金额应该大于0");
+        }
+        SysWithdrawMethod withdrawMethod = withdrawMethodService.selectSysWithdrawMethodById(vo.getReceiveAccountId());
+        if(withdrawMethod == null) {
+            throw new ServiceException("收款账号不存在");
+        }
+        Long userId = SecurityUtils.getUserId();
+        if(!Objects.equals(withdrawMethod.getUserId(), userId)) {
+            throw new ServiceException("收款账号所属账号与当前账号不符");
+        }
+        SysConfigWithdraw configWithdraw = configWithdrawService.getById(1);
+        if(configWithdraw == null) {
+            throw new ServiceException("提现配置数据缺失");
+        }
+        // 判断是否开启提现
+        if(!configWithdraw.getEnableWithdrawCash().equals("1")) {
+            throw new ServiceException("提现功能未开启");
+        }
+        // 判断最大最小提现金额
+        if(isLessThan(vo.getApplyFee(), configWithdraw.getWithdrawCashMin()) || isLessThan(configWithdraw.getWithdrawCashMax(), vo.getApplyFee())) {
+            throw new ServiceException("提现金额应该在" + configWithdraw.getWithdrawCashMin() + "~" + configWithdraw.getWithdrawCashMax() + "之间");
+        }
+        // 计算手续费及实际提现金额
+        BigDecimal fee = vo.getApplyFee().multiply(BigDecimal.valueOf(configWithdraw.getHandlingFeeRate()));
+        fee = BigDecimal.valueOf(Math.round(fee.doubleValue()) / 100);
+        fee =  isLessThan(fee, configWithdraw.getHandlingFeeMin()) ? configWithdraw.getHandlingFeeMin() : fee;
+        fee = isLessThan(configWithdraw.getHandlingFeeMax(), fee) ? configWithdraw.getHandlingFeeMax() : fee;
+        SysUser user = userMapper.selectUserById(userId);
+        BigDecimal expectActualFee;
+        if(user.getAvailablePayBalance().compareTo(vo.getApplyFee().add(fee)) >= 0) {
+            expectActualFee = vo.getApplyFee();
+        } else {
+            expectActualFee = user.getAvailablePayBalance().subtract(fee);
+        }
+        withdrawOrderService.createWithdrawOrder();
+        // 余额变动记录
+        String description = "提现到收款账号[" + withdrawMethod.getReceiveMethod() + "|" + withdrawMethod.getReceiveAccount() + "]" + "："
+                + "申请：" + vo.getApplyFee() + "，手续费：" + fee + "，实际：" + expectActualFee + "，附加信息：" + vo.getRemark();
+        BalanceChangeVo changeFee = new BalanceChangeVo();
+        changeFee.setUserId(userId);
+        changeFee.setUpdateBy(SecurityUtils.getUsername());
+        changeFee.setType(BalanceChangeType.OTHOR_OUT);
+        changeFee.setDescription(description);
+        changeFee.setAvailablePayBalance(expectActualFee.negate());
+        changeFee.setFreezePayBalance(expectActualFee);
+        changeFee.setWithdrawCashId();
+        changeFee.setSourceUserId(userId);
+        updateUserBalance(changeFee);
+        BalanceChangeVo changeBalance = new BalanceChangeVo();
+        changeBalance.setUserId(userId);
+        changeBalance.setUpdateBy(SecurityUtils.getUsername());
+        changeBalance.setType(BalanceChangeType.WITHDRAW_CASH_FREEZE);
+        changeBalance.setDescription(description);
+        changeBalance.setAvailablePayBalance(expectActualFee.negate());
+        changeBalance.setFreezePayBalance(expectActualFee);
+        changeBalance.setWithdrawCashId();
+        changeBalance.setSourceUserId(userId);
+        updateUserBalance(changeBalance);
     }
 }

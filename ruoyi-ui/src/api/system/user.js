@@ -160,3 +160,12 @@ export function deptTreeSelect() {
     method: 'get'
   })
 }
+
+// 用户提现
+export function withdrawUserBalance(data) {
+  return request({
+    url: '/system/user/withdrawBalance',
+    method: 'put',
+    data: data
+  })
+}

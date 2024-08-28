@@ -12,6 +12,7 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.vo.UserBalanceChangeVo;
 import com.ruoyi.system.domain.vo.UserBalanceTransferVo;
+import com.ruoyi.system.domain.vo.UserBalanceWithdrawVo;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
@@ -253,7 +254,7 @@ public class SysUserController extends BaseController {
     }
 
     /**
-     * 修改用户余额
+     * 用户转账
      */
     @PreAuthorize("@ss.hasPermi('system:user:transferBalance')")
     @Log(title = "用户管理", businessType = BusinessType.TRANSFER_BALANCE)
@@ -269,5 +270,15 @@ public class SysUserController extends BaseController {
     @GetMapping("/deptTree")
     public AjaxResult deptTree(SysDept dept) {
         return success(deptService.selectDeptTreeList(dept));
+    }
+
+    /**
+     * 用户提现
+     */
+    @PreAuthorize("@ss.hasPermi('system:user:transferBalance')")
+    @Log(title = "用户管理", businessType = BusinessType.TRANSFER_BALANCE)
+    @PutMapping("/withdrawBalance")
+    public AjaxResult withdrawBalance(@Validated @RequestBody UserBalanceWithdrawVo vo) {
+        return toAjax(userService.withdrawBalance(vo));
     }
 }
