@@ -36,6 +36,7 @@ import com.ruoyi.sale.service.ISysSaleOrderItemGoodsService;
 import com.ruoyi.sale.service.ISysSaleOrderService;
 import com.ruoyi.sale.service.ISysSaleShopService;
 import com.ruoyi.system.domain.*;
+import com.ruoyi.system.domain.vo.CountVo;
 import com.ruoyi.system.mapper.*;
 import com.ruoyi.system.service.*;
 import com.ruoyi.web.controller.sale.vo.*;
@@ -101,22 +102,23 @@ public class SysSaleShopController extends BaseController {
      * 查询软件列表
      */
     @GetMapping("/appList")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
     public TableDataInfo appList(SysApp sysApp) {
         List<SaleAppVo> saleAppVoList = new ArrayList<>();
         List<SysApp> appList = sysAppMapper.selectSysAppList(sysApp);
+        Map<Long, CountVo> cardTemplateCountMap = sysCardTemplateMapper.selectSysCardTemplateOnSaleCountGroupByAppId();
+        Map<Long, CountVo> loginCodeTemplateCountMap = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateOnSaleCountGroupByAppId();
         for (SysApp app : appList) {
             if (app.getAuthType().equals(AuthType.ACCOUNT)) {
                 SysCardTemplate ct = new SysCardTemplate();
                 ct.setAppId(app.getAppId());
                 ct.setOnSale(UserConstants.YES);
-                saleAppVoList.add(new SaleAppVo(app.getAppId(), app.getAppName(), sysCardTemplateMapper.selectSysCardTemplateList(ct).size()));
+                saleAppVoList.add(new SaleAppVo(app.getAppId(), app.getAppName(), cardTemplateCountMap.getOrDefault(app.getAppId(), new CountVo()).getCount()));
             } else {
                 SysLoginCodeTemplate ct = new SysLoginCodeTemplate();
                 ct.setAppId(app.getAppId());
-                ct.setOnSale(UserConstants.YES);
-                saleAppVoList.add(new SaleAppVo(app.getAppId(), app.getAppName(), sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateList(ct).size()));
+                saleAppVoList.add(new SaleAppVo(app.getAppId(), app.getAppName(), loginCodeTemplateCountMap.getOrDefault(app.getAppId(), new CountVo()).getCount()));
             }
-
         }
         return getDataTable(saleAppVoList);
     }
@@ -125,6 +127,7 @@ public class SysSaleShopController extends BaseController {
      * 查询卡密模板列表
      */
     @GetMapping("/listCategory")
+    @RateLimiter(limitType = LimitType.IP)
     public TableDataInfo cardTemplateList(Long appId) {
         SysApp app = sysAppMapper.selectSysAppByAppId(appId);
         List<SaleCardTemplateVo> saleCardTemplateVoList = new ArrayList<>();
@@ -204,6 +207,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @PostMapping("/checkStock")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
     public AjaxResult checkStock(@RequestBody SaleOrderVo saleOrderVo) {
 
         Payment payment = PaymentDefine.paymentMap.get(saleOrderVo.getPayMode());
@@ -250,7 +254,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @PostMapping("/createSaleOrder")
-    @RateLimiter(limitType = LimitType.IP)
+    @RateLimiter(count = 10, limitType = LimitType.IP)
     public AjaxResult createSaleOrder(@RequestBody SaleOrderVo saleOrderVo) {
 
 //        if (StringUtils.isAnyBlank(saleOrderVo.getContact(), saleOrderVo.getQueryPass())) {
@@ -338,7 +342,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @PostMapping("/createChargeOrder")
-    @RateLimiter(limitType = LimitType.IP)
+    @RateLimiter(count = 10, limitType = LimitType.IP)
     public AjaxResult createChargeOrder(@RequestBody ChargeOrderVo chargeOrderVo) {
         Payment payment = PaymentDefine.paymentMap.get(chargeOrderVo.getPayMode());
         if (payment == null) {
@@ -404,6 +408,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @GetMapping("/paySaleOrder")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
     public AjaxResult paySaleOrder(String orderNo) {
         if (orderNo == null) {
             throw new ServiceException("订单不存在", 400);
@@ -455,6 +460,7 @@ public class SysSaleShopController extends BaseController {
      * @return
      */
     @GetMapping("/fetchGoods")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
     public AjaxResult fetchGoods(String orderNo) {
         if (orderNo == null) {
             throw new ServiceException("订单不存在", 400);
@@ -473,6 +479,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @GetMapping("/getCardList")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
     public AjaxResult getCardList(@RequestParam("orderNo") String orderNo, @RequestParam(value = "queryPass", required = false) String queryPass) {
         if (orderNo == null) {
             throw new ServiceException("订单不存在", 400);
@@ -517,6 +524,7 @@ public class SysSaleShopController extends BaseController {
      * 查询销售订单列表，订单查询调用
      */
     @GetMapping("/querySaleOrderByContact")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
     public TableDataInfo querySaleOrderByContact(SysSaleOrder sysSaleOrder) {
         List<SysSaleOrder> list = sysSaleOrderService.selectSysSaleOrderQueryLimit5(sysSaleOrder);
         return getDataTable(list);
@@ -528,6 +536,7 @@ public class SysSaleShopController extends BaseController {
      * @return
      */
     @GetMapping("/getShopConfig")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
     public AjaxResult getShopConfig() {
         Map<String, Object> map = new HashMap<>();
         // 公告

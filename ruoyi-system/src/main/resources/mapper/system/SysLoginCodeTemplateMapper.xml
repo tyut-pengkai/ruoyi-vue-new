@@ -118,6 +118,10 @@
         </if>
     </select>
 
+    <select id="selectSysLoginCodeTemplateOnSaleCountGroupByAppId" resultType="CountVo">
+        select app_id as id, count(1) as count from sys_login_code_template where on_sale = 'Y' group by app_id
+    </select>
+
     <select id="selectSysLoginCodeTemplateByTemplateId" parameterType="Long" resultMap="SysLoginCodeTemplateResult">
         <include refid="selectSysLoginCodeTemplateVo"/>
         where template_id = #{templateId}

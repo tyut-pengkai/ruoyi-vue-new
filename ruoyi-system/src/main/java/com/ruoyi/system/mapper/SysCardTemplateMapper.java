@@ -1,10 +1,13 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.system.domain.SysCardTemplate;
+import com.ruoyi.system.domain.vo.CountVo;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 卡密模板Mapper接口
@@ -71,4 +74,11 @@ public interface SysCardTemplateMapper
      * @return 卡密模板
      */
     public SysCardTemplate selectSysCardTemplateByAppIdAndTemplateName(@Param("appId") Long appId, @Param("templateName") String templateName);
+
+    /**
+     * 获取某APP下已上架的卡密模板数量
+     * @return
+     */
+    @MapKey("id")
+    public Map<Long, CountVo> selectSysCardTemplateOnSaleCountGroupByAppId();
 }

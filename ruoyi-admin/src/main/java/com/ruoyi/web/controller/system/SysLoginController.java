@@ -7,6 +7,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysMenu;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginBody;
+import com.ruoyi.common.enums.LimitType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.license.anno.LicenceCheck;
 import com.ruoyi.framework.web.service.SysLoginService;
@@ -44,8 +45,8 @@ public class SysLoginController {
      * @param vstr
      * @return
      */
-    @RateLimiter
     @GetMapping("/checkSafeEntrance")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
     public AjaxResult checkSafeEntrance(@RequestParam("vstr") String vstr) {
         return AjaxResult.success().put("data", loginService.checkSafeEntrance(vstr));
     }

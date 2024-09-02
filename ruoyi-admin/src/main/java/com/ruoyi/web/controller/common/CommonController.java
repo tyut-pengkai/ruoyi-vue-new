@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.common;
 
+import com.ruoyi.common.annotation.RateLimiter;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
@@ -10,6 +11,7 @@ import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.enums.LimitType;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.SysCache;
 import com.ruoyi.common.utils.file.FileUploadUtils;
@@ -231,6 +233,7 @@ public class CommonController {
     }
 
     @GetMapping("/sysInfo")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
     public RuoYiConfig sysInfo() {
         SysConfigWebsite website = sysConfigWebsiteService.getById(1);
         if (StringUtils.isNotBlank(website.getShortName())) {

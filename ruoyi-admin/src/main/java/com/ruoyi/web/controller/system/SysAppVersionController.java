@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.annotation.RateLimiter;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -8,6 +9,7 @@ import com.ruoyi.common.core.domain.entity.SysAppVersion;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.enums.LimitType;
 import com.ruoyi.system.domain.vo.ActivityMethodVo;
 import com.ruoyi.system.service.ISysAppService;
 import com.ruoyi.system.service.ISysAppVersionService;
@@ -149,6 +151,7 @@ public class SysAppVersionController extends BaseController {
      */
     @Log(title = "快速接入(扫码)", businessType = BusinessType.QUICK_ACCESS)
     @RequestMapping("/scan/{appVersionId}/{uuid}")
+    @RateLimiter(count = 10, limitType = LimitType.IP)
     public AjaxResult getQuickAccessParams(@PathVariable Long appVersionId, @PathVariable String uuid) {
         String verifyKey = CacheConstants.CAPTCHA_UUID_KEY + uuid;
         if(redisCache.hasKey(verifyKey)) {

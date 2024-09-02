@@ -1,10 +1,13 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.system.domain.SysLoginCodeTemplate;
+import com.ruoyi.system.domain.vo.CountVo;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 单码类别Mapper接口
@@ -29,6 +32,14 @@ public interface SysLoginCodeTemplateMapper {
      * @return 单码类别集合
      */
     public List<SysLoginCodeTemplate> selectSysLoginCodeTemplateList(SysLoginCodeTemplate sysLoginCodeTemplate);
+
+
+    /**
+     * 获取某APP下已上架的卡密模板数量
+     * @return
+     */
+    @MapKey("id")
+    public Map<Long, CountVo> selectSysLoginCodeTemplateOnSaleCountGroupByAppId();
 
     /**
      * 新增单码类别
