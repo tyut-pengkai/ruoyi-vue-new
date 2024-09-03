@@ -1,9 +1,15 @@
 package com.ruoyi.web.controller.common;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.framework.config.MinioConfig;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +40,12 @@ public class CommonController
 
     @Autowired
     private ServerConfig serverConfig;
+
+    @Autowired
+    MinioConfig minioConfig;
+
+    @Autowired
+    private MinioClient client;
 
     private static final String FILE_DELIMETER = ",";
 
@@ -124,6 +136,43 @@ public class CommonController
             ajax.put("fileNames", StringUtils.join(fileNames, FILE_DELIMETER));
             ajax.put("newFileNames", StringUtils.join(newFileNames, FILE_DELIMETER));
             ajax.put("originalFilenames", StringUtils.join(originalFilenames, FILE_DELIMETER));
+            return ajax;
+        }
+        catch (Exception e)
+        {
+            return AjaxResult.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 自定义 Minio 服务器上传请求
+     */
+    @PostMapping("/uploadMinio")
+    public AjaxResult uploadFileMinio(MultipartFile file) throws Exception
+    {
+        try
+        {
+            String fileName = FileUploadUtils.extractFilename(file);
+            String fileOrignalName = file.getOriginalFilename();
+            String fileType = file.getContentType();
+            InputStream inputStream = file.getInputStream();
+            PutObjectArgs args = PutObjectArgs.builder()
+                    .bucket(minioConfig.getBucketName())
+                    .object(fileName)
+                    .stream(inputStream, file.getSize(), -1)
+                    .contentType(file.getContentType())
+                    .build();
+            client.putObject(args);
+            IOUtils.closeQuietly(inputStream);
+            String url = minioConfig.getUrl() + "/" + minioConfig.getBucketName() + "/" + fileName;
+            // 上传并返回新文件名称
+            //String fileName = FileUploadUtils.uploadMinio(file);
+            AjaxResult ajax = AjaxResult.success();
+            ajax.put("url", url);
+            ajax.put("fileName", fileOrignalName);
+            ajax.put("fileType",fileType);
+            //ajax.put("newFileName", FileUtils.getName(fileName));
+            //ajax.put("originalFilename", file.getOriginalFilename());
             return ajax;
         }
         catch (Exception e)
