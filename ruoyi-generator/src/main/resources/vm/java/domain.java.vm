@@ -6,7 +6,7 @@ import ${import};
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import com.wenhu.common.annotation.Excel;
+import com.ruoyi.common.annotation.Excel;
 import lombok.Data;
 #if($table.crud || $table.sub)
 #elseif($table.tree)

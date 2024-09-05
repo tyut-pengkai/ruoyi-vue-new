@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TCompanyMapper">
+    
+    <resultMap type="com.ruoyi.system.domain.TCompany" id="TCompanyResult">
+        <result property="id"    column="id"    />
+        <result property="khbh"    column="khbh"    />
+        <result property="khmc"    column="khmc"    />
+        <result property="shtydm"    column="shtydm"    />
+        <result property="glyxm"    column="glyxm"    />
+        <result property="glydh"    column="glydh"    />
+        <result property="tcqk"    column="tcqk"    />
+        <result property="dkrs"    column="dkrs"    />
+        <result property="qxkssj"    column="qxkssj"    />
+        <result property="qxjssj"    column="qxjssj"    />
+        <result property="zt"    column="zt"    />
+        <result property="bz"    column="bz"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="logo"    column="logo"    />
+    </resultMap>
+
+    <sql id="selectTCompanyVo">
+        select id, khbh, khmc, shtydm, glyxm, glydh, tcqk, dkrs, qxkssj, qxjssj, zt, bz, create_time, logo, from t_company
+    </sql>
+</mapper>

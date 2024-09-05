@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TProjectApplyMapper">
+    
+    <resultMap type="com.ruoyi.system.domain.TProjectApply" id="TProjectApplyResult">
+        <result property="id"    column="id"    />
+        <result property="shtydm"    column="shtydm"    />
+        <result property="smbh"    column="smbh"    />
+        <result property="smmc"    column="smmc"    />
+        <result property="xm"    column="xm"    />
+        <result property="idcard"    column="idcard"    />
+        <result property="phone"    column="phone"    />
+        <result property="sqsj"    column="sqsj"    />
+        <result property="sqzt"    column="sqzt"    />
+    </resultMap>
+
+    <sql id="selectTProjectApplyVo">
+        select id, shtydm, smbh, smmc, xm, idcard, phone, sqsj, sqzt, from t_project_apply
+    </sql>
+</mapper>

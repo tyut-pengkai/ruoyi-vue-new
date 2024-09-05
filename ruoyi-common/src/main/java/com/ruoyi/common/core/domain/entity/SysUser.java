@@ -3,6 +3,9 @@ package com.ruoyi.common.core.domain.entity;
 import java.util.Date;
 import java.util.List;
 import javax.validation.constraints.*;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -17,6 +20,7 @@ import com.ruoyi.common.xss.Xss;
  * 
  * @author ruoyi
  */
+@Data
 public class SysUser extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -88,6 +92,51 @@ public class SysUser extends BaseEntity
 
     /** 角色ID */
     private Long roleId;
+
+    /** 微信唯一标识 */
+    @Excel(name = "微信唯一标识")
+    private String openid;
+
+    /** 身份证号 */
+    @Excel(name = "身份证号")
+    private String idcard;
+
+    /** 劳务关系 */
+    @Excel(name = "劳务关系")
+    private String lwgx;
+
+    /** 所属部门 */
+    @Excel(name = "所属部门")
+    private String ssbm;
+
+    /** 岗位 */
+    @Excel(name = "岗位")
+    private String gw;
+
+    /** 人员性质 */
+    @Excel(name = "人员性质")
+    private String ryxz;
+
+    /** 学历 */
+    @Excel(name = "学历")
+    private String xl;
+
+    /** 职称 */
+    @Excel(name = "职称")
+    private String zc;
+
+    /** 入职时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Excel(name = "入职时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date rzsj;
+
+    /** 打卡编号 */
+    @Excel(name = "打卡编号")
+    private String dkbh;
+
+    /** 社会统一信用代码 */
+    @Excel(name = "社会统一信用代码")
+    private String shtydm;
 
     public SysUser()
     {
@@ -167,6 +216,7 @@ public class SysUser extends BaseEntity
     }
 
     @Size(min = 0, max = 11, message = "手机号码长度不能超过11个字符")
+    @NotBlank(message = "手机号码不能为空")
     public String getPhonenumber()
     {
         return phonenumber;
@@ -297,28 +347,99 @@ public class SysUser extends BaseEntity
         this.roleId = roleId;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("userId", getUserId())
-            .append("deptId", getDeptId())
-            .append("userName", getUserName())
-            .append("nickName", getNickName())
-            .append("email", getEmail())
-            .append("phonenumber", getPhonenumber())
-            .append("sex", getSex())
-            .append("avatar", getAvatar())
-            .append("password", getPassword())
-            .append("status", getStatus())
-            .append("delFlag", getDelFlag())
-            .append("loginIp", getLoginIp())
-            .append("loginDate", getLoginDate())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .append("updateBy", getUpdateBy())
-            .append("updateTime", getUpdateTime())
-            .append("remark", getRemark())
-            .append("dept", getDept())
-            .toString();
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
+
+    @NotBlank(message = "身份证号不能为空")
+    public String getIdcard() {
+        return idcard;
+    }
+
+    public void setIdcard(String idcard) {
+        this.idcard = idcard;
+    }
+
+    @NotBlank(message = "劳务关系不能为空")
+    public String getLwgx() {
+        return lwgx;
+    }
+
+    public void setLwgx(String lwgx) {
+        this.lwgx = lwgx;
+    }
+
+    @NotBlank(message = "所属部门不能为空")
+    public String getSsbm() {
+        return ssbm;
+    }
+
+    public void setSsbm(String ssbm) {
+        this.ssbm = ssbm;
+    }
+
+    @NotBlank(message = "岗位不能为空")
+    public String getGw() {
+        return gw;
+    }
+
+    public void setGw(String gw) {
+        this.gw = gw;
+    }
+
+    @NotBlank(message = "人员性质不能为空")
+    public String getRyxz() {
+        return ryxz;
+    }
+
+    public void setRyxz(String ryxz) {
+        this.ryxz = ryxz;
+    }
+
+    @NotBlank(message = "学历不能为空")
+    public String getXl() {
+        return xl;
+    }
+
+    public void setXl(String xl) {
+        this.xl = xl;
+    }
+
+    @NotBlank(message = "职称不能为空")
+    public String getZc() {
+        return zc;
+    }
+
+    public void setZc(String zc) {
+        this.zc = zc;
+    }
+
+    @NotBlank(message = "入职时间不能为空")
+    public Date getRzsj() {
+        return rzsj;
+    }
+
+    public void setRzsj(Date rzsj) {
+        this.rzsj = rzsj;
+    }
+
+    public String getDkbh() {
+        return dkbh;
+    }
+
+    public void setDkbh(String dkbh) {
+        this.dkbh = dkbh;
+    }
+
+    public String getShtydm() {
+        return shtydm;
+    }
+
+    public void setShtydm(String shtydm) {
+        this.shtydm = shtydm;
     }
 }

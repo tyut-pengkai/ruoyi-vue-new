@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TClockinWorkLogMapper">
+    
+    <resultMap type="com.ruoyi.system.domain.TClockinWorkLog" id="TClockinWorkLogResult">
+        <result property="id"    column="id"    />
+        <result property="dkid"    column="dkid"    />
+        <result property="content"    column="content"    />
+        <result property="fjmc"    column="fjmc"    />
+        <result property="fjdz"    column="fjdz"    />
+        <result property="fjlx"    column="fjlx"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectTClockinWorkLogVo">
+        select id, dkid, content, fjmc, fjdz, fjlx, create_time, from t_clockin_work_log
+    </sql>
+</mapper>
