@@ -16,12 +16,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="qxkssj"    column="qxkssj"    />
         <result property="qxjssj"    column="qxjssj"    />
         <result property="zt"    column="zt"    />
-        <result property="bz"    column="bz"    />
+        <result property="remark"    column="remark"    />
         <result property="createTime"    column="create_time"    />
         <result property="logo"    column="logo"    />
     </resultMap>
 
     <sql id="selectTCompanyVo">
-        select id, khbh, khmc, shtydm, glyxm, glydh, tcqk, dkrs, qxkssj, qxjssj, zt, bz, create_time, logo, from t_company
+        select id, khbh, khmc, shtydm, glyxm, glydh, tcqk, dkrs, qxkssj, qxjssj, zt, remark, create_time, logo, from t_company
     </sql>
 </mapper>

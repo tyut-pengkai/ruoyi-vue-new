@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TNoticeMapper">
+    
+    <resultMap type="com.ruoyi.system.domain.TNotice" id="TNoticeResult">
+        <result property="id"    column="id"    />
+        <result property="txrq"    column="txrq"    />
+        <result property="xm"    column="xm"    />
+        <result property="idcard"    column="idcard"    />
+        <result property="phone"    column="phone"    />
+        <result property="content"    column="content"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="ydzt"    column="ydzt"    />
+        <result property="shtydm"    column="shtydm"    />
+        <result property="xmbh"    column="xmbh"    />
+        <result property="smmc"    column="smmc"    />
+        <result property="xmzt"    column="xmzt"    />
+    </resultMap>
+
+    <sql id="selectTNoticeVo">
+        select id, txrq, xm, idcard, phone, content, create_time, ydzt, shtydm, xmbh, smmc, xmzt, from t_notice
+    </sql>
+</mapper>

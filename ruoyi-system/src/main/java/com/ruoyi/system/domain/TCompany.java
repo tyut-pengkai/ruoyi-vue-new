@@ -27,7 +27,7 @@ public class TCompany extends BaseEntity {
     private Long id;
 
     /** 客户编号 */
-    @Excel(name = "客户编号")
+    @Excel(name = "客户编号",type = Excel.Type.EXPORT)
     private String khbh;
 
     /** 客户名称 */
@@ -51,7 +51,7 @@ public class TCompany extends BaseEntity {
     private String tcqk;
 
     /** 打卡人数 */
-    @Excel(name = "打卡人数")
+    @Excel(name = "打卡人数（数字）")
     private Long dkrs;
 
     /** 权限开始时间 */
@@ -65,15 +65,12 @@ public class TCompany extends BaseEntity {
     private Date qxjssj;
 
     /** 状态 1 正常 0 停用 */
-    @Excel(name = "状态 1 正常 0 停用")
+    @Excel(name = "状态", readConverterExp = "1=正常,0=停用",type = Excel.Type.EXPORT)
     private String zt;
 
-    /** 备注 */
-    @Excel(name = "备注")
-    private String bz;
 
     /** logo存储的url */
-    @Excel(name = "logo存储的url")
+    //@Excel(name = "logo存储的url")
     private String logo;
 
 }

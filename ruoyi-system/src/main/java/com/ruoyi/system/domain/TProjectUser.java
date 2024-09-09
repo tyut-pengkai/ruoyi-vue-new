@@ -71,9 +71,6 @@ public class TProjectUser extends BaseEntity {
     @Excel(name = "职称")
     private String zc;
 
-    /** 备注 */
-    @Excel(name = "备注")
-    private String bz;
 
     /** 启用状态  0 禁用  1 启用 */
     @Excel(name = "启用状态  0 禁用  1 启用")

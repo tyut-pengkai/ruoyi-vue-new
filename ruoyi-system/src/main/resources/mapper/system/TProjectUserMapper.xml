@@ -18,12 +18,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="gw"    column="gw"    />
         <result property="xl"    column="xl"    />
         <result property="zc"    column="zc"    />
-        <result property="bz"    column="bz"    />
+        <result property="remark"    column="remark"    />
         <result property="qyzt"    column="qyzt"    />
         <result property="createTime"    column="create_time"    />
     </resultMap>
 
     <sql id="selectTProjectUserVo">
-        select id, shtydm, smbh, smmc, xm, idcard, xmjs, xmjsid, lwgx, ssbm, gw, xl, zc, bz, qyzt, create_time, from t_project_user
+        select id, shtydm, smbh, smmc, xm, idcard, xmjs, xmjsid, lwgx, ssbm, gw, xl, zc, remark, qyzt, create_time, from t_project_user
     </sql>
 </mapper>
