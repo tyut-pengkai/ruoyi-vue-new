@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TProjectUserMapper">
+    
+    <resultMap type="com.ruoyi.system.domain.TProjectUser" id="TProjectUserResult">
+        <result property="id"    column="id"    />
+        <result property="shtydm"    column="shtydm"    />
+        <result property="smbh"    column="smbh"    />
+        <result property="smmc"    column="smmc"    />
+        <result property="xm"    column="xm"    />
+        <result property="idcard"    column="idcard"    />
+        <result property="xmjs"    column="xmjs"    />
+        <result property="xmjsid"    column="xmjsid"    />
+        <result property="lwgx"    column="lwgx"    />
+        <result property="ssbm"    column="ssbm"    />
+        <result property="gw"    column="gw"    />
+        <result property="xl"    column="xl"    />
+        <result property="zc"    column="zc"    />
+        <result property="remark"    column="remark"    />
+        <result property="qyzt"    column="qyzt"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectTProjectUserVo">
+        select id, shtydm, smbh, smmc, xm, idcard, xmjs, xmjsid, lwgx, ssbm, gw, xl, zc, remark, qyzt, create_time, from t_project_user
+    </sql>
+</mapper>
