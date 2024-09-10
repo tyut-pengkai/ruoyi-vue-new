@@ -90,7 +90,7 @@ service.interceptors.response.use(res => {
             location.href = '/index';
           })
       }).catch(() => {
-        isRelogin.show = false;
+        //isRelogin.show = false;
       });
     }
       return Promise.reject('无效的会话，或者会话已过期，请重新登录。')
