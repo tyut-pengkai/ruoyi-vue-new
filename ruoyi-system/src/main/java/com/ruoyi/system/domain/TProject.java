@@ -20,7 +20,7 @@ import lombok.Data;
 @NoArgsConstructor
 @Accessors(chain = true)
 @TableName("t_project")
-public class TProject extends BaseEntity {
+public class TProject implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** $column.columnComment */
@@ -63,5 +63,9 @@ public class TProject extends BaseEntity {
     /** 社会统一信用代码 */
     @Excel(name = "社会统一信用代码")
     private String shtydm;
+
+    /** 创建时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
 
 }

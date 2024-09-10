@@ -1,5 +1,6 @@
 package com.ruoyi.system.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.baomidou.mybatisplus.annotation.*;
@@ -19,7 +20,7 @@ import lombok.Data;
 @NoArgsConstructor
 @Accessors(chain = true)
 @TableName("t_project_apply")
-public class TProjectApply extends BaseEntity {
+public class TProjectApply implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** 主键 */

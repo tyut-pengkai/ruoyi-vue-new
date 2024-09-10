@@ -1,5 +1,6 @@
 package com.ruoyi.system.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.baomidou.mybatisplus.annotation.*;
@@ -19,7 +20,7 @@ import lombok.Data;
 @NoArgsConstructor
 @Accessors(chain = true)
 @TableName("t_notice")
-public class TNotice extends BaseEntity {
+public class TNotice implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** 主键 */
@@ -65,5 +66,9 @@ public class TNotice extends BaseEntity {
     /** 项目状态 */
     @Excel(name = "项目状态")
     private String xmzt;
+
+    /** 创建时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
 
 }

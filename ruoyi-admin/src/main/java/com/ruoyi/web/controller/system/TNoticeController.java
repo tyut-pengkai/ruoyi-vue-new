@@ -33,7 +33,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  * @date 2024-09-09
  */
 @RestController
-@RequestMapping("/system/notice")
+@RequestMapping("/system/remind")
 @Api(value = "日志提醒控制器", tags = {"日志提醒管理"})
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class TNoticeController extends BaseController
@@ -44,7 +44,7 @@ public class TNoticeController extends BaseController
      * 查询日志提醒列表
      */
     @ApiOperation("查询日志提醒列表")
-    @PreAuthorize("@ss.hasPermi('system:notice:list')")
+    @PreAuthorize("@ss.hasPermi('system:remind:list')")
     @GetMapping("/list")
     public TableDataInfo list(TNotice tNotice) {
         startPage();
@@ -56,7 +56,7 @@ public class TNoticeController extends BaseController
      * 导出日志提醒列表
      */
     @ApiOperation("导出日志提醒列表")
-    @PreAuthorize("@ss.hasPermi('system:notice:export')")
+    @PreAuthorize("@ss.hasPermi('system:remind:export')")
     @Log(title = "日志提醒", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(TNotice tNotice) {
@@ -69,7 +69,7 @@ public class TNoticeController extends BaseController
      * 获取日志提醒详细信息
      */
     @ApiOperation("获取日志提醒详细信息")
-    @PreAuthorize("@ss.hasPermi('system:notice:query')")
+    @PreAuthorize("@ss.hasPermi('system:remind:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(tNoticeService.getById(id));
@@ -79,7 +79,7 @@ public class TNoticeController extends BaseController
      * 新增日志提醒
      */
     @ApiOperation("新增日志提醒")
-    @PreAuthorize("@ss.hasPermi('system:notice:add')")
+    @PreAuthorize("@ss.hasPermi('system:remind:add')")
     @Log(title = "日志提醒", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody TNotice tNotice) {
@@ -90,7 +90,7 @@ public class TNoticeController extends BaseController
      * 修改日志提醒
      */
     @ApiOperation("修改日志提醒")
-    @PreAuthorize("@ss.hasPermi('system:notice:edit')")
+    @PreAuthorize("@ss.hasPermi('system:remind:edit')")
     @Log(title = "日志提醒", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody TNotice tNotice) {
@@ -101,7 +101,7 @@ public class TNoticeController extends BaseController
      * 删除日志提醒
      */
     @ApiOperation("删除日志提醒")
-    @PreAuthorize("@ss.hasPermi('system:notice:remove')")
+    @PreAuthorize("@ss.hasPermi('system:remind:remove')")
     @Log(title = "日志提醒", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TClockinInfoMapper">
+    
+    <resultMap type="com.ruoyi.system.domain.TClockinInfo" id="TClockinInfoResult">
+        <result property="id"    column="id"    />
+        <result property="shtydm"    column="shtydm"    />
+        <result property="xmbh"    column="xmbh"    />
+        <result property="xmmc"    column="xmmc"    />
+        <result property="xm"    column="xm"    />
+        <result property="idcard"    column="idcard"    />
+        <result property="dkrq"    column="dkrq"    />
+        <result property="dkkssj"    column="dkkssj"    />
+        <result property="dkjssj"    column="dkjssj"    />
+        <result property="yfgs"    column="yfgs"    />
+        <result property="shzt"    column="shzt"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectTClockinInfoVo">
+        select id, shtydm, xmbh, xmmc, xm, idcard, dkrq, dkkssj, dkjssj, yfgs, shzt, create_time, from t_clockin_info
+    </sql>
+</mapper>

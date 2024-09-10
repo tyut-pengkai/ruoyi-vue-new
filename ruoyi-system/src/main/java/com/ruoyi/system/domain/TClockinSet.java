@@ -20,7 +20,7 @@ import lombok.Data;
 @NoArgsConstructor
 @Accessors(chain = true)
 @TableName("t_clockin_set")
-public class TClockinSet extends BaseEntity {
+public class TClockinSet implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** 主键 */
@@ -71,5 +71,14 @@ public class TClockinSet extends BaseEntity {
     /** 社会统一信用代码 */
     @Excel(name = "社会统一信用代码")
     private String shtydm;
+
+    /** 创建时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+
+    /** 更新时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
 
 }

@@ -1,11 +1,15 @@
 package com.ruoyi.system.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import com.ruoyi.common.annotation.Excel;
 import lombok.Data;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 项目人员关联对象 t_project_user
@@ -17,7 +21,7 @@ import lombok.Data;
 @NoArgsConstructor
 @Accessors(chain = true)
 @TableName("t_project_user")
-public class TProjectUser extends BaseEntity {
+public class TProjectUser implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** 主键 */
@@ -76,4 +80,11 @@ public class TProjectUser extends BaseEntity {
     @Excel(name = "启用状态  0 禁用  1 启用")
     private String qyzt;
 
+    /** 创建时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+    /** 备注 */
+    @Excel(name = "备注")
+    private String remark;
 }

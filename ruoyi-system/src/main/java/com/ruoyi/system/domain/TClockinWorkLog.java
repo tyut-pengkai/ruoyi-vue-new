@@ -1,11 +1,15 @@
 package com.ruoyi.system.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import com.ruoyi.common.annotation.Excel;
 import lombok.Data;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 日志信息对象 t_clockin_work_log
@@ -17,7 +21,7 @@ import lombok.Data;
 @NoArgsConstructor
 @Accessors(chain = true)
 @TableName("t_clockin_work_log")
-public class TClockinWorkLog extends BaseEntity {
+public class TClockinWorkLog implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** 主键 */
@@ -42,5 +46,9 @@ public class TClockinWorkLog extends BaseEntity {
     /** 附件类型 */
     @Excel(name = "附件类型")
     private String fjlx;
+
+    /** 创建时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
 
 }

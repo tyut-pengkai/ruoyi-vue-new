@@ -20,7 +20,7 @@ import lombok.Data;
 @NoArgsConstructor
 @Accessors(chain = true)
 @TableName("t_company")
-public class TCompany extends BaseEntity {
+public class TCompany implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** 主键 */
@@ -72,5 +72,13 @@ public class TCompany extends BaseEntity {
     /** logo存储的url */
     //@Excel(name = "logo存储的url")
     private String logo;
+
+    /** 创建时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+    /** 备注 */
+    @Excel(name = "备注")
+    private String remark;
 
 }
