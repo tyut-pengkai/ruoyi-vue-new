@@ -70,6 +70,7 @@ export default {
       height: 32px;
       vertical-align: middle;
       margin-right: 12px;
+      margin-left: -15px;
     }
 
     & .sidebar-title {
