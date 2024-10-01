@@ -17,42 +17,58 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="tradeNo"    column="trade_no"    />
         <result property="errorCode"    column="error_code"    />
         <result property="errorMessage"    column="error_message"    />
+        <result property="withdrawMethodId"    column="withdraw_method_id"    />
         <result property="receiveMethod"    column="receive_method"    />
         <result property="receiveAccount"    column="receive_account"    />
+        <result property="realName"    column="real_name"    />
         <result property="createBy"    column="create_by"    />
         <result property="createTime"    column="create_time"    />
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
         <result property="delFlag"    column="del_flag"    />
+        <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
+    </resultMap>
+
+    <resultMap type="SysUser" id="SysUserResult">
+        <id     property="userId"       column="user_id"      />
+        <result property="userName"     column="user_name"    />
+        <result property="nickName"     column="nick_name"    />
     </resultMap>
 
     <sql id="selectSysWithdrawOrderVo">
-        select id, user_id, order_no, handling_fee, apply_fee, actual_fee, withdraw_status, manual_transfer, trade_time, trade_no, error_code, error_message, receive_method, receive_account, create_by, create_time, update_by, update_time, remark, del_flag from sys_withdraw_order
+        select swo.id, swo.user_id, swo.order_no, swo.handling_fee, swo.apply_fee, swo.actual_fee, swo.withdraw_status,
+               swo.manual_transfer, swo.trade_time, swo.trade_no, swo.error_code, swo.error_message, swo.withdraw_method_id,
+               swm.receive_method, swm.receive_account, swm.real_name, swo.create_by, swo.create_time, swo.update_by,
+               swo.update_time, swo.remark, u.user_name, u.nick_name from sys_withdraw_order swo
+        left join sys_withdraw_method swm on swm.id = swo.withdraw_method_id
+        left join sys_user u on u.user_id = swm.user_id
     </sql>
 
     <select id="selectSysWithdrawOrderList" parameterType="SysWithdrawOrder" resultMap="SysWithdrawOrderResult">
         <include refid="selectSysWithdrawOrderVo"/>
         <where>  
-            <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="orderNo != null "> and order_no like concat('%', #{orderNo}, '%')</if>
-            <if test="params.beginHandlingFee != null and params.beginHandlingFee != '' and params.endHandlingFee != null and params.endHandlingFee != ''"> and handling_fee between #{params.beginHandlingFee} and #{params.endHandlingFee}</if>
-            <if test="params.beginApplyFee != null and params.beginApplyFee != '' and params.endApplyFee != null and params.endApplyFee != ''"> and apply_fee between #{params.beginApplyFee} and #{params.endApplyFee}</if>
-            <if test="params.beginActualFee != null and params.beginActualFee != '' and params.endActualFee != null and params.endActualFee != ''"> and actual_fee between #{params.beginActualFee} and #{params.endActualFee}</if>
-            <if test="withdrawStatus != null  and withdrawStatus != ''"> and withdraw_status = #{withdrawStatus}</if>
-            <if test="manualTransfer != null  and manualTransfer != ''"> and manual_transfer = #{manualTransfer}</if>
-            <if test="params.beginTradeTime != null and params.beginTradeTime != '' and params.endTradeTime != null and params.endTradeTime != ''"> and trade_time between #{params.beginTradeTime} and #{params.endTradeTime}</if>
-            <if test="tradeNo != null  and tradeNo != ''"> and trade_no like concat('%', #{tradeNo}, '%')</if>
-            <if test="errorCode != null  and errorCode != ''"> and error_code like concat('%', #{errorCode}, '%')</if>
-            <if test="errorMessage != null  and errorMessage != ''"> and error_message like concat('%', #{errorMessage}, '%')</if>
-            <if test="receiveMethod != null  and receiveMethod != ''"> and receive_method = #{receiveMethod}</if>
-            <if test="receiveAccount != null  and receiveAccount != ''"> and receive_account like concat('%', #{receiveAccount}, '%')</if>
+            <if test="userId != null "> and swo.user_id = #{userId}</if>
+            <if test="orderNo != null "> and swo.order_no like concat('%', #{orderNo}, '%')</if>
+            <if test="params.beginHandlingFee != null and params.beginHandlingFee != '' and params.endHandlingFee != null and params.endHandlingFee != ''"> and swo.handling_fee between #{params.beginHandlingFee} and #{params.endHandlingFee}</if>
+            <if test="params.beginApplyFee != null and params.beginApplyFee != '' and params.endApplyFee != null and params.endApplyFee != ''"> and swo.apply_fee between #{params.beginApplyFee} and #{params.endApplyFee}</if>
+            <if test="params.beginActualFee != null and params.beginActualFee != '' and params.endActualFee != null and params.endActualFee != ''"> and swo.actual_fee between #{params.beginActualFee} and #{params.endActualFee}</if>
+            <if test="withdrawStatus != null "> and swo.withdraw_status = #{withdrawStatus}</if>
+            <if test="manualTransfer != null  and manualTransfer != ''"> and swo.manual_transfer = #{manualTransfer}</if>
+            <if test="params.beginTradeTime != null and params.beginTradeTime != '' and params.endTradeTime != null and params.endTradeTime != ''"> and swo.trade_time between #{params.beginTradeTime} and #{params.endTradeTime}</if>
+            <if test="tradeNo != null  and tradeNo != ''"> and swo.trade_no like concat('%', #{tradeNo}, '%')</if>
+            <if test="errorCode != null  and errorCode != ''"> and swo.error_code like concat('%', #{errorCode}, '%')</if>
+            <if test="errorMessage != null  and errorMessage != ''"> and swo.error_message like concat('%', #{errorMessage}, '%')</if>
+            <if test="receiveMethod != null  and receiveMethod != ''"> and swo.receive_method = #{receiveMethod}</if>
+            <if test="receiveAccount != null  and receiveAccount != ''"> and swo.receive_account like concat('%', #{receiveAccount}, '%')</if>
+            <if test="realName != null  and realName != ''"> and swo.real_name like concat('%', #{realName}, '%')</if>
+            <if test="userName != null ">and (u.nick_name like concat('%', #{userName}, '%') or u.user_name like concat('%', #{userName}, '%'))</if>
         </where>
     </select>
     
     <select id="selectSysWithdrawOrderById" parameterType="Long" resultMap="SysWithdrawOrderResult">
         <include refid="selectSysWithdrawOrderVo"/>
-        where id = #{id}
+        where swo.id = #{id}
     </select>
         
     <insert id="insertSysWithdrawOrder" parameterType="SysWithdrawOrder" useGeneratedKeys="true" keyProperty="id">
@@ -63,14 +79,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="handlingFee != null">handling_fee,</if>
             <if test="applyFee != null">apply_fee,</if>
             <if test="actualFee != null">actual_fee,</if>
-            <if test="withdrawStatus != null and withdrawStatus != ''">withdraw_status,</if>
+            <if test="withdrawStatus != null">withdraw_status,</if>
             <if test="manualTransfer != null and manualTransfer != ''">manual_transfer,</if>
             <if test="tradeTime != null">trade_time,</if>
             <if test="tradeNo != null">trade_no,</if>
             <if test="errorCode != null">error_code,</if>
             <if test="errorMessage != null">error_message,</if>
-            <if test="receiveMethod != null and receiveMethod != ''">receive_method,</if>
-            <if test="receiveAccount != null and receiveAccount != ''">receive_account,</if>
+            <if test="withdrawMethodId != null and withdrawMethodId != ''">withdraw_method_id,</if>
             <if test="createBy != null">create_by,</if>
             create_time,
             <if test="remark != null">remark,</if>
@@ -82,14 +97,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="handlingFee != null">#{handlingFee},</if>
             <if test="applyFee != null">#{applyFee},</if>
             <if test="actualFee != null">#{actualFee},</if>
-            <if test="withdrawStatus != null and withdrawStatus != ''">#{withdrawStatus},</if>
+            <if test="withdrawStatus != null">#{withdrawStatus},</if>
             <if test="manualTransfer != null and manualTransfer != ''">#{manualTransfer},</if>
             <if test="tradeTime != null">#{tradeTime},</if>
             <if test="tradeNo != null">#{tradeNo},</if>
             <if test="errorCode != null">#{errorCode},</if>
             <if test="errorMessage != null">#{errorMessage},</if>
-            <if test="receiveMethod != null and receiveMethod != ''">#{receiveMethod},</if>
-            <if test="receiveAccount != null and receiveAccount != ''">#{receiveAccount},</if>
+            <if test="withdrawMethodId != null and withdrawMethodId != ''">#{withdrawMethodId},</if>
             <if test="createBy != null">#{createBy},</if>
             sysdate(),
             <if test="remark != null">#{remark},</if>
@@ -105,14 +119,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="handlingFee != null">handling_fee = #{handlingFee},</if>
             <if test="applyFee != null">apply_fee = #{applyFee},</if>
             <if test="actualFee != null">actual_fee = #{actualFee},</if>
-            <if test="withdrawStatus != null and withdrawStatus != ''">withdraw_status = #{withdrawStatus},</if>
+            <if test="withdrawStatus != null ">withdraw_status = #{withdrawStatus},</if>
             <if test="manualTransfer != null and manualTransfer != ''">manual_transfer = #{manualTransfer},</if>
             <if test="tradeTime != null">trade_time = #{tradeTime},</if>
             <if test="tradeNo != null">trade_no = #{tradeNo},</if>
             <if test="errorCode != null">error_code = #{errorCode},</if>
             <if test="errorMessage != null">error_message = #{errorMessage},</if>
-            <if test="receiveMethod != null and receiveMethod != ''">receive_method = #{receiveMethod},</if>
-            <if test="receiveAccount != null and receiveAccount != ''">receive_account = #{receiveAccount},</if>
+            <if test="withdrawMethodId != null and withdrawMethodId != ''">withdraw_method_id = #{withdrawMethodId},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             update_time = sysdate(),
             <if test="remark != null">remark = #{remark},</if>

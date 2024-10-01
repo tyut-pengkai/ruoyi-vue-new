@@ -77,6 +77,9 @@ public class SysAgentLoginCodeController extends BaseController {
         startPage();
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
         SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        if(agent == null) {
+            throw new ServiceException("您没有该操作的权限（代理系统）");
+        }
         sysLoginCode.setAgentId(agent.getAgentId());
 //        }
         List<SysLoginCode> list = sysLoginCodeService.selectSysLoginCodeList(sysLoginCode);
@@ -93,6 +96,9 @@ public class SysAgentLoginCodeController extends BaseController {
     public AjaxResult export(SysLoginCode sysLoginCode) {
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
         SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        if(agent == null) {
+            throw new ServiceException("您没有该操作的权限（代理系统）");
+        }
         sysLoginCode.setAgentId(agent.getAgentId());
 //        }
         List<SysLoginCode> list = sysLoginCodeService.selectSysLoginCodeList(sysLoginCode);

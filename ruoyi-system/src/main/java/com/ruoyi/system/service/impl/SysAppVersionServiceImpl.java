@@ -205,7 +205,9 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
             }
             SysAppVersion version = sysAppVersionMapper.selectSysAppVersionByAppVersionId(versionId);
             SysApp app = sysAppService.selectSysAppByAppId(version.getAppId());
-            assert originalFilename != null;
+            if(StringUtils.isBlank(originalFilename)) {
+                throw new ServiceException("文件不能为空");
+            }
             QuickAccessResultVo result = quickAccessHandle(accessType, bytes, version, originalFilename, apkOper, template, skin, vo, fullScreen, enableOffline, hideAutoLogin, enhancedMode);
 
             // 1全局 2单例

@@ -52,15 +52,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="查询密码" prop="queryPass">
-        <el-input
-          v-model="queryParams.queryPass"
-          clearable
-          placeholder="请输入查询密码"
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="查询密码" prop="queryPass">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.queryPass"-->
+<!--          clearable-->
+<!--          placeholder="请输入查询密码"-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item>
         <el-button
           icon="el-icon-search"
@@ -181,11 +181,11 @@
                   <span>{{ scope.row.contact }}</span>
                 </el-form-item>
               </el-col>
-              <el-col :span="5">
-                <el-form-item label="查询密码">
-                  <span>{{ scope.row.queryPass }}</span>
-                </el-form-item>
-              </el-col>
+<!--              <el-col :span="5">-->
+<!--                <el-form-item label="查询密码">-->
+<!--                  <span>{{ scope.row.queryPass }}</span>-->
+<!--                </el-form-item>-->
+<!--              </el-col>-->
               <!-- <el-col :span="5">
                 <el-form-item label="面值">
                   <span>{{
@@ -475,11 +475,11 @@
               <el-input v-model="form.contact" placeholder="请输入联系方式" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="查询密码" prop="queryPass">
-              <el-input v-model="form.queryPass" placeholder="请输入查询密码" />
-            </el-form-item>
-          </el-col>
+<!--          <el-col :span="12">-->
+<!--            <el-form-item label="查询密码" prop="queryPass">-->
+<!--              <el-input v-model="form.queryPass" placeholder="请输入查询密码" />-->
+<!--            </el-form-item>-->
+<!--          </el-col>-->
         </el-form-item>
         <el-form-item>
           <el-col :span="12">

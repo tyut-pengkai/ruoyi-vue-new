@@ -1,9 +1,10 @@
 package com.ruoyi.system.service;
 
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.system.domain.SysWithdrawMethod;
 import com.ruoyi.system.domain.SysWithdrawOrder;
-import com.ruoyi.system.domain.vo.WithdrawCashVo;
+import com.ruoyi.system.domain.vo.UserBalanceWithdrawVo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -62,5 +63,7 @@ public interface ISysWithdrawOrderService
      */
     public int deleteSysWithdrawOrderById(Long id);
 
-    public AjaxResult createWithdrawOrder(WithdrawCashVo vo);
+    public Long createWithdrawOrder(UserBalanceWithdrawVo vo, SysWithdrawMethod withdrawMethod, BigDecimal expectActualFee, BigDecimal handlingFee);
+
+    public int cancelSysWithdrawOrderByIds(Long[] ids);
 }

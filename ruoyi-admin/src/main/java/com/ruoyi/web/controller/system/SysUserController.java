@@ -276,7 +276,7 @@ public class SysUserController extends BaseController {
      * 用户提现
      */
     @PreAuthorize("@ss.hasPermi('system:user:transferBalance')")
-    @Log(title = "用户管理", businessType = BusinessType.TRANSFER_BALANCE)
+    @Log(title = "用户管理", businessType = BusinessType.WITHDRAW_CASH)
     @PutMapping("/withdrawBalance")
     public AjaxResult withdrawBalance(@Validated @RequestBody UserBalanceWithdrawVo vo) {
         return toAjax(userService.withdrawBalance(vo));

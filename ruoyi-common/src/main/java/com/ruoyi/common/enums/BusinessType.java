@@ -86,4 +86,9 @@ public enum BusinessType
      * 提现
      */
     WITHDRAW_CASH,
+
+    /**
+     * 取消
+     */
+    CANCEL,
 }

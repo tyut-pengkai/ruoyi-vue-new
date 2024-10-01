@@ -8,6 +8,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.domain.SysSaleOrderItem;
 import com.ruoyi.sale.domain.SysSaleOrderItemGoods;
@@ -52,6 +53,8 @@ public class SysSaleOrderController extends BaseController {
     private ISysSaleShopService sysSaleShopService;
     @Resource
     private ISysUserService userService;
+    @Resource
+    private PermissionService permissionService;
 
     /**
      * 查询销售订单列表
@@ -84,6 +87,9 @@ public class SysSaleOrderController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo list(SysSaleOrder sysSaleOrder) {
         startPage();
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            sysSaleOrder.setUserId(getUserId());
+        }
         List<SysSaleOrder> list = sysSaleOrderService.selectSysSaleOrderList(sysSaleOrder);
         return getDataTable(list);
     }
@@ -95,6 +101,9 @@ public class SysSaleOrderController extends BaseController {
     @Log(title = "销售订单", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysSaleOrder sysSaleOrder) {
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            sysSaleOrder.setUserId(getUserId());
+        }
         List<SysSaleOrder> list = sysSaleOrderService.selectSysSaleOrderList(sysSaleOrder);
         ExcelUtil<SysSaleOrder> util = new ExcelUtil<SysSaleOrder>(SysSaleOrder.class);
         util.exportExcel(response, list, "销售订单数据");

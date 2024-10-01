@@ -1,12 +1,16 @@
 package com.ruoyi.system.domain;
 
-import java.math.BigDecimal;
-import java.util.Date;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.enums.WithdrawStatus;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 提现记录对象 sys_withdraw_order
@@ -27,7 +31,7 @@ public class SysWithdrawOrder extends BaseEntity
 
     /** 提现交易编号 */
     @Excel(name = "提现交易编号")
-    private Long orderNo;
+    private String orderNo;
 
     /** 提现手续费 */
     @Excel(name = "提现手续费")
@@ -41,9 +45,9 @@ public class SysWithdrawOrder extends BaseEntity
     @Excel(name = "实际提现金额")
     private BigDecimal actualFee;
 
-    /** 提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败 */
-    @Excel(name = "提现状态：1：待审核，2：审核通过，3：审核不通过，4：待打款， 5，已打款， 6：打款失败")
-    private String withdrawStatus;
+    /** 提现状态：0：待审核，1：审核通过，待打款，2：审核不通过，3：提现成功，已打款， 4：打款失败 */
+    @Excel(name = "提现状态", dictType = "sys_withdraw_status")
+    private WithdrawStatus withdrawStatus;
 
     /** 是否人工转账 */
     @Excel(name = "是否人工转账")
@@ -66,18 +70,50 @@ public class SysWithdrawOrder extends BaseEntity
     @Excel(name = "交易失败描述")
     private String errorMessage;
 
+    /** 收款方式id */
+    private Long withdrawMethodId;
+
     /** 收款平台 */
     @Excel(name = "收款平台")
+    @TableField(exist = false)
     private String receiveMethod;
 
     /** 收款账号 */
     @Excel(name = "收款账号")
+    @TableField(exist = false)
     private String receiveAccount;
+
+    /** 真实姓名 */
+    @Excel(name = "真实姓名")
+    @TableField(exist = false)
+    private String realName;
 
     /** 删除标志（0代表存在 2代表删除） */
     private String delFlag;
 
-    public void setId(Long id) 
+    private SysUser user;
+
+    @TableField(exist = false)
+    // 用于搜索
+    private String userName;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public SysUser getUser() {
+        return user;
+    }
+
+    public void setUser(SysUser user) {
+        this.user = user;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }
@@ -95,12 +131,12 @@ public class SysWithdrawOrder extends BaseEntity
     {
         return userId;
     }
-    public void setOrderNo(Long orderNo) 
+    public void setOrderNo(String orderNo)
     {
         this.orderNo = orderNo;
     }
 
-    public Long getOrderNo() 
+    public String getOrderNo()
     {
         return orderNo;
     }
@@ -131,12 +167,12 @@ public class SysWithdrawOrder extends BaseEntity
     {
         return actualFee;
     }
-    public void setWithdrawStatus(String withdrawStatus) 
+    public void setWithdrawStatus(WithdrawStatus withdrawStatus)
     {
         this.withdrawStatus = withdrawStatus;
     }
 
-    public String getWithdrawStatus() 
+    public WithdrawStatus getWithdrawStatus()
     {
         return withdrawStatus;
     }
@@ -211,6 +247,22 @@ public class SysWithdrawOrder extends BaseEntity
     public String getDelFlag() 
     {
         return delFlag;
+    }
+
+    public Long getWithdrawMethodId() {
+        return withdrawMethodId;
+    }
+
+    public void setWithdrawMethodId(Long withdrawMethodId) {
+        this.withdrawMethodId = withdrawMethodId;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     @Override

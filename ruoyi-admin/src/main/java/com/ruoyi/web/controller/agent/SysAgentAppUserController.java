@@ -69,6 +69,9 @@ public class SysAgentAppUserController extends BaseController {
         startPage();
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
         SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        if(agent == null) {
+            throw new ServiceException("您没有该操作的权限（代理系统）");
+        }
         sysAppUser.setAgentId(agent.getAgentId());
 //        }
         List<SysAppUser> list = sysAppUserService.selectSysAppUserList(sysAppUser);
@@ -95,6 +98,9 @@ public class SysAgentAppUserController extends BaseController {
     public AjaxResult export(SysAppUser sysAppUser) {
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
         SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        if(agent == null) {
+            throw new ServiceException("您没有该操作的权限（代理系统）");
+        }
         sysAppUser.setAgentId(agent.getAgentId());
 //        }
         List<SysAppUser> list = sysAppUserService.selectSysAppUserList(sysAppUser);

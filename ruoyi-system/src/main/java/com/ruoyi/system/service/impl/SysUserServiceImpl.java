@@ -732,7 +732,7 @@ public class SysUserServiceImpl implements ISysUserService {
             throw new ServiceException("提现配置数据缺失");
         }
         // 判断是否开启提现
-        if(!configWithdraw.getEnableWithdrawCash().equals("1")) {
+        if(!configWithdraw.getEnableWithdrawCash().equals("Y")) {
             throw new ServiceException("提现功能未开启");
         }
         // 判断最大最小提现金额
@@ -740,40 +740,30 @@ public class SysUserServiceImpl implements ISysUserService {
             throw new ServiceException("提现金额应该在" + configWithdraw.getWithdrawCashMin() + "~" + configWithdraw.getWithdrawCashMax() + "之间");
         }
         // 计算手续费及实际提现金额
-        BigDecimal fee = vo.getApplyFee().multiply(BigDecimal.valueOf(configWithdraw.getHandlingFeeRate()));
-        fee = BigDecimal.valueOf(Math.round(fee.doubleValue()) / 100);
-        fee =  isLessThan(fee, configWithdraw.getHandlingFeeMin()) ? configWithdraw.getHandlingFeeMin() : fee;
-        fee = isLessThan(configWithdraw.getHandlingFeeMax(), fee) ? configWithdraw.getHandlingFeeMax() : fee;
+        BigDecimal handlingFee = vo.getApplyFee().multiply(BigDecimal.valueOf(configWithdraw.getHandlingFeeRate()));
+        handlingFee = BigDecimal.valueOf(Math.round(handlingFee.doubleValue()) / 100);
+        handlingFee =  isLessThan(handlingFee, configWithdraw.getHandlingFeeMin()) ? configWithdraw.getHandlingFeeMin() : handlingFee;
+        handlingFee = isLessThan(configWithdraw.getHandlingFeeMax(), handlingFee) ? configWithdraw.getHandlingFeeMax() : handlingFee;
         SysUser user = userMapper.selectUserById(userId);
-        BigDecimal expectActualFee;
-        if(user.getAvailablePayBalance().compareTo(vo.getApplyFee().add(fee)) >= 0) {
-            expectActualFee = vo.getApplyFee();
+        BigDecimal actualFee;
+        if(user.getAvailablePayBalance().compareTo(vo.getApplyFee().add(handlingFee)) >= 0) {
+            actualFee = vo.getApplyFee();
         } else {
-            expectActualFee = user.getAvailablePayBalance().subtract(fee);
+            actualFee = user.getAvailablePayBalance().subtract(handlingFee);
         }
-        withdrawOrderService.createWithdrawOrder();
+        Long withdrawOrderId = withdrawOrderService.createWithdrawOrder(vo, withdrawMethod, actualFee, handlingFee);
         // 余额变动记录
         String description = "提现到收款账号[" + withdrawMethod.getReceiveMethod() + "|" + withdrawMethod.getReceiveAccount() + "]" + "："
-                + "申请：" + vo.getApplyFee() + "，手续费：" + fee + "，实际：" + expectActualFee + "，附加信息：" + vo.getRemark();
-        BalanceChangeVo changeFee = new BalanceChangeVo();
-        changeFee.setUserId(userId);
-        changeFee.setUpdateBy(SecurityUtils.getUsername());
-        changeFee.setType(BalanceChangeType.OTHOR_OUT);
-        changeFee.setDescription(description);
-        changeFee.setAvailablePayBalance(expectActualFee.negate());
-        changeFee.setFreezePayBalance(expectActualFee);
-        changeFee.setWithdrawCashId();
-        changeFee.setSourceUserId(userId);
-        updateUserBalance(changeFee);
+                + "申请：" + vo.getApplyFee() + "，手续费：" + handlingFee + "，实际：" + actualFee + "，附加信息：" + vo.getRemark();
         BalanceChangeVo changeBalance = new BalanceChangeVo();
         changeBalance.setUserId(userId);
-        changeBalance.setUpdateBy(SecurityUtils.getUsername());
+        changeBalance.setUpdateBy(SecurityUtils.getUsernameNoException());
         changeBalance.setType(BalanceChangeType.WITHDRAW_CASH_FREEZE);
         changeBalance.setDescription(description);
-        changeBalance.setAvailablePayBalance(expectActualFee.negate());
-        changeBalance.setFreezePayBalance(expectActualFee);
-        changeBalance.setWithdrawCashId();
+        changeBalance.setAvailablePayBalance(actualFee.negate());
+        changeBalance.setFreezePayBalance(actualFee);
+        changeBalance.setWithdrawCashId(withdrawOrderId);
         changeBalance.setSourceUserId(userId);
-        updateUserBalance(changeBalance);
+        return updateUserBalance(changeBalance);
     }
 }

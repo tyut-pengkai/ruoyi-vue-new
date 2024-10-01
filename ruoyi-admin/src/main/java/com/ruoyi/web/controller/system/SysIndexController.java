@@ -21,7 +21,7 @@ import com.ruoyi.sale.mapper.DashboardSaleViewMapper;
 import com.ruoyi.system.domain.SysAppUserCount;
 import com.ruoyi.system.domain.SysNotice;
 import com.ruoyi.system.domain.vo.TbhbVo;
-import com.ruoyi.system.service.ISysAppService;
+import com.ruoyi.system.mapper.SysAppMapper;
 import com.ruoyi.system.service.ISysAppUserCountService;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysNoticeService;
@@ -62,7 +62,7 @@ public class SysIndexController extends BaseController {
     @Resource
     private ISysAppUserCountService appUserCountService;
     @Resource
-    private ISysAppService sysAppService;
+    private SysAppMapper sysAppMapper;
     @Autowired
     private RedisCache redisCache;
     @Resource
@@ -192,7 +192,7 @@ public class SysIndexController extends BaseController {
         // 用户总数量
         SysApp sysApp = new SysApp();
         sysApp.setStatus(UserConstants.NORMAL);
-        List<SysApp> appList = sysAppService.selectSysAppList(sysApp);
+        List<SysApp> appList = sysAppMapper.selectSysAppList(sysApp);
         List<List<SysAppUserCount>> appUserCountListList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             LambdaQueryWrapper<SysAppUserCount> dataVoWrapper = new LambdaQueryWrapper<>();

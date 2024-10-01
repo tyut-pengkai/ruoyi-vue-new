@@ -5,17 +5,19 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.system.domain.SysWithdrawOrder;
-import com.ruoyi.system.domain.vo.WithdrawCashVo;
 import com.ruoyi.system.service.ISysWithdrawOrderService;
 import com.ruoyi.utils.poi.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 提现记录Controller
@@ -28,6 +30,32 @@ import java.util.List;
 public class SysWithdrawOrderController extends BaseController {
     @Autowired
     private ISysWithdrawOrderService sysWithdrawOrderService;
+    @Resource
+    private PermissionService permissionService;
+
+    /**
+     * 查询提现记录列表
+     */
+    @GetMapping("/self/list")
+    public TableDataInfo listSelf(SysWithdrawOrder sysWithdrawOrder) {
+        startPage();
+        sysWithdrawOrder.setUserId(getUserId());
+        List<SysWithdrawOrder> list = sysWithdrawOrderService.selectSysWithdrawOrderList(sysWithdrawOrder);
+        return getDataTable(list);
+    }
+
+    /**
+     * 获取提现记录详细信息
+     */
+    @GetMapping(value = "/self/{id}")
+    public AjaxResult getInfoSelf(@PathVariable("id") Long id) {
+        SysWithdrawOrder order = sysWithdrawOrderService.selectSysWithdrawOrderById(id);
+        if (Objects.equals(order.getUserId(), getUserId())) {
+            return AjaxResult.success(order);
+        } else {
+            throw new ServiceException("您没有查看该数据的权限");
+        }
+    }
 
     /**
      * 查询提现记录列表
@@ -36,6 +64,9 @@ public class SysWithdrawOrderController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo list(SysWithdrawOrder sysWithdrawOrder) {
         startPage();
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            sysWithdrawOrder.setUserId(getUserId());
+        }
         List<SysWithdrawOrder> list = sysWithdrawOrderService.selectSysWithdrawOrderList(sysWithdrawOrder);
         return getDataTable(list);
     }
@@ -47,6 +78,9 @@ public class SysWithdrawOrderController extends BaseController {
     @Log(title = "提现记录", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysWithdrawOrder sysWithdrawOrder) {
+        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            sysWithdrawOrder.setUserId(getUserId());
+        }
         List<SysWithdrawOrder> list = sysWithdrawOrderService.selectSysWithdrawOrderList(sysWithdrawOrder);
         ExcelUtil<SysWithdrawOrder> util = new ExcelUtil<SysWithdrawOrder>(SysWithdrawOrder.class);
         util.exportExcel(response, list, "提现记录数据");
@@ -92,12 +126,13 @@ public class SysWithdrawOrderController extends BaseController {
     }
 
     /**
-     * 创建提现订单
+     * 删除提现记录
      */
-    @PreAuthorize("@ss.hasPermi('system:withdrawOrder:withdrawCash')")
-    @Log(title = "提现记录", businessType = BusinessType.WITHDRAW_CASH)
-    @PutMapping("/createWithdrawOrder")
-    public AjaxResult createWithdrawOrder(@Validated @RequestBody WithdrawCashVo vo) {
-        return sysWithdrawOrderService.createWithdrawOrder(vo);
+    @PreAuthorize("@ss.hasPermi('system:withdrawOrder:cancel')")
+    @Log(title = "提现记录", businessType = BusinessType.CANCEL)
+    @DeleteMapping("/cancel/{ids}")
+    public AjaxResult cancel(@PathVariable Long[] ids) {
+        return toAjax(sysWithdrawOrderService.cancelSysWithdrawOrderByIds(ids));
     }
+
 }

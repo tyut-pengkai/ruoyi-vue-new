@@ -77,6 +77,9 @@ public class SysAgentCardController extends BaseController {
         startPage();
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
         SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        if(agent == null) {
+            throw new ServiceException("您没有该操作的权限（代理系统）");
+        }
         sysCard.setAgentId(agent.getAgentId());
 //        }
         List<SysCard> list = sysCardService.selectSysCardList(sysCard);
@@ -93,6 +96,9 @@ public class SysAgentCardController extends BaseController {
     public AjaxResult export(SysCard sysCard) {
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
         SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
+        if(agent == null) {
+            throw new ServiceException("您没有该操作的权限（代理系统）");
+        }
         sysCard.setAgentId(agent.getAgentId());
 //        }
         List<SysCard> list = sysCardService.selectSysCardList(sysCard);

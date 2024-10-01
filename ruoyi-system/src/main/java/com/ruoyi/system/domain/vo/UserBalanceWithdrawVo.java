@@ -9,7 +9,7 @@ public class UserBalanceWithdrawVo {
     private Long receiveAccountId;
     private String remark;
 
-    @NotNull(message = "转账金额不能为空")
+    @NotNull(message = "提现金额不能为空")
     public BigDecimal getApplyFee() {
         return applyFee;
     }
@@ -18,7 +18,7 @@ public class UserBalanceWithdrawVo {
         this.applyFee = applyFee;
     }
 
-    @NotNull(message = "目的账号不能为空")
+    @NotNull(message = "收款账号不能为空")
     public Long getReceiveAccountId() {
         return receiveAccountId;
     }
@@ -27,7 +27,6 @@ public class UserBalanceWithdrawVo {
         this.receiveAccountId = receiveAccountId;
     }
 
-    @NotNull(message = "转账原因不能为空")
     public String getRemark() {
         return remark;
     }

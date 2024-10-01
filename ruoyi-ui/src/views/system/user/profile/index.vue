@@ -85,7 +85,7 @@
               <count-to
                 :decimals="2"
                 :duration="2600"
-                :end-val="user.freezeFreeBalance"
+                :end-val="user.freezePayBalance"
                 :start-val="0"
                 class="card-num"
                 prefix="￥ "
@@ -536,7 +536,7 @@ export default {
     handleReceiveAccount() {
       this.cancelW();
       this.$router.push({
-        path: "/more/withdrawMethod",
+        path: "/user/withdrawMethod",
         query: {
 
         },

@@ -304,15 +304,15 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="冻结余额" prop="freezeFreeBalance">
+              <el-form-item label="冻结余额" prop="freezePayBalance">
                 <!-- <el-input-number
-                v-model="form.freezeFreeBalance"
+                v-model="form.freezePayBalance"
                 :precision="2"
                 :step="0.01"
                 controls-position="right"
                 :disabled="true"
               /> -->
-                {{ parseMoney(form.freezeFreeBalance) }}
+                {{ parseMoney(form.freezePayBalance) }}
               </el-form-item>
             </el-col>
           </el-row>
@@ -444,7 +444,7 @@
                 <i class="el-icon-wallet"></i>
                 冻结余额
               </template>
-              {{ parseMoney(form.freezeFreeBalance) }}
+              {{ parseMoney(form.freezePayBalance) }}
             </el-descriptions-item>
           </el-descriptions>
         </div>
