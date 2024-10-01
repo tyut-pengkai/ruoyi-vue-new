@@ -33,7 +33,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="到账金额" prop="actualFee">
+      <el-form-item label="到账金额(预计)" prop="actualFee">
         <el-input
           v-model="queryParams.actualFee"
           placeholder="请输入实际提现金额"
@@ -181,7 +181,7 @@
           <span>{{ parseMoney(scope.row.applyFee) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="到账金额" align="center" prop="actualFee">
+      <el-table-column label="到账金额(预计)" align="center" prop="actualFee">
         <template slot-scope="scope">
           <span>{{ parseMoney(scope.row.actualFee) }}</span>
         </template>
@@ -307,7 +307,7 @@
         </el-form-item>
         <el-form-item>
           <el-col :span="12">
-            <el-form-item label="到账金额(实际打款金额)" prop="actualFee">
+            <el-form-item label="到账金额(应打款金额)" prop="actualFee">
               <span>{{ parseMoney(form.actualFee) }}元 </span>
             </el-form-item>
           </el-col>

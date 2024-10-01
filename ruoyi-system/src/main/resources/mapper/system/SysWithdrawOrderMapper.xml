@@ -64,6 +64,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="realName != null  and realName != ''"> and swo.real_name like concat('%', #{realName}, '%')</if>
             <if test="userName != null ">and (u.nick_name like concat('%', #{userName}, '%') or u.user_name like concat('%', #{userName}, '%'))</if>
         </where>
+        order by swo.id desc
     </select>
     
     <select id="selectSysWithdrawOrderById" parameterType="Long" resultMap="SysWithdrawOrderResult">

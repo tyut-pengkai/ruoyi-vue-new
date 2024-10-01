@@ -33,7 +33,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="到账金额" prop="actualFee">
+      <el-form-item label="到账金额(预计)" prop="actualFee">
         <el-input
           v-model="queryParams.actualFee"
           placeholder="请输入实际提现金额"
@@ -181,7 +181,7 @@
           <span>{{ parseMoney(scope.row.applyFee) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="到账金额" align="center" prop="actualFee">
+      <el-table-column label="到账金额(预计)" align="center" prop="actualFee">
         <template slot-scope="scope">
           <span>{{ parseMoney(scope.row.actualFee) }}</span>
         </template>
@@ -307,7 +307,7 @@
         </el-form-item>
         <el-form-item>
           <el-col :span="12">
-            <el-form-item label="到账金额(实际打款金额)" prop="actualFee">
+            <el-form-item label="到账金额(应打款金额)" prop="actualFee">
               <span>{{ parseMoney(form.actualFee) }}元 </span>
             </el-form-item>
           </el-col>
@@ -320,7 +320,7 @@
         <el-form-item>
           <el-col :span="12">
             <el-form-item label="提现状态" prop="withdrawStatus">
-              <el-select v-model="form.withdrawStatus" placeholder="请选择提现状态" :disabled="withdrawStatusOld !== '0'">
+              <el-select v-model="form.withdrawStatus" placeholder="请选择提现状态" :disabled="withdrawStatusOld && withdrawStatusOld !== '0'">
                 <el-option
                   v-for="dict in dict.type.sys_cash_status"
                   :key="dict.value"
@@ -342,7 +342,9 @@
         <div v-if="form.withdrawStatus === '2'">
           <el-form-item label="失败描述" prop="errorMessage">
             <el-input v-model="form.errorMessage" placeholder="请输入交易失败描述" />
-            <el-button size="mini" round v-for="(reason, index) in reasonList" :key="index" @click="fillReason(reason)">{{ reason }}</el-button>
+            <div v-if="reasonList">
+              <el-button size="mini" round v-for="(reason, index) in reasonList" :key="index" @click="fillReason(reason)">{{ reason }}</el-button>
+            </div>
           </el-form-item>
         </div>
         <!--            <el-form-item label="错误代码" prop="errorCode">-->
