@@ -165,7 +165,7 @@ export default {
       title: "在线商城",
       drawer: false,
       isLicenseServer: false,
-      icp: "",
+      // icp: "",
       navList: [
         // {
         //   navName: "a",
@@ -244,6 +244,11 @@ export default {
       }
     });
   },
+  computed: {
+    icp() {
+      return this.$store.state.settings.icp;
+    }
+  }
 };
 </script>
 <style scoped>

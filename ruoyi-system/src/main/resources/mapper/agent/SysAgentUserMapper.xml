@@ -43,9 +43,9 @@
         <result property="enableUpdateCardStatus1"    column="enable_update_card_status_1"    />
         <result property="enableBatchCardReplace"    column="enable_batch_card_replace"    />
         <result property="enableAddCard"    column="enable_add_card"    />
-        <result property="enableDeleteSubagent"    column="enableDeleteSubagent"    />
-        <result property="enableDeleteAppUser"    column="enableDeleteAppUser"    />
-        <result property="enableDeleteCard"    column="enableDeleteCard"    />
+        <result property="enableDeleteSubagent"    column="enable_delete_subagent"    />
+        <result property="enableDeleteAppUser"    column="enable_delete_app_user"    />
+        <result property="enableDeleteCard"    column="enable_delete_card"    />
         <association property="user" column="user_id" javaType="SysUser" resultMap="SysUserResult"/>
     </resultMap>
 
@@ -73,7 +73,7 @@
                ag.enable_update_app_user_time, ag.enable_update_app_user_point, ag.enable_update_app_user_login_limit_u, ag.enable_update_app_user_login_limit_m, ag.enbale_update_app_user_custom_params,
                ag.enable_update_app_user_remark, ag.enbale_view_user_contact, ag.enable_update_user_contact, ag.enable_update_user_password, ag.enable_update_user_remark, ag.enable_update_card_time,
                ag.enable_update_card_point, ag.enable_update_card_login_limit_u, ag.enable_update_card_login_limit_m, ag.enable_update_card_custom_params, ag.enable_update_card_remark,
-               ag.enable_update_card_status_0, ag.enable_update_card_status_1, ag.enable_batch_card_replace, ag.enable_add_card, ag.enableDeleteSubagent, ag.enableDeleteAppUser, ag.enableDeleteCard,
+               ag.enable_update_card_status_0, ag.enable_update_card_status_1, ag.enable_batch_card_replace, ag.enable_add_card, ag.enable_delete_subagent, ag.enable_delete_app_user, ag.enable_delete_card,
                u.user_id,
                u.user_name,
                u.nick_name
@@ -121,9 +121,9 @@
         <if test="enableUpdateCardStatus1 != null  and enableUpdateCardStatus1 != ''"> and enable_update_card_status_1 = #{enableUpdateCardStatus1}</if>
         <if test="enableBatchCardReplace != null  and enableBatchCardReplace != ''"> and enable_batch_card_replace = #{enableBatchCardReplace}</if>
         <if test="enableAddCard != null  and enableAddCard != ''"> and enable_add_card = #{enableAddCard}</if>
-        <if test="enableDeleteSubagent != null  and enableDeleteSubagent != ''"> and enableDeleteSubagent = #{enableDeleteSubagent}</if>
-        <if test="enableDeleteAppUser != null  and enableDeleteAppUser != ''"> and enableDeleteAppUser = #{enableDeleteAppUser}</if>
-        <if test="enableDeleteCard != null  and enableDeleteCard != ''"> and enableDeleteCard = #{enableDeleteCard}</if>
+        <if test="enableDeleteSubagent != null  and enableDeleteSubagent != ''"> and enable_delete_subagent = #{enableDeleteSubagent}</if>
+        <if test="enableDeleteAppUser != null  and enableDeleteAppUser != ''"> and enable_delete_app_user = #{enableDeleteAppUser}</if>
+        <if test="enableDeleteCard != null  and enableDeleteCard != ''"> and enable_delete_card = #{enableDeleteCard}</if>
     </select>
 
     <select id="selectSysAgentByAgentId" parameterType="Long" resultMap="SysAgentResult">
@@ -176,9 +176,9 @@
             <if test="enableUpdateCardStatus1 != null and enableUpdateCardStatus1 != ''">enable_update_card_status_1,</if>
             <if test="enableBatchCardReplace != null and enableBatchCardReplace != ''">enable_batch_card_replace,</if>
             <if test="enableAddCard != null and enableAddCard != ''">enable_add_card,</if>
-            <if test="enableDeleteSubagent != null and enableDeleteSubagent != ''">enableDeleteSubagent,</if>
-            <if test="enableDeleteAppUser != null and enableDeleteAppUser != ''">enableDeleteAppUser,</if>
-            <if test="enableDeleteCard != null and enableDeleteCard != ''">enableDeleteCard,</if>
+            <if test="enableDeleteSubagent != null and enableDeleteSubagent != ''">enable_delete_subagent,</if>
+            <if test="enableDeleteAppUser != null and enableDeleteAppUser != ''">enable_delete_app_user,</if>
+            <if test="enableDeleteCard != null and enableDeleteCard != ''">enable_delete_card,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="parentAgentId != null">#{parentAgentId},</if>
@@ -264,9 +264,9 @@
             <if test="enableUpdateCardStatus1 != null and enableUpdateCardStatus1 != ''">enable_update_card_status_1 = #{enableUpdateCardStatus1},</if>
             <if test="enableBatchCardReplace != null and enableBatchCardReplace != ''">enable_batch_card_replace = #{enableBatchCardReplace},</if>
             <if test="enableAddCard != null and enableAddCard != ''">enable_add_card = #{enableAddCard},</if>
-            <if test="enableDeleteSubagent != null and enableDeleteSubagent != ''">enableDeleteSubagent = #{enableDeleteSubagent},</if>
-            <if test="enableDeleteAppUser != null and enableDeleteAppUser != ''">enableDeleteAppUser = #{enableDeleteAppUser},</if>
-            <if test="enableDeleteCard != null and enableDeleteCard != ''">enableDeleteCard = #{enableDeleteCard},</if>
+            <if test="enableDeleteSubagent != null and enableDeleteSubagent != ''">enable_delete_subagent = #{enableDeleteSubagent},</if>
+            <if test="enableDeleteAppUser != null and enableDeleteAppUser != ''">enable_delete_app_user = #{enableDeleteAppUser},</if>
+            <if test="enableDeleteCard != null and enableDeleteCard != ''">enable_delete_card = #{enableDeleteCard},</if>
         </trim>
         where agent_id = #{agentId}
     </update>
