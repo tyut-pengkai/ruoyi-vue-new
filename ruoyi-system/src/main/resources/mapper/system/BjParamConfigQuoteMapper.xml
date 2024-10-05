@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.BjParamConfigQuoteMapper">
+    
+    <resultMap type="BjParamConfigQuote" id="BjParamConfigQuoteResult">
+        <result property="id"    column="id"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="blackWight"    column="black_wight"    />
+        <result property="scrapWight"    column="scrap_wight"    />
+        <result property="cutMaterial"    column="cut_material"    />
+        <result property="processSaw"    column="process_saw"    />
+        <result property="processBend"    column="process_bend"    />
+        <result property="processDrill"    column="process_drill"    />
+        <result property="processLathe"    column="process_lathe"    />
+        <result property="processGrind"    column="process_grind"    />
+        <result property="processMill"    column="process_mill"    />
+        <result property="processLevel"    column="process_level"    />
+        <result property="processBor"    column="process_bor"    />
+        <result property="processWeld"    column="process_weld"    />
+        <result property="processPolish"    column="process_polish"    />
+        <result property="processPack"    column="process_pack"    />
+        <result property="surfaceGalvanized"    column="surface_galvanized"    />
+        <result property="surfaceCondit"    column="surface_condit"    />
+        <result property="surfaceSandwash"    column="surface_sandwash"    />
+        <result property="surfacePqp"    column="surface_pqp"    />
+        <result property="sprayPick"    column="spray_pick"    />
+        <result property="sprayPlastic"    column="spray_plastic"    />
+        <result property="sprayElectro"    column="spray_electro"    />
+        <result property="sprayPrimer"    column="spray_primer"    />
+        <result property="sprayTopcoat"    column="spray_topcoat"    />
+    </resultMap>
+
+    <sql id="selectBjParamConfigQuoteVo">
+        select id, customer_id, black_wight, scrap_wight, cut_material, process_saw, process_bend, process_drill, process_lathe, process_grind, process_mill, process_level, process_bor, process_weld, process_polish, process_pack, surface_galvanized, surface_condit, surface_sandwash, surface_pqp, spray_pick, spray_plastic, spray_electro, spray_primer, spray_topcoat from bj_param_config_quote
+    </sql>
+
+    <select id="selectBjParamConfigQuoteList" parameterType="BjParamConfigQuote" resultMap="BjParamConfigQuoteResult">
+        <include refid="selectBjParamConfigQuoteVo"/>
+        <where>  
+            <if test="customerId != null "> and customer_id = #{customerId}</if>
+            <if test="blackWight != null "> and black_wight = #{blackWight}</if>
+            <if test="scrapWight != null "> and scrap_wight = #{scrapWight}</if>
+            <if test="cutMaterial != null "> and cut_material = #{cutMaterial}</if>
+            <if test="processSaw != null "> and process_saw = #{processSaw}</if>
+            <if test="processBend != null "> and process_bend = #{processBend}</if>
+            <if test="processDrill != null "> and process_drill = #{processDrill}</if>
+            <if test="processLathe != null "> and process_lathe = #{processLathe}</if>
+            <if test="processGrind != null "> and process_grind = #{processGrind}</if>
+            <if test="processMill != null "> and process_mill = #{processMill}</if>
+            <if test="processLevel != null "> and process_level = #{processLevel}</if>
+            <if test="processBor != null "> and process_bor = #{processBor}</if>
+            <if test="processWeld != null "> and process_weld = #{processWeld}</if>
+            <if test="processPolish != null "> and process_polish = #{processPolish}</if>
+            <if test="processPack != null "> and process_pack = #{processPack}</if>
+            <if test="surfaceGalvanized != null "> and surface_galvanized = #{surfaceGalvanized}</if>
+            <if test="surfaceCondit != null "> and surface_condit = #{surfaceCondit}</if>
+            <if test="surfaceSandwash != null "> and surface_sandwash = #{surfaceSandwash}</if>
+            <if test="surfacePqp != null "> and surface_pqp = #{surfacePqp}</if>
+            <if test="sprayPick != null "> and spray_pick = #{sprayPick}</if>
+            <if test="sprayPlastic != null "> and spray_plastic = #{sprayPlastic}</if>
+            <if test="sprayElectro != null "> and spray_electro = #{sprayElectro}</if>
+            <if test="sprayPrimer != null "> and spray_primer = #{sprayPrimer}</if>
+            <if test="sprayTopcoat != null "> and spray_topcoat = #{sprayTopcoat}</if>
+        </where>
+    </select>
+    
+    <select id="selectBjParamConfigQuoteById" parameterType="Long" resultMap="BjParamConfigQuoteResult">
+        <include refid="selectBjParamConfigQuoteVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBjParamConfigQuote" parameterType="BjParamConfigQuote">
+        insert into bj_param_config_quote
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="customerId != null">customer_id,</if>
+            <if test="blackWight != null">black_wight,</if>
+            <if test="scrapWight != null">scrap_wight,</if>
+            <if test="cutMaterial != null">cut_material,</if>
+            <if test="processSaw != null">process_saw,</if>
+            <if test="processBend != null">process_bend,</if>
+            <if test="processDrill != null">process_drill,</if>
+            <if test="processLathe != null">process_lathe,</if>
+            <if test="processGrind != null">process_grind,</if>
+            <if test="processMill != null">process_mill,</if>
+            <if test="processLevel != null">process_level,</if>
+            <if test="processBor != null">process_bor,</if>
+            <if test="processWeld != null">process_weld,</if>
+            <if test="processPolish != null">process_polish,</if>
+            <if test="processPack != null">process_pack,</if>
+            <if test="surfaceGalvanized != null">surface_galvanized,</if>
+            <if test="surfaceCondit != null">surface_condit,</if>
+            <if test="surfaceSandwash != null">surface_sandwash,</if>
+            <if test="surfacePqp != null">surface_pqp,</if>
+            <if test="sprayPick != null">spray_pick,</if>
+            <if test="sprayPlastic != null">spray_plastic,</if>
+            <if test="sprayElectro != null">spray_electro,</if>
+            <if test="sprayPrimer != null">spray_primer,</if>
+            <if test="sprayTopcoat != null">spray_topcoat,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="customerId != null">#{customerId},</if>
+            <if test="blackWight != null">#{blackWight},</if>
+            <if test="scrapWight != null">#{scrapWight},</if>
+            <if test="cutMaterial != null">#{cutMaterial},</if>
+            <if test="processSaw != null">#{processSaw},</if>
+            <if test="processBend != null">#{processBend},</if>
+            <if test="processDrill != null">#{processDrill},</if>
+            <if test="processLathe != null">#{processLathe},</if>
+            <if test="processGrind != null">#{processGrind},</if>
+            <if test="processMill != null">#{processMill},</if>
+            <if test="processLevel != null">#{processLevel},</if>
+            <if test="processBor != null">#{processBor},</if>
+            <if test="processWeld != null">#{processWeld},</if>
+            <if test="processPolish != null">#{processPolish},</if>
+            <if test="processPack != null">#{processPack},</if>
+            <if test="surfaceGalvanized != null">#{surfaceGalvanized},</if>
+            <if test="surfaceCondit != null">#{surfaceCondit},</if>
+            <if test="surfaceSandwash != null">#{surfaceSandwash},</if>
+            <if test="surfacePqp != null">#{surfacePqp},</if>
+            <if test="sprayPick != null">#{sprayPick},</if>
+            <if test="sprayPlastic != null">#{sprayPlastic},</if>
+            <if test="sprayElectro != null">#{sprayElectro},</if>
+            <if test="sprayPrimer != null">#{sprayPrimer},</if>
+            <if test="sprayTopcoat != null">#{sprayTopcoat},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBjParamConfigQuote" parameterType="BjParamConfigQuote">
+        update bj_param_config_quote
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="blackWight != null">black_wight = #{blackWight},</if>
+            <if test="scrapWight != null">scrap_wight = #{scrapWight},</if>
+            <if test="cutMaterial != null">cut_material = #{cutMaterial},</if>
+            <if test="processSaw != null">process_saw = #{processSaw},</if>
+            <if test="processBend != null">process_bend = #{processBend},</if>
+            <if test="processDrill != null">process_drill = #{processDrill},</if>
+            <if test="processLathe != null">process_lathe = #{processLathe},</if>
+            <if test="processGrind != null">process_grind = #{processGrind},</if>
+            <if test="processMill != null">process_mill = #{processMill},</if>
+            <if test="processLevel != null">process_level = #{processLevel},</if>
+            <if test="processBor != null">process_bor = #{processBor},</if>
+            <if test="processWeld != null">process_weld = #{processWeld},</if>
+            <if test="processPolish != null">process_polish = #{processPolish},</if>
+            <if test="processPack != null">process_pack = #{processPack},</if>
+            <if test="surfaceGalvanized != null">surface_galvanized = #{surfaceGalvanized},</if>
+            <if test="surfaceCondit != null">surface_condit = #{surfaceCondit},</if>
+            <if test="surfaceSandwash != null">surface_sandwash = #{surfaceSandwash},</if>
+            <if test="surfacePqp != null">surface_pqp = #{surfacePqp},</if>
+            <if test="sprayPick != null">spray_pick = #{sprayPick},</if>
+            <if test="sprayPlastic != null">spray_plastic = #{sprayPlastic},</if>
+            <if test="sprayElectro != null">spray_electro = #{sprayElectro},</if>
+            <if test="sprayPrimer != null">spray_primer = #{sprayPrimer},</if>
+            <if test="sprayTopcoat != null">spray_topcoat = #{sprayTopcoat},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBjParamConfigQuoteById" parameterType="Long">
+        delete from bj_param_config_quote where id = #{id}
+    </delete>
+
+    <delete id="deleteBjParamConfigQuoteByIds" parameterType="String">
+        delete from bj_param_config_quote where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

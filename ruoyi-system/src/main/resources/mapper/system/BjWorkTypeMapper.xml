@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.BjWorkTypeMapper">
+    
+    <resultMap type="BjWorkType" id="BjWorkTypeResult">
+        <result property="id"    column="id"    />
+        <result property="workType"    column="work_type"    />
+    </resultMap>
+
+    <sql id="selectBjWorkTypeVo">
+        select id, work_type from bj_work_type
+    </sql>
+
+    <select id="selectBjWorkTypeList" parameterType="BjWorkType" resultMap="BjWorkTypeResult">
+        <include refid="selectBjWorkTypeVo"/>
+        <where>  
+            <if test="workType != null  and workType != ''"> and work_type = #{workType}</if>
+        </where>
+    </select>
+    
+    <select id="selectBjWorkTypeById" parameterType="Long" resultMap="BjWorkTypeResult">
+        <include refid="selectBjWorkTypeVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBjWorkType" parameterType="BjWorkType">
+        insert into bj_work_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="workType != null">work_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="workType != null">#{workType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBjWorkType" parameterType="BjWorkType">
+        update bj_work_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="workType != null">work_type = #{workType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBjWorkTypeById" parameterType="Long">
+        delete from bj_work_type where id = #{id}
+    </delete>
+
+    <delete id="deleteBjWorkTypeByIds" parameterType="String">
+        delete from bj_work_type where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

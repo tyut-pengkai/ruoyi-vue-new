@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.BjQuoteMapper">
+    
+    <resultMap type="BjQuote" id="BjQuoteResult">
+        <result property="id"    column="id"    />
+        <result property="materialsNo"    column="materials_no"    />
+        <result property="name"    column="name"    />
+        <result property="netWight"    column="net_wight"    />
+        <result property="noTax"    column="no_tax"    />
+        <result property="perPrice"    column="per_price"    />
+        <result property="commit"    column="commit"    />
+    </resultMap>
+
+    <sql id="selectBjQuoteVo">
+        select id, materials_no, name, net_wight, no_tax, per_price, commit from bj_quote
+    </sql>
+
+    <select id="selectBjQuoteList" parameterType="BjQuote" resultMap="BjQuoteResult">
+        <include refid="selectBjQuoteVo"/>
+        <where>  
+            <if test="materialsNo != null "> and materials_no = #{materialsNo}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="netWight != null "> and net_wight = #{netWight}</if>
+            <if test="noTax != null "> and no_tax = #{noTax}</if>
+            <if test="perPrice != null "> and per_price = #{perPrice}</if>
+            <if test="commit != null  and commit != ''"> and commit = #{commit}</if>
+        </where>
+    </select>
+    
+    <select id="selectBjQuoteById" parameterType="Long" resultMap="BjQuoteResult">
+        <include refid="selectBjQuoteVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBjQuote" parameterType="BjQuote">
+        insert into bj_quote
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="materialsNo != null">materials_no,</if>
+            <if test="name != null">name,</if>
+            <if test="netWight != null">net_wight,</if>
+            <if test="noTax != null">no_tax,</if>
+            <if test="perPrice != null">per_price,</if>
+            <if test="commit != null">commit,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="materialsNo != null">#{materialsNo},</if>
+            <if test="name != null">#{name},</if>
+            <if test="netWight != null">#{netWight},</if>
+            <if test="noTax != null">#{noTax},</if>
+            <if test="perPrice != null">#{perPrice},</if>
+            <if test="commit != null">#{commit},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBjQuote" parameterType="BjQuote">
+        update bj_quote
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="materialsNo != null">materials_no = #{materialsNo},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="netWight != null">net_wight = #{netWight},</if>
+            <if test="noTax != null">no_tax = #{noTax},</if>
+            <if test="perPrice != null">per_price = #{perPrice},</if>
+            <if test="commit != null">commit = #{commit},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBjQuoteById" parameterType="Long">
+        delete from bj_quote where id = #{id}
+    </delete>
+
+    <delete id="deleteBjQuoteByIds" parameterType="String">
+        delete from bj_quote where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.BjCustomerMapper">
+    
+    <resultMap type="BjCustomer" id="BjCustomerResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="tel"    column="tel"    />
+        <result property="chargePerson"    column="charge_person"    />
+    </resultMap>
+
+    <sql id="selectBjCustomerVo">
+        select id, name, tel, charge_person from bj_customer
+    </sql>
+
+    <select id="selectBjCustomerList" parameterType="BjCustomer" resultMap="BjCustomerResult">
+        <include refid="selectBjCustomerVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="tel != null  and tel != ''"> and tel = #{tel}</if>
+            <if test="chargePerson != null  and chargePerson != ''"> and charge_person = #{chargePerson}</if>
+        </where>
+    </select>
+    
+    <select id="selectBjCustomerById" parameterType="Long" resultMap="BjCustomerResult">
+        <include refid="selectBjCustomerVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBjCustomer" parameterType="BjCustomer" useGeneratedKeys="true" keyProperty="id">
+        insert into bj_customer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="tel != null">tel,</if>
+            <if test="chargePerson != null">charge_person,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="tel != null">#{tel},</if>
+            <if test="chargePerson != null">#{chargePerson},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBjCustomer" parameterType="BjCustomer">
+        update bj_customer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="tel != null">tel = #{tel},</if>
+            <if test="chargePerson != null">charge_person = #{chargePerson},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBjCustomerById" parameterType="Long">
+        delete from bj_customer where id = #{id}
+    </delete>
+
+    <delete id="deleteBjCustomerByIds" parameterType="String">
+        delete from bj_customer where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

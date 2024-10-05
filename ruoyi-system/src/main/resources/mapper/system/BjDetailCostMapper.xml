@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.BjDetailCostMapper">
+    
+    <resultMap type="BjDetailCost" id="BjDetailCostResult">
+        <result property="id"    column="id"    />
+        <result property="materialsNo"    column="materials_no"    />
+        <result property="name"    column="name"    />
+        <result property="num"    column="num"    />
+        <result property="flag"    column="flag"    />
+        <result property="cost"    column="cost"    />
+        <result property="materialSpec"    column="material_spec"    />
+        <result property="perWight"    column="per_wight"    />
+        <result property="netWight"    column="net_wight"    />
+        <result property="steelLen"    column="steel_len"    />
+        <result property="steelWid"    column="steel_wid"    />
+        <result property="steelHei"    column="steel_hei"    />
+        <result property="steelWight"    column="steel_wight"    />
+        <result property="steelPerPrice"    column="steel_per_price"    />
+        <result property="steelPrice"    column="steel_price"    />
+        <result property="steelScrapWgt"    column="steel_scrap_wgt"    />
+        <result property="steelScrapPer"    column="steel_scrap_per"    />
+        <result property="steelScrapPrice"    column="steel_scrap_price"    />
+        <result property="totalSteel"    column="total_steel"    />
+        <result property="cutNum"    column="cut_num"    />
+        <result property="cutMaterial"    column="cut_material"    />
+        <result property="totalCut"    column="total_cut"    />
+        <result property="processSaw"    column="process_saw"    />
+        <result property="processBend"    column="process_bend"    />
+        <result property="processDrill"    column="process_drill"    />
+        <result property="processLathe"    column="process_lathe"    />
+        <result property="processGrind"    column="process_grind"    />
+        <result property="processMill"    column="process_mill"    />
+        <result property="processLevel"    column="process_level"    />
+        <result property="processBor"    column="process_bor"    />
+        <result property="processWeld"    column="process_weld"    />
+        <result property="processPolish"    column="process_polish"    />
+        <result property="processPack"    column="process_pack"    />
+        <result property="processSawTime"    column="process_saw_time"    />
+        <result property="processBendTime"    column="process_bend_time"    />
+        <result property="processDrillTime"    column="process_drill_time"    />
+        <result property="processLatheTime"    column="process_lathe_time"    />
+        <result property="processGrindTime"    column="process_grind_time"    />
+        <result property="processMillTime"    column="process_mill_time"    />
+        <result property="processLevelTime"    column="process_level_time"    />
+        <result property="processBorTime"    column="process_bor_time"    />
+        <result property="processWeldTime"    column="process_weld_time"    />
+        <result property="processPolishTime"    column="process_polish_time"    />
+        <result property="processPackTime"    column="process_pack_time"    />
+        <result property="totalProcess"    column="total_process"    />
+        <result property="surfaceGalvanized"    column="surface_galvanized"    />
+        <result property="surfaceCondit"    column="surface_condit"    />
+        <result property="surfaceSandwash"    column="surface_sandwash"    />
+        <result property="surfacePqp"    column="surface_pqp"    />
+        <result property="surfaceGalvanizedWgt"    column="surface_galvanized_wgt"    />
+        <result property="surfaceConditWgt"    column="surface_condit_wgt"    />
+        <result property="surfaceSandwashWgt"    column="surface_sandwash_wgt"    />
+        <result property="surfacePqpWgt"    column="surface_pqp_wgt"    />
+        <result property="totalSurface"    column="total_surface"    />
+        <result property="sprayWashpickling"    column="spray_washpickling"    />
+        <result property="sprayPlastic"    column="spray_plastic"    />
+        <result property="sprayElectro"    column="spray_electro"    />
+        <result property="sprayPrimer"    column="spray_primer"    />
+        <result property="sprayTopcoat"    column="spray_topcoat"    />
+        <result property="sprayPickSquare"    column="spray_pick_square"    />
+        <result property="sprayPlasticSquare"    column="spray_plastic_square"    />
+        <result property="sprayElectroSquare"    column="spray_electro_square"    />
+        <result property="sprayPrimerSquare"    column="spray_primer_square"    />
+        <result property="sprayTopcoatSquare"    column="spray_topcoat_square"    />
+        <result property="totalSpray"    column="total_spray"    />
+        <result property="nakedPrice"    column="naked_price"    />
+        <result property="profit"    column="profit"    />
+        <result property="transCost"    column="trans_cost"    />
+        <result property="totalPrice"    column="total_price"    />
+        <result property="noTax"    column="no_tax"    />
+        <result property="perPrice"    column="per_price"    />
+    </resultMap>
+
+    <sql id="selectBjDetailCostVo">
+        select id, materials_no, name, num, flag, cost, material_spec, per_wight, net_wight, steel_len, steel_wid, steel_hei, steel_wight, steel_per_price, steel_price, steel_scrap_wgt, steel_scrap_per, steel_scrap_price, total_steel, cut_num, cut_material, total_cut, process_saw, process_bend, process_drill, process_lathe, process_grind, process_mill, process_level, process_bor, process_weld, process_polish, process_pack, process_saw_time, process_bend_time, process_drill_time, process_lathe_time, process_grind_time, process_mill_time, process_level_time, process_bor_time, process_weld_time, process_polish_time, process_pack_time, total_process, surface_galvanized, surface_condit, surface_sandwash, surface_pqp, surface_galvanized_wgt, surface_condit_wgt, surface_sandwash_wgt, surface_pqp_wgt, total_surface, spray_washpickling, spray_plastic, spray_electro, spray_primer, spray_topcoat, spray_pick_square, spray_plastic_square, spray_electro_square, spray_primer_square, spray_topcoat_square, total_spray, naked_price, profit, trans_cost, total_price, no_tax, per_price from bj_detail_cost
+    </sql>
+
+    <select id="selectBjDetailCostList" parameterType="BjDetailCost" resultMap="BjDetailCostResult">
+        <include refid="selectBjDetailCostVo"/>
+        <where>  
+            <if test="materialsNo != null "> and materials_no = #{materialsNo}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="num != null "> and num = #{num}</if>
+            <if test="flag != null  and flag != ''"> and flag = #{flag}</if>
+            <if test="cost != null "> and cost = #{cost}</if>
+            <if test="materialSpec != null  and materialSpec != ''"> and material_spec = #{materialSpec}</if>
+            <if test="perWight != null "> and per_wight = #{perWight}</if>
+            <if test="netWight != null "> and net_wight = #{netWight}</if>
+            <if test="steelLen != null "> and steel_len = #{steelLen}</if>
+            <if test="steelWid != null "> and steel_wid = #{steelWid}</if>
+            <if test="steelHei != null "> and steel_hei = #{steelHei}</if>
+            <if test="steelWight != null "> and steel_wight = #{steelWight}</if>
+            <if test="steelPerPrice != null "> and steel_per_price = #{steelPerPrice}</if>
+            <if test="steelPrice != null "> and steel_price = #{steelPrice}</if>
+            <if test="steelScrapWgt != null "> and steel_scrap_wgt = #{steelScrapWgt}</if>
+            <if test="steelScrapPer != null "> and steel_scrap_per = #{steelScrapPer}</if>
+            <if test="steelScrapPrice != null "> and steel_scrap_price = #{steelScrapPrice}</if>
+            <if test="totalSteel != null "> and total_steel = #{totalSteel}</if>
+            <if test="cutNum != null "> and cut_num = #{cutNum}</if>
+            <if test="cutMaterial != null "> and cut_material = #{cutMaterial}</if>
+            <if test="totalCut != null  and totalCut != ''"> and total_cut = #{totalCut}</if>
+            <if test="processSaw != null "> and process_saw = #{processSaw}</if>
+            <if test="processBend != null "> and process_bend = #{processBend}</if>
+            <if test="processDrill != null "> and process_drill = #{processDrill}</if>
+            <if test="processLathe != null "> and process_lathe = #{processLathe}</if>
+            <if test="processGrind != null "> and process_grind = #{processGrind}</if>
+            <if test="processMill != null "> and process_mill = #{processMill}</if>
+            <if test="processLevel != null "> and process_level = #{processLevel}</if>
+            <if test="processBor != null "> and process_bor = #{processBor}</if>
+            <if test="processWeld != null "> and process_weld = #{processWeld}</if>
+            <if test="processPolish != null "> and process_polish = #{processPolish}</if>
+            <if test="processPack != null "> and process_pack = #{processPack}</if>
+            <if test="processSawTime != null "> and process_saw_time = #{processSawTime}</if>
+            <if test="processBendTime != null "> and process_bend_time = #{processBendTime}</if>
+            <if test="processDrillTime != null "> and process_drill_time = #{processDrillTime}</if>
+            <if test="processLatheTime != null "> and process_lathe_time = #{processLatheTime}</if>
+            <if test="processGrindTime != null "> and process_grind_time = #{processGrindTime}</if>
+            <if test="processMillTime != null "> and process_mill_time = #{processMillTime}</if>
+            <if test="processLevelTime != null "> and process_level_time = #{processLevelTime}</if>
+            <if test="processBorTime != null "> and process_bor_time = #{processBorTime}</if>
+            <if test="processWeldTime != null "> and process_weld_time = #{processWeldTime}</if>
+            <if test="processPolishTime != null "> and process_polish_time = #{processPolishTime}</if>
+            <if test="processPackTime != null "> and process_pack_time = #{processPackTime}</if>
+            <if test="totalProcess != null  and totalProcess != ''"> and total_process = #{totalProcess}</if>
+            <if test="surfaceGalvanized != null "> and surface_galvanized = #{surfaceGalvanized}</if>
+            <if test="surfaceCondit != null "> and surface_condit = #{surfaceCondit}</if>
+            <if test="surfaceSandwash != null "> and surface_sandwash = #{surfaceSandwash}</if>
+            <if test="surfacePqp != null "> and surface_pqp = #{surfacePqp}</if>
+            <if test="surfaceGalvanizedWgt != null "> and surface_galvanized_wgt = #{surfaceGalvanizedWgt}</if>
+            <if test="surfaceConditWgt != null "> and surface_condit_wgt = #{surfaceConditWgt}</if>
+            <if test="surfaceSandwashWgt != null "> and surface_sandwash_wgt = #{surfaceSandwashWgt}</if>
+            <if test="surfacePqpWgt != null "> and surface_pqp_wgt = #{surfacePqpWgt}</if>
+            <if test="totalSurface != null  and totalSurface != ''"> and total_surface = #{totalSurface}</if>
+            <if test="sprayWashpickling != null "> and spray_washpickling = #{sprayWashpickling}</if>
+            <if test="sprayPlastic != null "> and spray_plastic = #{sprayPlastic}</if>
+            <if test="sprayElectro != null "> and spray_electro = #{sprayElectro}</if>
+            <if test="sprayPrimer != null "> and spray_primer = #{sprayPrimer}</if>
+            <if test="sprayTopcoat != null "> and spray_topcoat = #{sprayTopcoat}</if>
+            <if test="sprayPickSquare != null "> and spray_pick_square = #{sprayPickSquare}</if>
+            <if test="sprayPlasticSquare != null "> and spray_plastic_square = #{sprayPlasticSquare}</if>
+            <if test="sprayElectroSquare != null "> and spray_electro_square = #{sprayElectroSquare}</if>
+            <if test="sprayPrimerSquare != null "> and spray_primer_square = #{sprayPrimerSquare}</if>
+            <if test="sprayTopcoatSquare != null "> and spray_topcoat_square = #{sprayTopcoatSquare}</if>
+            <if test="totalSpray != null  and totalSpray != ''"> and total_spray = #{totalSpray}</if>
+            <if test="nakedPrice != null "> and naked_price = #{nakedPrice}</if>
+            <if test="profit != null "> and profit = #{profit}</if>
+            <if test="transCost != null "> and trans_cost = #{transCost}</if>
+            <if test="totalPrice != null "> and total_price = #{totalPrice}</if>
+            <if test="noTax != null "> and no_tax = #{noTax}</if>
+            <if test="perPrice != null "> and per_price = #{perPrice}</if>
+        </where>
+    </select>
+    
+    <select id="selectBjDetailCostById" parameterType="Long" resultMap="BjDetailCostResult">
+        <include refid="selectBjDetailCostVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBjDetailCost" parameterType="BjDetailCost">
+        insert into bj_detail_cost
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="materialsNo != null">materials_no,</if>
+            <if test="name != null">name,</if>
+            <if test="num != null">num,</if>
+            <if test="flag != null">flag,</if>
+            <if test="cost != null">cost,</if>
+            <if test="materialSpec != null">material_spec,</if>
+            <if test="perWight != null">per_wight,</if>
+            <if test="netWight != null">net_wight,</if>
+            <if test="steelLen != null">steel_len,</if>
+            <if test="steelWid != null">steel_wid,</if>
+            <if test="steelHei != null">steel_hei,</if>
+            <if test="steelWight != null">steel_wight,</if>
+            <if test="steelPerPrice != null">steel_per_price,</if>
+            <if test="steelPrice != null">steel_price,</if>
+            <if test="steelScrapWgt != null">steel_scrap_wgt,</if>
+            <if test="steelScrapPer != null">steel_scrap_per,</if>
+            <if test="steelScrapPrice != null">steel_scrap_price,</if>
+            <if test="totalSteel != null">total_steel,</if>
+            <if test="cutNum != null">cut_num,</if>
+            <if test="cutMaterial != null">cut_material,</if>
+            <if test="totalCut != null">total_cut,</if>
+            <if test="processSaw != null">process_saw,</if>
+            <if test="processBend != null">process_bend,</if>
+            <if test="processDrill != null">process_drill,</if>
+            <if test="processLathe != null">process_lathe,</if>
+            <if test="processGrind != null">process_grind,</if>
+            <if test="processMill != null">process_mill,</if>
+            <if test="processLevel != null">process_level,</if>
+            <if test="processBor != null">process_bor,</if>
+            <if test="processWeld != null">process_weld,</if>
+            <if test="processPolish != null">process_polish,</if>
+            <if test="processPack != null">process_pack,</if>
+            <if test="processSawTime != null">process_saw_time,</if>
+            <if test="processBendTime != null">process_bend_time,</if>
+            <if test="processDrillTime != null">process_drill_time,</if>
+            <if test="processLatheTime != null">process_lathe_time,</if>
+            <if test="processGrindTime != null">process_grind_time,</if>
+            <if test="processMillTime != null">process_mill_time,</if>
+            <if test="processLevelTime != null">process_level_time,</if>
+            <if test="processBorTime != null">process_bor_time,</if>
+            <if test="processWeldTime != null">process_weld_time,</if>
+            <if test="processPolishTime != null">process_polish_time,</if>
+            <if test="processPackTime != null">process_pack_time,</if>
+            <if test="totalProcess != null">total_process,</if>
+            <if test="surfaceGalvanized != null">surface_galvanized,</if>
+            <if test="surfaceCondit != null">surface_condit,</if>
+            <if test="surfaceSandwash != null">surface_sandwash,</if>
+            <if test="surfacePqp != null">surface_pqp,</if>
+            <if test="surfaceGalvanizedWgt != null">surface_galvanized_wgt,</if>
+            <if test="surfaceConditWgt != null">surface_condit_wgt,</if>
+            <if test="surfaceSandwashWgt != null">surface_sandwash_wgt,</if>
+            <if test="surfacePqpWgt != null">surface_pqp_wgt,</if>
+            <if test="totalSurface != null">total_surface,</if>
+            <if test="sprayWashpickling != null">spray_washpickling,</if>
+            <if test="sprayPlastic != null">spray_plastic,</if>
+            <if test="sprayElectro != null">spray_electro,</if>
+            <if test="sprayPrimer != null">spray_primer,</if>
+            <if test="sprayTopcoat != null">spray_topcoat,</if>
+            <if test="sprayPickSquare != null">spray_pick_square,</if>
+            <if test="sprayPlasticSquare != null">spray_plastic_square,</if>
+            <if test="sprayElectroSquare != null">spray_electro_square,</if>
+            <if test="sprayPrimerSquare != null">spray_primer_square,</if>
+            <if test="sprayTopcoatSquare != null">spray_topcoat_square,</if>
+            <if test="totalSpray != null">total_spray,</if>
+            <if test="nakedPrice != null">naked_price,</if>
+            <if test="profit != null">profit,</if>
+            <if test="transCost != null">trans_cost,</if>
+            <if test="totalPrice != null">total_price,</if>
+            <if test="noTax != null">no_tax,</if>
+            <if test="perPrice != null">per_price,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="materialsNo != null">#{materialsNo},</if>
+            <if test="name != null">#{name},</if>
+            <if test="num != null">#{num},</if>
+            <if test="flag != null">#{flag},</if>
+            <if test="cost != null">#{cost},</if>
+            <if test="materialSpec != null">#{materialSpec},</if>
+            <if test="perWight != null">#{perWight},</if>
+            <if test="netWight != null">#{netWight},</if>
+            <if test="steelLen != null">#{steelLen},</if>
+            <if test="steelWid != null">#{steelWid},</if>
+            <if test="steelHei != null">#{steelHei},</if>
+            <if test="steelWight != null">#{steelWight},</if>
+            <if test="steelPerPrice != null">#{steelPerPrice},</if>
+            <if test="steelPrice != null">#{steelPrice},</if>
+            <if test="steelScrapWgt != null">#{steelScrapWgt},</if>
+            <if test="steelScrapPer != null">#{steelScrapPer},</if>
+            <if test="steelScrapPrice != null">#{steelScrapPrice},</if>
+            <if test="totalSteel != null">#{totalSteel},</if>
+            <if test="cutNum != null">#{cutNum},</if>
+            <if test="cutMaterial != null">#{cutMaterial},</if>
+            <if test="totalCut != null">#{totalCut},</if>
+            <if test="processSaw != null">#{processSaw},</if>
+            <if test="processBend != null">#{processBend},</if>
+            <if test="processDrill != null">#{processDrill},</if>
+            <if test="processLathe != null">#{processLathe},</if>
+            <if test="processGrind != null">#{processGrind},</if>
+            <if test="processMill != null">#{processMill},</if>
+            <if test="processLevel != null">#{processLevel},</if>
+            <if test="processBor != null">#{processBor},</if>
+            <if test="processWeld != null">#{processWeld},</if>
+            <if test="processPolish != null">#{processPolish},</if>
+            <if test="processPack != null">#{processPack},</if>
+            <if test="processSawTime != null">#{processSawTime},</if>
+            <if test="processBendTime != null">#{processBendTime},</if>
+            <if test="processDrillTime != null">#{processDrillTime},</if>
+            <if test="processLatheTime != null">#{processLatheTime},</if>
+            <if test="processGrindTime != null">#{processGrindTime},</if>
+            <if test="processMillTime != null">#{processMillTime},</if>
+            <if test="processLevelTime != null">#{processLevelTime},</if>
+            <if test="processBorTime != null">#{processBorTime},</if>
+            <if test="processWeldTime != null">#{processWeldTime},</if>
+            <if test="processPolishTime != null">#{processPolishTime},</if>
+            <if test="processPackTime != null">#{processPackTime},</if>
+            <if test="totalProcess != null">#{totalProcess},</if>
+            <if test="surfaceGalvanized != null">#{surfaceGalvanized},</if>
+            <if test="surfaceCondit != null">#{surfaceCondit},</if>
+            <if test="surfaceSandwash != null">#{surfaceSandwash},</if>
+            <if test="surfacePqp != null">#{surfacePqp},</if>
+            <if test="surfaceGalvanizedWgt != null">#{surfaceGalvanizedWgt},</if>
+            <if test="surfaceConditWgt != null">#{surfaceConditWgt},</if>
+            <if test="surfaceSandwashWgt != null">#{surfaceSandwashWgt},</if>
+            <if test="surfacePqpWgt != null">#{surfacePqpWgt},</if>
+            <if test="totalSurface != null">#{totalSurface},</if>
+            <if test="sprayWashpickling != null">#{sprayWashpickling},</if>
+            <if test="sprayPlastic != null">#{sprayPlastic},</if>
+            <if test="sprayElectro != null">#{sprayElectro},</if>
+            <if test="sprayPrimer != null">#{sprayPrimer},</if>
+            <if test="sprayTopcoat != null">#{sprayTopcoat},</if>
+            <if test="sprayPickSquare != null">#{sprayPickSquare},</if>
+            <if test="sprayPlasticSquare != null">#{sprayPlasticSquare},</if>
+            <if test="sprayElectroSquare != null">#{sprayElectroSquare},</if>
+            <if test="sprayPrimerSquare != null">#{sprayPrimerSquare},</if>
+            <if test="sprayTopcoatSquare != null">#{sprayTopcoatSquare},</if>
+            <if test="totalSpray != null">#{totalSpray},</if>
+            <if test="nakedPrice != null">#{nakedPrice},</if>
+            <if test="profit != null">#{profit},</if>
+            <if test="transCost != null">#{transCost},</if>
+            <if test="totalPrice != null">#{totalPrice},</if>
+            <if test="noTax != null">#{noTax},</if>
+            <if test="perPrice != null">#{perPrice},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBjDetailCost" parameterType="BjDetailCost">
+        update bj_detail_cost
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="materialsNo != null">materials_no = #{materialsNo},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="num != null">num = #{num},</if>
+            <if test="flag != null">flag = #{flag},</if>
+            <if test="cost != null">cost = #{cost},</if>
+            <if test="materialSpec != null">material_spec = #{materialSpec},</if>
+            <if test="perWight != null">per_wight = #{perWight},</if>
+            <if test="netWight != null">net_wight = #{netWight},</if>
+            <if test="steelLen != null">steel_len = #{steelLen},</if>
+            <if test="steelWid != null">steel_wid = #{steelWid},</if>
+            <if test="steelHei != null">steel_hei = #{steelHei},</if>
+            <if test="steelWight != null">steel_wight = #{steelWight},</if>
+            <if test="steelPerPrice != null">steel_per_price = #{steelPerPrice},</if>
+            <if test="steelPrice != null">steel_price = #{steelPrice},</if>
+            <if test="steelScrapWgt != null">steel_scrap_wgt = #{steelScrapWgt},</if>
+            <if test="steelScrapPer != null">steel_scrap_per = #{steelScrapPer},</if>
+            <if test="steelScrapPrice != null">steel_scrap_price = #{steelScrapPrice},</if>
+            <if test="totalSteel != null">total_steel = #{totalSteel},</if>
+            <if test="cutNum != null">cut_num = #{cutNum},</if>
+            <if test="cutMaterial != null">cut_material = #{cutMaterial},</if>
+            <if test="totalCut != null">total_cut = #{totalCut},</if>
+            <if test="processSaw != null">process_saw = #{processSaw},</if>
+            <if test="processBend != null">process_bend = #{processBend},</if>
+            <if test="processDrill != null">process_drill = #{processDrill},</if>
+            <if test="processLathe != null">process_lathe = #{processLathe},</if>
+            <if test="processGrind != null">process_grind = #{processGrind},</if>
+            <if test="processMill != null">process_mill = #{processMill},</if>
+            <if test="processLevel != null">process_level = #{processLevel},</if>
+            <if test="processBor != null">process_bor = #{processBor},</if>
+            <if test="processWeld != null">process_weld = #{processWeld},</if>
+            <if test="processPolish != null">process_polish = #{processPolish},</if>
+            <if test="processPack != null">process_pack = #{processPack},</if>
+            <if test="processSawTime != null">process_saw_time = #{processSawTime},</if>
+            <if test="processBendTime != null">process_bend_time = #{processBendTime},</if>
+            <if test="processDrillTime != null">process_drill_time = #{processDrillTime},</if>
+            <if test="processLatheTime != null">process_lathe_time = #{processLatheTime},</if>
+            <if test="processGrindTime != null">process_grind_time = #{processGrindTime},</if>
+            <if test="processMillTime != null">process_mill_time = #{processMillTime},</if>
+            <if test="processLevelTime != null">process_level_time = #{processLevelTime},</if>
+            <if test="processBorTime != null">process_bor_time = #{processBorTime},</if>
+            <if test="processWeldTime != null">process_weld_time = #{processWeldTime},</if>
+            <if test="processPolishTime != null">process_polish_time = #{processPolishTime},</if>
+            <if test="processPackTime != null">process_pack_time = #{processPackTime},</if>
+            <if test="totalProcess != null">total_process = #{totalProcess},</if>
+            <if test="surfaceGalvanized != null">surface_galvanized = #{surfaceGalvanized},</if>
+            <if test="surfaceCondit != null">surface_condit = #{surfaceCondit},</if>
+            <if test="surfaceSandwash != null">surface_sandwash = #{surfaceSandwash},</if>
+            <if test="surfacePqp != null">surface_pqp = #{surfacePqp},</if>
+            <if test="surfaceGalvanizedWgt != null">surface_galvanized_wgt = #{surfaceGalvanizedWgt},</if>
+            <if test="surfaceConditWgt != null">surface_condit_wgt = #{surfaceConditWgt},</if>
+            <if test="surfaceSandwashWgt != null">surface_sandwash_wgt = #{surfaceSandwashWgt},</if>
+            <if test="surfacePqpWgt != null">surface_pqp_wgt = #{surfacePqpWgt},</if>
+            <if test="totalSurface != null">total_surface = #{totalSurface},</if>
+            <if test="sprayWashpickling != null">spray_washpickling = #{sprayWashpickling},</if>
+            <if test="sprayPlastic != null">spray_plastic = #{sprayPlastic},</if>
+            <if test="sprayElectro != null">spray_electro = #{sprayElectro},</if>
+            <if test="sprayPrimer != null">spray_primer = #{sprayPrimer},</if>
+            <if test="sprayTopcoat != null">spray_topcoat = #{sprayTopcoat},</if>
+            <if test="sprayPickSquare != null">spray_pick_square = #{sprayPickSquare},</if>
+            <if test="sprayPlasticSquare != null">spray_plastic_square = #{sprayPlasticSquare},</if>
+            <if test="sprayElectroSquare != null">spray_electro_square = #{sprayElectroSquare},</if>
+            <if test="sprayPrimerSquare != null">spray_primer_square = #{sprayPrimerSquare},</if>
+            <if test="sprayTopcoatSquare != null">spray_topcoat_square = #{sprayTopcoatSquare},</if>
+            <if test="totalSpray != null">total_spray = #{totalSpray},</if>
+            <if test="nakedPrice != null">naked_price = #{nakedPrice},</if>
+            <if test="profit != null">profit = #{profit},</if>
+            <if test="transCost != null">trans_cost = #{transCost},</if>
+            <if test="totalPrice != null">total_price = #{totalPrice},</if>
+            <if test="noTax != null">no_tax = #{noTax},</if>
+            <if test="perPrice != null">per_price = #{perPrice},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBjDetailCostById" parameterType="Long">
+        delete from bj_detail_cost where id = #{id}
+    </delete>
+
+    <delete id="deleteBjDetailCostByIds" parameterType="String">
+        delete from bj_detail_cost where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
