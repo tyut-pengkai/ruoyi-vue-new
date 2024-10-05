@@ -30,7 +30,8 @@ const state = {
   safeEntrance: '',
   pageSize: '10',
   icp: '',
-  enableFrontEnd: 'Y'
+  enableFrontEnd: 'Y',
+  domain: '',
 }
 const mutations = {
   CHANGE_SETTING: (state, {
@@ -114,6 +115,12 @@ const actions = {
                       commit
                     }, enableFrontEnd) {
     state.enableFrontEnd = enableFrontEnd
+  },
+  // 域名
+  setDomain({
+    commit
+  }, domain) {
+    state.domain = domain
   },
 }
 

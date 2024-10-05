@@ -161,8 +161,8 @@ export default {
       copyright: "",
       activeIndex: "0",
       regShow: false,
-      logo: require("../../assets/logo/logo.png"),
-      title: "在线商城",
+      // logo: require("../../assets/logo/logo.png"),
+      // title: "在线商城",
       drawer: false,
       isLicenseServer: false,
       // icp: "",
@@ -201,16 +201,15 @@ export default {
           this.$router.replace("stop");
         }
       });
-      if (this.$store.state.settings.shopName) {
-        this.title = this.$store.state.settings.shopName;
-      }
-      if (this.$store.state.settings.websiteLogo) {
-        this.logo =
-          process.env.VUE_APP_BASE_API + this.$store.state.settings.websiteLogo;
-      }
-      if (this.$store.state.settings.icp) {
-        this.icp = this.$store.state.settings.icp;
-      }
+      // if (this.$store.state.settings.shopName) {
+      //   this.title = this.$store.state.settings.shopName;
+      // }
+      // if (this.$store.state.settings.websiteLogo) {
+      //   this.logo = process.env.VUE_APP_BASE_API + this.$store.state.settings.websiteLogo;
+      // }
+      // if (this.$store.state.settings.icp) {
+      //   this.icp = this.$store.state.settings.icp;
+      // }
       if (this.$store.state.settings.websiteFavicon) {
         var faviconurl = this.$store.state.settings.websiteFavicon; //这里可以是动态的获取的favicon的地址
         var link =
@@ -247,6 +246,12 @@ export default {
   computed: {
     icp() {
       return this.$store.state.settings.icp;
+    },
+    title() {
+      return this.$store.state.settings.shopName || "在线商城";
+    },
+    logo() {
+      return this.$store.state.settings.websiteLogo || require("../../assets/logo/logo.png");
     }
   }
 };

@@ -116,6 +116,7 @@
             <!-- 数据范围过滤 -->
             ${params.dataScope}
         </if>
+        <if test="shopUrl != null and shopUrl != ''">and ct.shop_url = #{shopUrl}</if>
     </select>
 
     <select id="selectSysCardTemplateByTemplateId" parameterType="Long" resultMap="SysCardTemplateResult">

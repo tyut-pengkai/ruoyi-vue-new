@@ -226,6 +226,11 @@ public class SysApp extends BaseEntity
     private String shopUrl;
 
     /**
+     * 用于承载card的购卡链接，用于筛选要显示的APP列表
+     */
+    private String cardUrl;
+
+    /**
      * 自定义购卡链接
      */
     @Excel(name = "自定义购卡链接")
@@ -670,6 +675,14 @@ public class SysApp extends BaseEntity
 
     public void setEnableFirstLogoutLocalMachine(String enableFirstLogoutLocalMachine) {
         this.enableFirstLogoutLocalMachine = enableFirstLogoutLocalMachine;
+    }
+
+    public String getCardUrl() {
+        return cardUrl;
+    }
+
+    public void setCardUrl(String cardUrl) {
+        this.cardUrl = cardUrl;
     }
 
     @Override

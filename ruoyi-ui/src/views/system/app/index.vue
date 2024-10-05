@@ -530,6 +530,30 @@
             </el-form-item>
             <el-divider></el-divider>
             <updown>
+              <el-form-item label="购卡地址" label-width="80px" prop="shopUrl">
+                <el-col :span="20">
+                  <el-input v-model="form.shopUrl" placeholder="请输入购卡地址" maxlength="50" show-word-limit>
+                    <template slot="prepend">{{ getShopUrlPrefix() }}</template>
+                  </el-input>
+                </el-col>
+                <el-col :span="4">
+                  <el-button
+                    size="small"
+                    icon="el-icon-refresh"
+                    circle style="margin-left: 5px"
+                    @click="getRandomString('shopUrl', 10)"
+                  >
+                  </el-button>
+                  <el-button
+                    id="copyButton"
+                    size="small"
+                    icon="el-icon-document-copy"
+                    circle style="margin-left: 5px"
+                    @click="doCopy('shopUrl')"
+                  >
+                  </el-button>
+                </el-col>
+              </el-form-item>
               <el-form-item>
                 <el-col :span="12">
                   <el-form-item label="软件状态" prop="status">
@@ -611,7 +635,18 @@
               <el-form-item label="软件主页" prop="idxUrl">
                 <el-input v-model="form.idxUrl" placeholder="请输入软件主页" maxlength="100" show-word-limit/>
               </el-form-item>
-              <el-form-item label="购卡地址" prop="idxUrl">
+              <el-form-item label="软件购卡地址" prop="customBuyUrl">
+                <span>
+                    <el-tooltip
+                      content="用于配置软件(官方模板)的跳转购卡页面，可通过软件信息API获取"
+                      placement="top"
+                    >
+                      <i
+                        class="el-icon-question"
+                        style="margin-left: -12px; margin-right: 10px"
+                      ></i>
+                    </el-tooltip>
+                  </span>
                 <el-input
                   v-model="form.customBuyUrl"
                   placeholder="请输入购卡地址"
@@ -1988,7 +2023,15 @@ export default {
       var clipboard = new Clipboard("#copyButton", {
         text: () => {
           // 如果想从其它DOM元素内容复制。应该是target:function(){return: };
-          return this.form[index];
+          if(index === 'shopUrl') {
+            if(!this.form[index]) {
+              this.$modal.msgError("请先设置软件链接");
+              return;
+            }
+            return this.getShopUrlPrefix() + this.form[index];
+          } else {
+            return this.form[index];
+          }
         },
       });
       clipboard.on("success", (e) => {
@@ -1997,10 +2040,14 @@ export default {
       });
       clipboard.on("error", (e) => {
         this.$modal.msgError(
-          "复制失败，您的浏览器不支持复制，请自行复制对接参数"
+          "复制失败，您的浏览器不支持复制，请自行复制"
         );
         clipboard.destroy();
       });
+    },
+    getShopUrlPrefix() {
+      let domain = this.$store.state.settings.domain;
+      return domain + (domain.endsWith('/') ? "" : "/") + "shop/a/";
     },
     handleUnbindCycleQuota(totalSeconds) {
       this.form.unbindCycle = totalSeconds;

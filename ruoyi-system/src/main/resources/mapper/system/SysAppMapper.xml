@@ -183,6 +183,7 @@
 		<if test="enableFeCharge != null">and a.enable_fe_charge = #{enableFeCharge}</if>
 		<if test="enableFirstLogoutLocalMachine != null">and a.enable_first_logout_local_machine = #{enableFirstLogoutLocalMachine}</if>
 		<if test="remark != null and remark != ''">and a.remark like concat('%', #{remark}, '%')</if>
+		<if test="shopUrl != null and shopUrl != ''">and a.shop_url = #{shopUrl}</if>
 	</select>
 
     <select id="selectSysAppByAppId" parameterType="Long" resultMap="SysAppResult">

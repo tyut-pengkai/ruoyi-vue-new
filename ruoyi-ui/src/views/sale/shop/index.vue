@@ -401,9 +401,13 @@ export default {
         //   },
         // ],
       },
+      appUrl: null, // 用于限制要选择的软件和卡类
+      cardUrl: null, // 用于限制要选择的软件和卡类
     };
   },
   created() {
+    this.appUrl = this.$route.params && this.$route.params.appUrl;
+    this.cardUrl = this.$route.params && this.$route.params.cardUrl;
     this.getShopConfig();
     this.getList();
   },
@@ -421,7 +425,7 @@ export default {
     },
     /** 查询软件列表 */
     getList() {
-      listApp({}).then((response) => {
+      listApp({'shopUrl': this.appUrl, 'cardUrl': this.cardUrl}).then((response) => {
         var appList = response.rows;
         for (var app of appList) {
           if (app.tplCount > 0) {
@@ -440,7 +444,7 @@ export default {
       this.showGoodsDetail = false;
       this.goodsId = null;
       // 拉取当前选择目录下的商品列表
-      listCategory({appId: this.categoryData[id].appId}).then((response) => {
+      listCategory({'appId': this.categoryData[id].appId, 'shopUrl': this.cardUrl}).then((response) => {
         var ctList = response.rows;
         for (var ct of ctList) {
           this.goodsData.push({

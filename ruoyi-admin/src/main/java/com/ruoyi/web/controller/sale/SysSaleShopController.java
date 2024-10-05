@@ -105,18 +105,35 @@ public class SysSaleShopController extends BaseController {
     @RateLimiter(count = 10, limitType = LimitType.IP)
     public TableDataInfo appList(SysApp sysApp) {
         List<SaleAppVo> saleAppVoList = new ArrayList<>();
-        List<SysApp> appList = sysAppMapper.selectSysAppList(sysApp);
+        List<SysApp> appList = new ArrayList<>();
+        if(StringUtils.isBlank(sysApp.getCardUrl())) {
+            appList = sysAppMapper.selectSysAppList(sysApp);
+        } else {
+            SysCardTemplate ct = new SysCardTemplate();
+            ct.setOnSale(UserConstants.YES);
+            ct.setShopUrl(sysApp.getCardUrl());
+            List<SysCardTemplate> cardTemplateList = sysCardTemplateMapper.selectSysCardTemplateList(ct);
+            SysLoginCodeTemplate ct2 = new SysLoginCodeTemplate();
+            ct2.setOnSale(UserConstants.YES);
+            ct2.setShopUrl(sysApp.getCardUrl());
+            List<SysLoginCodeTemplate> loginCodeTemplateList = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateList(ct2);
+            if(!cardTemplateList.isEmpty()) {
+                for (SysCardTemplate cardTemplate : cardTemplateList) {
+                    appList.add(sysAppMapper.selectSysAppByAppId(cardTemplate.getAppId()));
+                }
+            }
+            if(!loginCodeTemplateList.isEmpty()) {
+                for (SysLoginCodeTemplate loginCodeTemplate : loginCodeTemplateList) {
+                    appList.add(sysAppMapper.selectSysAppByAppId(loginCodeTemplate.getAppId()));
+                }
+            }
+        }
         Map<Long, CountVo> cardTemplateCountMap = sysCardTemplateMapper.selectSysCardTemplateOnSaleCountGroupByAppId();
         Map<Long, CountVo> loginCodeTemplateCountMap = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateOnSaleCountGroupByAppId();
         for (SysApp app : appList) {
             if (app.getAuthType().equals(AuthType.ACCOUNT)) {
-                SysCardTemplate ct = new SysCardTemplate();
-                ct.setAppId(app.getAppId());
-                ct.setOnSale(UserConstants.YES);
                 saleAppVoList.add(new SaleAppVo(app.getAppId(), app.getAppName(), cardTemplateCountMap.getOrDefault(app.getAppId(), new CountVo()).getCount()));
             } else {
-                SysLoginCodeTemplate ct = new SysLoginCodeTemplate();
-                ct.setAppId(app.getAppId());
                 saleAppVoList.add(new SaleAppVo(app.getAppId(), app.getAppName(), loginCodeTemplateCountMap.getOrDefault(app.getAppId(), new CountVo()).getCount()));
             }
         }
@@ -128,12 +145,13 @@ public class SysSaleShopController extends BaseController {
      */
     @GetMapping("/listCategory")
     @RateLimiter(limitType = LimitType.IP)
-    public TableDataInfo cardTemplateList(Long appId) {
+    public TableDataInfo cardTemplateList(Long appId, String shopUrl) {
         SysApp app = sysAppMapper.selectSysAppByAppId(appId);
         List<SaleCardTemplateVo> saleCardTemplateVoList = new ArrayList<>();
         if (app.getAuthType() == AuthType.ACCOUNT) {
             SysCardTemplate sysCardTemplate = new SysCardTemplate();
             sysCardTemplate.setAppId(appId);
+            sysCardTemplate.setShopUrl(shopUrl);
             sysCardTemplate.setOnSale(UserConstants.YES);
             List<SysCardTemplate> list = sysCardTemplateMapper.selectSysCardTemplateList(sysCardTemplate);
             Map<Long, Long> cardSize = sysSaleShopService.getSaleableCardSizeAll();
@@ -170,6 +188,7 @@ public class SysSaleShopController extends BaseController {
         } else if (app.getAuthType() == AuthType.LOGIN_CODE) {
             SysLoginCodeTemplate sysLoginCodeTemplate = new SysLoginCodeTemplate();
             sysLoginCodeTemplate.setAppId(appId);
+            sysLoginCodeTemplate.setShopUrl(shopUrl);
             sysLoginCodeTemplate.setOnSale(UserConstants.YES);
             List<SysLoginCodeTemplate> list = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateList(sysLoginCodeTemplate);
             Map<Long, Long> cardSize = sysSaleShopService.getSaleableLoginCodeSizeAll();

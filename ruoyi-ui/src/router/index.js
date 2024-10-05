@@ -83,6 +83,20 @@ export const constantRoutes = [{
       path: '/shop',
       component: () => import('@/views/sale/shop/index'),
       name: 'Shop',
+      // redirect: '/shop/index',
+      // children: [{
+      //   path: ':filter(\\S+)',
+      //   component: () => import('@/views/sale/shop/index'),
+      //   name: 'Shop1',
+      // },]
+    }, {
+      path: '/shop/a/:appUrl(\\S+)',
+      component: () => import('@/views/sale/shop/index'),
+      name: 'ShopApp',
+    }, {
+      path: '/shop/c/:cardUrl(\\S+)',
+      component: () => import('@/views/sale/shop/index'),
+      name: 'ShopCardTemplate',
     }, {
       path: '/queryOrder',
       component: () => import('@/views/sale/shop/queryOrder'),
