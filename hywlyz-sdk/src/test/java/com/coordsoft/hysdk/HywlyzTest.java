@@ -16,7 +16,7 @@ public class HywlyzTest {
         // 将此处设置为true显示SDK内部信息
         hy.setShowLog(false);
 
-        hy.init("https://demo.coordsoft.com/prod-api/api/v1/uSZNfxKRaXAqpJBoC5sMEFcuKjOG2xTP", "YIIgPA0881syIEQtmS8qUZXjUqgzhHDs", "1",
+        hy.init("http://localhost/prod-api/api/v1/uSZNfxKRaXAqpJBoC5sMEFcuKjOG2xTP", "YIIgPA0881syIEQtmS8qUZXjUqgzhHDs", "1",
                 EncryptType.NONE, "123456", EncryptType.NONE, "123456", "");
     }
 
@@ -30,6 +30,12 @@ public class HywlyzTest {
     @Test
     public void testLogin() {
         System.out.println(HyUtils.analyseResult(hy.loginNc("OSURn3OhatUVX56PpmsH", "666", "")));
+    }
+
+    @Test
+    public void testLogin2() {
+        System.out.println(hy.loginNc("mxiIJBZzhy8qORr0k2HskQ", "666", ""));
+        System.out.println(HyUtils.analyseResult(hy.loginNc("mxiIJBZzhy8qORr0k2HskQ", "666", "")));
     }
 
     @Test
