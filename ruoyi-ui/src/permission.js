@@ -13,6 +13,8 @@ const whiteList = ['regx:/login/.*', '/auth-redirect', '/bind', '/register', '/c
   '/getCardList', '/getShopConfig', 'regx:/sale/shop/notify/.*'
 ]
 
+const navWhiteList = ['/shop', '/queryOrder', '/queryCard', '/chargeCenter', '/unbindDevice']
+
 router.beforeEach((to, from, next) => {
   NProgress.start()
   if (getToken()) {
@@ -22,7 +24,44 @@ router.beforeEach((to, from, next) => {
       next({ path: '/index' })
       NProgress.done()
     } else if (whiteList.indexOf(to.path) !== -1) {
-      next()
+      if(navWhiteList.indexOf(to.path) !== -1) {
+        if(store.state.settings.navList.length === 0) {
+          store.dispatch('settings/GetNavList').then((res) => {
+            let navList = res.data;
+            let flag = false;
+            for (let item of navList) {
+              if ('/' + item.path === to.path || item.path === to.path) {
+                flag = true;
+                break;
+              }
+            }
+            if (!flag) {
+              next({ path: '/' })
+            } else {
+              next()
+            }
+          }).catch(err => {
+            Message.error(err)
+          })
+        } else {
+          let navList = store.state.settings.navList;
+          let flag = false;
+          for (let item of navList) {
+            if ('/' + item.path === to.path || item.path === to.path) {
+              flag = true;
+              break;
+            }
+          }
+          if (!flag) {
+            next({ path: '/' })
+          } else {
+            next()
+          }
+        }
+      } else {
+        // 在免登录白名单，直接进入
+        next()
+      }
     } else {
       if (store.getters.roles.length === 0) {
         isRelogin.show = true
@@ -48,8 +87,44 @@ router.beforeEach((to, from, next) => {
     // console.log(to.path);
     // 没有token
     if (whiteList.indexOf(to.path) !== -1) {
-      // 在免登录白名单，直接进入
-      next()
+      if(navWhiteList.indexOf(to.path) !== -1) {
+        if(store.state.settings.navList.length === 0) {
+          store.dispatch('settings/GetNavList').then((res) => {
+            let navList = res.data;
+            let flag = false;
+            for (let item of navList) {
+              if ('/' + item.path === to.path || item.path === to.path) {
+                flag = true;
+                break;
+              }
+            }
+            if (!flag) {
+              next({ path: '/' })
+            } else {
+              next()
+            }
+          }).catch(err => {
+            Message.error(err)
+          })
+        } else {
+          let navList = store.state.settings.navList;
+          let flag = false;
+          for (let item of navList) {
+            if ('/' + item.path === to.path || item.path === to.path) {
+              flag = true;
+              break;
+            }
+          }
+          if (!flag) {
+            next({ path: '/' })
+          } else {
+            next()
+          }
+        }
+      } else {
+        // 在免登录白名单，直接进入
+        next()
+      }
     } else {
       var pass = false;
       for (var item of whiteList) {
@@ -68,32 +143,30 @@ router.beforeEach((to, from, next) => {
         // next(`/login?redirect=${to.fullPath}`) // 否则全部重定向到登录页
         if (to.path == '/admin/index') {
           // console.log(store.getters.safeEntrance)
+          // console.log(store.getters.safeEntrance.length)
           if (store.getters.safeEntrance.length == 0) {
-            // console.log(store.getters.safeEntrance)
-            if (store.getters.safeEntrance.length == 0) {
-              store.dispatch('settings/GetSafeEntrance').then(() => {
-                if (store.getters.safeEntrance == '1') {
-                  next(`/`)
-                } else {
-                  next(`/login?redirect=${encodeURIComponent(to.fullPath)}`)
-                }
-              }).catch(err => {
-                store.dispatch('LogOut').then(() => {
-                  Message.error(err)
-                  next({
-                    path: '/index'
-                  })
-                })
-              })
-            } else {
+            store.dispatch('settings/GetSafeEntrance').then(() => {
+              // console.log(store.getters.safeEntrance)
+              // console.log(store.getters.safeEntrance.length)
               if (store.getters.safeEntrance == '1') {
                 next(`/`)
               } else {
                 next(`/login?redirect=${encodeURIComponent(to.fullPath)}`)
               }
-            }
+            }).catch(err => {
+              store.dispatch('LogOut').then(() => {
+                Message.error(err)
+                next({
+                  path: '/index'
+                })
+              })
+            })
           } else {
-            next(`/`) // 否则全部重定向到商城页
+            if (store.getters.safeEntrance == '1') {
+              next(`/`)
+            } else {
+              next(`/login?redirect=${encodeURIComponent(to.fullPath)}`)
+            }
           }
         }
         NProgress.done();

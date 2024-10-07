@@ -38,7 +38,7 @@ public class SysConfigWebsiteController extends BaseController {
      * 获取网站配置信息
      */
     @GetMapping
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult getConfig() {
 
         SysConfigWebsite website = sysWebsiteService.getById(1);

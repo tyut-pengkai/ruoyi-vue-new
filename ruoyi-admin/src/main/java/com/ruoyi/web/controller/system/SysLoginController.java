@@ -46,7 +46,7 @@ public class SysLoginController {
      * @return
      */
     @GetMapping("/checkSafeEntrance")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult checkSafeEntrance(@RequestParam("vstr") String vstr) {
         return AjaxResult.success().put("data", loginService.checkSafeEntrance(vstr));
     }

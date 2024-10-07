@@ -233,7 +233,7 @@ public class CommonController {
     }
 
     @GetMapping("/sysInfo")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public RuoYiConfig sysInfo() {
         SysConfigWebsite website = sysConfigWebsiteService.getById(1);
         if (StringUtils.isNotBlank(website.getShortName())) {

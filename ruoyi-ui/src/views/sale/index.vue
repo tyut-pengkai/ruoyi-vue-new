@@ -145,7 +145,6 @@
   </div>
 </template>
 <script>
-import {getNavInfo} from "@/api/sale/saleShop";
 import {getSysInfo} from "@/api/common";
 import Hamburger from "@/components/Hamburger";
 import SidebarItem from "../../layout/components/Sidebar/SidebarItemNav";
@@ -178,20 +177,18 @@ export default {
     };
   },
   created() {
-    // if (this.$store.state.settings.enableFrontEnd == "Y") {
-    //   this.getNavigation();
-    //   this.getSysInfo();
-    // } else {
-    //   this.$router.replace("stop");
-    // }
     this.getNavigation();
     this.getSysInfo();
   },
   methods: {
     getNavigation() {
-      getNavInfo().then((res) => {
-        this.navList = res.data;
-      });
+      if(this.$store.state.settings.navList.length === 0) {
+        this.$store.dispatch('settings/GetNavList').then((res) => {
+          this.navList = res.data;
+        });
+      } else {
+        this.navList = this.$store.state.settings.navList;
+      }
     },
     getSysInfo() {
       getSysInfo().then((res) => {
@@ -248,7 +245,7 @@ export default {
       return this.$store.state.settings.icp;
     },
     title() {
-      return this.$store.state.settings.shopName || "在线商城";
+      return this.$store.state.settings.shopName || "";
     },
     logo() {
       return this.$store.state.settings.websiteLogo || require("../../assets/logo/logo.png");

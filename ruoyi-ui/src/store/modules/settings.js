@@ -1,5 +1,6 @@
 import defaultSettings from '@/settings'
 import {getWebsiteConfig} from '@/api/system/website'
+import {getNavInfo} from "@/api/sale/saleShop";
 
 const {
   sideTheme,
@@ -30,20 +31,15 @@ const state = {
   safeEntrance: '',
   pageSize: '10',
   icp: '',
-  enableFrontEnd: 'Y',
+  enableFrontEnd: '',
   domain: '',
+  navList: [],
 }
 const mutations = {
-  CHANGE_SETTING: (state, {
-    key,
-    value
-  }) => {
+  CHANGE_SETTING: (state, { key, value }) => {
     if (state.hasOwnProperty(key)) {
       state[key] = value
     }
-  },
-  SET_SAFE_ENTRANCE: (state, safeEntrance) => {
-    state.safeEntrance = safeEntrance
   },
 }
 
@@ -91,13 +87,10 @@ const actions = {
     state.pageSize = pageSize
   },
   // 获取安全入口
-  GetSafeEntrance({
-                    commit,
-                    state
-                  }) {
+  GetSafeEntrance({ commit, state }) {
     return new Promise((resolve, reject) => {
       getWebsiteConfig().then(res => {
-        commit('SET_SAFE_ENTRANCE', res.data.isSafeEntrance)
+        commit('CHANGE_SETTING', {'safeEntrance': res.data.isSafeEntrance})
         resolve(res)
       }).catch(error => {
         reject(error)
@@ -111,10 +104,15 @@ const actions = {
     state.icp = icp
   },
   // 是否开启前台
-  setEnableFrontEnd({
-                      commit
-                    }, enableFrontEnd) {
-    state.enableFrontEnd = enableFrontEnd
+  GetEnableFrontEnd({ commit, state }) {
+    return new Promise((resolve, reject) => {
+      getWebsiteConfig().then(res => {
+        commit('CHANGE_SETTING', {'enableFrontEnd': res.data.enableFrontEnd})
+        resolve(res)
+      }).catch(error => {
+        reject(error)
+      })
+    })
   },
   // 域名
   setDomain({
@@ -122,6 +120,17 @@ const actions = {
   }, domain) {
     state.domain = domain
   },
+  // 导航列表
+  GetNavList({ commit, state }) {
+    return new Promise((resolve, reject) => {
+      getNavInfo().then(res => {
+        state.navList = [].concat(res.data)
+        resolve(res)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  }
 }
 
 export default {

@@ -151,7 +151,7 @@ public class SysAppVersionController extends BaseController {
      */
     @Log(title = "快速接入(扫码)", businessType = BusinessType.QUICK_ACCESS)
     @RequestMapping("/scan/{appVersionId}/{uuid}")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult getQuickAccessParams(@PathVariable Long appVersionId, @PathVariable String uuid) {
         String verifyKey = CacheConstants.CAPTCHA_UUID_KEY + uuid;
         if(redisCache.hasKey(verifyKey)) {

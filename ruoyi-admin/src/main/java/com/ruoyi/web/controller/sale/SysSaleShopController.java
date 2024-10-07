@@ -102,7 +102,7 @@ public class SysSaleShopController extends BaseController {
      * 查询软件列表
      */
     @GetMapping("/appList")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public TableDataInfo appList(SysApp sysApp) {
         List<SaleAppVo> saleAppVoList = new ArrayList<>();
         List<SysApp> appList = new ArrayList<>();
@@ -226,7 +226,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @PostMapping("/checkStock")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult checkStock(@RequestBody SaleOrderVo saleOrderVo) {
 
         Payment payment = PaymentDefine.paymentMap.get(saleOrderVo.getPayMode());
@@ -273,7 +273,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @PostMapping("/createSaleOrder")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult createSaleOrder(@RequestBody SaleOrderVo saleOrderVo) {
 
 //        if (StringUtils.isAnyBlank(saleOrderVo.getContact(), saleOrderVo.getQueryPass())) {
@@ -361,7 +361,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @PostMapping("/createChargeOrder")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult createChargeOrder(@RequestBody ChargeOrderVo chargeOrderVo) {
         Payment payment = PaymentDefine.paymentMap.get(chargeOrderVo.getPayMode());
         if (payment == null) {
@@ -427,7 +427,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @GetMapping("/paySaleOrder")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult paySaleOrder(String orderNo) {
         if (orderNo == null) {
             throw new ServiceException("订单不存在", 400);
@@ -479,7 +479,7 @@ public class SysSaleShopController extends BaseController {
      * @return
      */
     @GetMapping("/fetchGoods")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult fetchGoods(String orderNo) {
         if (orderNo == null) {
             throw new ServiceException("订单不存在", 400);
@@ -498,7 +498,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @GetMapping("/getCardList")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult getCardList(@RequestParam("orderNo") String orderNo, @RequestParam(value = "queryPass", required = false) String queryPass) {
         if (orderNo == null) {
             throw new ServiceException("订单不存在", 400);
@@ -543,7 +543,7 @@ public class SysSaleShopController extends BaseController {
      * 查询销售订单列表，订单查询调用
      */
     @GetMapping("/querySaleOrderByContact")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public TableDataInfo querySaleOrderByContact(SysSaleOrder sysSaleOrder) {
         List<SysSaleOrder> list = sysSaleOrderService.selectSysSaleOrderQueryLimit5(sysSaleOrder);
         return getDataTable(list);
@@ -555,7 +555,7 @@ public class SysSaleShopController extends BaseController {
      * @return
      */
     @GetMapping("/getShopConfig")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult getShopConfig() {
         Map<String, Object> map = new HashMap<>();
         // 公告
@@ -590,7 +590,7 @@ public class SysSaleShopController extends BaseController {
      * @return
      */
     @GetMapping("/getPayStatus")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult getPayStatus(String orderNo) {
         SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(orderNo);
         if (SaleOrderStatus.PAID == sso.getStatus() || SaleOrderStatus.TRADE_SUCCESS == sso.getStatus() || SaleOrderStatus.TRADE_FINISHED == sso.getStatus()) {
@@ -608,7 +608,7 @@ public class SysSaleShopController extends BaseController {
      * @return
      */
     @GetMapping("/queryCard")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult queryCard(@RequestParam("cardNo") String cardNo, @RequestParam(value = "cardPass", required = false) String cardPass, @RequestParam("queryType") int queryType) {
         if (queryType == 1) {
             SysCard sysCard = sysCardMapper.selectSysCardByCardNo(cardNo);
@@ -637,7 +637,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @GetMapping("/chargeCard")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult chargeCard(@RequestParam("appId") long appId, @RequestParam("username") String username, @RequestParam(value = "password", required = false, defaultValue = "") String password,
                                  @RequestParam("validPassword") String validPassword, @RequestParam("cardNo") String cardNo, @RequestParam(value = "cardPass", required = false) String cardPass,
                                  @RequestParam("queryType") int queryType) {
@@ -686,7 +686,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @GetMapping("/queryBindDevice")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult queryBindDevice(@RequestParam("appId") long appId, @RequestParam("username") String username,
                                       @RequestParam(value = "password", required = false, defaultValue = "") String password, @RequestParam("queryType") int queryType) {
         SysApp app = sysAppMapper.selectSysAppByAppId(appId);
@@ -725,7 +725,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @GetMapping("/unbindDevice")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     @Transactional(rollbackFor = Exception.class)
     public AjaxResult unbindDevice(@RequestParam("id") long id) {
         SysAppUserDeviceCode appUserDeviceCode = sysAppUserDeviceCodeService.selectSysAppUserDeviceCodeById(id);
@@ -841,7 +841,7 @@ public class SysSaleShopController extends BaseController {
     }
 
     @GetMapping("/getNavInfo")
-    @RateLimiter(count = 10, limitType = LimitType.IP)
+    @RateLimiter(limitType = LimitType.IP)
     public AjaxResult getNavInfo() {
         SysNavigation nav = new SysNavigation();
         nav.setVisible(UserConstants.NORMAL);
