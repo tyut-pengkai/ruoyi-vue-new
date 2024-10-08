@@ -11,7 +11,7 @@
 
     <artifactId>hywlyz-sdk</artifactId>
     <groupId>com.coordsoft</groupId>
-    <version>1.7.0</version>
+    <version>1.9.0</version>
 
     <dependencies>
         <dependency>

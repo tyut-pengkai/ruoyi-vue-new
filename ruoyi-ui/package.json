@@ -7,10 +7,10 @@
   "license": "MIT",
   "scripts": {
     "dev": "SET NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve",
-    "build:prod": "SET NODE_OPTIONS=--openssl-legacy-provider &&  && vue-cli-service build",
-    "build:stage": "SET NODE_OPTIONS=--openssl-legacy-provider &&  && vue-cli-service build --mode staging",
-    "preview": "SET NODE_OPTIONS=--openssl-legacy-provider &&  && node build/index.js --preview",
-    "lint": "SET NODE_OPTIONS=--openssl-legacy-provider &&  && eslint --ext .js,.vue src"
+    "build:prod": "SET NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build",
+    "build:stage": "SET NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build --mode staging",
+    "preview": "SET NODE_OPTIONS=--openssl-legacy-provider && node build/index.js --preview",
+    "lint": "SET NODE_OPTIONS=--openssl-legacy-provider && eslint --ext .js,.vue src"
   },
   "husky": {
     "hooks": {

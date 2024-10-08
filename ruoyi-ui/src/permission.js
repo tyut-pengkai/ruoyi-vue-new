@@ -20,17 +20,18 @@ router.beforeEach((to, from, next) => {
   if (getToken()) {
     to.meta.title && store.dispatch('settings/setTitle', to.meta.title)
     /* has token*/
+    // console.log(to.path);
     if (to.path === '/login') {
       next({ path: '/index' })
       NProgress.done()
-    } else if (whiteList.indexOf(to.path) !== -1) {
-      if(navWhiteList.indexOf(to.path) !== -1) {
+    } else if (whiteList.indexOf(to.path) !== -1 || to.path.startsWith("/shop/a/") || to.path.startsWith("/shop/c/")) {
+      if(navWhiteList.indexOf(to.path) !== -1 || to.path.startsWith("/shop/a/") || to.path.startsWith("/shop/c/")) {
         if(store.state.settings.navList.length === 0) {
           store.dispatch('settings/GetNavList').then((res) => {
             let navList = res.data;
             let flag = false;
             for (let item of navList) {
-              if ('/' + item.path === to.path || item.path === to.path) {
+              if ('/' + item.path === to.path || item.path === to.path || to.path.startsWith("/" + item.path + "/")) {
                 flag = true;
                 break;
               }
@@ -47,7 +48,7 @@ router.beforeEach((to, from, next) => {
           let navList = store.state.settings.navList;
           let flag = false;
           for (let item of navList) {
-            if ('/' + item.path === to.path || item.path === to.path) {
+            if ('/' + item.path === to.path || item.path === to.path || to.path.startsWith("/" + item.path + "/")) {
               flag = true;
               break;
             }
@@ -86,14 +87,14 @@ router.beforeEach((to, from, next) => {
   } else {
     // console.log(to.path);
     // 没有token
-    if (whiteList.indexOf(to.path) !== -1) {
-      if(navWhiteList.indexOf(to.path) !== -1) {
+    if (whiteList.indexOf(to.path) !== -1 || to.path.startsWith("/shop/a/") || to.path.startsWith("/shop/c/")) {
+      if(navWhiteList.indexOf(to.path) !== -1 || to.path.startsWith("/shop/a/") || to.path.startsWith("/shop/c/")) {
         if(store.state.settings.navList.length === 0) {
           store.dispatch('settings/GetNavList').then((res) => {
             let navList = res.data;
             let flag = false;
             for (let item of navList) {
-              if ('/' + item.path === to.path || item.path === to.path) {
+              if ('/' + item.path === to.path || item.path === to.path || to.path.startsWith("/" + item.path + "/")) {
                 flag = true;
                 break;
               }
@@ -110,7 +111,7 @@ router.beforeEach((to, from, next) => {
           let navList = store.state.settings.navList;
           let flag = false;
           for (let item of navList) {
-            if ('/' + item.path === to.path || item.path === to.path) {
+            if ('/' + item.path === to.path || item.path === to.path || to.path.startsWith("/" + item.path + "/")) {
               flag = true;
               break;
             }
