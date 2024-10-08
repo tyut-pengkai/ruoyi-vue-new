@@ -1,5 +1,7 @@
 package com.ruoyi.system.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,19 +12,19 @@ import com.ruoyi.system.service.IBjDetailQuoteService;
 
 /**
  * 详细报价Service业务层处理
- * 
+ *
  * @author ssq
  * @date 2024-10-08
  */
 @Service
-public class BjDetailQuoteServiceImpl implements IBjDetailQuoteService 
+public class BjDetailQuoteServiceImpl implements IBjDetailQuoteService
 {
     @Autowired
     private BjDetailQuoteMapper bjDetailQuoteMapper;
 
     /**
      * 查询详细报价
-     * 
+     *
      * @param id 详细报价主键
      * @return 详细报价
      */
@@ -34,7 +36,7 @@ public class BjDetailQuoteServiceImpl implements IBjDetailQuoteService
 
     /**
      * 查询详细报价列表
-     * 
+     *
      * @param bjDetailQuote 详细报价
      * @return 详细报价
      */
@@ -46,20 +48,25 @@ public class BjDetailQuoteServiceImpl implements IBjDetailQuoteService
 
     /**
      * 新增详细报价
-     * 
+     *
      * @param bjDetailQuote 详细报价
      * @return 结果
      */
     @Override
     public int insertBjDetailQuote(BjDetailQuote bjDetailQuote)
     {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String dateStr = sdf.format(new Date());
+        int nums = bjDetailQuoteMapper.countTodayNum(dateStr)+1;
+        String countStr = String.format("%04d", nums);
+        bjDetailQuote.setQuoteNo(dateStr+countStr);
         bjDetailQuote.setCreateTime(DateUtils.getNowDate());
         return bjDetailQuoteMapper.insertBjDetailQuote(bjDetailQuote);
     }
 
     /**
      * 修改详细报价
-     * 
+     *
      * @param bjDetailQuote 详细报价
      * @return 结果
      */
@@ -72,7 +79,7 @@ public class BjDetailQuoteServiceImpl implements IBjDetailQuoteService
 
     /**
      * 批量删除详细报价
-     * 
+     *
      * @param ids 需要删除的详细报价主键
      * @return 结果
      */
@@ -84,7 +91,7 @@ public class BjDetailQuoteServiceImpl implements IBjDetailQuoteService
 
     /**
      * 删除详细报价信息
-     * 
+     *
      * @param id 详细报价主键
      * @return 结果
      */

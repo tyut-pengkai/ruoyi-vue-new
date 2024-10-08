@@ -2,6 +2,8 @@ package com.ruoyi.system.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.common.annotation.Anonymous;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +25,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 
 /**
  * 详细报价Controller
- * 
+ *
  * @author ssq
  * @date 2024-10-08
  */
@@ -72,7 +74,8 @@ public class BjDetailQuoteController extends BaseController
     /**
      * 新增详细报价
      */
-    @PreAuthorize("@ss.hasPermi('system:quote:add')")
+//    @PreAuthorize("@ss.hasPermi('system:quote:add')")
+    @Anonymous
     @Log(title = "详细报价", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody BjDetailQuote bjDetailQuote)

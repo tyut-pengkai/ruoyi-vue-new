@@ -5,15 +5,15 @@ import com.ruoyi.system.domain.BjDetailQuote;
 
 /**
  * 详细报价Mapper接口
- * 
+ *
  * @author ssq
  * @date 2024-10-08
  */
-public interface BjDetailQuoteMapper 
+public interface BjDetailQuoteMapper
 {
     /**
      * 查询详细报价
-     * 
+     *
      * @param id 详细报价主键
      * @return 详细报价
      */
@@ -21,7 +21,7 @@ public interface BjDetailQuoteMapper
 
     /**
      * 查询详细报价列表
-     * 
+     *
      * @param bjDetailQuote 详细报价
      * @return 详细报价集合
      */
@@ -29,7 +29,7 @@ public interface BjDetailQuoteMapper
 
     /**
      * 新增详细报价
-     * 
+     *
      * @param bjDetailQuote 详细报价
      * @return 结果
      */
@@ -37,7 +37,7 @@ public interface BjDetailQuoteMapper
 
     /**
      * 修改详细报价
-     * 
+     *
      * @param bjDetailQuote 详细报价
      * @return 结果
      */
@@ -45,7 +45,7 @@ public interface BjDetailQuoteMapper
 
     /**
      * 删除详细报价
-     * 
+     *
      * @param id 详细报价主键
      * @return 结果
      */
@@ -53,9 +53,11 @@ public interface BjDetailQuoteMapper
 
     /**
      * 批量删除详细报价
-     * 
+     *
      * @param ids 需要删除的数据主键集合
      * @return 结果
      */
     public int deleteBjDetailQuoteByIds(Long[] ids);
+
+    public int countTodayNum(String date);
 }

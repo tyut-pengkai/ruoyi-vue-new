@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.BjDetailQuoteMapper">
-    
+
     <resultMap type="BjDetailQuote" id="BjDetailQuoteResult">
         <result property="id"    column="id"    />
         <result property="quoteNo"    column="quote_no"    />
@@ -87,7 +87,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectBjDetailQuoteList" parameterType="BjDetailQuote" resultMap="BjDetailQuoteResult">
         <include refid="selectBjDetailQuoteVo"/>
-        <where>  
+        <where>
             <if test="quoteNo != null  and quoteNo != ''"> and quote_no = #{quoteNo}</if>
             <if test="materialsNo != null "> and materials_no = #{materialsNo}</if>
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
@@ -161,7 +161,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="perPrice != null "> and per_price = #{perPrice}</if>
         </where>
     </select>
-    
+
     <select id="selectBjDetailQuoteById" parameterType="Long" resultMap="BjDetailQuoteResult">
         <include refid="selectBjDetailQuoteVo"/>
         where id = #{id}
@@ -406,9 +406,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteBjDetailQuoteByIds" parameterType="String">
-        delete from bj_detail_quote where id in 
+        delete from bj_detail_quote where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>
+
+    <select id="countByPrefix" resultType="int" parameterType="string">
+        SELECT COUNT(*)
+        FROM bj_detail_quote
+        WHERE quote_no LIKE CONCAT(#{date}, '%')
+    </select>
 </mapper>
