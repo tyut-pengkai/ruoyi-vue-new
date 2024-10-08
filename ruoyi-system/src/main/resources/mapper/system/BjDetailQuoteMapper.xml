@@ -6,6 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="BjDetailQuote" id="BjDetailQuoteResult">
         <result property="id"    column="id"    />
+        <result property="quoteNo"    column="quote_no"    />
         <result property="materialsNo"    column="materials_no"    />
         <result property="name"    column="name"    />
         <result property="num"    column="num"    />
@@ -76,15 +77,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="totalPrice"    column="total_price"    />
         <result property="noTax"    column="no_tax"    />
         <result property="perPrice"    column="per_price"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
     </resultMap>
 
     <sql id="selectBjDetailQuoteVo">
-        select id, materials_no, name, num, flag, cost, material_spec, per_wight, net_wight, steel_len, steel_wid, steel_hei, steel_wight, steel_per_price, steel_price, steel_scrap_wgt, steel_scrap_per, steel_scrap_price, total_steel, cut_num, cut_material, total_cut, process_saw, process_bend, process_drill, process_lathe, process_grind, process_mill, process_level, process_bor, process_weld, process_polish, process_pack, process_saw_time, process_bend_time, process_drill_time, process_lathe_time, process_grind_time, process_mill_time, process_level_time, process_bor_time, process_weld_time, process_polish_time, process_pack_time, total_process, surface_galvanized, surface_condit, surface_sandwash, surface_pqp, surface_galvanized_wgt, surface_condit_wgt, surface_sandwash_wgt, surface_pqp_wgt, total_surface, spray_washpickling, spray_plastic, spray_electro, spray_primer, spray_topcoat, spray_pick_square, spray_plastic_square, spray_electro_square, spray_primer_square, spray_topcoat_square, total_spray, naked_price, profit, trans_cost, total_price, no_tax, per_price from bj_detail_quote
+        select id, quote_no, materials_no, name, num, flag, cost, material_spec, per_wight, net_wight, steel_len, steel_wid, steel_hei, steel_wight, steel_per_price, steel_price, steel_scrap_wgt, steel_scrap_per, steel_scrap_price, total_steel, cut_num, cut_material, total_cut, process_saw, process_bend, process_drill, process_lathe, process_grind, process_mill, process_level, process_bor, process_weld, process_polish, process_pack, process_saw_time, process_bend_time, process_drill_time, process_lathe_time, process_grind_time, process_mill_time, process_level_time, process_bor_time, process_weld_time, process_polish_time, process_pack_time, total_process, surface_galvanized, surface_condit, surface_sandwash, surface_pqp, surface_galvanized_wgt, surface_condit_wgt, surface_sandwash_wgt, surface_pqp_wgt, total_surface, spray_washpickling, spray_plastic, spray_electro, spray_primer, spray_topcoat, spray_pick_square, spray_plastic_square, spray_electro_square, spray_primer_square, spray_topcoat_square, total_spray, naked_price, profit, trans_cost, total_price, no_tax, per_price, create_time, update_time from bj_detail_quote
     </sql>
 
     <select id="selectBjDetailQuoteList" parameterType="BjDetailQuote" resultMap="BjDetailQuoteResult">
         <include refid="selectBjDetailQuoteVo"/>
         <where>  
+            <if test="quoteNo != null  and quoteNo != ''"> and quote_no = #{quoteNo}</if>
             <if test="materialsNo != null "> and materials_no = #{materialsNo}</if>
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="num != null "> and num = #{num}</if>
@@ -163,10 +167,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
 
-    <insert id="insertBjDetailQuote" parameterType="BjDetailQuote">
+    <insert id="insertBjDetailQuote" parameterType="BjDetailQuote" useGeneratedKeys="true" keyProperty="id">
         insert into bj_detail_quote
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">id,</if>
+            <if test="quoteNo != null and quoteNo != ''">quote_no,</if>
             <if test="materialsNo != null">materials_no,</if>
             <if test="name != null">name,</if>
             <if test="num != null">num,</if>
@@ -237,9 +241,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="totalPrice != null">total_price,</if>
             <if test="noTax != null">no_tax,</if>
             <if test="perPrice != null">per_price,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null">#{id},</if>
+            <if test="quoteNo != null and quoteNo != ''">#{quoteNo},</if>
             <if test="materialsNo != null">#{materialsNo},</if>
             <if test="name != null">#{name},</if>
             <if test="num != null">#{num},</if>
@@ -310,12 +316,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="totalPrice != null">#{totalPrice},</if>
             <if test="noTax != null">#{noTax},</if>
             <if test="perPrice != null">#{perPrice},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
          </trim>
     </insert>
 
     <update id="updateBjDetailQuote" parameterType="BjDetailQuote">
         update bj_detail_quote
         <trim prefix="SET" suffixOverrides=",">
+            <if test="quoteNo != null and quoteNo != ''">quote_no = #{quoteNo},</if>
             <if test="materialsNo != null">materials_no = #{materialsNo},</if>
             <if test="name != null">name = #{name},</if>
             <if test="num != null">num = #{num},</if>
@@ -386,6 +395,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="totalPrice != null">total_price = #{totalPrice},</if>
             <if test="noTax != null">no_tax = #{noTax},</if>
             <if test="perPrice != null">per_price = #{perPrice},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
         where id = #{id}
     </update>

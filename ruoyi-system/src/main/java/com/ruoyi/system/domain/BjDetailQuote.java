@@ -7,17 +7,21 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
- * 报价对象 bj_detail_quote
+ * 详细报价对象 bj_detail_quote
  * 
  * @author ssq
- * @date 2024-10-05
+ * @date 2024-10-08
  */
 public class BjDetailQuote extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 报价单id */
+    /** id */
     private Long id;
+
+    /** 报价单编号 */
+    @Excel(name = "报价单编号")
+    private String quoteNo;
 
     /** 物料编码 */
     @Excel(name = "物料编码")
@@ -307,6 +311,15 @@ public class BjDetailQuote extends BaseEntity
     public Long getId() 
     {
         return id;
+    }
+    public void setQuoteNo(String quoteNo) 
+    {
+        this.quoteNo = quoteNo;
+    }
+
+    public String getQuoteNo() 
+    {
+        return quoteNo;
     }
     public void setMaterialsNo(Long materialsNo) 
     {
@@ -785,12 +798,12 @@ public class BjDetailQuote extends BaseEntity
     {
         return totalSurface;
     }
-    public void setSprayWashpickling(Long sprayWashpickling)
+    public void setSprayWashpickling(Long sprayWashpickling) 
     {
         this.sprayWashpickling = sprayWashpickling;
     }
 
-    public Long getSprayWashpickling()
+    public Long getSprayWashpickling() 
     {
         return sprayWashpickling;
     }
@@ -943,6 +956,7 @@ public class BjDetailQuote extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
+            .append("quoteNo", getQuoteNo())
             .append("materialsNo", getMaterialsNo())
             .append("name", getName())
             .append("num", getNum())
@@ -1013,6 +1027,8 @@ public class BjDetailQuote extends BaseEntity
             .append("totalPrice", getTotalPrice())
             .append("noTax", getNoTax())
             .append("perPrice", getPerPrice())
+            .append("createTime", getCreateTime())
+            .append("updateTime", getUpdateTime())
             .toString();
     }
 }

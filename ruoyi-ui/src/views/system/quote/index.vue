@@ -1,6 +1,14 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="88px">
+      <el-form-item label="报价单编号" prop="quoteNo">
+        <el-input
+          v-model="queryParams.quoteNo"
+          placeholder="请输入报价单编号"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="物料编码" prop="materialsNo">
         <el-input
           v-model="queryParams.materialsNo"
@@ -615,7 +623,8 @@
 
     <el-table v-loading="loading" :data="quoteList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="报价单id" align="center" prop="id" />
+      <el-table-column label="id" align="center" prop="id" />
+      <el-table-column label="报价单编号" align="center" prop="quoteNo" />
       <el-table-column label="物料编码" align="center" prop="materialsNo" />
       <el-table-column label="物料名称" align="center" prop="name" />
       <el-table-column label="数量" align="center" prop="num" />
@@ -714,9 +723,12 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改报价对话框 -->
+    <!-- 添加或修改详细报价对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="报价单编号" prop="quoteNo">
+          <el-input v-model="form.quoteNo" placeholder="请输入报价单编号" />
+        </el-form-item>
         <el-form-item label="物料编码" prop="materialsNo">
           <el-input v-model="form.materialsNo" placeholder="请输入物料编码" />
         </el-form-item>
@@ -955,7 +967,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 报价表格数据
+      // 详细报价表格数据
       quoteList: [],
       // 弹出层标题
       title: "",
@@ -965,6 +977,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        quoteNo: null,
         materialsNo: null,
         name: null,
         num: null,
@@ -1034,12 +1047,15 @@ export default {
         transCost: null,
         totalPrice: null,
         noTax: null,
-        perPrice: null
+        perPrice: null,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
+        quoteNo: [
+          { required: true, message: "报价单编号不能为空", trigger: "blur" }
+        ],
       }
     };
   },
@@ -1047,7 +1063,7 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询报价列表 */
+    /** 查询详细报价列表 */
     getList() {
       this.loading = true;
       listQuote(this.queryParams).then(response => {
@@ -1065,6 +1081,7 @@ export default {
     reset() {
       this.form = {
         id: null,
+        quoteNo: null,
         materialsNo: null,
         name: null,
         num: null,
@@ -1134,7 +1151,9 @@ export default {
         transCost: null,
         totalPrice: null,
         noTax: null,
-        perPrice: null
+        perPrice: null,
+        createTime: null,
+        updateTime: null
       };
       this.resetForm("form");
     },
@@ -1158,7 +1177,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加报价";
+      this.title = "添加详细报价";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -1167,7 +1186,7 @@ export default {
       getQuote(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改报价";
+        this.title = "修改详细报价";
       });
     },
     /** 提交按钮 */
@@ -1193,7 +1212,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除报价编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除详细报价编号为"' + ids + '"的数据项？').then(function() {
         return delQuote(ids);
       }).then(() => {
         this.getList();

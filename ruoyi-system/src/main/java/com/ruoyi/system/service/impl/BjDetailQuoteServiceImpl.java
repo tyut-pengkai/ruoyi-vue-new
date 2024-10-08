@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import java.util.List;
+import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.BjDetailQuoteMapper;
@@ -8,10 +9,10 @@ import com.ruoyi.system.domain.BjDetailQuote;
 import com.ruoyi.system.service.IBjDetailQuoteService;
 
 /**
- * 报价Service业务层处理
+ * 详细报价Service业务层处理
  * 
  * @author ssq
- * @date 2024-10-05
+ * @date 2024-10-08
  */
 @Service
 public class BjDetailQuoteServiceImpl implements IBjDetailQuoteService 
@@ -20,10 +21,10 @@ public class BjDetailQuoteServiceImpl implements IBjDetailQuoteService
     private BjDetailQuoteMapper bjDetailQuoteMapper;
 
     /**
-     * 查询报价
+     * 查询详细报价
      * 
-     * @param id 报价主键
-     * @return 报价
+     * @param id 详细报价主键
+     * @return 详细报价
      */
     @Override
     public BjDetailQuote selectBjDetailQuoteById(Long id)
@@ -32,10 +33,10 @@ public class BjDetailQuoteServiceImpl implements IBjDetailQuoteService
     }
 
     /**
-     * 查询报价列表
+     * 查询详细报价列表
      * 
-     * @param bjDetailQuote 报价
-     * @return 报价
+     * @param bjDetailQuote 详细报价
+     * @return 详细报价
      */
     @Override
     public List<BjDetailQuote> selectBjDetailQuoteList(BjDetailQuote bjDetailQuote)
@@ -44,33 +45,35 @@ public class BjDetailQuoteServiceImpl implements IBjDetailQuoteService
     }
 
     /**
-     * 新增报价
+     * 新增详细报价
      * 
-     * @param bjDetailQuote 报价
+     * @param bjDetailQuote 详细报价
      * @return 结果
      */
     @Override
     public int insertBjDetailQuote(BjDetailQuote bjDetailQuote)
     {
+        bjDetailQuote.setCreateTime(DateUtils.getNowDate());
         return bjDetailQuoteMapper.insertBjDetailQuote(bjDetailQuote);
     }
 
     /**
-     * 修改报价
+     * 修改详细报价
      * 
-     * @param bjDetailQuote 报价
+     * @param bjDetailQuote 详细报价
      * @return 结果
      */
     @Override
     public int updateBjDetailQuote(BjDetailQuote bjDetailQuote)
     {
+        bjDetailQuote.setUpdateTime(DateUtils.getNowDate());
         return bjDetailQuoteMapper.updateBjDetailQuote(bjDetailQuote);
     }
 
     /**
-     * 批量删除报价
+     * 批量删除详细报价
      * 
-     * @param ids 需要删除的报价主键
+     * @param ids 需要删除的详细报价主键
      * @return 结果
      */
     @Override
@@ -80,9 +83,9 @@ public class BjDetailQuoteServiceImpl implements IBjDetailQuoteService
     }
 
     /**
-     * 删除报价信息
+     * 删除详细报价信息
      * 
-     * @param id 报价主键
+     * @param id 详细报价主键
      * @return 结果
      */
     @Override

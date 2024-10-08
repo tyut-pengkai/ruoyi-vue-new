@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询报价列表
+// 查询详细报价列表
 export function listQuote(query) {
   return request({
     url: '/system/quote/list',
@@ -9,7 +9,7 @@ export function listQuote(query) {
   })
 }
 
-// 查询报价详细
+// 查询详细报价详细
 export function getQuote(id) {
   return request({
     url: '/system/quote/' + id,
@@ -17,7 +17,7 @@ export function getQuote(id) {
   })
 }
 
-// 新增报价
+// 新增详细报价
 export function addQuote(data) {
   return request({
     url: '/system/quote',
@@ -26,7 +26,7 @@ export function addQuote(data) {
   })
 }
 
-// 修改报价
+// 修改详细报价
 export function updateQuote(data) {
   return request({
     url: '/system/quote',
@@ -35,7 +35,7 @@ export function updateQuote(data) {
   })
 }
 
-// 删除报价
+// 删除详细报价
 export function delQuote(id) {
   return request({
     url: '/system/quote/' + id,
