@@ -84,15 +84,17 @@ public class RegionUtil {
             }
 
             DataBlock dataBlock = null;
-            if (Util.isIpAddress(ip) == false) {
+            if (!Util.isIpAddress(ip)) {
                 log.warn("warning: Invalid ip address");
+                return StringUtils.EMPTY;
             }
             dataBlock = (DataBlock) method.invoke(searcher, ip);
-            String result = dataBlock.getRegion();
-            long endTime = System.currentTimeMillis();
-            log.debug("region use time[{}] result[{}]", endTime - startTime, result);
-            return result;
-
+            if(dataBlock != null) {
+                String result = dataBlock.getRegion();
+                long endTime = System.currentTimeMillis();
+                log.debug("region use time[{}] result[{}]", endTime - startTime, result);
+                return result;
+            }
         } catch (Exception e) {
             log.error("error:{}", e);
         }

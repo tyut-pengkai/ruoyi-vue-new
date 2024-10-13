@@ -31,13 +31,13 @@ public class ApplicationInfoEditor extends BaseEditor<ApplicationInfoEditor.Edit
         BTagNode node = (BTagNode) findNode();
         if (node != null) {
             if (node.getAttrStringForKey(editorInfo.label_Name) != -1) {
-                editorInfo.App = doc.getStringBlock().getStringFor(node.getAttrStringForKey(editorInfo.label_Name));
                 final StringBlock stringBlock = doc.getStringBlock();
                 node.setAttrStringForKey(editorInfo.label_Name, editorInfo.label_Value);
                 stringBlock.setString(editorInfo.label_Value, editorInfo.label);
             } else {
-                BTagNode.Attribute Appinfo_attr = new BTagNode.Attribute(attr_name, attr_name, TypedValue.TYPE_STRING);
+                BTagNode.Attribute Appinfo_attr = new BTagNode.Attribute(namespace, editorInfo.label_Name, TypedValue.TYPE_STRING);
                 Appinfo_attr.setString(editorInfo.label_Value);
+                Appinfo_attr.setValue(editorInfo.type, editorInfo.label_Value);
                 node.setAttribute(Appinfo_attr);
                 doc.getStringBlock().setString(editorInfo.label_Value, editorInfo.label);
             }
@@ -54,20 +54,29 @@ public class ApplicationInfoEditor extends BaseEditor<ApplicationInfoEditor.Edit
         namespace = sb.putString(NAME_SPACE);
         attr_name = sb.putString(NAME);
         attr_value = sb.putString(VALUE);
-        editorInfo.label_Name = sb.putString(EditorInfo.LABEL);
-        editorInfo.label_Value = sb.addString(String.valueOf(editorInfo.label));
+        editorInfo.label_Name = sb.putString(String.valueOf(editorInfo.label));
+        editorInfo.label_Value = sb.addString(String.valueOf(editorInfo.value)) + editorInfo.offset;
     }
 
 
     public static class EditorInfo {
-        public static final String LABEL = "name";
-        public static String App = "";
-        private String label;
+        private final int type;
+        private final String label;
+        private final String value;
         private int label_Name;
         private int label_Value;
+        private int offset = 0;
 
-        public EditorInfo(String label) {
+        public EditorInfo(int type, String label, String value) {
+            this.type = type;
             this.label = label;
+            this.value = value;
+        }
+        public EditorInfo(int type, String label, String value, int offset) {
+            this.type = type;
+            this.label = label;
+            this.value = value;
+            this.offset = offset;
         }
     }
 

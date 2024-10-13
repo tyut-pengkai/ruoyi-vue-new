@@ -5,7 +5,9 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.PathUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.apk.apkeditor.axmleditor.decode.AXMLDoc;
+import com.ruoyi.common.utils.apk.apkeditor.axmleditor.editor.ApplicationInfoEditor;
 import com.ruoyi.common.utils.apk.apkeditor.axmleditor.editor.PermissionEditor;
+import com.ruoyi.common.utils.apk.apkeditor.axmleditor.utils.TypedValue;
 import com.ruoyi.common.utils.apk.xml.decode.AXmlDecoder;
 import com.ruoyi.common.utils.apk.xml.decode.AXmlResourceParser;
 import com.ruoyi.common.utils.apk.xml.decode.XmlPullParser;
@@ -672,22 +674,38 @@ public class QuickAccessApkUtil {
     private static void addNecessaryPermission(ByteArrayOutputStream byteArrayOutputStream, byte[] xml) throws Exception {
         AXMLDoc doc = new AXMLDoc();
         doc.parse(new ByteArrayInputStream(xml));
-        PermissionEditor permissionEditor = new PermissionEditor(doc);
-        permissionEditor.setEditorInfo(new PermissionEditor.EditorInfo()
-                .with(new PermissionEditor.PermissionOpera("android.permission.本验证由红叶网络验证提供").add())
-                .with(new PermissionEditor.PermissionOpera("android.permission.QQ群.947144396").add())
-                .with(new PermissionEditor.PermissionOpera("android.permission.COORDSOFT").add())
-                .with(new PermissionEditor.PermissionOpera("android.permission.INTERNET").add())
-                .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_NETWORK_STATE").add())
-                .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_WIFI_STATE").add())
-                .with(new PermissionEditor.PermissionOpera("android.permission.READ_PHONE_STATE").add())
-                .with(new PermissionEditor.PermissionOpera("android.permission.WRITE_EXTERNAL_STORAGE").add())
-        );
-        permissionEditor.commit();
 
-//        ApplicationInfoEditor applicationEditor = new ApplicationInfoEditor(doc);
-//        applicationEditor.setEditorInfo(new ApplicationInfoEditor.EditorInfo("usesCleartextTraffic", "true"));
-//        applicationEditor.commit();
+        try {
+            PermissionEditor permissionEditor = new PermissionEditor(doc);
+            permissionEditor.setEditorInfo(new PermissionEditor.EditorInfo()
+                    .with(new PermissionEditor.PermissionOpera("android.permission.本验证由红叶网络验证提供").add())
+                    .with(new PermissionEditor.PermissionOpera("android.permission.QQ群.947144396").add())
+                    .with(new PermissionEditor.PermissionOpera("android.permission.COORDSOFT").add())
+                    .with(new PermissionEditor.PermissionOpera("android.permission.HY_COORDSOFT_COM").add())
+                    .with(new PermissionEditor.PermissionOpera("android.permission.INTERNET").add())
+                    .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_NETWORK_STATE").add())
+                    .with(new PermissionEditor.PermissionOpera("android.permission.ACCESS_WIFI_STATE").add())
+                    .with(new PermissionEditor.PermissionOpera("android.permission.READ_PHONE_STATE").add())
+                    .with(new PermissionEditor.PermissionOpera("android.permission.READ_EXTERNAL_STORAGE").add())
+                    .with(new PermissionEditor.PermissionOpera("android.permission.WRITE_EXTERNAL_STORAGE").add())
+                    .with(new PermissionEditor.PermissionOpera("android.permission.REQUEST_INSTALL_PACKAGES").add())
+            );
+            permissionEditor.commit();
+        } catch (Exception e) {
+            log.warn("[注入]添加权限失败", e);
+        }
+
+        try {
+            ApplicationInfoEditor applicationInfoEditor1 = new ApplicationInfoEditor(doc);
+            applicationInfoEditor1.setEditorInfo(new ApplicationInfoEditor.EditorInfo(TypedValue.TYPE_INT_BOOLEAN, "requestLegacyExternalStorage", "true"));
+            applicationInfoEditor1.commit();
+
+            ApplicationInfoEditor applicationInfoEditor2 = new ApplicationInfoEditor(doc);
+            applicationInfoEditor2.setEditorInfo(new ApplicationInfoEditor.EditorInfo(TypedValue.TYPE_INT_BOOLEAN, "usesCleartextTraffic", "true", 1));
+            applicationInfoEditor2.commit();
+        } catch (Exception ignored) {
+            log.warn("[注入]添加application属性失败");
+        }
 
         doc.build(byteArrayOutputStream);
         doc.release();

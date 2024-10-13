@@ -622,7 +622,7 @@
                     <el-checkbox v-model="upload.enableOffline">攻击自动离线</el-checkbox>
                     <span style="margin-left: 15px">
                     <el-tooltip
-                      content="当服务器受到攻击时自动允许用户离线使用，当服务器恢复正常将自动恢复计费模式"
+                      content="当服务器受到攻击时自动允许用户离线使用，当服务器恢复正常将自动恢复计费模式，注意弊端：一旦服务器停止运行，该软件用户将可免费使用，如果要经常更换服务器，建议关闭"
                       placement="top"
                     >
                       <i
@@ -806,10 +806,10 @@
             <div style="margin-top: 10px; margin-left: 20px; margin-right: 20px">
               <el-row>
                 <el-col :span="12">
-                  <el-checkbox v-model="upload.enableOffline">自动离线</el-checkbox>
+                  <el-checkbox v-model="upload.enableOffline">攻击自动离线</el-checkbox>
                   <span style="margin-left: 15px">
                     <el-tooltip
-                      content="当服务器受到攻击时自动允许用户离线使用，当服务器恢复正常将自动恢复计费模式"
+                      content="当服务器受到攻击时自动允许用户离线使用，当服务器恢复正常将自动恢复计费模式，注意弊端：一旦服务器停止运行，该软件用户将可免费使用，如果要经常更换服务器，建议关闭"
                       placement="top"
                     >
                       <i
