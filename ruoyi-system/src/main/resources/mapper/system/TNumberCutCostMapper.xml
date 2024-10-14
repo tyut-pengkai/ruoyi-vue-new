@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TNumberCutCostMapper">
+    
+    <resultMap type="TNumberCutCost" id="TNumberCutCostResult">
+        <result property="id"    column="id"    />
+        <result property="quoteNo"    column="quote_no"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="cutNum"    column="cut_num"    />
+        <result property="cutMaterial"    column="cut_material"    />
+        <result property="totalCut"    column="total_cut"    />
+    </resultMap>
+
+    <sql id="selectTNumberCutCostVo">
+        select id, quote_no, customer_id, cut_num, cut_material, total_cut from t_number_cut_cost
+    </sql>
+
+    <select id="selectTNumberCutCostList" parameterType="TNumberCutCost" resultMap="TNumberCutCostResult">
+        <include refid="selectTNumberCutCostVo"/>
+        <where>  
+            <if test="quoteNo != null  and quoteNo != ''"> and quote_no = #{quoteNo}</if>
+            <if test="customerId != null "> and customer_id = #{customerId}</if>
+            <if test="cutNum != null "> and cut_num = #{cutNum}</if>
+            <if test="cutMaterial != null "> and cut_material = #{cutMaterial}</if>
+            <if test="totalCut != null "> and total_cut = #{totalCut}</if>
+        </where>
+    </select>
+    
+    <select id="selectTNumberCutCostById" parameterType="Long" resultMap="TNumberCutCostResult">
+        <include refid="selectTNumberCutCostVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTNumberCutCost" parameterType="TNumberCutCost" useGeneratedKeys="true" keyProperty="id">
+        insert into t_number_cut_cost
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="quoteNo != null">quote_no,</if>
+            <if test="customerId != null">customer_id,</if>
+            <if test="cutNum != null">cut_num,</if>
+            <if test="cutMaterial != null">cut_material,</if>
+            <if test="totalCut != null">total_cut,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="quoteNo != null">#{quoteNo},</if>
+            <if test="customerId != null">#{customerId},</if>
+            <if test="cutNum != null">#{cutNum},</if>
+            <if test="cutMaterial != null">#{cutMaterial},</if>
+            <if test="totalCut != null">#{totalCut},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTNumberCutCost" parameterType="TNumberCutCost">
+        update t_number_cut_cost
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="quoteNo != null">quote_no = #{quoteNo},</if>
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="cutNum != null">cut_num = #{cutNum},</if>
+            <if test="cutMaterial != null">cut_material = #{cutMaterial},</if>
+            <if test="totalCut != null">total_cut = #{totalCut},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTNumberCutCostById" parameterType="Long">
+        delete from t_number_cut_cost where id = #{id}
+    </delete>
+
+    <delete id="deleteTNumberCutCostByIds" parameterType="String">
+        delete from t_number_cut_cost where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

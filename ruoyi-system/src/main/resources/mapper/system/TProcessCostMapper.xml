@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TProcessCostMapper">
+    
+    <resultMap type="TProcessCost" id="TProcessCostResult">
+        <result property="id"    column="id"    />
+        <result property="quoteNo"    column="quote_no"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="workTypeName"    column="work_type_name"    />
+        <result property="workTypeHours"    column="work_type_hours"    />
+        <result property="workTypePrice"    column="work_type_price"    />
+        <result property="types"    column="types"    />
+        <result property="quotaPrice"    column="quota_price"    />
+        <result property="totalPrice"    column="total_price"    />
+    </resultMap>
+
+    <sql id="selectTProcessCostVo">
+        select id, quote_no, customer_id, work_type_name, work_type_hours, work_type_price,types, quota_price, total_price from t_process_cost
+    </sql>
+
+    <select id="selectTProcessCostList" parameterType="TProcessCost" resultMap="TProcessCostResult">
+        <include refid="selectTProcessCostVo"/>
+        <where>  
+            <if test="quoteNo != null  and quoteNo != ''"> and quote_no = #{quoteNo}</if>
+            <if test="customerId != null "> and customer_id = #{customerId}</if>
+            <if test="workTypeName != null  and workTypeName != ''"> and work_type_name like concat('%', #{workTypeName}, '%')</if>
+            <if test="workTypeHours != null "> and work_type_hours = #{workTypeHours}</if>
+            <if test="workTypePrice != null "> and work_type_price = #{workTypePrice}</if>
+            <if test="quotaPrice != null "> and quota_price = #{quotaPrice}</if>
+            <if test="totalPrice != null "> and total_price = #{totalPrice}</if>
+        </where>
+    </select>
+    
+    <select id="selectTProcessCostById" parameterType="Long" resultMap="TProcessCostResult">
+        <include refid="selectTProcessCostVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTProcessCost" parameterType="TProcessCost" useGeneratedKeys="true" keyProperty="id">
+        insert into t_process_cost
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="quoteNo != null">quote_no,</if>
+            <if test="customerId != null">customer_id,</if>
+            <if test="workTypeName != null">work_type_name,</if>
+            <if test="workTypeHours != null">work_type_hours,</if>
+            <if test="workTypePrice != null">work_type_price,</if>
+            <if test="types != null">types,</if>
+            <if test="quotaPrice != null">quota_price,</if>
+            <if test="totalPrice != null">total_price,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="quoteNo != null">#{quoteNo},</if>
+            <if test="customerId != null">#{customerId},</if>
+            <if test="workTypeName != null">#{workTypeName},</if>
+            <if test="workTypeHours != null">#{workTypeHours},</if>
+            <if test="workTypePrice != null">#{workTypePrice},</if>
+            <if test="types != null">#{types},</if>
+            <if test="quotaPrice != null">#{quotaPrice},</if>
+            <if test="totalPrice != null">#{totalPrice},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTProcessCost" parameterType="TProcessCost">
+        update t_process_cost
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="quoteNo != null">quote_no = #{quoteNo},</if>
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="workTypeName != null">work_type_name = #{workTypeName},</if>
+            <if test="workTypeHours != null">work_type_hours = #{workTypeHours},</if>
+            <if test="workTypePrice != null">work_type_price = #{workTypePrice},</if>
+            <if test="quotaPrice != null">quota_price = #{quotaPrice},</if>
+            <if test="totalPrice != null">total_price = #{totalPrice},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTProcessCostById" parameterType="Long">
+        delete from t_process_cost where id = #{id}
+    </delete>
+
+    <delete id="deleteTProcessCostByIds" parameterType="String">
+        delete from t_process_cost where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

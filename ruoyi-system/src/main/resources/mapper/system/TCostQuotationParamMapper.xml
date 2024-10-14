@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TCostQuotationParamMapper">
+    
+    <resultMap type="TCostQuotationParam" id="TCostQuotationParamResult">
+        <result property="id"    column="id"    />
+        <result property="workTypeId"    column="work_type_id"    />
+        <result property="workTypeName"    column="work_type_name"    />
+        <result property="cost"    column="cost"    />
+        <result property="quotation"    column="quotation"    />
+    </resultMap>
+
+    <sql id="selectTCostQuotationParamVo">
+        select id, work_type_id, work_type_name, cost, quotation from t_cost_quotation_param
+    </sql>
+
+    <select id="selectTCostQuotationParamList" parameterType="TCostQuotationParam" resultMap="TCostQuotationParamResult">
+        <include refid="selectTCostQuotationParamVo"/>
+        <where>  
+            <if test="workTypeId != null "> and work_type_id = #{workTypeId}</if>
+            <if test="workTypeName != null  and workTypeName != ''"> and work_type_name like concat('%', #{workTypeName}, '%')</if>
+            <if test="cost != null "> and cost = #{cost}</if>
+            <if test="quotation != null "> and quotation = #{quotation}</if>
+        </where>
+    </select>
+    
+    <select id="selectTCostQuotationParamById" parameterType="Long" resultMap="TCostQuotationParamResult">
+        <include refid="selectTCostQuotationParamVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTCostQuotationParam" parameterType="TCostQuotationParam" useGeneratedKeys="true" keyProperty="id">
+        insert into t_cost_quotation_param
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="workTypeId != null">work_type_id,</if>
+            <if test="workTypeName != null">work_type_name,</if>
+            <if test="cost != null">cost,</if>
+            <if test="quotation != null">quotation,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="workTypeId != null">#{workTypeId},</if>
+            <if test="workTypeName != null">#{workTypeName},</if>
+            <if test="cost != null">#{cost},</if>
+            <if test="quotation != null">#{quotation},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTCostQuotationParam" parameterType="TCostQuotationParam">
+        update t_cost_quotation_param
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="workTypeId != null">work_type_id = #{workTypeId},</if>
+            <if test="workTypeName != null">work_type_name = #{workTypeName},</if>
+            <if test="cost != null">cost = #{cost},</if>
+            <if test="quotation != null">quotation = #{quotation},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTCostQuotationParamById" parameterType="Long">
+        delete from t_cost_quotation_param where id = #{id}
+    </delete>
+
+    <delete id="deleteTCostQuotationParamByIds" parameterType="String">
+        delete from t_cost_quotation_param where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

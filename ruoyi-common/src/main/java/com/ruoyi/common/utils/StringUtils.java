@@ -6,7 +6,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.springframework.util.AntPathMatcher;
+
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.text.StrFormatter;
 
@@ -681,4 +684,20 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
         }
         return sb.toString();
     }
+    
+    public static String randomString(int length) {
+    	String baseString = "0123456789";
+		final StringBuilder sb = new StringBuilder(length);
+
+		if (length < 1) {
+			length = 1;
+		}
+		int baseLength = baseString.length();
+		for (int i = 0; i < length; i++) {
+			int number = ThreadLocalRandom.current().nextInt(baseLength);
+			sb.append(baseString.charAt(number));
+		}
+		return sb.toString();
+	}
+    
 }

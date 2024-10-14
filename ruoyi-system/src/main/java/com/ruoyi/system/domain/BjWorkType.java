@@ -21,6 +21,8 @@ public class BjWorkType extends BaseEntity
     /** 工种 */
     @Excel(name = "工种")
     private String workType;
+    private Integer types;
+    private Integer sorts;
 
     public void setId(Long id) 
     {
@@ -41,7 +43,23 @@ public class BjWorkType extends BaseEntity
         return workType;
     }
 
-    @Override
+    public Integer getTypes() {
+		return types;
+	}
+
+	public void setTypes(Integer types) {
+		this.types = types;
+	}
+
+	public Integer getSorts() {
+		return sorts;
+	}
+
+	public void setSorts(Integer sorts) {
+		this.sorts = sorts;
+	}
+
+	@Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())

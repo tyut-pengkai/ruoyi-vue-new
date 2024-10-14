@@ -7,6 +7,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="BjWorkType" id="BjWorkTypeResult">
         <result property="id"    column="id"    />
         <result property="workType"    column="work_type"    />
+        <result property="types"    column="types"    />
+        <result property="sorts"    column="sorts"    />
     </resultMap>
 
     <sql id="selectBjWorkTypeVo">
@@ -17,7 +19,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectBjWorkTypeVo"/>
         <where>  
             <if test="workType != null  and workType != ''"> and work_type = #{workType}</if>
+            <if test="types != null  and types != ''"> and types = #{types}</if>
         </where>
+        order by sorts
     </select>
     
     <select id="selectBjWorkTypeById" parameterType="Long" resultMap="BjWorkTypeResult">

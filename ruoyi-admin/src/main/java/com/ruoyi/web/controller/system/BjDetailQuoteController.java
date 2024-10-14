@@ -1,4 +1,4 @@
-package com.ruoyi.system.controller;
+package com.ruoyi.web.controller.system;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +30,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  * @date 2024-10-08
  */
 @RestController
-@RequestMapping("/system/quote")
+@RequestMapping("/system/detailQuote")
 public class BjDetailQuoteController extends BaseController
 {
     @Autowired

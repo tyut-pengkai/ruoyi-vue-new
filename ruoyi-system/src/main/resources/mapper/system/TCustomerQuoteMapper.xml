@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TCustomerQuoteMapper">
+    
+    <resultMap type="TCustomerQuote" id="TCustomerQuoteResult">
+        <result property="id"    column="id"    />
+        <result property="quoteNo"    column="quote_no"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="materialsNo"    column="materials_no"    />
+        <result property="name"    column="name"    />
+        <result property="num"    column="num"    />
+        <result property="isExternal"    column="is_external"    />
+        <result property="materialSpec"    column="material_spec"    />
+        <result property="perWight"    column="per_wight"    />
+        <result property="netWight"    column="net_wight"    />
+        <result property="nakedPrice"    column="naked_price"    />
+        <result property="profit"    column="profit"    />
+        <result property="transCost"    column="trans_cost"    />
+        <result property="totalPrice"    column="total_price"    />
+        <result property="noTax"    column="no_tax"    />
+        <result property="perPrice"    column="per_price"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+    </resultMap>
+
+    <sql id="selectTCustomerQuoteVo">
+        select id, quote_no, customer_id, materials_no, name, num, is_external, material_spec, per_wight, net_wight, naked_price, profit, trans_cost, total_price, no_tax, per_price, create_time, create_by from t_customer_quote
+    </sql>
+
+    <select id="selectTCustomerQuoteList" parameterType="TCustomerQuote" resultMap="TCustomerQuoteResult">
+        <include refid="selectTCustomerQuoteVo"/>
+        <where>  
+            <if test="quoteNo != null  and quoteNo != ''"> and quote_no = #{quoteNo}</if>
+            <if test="customerId != null "> and customer_id = #{customerId}</if>
+            <if test="materialsNo != null  and materialsNo != ''"> and materials_no = #{materialsNo}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="num != null "> and num = #{num}</if>
+            <if test="isExternal != null "> and is_external = #{isExternal}</if>
+            <if test="materialSpec != null  and materialSpec != ''"> and material_spec = #{materialSpec}</if>
+            <if test="perWight != null "> and per_wight = #{perWight}</if>
+            <if test="netWight != null "> and net_wight = #{netWight}</if>
+            <if test="nakedPrice != null "> and naked_price = #{nakedPrice}</if>
+            <if test="profit != null "> and profit = #{profit}</if>
+            <if test="transCost != null "> and trans_cost = #{transCost}</if>
+            <if test="totalPrice != null "> and total_price = #{totalPrice}</if>
+            <if test="noTax != null "> and no_tax = #{noTax}</if>
+            <if test="perPrice != null "> and per_price = #{perPrice}</if>
+        </where>
+    </select>
+    
+    <select id="selectTCustomerQuoteById" parameterType="Long" resultMap="TCustomerQuoteResult">
+        <include refid="selectTCustomerQuoteVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTCustomerQuote" parameterType="TCustomerQuote" useGeneratedKeys="true" keyProperty="id">
+        insert into t_customer_quote
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="quoteNo != null">quote_no,</if>
+            <if test="customerId != null">customer_id,</if>
+            <if test="materialsNo != null">materials_no,</if>
+            <if test="name != null">name,</if>
+            <if test="num != null">num,</if>
+            <if test="isExternal != null">is_external,</if>
+            <if test="materialSpec != null">material_spec,</if>
+            <if test="perWight != null">per_wight,</if>
+            <if test="netWight != null">net_wight,</if>
+            <if test="nakedPrice != null">naked_price,</if>
+            <if test="profit != null">profit,</if>
+            <if test="transCost != null">trans_cost,</if>
+            <if test="totalPrice != null">total_price,</if>
+            <if test="noTax != null">no_tax,</if>
+            <if test="perPrice != null">per_price,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="quoteNo != null">#{quoteNo},</if>
+            <if test="customerId != null">#{customerId},</if>
+            <if test="materialsNo != null">#{materialsNo},</if>
+            <if test="name != null">#{name},</if>
+            <if test="num != null">#{num},</if>
+            <if test="isExternal != null">#{isExternal},</if>
+            <if test="materialSpec != null">#{materialSpec},</if>
+            <if test="perWight != null">#{perWight},</if>
+            <if test="netWight != null">#{netWight},</if>
+            <if test="nakedPrice != null">#{nakedPrice},</if>
+            <if test="profit != null">#{profit},</if>
+            <if test="transCost != null">#{transCost},</if>
+            <if test="totalPrice != null">#{totalPrice},</if>
+            <if test="noTax != null">#{noTax},</if>
+            <if test="perPrice != null">#{perPrice},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTCustomerQuote" parameterType="TCustomerQuote">
+        update t_customer_quote
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="quoteNo != null">quote_no = #{quoteNo},</if>
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="materialsNo != null">materials_no = #{materialsNo},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="num != null">num = #{num},</if>
+            <if test="isExternal != null">is_external = #{isExternal},</if>
+            <if test="materialSpec != null">material_spec = #{materialSpec},</if>
+            <if test="perWight != null">per_wight = #{perWight},</if>
+            <if test="netWight != null">net_wight = #{netWight},</if>
+            <if test="nakedPrice != null">naked_price = #{nakedPrice},</if>
+            <if test="profit != null">profit = #{profit},</if>
+            <if test="transCost != null">trans_cost = #{transCost},</if>
+            <if test="totalPrice != null">total_price = #{totalPrice},</if>
+            <if test="noTax != null">no_tax = #{noTax},</if>
+            <if test="perPrice != null">per_price = #{perPrice},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTCustomerQuoteById" parameterType="Long">
+        delete from t_customer_quote where id = #{id}
+    </delete>
+
+    <delete id="deleteTCustomerQuoteByIds" parameterType="String">
+        delete from t_customer_quote where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <select id="listCoustomerQuote" parameterType="TCustomerQuote" resultType="java.util.Map">
+    	SELECT q.quote_no,c.name,COUNT(0) AS num,q.create_time FROM t_customer_quote q,bj_customer c WHERE q.customer_id=c.id
+    	<if test="quoteNo != null  and quoteNo != ''"> and q.quote_no = #{quoteNo}</if>
+        <if test="customerId != null "> and q.customer_id = #{customerId}</if>
+        GROUP BY q.quote_no
+        ORDER BY q.create_time DESC
+    </select>
+</mapper>

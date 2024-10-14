@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TRawMaterialCostMapper">
+    
+    <resultMap type="TRawMaterialCost" id="TRawMaterialCostResult">
+        <result property="id"    column="id"    />
+        <result property="quoteNo"    column="quote_no"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="materialSpec"    column="material_spec"    />
+        <result property="perWight"    column="per_wight"    />
+        <result property="netWight"    column="net_wight"    />
+        <result property="steelLen"    column="steel_len"    />
+        <result property="steelWid"    column="steel_wid"    />
+        <result property="steelHei"    column="steel_hei"    />
+        <result property="steelWight"    column="steel_wight"    />
+        <result property="steelPerPrice"    column="steel_per_price"    />
+        <result property="steelPrice"    column="steel_price"    />
+        <result property="steelScrapWgt"    column="steel_scrap_wgt"    />
+        <result property="steelScrapPer"    column="steel_scrap_per"    />
+        <result property="steelScrapPrice"    column="steel_scrap_price"    />
+        <result property="totalSteel"    column="total_steel"    />
+    </resultMap>
+
+    <sql id="selectTRawMaterialCostVo">
+        select id, quote_no, customer_id, material_spec, per_wight, net_wight, steel_len, steel_wid, steel_hei, steel_wight, steel_per_price, steel_price, steel_scrap_wgt, steel_scrap_per, steel_scrap_price, total_steel from t_raw_material_cost
+    </sql>
+
+    <select id="selectTRawMaterialCostList" parameterType="TRawMaterialCost" resultMap="TRawMaterialCostResult">
+        <include refid="selectTRawMaterialCostVo"/>
+        <where>  
+            <if test="quoteNo != null  and quoteNo != ''"> and quote_no = #{quoteNo}</if>
+            <if test="customerId != null "> and customer_id = #{customerId}</if>
+            <if test="materialSpec != null  and materialSpec != ''"> and material_spec = #{materialSpec}</if>
+            <if test="perWight != null "> and per_wight = #{perWight}</if>
+            <if test="netWight != null "> and net_wight = #{netWight}</if>
+            <if test="steelLen != null "> and steel_len = #{steelLen}</if>
+            <if test="steelWid != null "> and steel_wid = #{steelWid}</if>
+            <if test="steelHei != null "> and steel_hei = #{steelHei}</if>
+            <if test="steelWight != null "> and steel_wight = #{steelWight}</if>
+            <if test="steelPerPrice != null "> and steel_per_price = #{steelPerPrice}</if>
+            <if test="steelPrice != null "> and steel_price = #{steelPrice}</if>
+            <if test="steelScrapWgt != null "> and steel_scrap_wgt = #{steelScrapWgt}</if>
+            <if test="steelScrapPer != null "> and steel_scrap_per = #{steelScrapPer}</if>
+            <if test="steelScrapPrice != null "> and steel_scrap_price = #{steelScrapPrice}</if>
+            <if test="totalSteel != null "> and total_steel = #{totalSteel}</if>
+        </where>
+    </select>
+    
+    <select id="selectTRawMaterialCostById" parameterType="Long" resultMap="TRawMaterialCostResult">
+        <include refid="selectTRawMaterialCostVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTRawMaterialCost" parameterType="TRawMaterialCost" useGeneratedKeys="true" keyProperty="id">
+        insert into t_raw_material_cost
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="quoteNo != null">quote_no,</if>
+            <if test="customerId != null">customer_id,</if>
+            <if test="materialSpec != null">material_spec,</if>
+            <if test="perWight != null">per_wight,</if>
+            <if test="netWight != null">net_wight,</if>
+            <if test="steelLen != null">steel_len,</if>
+            <if test="steelWid != null">steel_wid,</if>
+            <if test="steelHei != null">steel_hei,</if>
+            <if test="steelWight != null">steel_wight,</if>
+            <if test="steelPerPrice != null">steel_per_price,</if>
+            <if test="steelPrice != null">steel_price,</if>
+            <if test="steelScrapWgt != null">steel_scrap_wgt,</if>
+            <if test="steelScrapPer != null">steel_scrap_per,</if>
+            <if test="steelScrapPrice != null">steel_scrap_price,</if>
+            <if test="totalSteel != null">total_steel,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="quoteNo != null">#{quoteNo},</if>
+            <if test="customerId != null">#{customerId},</if>
+            <if test="materialSpec != null">#{materialSpec},</if>
+            <if test="perWight != null">#{perWight},</if>
+            <if test="netWight != null">#{netWight},</if>
+            <if test="steelLen != null">#{steelLen},</if>
+            <if test="steelWid != null">#{steelWid},</if>
+            <if test="steelHei != null">#{steelHei},</if>
+            <if test="steelWight != null">#{steelWight},</if>
+            <if test="steelPerPrice != null">#{steelPerPrice},</if>
+            <if test="steelPrice != null">#{steelPrice},</if>
+            <if test="steelScrapWgt != null">#{steelScrapWgt},</if>
+            <if test="steelScrapPer != null">#{steelScrapPer},</if>
+            <if test="steelScrapPrice != null">#{steelScrapPrice},</if>
+            <if test="totalSteel != null">#{totalSteel},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTRawMaterialCost" parameterType="TRawMaterialCost">
+        update t_raw_material_cost
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="quoteNo != null">quote_no = #{quoteNo},</if>
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="materialSpec != null">material_spec = #{materialSpec},</if>
+            <if test="perWight != null">per_wight = #{perWight},</if>
+            <if test="netWight != null">net_wight = #{netWight},</if>
+            <if test="steelLen != null">steel_len = #{steelLen},</if>
+            <if test="steelWid != null">steel_wid = #{steelWid},</if>
+            <if test="steelHei != null">steel_hei = #{steelHei},</if>
+            <if test="steelWight != null">steel_wight = #{steelWight},</if>
+            <if test="steelPerPrice != null">steel_per_price = #{steelPerPrice},</if>
+            <if test="steelPrice != null">steel_price = #{steelPrice},</if>
+            <if test="steelScrapWgt != null">steel_scrap_wgt = #{steelScrapWgt},</if>
+            <if test="steelScrapPer != null">steel_scrap_per = #{steelScrapPer},</if>
+            <if test="steelScrapPrice != null">steel_scrap_price = #{steelScrapPrice},</if>
+            <if test="totalSteel != null">total_steel = #{totalSteel},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTRawMaterialCostById" parameterType="Long">
+        delete from t_raw_material_cost where id = #{id}
+    </delete>
+
+    <delete id="deleteTRawMaterialCostByIds" parameterType="String">
+        delete from t_raw_material_cost where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

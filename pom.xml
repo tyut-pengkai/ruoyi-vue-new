@@ -46,6 +46,7 @@
                 <scope>import</scope>
             </dependency>
 
+
             <!-- SpringSecurity的依赖配置-->
             <dependency>
                 <groupId>org.springframework.security</groupId>
