@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Demo {
+public class DemoUpdateEngineTest {
 
     @Test
     public void testGetDiffFromDir() {
@@ -38,7 +38,7 @@ public class Demo {
     public void testGenUpdateInfoJson() {
         try {
             String versionName = "v1.9.0";
-            Long versionNo = 20240501221100L;
+            Long versionNo = 20241002014300L;
             String fullVersion = versionName + "_" + versionNo;
             UpdateEngine ue = new UpdateEngine();
             ArrayList<FileInfo> updateList = ue.getFileInfoList("D:\\网络验证\\红叶\\release\\红叶网络验证系统_" + fullVersion + "\\upload");
