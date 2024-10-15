@@ -154,20 +154,22 @@ public abstract class Payment extends BaseAutoAware {
     }
 
     public void doDeliveryGoods(String outTradeNo, String tradeNo, boolean isCallback) {
-        SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(outTradeNo);
-        if (sso == null) {
-            throw new ServiceException("订单不存在", 400);
-        }
-        if (sso.getStatus() == SaleOrderStatus.WAIT_PAY) {
-            sso.setStatus(SaleOrderStatus.PAID);
-            sso.setPaymentTime(DateUtils.getNowDate());
-            sso.setTradeNo(tradeNo);
-            sysSaleOrderService.updateSysSaleOrder(sso);
-            // 发货
-            sysSaleShopService.deliveryGoods(sso);
-            log.info("******************** 支付成功(" + name + (isCallback ? "异步通知" : "主动获取") + ") ********************");
-            log.info("* " + name + "交易号: {}", tradeNo);
-            log.info("******************** 订单发货(" + name + (isCallback ? "异步通知" : "主动获取") + ") ********************");
+        synchronized (tradeNo.intern()) {
+            SysSaleOrder sso = sysSaleOrderService.selectSysSaleOrderByOrderNo(outTradeNo);
+            if (sso == null) {
+                throw new ServiceException("订单不存在", 400);
+            }
+            if (sso.getStatus() == SaleOrderStatus.WAIT_PAY) {
+                sso.setStatus(SaleOrderStatus.PAID);
+                sso.setPaymentTime(DateUtils.getNowDate());
+                sso.setTradeNo(tradeNo);
+                sysSaleOrderService.updateSysSaleOrder(sso);
+                // 发货
+                sysSaleShopService.deliveryGoods(sso);
+                log.info("******************** 支付成功(" + name + (isCallback ? "异步通知" : "主动获取") + ") ********************");
+                log.info("* " + name + "交易号: {}", tradeNo);
+                log.info("******************** 订单发货(" + name + (isCallback ? "异步通知" : "主动获取") + ") ********************");
+            }
         }
     }
 

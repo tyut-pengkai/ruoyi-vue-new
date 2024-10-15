@@ -31,14 +31,35 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="卡密名称" prop="cardName">
-        <el-input
-          v-model="queryParams.cardName"
-          placeholder="请输入卡密名称"
+      <el-form-item label="卡类" prop="cardName">
+<!--        <el-input-->
+<!--          v-model="queryParams.cardName"-->
+<!--          placeholder="请输入卡密名称"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+        <el-select
+          v-model="queryParams.templateId"
           clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+          filterable
+          placeholder="请选择"
+          prop="templateId"
+          style="width: 150px"
+        >
+          <el-option
+            v-for="item in templateList"
+            :key="item.templateId"
+            :disabled="item.disabled"
+            :label="
+                    item.templateId != 0
+                      ? '[' + item.app.appName + ']' + item.cardName
+                      : item.cardName
+                  "
+            :value="item.templateId"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="充值卡号" prop="cardNo">
         <el-input
@@ -1540,7 +1561,8 @@ export default {
           {required: true, message: "换卡模式不能为空", trigger: "blur"},
         ],
       },
-      result: ""
+      result: "",
+      templateList: [],
     };
   },
   created() {
@@ -1564,6 +1586,9 @@ export default {
     }
     getBatchNoList().then((response) => {
       this.batchNoList = response.data;
+    });
+    listCardTemplateAll({}).then((response) => {
+      this.templateList = response.rows;
     });
   },
   methods: {
@@ -1902,6 +1927,15 @@ export default {
       this.loading = true;
       this.app = this.appMap[appId];
       this.getList();
+      let queryParams = {};
+      if (appId > 0) {
+        queryParams = {
+          appId: appId,
+        };
+      }
+      listCardTemplateAll(queryParams).then((response) => {
+        this.templateList = response.rows;
+      });
       this.loading = false;
     },
     //在<table>⾥，我们已经设置row的key值设置为每⾏数据id：row-key="cardId"

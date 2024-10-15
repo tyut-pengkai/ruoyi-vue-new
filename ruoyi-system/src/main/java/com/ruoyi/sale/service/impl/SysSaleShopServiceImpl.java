@@ -58,7 +58,7 @@ public class SysSaleShopServiceImpl implements ISysSaleShopService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deliveryGoods(SysSaleOrder sso) {
-        synchronized (sso.getOrderNo()) {
+        synchronized (sso.getOrderNo().intern()) {
             if (sso.getStatus() != SaleOrderStatus.PAID) {
                 throw new ServiceException("该订单尚未支付", 400);
             }
