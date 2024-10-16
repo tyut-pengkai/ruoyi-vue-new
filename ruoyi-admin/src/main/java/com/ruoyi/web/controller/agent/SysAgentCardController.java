@@ -74,7 +74,6 @@ public class SysAgentCardController extends BaseController {
     @AgentPermCheck
     @GetMapping("/list")
     public TableDataInfo list(SysCard sysCard) {
-        startPage();
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
         SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
         if(agent == null) {
@@ -82,6 +81,7 @@ public class SysAgentCardController extends BaseController {
         }
         sysCard.setAgentId(agent.getAgentId());
 //        }
+        startPage();
         List<SysCard> list = sysCardService.selectSysCardList(sysCard);
         return getDataTable(list);
     }

@@ -22,7 +22,6 @@ import com.ruoyi.system.domain.SysLoginCodeTemplate;
 import com.ruoyi.system.domain.vo.BalanceChangeVo;
 import com.ruoyi.system.domain.vo.BatchNoVo;
 import com.ruoyi.system.domain.vo.BatchReplaceVo;
-import com.ruoyi.system.service.ISysBalanceLogService;
 import com.ruoyi.system.service.ISysLoginCodeService;
 import com.ruoyi.system.service.ISysLoginCodeTemplateService;
 import com.ruoyi.system.service.ISysUserService;
@@ -63,8 +62,6 @@ public class SysAgentLoginCodeController extends BaseController {
     @Resource
     private ISysUserService userService;
     @Resource
-    private ISysBalanceLogService sysBalanceLogService;
-    @Resource
     private SysLoginCodeController loginCodeController;
 
     /**
@@ -74,7 +71,6 @@ public class SysAgentLoginCodeController extends BaseController {
     @AgentPermCheck
     @GetMapping("/list")
     public TableDataInfo list(SysLoginCode sysLoginCode) {
-        startPage();
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
         SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
         if(agent == null) {
@@ -82,6 +78,7 @@ public class SysAgentLoginCodeController extends BaseController {
         }
         sysLoginCode.setAgentId(agent.getAgentId());
 //        }
+        startPage();
         List<SysLoginCode> list = sysLoginCodeService.selectSysLoginCodeList(sysLoginCode);
         return getDataTable(list);
     }

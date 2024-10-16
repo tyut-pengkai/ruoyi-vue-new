@@ -160,7 +160,7 @@ public class SysAgentUserServiceImpl implements ISysAgentUserService {
     /**
      * 获取代理
      *
-     * @param userId
+     * @param user
      * @return
      */
     @Override

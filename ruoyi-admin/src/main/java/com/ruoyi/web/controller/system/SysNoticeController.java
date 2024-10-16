@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -50,6 +51,7 @@ public class SysNoticeController extends BaseController
         startPage();
         SysNotice notice = new SysNotice();
         notice.setNoticeType(NoticeType.ALL_FOR_USER.getCode());
+        notice.setStatus(UserConstants.NORMAL);
         List<SysNotice> list = noticeService.selectNoticeList(notice);
         return AjaxResult.success(list);
     }

@@ -200,7 +200,7 @@ public class SysRoleServiceImpl implements ISysRoleService
     @Override
     public void checkRoleDataScope(Long... roleIds)
     {
-        if (!SysUser.isAdmin(SecurityUtils.getUserId()))
+        if (!SysUser.isSAdmin(SecurityUtils.getUserId()))
         {
             for (Long roleId : roleIds)
             {

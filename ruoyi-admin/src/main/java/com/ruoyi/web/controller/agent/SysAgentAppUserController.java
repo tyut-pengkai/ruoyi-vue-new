@@ -66,7 +66,6 @@ public class SysAgentAppUserController extends BaseController {
     @AgentPermCheck
     @GetMapping("/list")
     public TableDataInfo list(SysAppUser sysAppUser) {
-        startPage();
 //        if (!permissionService.hasAnyRoles("sadmin,admin")) {
         SysAgent agent = sysAgentService.selectSysAgentByUserId(getUserId());
         if(agent == null) {
@@ -74,6 +73,7 @@ public class SysAgentAppUserController extends BaseController {
         }
         sysAppUser.setAgentId(agent.getAgentId());
 //        }
+        startPage();
         List<SysAppUser> list = sysAppUserService.selectSysAppUserList(sysAppUser);
 
         Map<String, Object> map = sysAppUserService.computeCurrentOnline();

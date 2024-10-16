@@ -102,6 +102,7 @@ public class SysIndexController extends BaseController {
         // 获取所有人的本地公告
         SysNotice sysNotice = new SysNotice();
         sysNotice.setNoticeType(NoticeType.BACKEND.getCode());
+        sysNotice.setStatus(UserConstants.NORMAL);
         List<SysNotice> noticeList = sysNoticeService.selectNoticeList(sysNotice);
         if(!noticeList.isEmpty()) {
             allNoticeList.addAll(noticeList);
@@ -109,6 +110,7 @@ public class SysIndexController extends BaseController {
         // 获取代理的本地公告
         if(permissionService.hasRole("agent")) {
             sysNotice.setNoticeType(NoticeType.AGENT.getCode());
+            sysNotice.setStatus(UserConstants.NORMAL);
            noticeList = sysNoticeService.selectNoticeList(sysNotice);
             if(!noticeList.isEmpty()) {
                 allNoticeList.addAll(noticeList);
@@ -278,8 +280,12 @@ public class SysIndexController extends BaseController {
                 loginUser = (LoginUser) SysCache.get(key);
             } catch(Exception ignored) {}
             if(loginUser == null) {
-                loginUser = redisCache.getCacheObject(key);
-                SysCache.set(key, loginUser, redisCache.getExpire(key));
+                try {
+                    loginUser = redisCache.getCacheObject(key);
+                    SysCache.set(key, loginUser, redisCache.getExpire(key));
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             if (loginUser != null && loginUser.getIfApp() && !loginUser.getIfTrial()) {
                 onlineListU.add(loginUser);

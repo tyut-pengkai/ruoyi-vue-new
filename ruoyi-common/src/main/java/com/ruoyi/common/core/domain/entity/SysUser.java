@@ -165,8 +165,12 @@ public class SysUser extends BaseEntity {
         this.userId = userId;
     }
 
-    public static boolean isAdmin(Long userId) {
+    public static boolean isSAdmin(Long userId) {
         return userId != null && 1L == userId;
+    }
+
+    public static boolean isAdmin(Long userId) {
+        return userId != null && (1L == userId || 2L == userId);
     }
 
     public Long getUserId() {
@@ -175,6 +179,10 @@ public class SysUser extends BaseEntity {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public boolean isSAdmin() {
+        return isSAdmin(this.userId);
     }
 
     public boolean isAdmin() {

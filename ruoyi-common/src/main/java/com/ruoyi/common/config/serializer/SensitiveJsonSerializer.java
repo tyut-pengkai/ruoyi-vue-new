@@ -57,7 +57,7 @@ public class SensitiveJsonSerializer extends JsonSerializer<String> implements C
         {
             LoginUser securityUser = SecurityUtils.getLoginUser();
             // 管理员不脱敏
-            return !securityUser.getUser().isAdmin();
+            return !securityUser.getUser().isSAdmin();
         }
         catch (Exception e)
         {

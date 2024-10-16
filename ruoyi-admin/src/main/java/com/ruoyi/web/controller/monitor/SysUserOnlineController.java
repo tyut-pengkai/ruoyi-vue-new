@@ -95,7 +95,7 @@ public class SysUserOnlineController extends BaseController {
             SysUser currentUser = loginUser.getUser();
             // 如果是超级管理员，则不过滤数据
             if (StringUtils.isNotNull(currentUser)) {
-                if (currentUser.isAdmin()) {
+                if (currentUser.isSAdmin()) {
                     userOnlineListFilted = userOnlineList;
                 } else {
                     for (SysRole role : currentUser.getRoles()) {

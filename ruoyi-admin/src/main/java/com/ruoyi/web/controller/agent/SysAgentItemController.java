@@ -58,11 +58,11 @@ public class SysAgentItemController extends BaseController {
     @AgentPermCheck
     @GetMapping("/list")
     public TableDataInfo list(SysAgentItem sysAgentItem) {
-        startPage();
         if (!permissionService.hasAnyRoles("sadmin,admin")) {
             SysAgent sysAgent = sysAgentService.selectSysAgentByUserId(getUserId());
             sysAgentItem.getParams().put("_agentId", sysAgent.getAgentId());  // 用于查询自己的子代理
         }
+        startPage();
         List<SysAgentItem> list = sysAgentItemService.selectSysAgentItemList(sysAgentItem);
         for (SysAgentItem item : list) {
             fillTemplateInfo(item);
