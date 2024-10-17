@@ -649,12 +649,14 @@ public class SysAppLoginService {
             deviceCode.setLastLoginTime(nowDate);
             deviceCodeService.updateSysDeviceCode(deviceCode);
             // 用户设备码信息
-            SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(loginUser.getAppUserId(), loginUser.getDeviceCodeId());
-            SysAppUserDeviceCode uAppUserDeviceCode = new SysAppUserDeviceCode();
-            uAppUserDeviceCode.setId(appUserDeviceCode.getId());
-            uAppUserDeviceCode.setLoginTimes(appUserDeviceCode.getLoginTimes() + 1);
-            uAppUserDeviceCode.setLastLoginTime(nowDate);
-            appUserDeviceCodeService.updateSysAppUserDeviceCode(uAppUserDeviceCode);
+            if(loginUser.getAppUserId() != null) {
+                SysAppUserDeviceCode appUserDeviceCode = appUserDeviceCodeService.selectSysAppUserDeviceCodeByAppUserIdAndDeviceCodeId(loginUser.getAppUserId(), loginUser.getDeviceCodeId());
+                SysAppUserDeviceCode uAppUserDeviceCode = new SysAppUserDeviceCode();
+                uAppUserDeviceCode.setId(appUserDeviceCode.getId());
+                uAppUserDeviceCode.setLoginTimes(appUserDeviceCode.getLoginTimes() + 1);
+                uAppUserDeviceCode.setLastLoginTime(nowDate);
+                appUserDeviceCodeService.updateSysAppUserDeviceCode(uAppUserDeviceCode);
+            }
         }
     }
 

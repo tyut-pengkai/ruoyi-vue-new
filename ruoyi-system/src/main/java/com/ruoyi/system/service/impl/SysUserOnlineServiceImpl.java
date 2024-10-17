@@ -115,10 +115,26 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService {
                 SysApp app = appService.selectSysAppByAppKey(appKey);
 //                System.out.println(JSON.toJSONString(user));
 //                System.out.println(JSON.toJSONString(app));
-                sysUserOnline.setAppDesc(app.getAppName() + "-" + appVersion.getVersionShow());
-                sysUserOnline.setAppAuthor(app.getCreateBy());
+                if(app != null && appVersion != null) {
+                    sysUserOnline.setAppDesc(app.getAppName() + "-" + appVersion.getVersionShow());
+                } else {
+                    if(appVersion != null) {
+                        sysUserOnline.setAppDesc("未知" + "-" + appVersion.getVersionShow());
+                    } else {
+                        sysUserOnline.setAppDesc("未知");
+                    }
+                }
+                if(app != null) {
+                    sysUserOnline.setAppAuthor(app.getCreateBy());
+                } else {
+                    sysUserOnline.setAppAuthor("未知");
+                }
             } else {
-                sysUserOnline.setAppDesc("未知" + "-" + appVersion.getVersionShow());
+                if(appVersion != null) {
+                    sysUserOnline.setAppDesc("未知" + "-" + appVersion.getVersionShow());
+                } else {
+                    sysUserOnline.setAppDesc("未知");
+                }
                 sysUserOnline.setAppAuthor("未知");
             }
             if (user.getDeviceCodeId() != null) {
