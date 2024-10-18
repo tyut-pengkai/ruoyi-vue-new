@@ -12,7 +12,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectBjWorkTypeVo">
-        select id, work_type from bj_work_type
+        select id, work_type,types,sorts from bj_work_type
     </sql>
 
     <select id="selectBjWorkTypeList" parameterType="BjWorkType" resultMap="BjWorkTypeResult">
