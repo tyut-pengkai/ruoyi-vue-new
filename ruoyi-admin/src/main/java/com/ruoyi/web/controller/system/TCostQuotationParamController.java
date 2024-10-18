@@ -37,7 +37,7 @@ public class TCostQuotationParamController extends BaseController
     /**
      * 查询成本报价参数列表
      */
-    @PreAuthorize("@ss.hasPermi('system:costparam:list')")
+    @PreAuthorize("@ss.hasPermi('system:quoteparam:list')")
     @GetMapping("/list")
     public TableDataInfo list(TCostQuotationParam tCostQuotationParam)
     {
@@ -49,7 +49,7 @@ public class TCostQuotationParamController extends BaseController
     /**
      * 导出成本报价参数列表
      */
-    @PreAuthorize("@ss.hasPermi('system:costparam:export')")
+    @PreAuthorize("@ss.hasPermi('system:quoteparam:export')")
     @Log(title = "成本报价参数", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, TCostQuotationParam tCostQuotationParam)
@@ -62,7 +62,7 @@ public class TCostQuotationParamController extends BaseController
     /**
      * 获取成本报价参数详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:param:query')")
+    @PreAuthorize("@ss.hasPermi('system:quoteparam:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -72,18 +72,35 @@ public class TCostQuotationParamController extends BaseController
     /**
      * 新增成本报价参数
      */
-    @PreAuthorize("@ss.hasPermi('system:param:add')")
+    @PreAuthorize("@ss.hasPermi('system:quoteparam:add')")
     @Log(title = "成本报价参数", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody TCostQuotationParam tCostQuotationParam)
     {
         return toAjax(tCostQuotationParamService.insertTCostQuotationParam(tCostQuotationParam));
     }
+    
+    @PreAuthorize("@ss.hasPermi('system:quoteparam:add')")
+    @Log(title = "成本报价参数", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/batch")
+    public AjaxResult batch(@RequestBody List<TCostQuotationParam> list)
+    {
+    	if(list != null && list.size() > 0) {
+    		for(TCostQuotationParam cost : list) {
+    			if(cost.getId() == null) {
+    				tCostQuotationParamService.insertTCostQuotationParam(cost);
+    			} else {
+    				tCostQuotationParamService.updateTCostQuotationParam(cost);
+    			}
+    		}
+    	}
+        return success();
+    }
 
     /**
      * 修改成本报价参数
      */
-    @PreAuthorize("@ss.hasPermi('system:costparam:edit')")
+    @PreAuthorize("@ss.hasPermi('system:quoteparam:edit')")
     @Log(title = "成本报价参数", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody TCostQuotationParam tCostQuotationParam)
@@ -94,7 +111,7 @@ public class TCostQuotationParamController extends BaseController
     /**
      * 删除成本报价参数
      */
-    @PreAuthorize("@ss.hasPermi('system:costparam:remove')")
+    @PreAuthorize("@ss.hasPermi('system:quoteparam:remove')")
     @Log(title = "成本报价参数", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

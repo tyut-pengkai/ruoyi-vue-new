@@ -37,7 +37,7 @@ public class TCostLaborController extends BaseController
     /**
      * 查询人工报价成本列表
      */
-    @PreAuthorize("@ss.hasPermi('system:labor:list')")
+    @PreAuthorize("@ss.hasPermi('system:workercost:list')")
     @GetMapping("/list")
     public TableDataInfo list(TCostLabor tCostLabor)
     {
@@ -49,7 +49,7 @@ public class TCostLaborController extends BaseController
     /**
      * 导出人工报价成本列表
      */
-    @PreAuthorize("@ss.hasPermi('system:labor:export')")
+    @PreAuthorize("@ss.hasPermi('system:workercost:export')")
     @Log(title = "人工报价成本", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, TCostLabor tCostLabor)
@@ -62,7 +62,7 @@ public class TCostLaborController extends BaseController
     /**
      * 获取人工报价成本详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:labor:query')")
+    @PreAuthorize("@ss.hasPermi('system:workercost:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -72,7 +72,7 @@ public class TCostLaborController extends BaseController
     /**
      * 新增人工报价成本
      */
-    @PreAuthorize("@ss.hasPermi('system:labor:add')")
+    @PreAuthorize("@ss.hasPermi('system:workercost:add')")
     @Log(title = "人工报价成本", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody TCostLabor tCostLabor)
@@ -83,7 +83,7 @@ public class TCostLaborController extends BaseController
     /**
      * 修改人工报价成本
      */
-    @PreAuthorize("@ss.hasPermi('system:labor:edit')")
+    @PreAuthorize("@ss.hasPermi('system:workercost:edit')")
     @Log(title = "人工报价成本", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody TCostLabor tCostLabor)
