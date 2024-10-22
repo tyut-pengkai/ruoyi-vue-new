@@ -12,6 +12,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="name"    column="name"    />
         <result property="num"    column="num"    />
         <result property="isExternal"    column="is_external"    />
+        <result property="price"    column="price"    />
         <result property="materialSpec"    column="material_spec"    />
         <result property="perWight"    column="per_wight"    />
         <result property="netWight"    column="net_wight"    />
@@ -26,7 +27,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectTCustomerQuoteVo">
-        select id, quote_no, customer_id, materials_no, name, num, is_external, material_spec, per_wight, net_wight, naked_price, profit, trans_cost, total_price, no_tax, per_price, create_time, create_by from t_customer_quote
+        select id, quote_no, customer_id, materials_no, name, num, is_external,price, material_spec, per_wight, net_wight, naked_price, profit, trans_cost, total_price, no_tax, per_price, create_time, create_by from t_customer_quote
     </sql>
 
     <select id="selectTCustomerQuoteList" parameterType="TCustomerQuote" resultMap="TCustomerQuoteResult">
@@ -38,6 +39,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="num != null "> and num = #{num}</if>
             <if test="isExternal != null "> and is_external = #{isExternal}</if>
+            <if test="price != null "> and price = #{price}</if>
             <if test="materialSpec != null  and materialSpec != ''"> and material_spec = #{materialSpec}</if>
             <if test="perWight != null "> and per_wight = #{perWight}</if>
             <if test="netWight != null "> and net_wight = #{netWight}</if>
@@ -64,6 +66,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="name != null">name,</if>
             <if test="num != null">num,</if>
             <if test="isExternal != null">is_external,</if>
+            <if test="price != null">price,</if>
             <if test="materialSpec != null">material_spec,</if>
             <if test="perWight != null">per_wight,</if>
             <if test="netWight != null">net_wight,</if>
@@ -83,6 +86,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="name != null">#{name},</if>
             <if test="num != null">#{num},</if>
             <if test="isExternal != null">#{isExternal},</if>
+            <if test="price != null">#{price},</if>
             <if test="materialSpec != null">#{materialSpec},</if>
             <if test="perWight != null">#{perWight},</if>
             <if test="netWight != null">#{netWight},</if>
@@ -106,6 +110,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="name != null">name = #{name},</if>
             <if test="num != null">num = #{num},</if>
             <if test="isExternal != null">is_external = #{isExternal},</if>
+            <if test="price != null">price = #{price},</if>
             <if test="materialSpec != null">material_spec = #{materialSpec},</if>
             <if test="perWight != null">per_wight = #{perWight},</if>
             <if test="netWight != null">net_wight = #{netWight},</if>

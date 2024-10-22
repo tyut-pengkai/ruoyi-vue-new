@@ -23,6 +23,8 @@ public class BjWorkType extends BaseEntity
     private String workType;
     private Integer types;
     private Integer sorts;
+    private Integer priceType;
+    private String calFormula;
 
     public void setId(Long id) 
     {
@@ -57,6 +59,22 @@ public class BjWorkType extends BaseEntity
 
 	public void setSorts(Integer sorts) {
 		this.sorts = sorts;
+	}
+
+	public Integer getPriceType() {
+		return priceType;
+	}
+
+	public void setPriceType(Integer priceType) {
+		this.priceType = priceType;
+	}
+
+	public String getCalFormula() {
+		return calFormula;
+	}
+
+	public void setCalFormula(String calFormula) {
+		this.calFormula = calFormula;
 	}
 
 	@Override

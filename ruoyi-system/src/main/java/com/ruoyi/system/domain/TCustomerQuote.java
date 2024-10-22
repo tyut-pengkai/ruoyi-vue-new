@@ -18,63 +18,50 @@ public class TCustomerQuote extends BaseEntity
 
     /** $column.columnComment */
     private Long id;
-
     /** 报价单编号 */
     @Excel(name = "报价单编号")
     private String quoteNo;
-
     /** 客户id */
     @Excel(name = "客户id")
     private Long customerId;
-
     /** 物料编码 */
     @Excel(name = "物料编码")
     private String materialsNo;
-
     /** 物料名称 */
     @Excel(name = "物料名称")
     private String name;
-
     /** 数量 */
     @Excel(name = "数量")
     private Long num;
-
     /** 是否外采：1、否；2、外采；3、协作 */
     @Excel(name = "是否外采：1、否；2、外采；3、协作")
     private Integer isExternal;
-
+    @Excel(name = "单价")
+    private BigDecimal price;
     /** 材料规格 */
     @Excel(name = "材料规格")
     private String materialSpec;
-
     /** 单件重量 */
     @Excel(name = "单件重量")
     private BigDecimal perWight;
-
     /** 净重(数量*单件重量) */
     @Excel(name = "净重(数量*单件重量)")
     private BigDecimal netWight;
-
     /** 裸价(元) */
     @Excel(name = "裸价(元)")
     private BigDecimal nakedPrice;
-
     /** 利润 */
     @Excel(name = "利润")
     private BigDecimal profit;
-
     /** 包装运输 */
     @Excel(name = "包装运输")
     private BigDecimal transCost;
-
     /** 产品合计报价 */
     @Excel(name = "产品合计报价")
     private BigDecimal totalPrice;
-
     /** 未税 */
     @Excel(name = "未税")
     private BigDecimal noTax;
-
     /** 公斤价 */
     @Excel(name = "公斤价")
     private BigDecimal perPrice;
@@ -232,6 +219,14 @@ public class TCustomerQuote extends BaseEntity
 
 	public void setCustomerName(String customerName) {
 		this.customerName = customerName;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
 	}
 
 	@Override

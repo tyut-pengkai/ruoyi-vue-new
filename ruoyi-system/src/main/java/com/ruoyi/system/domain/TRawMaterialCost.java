@@ -18,63 +18,48 @@ public class TRawMaterialCost extends BaseEntity
 
     /** $column.columnComment */
     private Long id;
-
     /** 报价单编号 */
     @Excel(name = "报价单编号")
     private String quoteNo;
-
     /** 客户id */
     @Excel(name = "客户id")
     private Long customerId;
-
     /** 材料规格 */
     @Excel(name = "材料规格")
     private String materialSpec;
-
     /** 单件重量 */
     @Excel(name = "单件重量")
     private BigDecimal perWight;
-
     /** 净重(数量*单件重量) */
     @Excel(name = "净重(数量*单件重量)")
     private BigDecimal netWight;
-
     /** 长 */
     @Excel(name = "长")
     private BigDecimal steelLen;
-
     /** 宽 */
     @Excel(name = "宽")
     private BigDecimal steelWid;
-
     /** 高 */
     @Excel(name = "高")
     private BigDecimal steelHei;
-
     /** 毛坯重量 */
     @Excel(name = "毛坯重量")
     private BigDecimal steelWight;
-
     /** 材料单价 */
     @Excel(name = "材料单价")
     private BigDecimal steelPerPrice;
-
     /** 毛坯费 */
     @Excel(name = "毛坯费")
     private BigDecimal steelPrice;
-
     /** 废料重 */
     @Excel(name = "废料重")
     private BigDecimal steelScrapWgt;
-
     /** 废料单价 */
     @Excel(name = "废料单价")
     private BigDecimal steelScrapPer;
-
     /** 废料费 */
     @Excel(name = "废料费")
     private BigDecimal steelScrapPrice;
-
     /** 原料材料费用小计 */
     @Excel(name = "原料材料费用小计")
     private BigDecimal totalSteel;

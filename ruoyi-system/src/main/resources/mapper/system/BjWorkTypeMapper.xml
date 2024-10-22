@@ -9,10 +9,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="workType"    column="work_type"    />
         <result property="types"    column="types"    />
         <result property="sorts"    column="sorts"    />
+        <result property="priceType"    column="price_type"    />
+        <result property="calFormula"    column="cal_formula"    />
     </resultMap>
 
     <sql id="selectBjWorkTypeVo">
-        select id, work_type,types,sorts from bj_work_type
+        select id, work_type,types,sorts,price_type,cal_formula from bj_work_type
     </sql>
 
     <select id="selectBjWorkTypeList" parameterType="BjWorkType" resultMap="BjWorkTypeResult">
@@ -34,10 +36,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
             <if test="workType != null">work_type,</if>
+            <if test="types != null">types,</if>
+            <if test="sorts != null">sorts,</if>
+            <if test="priceType != null">price_type,</if>
+            <if test="calFormula != null">cal_formula,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
             <if test="workType != null">#{workType},</if>
+            <if test="types != null">#{types},</if>
+            <if test="sorts != null">#{sorts},</if>
+            <if test="priceType != null">#{priceType},</if>
+            <if test="calFormula != null">#{calFormula},</if>
          </trim>
     </insert>
 
@@ -45,6 +55,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update bj_work_type
         <trim prefix="SET" suffixOverrides=",">
             <if test="workType != null">work_type = #{workType},</if>
+            <if test="types != null">types = #{types},</if>
+            <if test="sorts != null">sorts = #{sorts},</if>
+            <if test="priceType != null">price_type = #{priceType},</if>
+            <if test="calFormula != null">cal_formula = #{calFormula},</if>
         </trim>
         where id = #{id}
     </update>
