@@ -33,7 +33,7 @@ public class TProcessCost extends BaseEntity
 
     /** 工时 */
     @Excel(name = "工时")
-    private Long workTypeHours;
+    private BigDecimal workTypeHours;
 
     /** 金额 */
     @Excel(name = "金额")
@@ -85,12 +85,12 @@ public class TProcessCost extends BaseEntity
     {
         return workTypeName;
     }
-    public void setWorkTypeHours(Long workTypeHours) 
+    public void setWorkTypeHours(BigDecimal workTypeHours) 
     {
         this.workTypeHours = workTypeHours;
     }
 
-    public Long getWorkTypeHours() 
+    public BigDecimal getWorkTypeHours() 
     {
         return workTypeHours;
     }

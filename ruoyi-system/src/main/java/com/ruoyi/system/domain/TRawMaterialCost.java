@@ -24,15 +24,6 @@ public class TRawMaterialCost extends BaseEntity
     /** 客户id */
     @Excel(name = "客户id")
     private Long customerId;
-    /** 材料规格 */
-    @Excel(name = "材料规格")
-    private String materialSpec;
-    /** 单件重量 */
-    @Excel(name = "单件重量")
-    private BigDecimal perWight;
-    /** 净重(数量*单件重量) */
-    @Excel(name = "净重(数量*单件重量)")
-    private BigDecimal netWight;
     /** 长 */
     @Excel(name = "长")
     private BigDecimal steelLen;
@@ -90,33 +81,6 @@ public class TRawMaterialCost extends BaseEntity
     public Long getCustomerId() 
     {
         return customerId;
-    }
-    public void setMaterialSpec(String materialSpec) 
-    {
-        this.materialSpec = materialSpec;
-    }
-
-    public String getMaterialSpec() 
-    {
-        return materialSpec;
-    }
-    public void setPerWight(BigDecimal perWight) 
-    {
-        this.perWight = perWight;
-    }
-
-    public BigDecimal getPerWight() 
-    {
-        return perWight;
-    }
-    public void setNetWight(BigDecimal netWight) 
-    {
-        this.netWight = netWight;
-    }
-
-    public BigDecimal getNetWight() 
-    {
-        return netWight;
     }
     public void setSteelLen(BigDecimal steelLen) 
     {
@@ -215,9 +179,6 @@ public class TRawMaterialCost extends BaseEntity
             .append("id", getId())
             .append("quoteNo", getQuoteNo())
             .append("customerId", getCustomerId())
-            .append("materialSpec", getMaterialSpec())
-            .append("perWight", getPerWight())
-            .append("netWight", getNetWight())
             .append("steelLen", getSteelLen())
             .append("steelWid", getSteelWid())
             .append("steelHei", getSteelHei())

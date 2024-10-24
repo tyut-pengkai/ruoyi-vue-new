@@ -8,9 +8,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="id"    column="id"    />
         <result property="quoteNo"    column="quote_no"    />
         <result property="customerId"    column="customer_id"    />
-        <result property="materialSpec"    column="material_spec"    />
-        <result property="perWight"    column="per_wight"    />
-        <result property="netWight"    column="net_wight"    />
         <result property="steelLen"    column="steel_len"    />
         <result property="steelWid"    column="steel_wid"    />
         <result property="steelHei"    column="steel_hei"    />
@@ -24,7 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectTRawMaterialCostVo">
-        select id, quote_no, customer_id, material_spec, per_wight, net_wight, steel_len, steel_wid, steel_hei, steel_wight, steel_per_price, steel_price, steel_scrap_wgt, steel_scrap_per, steel_scrap_price, total_steel from t_raw_material_cost
+        select id, quote_no, customer_id, steel_len, steel_wid, steel_hei, steel_wight, steel_per_price, steel_price, steel_scrap_wgt, steel_scrap_per, steel_scrap_price, total_steel from t_raw_material_cost
     </sql>
 
     <select id="selectTRawMaterialCostList" parameterType="TRawMaterialCost" resultMap="TRawMaterialCostResult">
@@ -32,9 +29,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="quoteNo != null  and quoteNo != ''"> and quote_no = #{quoteNo}</if>
             <if test="customerId != null "> and customer_id = #{customerId}</if>
-            <if test="materialSpec != null  and materialSpec != ''"> and material_spec = #{materialSpec}</if>
-            <if test="perWight != null "> and per_wight = #{perWight}</if>
-            <if test="netWight != null "> and net_wight = #{netWight}</if>
             <if test="steelLen != null "> and steel_len = #{steelLen}</if>
             <if test="steelWid != null "> and steel_wid = #{steelWid}</if>
             <if test="steelHei != null "> and steel_hei = #{steelHei}</if>
@@ -58,9 +52,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="quoteNo != null">quote_no,</if>
             <if test="customerId != null">customer_id,</if>
-            <if test="materialSpec != null">material_spec,</if>
-            <if test="perWight != null">per_wight,</if>
-            <if test="netWight != null">net_wight,</if>
             <if test="steelLen != null">steel_len,</if>
             <if test="steelWid != null">steel_wid,</if>
             <if test="steelHei != null">steel_hei,</if>
@@ -75,9 +66,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="quoteNo != null">#{quoteNo},</if>
             <if test="customerId != null">#{customerId},</if>
-            <if test="materialSpec != null">#{materialSpec},</if>
-            <if test="perWight != null">#{perWight},</if>
-            <if test="netWight != null">#{netWight},</if>
             <if test="steelLen != null">#{steelLen},</if>
             <if test="steelWid != null">#{steelWid},</if>
             <if test="steelHei != null">#{steelHei},</if>
@@ -96,9 +84,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="quoteNo != null">quote_no = #{quoteNo},</if>
             <if test="customerId != null">customer_id = #{customerId},</if>
-            <if test="materialSpec != null">material_spec = #{materialSpec},</if>
-            <if test="perWight != null">per_wight = #{perWight},</if>
-            <if test="netWight != null">net_wight = #{netWight},</if>
             <if test="steelLen != null">steel_len = #{steelLen},</if>
             <if test="steelWid != null">steel_wid = #{steelWid},</if>
             <if test="steelHei != null">steel_hei = #{steelHei},</if>
