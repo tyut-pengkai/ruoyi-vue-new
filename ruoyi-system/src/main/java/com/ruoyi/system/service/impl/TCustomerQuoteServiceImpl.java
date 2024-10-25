@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -133,6 +134,12 @@ public class TCustomerQuoteServiceImpl implements ITCustomerQuoteService
     			cq.setCreateBy(userName);
     			cq.setQuoteNo(quoteNo);
     			cq.setCustomerId(vo.getCustomerId());
+    			if(cq.getTotalPrice() != null) {
+    				cq.setNoTax(cq.getTotalPrice().divide(new BigDecimal("1.13"), 2));
+    				if(cq.getNetWight() != null) {
+    					cq.setPerPrice(cq.getNoTax().divide(cq.getNetWight(), 2));
+    				}
+    			}
     			insertTCustomerQuote(cq);
     			TRawMaterialCost rmc = vo.getRawMaterial();
     			rmc.setQuoteNo(quoteNo);
