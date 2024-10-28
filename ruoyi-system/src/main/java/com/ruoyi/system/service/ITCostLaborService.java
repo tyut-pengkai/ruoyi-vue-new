@@ -58,4 +58,6 @@ public interface ITCostLaborService
      * @return 结果
      */
     public int deleteTCostLaborById(Long id);
+    
+    public List<TCostLabor> historyTCostLaborList(TCostLabor tCostLabor);
 }

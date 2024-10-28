@@ -42,6 +42,10 @@ public class TCostLabor extends BaseEntity
     /** 报价成本 */
     @Excel(name = "报价成本")
     private BigDecimal costPrice;
+    
+    /** 报价工时 */
+    @Excel(name = "报价工时")
+    private Integer costHour;
 
     /** 类型：1、人工成本，2、报价成本 */
     @Excel(name = "类型：1、人工成本，2、报价成本")
@@ -50,6 +54,8 @@ public class TCostLabor extends BaseEntity
     /** 金额 */
     @Excel(name = "金额")
     private BigDecimal price;
+    
+    private Integer queryCount;
 
     public void setId(Long id) 
     {
@@ -133,7 +139,23 @@ public class TCostLabor extends BaseEntity
         return price;
     }
 
-    @Override
+    public Integer getCostHour() {
+		return costHour;
+	}
+
+	public void setCostHour(Integer costHour) {
+		this.costHour = costHour;
+	}
+
+	public Integer getQueryCount() {
+		return queryCount;
+	}
+
+	public void setQueryCount(Integer queryCount) {
+		this.queryCount = queryCount;
+	}
+
+	@Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())

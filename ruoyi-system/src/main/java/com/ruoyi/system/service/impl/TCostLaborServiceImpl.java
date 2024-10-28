@@ -1,11 +1,17 @@
 package com.ruoyi.system.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.ruoyi.system.mapper.BjWorkTypeMapper;
 import com.ruoyi.system.mapper.TCostLaborMapper;
+import com.ruoyi.system.mapper.TCostQuotationParamMapper;
+import com.ruoyi.system.domain.BjWorkType;
 import com.ruoyi.system.domain.TCostLabor;
+import com.ruoyi.system.domain.TCostQuotationParam;
 import com.ruoyi.system.service.ITCostLaborService;
 
 /**
@@ -19,6 +25,10 @@ public class TCostLaborServiceImpl implements ITCostLaborService
 {
     @Autowired
     private TCostLaborMapper tCostLaborMapper;
+    @Autowired
+    private BjWorkTypeMapper bjWorkTypeMapper;
+    @Autowired
+    private TCostQuotationParamMapper costQuotationParamMapper;
 
     /**
      * 查询人工报价成本
@@ -91,5 +101,31 @@ public class TCostLaborServiceImpl implements ITCostLaborService
     public int deleteTCostLaborById(Long id)
     {
         return tCostLaborMapper.deleteTCostLaborById(id);
+    }
+    
+    @Override
+    public List<TCostLabor> historyTCostLaborList(TCostLabor tCostLabor){
+    	List<BjWorkType> wtList = bjWorkTypeMapper.selectBjWorkTypeList(null);
+    	tCostLabor.setQueryCount(wtList != null && wtList.size() > 0 ? wtList.size() : 10);
+    	List<TCostLabor> clList = tCostLaborMapper.historyTCostLaborList(tCostLabor);
+    	if(clList != null && clList.size() > 0) {
+    		return clList;
+    	} else {
+    		List<TCostQuotationParam> cqList = costQuotationParamMapper.selectTCostQuotationParamList(null);
+    		if(cqList != null && cqList.size() > 0) {
+    			clList = new ArrayList<>();
+    			for(TCostQuotationParam cq : cqList) {
+    				TCostLabor cl = new TCostLabor();
+    				cl.setTypes(tCostLabor.getTypes());
+    				if(cl.getTypes() == 1) {
+    					cl.setCostLabor(cq.getCost());
+    				} else if(cl.getTypes() == 2){
+    					cl.setCostPrice(cq.getQuotation());
+    				}
+    				clList.add(cl);
+    			}
+    		}
+    		return clList;
+    	}
     }
 }

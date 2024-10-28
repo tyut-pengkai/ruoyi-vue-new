@@ -12,6 +12,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="workTypeName"    column="work_type_name"    />
         <result property="costLabor"    column="cost_labor"    />
         <result property="costPrice"    column="cost_price"    />
+        <result property="costHour"    column="cost_hour"    />
         <result property="types"    column="types"    />
         <result property="price"    column="price"    />
         <result property="createTime"    column="create_time"    />
@@ -19,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectTCostLaborVo">
-        select id, quote_no, customer_id, work_type_id, work_type_name, cost_labor, cost_price, types, price, create_time, create_by from t_cost_labor
+        select id, quote_no, customer_id, work_type_id, work_type_name, cost_labor, cost_price, cost_hour, types, price, create_time, create_by from t_cost_labor
     </sql>
 
     <select id="selectTCostLaborList" parameterType="TCostLabor" resultMap="TCostLaborResult">
@@ -50,6 +51,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="workTypeName != null">work_type_name,</if>
             <if test="costLabor != null">cost_labor,</if>
             <if test="costPrice != null">cost_price,</if>
+            <if test="costHour != null">cost_hour,</if>
             <if test="types != null">types,</if>
             <if test="price != null">price,</if>
             <if test="createTime != null">create_time,</if>
@@ -62,6 +64,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="workTypeName != null">#{workTypeName},</if>
             <if test="costLabor != null">#{costLabor},</if>
             <if test="costPrice != null">#{costPrice},</if>
+            <if test="costHour != null">#{costHour},</if>
             <if test="types != null">#{types},</if>
             <if test="price != null">#{price},</if>
             <if test="createTime != null">#{createTime},</if>
@@ -78,6 +81,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="workTypeName != null">work_type_name = #{workTypeName},</if>
             <if test="costLabor != null">cost_labor = #{costLabor},</if>
             <if test="costPrice != null">cost_price = #{costPrice},</if>
+            <if test="costHour != null">cost_hour = #{costHour},</if>
             <if test="types != null">types = #{types},</if>
             <if test="price != null">price = #{price},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
@@ -96,4 +100,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+    <select id="historyTCostLaborList" parameterType="TCostLabor" resultMap="TCostLaborResult">
+        <include refid="selectTCostLaborVo"/>
+        <where>  
+            <if test="customerId != null "> and customer_id = #{customerId}</if>
+            <if test="types != null "> and types = #{types}</if>
+        </where>
+        order by create_time desc
+        limit 1,#{queryCount}
+    </select>
 </mapper>
