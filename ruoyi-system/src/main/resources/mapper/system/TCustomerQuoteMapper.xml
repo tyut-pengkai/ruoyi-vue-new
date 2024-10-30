@@ -138,7 +138,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
     
     <select id="listCoustomerQuote" parameterType="TCustomerQuote" resultType="java.util.Map">
-    	SELECT q.quote_no,c.name,COUNT(0) AS num,q.create_time FROM t_customer_quote q,bj_customer c WHERE q.customer_id=c.id
+    	SELECT q.quote_no,q.customer_id,c.name,COUNT(0) AS num,q.create_time FROM t_customer_quote q,bj_customer c WHERE q.customer_id=c.id
     	<if test="quoteNo != null  and quoteNo != ''"> and q.quote_no = #{quoteNo}</if>
         <if test="customerId != null "> and q.customer_id = #{customerId}</if>
         GROUP BY q.quote_no

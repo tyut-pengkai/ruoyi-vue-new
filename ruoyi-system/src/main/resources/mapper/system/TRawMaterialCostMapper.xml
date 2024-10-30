@@ -6,6 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="TRawMaterialCost" id="TRawMaterialCostResult">
         <result property="id"    column="id"    />
+        <result property="quoteId"    column="quote_id"    />
         <result property="quoteNo"    column="quote_no"    />
         <result property="customerId"    column="customer_id"    />
         <result property="steelLen"    column="steel_len"    />
@@ -21,12 +22,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectTRawMaterialCostVo">
-        select id, quote_no, customer_id, steel_len, steel_wid, steel_hei, steel_wight, steel_per_price, steel_price, steel_scrap_wgt, steel_scrap_per, steel_scrap_price, total_steel from t_raw_material_cost
+        select id, quote_id, quote_no, customer_id, steel_len, steel_wid, steel_hei, steel_wight, steel_per_price, steel_price, steel_scrap_wgt, steel_scrap_per, steel_scrap_price, total_steel from t_raw_material_cost
     </sql>
 
     <select id="selectTRawMaterialCostList" parameterType="TRawMaterialCost" resultMap="TRawMaterialCostResult">
         <include refid="selectTRawMaterialCostVo"/>
-        <where>  
+        <where>
+        	<if test="quoteId != null "> and quote_id = #{quoteId}</if>
             <if test="quoteNo != null  and quoteNo != ''"> and quote_no = #{quoteNo}</if>
             <if test="customerId != null "> and customer_id = #{customerId}</if>
             <if test="steelLen != null "> and steel_len = #{steelLen}</if>
@@ -50,6 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertTRawMaterialCost" parameterType="TRawMaterialCost" useGeneratedKeys="true" keyProperty="id">
         insert into t_raw_material_cost
         <trim prefix="(" suffix=")" suffixOverrides=",">
+        	<if test="quoteId != null">quote_id,</if>
             <if test="quoteNo != null">quote_no,</if>
             <if test="customerId != null">customer_id,</if>
             <if test="steelLen != null">steel_len,</if>
@@ -64,6 +67,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="totalSteel != null">total_steel,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+        	<if test="quoteId != null">#{quoteId},</if>
             <if test="quoteNo != null">#{quoteNo},</if>
             <if test="customerId != null">#{customerId},</if>
             <if test="steelLen != null">#{steelLen},</if>

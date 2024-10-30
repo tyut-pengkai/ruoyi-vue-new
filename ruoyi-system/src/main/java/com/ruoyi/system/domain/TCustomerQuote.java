@@ -1,6 +1,8 @@
 package com.ruoyi.system.domain;
 
 import java.math.BigDecimal;
+import java.util.List;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -67,6 +69,12 @@ public class TCustomerQuote extends BaseEntity
     private BigDecimal perPrice;
     
     private String customerName;
+    
+    private List<TRawMaterialCost> mcList;
+    
+    private List<TNumberCutCost> ccList;
+    
+    private List<TProcessCost> pcList;
 
     public void setId(Long id) 
     {
@@ -227,6 +235,30 @@ public class TCustomerQuote extends BaseEntity
 
 	public void setPrice(BigDecimal price) {
 		this.price = price;
+	}
+
+	public List<TRawMaterialCost> getMcList() {
+		return mcList;
+	}
+
+	public void setMcList(List<TRawMaterialCost> mcList) {
+		this.mcList = mcList;
+	}
+
+	public List<TNumberCutCost> getCcList() {
+		return ccList;
+	}
+
+	public void setCcList(List<TNumberCutCost> ccList) {
+		this.ccList = ccList;
+	}
+
+	public List<TProcessCost> getPcList() {
+		return pcList;
+	}
+
+	public void setPcList(List<TProcessCost> pcList) {
+		this.pcList = pcList;
 	}
 
 	@Override

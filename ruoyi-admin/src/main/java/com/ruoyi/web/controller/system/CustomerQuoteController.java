@@ -66,19 +66,28 @@ public class CustomerQuoteController extends BaseController {
 		TCustomerQuote cq = new TCustomerQuote();
 		cq.setQuoteNo(quote_no);
 		List<TCustomerQuote> quoteList = tCustomerQuoteService.selectTCustomerQuoteList(cq);
+		if(quoteList != null && quoteList.size() > 0) {
+			for(TCustomerQuote quote : quoteList) {
+				TRawMaterialCost mc = new TRawMaterialCost();
+				mc.setQuoteId(quote.getId());
+				mc.setQuoteNo(quote.getQuoteNo());
+				List<TRawMaterialCost> mcList = rawMaterialCostService.selectTRawMaterialCostList(mc);
+				quote.setMcList(mcList);
+				
+				TNumberCutCost cc = new TNumberCutCost();
+				cc.setQuoteId(quote.getId());
+				cc.setQuoteNo(quote.getQuoteNo());
+				List<TNumberCutCost> ccList = numberCutCostService.selectTNumberCutCostList(cc);
+				quote.setCcList(ccList);
+				
+				TProcessCost pc = new TProcessCost();
+				pc.setQuoteId(quote.getId());
+				pc.setQuoteNo(quote.getQuoteNo());
+				List<TProcessCost> pcList = processCostService.selectTProcessCostList(pc);
+				quote.setPcList(pcList);
+			}
+		}
 		map.put("quote", quoteList);
-		TRawMaterialCost mc = new TRawMaterialCost();
-		mc.setQuoteNo(quote_no);
-		List<TRawMaterialCost> mcList = rawMaterialCostService.selectTRawMaterialCostList(mc);
-		map.put("rawMaterialCost", mcList);
-		TNumberCutCost cc = new TNumberCutCost();
-		cc.setQuoteNo(quote_no);
-		List<TNumberCutCost> ccList = numberCutCostService.selectTNumberCutCostList(cc);
-		map.put("numberCutCost", ccList);
-		TProcessCost pc = new TProcessCost();
-		pc.setQuoteNo(quote_no);
-		List<TProcessCost> pcList = processCostService.selectTProcessCostList(pc);
-		map.put("processCost", pcList);
         return success(map);
     }
 }

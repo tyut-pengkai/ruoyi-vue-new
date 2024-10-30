@@ -19,6 +19,7 @@ public class TProcessCost extends BaseEntity
     /** $column.columnComment */
     private Long id;
 
+    private Long quoteId;
     /** 报价单编号 */
     @Excel(name = "报价单编号")
     private String quoteNo;
@@ -128,6 +129,14 @@ public class TProcessCost extends BaseEntity
 
 	public void setTypes(Integer types) {
 		this.types = types;
+	}
+
+	public Long getQuoteId() {
+		return quoteId;
+	}
+
+	public void setQuoteId(Long quoteId) {
+		this.quoteId = quoteId;
 	}
 
 	@Override

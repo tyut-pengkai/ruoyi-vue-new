@@ -18,6 +18,8 @@ public class TRawMaterialCost extends BaseEntity
 
     /** $column.columnComment */
     private Long id;
+    
+    private Long quoteId;
     /** 报价单编号 */
     @Excel(name = "报价单编号")
     private String quoteNo;
@@ -173,7 +175,15 @@ public class TRawMaterialCost extends BaseEntity
         return totalSteel;
     }
 
-    @Override
+    public Long getQuoteId() {
+		return quoteId;
+	}
+
+	public void setQuoteId(Long quoteId) {
+		this.quoteId = quoteId;
+	}
+
+	@Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())

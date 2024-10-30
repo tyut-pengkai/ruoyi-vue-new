@@ -143,16 +143,19 @@ public class TCustomerQuoteServiceImpl implements ITCustomerQuoteService
     			insertTCustomerQuote(cq);
     			TRawMaterialCost rmc = vo.getRawMaterial();
     			rmc.setQuoteNo(quoteNo);
+    			rmc.setQuoteId(cq.getId());
     			rmc.setCustomerId(vo.getCustomerId());
     			rawMaterialCostMapper.insertTRawMaterialCost(rmc);
     			TNumberCutCost ncc = vo.getNumberCut();
     			ncc.setQuoteNo(quoteNo);
+    			ncc.setQuoteId(cq.getId());
     			ncc.setCustomerId(vo.getCustomerId());
     			numberCutCostMapper.insertTNumberCutCost(ncc);
     			List<TProcessCost> pcList = vo.getProcess();
     			if(pcList != null && pcList.size() > 0) {
     				pcList.forEach(pc -> {
     					pc.setQuoteNo(quoteNo);
+    					pc.setQuoteId(cq.getId());
     	    			pc.setCustomerId(vo.getCustomerId());
     	    			processCostMapper.insertTProcessCost(pc);
     				});
