@@ -26,6 +26,10 @@ public class TCustomerQuote extends BaseEntity
     /** 客户id */
     @Excel(name = "客户id")
     private Long customerId;
+    
+    private Long materialsId;
+    
+    private Long parentMaterialsId;
     /** 物料编码 */
     @Excel(name = "物料编码")
     private String materialsNo;
@@ -259,6 +263,22 @@ public class TCustomerQuote extends BaseEntity
 
 	public void setPcList(List<TProcessCost> pcList) {
 		this.pcList = pcList;
+	}
+
+	public Long getMaterialsId() {
+		return materialsId;
+	}
+
+	public void setMaterialsId(Long materialsId) {
+		this.materialsId = materialsId;
+	}
+
+	public Long getParentMaterialsId() {
+		return parentMaterialsId;
+	}
+
+	public void setParentMaterialsId(Long parentMaterialsId) {
+		this.parentMaterialsId = parentMaterialsId;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.ruoyi.system.service;
 import java.util.List;
 import java.util.Map;
 
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.system.domain.TCustomerQuote;
 import com.ruoyi.system.domain.vo.CustomerQuoteVO;
 
@@ -62,7 +63,7 @@ public interface ITCustomerQuoteService
      */
     public int deleteTCustomerQuoteById(Long id);
     
-    public List<String> createCustomerQuote(String userName, List<CustomerQuoteVO> quoteList);
+    public AjaxResult createCustomerQuote(String userName, List<CustomerQuoteVO> quoteList);
     
     public List<Map<String,Object>> listCoustomerQuote(TCustomerQuote tCustomerQuote);
 }

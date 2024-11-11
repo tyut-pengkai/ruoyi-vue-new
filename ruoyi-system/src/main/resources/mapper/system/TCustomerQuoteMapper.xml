@@ -8,6 +8,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="id"    column="id"    />
         <result property="quoteNo"    column="quote_no"    />
         <result property="customerId"    column="customer_id"    />
+        <result property="materialsId"    column="materials_id"    />
+        <result property="parentMaterialsId"    column="parent_materials_id"    />
         <result property="materialsNo"    column="materials_no"    />
         <result property="name"    column="name"    />
         <result property="num"    column="num"    />
@@ -27,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectTCustomerQuoteVo">
-        select id, quote_no, customer_id, materials_no, name, num, is_external,price, material_spec, per_wight, net_wight, naked_price, profit, trans_cost, total_price, no_tax, per_price, create_time, create_by from t_customer_quote
+        select id, quote_no, customer_id, materials_id,parent_materials_id, materials_no, name, num, is_external,price, material_spec, per_wight, net_wight, naked_price, profit, trans_cost, total_price, no_tax, per_price, create_time, create_by from t_customer_quote
     </sql>
 
     <select id="selectTCustomerQuoteList" parameterType="TCustomerQuote" resultMap="TCustomerQuoteResult">
@@ -35,6 +37,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="quoteNo != null  and quoteNo != ''"> and quote_no = #{quoteNo}</if>
             <if test="customerId != null "> and customer_id = #{customerId}</if>
+            <if test="materialsId != null "> and materials_id = #{materialsId}</if>
+            <if test="parentMaterialsId != null "> and parent_materials_id = #{parentMaterialsId}</if>
             <if test="materialsNo != null  and materialsNo != ''"> and materials_no = #{materialsNo}</if>
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="num != null "> and num = #{num}</if>
@@ -62,6 +66,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="quoteNo != null">quote_no,</if>
             <if test="customerId != null">customer_id,</if>
+            <if test="materialsId != null">materials_id,</if>
+            <if test="parentMaterialsId != null">parent_materials_id,</if>
             <if test="materialsNo != null">materials_no,</if>
             <if test="name != null">name,</if>
             <if test="num != null">num,</if>
@@ -82,6 +88,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="quoteNo != null">#{quoteNo},</if>
             <if test="customerId != null">#{customerId},</if>
+            <if test="materialsId != null">#{materialsId},</if>
+            <if test="parentMaterialsId != null">#{parentMaterialsId},</if>
             <if test="materialsNo != null">#{materialsNo},</if>
             <if test="name != null">#{name},</if>
             <if test="num != null">#{num},</if>

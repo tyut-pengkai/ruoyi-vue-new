@@ -30,6 +30,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="workTypeName != null  and workTypeName != ''"> and work_type_name like concat('%', #{workTypeName}, '%')</if>
             <if test="workTypeHours != null "> and work_type_hours = #{workTypeHours}</if>
             <if test="workTypePrice != null "> and work_type_price = #{workTypePrice}</if>
+            <if test="types != null "> and types = #{types}</if>
             <if test="quotaPrice != null "> and quota_price = #{quotaPrice}</if>
             <if test="totalPrice != null "> and total_price = #{totalPrice}</if>
         </where>
