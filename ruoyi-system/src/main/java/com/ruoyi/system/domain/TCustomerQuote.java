@@ -79,6 +79,13 @@ public class TCustomerQuote extends BaseEntity
     private List<TNumberCutCost> ccList;
     
     private List<TProcessCost> pcList;
+    
+    private BigDecimal firstPrice;
+	private String firstBeginTime;
+	private String firstEndTime;
+	private BigDecimal secondPrice;
+	private String secondBeginTime;
+	private String secondEndTime;
 
     public void setId(Long id) 
     {
@@ -279,6 +286,54 @@ public class TCustomerQuote extends BaseEntity
 
 	public void setParentMaterialsId(Long parentMaterialsId) {
 		this.parentMaterialsId = parentMaterialsId;
+	}
+
+	public BigDecimal getFirstPrice() {
+		return firstPrice;
+	}
+
+	public void setFirstPrice(BigDecimal firstPrice) {
+		this.firstPrice = firstPrice;
+	}
+
+	public String getFirstBeginTime() {
+		return firstBeginTime;
+	}
+
+	public void setFirstBeginTime(String firstBeginTime) {
+		this.firstBeginTime = firstBeginTime;
+	}
+
+	public String getFirstEndTime() {
+		return firstEndTime;
+	}
+
+	public void setFirstEndTime(String firstEndTime) {
+		this.firstEndTime = firstEndTime;
+	}
+
+	public BigDecimal getSecondPrice() {
+		return secondPrice;
+	}
+
+	public void setSecondPrice(BigDecimal secondPrice) {
+		this.secondPrice = secondPrice;
+	}
+
+	public String getSecondBeginTime() {
+		return secondBeginTime;
+	}
+
+	public void setSecondBeginTime(String secondBeginTime) {
+		this.secondBeginTime = secondBeginTime;
+	}
+
+	public String getSecondEndTime() {
+		return secondEndTime;
+	}
+
+	public void setSecondEndTime(String secondEndTime) {
+		this.secondEndTime = secondEndTime;
 	}
 
 	@Override

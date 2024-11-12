@@ -164,19 +164,25 @@ public class TCustomerQuoteServiceImpl implements ITCustomerQuoteService
     			cq.setCreateBy(userName);
     			cq.setQuoteNo(quoteNo);
     			cq.setCustomerId(vo.getCustomerId());
-    			if(cq.getTotalPrice() != null) {
-    				cq.setNoTax(cq.getTotalPrice().divide(new BigDecimal("1.13"), 2));
-    				if(cq.getNetWight() != null) {
-    					cq.setPerPrice(cq.getNoTax().divide(cq.getNetWight(), 2));
-    				}
-    			}
+    			cq.setFirstPrice(vo.getFirstPrice());
+    			cq.setFirstBeginTime(vo.getFirstBeginTime());
+    			cq.setFirstEndTime(vo.getFirstEndTime());
+    			cq.setSecondPrice(vo.getSecondPrice());
+    			cq.setSecondBeginTime(vo.getSecondBeginTime());
+    			cq.setSecondEndTime(vo.getSecondEndTime());
     			insertTCustomerQuote(cq);
     			TRawMaterialCost rmc = vo.getRawMaterial();
+    			if(rmc == null) {
+    				rmc = new TRawMaterialCost();
+    			}
     			rmc.setQuoteNo(quoteNo);
     			rmc.setQuoteId(cq.getId());
     			rmc.setCustomerId(vo.getCustomerId());
     			rawMaterialCostMapper.insertTRawMaterialCost(rmc);
     			TNumberCutCost ncc = vo.getNumberCut();
+    			if(ncc == null) {
+    				ncc = new TNumberCutCost();
+    			}
     			ncc.setQuoteNo(quoteNo);
     			ncc.setQuoteId(cq.getId());
     			ncc.setCustomerId(vo.getCustomerId());
@@ -189,8 +195,16 @@ public class TCustomerQuoteServiceImpl implements ITCustomerQuoteService
     	    			pc.setCustomerId(vo.getCustomerId());
     	    			processCostMapper.insertTProcessCost(pc);
     				});
+    			} else {
+    				for(int i=1;i<4;i++) {
+    					TProcessCost pc = new TProcessCost();
+    					pc.setQuoteId(cq.getId());
+    	        		pc.setQuoteNo(quoteNo);
+    	        		pc.setCustomerId(vo.getCustomerId());
+    	        		pc.setTypes(i);
+    	        		processCostMapper.insertTProcessCost(pc);
+    				}
     			}
-    			
     			quoteNos.add(quoteNo);
     		}
     		// 根据子件统计数据数据给上一层套件
@@ -235,7 +249,13 @@ public class TCustomerQuoteServiceImpl implements ITCustomerQuoteService
 				if(q.getNetWight() == null) {
 					q.setNetWight(BigDecimal.ZERO);
 				}
-				q.setNetWight(q.getNetWight().add(c_quote.getNetWight()));
+				q.setNetWight(q.getNetWight().add(quote.getNetWight()));
+				q.setFirstPrice(quote.getFirstPrice());
+    			q.setFirstBeginTime(quote.getFirstBeginTime());
+    			q.setFirstEndTime(quote.getFirstEndTime());
+    			q.setSecondPrice(quote.getSecondPrice());
+    			q.setSecondBeginTime(quote.getSecondBeginTime());
+    			q.setSecondEndTime(quote.getSecondEndTime());
 				tCustomerQuoteMapper.updateTCustomerQuote(q);
     		} else {
     			// 没有父套件的记录，则需要记录父套件
@@ -250,15 +270,80 @@ public class TCustomerQuoteServiceImpl implements ITCustomerQuoteService
     				q.setName(m.getMaterialName());
     				q.setNetWight(quote.getNetWight());
     			}
+    			q.setFirstPrice(quote.getFirstPrice());
+    			q.setFirstBeginTime(quote.getFirstBeginTime());
+    			q.setFirstEndTime(quote.getFirstEndTime());
+    			q.setSecondPrice(quote.getSecondPrice());
+    			q.setSecondBeginTime(quote.getSecondBeginTime());
+    			q.setSecondEndTime(quote.getSecondEndTime());
     			tCustomerQuoteMapper.insertTCustomerQuote(q);
     		}
     		summaryRawMaterial(q, quote);
     		summaryNumberCutCost(q, quote);
     		summaryProcessCost(q, quote);
+    		// 计算父套件的裸价、利润、未税
+    		calculate(q);
     		if(q.getParentMaterialsId() != -1) {
     			summaryCustomerQuote(q);
     		}
     	}
+    }
+    
+    private void calculate(TCustomerQuote quote) {
+    	BigDecimal ycl = BigDecimal.ZERO;
+    	BigDecimal sg = BigDecimal.ZERO;
+    	BigDecimal djjg = BigDecimal.ZERO;
+    	BigDecimal bmcl = BigDecimal.ZERO;
+    	BigDecimal pt = BigDecimal.ZERO;
+    	// 查询原材料
+    	List<TRawMaterialCost> rmcList = getRawMaterialCostList(quote.getId(), quote.getQuoteNo());
+    	if(rmcList != null && rmcList.size() > 0) {
+    		TRawMaterialCost rmc = rmcList.get(0);
+    		ycl = rmc.getTotalSteel();
+    	}
+    	// 数割
+    	List<TNumberCutCost> nccList = getNumberCutCost(quote.getId(), quote.getQuoteNo());
+    	if(nccList != null && nccList.size() > 0) {
+    		TNumberCutCost ncc = nccList.get(0);
+    		sg = ncc.getTotalCut();
+    	}
+    	// 单件加工
+    	List<TProcessCost> pclist1 = getPorcessCost(quote.getId(), quote.getQuoteNo(), 1);
+    	if(pclist1 != null && pclist1.size() > 0) {
+    		TProcessCost pc = pclist1.get(0);
+    		djjg = pc.getTotalPrice();
+    	}
+    	// 表面处理
+    	List<TProcessCost> pclist2 = getPorcessCost(quote.getId(), quote.getQuoteNo(), 2);
+    	if(pclist2 != null && pclist2.size() > 0) {
+    		TProcessCost pc = pclist2.get(0);
+    		bmcl = pc.getTotalPrice();
+    	}
+    	// 喷涂
+    	List<TProcessCost> pclist3 = getPorcessCost(quote.getId(), quote.getQuoteNo(), 3);
+    	if(pclist3 != null && pclist3.size() > 0) {
+    		TProcessCost pc = pclist3.get(0);
+    		pt = pc.getTotalPrice();
+    	}
+    	BigDecimal tempPrice = sg.add(djjg).add(bmcl).add(pt);
+    	BigDecimal price = tempPrice.add(ycl);
+    	BigDecimal lr1 = tempPrice.multiply(new BigDecimal("0.05"));
+    	BigDecimal lr2 = ycl.multiply(new BigDecimal("0.05"));
+    	BigDecimal lr = lr1.add(lr2);
+    	BigDecimal bz1 = price.multiply(new BigDecimal("0.07"));
+    	BigDecimal bz2 = quote.getNetWight().multiply(new BigDecimal("0.17"));
+    	BigDecimal bz3 = quote.getNetWight().multiply(new BigDecimal("0.03"));
+    	BigDecimal bz = bz1.add(bz2).add(bz3);
+    	BigDecimal totalPrice = price.add(lr).add(bz);
+    	quote.setNakedPrice(price);
+    	quote.setProfit(lr);
+    	quote.setTransCost(bz);
+    	quote.setTotalPrice(totalPrice);
+    	quote.setNoTax(totalPrice.divide(new BigDecimal("1.13"), 2));
+    	if(quote.getNetWight().compareTo(BigDecimal.ZERO) > 0) {
+    		quote.setPerPrice(quote.getNoTax().divide(quote.getNetWight(), 2));
+    	}
+    	tCustomerQuoteMapper.updateTCustomerQuote(quote);
     }
     
     private void summaryRawMaterial(TCustomerQuote parent_quote,TCustomerQuote son_quote) {
@@ -273,12 +358,13 @@ public class TCustomerQuoteServiceImpl implements ITCustomerQuoteService
     	if(rmcParentList != null && rmcParentList.size() > 0) {
     		// 有父套件的原材料费用
     		TRawMaterialCost parent_rmc = rmcParentList.get(0);
-    		if(parent_rmc.getSteelWight() == null) {
-    			parent_rmc.setSteelWight(BigDecimal.ZERO);
-    		}
     		parent_rmc.setSteelWight(tempWight);
     		parent_rmc.setTotalSteel(tempTotalPrice);
-    		parent_rmc.setSteelPerPrice(parent_quote.getNetWight().divide(parent_rmc.getSteelWight(), 2));
+    		if(parent_rmc.getSteelWight().compareTo(BigDecimal.ZERO) > 0) {
+    			parent_rmc.setSteelPerPrice(parent_quote.getNetWight().divide(parent_rmc.getSteelWight(), 2));
+    		} else {
+    			parent_rmc.setSteelPerPrice(BigDecimal.ZERO);
+    		}
     		rawMaterialCostMapper.updateTRawMaterialCost(parent_rmc);
     	} else {
     		// 没有父套件的原材料费用
@@ -288,7 +374,11 @@ public class TCustomerQuoteServiceImpl implements ITCustomerQuoteService
     		parent_rmc.setCustomerId(parent_quote.getCustomerId());
     		parent_rmc.setSteelWight(tempWight);
     		parent_rmc.setTotalSteel(tempTotalPrice);
-    		parent_rmc.setSteelPerPrice(parent_quote.getNetWight().divide(parent_rmc.getSteelWight(), 2));
+    		if(parent_rmc.getSteelWight().compareTo(BigDecimal.ZERO) > 0) {
+    			parent_rmc.setSteelPerPrice(parent_quote.getNetWight().divide(parent_rmc.getSteelWight(), 2));
+    		} else {
+    			parent_rmc.setSteelPerPrice(BigDecimal.ZERO);
+    		}
     		rawMaterialCostMapper.insertTRawMaterialCost(parent_rmc);
     	}
     }

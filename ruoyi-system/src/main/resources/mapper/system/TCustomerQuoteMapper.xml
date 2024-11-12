@@ -25,11 +25,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="noTax"    column="no_tax"    />
         <result property="perPrice"    column="per_price"    />
         <result property="createTime"    column="create_time"    />
+        <result property="firstPrice"    column="first_price"    />
+        <result property="firstBeginTime"    column="first_begin_time"    />
+        <result property="firstEndTime"    column="first_end_time"    />
+        <result property="secondPrice"    column="second_price"    />
+        <result property="secondBeginTime"    column="second_begin_time"    />
+        <result property="secondEndTime"    column="second_end_time"    />
         <result property="createBy"    column="create_by"    />
     </resultMap>
 
     <sql id="selectTCustomerQuoteVo">
-        select id, quote_no, customer_id, materials_id,parent_materials_id, materials_no, name, num, is_external,price, material_spec, per_wight, net_wight, naked_price, profit, trans_cost, total_price, no_tax, per_price, create_time, create_by from t_customer_quote
+        select id, quote_no, customer_id, materials_id,parent_materials_id, materials_no, name, num, is_external,price, 
+        material_spec, per_wight, net_wight, naked_price, profit, trans_cost, total_price, no_tax, per_price, create_time, create_by,
+        first_price,first_begin_time,first_end_time,second_price,second_begin_time,second_end_time from t_customer_quote
     </sql>
 
     <select id="selectTCustomerQuoteList" parameterType="TCustomerQuote" resultMap="TCustomerQuoteResult">
@@ -84,6 +92,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="perPrice != null">per_price,</if>
             <if test="createTime != null">create_time,</if>
             <if test="createBy != null">create_by,</if>
+            <if test="firstPrice != null">first_price,</if>
+            <if test="firstBeginTime != null">first_begin_time,</if>
+            <if test="firstEndTime != null">first_end_time,</if>
+            <if test="secondPrice != null">second_price,</if>
+            <if test="secondBeginTime != null">second_begin_time,</if>
+            <if test="secondEndTime != null">second_end_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="quoteNo != null">#{quoteNo},</if>
@@ -106,6 +120,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="perPrice != null">#{perPrice},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="createBy != null">#{createBy},</if>
+            <if test="firstPrice != null">#{firstPrice},</if>
+            <if test="firstBeginTime != null">#{firstBeginTime},</if>
+            <if test="firstEndTime != null">#{firstEndTime},</if>
+            <if test="secondPrice != null">#{secondPrice},</if>
+            <if test="secondBeginTime != null">#{secondBeginTime},</if>
+            <if test="secondEndTime != null">#{secondEndTime},</if>
          </trim>
     </insert>
 
@@ -130,6 +150,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="perPrice != null">per_price = #{perPrice},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="firstPrice != null">first_price = #{firstPrice},</if>
+            <if test="firstBeginTime != null">first_begin_time = #{firstBeginTime},</if>
+            <if test="firstEndTime != null">first_end_time = #{firstEndTime},</if>
+            <if test="secondPrice != null">second_price = #{secondPrice},</if>
+            <if test="secondBeginTime != null">second_begin_time = #{secondBeginTime},</if>
+            <if test="secondEndTime != null">second_end_time = #{secondEndTime},</if>
         </trim>
         where id = #{id}
     </update>

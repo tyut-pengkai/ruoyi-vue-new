@@ -60,6 +60,16 @@ public class CustomerQuoteController extends BaseController {
 	}
 	
 	@PreAuthorize("@ss.hasPermi('system:easyquote:list')")
+    @GetMapping("/list/{quote_no}")
+    public AjaxResult listDetail(@PathVariable(name = "quote_no") String quote_no) {
+		TCustomerQuote cq = new TCustomerQuote();
+		cq.setQuoteNo(quote_no);
+		cq.setParentMaterialsId(-1L);
+		List<TCustomerQuote> quoteList = tCustomerQuoteService.selectTCustomerQuoteList(cq);
+		return success(quoteList);
+	}
+	
+	@PreAuthorize("@ss.hasPermi('system:easyquote:list')")
     @GetMapping("/detail/{quote_no}")
     public AjaxResult detail(@PathVariable(name = "quote_no") String quote_no) {
 		Map<String, Object> map = new HashMap<>();
