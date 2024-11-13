@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,6 +58,27 @@ public class CustomerQuoteController extends BaseController {
     @PostMapping
     public AjaxResult add(@RequestBody List<CustomerQuoteVO> quoteList) {
 		return success(tCustomerQuoteService.createCustomerQuote(getUsername(), quoteList));
+	}
+	
+	@PreAuthorize("@ss.hasPermi('system:easyquote:add')")
+    @Log(title = "修改报价单", businessType = BusinessType.INSERT)
+    @PutMapping("/{quote_no}")
+    public AjaxResult update(@PathVariable(name = "quote_no") String quote_no, @RequestBody TCustomerQuote quote) {
+		TCustomerQuote cq = new TCustomerQuote();
+		cq.setQuoteNo(quote_no);
+		List<TCustomerQuote> quoteList = tCustomerQuoteService.selectTCustomerQuoteList(cq);
+		if(quoteList != null && quoteList.size() > 0) {
+			for(TCustomerQuote q : quoteList) {
+				q.setFirstPrice(quote.getFirstPrice());
+				q.setFirstBeginTime(quote.getFirstBeginTime());
+				q.setFirstEndTime(quote.getFirstEndTime());
+				q.setSecondPrice(quote.getSecondPrice());
+				q.setSecondBeginTime(quote.getSecondBeginTime());
+				q.setSecondEndTime(quote.getSecondEndTime());
+				tCustomerQuoteService.updateTCustomerQuote(q);
+			}
+		}
+		return success();
 	}
 	
 	@PreAuthorize("@ss.hasPermi('system:easyquote:list')")

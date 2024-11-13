@@ -128,4 +128,8 @@ public class TCostLaborServiceImpl implements ITCostLaborService
     		return clList;
     	}
     }
+    
+    public int deleteTCostLaborByCustomer(TCostLabor tCostLabor) {
+    	return tCostLaborMapper.deleteTCostLaborByCustomer(tCostLabor);
+    }
 }

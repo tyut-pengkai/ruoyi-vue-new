@@ -60,4 +60,6 @@ public interface TCostLaborMapper
     public int deleteTCostLaborByIds(Long[] ids);
     
     public List<TCostLabor> historyTCostLaborList(TCostLabor tCostLabor);
+    
+    public int deleteTCostLaborByCustomer(TCostLabor tCostLabor);
 }

@@ -193,7 +193,9 @@ public class TCustomerQuoteServiceImpl implements ITCustomerQuoteService
     					pc.setQuoteNo(quoteNo);
     					pc.setQuoteId(cq.getId());
     	    			pc.setCustomerId(vo.getCustomerId());
-    	    			processCostMapper.insertTProcessCost(pc);
+    	    			if(cq.getParentMaterialsId() != -1) {
+    	    				processCostMapper.insertTProcessCost(pc);
+    	    			}
     				});
     			} else {
     				for(int i=1;i<4;i++) {
@@ -240,7 +242,7 @@ public class TCustomerQuoteServiceImpl implements ITCustomerQuoteService
     		TCustomerQuote c_quote = new TCustomerQuote();
     		c_quote.setQuoteNo(quote.getQuoteNo());
     		c_quote.setMaterialsId(quote.getParentMaterialsId());
-    		List<TCustomerQuote> cList = tCustomerQuoteMapper.selectTCustomerQuoteList(quote);
+    		List<TCustomerQuote> cList = tCustomerQuoteMapper.selectTCustomerQuoteList(c_quote);
     		
     		TCustomerQuote q = null;
     		if(cList != null && cList.size() > 0) {
@@ -352,8 +354,8 @@ public class TCustomerQuoteServiceImpl implements ITCustomerQuoteService
     	BigDecimal tempWight = BigDecimal.ZERO;
 		BigDecimal tempTotalPrice = BigDecimal.ZERO;
 		for(TRawMaterialCost son_rmc : rmcSonList) {
-			tempWight.add(son_rmc.getSteelWight());
-			tempTotalPrice.add(son_rmc.getTotalSteel());
+			tempWight = tempWight.add(son_rmc.getSteelWight());
+			tempTotalPrice = tempTotalPrice.add(son_rmc.getTotalSteel());
 		}
     	if(rmcParentList != null && rmcParentList.size() > 0) {
     		// 有父套件的原材料费用
@@ -388,7 +390,7 @@ public class TCustomerQuoteServiceImpl implements ITCustomerQuoteService
     	List<TNumberCutCost> s_number_cut = getNumberCutCost(son_quote.getId(), son_quote.getQuoteNo());
     	BigDecimal tempTotalPrice = BigDecimal.ZERO;
     	for(TNumberCutCost ncc : s_number_cut) {
-    		tempTotalPrice.add(ncc.getTotalCut());
+    		tempTotalPrice = tempTotalPrice.add(ncc.getTotalCut());
     	}
     	if(p_number_cut != null && p_number_cut.size() > 0) {
     		TNumberCutCost ncc = p_number_cut.get(0);
@@ -411,7 +413,9 @@ public class TCustomerQuoteServiceImpl implements ITCustomerQuoteService
         	
         	BigDecimal temp_price = BigDecimal.ZERO;
         	for(TProcessCost p : s_list) {
-        		temp_price.add(p.getTotalPrice());
+        		if(p.getTotalPrice() != null) {
+        			temp_price = temp_price.add(p.getTotalPrice());
+        		}
         	}
         	if(p_list != null && p_list.size() > 0) {
         		TProcessCost pc = p_list.get(0);

@@ -10,6 +10,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="customerId"    column="customer_id"    />
         <result property="workTypeId"    column="work_type_id"    />
         <result property="workTypeName"    column="work_type_name"    />
+        <result property="worker"    column="worker"    />
         <result property="costLabor"    column="cost_labor"    />
         <result property="costPrice"    column="cost_price"    />
         <result property="costHour"    column="cost_hour"    />
@@ -20,7 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectTCostLaborVo">
-        select id, quote_no, customer_id, work_type_id, work_type_name, cost_labor, cost_price, cost_hour, types, price, create_time, create_by from t_cost_labor
+        select id, quote_no, customer_id, work_type_id, work_type_name, worker, cost_labor, cost_price, cost_hour, types, price, create_time, create_by from t_cost_labor
     </sql>
 
     <select id="selectTCostLaborList" parameterType="TCostLabor" resultMap="TCostLaborResult">
@@ -34,6 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="costPrice != null "> and cost_price = #{costPrice}</if>
             <if test="types != null "> and types = #{types}</if>
             <if test="price != null "> and price = #{price}</if>
+            <if test="worker != null "> and worker = #{worker}</if>
         </where>
     </select>
     
@@ -49,6 +51,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="customerId != null">customer_id,</if>
             <if test="workTypeId != null">work_type_id,</if>
             <if test="workTypeName != null">work_type_name,</if>
+            <if test="worker != null">worker,</if>
             <if test="costLabor != null">cost_labor,</if>
             <if test="costPrice != null">cost_price,</if>
             <if test="costHour != null">cost_hour,</if>
@@ -62,6 +65,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="customerId != null">#{customerId},</if>
             <if test="workTypeId != null">#{workTypeId},</if>
             <if test="workTypeName != null">#{workTypeName},</if>
+            <if test="worker != null">#{worker},</if>
             <if test="costLabor != null">#{costLabor},</if>
             <if test="costPrice != null">#{costPrice},</if>
             <if test="costHour != null">#{costHour},</if>
@@ -79,6 +83,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="customerId != null">customer_id = #{customerId},</if>
             <if test="workTypeId != null">work_type_id = #{workTypeId},</if>
             <if test="workTypeName != null">work_type_name = #{workTypeName},</if>
+            <if test="worker != null">worker = #{worker},</if>
             <if test="costLabor != null">cost_labor = #{costLabor},</if>
             <if test="costPrice != null">cost_price = #{costPrice},</if>
             <if test="costHour != null">cost_hour = #{costHour},</if>
@@ -92,6 +97,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <delete id="deleteTCostLaborById" parameterType="Long">
         delete from t_cost_labor where id = #{id}
+    </delete>
+    
+    <delete id="deleteTCostLaborByCustomer" parameterType="TCostLabor">
+        delete from t_cost_labor where quote_no=#{quoteNo} and customer_id = #{customerId}
     </delete>
 
     <delete id="deleteTCostLaborByIds" parameterType="String">

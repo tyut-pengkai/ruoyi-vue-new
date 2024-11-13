@@ -112,12 +112,10 @@ public class TCostLaborController extends BaseController
     public AjaxResult batch(@RequestBody List<TCostLabor> list)
     {
     	if(list != null && list.size() > 0) {
+    		TCostLabor cl = list.get(0);
+    		tCostLaborService.deleteTCostLaborByCustomer(cl);
     		for(TCostLabor cost : list) {
-    			if(cost.getId() == null) {
-    				tCostLaborService.insertTCostLabor(cost);
-    			} else {
-    				tCostLaborService.updateTCostLabor(cost);
-    			}
+				tCostLaborService.insertTCostLabor(cost);
     		}
     	}
         return success();

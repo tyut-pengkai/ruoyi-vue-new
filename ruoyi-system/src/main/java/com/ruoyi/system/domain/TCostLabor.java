@@ -34,6 +34,8 @@ public class TCostLabor extends BaseEntity
     /** 加工名称 */
     @Excel(name = "加工名称")
     private String workTypeName;
+    
+    private String worker;
 
     /** 人工成本 */
     @Excel(name = "人工成本")
@@ -153,6 +155,14 @@ public class TCostLabor extends BaseEntity
 
 	public void setQueryCount(Integer queryCount) {
 		this.queryCount = queryCount;
+	}
+
+	public String getWorker() {
+		return worker;
+	}
+
+	public void setWorker(String worker) {
+		this.worker = worker;
 	}
 
 	@Override

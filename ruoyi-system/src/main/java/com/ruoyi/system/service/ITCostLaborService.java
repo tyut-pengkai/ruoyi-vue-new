@@ -60,4 +60,6 @@ public interface ITCostLaborService
     public int deleteTCostLaborById(Long id);
     
     public List<TCostLabor> historyTCostLaborList(TCostLabor tCostLabor);
+    
+    public int deleteTCostLaborByCustomer(TCostLabor tCostLabor);
 }
