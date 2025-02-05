@@ -23,7 +23,7 @@ features:
   - title: 可快速接入
     details: 支持EXE、APK成品软件快速接入验证，全自动一键接入，无需编写一行代码。
   - title: 丰富的SDK
-    details: 现已完成多种语言SDK模块，包括java、易语言、火山PC、按键精灵(安卓)、懒人精灵，更多SDK陆续开发中。
-footer: Copyright © 2020-2023 Coordsoft.Com All Rights Reserved.
+    details: 现已完成多种语言SDK模块，包括java、易语言、火山PC、按键精灵(安卓)、懒人精灵、C#，更多SDK陆续开发中。
+footer: Copyright © 2020-2024 Coordsoft.Com All Rights Reserved.
 
 ---

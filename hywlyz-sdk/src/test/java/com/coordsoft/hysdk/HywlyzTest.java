@@ -16,7 +16,7 @@ public class HywlyzTest {
         // 将此处设置为true显示SDK内部信息
         hy.setShowLog(false);
 
-        hy.init("http://localhost/prod-api/api/v1/uSZNfxKRaXAqpJBoC5sMEFcuKjOG2xTP", "YIIgPA0881syIEQtmS8qUZXjUqgzhHDs", "1",
+        hy.init("http://localhost:82/prod-api/api/v1/uSZNfxKRaXAqpJBoC5sMEFcuKjOG2xTP", "YIIgPA0881syIEQtmS8qUZXjUqgzhHDs", "1",
                 EncryptType.NONE, "123456", EncryptType.NONE, "123456", "");
     }
 

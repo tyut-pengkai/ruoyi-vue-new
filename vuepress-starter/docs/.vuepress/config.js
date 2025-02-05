@@ -36,8 +36,17 @@ export default {
                 text: '购买授权',
                 link: 'http://shop.coordsoft.com',
             }, {
-                text: '加入群聊',
-                link: 'https://jq.qq.com/?_wv=1027&k=tT0T695Q',
+                text: 'QQ交流群',
+                children: [
+                    {
+                        text: '加入群聊①',
+                        link: 'https://jq.qq.com/?_wv=1027&k=tT0T695Q',
+                    },
+                    {
+                        text: '加入群聊②',
+                        link: 'https://qm.qq.com/q/kiEZTm53Jm',
+                    }
+                ]
             }
             // // NavbarItem
             // {
@@ -76,7 +85,7 @@ export default {
                 children: [{
                     text: '需求环境',
                     collapsible: true,
-                    link: '/install/install-env.md'
+                    link: '/install/require-env/require-env.md'
                 }, {
                     text: '部署教程',
                     collapsible: true,
@@ -98,11 +107,13 @@ export default {
                     text: '激活授权',
                     collapsible: true,
                     link: '/install/license/license.md'
-                }, {
-                    text: '初始配置',
-                    collapsible: true,
-                    link: '/install/init-config/init-config.md'
-                }],
+                }
+                // , {
+                //     text: '初始配置',
+                //     collapsible: true,
+                //     link: '/install/init-config/init-config.md'
+                // }
+                ],
             },
             {
                 text: '使用指南',
@@ -118,7 +129,21 @@ export default {
                             '/guide/code-access/api-docs.md',
                         ]
                     },
-                    '/guide/function-introduce/function-introduce.md',
+                    {
+                        text: '功能介绍',
+                        collapsible: true,
+                        children: [
+                            '/guide/function-introduce/software/software.md',
+                            '/guide/function-introduce/version/version.md',
+                            '/guide/function-introduce/template/template.md',
+                            '/guide/function-introduce/card/card.md',
+                            '/guide/function-introduce/app_user/app_user.md',
+                            '/guide/function-introduce/user_center/user_center.md',
+                            '/guide/function-introduce/device/device.md',
+                            '/guide/function-introduce/online/online.md',
+                            '/guide/function-introduce/batch/batch.md',
+                        ]
+                    },
                     {
                         text: '支付对接',
                         collapsible: true,

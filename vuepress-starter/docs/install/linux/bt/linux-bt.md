@@ -29,7 +29,7 @@
 #### （1）Java环境：JDK
 在服务器终端中输入以下命令安装JDK
 ```
-yum install -y java-1.8.0-openjdk.x86_64
+yum install -y java-1.8.0-*
 ```
 安装完毕后执行如下命令查看版本
 ```
@@ -88,7 +88,7 @@ Mysql、Redis、Nginx这三个软件可以在宝塔面板软件商店里直接�
 ```
 
 ### 3、启动前端程序
-在宝塔面板依次选择`网站`-`PHP项目`-`添加站点`
+在宝塔面板依次选择`网站`-`PHP项目`-`添加站点`  
 ![image](./5.jpg)
 
 域名：填写您自己的域名，此处以`hy.coordsoft.com`为例  
@@ -132,18 +132,35 @@ cd /opt/app/hywlyz && chmod 755 bin/hy && sh hy.sh restart && tail -f nohup.out
 请记录此处提示的`机器码`，需要凭此码获取授权信息
 :::
 
-此时即可通过您的域名尝试访问网站`http://域名/admin`，默认管理员账号密码为：admin/admin123，如果登录时提示未授权说明部署成功
+此时即可通过您的域名尝试访问网站`http://域名/admin`，默认管理员账号密码为：admin/admin123，如果登录时提示未授权说明部署成功，如果提示后端连接异常，请检查上述步骤，并重新启动后端程序
 
-## 三、购买授权
+## 三、设置开机启动
+登入宝塔后台，打开`计划任务`页面，任务类型选择`Shell脚本`，任务名称可随意设置，执行周期选择`N分钟`-`1分钟`，脚本内容如下：  
+![image](./9.jpg)
+
+```shell{6}
+# 脚本代码（注意其中的/opt/app/hywlyz使用自己的实际路径）
+
+pid=`ps -ef|grep hywlyz-.*-release.jar|grep -v grep|awk '{print $2}' `
+# 如果不存在返回1，存在返回0 
+if [ -z "${pid}" ]; then
+ cd /opt/app/hywlyz && sh hy.sh start
+else
+ echo "hywlyz is already running. pid=${pid} ."
+fi
+```
+
+## 四、购买授权
 购买请访问商城：[https://shop.coordsoft.com/](https://shop.coordsoft.com/)
 购买授权码后点击 [激活授权](https://shop.coordsoft.com/getLicense) 为您的网站在线授权
-
-## 四、初始化配置
-配置初始参数和系统开机自启动  
-点击跳转 [初始化配置](/install/init-config/init-config.md)
 
 ## 五、登录网站
 至此，整个网站部署完成，如果一切正常，您可通过您的域名访问属于您的红叶网络验证系统  
 前台地址：http://域名  
 后台地址：http://域名/admin  
 默认管理员账号密码：admin/admin123
+
+:::tip
+首次进入后台，系统会提示请配置网站域名，请点击确认并打开`系统配置`-`网站配置`菜单页，将默认信息修改为您的信息，其中`网站域名`必须修改为您的实际访问域名(或IP)
+![image](./10.jpg)
+:::
