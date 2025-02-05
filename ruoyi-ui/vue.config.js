@@ -27,6 +27,7 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV === 'development',
   // 如果你不需要生产环境的 source map，可以将其设置为 false 以加速生产环境构建。
   productionSourceMap: false,
+  transpileDependencies: ['quill'],
   // webpack-dev-server 相关配置
   devServer: {
     host: '0.0.0.0',
@@ -47,9 +48,7 @@ module.exports = {
   css: {
     loaderOptions: {
       sass: {
-        sassOptions: {
-          outputStyle: "expanded"
-        }
+        sassOptions: { outputStyle: "expanded" }
       }
     }
   },
@@ -98,7 +97,7 @@ module.exports = {
             .plugin('ScriptExtHtmlWebpackPlugin')
             .after('html')
             .use('script-ext-html-webpack-plugin', [{
-              // `runtime` must same as runtimeChunk name. default is `runtime`
+            // `runtime` must same as runtimeChunk name. default is `runtime`
               inline: /runtime\..*\.js$/
             }])
             .end()
@@ -116,15 +115,15 @@ module.exports = {
                 name: 'chunk-elementUI', // split elementUI into a single package
                 test: /[\\/]node_modules[\\/]_?element-ui(.*)/, // in order to adapt to cnpm
                 priority: 20 // the weight needs to be larger than libs and app or it will be packaged into libs or app
-                },
-                commons: {
-                  name: 'chunk-commons',
-                  test: resolve('src/components'), // can customize your rules
-                  minChunks: 3, //  minimum common number
-                  priority: 5,
-                  reuseExistingChunk: true
-                }
+              },
+              commons: {
+                name: 'chunk-commons',
+                test: resolve('src/components'), // can customize your rules
+                minChunks: 3, //  minimum common number
+                priority: 5,
+                reuseExistingChunk: true
               }
+            }
           })
           config.optimization.runtimeChunk('single')
     })

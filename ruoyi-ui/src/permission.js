@@ -4,6 +4,7 @@ import { Message } from 'element-ui'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { getToken } from '@/utils/auth'
+import { isPathMatch } from '@/utils/validate'
 import { isRelogin } from '@/utils/request'
 
 NProgress.configure({ showSpinner: false })
@@ -15,6 +16,10 @@ const whiteList = ['regx:/login/.*', '/auth-redirect', '/bind', '/register', '/c
 
 const navWhiteList = ['/shop', '/queryOrder', '/queryCard', '/chargeCenter', '/unbindDevice']
 
+const isWhiteList = (path) => {
+  return whiteList.some(pattern => isPathMatch(pattern, path)) || whiteList.indexOf(path) !== -1 || path.startsWith("/shop/a/") || path.startsWith("/shop/c/")
+}
+
 router.beforeEach((to, from, next) => {
   NProgress.start()
   if (getToken()) {
@@ -24,7 +29,7 @@ router.beforeEach((to, from, next) => {
     if (to.path === '/login') {
       next({ path: '/index' })
       NProgress.done()
-    } else if (whiteList.indexOf(to.path) !== -1 || to.path.startsWith("/shop/a/") || to.path.startsWith("/shop/c/")) {
+    } else if (isWhiteList(to.path)) {
       if(navWhiteList.indexOf(to.path) !== -1 || to.path.startsWith("/shop/a/") || to.path.startsWith("/shop/c/")) {
         if(store.state.settings.navList.length === 0) {
           store.dispatch('settings/GetNavList').then((res) => {
@@ -87,7 +92,7 @@ router.beforeEach((to, from, next) => {
   } else {
     // console.log(to.path);
     // 没有token
-    if (whiteList.indexOf(to.path) !== -1 || to.path.startsWith("/shop/a/") || to.path.startsWith("/shop/c/")) {
+    if (isWhiteList(to.path)) {
       if(navWhiteList.indexOf(to.path) !== -1 || to.path.startsWith("/shop/a/") || to.path.startsWith("/shop/c/")) {
         if(store.state.settings.navList.length === 0) {
           store.dispatch('settings/GetNavList').then((res) => {

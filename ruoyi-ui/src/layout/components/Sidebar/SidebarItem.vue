@@ -61,13 +61,12 @@ export default {
       }
       const showingChildren = children.filter((item) => {
         if (item.hidden) {
-          return false;
-        } else {
-          // Temp set(will be used if only has one showing child)
-          this.onlyOneChild = item;
-          return true;
+          return false
         }
-      });
+        // Temp set(will be used if only has one showing child)
+        this.onlyOneChild = item
+        return true
+      })
 
       // When there is only one child router, the child router is displayed by default
       if (showingChildren.length === 1) {

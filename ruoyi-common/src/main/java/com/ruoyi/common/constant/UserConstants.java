@@ -2,7 +2,7 @@ package com.ruoyi.common.constant;
 
 /**
  * 用户常量信息
- *
+ * 
  * @author ruoyi
  */
 public class UserConstants
@@ -20,6 +20,9 @@ public class UserConstants
 
     /** 用户封禁状态 */
     public static final String USER_DISABLE = "1";
+
+    /** 角色正常状态 */
+    public static final String ROLE_NORMAL = "0";
 
     /** 角色封禁状态 */
     public static final String ROLE_DISABLE = "1";
@@ -53,24 +56,16 @@ public class UserConstants
     /** 菜单类型（按钮） */
     public static final String TYPE_BUTTON = "F";
 
-    /**
-     * Layout组件标识
-     */
+    /** Layout组件标识 */
     public final static String LAYOUT = "Layout";
-
-    /**
-     * ParentView组件标识
-     */
+    
+    /** ParentView组件标识 */
     public final static String PARENT_VIEW = "ParentView";
 
-    /**
-     * InnerLink组件标识
-     */
+    /** InnerLink组件标识 */
     public final static String INNER_LINK = "InnerLink";
 
-    /**
-     * 校验是否唯一的返回标识
-     */
+    /** 校验是否唯一的返回标识 */
     public final static boolean UNIQUE = true;
     public final static boolean NOT_UNIQUE = false;
 

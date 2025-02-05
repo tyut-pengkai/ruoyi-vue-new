@@ -86,12 +86,12 @@ export default {
       },
       loginRules: {
         username: [
-          {required: true, trigger: "blur", message: "请输入您的账号"},
+          { required: true, trigger: "blur", message: "请输入您的账号" }
         ],
         password: [
-          {required: true, trigger: "blur", message: "请输入您的密码"},
+          { required: true, trigger: "blur", message: "请输入您的密码" }
         ],
-        code: [{required: true, trigger: "change", message: "请输入验证码"}],
+        code: [{ required: true, trigger: "change", message: "请输入验证码" }]
       },
       loading: false,
       // 验证码开关
@@ -106,8 +106,8 @@ export default {
       handler: function(route) {
         this.redirect = route.query && route.query.redirect;
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   created() {
     this.loginForm.vstr = this.$route.params.vstr;
