@@ -1,75 +1,5 @@
 package com.ruoyi.utils.poi;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.RegExUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
-import org.apache.poi.hssf.usermodel.HSSFPicture;
-import org.apache.poi.hssf.usermodel.HSSFPictureData;
-import org.apache.poi.hssf.usermodel.HSSFShape;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ooxml.POIXMLDocumentPart;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.DataValidation;
-import org.apache.poi.ss.usermodel.DataValidationConstraint;
-import org.apache.poi.ss.usermodel.DataValidationHelper;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Name;
-import org.apache.poi.ss.usermodel.PictureData;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.ss.util.CellRangeAddressList;
-import org.apache.poi.util.IOUtils;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
-import org.apache.poi.xssf.usermodel.XSSFDataValidation;
-import org.apache.poi.xssf.usermodel.XSSFDrawing;
-import org.apache.poi.xssf.usermodel.XSSFPicture;
-import org.apache.poi.xssf.usermodel.XSSFShape;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openxmlformats.schemas.drawingml.x2006.spreadsheetDrawing.CTMarker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excel.ColumnType;
 import com.ruoyi.common.annotation.Excel.Type;
@@ -84,7 +14,34 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileTypeUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.common.utils.file.ImageUtils;
+import com.ruoyi.common.utils.poi.ExcelHandlerAdapter;
 import com.ruoyi.common.utils.reflect.ReflectUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ooxml.POIXMLDocumentPart;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.util.IOUtils;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
+import org.openxmlformats.schemas.drawingml.x2006.spreadsheetDrawing.CTMarker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Excel相关处理
@@ -1536,41 +1493,79 @@ public class ExcelUtil<T>
         List<Field> tempFields = new ArrayList<>();
         tempFields.addAll(Arrays.asList(clazz.getSuperclass().getDeclaredFields()));
         tempFields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-        for (Field field : tempFields)
+        if (StringUtils.isNotEmpty(includeFields))
         {
-            if (!ArrayUtils.contains(this.excludeFields, field.getName()))
+            for (Field field : tempFields)
             {
-                // 单注解
-                if (field.isAnnotationPresent(Excel.class))
+                if (ArrayUtils.contains(this.includeFields, field.getName()) || field.isAnnotationPresent(Excels.class))
                 {
-                    Excel attr = field.getAnnotation(Excel.class);
-                    if (attr != null && (attr.type() == Type.ALL || attr.type() == type))
+                    addField(fields, field);
+                }
+            }
+        }
+        else if (StringUtils.isNotEmpty(excludeFields))
+        {
+            for (Field field : tempFields)
+            {
+                if (!ArrayUtils.contains(this.excludeFields, field.getName()))
+                {
+                    addField(fields, field);
+                }
+            }
+        }
+        else
+        {
+            for (Field field : tempFields)
+            {
+                addField(fields, field);
+            }
+        }
+        return fields;
+    }
+
+    /**
+     * 添加字段信息
+     */
+    public void addField(List<Object[]> fields, Field field)
+    {
+        // 单注解
+        if (field.isAnnotationPresent(Excel.class))
+        {
+            Excel attr = field.getAnnotation(Excel.class);
+            if (attr != null && (attr.type() == Type.ALL || attr.type() == type))
+            {
+                fields.add(new Object[] { field, attr });
+            }
+            if (Collection.class.isAssignableFrom(field.getType()))
+            {
+                subMethod = getSubMethod(field.getName(), clazz);
+                ParameterizedType pt = (ParameterizedType) field.getGenericType();
+                Class<?> subClass = (Class<?>) pt.getActualTypeArguments()[0];
+                this.subFields = FieldUtils.getFieldsListWithAnnotation(subClass, Excel.class);
+            }
+        }
+
+        // 多注解
+        if (field.isAnnotationPresent(Excels.class))
+        {
+            Excels attrs = field.getAnnotation(Excels.class);
+            Excel[] excels = attrs.value();
+            for (Excel attr : excels)
+            {
+                if (StringUtils.isNotEmpty(includeFields))
+                {
+                    if (ArrayUtils.contains(this.includeFields, field.getName() + "." + attr.targetAttr())
+                            && (attr != null && (attr.type() == Type.ALL || attr.type() == type)))
                     {
-                        field.setAccessible(true);
                         fields.add(new Object[] { field, attr });
                     }
-                    if (Collection.class.isAssignableFrom(field.getType()))
-                    {
-                        subMethod = getSubMethod(field.getName(), clazz);
-                        ParameterizedType pt = (ParameterizedType) field.getGenericType();
-                        Class<?> subClass = (Class<?>) pt.getActualTypeArguments()[0];
-                        this.subFields = FieldUtils.getFieldsListWithAnnotation(subClass, Excel.class);
-                    }
                 }
-
-                // 多注解
-                if (field.isAnnotationPresent(Excels.class))
+                else
                 {
-                    Excels attrs = field.getAnnotation(Excels.class);
-                    Excel[] excels = attrs.value();
-                    for (Excel attr : excels)
+                    if (!ArrayUtils.contains(this.excludeFields, field.getName() + "." + attr.targetAttr())
+                            && (attr != null && (attr.type() == Type.ALL || attr.type() == type)))
                     {
-                        if (!ArrayUtils.contains(this.excludeFields, field.getName() + "." + attr.targetAttr())
-                                && (attr != null && (attr.type() == Type.ALL || attr.type() == type)))
-                        {
-                            field.setAccessible(true);
-                            fields.add(new Object[] { field, attr });
-                        }
+                        fields.add(new Object[] { field, attr });
                     }
                 }
             }
