@@ -61,6 +61,12 @@
             <artifactId>ruoyi-generator</artifactId>
         </dependency>
 
+        <!-- 车型-->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>kekecha-car</artifactId>
+            <version>3.8.9</version>
+        </dependency>
     </dependencies>
 
     <build>
