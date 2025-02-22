@@ -23,9 +23,11 @@ public class SiteController extends BaseController {
     private ICameraService cameraService;
 
     @Anonymous
-    @GetMapping("")
-    public AjaxResult list(int type, String city, String filter, int start, int end)
+    @GetMapping("/net")
+    public AjaxResult getNetList(String city, String filter, int start, int end)
     {
+        int type = 1;
+
         if (start < 0 || start > end) {
             return AjaxResult.error("参数不合法");
         }
@@ -50,16 +52,59 @@ public class SiteController extends BaseController {
     }
 
     @Anonymous
-    @PostMapping("/edit")
-    public AjaxResult edit(@RequestBody Site site)
+    @GetMapping("/parking")
+    public AjaxResult getParkingList(String city, String filter, int start, int end)
     {
-        int site_type = site.getType();
+        int type = 2;
 
-        if (site_type <= 0 || site_type > 2) {
-            return AjaxResult.error("参数错误");
+        if (start < 0 || start > end) {
+            return AjaxResult.error("参数不合法");
         }
 
-        Site old_site = siteService.selectOne(site_type, site.getName());
+        AjaxResult ajaxResult = AjaxResult.success("查询成功");
+
+        List<Site> siteList = siteService.selectSite(type, city, filter);
+
+        int total = siteList.size();
+        ajaxResult.put("total", total);
+
+        int search_end = Math.min(end, total);
+        if (start >= total) {
+            List<Site> sub_list = new ArrayList<>();
+            ajaxResult.put("data", sub_list);
+        } else {
+            List<Site> sub_list = siteList.subList(start, search_end);
+            ajaxResult.put("data", sub_list);
+        }
+
+        return ajaxResult;
+    }
+
+    @Anonymous
+    @PostMapping("/net/edit")
+    public AjaxResult netEdit(@RequestBody Site site)
+    {
+        site.setType(1);
+
+        Site old_site = siteService.selectOne(1, site.getName());
+        if (old_site != null) {
+            System.out.println(old_site.toString());
+            siteService.updateSite(site);
+            return AjaxResult.success("更新成功");
+        } else {
+            System.out.println("old site " + site.getName() + " not found");
+            siteService.insertSite(site);
+            return AjaxResult.success("创建成功");
+        }
+    }
+
+    @Anonymous
+    @PostMapping("/parking/edit")
+    public AjaxResult parkingEdit(@RequestBody Site site)
+    {
+        site.setType(2);
+
+        Site old_site = siteService.selectOne(2, site.getName());
         if (old_site != null) {
             System.out.println(old_site.toString());
             siteService.updateSite(site);

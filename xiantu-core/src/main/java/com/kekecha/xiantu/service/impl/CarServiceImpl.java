@@ -1,5 +1,6 @@
 package com.kekecha.xiantu.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kekecha.xiantu.domain.*;
 import com.kekecha.xiantu.service.ICarService;
 import com.ruoyi.common.config.RuoYiConfig;
@@ -12,12 +13,45 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CarServiceImpl implements ICarService
 {
     @Autowired
     private CarMapper carMapper;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Override
+    public Car buildCarFromJson(Map<String, Object> jsonMap)
+    {
+        for (Map.Entry<String, Object> entry : jsonMap.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (key.equals("imageUrl")) {
+                /* 将image数组转变为字符串 */
+                String imageUrl = value.toString();
+                imageUrl = imageUrl.subSequence(1, imageUrl.length() - 1).toString().replace(" ","");
+                jsonMap.put("imageUrl", imageUrl);
+                break;
+            }
+        }
+        return objectMapper.convertValue(jsonMap, Car.class);
+    }
+
+    @Override
+    public Map<String, Object> ConverCarToJson(Car car)
+    {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> jsonMap = objectMapper.convertValue(car, Map.class);
+        /* 将字符串的imageUrl转换成数组 */
+        String imageUrl = jsonMap.get("imageUrl").toString();
+        List<String> image_url_list = Arrays.asList(imageUrl.split(","));
+        jsonMap.put("imageUrl", image_url_list);
+        return jsonMap;
+    }
 
     @Override
     public int removeRealPathFile(String imageFilePath)

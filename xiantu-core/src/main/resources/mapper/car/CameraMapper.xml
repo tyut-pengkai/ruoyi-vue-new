@@ -18,7 +18,7 @@
     </resultMap>
 
     <select id="selectAll" resultMap="CameraResultMap" parameterType="String">
-        SELECT * FROM camera
+        SELECT * FROM xiantu_camera
         <trim prefix="WHERE (" suffix=")" prefixOverrides="AND |OR">
             <if test="filter != null and filter != ''">
                 OR name LIKE CONCAT('%', #{filter}, '%')
@@ -28,17 +28,17 @@
     </select>
 
     <select id="selectByName" resultMap="CameraResultMap" parameterType="String">
-        SELECT * FROM camera
+        SELECT * FROM xiantu_camera
         WHERE name = #{name}
     </select>
 
     <select id="selectByRef" resultMap="CameraResultMap" parameterType="String">
-        SELECT * FROM camera
+        SELECT * FROM xiantu_camera
         WHERE ref_site = #{refer}
     </select>
 
     <insert id="insert" parameterType="com.kekecha.xiantu.domain.Camera">
-        insert into camera
+        INSERT INTO xiantu_camera
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>
             <if test="supplier != null and supplier != ''">supplier,</if>
@@ -51,7 +51,7 @@
             <if test="description != null and description != ''">description,</if>
             <if test="refSite != null and refSite != ''">ref_site,</if>
         </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
             <if test="supplier != null and supplier != ''">#{supplier},</if>
             <if test="appKey != null and appKey != ''">#{appKey},</if>
@@ -66,7 +66,7 @@
     </insert>
 
     <update id="update" parameterType="com.kekecha.xiantu.domain.Camera">
-        UPDATE camera
+        UPDATE xiantu_camera
         <trim prefix="SET" suffixOverrides=",">
             <if test="supplier != null and supplier != ''">supplier=#{supplier},</if>
             <if test="appKey != null and appKey != ''">app_key=#{appKey},</if>
@@ -82,6 +82,6 @@
     </update>
 
     <delete id="delete" parameterType="String">
-        DELETE FROM camera WHERE name = #{name}
+        DELETE FROM xiantu_camera WHERE name = #{name}
     </delete>
 </mapper>

@@ -14,12 +14,12 @@
     </resultMap>
 
     <select id="selectOne" resultMap="SiteResultMap">
-        SELECT * FROM site
+        SELECT * FROM xiantu_site
         WHERE name = #{name} AND type = #{type}
     </select>
 
     <select id="selectAll" resultMap="SiteResultMap">
-        SELECT * FROM site
+        SELECT * FROM xiantu_site
         WHERE
         <trim prefix="(" suffix=")" prefixOverrides="AND |OR">
             <if test="city != null and city != ''">
@@ -33,7 +33,7 @@
     </select>
 
     <select id="selectNet" resultMap="SiteResultMap">
-        SELECT * FROM site
+        SELECT * FROM xiantu_site
         WHERE type = 1
         <trim prefix=" AND (" suffix=")" prefixOverrides="AND |OR">
             <if test="city != null and city != ''">
@@ -47,7 +47,7 @@
     </select>
 
     <select id="selectParking" resultMap="SiteResultMap">
-        SELECT * FROM site
+        SELECT * FROM xiantu_site
         WHERE type = 2
         <trim prefix=" AND (" suffix=")" prefixOverrides="AND |OR">
             <if test="city != null and city != ''">
@@ -61,7 +61,7 @@
     </select>
 
     <insert id="insertSite" parameterType="com.kekecha.xiantu.domain.Site">
-        insert into site
+        INSERT INTO xiantu_site
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>
             <if test="type != 0">type,</if>
@@ -81,7 +81,7 @@
     </insert>
 
     <update id="updateSite" parameterType="com.kekecha.xiantu.domain.Site">
-        UPDATE site
+        UPDATE xiantu_site
         <trim prefix="SET" suffixOverrides=",">
             <if test="type != 0">type=#{type},</if>
             <if test="description != null and description != ''">description=#{description},</if>
@@ -93,6 +93,6 @@
     </update>
 
     <delete id="deleteSite" parameterType="String">
-        DELETE FROM site WHERE name = #{name}
+        DELETE FROM xiantu_site WHERE name = #{name}
     </delete>
 </mapper>

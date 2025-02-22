@@ -16,42 +16,42 @@
     </resultMap>
 
     <select id="selectAllArticle" resultMap="ArticleResultMap">
-        select * from article
+        SELECT * FROM xiantu_article
         ORDER BY create_time DESC
     </select>
 
     <select id="selectAllNews" resultMap="ArticleResultMap">
-        SELECT * from article
+        SELECT * FROM xiantu_article
         WHERE tag = 'news'
         ORDER BY create_time DESC
     </select>
 
     <select id="selectAllKnowledge"  resultMap="ArticleResultMap">
-        SELECT * from article
+        SELECT * FROM xiantu_article
         WHERE tag = 'knowledge'
         ORDER BY create_time DESC
     </select>
 
     <select id="selectPinArticle" resultMap="ArticleResultMap">
-        select * from article
+        select * FROM xiantu_article
         WHERE is_pin = '1'
         ORDER BY create_time DESC
     </select>
 
     <select id="selectPinNews" resultMap="ArticleResultMap">
-        SELECT * from article
+        SELECT * FROM xiantu_article
         WHERE tag = 'news' AND is_pin = '1'
         ORDER BY create_time DESC
     </select>
 
     <select id="selectPinKnowledge"  resultMap="ArticleResultMap">
-        SELECT * from article
+        SELECT * FROM xiantu_article
         WHERE tag = 'knowledge' AND is_pin = '1'
         ORDER BY create_time DESC
     </select>
 
     <insert id="insertArticle" parameterType="com.kekecha.xiantu.domain.Article"  useGeneratedKeys="true"  keyProperty="id">
-        insert into article
+        INSERT INTO xiantu_article
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="tag != null and tag != ''">tag,</if>
             <if test="title != null and title != ''">title,</if>
@@ -61,7 +61,7 @@
             <if test="updateTime != null">update_time,</if>
             <if test="isPin != null">is_pin,</if>
         </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
             <if test="tag != null and tag != ''">#{tag},</if>
             <if test="title != null and title != ''">#{title},</if>
             <if test="coverImg != null and coverImg != ''">#{coverImg},</if>
@@ -73,7 +73,7 @@
     </insert>
 
     <update id="updateArticle" parameterType="com.kekecha.xiantu.domain.Article">
-        update article
+        UPDATE xiantu_article
         <trim prefix="SET" suffixOverrides=",">
             <if test="tag != null and tag != ''">tag=#{tag},</if>
             <if test="title != null and title != ''">title=#{title},</if>
@@ -87,6 +87,6 @@
     </update>
 
     <delete id="deleteArticle" parameterType="int">
-        delete from article where id = #{id}
+        DELETE FROM xiantu_article WHERE id = #{id}
     </delete>
 </mapper>

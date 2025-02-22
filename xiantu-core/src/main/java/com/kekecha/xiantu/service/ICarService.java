@@ -3,6 +3,7 @@ package com.kekecha.xiantu.service;
 import com.kekecha.xiantu.domain.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 车型Service接口
@@ -33,4 +34,7 @@ public interface ICarService {
     int removeRealPathFile(String imageFilePath);
     Car appendImageToCar(String imageUploadMaskPath, String name);
     Car removeImageFromCar(String imageUploadMaskPath, String name);
+
+    Car buildCarFromJson(Map<String, Object> jsonMap);
+    Map<String, Object> ConverCarToJson(Car car);
 }

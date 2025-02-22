@@ -6,7 +6,7 @@
 
     <resultMap type="com.kekecha.xiantu.domain.CarOverview" id="CarOverviewResultMap">
         <result property="name"                 column="name"    />
-        <result property="image"                 column="image"  />
+        <result property="image"                 column="image_url"  />
     </resultMap>
 
     <resultMap type="com.kekecha.xiantu.domain.Car" id="CarResultMap" >
@@ -45,20 +45,20 @@
         <result property="containerHeight"      column="container_height"    />
         <result property="tireSize"             column="tire_size"    />
         <result property="tireNum"              column="tire_num"    />
-        <result property="imageUrl"             column="image"    />
+        <result property="imageUrl"             column="image_url"    />
     </resultMap>
 
     <select id="selectCarOverviewList" resultMap="CarOverviewResultMap">
-        select name, image from car
+        SELECT name, image_url FROM xiantu_car
     </select>
 
     <select id="selectCarDetail" parameterType="String" resultMap="CarResultMap">
-        SELECT * from car
+        SELECT * FROM xiantu_car
         WHERE name = #{name}
     </select>
 
     <insert id="insertCar" parameterType="com.kekecha.xiantu.domain.Car" useGeneratedKeys="true" keyProperty="id">
-        insert into car
+        INSERT INTO xiantu_car
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>
             <if test="license != null and license != ''">license,</if>
@@ -95,9 +95,9 @@
             <if test="containerHeight != null">container_height,</if>
             <if test="tireSize != null and tireSize != ''">tire_size,</if>
             <if test="tireNum != null">tire_num,</if>
-            <if test="imageUrl != null and imageUrl != ''">image,</if>
+            <if test="imageUrl != null and imageUrl != ''">image_url,</if>
         </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
             <if test="license != null and license != ''">#{license},</if>
             <if test="carType != null">#{carType},</if>
@@ -138,7 +138,7 @@
     </insert>
 
     <update id="updateCar" parameterType="com.kekecha.xiantu.domain.Car">
-        update car
+        UPDATE xiantu_car
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null and name != ''">name=#{name},</if>
             <if test="license != null and license != ''">license=#{license},</if>
@@ -175,12 +175,12 @@
             <if test="containerHeight != null">container_height=#{containerHeight},</if>
             <if test="tireSize != null and tireSize != ''">tire_size=#{tireSize},</if>
             <if test="tireNum != null">tire_num=#{tireNum},</if>
-            image=#{imageUrl},
+            <if test="imageUrl != null and imageUrl != ''">image_url=#{imageUrl},</if>
         </trim>
-        where name = #{name}
+        WHERE NAME = #{name}
     </update>
 
     <delete id="deleteCar" parameterType="String">
-        delete from car where name = #{name}
+        DELETE FROM xiantu_car WHERE name = #{name}
     </delete>
 </mapper>

@@ -1,7 +1,10 @@
 package com.kekecha.xiantu.controller;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kekecha.xiantu.domain.*;
 import com.kekecha.xiantu.service.ICarService;
 import com.ruoyi.common.annotation.Anonymous;
@@ -45,7 +48,7 @@ public class CarController extends BaseController {
     {
         Car car = carService.selectCarDetail(name);
         if (car != null) {
-            return AjaxResult.success(car);
+            return AjaxResult.success(carService.ConverCarToJson(car));
         } else {
             return AjaxResult.error("查询的车型不存在");
         }
@@ -53,8 +56,9 @@ public class CarController extends BaseController {
 
     @Anonymous
     @PostMapping("/edit")
-    public AjaxResult editCar(@RequestBody Car car)
+    public AjaxResult editCar(@RequestBody Map<String, Object> jsonMap)
     {
+        Car car = carService.buildCarFromJson(jsonMap);
         Car db_car = carService.selectCarDetail(car.getName());
 
         if (db_car != null) {
