@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kekecha.xiantu.mapper.CameraMapper">
+
+    <resultMap type="com.kekecha.xiantu.domain.Camera" id="CameraResultMap">
+        <result property="name"          column="name"    />
+        <result property="supplier"        column="supplier"    />
+        <result property="appKey"     column="app_key"    />
+        <result property="appSecret"          column="app_secret"    />
+        <result property="netProtocol"   column="net_protocol"    />
+        <result property="platformUrl"   column="platform_url"    />
+        <result property="streamProtocol"   column="stream_protocol"    />
+        <result property="recordProtocol"   column="record_protocol"    />
+        <result property="description"   column="description"    />
+    </resultMap>
+
+    <select id="selectAll" resultMap="CameraResultMap" parameterType="String">
+        SELECT * FROM camera
+        <trim prefix="WHERE (" suffix=")" prefixOverrides="AND |OR">
+            <if test="filter != null and filter != ''">
+                OR name LIKE CONCAT('%', #{filter}, '%')
+                OR description LIKE CONCAT('%', #{filter}, '%')
+            </if>
+        </trim>
+    </select>
+
+    <select id="selectByName" resultMap="CameraResultMap" parameterType="String">
+        SELECT * FROM camera
+        WHERE name = #{name}
+    </select>
+
+    <insert id="insert" parameterType="com.kekecha.xiantu.domain.Camera">
+        insert into camera
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="supplier != null and supplier != ''">supplier,</if>
+            <if test="appKey != null and appKey != ''">app_key,</if>
+            <if test="appSecret != null and appSecret != ''">app_secret,</if>
+            <if test="netProtocol != 0">net_protocol,</if>
+            <if test="platformUrl != null and platformUrl != ''">platform_url,</if>
+            <if test="streamProtocol != 0">stream_protocol,</if>
+            <if test="recordProtocol != 0">record_protocol,</if>
+            <if test="description != null and description != ''">description,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="supplier != null and supplier != ''">#{supplier},</if>
+            <if test="appKey != null and appKey != ''">#{appKey},</if>
+            <if test="appSecret != null and appSecret != ''">#{appSecret},</if>
+            <if test="netProtocol != 0">#{netProtocol},</if>
+            <if test="platformUrl != null and platformUrl != ''">#{platformUrl},</if>
+            <if test="streamProtocol != 0">#{streamProtocol},</if>
+            <if test="recordProtocol != 0">#{recordProtocol},</if>
+            <if test="description != null and description != ''">#{description},</if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.kekecha.xiantu.domain.Camera">
+        UPDATE camera
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="supplier != null and supplier != ''">supplier=#{supplier},</if>
+            <if test="appKey != null and appKey != ''">app_key=#{appKey},</if>
+            <if test="appSecret != null and appSecret != ''">app_secret=#{appSecret},</if>
+            <if test="netProtocol != 0">net_protocol=#{netProtocol},</if>
+            <if test="platformUrl != null and platformUrl != ''">platform_url=#{platformUrl},</if>
+            <if test="streamProtocol != 0">stream_protocol=#{streamProtocol},</if>
+            <if test="recordProtocol != 0">record_protocol=#{recordProtocol},</if>
+            <if test="description != null and description != ''">description=#{description},</if>
+        </trim>
+        WHERE name = #{name}
+    </update>
+
+    <delete id="delete" parameterType="String">
+        DELETE FROM camera WHERE name = #{name}
+    </delete>
+</mapper>

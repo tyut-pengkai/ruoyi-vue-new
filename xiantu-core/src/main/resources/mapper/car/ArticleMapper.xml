@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kekecha.xiantu.mapper.ArticleMapper">
+
+    <resultMap type="com.kekecha.xiantu.domain.Article" id="ArticleResultMap">
+        <id property="id"               column="id"    />
+        <result property="tag"          column="tag"    />
+        <result property="title"        column="title"    />
+        <result property="coverImg"     column="cover_img"    />
+        <result property="url"          column="url"    />
+        <result property="createTime"   column="create_time"    />
+        <result property="updateTime"   column="update_time"    />
+        <result property="isPin"        column="is_pin"    />
+    </resultMap>
+
+    <select id="selectAllArticle" resultMap="ArticleResultMap">
+        select * from article
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectAllNews" resultMap="ArticleResultMap">
+        SELECT * from article
+        WHERE tag = 'news'
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectAllKnowledge"  resultMap="ArticleResultMap">
+        SELECT * from article
+        WHERE tag = 'knowledge'
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectPinArticle" resultMap="ArticleResultMap">
+        select * from article
+        WHERE is_pin = '1'
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectPinNews" resultMap="ArticleResultMap">
+        SELECT * from article
+        WHERE tag = 'news' AND is_pin = '1'
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectPinKnowledge"  resultMap="ArticleResultMap">
+        SELECT * from article
+        WHERE tag = 'knowledge' AND is_pin = '1'
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insertArticle" parameterType="com.kekecha.xiantu.domain.Article"  useGeneratedKeys="true"  keyProperty="id">
+        insert into article
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tag != null and tag != ''">tag,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="coverImg != null and coverImg != ''">cover_img,</if>
+            <if test="url != null and url != ''">url,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="isPin != null">is_pin,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tag != null and tag != ''">#{tag},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="coverImg != null and coverImg != ''">#{coverImg},</if>
+            <if test="url != null and url != ''">#{url},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="isPin != null">#{isPin},</if>
+        </trim>
+    </insert>
+
+    <update id="updateArticle" parameterType="com.kekecha.xiantu.domain.Article">
+        update article
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tag != null and tag != ''">tag=#{tag},</if>
+            <if test="title != null and title != ''">title=#{title},</if>
+            <if test="coverImg != null and coverImg != ''">cover_img=#{coverImg},</if>
+            <if test="url != null and url != ''">url=#{url},</if>
+            <if test="createTime != null and createTime != 0">create_time=#{createTime},</if>
+            <if test="updateTime != null and updateTime != 0">update_time=#{updateTime},</if>
+            <if test="isPin != null">is_pin=#{isPin},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteArticle" parameterType="int">
+        delete from article where id = #{id}
+    </delete>
+</mapper>

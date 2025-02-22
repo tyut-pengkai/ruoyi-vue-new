@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 @ComponentScan(basePackages = {
         "com.ruoyi", // 主模块的包
-        "com.kekecha.car" // 其他模块的包
+        "com.kekecha.xiantu" // 其他模块的包
 })
 public class RuoYiApplication
 {

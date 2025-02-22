@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kekecha.xiantu.mapper.SiteMapper">
+
+    <resultMap type="com.kekecha.xiantu.domain.Site" id="SiteResultMap">
+        <result property="name"          column="name"    />
+        <result property="type"        column="type"    />
+        <result property="description"     column="description"    />
+        <result property="longitude"          column="longitude"    />
+        <result property="latitude"   column="latitude"    />
+        <result property="city"   column="city"    />
+    </resultMap>
+
+    <select id="selectOne" resultMap="SiteResultMap">
+        SELECT * FROM site
+        WHERE name = #{name} AND type = #{type}
+    </select>
+
+    <select id="selectAll" resultMap="SiteResultMap">
+        SELECT * FROM site
+        WHERE
+        <trim prefix="(" suffix=")" prefixOverrides="AND |OR">
+            <if test="city != null and city != ''">
+                OR city = CONCAT('%', #{city}, '%')
+            </if>
+            <if test="filter != null and filter != ''">
+                OR name LIKE CONCAT('%', #{filter}, '%')
+                OR description LIKE CONCAT('%', #{filter}, '%')
+            </if>
+        </trim>
+    </select>
+
+    <select id="selectNet" resultMap="SiteResultMap">
+        SELECT * FROM site
+        WHERE type = 1
+        <trim prefix=" AND (" suffix=")" prefixOverrides="AND |OR">
+            <if test="city != null and city != ''">
+                OR city = CONCAT('%', #{city}, '%')
+            </if>
+            <if test="filter != null and filter != ''">
+                OR name LIKE CONCAT('%', #{filter}, '%')
+                OR description LIKE CONCAT('%', #{filter}, '%')
+            </if>
+        </trim>
+    </select>
+
+    <select id="selectParking" resultMap="SiteResultMap">
+        SELECT * FROM site
+        WHERE type = 2
+        <trim prefix=" AND (" suffix=")" prefixOverrides="AND |OR">
+            <if test="city != null and city != ''">
+                OR city = CONCAT('%', #{city}, '%')
+            </if>
+            <if test="filter != null and filter != ''">
+                OR name LIKE CONCAT('%', #{filter}, '%')
+                OR description LIKE CONCAT('%', #{filter}, '%')
+            </if>
+        </trim>
+    </select>
+
+    <insert id="insertSite" parameterType="com.kekecha.xiantu.domain.Site">
+        insert into site
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="type != 0">type,</if>
+            <if test="description != null and description != ''">description,</if>
+            <if test="longitude != 0">longitude,</if>
+            <if test="latitude != 0">latitude,</if>
+            <if test="city != null and city != ''">city,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="type != 0">#{type},</if>
+            <if test="description != null and description != ''">#{description},</if>
+            <if test="longitude != 0">#{longitude},</if>
+            <if test="latitude != 0">#{latitude},</if>
+            <if test="city != null and city != ''">#{city},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSite" parameterType="com.kekecha.xiantu.domain.Site">
+        UPDATE site
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != 0">type=#{type},</if>
+            <if test="description != null and description != ''">description=#{description},</if>
+            <if test="longitude != 0">longitude=#{longitude},</if>
+            <if test="latitude != 0">latitude=#{latitude},</if>
+            <if test="city != null and city != ''">city=#{city},</if>
+        </trim>
+        WHERE name = #{name}
+    </update>
+
+    <delete id="deleteSite" parameterType="String">
+        DELETE FROM site WHERE name = #{name}
+    </delete>
+</mapper>
