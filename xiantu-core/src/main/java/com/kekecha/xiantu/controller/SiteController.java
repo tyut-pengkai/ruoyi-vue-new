@@ -1,6 +1,8 @@
 package com.kekecha.xiantu.controller;
 
+import com.kekecha.xiantu.domain.Camera;
 import com.kekecha.xiantu.domain.Site;
+import com.kekecha.xiantu.service.ICameraService;
 import com.kekecha.xiantu.service.ISiteService;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
@@ -17,6 +19,8 @@ public class SiteController extends BaseController {
 
     @Autowired
     private ISiteService siteService;
+    @Autowired
+    private ICameraService cameraService;
 
     @Anonymous
     @GetMapping("")
@@ -69,11 +73,29 @@ public class SiteController extends BaseController {
 
     @Anonymous
     @DeleteMapping("")
-    public AjaxResult delete(String name)
+    public AjaxResult delete(@RequestParam("name") String name)
     {
         if (siteService.deleteSite(name) <= 0) {
             System.out.println("Site " + name + " not exist");
         }
         return AjaxResult.success("删除成功");
+    }
+
+    @Anonymous
+    @GetMapping("/camera")
+    public AjaxResult selectRefCamera(@RequestParam("name") String name)
+    {
+        AjaxResult ajaxResult = AjaxResult.success("查询成功");
+        try {
+            List<Camera> list = cameraService.selectByRef(name);
+            ajaxResult.put("total", list.size());
+            ajaxResult.put("data", list);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            ajaxResult.put("total", 0);
+            ajaxResult.put("data", new ArrayList<>());
+        }
+
+        return ajaxResult;
     }
 }

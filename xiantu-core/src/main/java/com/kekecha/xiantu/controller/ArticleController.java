@@ -72,7 +72,7 @@ public class ArticleController extends BaseController {
 
     @Anonymous
     @DeleteMapping("")
-    public AjaxResult delete(int id)
+    public AjaxResult delete(@RequestParam("id") int id)
     {
         if (articleService.delete(id) <= 0) {
             System.out.println("Article " + id + " not exist");

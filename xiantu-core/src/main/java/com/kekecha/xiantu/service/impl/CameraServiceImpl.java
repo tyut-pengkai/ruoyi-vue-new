@@ -21,6 +21,9 @@ public class CameraServiceImpl implements ICameraService {
     public Camera selectByName(String name) {
         return cameraMapper.selectByName(name);
     }
+    public List<Camera> selectByRef(String refer) {
+        return cameraMapper.selectByRef(refer);
+    }
 
     public int insert(Camera camera)
     {

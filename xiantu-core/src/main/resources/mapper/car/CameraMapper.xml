@@ -14,6 +14,7 @@
         <result property="streamProtocol"   column="stream_protocol"    />
         <result property="recordProtocol"   column="record_protocol"    />
         <result property="description"   column="description"    />
+        <result property="refSite"   column="ref_site"    />
     </resultMap>
 
     <select id="selectAll" resultMap="CameraResultMap" parameterType="String">
@@ -31,6 +32,11 @@
         WHERE name = #{name}
     </select>
 
+    <select id="selectByRef" resultMap="CameraResultMap" parameterType="String">
+        SELECT * FROM camera
+        WHERE ref_site = #{refer}
+    </select>
+
     <insert id="insert" parameterType="com.kekecha.xiantu.domain.Camera">
         insert into camera
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -43,6 +49,7 @@
             <if test="streamProtocol != 0">stream_protocol,</if>
             <if test="recordProtocol != 0">record_protocol,</if>
             <if test="description != null and description != ''">description,</if>
+            <if test="refSite != null and refSite != ''">ref_site,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
@@ -54,6 +61,7 @@
             <if test="streamProtocol != 0">#{streamProtocol},</if>
             <if test="recordProtocol != 0">#{recordProtocol},</if>
             <if test="description != null and description != ''">#{description},</if>
+            <if test="refSite != null and refSite != ''">#{refSite},</if>
         </trim>
     </insert>
 
@@ -68,6 +76,7 @@
             <if test="streamProtocol != 0">stream_protocol=#{streamProtocol},</if>
             <if test="recordProtocol != 0">record_protocol=#{recordProtocol},</if>
             <if test="description != null and description != ''">description=#{description},</if>
+            <if test="refSite != null and refSite != ''">ref_site=#{refSite},</if>
         </trim>
         WHERE name = #{name}
     </update>

@@ -11,6 +11,8 @@ public class Camera {
     private int recordProtocol;
     private String description;
 
+    private String refSite;
+
     public String getName() {
         return name;
     }
@@ -83,6 +85,14 @@ public class Camera {
         this.description = description;
     }
 
+    public String getRefSite() {
+        return refSite;
+    }
+
+    public void setRefSite(String refSite) {
+        this.refSite = refSite;
+    }
+
     @Override
     public String toString() {
         return "Camera{" +
@@ -90,11 +100,12 @@ public class Camera {
                 ", supplier='" + supplier + '\'' +
                 ", appKey='" + appKey + '\'' +
                 ", appSecret='" + appSecret + '\'' +
-                ", netProtocol='" + netProtocol + '\'' +
+                ", netProtocol=" + netProtocol +
                 ", platformUrl='" + platformUrl + '\'' +
-                ", streamProtocol='" + streamProtocol + '\'' +
-                ", recordProtocol='" + recordProtocol + '\'' +
+                ", streamProtocol=" + streamProtocol +
+                ", recordProtocol=" + recordProtocol +
                 ", description='" + description + '\'' +
+                ", refSite='" + refSite + '\'' +
                 '}';
     }
 }

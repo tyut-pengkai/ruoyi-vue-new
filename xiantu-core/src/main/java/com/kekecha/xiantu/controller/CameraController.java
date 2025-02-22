@@ -20,7 +20,8 @@ public class CameraController extends BaseController {
 
     @Anonymous
     @GetMapping("")
-    public AjaxResult list(String filter, int start, int end)
+    public AjaxResult list(
+            @RequestParam("filter") String filter, @RequestParam("start") int start, @RequestParam("end") int end)
     {
         if (start < 0 || start > end) {
             return AjaxResult.error("参数不合法");
@@ -62,7 +63,7 @@ public class CameraController extends BaseController {
 
     @Anonymous
     @DeleteMapping("")
-    public AjaxResult delete(String name)
+    public AjaxResult delete(@RequestParam("name") String name)
     {
         if (cameraService.delete(name) <= 0) {
             System.out.println("Camera " + name + " not exist");
