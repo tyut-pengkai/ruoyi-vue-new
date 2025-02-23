@@ -37,7 +37,7 @@
         WHERE type = 1
         <trim prefix=" AND (" suffix=")" prefixOverrides="AND |OR">
             <if test="city != null and city != ''">
-                OR city = CONCAT('%', #{city}, '%')
+                OR city = #{city}
             </if>
             <if test="filter != null and filter != ''">
                 OR name LIKE CONCAT('%', #{filter}, '%')
@@ -51,7 +51,7 @@
         WHERE type = 2
         <trim prefix=" AND (" suffix=")" prefixOverrides="AND |OR">
             <if test="city != null and city != ''">
-                OR city = CONCAT('%', #{city}, '%')
+                OR city = #{city}
             </if>
             <if test="filter != null and filter != ''">
                 OR name LIKE CONCAT('%', #{filter}, '%')

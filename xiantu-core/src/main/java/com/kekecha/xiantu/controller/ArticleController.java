@@ -130,7 +130,7 @@ public class ArticleController extends BaseController {
     }
 
     @Anonymous
-    @DeleteMapping("/news")
+    @DeleteMapping("/")
     public AjaxResult delete(@RequestParam("id") int id)
     {
         if (articleService.delete(id) <= 0) {
