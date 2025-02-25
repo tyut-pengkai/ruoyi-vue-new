@@ -1,5 +1,6 @@
 package com.kekecha.xiantu.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +36,40 @@ public class CarController extends BaseController {
 
     @Anonymous
     @GetMapping("")
-    public TableDataInfo list()
+    public AjaxResult list(int pageNum, int pageSize)
     {
-        startPage();
+        boolean select_all = false;
+
+        if (pageNum <= 0) {
+            return AjaxResult.error("参数不合法");
+        }
+
+        if (pageSize <= 0) {
+            select_all = true;
+        }
+
+        AjaxResult ajaxResult = AjaxResult.success("查询成功");
+
         List<CarOverview> list = carService.selectCarOverviewList();
-        return getDataTable(list);
+        int total = list.size();
+        ajaxResult.put("total", total);
+
+        if (select_all) {
+            ajaxResult.put("data", list);
+        } else {
+            int search_start = (pageNum - 1) * pageSize;
+            int search_end = Math.min((pageNum * pageSize), total);
+            // 如果 start 超过列表大小，返回空列表
+            search_end = Math.min(search_end, total);
+            if (search_start >= total) {
+                List<CarOverview> sub_list = new ArrayList<>();
+                ajaxResult.put("data", sub_list);
+            } else {
+                List<CarOverview> sub_list = list.subList(search_start, search_end);
+                ajaxResult.put("data", sub_list);
+            }
+        }
+        return ajaxResult;
     }
 
     @Anonymous

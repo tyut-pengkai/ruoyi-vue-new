@@ -21,10 +21,18 @@ public class CameraController extends BaseController {
     @Anonymous
     @GetMapping("")
     public AjaxResult list(
-            @RequestParam("filter") String filter, @RequestParam("start") int start, @RequestParam("end") int end)
+            @RequestParam(name="filter", required = false) String filter,
+            @RequestParam(name="pageNum", defaultValue = "0") int pageNum,
+            @RequestParam(name="pageSize", defaultValue = "0") int pageSize)
     {
-        if (start < 0 || start > end) {
+        boolean select_all = false;
+
+        if (pageNum <= 0) {
             return AjaxResult.error("参数不合法");
+        }
+
+        if (pageSize <= 0) {
+            select_all = true;
         }
 
         AjaxResult ajaxResult = AjaxResult.success("查询成功");
@@ -34,14 +42,23 @@ public class CameraController extends BaseController {
         int total = cameraList.size();
         ajaxResult.put("total", total);
 
-        int search_end = Math.min(end, total);
-        if (start >= total) {
-            List<Camera> sub_list = new ArrayList<>();
-            ajaxResult.put("data", sub_list);
+        if (select_all) {
+            ajaxResult.put("data", cameraList);
         } else {
-            List<Camera> sub_list = cameraList.subList(start, search_end);
-            ajaxResult.put("data", sub_list);
+            int search_start = (pageNum - 1) * pageSize;
+            int search_end = Math.min((pageNum * pageSize), total);
+            // 如果 start 超过列表大小，返回空列表
+            search_end = Math.min(search_end, total);
+            if (search_start >= total) {
+                List<Camera> sub_list = new ArrayList<>();
+                ajaxResult.put("data", sub_list);
+            } else {
+                List<Camera> sub_list = cameraList.subList(search_start, search_end);
+                ajaxResult.put("data", sub_list);
+            }
         }
+
+
         return ajaxResult;
     }
 

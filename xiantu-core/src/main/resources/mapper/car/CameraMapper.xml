@@ -49,7 +49,7 @@
             <if test="streamProtocol != 0">stream_protocol,</if>
             <if test="recordProtocol != 0">record_protocol,</if>
             <if test="description != null and description != ''">description,</if>
-            <if test="refSite != null and refSite != ''">ref_site,</if>
+            <if test="refSite != null">ref_site,</if>
         </trim>
         <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
@@ -61,7 +61,7 @@
             <if test="streamProtocol != 0">#{streamProtocol},</if>
             <if test="recordProtocol != 0">#{recordProtocol},</if>
             <if test="description != null and description != ''">#{description},</if>
-            <if test="refSite != null and refSite != ''">#{refSite},</if>
+            <if test="refSite != null">#{refSite},</if>
         </trim>
     </insert>
 
@@ -76,7 +76,7 @@
             <if test="streamProtocol != 0">stream_protocol=#{streamProtocol},</if>
             <if test="recordProtocol != 0">record_protocol=#{recordProtocol},</if>
             <if test="description != null and description != ''">description=#{description},</if>
-            <if test="refSite != null and refSite != ''">ref_site=#{refSite},</if>
+            <if test="refSite != null">ref_site=#{refSite},</if>
         </trim>
         WHERE name = #{name}
     </update>

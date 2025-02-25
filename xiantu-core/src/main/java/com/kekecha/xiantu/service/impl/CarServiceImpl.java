@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -48,8 +49,12 @@ public class CarServiceImpl implements ICarService
         Map<String, Object> jsonMap = objectMapper.convertValue(car, Map.class);
         /* 将字符串的imageUrl转换成数组 */
         String imageUrl = jsonMap.get("imageUrl").toString();
-        List<String> image_url_list = Arrays.asList(imageUrl.split(","));
-        jsonMap.put("imageUrl", image_url_list);
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            jsonMap.put("imageUrl", new ArrayList<String>());
+        } else {
+            List<String> image_url_list = Arrays.asList(imageUrl.split(","));
+            jsonMap.put("imageUrl", image_url_list);
+        }
         return jsonMap;
     }
 
@@ -156,9 +161,11 @@ public class CarServiceImpl implements ICarService
         for (CarOverview carOverview : list) {
             String imageUrl = carOverview.getImage();
             /* 剪裁只返回第一个图片 */
-            if (imageUrl != null) {
+            if (imageUrl != null && !imageUrl.isEmpty()) {
                 String[] url = imageUrl.split(",");
                 carOverview.setImage(url[0]);
+            } else {
+                carOverview.setImage(null);
             }
         }
         return list;
@@ -184,14 +191,16 @@ public class CarServiceImpl implements ICarService
         Car car = selectCarDetail(name);
         if (car != null) {
             String imageUrl = car.getImageUrl();
-            String[] filePath = imageUrl.split(",");
-            /* 删除关联的图片 */
-            for (int i = 0; i < filePath.length; i++) {
-                if (filePath[i].isEmpty()) {
-                    continue;
+            if (imageUrl != null) {
+                String[] filePath = imageUrl.split(",");
+                /* 删除关联的图片 */
+                for (int i = 0; i < filePath.length; i++) {
+                    if (filePath[i].isEmpty()) {
+                        continue;
+                    }
+                    System.out.println("remove Image " + filePath[i]);
+                    removeRealPathFile(filePath[i]);
                 }
-                System.out.println("remove Image " + filePath[i]);
-                removeRealPathFile(filePath[i]);
             }
         }
         return carMapper.deleteCar(name);

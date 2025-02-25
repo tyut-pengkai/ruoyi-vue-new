@@ -21,12 +21,17 @@ public class ArticleController extends BaseController {
 
     @Anonymous
     @GetMapping("/news")
-    public AjaxResult getNewsList(int start, int end)
+    public AjaxResult getNewsList(int pageNum, int pageSize)
     {
         String tag = "news";
+        boolean select_all = false;
 
-        if (start < 0 || start > end) {
+        if (pageNum <= 0) {
             return AjaxResult.error("参数不合法");
+        }
+
+        if (pageSize <= 0) {
+            select_all = true;
         }
 
         AjaxResult ajaxResult = AjaxResult.success("查询成功");
@@ -37,14 +42,20 @@ public class ArticleController extends BaseController {
         List<Article> normal_list = articleService.selectAll(tag);
         int total = normal_list.size();
         ajaxResult.put("total", total);
-        int search_end = Math.min(end, total);
-        // 如果 start 超过列表大小，返回空列表
-        if (start >= total) {
-            List<Article> normal_result = new ArrayList<>();
-            ajaxResult.put("data", normal_result);
+
+        if (select_all) {
+            ajaxResult.put("data", normal_list);
         } else {
-            List<Article> normal_result = normal_list.subList(start, search_end);
-            ajaxResult.put("data", normal_result);
+            int search_start = (pageNum - 1) * pageSize;
+            int search_end = Math.min((pageNum * pageSize), total);
+            // 如果 start 超过列表大小，返回空列表
+            if (search_start >= total) {
+                List<Article> normal_result = new ArrayList<>();
+                ajaxResult.put("data", normal_result);
+            } else {
+                List<Article> normal_result = normal_list.subList(search_start, search_end);
+                ajaxResult.put("data", normal_result);
+            }
         }
 
         return ajaxResult;
@@ -52,12 +63,17 @@ public class ArticleController extends BaseController {
 
     @Anonymous
     @GetMapping("/knowledge")
-    public AjaxResult getKnowledgeList(int start, int end)
+    public AjaxResult getKnowledgeList(int pageNum, int pageSize)
     {
         String tag = "knowledge";
+        boolean select_all = false;
 
-        if (start < 0 || start > end) {
+        if (pageNum <= 0) {
             return AjaxResult.error("参数不合法");
+        }
+
+        if (pageSize <= 0) {
+            select_all = true;
         }
 
         AjaxResult ajaxResult = AjaxResult.success("查询成功");
@@ -68,14 +84,20 @@ public class ArticleController extends BaseController {
         List<Article> normal_list = articleService.selectAll(tag);
         int total = normal_list.size();
         ajaxResult.put("total", total);
-        int search_end = Math.min(end, total);
-        // 如果 start 超过列表大小，返回空列表
-        if (start >= total) {
-            List<Article> normal_result = new ArrayList<>();
-            ajaxResult.put("data", normal_result);
+
+        if (select_all) {
+            ajaxResult.put("data", normal_list);
         } else {
-            List<Article> normal_result = normal_list.subList(start, search_end);
-            ajaxResult.put("data", normal_result);
+            int search_start = (pageNum - 1) * pageSize;
+            int search_end = Math.min((pageNum * pageSize), total);
+            // 如果 start 超过列表大小，返回空列表
+            if (search_start >= total) {
+                List<Article> normal_result = new ArrayList<>();
+                ajaxResult.put("data", normal_result);
+            } else {
+                List<Article> normal_result = normal_list.subList(search_start, search_end);
+                ajaxResult.put("data", normal_result);
+            }
         }
 
         return ajaxResult;
@@ -130,7 +152,7 @@ public class ArticleController extends BaseController {
     }
 
     @Anonymous
-    @DeleteMapping("/")
+    @DeleteMapping("")
     public AjaxResult delete(@RequestParam("id") int id)
     {
         if (articleService.delete(id) <= 0) {
