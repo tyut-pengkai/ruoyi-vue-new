@@ -13,6 +13,7 @@ import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.framework.config.ServerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -84,7 +85,7 @@ public class CarController extends BaseController {
         }
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasPermi('data:car:list')")
     @PostMapping("/edit")
     public AjaxResult editCar(@RequestBody Map<String, Object> jsonMap)
     {
@@ -108,7 +109,7 @@ public class CarController extends BaseController {
         }
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasPermi('data:car:list')")
     @DeleteMapping("")
     public AjaxResult deleteCar(@RequestParam("name") String name)
     {
@@ -126,56 +127,56 @@ public class CarController extends BaseController {
         }
     }
 
-    @Anonymous
-    @PostMapping("/image/upload")
-    public AjaxResult uploadImageFile(@RequestParam("name") String name,
-                                 @RequestParam("file") MultipartFile file) throws Exception
-    {
-        try
-        {
-            // 图片上传真实路径
-            String imageUploadRealPath = RuoYiConfig.getUploadPath();
-            // 上传到真实路径后，返回虚拟的图片路径
-            String imageUploadMaskPath = FileUploadUtils.upload(imageUploadRealPath, file);
-
-            Car car = carService.appendImageToCar(imageUploadMaskPath, name);
-            if (car != null) {
-                AjaxResult ajax = AjaxResult.success();
-                ajax.put("image", car.getImageUrl().split(","));
-                return ajax;
-            } else {
-                return AjaxResult.error("车型不存在");
-            }
-        }
-        catch (Exception e)
-        {
-            System.out.println("exception : " + e.getMessage());
-            return AjaxResult.error(e.getMessage());
-        }
-    }
-
-    @Anonymous
-    @DeleteMapping("/image")
-    public AjaxResult deleteImageFile(@RequestParam("name") String name,
-                                 @RequestParam("file") String imageFilePath) throws Exception
-    {
-        try
-        {
-            if (carService.removeRealPathFile(imageFilePath) == 1) {
-                return AjaxResult.error("路径错误");
-            }
-
-            Car car = carService.removeImageFromCar(imageFilePath, name);
-            if (car != null) {
-                return AjaxResult.success("删除成功");
-            } else {
-                return AjaxResult.error("车型不存在");
-            }
-        }
-        catch (Exception e)
-        {
-            System.out.println("exception : " + e.getMessage());
-            return AjaxResult.error(e.getMessage());
-        }
-    }
+//
+//    @PostMapping("/image/upload")
+//    public AjaxResult uploadImageFile(@RequestParam("name") String name,
+//                                 @RequestParam("file") MultipartFile file) throws Exception
+//    {
+//        try
+//        {
+//            // 图片上传真实路径
+//            String imageUploadRealPath = RuoYiConfig.getUploadPath();
+//            // 上传到真实路径后，返回虚拟的图片路径
+//            String imageUploadMaskPath = FileUploadUtils.upload(imageUploadRealPath, file);
+//
+//            Car car = carService.appendImageToCar(imageUploadMaskPath, name);
+//            if (car != null) {
+//                AjaxResult ajax = AjaxResult.success();
+//                ajax.put("image", car.getImageUrl().split(","));
+//                return ajax;
+//            } else {
+//                return AjaxResult.error("车型不存在");
+//            }
+//        }
+//        catch (Exception e)
+//        {
+//            System.out.println("exception : " + e.getMessage());
+//            return AjaxResult.error(e.getMessage());
+//        }
+//    }
+//
+//    @Anonymous
+//    @DeleteMapping("/image")
+//    public AjaxResult deleteImageFile(@RequestParam("name") String name,
+//                                 @RequestParam("file") String imageFilePath) throws Exception
+//    {
+//        try
+//        {
+//            if (carService.removeRealPathFile(imageFilePath) == 1) {
+//                return AjaxResult.error("路径错误");
+//            }
+//
+//            Car car = carService.removeImageFromCar(imageFilePath, name);
+//            if (car != null) {
+//                return AjaxResult.success("删除成功");
+//            } else {
+//                return AjaxResult.error("车型不存在");
+//            }
+//        }
+//        catch (Exception e)
+//        {
+//            System.out.println("exception : " + e.getMessage());
+//            return AjaxResult.error(e.getMessage());
+//        }
+//    }
 }

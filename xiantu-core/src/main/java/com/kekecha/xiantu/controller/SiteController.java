@@ -8,6 +8,7 @@ import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -105,7 +106,7 @@ public class SiteController extends BaseController {
         return ajaxResult;
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasPermi('data:net:list')")
     @PostMapping("/net/edit")
     public AjaxResult netEdit(@RequestBody Site site)
     {
@@ -123,7 +124,7 @@ public class SiteController extends BaseController {
         }
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasPermi('data:parking:list')")
     @PostMapping("/parking/edit")
     public AjaxResult parkingEdit(@RequestBody Site site)
     {
@@ -141,7 +142,7 @@ public class SiteController extends BaseController {
         }
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasAnyPermi({'data:parking:list', 'data:net:list'})")
     @DeleteMapping("")
     public AjaxResult delete(@RequestParam("name") String name)
     {

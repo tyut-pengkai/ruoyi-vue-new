@@ -6,6 +6,7 @@ import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -103,7 +104,7 @@ public class ArticleController extends BaseController {
         return ajaxResult;
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasPermi('data:new:list')")
     @PostMapping("/news/edit")
     public AjaxResult newEdit(@RequestBody Article article)
     {
@@ -127,7 +128,7 @@ public class ArticleController extends BaseController {
         }
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasPermi('data:knowledge:list')")
     @PostMapping("/knowledge/edit")
     public AjaxResult knowledgeEdit(@RequestBody Article article)
     {
@@ -151,7 +152,7 @@ public class ArticleController extends BaseController {
         }
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasAnyPermi({'data:new:list', 'data:knowledge:list'})")
     @DeleteMapping("")
     public AjaxResult delete(@RequestParam("id") int id)
     {

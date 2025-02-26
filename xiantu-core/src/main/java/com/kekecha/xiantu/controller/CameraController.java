@@ -7,6 +7,7 @@ import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class CameraController extends BaseController {
         return ajaxResult;
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasPermi('data:camera:list')")
     @PostMapping("/edit")
     public AjaxResult edit(@RequestBody Camera camera)
     {
@@ -78,7 +79,7 @@ public class CameraController extends BaseController {
         }
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasPermi('data:camera:list')")
     @DeleteMapping("")
     public AjaxResult delete(@RequestParam("name") String name)
     {
