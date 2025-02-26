@@ -49,12 +49,19 @@
             <artifactId>ruoyi-framework</artifactId>
         </dependency>
 
-        <!-- 车型-->
+        <!-- 定时任务-->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-quartz</artifactId>
+        </dependency>
+
+        <!-- 代码生成-->
         <dependency>
             <groupId>com.ruoyi</groupId>
             <artifactId>xiantu-core</artifactId>
             <version>3.8.9</version>
         </dependency>
+
     </dependencies>
 
     <build>
