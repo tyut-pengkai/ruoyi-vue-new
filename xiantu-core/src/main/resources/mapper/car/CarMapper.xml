@@ -46,6 +46,7 @@
         <result property="tireSize"             column="tire_size"    />
         <result property="tireNum"              column="tire_num"    />
         <result property="imageUrl"             column="image_url"    />
+        <result property="videoUrl"             column="video_url"    />
     </resultMap>
 
     <select id="selectCarOverviewList" resultMap="CarOverviewResultMap">
@@ -96,6 +97,7 @@
             <if test="tireSize != null and tireSize != ''">tire_size,</if>
             <if test="tireNum != null">tire_num,</if>
             <if test="imageUrl != null">image_url,</if>
+            <if test="videoUrl != null">video_url,</if>
         </trim>
         <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
@@ -134,6 +136,7 @@
             <if test="tireSize != null and tireSize != ''">#{tireSize},</if>
             <if test="tireNum != null">#{tireNum},</if>
             <if test="imageUrl != null">#{imageUrl},</if>
+            <if test="videoUrl != null">#{videoUrl},</if>
         </trim>
     </insert>
 
@@ -176,6 +179,7 @@
             <if test="tireSize != null and tireSize != ''">tire_size=#{tireSize},</if>
             <if test="tireNum != null">tire_num=#{tireNum},</if>
             <if test="imageUrl != null">image_url=#{imageUrl},</if>
+            <if test="videoUrl != null">video_url=#{videoUrl},</if>
         </trim>
         WHERE NAME = #{name}
     </update>

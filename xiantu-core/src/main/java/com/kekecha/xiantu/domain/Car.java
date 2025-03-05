@@ -3,6 +3,7 @@ package com.kekecha.xiantu.domain;
 public class Car {
     private String name;
     private String imageUrl;
+    private String videoUrl;
 
     /* 基本信息 */
     // 驾驶证
@@ -372,11 +373,20 @@ public class Car {
         this.imageUrl = imageUrl;
     }
 
+    public String getvideoUrl() {
+        return videoUrl;
+    }
+
+    public void setvideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
     @Override
     public String toString() {
         return "Car{" +
                 "name='" + name + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
+                ", videoUrl='" + videoUrl + '\'' +
                 ", license='" + license + '\'' +
                 ", carType=" + carType +
                 ", driveType='" + driveType + '\'' +

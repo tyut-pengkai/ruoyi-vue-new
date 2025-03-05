@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kekecha.xiantu.mapper.PostWantedMapper">
+
+    <resultMap type="com.kekecha.xiantu.domain.PostWanted" id="PostWantedResultMap">
+        <result property="id"          column="id"    />
+        <result property="name"          column="name"    />
+        <result property="salary"        column="salary"    />
+        <result property="jobNature"     column="jobNature"    />
+        <result property="jobType"          column="jobType"    />
+        <result property="companyName"   column="companyName"    />
+        <result property="province"   column="province"    />
+        <result property="city"   column="city"    />
+        <result property="jobDescription"   column="jobDescription"    />
+        <result property="requirements"   column="requirements"    />
+        <result property="publishDate"   column="publishDate"    />
+    </resultMap>
+
+    <select id="select" resultMap="PostWantedResultMap">
+        SELECT * FROM xiantu_postwanted
+        <where>
+            <!-- 城市筛选 -->
+            <if test="city != null and city != ''">
+                city = #{city}
+            </if>
+            <!-- 关键词模糊筛选（匹配标题或公司名称） -->
+            <if test="filter != null and filter != ''">
+                AND (
+                title LIKE CONCAT('%', #{filter}, '%')
+                OR company_name LIKE CONCAT('%', #{filter}, '%')
+                )
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert" parameterType="com.kekecha.xiantu.domain.PostWanted">
+        INSERT INTO xiantu_postwanted
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="salary != null and salary != ''">salary,</if>
+            <if test="jobNature != null and jobNature != ''">jobNature,</if>
+            <if test="jobType != null and jobType != ''">jobType,</if>
+            <if test="companyName != null and companyName != ''">companyName,</if>
+            <if test="province != null and province != ''">province,</if>
+            <if test="city != null and city != ''">city,</if>
+            <if test="jobDescription != null and jobDescription != ''">jobDescription,</if>
+            <if test="requirements != null and requirements != ''">requirements,</if>
+            <if test="publishDate != 0">publishDate,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="salary != null and salary != ''">#{salary},</if>
+            <if test="jobNature != null and jobNature != ''">#{jobNature},</if>
+            <if test="jobType != null and jobType != ''">#{jobType},</if>
+            <if test="companyName != null and companyName != ''">#{companyName},</if>
+            <if test="province != null and province != ''">#{province},</if>
+            <if test="city != null and city != ''">#{city},</if>
+            <if test="jobDescription != null and jobDescription != ''">#{jobDescription},</if>
+            <if test="requirements != null and requirements != ''">#{requirements},</if>
+            <if test="publishDate != 0">#{publishDate},</if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.kekecha.xiantu.domain.PostWanted">
+        UPDATE xiantu_postwanted
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name=#{name},</if>
+            <if test="salary != null and salary != ''">salary=#{salary},</if>
+            <if test="jobNature != null and jobNature != ''">jobNature=#{jobNature},</if>
+            <if test="jobType != null and jobType != ''">jobType=#{jobType},</if>
+            <if test="companyName != null and companyName != ''">companyName=#{companyName},</if>
+            <if test="province != null and province != ''">province=#{province},</if>
+            <if test="city != null and city != ''">city=#{city},</if>
+            <if test="jobDescription != null and jobDescription != ''">jobDescription=#{jobDescription},</if>
+            <if test="requirements != null and requirements != ''">requirements=#{requirements},</if>
+            <if test="publishDate != 0">publishDate=#{publishDate},</if>
+        </trim>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM xiantu_postwanted WHERE id = #{id}
+    </delete>
+</mapper>

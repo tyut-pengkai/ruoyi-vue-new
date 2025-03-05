@@ -130,6 +130,32 @@ public class SysLoginService
     }
 
     /**
+     * 校验验证码
+     *
+     * @param code 验证码
+     * @param uuid 唯一标识
+     * @return 结果
+     */
+    public void justValidateCaptcha(String code, String uuid)
+    {
+        boolean captchaEnabled = configService.selectCaptchaEnabled();
+        if (captchaEnabled)
+        {
+            String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");
+            String captcha = redisCache.getCacheObject(verifyKey);
+            if (captcha == null)
+            {
+                throw new CaptchaExpireException();
+            }
+            redisCache.deleteObject(verifyKey);
+            if (!code.equalsIgnoreCase(captcha))
+            {
+                throw new CaptchaException();
+            }
+        }
+    }
+
+    /**
      * 登录前置校验
      * @param username 用户名
      * @param password 用户密码

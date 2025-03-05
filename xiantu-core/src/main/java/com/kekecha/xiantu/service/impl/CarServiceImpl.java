@@ -36,7 +36,11 @@ public class CarServiceImpl implements ICarService
                 String imageUrl = value.toString();
                 imageUrl = imageUrl.subSequence(1, imageUrl.length() - 1).toString().replace(" ","");
                 jsonMap.put("imageUrl", imageUrl);
-                break;
+            }
+            if (key.equals("videoUrl")) {
+                String videoUrl = value.toString();
+                videoUrl = videoUrl.subSequence(1, videoUrl.length() - 1).toString().replace(" ","");
+                jsonMap.put("videoUrl", videoUrl);
             }
         }
         return objectMapper.convertValue(jsonMap, Car.class);
@@ -54,6 +58,14 @@ public class CarServiceImpl implements ICarService
         } else {
             List<String> image_url_list = Arrays.asList(imageUrl.split(","));
             jsonMap.put("imageUrl", image_url_list);
+        }
+
+        String videoUrl = jsonMap.get("videoUrl").toString();
+        if (videoUrl == null || videoUrl.isEmpty()) {
+            jsonMap.put("videoUrl", new ArrayList<String>());
+        } else {
+            List<String> video_url_list = Arrays.asList(videoUrl.split(","));
+            jsonMap.put("videoUrl", video_url_list);
         }
         return jsonMap;
     }
