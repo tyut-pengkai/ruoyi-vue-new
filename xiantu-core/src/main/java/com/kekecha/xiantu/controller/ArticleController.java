@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,6 +114,11 @@ public class ArticleController extends BaseController {
         if (article.getId() == 0) {
             /* 新建 */
             try {
+
+                long time = Instant.now().getEpochSecond();
+                article.setCreateTime(time);
+                article.setUpdateTime(time);
+
                 System.out.println("article is pin: " + article.getIsPin());
                 articleService.insert(article);
                 return AjaxResult.success("创建成功");
@@ -121,6 +127,9 @@ public class ArticleController extends BaseController {
             }
         } else {
             /* 修订 */
+            long time = Instant.now().getEpochSecond();
+            article.setUpdateTime(time);
+
             if (articleService.update(article) <= 0) {
                 System.out.println("Article " + article.getId() + " not exist");
             }
@@ -137,6 +146,10 @@ public class ArticleController extends BaseController {
         if (article.getId() == 0) {
             /* 新建 */
             try {
+                long time = Instant.now().getEpochSecond();
+                article.setCreateTime(time);
+                article.setUpdateTime(time);
+
                 System.out.println("article is pin: " + article.getIsPin());
                 articleService.insert(article);
                 return AjaxResult.success("创建成功");
@@ -145,6 +158,9 @@ public class ArticleController extends BaseController {
             }
         } else {
             /* 修订 */
+            long time = Instant.now().getEpochSecond();
+            article.setUpdateTime(time);
+
             if (articleService.update(article) <= 0) {
                 System.out.println("Article " + article.getId() + " not exist");
             }

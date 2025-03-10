@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kekecha.xiantu.mapper.StatisticsMapper">
+
+    <resultMap type="com.kekecha.xiantu.domain.HistoryCount" id="CountResultMap">
+        <result property="timestamp"          column="timestamp"    />
+        <result property="count"          column="count"    />
+    </resultMap>
+
+    <select id="getTypeCount">
+        SELECT count FROM xiantu_statistics
+        WHERE type = #{type}
+        AND timestamp = #{timestamp}
+    </select>
+
+    <select id="getTypeHistoryCount" resultMap="CountResultMap">
+        SELECT * FROM xiantu_statistics
+        WHERE type = #{type}
+        AND `timestamp` >= #{start_ts}
+        AND `timestamp` &lt; #{end_ts}
+    </select>
+
+    <insert id="increaseType">
+        INSERT INTO xiantu_statistics
+        (timestamp, type, count)
+        VALUES (#{timestamp}, #{type}, 1)
+        ON DUPLICATE KEY UPDATE count = count + 1;
+    </insert>
+
+    <update id="clearType" parameterType="com.kekecha.xiantu.domain.HistoryCount">
+        UPDATE xiantu_statistics
+        SET count = 0
+        WHERE type = #{type}
+        AND timestamp = #{timestamp}
+    </update>
+</mapper>

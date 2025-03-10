@@ -51,22 +51,32 @@ public class CarServiceImpl implements ICarService
     {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> jsonMap = objectMapper.convertValue(car, Map.class);
+
         /* 将字符串的imageUrl转换成数组 */
-        String imageUrl = jsonMap.get("imageUrl").toString();
-        if (imageUrl == null || imageUrl.isEmpty()) {
-            jsonMap.put("imageUrl", new ArrayList<String>());
+        if (jsonMap.get("imageUrl") != null) {
+            String imageUrl = jsonMap.get("imageUrl").toString();
+            if (imageUrl == null || imageUrl.isEmpty()) {
+                jsonMap.put("imageUrl", new ArrayList<String>());
+            } else {
+                List<String> image_url_list = Arrays.asList(imageUrl.split(","));
+                jsonMap.put("imageUrl", image_url_list);
+            }
         } else {
-            List<String> image_url_list = Arrays.asList(imageUrl.split(","));
-            jsonMap.put("imageUrl", image_url_list);
+            jsonMap.put("imageUrl", new ArrayList<String>());
         }
 
-        String videoUrl = jsonMap.get("videoUrl").toString();
-        if (videoUrl == null || videoUrl.isEmpty()) {
-            jsonMap.put("videoUrl", new ArrayList<String>());
+        if (jsonMap.get("videoUrl") != null) {
+            String videoUrl = jsonMap.get("videoUrl").toString();
+            if (videoUrl == null || videoUrl.isEmpty()) {
+                jsonMap.put("videoUrl", new ArrayList<String>());
+            } else {
+                List<String> video_url_list = Arrays.asList(videoUrl.split(","));
+                jsonMap.put("videoUrl", video_url_list);
+            }
         } else {
-            List<String> video_url_list = Arrays.asList(videoUrl.split(","));
-            jsonMap.put("videoUrl", video_url_list);
+            jsonMap.put("videoUrl", new ArrayList<String>());
         }
+
         return jsonMap;
     }
 

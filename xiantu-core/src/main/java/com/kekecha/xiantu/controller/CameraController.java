@@ -89,4 +89,16 @@ public class CameraController extends BaseController {
         return AjaxResult.success("删除成功");
     }
 
+    @PreAuthorize("@ss.hasPermi('data:camera:list')")
+    @GetMapping("/state")
+    public AjaxResult getCameraState(@RequestParam(name="pageNum", defaultValue = "0") int pageNum,
+                                     @RequestParam(name="pageSize", defaultValue = "0") int pageSize)
+    {
+        AjaxResult ajaxResult = AjaxResult.success();
+        ajaxResult.put("total", 0);
+        ajaxResult.put("normal", 0);
+        ajaxResult.put("error", 0);
+        ajaxResult.put("disabled", 0);
+        return ajaxResult;
+    }
 }

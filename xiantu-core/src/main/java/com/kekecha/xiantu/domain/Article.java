@@ -6,8 +6,8 @@ public class Article {
     private String title;
     private String coverImg;
     private String url;
-    private int createTime;
-    private int updateTime;
+    private long createTime;
+    private long updateTime;
     private boolean isPin;
 
     public int getId() {
@@ -50,19 +50,19 @@ public class Article {
         this.url = url;
     }
 
-    public int getCreateTime() {
+    public long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(int createTime) {
+    public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 
-    public int getUpdateTime() {
+    public long getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(int updateTime) {
+    public void setUpdateTime(long updateTime) {
         this.updateTime = updateTime;
     }
 
