@@ -26,61 +26,65 @@ public class PostWantedController {
                                         @RequestParam(name="city", required = false) String city)
     {
         boolean select_all = false;
-
-        if (pageNum <= 0) {
-            return AjaxResult.error("参数不合法");
-        }
-
-        if (pageSize <= 0) {
-            select_all = true;
-        }
-
-        AjaxResult ajaxResult = AjaxResult.success("查询成功");
-        List<PostWanted> list = postWantedService.select(filter, city);
-
-        int total = list.size();
-        ajaxResult.put("total", total);
-
-        if (select_all) {
-            ajaxResult.put("data", list);
-        } else {
-            int search_start = (pageNum - 1) * pageSize;
-            int search_end = Math.min((pageNum * pageSize), total);
-            // 如果 start 超过列表大小，返回空列表
-            if (search_start >= total) {
-                List<PostWanted> result_list = new ArrayList<>();
-                ajaxResult.put("data", result_list);
-            } else {
-                List<PostWanted> result_list = list.subList(search_start, search_end);
-                ajaxResult.put("data", result_list);
+        try {
+            if (pageNum <= 0) {
+                return AjaxResult.error("参数不合法");
             }
+            if (pageSize <= 0) {
+                select_all = true;
+            }
+            AjaxResult ajaxResult = AjaxResult.success("查询成功");
+            List<PostWanted> list = postWantedService.select(filter, city);
+            int total = list.size();
+            ajaxResult.put("total", total);
+            if (select_all) {
+                ajaxResult.put("data", list);
+            } else {
+                int search_start = (pageNum - 1) * pageSize;
+                int search_end = Math.min((pageNum * pageSize), total);
+                if (search_start >= total) {
+                    List<PostWanted> result_list = new ArrayList<>();
+                    ajaxResult.put("data", result_list);
+                } else {
+                    List<PostWanted> result_list = list.subList(search_start, search_end);
+                    ajaxResult.put("data", result_list);
+                }
+            }
+            return ajaxResult;
+        } catch (Exception e) {
+            return AjaxResult.error("系统异常，获取数据失败");
         }
-        return ajaxResult;
     }
 
-    @Anonymous
-//    @PreAuthorize("@ss.hasPermi('data:postwanted:list')")
+    @PreAuthorize("@ss.hasPermi('data:postwanted:list')")
     @PostMapping("/edit")
     public AjaxResult edit(@RequestBody PostWanted postWanted) {
-        if (postWanted.getId() == 0) {
-            postWantedService.insert(postWanted);
-            return AjaxResult.success("创建成功");
-        } else {
-            postWantedService.update(postWanted);
-            return AjaxResult.success("更新成功");
+        try {
+            if (postWanted.getId() == 0) {
+                postWantedService.insert(postWanted);
+                return AjaxResult.success("创建成功");
+            } else {
+                postWantedService.update(postWanted);
+                return AjaxResult.success("更新成功");
+            }
+        } catch (Exception e) {
+            return AjaxResult.error("操作失败，请刷新重试");
         }
+
     }
 
-    @Anonymous
-//    @PreAuthorize("@ss.hasPermi('data:postwanted:list')")
+    @PreAuthorize("@ss.hasPermi('data:postwanted:list')")
     @DeleteMapping("")
     public AjaxResult delete(int id) {
-        int res = postWantedService.delete(id);
-        AjaxResult ajaxResult = AjaxResult.success();
-        if (res > 0) {
-            return AjaxResult.success("删除成功");
-        } else {
-            return AjaxResult.error("删除的目标岗位不存在");
+        try {
+            int res = postWantedService.delete(id);
+            if (res > 0) {
+                return AjaxResult.success("删除成功");
+            } else {
+                return AjaxResult.error("删除的目标岗位不存在");
+            }
+        } catch (Exception e) {
+            return AjaxResult.error("删除失败，请刷新重试");
         }
     }
 }

@@ -5,6 +5,7 @@ import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ruoyi.common.core.domain.AjaxResult;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,7 +16,8 @@ public class FileController extends BaseController {
     @Autowired
     private FileServiceImpl fileServiceImpl;
 
-    @Anonymous
+    // 当前只有这些界面允许上传
+    @PreAuthorize("@ss.hasAnyPermi({'data:car:list', 'data:new:list','data:knowledge:list'})")
     @PostMapping("")
     public AjaxResult upload(@RequestParam("file") MultipartFile file) throws Exception
     {
@@ -29,7 +31,7 @@ public class FileController extends BaseController {
         }
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasAnyPermi({'data:car:list', 'data:new:list','data:knowledge:list'})")
     @DeleteMapping("")
     public AjaxResult delete(@RequestParam("url") String fileUrl) throws Exception
     {

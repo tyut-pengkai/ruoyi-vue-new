@@ -1,7 +1,6 @@
 package com.kekecha.xiantu.controller;
 
 import com.kekecha.xiantu.domain.Camera;
-import com.kekecha.xiantu.domain.Site;
 import com.kekecha.xiantu.service.ICameraService;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
@@ -27,55 +26,53 @@ public class CameraController extends BaseController {
             @RequestParam(name="pageSize", defaultValue = "0") int pageSize)
     {
         boolean select_all = false;
-
-        if (pageNum <= 0) {
-            return AjaxResult.error("参数不合法");
-        }
-
-        if (pageSize <= 0) {
-            select_all = true;
-        }
-
-        AjaxResult ajaxResult = AjaxResult.success("查询成功");
-
-        List<Camera> cameraList = cameraService.selectAll(filter);
-
-        int total = cameraList.size();
-        ajaxResult.put("total", total);
-
-        if (select_all) {
-            ajaxResult.put("data", cameraList);
-        } else {
-            int search_start = (pageNum - 1) * pageSize;
-            int search_end = Math.min((pageNum * pageSize), total);
-            // 如果 start 超过列表大小，返回空列表
-            search_end = Math.min(search_end, total);
-            if (search_start >= total) {
-                List<Camera> sub_list = new ArrayList<>();
-                ajaxResult.put("data", sub_list);
-            } else {
-                List<Camera> sub_list = cameraList.subList(search_start, search_end);
-                ajaxResult.put("data", sub_list);
+        try {
+            if (pageNum <= 0) {
+                return AjaxResult.error("参数不合法");
             }
+            if (pageSize <= 0) {
+                select_all = true;
+            }
+            AjaxResult ajaxResult = AjaxResult.success("查询成功");
+            List<Camera> cameraList = cameraService.selectAll(filter);
+            int total = cameraList.size();
+            ajaxResult.put("total", total);
+            if (select_all) {
+                ajaxResult.put("data", cameraList);
+            } else {
+                int search_start = (pageNum - 1) * pageSize;
+                int search_end = Math.min((pageNum * pageSize), total);
+
+                search_end = Math.min(search_end, total);
+                if (search_start >= total) {
+                    List<Camera> sub_list = new ArrayList<>();
+                    ajaxResult.put("data", sub_list);
+                } else {
+                    List<Camera> sub_list = cameraList.subList(search_start, search_end);
+                    ajaxResult.put("data", sub_list);
+                }
+            }
+            return ajaxResult;
+        } catch (Exception e) {
+            return AjaxResult.error("系统异常，获取数据失败");
         }
-
-
-        return ajaxResult;
     }
 
     @PreAuthorize("@ss.hasPermi('data:camera:list')")
     @PostMapping("/edit")
     public AjaxResult edit(@RequestBody Camera camera)
     {
-        Camera old_camera = cameraService.selectByName(camera.getName());
-        if (old_camera != null) {
-            System.out.println(old_camera.toString());
-            cameraService.update(camera);
-            return AjaxResult.success("更新成功");
-        } else {
-            System.out.println("old camera " + camera.getName() + " not found");
-            cameraService.insert(camera);
-            return AjaxResult.success("创建成功");
+        try {
+            Camera old_camera = cameraService.selectByName(camera.getName());
+            if (old_camera != null) {
+                cameraService.update(camera);
+                return AjaxResult.success("更新成功");
+            } else {
+                cameraService.insert(camera);
+                return AjaxResult.success("创建成功");
+            }
+        } catch (Exception e) {
+            return AjaxResult.error("创建失败, 内部参数错误");
         }
     }
 
@@ -83,10 +80,12 @@ public class CameraController extends BaseController {
     @DeleteMapping("")
     public AjaxResult delete(@RequestParam("name") String name)
     {
-        if (cameraService.delete(name) <= 0) {
-            System.out.println("Camera " + name + " not exist");
+        try {
+            cameraService.delete(name);
+            return AjaxResult.success("删除成功");
+        } catch (Exception e) {
+            return AjaxResult.error("删除失败");
         }
-        return AjaxResult.success("删除成功");
     }
 
     @PreAuthorize("@ss.hasPermi('data:camera:list')")

@@ -6,8 +6,11 @@ import com.kekecha.xiantu.service.IMemberShipService;
 import com.kekecha.xiantu.service.IPostWantedService;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.exception.user.CaptchaException;
+import com.ruoyi.common.exception.user.CaptchaExpireException;
 import com.ruoyi.framework.web.service.SysLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Time;
@@ -25,11 +28,11 @@ public class MemberShipController {
     @Autowired
     private SysLoginService loginService;
 
-    @Anonymous
+    @PreAuthorize("@ss.hasPermi('data:membership:list')")
     @GetMapping("")
     public AjaxResult getList(
-                                        @RequestParam(name="pageNum", defaultValue = "1")int pageNum,
-                                        @RequestParam(name="pageSize", defaultValue = "10")int pageSize)
+            @RequestParam(name="pageNum", defaultValue = "1")int pageNum,
+            @RequestParam(name="pageSize", defaultValue = "10")int pageSize)
     {
         boolean select_all = false;
 
@@ -52,7 +55,6 @@ public class MemberShipController {
         } else {
             int search_start = (pageNum - 1) * pageSize;
             int search_end = Math.min((pageNum * pageSize), total);
-            // 如果 start 超过列表大小，返回空列表
             if (search_start >= total) {
                 List<MemberShip> result_list = new ArrayList<>();
                 ajaxResult.put("data", result_list);
@@ -65,60 +67,61 @@ public class MemberShipController {
     }
 
     @Anonymous
-//    @PreAuthorize("@ss.hasPermi('data:membership:list')")
     @PostMapping("")
     public AjaxResult postMemberShip(@RequestBody Map<String, Object> jsonMap) {
+        try {
+            String uuid = jsonMap.get("uuid").toString();
+            String code = jsonMap.get("code").toString();
+            String name = jsonMap.get("name").toString();
+            String phone = jsonMap.get("phone").toString();
+            String description = jsonMap.get("description").toString();
+            int id = 0;
+            if (jsonMap.containsKey("id")) {
+                id = Integer.parseInt(jsonMap.get("id").toString());
+            }
 
-        String uuid = jsonMap.get("uuid").toString();
-        String code = jsonMap.get("code").toString();
-        String name = jsonMap.get("name").toString();
-        String phone = jsonMap.get("phone").toString();
-        String description = jsonMap.get("description").toString();
-        int id = 0;
-        if (jsonMap.containsKey("id")) {
-            id = Integer.parseInt(jsonMap.get("id").toString());
-        }
+            if (uuid.isEmpty() || code.isEmpty() || phone == null) {
+                return AjaxResult.error("验证失败");
+            }
 
-        System.out.println(
-                "uuid:" + uuid + ",code:" + code + ",name:" + name + ",phone:"
-                        + phone + ",description:" + description + ",id:" + id);
+            loginService.justValidateCaptcha(code, uuid);
 
-        if (uuid.isEmpty() || code.isEmpty() || phone == null) {
-            return AjaxResult.error("验证失败");
-        }
+            MemberShip memberShip = new MemberShip();
 
-        MemberShip memberShip = new MemberShip();
+            memberShip.setId(id);
+            memberShip.setName(name);
+            memberShip.setPhone(phone);
+            memberShip.setDescription(description);
 
-        memberShip.setId(id);
-        memberShip.setName(name);
-        memberShip.setPhone(phone);
-        memberShip.setDescription(description);
+            long createTime = Instant.now().getEpochSecond();
+            memberShip.setCreateTime(createTime);
 
-        long createTime = Instant.now().getEpochSecond();
-        memberShip.setCreateTime(createTime);
-
-        // 验证码校验
-        loginService.justValidateCaptcha(code, uuid);
-
-        if (memberShip.getId() == 0) {
-            memberShipService.insert(memberShip);
-            return AjaxResult.success("创建成功");
-        } else {
-            memberShipService.update(memberShip);
-            return AjaxResult.success("更新成功");
+            if (memberShip.getId() == 0) {
+                memberShipService.insert(memberShip);
+                return AjaxResult.success("创建成功");
+            } else {
+                memberShipService.update(memberShip);
+                return AjaxResult.success("更新成功");
+            }
+        } catch (CaptchaExpireException | CaptchaException e) {
+            throw e;
+        } catch (Exception e) {
+            return AjaxResult.error("提交表单失败，请重试");
         }
     }
 
-    @Anonymous
-//    @PreAuthorize("@ss.hasPermi('data:membership:list')")
+    @PreAuthorize("@ss.hasPermi('data:membership:list')")
     @DeleteMapping("")
     public AjaxResult delete(int id) {
-        int res = memberShipService.delete(id);
-
-        if (res > 0) {
-            return AjaxResult.success("删除成功");
-        } else {
-            return AjaxResult.error("删除的目标岗位不存在");
+        try {
+            int res = memberShipService.delete(id);
+            if (res > 0) {
+                return AjaxResult.success("删除成功");
+            } else {
+                return AjaxResult.error("删除的目标岗位不存在");
+            }
+        } catch (Exception e) {
+            return AjaxResult.error("删除失败");
         }
     }
 }

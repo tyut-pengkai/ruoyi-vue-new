@@ -13,8 +13,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ruoyi.common.utils.PageUtils.startPage;
-
 @RestController
 @RequestMapping("/article")
 public class ArticleController extends BaseController {
@@ -27,40 +25,39 @@ public class ArticleController extends BaseController {
     {
         String tag = "news";
         boolean select_all = false;
-
-        if (pageNum <= 0) {
-            return AjaxResult.error("参数不合法");
-        }
-
-        if (pageSize <= 0) {
-            select_all = true;
-        }
-
-        AjaxResult ajaxResult = AjaxResult.success("查询成功");
-
-        List<Article> pin_list = articleService.selectPin(tag);
-        ajaxResult.put("pin", pin_list);
-
-        List<Article> normal_list = articleService.selectAll(tag);
-        int total = normal_list.size();
-        ajaxResult.put("total", total);
-
-        if (select_all) {
-            ajaxResult.put("data", normal_list);
-        } else {
-            int search_start = (pageNum - 1) * pageSize;
-            int search_end = Math.min((pageNum * pageSize), total);
-            // 如果 start 超过列表大小，返回空列表
-            if (search_start >= total) {
-                List<Article> normal_result = new ArrayList<>();
-                ajaxResult.put("data", normal_result);
-            } else {
-                List<Article> normal_result = normal_list.subList(search_start, search_end);
-                ajaxResult.put("data", normal_result);
+        try {
+            if (pageNum <= 0) {
+                return AjaxResult.error("参数不合法");
             }
-        }
+            if (pageSize <= 0) {
+                select_all = true;
+            }
+            AjaxResult ajaxResult = AjaxResult.success("查询成功");
 
-        return ajaxResult;
+            List<Article> pin_list = articleService.selectPin(tag);
+            ajaxResult.put("pin", pin_list);
+
+            List<Article> normal_list = articleService.selectAll(tag);
+            int total = normal_list.size();
+            ajaxResult.put("total", total);
+
+            if (select_all) {
+                ajaxResult.put("data", normal_list);
+            } else {
+                int search_start = (pageNum - 1) * pageSize;
+                int search_end = Math.min((pageNum * pageSize), total);
+                if (search_start >= total) {
+                    List<Article> normal_result = new ArrayList<>();
+                    ajaxResult.put("data", normal_result);
+                } else {
+                    List<Article> normal_result = normal_list.subList(search_start, search_end);
+                    ajaxResult.put("data", normal_result);
+                }
+            }
+            return ajaxResult;
+        } catch (Exception e) {
+            return AjaxResult.error("系统异常，获取数据失败");
+        }
     }
 
     @Anonymous
@@ -69,40 +66,39 @@ public class ArticleController extends BaseController {
     {
         String tag = "knowledge";
         boolean select_all = false;
-
-        if (pageNum <= 0) {
-            return AjaxResult.error("参数不合法");
-        }
-
-        if (pageSize <= 0) {
-            select_all = true;
-        }
-
-        AjaxResult ajaxResult = AjaxResult.success("查询成功");
-
-        List<Article> pin_list = articleService.selectPin(tag);
-        ajaxResult.put("pin", pin_list);
-
-        List<Article> normal_list = articleService.selectAll(tag);
-        int total = normal_list.size();
-        ajaxResult.put("total", total);
-
-        if (select_all) {
-            ajaxResult.put("data", normal_list);
-        } else {
-            int search_start = (pageNum - 1) * pageSize;
-            int search_end = Math.min((pageNum * pageSize), total);
-            // 如果 start 超过列表大小，返回空列表
-            if (search_start >= total) {
-                List<Article> normal_result = new ArrayList<>();
-                ajaxResult.put("data", normal_result);
-            } else {
-                List<Article> normal_result = normal_list.subList(search_start, search_end);
-                ajaxResult.put("data", normal_result);
+        try {
+            if (pageNum <= 0) {
+                return AjaxResult.error("参数不合法");
             }
-        }
+            if (pageSize <= 0) {
+                select_all = true;
+            }
+            AjaxResult ajaxResult = AjaxResult.success("查询成功");
 
-        return ajaxResult;
+            List<Article> pin_list = articleService.selectPin(tag);
+            ajaxResult.put("pin", pin_list);
+
+            List<Article> normal_list = articleService.selectAll(tag);
+            int total = normal_list.size();
+            ajaxResult.put("total", total);
+
+            if (select_all) {
+                ajaxResult.put("data", normal_list);
+            } else {
+                int search_start = (pageNum - 1) * pageSize;
+                int search_end = Math.min((pageNum * pageSize), total);
+                if (search_start >= total) {
+                    List<Article> normal_result = new ArrayList<>();
+                    ajaxResult.put("data", normal_result);
+                } else {
+                    List<Article> normal_result = normal_list.subList(search_start, search_end);
+                    ajaxResult.put("data", normal_result);
+                }
+            }
+            return ajaxResult;
+        } catch (Exception e) {
+            return AjaxResult.error("系统异常，获取数据失败");
+        }
     }
 
     @PreAuthorize("@ss.hasPermi('data:new:list')")
@@ -110,29 +106,20 @@ public class ArticleController extends BaseController {
     public AjaxResult newEdit(@RequestBody Article article)
     {
         article.setTag("news");
-
         if (article.getId() == 0) {
-            /* 新建 */
             try {
-
                 long time = Instant.now().getEpochSecond();
                 article.setCreateTime(time);
                 article.setUpdateTime(time);
-
-                System.out.println("article is pin: " + article.getIsPin());
                 articleService.insert(article);
                 return AjaxResult.success("创建成功");
             } catch (Exception e) {
-                return AjaxResult.error("创建失败" + e.getMessage());
+                return AjaxResult.error("创建失败, 内部参数错误");
             }
         } else {
-            /* 修订 */
             long time = Instant.now().getEpochSecond();
             article.setUpdateTime(time);
-
-            if (articleService.update(article) <= 0) {
-                System.out.println("Article " + article.getId() + " not exist");
-            }
+            articleService.update(article);
             return AjaxResult.success("更新成功");
         }
     }
@@ -142,28 +129,20 @@ public class ArticleController extends BaseController {
     public AjaxResult knowledgeEdit(@RequestBody Article article)
     {
         article.setTag("knowledge");
-
         if (article.getId() == 0) {
-            /* 新建 */
             try {
                 long time = Instant.now().getEpochSecond();
                 article.setCreateTime(time);
                 article.setUpdateTime(time);
-
-                System.out.println("article is pin: " + article.getIsPin());
                 articleService.insert(article);
                 return AjaxResult.success("创建成功");
             } catch (Exception e) {
-                return AjaxResult.error("创建失败" + e.getMessage());
+                return AjaxResult.error("创建失败, 内部参数错误");
             }
         } else {
-            /* 修订 */
             long time = Instant.now().getEpochSecond();
             article.setUpdateTime(time);
-
-            if (articleService.update(article) <= 0) {
-                System.out.println("Article " + article.getId() + " not exist");
-            }
+            articleService.update(article);
             return AjaxResult.success("更新成功");
         }
     }
@@ -172,9 +151,11 @@ public class ArticleController extends BaseController {
     @DeleteMapping("")
     public AjaxResult delete(@RequestParam("id") int id)
     {
-        if (articleService.delete(id) <= 0) {
-            System.out.println("Article " + id + " not exist");
+        try {
+            articleService.delete(id);
+            return AjaxResult.success("删除成功");
+        } catch (Exception e) {
+            return AjaxResult.error("删除失败");
         }
-        return AjaxResult.success("删除成功");
     }
 }

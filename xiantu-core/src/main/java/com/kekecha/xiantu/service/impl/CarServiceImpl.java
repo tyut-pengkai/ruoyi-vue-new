@@ -88,12 +88,12 @@ public class CarServiceImpl implements ICarService
         }
         try {
             String imageRealPath = RuoYiConfig.getUploadPath() + imageFilePath.substring("/profile/upload".length());
-            System.out.println("imageRealPath : " + imageRealPath);
+//            System.out.println("imageRealPath : " + imageRealPath);
             Path path = Paths.get(imageRealPath);
             Files.delete(path);
         } catch (Exception e)
         {
-            System.out.println("exception : " + e.getMessage());
+//            System.out.println("exception : " + e.getMessage());
             return 2;
         }
         return 0;
@@ -109,7 +109,6 @@ public class CarServiceImpl implements ICarService
 
         /* 将图片增加到车型中 */
         String imageUrl = car.getImageUrl();
-        System.out.println("Car's imageUrl: " + imageUrl);
         /* 图片列表不为空，要做字符串拼接 */
         if (imageUrl != null) {
             if (imageUrl.contains(",")) {
@@ -127,9 +126,6 @@ public class CarServiceImpl implements ICarService
             /* 空串 */
             car.setImageUrl(imageUploadMaskPath);
         }
-
-        System.out.println("prev: " + imageUrl);
-        System.out.println("new: " + car.getImageUrl());
         updateCar(car);
         return car;
     }
@@ -169,9 +165,6 @@ public class CarServiceImpl implements ICarService
                 }
             }
         }
-        System.out.println("prev: " + imageUrl);
-        System.out.println("new: " + car.getImageUrl());
-
         updateCar(car);
         return car;
     }
@@ -220,7 +213,6 @@ public class CarServiceImpl implements ICarService
                     if (filePath[i].isEmpty()) {
                         continue;
                     }
-                    System.out.println("remove Image " + filePath[i]);
                     removeRealPathFile(filePath[i]);
                 }
             }

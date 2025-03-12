@@ -37,7 +37,6 @@ public class FileServiceImpl implements IFileService {
     {
         try {
             String fileRealPath = RuoYiConfig.getUploadPath() + file.substring("/profile/upload".length());
-            System.out.println("fileRealPath : " + fileRealPath);
             Path path = Paths.get(fileRealPath);
             Files.delete(path);
             return "";

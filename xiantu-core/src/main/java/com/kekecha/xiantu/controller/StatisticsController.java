@@ -17,7 +17,6 @@ import java.time.ZonedDateTime;
 @RestController
 @RequestMapping("/statis")
 public class StatisticsController  extends BaseController {
-
     @Autowired
     private IStatisticsService statisticsService;
 
