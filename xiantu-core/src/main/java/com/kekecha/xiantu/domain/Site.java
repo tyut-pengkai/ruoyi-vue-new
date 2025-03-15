@@ -7,6 +7,28 @@ public class Site {
     private float longitude;
     private float latitude;
     private String city;
+    private String phone;
+
+    @Override
+    public String toString() {
+        return "Site{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                ", description='" + description + '\'' +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
+                ", city='" + city + '\'' +
+                ", phone='" + phone + '\'' +
+                '}';
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
     public String getName() {
         return name;
@@ -56,15 +78,4 @@ public class Site {
         this.city = city;
     }
 
-    @Override
-    public String toString() {
-        return "Site{" +
-                "name='" + name + '\'' +
-                ", type=" + type +
-                ", description='" + description + '\'' +
-                ", longitude=" + longitude +
-                ", latitude=" + latitude +
-                ", city='" + city + '\'' +
-                '}';
-    }
 }

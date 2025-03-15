@@ -9,6 +9,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 @RestController
 @RequestMapping("/file")
 public class FileController extends BaseController {
@@ -17,7 +20,7 @@ public class FileController extends BaseController {
     private FileServiceImpl fileServiceImpl;
 
     // 当前只有这些界面允许上传
-    @PreAuthorize("@ss.hasAnyPermi({'data:car:list', 'data:new:list','data:knowledge:list'})")
+    @PreAuthorize("@ss.hasAnyPermi({'data:car:list', 'data:new:list','data:knowledge:list','data:content:list'})")
     @PostMapping("")
     public AjaxResult upload(@RequestParam("file") MultipartFile file) throws Exception
     {
@@ -31,11 +34,12 @@ public class FileController extends BaseController {
         }
     }
 
-    @PreAuthorize("@ss.hasAnyPermi({'data:car:list', 'data:new:list','data:knowledge:list'})")
+    @PreAuthorize("@ss.hasAnyPermi({'data:car:list', 'data:new:list','data:knowledge:list','data:content:list'})")
     @DeleteMapping("")
     public AjaxResult delete(@RequestParam("url") String fileUrl) throws Exception
     {
-        if (!fileServiceImpl.isValidPath(fileUrl)) {
+        Path p = Paths.get(fileUrl).normalize();
+        if(!p.startsWith("/profile/upload/")) {
             return AjaxResult.error("路径非法");
         }
 

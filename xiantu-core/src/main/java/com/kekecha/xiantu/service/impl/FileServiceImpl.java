@@ -28,11 +28,6 @@ public class FileServiceImpl implements IFileService {
         }
     }
 
-    public boolean isValidPath(String file)
-    {
-        return file.startsWith("/profile/upload/");
-    }
-
     public String delete(String file)
     {
         try {

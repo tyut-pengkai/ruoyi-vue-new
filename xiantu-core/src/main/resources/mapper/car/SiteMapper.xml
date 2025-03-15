@@ -11,6 +11,7 @@
         <result property="longitude"          column="longitude"    />
         <result property="latitude"   column="latitude"    />
         <result property="city"   column="city"    />
+        <result property="phone"   column="phone"    />
     </resultMap>
 
     <select id="selectOne" resultMap="SiteResultMap">
@@ -69,6 +70,7 @@
             <if test="longitude != 0">longitude,</if>
             <if test="latitude != 0">latitude,</if>
             <if test="city != null and city != ''">city,</if>
+            <if test="phone != null and phone != ''">phone,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
@@ -77,6 +79,7 @@
             <if test="longitude != 0">#{longitude},</if>
             <if test="latitude != 0">#{latitude},</if>
             <if test="city != null and city != ''">#{city},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
         </trim>
     </insert>
 
@@ -88,6 +91,7 @@
             <if test="longitude != 0">longitude=#{longitude},</if>
             <if test="latitude != 0">latitude=#{latitude},</if>
             <if test="city != null and city != ''">city=#{city},</if>
+            <if test="phone != null and phone != ''">phone=#{phone},</if>
         </trim>
         WHERE name = #{name}
     </update>

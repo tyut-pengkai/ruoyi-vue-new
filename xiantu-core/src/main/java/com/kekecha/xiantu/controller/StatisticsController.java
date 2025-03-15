@@ -5,6 +5,7 @@ import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +43,7 @@ public class StatisticsController  extends BaseController {
         }
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasAnyPermi({'data:car:list', 'data:net:list', 'data:knowledge:list', 'data:membership:list', 'data:postwanted:list'})")
     @GetMapping("/count")
     public AjaxResult getStatisticsCount(@RequestParam("type") String type) {
         if (type == null || type.isEmpty()) {
@@ -66,7 +67,7 @@ public class StatisticsController  extends BaseController {
         }
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasAnyPermi({'data:car:list', 'data:net:list', 'data:knowledge:list', 'data:membership:list', 'data:postwanted:list'})")
     @GetMapping("/history")
     public AjaxResult getStatisticsHistory(@RequestParam("type") String type,
                                            @RequestParam("start_ts") long start_ts,
