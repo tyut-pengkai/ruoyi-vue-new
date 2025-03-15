@@ -11,9 +11,9 @@
         :xs="12"
         class="quick-entrance-items"
       >
-        <el-card style="width: 126px;height:126px" shadow="hover" @click.native="toTarget(card.label, card.url)">
+        <el-card style="width: 150px;height:150px" shadow="hover" @click.native="toTarget(card.label, card.url)">
           <div class="quick-entrance-item">
-            <div class="quick-entrance-item-icon" :style="{ backgroundColor: card.bg }">
+            <div class="quick-entrance-item-icon" :style="{ backgroundColor: card.bg, marginTop: '15px' }">
               <svg-icon style="width: 24px; height:24px" :icon-class="card.icon" :style="{ color: card.color }" />
             </div>
             <p>{{ card.label }}</p>

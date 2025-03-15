@@ -13,6 +13,8 @@ import com.ruoyi.common.core.domain.entity.SysApp;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.enums.AuthType;
+import com.ruoyi.common.enums.BillType;
 import com.ruoyi.common.enums.NoticeType;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.SysCache;
@@ -177,7 +179,7 @@ public class SysIndexController extends BaseController {
         map.put("transRate", String.format("%.2f", rate));
         // 柱状图
         LocalDate localDate = LocalDate.now();
-        LocalDate firstDay = localDate.minusDays(9);
+        LocalDate firstDay = localDate.minusDays(10);
         List<Integer> tradeNumList = new ArrayList<>();
         List<String> dateWeekList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -312,6 +314,7 @@ public class SysIndexController extends BaseController {
             HashMap<Object, Object> map1 = new HashMap<>();
             map1.put("appId", item.getAppId());
             map1.put("appName", item.getAppName());
+            map1.put("appType", (item.getAuthType() == AuthType.ACCOUNT?"账号":"单码") + (item.getBillType()== BillType.TIME ? "计时": "计点"));
             return map1;
         }).collect(Collectors.toList());
         map.put("appList", collect);
@@ -324,6 +327,7 @@ public class SysIndexController extends BaseController {
                 HashMap<Object, Object> map1 = new HashMap<>();
                 map1.put("appId", item.getAppId());
                 map1.put("appName", item.getAppName());
+                map1.put("appType", (item.getAuthType() == AuthType.ACCOUNT?"账号":"单码") + (item.getBillType()== BillType.TIME ? "计时": "计点"));
                 return map1;
             }).collect(Collectors.toList());
             map.put("appListMore", collect2);

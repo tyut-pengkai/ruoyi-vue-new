@@ -27,9 +27,9 @@
         <result property="enableUpdateAppUserPoint"    column="enable_update_app_user_point"    />
         <result property="enableUpdateAppUserLoginLimitU"    column="enable_update_app_user_login_limit_u"    />
         <result property="enableUpdateAppUserLoginLimitM"    column="enable_update_app_user_login_limit_m"    />
-        <result property="enbaleUpdateAppUserCustomParams"    column="enbale_update_app_user_custom_params"    />
+        <result property="enableUpdateAppUserCustomParams"    column="enable_update_app_user_custom_params"    />
         <result property="enableUpdateAppUserRemark"    column="enable_update_app_user_remark"    />
-        <result property="enbaleViewUserContact"    column="enbale_view_user_contact"    />
+        <result property="enableViewUserContact"    column="enable_view_user_contact"    />
         <result property="enableUpdateUserContact"    column="enable_update_user_contact"    />
         <result property="enableUpdateUserPassword"    column="enable_update_user_password"    />
         <result property="enableUpdateUserRemark"    column="enable_update_user_remark"    />
@@ -70,8 +70,8 @@
                ag.update_time,
                ag.remark,
                ag.enable_update_subagent_password, ag.enable_update_subagent_status, ag.enable_unbind_app_user, ag.enable_update_app_user_status_0, ag.enable_update_app_user_status_1,
-               ag.enable_update_app_user_time, ag.enable_update_app_user_point, ag.enable_update_app_user_login_limit_u, ag.enable_update_app_user_login_limit_m, ag.enbale_update_app_user_custom_params,
-               ag.enable_update_app_user_remark, ag.enbale_view_user_contact, ag.enable_update_user_contact, ag.enable_update_user_password, ag.enable_update_user_remark, ag.enable_update_card_time,
+               ag.enable_update_app_user_time, ag.enable_update_app_user_point, ag.enable_update_app_user_login_limit_u, ag.enable_update_app_user_login_limit_m, ag.enable_update_app_user_custom_params,
+               ag.enable_update_app_user_remark, ag.enable_view_user_contact, ag.enable_update_user_contact, ag.enable_update_user_password, ag.enable_update_user_remark, ag.enable_update_card_time,
                ag.enable_update_card_point, ag.enable_update_card_login_limit_u, ag.enable_update_card_login_limit_m, ag.enable_update_card_custom_params, ag.enable_update_card_remark,
                ag.enable_update_card_status_0, ag.enable_update_card_status_1, ag.enable_batch_card_replace, ag.enable_add_card, ag.enable_delete_subagent, ag.enable_delete_app_user, ag.enable_delete_card,
                u.user_id,
@@ -105,9 +105,9 @@
         <if test="enableUpdateAppUserPoint != null  and enableUpdateAppUserPoint != ''"> and enable_update_app_user_point = #{enableUpdateAppUserPoint}</if>
         <if test="enableUpdateAppUserLoginLimitU != null  and enableUpdateAppUserLoginLimitU != ''"> and enable_update_app_user_login_limit_u = #{enableUpdateAppUserLoginLimitU}</if>
         <if test="enableUpdateAppUserLoginLimitM != null  and enableUpdateAppUserLoginLimitM != ''"> and enable_update_app_user_login_limit_m = #{enableUpdateAppUserLoginLimitM}</if>
-        <if test="enbaleUpdateAppUserCustomParams != null  and enbaleUpdateAppUserCustomParams != ''"> and enbale_update_app_user_custom_params = #{enbaleUpdateAppUserCustomParams}</if>
+        <if test="enableUpdateAppUserCustomParams != null  and enableUpdateAppUserCustomParams != ''"> and enable_update_app_user_custom_params = #{enableUpdateAppUserCustomParams}</if>
         <if test="enableUpdateAppUserRemark != null  and enableUpdateAppUserRemark != ''"> and enable_update_app_user_remark = #{enableUpdateAppUserRemark}</if>
-        <if test="enbaleViewUserContact != null  and enbaleViewUserContact != ''"> and enbale_view_user_contact = #{enbaleViewUserContact}</if>
+        <if test="enableViewUserContact != null  and enableViewUserContact != ''"> and enable_view_user_contact = #{enableViewUserContact}</if>
         <if test="enableUpdateUserContact != null  and enableUpdateUserContact != ''"> and enable_update_user_contact = #{enableUpdateUserContact}</if>
         <if test="enableUpdateUserPassword != null  and enableUpdateUserPassword != ''"> and enable_update_user_password = #{enableUpdateUserPassword}</if>
         <if test="enableUpdateUserRemark != null  and enableUpdateUserRemark != ''"> and enable_update_user_remark = #{enableUpdateUserRemark}</if>
@@ -160,9 +160,9 @@
             <if test="enableUpdateAppUserPoint != null and enableUpdateAppUserPoint != ''">enable_update_app_user_point,</if>
             <if test="enableUpdateAppUserLoginLimitU != null and enableUpdateAppUserLoginLimitU != ''">enable_update_app_user_login_limit_u,</if>
             <if test="enableUpdateAppUserLoginLimitM != null and enableUpdateAppUserLoginLimitM != ''">enable_update_app_user_login_limit_m,</if>
-            <if test="enbaleUpdateAppUserCustomParams != null and enbaleUpdateAppUserCustomParams != ''">enbale_update_app_user_custom_params,</if>
+            <if test="enableUpdateAppUserCustomParams != null and enableUpdateAppUserCustomParams != ''">enable_update_app_user_custom_params,</if>
             <if test="enableUpdateAppUserRemark != null and enableUpdateAppUserRemark != ''">enable_update_app_user_remark,</if>
-            <if test="enbaleViewUserContact != null and enbaleViewUserContact != ''">enbale_view_user_contact,</if>
+            <if test="enableViewUserContact != null and enableViewUserContact != ''">enable_view_user_contact,</if>
             <if test="enableUpdateUserContact != null and enableUpdateUserContact != ''">enable_update_user_contact,</if>
             <if test="enableUpdateUserPassword != null and enableUpdateUserPassword != ''">enable_update_user_password,</if>
             <if test="enableUpdateUserRemark != null and enableUpdateUserRemark != ''">enable_update_user_remark,</if>
@@ -202,9 +202,9 @@
             <if test="enableUpdateAppUserPoint != null and enableUpdateAppUserPoint != ''">#{enableUpdateAppUserPoint},</if>
             <if test="enableUpdateAppUserLoginLimitU != null and enableUpdateAppUserLoginLimitU != ''">#{enableUpdateAppUserLoginLimitU},</if>
             <if test="enableUpdateAppUserLoginLimitM != null and enableUpdateAppUserLoginLimitM != ''">#{enableUpdateAppUserLoginLimitM},</if>
-            <if test="enbaleUpdateAppUserCustomParams != null and enbaleUpdateAppUserCustomParams != ''">#{enbaleUpdateAppUserCustomParams},</if>
+            <if test="enableUpdateAppUserCustomParams != null and enableUpdateAppUserCustomParams != ''">#{enableUpdateAppUserCustomParams},</if>
             <if test="enableUpdateAppUserRemark != null and enableUpdateAppUserRemark != ''">#{enableUpdateAppUserRemark},</if>
-            <if test="enbaleViewUserContact != null and enbaleViewUserContact != ''">#{enbaleViewUserContact},</if>
+            <if test="enableViewUserContact != null and enableViewUserContact != ''">#{enableViewUserContact},</if>
             <if test="enableUpdateUserContact != null and enableUpdateUserContact != ''">#{enableUpdateUserContact},</if>
             <if test="enableUpdateUserPassword != null and enableUpdateUserPassword != ''">#{enableUpdateUserPassword},</if>
             <if test="enableUpdateUserRemark != null and enableUpdateUserRemark != ''">#{enableUpdateUserRemark},</if>
@@ -248,9 +248,9 @@
             <if test="enableUpdateAppUserPoint != null and enableUpdateAppUserPoint != ''">enable_update_app_user_point = #{enableUpdateAppUserPoint},</if>
             <if test="enableUpdateAppUserLoginLimitU != null and enableUpdateAppUserLoginLimitU != ''">enable_update_app_user_login_limit_u = #{enableUpdateAppUserLoginLimitU},</if>
             <if test="enableUpdateAppUserLoginLimitM != null and enableUpdateAppUserLoginLimitM != ''">enable_update_app_user_login_limit_m = #{enableUpdateAppUserLoginLimitM},</if>
-            <if test="enbaleUpdateAppUserCustomParams != null and enbaleUpdateAppUserCustomParams != ''">enbale_update_app_user_custom_params = #{enbaleUpdateAppUserCustomParams},</if>
+            <if test="enableUpdateAppUserCustomParams != null and enableUpdateAppUserCustomParams != ''">enable_update_app_user_custom_params = #{enableUpdateAppUserCustomParams},</if>
             <if test="enableUpdateAppUserRemark != null and enableUpdateAppUserRemark != ''">enable_update_app_user_remark = #{enableUpdateAppUserRemark},</if>
-            <if test="enbaleViewUserContact != null and enbaleViewUserContact != ''">enbale_view_user_contact = #{enbaleViewUserContact},</if>
+            <if test="enableViewUserContact != null and enableViewUserContact != ''">enable_view_user_contact = #{enableViewUserContact},</if>
             <if test="enableUpdateUserContact != null and enableUpdateUserContact != ''">enable_update_user_contact = #{enableUpdateUserContact},</if>
             <if test="enableUpdateUserPassword != null and enableUpdateUserPassword != ''">enable_update_user_password = #{enableUpdateUserPassword},</if>
             <if test="enableUpdateUserRemark != null and enableUpdateUserRemark != ''">enable_update_user_remark = #{enableUpdateUserRemark},</if>

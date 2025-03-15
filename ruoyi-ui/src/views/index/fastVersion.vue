@@ -17,7 +17,7 @@
             v-for="(card, key) in toolCardMoreList"
             :key="key"
           >
-            {{ card.label }}
+            {{ card.prefix }}{{ card.label }}
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -31,12 +31,12 @@
           :xs="12"
           class="quick-entrance-items"
         >
-          <el-card style="width: 126px;height:126px" shadow="hover" @click.native="toTarget(card.appId)">
+          <el-card style="width: 150px;height:150px" shadow="hover" @click.native="toTarget(card.appId)">
             <div class="quick-entrance-item">
               <div class="quick-entrance-item-icon" :style="{ backgroundColor: card.bg }">
                 <svg-icon style="width: 24px; height:24px" :icon-class="card.icon" :style="{ color: card.color }" />
               </div>
-              <p>{{ card.label }}</p>
+              <p>{{ card.prefix }}<br>{{ card.label }}</p>
             </div>
           </el-card>
         </el-col>
@@ -66,6 +66,7 @@ export default {
       let arr = [];
       for (let toolCard of this.toolCards) {
         arr.push({
+          prefix: '[' + toolCard["appType"] + ']',
           label: toolCard["appName"],
           icon: 'number',
           appId: toolCard["appId"],
@@ -79,6 +80,7 @@ export default {
       let arr = [];
       for (let toolCard of this.toolCardsMore) {
         arr.push({
+          prefix: '[' + toolCard["appType"] + ']',
           label: toolCard["appName"],
           appId: toolCard["appId"],
         });
@@ -90,6 +92,7 @@ export default {
     return {
     /*toolCards: [
              {
+              prefix: '[单码计时]',
               label: '版本管理-软件1',
               icon: 'number',
               url: '/verify/appVersion?appId=1',

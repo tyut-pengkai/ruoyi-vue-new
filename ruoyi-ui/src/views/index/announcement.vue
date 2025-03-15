@@ -5,7 +5,7 @@
         <span>系统公告</span>
 <!--        <el-button style="float: right; padding: 3px 0" type="text">查看更多</el-button>-->
       </div>
-      <div style="height: 126px; overflow:auto">
+      <div style="height: 150px; overflow:auto">
         <el-table
           :data="notice"
           :show-header="false"

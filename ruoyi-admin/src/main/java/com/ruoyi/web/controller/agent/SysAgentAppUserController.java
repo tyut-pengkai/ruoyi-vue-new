@@ -296,12 +296,17 @@ public class SysAgentAppUserController extends BaseController {
         map.put("LoginLimitM", "enableUpdateAppUserLoginLimitM");
         map.put("CardLoginLimitU", "enableUpdateCardLoginLimitU");
         map.put("CardLoginLimitM", "enableUpdateCardLoginLimitM");
-        map.put("CardCustomParams", "enbaleUpdateAppUserCustomParams");
+        map.put("CardCustomParams", "enableUpdateAppUserCustomParams");
         map.put("Remark", "enableUpdateAppUserRemark");
 
         for (Map.Entry<String, String> entry : map.entrySet()) {
             try {
-                Method declaredMethod = SysAppUser.class.getDeclaredMethod("get" + StringUtils.capitalize(entry.getKey()));
+                Method declaredMethod;
+                try {
+                    declaredMethod = SysAppUser.class.getDeclaredMethod("get" + StringUtils.capitalize(entry.getKey()));
+                } catch (NoSuchMethodException e) {
+                    declaredMethod = SysAppUser.class.getSuperclass().getDeclaredMethod("get" + StringUtils.capitalize(entry.getKey()));
+                }
                 Object value = declaredMethod.invoke(appUser);
                 Object oValue = declaredMethod.invoke(oAppUser);
                 if (value != null && !Objects.equals(value, oValue) && !permissionService.hasAgentPermi(entry.getValue())) {

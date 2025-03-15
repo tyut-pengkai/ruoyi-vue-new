@@ -480,6 +480,8 @@
             :headers="upload.headers"
             :limit="1"
             :on-change="handleFileOnChange"
+            :on-remove="handleRemove"
+            :show-file-list="true"
             :on-progress="handleFileUploadProgress"
             :on-success="handleFileSuccess"
             accept=".apk"
@@ -903,7 +905,7 @@
         <el-tab-pane v-else label="APK(扫码)" style="height: 300px">
           <span>APK快速接入目前只支持【单码计时】模式的软件</span>
         </el-tab-pane>
-        <el-tab-pane label="EXE(自动)">
+        <el-tab-pane label="EXE/APK(自动)">
           <div style="width: 516px; height: 303px">
             <el-alert
               :closable="false"
@@ -912,7 +914,7 @@
               type="info"
             >
               <template slot="title">
-                <span> 请在官方群共享下载红叶快速接入工具 </span>
+                <span> 请在官方群共享下载红叶快速接入工具(EXE)或红叶小助手APP(APK) </span>
               </template>
             </el-alert>
             <div align="center" style="margin-top: 10px">
@@ -1526,7 +1528,9 @@ export default {
           this.upload.oriName = response.data.oriName;
         }
       } else {
-        this.$modal.alert("接入失败：" + response.msg);
+        this.$refs.upload.abort();
+        this.$refs.upload.clearFiles();
+        this.$modal.alert("接入失败1：" + response.msg);
       }
     },
     // 提交上传文件
@@ -1571,7 +1575,8 @@ export default {
           })
           .catch((error) => {
             console.info(error);
-            this.$modal.alert("接入失败：" + error);
+            this.$refs.upload.clearFiles();
+            this.$modal.alert("接入失败2：" + error);
           })
           .finally(() => {
             this.loading = false;
@@ -1580,14 +1585,33 @@ export default {
     },
     // 校验文件
     onBeforeUpload(file) {
-      // const isLt1M = file.size / 1024 / 1024 < 20;
-      // if (!isLt1M) {
-      //   this.$message.error("上传文件大小不能超过 20MB!");
-      // }
-      // return isLt1M;
+      const isLt1M = file.size / 1024 / 1024 < 50;
+      if (!isLt1M) {
+        // this.$message.error("上传文件大小不能超过 20MB!");
+        // 询问用户是否继续
+        return this.$modal
+          .confirm("上传文件大小超过50MB，可能超出服务器处理能力，建议下载使用【红叶小助手APP(群文件)】进行对接，是否继续尝试对接？")
+          .then(() => {
+            return true;
+          })
+          .catch(() => {
+            // 取消上传
+            this.$refs.upload.clearFiles();
+            return false;
+          });
+      }
+      return true;
     },
     // 添加文件
     handleFileOnChange(file, fileList) {
+      if (fileList.length === 0) {
+        this.$refs.upload.clearFiles() // 清空已选文件列表
+      }
+      if (fileList.length > 1) {
+        this.$refs.upload.abort()
+        this.$refs.upload.clearFiles()
+        this.$refs.upload.uploadFiles = [file]
+      }
       if (file && file.name) {
         String.prototype.endWith = function (endStr) {
           var d = this.length - endStr.length;
@@ -1604,6 +1628,9 @@ export default {
         this.showApk = false;
         this.showExe = false;
       }
+    },
+    handleRemove() {
+      this.$refs.upload.clearFiles()
     },
     downFile(name) {
       //这里放参数

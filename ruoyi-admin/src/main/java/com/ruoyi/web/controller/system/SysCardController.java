@@ -175,7 +175,7 @@ public class SysCardController extends BaseController {
     /**
      * 批量换卡
      */
-    @PreAuthorize("@ss.hasPermi('system:card:replace')")
+    @PreAuthorize("@ss.hasAnyPermi('system:card:replace,agent:agentCard:replace')")
     @Log(title = "卡密", businessType = BusinessType.REPLACE)
     @PostMapping("/batchReplace")
     public AjaxResult batchReplace(@RequestBody BatchReplaceVo vo) {

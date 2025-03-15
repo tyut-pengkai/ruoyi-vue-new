@@ -45,4 +45,6 @@ public interface ISysUserOnlineService
      * @return 在线用户
      */
     public SysUserOnline loginUserToUserOnline(LoginUser user);
+
+    public void fillSysUserOnline(LoginUser user, SysUserOnline sysUserOnline);
 }

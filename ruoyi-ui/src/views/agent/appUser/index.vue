@@ -849,10 +849,10 @@
         </el-form-item>
         <el-form-item label="充值卡/单码自定义参数" prop="cardCustomParams">
           <el-input
-            :value="form.cardCustomParams"
+            v-model="form.cardCustomParams"
             placeholder="请输入内容"
             type="textarea"
-            :disabled="!$auth.hasAgentPermi('enbaleUpdateAppUserCustomParams')"
+            :disabled="!$auth.hasAgentPermi('enableUpdateAppUserCustomParams')"
           />
         </el-form-item>
         <el-form-item label="备注" prop="remark">

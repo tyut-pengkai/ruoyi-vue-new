@@ -105,38 +105,7 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService {
         sysUserOnline.setIfApp(user.getIfApp() ? 'Y' : 'N');
         sysUserOnline.setIfTrial(user.getIfTrial() ? 'Y' : 'N');
         if (user.getIfApp()) {
-            String appKey = user.getAppKey();
-            if (appKey == null) {
-                //noinspection deprecation
-                appKey = user.getApp() != null ? user.getApp().getAppKey() : null;
-            }
-            SysAppVersion appVersion = versionService.selectSysAppVersionByAppVersionId(user.getAppVersionId());
-            if (StringUtils.isNotBlank(appKey)) {
-                SysApp app = appService.selectSysAppByAppKey(appKey);
-//                System.out.println(JSON.toJSONString(user));
-//                System.out.println(JSON.toJSONString(app));
-                if(app != null && appVersion != null) {
-                    sysUserOnline.setAppDesc(app.getAppName() + "-" + appVersion.getVersionShow());
-                } else {
-                    if(appVersion != null) {
-                        sysUserOnline.setAppDesc("未知" + "-" + appVersion.getVersionShow());
-                    } else {
-                        sysUserOnline.setAppDesc("未知");
-                    }
-                }
-                if(app != null) {
-                    sysUserOnline.setAppAuthor(app.getCreateBy());
-                } else {
-                    sysUserOnline.setAppAuthor("未知");
-                }
-            } else {
-                if(appVersion != null) {
-                    sysUserOnline.setAppDesc("未知" + "-" + appVersion.getVersionShow());
-                } else {
-                    sysUserOnline.setAppDesc("未知");
-                }
-                sysUserOnline.setAppAuthor("未知");
-            }
+            fillSysUserOnline(user, sysUserOnline);
             if (user.getDeviceCodeId() != null) {
                 SysDeviceCode deviceCode = deviceCodeService.selectSysDeviceCodeByDeviceCodeId(user.getDeviceCodeId());
                 sysUserOnline.setDeviceCode(deviceCode.getDeviceCode());
@@ -147,5 +116,40 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService {
         }
 
         return sysUserOnline;
+    }
+
+    public void fillSysUserOnline(LoginUser user, SysUserOnline sysUserOnline) {
+        String appKey = user.getAppKey();
+        if (appKey == null) {
+            //noinspection deprecation
+            appKey = user.getApp() != null ? user.getApp().getAppKey() : null;
+        }
+        SysAppVersion appVersion = versionService.selectSysAppVersionByAppVersionId(user.getAppVersionId());
+        if (StringUtils.isNotBlank(appKey)) {
+            SysApp app = appService.selectSysAppByAppKey(appKey);
+//                System.out.println(JSON.toJSONString(user));
+//                System.out.println(JSON.toJSONString(app));
+            if(app != null && appVersion != null) {
+                sysUserOnline.setAppDesc(app.getAppName() + "-" + appVersion.getVersionShow());
+            } else {
+                if(appVersion != null) {
+                    sysUserOnline.setAppDesc("未知" + "-" + appVersion.getVersionShow());
+                } else {
+                    sysUserOnline.setAppDesc("未知");
+                }
+            }
+            if(app != null) {
+                sysUserOnline.setAppAuthor(app.getCreateBy());
+            } else {
+                sysUserOnline.setAppAuthor("未知");
+            }
+        } else {
+            if(appVersion != null) {
+                sysUserOnline.setAppDesc("未知" + "-" + appVersion.getVersionShow());
+            } else {
+                sysUserOnline.setAppDesc("未知");
+            }
+            sysUserOnline.setAppAuthor("未知");
+        }
     }
 }

@@ -42,6 +42,7 @@ public class GlobalExceptionHandler {
     public AjaxResult handleAccessDeniedException(AccessDeniedException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',权限校验失败'{}'", requestURI, e.getMessage());
+        e.printStackTrace();
         return AjaxResult.error(HttpStatus.FORBIDDEN, "没有权限，请联系管理员授权");
     }
 

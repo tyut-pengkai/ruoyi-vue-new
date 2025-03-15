@@ -33,10 +33,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -276,7 +273,7 @@ public class SysUpdateController extends BaseController {
                     String remoteJson = Utils.readFromUrl(baseUrl + "upgradeSql.json");
                     List<String> sqlList = JSON.parseArray(remoteJson, String.class);
                     List<String> readySqlList = new ArrayList<>();
-                    recursion(config.getDbVersionNo(), sqlList, readySqlList);
+                    recursion(config.getDbVersionNo(), versionInfo.getVersionNo(), sqlList, readySqlList);
                     log.info("数据库更新：\n" + JSON.toJSONString(readySqlList));
                     log.info("数据库更新信息获取完毕");
                     // log.info("旧数据备份");
@@ -362,15 +359,18 @@ public class SysUpdateController extends BaseController {
         return AjaxResult.success();
     }
 
-    private void recursion(Long version, List<String> sqlList, List<String> readySqlList) {
+    private void recursion(Long fromVersion, Long toVersion, List<String> sqlList, List<String> readySqlList) {
         for (String sql : sqlList) {
             String[] split = sql.split("-");
             if (split.length == 2) {
                 long oldVer = Long.parseLong(split[0]);
                 long newVer = Long.parseLong(split[1]);
-                if (oldVer == version) {
+                if(Objects.equals(fromVersion, toVersion)) { // 避免数据库版本大于程序版本时，多升级数据库版本，造成程序与数据版本不一致的问题
+                    break;
+                }
+                if (oldVer == fromVersion) {
                     readySqlList.add(sql);
-                    recursion(newVer, sqlList, readySqlList);
+                    recursion(newVer, toVersion, sqlList, readySqlList);
                     break;
                 }
             }

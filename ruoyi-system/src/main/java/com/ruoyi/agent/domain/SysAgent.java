@@ -128,7 +128,7 @@ public class SysAgent extends TreeEntity {
 
     /** 修改软件用户自定义参数 */
     @Excel(name = "修改软件用户自定义参数")
-    private String enbaleUpdateAppUserCustomParams;
+    private String enableUpdateAppUserCustomParams;
 
     /** 修改软件用户备注 */
     @Excel(name = "修改软件用户备注")
@@ -136,7 +136,7 @@ public class SysAgent extends TreeEntity {
 
     /** 查看用户联系方式 */
     @Excel(name = "查看用户联系方式")
-    private String enbaleViewUserContact;
+    private String enableViewUserContact;
 
     /** 修改用户联系方式 */
     @Excel(name = "修改用户联系方式")
@@ -298,12 +298,12 @@ public class SysAgent extends TreeEntity {
         this.enableUpdateAppUserLoginLimitM = enableUpdateAppUserLoginLimitM;
     }
 
-    public String getEnbaleUpdateAppUserCustomParams() {
-        return enbaleUpdateAppUserCustomParams;
+    public String getEnableUpdateAppUserCustomParams() {
+        return enableUpdateAppUserCustomParams;
     }
 
-    public void setEnbaleUpdateAppUserCustomParams(String enbaleUpdateAppUserCustomParams) {
-        this.enbaleUpdateAppUserCustomParams = enbaleUpdateAppUserCustomParams;
+    public void setEnableUpdateAppUserCustomParams(String enableUpdateAppUserCustomParams) {
+        this.enableUpdateAppUserCustomParams = enableUpdateAppUserCustomParams;
     }
 
     public String getEnableUpdateAppUserRemark() {
@@ -314,12 +314,12 @@ public class SysAgent extends TreeEntity {
         this.enableUpdateAppUserRemark = enableUpdateAppUserRemark;
     }
 
-    public String getEnbaleViewUserContact() {
-        return enbaleViewUserContact;
+    public String getEnableViewUserContact() {
+        return enableViewUserContact;
     }
 
-    public void setEnbaleViewUserContact(String enbaleViewUserContact) {
-        this.enbaleViewUserContact = enbaleViewUserContact;
+    public void setEnableViewUserContact(String enableViewUserContact) {
+        this.enableViewUserContact = enableViewUserContact;
     }
 
     public String getEnableUpdateUserContact() {

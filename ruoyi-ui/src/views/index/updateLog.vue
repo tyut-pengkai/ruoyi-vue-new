@@ -3,7 +3,7 @@
     <div slot="header" class="clearfix">
       <span>更新日志</span>
     </div>
-    <div style="height: 553px; overflow:auto">
+    <div style="height: 583px; overflow:auto">
       <el-collapse accordion>
         <el-collapse-item title="v1.9.0 - 2024-10-15">
           <ol>

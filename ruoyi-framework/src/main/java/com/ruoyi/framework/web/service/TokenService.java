@@ -99,6 +99,7 @@ public class TokenService {
                 }
                 return loginUser;
             } catch (Exception e) {
+                e.printStackTrace();
                 log.error("获取用户信息异常'{}'", e.getMessage());
             }
         }

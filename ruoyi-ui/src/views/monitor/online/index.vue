@@ -7,6 +7,22 @@
       label-width="68px"
       size="small"
     >
+      <el-form-item label="用户账号" prop="userName">
+        <el-input
+          v-model="queryParams.userName"
+          placeholder="请输入用户账号"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="账号分组" prop="deptName">
+        <el-input
+          v-model="queryParams.deptName"
+          placeholder="请输入账号分组"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="登录地址" prop="ipaddr">
         <el-input
           v-model="queryParams.ipaddr"
@@ -15,10 +31,52 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="用户账号" prop="userName">
+      <el-form-item label="登录地点" prop="loginLocation">
         <el-input
-          v-model="queryParams.userName"
-          placeholder="请输入用户账号"
+          v-model="queryParams.loginLocation"
+          placeholder="请输入登录地点"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="浏览器" prop="browser">
+        <el-input
+          v-model="queryParams.browser"
+          placeholder="请输入浏览器"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="操作系统" prop="os">
+        <el-input
+          v-model="queryParams.os"
+          placeholder="请输入操作系统"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="软件用户" prop="ifApp">
+        <el-select v-model="queryParams.ifApp" placeholder="软件用户" clearable style="width: 240px">
+          <el-option v-for="dict in dict.type.sys_yes_no" :key="dict.value" :label="dict.label" :value="dict.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="试用用户" prop="ifTrial">
+        <el-select v-model="queryParams.ifTrial" placeholder="试用用户" clearable style="width: 240px">
+          <el-option v-for="dict in dict.type.sys_yes_no" :key="dict.value" :label="dict.label" :value="dict.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="软件信息" prop="appDesc">
+        <el-input
+          v-model="queryParams.appDesc"
+          placeholder="请输入软件信息"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="设备码" prop="deviceCode">
+        <el-input
+          v-model="queryParams.deviceCode"
+          placeholder="请输入设备码"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -55,14 +113,20 @@
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
-        label="登录名称"
+        label="用户账号"
         prop="userName"
+      />
+      <el-table-column
+        :show-overflow-tooltip="true"
+        align="center"
+        label="账号分组"
+        prop="deptName"
       />
       <!-- <el-table-column label="分组名称" align="center" prop="deptName" /> -->
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
-        label="主机"
+        label="登录地址"
         prop="ipaddr"
       />
       <el-table-column

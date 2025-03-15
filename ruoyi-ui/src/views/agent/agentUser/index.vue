@@ -109,8 +109,8 @@
 <!--          />-->
 <!--        </el-select>-->
 <!--      </el-form-item>-->
-<!--      <el-form-item label="修改软件用户自定义参数" prop="enbaleUpdateAppUserCustomParams">-->
-<!--        <el-select v-model="queryParams.enbaleUpdateAppUserCustomParams" placeholder="请选择修改软件用户自定义参数" clearable>-->
+<!--      <el-form-item label="修改软件用户自定义参数" prop="enableUpdateAppUserCustomParams">-->
+<!--        <el-select v-model="queryParams.enableUpdateAppUserCustomParams" placeholder="请选择修改软件用户自定义参数" clearable>-->
 <!--          <el-option-->
 <!--              v-for="dict in dict.type.sys_yes_no"-->
 <!--              :key="dict.value"-->
@@ -129,8 +129,8 @@
 <!--          />-->
 <!--        </el-select>-->
 <!--      </el-form-item>-->
-<!--      <el-form-item label="查看用户联系方式" prop="enbaleViewUserContact">-->
-<!--        <el-select v-model="queryParams.enbaleViewUserContact" placeholder="请选择查看用户联系方式" clearable>-->
+<!--      <el-form-item label="查看用户联系方式" prop="enableViewUserContact">-->
+<!--        <el-select v-model="queryParams.enableViewUserContact" placeholder="请选择查看用户联系方式" clearable>-->
 <!--          <el-option-->
 <!--              v-for="dict in dict.type.sys_yes_no"-->
 <!--              :key="dict.value"-->
@@ -667,7 +667,7 @@
           label="已有权限">
           <template slot-scope="scope">
             <i class="el-icon-check" v-if="scope.row.bool"></i>
-            <i class="el-icon-close" v-else="scope.row.bool"></i>
+            <i class="el-icon-close" v-else></i>
           </template>
         </el-table-column>
       </el-table>
@@ -818,10 +818,10 @@ export default {
         {'object': '用户', 'name': '修改用户点数', 'code': 'enableUpdateAppUserPoint', 'default': false },
         {'object': '用户', 'name': '修改用户登录用户数限制', 'code': 'enableUpdateAppUserLoginLimitU', 'default': false },
         {'object': '用户', 'name': '修改用户登录设备数限制', 'code': 'enableUpdateAppUserLoginLimitM', 'default': false },
-        {'object': '用户', 'name': '修改用户自定义数据', 'code': 'enbaleUpdateAppUserCustomParams', 'default': false },
+        {'object': '用户', 'name': '修改用户自定义数据', 'code': 'enableUpdateAppUserCustomParams', 'default': false },
         {'object': '用户', 'name': '[默认]修改用户备注', 'code': 'enableUpdateAppUserRemark', 'default': true },
         {'object': '用户', 'name': '修改用户密码', 'code': 'enableUpdateUserPassword', 'default': false },
-        // {'object': '用户', 'name': '查看用户联系方式', 'code': 'enbaleViewUserContact', 'default': false },
+        // {'object': '用户', 'name': '查看用户联系方式', 'code': 'enableViewUserContact', 'default': false },
         // {'object': '用户', 'name': '修改用户联系方式', 'code': 'enableUpdateUserContact', 'default': false },
         // {'object': '用户', 'name': '修改用户账号备注', 'code': 'enableUpdateUserRemark', 'default': false },
         {'object': '卡密', 'name': '[默认]冻结卡密', 'code': 'enableUpdateCardStatus1', 'default': true },

@@ -40,9 +40,12 @@ public class DictUtils {
     public static List<SysDictData> getDictCache(String key)
     {
         JSONArray arrayCache = SpringUtils.getBean(RedisCache.class).getCacheObject(getCacheKey(key));
-        if (StringUtils.isNotNull(arrayCache))
-        {
-            return arrayCache.toJavaList(SysDictData.class);
+        try {
+            if (StringUtils.isNotNull(arrayCache))
+            {
+                return arrayCache.toJavaList(SysDictData.class);
+            }
+        } catch (Exception ignored) {
         }
         return null;
     }

@@ -179,7 +179,7 @@ public class SysLoginCodeController extends BaseController {
     /**
      * 批量换卡
      */
-    @PreAuthorize("@ss.hasPermi('system:loginCode:replace')")
+    @PreAuthorize("@ss.hasAnyPermi('system:loginCode:replace,agent:agentLoginCode:replace')")
     @Log(title = "单码", businessType = BusinessType.REPLACE)
     @PostMapping("/batchReplace")
     public AjaxResult batchReplace(@RequestBody BatchReplaceVo vo) {

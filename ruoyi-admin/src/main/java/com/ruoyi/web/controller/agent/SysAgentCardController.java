@@ -8,7 +8,6 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.core.domain.entity.SysAppUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.*;
 import com.ruoyi.common.exception.ServiceException;
@@ -288,7 +287,12 @@ public class SysAgentCardController extends BaseController {
         map.put("Remark", "enableUpdateCardRemark");
         for (Map.Entry<String, String> entry : map.entrySet()) {
             try {
-                Method declaredMethod = SysAppUser.class.getDeclaredMethod("get" + StringUtils.capitalize(entry.getKey()));
+                Method declaredMethod;
+                try {
+                    declaredMethod = SysCard.class.getDeclaredMethod("get" + StringUtils.capitalize(entry.getKey()));
+                } catch (NoSuchMethodException e) {
+                    declaredMethod = SysCard.class.getSuperclass().getDeclaredMethod("get" + StringUtils.capitalize(entry.getKey()));
+                }
                 Object value = declaredMethod.invoke(card);
                 Object oValue = declaredMethod.invoke(oCard);
                 if (value != null && !Objects.equals(value, oValue) && !permissionService.hasAgentPermi(entry.getValue())) {
@@ -379,6 +383,11 @@ public class SysAgentCardController extends BaseController {
     @Log(title = "卡密", businessType = BusinessType.REPLACE)
     @PostMapping("/batchReplace")
     public AjaxResult batchReplace(@RequestBody BatchReplaceVo vo) {
+//        if (!permissionService.hasAnyRoles("sadmin,admin")) {
+            if (!permissionService.hasAgentPermi("enableBatchCardReplace")) {
+                throw new ServiceException("您没有该操作的权限（代理系统）");
+            }
+//        }
         return cardController.batchReplace(vo);
     }
 
