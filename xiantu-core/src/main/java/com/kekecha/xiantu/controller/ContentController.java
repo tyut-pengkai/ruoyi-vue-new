@@ -35,7 +35,7 @@ public class ContentController extends BaseController {
         return ajaxResult;
     }
 
-    @Anonymous
+    @PreAuthorize("@ss.hasPermi('data:content:list')")
     @PostMapping("/edit")
     public AjaxResult edit(@RequestBody Map<String, Object> jsonMap) {
         try {
