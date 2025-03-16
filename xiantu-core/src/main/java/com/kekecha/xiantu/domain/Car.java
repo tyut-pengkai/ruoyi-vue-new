@@ -1,9 +1,26 @@
 package com.kekecha.xiantu.domain;
 
 public class Car {
+    private int id;
     private String name;
     private String imageUrl;
     private String videoUrl;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
 
     /* 基本信息 */
     // 驾驶证
@@ -373,18 +390,11 @@ public class Car {
         this.imageUrl = imageUrl;
     }
 
-    public String getvideoUrl() {
-        return videoUrl;
-    }
-
-    public void setvideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
-    }
-
     @Override
     public String toString() {
         return "Car{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", videoUrl='" + videoUrl + '\'' +
                 ", license='" + license + '\'' +

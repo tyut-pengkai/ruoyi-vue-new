@@ -19,7 +19,7 @@ public interface CarMapper
      */
     public List<CarOverview> selectCarOverviewList();
 
-
+    public Car selectCarDetailByID(int id);
     public Car selectCarDetail(String name);
 
     public int insertCar(Car detail);

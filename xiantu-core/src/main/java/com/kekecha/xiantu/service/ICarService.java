@@ -19,7 +19,7 @@ public interface ICarService {
      * @return 车型集合
      */
     List<CarOverview> selectCarOverviewList();
-
+    Car selectCarDetailByID(int id);
     Car selectCarDetail(String name);
     /**
      * 插入一条车辆信息

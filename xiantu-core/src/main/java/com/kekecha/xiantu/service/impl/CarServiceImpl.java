@@ -192,6 +192,11 @@ public class CarServiceImpl implements ICarService
     }
 
     @Override
+    public Car selectCarDetailByID(int id)  {
+        return carMapper.selectCarDetailByID(id);
+    }
+
+    @Override
     public int insertCar(Car detail) {
         return carMapper.insertCar(detail);
     }

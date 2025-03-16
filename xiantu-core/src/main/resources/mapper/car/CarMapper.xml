@@ -6,11 +6,13 @@
 
     <resultMap type="com.kekecha.xiantu.domain.CarOverview" id="CarOverviewResultMap">
         <result property="name"                 column="name"    />
+        <result property="id"                 column="id"    />
         <result property="image"                 column="image_url"  />
     </resultMap>
 
     <resultMap type="com.kekecha.xiantu.domain.Car" id="CarResultMap" >
         <result property="name"                 column="name"    />
+        <result property="id"                   column="id"    />
         <result property="license"              column="license"    />
         <result property="carType"              column="car_type"    />
         <result property="driveType"            column="drive_type"    />
@@ -50,12 +52,17 @@
     </resultMap>
 
     <select id="selectCarOverviewList" resultMap="CarOverviewResultMap">
-        SELECT name, image_url FROM xiantu_car
+        SELECT name, id, image_url FROM xiantu_car
     </select>
 
     <select id="selectCarDetail" parameterType="String" resultMap="CarResultMap">
         SELECT * FROM xiantu_car
         WHERE name = #{name}
+    </select>
+
+    <select id="selectCarDetailByID" parameterType="int" resultMap="CarResultMap">
+        SELECT * FROM xiantu_car
+        WHERE id = #{id}
     </select>
 
     <insert id="insertCar" parameterType="com.kekecha.xiantu.domain.Car" useGeneratedKeys="true" keyProperty="id">

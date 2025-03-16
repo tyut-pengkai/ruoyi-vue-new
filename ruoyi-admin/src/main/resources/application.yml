@@ -74,8 +74,10 @@ spring:
     port: 6379
     # 数据库索引
     database: 0
-    # 密码
+    # 密码 主环境：
     password: Tg5&xW8^sPqN%4Fh
+    # 测试环境：
+    # password: kekecha
     # 连接超时时间
     timeout: 10s
     lettuce:

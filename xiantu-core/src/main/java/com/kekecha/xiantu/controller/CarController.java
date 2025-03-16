@@ -59,17 +59,23 @@ public class CarController extends BaseController {
 
     @Anonymous
     @GetMapping("/detail")
-    public AjaxResult getCarDetail(@RequestParam("name") String name)
+    public AjaxResult getCarDetail(@RequestParam(name="name", defaultValue = "") String name,
+                                   @RequestParam(name="id", defaultValue = "-1") int id)
     {
+        Car car = null;
         try {
-            Car car = carService.selectCarDetail(name);
+            if (id != -1) {
+                car = carService.selectCarDetailByID(id);
+            } else {
+                car = carService.selectCarDetail(name);
+            }
             if (car != null) {
                 return AjaxResult.success(carService.ConverCarToJson(car));
             } else {
                 return AjaxResult.error("查询的车型不存在");
             }
         } catch (Exception e) {
-            return AjaxResult.error("系统异常，获取数据失败");
+            return AjaxResult.error("系统异常，获取数据失败" + e.getMessage());
         }
     }
 

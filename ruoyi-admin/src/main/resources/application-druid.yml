@@ -9,8 +9,10 @@ spring:
                 # url: jdbc:mysql://localhost:3306/xiantu?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
                 url: jdbc:mysql://localhost:33308/xiantu?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
                 username: root
-                # WSL设置的密码
+                # WSL/主环境设置的密码：
                 password: 7mZ$9K#pL!vR3@Qd
+                # 测试环境密码
+                # password:
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭

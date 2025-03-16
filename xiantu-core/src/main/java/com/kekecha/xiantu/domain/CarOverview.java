@@ -1,8 +1,17 @@
 package com.kekecha.xiantu.domain;
 
 public class CarOverview {
+    private int id;
     private String name;
     private String image;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -23,7 +32,8 @@ public class CarOverview {
     @Override
     public String toString() {
         return "CarOverview{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", image='" + image + '\'' +
                 '}';
     }
