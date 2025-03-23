@@ -29,6 +29,7 @@ public class ContentServiceImpl implements IContentService {
         try {
             Files.write(filePath,
                     content.getBytes(StandardCharsets.UTF_8),
+                    StandardOpenOption.TRUNCATE_EXISTING,
                     StandardOpenOption.CREATE);
             return 0;
         } catch (IOException e) {
