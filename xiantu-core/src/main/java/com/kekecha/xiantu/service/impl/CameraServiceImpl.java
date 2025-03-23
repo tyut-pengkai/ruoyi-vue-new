@@ -7,13 +7,13 @@ import com.kekecha.xiantu.service.ICameraService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.hikvision.artemis.sdk.ArtemisHttpUtil;
-import com.hikvision.artemis.sdk.Client;
-import com.hikvision.artemis.sdk.Request;
-import com.hikvision.artemis.sdk.Response;
-import com.hikvision.artemis.sdk.config.ArtemisConfig;
-import com.hikvision.artemis.sdk.constant.Constants;
-import com.hikvision.artemis.sdk.enums.Method;
+//import com.hikvision.artemis.sdk.ArtemisHttpUtil;
+//import com.hikvision.artemis.sdk.Client;
+//import com.hikvision.artemis.sdk.Request;
+//import com.hikvision.artemis.sdk.Response;
+//import com.hikvision.artemis.sdk.config.ArtemisConfig;
+//import com.hikvision.artemis.sdk.constant.Constants;
+//import com.hikvision.artemis.sdk.enums.Method;
 
 
 import java.util.HashMap;
