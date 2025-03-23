@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kekecha.xiantu.mapper.CarWantedMapper">
+
+    <resultMap type="com.kekecha.xiantu.domain.CarWanted" id="CarWantedResultMap">
+        <result property="id"          column="id"    />
+        <result property="name"          column="name"    />
+        <result property="phone"          column="phone"    />
+        <result property="company"          column="company"    />
+        <result property="city"          column="city"    />
+        <result property="createTime"          column="createTime"    />
+    </resultMap>
+
+    <select id="select" resultMap="CarWantedResultMap">
+        SELECT * FROM xiantu_carwanted
+    </select>
+
+    <insert id="insert" parameterType="com.kekecha.xiantu.domain.CarWanted">
+        INSERT INTO xiantu_carwanted
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="company != null and company != ''">company,</if>
+            <if test="city != null and city != ''">city,</if>
+            <if test="createTime != 0">createTime,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="company != null and company != ''">#{company},</if>
+            <if test="city != null and city != ''">#{city},</if>
+            <if test="createTime != 0">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.kekecha.xiantu.domain.CarWanted">
+        UPDATE xiantu_carwanted
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name=#{name},</if>
+            <if test="phone != null and phone != ''">phone=#{phone},</if>
+            <if test="company != null and company != ''">company=#{company},</if>
+            <if test="city != null and city != ''">city=#{city},</if>
+            <if test="createTime != 0">createTime=#{createTime},</if>
+        </trim>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM xiantu_carwanted WHERE id = #{id}
+    </delete>
+</mapper>

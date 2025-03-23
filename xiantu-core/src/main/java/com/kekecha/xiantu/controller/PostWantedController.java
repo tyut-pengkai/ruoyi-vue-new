@@ -4,6 +4,7 @@ import com.kekecha.xiantu.domain.PostWanted;
 import com.kekecha.xiantu.service.IPostWantedService;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.framework.web.service.SysLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

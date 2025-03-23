@@ -11,4 +11,7 @@ public interface ICameraService {
     int insert(Camera camera);
     int update(Camera camera);
     int delete(String name);
+
+//    String getPriviewURL(Camera camera);
+
 }

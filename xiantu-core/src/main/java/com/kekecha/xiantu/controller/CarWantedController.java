@@ -1,9 +1,7 @@
 package com.kekecha.xiantu.controller;
 
-import com.kekecha.xiantu.domain.MemberShip;
-import com.kekecha.xiantu.domain.PostWanted;
-import com.kekecha.xiantu.service.IMemberShipService;
-import com.kekecha.xiantu.service.IPostWantedService;
+import com.kekecha.xiantu.domain.CarWanted;
+import com.kekecha.xiantu.service.ICarWantedService;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.exception.user.CaptchaException;
@@ -13,22 +11,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Time;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/membership")
-public class MemberShipController {
+@RequestMapping("/carwanted")
+public class CarWantedController {
     @Autowired
-    private IMemberShipService memberShipService;
+    private ICarWantedService carWantedService;
 
     @Autowired
     private SysLoginService loginService;
 
-    @PreAuthorize("@ss.hasPermi('data:membership:list')")
+    @PreAuthorize("@ss.hasPermi('data:carwanted:list')")
     @GetMapping("")
     public AjaxResult getList(
             @RequestParam(name="pageNum", defaultValue = "1")int pageNum,
@@ -45,7 +42,7 @@ public class MemberShipController {
         }
 
         AjaxResult ajaxResult = AjaxResult.success("查询成功");
-        List<MemberShip> list = memberShipService.select();
+        List<CarWanted> list = carWantedService.select();
 
         int total = list.size();
         ajaxResult.put("total", total);
@@ -56,10 +53,10 @@ public class MemberShipController {
             int search_start = (pageNum - 1) * pageSize;
             int search_end = Math.min((pageNum * pageSize), total);
             if (search_start >= total) {
-                List<MemberShip> result_list = new ArrayList<>();
+                List<CarWanted> result_list = new ArrayList<>();
                 ajaxResult.put("data", result_list);
             } else {
-                List<MemberShip> result_list = list.subList(search_start, search_end);
+                List<CarWanted> result_list = list.subList(search_start, search_end);
                 ajaxResult.put("data", result_list);
             }
         }
@@ -68,52 +65,57 @@ public class MemberShipController {
 
     @Anonymous
     @PostMapping("")
-    public AjaxResult postMemberShip(@RequestBody Map<String, Object> jsonMap) {
+    public AjaxResult postCarWanted(@RequestBody Map<String, Object> jsonMap) {
         try {
             String uuid = jsonMap.get("uuid").toString();
             String code = jsonMap.get("code").toString();
             String name = jsonMap.get("name").toString();
             String phone = jsonMap.get("phone").toString();
-            String description = jsonMap.get("description").toString();
+            String company = jsonMap.get("company").toString();
 
             if (uuid.isEmpty() || code.isEmpty()) {
                 return AjaxResult.error("验证失败");
             }
+
             loginService.justValidateCaptcha(code, uuid);
 
-            if (name.isEmpty() || phone.isEmpty() || description.isEmpty()) {
+            if (name.isEmpty() || company.isEmpty() || phone.isEmpty()) {
                 return AjaxResult.error("填写的表单信息不正确");
             }
 
-            MemberShip memberShip = new MemberShip();
-            memberShip.setName(name);
-            memberShip.setPhone(phone);
-            memberShip.setDescription(description);
-
+            CarWanted carWanted = new CarWanted();
+            carWanted.setName(name);
+            carWanted.setPhone(phone);
+            carWanted.setCompany(company);
+            if (jsonMap.containsKey("city")) {
+                String city = jsonMap.get("city").toString();
+                carWanted.setCity(city);
+            }
             long createTime = Instant.now().getEpochSecond();
-            memberShip.setCreateTime(createTime);
+            carWanted.setCreateTime(createTime);
 
-            memberShipService.insert(memberShip);
+            carWantedService.insert(carWanted);
             return AjaxResult.success("创建成功");
         } catch (CaptchaExpireException | CaptchaException e) {
             throw e;
         } catch (Exception e) {
-            return AjaxResult.error("提交表单失败，请重试");
+            return AjaxResult.error("提交表单失败，请重试: " + e.getMessage());
         }
     }
 
-    @PreAuthorize("@ss.hasPermi('data:membership:list')")
+    @PreAuthorize("@ss.hasPermi('data:carwanted:list')")
     @DeleteMapping("")
     public AjaxResult delete(int id) {
         try {
-            int res = memberShipService.delete(id);
+            int res = carWantedService.delete(id);
             if (res > 0) {
                 return AjaxResult.success("删除成功");
             } else {
-                return AjaxResult.error("删除的目标岗位不存在");
+                return AjaxResult.error("删除的用车申请不存在");
             }
         } catch (Exception e) {
             return AjaxResult.error("删除失败");
         }
     }
 }
+

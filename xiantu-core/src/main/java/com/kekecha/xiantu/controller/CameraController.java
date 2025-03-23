@@ -100,4 +100,76 @@ public class CameraController extends BaseController {
         ajaxResult.put("disabled", 0);
         return ajaxResult;
     }
+
+
+//    /**
+//     * 获取播放地址
+//     */
+//    @GetMapping("/getPreviewURL")
+//    public AjaxResult getPreviewURL(
+//            @RequestParam(required = true, defaultValue = "") String cameraName) throws Exception {
+//        try {
+//            if (cameraName == null || "".equals(cameraName)) {
+//                return AjaxResult.error("获取摄像头异常");
+//            }
+//
+//            Camera camera = cameraService.selectByName(cameraName);
+//
+//            String url = cameraService.getPriviewURL(camera);
+//            return AjaxResult.success(url);
+//        } catch (Exception e) {
+//            return AjaxResult.error(e.getMessage());
+//        }
+//    }
+//    public AjaxResult getPreviewURL(@RequestParam String indexCode, @RequestParam(required = false) String streamType,
+//                                   @RequestParam(required = false) String protocol,
+//                                   @RequestParam String source) throws Exception {
+//        String previewURL = "";
+//        if (MonitorVideoSourceEnum.HIKVISION.getSource().equals(source) || MonitorVideoSourceEnum.FORESTFIREMONITORPLATFORM.getSource().equals(source)
+//                || MonitorVideoSourceEnum.YANXIFORESTFARM.getSource().equals(source)) {
+//            previewURL = monitorVideoService.getHikvisionPreviewURL(indexCode, streamType, source, protocol);
+//        } else if (MonitorVideoSourceEnum.GEYE.getSource().equals(source)) {
+//            previewURL = monitorVideoService.getGeyePreviewURL(indexCode, streamType, source, protocol);
+//        }
+//        return R.data(previewURL);
+//    }
+
+//    /**
+//     * 获取回放地址
+//     */
+//    @GetMapping("/getPlaybackURL")
+//    public AjaxResult getPlaybackURL(@RequestParam String indexCode,
+//                                    @RequestParam String source,
+//                                    @RequestParam(required = false) String protocol,
+//                                    @ApiParam("yyyy-MM-dd hh:mm:ss") @RequestParam String beginTime,
+//                                    @ApiParam("yyyy-MM-dd hh:mm:ss") @RequestParam String endTime) throws Exception {
+//        String previewURL = "";
+//        if (MonitorVideoSourceEnum.HIKVISION.getSource().equals(source) || MonitorVideoSourceEnum.FORESTFIREMONITORPLATFORM.getSource().equals(source)
+//                || MonitorVideoSourceEnum.YANXIFORESTFARM.getSource().equals(source)) {
+//            previewURL = monitorVideoService.getHikvisionPlaybackURL(indexCode, source, protocol, beginTime, endTime);
+//        } else if (MonitorVideoSourceEnum.GEYE.getSource().equals(source)) {
+//            previewURL = monitorVideoService.getGeyePlaybackURL(indexCode, source, beginTime, endTime);
+//        }
+//        return R.data(previewURL);
+//    }
+
+//    /**
+//     * 云台操作(source=1)
+//     */
+//    @GetMapping("/controlling")
+////    @ApiImplicitParams({
+////            @ApiImplicitParam(name = "action", value = "时候  0-开始 ，1-停止 ", paramType = "query", dataType = "number"),
+////            @ApiImplicitParam(name = "command", value = "时候 LEFT 左转 RIGHT右转 UP 上转 DOWN 下转 ZOOM_IN 焦距变大 " +
+////                    "ZOOM_OUT 焦距变小 LEFT_UP 左上 LEFT_DOWN 左下 RIGHT_UP 右上 RIGHT_DOWN 右下 FOCUS_NEAR 焦点前移 " +
+////                    "FOCUS_FAR 焦点后移 IRIS_ENLARGE 光圈扩大 IRIS_REDUCE 光圈缩小", paramType = "query", dataType = "string"),
+////            @ApiImplicitParam(name = "speed", value = "云台速度，取值范围为1-100，默认50", paramType = "query", dataType = "number"),
+////    })
+//    public AjaxResult controlling(@RequestParam String indexCode,
+//                         @RequestParam String source,
+//                         @ApiIgnore @RequestParam Integer action,
+//                         @ApiIgnore @RequestParam String command,
+//                         @ApiIgnore @RequestParam(required = false) Integer speed) {
+//        return R.status(monitorVideoService.hikvisionControlling(indexCode, action, command, source, speed));
+//    }
+
 }
