@@ -12,6 +12,15 @@ ruoyi:
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证
   captchaType: math
+oss:
+  endPoint: oss-cn-beijing.aliyuncs.com
+  accessKeyId: LTAI5tFXTfY5Rsiwvrg9gUuk
+  accessKeySecret: Ebbj7anXSdbJwfm5zbTfHkJ5QWDbTP
+  bucketName: lyq-private
+  https: true
+  regionId: cn-beijing
+  roleArn: acs:ram::1919425406190533:role/sts-role
+  expiredDuration: 3600
 
 # 开发环境配置
 server:

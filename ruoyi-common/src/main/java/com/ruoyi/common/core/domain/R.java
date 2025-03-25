@@ -2,12 +2,14 @@ package com.ruoyi.common.core.domain;
 
 import java.io.Serializable;
 import com.ruoyi.common.constant.HttpStatus;
+import lombok.ToString;
 
 /**
  * 响应信息主体
  *
  * @author ruoyi
  */
+@ToString
 public class R<T> implements Serializable
 {
     private static final long serialVersionUID = 1L;
