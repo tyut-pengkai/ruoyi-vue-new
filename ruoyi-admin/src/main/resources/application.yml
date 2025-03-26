@@ -21,6 +21,7 @@ oss:
   regionId: cn-beijing
   roleArn: acs:ram::1919425406190533:role/sts-role
   expiredDuration: 3600
+  tempDir: E:/temp/
 
 # 开发环境配置
 server:

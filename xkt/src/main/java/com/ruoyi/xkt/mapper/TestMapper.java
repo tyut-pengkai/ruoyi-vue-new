@@ -1,7 +1,7 @@
-package com.ruoyi.system.mapper;
+package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ruoyi.system.domain.TestDO;
+import com.ruoyi.xkt.domain.Test;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
  * @date 2025-03-18 16:05
  */
 @Repository
-public interface TestMapper extends BaseMapper<TestDO> {
+public interface TestMapper extends BaseMapper<Test> {
 }

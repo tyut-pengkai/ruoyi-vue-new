@@ -26,4 +26,6 @@ public class OSSProperties {
     private String roleArn;
 
     private Long expiredDuration;
+
+    private String tempDir;
 }

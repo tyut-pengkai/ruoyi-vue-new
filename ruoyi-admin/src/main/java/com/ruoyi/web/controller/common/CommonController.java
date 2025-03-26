@@ -29,7 +29,7 @@ public class CommonController {
     private OSSProperties ossProperties;
 
     @ApiOperation("获取OSS临时访问凭证")
-    @GetMapping("/getCredentials")
+    @GetMapping("/oss/getCredentials")
     public R<STSCredentialsVO> getCredentials() {
         STSCredentialsVO vo = new STSCredentialsVO();
         Credentials credentials = ossClient.createStsCredentials();

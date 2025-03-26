@@ -1,4 +1,4 @@
-package com.ruoyi.system.domain;
+package com.ruoyi.xkt.domain;
 
 
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -12,7 +12,7 @@ import lombok.Data;
  */
 @Data
 @TableName("test")
-public class TestDO {
+public class Test {
 
     @TableId
     private Long id;
