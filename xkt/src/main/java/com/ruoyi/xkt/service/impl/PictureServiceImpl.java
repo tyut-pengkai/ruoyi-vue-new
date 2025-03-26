@@ -61,12 +61,14 @@ public class PictureServiceImpl implements IPictureService {
                 if (ImgExtUtil.isImageByMagicNumber(file)) {
                     FileUtil.mkParentDirs(new450Path);
                     FileUtil.mkParentDirs(new750Path);
+                    int height;
+                    int weight;
                     //450p图片
                     try (InputStream is = new FileInputStream(file);
                          FileOutputStream fos = new FileOutputStream(new450Path)) {
                         BufferedImage in = ImageIO.read(is);
-                        int height = in.getHeight();
-                        int weight = in.getWidth();
+                        height = in.getHeight();
+                        weight = in.getWidth();
                         int neww = 450;
                         int newh = (int) (NumberUtil.div(height, weight, 5) * neww);
                         ImgExtUtil.scale(in, fos, neww, newh, null);
@@ -75,8 +77,6 @@ public class PictureServiceImpl implements IPictureService {
                     try (InputStream is = new FileInputStream(file);
                          FileOutputStream fos = new FileOutputStream(new750Path)) {
                         BufferedImage in = ImageIO.read(is);
-                        int height = in.getHeight();
-                        int weight = in.getWidth();
                         int neww = 750;
                         int newh = (int) (NumberUtil.div(height, weight, 5) * neww);
                         ImgExtUtil.scale(in, fos, neww, newh, null);
