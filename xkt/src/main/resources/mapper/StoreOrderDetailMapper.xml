@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreOrderDetailMapper">
+    
+    <resultMap type="StoreOrderDetail" id="StoreOrderDetailResult">
+        <result property="storeOrderDetailId"    column="store_order_detail_id"    />
+        <result property="storeOrderId"    column="store_order_id"    />
+        <result property="storeOrderDetailRefundId"    column="store_order_detail_refund_id"    />
+        <result property="storeProdColorSizeId"    column="store_prod_color_size_id"    />
+        <result property="storeProdId"    column="store_prod_id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="price"    column="price"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="amount"    column="amount"    />
+        <result property="detailStatus"    column="detail_status"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreOrderDetailVo">
+        select store_order_detail_id, store_order_id, store_order_detail_refund_id, store_prod_color_size_id, store_prod_id, store_id, price, quantity, amount, detail_status, version, del_flag, create_by, create_time, update_by, update_time from store_order_detail
+    </sql>
+
+    <select id="selectStoreOrderDetailList" parameterType="StoreOrderDetail" resultMap="StoreOrderDetailResult">
+        <include refid="selectStoreOrderDetailVo"/>
+        <where>  
+            <if test="storeOrderId != null "> and store_order_id = #{storeOrderId}</if>
+            <if test="storeOrderDetailRefundId != null "> and store_order_detail_refund_id = #{storeOrderDetailRefundId}</if>
+            <if test="storeProdColorSizeId != null "> and store_prod_color_size_id = #{storeProdColorSizeId}</if>
+            <if test="storeProdId != null "> and store_prod_id = #{storeProdId}</if>
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="detailStatus != null "> and detail_status = #{detailStatus}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreOrderDetailByStoreOrderDetailId" parameterType="Long" resultMap="StoreOrderDetailResult">
+        <include refid="selectStoreOrderDetailVo"/>
+        where store_order_detail_id = #{storeOrderDetailId}
+    </select>
+
+    <insert id="insertStoreOrderDetail" parameterType="StoreOrderDetail" useGeneratedKeys="true" keyProperty="storeOrderDetailId">
+        insert into store_order_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeOrderId != null">store_order_id,</if>
+            <if test="storeOrderDetailRefundId != null">store_order_detail_refund_id,</if>
+            <if test="storeProdColorSizeId != null">store_prod_color_size_id,</if>
+            <if test="storeProdId != null">store_prod_id,</if>
+            <if test="storeId != null">store_id,</if>
+            <if test="price != null">price,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="amount != null">amount,</if>
+            <if test="detailStatus != null">detail_status,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeOrderId != null">#{storeOrderId},</if>
+            <if test="storeOrderDetailRefundId != null">#{storeOrderDetailRefundId},</if>
+            <if test="storeProdColorSizeId != null">#{storeProdColorSizeId},</if>
+            <if test="storeProdId != null">#{storeProdId},</if>
+            <if test="storeId != null">#{storeId},</if>
+            <if test="price != null">#{price},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="detailStatus != null">#{detailStatus},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreOrderDetail" parameterType="StoreOrderDetail">
+        update store_order_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeOrderId != null">store_order_id = #{storeOrderId},</if>
+            <if test="storeOrderDetailRefundId != null">store_order_detail_refund_id = #{storeOrderDetailRefundId},</if>
+            <if test="storeProdColorSizeId != null">store_prod_color_size_id = #{storeProdColorSizeId},</if>
+            <if test="storeProdId != null">store_prod_id = #{storeProdId},</if>
+            <if test="storeId != null">store_id = #{storeId},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="detailStatus != null">detail_status = #{detailStatus},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_order_detail_id = #{storeOrderDetailId}
+    </update>
+
+    <delete id="deleteStoreOrderDetailByStoreOrderDetailId" parameterType="Long">
+        delete from store_order_detail where store_order_detail_id = #{storeOrderDetailId}
+    </delete>
+
+    <delete id="deleteStoreOrderDetailByStoreOrderDetailIds" parameterType="String">
+        delete from store_order_detail where store_order_detail_id in 
+        <foreach item="storeOrderDetailId" collection="array" open="(" separator="," close=")">
+            #{storeOrderDetailId}
+        </foreach>
+    </delete>
+</mapper>

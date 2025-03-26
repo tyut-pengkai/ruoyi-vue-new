@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreProductStorageMapper">
+    
+    <resultMap type="StoreProductStorage" id="StoreProductStorageResult">
+        <result property="storeProdStorId"    column="store_prod_stor_id"    />
+        <result property="code"    column="code"    />
+        <result property="storageType"    column="storage_type"    />
+        <result property="totalNum"    column="total_num"    />
+        <result property="totalProducePrice"    column="total_produce_price"    />
+        <result property="storageStatus"    column="storage_status"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreProductStorageVo">
+        select store_prod_stor_id, code, storage_type, total_num, total_produce_price, storage_status, version, del_flag, create_by, create_time, update_by, update_time from store_product_storage
+    </sql>
+
+    <select id="selectStoreProductStorageList" parameterType="StoreProductStorage" resultMap="StoreProductStorageResult">
+        <include refid="selectStoreProductStorageVo"/>
+        <where>  
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="storageType != null "> and storage_type = #{storageType}</if>
+            <if test="totalNum != null "> and total_num = #{totalNum}</if>
+            <if test="totalProducePrice != null "> and total_produce_price = #{totalProducePrice}</if>
+            <if test="storageStatus != null "> and storage_status = #{storageStatus}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreProductStorageByStoreProdStorId" parameterType="Long" resultMap="StoreProductStorageResult">
+        <include refid="selectStoreProductStorageVo"/>
+        where store_prod_stor_id = #{storeProdStorId}
+    </select>
+
+    <insert id="insertStoreProductStorage" parameterType="StoreProductStorage" useGeneratedKeys="true" keyProperty="storeProdStorId">
+        insert into store_product_storage
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="code != null and code != ''">code,</if>
+            <if test="storageType != null">storage_type,</if>
+            <if test="totalNum != null">total_num,</if>
+            <if test="totalProducePrice != null">total_produce_price,</if>
+            <if test="storageStatus != null">storage_status,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="code != null and code != ''">#{code},</if>
+            <if test="storageType != null">#{storageType},</if>
+            <if test="totalNum != null">#{totalNum},</if>
+            <if test="totalProducePrice != null">#{totalProducePrice},</if>
+            <if test="storageStatus != null">#{storageStatus},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreProductStorage" parameterType="StoreProductStorage">
+        update store_product_storage
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="code != null and code != ''">code = #{code},</if>
+            <if test="storageType != null">storage_type = #{storageType},</if>
+            <if test="totalNum != null">total_num = #{totalNum},</if>
+            <if test="totalProducePrice != null">total_produce_price = #{totalProducePrice},</if>
+            <if test="storageStatus != null">storage_status = #{storageStatus},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_prod_stor_id = #{storeProdStorId}
+    </update>
+
+    <delete id="deleteStoreProductStorageByStoreProdStorId" parameterType="Long">
+        delete from store_product_storage where store_prod_stor_id = #{storeProdStorId}
+    </delete>
+
+    <delete id="deleteStoreProductStorageByStoreProdStorIds" parameterType="String">
+        delete from store_product_storage where store_prod_stor_id in 
+        <foreach item="storeProdStorId" collection="array" open="(" separator="," close=")">
+            #{storeProdStorId}
+        </foreach>
+    </delete>
+</mapper>

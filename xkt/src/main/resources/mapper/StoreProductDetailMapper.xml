@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreProductDetailMapper">
+    
+    <resultMap type="StoreProductDetail" id="StoreProductDetailResult">
+        <result property="storeProdDetailId"    column="store_prod_detail_id"    />
+        <result property="storeProdId"    column="store_prod_id"    />
+        <result property="detail"    column="detail"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreProductDetailVo">
+        select store_prod_detail_id, store_prod_id, detail, version, del_flag, create_by, create_time, update_by, update_time from store_product_detail
+    </sql>
+
+    <select id="selectStoreProductDetailList" parameterType="StoreProductDetail" resultMap="StoreProductDetailResult">
+        <include refid="selectStoreProductDetailVo"/>
+        <where>  
+            <if test="storeProdId != null "> and store_prod_id = #{storeProdId}</if>
+            <if test="detail != null  and detail != ''"> and detail = #{detail}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreProductDetailByStoreProdDetailId" parameterType="Long" resultMap="StoreProductDetailResult">
+        <include refid="selectStoreProductDetailVo"/>
+        where store_prod_detail_id = #{storeProdDetailId}
+    </select>
+
+    <insert id="insertStoreProductDetail" parameterType="StoreProductDetail" useGeneratedKeys="true" keyProperty="storeProdDetailId">
+        insert into store_product_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeProdId != null">store_prod_id,</if>
+            <if test="detail != null and detail != ''">detail,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeProdId != null">#{storeProdId},</if>
+            <if test="detail != null and detail != ''">#{detail},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreProductDetail" parameterType="StoreProductDetail">
+        update store_product_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeProdId != null">store_prod_id = #{storeProdId},</if>
+            <if test="detail != null and detail != ''">detail = #{detail},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_prod_detail_id = #{storeProdDetailId}
+    </update>
+
+    <delete id="deleteStoreProductDetailByStoreProdDetailId" parameterType="Long">
+        delete from store_product_detail where store_prod_detail_id = #{storeProdDetailId}
+    </delete>
+
+    <delete id="deleteStoreProductDetailByStoreProdDetailIds" parameterType="String">
+        delete from store_product_detail where store_prod_detail_id in 
+        <foreach item="storeProdDetailId" collection="array" open="(" separator="," close=")">
+            #{storeProdDetailId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreSaleRefundRecordMapper">
+    
+    <resultMap type="StoreSaleRefundRecord" id="StoreSaleRefundRecordResult">
+        <result property="storeSaleRefundRecordId"    column="store_sale_refund_record_id"    />
+        <result property="storeSaleId"    column="store_sale_id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="storeCusId"    column="store_cus_id"    />
+        <result property="storeProdId"    column="store_prod_id"    />
+        <result property="saleType"    column="sale_type"    />
+        <result property="code"    column="code"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="amount"    column="amount"    />
+        <result property="payWay"    column="pay_way"    />
+        <result property="remark"    column="remark"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreSaleRefundRecordVo">
+        select store_sale_refund_record_id, store_sale_id, store_id, store_cus_id, store_prod_id, sale_type, code, quantity, amount, pay_way, remark, version, del_flag, create_by, create_time, update_by, update_time from store_sale_refund_record
+    </sql>
+
+    <select id="selectStoreSaleRefundRecordList" parameterType="StoreSaleRefundRecord" resultMap="StoreSaleRefundRecordResult">
+        <include refid="selectStoreSaleRefundRecordVo"/>
+        <where>  
+            <if test="storeSaleId != null "> and store_sale_id = #{storeSaleId}</if>
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="storeCusId != null "> and store_cus_id = #{storeCusId}</if>
+            <if test="storeProdId != null "> and store_prod_id = #{storeProdId}</if>
+            <if test="saleType != null "> and sale_type = #{saleType}</if>
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="payWay != null "> and pay_way = #{payWay}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreSaleRefundRecordByStoreSaleRefundRecordId" parameterType="Long" resultMap="StoreSaleRefundRecordResult">
+        <include refid="selectStoreSaleRefundRecordVo"/>
+        where store_sale_refund_record_id = #{storeSaleRefundRecordId}
+    </select>
+
+    <insert id="insertStoreSaleRefundRecord" parameterType="StoreSaleRefundRecord" useGeneratedKeys="true" keyProperty="storeSaleRefundRecordId">
+        insert into store_sale_refund_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeSaleId != null">store_sale_id,</if>
+            <if test="storeId != null">store_id,</if>
+            <if test="storeCusId != null">store_cus_id,</if>
+            <if test="storeProdId != null">store_prod_id,</if>
+            <if test="saleType != null">sale_type,</if>
+            <if test="code != null and code != ''">code,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="amount != null">amount,</if>
+            <if test="payWay != null">pay_way,</if>
+            <if test="remark != null">remark,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeSaleId != null">#{storeSaleId},</if>
+            <if test="storeId != null">#{storeId},</if>
+            <if test="storeCusId != null">#{storeCusId},</if>
+            <if test="storeProdId != null">#{storeProdId},</if>
+            <if test="saleType != null">#{saleType},</if>
+            <if test="code != null and code != ''">#{code},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="payWay != null">#{payWay},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreSaleRefundRecord" parameterType="StoreSaleRefundRecord">
+        update store_sale_refund_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeSaleId != null">store_sale_id = #{storeSaleId},</if>
+            <if test="storeId != null">store_id = #{storeId},</if>
+            <if test="storeCusId != null">store_cus_id = #{storeCusId},</if>
+            <if test="storeProdId != null">store_prod_id = #{storeProdId},</if>
+            <if test="saleType != null">sale_type = #{saleType},</if>
+            <if test="code != null and code != ''">code = #{code},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="payWay != null">pay_way = #{payWay},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_sale_refund_record_id = #{storeSaleRefundRecordId}
+    </update>
+
+    <delete id="deleteStoreSaleRefundRecordByStoreSaleRefundRecordId" parameterType="Long">
+        delete from store_sale_refund_record where store_sale_refund_record_id = #{storeSaleRefundRecordId}
+    </delete>
+
+    <delete id="deleteStoreSaleRefundRecordByStoreSaleRefundRecordIds" parameterType="String">
+        delete from store_sale_refund_record where store_sale_refund_record_id in 
+        <foreach item="storeSaleRefundRecordId" collection="array" open="(" separator="," close=")">
+            #{storeSaleRefundRecordId}
+        </foreach>
+    </delete>
+</mapper>

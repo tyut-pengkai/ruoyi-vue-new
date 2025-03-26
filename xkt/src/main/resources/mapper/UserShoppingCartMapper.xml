@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserShoppingCartMapper">
+    
+    <resultMap type="UserShoppingCart" id="UserShoppingCartResult">
+        <result property="userShopCartId"    column="user_shop_cart_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="storeProdColorSizeId"    column="store_prod_color_size_id"    />
+        <result property="storeProdId"    column="store_prod_id"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectUserShoppingCartVo">
+        select user_shop_cart_id, user_id, store_id, store_prod_color_size_id, store_prod_id, quantity, version, del_flag, create_by, create_time, update_by, update_time from user_shopping_cart
+    </sql>
+
+    <select id="selectUserShoppingCartList" parameterType="UserShoppingCart" resultMap="UserShoppingCartResult">
+        <include refid="selectUserShoppingCartVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="storeProdColorSizeId != null "> and store_prod_color_size_id = #{storeProdColorSizeId}</if>
+            <if test="storeProdId != null "> and store_prod_id = #{storeProdId}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserShoppingCartByUserShopCartId" parameterType="Long" resultMap="UserShoppingCartResult">
+        <include refid="selectUserShoppingCartVo"/>
+        where user_shop_cart_id = #{userShopCartId}
+    </select>
+
+    <insert id="insertUserShoppingCart" parameterType="UserShoppingCart" useGeneratedKeys="true" keyProperty="userShopCartId">
+        insert into user_shopping_cart
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="storeId != null">store_id,</if>
+            <if test="storeProdColorSizeId != null">store_prod_color_size_id,</if>
+            <if test="storeProdId != null">store_prod_id,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="storeId != null">#{storeId},</if>
+            <if test="storeProdColorSizeId != null">#{storeProdColorSizeId},</if>
+            <if test="storeProdId != null">#{storeProdId},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserShoppingCart" parameterType="UserShoppingCart">
+        update user_shopping_cart
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="storeId != null">store_id = #{storeId},</if>
+            <if test="storeProdColorSizeId != null">store_prod_color_size_id = #{storeProdColorSizeId},</if>
+            <if test="storeProdId != null">store_prod_id = #{storeProdId},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where user_shop_cart_id = #{userShopCartId}
+    </update>
+
+    <delete id="deleteUserShoppingCartByUserShopCartId" parameterType="Long">
+        delete from user_shopping_cart where user_shop_cart_id = #{userShopCartId}
+    </delete>
+
+    <delete id="deleteUserShoppingCartByUserShopCartIds" parameterType="String">
+        delete from user_shopping_cart where user_shop_cart_id in 
+        <foreach item="userShopCartId" collection="array" open="(" separator="," close=")">
+            #{userShopCartId}
+        </foreach>
+    </delete>
+</mapper>

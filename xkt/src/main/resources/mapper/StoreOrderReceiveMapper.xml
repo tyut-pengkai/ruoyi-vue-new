@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreOrderReceiveMapper">
+    
+    <resultMap type="StoreOrderReceive" id="StoreOrderReceiveResult">
+        <result property="storeOrderRcvId"    column="store_order_rcv_id"    />
+        <result property="storeOrderId"    column="store_order_id"    />
+        <result property="sysUserAddressId"    column="sys_user_address_id"    />
+        <result property="receiveName"    column="receive_name"    />
+        <result property="receivePhone"    column="receive_phone"    />
+        <result property="provinceCode"    column="province_code"    />
+        <result property="cityId"    column="city_id"    />
+        <result property="districtCode"    column="district_code"    />
+        <result property="detailAddress"    column="detail_address"    />
+        <result property="remark"    column="remark"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreOrderReceiveVo">
+        select store_order_rcv_id, store_order_id, sys_user_address_id, receive_name, receive_phone, province_code, city_id, district_code, detail_address, remark, version, del_flag, create_by, create_time, update_by, update_time from store_order_receive
+    </sql>
+
+    <select id="selectStoreOrderReceiveList" parameterType="StoreOrderReceive" resultMap="StoreOrderReceiveResult">
+        <include refid="selectStoreOrderReceiveVo"/>
+        <where>  
+            <if test="storeOrderId != null "> and store_order_id = #{storeOrderId}</if>
+            <if test="sysUserAddressId != null "> and sys_user_address_id = #{sysUserAddressId}</if>
+            <if test="receiveName != null  and receiveName != ''"> and receive_name like concat('%', #{receiveName}, '%')</if>
+            <if test="receivePhone != null  and receivePhone != ''"> and receive_phone = #{receivePhone}</if>
+            <if test="provinceCode != null  and provinceCode != ''"> and province_code = #{provinceCode}</if>
+            <if test="cityId != null  and cityId != ''"> and city_id = #{cityId}</if>
+            <if test="districtCode != null  and districtCode != ''"> and district_code = #{districtCode}</if>
+            <if test="detailAddress != null  and detailAddress != ''"> and detail_address = #{detailAddress}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreOrderReceiveByStoreOrderRcvId" parameterType="Long" resultMap="StoreOrderReceiveResult">
+        <include refid="selectStoreOrderReceiveVo"/>
+        where store_order_rcv_id = #{storeOrderRcvId}
+    </select>
+
+    <insert id="insertStoreOrderReceive" parameterType="StoreOrderReceive" useGeneratedKeys="true" keyProperty="storeOrderRcvId">
+        insert into store_order_receive
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeOrderId != null">store_order_id,</if>
+            <if test="sysUserAddressId != null">sys_user_address_id,</if>
+            <if test="receiveName != null">receive_name,</if>
+            <if test="receivePhone != null">receive_phone,</if>
+            <if test="provinceCode != null">province_code,</if>
+            <if test="cityId != null">city_id,</if>
+            <if test="districtCode != null">district_code,</if>
+            <if test="detailAddress != null">detail_address,</if>
+            <if test="remark != null">remark,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeOrderId != null">#{storeOrderId},</if>
+            <if test="sysUserAddressId != null">#{sysUserAddressId},</if>
+            <if test="receiveName != null">#{receiveName},</if>
+            <if test="receivePhone != null">#{receivePhone},</if>
+            <if test="provinceCode != null">#{provinceCode},</if>
+            <if test="cityId != null">#{cityId},</if>
+            <if test="districtCode != null">#{districtCode},</if>
+            <if test="detailAddress != null">#{detailAddress},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreOrderReceive" parameterType="StoreOrderReceive">
+        update store_order_receive
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeOrderId != null">store_order_id = #{storeOrderId},</if>
+            <if test="sysUserAddressId != null">sys_user_address_id = #{sysUserAddressId},</if>
+            <if test="receiveName != null">receive_name = #{receiveName},</if>
+            <if test="receivePhone != null">receive_phone = #{receivePhone},</if>
+            <if test="provinceCode != null">province_code = #{provinceCode},</if>
+            <if test="cityId != null">city_id = #{cityId},</if>
+            <if test="districtCode != null">district_code = #{districtCode},</if>
+            <if test="detailAddress != null">detail_address = #{detailAddress},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_order_rcv_id = #{storeOrderRcvId}
+    </update>
+
+    <delete id="deleteStoreOrderReceiveByStoreOrderRcvId" parameterType="Long">
+        delete from store_order_receive where store_order_rcv_id = #{storeOrderRcvId}
+    </delete>
+
+    <delete id="deleteStoreOrderReceiveByStoreOrderRcvIds" parameterType="String">
+        delete from store_order_receive where store_order_rcv_id in 
+        <foreach item="storeOrderRcvId" collection="array" open="(" separator="," close=")">
+            #{storeOrderRcvId}
+        </foreach>
+    </delete>
+</mapper>

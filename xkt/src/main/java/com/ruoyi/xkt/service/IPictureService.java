@@ -10,6 +10,7 @@ public interface IPictureService {
 
     /**
      * 处理图包
+     *
      * @param key
      * @return
      */

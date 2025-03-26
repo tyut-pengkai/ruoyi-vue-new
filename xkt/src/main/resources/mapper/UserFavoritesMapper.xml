@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserFavoritesMapper">
+    
+    <resultMap type="UserFavorites" id="UserFavoritesResult">
+        <result property="userFavoId"    column="user_favo_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="storeProdId"    column="store_prod_id"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectUserFavoritesVo">
+        select user_favo_id, user_id, store_id, store_prod_id, version, del_flag, create_by, create_time, update_by, update_time from user_favorites
+    </sql>
+
+    <select id="selectUserFavoritesList" parameterType="UserFavorites" resultMap="UserFavoritesResult">
+        <include refid="selectUserFavoritesVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="storeProdId != null "> and store_prod_id = #{storeProdId}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserFavoritesByUserFavoId" parameterType="Long" resultMap="UserFavoritesResult">
+        <include refid="selectUserFavoritesVo"/>
+        where user_favo_id = #{userFavoId}
+    </select>
+
+    <insert id="insertUserFavorites" parameterType="UserFavorites" useGeneratedKeys="true" keyProperty="userFavoId">
+        insert into user_favorites
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="storeId != null">store_id,</if>
+            <if test="storeProdId != null">store_prod_id,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="storeId != null">#{storeId},</if>
+            <if test="storeProdId != null">#{storeProdId},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserFavorites" parameterType="UserFavorites">
+        update user_favorites
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="storeId != null">store_id = #{storeId},</if>
+            <if test="storeProdId != null">store_prod_id = #{storeProdId},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where user_favo_id = #{userFavoId}
+    </update>
+
+    <delete id="deleteUserFavoritesByUserFavoId" parameterType="Long">
+        delete from user_favorites where user_favo_id = #{userFavoId}
+    </delete>
+
+    <delete id="deleteUserFavoritesByUserFavoIds" parameterType="String">
+        delete from user_favorites where user_favo_id in 
+        <foreach item="userFavoId" collection="array" open="(" separator="," close=")">
+            #{userFavoId}
+        </foreach>
+    </delete>
+</mapper>

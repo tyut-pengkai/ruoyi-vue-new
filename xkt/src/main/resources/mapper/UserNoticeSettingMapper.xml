@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserNoticeSettingMapper">
+    
+    <resultMap type="UserNoticeSetting" id="UserNoticeSettingResult">
+        <result property="userNoticeSetId"    column="user_notice_set_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="noticeType"    column="notice_type"    />
+        <result property="allow"    column="allow"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectUserNoticeSettingVo">
+        select user_notice_set_id, user_id, notice_type, allow, version, del_flag, create_by, create_time, update_by, update_time from user_notice_setting
+    </sql>
+
+    <select id="selectUserNoticeSettingList" parameterType="UserNoticeSetting" resultMap="UserNoticeSettingResult">
+        <include refid="selectUserNoticeSettingVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="noticeType != null  and noticeType != ''"> and notice_type = #{noticeType}</if>
+            <if test="allow != null  and allow != ''"> and allow = #{allow}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserNoticeSettingByUserNoticeSetId" parameterType="Long" resultMap="UserNoticeSettingResult">
+        <include refid="selectUserNoticeSettingVo"/>
+        where user_notice_set_id = #{userNoticeSetId}
+    </select>
+
+    <insert id="insertUserNoticeSetting" parameterType="UserNoticeSetting" useGeneratedKeys="true" keyProperty="userNoticeSetId">
+        insert into user_notice_setting
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="noticeType != null">notice_type,</if>
+            <if test="allow != null">allow,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="noticeType != null">#{noticeType},</if>
+            <if test="allow != null">#{allow},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserNoticeSetting" parameterType="UserNoticeSetting">
+        update user_notice_setting
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="noticeType != null">notice_type = #{noticeType},</if>
+            <if test="allow != null">allow = #{allow},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where user_notice_set_id = #{userNoticeSetId}
+    </update>
+
+    <delete id="deleteUserNoticeSettingByUserNoticeSetId" parameterType="Long">
+        delete from user_notice_setting where user_notice_set_id = #{userNoticeSetId}
+    </delete>
+
+    <delete id="deleteUserNoticeSettingByUserNoticeSetIds" parameterType="String">
+        delete from user_notice_setting where user_notice_set_id in 
+        <foreach item="userNoticeSetId" collection="array" open="(" separator="," close=")">
+            #{userNoticeSetId}
+        </foreach>
+    </delete>
+</mapper>

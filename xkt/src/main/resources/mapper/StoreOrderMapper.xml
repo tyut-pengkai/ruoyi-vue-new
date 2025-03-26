@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreOrderMapper">
+    
+    <resultMap type="StoreOrder" id="StoreOrderResult">
+        <result property="storeOrderId"    column="store_order_id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="code"    column="code"    />
+        <result property="orderType"    column="order_type"    />
+        <result property="refundOriginalId"    column="refund_original_id"    />
+        <result property="expressId"    column="express_id"    />
+        <result property="expressFee"    column="express_fee"    />
+        <result property="deliveryType"    column="delivery_type"    />
+        <result property="deliveryEndTime"    column="delivery_end_time"    />
+        <result property="refundReasonId"    column="refund_reason_id"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="amount"    column="amount"    />
+        <result property="rejectReason"    column="reject_reason"    />
+        <result property="voucherDate"    column="voucher_date"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreOrderVo">
+        select store_order_id, store_id, user_id, code, order_type, refund_original_id, express_id, express_fee, delivery_type, delivery_end_time, refund_reason_id, quantity, amount, reject_reason, voucher_date, order_status, version, del_flag, create_by, create_time, update_by, update_time from store_order
+    </sql>
+
+    <select id="selectStoreOrderList" parameterType="StoreOrder" resultMap="StoreOrderResult">
+        <include refid="selectStoreOrderVo"/>
+        <where>  
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="orderType != null "> and order_type = #{orderType}</if>
+            <if test="refundOriginalId != null "> and refund_original_id = #{refundOriginalId}</if>
+            <if test="expressId != null "> and express_id = #{expressId}</if>
+            <if test="expressFee != null "> and express_fee = #{expressFee}</if>
+            <if test="deliveryType != null "> and delivery_type = #{deliveryType}</if>
+            <if test="deliveryEndTime != null "> and delivery_end_time = #{deliveryEndTime}</if>
+            <if test="refundReasonId != null "> and refund_reason_id = #{refundReasonId}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="rejectReason != null  and rejectReason != ''"> and reject_reason = #{rejectReason}</if>
+            <if test="voucherDate != null "> and voucher_date = #{voucherDate}</if>
+            <if test="orderStatus != null "> and order_status = #{orderStatus}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreOrderByStoreOrderId" parameterType="Long" resultMap="StoreOrderResult">
+        <include refid="selectStoreOrderVo"/>
+        where store_order_id = #{storeOrderId}
+    </select>
+
+    <insert id="insertStoreOrder" parameterType="StoreOrder" useGeneratedKeys="true" keyProperty="storeOrderId">
+        insert into store_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeId != null">store_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="code != null">code,</if>
+            <if test="orderType != null">order_type,</if>
+            <if test="refundOriginalId != null">refund_original_id,</if>
+            <if test="expressId != null">express_id,</if>
+            <if test="expressFee != null">express_fee,</if>
+            <if test="deliveryType != null">delivery_type,</if>
+            <if test="deliveryEndTime != null">delivery_end_time,</if>
+            <if test="refundReasonId != null">refund_reason_id,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="amount != null">amount,</if>
+            <if test="rejectReason != null">reject_reason,</if>
+            <if test="voucherDate != null">voucher_date,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeId != null">#{storeId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="code != null">#{code},</if>
+            <if test="orderType != null">#{orderType},</if>
+            <if test="refundOriginalId != null">#{refundOriginalId},</if>
+            <if test="expressId != null">#{expressId},</if>
+            <if test="expressFee != null">#{expressFee},</if>
+            <if test="deliveryType != null">#{deliveryType},</if>
+            <if test="deliveryEndTime != null">#{deliveryEndTime},</if>
+            <if test="refundReasonId != null">#{refundReasonId},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="rejectReason != null">#{rejectReason},</if>
+            <if test="voucherDate != null">#{voucherDate},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreOrder" parameterType="StoreOrder">
+        update store_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeId != null">store_id = #{storeId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="code != null">code = #{code},</if>
+            <if test="orderType != null">order_type = #{orderType},</if>
+            <if test="refundOriginalId != null">refund_original_id = #{refundOriginalId},</if>
+            <if test="expressId != null">express_id = #{expressId},</if>
+            <if test="expressFee != null">express_fee = #{expressFee},</if>
+            <if test="deliveryType != null">delivery_type = #{deliveryType},</if>
+            <if test="deliveryEndTime != null">delivery_end_time = #{deliveryEndTime},</if>
+            <if test="refundReasonId != null">refund_reason_id = #{refundReasonId},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="rejectReason != null">reject_reason = #{rejectReason},</if>
+            <if test="voucherDate != null">voucher_date = #{voucherDate},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_order_id = #{storeOrderId}
+    </update>
+
+    <delete id="deleteStoreOrderByStoreOrderId" parameterType="Long">
+        delete from store_order where store_order_id = #{storeOrderId}
+    </delete>
+
+    <delete id="deleteStoreOrderByStoreOrderIds" parameterType="String">
+        delete from store_order where store_order_id in 
+        <foreach item="storeOrderId" collection="array" open="(" separator="," close=")">
+            #{storeOrderId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreOrderExpressMapper">
+    
+    <resultMap type="StoreOrderExpress" id="StoreOrderExpressResult">
+        <result property="storeOrderExprId"    column="store_order_expr_id"    />
+        <result property="storeOrderDetailId"    column="store_order_detail_id"    />
+        <result property="storeOrderId"    column="store_order_id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="deliveryType"    column="delivery_type"    />
+        <result property="expressId"    column="express_id"    />
+        <result property="expressFee"    column="express_fee"    />
+        <result property="trackingNum"    column="tracking_num"    />
+        <result property="exprStatus"    column="expr_status"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreOrderExpressVo">
+        select store_order_expr_id, store_order_detail_id, store_order_id, store_id, delivery_type, express_id, express_fee, tracking_num, expr_status, version, del_flag, create_by, create_time, update_by, update_time from store_order_express
+    </sql>
+
+    <select id="selectStoreOrderExpressList" parameterType="StoreOrderExpress" resultMap="StoreOrderExpressResult">
+        <include refid="selectStoreOrderExpressVo"/>
+        <where>  
+            <if test="storeOrderDetailId != null "> and store_order_detail_id = #{storeOrderDetailId}</if>
+            <if test="storeOrderId != null "> and store_order_id = #{storeOrderId}</if>
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="deliveryType != null "> and delivery_type = #{deliveryType}</if>
+            <if test="expressId != null "> and express_id = #{expressId}</if>
+            <if test="expressFee != null "> and express_fee = #{expressFee}</if>
+            <if test="trackingNum != null  and trackingNum != ''"> and tracking_num = #{trackingNum}</if>
+            <if test="exprStatus != null "> and expr_status = #{exprStatus}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreOrderExpressByStoreOrderExprId" parameterType="Long" resultMap="StoreOrderExpressResult">
+        <include refid="selectStoreOrderExpressVo"/>
+        where store_order_expr_id = #{storeOrderExprId}
+    </select>
+
+    <insert id="insertStoreOrderExpress" parameterType="StoreOrderExpress" useGeneratedKeys="true" keyProperty="storeOrderExprId">
+        insert into store_order_express
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeOrderDetailId != null">store_order_detail_id,</if>
+            <if test="storeOrderId != null">store_order_id,</if>
+            <if test="storeId != null">store_id,</if>
+            <if test="deliveryType != null">delivery_type,</if>
+            <if test="expressId != null">express_id,</if>
+            <if test="expressFee != null">express_fee,</if>
+            <if test="trackingNum != null">tracking_num,</if>
+            <if test="exprStatus != null">expr_status,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeOrderDetailId != null">#{storeOrderDetailId},</if>
+            <if test="storeOrderId != null">#{storeOrderId},</if>
+            <if test="storeId != null">#{storeId},</if>
+            <if test="deliveryType != null">#{deliveryType},</if>
+            <if test="expressId != null">#{expressId},</if>
+            <if test="expressFee != null">#{expressFee},</if>
+            <if test="trackingNum != null">#{trackingNum},</if>
+            <if test="exprStatus != null">#{exprStatus},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreOrderExpress" parameterType="StoreOrderExpress">
+        update store_order_express
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeOrderDetailId != null">store_order_detail_id = #{storeOrderDetailId},</if>
+            <if test="storeOrderId != null">store_order_id = #{storeOrderId},</if>
+            <if test="storeId != null">store_id = #{storeId},</if>
+            <if test="deliveryType != null">delivery_type = #{deliveryType},</if>
+            <if test="expressId != null">express_id = #{expressId},</if>
+            <if test="expressFee != null">express_fee = #{expressFee},</if>
+            <if test="trackingNum != null">tracking_num = #{trackingNum},</if>
+            <if test="exprStatus != null">expr_status = #{exprStatus},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_order_expr_id = #{storeOrderExprId}
+    </update>
+
+    <delete id="deleteStoreOrderExpressByStoreOrderExprId" parameterType="Long">
+        delete from store_order_express where store_order_expr_id = #{storeOrderExprId}
+    </delete>
+
+    <delete id="deleteStoreOrderExpressByStoreOrderExprIds" parameterType="String">
+        delete from store_order_express where store_order_expr_id in 
+        <foreach item="storeOrderExprId" collection="array" open="(" separator="," close=")">
+            #{storeOrderExprId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreProductDemandDetailMapper">
+    
+    <resultMap type="StoreProductDemandDetail" id="StoreProductDemandDetailResult">
+        <result property="storeProdDemaDetailId"    column="store_prod_dema_detail_id"    />
+        <result property="storeProdDemandId"    column="store_prod_demand_id"    />
+        <result property="storeProdColorId"    column="store_prod_color_id"    />
+        <result property="storeProdId"    column="store_prod_id"    />
+        <result property="size30"    column="size_30"    />
+        <result property="size31"    column="size_31"    />
+        <result property="size32"    column="size_32"    />
+        <result property="size33"    column="size_33"    />
+        <result property="size34"    column="size_34"    />
+        <result property="size35"    column="size_35"    />
+        <result property="size36"    column="size_36"    />
+        <result property="size37"    column="size_37"    />
+        <result property="size38"    column="size_38"    />
+        <result property="size39"    column="size_39"    />
+        <result property="size40"    column="size_40"    />
+        <result property="size41"    column="size_41"    />
+        <result property="size42"    column="size_42"    />
+        <result property="size43"    column="size_43"    />
+        <result property="emergency"    column="emergency"    />
+        <result property="detailStatus"    column="detail_status"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreProductDemandDetailVo">
+        select store_prod_dema_detail_id, store_prod_demand_id, store_prod_color_id, store_prod_id, size_30, size_31, size_32, size_33, size_34, size_35, size_36, size_37, size_38, size_39, size_40, size_41, size_42, size_43, emergency, detail_status, version, del_flag, create_by, create_time, update_by, update_time from store_product_demand_detail
+    </sql>
+
+    <select id="selectStoreProductDemandDetailList" parameterType="StoreProductDemandDetail" resultMap="StoreProductDemandDetailResult">
+        <include refid="selectStoreProductDemandDetailVo"/>
+        <where>  
+            <if test="storeProdDemandId != null "> and store_prod_demand_id = #{storeProdDemandId}</if>
+            <if test="storeProdColorId != null "> and store_prod_color_id = #{storeProdColorId}</if>
+            <if test="storeProdId != null "> and store_prod_id = #{storeProdId}</if>
+            <if test="size30 != null "> and size_30 = #{size30}</if>
+            <if test="size31 != null "> and size_31 = #{size31}</if>
+            <if test="size32 != null "> and size_32 = #{size32}</if>
+            <if test="size33 != null "> and size_33 = #{size33}</if>
+            <if test="size34 != null "> and size_34 = #{size34}</if>
+            <if test="size35 != null "> and size_35 = #{size35}</if>
+            <if test="size36 != null "> and size_36 = #{size36}</if>
+            <if test="size37 != null "> and size_37 = #{size37}</if>
+            <if test="size38 != null "> and size_38 = #{size38}</if>
+            <if test="size39 != null "> and size_39 = #{size39}</if>
+            <if test="size40 != null "> and size_40 = #{size40}</if>
+            <if test="size41 != null "> and size_41 = #{size41}</if>
+            <if test="size42 != null "> and size_42 = #{size42}</if>
+            <if test="size43 != null "> and size_43 = #{size43}</if>
+            <if test="emergency != null  and emergency != ''"> and emergency = #{emergency}</if>
+            <if test="detailStatus != null "> and detail_status = #{detailStatus}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreProductDemandDetailByStoreProdDemaDetailId" parameterType="Long" resultMap="StoreProductDemandDetailResult">
+        <include refid="selectStoreProductDemandDetailVo"/>
+        where store_prod_dema_detail_id = #{storeProdDemaDetailId}
+    </select>
+
+    <insert id="insertStoreProductDemandDetail" parameterType="StoreProductDemandDetail" useGeneratedKeys="true" keyProperty="storeProdDemaDetailId">
+        insert into store_product_demand_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeProdDemandId != null">store_prod_demand_id,</if>
+            <if test="storeProdColorId != null">store_prod_color_id,</if>
+            <if test="storeProdId != null">store_prod_id,</if>
+            <if test="size30 != null">size_30,</if>
+            <if test="size31 != null">size_31,</if>
+            <if test="size32 != null">size_32,</if>
+            <if test="size33 != null">size_33,</if>
+            <if test="size34 != null">size_34,</if>
+            <if test="size35 != null">size_35,</if>
+            <if test="size36 != null">size_36,</if>
+            <if test="size37 != null">size_37,</if>
+            <if test="size38 != null">size_38,</if>
+            <if test="size39 != null">size_39,</if>
+            <if test="size40 != null">size_40,</if>
+            <if test="size41 != null">size_41,</if>
+            <if test="size42 != null">size_42,</if>
+            <if test="size43 != null">size_43,</if>
+            <if test="emergency != null and emergency != ''">emergency,</if>
+            <if test="detailStatus != null">detail_status,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeProdDemandId != null">#{storeProdDemandId},</if>
+            <if test="storeProdColorId != null">#{storeProdColorId},</if>
+            <if test="storeProdId != null">#{storeProdId},</if>
+            <if test="size30 != null">#{size30},</if>
+            <if test="size31 != null">#{size31},</if>
+            <if test="size32 != null">#{size32},</if>
+            <if test="size33 != null">#{size33},</if>
+            <if test="size34 != null">#{size34},</if>
+            <if test="size35 != null">#{size35},</if>
+            <if test="size36 != null">#{size36},</if>
+            <if test="size37 != null">#{size37},</if>
+            <if test="size38 != null">#{size38},</if>
+            <if test="size39 != null">#{size39},</if>
+            <if test="size40 != null">#{size40},</if>
+            <if test="size41 != null">#{size41},</if>
+            <if test="size42 != null">#{size42},</if>
+            <if test="size43 != null">#{size43},</if>
+            <if test="emergency != null and emergency != ''">#{emergency},</if>
+            <if test="detailStatus != null">#{detailStatus},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreProductDemandDetail" parameterType="StoreProductDemandDetail">
+        update store_product_demand_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeProdDemandId != null">store_prod_demand_id = #{storeProdDemandId},</if>
+            <if test="storeProdColorId != null">store_prod_color_id = #{storeProdColorId},</if>
+            <if test="storeProdId != null">store_prod_id = #{storeProdId},</if>
+            <if test="size30 != null">size_30 = #{size30},</if>
+            <if test="size31 != null">size_31 = #{size31},</if>
+            <if test="size32 != null">size_32 = #{size32},</if>
+            <if test="size33 != null">size_33 = #{size33},</if>
+            <if test="size34 != null">size_34 = #{size34},</if>
+            <if test="size35 != null">size_35 = #{size35},</if>
+            <if test="size36 != null">size_36 = #{size36},</if>
+            <if test="size37 != null">size_37 = #{size37},</if>
+            <if test="size38 != null">size_38 = #{size38},</if>
+            <if test="size39 != null">size_39 = #{size39},</if>
+            <if test="size40 != null">size_40 = #{size40},</if>
+            <if test="size41 != null">size_41 = #{size41},</if>
+            <if test="size42 != null">size_42 = #{size42},</if>
+            <if test="size43 != null">size_43 = #{size43},</if>
+            <if test="emergency != null and emergency != ''">emergency = #{emergency},</if>
+            <if test="detailStatus != null">detail_status = #{detailStatus},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_prod_dema_detail_id = #{storeProdDemaDetailId}
+    </update>
+
+    <delete id="deleteStoreProductDemandDetailByStoreProdDemaDetailId" parameterType="Long">
+        delete from store_product_demand_detail where store_prod_dema_detail_id = #{storeProdDemaDetailId}
+    </delete>
+
+    <delete id="deleteStoreProductDemandDetailByStoreProdDemaDetailIds" parameterType="String">
+        delete from store_product_demand_detail where store_prod_dema_detail_id in 
+        <foreach item="storeProdDemaDetailId" collection="array" open="(" separator="," close=")">
+            #{storeProdDemaDetailId}
+        </foreach>
+    </delete>
+</mapper>

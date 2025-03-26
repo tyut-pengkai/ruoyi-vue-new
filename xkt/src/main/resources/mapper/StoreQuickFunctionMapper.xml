@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreQuickFunctionMapper">
+    
+    <resultMap type="StoreQuickFunction" id="StoreQuickFunctionResult">
+        <result property="storeQuickFuncId"    column="store_quick_func_id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="funcName"    column="func_name"    />
+        <result property="funcIcon"    column="func_icon"    />
+        <result property="funcUrl"    column="func_url"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreQuickFunctionVo">
+        select store_quick_func_id, store_id, func_name, func_icon, func_url, order_num, version, del_flag, create_by, create_time, update_by, update_time from store_quick_function
+    </sql>
+
+    <select id="selectStoreQuickFunctionList" parameterType="StoreQuickFunction" resultMap="StoreQuickFunctionResult">
+        <include refid="selectStoreQuickFunctionVo"/>
+        <where>  
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="funcName != null  and funcName != ''"> and func_name like concat('%', #{funcName}, '%')</if>
+            <if test="funcIcon != null  and funcIcon != ''"> and func_icon = #{funcIcon}</if>
+            <if test="funcUrl != null  and funcUrl != ''"> and func_url = #{funcUrl}</if>
+            <if test="orderNum != null "> and order_num = #{orderNum}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreQuickFunctionByStoreQuickFuncId" parameterType="Long" resultMap="StoreQuickFunctionResult">
+        <include refid="selectStoreQuickFunctionVo"/>
+        where store_quick_func_id = #{storeQuickFuncId}
+    </select>
+
+    <insert id="insertStoreQuickFunction" parameterType="StoreQuickFunction" useGeneratedKeys="true" keyProperty="storeQuickFuncId">
+        insert into store_quick_function
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeId != null">store_id,</if>
+            <if test="funcName != null">func_name,</if>
+            <if test="funcIcon != null">func_icon,</if>
+            <if test="funcUrl != null">func_url,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeId != null">#{storeId},</if>
+            <if test="funcName != null">#{funcName},</if>
+            <if test="funcIcon != null">#{funcIcon},</if>
+            <if test="funcUrl != null">#{funcUrl},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreQuickFunction" parameterType="StoreQuickFunction">
+        update store_quick_function
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeId != null">store_id = #{storeId},</if>
+            <if test="funcName != null">func_name = #{funcName},</if>
+            <if test="funcIcon != null">func_icon = #{funcIcon},</if>
+            <if test="funcUrl != null">func_url = #{funcUrl},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_quick_func_id = #{storeQuickFuncId}
+    </update>
+
+    <delete id="deleteStoreQuickFunctionByStoreQuickFuncId" parameterType="Long">
+        delete from store_quick_function where store_quick_func_id = #{storeQuickFuncId}
+    </delete>
+
+    <delete id="deleteStoreQuickFunctionByStoreQuickFuncIds" parameterType="String">
+        delete from store_quick_function where store_quick_func_id in 
+        <foreach item="storeQuickFuncId" collection="array" open="(" separator="," close=")">
+            #{storeQuickFuncId}
+        </foreach>
+    </delete>
+</mapper>

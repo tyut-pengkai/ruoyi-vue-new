@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserAccountMapper">
+    
+    <resultMap type="UserAccount" id="UserAccountResult">
+        <result property="userAccId"    column="user_acc_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="accountPhone"    column="account_phone"    />
+        <result property="accountName"    column="account_name"    />
+        <result property="balance"    column="balance"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectUserAccountVo">
+        select user_acc_id, user_id, account_type, account_phone, account_name, balance, version, del_flag, create_by, create_time, update_by, update_time from user_account
+    </sql>
+
+    <select id="selectUserAccountList" parameterType="UserAccount" resultMap="UserAccountResult">
+        <include refid="selectUserAccountVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="accountPhone != null  and accountPhone != ''"> and account_phone = #{accountPhone}</if>
+            <if test="accountName != null  and accountName != ''"> and account_name like concat('%', #{accountName}, '%')</if>
+            <if test="balance != null "> and balance = #{balance}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserAccountByUserAccId" parameterType="Long" resultMap="UserAccountResult">
+        <include refid="selectUserAccountVo"/>
+        where user_acc_id = #{userAccId}
+    </select>
+
+    <insert id="insertUserAccount" parameterType="UserAccount" useGeneratedKeys="true" keyProperty="userAccId">
+        insert into user_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="accountType != null">account_type,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="balance != null">balance,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="accountType != null">#{accountType},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="balance != null">#{balance},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserAccount" parameterType="UserAccount">
+        update user_account
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="accountType != null">account_type = #{accountType},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="balance != null">balance = #{balance},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where user_acc_id = #{userAccId}
+    </update>
+
+    <delete id="deleteUserAccountByUserAccId" parameterType="Long">
+        delete from user_account where user_acc_id = #{userAccId}
+    </delete>
+
+    <delete id="deleteUserAccountByUserAccIds" parameterType="String">
+        delete from user_account where user_acc_id in 
+        <foreach item="userAccId" collection="array" open="(" separator="," close=")">
+            #{userAccId}
+        </foreach>
+    </delete>
+</mapper>

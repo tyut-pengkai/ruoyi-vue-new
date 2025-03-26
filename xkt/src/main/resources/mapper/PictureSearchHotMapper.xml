@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PictureSearchHotMapper">
+    
+    <resultMap type="PictureSearchHot" id="PictureSearchHotResult">
+        <result property="picSearchHotId"    column="pic_search_hot_id"    />
+        <result property="storeProdFileId"    column="store_prod_file_id"    />
+        <result property="fileId"    column="file_id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="searchCount"    column="search_count"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectPictureSearchHotVo">
+        select pic_search_hot_id, store_prod_file_id, file_id, store_id, search_count, version, del_flag, create_by, create_time, update_by, update_time from picture_search_hot
+    </sql>
+
+    <select id="selectPictureSearchHotList" parameterType="PictureSearchHot" resultMap="PictureSearchHotResult">
+        <include refid="selectPictureSearchHotVo"/>
+        <where>  
+            <if test="storeProdFileId != null "> and store_prod_file_id = #{storeProdFileId}</if>
+            <if test="fileId != null "> and file_id = #{fileId}</if>
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="searchCount != null "> and search_count = #{searchCount}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectPictureSearchHotByPicSearchHotId" parameterType="Long" resultMap="PictureSearchHotResult">
+        <include refid="selectPictureSearchHotVo"/>
+        where pic_search_hot_id = #{picSearchHotId}
+    </select>
+
+    <insert id="insertPictureSearchHot" parameterType="PictureSearchHot" useGeneratedKeys="true" keyProperty="picSearchHotId">
+        insert into picture_search_hot
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeProdFileId != null">store_prod_file_id,</if>
+            <if test="fileId != null">file_id,</if>
+            <if test="storeId != null">store_id,</if>
+            <if test="searchCount != null">search_count,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeProdFileId != null">#{storeProdFileId},</if>
+            <if test="fileId != null">#{fileId},</if>
+            <if test="storeId != null">#{storeId},</if>
+            <if test="searchCount != null">#{searchCount},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePictureSearchHot" parameterType="PictureSearchHot">
+        update picture_search_hot
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeProdFileId != null">store_prod_file_id = #{storeProdFileId},</if>
+            <if test="fileId != null">file_id = #{fileId},</if>
+            <if test="storeId != null">store_id = #{storeId},</if>
+            <if test="searchCount != null">search_count = #{searchCount},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where pic_search_hot_id = #{picSearchHotId}
+    </update>
+
+    <delete id="deletePictureSearchHotByPicSearchHotId" parameterType="Long">
+        delete from picture_search_hot where pic_search_hot_id = #{picSearchHotId}
+    </delete>
+
+    <delete id="deletePictureSearchHotByPicSearchHotIds" parameterType="String">
+        delete from picture_search_hot where pic_search_hot_id in 
+        <foreach item="picSearchHotId" collection="array" open="(" separator="," close=")">
+            #{picSearchHotId}
+        </foreach>
+    </delete>
+</mapper>

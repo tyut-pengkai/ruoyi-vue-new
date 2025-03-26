@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreCustomerMapper">
+    
+    <resultMap type="StoreCustomer" id="StoreCustomerResult">
+        <result property="storeCusId"    column="store_cus_id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="cusName"    column="cus_name"    />
+        <result property="phone"    column="phone"    />
+        <result property="remark"    column="remark"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreCustomerVo">
+        select store_cus_id, store_id, cus_name, phone, remark, version, del_flag, create_by, create_time, update_by, update_time from store_customer
+    </sql>
+
+    <select id="selectStoreCustomerList" parameterType="StoreCustomer" resultMap="StoreCustomerResult">
+        <include refid="selectStoreCustomerVo"/>
+        <where>  
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="cusName != null  and cusName != ''"> and cus_name like concat('%', #{cusName}, '%')</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreCustomerByStoreCusId" parameterType="Long" resultMap="StoreCustomerResult">
+        <include refid="selectStoreCustomerVo"/>
+        where store_cus_id = #{storeCusId}
+    </select>
+
+    <insert id="insertStoreCustomer" parameterType="StoreCustomer" useGeneratedKeys="true" keyProperty="storeCusId">
+        insert into store_customer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeId != null">store_id,</if>
+            <if test="cusName != null">cus_name,</if>
+            <if test="phone != null">phone,</if>
+            <if test="remark != null">remark,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeId != null">#{storeId},</if>
+            <if test="cusName != null">#{cusName},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreCustomer" parameterType="StoreCustomer">
+        update store_customer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeId != null">store_id = #{storeId},</if>
+            <if test="cusName != null">cus_name = #{cusName},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_cus_id = #{storeCusId}
+    </update>
+
+    <delete id="deleteStoreCustomerByStoreCusId" parameterType="Long">
+        delete from store_customer where store_cus_id = #{storeCusId}
+    </delete>
+
+    <delete id="deleteStoreCustomerByStoreCusIds" parameterType="String">
+        delete from store_customer where store_cus_id in 
+        <foreach item="storeCusId" collection="array" open="(" separator="," close=")">
+            #{storeCusId}
+        </foreach>
+    </delete>
+</mapper>

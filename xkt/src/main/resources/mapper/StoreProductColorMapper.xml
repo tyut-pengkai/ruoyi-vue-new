@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreProductColorMapper">
+    
+    <resultMap type="StoreProductColor" id="StoreProductColorResult">
+        <result property="storeProdColorId"    column="store_prod_color_id"    />
+        <result property="storeColorId"    column="store_color_id"    />
+        <result property="storeProdId"    column="store_prod_id"    />
+        <result property="colorName"    column="color_name"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreProductColorVo">
+        select store_prod_color_id, store_color_id, store_prod_id, color_name, version, del_flag, create_by, create_time, update_by, update_time from store_product_color
+    </sql>
+
+    <select id="selectStoreProductColorList" parameterType="StoreProductColor" resultMap="StoreProductColorResult">
+        <include refid="selectStoreProductColorVo"/>
+        <where>  
+            <if test="storeColorId != null "> and store_color_id = #{storeColorId}</if>
+            <if test="storeProdId != null "> and store_prod_id = #{storeProdId}</if>
+            <if test="colorName != null  and colorName != ''"> and color_name like concat('%', #{colorName}, '%')</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreProductColorByStoreProdColorId" parameterType="Long" resultMap="StoreProductColorResult">
+        <include refid="selectStoreProductColorVo"/>
+        where store_prod_color_id = #{storeProdColorId}
+    </select>
+
+    <insert id="insertStoreProductColor" parameterType="StoreProductColor" useGeneratedKeys="true" keyProperty="storeProdColorId">
+        insert into store_product_color
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeColorId != null">store_color_id,</if>
+            <if test="storeProdId != null">store_prod_id,</if>
+            <if test="colorName != null and colorName != ''">color_name,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeColorId != null">#{storeColorId},</if>
+            <if test="storeProdId != null">#{storeProdId},</if>
+            <if test="colorName != null and colorName != ''">#{colorName},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreProductColor" parameterType="StoreProductColor">
+        update store_product_color
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeColorId != null">store_color_id = #{storeColorId},</if>
+            <if test="storeProdId != null">store_prod_id = #{storeProdId},</if>
+            <if test="colorName != null and colorName != ''">color_name = #{colorName},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_prod_color_id = #{storeProdColorId}
+    </update>
+
+    <delete id="deleteStoreProductColorByStoreProdColorId" parameterType="Long">
+        delete from store_product_color where store_prod_color_id = #{storeProdColorId}
+    </delete>
+
+    <delete id="deleteStoreProductColorByStoreProdColorIds" parameterType="String">
+        delete from store_product_color where store_prod_color_id in 
+        <foreach item="storeProdColorId" collection="array" open="(" separator="," close=")">
+            #{storeProdColorId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserQuickFunctionMapper">
+    
+    <resultMap type="UserQuickFunction" id="UserQuickFunctionResult">
+        <result property="userQuickFuncId"    column="user_quick_func_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="funcName"    column="func_name"    />
+        <result property="funcIcon"    column="func_icon"    />
+        <result property="funcUrl"    column="func_url"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectUserQuickFunctionVo">
+        select user_quick_func_id, user_id, func_name, func_icon, func_url, order_num, version, del_flag, create_by, create_time, update_by, update_time from user_quick_function
+    </sql>
+
+    <select id="selectUserQuickFunctionList" parameterType="UserQuickFunction" resultMap="UserQuickFunctionResult">
+        <include refid="selectUserQuickFunctionVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="funcName != null  and funcName != ''"> and func_name like concat('%', #{funcName}, '%')</if>
+            <if test="funcIcon != null  and funcIcon != ''"> and func_icon = #{funcIcon}</if>
+            <if test="funcUrl != null  and funcUrl != ''"> and func_url = #{funcUrl}</if>
+            <if test="orderNum != null "> and order_num = #{orderNum}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserQuickFunctionByUserQuickFuncId" parameterType="Long" resultMap="UserQuickFunctionResult">
+        <include refid="selectUserQuickFunctionVo"/>
+        where user_quick_func_id = #{userQuickFuncId}
+    </select>
+
+    <insert id="insertUserQuickFunction" parameterType="UserQuickFunction" useGeneratedKeys="true" keyProperty="userQuickFuncId">
+        insert into user_quick_function
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="funcName != null">func_name,</if>
+            <if test="funcIcon != null">func_icon,</if>
+            <if test="funcUrl != null">func_url,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="funcName != null">#{funcName},</if>
+            <if test="funcIcon != null">#{funcIcon},</if>
+            <if test="funcUrl != null">#{funcUrl},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserQuickFunction" parameterType="UserQuickFunction">
+        update user_quick_function
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="funcName != null">func_name = #{funcName},</if>
+            <if test="funcIcon != null">func_icon = #{funcIcon},</if>
+            <if test="funcUrl != null">func_url = #{funcUrl},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where user_quick_func_id = #{userQuickFuncId}
+    </update>
+
+    <delete id="deleteUserQuickFunctionByUserQuickFuncId" parameterType="Long">
+        delete from user_quick_function where user_quick_func_id = #{userQuickFuncId}
+    </delete>
+
+    <delete id="deleteUserQuickFunctionByUserQuickFuncIds" parameterType="String">
+        delete from user_quick_function where user_quick_func_id in 
+        <foreach item="userQuickFuncId" collection="array" open="(" separator="," close=")">
+            #{userQuickFuncId}
+        </foreach>
+    </delete>
+</mapper>

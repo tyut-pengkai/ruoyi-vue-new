@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreProductMapper">
+    
+    <resultMap type="StoreProduct" id="StoreProductResult">
+        <result property="storeProdId"    column="store_prod_id"    />
+        <result property="prodName"    column="prod_name"    />
+        <result property="prodCateId"    column="prod_cate_id"    />
+        <result property="factoryArtNum"    column="factory_art_num"    />
+        <result property="prodArtNum"    column="prod_art_num"    />
+        <result property="prodTitle"    column="prod_title"    />
+        <result property="prodWeight"    column="prod_weight"    />
+        <result property="producePrice"    column="produce_price"    />
+        <result property="overPrice"    column="over_price"    />
+        <result property="deliveryTime"    column="delivery_time"    />
+        <result property="listingWay"    column="listing_way"    />
+        <result property="nextBarcodeNum"    column="next_barcode_num"    />
+        <result property="listingWaySchedule"    column="listing_way_schedule"    />
+        <result property="vroucherDate"    column="vroucher_date"    />
+        <result property="prodStatus"    column="prod_status"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreProductVo">
+        select store_prod_id, prod_name, prod_cate_id, factory_art_num, prod_art_num, prod_title, prod_weight, produce_price, over_price, delivery_time, listing_way, next_barcode_num, listing_way_schedule, vroucher_date, prod_status, version, del_flag, create_by, create_time, update_by, update_time from store_product
+    </sql>
+
+    <select id="selectStoreProductList" parameterType="StoreProduct" resultMap="StoreProductResult">
+        <include refid="selectStoreProductVo"/>
+        <where>  
+            <if test="prodName != null  and prodName != ''"> and prod_name like concat('%', #{prodName}, '%')</if>
+            <if test="prodCateId != null "> and prod_cate_id = #{prodCateId}</if>
+            <if test="factoryArtNum != null  and factoryArtNum != ''"> and factory_art_num = #{factoryArtNum}</if>
+            <if test="prodArtNum != null  and prodArtNum != ''"> and prod_art_num = #{prodArtNum}</if>
+            <if test="prodTitle != null  and prodTitle != ''"> and prod_title = #{prodTitle}</if>
+            <if test="prodWeight != null "> and prod_weight = #{prodWeight}</if>
+            <if test="producePrice != null "> and produce_price = #{producePrice}</if>
+            <if test="overPrice != null "> and over_price = #{overPrice}</if>
+            <if test="deliveryTime != null "> and delivery_time = #{deliveryTime}</if>
+            <if test="listingWay != null "> and listing_way = #{listingWay}</if>
+            <if test="nextBarcodeNum != null "> and next_barcode_num = #{nextBarcodeNum}</if>
+            <if test="listingWaySchedule != null "> and listing_way_schedule = #{listingWaySchedule}</if>
+            <if test="vroucherDate != null "> and vroucher_date = #{vroucherDate}</if>
+            <if test="prodStatus != null "> and prod_status = #{prodStatus}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreProductByStoreProdId" parameterType="Long" resultMap="StoreProductResult">
+        <include refid="selectStoreProductVo"/>
+        where store_prod_id = #{storeProdId}
+    </select>
+
+    <insert id="insertStoreProduct" parameterType="StoreProduct" useGeneratedKeys="true" keyProperty="storeProdId">
+        insert into store_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="prodName != null and prodName != ''">prod_name,</if>
+            <if test="prodCateId != null">prod_cate_id,</if>
+            <if test="factoryArtNum != null">factory_art_num,</if>
+            <if test="prodArtNum != null">prod_art_num,</if>
+            <if test="prodTitle != null">prod_title,</if>
+            <if test="prodWeight != null">prod_weight,</if>
+            <if test="producePrice != null">produce_price,</if>
+            <if test="overPrice != null">over_price,</if>
+            <if test="deliveryTime != null">delivery_time,</if>
+            <if test="listingWay != null">listing_way,</if>
+            <if test="nextBarcodeNum != null">next_barcode_num,</if>
+            <if test="listingWaySchedule != null">listing_way_schedule,</if>
+            <if test="vroucherDate != null">vroucher_date,</if>
+            <if test="prodStatus != null">prod_status,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="prodName != null and prodName != ''">#{prodName},</if>
+            <if test="prodCateId != null">#{prodCateId},</if>
+            <if test="factoryArtNum != null">#{factoryArtNum},</if>
+            <if test="prodArtNum != null">#{prodArtNum},</if>
+            <if test="prodTitle != null">#{prodTitle},</if>
+            <if test="prodWeight != null">#{prodWeight},</if>
+            <if test="producePrice != null">#{producePrice},</if>
+            <if test="overPrice != null">#{overPrice},</if>
+            <if test="deliveryTime != null">#{deliveryTime},</if>
+            <if test="listingWay != null">#{listingWay},</if>
+            <if test="nextBarcodeNum != null">#{nextBarcodeNum},</if>
+            <if test="listingWaySchedule != null">#{listingWaySchedule},</if>
+            <if test="vroucherDate != null">#{vroucherDate},</if>
+            <if test="prodStatus != null">#{prodStatus},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreProduct" parameterType="StoreProduct">
+        update store_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="prodName != null and prodName != ''">prod_name = #{prodName},</if>
+            <if test="prodCateId != null">prod_cate_id = #{prodCateId},</if>
+            <if test="factoryArtNum != null">factory_art_num = #{factoryArtNum},</if>
+            <if test="prodArtNum != null">prod_art_num = #{prodArtNum},</if>
+            <if test="prodTitle != null">prod_title = #{prodTitle},</if>
+            <if test="prodWeight != null">prod_weight = #{prodWeight},</if>
+            <if test="producePrice != null">produce_price = #{producePrice},</if>
+            <if test="overPrice != null">over_price = #{overPrice},</if>
+            <if test="deliveryTime != null">delivery_time = #{deliveryTime},</if>
+            <if test="listingWay != null">listing_way = #{listingWay},</if>
+            <if test="nextBarcodeNum != null">next_barcode_num = #{nextBarcodeNum},</if>
+            <if test="listingWaySchedule != null">listing_way_schedule = #{listingWaySchedule},</if>
+            <if test="vroucherDate != null">vroucher_date = #{vroucherDate},</if>
+            <if test="prodStatus != null">prod_status = #{prodStatus},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_prod_id = #{storeProdId}
+    </update>
+
+    <delete id="deleteStoreProductByStoreProdId" parameterType="Long">
+        delete from store_product where store_prod_id = #{storeProdId}
+    </delete>
+
+    <delete id="deleteStoreProductByStoreProdIds" parameterType="String">
+        delete from store_product where store_prod_id in 
+        <foreach item="storeProdId" collection="array" open="(" separator="," close=")">
+            #{storeProdId}
+        </foreach>
+    </delete>
+</mapper>

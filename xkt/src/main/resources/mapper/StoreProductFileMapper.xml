@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreProductFileMapper">
+    
+    <resultMap type="StoreProductFile" id="StoreProductFileResult">
+        <result property="storeProdFileId"    column="store_prod_file_id"    />
+        <result property="storeProdId"    column="store_prod_id"    />
+        <result property="fileId"    column="file_id"    />
+        <result property="fileType"    column="file_type"    />
+        <result property="fileSize"    column="file_size"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreProductFileVo">
+        select store_prod_file_id, store_prod_id, file_id, file_type, file_size, order_num, version, del_flag, create_by, create_time, update_by, update_time from store_product_file
+    </sql>
+
+    <select id="selectStoreProductFileList" parameterType="StoreProductFile" resultMap="StoreProductFileResult">
+        <include refid="selectStoreProductFileVo"/>
+        <where>  
+            <if test="storeProdId != null "> and store_prod_id = #{storeProdId}</if>
+            <if test="fileId != null "> and file_id = #{fileId}</if>
+            <if test="fileType != null "> and file_type = #{fileType}</if>
+            <if test="fileSize != null "> and file_size = #{fileSize}</if>
+            <if test="orderNum != null "> and order_num = #{orderNum}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreProductFileByStoreProdFileId" parameterType="Long" resultMap="StoreProductFileResult">
+        <include refid="selectStoreProductFileVo"/>
+        where store_prod_file_id = #{storeProdFileId}
+    </select>
+
+    <insert id="insertStoreProductFile" parameterType="StoreProductFile" useGeneratedKeys="true" keyProperty="storeProdFileId">
+        insert into store_product_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeProdId != null">store_prod_id,</if>
+            <if test="fileId != null">file_id,</if>
+            <if test="fileType != null">file_type,</if>
+            <if test="fileSize != null">file_size,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeProdId != null">#{storeProdId},</if>
+            <if test="fileId != null">#{fileId},</if>
+            <if test="fileType != null">#{fileType},</if>
+            <if test="fileSize != null">#{fileSize},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreProductFile" parameterType="StoreProductFile">
+        update store_product_file
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeProdId != null">store_prod_id = #{storeProdId},</if>
+            <if test="fileId != null">file_id = #{fileId},</if>
+            <if test="fileType != null">file_type = #{fileType},</if>
+            <if test="fileSize != null">file_size = #{fileSize},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_prod_file_id = #{storeProdFileId}
+    </update>
+
+    <delete id="deleteStoreProductFileByStoreProdFileId" parameterType="Long">
+        delete from store_product_file where store_prod_file_id = #{storeProdFileId}
+    </delete>
+
+    <delete id="deleteStoreProductFileByStoreProdFileIds" parameterType="String">
+        delete from store_product_file where store_prod_file_id in 
+        <foreach item="storeProdFileId" collection="array" open="(" separator="," close=")">
+            #{storeProdFileId}
+        </foreach>
+    </delete>
+</mapper>

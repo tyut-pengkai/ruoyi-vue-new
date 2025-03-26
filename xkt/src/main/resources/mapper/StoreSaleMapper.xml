@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreSaleMapper">
+    
+    <resultMap type="StoreSale" id="StoreSaleResult">
+        <result property="storeSaleId"    column="store_sale_id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="storeCusId"    column="store_cus_id"    />
+        <result property="saleType"    column="sale_type"    />
+        <result property="code"    column="code"    />
+        <result property="voucherDate"    column="voucher_date"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="amount"    column="amount"    />
+        <result property="payWay"    column="pay_way"    />
+        <result property="remark"    column="remark"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreSaleVo">
+        select store_sale_id, store_id, store_cus_id, sale_type, code, voucher_date, quantity, amount, pay_way, remark, version, del_flag, create_by, create_time, update_by, update_time from store_sale
+    </sql>
+
+    <select id="selectStoreSaleList" parameterType="StoreSale" resultMap="StoreSaleResult">
+        <include refid="selectStoreSaleVo"/>
+        <where>  
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="storeCusId != null "> and store_cus_id = #{storeCusId}</if>
+            <if test="saleType != null "> and sale_type = #{saleType}</if>
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="voucherDate != null "> and voucher_date = #{voucherDate}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="payWay != null "> and pay_way = #{payWay}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreSaleByStoreSaleId" parameterType="Long" resultMap="StoreSaleResult">
+        <include refid="selectStoreSaleVo"/>
+        where store_sale_id = #{storeSaleId}
+    </select>
+
+    <insert id="insertStoreSale" parameterType="StoreSale" useGeneratedKeys="true" keyProperty="storeSaleId">
+        insert into store_sale
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeId != null">store_id,</if>
+            <if test="storeCusId != null">store_cus_id,</if>
+            <if test="saleType != null">sale_type,</if>
+            <if test="code != null and code != ''">code,</if>
+            <if test="voucherDate != null">voucher_date,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="amount != null">amount,</if>
+            <if test="payWay != null">pay_way,</if>
+            <if test="remark != null">remark,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeId != null">#{storeId},</if>
+            <if test="storeCusId != null">#{storeCusId},</if>
+            <if test="saleType != null">#{saleType},</if>
+            <if test="code != null and code != ''">#{code},</if>
+            <if test="voucherDate != null">#{voucherDate},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="payWay != null">#{payWay},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreSale" parameterType="StoreSale">
+        update store_sale
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeId != null">store_id = #{storeId},</if>
+            <if test="storeCusId != null">store_cus_id = #{storeCusId},</if>
+            <if test="saleType != null">sale_type = #{saleType},</if>
+            <if test="code != null and code != ''">code = #{code},</if>
+            <if test="voucherDate != null">voucher_date = #{voucherDate},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="payWay != null">pay_way = #{payWay},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_sale_id = #{storeSaleId}
+    </update>
+
+    <delete id="deleteStoreSaleByStoreSaleId" parameterType="Long">
+        delete from store_sale where store_sale_id = #{storeSaleId}
+    </delete>
+
+    <delete id="deleteStoreSaleByStoreSaleIds" parameterType="String">
+        delete from store_sale where store_sale_id in 
+        <foreach item="storeSaleId" collection="array" open="(" separator="," close=")">
+            #{storeSaleId}
+        </foreach>
+    </delete>
+</mapper>

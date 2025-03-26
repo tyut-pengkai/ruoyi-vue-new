@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StoreFactoryMapper">
+    
+    <resultMap type="StoreFactory" id="StoreFactoryResult">
+        <result property="storeFacId"    column="store_fac_id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="facName"    column="fac_name"    />
+        <result property="facAddress"    column="fac_address"    />
+        <result property="facPhone"    column="fac_phone"    />
+        <result property="remark"    column="remark"    />
+        <result property="facStatus"    column="fac_status"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStoreFactoryVo">
+        select store_fac_id, store_id, fac_name, fac_address, fac_phone, remark, fac_status, version, del_flag, create_by, create_time, update_by, update_time from store_factory
+    </sql>
+
+    <select id="selectStoreFactoryList" parameterType="StoreFactory" resultMap="StoreFactoryResult">
+        <include refid="selectStoreFactoryVo"/>
+        <where>  
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="facName != null  and facName != ''"> and fac_name like concat('%', #{facName}, '%')</if>
+            <if test="facAddress != null  and facAddress != ''"> and fac_address = #{facAddress}</if>
+            <if test="facPhone != null  and facPhone != ''"> and fac_phone = #{facPhone}</if>
+            <if test="facStatus != null  and facStatus != ''"> and fac_status = #{facStatus}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreFactoryByStoreFacId" parameterType="Long" resultMap="StoreFactoryResult">
+        <include refid="selectStoreFactoryVo"/>
+        where store_fac_id = #{storeFacId}
+    </select>
+
+    <insert id="insertStoreFactory" parameterType="StoreFactory" useGeneratedKeys="true" keyProperty="storeFacId">
+        insert into store_factory
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeId != null">store_id,</if>
+            <if test="facName != null">fac_name,</if>
+            <if test="facAddress != null">fac_address,</if>
+            <if test="facPhone != null">fac_phone,</if>
+            <if test="remark != null">remark,</if>
+            <if test="facStatus != null">fac_status,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeId != null">#{storeId},</if>
+            <if test="facName != null">#{facName},</if>
+            <if test="facAddress != null">#{facAddress},</if>
+            <if test="facPhone != null">#{facPhone},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="facStatus != null">#{facStatus},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreFactory" parameterType="StoreFactory">
+        update store_factory
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeId != null">store_id = #{storeId},</if>
+            <if test="facName != null">fac_name = #{facName},</if>
+            <if test="facAddress != null">fac_address = #{facAddress},</if>
+            <if test="facPhone != null">fac_phone = #{facPhone},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="facStatus != null">fac_status = #{facStatus},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where store_fac_id = #{storeFacId}
+    </update>
+
+    <delete id="deleteStoreFactoryByStoreFacId" parameterType="Long">
+        delete from store_factory where store_fac_id = #{storeFacId}
+    </delete>
+
+    <delete id="deleteStoreFactoryByStoreFacIds" parameterType="String">
+        delete from store_factory where store_fac_id in 
+        <foreach item="storeFacId" collection="array" open="(" separator="," close=")">
+            #{storeFacId}
+        </foreach>
+    </delete>
+</mapper>

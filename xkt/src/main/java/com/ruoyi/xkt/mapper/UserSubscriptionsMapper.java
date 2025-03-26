@@ -1,0 +1,61 @@
+package com.ruoyi.xkt.mapper;
+
+import com.ruoyi.xkt.domain.UserSubscriptions;
+
+import java.util.List;
+
+/**
+ * 用户关注u档口Mapper接口
+ *
+ * @author ruoyi
+ * @date 2025-03-26
+ */
+public interface UserSubscriptionsMapper {
+    /**
+     * 查询用户关注u档口
+     *
+     * @param userSubsId 用户关注u档口主键
+     * @return 用户关注u档口
+     */
+    public UserSubscriptions selectUserSubscriptionsByUserSubsId(Long userSubsId);
+
+    /**
+     * 查询用户关注u档口列表
+     *
+     * @param userSubscriptions 用户关注u档口
+     * @return 用户关注u档口集合
+     */
+    public List<UserSubscriptions> selectUserSubscriptionsList(UserSubscriptions userSubscriptions);
+
+    /**
+     * 新增用户关注u档口
+     *
+     * @param userSubscriptions 用户关注u档口
+     * @return 结果
+     */
+    public int insertUserSubscriptions(UserSubscriptions userSubscriptions);
+
+    /**
+     * 修改用户关注u档口
+     *
+     * @param userSubscriptions 用户关注u档口
+     * @return 结果
+     */
+    public int updateUserSubscriptions(UserSubscriptions userSubscriptions);
+
+    /**
+     * 删除用户关注u档口
+     *
+     * @param userSubsId 用户关注u档口主键
+     * @return 结果
+     */
+    public int deleteUserSubscriptionsByUserSubsId(Long userSubsId);
+
+    /**
+     * 批量删除用户关注u档口
+     *
+     * @param userSubsIds 需要删除的数据主键集合
+     * @return 结果
+     */
+    public int deleteUserSubscriptionsByUserSubsIds(Long[] userSubsIds);
+}
