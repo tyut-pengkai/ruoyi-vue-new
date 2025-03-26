@@ -250,7 +250,7 @@ public class OSSClientWrapper {
     /**
      * 下载文件
      */
-    public void download(OSSClient client, String key, String filename)
+    public void download(String key, String filename)
             throws OSSException, ClientException {
         client.getObject(new GetObjectRequest(configuration.getBucketName(), key), new File(filename));
     }
