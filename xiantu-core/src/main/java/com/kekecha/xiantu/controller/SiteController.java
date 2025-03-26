@@ -1,6 +1,6 @@
 package com.kekecha.xiantu.controller;
 
-import com.kekecha.xiantu.domain.Camera;
+import com.kekecha.xiantu.domain.CameraPlatform;
 import com.kekecha.xiantu.domain.Site;
 import com.kekecha.xiantu.service.ICameraService;
 import com.kekecha.xiantu.service.ISiteService;
@@ -154,7 +154,7 @@ public class SiteController extends BaseController {
         try {
             AjaxResult ajaxResult = AjaxResult.success("查询成功");
             try {
-                List<Camera> list = cameraService.selectByRef(name);
+                List<CameraPlatform> list = cameraService.selectByRef(name);
                 ajaxResult.put("total", list.size());
                 ajaxResult.put("data", list);
             } catch (Exception e) {

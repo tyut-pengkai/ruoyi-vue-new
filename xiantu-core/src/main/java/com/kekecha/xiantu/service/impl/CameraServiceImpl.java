@@ -1,52 +1,67 @@
 package com.kekecha.xiantu.service.impl;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.kekecha.xiantu.domain.Camera;
+import com.alibaba.fastjson2.util.DateUtils;
+import com.kekecha.xiantu.domain.CameraPlatform;
+import com.kekecha.xiantu.domain.CameraInstance;
 import com.kekecha.xiantu.mapper.CameraMapper;
 import com.kekecha.xiantu.service.ICameraService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-//import com.hikvision.artemis.sdk.ArtemisHttpUtil;
-//import com.hikvision.artemis.sdk.Client;
-//import com.hikvision.artemis.sdk.Request;
-//import com.hikvision.artemis.sdk.Response;
-//import com.hikvision.artemis.sdk.config.ArtemisConfig;
-//import com.hikvision.artemis.sdk.constant.Constants;
-//import com.hikvision.artemis.sdk.enums.Method;
+import com.hikvision.artemis.sdk.ArtemisHttpUtil;
+import com.hikvision.artemis.sdk.Client;
+import com.hikvision.artemis.sdk.Request;
+import com.hikvision.artemis.sdk.Response;
+import com.hikvision.artemis.sdk.config.ArtemisConfig;
+import com.hikvision.artemis.sdk.constant.Constants;
+import com.hikvision.artemis.sdk.enums.Method;
+import com.hikvision.artemis.sdk.constant.HttpSchema;
 
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class CameraServiceImpl implements ICameraService {
     @Autowired
     CameraMapper cameraMapper;
 
+    private static final String GET_CAMERAS_STATUS_URL = "/artemis/api/nms/v1/online/camera/get";
+
     private static final String GET_PREVIEW_URL = "/artemis/api/video/v2/cameras/previewURLs";
 
-    public List<Camera> selectAll(String filter)
+    private static final String GET_PLAY_BACK_URL = "/artemis/api/video/v2/cameras/playbackURLs";
+
+    private static final String CONTROL_URL = "/artemis/api/video/v1/ptzs/controlling";
+
+    private static final String GET_CAMERAS_URL = "/artemis/api/resource/v1/cameras";
+
+    private static final String GET_TOKEN_URL = "/artemis/api/v1/oauth/token";
+
+    private static final String MONITOR_VIDEO_TOKEN = "MONITOR_VIDEO_TOKEN";
+
+    public List<CameraPlatform> selectAll(String filter)
     {
         return cameraMapper.selectAll(filter);
     }
 
-    public Camera selectByName(String name) {
+    public CameraPlatform selectByName(String name) {
         return cameraMapper.selectByName(name);
     }
-    public List<Camera> selectByRef(String refer) {
+    public List<CameraPlatform> selectByRef(String refer) {
         return cameraMapper.selectByRef(refer);
     }
 
-    public int insert(Camera camera)
+    public int insert(CameraPlatform cameraPlatform)
     {
-        return cameraMapper.insert(camera);
+        return cameraMapper.insert(cameraPlatform);
     }
 
-    public int update(Camera camera)
+    public int update(CameraPlatform cameraPlatform)
     {
-        return cameraMapper.update(camera);
+        return cameraMapper.update(cameraPlatform);
     }
 
     public int delete(String name)
@@ -54,77 +69,198 @@ public class CameraServiceImpl implements ICameraService {
         return cameraMapper.delete(name);
     }
 
-//    public String getPriviewURL(Camera camera)
-//    {
-//        String platformUrl = null;
-//        String appKey = null;
-//        String appSecret = null;
-//        String netProtocol = null;
-//        String streamProtocol = null;
-//
-//        appKey = camera.getAppKey();
-//        appSecret = camera.getAppSecret();
-//        platformUrl = camera.getPlatformUrl();
-//        netProtocol = camera.getNetProtocol();
-//        streamProtocol = camera.getStreamProtocol();
-//        String expand = "";
-//
-//        if ("ws".equals(streamProtocol)) {
-//            expand = "transcode=0";
-//        } else {
-//            expand = "transcode=1&videotype=h264";
-//        }
-//
-//        String path = GET_PREVIEW_URL;
-//
-//        JSONObject jsonBody = new JSONObject();
-//        jsonBody.put("cameraIndexCode", indexCode);
-//        jsonBody.put("protocol", netProtocol);
-//        jsonBody.put("streamType", streamProtocol);
-//        jsonBody.put("transmode", "1");
-//        jsonBody.put("expand", expand);
-//        jsonBody.put("streamform", "ps");
-//        String body = jsonBody.toJSONString();
-//        String result = doPostStringArtemis(path, body, null, null, "application/json", host, appKey, appSecret);
-//        JSONObject jsonResult = JSONObject.parseObject(result);
-//        if ("0".equals(jsonResult.get("code"))) {
-//            JSONObject jsonData = JSONObject.parseObject(jsonResult.get("data").toString());
-//            return jsonData.get("url").toString();
-//        } else {
-//            throw new RuntimeException(result);
-//        }
-//    }
-//
-//    private static String doPostStringArtemis(
-//            String path, String body, Map<String, String> querys,
-//            String accept, String contentType, String host, String appKey, String appSecret) {
-//        if (path != null && !path.isEmpty()) {
-//            String responseStr = null;
-//            try {
-//                Map<String, String> headers = new HashMap();
-//                if (accept != null && !accept.isEmpty()) {
-//                    headers.put("Accept", accept);
-//                } else {
-//                    headers.put("Accept", "*/*");
-//                }
-//
-//                if (contentType != null && !contentType.isEmpty()) {
-//                    headers.put("Content-Type", contentType);
-//                } else {
-//                    headers.put("Content-Type", "application/text;charset=UTF-8");
-//                }
-//
-//                Request request = new Request(Method.POST_STRING, path + host, path, appKey, appSecret, 1000);
-//                request.setHeaders(headers);
-//                request.setQuerys(querys);
-//                request.setStringBody(body);
-//                Response response = Client.execute(request);
-//                responseStr = getResponseResult(response);
-//            } catch (Exception var10) {
-//            }
-//            return responseStr;
-//        } else {
-//            throw new RuntimeException("http和https参数错误httpSchema: " + httpSchema);
-//        }
-//    }
+    public List<CameraInstance> getPlatformCameraInstances(CameraPlatform cameraPlatform)
+    {
+        Map<String, String> paramMap = new HashMap<String, String>();
+        paramMap.put("pageNo", "1");
+        paramMap.put("pageSize", "1000");
+
+        String body = JSONObject.toJSONString(paramMap);
+        int netProtocol = cameraPlatform.getNetProtocol();
+
+        Map<String, String> path = new HashMap<String, String>();
+        if (netProtocol == 0) {
+            path.put(HttpSchema.HTTP, GET_CAMERAS_URL);
+        } else {
+            path.put(HttpSchema.HTTPS, GET_CAMERAS_URL);
+        }
+
+        String result = null;
+        try {
+            System.out.println("try getPlatformCameraInstances" + cameraPlatform.toString());
+            result = doPostStringArtemis(path, body, null, null, "application/json",
+                    cameraPlatform.getPlatformUrl(), cameraPlatform.getAppKey(), cameraPlatform.getAppSecret());
+            System.out.println("get result" + result);
+            JSONObject camerasJson = JSONObject.parseObject(result);
+            JSONArray cameraList = camerasJson.getJSONObject("data").getJSONArray("list");
+            System.out.println("cameraList" + cameraList.toString());
+            List<CameraInstance> cameraInstances = cameraList.toList(CameraInstance.class);
+
+            for (int i = 0; i < cameraInstances.size(); i++) {
+                System.out.println("元素 " + i + ": " + cameraInstances.get(i));
+            }
+            return cameraInstances;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String getHikvisionPreviewURL(CameraPlatform cameraPlatform, String cameraIndexCode) {
+        /* 当前写死，用户不需要配置 */
+        String expand = "transcode=1&videotype=h264";
+        String protocol = "hls";
+        String streamType = "0";
+
+        String host = cameraPlatform.getPlatformUrl();
+        String appKey = cameraPlatform.getAppKey();
+        String appSecret = cameraPlatform.getAppSecret();
+
+        Map<String, String> path = new HashMap<String, String>(2) {
+            {
+                put(HttpSchema.HTTPS, GET_PREVIEW_URL);
+            }
+        };
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("cameraIndexCode", cameraIndexCode);
+        jsonBody.put("protocol", protocol);
+        jsonBody.put("streamType", streamType);
+        jsonBody.put("transmode", "1");
+        jsonBody.put("expand", expand);
+        jsonBody.put("streamform", "ps");
+        String body = jsonBody.toString();
+        String result = doPostStringArtemis(path, body, null, null, "application/json", host, appKey, appSecret);
+        JSONObject jsonResult = JSONObject.parseObject(result);
+        if ("0".equals(jsonResult.get("code").toString())) {
+            JSONObject data = jsonResult.getJSONObject("data");
+            return data.get("url").toString();
+        } else {
+            throw new RuntimeException(result);
+        }
+    }
+
+    @Override
+    public String getHikvisionPlaybackURL(
+            CameraPlatform cameraPlatform, String cameraIndexCode, String beginTime, String endTime) {
+
+        Date begin = DateUtils.parseDate(beginTime);
+        Date end = DateUtils.parseDate(endTime);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        String beginDateStr = sdf.format(begin) + "+08:00"; // 手动添加时区
+        String endDateStr = sdf.format(end) + "+08:00"; // 手动添加时区
+
+        System.out.println(beginDateStr); // 输出示例：2021-03-31T20:08:43.000+08:00
+        System.out.println(endDateStr); // 输出示例：2021-03-31T20:08:43.000+08:00
+
+        String host = cameraPlatform.getPlatformUrl();
+        String appKey = cameraPlatform.getAppKey();
+        String appSecret = cameraPlatform.getAppSecret();
+
+        Map<String, String> path = new HashMap<String, String>(2) {
+            {
+                put(HttpSchema.HTTPS, GET_PLAY_BACK_URL);
+            }
+        };
+
+        String protocol = "hls";
+
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("cameraIndexCode", cameraIndexCode);
+        jsonBody.put("recordLocation", 0);
+        jsonBody.put("protocol", protocol);
+        jsonBody.put("transmode", 1);
+        jsonBody.put("beginTime", beginDateStr);
+        jsonBody.put("endTime", endDateStr);
+        jsonBody.put("streamform", "ps");
+        jsonBody.put("lockType", 0);
+        String body = jsonBody.toString();
+        String result = doPostStringArtemis(path, body, null, null, "application/json", host, appKey, appSecret);
+        System.out.println(result);
+
+        //{"code":"0","msg":"success","data":{"uuid":"","url":null,"list":null}}
+        JSONObject jsonResult = JSONObject.parseObject(result);
+        if ("0".equals(jsonResult.get("code").toString())) {
+            JSONObject data = jsonResult.getJSONObject("data");
+            System.out.println(data.toString());
+            JSONObject jsonUrl = data.getJSONObject("url");
+            if (jsonUrl != null) {
+                return jsonUrl.toString();
+            } else {
+                return null;
+            }
+        } else {
+            throw new RuntimeException(result);
+        }
+    }
+
+    @Override
+    public Boolean hikvisionControlling(
+            CameraPlatform cameraPlatform, String cameraIndexCode, Integer action, String command, Integer speed) {
+        if (speed == null) {
+            speed = 10;
+        }
+
+        String host = cameraPlatform.getPlatformUrl();
+        String appKey = cameraPlatform.getAppKey();
+        String appSecret = cameraPlatform.getAppSecret();
+
+        Map<String, String> path = new HashMap<String, String>(2) {
+            {
+                put(HttpSchema.HTTPS, CONTROL_URL);
+            }
+        };
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("cameraIndexCode", cameraIndexCode);
+        jsonBody.put("action", action);
+        jsonBody.put("command", command);
+        jsonBody.put("speed", speed);
+        String body = jsonBody.toString();
+        String result = doPostStringArtemis(path, body, null, null, "application/json", host, appKey, appSecret);
+        System.out.println(result);
+
+        JSONObject jsonResult = JSONObject.parseObject(result);
+        if ("0".equals(jsonResult.get("code").toString())) {
+            return true;
+        } else {
+            throw new RuntimeException(result);
+        }
+    }
+
+    public static String doPostStringArtemis(Map<String, String> path, String body, Map<String, String> querys, String accept, String contentType, String host, String appKey, String appSecret) {
+        String httpSchema = (String) path.keySet().toArray()[0];
+        if (httpSchema != null && !httpSchema.isEmpty()) {
+            String responseStr = null;
+            try {
+                Map<String, String> headers = new HashMap<>();
+                if (accept != null && !accept.isEmpty()) {
+                    headers.put("Accept", accept);
+                } else {
+                    headers.put("Accept", "*/*");
+                }
+                if (contentType != null && !contentType.isEmpty()) {
+                    headers.put("Content-Type", contentType);
+                } else {
+                    headers.put("Content-Type", "application/text;charset=UTF-8");
+                }
+                Request request = new Request(Method.POST_STRING, httpSchema + host, (String) path.get(httpSchema), appKey, appSecret, Constants.DEFAULT_TIMEOUT);
+                request.setHeaders(headers);
+                request.setQuerys(querys);
+                request.setStringBody(body);
+                Response response = Client.execute(request);
+                responseStr = getResponseResult(response);
+            } catch (Exception var10) {
+                throw new RuntimeException(var10);
+            }
+            return responseStr;
+        } else {
+            throw new RuntimeException("http和https参数错误httpSchema: " + httpSchema);
+        }
+    }
+
+    private static String getResponseResult(Response response) {
+        return response.getBody();
+    }
 }

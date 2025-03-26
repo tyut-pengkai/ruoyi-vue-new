@@ -1,6 +1,7 @@
 package com.kekecha.xiantu.controller;
 
-import com.kekecha.xiantu.domain.Camera;
+import com.kekecha.xiantu.domain.CameraInstance;
+import com.kekecha.xiantu.domain.CameraPlatform;
 import com.kekecha.xiantu.service.ICameraService;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
@@ -34,21 +35,21 @@ public class CameraController extends BaseController {
                 select_all = true;
             }
             AjaxResult ajaxResult = AjaxResult.success("查询成功");
-            List<Camera> cameraList = cameraService.selectAll(filter);
-            int total = cameraList.size();
+            List<CameraPlatform> cameraPlatformList = cameraService.selectAll(filter);
+            int total = cameraPlatformList.size();
             ajaxResult.put("total", total);
             if (select_all) {
-                ajaxResult.put("data", cameraList);
+                ajaxResult.put("data", cameraPlatformList);
             } else {
                 int search_start = (pageNum - 1) * pageSize;
                 int search_end = Math.min((pageNum * pageSize), total);
 
                 search_end = Math.min(search_end, total);
                 if (search_start >= total) {
-                    List<Camera> sub_list = new ArrayList<>();
+                    List<CameraPlatform> sub_list = new ArrayList<>();
                     ajaxResult.put("data", sub_list);
                 } else {
-                    List<Camera> sub_list = cameraList.subList(search_start, search_end);
+                    List<CameraPlatform> sub_list = cameraPlatformList.subList(search_start, search_end);
                     ajaxResult.put("data", sub_list);
                 }
             }
@@ -60,15 +61,15 @@ public class CameraController extends BaseController {
 
     @PreAuthorize("@ss.hasPermi('data:camera:list')")
     @PostMapping("/edit")
-    public AjaxResult edit(@RequestBody Camera camera)
+    public AjaxResult edit(@RequestBody CameraPlatform cameraPlatform)
     {
         try {
-            Camera old_camera = cameraService.selectByName(camera.getName());
-            if (old_camera != null) {
-                cameraService.update(camera);
+            CameraPlatform old_cameraPlatform = cameraService.selectByName(cameraPlatform.getName());
+            if (old_cameraPlatform != null) {
+                cameraService.update(cameraPlatform);
                 return AjaxResult.success("更新成功");
             } else {
-                cameraService.insert(camera);
+                cameraService.insert(cameraPlatform);
                 return AjaxResult.success("创建成功");
             }
         } catch (Exception e) {
@@ -101,75 +102,141 @@ public class CameraController extends BaseController {
         return ajaxResult;
     }
 
+    @Anonymous
+    @GetMapping("/list")
+    public AjaxResult getCameraList(@RequestParam(name="pageNum", defaultValue = "0") int pageNum,
+                                    @RequestParam(name="pageSize", defaultValue = "0") int pageSize,
+                                    @RequestParam(name="platform", defaultValue = "") String platformName)
+    {
+        if (platformName == null || platformName.isEmpty()) {
+            return AjaxResult.error("查询的平台名称异常");
+        }
 
-//    /**
-//     * 获取播放地址
-//     */
-//    @GetMapping("/getPreviewURL")
-//    public AjaxResult getPreviewURL(
-//            @RequestParam(required = true, defaultValue = "") String cameraName) throws Exception {
-//        try {
-//            if (cameraName == null || "".equals(cameraName)) {
-//                return AjaxResult.error("获取摄像头异常");
-//            }
-//
-//            Camera camera = cameraService.selectByName(cameraName);
-//
-//            String url = cameraService.getPriviewURL(camera);
-//            return AjaxResult.success(url);
-//        } catch (Exception e) {
-//            return AjaxResult.error(e.getMessage());
-//        }
-//    }
-//    public AjaxResult getPreviewURL(@RequestParam String indexCode, @RequestParam(required = false) String streamType,
-//                                   @RequestParam(required = false) String protocol,
-//                                   @RequestParam String source) throws Exception {
-//        String previewURL = "";
-//        if (MonitorVideoSourceEnum.HIKVISION.getSource().equals(source) || MonitorVideoSourceEnum.FORESTFIREMONITORPLATFORM.getSource().equals(source)
-//                || MonitorVideoSourceEnum.YANXIFORESTFARM.getSource().equals(source)) {
-//            previewURL = monitorVideoService.getHikvisionPreviewURL(indexCode, streamType, source, protocol);
-//        } else if (MonitorVideoSourceEnum.GEYE.getSource().equals(source)) {
-//            previewURL = monitorVideoService.getGeyePreviewURL(indexCode, streamType, source, protocol);
-//        }
-//        return R.data(previewURL);
-//    }
+        boolean select_all = false;
+        try {
+            if (pageNum <= 0) {
+                return AjaxResult.error("参数不合法");
+            }
+            if (pageSize <= 0) {
+                select_all = true;
+            }
+            AjaxResult ajaxResult = AjaxResult.success("查询成功");
+            /* 获取平台信息 */
+            CameraPlatform cameraPlatform = cameraService.selectByName(platformName);
+            if (cameraPlatform == null) {
+                return AjaxResult.error("查询的平台不存在");
+            }
+            /* 构建查询 */
+            List<CameraInstance> list = cameraService.getPlatformCameraInstances(cameraPlatform);
+            int total = list.size();
+            ajaxResult.put("total", total);
+            if (select_all) {
+                ajaxResult.put("data", list);
+            } else {
+                int search_start = (pageNum - 1) * pageSize;
+                int search_end = Math.min((pageNum * pageSize), total);
 
-//    /**
-//     * 获取回放地址
-//     */
-//    @GetMapping("/getPlaybackURL")
-//    public AjaxResult getPlaybackURL(@RequestParam String indexCode,
-//                                    @RequestParam String source,
-//                                    @RequestParam(required = false) String protocol,
-//                                    @ApiParam("yyyy-MM-dd hh:mm:ss") @RequestParam String beginTime,
-//                                    @ApiParam("yyyy-MM-dd hh:mm:ss") @RequestParam String endTime) throws Exception {
-//        String previewURL = "";
-//        if (MonitorVideoSourceEnum.HIKVISION.getSource().equals(source) || MonitorVideoSourceEnum.FORESTFIREMONITORPLATFORM.getSource().equals(source)
-//                || MonitorVideoSourceEnum.YANXIFORESTFARM.getSource().equals(source)) {
-//            previewURL = monitorVideoService.getHikvisionPlaybackURL(indexCode, source, protocol, beginTime, endTime);
-//        } else if (MonitorVideoSourceEnum.GEYE.getSource().equals(source)) {
-//            previewURL = monitorVideoService.getGeyePlaybackURL(indexCode, source, beginTime, endTime);
-//        }
-//        return R.data(previewURL);
-//    }
+                search_end = Math.min(search_end, total);
+                if (search_start >= total) {
+                    List<CameraInstance> sub_list = new ArrayList<>();
+                    ajaxResult.put("data", sub_list);
+                } else {
+                    List<CameraInstance> sub_list = list.subList(search_start, search_end);
+                    ajaxResult.put("data", sub_list);
+                }
+            }
+            return ajaxResult;
+        } catch (Exception e) {
+            return AjaxResult.error("系统异常，获取数据失败");
+        }
+    }
 
-//    /**
-//     * 云台操作(source=1)
-//     */
-//    @GetMapping("/controlling")
-////    @ApiImplicitParams({
-////            @ApiImplicitParam(name = "action", value = "时候  0-开始 ，1-停止 ", paramType = "query", dataType = "number"),
-////            @ApiImplicitParam(name = "command", value = "时候 LEFT 左转 RIGHT右转 UP 上转 DOWN 下转 ZOOM_IN 焦距变大 " +
-////                    "ZOOM_OUT 焦距变小 LEFT_UP 左上 LEFT_DOWN 左下 RIGHT_UP 右上 RIGHT_DOWN 右下 FOCUS_NEAR 焦点前移 " +
-////                    "FOCUS_FAR 焦点后移 IRIS_ENLARGE 光圈扩大 IRIS_REDUCE 光圈缩小", paramType = "query", dataType = "string"),
-////            @ApiImplicitParam(name = "speed", value = "云台速度，取值范围为1-100，默认50", paramType = "query", dataType = "number"),
-////    })
-//    public AjaxResult controlling(@RequestParam String indexCode,
-//                         @RequestParam String source,
-//                         @ApiIgnore @RequestParam Integer action,
-//                         @ApiIgnore @RequestParam String command,
-//                         @ApiIgnore @RequestParam(required = false) Integer speed) {
-//        return R.status(monitorVideoService.hikvisionControlling(indexCode, action, command, source, speed));
-//    }
+    /**
+     * 获取播放地址
+     */
+    @Anonymous
+    @GetMapping("/getPreviewURL")
+    public AjaxResult getPreviewURL(
+            @RequestParam(required = true) String platform,
+            @RequestParam(required = true) String indexCode) throws Exception {
+        try {
+            if (platform.isEmpty() || indexCode.isEmpty()) {
+                return AjaxResult.error("参数异常");
+            }
+
+            CameraPlatform cameraPlatform = cameraService.selectByName(platform);
+            if (cameraPlatform == null) {
+                return AjaxResult.error("平台名称异常");
+            }
+
+            String url = cameraService.getHikvisionPreviewURL(cameraPlatform, indexCode);
+            AjaxResult ajaxResult = AjaxResult.success();
+            ajaxResult.put("url", url);
+            return ajaxResult;
+        } catch (Exception e) {
+            return AjaxResult.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 获取回放地址
+     */
+    @Anonymous
+    @GetMapping("/getPlaybackURL")
+    public AjaxResult getPlaybackURL(
+            @RequestParam(required = true) String platform,
+            @RequestParam(required = true) String indexCode,
+            @RequestParam(required = true) String beginTime,
+            @RequestParam(required = true) String endTime) throws Exception {
+        if (platform.isEmpty() || indexCode.isEmpty() || beginTime.isEmpty() || endTime.isEmpty()) {
+            return AjaxResult.error("参数异常");
+        }
+
+        CameraPlatform cameraPlatform = cameraService.selectByName(platform);
+        if (cameraPlatform == null) {
+            return AjaxResult.error("平台名称异常");
+        }
+
+        AjaxResult ajaxResult = AjaxResult.success("获取成功");
+        String previewUrl = cameraService.getHikvisionPlaybackURL(cameraPlatform, indexCode, beginTime, endTime);
+        ajaxResult.put("url", previewUrl);
+        return ajaxResult;
+    }
+
+    /**
+     * 云台操作
+     */
+    @Anonymous
+    @GetMapping("/controlling")
+    public AjaxResult controlling(
+            @RequestParam(required = true) String platform,
+            @RequestParam(required = true) String indexCode,
+            @RequestParam(required = true) Integer action,
+            @RequestParam(required = true) String command,
+            @RequestParam(required = false) Integer speed) {
+
+        /*
+        * action 0-开始 ，1-停止
+        * command
+        *   LEFT 左转 RIGHT右转 UP 上转 DOWN 下转
+        *   ZOOM_IN 焦距变大 ZOOM_OUT 焦距变小
+        *   LEFT_UP 左上 LEFT_DOWN 左下 RIGHT_UP 右上 RIGHT_DOWN 右下
+        *   FOCUS_NEAR 焦点前移 FOCUS_FAR 焦点后移
+        *   IRIS_ENLARGE 光圈扩大 IRIS_REDUCE 光圈缩小
+        * speed 云台速度，取值范围为1-100，默认50
+        */
+
+        if (platform.isEmpty() || indexCode.isEmpty() || command.isEmpty()) {
+            return AjaxResult.error("参数异常");
+        }
+
+        CameraPlatform cameraPlatform = cameraService.selectByName(platform);
+        if (cameraPlatform == null) {
+            return AjaxResult.error("平台名称异常");
+        }
+
+        return AjaxResult.success(
+                cameraService.hikvisionControlling(cameraPlatform, indexCode, action, command, speed));
+    }
 
 }

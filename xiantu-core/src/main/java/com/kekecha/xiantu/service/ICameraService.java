@@ -1,17 +1,22 @@
 package com.kekecha.xiantu.service;
 
-import com.kekecha.xiantu.domain.Camera;
+import com.kekecha.xiantu.domain.CameraInstance;
+import com.kekecha.xiantu.domain.CameraPlatform;
 
 import java.util.List;
 
 public interface ICameraService {
-    List<Camera> selectAll(String filter);
-    Camera selectByName(String name);
-    List<Camera> selectByRef(String refer);
-    int insert(Camera camera);
-    int update(Camera camera);
+    List<CameraPlatform> selectAll(String filter);
+    CameraPlatform selectByName(String name);
+    List<CameraPlatform> selectByRef(String refer);
+    int insert(CameraPlatform cameraPlatform);
+    int update(CameraPlatform cameraPlatform);
     int delete(String name);
 
-//    String getPriviewURL(Camera camera);
-
+    List<CameraInstance> getPlatformCameraInstances(CameraPlatform cameraPlatform);
+    String getHikvisionPreviewURL(CameraPlatform cameraPlatform, String cameraIndexCode);
+    String getHikvisionPlaybackURL(
+            CameraPlatform cameraPlatform, String cameraIndexCode, String beginTime, String endTime);
+    Boolean hikvisionControlling(
+            CameraPlatform cameraPlatform, String cameraIndexCode, Integer action, String command, Integer speed);
 }

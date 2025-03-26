@@ -108,17 +108,12 @@ public class ArticleController extends BaseController {
         article.setTag("news");
         if (article.getId() == 0) {
             try {
-                long time = Instant.now().getEpochSecond();
-                article.setCreateTime(time);
-                article.setUpdateTime(time);
                 articleService.insert(article);
                 return AjaxResult.success("创建成功");
             } catch (Exception e) {
                 return AjaxResult.error("创建失败, 内部参数错误");
             }
         } else {
-            long time = Instant.now().getEpochSecond();
-            article.setUpdateTime(time);
             articleService.update(article);
             return AjaxResult.success("更新成功");
         }

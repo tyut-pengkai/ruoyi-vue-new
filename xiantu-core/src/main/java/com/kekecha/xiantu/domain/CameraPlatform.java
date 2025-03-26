@@ -1,6 +1,6 @@
 package com.kekecha.xiantu.domain;
 
-public class Camera {
+public class CameraPlatform {
     private String name;
     private String supplier;
     private String appKey;

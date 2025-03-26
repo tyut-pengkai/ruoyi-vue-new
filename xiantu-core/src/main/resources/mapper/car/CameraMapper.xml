@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kekecha.xiantu.mapper.CameraMapper">
 
-    <resultMap type="com.kekecha.xiantu.domain.Camera" id="CameraResultMap">
+    <resultMap type="com.kekecha.xiantu.domain.CameraPlatform" id="CameraResultMap">
         <result property="name"          column="name"    />
         <result property="supplier"        column="supplier"    />
         <result property="appKey"     column="app_key"    />
@@ -37,7 +37,7 @@
         WHERE ref_site = #{refer}
     </select>
 
-    <insert id="insert" parameterType="com.kekecha.xiantu.domain.Camera">
+    <insert id="insert" parameterType="com.kekecha.xiantu.domain.CameraPlatform">
         INSERT INTO xiantu_camera
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>
@@ -65,7 +65,7 @@
         </trim>
     </insert>
 
-    <update id="update" parameterType="com.kekecha.xiantu.domain.Camera">
+    <update id="update" parameterType="com.kekecha.xiantu.domain.CameraPlatform">
         UPDATE xiantu_camera
         <trim prefix="SET" suffixOverrides=",">
             <if test="supplier != null and supplier != ''">supplier=#{supplier},</if>
