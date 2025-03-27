@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.system.mapper.StoreQuickFunctionMapper">
+<mapper namespace="com.ruoyi.xkt.mapper.StoreQuickFunctionMapper">
     
     <resultMap type="StoreQuickFunction" id="StoreQuickFunctionResult">
         <result property="storeQuickFuncId"    column="store_quick_func_id"    />

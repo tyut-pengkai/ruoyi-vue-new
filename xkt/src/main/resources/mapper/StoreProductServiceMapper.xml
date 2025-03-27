@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.system.mapper.StoreProductServiceMapper">
+<mapper namespace="com.ruoyi.xkt.mapper.StoreProductServiceMapper">
     
     <resultMap type="StoreProductService" id="StoreProductServiceResult">
         <result property="storeProdSvcId"    column="store_prod_svc_id"    />

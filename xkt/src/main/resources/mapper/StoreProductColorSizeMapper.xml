@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.system.mapper.StoreProductColorSizeMapper">
+<mapper namespace="com.ruoyi.xkt.mapper.StoreProductColorSizeMapper">
     
     <resultMap type="StoreProductColorSize" id="StoreProductColorSizeResult">
         <result property="storeProdColorSizeId"    column="store_prod_color_size_id"    />

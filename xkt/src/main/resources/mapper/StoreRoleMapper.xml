@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.system.mapper.StoreRoleMapper">
+<mapper namespace="com.ruoyi.xkt.mapper.StoreRoleMapper">
     
     <resultMap type="StoreRole" id="StoreRoleResult">
         <result property="storeRoleId"    column="store_role_id"    />

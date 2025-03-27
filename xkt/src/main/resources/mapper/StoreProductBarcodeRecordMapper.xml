@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.system.mapper.StoreProductBarcodeRecordMapper">
+<mapper namespace="com.ruoyi.xkt.mapper.StoreProductBarcodeRecordMapper">
     
     <resultMap type="StoreProductBarcodeRecord" id="StoreProductBarcodeRecordResult">
         <result property="storeProdBarcodeRecordId"    column="store_prod_barcode_record_id"    />

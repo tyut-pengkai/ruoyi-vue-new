@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.system.mapper.StoreOrderDetailMapper">
+<mapper namespace="com.ruoyi.xkt.mapper.StoreOrderDetailMapper">
     
     <resultMap type="StoreOrderDetail" id="StoreOrderDetailResult">
         <result property="storeOrderDetailId"    column="store_order_detail_id"    />
