@@ -7,7 +7,7 @@ ruoyi:
   # 版权年份
   copyrightYear: 2025
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  # profile: C:/xiantu/uploadPath
+#  profile: C:/xiantu/uploadPath
   profile: /xiantu/admin/uploadPath
   # 获取ip地址开关
   addressEnabled: false
@@ -58,9 +58,9 @@ spring:
   servlet:
     multipart:
       # 单个文件大小
-      max-file-size: 10MB
+      max-file-size: 200MB
       # 设置总上传的文件大小
-      max-request-size: 20MB
+      max-request-size: 400MB
   # 服务模块
   devtools:
     restart:
@@ -77,7 +77,7 @@ spring:
     # WSL/主环境：
     password: Tg5&xW8^sPqN%4Fh
     # 测试环境：
-    # password: kekecha
+#    password: kekecha
     # 连接超时时间
     timeout: 10s
     lettuce:

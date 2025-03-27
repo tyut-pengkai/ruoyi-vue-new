@@ -101,7 +101,7 @@ public class CarController extends BaseController {
                 }
             }
         } catch (Exception e) {
-            return AjaxResult.error("操作失败，请重新尝试");
+            return AjaxResult.error("操作失败，请重新尝试：" + e.getMessage());
         }
     }
 

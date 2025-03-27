@@ -245,7 +245,8 @@ public class CameraServiceImpl implements ICameraService {
                 } else {
                     headers.put("Content-Type", "application/text;charset=UTF-8");
                 }
-                Request request = new Request(Method.POST_STRING, httpSchema + host, (String) path.get(httpSchema), appKey, appSecret, Constants.DEFAULT_TIMEOUT);
+                Request request = new Request(Method.POST_STRING, httpSchema + host,
+                        (String) path.get(httpSchema), appKey, appSecret, Constants.DEFAULT_TIMEOUT * 10);
                 request.setHeaders(headers);
                 request.setQuerys(querys);
                 request.setStringBody(body);

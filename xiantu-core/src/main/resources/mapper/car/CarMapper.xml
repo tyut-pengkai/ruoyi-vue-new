@@ -13,40 +13,16 @@
     <resultMap type="com.kekecha.xiantu.domain.Car" id="CarResultMap" >
         <result property="name"                 column="name"    />
         <result property="id"                   column="id"    />
-        <result property="license"              column="license"    />
-        <result property="carType"              column="car_type"    />
-        <result property="driveType"            column="drive_type"    />
-        <result property="boxLengthClass"       column="box_length_class"    />
         <result property="bodyLength"           column="body_length"    />
         <result property="bodyWidth"            column="body_width"    />
         <result property="bodyHeight"           column="body_height"    />
         <result property="grossWeight"          column="gross_weight"    />
         <result property="curbWeight"           column="curb_weight"    />
-        <result property="ratedLoadCapacity"    column="rated_load_capacity"    />
-        <result property="tonnageClass"         column="tonnage_class"    />
-        <result property="batterySwapSupport"   column="battery_swap_support"    />
-        <result property="wheelbase"            column="wheelbase"    />
-        <result property="maximumSpeed"         column="maximum_speed"    />
-        <result property="placeOfOrigin"        column="place_of_origin"    />
         <result property="energyType"           column="energy_type"    />
-        <result property="rearMotorBrand"       column="rear_motor_brand"    />
-        <result property="rearMotorModel"       column="rear_motor_model"    />
-        <result property="motorType"            column="motor_type"    />
-        <result property="totalRatedPower"      column="total_rated_power"    />
-        <result property="peakPower"            column="peak_power"    />
-        <result property="totalPeakTorque"      column="total_peak_torque"    />
-        <result property="fuelCategory"         column="fuel_category"    />
-        <result property="cabWidth"             column="cab_width"    />
-        <result property="cabPassengerNum"      column="cab_passenger_num"    />
-        <result property="cabRowNum"            column="cab_row_num"    />
-        <result property="chassisFrontLoad"     column="chassis_front_load"    />
-        <result property="chassisRearLoad"      column="chassis_rear_load"    />
-        <result property="containerType"        column="container_type"    />
+        <result property="ratedLoadCapacity"    column="rated_load_capacity"    />
         <result property="containerLength"      column="container_length"    />
         <result property="containerWidth"       column="container_width"    />
         <result property="containerHeight"      column="container_height"    />
-        <result property="tireSize"             column="tire_size"    />
-        <result property="tireNum"              column="tire_num"    />
         <result property="imageUrl"             column="image_url"    />
         <result property="videoUrl"             column="video_url"    />
     </resultMap>
@@ -69,79 +45,31 @@
         INSERT INTO xiantu_car
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>
-            <if test="license != null and license != ''">license,</if>
-            <if test="carType != null">car_type,</if>
-            <if test="driveType != null and driveType != ''">drive_type,</if>
-            <if test="wheelbase != null">wheelbase,</if>
-            <if test="boxLengthClass != null">box_length_class,</if>
-            <if test="bodyLength != null">body_length,</if>
-            <if test="bodyWidth != null">body_width,</if>
-            <if test="bodyHeight != null">body_height,</if>
-            <if test="grossWeight != null">gross_weight,</if>
-            <if test="ratedLoadCapacity != null">rated_load_capacity,</if>
-            <if test="curbWeight != null">curb_weight,</if>
-            <if test="maximumSpeed != null">maximum_speed,</if>
-            <if test="tonnageClass != null">tonnage_class,</if>
-            <if test="placeOfOrigin != null and placeOfOrigin != ''">place_of_origin,</if>
-            <if test="batterySwapSupport != null and batterySwapSupport != ''">battery_swap_support,</if>
-            <if test="energyType != null">energy_type,</if>
-            <if test="rearMotorBrand != null and rearMotorBrand != ''">rear_motor_brand,</if>
-            <if test="rearMotorModel != null and rearMotorModel != ''">rear_motor_model,</if>
-            <if test="motorType != null">motor_type,</if>
-            <if test="totalRatedPower != null">total_rated_power,</if>
-            <if test="peakPower != null">peak_power,</if>
-            <if test="totalPeakTorque != null">total_peak_torque,</if>
-            <if test="fuelCategory != null and fuelCategory != ''">fuel_category,</if>
-            <if test="cabWidth != null">cab_width,</if>
-            <if test="cabPassengerNum != null">cab_passenger_num,</if>
-            <if test="cabRowNum != null">cab_row_num,</if>
-            <if test="chassisFrontLoad != null">chassis_front_load,</if>
-            <if test="chassisRearLoad != null">chassis_rear_load,</if>
-            <if test="containerType != null">container_type,</if>
             <if test="containerLength != null">container_length,</if>
             <if test="containerWidth != null">container_width,</if>
             <if test="containerHeight != null">container_height,</if>
-            <if test="tireSize != null and tireSize != ''">tire_size,</if>
-            <if test="tireNum != null">tire_num,</if>
+            <if test="bodyLength != null">body_length,</if>
+            <if test="bodyWidth != null">body_width,</if>
+            <if test="bodyHeight != null">body_height,</if>
+            <if test="curbWeight != null">curb_weight,</if>
+            <if test="ratedLoadCapacity != null">rated_load_capacity,</if>
+            <if test="grossWeight != null">gross_weight,</if>
+            <if test="energyType != null">energy_type,</if>
             <if test="imageUrl != null">image_url,</if>
             <if test="videoUrl != null">video_url,</if>
         </trim>
         <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
-            <if test="license != null and license != ''">#{license},</if>
-            <if test="carType != null">#{carType},</if>
-            <if test="driveType != null and driveType != ''">#{driveType},</if>
-            <if test="wheelbase != null">#{wheelbase},</if>
-            <if test="boxLengthClass != null">#{boxLengthClass},</if>
-            <if test="bodyLength != null">#{bodyLength},</if>
-            <if test="bodyWidth != null">#{bodyWidth},</if>
-            <if test="bodyHeight != null">#{bodyHeight},</if>
-            <if test="grossWeight != null">#{grossWeight},</if>
-            <if test="ratedLoadCapacity != null">#{ratedLoadCapacity},</if>
-            <if test="curbWeight != null">#{curbWeight},</if>
-            <if test="maximumSpeed != null">#{maximumSpeed},</if>
-            <if test="tonnageClass != null">#{tonnageClass},</if>
-            <if test="placeOfOrigin != null and placeOfOrigin != ''">#{placeOfOrigin},</if>
-            <if test="batterySwapSupport != null and batterySwapSupport != ''">#{batterySwapSupport},</if>
-            <if test="energyType != null">#{energyType},</if>
-            <if test="rearMotorBrand != null and rearMotorBrand != ''">#{rearMotorBrand},</if>
-            <if test="rearMotorModel != null and rearMotorModel != ''">#{rearMotorModel},</if>
-            <if test="motorType != null">#{motorType},</if>
-            <if test="totalRatedPower != null">#{totalRatedPower},</if>
-            <if test="peakPower != null">#{peakPower},</if>
-            <if test="totalPeakTorque != null">#{totalPeakTorque},</if>
-            <if test="fuelCategory != null and fuelCategory != ''">#{fuelCategory},</if>
-            <if test="cabWidth != null">#{cabWidth},</if>
-            <if test="cabPassengerNum != null">#{cabPassengerNum},</if>
-            <if test="cabRowNum != null">#{cabRowNum},</if>
-            <if test="chassisFrontLoad != null">#{chassisFrontLoad},</if>
-            <if test="chassisRearLoad != null">#{chassisRearLoad},</if>
-            <if test="containerType != null">#{containerType},</if>
             <if test="containerLength != null">#{containerLength},</if>
             <if test="containerWidth != null">#{containerWidth},</if>
             <if test="containerHeight != null">#{containerHeight},</if>
-            <if test="tireSize != null and tireSize != ''">#{tireSize},</if>
-            <if test="tireNum != null">#{tireNum},</if>
+            <if test="bodyLength != null">#{bodyLength},</if>
+            <if test="bodyWidth != null">#{bodyWidth},</if>
+            <if test="bodyHeight != null">#{bodyHeight},</if>
+            <if test="curbWeight != null">#{curbWeight},</if>
+            <if test="ratedLoadCapacity != null">#{ratedLoadCapacity},</if>
+            <if test="grossWeight != null">#{grossWeight},</if>
+            <if test="energyType != null">#{energyType},</if>
             <if test="imageUrl != null">#{imageUrl},</if>
             <if test="videoUrl != null">#{videoUrl},</if>
         </trim>
@@ -151,40 +79,16 @@
         UPDATE xiantu_car
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null and name != ''">name=#{name},</if>
-            <if test="license != null and license != ''">license=#{license},</if>
-            <if test="carType != null">car_type=#{carType},</if>
-            <if test="driveType != null and driveType != ''">drive_type=#{driveType},</if>
-            <if test="wheelbase != null">wheelbase=#{wheelbase},</if>
-            <if test="boxLengthClass != null">box_length_class=#{boxLengthClass},</if>
             <if test="bodyLength != null">body_length=#{bodyLength},</if>
             <if test="bodyWidth != null">body_width=#{bodyWidth},</if>
             <if test="bodyHeight != null">body_height=#{bodyHeight},</if>
             <if test="grossWeight != null">gross_weight=#{grossWeight},</if>
-            <if test="ratedLoadCapacity != null">rated_load_capacity=#{ratedLoadCapacity},</if>
             <if test="curbWeight != null">curb_weight=#{curbWeight},</if>
-            <if test="maximumSpeed != null">maximum_speed=#{maximumSpeed},</if>
-            <if test="tonnageClass != null">tonnage_class=#{tonnageClass},</if>
-            <if test="placeOfOrigin != null and placeOfOrigin != ''">place_of_origin=#{placeOfOrigin},</if>
-            <if test="batterySwapSupport != null and batterySwapSupport != ''">battery_swap_support=#{batterySwapSupport},</if>
             <if test="energyType != null">energy_type=#{energyType},</if>
-            <if test="rearMotorBrand != null and rearMotorBrand != ''">rear_motor_brand=#{rearMotorBrand},</if>
-            <if test="rearMotorModel != null and rearMotorModel != ''">rear_motor_model=#{rearMotorModel},</if>
-            <if test="motorType != null">motor_type=#{motorType},</if>
-            <if test="totalRatedPower != null">total_rated_power=#{totalRatedPower},</if>
-            <if test="peakPower != null">peak_power=#{peakPower},</if>
-            <if test="totalPeakTorque != null">total_peak_torque=#{totalPeakTorque},</if>
-            <if test="fuelCategory != null and fuelCategory != ''">fuel_category=#{fuelCategory},</if>
-            <if test="cabWidth != null">cab_width=#{cabWidth},</if>
-            <if test="cabPassengerNum != null">cab_passenger_num=#{cabPassengerNum},</if>
-            <if test="cabRowNum != null">cab_row_num=#{cabRowNum},</if>
-            <if test="chassisFrontLoad != null">chassis_front_load=#{chassisFrontLoad},</if>
-            <if test="chassisRearLoad != null">chassis_rear_load=#{chassisRearLoad},</if>
-            <if test="containerType != null">container_type=#{containerType},</if>
             <if test="containerLength != null">container_length=#{containerLength},</if>
             <if test="containerWidth != null">container_width=#{containerWidth},</if>
+            <if test="ratedLoadCapacity != null">rated_load_capacity=#{ratedLoadCapacity},</if>
             <if test="containerHeight != null">container_height=#{containerHeight},</if>
-            <if test="tireSize != null and tireSize != ''">tire_size=#{tireSize},</if>
-            <if test="tireNum != null">tire_num=#{tireNum},</if>
             <if test="imageUrl != null">image_url=#{imageUrl},</if>
             <if test="videoUrl != null">video_url=#{videoUrl},</if>
         </trim>
