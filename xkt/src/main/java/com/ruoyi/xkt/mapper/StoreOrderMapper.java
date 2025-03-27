@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreOrder;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
-public interface StoreOrderMapper {
+public interface StoreOrderMapper extends BaseMapper<StoreOrder> {
     /**
      * 查询档口代发订单
      *

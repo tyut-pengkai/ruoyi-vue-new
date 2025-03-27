@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductBarcodeMatch;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
-public interface StoreProductBarcodeMatchMapper {
+public interface StoreProductBarcodeMatchMapper extends BaseMapper<StoreProductBarcodeMatch> {
     /**
      * 查询档口条形码和第三方系统条形码匹配结果
      *

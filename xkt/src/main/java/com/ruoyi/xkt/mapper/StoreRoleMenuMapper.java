@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreRoleMenu;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
-public interface StoreRoleMenuMapper {
+public interface StoreRoleMenuMapper extends BaseMapper<StoreRoleMenu> {
     /**
      * 查询档口子角色菜单
      *
