@@ -6,12 +6,18 @@
 
     <resultMap type="com.kekecha.xiantu.domain.Site" id="SiteResultMap">
         <result property="name"          column="name"    />
-        <result property="type"        column="type"    />
+        <result property="type"         column="type"    />
         <result property="description"     column="description"    />
         <result property="longitude"          column="longitude"    />
         <result property="latitude"   column="latitude"    />
         <result property="city"   column="city"    />
         <result property="phone"   column="phone"    />
+    </resultMap>
+
+    <resultMap type="com.kekecha.xiantu.domain.CameraToSite" id="siteRefMap">
+        <result property="siteId"          column="siteId"    />
+        <result property="type"        column="type"    />
+        <result property="indexCode"        column="indexCode"    />
     </resultMap>
 
     <select id="selectOne" resultMap="SiteResultMap">
@@ -96,7 +102,34 @@
         WHERE name = #{name}
     </update>
 
-    <delete id="deleteSite" parameterType="String">
-        DELETE FROM xiantu_site WHERE name = #{name}
+    <delete id="deleteSite" parameterType="int">
+        DELETE FROM xiantu_site WHERE id = #{id}
+    </delete>
+
+    <select id="selectRef" resultMap="siteRefMap">
+        SELECT * FROM xiantu_site_camera
+        WHERE siteId = #{siteId}
+    </select>
+
+    <insert id="refCameraToSite" parameterType="com.kekecha.xiantu.domain.CameraToSite">
+        INSERT INTO xiantu_site_camera
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null and siteId != ''">siteId,</if>
+            type,
+            <if test="indexCode != null and indexCode != ''">indexCode,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null and siteId != ''">#{siteId},</if>
+            2,
+            <if test="indexCode != null and indexCode != ''">#{indexCode},</if>
+        </trim>
+    </insert>
+
+    <delete id="derefCameraToSite" parameterType="String">
+        DELETE FROM xiantu_site_camera WHERE indexCode = #{indexCode}
+    </delete>
+
+    <delete id="clearSiteCamera" parameterType="int">
+        DELETE FROM xiantu_site_camera WHERE siteId = #{siteId}
     </delete>
 </mapper>

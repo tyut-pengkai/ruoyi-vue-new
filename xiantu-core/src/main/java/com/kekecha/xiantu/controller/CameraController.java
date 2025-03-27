@@ -2,7 +2,9 @@ package com.kekecha.xiantu.controller;
 
 import com.kekecha.xiantu.domain.CameraInstance;
 import com.kekecha.xiantu.domain.CameraPlatform;
+import com.kekecha.xiantu.domain.Site;
 import com.kekecha.xiantu.service.ICameraService;
+import com.kekecha.xiantu.service.ISiteService;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -18,6 +20,8 @@ import java.util.List;
 public class CameraController extends BaseController {
     @Autowired
     private ICameraService cameraService;
+    @Autowired
+    private ISiteService siteService;
 
     @Anonymous
     @GetMapping("")
@@ -74,6 +78,30 @@ public class CameraController extends BaseController {
             }
         } catch (Exception e) {
             return AjaxResult.error("创建失败, 内部参数错误");
+        }
+    }
+
+    @PreAuthorize("@ss.hasPermi('data:camera:list')")
+    @PostMapping("/link")
+    public AjaxResult link(@RequestParam(required = false, defaultValue = "2") int type,
+                           @RequestParam String indexCode,
+                           @RequestParam String siteName)
+    {
+        if (indexCode == null || indexCode.isEmpty() || siteName == null || siteName.isEmpty()) {
+            return AjaxResult.error("参数错误");
+        }
+
+        Site site = siteService.selectOne(type, siteName);
+        if (site == null) {
+            return AjaxResult.error("目标地点不存在");
+        }
+
+        try {
+            cameraService.clearCameraLink(indexCode);
+            cameraService.linkCameraToSite(indexCode, site.getId());
+            return AjaxResult.success();
+        } catch (Exception e) {
+            return AjaxResult.error("创建失败, 内部参数错误" + e.getMessage());
         }
     }
 

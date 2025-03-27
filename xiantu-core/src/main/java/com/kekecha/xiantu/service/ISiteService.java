@@ -1,5 +1,6 @@
 package com.kekecha.xiantu.service;
 
+import com.kekecha.xiantu.domain.CameraToSite;
 import com.kekecha.xiantu.domain.Site;
 
 import java.util.List;
@@ -10,5 +11,7 @@ public interface ISiteService {
 
     int insertSite(Site site);
     int updateSite(Site site);
-    int deleteSite(String name);
+    int deleteSite(int id);
+
+    List<CameraToSite> getSiteCamera(int id);
 }

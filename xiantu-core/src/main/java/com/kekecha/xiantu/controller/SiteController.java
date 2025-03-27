@@ -1,6 +1,7 @@
 package com.kekecha.xiantu.controller;
 
 import com.kekecha.xiantu.domain.CameraPlatform;
+import com.kekecha.xiantu.domain.CameraToSite;
 import com.kekecha.xiantu.domain.Site;
 import com.kekecha.xiantu.service.ICameraService;
 import com.kekecha.xiantu.service.ISiteService;
@@ -19,8 +20,6 @@ import java.util.List;
 public class SiteController extends BaseController {
     @Autowired
     private ISiteService siteService;
-    @Autowired
-    private ICameraService cameraService;
 
     @Anonymous
     @GetMapping("/net")
@@ -137,24 +136,25 @@ public class SiteController extends BaseController {
 
     @PreAuthorize("@ss.hasAnyPermi({'data:parking:list', 'data:net:list'})")
     @DeleteMapping("")
-    public AjaxResult delete(@RequestParam("name") String name)
+    public AjaxResult delete(
+            @RequestParam("id") int id)
     {
         try {
-            siteService.deleteSite(name);
+            siteService.deleteSite(id);
             return AjaxResult.success("删除成功");
         } catch (Exception e) {
             return AjaxResult.error("删除失败，请刷新重试");
         }
     }
 
-    @PreAuthorize("@ss.hasAnyPermi({'data:parking:list', 'data:net:list', 'data:camera:list'})")
+    @Anonymous
     @GetMapping("/camera")
-    public AjaxResult selectRefCamera(@RequestParam("name") String name)
+    public AjaxResult selectRefCamera(int id)
     {
         try {
             AjaxResult ajaxResult = AjaxResult.success("查询成功");
             try {
-                List<CameraPlatform> list = cameraService.selectByRef(name);
+                List<CameraToSite> list = siteService.getSiteCamera(id);
                 ajaxResult.put("total", list.size());
                 ajaxResult.put("data", list);
             } catch (Exception e) {

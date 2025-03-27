@@ -1,5 +1,6 @@
 package com.kekecha.xiantu.service.impl;
 
+import com.kekecha.xiantu.domain.CameraToSite;
 import com.kekecha.xiantu.domain.Site;
 import com.kekecha.xiantu.mapper.SiteMapper;
 import com.kekecha.xiantu.service.ISiteService;
@@ -40,8 +41,14 @@ public class SiteServiceImpl implements ISiteService {
         return siteMapper.updateSite(site);
     }
 
-    public int deleteSite(String name)
+    public int deleteSite(int siteId)
     {
-        return siteMapper.deleteSite(name);
+        siteMapper.clearSiteCamera(siteId);
+        return siteMapper.deleteSite(siteId);
+    }
+
+    public List<CameraToSite> getSiteCamera(int id)
+    {
+        return siteMapper.selectRef(id);
     }
 }

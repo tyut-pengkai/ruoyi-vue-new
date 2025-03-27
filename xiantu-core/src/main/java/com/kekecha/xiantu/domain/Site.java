@@ -1,6 +1,7 @@
 package com.kekecha.xiantu.domain;
 
 public class Site {
+    private int id;
     private String name;
     private int type;
     private String description;
@@ -12,7 +13,8 @@ public class Site {
     @Override
     public String toString() {
         return "Site{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", type=" + type +
                 ", description='" + description + '\'' +
                 ", longitude=" + longitude +
@@ -20,6 +22,14 @@ public class Site {
                 ", city='" + city + '\'' +
                 ", phone='" + phone + '\'' +
                 '}';
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getPhone() {

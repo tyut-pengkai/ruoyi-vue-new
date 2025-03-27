@@ -1,5 +1,6 @@
 package com.kekecha.xiantu.mapper;
 
+import com.kekecha.xiantu.domain.CameraToSite;
 import com.kekecha.xiantu.domain.Site;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,5 +14,11 @@ public interface SiteMapper {
     Site selectOne(@Param("type") int type, @Param("name") String name);
     int insertSite(Site site);
     int updateSite(Site site);
-    int deleteSite(String name);
+    int deleteSite(int id);
+
+    int refCameraToSite(@Param("indexCode")String indexCode, @Param("siteId") int siteId);
+    int derefCameraToSite(String indexCode);
+
+    int clearSiteCamera(@Param("siteId") int siteId);
+    List<CameraToSite> selectRef(@Param("siteId") int siteId);
 }

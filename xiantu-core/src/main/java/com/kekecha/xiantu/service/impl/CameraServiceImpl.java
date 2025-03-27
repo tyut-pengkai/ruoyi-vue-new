@@ -5,7 +5,9 @@ import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.util.DateUtils;
 import com.kekecha.xiantu.domain.CameraPlatform;
 import com.kekecha.xiantu.domain.CameraInstance;
+import com.kekecha.xiantu.domain.CameraToSite;
 import com.kekecha.xiantu.mapper.CameraMapper;
+import com.kekecha.xiantu.mapper.SiteMapper;
 import com.kekecha.xiantu.service.ICameraService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,8 @@ import java.util.*;
 public class CameraServiceImpl implements ICameraService {
     @Autowired
     CameraMapper cameraMapper;
+    @Autowired
+    SiteMapper siteMapper;
 
     private static final String GET_CAMERAS_STATUS_URL = "/artemis/api/nms/v1/online/camera/get";
 
@@ -67,6 +71,16 @@ public class CameraServiceImpl implements ICameraService {
     public int delete(String name)
     {
         return cameraMapper.delete(name);
+    }
+
+    public int linkCameraToSite(String indexCode, int siteId)
+    {
+        return siteMapper.refCameraToSite(indexCode, siteId);
+    }
+
+    public int clearCameraLink(String indexCode)
+    {
+        return siteMapper.derefCameraToSite(indexCode);
     }
 
     public List<CameraInstance> getPlatformCameraInstances(CameraPlatform cameraPlatform)

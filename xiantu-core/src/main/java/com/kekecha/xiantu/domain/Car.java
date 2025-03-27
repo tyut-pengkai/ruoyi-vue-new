@@ -25,7 +25,7 @@ public class Car {
     // 总质量
     private int grossWeight;
     // 能源类型
-    private int energyType;
+    private String energyType;
 
     public int getId() {
         return id;
@@ -131,11 +131,11 @@ public class Car {
         this.grossWeight = grossWeight;
     }
 
-    public int getEnergyType() {
+    public String getEnergyType() {
         return energyType;
     }
 
-    public void setEnergyType(int energyType) {
+    public void setEnergyType(String energyType) {
         this.energyType = energyType;
     }
 

@@ -13,6 +13,9 @@ public interface ICameraService {
     int update(CameraPlatform cameraPlatform);
     int delete(String name);
 
+    int linkCameraToSite(String indexCode, int siteId);
+    int clearCameraLink(String indexCode);
+
     List<CameraInstance> getPlatformCameraInstances(CameraPlatform cameraPlatform);
     String getHikvisionPreviewURL(CameraPlatform cameraPlatform, String cameraIndexCode);
     String getHikvisionPlaybackURL(
