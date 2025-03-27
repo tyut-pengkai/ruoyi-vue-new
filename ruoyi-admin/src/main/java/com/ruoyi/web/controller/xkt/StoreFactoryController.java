@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/store-factories")
-public class StoreFactoryController extends BaseController {
+public class StoreFactoryController extends XktBaseController {
     @Autowired
     private IStoreFactoryService storeFactoryService;
 
@@ -55,7 +55,7 @@ public class StoreFactoryController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:factory:query')")
     @GetMapping(value = "/{storeFacId}")
-    public AjaxResult getInfo(@PathVariable("storeFacId") Long storeFacId) {
+    public R getInfo(@PathVariable("storeFacId") Long storeFacId) {
         return success(storeFactoryService.selectStoreFactoryByStoreFacId(storeFacId));
     }
 
@@ -65,8 +65,8 @@ public class StoreFactoryController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:factory:add')")
     @Log(title = "档口合作工厂", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreFactory storeFactory) {
-        return toAjax(storeFactoryService.insertStoreFactory(storeFactory));
+    public R add(@RequestBody StoreFactory storeFactory) {
+        return success(storeFactoryService.insertStoreFactory(storeFactory));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreFactoryController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:factory:edit')")
     @Log(title = "档口合作工厂", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreFactory storeFactory) {
-        return toAjax(storeFactoryService.updateStoreFactory(storeFactory));
+    public R edit(@RequestBody StoreFactory storeFactory) {
+        return success(storeFactoryService.updateStoreFactory(storeFactory));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreFactoryController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:factory:remove')")
     @Log(title = "档口合作工厂", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeFacIds}")
-    public AjaxResult remove(@PathVariable Long[] storeFacIds) {
-        return toAjax(storeFactoryService.deleteStoreFactoryByStoreFacIds(storeFacIds));
+    public R remove(@PathVariable Long[] storeFacIds) {
+        return success(storeFactoryService.deleteStoreFactoryByStoreFacIds(storeFacIds));
     }
 }

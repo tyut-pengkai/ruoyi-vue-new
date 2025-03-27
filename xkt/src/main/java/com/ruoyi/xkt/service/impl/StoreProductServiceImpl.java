@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service.impl;
 
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.StoreProduct;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdDTO;
 import com.ruoyi.xkt.mapper.StoreProductMapper;
 import com.ruoyi.xkt.service.IStoreProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.util.List;
  */
 @Service
 public class StoreProductServiceImpl implements IStoreProductService {
+
     @Autowired
     private StoreProductMapper storeProductMapper;
 
@@ -42,16 +44,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
         return storeProductMapper.selectStoreProductList(storeProduct);
     }
 
-    /**
-     * 新增档口商品
-     *
-     * @param storeProduct 档口商品
-     * @return 结果
-     */
+
     @Override
-    public int insertStoreProduct(StoreProduct storeProduct) {
-        storeProduct.setCreateTime(DateUtils.getNowDate());
-        return storeProductMapper.insertStoreProduct(storeProduct);
+    public int insertStoreProduct(StoreProdDTO storeProdDTO) {
+//        storeProduct.setCreateTime(DateUtils.getNowDate());
+//        return storeProductMapper.insertStoreProduct(storeProduct);
+        return 0;
     }
 
     /**

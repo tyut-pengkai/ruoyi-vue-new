@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/user-auths")
-public class UserAuthenticationController extends BaseController {
+public class UserAuthenticationController extends XktBaseController {
     @Autowired
     private IUserAuthenticationService userAuthenticationService;
 
@@ -55,7 +55,7 @@ public class UserAuthenticationController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:authentication:query')")
     @GetMapping(value = "/{userAuthId}")
-    public AjaxResult getInfo(@PathVariable("userAuthId") Long userAuthId) {
+    public R getInfo(@PathVariable("userAuthId") Long userAuthId) {
         return success(userAuthenticationService.selectUserAuthenticationByUserAuthId(userAuthId));
     }
 
@@ -65,8 +65,8 @@ public class UserAuthenticationController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:authentication:add')")
     @Log(title = "用户代发认证", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody UserAuthentication userAuthentication) {
-        return toAjax(userAuthenticationService.insertUserAuthentication(userAuthentication));
+    public R add(@RequestBody UserAuthentication userAuthentication) {
+        return success(userAuthenticationService.insertUserAuthentication(userAuthentication));
     }
 
     /**
@@ -75,8 +75,8 @@ public class UserAuthenticationController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:authentication:edit')")
     @Log(title = "用户代发认证", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody UserAuthentication userAuthentication) {
-        return toAjax(userAuthenticationService.updateUserAuthentication(userAuthentication));
+    public R edit(@RequestBody UserAuthentication userAuthentication) {
+        return success(userAuthenticationService.updateUserAuthentication(userAuthentication));
     }
 
     /**
@@ -85,7 +85,7 @@ public class UserAuthenticationController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:authentication:remove')")
     @Log(title = "用户代发认证", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userAuthIds}")
-    public AjaxResult remove(@PathVariable Long[] userAuthIds) {
-        return toAjax(userAuthenticationService.deleteUserAuthenticationByUserAuthIds(userAuthIds));
+    public R remove(@PathVariable Long[] userAuthIds) {
+        return success(userAuthenticationService.deleteUserAuthenticationByUserAuthIds(userAuthIds));
     }
 }

@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/prod-color-sizes")
-public class StoreProductColorSizeController extends BaseController {
+public class StoreProductColorSizeController extends XktBaseController {
     @Autowired
     private IStoreProductColorSizeService storeProductColorSizeService;
 
@@ -55,7 +55,7 @@ public class StoreProductColorSizeController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:size:query')")
     @GetMapping(value = "/{storeProdColorSizeId}")
-    public AjaxResult getInfo(@PathVariable("storeProdColorSizeId") Long storeProdColorSizeId) {
+    public R getInfo(@PathVariable("storeProdColorSizeId") Long storeProdColorSizeId) {
         return success(storeProductColorSizeService.selectStoreProductColorSizeByStoreProdColorSizeId(storeProdColorSizeId));
     }
 
@@ -65,8 +65,8 @@ public class StoreProductColorSizeController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:size:add')")
     @Log(title = "档口商品颜色的尺码", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreProductColorSize storeProductColorSize) {
-        return toAjax(storeProductColorSizeService.insertStoreProductColorSize(storeProductColorSize));
+    public R add(@RequestBody StoreProductColorSize storeProductColorSize) {
+        return success(storeProductColorSizeService.insertStoreProductColorSize(storeProductColorSize));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreProductColorSizeController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:size:edit')")
     @Log(title = "档口商品颜色的尺码", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreProductColorSize storeProductColorSize) {
-        return toAjax(storeProductColorSizeService.updateStoreProductColorSize(storeProductColorSize));
+    public R edit(@RequestBody StoreProductColorSize storeProductColorSize) {
+        return success(storeProductColorSizeService.updateStoreProductColorSize(storeProductColorSize));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreProductColorSizeController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:size:remove')")
     @Log(title = "档口商品颜色的尺码", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdColorSizeIds}")
-    public AjaxResult remove(@PathVariable Long[] storeProdColorSizeIds) {
-        return toAjax(storeProductColorSizeService.deleteStoreProductColorSizeByStoreProdColorSizeIds(storeProdColorSizeIds));
+    public R remove(@PathVariable Long[] storeProdColorSizeIds) {
+        return success(storeProductColorSizeService.deleteStoreProductColorSizeByStoreProdColorSizeIds(storeProdColorSizeIds));
     }
 }

@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/store-order-receives")
-public class StoreOrderReceiveController extends BaseController {
+public class StoreOrderReceiveController extends XktBaseController {
     @Autowired
     private IStoreOrderReceiveService storeOrderReceiveService;
 
@@ -55,7 +55,7 @@ public class StoreOrderReceiveController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:receive:query')")
     @GetMapping(value = "/{storeOrderRcvId}")
-    public AjaxResult getInfo(@PathVariable("storeOrderRcvId") Long storeOrderRcvId) {
+    public R getInfo(@PathVariable("storeOrderRcvId") Long storeOrderRcvId) {
         return success(storeOrderReceiveService.selectStoreOrderReceiveByStoreOrderRcvId(storeOrderRcvId));
     }
 
@@ -65,8 +65,8 @@ public class StoreOrderReceiveController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:receive:add')")
     @Log(title = "档口代发订单收件人", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreOrderReceive storeOrderReceive) {
-        return toAjax(storeOrderReceiveService.insertStoreOrderReceive(storeOrderReceive));
+    public R add(@RequestBody StoreOrderReceive storeOrderReceive) {
+        return success(storeOrderReceiveService.insertStoreOrderReceive(storeOrderReceive));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreOrderReceiveController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:receive:edit')")
     @Log(title = "档口代发订单收件人", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreOrderReceive storeOrderReceive) {
-        return toAjax(storeOrderReceiveService.updateStoreOrderReceive(storeOrderReceive));
+    public R edit(@RequestBody StoreOrderReceive storeOrderReceive) {
+        return success(storeOrderReceiveService.updateStoreOrderReceive(storeOrderReceive));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreOrderReceiveController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:receive:remove')")
     @Log(title = "档口代发订单收件人", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeOrderRcvIds}")
-    public AjaxResult remove(@PathVariable Long[] storeOrderRcvIds) {
-        return toAjax(storeOrderReceiveService.deleteStoreOrderReceiveByStoreOrderRcvIds(storeOrderRcvIds));
+    public R remove(@PathVariable Long[] storeOrderRcvIds) {
+        return success(storeOrderReceiveService.deleteStoreOrderReceiveByStoreOrderRcvIds(storeOrderRcvIds));
     }
 }

@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/cus-discounts")
-public class StoreCustomerProductDiscountController extends BaseController {
+public class StoreCustomerProductDiscountController extends XktBaseController {
     @Autowired
     private IStoreCustomerProductDiscountService storeCustomerProductDiscountService;
 
@@ -55,7 +55,7 @@ public class StoreCustomerProductDiscountController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:discount:query')")
     @GetMapping(value = "/{storeCusProdDiscId}")
-    public AjaxResult getInfo(@PathVariable("storeCusProdDiscId") Long storeCusProdDiscId) {
+    public R getInfo(@PathVariable("storeCusProdDiscId") Long storeCusProdDiscId) {
         return success(storeCustomerProductDiscountService.selectStoreCustomerProductDiscountByStoreCusProdDiscId(storeCusProdDiscId));
     }
 
@@ -65,8 +65,8 @@ public class StoreCustomerProductDiscountController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:discount:add')")
     @Log(title = "档口客户优惠", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreCustomerProductDiscount storeCustomerProductDiscount) {
-        return toAjax(storeCustomerProductDiscountService.insertStoreCustomerProductDiscount(storeCustomerProductDiscount));
+    public R add(@RequestBody StoreCustomerProductDiscount storeCustomerProductDiscount) {
+        return success(storeCustomerProductDiscountService.insertStoreCustomerProductDiscount(storeCustomerProductDiscount));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreCustomerProductDiscountController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:discount:edit')")
     @Log(title = "档口客户优惠", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreCustomerProductDiscount storeCustomerProductDiscount) {
-        return toAjax(storeCustomerProductDiscountService.updateStoreCustomerProductDiscount(storeCustomerProductDiscount));
+    public R edit(@RequestBody StoreCustomerProductDiscount storeCustomerProductDiscount) {
+        return success(storeCustomerProductDiscountService.updateStoreCustomerProductDiscount(storeCustomerProductDiscount));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreCustomerProductDiscountController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:discount:remove')")
     @Log(title = "档口客户优惠", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeCusProdDiscIds}")
-    public AjaxResult remove(@PathVariable Long[] storeCusProdDiscIds) {
-        return toAjax(storeCustomerProductDiscountService.deleteStoreCustomerProductDiscountByStoreCusProdDiscIds(storeCusProdDiscIds));
+    public R remove(@PathVariable Long[] storeCusProdDiscIds) {
+        return success(storeCustomerProductDiscountService.deleteStoreCustomerProductDiscountByStoreCusProdDiscIds(storeCusProdDiscIds));
     }
 }

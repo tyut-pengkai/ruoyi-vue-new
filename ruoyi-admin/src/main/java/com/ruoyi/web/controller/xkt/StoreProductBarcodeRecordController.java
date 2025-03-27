@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/barcode-records")
-public class StoreProductBarcodeRecordController extends BaseController {
+public class StoreProductBarcodeRecordController extends XktBaseController {
     @Autowired
     private IStoreProductBarcodeRecordService storeProductBarcodeRecordService;
 
@@ -55,7 +55,7 @@ public class StoreProductBarcodeRecordController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:record:query')")
     @GetMapping(value = "/{storeProdBarcodeRecordId}")
-    public AjaxResult getInfo(@PathVariable("storeProdBarcodeRecordId") Long storeProdBarcodeRecordId) {
+    public R getInfo(@PathVariable("storeProdBarcodeRecordId") Long storeProdBarcodeRecordId) {
         return success(storeProductBarcodeRecordService.selectStoreProductBarcodeRecordByStoreProdBarcodeRecordId(storeProdBarcodeRecordId));
     }
 
@@ -65,8 +65,8 @@ public class StoreProductBarcodeRecordController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:record:add')")
     @Log(title = "档口打印条形码记录", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreProductBarcodeRecord storeProductBarcodeRecord) {
-        return toAjax(storeProductBarcodeRecordService.insertStoreProductBarcodeRecord(storeProductBarcodeRecord));
+    public R add(@RequestBody StoreProductBarcodeRecord storeProductBarcodeRecord) {
+        return success(storeProductBarcodeRecordService.insertStoreProductBarcodeRecord(storeProductBarcodeRecord));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreProductBarcodeRecordController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:record:edit')")
     @Log(title = "档口打印条形码记录", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreProductBarcodeRecord storeProductBarcodeRecord) {
-        return toAjax(storeProductBarcodeRecordService.updateStoreProductBarcodeRecord(storeProductBarcodeRecord));
+    public R edit(@RequestBody StoreProductBarcodeRecord storeProductBarcodeRecord) {
+        return success(storeProductBarcodeRecordService.updateStoreProductBarcodeRecord(storeProductBarcodeRecord));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreProductBarcodeRecordController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:record:remove')")
     @Log(title = "档口打印条形码记录", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdBarcodeRecordIds}")
-    public AjaxResult remove(@PathVariable Long[] storeProdBarcodeRecordIds) {
-        return toAjax(storeProductBarcodeRecordService.deleteStoreProductBarcodeRecordByStoreProdBarcodeRecordIds(storeProdBarcodeRecordIds));
+    public R remove(@PathVariable Long[] storeProdBarcodeRecordIds) {
+        return success(storeProductBarcodeRecordService.deleteStoreProductBarcodeRecordByStoreProdBarcodeRecordIds(storeProdBarcodeRecordIds));
     }
 }

@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/store-orders")
-public class StoreOrderController extends BaseController {
+public class StoreOrderController extends XktBaseController {
     @Autowired
     private IStoreOrderService storeOrderService;
 
@@ -55,7 +55,7 @@ public class StoreOrderController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:order:query')")
     @GetMapping(value = "/{storeOrderId}")
-    public AjaxResult getInfo(@PathVariable("storeOrderId") Long storeOrderId) {
+    public R getInfo(@PathVariable("storeOrderId") Long storeOrderId) {
         return success(storeOrderService.selectStoreOrderByStoreOrderId(storeOrderId));
     }
 
@@ -65,8 +65,8 @@ public class StoreOrderController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:order:add')")
     @Log(title = "档口代发订单", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreOrder storeOrder) {
-        return toAjax(storeOrderService.insertStoreOrder(storeOrder));
+    public R add(@RequestBody StoreOrder storeOrder) {
+        return success(storeOrderService.insertStoreOrder(storeOrder));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreOrderController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:order:edit')")
     @Log(title = "档口代发订单", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreOrder storeOrder) {
-        return toAjax(storeOrderService.updateStoreOrder(storeOrder));
+    public R edit(@RequestBody StoreOrder storeOrder) {
+        return success(storeOrderService.updateStoreOrder(storeOrder));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreOrderController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:order:remove')")
     @Log(title = "档口代发订单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeOrderIds}")
-    public AjaxResult remove(@PathVariable Long[] storeOrderIds) {
-        return toAjax(storeOrderService.deleteStoreOrderByStoreOrderIds(storeOrderIds));
+    public R remove(@PathVariable Long[] storeOrderIds) {
+        return success(storeOrderService.deleteStoreOrderByStoreOrderIds(storeOrderIds));
     }
 }

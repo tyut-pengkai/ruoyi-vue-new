@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/store-role-menus")
-public class StoreRoleMenuController extends BaseController {
+public class StoreRoleMenuController extends XktBaseController {
     @Autowired
     private IStoreRoleMenuService storeRoleMenuService;
 
@@ -55,7 +55,7 @@ public class StoreRoleMenuController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:menu:query')")
     @GetMapping(value = "/{storeRoleMenuId}")
-    public AjaxResult getInfo(@PathVariable("storeRoleMenuId") Long storeRoleMenuId) {
+    public R getInfo(@PathVariable("storeRoleMenuId") Long storeRoleMenuId) {
         return success(storeRoleMenuService.selectStoreRoleMenuByStoreRoleMenuId(storeRoleMenuId));
     }
 
@@ -65,8 +65,8 @@ public class StoreRoleMenuController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:menu:add')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreRoleMenu storeRoleMenu) {
-        return toAjax(storeRoleMenuService.insertStoreRoleMenu(storeRoleMenu));
+    public R add(@RequestBody StoreRoleMenu storeRoleMenu) {
+        return success(storeRoleMenuService.insertStoreRoleMenu(storeRoleMenu));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreRoleMenuController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:menu:edit')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreRoleMenu storeRoleMenu) {
-        return toAjax(storeRoleMenuService.updateStoreRoleMenu(storeRoleMenu));
+    public R edit(@RequestBody StoreRoleMenu storeRoleMenu) {
+        return success(storeRoleMenuService.updateStoreRoleMenu(storeRoleMenu));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreRoleMenuController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:menu:remove')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeRoleMenuIds}")
-    public AjaxResult remove(@PathVariable Long[] storeRoleMenuIds) {
-        return toAjax(storeRoleMenuService.deleteStoreRoleMenuByStoreRoleMenuIds(storeRoleMenuIds));
+    public R remove(@PathVariable Long[] storeRoleMenuIds) {
+        return success(storeRoleMenuService.deleteStoreRoleMenuByStoreRoleMenuIds(storeRoleMenuIds));
     }
 }

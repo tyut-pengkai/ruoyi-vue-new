@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/search-results")
-public class PictureSearchResultController extends BaseController {
+public class PictureSearchResultController extends XktBaseController {
     @Autowired
     private IPictureSearchResultService pictureSearchResultService;
 
@@ -55,7 +55,7 @@ public class PictureSearchResultController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:result:query')")
     @GetMapping(value = "/{picSearchResId}")
-    public AjaxResult getInfo(@PathVariable("picSearchResId") Long picSearchResId) {
+    public R getInfo(@PathVariable("picSearchResId") Long picSearchResId) {
         return success(pictureSearchResultService.selectPictureSearchResultByPicSearchResId(picSearchResId));
     }
 
@@ -65,8 +65,8 @@ public class PictureSearchResultController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:result:add')")
     @Log(title = "以图搜款结果", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody PictureSearchResult pictureSearchResult) {
-        return toAjax(pictureSearchResultService.insertPictureSearchResult(pictureSearchResult));
+    public R add(@RequestBody PictureSearchResult pictureSearchResult) {
+        return success(pictureSearchResultService.insertPictureSearchResult(pictureSearchResult));
     }
 
     /**
@@ -75,8 +75,8 @@ public class PictureSearchResultController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:result:edit')")
     @Log(title = "以图搜款结果", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody PictureSearchResult pictureSearchResult) {
-        return toAjax(pictureSearchResultService.updatePictureSearchResult(pictureSearchResult));
+    public R edit(@RequestBody PictureSearchResult pictureSearchResult) {
+        return success(pictureSearchResultService.updatePictureSearchResult(pictureSearchResult));
     }
 
     /**
@@ -85,7 +85,7 @@ public class PictureSearchResultController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:result:remove')")
     @Log(title = "以图搜款结果", businessType = BusinessType.DELETE)
     @DeleteMapping("/{picSearchResIds}")
-    public AjaxResult remove(@PathVariable Long[] picSearchResIds) {
-        return toAjax(pictureSearchResultService.deletePictureSearchResultByPicSearchResIds(picSearchResIds));
+    public R remove(@PathVariable Long[] picSearchResIds) {
+        return success(pictureSearchResultService.deletePictureSearchResultByPicSearchResIds(picSearchResIds));
     }
 }

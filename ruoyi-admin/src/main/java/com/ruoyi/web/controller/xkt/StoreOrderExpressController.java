@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/store-order-expresses")
-public class StoreOrderExpressController extends BaseController {
+public class StoreOrderExpressController extends XktBaseController {
     @Autowired
     private IStoreOrderExpressService storeOrderExpressService;
 
@@ -55,7 +55,7 @@ public class StoreOrderExpressController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:express:query')")
     @GetMapping(value = "/{storeOrderExprId}")
-    public AjaxResult getInfo(@PathVariable("storeOrderExprId") Long storeOrderExprId) {
+    public R getInfo(@PathVariable("storeOrderExprId") Long storeOrderExprId) {
         return success(storeOrderExpressService.selectStoreOrderExpressByStoreOrderExprId(storeOrderExprId));
     }
 
@@ -65,8 +65,8 @@ public class StoreOrderExpressController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:express:add')")
     @Log(title = "档口代发订单快递", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreOrderExpress storeOrderExpress) {
-        return toAjax(storeOrderExpressService.insertStoreOrderExpress(storeOrderExpress));
+    public R add(@RequestBody StoreOrderExpress storeOrderExpress) {
+        return success(storeOrderExpressService.insertStoreOrderExpress(storeOrderExpress));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreOrderExpressController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:express:edit')")
     @Log(title = "档口代发订单快递", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreOrderExpress storeOrderExpress) {
-        return toAjax(storeOrderExpressService.updateStoreOrderExpress(storeOrderExpress));
+    public R edit(@RequestBody StoreOrderExpress storeOrderExpress) {
+        return success(storeOrderExpressService.updateStoreOrderExpress(storeOrderExpress));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreOrderExpressController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:express:remove')")
     @Log(title = "档口代发订单快递", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeOrderExprIds}")
-    public AjaxResult remove(@PathVariable Long[] storeOrderExprIds) {
-        return toAjax(storeOrderExpressService.deleteStoreOrderExpressByStoreOrderExprIds(storeOrderExprIds));
+    public R remove(@PathVariable Long[] storeOrderExprIds) {
+        return success(storeOrderExpressService.deleteStoreOrderExpressByStoreOrderExprIds(storeOrderExprIds));
     }
 }

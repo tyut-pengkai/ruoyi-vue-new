@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/user-notices")
-public class UserNoticeController extends BaseController {
+public class UserNoticeController extends XktBaseController {
     @Autowired
     private IUserNoticeService userNoticeService;
 
@@ -55,7 +55,7 @@ public class UserNoticeController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:notice:query')")
     @GetMapping(value = "/{userNoticeId}")
-    public AjaxResult getInfo(@PathVariable("userNoticeId") Long userNoticeId) {
+    public R getInfo(@PathVariable("userNoticeId") Long userNoticeId) {
         return success(userNoticeService.selectUserNoticeByUserNoticeId(userNoticeId));
     }
 
@@ -65,8 +65,8 @@ public class UserNoticeController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:notice:add')")
     @Log(title = "用户所有通知", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody UserNotice userNotice) {
-        return toAjax(userNoticeService.insertUserNotice(userNotice));
+    public R add(@RequestBody UserNotice userNotice) {
+        return success(userNoticeService.insertUserNotice(userNotice));
     }
 
     /**
@@ -75,8 +75,8 @@ public class UserNoticeController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:notice:edit')")
     @Log(title = "用户所有通知", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody UserNotice userNotice) {
-        return toAjax(userNoticeService.updateUserNotice(userNotice));
+    public R edit(@RequestBody UserNotice userNotice) {
+        return success(userNoticeService.updateUserNotice(userNotice));
     }
 
     /**
@@ -85,7 +85,7 @@ public class UserNoticeController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:notice:remove')")
     @Log(title = "用户所有通知", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userNoticeIds}")
-    public AjaxResult remove(@PathVariable Long[] userNoticeIds) {
-        return toAjax(userNoticeService.deleteUserNoticeByUserNoticeIds(userNoticeIds));
+    public R remove(@PathVariable Long[] userNoticeIds) {
+        return success(userNoticeService.deleteUserNoticeByUserNoticeIds(userNoticeIds));
     }
 }

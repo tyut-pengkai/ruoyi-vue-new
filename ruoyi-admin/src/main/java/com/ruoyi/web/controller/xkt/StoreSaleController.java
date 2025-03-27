@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/store-sales")
-public class StoreSaleController extends BaseController {
+public class StoreSaleController extends XktBaseController {
     @Autowired
     private IStoreSaleService storeSaleService;
 
@@ -55,7 +55,7 @@ public class StoreSaleController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:sale:query')")
     @GetMapping(value = "/{storeSaleId}")
-    public AjaxResult getInfo(@PathVariable("storeSaleId") Long storeSaleId) {
+    public R getInfo(@PathVariable("storeSaleId") Long storeSaleId) {
         return success(storeSaleService.selectStoreSaleByStoreSaleId(storeSaleId));
     }
 
@@ -65,8 +65,8 @@ public class StoreSaleController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:sale:add')")
     @Log(title = "档口销售出库", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreSale storeSale) {
-        return toAjax(storeSaleService.insertStoreSale(storeSale));
+    public R add(@RequestBody StoreSale storeSale) {
+        return success(storeSaleService.insertStoreSale(storeSale));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreSaleController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:sale:edit')")
     @Log(title = "档口销售出库", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreSale storeSale) {
-        return toAjax(storeSaleService.updateStoreSale(storeSale));
+    public R edit(@RequestBody StoreSale storeSale) {
+        return success(storeSaleService.updateStoreSale(storeSale));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreSaleController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:sale:remove')")
     @Log(title = "档口销售出库", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeSaleIds}")
-    public AjaxResult remove(@PathVariable Long[] storeSaleIds) {
-        return toAjax(storeSaleService.deleteStoreSaleByStoreSaleIds(storeSaleIds));
+    public R remove(@PathVariable Long[] storeSaleIds) {
+        return success(storeSaleService.deleteStoreSaleByStoreSaleIds(storeSaleIds));
     }
 }

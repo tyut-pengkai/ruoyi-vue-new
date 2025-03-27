@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/search-hots")
-public class PictureSearchHotController extends BaseController {
+public class PictureSearchHotController extends XktBaseController {
     @Autowired
     private IPictureSearchHotService pictureSearchHotService;
 
@@ -55,7 +55,7 @@ public class PictureSearchHotController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:hot:query')")
     @GetMapping(value = "/{picSearchHotId}")
-    public AjaxResult getInfo(@PathVariable("picSearchHotId") Long picSearchHotId) {
+    public R getInfo(@PathVariable("picSearchHotId") Long picSearchHotId) {
         return success(pictureSearchHotService.selectPictureSearchHotByPicSearchHotId(picSearchHotId));
     }
 
@@ -65,8 +65,8 @@ public class PictureSearchHotController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:hot:add')")
     @Log(title = "图搜热款", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody PictureSearchHot pictureSearchHot) {
-        return toAjax(pictureSearchHotService.insertPictureSearchHot(pictureSearchHot));
+    public R add(@RequestBody PictureSearchHot pictureSearchHot) {
+        return success(pictureSearchHotService.insertPictureSearchHot(pictureSearchHot));
     }
 
     /**
@@ -75,8 +75,8 @@ public class PictureSearchHotController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:hot:edit')")
     @Log(title = "图搜热款", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody PictureSearchHot pictureSearchHot) {
-        return toAjax(pictureSearchHotService.updatePictureSearchHot(pictureSearchHot));
+    public R edit(@RequestBody PictureSearchHot pictureSearchHot) {
+        return success(pictureSearchHotService.updatePictureSearchHot(pictureSearchHot));
     }
 
     /**
@@ -85,7 +85,7 @@ public class PictureSearchHotController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:hot:remove')")
     @Log(title = "图搜热款", businessType = BusinessType.DELETE)
     @DeleteMapping("/{picSearchHotIds}")
-    public AjaxResult remove(@PathVariable Long[] picSearchHotIds) {
-        return toAjax(pictureSearchHotService.deletePictureSearchHotByPicSearchHotIds(picSearchHotIds));
+    public R remove(@PathVariable Long[] picSearchHotIds) {
+        return success(pictureSearchHotService.deletePictureSearchHotByPicSearchHotIds(picSearchHotIds));
     }
 }

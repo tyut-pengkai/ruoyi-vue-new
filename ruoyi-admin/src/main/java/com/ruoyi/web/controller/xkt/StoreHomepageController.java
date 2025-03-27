@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/store-homepages")
-public class StoreHomepageController extends BaseController {
+public class StoreHomepageController extends XktBaseController {
     @Autowired
     private IStoreHomepageService storeHomepageService;
 
@@ -55,7 +55,7 @@ public class StoreHomepageController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:homepage:query')")
     @GetMapping(value = "/{storeHomeId}")
-    public AjaxResult getInfo(@PathVariable("storeHomeId") Long storeHomeId) {
+    public R getInfo(@PathVariable("storeHomeId") Long storeHomeId) {
         return success(storeHomepageService.selectStoreHomepageByStoreHomeId(storeHomeId));
     }
 
@@ -65,8 +65,8 @@ public class StoreHomepageController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:homepage:add')")
     @Log(title = "档口首页", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreHomepage storeHomepage) {
-        return toAjax(storeHomepageService.insertStoreHomepage(storeHomepage));
+    public R add(@RequestBody StoreHomepage storeHomepage) {
+        return success(storeHomepageService.insertStoreHomepage(storeHomepage));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreHomepageController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:homepage:edit')")
     @Log(title = "档口首页", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreHomepage storeHomepage) {
-        return toAjax(storeHomepageService.updateStoreHomepage(storeHomepage));
+    public R edit(@RequestBody StoreHomepage storeHomepage) {
+        return success(storeHomepageService.updateStoreHomepage(storeHomepage));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreHomepageController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:homepage:remove')")
     @Log(title = "档口首页", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeHomeIds}")
-    public AjaxResult remove(@PathVariable Long[] storeHomeIds) {
-        return toAjax(storeHomepageService.deleteStoreHomepageByStoreHomeIds(storeHomeIds));
+    public R remove(@PathVariable Long[] storeHomeIds) {
+        return success(storeHomepageService.deleteStoreHomepageByStoreHomeIds(storeHomeIds));
     }
 }

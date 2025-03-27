@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/stores")
-public class StoreController extends BaseController {
+public class StoreController extends XktBaseController {
     @Autowired
     private IStoreService storeService;
 
@@ -55,7 +55,7 @@ public class StoreController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:store:query')")
     @GetMapping(value = "/{storeId}")
-    public AjaxResult getInfo(@PathVariable("storeId") Long storeId) {
+    public R getInfo(@PathVariable("storeId") Long storeId) {
         return success(storeService.selectStoreByStoreId(storeId));
     }
 
@@ -65,8 +65,8 @@ public class StoreController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:store:add')")
     @Log(title = "档口", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Store store) {
-        return toAjax(storeService.insertStore(store));
+    public R add(@RequestBody Store store) {
+        return success(storeService.insertStore(store));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:store:edit')")
     @Log(title = "档口", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Store store) {
-        return toAjax(storeService.updateStore(store));
+    public R edit(@RequestBody Store store) {
+        return success(storeService.updateStore(store));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:store:remove')")
     @Log(title = "档口", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeIds}")
-    public AjaxResult remove(@PathVariable Long[] storeIds) {
-        return toAjax(storeService.deleteStoreByStoreIds(storeIds));
+    public R remove(@PathVariable Long[] storeIds) {
+        return success(storeService.deleteStoreByStoreIds(storeIds));
     }
 }

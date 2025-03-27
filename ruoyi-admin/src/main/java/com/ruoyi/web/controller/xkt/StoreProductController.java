@@ -1,12 +1,16 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.BeansUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.web.controller.xkt.vo.storeProduct.StoreProdVO;
 import com.ruoyi.xkt.domain.StoreProduct;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdDTO;
 import com.ruoyi.xkt.service.IStoreProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +27,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/prods")
-public class StoreProductController extends BaseController {
+public class StoreProductController extends XktBaseController {
     @Autowired
     private IStoreProductService storeProductService;
 
@@ -55,7 +59,7 @@ public class StoreProductController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:product:query')")
     @GetMapping(value = "/{storeProdId}")
-    public AjaxResult getInfo(@PathVariable("storeProdId") Long storeProdId) {
+    public R getInfo(@PathVariable("storeProdId") Long storeProdId) {
         return success(storeProductService.selectStoreProductByStoreProdId(storeProdId));
     }
 
@@ -65,8 +69,8 @@ public class StoreProductController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:product:add')")
     @Log(title = "档口商品", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreProduct storeProduct) {
-        return toAjax(storeProductService.insertStoreProduct(storeProduct));
+    public R add(@RequestBody StoreProdVO storeProdVO) {
+        return success(storeProductService.insertStoreProduct(BeansUtils.convertObject(storeProdVO, StoreProdDTO.class)));
     }
 
     /**
@@ -75,8 +79,8 @@ public class StoreProductController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:product:edit')")
     @Log(title = "档口商品", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreProduct storeProduct) {
-        return toAjax(storeProductService.updateStoreProduct(storeProduct));
+    public R edit(@RequestBody StoreProduct storeProduct) {
+        return success(storeProductService.updateStoreProduct(storeProduct));
     }
 
     /**
@@ -85,7 +89,7 @@ public class StoreProductController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:product:remove')")
     @Log(title = "档口商品", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdIds}")
-    public AjaxResult remove(@PathVariable Long[] storeProdIds) {
-        return toAjax(storeProductService.deleteStoreProductByStoreProdIds(storeProdIds));
+    public R remove(@PathVariable Long[] storeProdIds) {
+        return success(storeProductService.deleteStoreProductByStoreProdIds(storeProdIds));
     }
 }

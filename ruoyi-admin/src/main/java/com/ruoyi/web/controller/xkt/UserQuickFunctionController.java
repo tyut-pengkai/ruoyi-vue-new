@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/user-quick-funcs")
-public class UserQuickFunctionController extends BaseController {
+public class UserQuickFunctionController extends XktBaseController {
     @Autowired
     private IUserQuickFunctionService userQuickFunctionService;
 
@@ -55,7 +55,7 @@ public class UserQuickFunctionController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:function:query')")
     @GetMapping(value = "/{userQuickFuncId}")
-    public AjaxResult getInfo(@PathVariable("userQuickFuncId") Long userQuickFuncId) {
+    public R getInfo(@PathVariable("userQuickFuncId") Long userQuickFuncId) {
         return success(userQuickFunctionService.selectUserQuickFunctionByUserQuickFuncId(userQuickFuncId));
     }
 
@@ -65,8 +65,8 @@ public class UserQuickFunctionController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:function:add')")
     @Log(title = "用户快捷功能", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody UserQuickFunction userQuickFunction) {
-        return toAjax(userQuickFunctionService.insertUserQuickFunction(userQuickFunction));
+    public R add(@RequestBody UserQuickFunction userQuickFunction) {
+        return success(userQuickFunctionService.insertUserQuickFunction(userQuickFunction));
     }
 
     /**
@@ -75,8 +75,8 @@ public class UserQuickFunctionController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:function:edit')")
     @Log(title = "用户快捷功能", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody UserQuickFunction userQuickFunction) {
-        return toAjax(userQuickFunctionService.updateUserQuickFunction(userQuickFunction));
+    public R edit(@RequestBody UserQuickFunction userQuickFunction) {
+        return success(userQuickFunctionService.updateUserQuickFunction(userQuickFunction));
     }
 
     /**
@@ -85,7 +85,7 @@ public class UserQuickFunctionController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:function:remove')")
     @Log(title = "用户快捷功能", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userQuickFuncIds}")
-    public AjaxResult remove(@PathVariable Long[] userQuickFuncIds) {
-        return toAjax(userQuickFunctionService.deleteUserQuickFunctionByUserQuickFuncIds(userQuickFuncIds));
+    public R remove(@PathVariable Long[] userQuickFuncIds) {
+        return success(userQuickFunctionService.deleteUserQuickFunctionByUserQuickFuncIds(userQuickFuncIds));
     }
 }

@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/prod-processes")
-public class StoreProductProcessController extends BaseController {
+public class StoreProductProcessController extends XktBaseController {
     @Autowired
     private IStoreProductProcessService storeProductProcessService;
 
@@ -55,7 +55,7 @@ public class StoreProductProcessController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:process:query')")
     @GetMapping(value = "/{storeProdProcessId}")
-    public AjaxResult getInfo(@PathVariable("storeProdProcessId") Long storeProdProcessId) {
+    public R getInfo(@PathVariable("storeProdProcessId") Long storeProdProcessId) {
         return success(storeProductProcessService.selectStoreProductProcessByStoreProdProcessId(storeProdProcessId));
     }
 
@@ -65,8 +65,8 @@ public class StoreProductProcessController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:process:add')")
     @Log(title = "档口商品工艺信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreProductProcess storeProductProcess) {
-        return toAjax(storeProductProcessService.insertStoreProductProcess(storeProductProcess));
+    public R add(@RequestBody StoreProductProcess storeProductProcess) {
+        return success(storeProductProcessService.insertStoreProductProcess(storeProductProcess));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreProductProcessController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:process:edit')")
     @Log(title = "档口商品工艺信息", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreProductProcess storeProductProcess) {
-        return toAjax(storeProductProcessService.updateStoreProductProcess(storeProductProcess));
+    public R edit(@RequestBody StoreProductProcess storeProductProcess) {
+        return success(storeProductProcessService.updateStoreProductProcess(storeProductProcess));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreProductProcessController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:process:remove')")
     @Log(title = "档口商品工艺信息", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdProcessIds}")
-    public AjaxResult remove(@PathVariable Long[] storeProdProcessIds) {
-        return toAjax(storeProductProcessService.deleteStoreProductProcessByStoreProdProcessIds(storeProdProcessIds));
+    public R remove(@PathVariable Long[] storeProdProcessIds) {
+        return success(storeProductProcessService.deleteStoreProductProcessByStoreProdProcessIds(storeProdProcessIds));
     }
 }

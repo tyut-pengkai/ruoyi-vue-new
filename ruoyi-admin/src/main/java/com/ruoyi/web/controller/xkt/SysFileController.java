@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/files")
-public class SysFileController extends BaseController {
+public class SysFileController extends XktBaseController {
     @Autowired
     private ISysFileService sysFileService;
 
@@ -55,7 +55,7 @@ public class SysFileController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:file:query')")
     @GetMapping(value = "/{fileId}")
-    public AjaxResult getInfo(@PathVariable("fileId") Long fileId) {
+    public R getInfo(@PathVariable("fileId") Long fileId) {
         return success(sysFileService.selectSysFileByFileId(fileId));
     }
 
@@ -65,8 +65,8 @@ public class SysFileController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:file:add')")
     @Log(title = "file", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody SysFile sysFile) {
-        return toAjax(sysFileService.insertSysFile(sysFile));
+    public R add(@RequestBody SysFile sysFile) {
+        return success(sysFileService.insertSysFile(sysFile));
     }
 
     /**
@@ -75,8 +75,8 @@ public class SysFileController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:file:edit')")
     @Log(title = "file", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody SysFile sysFile) {
-        return toAjax(sysFileService.updateSysFile(sysFile));
+    public R edit(@RequestBody SysFile sysFile) {
+        return success(sysFileService.updateSysFile(sysFile));
     }
 
     /**
@@ -85,7 +85,7 @@ public class SysFileController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:file:remove')")
     @Log(title = "file", businessType = BusinessType.DELETE)
     @DeleteMapping("/{fileIds}")
-    public AjaxResult remove(@PathVariable Long[] fileIds) {
-        return toAjax(sysFileService.deleteSysFileByFileIds(fileIds));
+    public R remove(@PathVariable Long[] fileIds) {
+        return success(sysFileService.deleteSysFileByFileIds(fileIds));
     }
 }

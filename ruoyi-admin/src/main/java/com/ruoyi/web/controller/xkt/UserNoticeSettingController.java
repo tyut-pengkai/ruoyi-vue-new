@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/user-notice-settings")
-public class UserNoticeSettingController extends BaseController {
+public class UserNoticeSettingController extends XktBaseController {
     @Autowired
     private IUserNoticeSettingService userNoticeSettingService;
 
@@ -55,7 +55,7 @@ public class UserNoticeSettingController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:setting:query')")
     @GetMapping(value = "/{userNoticeSetId}")
-    public AjaxResult getInfo(@PathVariable("userNoticeSetId") Long userNoticeSetId) {
+    public R getInfo(@PathVariable("userNoticeSetId") Long userNoticeSetId) {
         return success(userNoticeSettingService.selectUserNoticeSettingByUserNoticeSetId(userNoticeSetId));
     }
 
@@ -65,8 +65,8 @@ public class UserNoticeSettingController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:setting:add')")
     @Log(title = "用户通知接收设置", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody UserNoticeSetting userNoticeSetting) {
-        return toAjax(userNoticeSettingService.insertUserNoticeSetting(userNoticeSetting));
+    public R add(@RequestBody UserNoticeSetting userNoticeSetting) {
+        return success(userNoticeSettingService.insertUserNoticeSetting(userNoticeSetting));
     }
 
     /**
@@ -75,8 +75,8 @@ public class UserNoticeSettingController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:setting:edit')")
     @Log(title = "用户通知接收设置", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody UserNoticeSetting userNoticeSetting) {
-        return toAjax(userNoticeSettingService.updateUserNoticeSetting(userNoticeSetting));
+    public R edit(@RequestBody UserNoticeSetting userNoticeSetting) {
+        return success(userNoticeSettingService.updateUserNoticeSetting(userNoticeSetting));
     }
 
     /**
@@ -85,7 +85,7 @@ public class UserNoticeSettingController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:setting:remove')")
     @Log(title = "用户通知接收设置", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userNoticeSetIds}")
-    public AjaxResult remove(@PathVariable Long[] userNoticeSetIds) {
-        return toAjax(userNoticeSettingService.deleteUserNoticeSettingByUserNoticeSetIds(userNoticeSetIds));
+    public R remove(@PathVariable Long[] userNoticeSetIds) {
+        return success(userNoticeSettingService.deleteUserNoticeSettingByUserNoticeSetIds(userNoticeSetIds));
     }
 }

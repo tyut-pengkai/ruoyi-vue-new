@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/user-carts")
-public class UserShoppingCartController extends BaseController {
+public class UserShoppingCartController extends XktBaseController {
     @Autowired
     private IUserShoppingCartService userShoppingCartService;
 
@@ -55,7 +55,7 @@ public class UserShoppingCartController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:cart:query')")
     @GetMapping(value = "/{userShopCartId}")
-    public AjaxResult getInfo(@PathVariable("userShopCartId") Long userShopCartId) {
+    public R getInfo(@PathVariable("userShopCartId") Long userShopCartId) {
         return success(userShoppingCartService.selectUserShoppingCartByUserShopCartId(userShopCartId));
     }
 
@@ -65,8 +65,8 @@ public class UserShoppingCartController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:cart:add')")
     @Log(title = "用户进货车", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody UserShoppingCart userShoppingCart) {
-        return toAjax(userShoppingCartService.insertUserShoppingCart(userShoppingCart));
+    public R add(@RequestBody UserShoppingCart userShoppingCart) {
+        return success(userShoppingCartService.insertUserShoppingCart(userShoppingCart));
     }
 
     /**
@@ -75,8 +75,8 @@ public class UserShoppingCartController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:cart:edit')")
     @Log(title = "用户进货车", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody UserShoppingCart userShoppingCart) {
-        return toAjax(userShoppingCartService.updateUserShoppingCart(userShoppingCart));
+    public R edit(@RequestBody UserShoppingCart userShoppingCart) {
+        return success(userShoppingCartService.updateUserShoppingCart(userShoppingCart));
     }
 
     /**
@@ -85,7 +85,7 @@ public class UserShoppingCartController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:cart:remove')")
     @Log(title = "用户进货车", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userShopCartIds}")
-    public AjaxResult remove(@PathVariable Long[] userShopCartIds) {
-        return toAjax(userShoppingCartService.deleteUserShoppingCartByUserShopCartIds(userShopCartIds));
+    public R remove(@PathVariable Long[] userShopCartIds) {
+        return success(userShoppingCartService.deleteUserShoppingCartByUserShopCartIds(userShopCartIds));
     }
 }

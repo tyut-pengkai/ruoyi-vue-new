@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.StoreProduct;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdDTO;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public interface IStoreProductService {
      * @param storeProduct 档口商品
      * @return 结果
      */
-    public int insertStoreProduct(StoreProduct storeProduct);
+    public int insertStoreProduct(StoreProdDTO storeProdDTO);
 
     /**
      * 修改档口商品

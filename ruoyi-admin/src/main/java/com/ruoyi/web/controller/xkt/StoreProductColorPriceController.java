@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/prod-color-prices")
-public class StoreProductColorPriceController extends BaseController {
+public class StoreProductColorPriceController extends XktBaseController {
     @Autowired
     private IStoreProductColorPriceService storeProductColorPriceService;
 
@@ -55,7 +55,7 @@ public class StoreProductColorPriceController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:price:query')")
     @GetMapping(value = "/{storeProdColorPriceId}")
-    public AjaxResult getInfo(@PathVariable("storeProdColorPriceId") Long storeProdColorPriceId) {
+    public R getInfo(@PathVariable("storeProdColorPriceId") Long storeProdColorPriceId) {
         return success(storeProductColorPriceService.selectStoreProductColorPriceByStoreProdColorPriceId(storeProdColorPriceId));
     }
 
@@ -65,8 +65,8 @@ public class StoreProductColorPriceController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:price:add')")
     @Log(title = "档口商品颜色定价", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreProductColorPrice storeProductColorPrice) {
-        return toAjax(storeProductColorPriceService.insertStoreProductColorPrice(storeProductColorPrice));
+    public R add(@RequestBody StoreProductColorPrice storeProductColorPrice) {
+        return success(storeProductColorPriceService.insertStoreProductColorPrice(storeProductColorPrice));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreProductColorPriceController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:price:edit')")
     @Log(title = "档口商品颜色定价", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreProductColorPrice storeProductColorPrice) {
-        return toAjax(storeProductColorPriceService.updateStoreProductColorPrice(storeProductColorPrice));
+    public R edit(@RequestBody StoreProductColorPrice storeProductColorPrice) {
+        return success(storeProductColorPriceService.updateStoreProductColorPrice(storeProductColorPrice));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreProductColorPriceController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:price:remove')")
     @Log(title = "档口商品颜色定价", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdColorPriceIds}")
-    public AjaxResult remove(@PathVariable Long[] storeProdColorPriceIds) {
-        return toAjax(storeProductColorPriceService.deleteStoreProductColorPriceByStoreProdColorPriceIds(storeProdColorPriceIds));
+    public R remove(@PathVariable Long[] storeProdColorPriceIds) {
+        return success(storeProductColorPriceService.deleteStoreProductColorPriceByStoreProdColorPriceIds(storeProdColorPriceIds));
     }
 }

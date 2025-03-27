@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/prod-colors")
-public class StoreProductColorController extends BaseController {
+public class StoreProductColorController extends XktBaseController {
     @Autowired
     private IStoreProductColorService storeProductColorService;
 
@@ -55,7 +55,7 @@ public class StoreProductColorController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:color:query')")
     @GetMapping(value = "/{storeProdColorId}")
-    public AjaxResult getInfo(@PathVariable("storeProdColorId") Long storeProdColorId) {
+    public R getInfo(@PathVariable("storeProdColorId") Long storeProdColorId) {
         return success(storeProductColorService.selectStoreProductColorByStoreProdColorId(storeProdColorId));
     }
 
@@ -65,8 +65,8 @@ public class StoreProductColorController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:color:add')")
     @Log(title = "档口当前商品颜色", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreProductColor storeProductColor) {
-        return toAjax(storeProductColorService.insertStoreProductColor(storeProductColor));
+    public R add(@RequestBody StoreProductColor storeProductColor) {
+        return success(storeProductColorService.insertStoreProductColor(storeProductColor));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreProductColorController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:color:edit')")
     @Log(title = "档口当前商品颜色", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreProductColor storeProductColor) {
-        return toAjax(storeProductColorService.updateStoreProductColor(storeProductColor));
+    public R edit(@RequestBody StoreProductColor storeProductColor) {
+        return success(storeProductColorService.updateStoreProductColor(storeProductColor));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreProductColorController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:color:remove')")
     @Log(title = "档口当前商品颜色", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdColorIds}")
-    public AjaxResult remove(@PathVariable Long[] storeProdColorIds) {
-        return toAjax(storeProductColorService.deleteStoreProductColorByStoreProdColorIds(storeProdColorIds));
+    public R remove(@PathVariable Long[] storeProdColorIds) {
+        return success(storeProductColorService.deleteStoreProductColorByStoreProdColorIds(storeProdColorIds));
     }
 }

@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/store-certs")
-public class StoreCertificateController extends BaseController {
+public class StoreCertificateController extends XktBaseController {
     @Autowired
     private IStoreCertificateService storeCertificateService;
 
@@ -55,7 +55,7 @@ public class StoreCertificateController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:certificate:query')")
     @GetMapping(value = "/{storeCertId}")
-    public AjaxResult getInfo(@PathVariable("storeCertId") Long storeCertId) {
+    public R getInfo(@PathVariable("storeCertId") Long storeCertId) {
         return success(storeCertificateService.selectStoreCertificateByStoreCertId(storeCertId));
     }
 
@@ -65,8 +65,8 @@ public class StoreCertificateController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:certificate:add')")
     @Log(title = "档口认证", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreCertificate storeCertificate) {
-        return toAjax(storeCertificateService.insertStoreCertificate(storeCertificate));
+    public R add(@RequestBody StoreCertificate storeCertificate) {
+        return success(storeCertificateService.insertStoreCertificate(storeCertificate));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreCertificateController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:certificate:edit')")
     @Log(title = "档口认证", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreCertificate storeCertificate) {
-        return toAjax(storeCertificateService.updateStoreCertificate(storeCertificate));
+    public R edit(@RequestBody StoreCertificate storeCertificate) {
+        return success(storeCertificateService.updateStoreCertificate(storeCertificate));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreCertificateController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:certificate:remove')")
     @Log(title = "档口认证", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeCertIds}")
-    public AjaxResult remove(@PathVariable Long[] storeCertIds) {
-        return toAjax(storeCertificateService.deleteStoreCertificateByStoreCertIds(storeCertIds));
+    public R remove(@PathVariable Long[] storeCertIds) {
+        return success(storeCertificateService.deleteStoreCertificateByStoreCertIds(storeCertIds));
     }
 }

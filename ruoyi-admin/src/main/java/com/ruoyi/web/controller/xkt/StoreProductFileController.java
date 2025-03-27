@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/prod-files")
-public class StoreProductFileController extends BaseController {
+public class StoreProductFileController extends XktBaseController {
     @Autowired
     private IStoreProductFileService storeProductFileService;
 
@@ -55,7 +55,7 @@ public class StoreProductFileController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:file:query')")
     @GetMapping(value = "/{storeProdFileId}")
-    public AjaxResult getInfo(@PathVariable("storeProdFileId") Long storeProdFileId) {
+    public R getInfo(@PathVariable("storeProdFileId") Long storeProdFileId) {
         return success(storeProductFileService.selectStoreProductFileByStoreProdFileId(storeProdFileId));
     }
 
@@ -65,8 +65,8 @@ public class StoreProductFileController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:file:add')")
     @Log(title = "档口商品文件", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreProductFile storeProductFile) {
-        return toAjax(storeProductFileService.insertStoreProductFile(storeProductFile));
+    public R add(@RequestBody StoreProductFile storeProductFile) {
+        return success(storeProductFileService.insertStoreProductFile(storeProductFile));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreProductFileController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:file:edit')")
     @Log(title = "档口商品文件", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreProductFile storeProductFile) {
-        return toAjax(storeProductFileService.updateStoreProductFile(storeProductFile));
+    public R edit(@RequestBody StoreProductFile storeProductFile) {
+        return success(storeProductFileService.updateStoreProductFile(storeProductFile));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreProductFileController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:file:remove')")
     @Log(title = "档口商品文件", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdFileIds}")
-    public AjaxResult remove(@PathVariable Long[] storeProdFileIds) {
-        return toAjax(storeProductFileService.deleteStoreProductFileByStoreProdFileIds(storeProdFileIds));
+    public R remove(@PathVariable Long[] storeProdFileIds) {
+        return success(storeProductFileService.deleteStoreProductFileByStoreProdFileIds(storeProdFileIds));
     }
 }

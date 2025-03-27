@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/user-bill-stats")
-public class UserBillingStatementController extends BaseController {
+public class UserBillingStatementController extends XktBaseController {
     @Autowired
     private IUserBillingStatementService userBillingStatementService;
 
@@ -55,7 +55,7 @@ public class UserBillingStatementController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:statement:query')")
     @GetMapping(value = "/{userBillStatId}")
-    public AjaxResult getInfo(@PathVariable("userBillStatId") Long userBillStatId) {
+    public R getInfo(@PathVariable("userBillStatId") Long userBillStatId) {
         return success(userBillingStatementService.selectUserBillingStatementByUserBillStatId(userBillStatId));
     }
 
@@ -65,8 +65,8 @@ public class UserBillingStatementController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:statement:add')")
     @Log(title = "用户对账明细", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody UserBillingStatement userBillingStatement) {
-        return toAjax(userBillingStatementService.insertUserBillingStatement(userBillingStatement));
+    public R add(@RequestBody UserBillingStatement userBillingStatement) {
+        return success(userBillingStatementService.insertUserBillingStatement(userBillingStatement));
     }
 
     /**
@@ -75,8 +75,8 @@ public class UserBillingStatementController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:statement:edit')")
     @Log(title = "用户对账明细", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody UserBillingStatement userBillingStatement) {
-        return toAjax(userBillingStatementService.updateUserBillingStatement(userBillingStatement));
+    public R edit(@RequestBody UserBillingStatement userBillingStatement) {
+        return success(userBillingStatementService.updateUserBillingStatement(userBillingStatement));
     }
 
     /**
@@ -85,7 +85,7 @@ public class UserBillingStatementController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:statement:remove')")
     @Log(title = "用户对账明细", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userBillStatIds}")
-    public AjaxResult remove(@PathVariable Long[] userBillStatIds) {
-        return toAjax(userBillingStatementService.deleteUserBillingStatementByUserBillStatIds(userBillStatIds));
+    public R remove(@PathVariable Long[] userBillStatIds) {
+        return success(userBillingStatementService.deleteUserBillingStatementByUserBillStatIds(userBillStatIds));
     }
 }

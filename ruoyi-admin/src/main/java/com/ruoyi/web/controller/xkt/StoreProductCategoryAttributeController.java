@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/cate-attrs")
-public class StoreProductCategoryAttributeController extends BaseController {
+public class StoreProductCategoryAttributeController extends XktBaseController {
     @Autowired
     private IStoreProductCategoryAttributeService storeProductCategoryAttributeService;
 
@@ -55,7 +55,7 @@ public class StoreProductCategoryAttributeController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:attribute:query')")
     @GetMapping(value = "/{storeProdAttrId}")
-    public AjaxResult getInfo(@PathVariable("storeProdAttrId") Long storeProdAttrId) {
+    public R getInfo(@PathVariable("storeProdAttrId") Long storeProdAttrId) {
         return success(storeProductCategoryAttributeService.selectStoreProductCategoryAttributeByStoreProdAttrId(storeProdAttrId));
     }
 
@@ -65,8 +65,8 @@ public class StoreProductCategoryAttributeController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:attribute:add')")
     @Log(title = "档口商品类目信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreProductCategoryAttribute storeProductCategoryAttribute) {
-        return toAjax(storeProductCategoryAttributeService.insertStoreProductCategoryAttribute(storeProductCategoryAttribute));
+    public R add(@RequestBody StoreProductCategoryAttribute storeProductCategoryAttribute) {
+        return success(storeProductCategoryAttributeService.insertStoreProductCategoryAttribute(storeProductCategoryAttribute));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreProductCategoryAttributeController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:attribute:edit')")
     @Log(title = "档口商品类目信息", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreProductCategoryAttribute storeProductCategoryAttribute) {
-        return toAjax(storeProductCategoryAttributeService.updateStoreProductCategoryAttribute(storeProductCategoryAttribute));
+    public R edit(@RequestBody StoreProductCategoryAttribute storeProductCategoryAttribute) {
+        return success(storeProductCategoryAttributeService.updateStoreProductCategoryAttribute(storeProductCategoryAttribute));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreProductCategoryAttributeController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:attribute:remove')")
     @Log(title = "档口商品类目信息", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdAttrIds}")
-    public AjaxResult remove(@PathVariable Long[] storeProdAttrIds) {
-        return toAjax(storeProductCategoryAttributeService.deleteStoreProductCategoryAttributeByStoreProdAttrIds(storeProdAttrIds));
+    public R remove(@PathVariable Long[] storeProdAttrIds) {
+        return success(storeProductCategoryAttributeService.deleteStoreProductCategoryAttributeByStoreProdAttrIds(storeProdAttrIds));
     }
 }

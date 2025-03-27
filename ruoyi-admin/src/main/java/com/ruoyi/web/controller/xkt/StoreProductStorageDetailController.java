@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/storage-details")
-public class StoreProductStorageDetailController extends BaseController {
+public class StoreProductStorageDetailController extends XktBaseController {
     @Autowired
     private IStoreProductStorageDetailService storeProductStorageDetailService;
 
@@ -55,7 +55,7 @@ public class StoreProductStorageDetailController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:detail:query')")
     @GetMapping(value = "/{storeProdStorDetailId}")
-    public AjaxResult getInfo(@PathVariable("storeProdStorDetailId") Long storeProdStorDetailId) {
+    public R getInfo(@PathVariable("storeProdStorDetailId") Long storeProdStorDetailId) {
         return success(storeProductStorageDetailService.selectStoreProductStorageDetailByStoreProdStorDetailId(storeProdStorDetailId));
     }
 
@@ -65,8 +65,8 @@ public class StoreProductStorageDetailController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:detail:add')")
     @Log(title = "档口商品入库明细", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreProductStorageDetail storeProductStorageDetail) {
-        return toAjax(storeProductStorageDetailService.insertStoreProductStorageDetail(storeProductStorageDetail));
+    public R add(@RequestBody StoreProductStorageDetail storeProductStorageDetail) {
+        return success(storeProductStorageDetailService.insertStoreProductStorageDetail(storeProductStorageDetail));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreProductStorageDetailController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:detail:edit')")
     @Log(title = "档口商品入库明细", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreProductStorageDetail storeProductStorageDetail) {
-        return toAjax(storeProductStorageDetailService.updateStoreProductStorageDetail(storeProductStorageDetail));
+    public R edit(@RequestBody StoreProductStorageDetail storeProductStorageDetail) {
+        return success(storeProductStorageDetailService.updateStoreProductStorageDetail(storeProductStorageDetail));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreProductStorageDetailController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:detail:remove')")
     @Log(title = "档口商品入库明细", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdStorDetailIds}")
-    public AjaxResult remove(@PathVariable Long[] storeProdStorDetailIds) {
-        return toAjax(storeProductStorageDetailService.deleteStoreProductStorageDetailByStoreProdStorDetailIds(storeProdStorDetailIds));
+    public R remove(@PathVariable Long[] storeProdStorDetailIds) {
+        return success(storeProductStorageDetailService.deleteStoreProductStorageDetailByStoreProdStorDetailIds(storeProdStorDetailIds));
     }
 }

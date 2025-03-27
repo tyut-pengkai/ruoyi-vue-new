@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/sale-refund-records")
-public class StoreSaleRefundRecordController extends BaseController {
+public class StoreSaleRefundRecordController extends XktBaseController {
     @Autowired
     private IStoreSaleRefundRecordService storeSaleRefundRecordService;
 
@@ -55,7 +55,7 @@ public class StoreSaleRefundRecordController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:record:query')")
     @GetMapping(value = "/{storeSaleRefundRecordId}")
-    public AjaxResult getInfo(@PathVariable("storeSaleRefundRecordId") Long storeSaleRefundRecordId) {
+    public R getInfo(@PathVariable("storeSaleRefundRecordId") Long storeSaleRefundRecordId) {
         return success(storeSaleRefundRecordService.selectStoreSaleRefundRecordByStoreSaleRefundRecordId(storeSaleRefundRecordId));
     }
 
@@ -65,8 +65,8 @@ public class StoreSaleRefundRecordController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:record:add')")
     @Log(title = "档口销售返单", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreSaleRefundRecord storeSaleRefundRecord) {
-        return toAjax(storeSaleRefundRecordService.insertStoreSaleRefundRecord(storeSaleRefundRecord));
+    public R add(@RequestBody StoreSaleRefundRecord storeSaleRefundRecord) {
+        return success(storeSaleRefundRecordService.insertStoreSaleRefundRecord(storeSaleRefundRecord));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreSaleRefundRecordController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:record:edit')")
     @Log(title = "档口销售返单", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreSaleRefundRecord storeSaleRefundRecord) {
-        return toAjax(storeSaleRefundRecordService.updateStoreSaleRefundRecord(storeSaleRefundRecord));
+    public R edit(@RequestBody StoreSaleRefundRecord storeSaleRefundRecord) {
+        return success(storeSaleRefundRecordService.updateStoreSaleRefundRecord(storeSaleRefundRecord));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreSaleRefundRecordController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:record:remove')")
     @Log(title = "档口销售返单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeSaleRefundRecordIds}")
-    public AjaxResult remove(@PathVariable Long[] storeSaleRefundRecordIds) {
-        return toAjax(storeSaleRefundRecordService.deleteStoreSaleRefundRecordByStoreSaleRefundRecordIds(storeSaleRefundRecordIds));
+    public R remove(@PathVariable Long[] storeSaleRefundRecordIds) {
+        return success(storeSaleRefundRecordService.deleteStoreSaleRefundRecordByStoreSaleRefundRecordIds(storeSaleRefundRecordIds));
     }
 }

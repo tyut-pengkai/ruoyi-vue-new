@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/user-accs")
-public class UserAccountController extends BaseController {
+public class UserAccountController extends XktBaseController {
     @Autowired
     private IUserAccountService userAccountService;
 
@@ -55,7 +55,7 @@ public class UserAccountController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:account:query')")
     @GetMapping(value = "/{userAccId}")
-    public AjaxResult getInfo(@PathVariable("userAccId") Long userAccId) {
+    public R getInfo(@PathVariable("userAccId") Long userAccId) {
         return success(userAccountService.selectUserAccountByUserAccId(userAccId));
     }
 
@@ -65,8 +65,8 @@ public class UserAccountController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:account:add')")
     @Log(title = "用户账户（支付宝、微信等）", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody UserAccount userAccount) {
-        return toAjax(userAccountService.insertUserAccount(userAccount));
+    public R add(@RequestBody UserAccount userAccount) {
+        return success(userAccountService.insertUserAccount(userAccount));
     }
 
     /**
@@ -75,8 +75,8 @@ public class UserAccountController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:account:edit')")
     @Log(title = "用户账户（支付宝、微信等）", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody UserAccount userAccount) {
-        return toAjax(userAccountService.updateUserAccount(userAccount));
+    public R edit(@RequestBody UserAccount userAccount) {
+        return success(userAccountService.updateUserAccount(userAccount));
     }
 
     /**
@@ -85,7 +85,7 @@ public class UserAccountController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:account:remove')")
     @Log(title = "用户账户（支付宝、微信等）", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userAccIds}")
-    public AjaxResult remove(@PathVariable Long[] userAccIds) {
-        return toAjax(userAccountService.deleteUserAccountByUserAccIds(userAccIds));
+    public R remove(@PathVariable Long[] userAccIds) {
+        return success(userAccountService.deleteUserAccountByUserAccIds(userAccIds));
     }
 }

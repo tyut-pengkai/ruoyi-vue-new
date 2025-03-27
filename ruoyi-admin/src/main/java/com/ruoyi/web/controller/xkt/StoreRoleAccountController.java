@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/store-role-accs")
-public class StoreRoleAccountController extends BaseController {
+public class StoreRoleAccountController extends XktBaseController {
     @Autowired
     private IStoreRoleAccountService storeRoleAccountService;
 
@@ -55,7 +55,7 @@ public class StoreRoleAccountController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:account:query')")
     @GetMapping(value = "/{storeRoleAccId}")
-    public AjaxResult getInfo(@PathVariable("storeRoleAccId") Long storeRoleAccId) {
+    public R getInfo(@PathVariable("storeRoleAccId") Long storeRoleAccId) {
         return success(storeRoleAccountService.selectStoreRoleAccountByStoreRoleAccId(storeRoleAccId));
     }
 
@@ -65,8 +65,8 @@ public class StoreRoleAccountController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:account:add')")
     @Log(title = "档口子角色账号", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreRoleAccount storeRoleAccount) {
-        return toAjax(storeRoleAccountService.insertStoreRoleAccount(storeRoleAccount));
+    public R add(@RequestBody StoreRoleAccount storeRoleAccount) {
+        return success(storeRoleAccountService.insertStoreRoleAccount(storeRoleAccount));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreRoleAccountController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:account:edit')")
     @Log(title = "档口子角色账号", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreRoleAccount storeRoleAccount) {
-        return toAjax(storeRoleAccountService.updateStoreRoleAccount(storeRoleAccount));
+    public R edit(@RequestBody StoreRoleAccount storeRoleAccount) {
+        return success(storeRoleAccountService.updateStoreRoleAccount(storeRoleAccount));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreRoleAccountController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:account:remove')")
     @Log(title = "档口子角色账号", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeRoleAccIds}")
-    public AjaxResult remove(@PathVariable Long[] storeRoleAccIds) {
-        return toAjax(storeRoleAccountService.deleteStoreRoleAccountByStoreRoleAccIds(storeRoleAccIds));
+    public R remove(@PathVariable Long[] storeRoleAccIds) {
+        return success(storeRoleAccountService.deleteStoreRoleAccountByStoreRoleAccIds(storeRoleAccIds));
     }
 }

@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/user-addrs")
-public class UserAddressController extends BaseController {
+public class UserAddressController extends XktBaseController {
     @Autowired
     private IUserAddressService userAddressService;
 
@@ -55,7 +55,7 @@ public class UserAddressController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:address:query')")
     @GetMapping(value = "/{userAddrId}")
-    public AjaxResult getInfo(@PathVariable("userAddrId") Long userAddrId) {
+    public R getInfo(@PathVariable("userAddrId") Long userAddrId) {
         return success(userAddressService.selectUserAddressByUserAddrId(userAddrId));
     }
 
@@ -65,8 +65,8 @@ public class UserAddressController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:address:add')")
     @Log(title = "用户收货地址", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody UserAddress userAddress) {
-        return toAjax(userAddressService.insertUserAddress(userAddress));
+    public R add(@RequestBody UserAddress userAddress) {
+        return success(userAddressService.insertUserAddress(userAddress));
     }
 
     /**
@@ -75,8 +75,8 @@ public class UserAddressController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:address:edit')")
     @Log(title = "用户收货地址", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody UserAddress userAddress) {
-        return toAjax(userAddressService.updateUserAddress(userAddress));
+    public R edit(@RequestBody UserAddress userAddress) {
+        return success(userAddressService.updateUserAddress(userAddress));
     }
 
     /**
@@ -85,7 +85,7 @@ public class UserAddressController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:address:remove')")
     @Log(title = "用户收货地址", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userAddrIds}")
-    public AjaxResult remove(@PathVariable Long[] userAddrIds) {
-        return toAjax(userAddressService.deleteUserAddressByUserAddrIds(userAddrIds));
+    public R remove(@PathVariable Long[] userAddrIds) {
+        return success(userAddressService.deleteUserAddressByUserAddrIds(userAddrIds));
     }
 }

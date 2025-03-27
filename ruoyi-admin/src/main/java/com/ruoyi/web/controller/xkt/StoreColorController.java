@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/store-colors")
-public class StoreColorController extends BaseController {
+public class StoreColorController extends XktBaseController {
     @Autowired
     private IStoreColorService storeColorService;
 
@@ -55,7 +55,7 @@ public class StoreColorController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:color:query')")
     @GetMapping(value = "/{storeColorId}")
-    public AjaxResult getInfo(@PathVariable("storeColorId") Long storeColorId) {
+    public R getInfo(@PathVariable("storeColorId") Long storeColorId) {
         return success(storeColorService.selectStoreColorByStoreColorId(storeColorId));
     }
 
@@ -65,8 +65,8 @@ public class StoreColorController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:color:add')")
     @Log(title = "档口所有颜色", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreColor storeColor) {
-        return toAjax(storeColorService.insertStoreColor(storeColor));
+    public R add(@RequestBody StoreColor storeColor) {
+        return success(storeColorService.insertStoreColor(storeColor));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreColorController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:color:edit')")
     @Log(title = "档口所有颜色", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreColor storeColor) {
-        return toAjax(storeColorService.updateStoreColor(storeColor));
+    public R edit(@RequestBody StoreColor storeColor) {
+        return success(storeColorService.updateStoreColor(storeColor));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreColorController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:color:remove')")
     @Log(title = "档口所有颜色", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeColorIds}")
-    public AjaxResult remove(@PathVariable Long[] storeColorIds) {
-        return toAjax(storeColorService.deleteStoreColorByStoreColorIds(storeColorIds));
+    public R remove(@PathVariable Long[] storeColorIds) {
+        return success(storeColorService.deleteStoreColorByStoreColorIds(storeColorIds));
     }
 }

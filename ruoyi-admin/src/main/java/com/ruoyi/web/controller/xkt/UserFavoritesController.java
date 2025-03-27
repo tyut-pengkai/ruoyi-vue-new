@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/user-faves")
-public class UserFavoritesController extends BaseController {
+public class UserFavoritesController extends XktBaseController {
     @Autowired
     private IUserFavoritesService userFavoritesService;
 
@@ -55,7 +55,7 @@ public class UserFavoritesController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:favorites:query')")
     @GetMapping(value = "/{userFavoId}")
-    public AjaxResult getInfo(@PathVariable("userFavoId") Long userFavoId) {
+    public R getInfo(@PathVariable("userFavoId") Long userFavoId) {
         return success(userFavoritesService.selectUserFavoritesByUserFavoId(userFavoId));
     }
 
@@ -65,8 +65,8 @@ public class UserFavoritesController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:favorites:add')")
     @Log(title = "用户收藏商品", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody UserFavorites userFavorites) {
-        return toAjax(userFavoritesService.insertUserFavorites(userFavorites));
+    public R add(@RequestBody UserFavorites userFavorites) {
+        return success(userFavoritesService.insertUserFavorites(userFavorites));
     }
 
     /**
@@ -75,8 +75,8 @@ public class UserFavoritesController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:favorites:edit')")
     @Log(title = "用户收藏商品", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody UserFavorites userFavorites) {
-        return toAjax(userFavoritesService.updateUserFavorites(userFavorites));
+    public R edit(@RequestBody UserFavorites userFavorites) {
+        return success(userFavoritesService.updateUserFavorites(userFavorites));
     }
 
     /**
@@ -85,7 +85,7 @@ public class UserFavoritesController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:favorites:remove')")
     @Log(title = "用户收藏商品", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userFavoIds}")
-    public AjaxResult remove(@PathVariable Long[] userFavoIds) {
-        return toAjax(userFavoritesService.deleteUserFavoritesByUserFavoIds(userFavoIds));
+    public R remove(@PathVariable Long[] userFavoIds) {
+        return success(userFavoritesService.deleteUserFavoritesByUserFavoIds(userFavoIds));
     }
 }

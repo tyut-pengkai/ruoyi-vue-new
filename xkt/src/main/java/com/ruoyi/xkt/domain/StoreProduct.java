@@ -105,7 +105,7 @@ public class StoreProduct extends BaseEntity {
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Excel(name = "单据日期", width = 30, dateFormat = "yyyy-MM-dd")
-    private Date vroucherDate;
+    private Date voucherDate;
 
     /**
      * 商品状态
@@ -140,7 +140,7 @@ public class StoreProduct extends BaseEntity {
                 .append("listingWay", getListingWay())
                 .append("nextBarcodeNum", getNextBarcodeNum())
                 .append("listingWaySchedule", getListingWaySchedule())
-                .append("vroucherDate", getVroucherDate())
+                .append("voucherDate", getVoucherDate())
                 .append("prodStatus", getProdStatus())
                 .append("version", getVersion())
                 .append("delFlag", getDelFlag())

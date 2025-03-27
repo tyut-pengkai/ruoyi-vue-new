@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/store-roles")
-public class StoreRoleController extends BaseController {
+public class StoreRoleController extends XktBaseController {
     @Autowired
     private IStoreRoleService storeRoleService;
 
@@ -55,7 +55,7 @@ public class StoreRoleController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:role:query')")
     @GetMapping(value = "/{storeRoleId}")
-    public AjaxResult getInfo(@PathVariable("storeRoleId") Long storeRoleId) {
+    public R getInfo(@PathVariable("storeRoleId") Long storeRoleId) {
         return success(storeRoleService.selectStoreRoleByStoreRoleId(storeRoleId));
     }
 
@@ -65,8 +65,8 @@ public class StoreRoleController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:role:add')")
     @Log(title = "档口子角色", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreRole storeRole) {
-        return toAjax(storeRoleService.insertStoreRole(storeRole));
+    public R add(@RequestBody StoreRole storeRole) {
+        return success(storeRoleService.insertStoreRole(storeRole));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreRoleController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:role:edit')")
     @Log(title = "档口子角色", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreRole storeRole) {
-        return toAjax(storeRoleService.updateStoreRole(storeRole));
+    public R edit(@RequestBody StoreRole storeRole) {
+        return success(storeRoleService.updateStoreRole(storeRole));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreRoleController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:role:remove')")
     @Log(title = "档口子角色", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeRoleIds}")
-    public AjaxResult remove(@PathVariable Long[] storeRoleIds) {
-        return toAjax(storeRoleService.deleteStoreRoleByStoreRoleIds(storeRoleIds));
+    public R remove(@PathVariable Long[] storeRoleIds) {
+        return success(storeRoleService.deleteStoreRoleByStoreRoleIds(storeRoleIds));
     }
 }

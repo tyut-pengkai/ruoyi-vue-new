@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/user-subs")
-public class UserSubscriptionsController extends BaseController {
+public class UserSubscriptionsController extends XktBaseController {
     @Autowired
     private IUserSubscriptionsService userSubscriptionsService;
 
@@ -55,7 +55,7 @@ public class UserSubscriptionsController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:subscriptions:query')")
     @GetMapping(value = "/{userSubsId}")
-    public AjaxResult getInfo(@PathVariable("userSubsId") Long userSubsId) {
+    public R getInfo(@PathVariable("userSubsId") Long userSubsId) {
         return success(userSubscriptionsService.selectUserSubscriptionsByUserSubsId(userSubsId));
     }
 
@@ -65,8 +65,8 @@ public class UserSubscriptionsController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:subscriptions:add')")
     @Log(title = "用户关注u档口", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody UserSubscriptions userSubscriptions) {
-        return toAjax(userSubscriptionsService.insertUserSubscriptions(userSubscriptions));
+    public R add(@RequestBody UserSubscriptions userSubscriptions) {
+        return success(userSubscriptionsService.insertUserSubscriptions(userSubscriptions));
     }
 
     /**
@@ -75,8 +75,8 @@ public class UserSubscriptionsController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:subscriptions:edit')")
     @Log(title = "用户关注u档口", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody UserSubscriptions userSubscriptions) {
-        return toAjax(userSubscriptionsService.updateUserSubscriptions(userSubscriptions));
+    public R edit(@RequestBody UserSubscriptions userSubscriptions) {
+        return success(userSubscriptionsService.updateUserSubscriptions(userSubscriptions));
     }
 
     /**
@@ -85,7 +85,7 @@ public class UserSubscriptionsController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:subscriptions:remove')")
     @Log(title = "用户关注u档口", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userSubsIds}")
-    public AjaxResult remove(@PathVariable Long[] userSubsIds) {
-        return toAjax(userSubscriptionsService.deleteUserSubscriptionsByUserSubsIds(userSubsIds));
+    public R remove(@PathVariable Long[] userSubsIds) {
+        return success(userSubscriptionsService.deleteUserSubscriptionsByUserSubsIds(userSubsIds));
     }
 }

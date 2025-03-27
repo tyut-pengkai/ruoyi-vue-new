@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/prod-stocks")
-public class StoreProductStockController extends BaseController {
+public class StoreProductStockController extends XktBaseController {
     @Autowired
     private IStoreProductStockService storeProductStockService;
 
@@ -55,7 +55,7 @@ public class StoreProductStockController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:stock:query')")
     @GetMapping(value = "/{storeProdStockId}")
-    public AjaxResult getInfo(@PathVariable("storeProdStockId") Long storeProdStockId) {
+    public R getInfo(@PathVariable("storeProdStockId") Long storeProdStockId) {
         return success(storeProductStockService.selectStoreProductStockByStoreProdStockId(storeProdStockId));
     }
 
@@ -65,8 +65,8 @@ public class StoreProductStockController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:stock:add')")
     @Log(title = "档口商品库存", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreProductStock storeProductStock) {
-        return toAjax(storeProductStockService.insertStoreProductStock(storeProductStock));
+    public R add(@RequestBody StoreProductStock storeProductStock) {
+        return success(storeProductStockService.insertStoreProductStock(storeProductStock));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreProductStockController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:stock:edit')")
     @Log(title = "档口商品库存", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreProductStock storeProductStock) {
-        return toAjax(storeProductStockService.updateStoreProductStock(storeProductStock));
+    public R edit(@RequestBody StoreProductStock storeProductStock) {
+        return success(storeProductStockService.updateStoreProductStock(storeProductStock));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreProductStockController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:stock:remove')")
     @Log(title = "档口商品库存", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdStockIds}")
-    public AjaxResult remove(@PathVariable Long[] storeProdStockIds) {
-        return toAjax(storeProductStockService.deleteStoreProductStockByStoreProdStockIds(storeProdStockIds));
+    public R remove(@PathVariable Long[] storeProdStockIds) {
+        return success(storeProductStockService.deleteStoreProductStockByStoreProdStockIds(storeProdStockIds));
     }
 }

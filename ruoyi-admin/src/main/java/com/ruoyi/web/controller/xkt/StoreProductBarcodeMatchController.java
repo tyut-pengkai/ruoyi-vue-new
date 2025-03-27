@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/barcode-matches")
-public class StoreProductBarcodeMatchController extends BaseController {
+public class StoreProductBarcodeMatchController extends XktBaseController {
     @Autowired
     private IStoreProductBarcodeMatchService storeProductBarcodeMatchService;
 
@@ -55,7 +55,7 @@ public class StoreProductBarcodeMatchController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:match:query')")
     @GetMapping(value = "/{storeProdBarcodeMatchId}")
-    public AjaxResult getInfo(@PathVariable("storeProdBarcodeMatchId") Long storeProdBarcodeMatchId) {
+    public R getInfo(@PathVariable("storeProdBarcodeMatchId") Long storeProdBarcodeMatchId) {
         return success(storeProductBarcodeMatchService.selectStoreProductBarcodeMatchByStoreProdBarcodeMatchId(storeProdBarcodeMatchId));
     }
 
@@ -65,8 +65,8 @@ public class StoreProductBarcodeMatchController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:match:add')")
     @Log(title = "档口条形码和第三方系统条形码匹配结果", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreProductBarcodeMatch storeProductBarcodeMatch) {
-        return toAjax(storeProductBarcodeMatchService.insertStoreProductBarcodeMatch(storeProductBarcodeMatch));
+    public R add(@RequestBody StoreProductBarcodeMatch storeProductBarcodeMatch) {
+        return success(storeProductBarcodeMatchService.insertStoreProductBarcodeMatch(storeProductBarcodeMatch));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreProductBarcodeMatchController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:match:edit')")
     @Log(title = "档口条形码和第三方系统条形码匹配结果", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreProductBarcodeMatch storeProductBarcodeMatch) {
-        return toAjax(storeProductBarcodeMatchService.updateStoreProductBarcodeMatch(storeProductBarcodeMatch));
+    public R edit(@RequestBody StoreProductBarcodeMatch storeProductBarcodeMatch) {
+        return success(storeProductBarcodeMatchService.updateStoreProductBarcodeMatch(storeProductBarcodeMatch));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreProductBarcodeMatchController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:match:remove')")
     @Log(title = "档口条形码和第三方系统条形码匹配结果", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdBarcodeMatchIds}")
-    public AjaxResult remove(@PathVariable Long[] storeProdBarcodeMatchIds) {
-        return toAjax(storeProductBarcodeMatchService.deleteStoreProductBarcodeMatchByStoreProdBarcodeMatchIds(storeProdBarcodeMatchIds));
+    public R remove(@PathVariable Long[] storeProdBarcodeMatchIds) {
+        return success(storeProductBarcodeMatchService.deleteStoreProductBarcodeMatchByStoreProdBarcodeMatchIds(storeProdBarcodeMatchIds));
     }
 }

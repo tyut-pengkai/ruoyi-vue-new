@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/storages-demand-deductes")
-public class StoreProductStorageDemandDeducteController extends BaseController {
+public class StoreProductStorageDemandDeducteController extends XktBaseController {
     @Autowired
     private IStoreProductStorageDemandDeducteService storeProductStorageDemandDeducteService;
 
@@ -55,7 +55,7 @@ public class StoreProductStorageDemandDeducteController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:deducte:query')")
     @GetMapping(value = "/{storeProdStorDemaDeducteId}")
-    public AjaxResult getInfo(@PathVariable("storeProdStorDemaDeducteId") Long storeProdStorDemaDeducteId) {
+    public R getInfo(@PathVariable("storeProdStorDemaDeducteId") Long storeProdStorDemaDeducteId) {
         return success(storeProductStorageDemandDeducteService.selectStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId(storeProdStorDemaDeducteId));
     }
 
@@ -65,8 +65,8 @@ public class StoreProductStorageDemandDeducteController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:deducte:add')")
     @Log(title = "档口商品入库抵扣需求", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
-        return toAjax(storeProductStorageDemandDeducteService.insertStoreProductStorageDemandDeducte(storeProductStorageDemandDeducte));
+    public R add(@RequestBody StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
+        return success(storeProductStorageDemandDeducteService.insertStoreProductStorageDemandDeducte(storeProductStorageDemandDeducte));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreProductStorageDemandDeducteController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:deducte:edit')")
     @Log(title = "档口商品入库抵扣需求", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
-        return toAjax(storeProductStorageDemandDeducteService.updateStoreProductStorageDemandDeducte(storeProductStorageDemandDeducte));
+    public R edit(@RequestBody StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
+        return success(storeProductStorageDemandDeducteService.updateStoreProductStorageDemandDeducte(storeProductStorageDemandDeducte));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreProductStorageDemandDeducteController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:deducte:remove')")
     @Log(title = "档口商品入库抵扣需求", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdStorDemaDeducteIds}")
-    public AjaxResult remove(@PathVariable Long[] storeProdStorDemaDeducteIds) {
-        return toAjax(storeProductStorageDemandDeducteService.deleteStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteIds(storeProdStorDemaDeducteIds));
+    public R remove(@PathVariable Long[] storeProdStorDemaDeducteIds) {
+        return success(storeProductStorageDemandDeducteService.deleteStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteIds(storeProdStorDemaDeducteIds));
     }
 }

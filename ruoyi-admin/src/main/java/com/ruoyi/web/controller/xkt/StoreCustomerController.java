@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/store-customers")
-public class StoreCustomerController extends BaseController {
+public class StoreCustomerController extends XktBaseController {
     @Autowired
     private IStoreCustomerService storeCustomerService;
 
@@ -55,7 +55,7 @@ public class StoreCustomerController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:customer:query')")
     @GetMapping(value = "/{storeCusId}")
-    public AjaxResult getInfo(@PathVariable("storeCusId") Long storeCusId) {
+    public R getInfo(@PathVariable("storeCusId") Long storeCusId) {
         return success(storeCustomerService.selectStoreCustomerByStoreCusId(storeCusId));
     }
 
@@ -65,8 +65,8 @@ public class StoreCustomerController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:customer:add')")
     @Log(title = "档口客户", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreCustomer storeCustomer) {
-        return toAjax(storeCustomerService.insertStoreCustomer(storeCustomer));
+    public R add(@RequestBody StoreCustomer storeCustomer) {
+        return success(storeCustomerService.insertStoreCustomer(storeCustomer));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreCustomerController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:customer:edit')")
     @Log(title = "档口客户", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreCustomer storeCustomer) {
-        return toAjax(storeCustomerService.updateStoreCustomer(storeCustomer));
+    public R edit(@RequestBody StoreCustomer storeCustomer) {
+        return success(storeCustomerService.updateStoreCustomer(storeCustomer));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreCustomerController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:customer:remove')")
     @Log(title = "档口客户", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeCusIds}")
-    public AjaxResult remove(@PathVariable Long[] storeCusIds) {
-        return toAjax(storeCustomerService.deleteStoreCustomerByStoreCusIds(storeCusIds));
+    public R remove(@PathVariable Long[] storeCusIds) {
+        return success(storeCustomerService.deleteStoreCustomerByStoreCusIds(storeCusIds));
     }
 }

@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/quick-funcs")
-public class StoreQuickFunctionController extends BaseController {
+public class StoreQuickFunctionController extends XktBaseController {
     @Autowired
     private IStoreQuickFunctionService storeQuickFunctionService;
 
@@ -55,7 +55,7 @@ public class StoreQuickFunctionController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:function:query')")
     @GetMapping(value = "/{storeQuickFuncId}")
-    public AjaxResult getInfo(@PathVariable("storeQuickFuncId") Long storeQuickFuncId) {
+    public R getInfo(@PathVariable("storeQuickFuncId") Long storeQuickFuncId) {
         return success(storeQuickFunctionService.selectStoreQuickFunctionByStoreQuickFuncId(storeQuickFuncId));
     }
 
@@ -65,8 +65,8 @@ public class StoreQuickFunctionController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:function:add')")
     @Log(title = "档口快捷功能", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody StoreQuickFunction storeQuickFunction) {
-        return toAjax(storeQuickFunctionService.insertStoreQuickFunction(storeQuickFunction));
+    public R add(@RequestBody StoreQuickFunction storeQuickFunction) {
+        return success(storeQuickFunctionService.insertStoreQuickFunction(storeQuickFunction));
     }
 
     /**
@@ -75,8 +75,8 @@ public class StoreQuickFunctionController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:function:edit')")
     @Log(title = "档口快捷功能", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody StoreQuickFunction storeQuickFunction) {
-        return toAjax(storeQuickFunctionService.updateStoreQuickFunction(storeQuickFunction));
+    public R edit(@RequestBody StoreQuickFunction storeQuickFunction) {
+        return success(storeQuickFunctionService.updateStoreQuickFunction(storeQuickFunction));
     }
 
     /**
@@ -85,7 +85,7 @@ public class StoreQuickFunctionController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:function:remove')")
     @Log(title = "档口快捷功能", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeQuickFuncIds}")
-    public AjaxResult remove(@PathVariable Long[] storeQuickFuncIds) {
-        return toAjax(storeQuickFunctionService.deleteStoreQuickFunctionByStoreQuickFuncIds(storeQuickFuncIds));
+    public R remove(@PathVariable Long[] storeQuickFuncIds) {
+        return success(storeQuickFunctionService.deleteStoreQuickFunctionByStoreQuickFuncIds(storeQuickFuncIds));
     }
 }
