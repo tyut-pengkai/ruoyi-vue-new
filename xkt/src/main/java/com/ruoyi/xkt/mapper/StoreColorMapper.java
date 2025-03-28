@@ -61,6 +61,6 @@ public interface StoreColorMapper extends BaseMapper<StoreColor> {
      */
     public int deleteStoreColorByStoreColorIds(Long[] storeColorIds);
 
-    List<StoreColorDTO> selectListByStoreProdId(Long storeProdId);
+    List<StoreColorDTO> selectListByStoreProdId(Long storeId);
 
 }

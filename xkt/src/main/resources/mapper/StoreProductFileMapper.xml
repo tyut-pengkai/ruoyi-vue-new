@@ -110,6 +110,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sf.file_url AS fileUrl,
             spf.file_type AS fileType,
             sf.file_name AS fileName,
+            spf.file_size AS fileSize,
             spf.order_num AS orderNum
         FROM
             store_product_file spf

@@ -25,8 +25,10 @@ import java.util.List;
 @Data
 public class StoreProdResDTO {
 
-    @ApiModelProperty("档口商品名称")
+    @ApiModelProperty("档口商品ID")
     private Long storeProdId;
+    @ApiModelProperty("档口ID")
+    private Long storeId;
     @ApiModelProperty("档口商品名称")
     private String prodName;
     @ApiModelProperty(name = "商品分类ID")

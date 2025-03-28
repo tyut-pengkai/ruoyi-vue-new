@@ -79,7 +79,7 @@ public class StoreProductController extends XktBaseController {
     /**
      * 新增档口商品
      */
-//    @PreAuthorize("@ss.hasPermi('system:product:add')")
+    @PreAuthorize("@ss.hasPermi('system:product:add')")
     @Log(title = "档口商品", businessType = BusinessType.INSERT)
     @ApiOperation(value = "新增档口商品", httpMethod = "POST", response = R.class)
     @PostMapping

@@ -66,7 +66,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<StoreProdCateAttrDTO> cateAttrList = this.storeProdCateAttrMapper.selectListByStoreProdId(storeProdId);
         storeProdResDTO.setCateAttrList(CollectionUtils.isEmpty(cateAttrList) ? new ArrayList<>() : BeanUtil.copyToList(cateAttrList, StoreProdCateAttrDTO.class));
         // 档口所有颜色列表
-        List<StoreColorDTO> allColorList = this.storeColorMapper.selectListByStoreProdId(storeProdId);
+        List<StoreColorDTO> allColorList = this.storeColorMapper.selectListByStoreProdId(storeProd.getStoreId());
         storeProdResDTO.setAllColorList(CollectionUtils.isEmpty(allColorList) ? new ArrayList<>() : BeanUtil.copyToList(allColorList, StoreColorDTO.class));
         // 档口当前商品颜色列表
         List<StoreProdColorDTO> colorList = this.storeProdColorMapper.selectListByStoreProdId(storeProdId);
@@ -74,7 +74,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 档口颜色价格列表
         List<StoreProdColorPriceDTO> priceList = this.storeProdColorPriceMapper.selectListByStoreProdId(storeProdId);
         storeProdResDTO.setPriceList(CollectionUtils.isEmpty(priceList) ? new ArrayList<>() : BeanUtil.copyToList(priceList, StoreProdColorPriceDTO.class));
-        // 档口详情
+        // 档口商品详情
         StoreProductDetail prodDetail = this.storeProdDetailMapper.selectByStoreProdId(storeProdId);
         storeProdResDTO.setDetail(ObjectUtils.isEmpty(prodDetail) ? null : BeanUtil.toBean(prodDetail, StoreProdDetailDTO.class));
         // 档口服务承诺

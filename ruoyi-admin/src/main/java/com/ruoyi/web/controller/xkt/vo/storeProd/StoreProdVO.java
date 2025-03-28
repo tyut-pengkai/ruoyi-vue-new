@@ -33,6 +33,9 @@ public class StoreProdVO {
 
     @ApiModelProperty("档口商品名称")
     private String prodName;
+    @ApiModelProperty(name = "档口ID")
+    @NotNull(message = "档口ID不能为空!")
+    private Long storeId;
     @ApiModelProperty(name = "商品分类ID")
     @NotNull(message = "商品分类ID不能为空!")
     private Long prodCateId;
