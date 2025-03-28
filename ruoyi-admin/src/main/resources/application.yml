@@ -22,7 +22,14 @@ oss:
   roleArn: acs:ram::1919425406190533:role/sts-role
   expiredDuration: 3600
   tempDir: E:/temp/
-
+es:
+  #多个用","分割
+  hosts: 49.234.41.39:9222
+  ssl: false
+  username: elastic
+  password: eguMAH-Fg*dPETkgJTkD
+  maxConnTotal: 4
+  maxConnPerRoute: 2
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为9310
