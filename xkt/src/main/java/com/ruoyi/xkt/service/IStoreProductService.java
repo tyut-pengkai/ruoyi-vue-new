@@ -1,7 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.StoreProduct;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdDTO;
+import com.ruoyi.xkt.dto.storeProduct.*;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public interface IStoreProductService {
      * @param storeProdId 档口商品主键
      * @return 档口商品
      */
-    public StoreProduct selectStoreProductByStoreProdId(Long storeProdId);
+    public StoreProdResDTO selectStoreProductByStoreProdId(Long storeProdId);
 
     /**
      * 查询档口商品列表
@@ -28,10 +28,13 @@ public interface IStoreProductService {
      */
     public List<StoreProduct> selectStoreProductList(StoreProduct storeProduct);
 
+    public List<StoreProdPageResDTO> selectPage(StoreProdPageDTO pageDTO);
+
+
     /**
      * 新增档口商品
      *
-     * @param storeProduct 档口商品
+     * @param storeProdDTO 档口商品
      * @return 结果
      */
     public int insertStoreProduct(StoreProdDTO storeProdDTO);
@@ -39,10 +42,12 @@ public interface IStoreProductService {
     /**
      * 修改档口商品
      *
-     * @param storeProduct 档口商品
+     * @param storeProdDTO 档口商品
      * @return 结果
      */
-    public int updateStoreProduct(StoreProduct storeProduct);
+    public int updateStoreProduct(StoreProdDTO storeProdDTO);
+
+    public void updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO);
 
     /**
      * 批量删除档口商品

@@ -143,4 +143,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{storeProdId}
         </foreach>
     </delete>
+
+    <select id="selectStoreProdPage" parameterType="com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO" resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO">
+        SELECT
+            spc.store_prod_id AS storeProdId,
+            sp.prod_art_num AS prodArtNum,
+            spc.color_name AS colorName,
+            sp.prod_cate_id AS prodCateId,
+            spcp.price,
+            sp.prod_status AS prodStatus,
+            spc.create_time AS createTime
+        FROM
+            store_product_color spc
+                LEFT JOIN store_product sp ON spc.store_prod_id = sp.store_prod_id
+                LEFT JOIN store_product_color_price spcp ON spc.store_color_id = spcp.store_color_id
+                AND spc.store_prod_id = spcp.store_prod_id
+                AND spc.store_color_id = spcp.store_color_id
+        <where>
+            <if test="prodArtNum != null  and prodArtNum != ''"> and sp.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
+            <if test="prodCateId != null "> and sp.prod_cate_id = #{prodCateId}</if>
+        </where>
+    </select>
+
 </mapper>

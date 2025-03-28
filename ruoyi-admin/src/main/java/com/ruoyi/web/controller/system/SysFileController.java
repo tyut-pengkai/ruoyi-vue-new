@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt;
+package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
@@ -8,11 +8,16 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.service.ISysFileService;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -23,9 +28,19 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/files")
+@RequiredArgsConstructor
 public class SysFileController extends XktBaseController {
-    @Autowired
-    private ISysFileService sysFileService;
+
+    final ISysFileService sysFileService;
+
+    @PermitAll
+    @ApiOperation(value = "上传文件/图片等静态资源", httpMethod = "POST", response = R.class)
+    @PostMapping("/upload")
+    public R<Long> upload(@RequestParam("file") MultipartFile file, @RequestParam("module") String module) throws IOException {
+//        String url = uploadFileUtils.uploadMultipartFileToCloud(file, module);
+//        return BaseResponseDTO.buildSuccessRS(fileService.upload(file.getOriginalFilename(), url));
+        return success();
+    }
 
     /**
      * 查询file列表

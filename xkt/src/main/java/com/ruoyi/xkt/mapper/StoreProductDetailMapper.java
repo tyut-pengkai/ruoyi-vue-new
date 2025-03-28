@@ -59,4 +59,9 @@ public interface StoreProductDetailMapper extends BaseMapper<StoreProductDetail>
      * @return 结果
      */
     public int deleteStoreProductDetailByStoreProdDetailIds(Long[] storeProdDetailIds);
+
+    void updateDelFlagByStoreProdId(Long storeProdId);
+
+    StoreProductDetail selectByStoreProdId(Long storeProdId);
+
 }

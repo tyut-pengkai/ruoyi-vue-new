@@ -1,12 +1,19 @@
 package com.ruoyi.xkt.dto.storeProduct;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
+import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceDTO;
+import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
+import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liujiang
@@ -17,6 +24,8 @@ import java.util.Date;
 @Data
 public class StoreProdDTO {
 
+    @ApiModelProperty("档口商品名称")
+    private Long storeProdId;
     @ApiModelProperty("档口商品名称")
     private String prodName;
     @ApiModelProperty(name = "商品分类ID")
@@ -36,11 +45,21 @@ public class StoreProdDTO {
     @ApiModelProperty(name = "发货时效")
     private Integer deliveryTime;
     @ApiModelProperty(name = "上架方式")
-    private Long listingWay;
-    @ApiModelProperty(name = "下一个生成的条形码尾号")
-    private Integer nextBarcodeNum;
+    private String listingWay;
     @ApiModelProperty(name = "定时发货时间(精确到小时)")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date listingWaySchedule;
+    @ApiModelProperty(name = "档口文件列表")
+    private List<StoreProdFileDTO> fileList;
+    @ApiModelProperty(name = "档口类目属性列表")
+    private List<StoreProdCateAttrDTO> cateAttrList;
+    @ApiModelProperty(name = "档口颜色列表")
+    private List<StoreProdColorDTO> colorList;
+    @ApiModelProperty(name = "档口颜色列表")
+    private List<StoreProdColorPriceDTO> priceList;
+    @ApiModelProperty(name = "档口服务承诺")
+    private StoreProdSvcDTO svc;
+    @ApiModelProperty(name = "详情内容")
+    private StoreProdDetailDTO detail;
 
 }

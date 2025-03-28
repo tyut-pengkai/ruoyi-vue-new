@@ -62,7 +62,7 @@ public class UserAuthentication extends BaseEntity {
      * 代发认证状态
      */
     @Excel(name = "代发认证状态")
-    private Long authStatus;
+    private String authStatus;
 
     /**
      * 版本号

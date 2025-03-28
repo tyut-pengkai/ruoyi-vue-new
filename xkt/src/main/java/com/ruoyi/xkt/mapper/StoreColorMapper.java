@@ -2,6 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreColor;
+import com.ruoyi.xkt.dto.storeColor.StoreColorDTO;
 
 import java.util.List;
 
@@ -59,4 +60,7 @@ public interface StoreColorMapper extends BaseMapper<StoreColor> {
      * @return 结果
      */
     public int deleteStoreColorByStoreColorIds(Long[] storeColorIds);
+
+    List<StoreColorDTO> selectListByStoreProdId(Long storeProdId);
+
 }

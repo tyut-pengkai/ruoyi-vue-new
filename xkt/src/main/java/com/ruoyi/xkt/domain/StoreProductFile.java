@@ -2,8 +2,8 @@ package com.ruoyi.xkt.domain;
 
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -17,6 +17,7 @@ import java.math.BigDecimal;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreProductFile extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -41,7 +42,7 @@ public class StoreProductFile extends BaseEntity {
      * 文件类型（主图、视频、下载）
      */
     @Excel(name = "文件类型", readConverterExp = "主=图、视频、下载")
-    private Long fileType;
+    private String fileType;
 
     /**
      * 文件大小（M）

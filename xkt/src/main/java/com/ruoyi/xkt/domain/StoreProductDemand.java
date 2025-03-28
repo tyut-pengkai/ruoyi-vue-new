@@ -33,7 +33,7 @@ public class StoreProductDemand extends BaseEntity {
      * 需求状态
      */
     @Excel(name = "需求状态")
-    private Long demandStatus;
+    private String demandStatus;
 
     /**
      * 版本号

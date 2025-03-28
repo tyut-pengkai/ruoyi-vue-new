@@ -3,17 +3,18 @@ package com.ruoyi.web.controller.xkt;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.BeansUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.web.controller.xkt.vo.storeProduct.StoreProdVO;
+import com.ruoyi.web.controller.xkt.vo.storeProd.*;
 import com.ruoyi.xkt.domain.StoreProduct;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdDTO;
+import com.ruoyi.xkt.dto.storeProduct.*;
 import com.ruoyi.xkt.service.IStoreProductService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -36,9 +37,12 @@ public class StoreProductController extends XktBaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:product:list')")
     @GetMapping("/list")
-    public TableDataInfo list(StoreProduct storeProduct) {
+    public TableDataInfo list(StoreProdPageVO pageVO) {
         startPage();
-        List<StoreProduct> list = storeProductService.selectStoreProductList(storeProduct);
+        List<StoreProdPageResDTO> list = storeProductService.selectPage(ObjectUtils.isEmpty(pageVO) ? null : BeansUtils.convertObject(pageVO, StoreProdPageDTO.class));
+        // TODO 处理返回的VO
+        // TODO 处理返回的VO
+        // TODO 处理返回的VO
         return getDataTable(list);
     }
 
@@ -60,7 +64,7 @@ public class StoreProductController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:product:query')")
     @GetMapping(value = "/{storeProdId}")
     public R getInfo(@PathVariable("storeProdId") Long storeProdId) {
-        return success(storeProductService.selectStoreProductByStoreProdId(storeProdId));
+        return success(BeansUtils.convertObject(storeProductService.selectStoreProductByStoreProdId(storeProdId), StoreProdResVO.class));
     }
 
     /**
@@ -69,7 +73,7 @@ public class StoreProductController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:product:add')")
     @Log(title = "档口商品", businessType = BusinessType.INSERT)
     @PostMapping
-    public R add(@RequestBody StoreProdVO storeProdVO) {
+    public R add(@Validated  @RequestBody StoreProdVO storeProdVO) {
         return success(storeProductService.insertStoreProduct(BeansUtils.convertObject(storeProdVO, StoreProdDTO.class)));
     }
 
@@ -79,17 +83,21 @@ public class StoreProductController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:product:edit')")
     @Log(title = "档口商品", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R edit(@RequestBody StoreProduct storeProduct) {
-        return success(storeProductService.updateStoreProduct(storeProduct));
+    public R edit(@Validated  @RequestBody StoreProdVO storeProdVO) {
+        return success(storeProductService.updateStoreProduct(BeansUtils.convertObject(storeProdVO, StoreProdDTO.class)));
     }
 
     /**
-     * 删除档口商品
+     * 修改档口商品状态
      */
-    @PreAuthorize("@ss.hasPermi('system:product:remove')")
-    @Log(title = "档口商品", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{storeProdIds}")
-    public R remove(@PathVariable Long[] storeProdIds) {
-        return success(storeProductService.deleteStoreProductByStoreProdIds(storeProdIds));
+    @PreAuthorize("@ss.hasPermi('system:product:edit')")
+    @Log(title = "档口商品", businessType = BusinessType.UPDATE)
+    @PutMapping("/prod-status")
+    public R editProdStatus(@Validated  @RequestBody StoreProdStatusVO prodStatusVO) {
+        storeProductService.updateStoreProductStatus(BeansUtils.convertObject(prodStatusVO, StoreProdStatusDTO.class));
+        return success();
     }
+
+
+
 }

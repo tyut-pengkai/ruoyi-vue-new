@@ -4,6 +4,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreProductCategoryAttribute extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -32,8 +34,14 @@ public class StoreProductCategoryAttribute extends BaseEntity {
     /**
      * 系统设置类目ID
      */
-    @Excel(name = "系统设置类目ID")
-    private Long sysDictType;
+    @Excel(name = "系统设置类目")
+    private String dictType;
+
+    /**
+     * 系统设置类目ID
+     */
+    @Excel(name = "系统设置类目值")
+    private String dictValue;
 
     /**
      * 版本号
@@ -51,7 +59,7 @@ public class StoreProductCategoryAttribute extends BaseEntity {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("storeProdAttrId", getStoreProdAttrId())
                 .append("storeProdId", getStoreProdId())
-                .append("sysDictType", getSysDictType())
+                .append("dictType", getDictType())
                 .append("version", getVersion())
                 .append("delFlag", getDelFlag())
                 .append("createBy", getCreateBy())

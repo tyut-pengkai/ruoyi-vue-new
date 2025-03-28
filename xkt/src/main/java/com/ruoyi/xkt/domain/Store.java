@@ -134,7 +134,7 @@ public class Store extends BaseEntity {
      * 档口状态
      */
     @Excel(name = "档口状态")
-    private Long storeStatus;
+    private String storeStatus;
 
     /**
      * 档口模板ID

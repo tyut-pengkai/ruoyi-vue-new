@@ -102,7 +102,7 @@ public class StoreCertificate extends BaseEntity {
      * 登记状态
      */
     @Excel(name = "登记状态")
-    private Long registerStatus;
+    private String registerStatus;
 
     /**
      * 法定代表人/负责人名称
@@ -160,7 +160,7 @@ public class StoreCertificate extends BaseEntity {
      * 档口认证状态
      */
     @Excel(name = "档口认证状态")
-    private Long certStatus;
+    private String certStatus;
 
     /**
      * 版本号

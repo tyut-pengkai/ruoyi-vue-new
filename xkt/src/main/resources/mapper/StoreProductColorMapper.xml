@@ -88,4 +88,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{storeProdColorId}
         </foreach>
     </delete>
+
+    <update id="updateDelFlagByStoreProdId" parameterType="Long">
+        UPDATE store_product_color SET del_flag = 2 WHERE store_prod_id = #{storeProdId}
+    </update>
+
+
+    <select id="selectListByStoreProdId" parameterType="Long" resultType="com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO">
+        SELECT
+            store_color_id AS storeColorId,
+            color_name AS colorName,
+            order_num AS orderNum
+        FROM
+            store_product_color
+        WHERE
+            del_flag = 0 AND store_prod_id = #{storeProdId}
+    </select>
+
+
 </mapper>

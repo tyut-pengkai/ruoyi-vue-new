@@ -53,7 +53,7 @@ public class StoreProductStorage extends BaseEntity {
      * 入库状态
      */
     @Excel(name = "入库状态")
-    private Long storageStatus;
+    private String storageStatus;
 
     /**
      * 版本号

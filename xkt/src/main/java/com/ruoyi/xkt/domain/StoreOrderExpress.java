@@ -71,7 +71,7 @@ public class StoreOrderExpress extends BaseEntity {
      * 发货状态
      */
     @Excel(name = "发货状态")
-    private Long exprStatus;
+    private String exprStatus;
 
     /**
      * 版本号

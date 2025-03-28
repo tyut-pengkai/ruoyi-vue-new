@@ -4,6 +4,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreProductService extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -30,25 +32,25 @@ public class StoreProductService extends BaseEntity {
     private Long storeProdId;
 
     /**
-     * 大小码及定制款可退
+     * 大小码及定制款可退 （0未勾选 1代表勾选）
      */
     @Excel(name = "大小码及定制款可退")
     private String customRefund;
 
     /**
-     * 30天包退（大小码及定制款不可退）
+     * 30天包退（大小码及定制款不可退） （0未勾选 1代表勾选）
      */
     @Excel(name = "30天包退", readConverterExp = "大=小码及定制款不可退")
     private String thirtyDayRefund;
 
     /**
-     * 一件起批
+     * 一件起批 （0未勾选 1代表勾选）
      */
     @Excel(name = "一件起批")
     private String oneBatchSale;
 
     /**
-     * 退款72小时到账
+     * 退款72小时到账 （0未勾选 1代表勾选）
      */
     @Excel(name = "退款72小时到账")
     private String refundWithinThreeDay;

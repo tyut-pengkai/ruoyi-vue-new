@@ -5,6 +5,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -19,6 +20,7 @@ import java.util.Date;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreProduct extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -85,7 +87,7 @@ public class StoreProduct extends BaseEntity {
      * 上架方式（立即上架、定时上架）
      */
     @Excel(name = "上架方式", readConverterExp = "立=即上架、定时上架")
-    private Long listingWay;
+    private String listingWay;
 
     /**
      * 下一个生成的条形码尾号
@@ -111,7 +113,7 @@ public class StoreProduct extends BaseEntity {
      * 商品状态
      */
     @Excel(name = "商品状态")
-    private Long prodStatus;
+    private String prodStatus;
 
     /**
      * 版本号

@@ -77,7 +77,7 @@ public class StoreOrderDetail extends BaseEntity {
      * 明细状态
      */
     @Excel(name = "明细状态")
-    private Long detailStatus;
+    private String detailStatus;
 
     /**
      * 版本号

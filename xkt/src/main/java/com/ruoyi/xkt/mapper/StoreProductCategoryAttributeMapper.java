@@ -2,6 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductCategoryAttribute;
+import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 
 import java.util.List;
 
@@ -59,4 +60,8 @@ public interface StoreProductCategoryAttributeMapper extends BaseMapper<StorePro
      * @return 结果
      */
     public int deleteStoreProductCategoryAttributeByStoreProdAttrIds(Long[] storeProdAttrIds);
+
+    void updateDelFlagByStoreProdId(Long storeProdId);
+
+    List<StoreProdCateAttrDTO> selectListByStoreProdId(Long storeProdId);
 }

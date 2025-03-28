@@ -59,4 +59,8 @@ public interface StoreProductServiceMapper extends BaseMapper<StoreProductServic
      * @return 结果
      */
     public int deleteStoreProductServiceByStoreProdSvcIds(Long[] storeProdSvcIds);
+
+    void updateDelFlagByStoreProdId(Long storeProdId);
+
+    StoreProductService selectByStoreProdId(Long storeProdId);
 }

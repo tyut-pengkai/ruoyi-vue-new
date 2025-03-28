@@ -135,7 +135,7 @@ public class StoreProductDemandDetail extends BaseEntity {
      * 档口商品需求明细状态
      */
     @Excel(name = "档口商品需求明细状态")
-    private Long detailStatus;
+    private String detailStatus;
 
     /**
      * 版本号

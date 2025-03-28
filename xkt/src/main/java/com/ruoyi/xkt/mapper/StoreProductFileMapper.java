@@ -2,8 +2,12 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductFile;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
+import org.apache.ibatis.annotations.MapKey;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 档口商品文件Mapper接口
@@ -59,4 +63,14 @@ public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
      * @return 结果
      */
     public int deleteStoreProductFileByStoreProdFileIds(Long[] storeProdFileIds);
+
+    void updateDelFlagByStoreProdId(Long storeProdId);
+
+    List<StoreProdFileResDTO> selectListByStoreProdId(Long storeProdId);
+
+    // 指定 Map 的 key 字段
+    @MapKey("storeProdId")
+    Map<Long, String> selectMainPicByStoreProdIdList(@Param("storeProdIdList") List<Long> storeProdIdList,
+                                                     @Param("fileType") String fileType,
+                                                     @Param("orderNum") Integer orderNum);
 }
