@@ -5,6 +5,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreProductColorSize extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -26,10 +28,10 @@ public class StoreProductColorSize extends XktBaseEntity {
     private Long storeProdColorSizeId;
 
     /**
-     * 档口商品颜色ID
+     * 档口颜色ID
      */
-    @Excel(name = "档口商品颜色ID")
-    private Long storeProdColorId;
+    @Excel(name = "档口颜色ID")
+    private Long storeColorId;
 
     /**
      * 档口商品ID
@@ -55,12 +57,11 @@ public class StoreProductColorSize extends XktBaseEntity {
     @Excel(name = "是否是标准尺码", readConverterExp = "0=不是,1=是")
     private String standard;
 
-
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("storeProdColorSizeId", getStoreProdColorSizeId())
-                .append("storeProdColorId", getStoreProdColorId())
+                .append("storeColorId", getStoreColorId())
                 .append("storeProdId", getStoreProdId())
                 .append("size", getSize())
                 .append("barcodePrefix", getBarcodePrefix())

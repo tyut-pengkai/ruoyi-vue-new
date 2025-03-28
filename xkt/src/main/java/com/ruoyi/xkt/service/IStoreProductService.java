@@ -45,7 +45,7 @@ public interface IStoreProductService {
      * @param storeProdDTO 档口商品
      * @return 结果
      */
-    public int updateStoreProduct(StoreProdDTO storeProdDTO);
+    public int updateStoreProduct(Long storeProdId, StoreProdDTO storeProdDTO);
 
     public void updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO);
 

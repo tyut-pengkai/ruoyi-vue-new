@@ -1,15 +1,17 @@
 package com.ruoyi.xkt.dto.storeProduct;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
+import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceDTO;
+import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdColorSizeDTO;
 import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
 import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -22,10 +24,9 @@ import java.util.List;
  */
 @ApiModel("创建档口商品")
 @Data
+@Accessors(chain = true)
 public class StoreProdDTO {
 
-    @ApiModelProperty("档口商品名称")
-    private Long storeProdId;
     @ApiModelProperty("档口商品名称")
     private String prodName;
     @ApiModelProperty(name = "商品分类ID")
@@ -46,6 +47,8 @@ public class StoreProdDTO {
     private Integer deliveryTime;
     @ApiModelProperty(name = "上架方式")
     private String listingWay;
+    @ApiModelProperty(name = "商品状态")
+    private String prodStatus;
     @ApiModelProperty(name = "定时发货时间(精确到小时)")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date listingWaySchedule;
@@ -55,6 +58,8 @@ public class StoreProdDTO {
     private List<StoreProdCateAttrDTO> cateAttrList;
     @ApiModelProperty(name = "档口颜色列表")
     private List<StoreProdColorDTO> colorList;
+    @ApiModelProperty(name = "档口尺码列表")
+    private List<StoreProdColorSizeDTO> sizeList;
     @ApiModelProperty(name = "档口颜色列表")
     private List<StoreProdColorPriceDTO> priceList;
     @ApiModelProperty(name = "档口服务承诺")

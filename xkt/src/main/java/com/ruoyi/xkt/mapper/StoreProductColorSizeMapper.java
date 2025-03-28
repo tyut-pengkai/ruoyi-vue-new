@@ -59,4 +59,7 @@ public interface StoreProductColorSizeMapper extends BaseMapper<StoreProductColo
      * @return 结果
      */
     public int deleteStoreProductColorSizeByStoreProdColorSizeIds(Long[] storeProdColorSizeIds);
+
+    void updateDelFlagByStoreProdId(Long storeProdId);
+
 }

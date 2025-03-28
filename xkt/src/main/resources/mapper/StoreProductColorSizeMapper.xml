@@ -98,4 +98,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{storeProdColorSizeId}
         </foreach>
     </delete>
+
+    <update id="updateDelFlagByStoreProdId" parameterType="Long">
+        UPDATE store_product_color_size SET del_flag = 2 WHERE store_prod_id = #{storeProdId}
+    </update>
+
 </mapper>

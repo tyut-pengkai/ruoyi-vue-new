@@ -14,7 +14,6 @@ import java.math.BigDecimal;
  */
 @ApiModel("档口商品当前颜色")
 @Data
-@RequiredArgsConstructor
 public class StoreProdColorPriceDTO {
 
     @ApiModelProperty(name = "档口商品颜色ID")

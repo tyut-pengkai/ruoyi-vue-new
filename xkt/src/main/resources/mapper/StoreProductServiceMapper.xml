@@ -100,9 +100,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <update id="updateDelFlagByStoreProdId" parameterType="Long">
-        UPDATE store_product_detail SET del_flag = 2 WHERE store_prod_id = #{storeProdId}
+        UPDATE store_product_service SET del_flag = 2 WHERE store_prod_id = #{storeProdId}
     </update>
-
 
     <select id="selectByStoreProdId" parameterType="Long" resultMap="StoreProductServiceResult">
         SELECT

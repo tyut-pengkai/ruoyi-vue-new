@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
  */
 @ApiModel("档口商品当前颜色")
 @Data
-@RequiredArgsConstructor
 public class StoreProdColorDTO {
 
     @ApiModelProperty(name = "档口颜色ID")
