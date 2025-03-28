@@ -1,7 +1,8 @@
 package com.ruoyi.xkt.domain;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.ruoyi.common.annotation.Excel;
-import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -15,12 +16,13 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class StoreFactory extends BaseEntity {
+public class StoreFactory extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
      * 档口工厂ID
      */
+    @TableId
     private Long storeFacId;
 
     /**
@@ -53,16 +55,6 @@ public class StoreFactory extends BaseEntity {
     @Excel(name = "工厂状态")
     private String facStatus;
 
-    /**
-     * 版本号
-     */
-    @Excel(name = "版本号")
-    private Long version;
-
-    /**
-     * 删除标志（0代表存在 2代表删除）
-     */
-    private String delFlag;
 
     @Override
     public String toString() {
@@ -72,7 +64,6 @@ public class StoreFactory extends BaseEntity {
                 .append("facName", getFacName())
                 .append("facAddress", getFacAddress())
                 .append("facPhone", getFacPhone())
-                .append("remark", getRemark())
                 .append("facStatus", getFacStatus())
                 .append("version", getVersion())
                 .append("delFlag", getDelFlag())

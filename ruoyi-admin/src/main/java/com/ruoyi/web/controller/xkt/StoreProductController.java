@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
@@ -11,6 +12,8 @@ import com.ruoyi.web.controller.xkt.vo.storeProd.*;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeProduct.*;
 import com.ruoyi.xkt.service.IStoreProductService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +31,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/prods")
+@Api(tags = "档口商品")
 public class StoreProductController extends XktBaseController {
     @Autowired
     private IStoreProductService storeProductService;
@@ -70,17 +74,19 @@ public class StoreProductController extends XktBaseController {
     /**
      * 新增档口商品
      */
-    @PreAuthorize("@ss.hasPermi('system:product:add')")
+//    @PreAuthorize("@ss.hasPermi('system:product:add')")
     @Log(title = "档口商品", businessType = BusinessType.INSERT)
+    @ApiOperation(value = "新增档口商品", httpMethod = "POST", response = R.class)
     @PostMapping
     public R add(@Validated  @RequestBody StoreProdVO storeProdVO) {
-        return success(storeProductService.insertStoreProduct(BeansUtils.convertObject(storeProdVO, StoreProdDTO.class)));
+        return success(storeProductService.insertStoreProduct(BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
 
     /**
      * 修改档口商品
      */
     @PreAuthorize("@ss.hasPermi('system:product:edit')")
+    @ApiOperation(value = "修改档口商品", httpMethod = "POST", response = R.class)
     @Log(title = "档口商品", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@Validated  @RequestBody StoreProdVO storeProdVO) {

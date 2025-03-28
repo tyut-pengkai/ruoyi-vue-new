@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
@@ -7,8 +8,8 @@ import com.ruoyi.common.utils.BeansUtils;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeColor.StoreColorDTO;
-import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
+import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceDTO;
 import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
 import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;
@@ -43,6 +44,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final StoreProductDetailMapper storeProdDetailMapper;
     final StoreProductColorPriceMapper storeProdColorPriceMapper;
     final StoreColorMapper storeColorMapper;
+    final SysFileMapper fileMapper;
 
 
     /**
@@ -129,40 +131,45 @@ public List<StoreProdPageResDTO> selectPage(StoreProdPageDTO pageDTO) {
     @Transactional
     public int insertStoreProduct(StoreProdDTO storeProdDTO) {
         // 组装StoreProduct数据
-        StoreProduct storeProd = BeansUtils.convertObject(storeProdDTO, StoreProduct.class)
-                .setProdStatus("PRODSTATUS").setVoucherDate(DateUtils.getNowDate());
+        StoreProduct storeProd = BeanUtil.toBean(storeProdDTO, StoreProduct.class)
+                .setProdStatus("ON_SALE").setVoucherDate(DateUtils.getNowDate());
         int count = this.storeProdMapper.insert(storeProd);
+        // 将文件插入到SysFile表中
+        List<SysFile> fileList = BeanUtil.copyToList(storeProdDTO.getFileList(), SysFile.class);
+        this.fileMapper.insert(fileList);
+        // 将文件名称和文件ID映射到Map中
+        Map<String, Long> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getFileName, SysFile::getFileId));
         // 档口文件（商品主图、主图视频、下载的商品详情）
-        List<StoreProductFile> fileList = storeProdDTO.getFileList().stream()
-                .map(x -> BeansUtils.convertObject(x, StoreProductFile.class)
+        List<StoreProductFile> prodFileList = fileList.stream()
+                .map(x -> BeanUtil.toBean(x, StoreProductFile.class).setFileId(fileMap.get(x.getFileName()))
                         .setStoreProdId(storeProd.getStoreProdId()))
                 .collect(Collectors.toList());
-        this.storeProdFileMapper.insert(fileList);
+        this.storeProdFileMapper.insert(prodFileList);
         // 档口类目属性列表
         List<StoreProductCategoryAttribute> cateAttrList =  storeProdDTO.getCateAttrList().stream()
-                .map(x -> BeansUtils.convertObject(x, StoreProductCategoryAttribute.class)
+                .map(x -> BeanUtil.toBean(x, StoreProductCategoryAttribute.class)
                         .setStoreProdId(storeProd.getStoreProdId()))
                 .collect(Collectors.toList());
         this.storeProdCateAttrMapper.insert(cateAttrList);
         // 档口颜色列表
         List<StoreProductColor> colorList = storeProdDTO.getColorList().stream()
-                .map(x -> BeansUtils.convertObject(x, StoreProductColor.class)
+                .map(x -> BeanUtil.toBean(x, StoreProductColor.class)
                         .setStoreProdId(storeProd.getStoreProdId()))
                 .collect(Collectors.toList());
         this.storeProdColorMapper.insert(colorList);
         // 档口颜色价格列表
         List<StoreProductColorPrice> priceList = storeProdDTO.getPriceList().stream()
-                .map(x -> BeansUtils.convertObject(x, StoreProductColorPrice.class)
+                .map(x -> BeanUtil.toBean(x, StoreProductColorPrice.class)
                         .setStoreProdId(storeProd.getStoreProdId()))
                 .collect(Collectors.toList());
         this.storeProdColorPriceMapper.insert(priceList);
         // 档口详情内容
-        StoreProductDetail storeProdDetail = BeansUtils.convertObject(storeProdDTO.getDetail(), StoreProductDetail.class)
+        StoreProductDetail storeProdDetail = BeanUtil.toBean(storeProdDTO.getDetail(), StoreProductDetail.class)
                 .setStoreProdId(storeProd.getStoreProdId());
         this.storeProdDetailMapper.insert(storeProdDetail);
         // 档口服务承诺
         if (ObjectUtils.isNotEmpty(storeProdDTO.getSvc())) {
-            this.storeProdSvcMapper.insert(BeansUtils.convertObject(storeProdDTO.getSvc(), StoreProductService.class)
+            this.storeProdSvcMapper.insert(BeanUtil.toBean(storeProdDTO.getSvc(), StoreProductService.class)
                     .setStoreProdId(storeProd.getStoreProdId()));
         }
         return count;
@@ -171,7 +178,7 @@ public List<StoreProdPageResDTO> selectPage(StoreProdPageDTO pageDTO) {
     /**
      * 修改档口商品
      *
-     * @param storeProduct 档口商品
+     * @param storeProdDTO 档口商品
      * @return 结果
      */
     @Override

@@ -3,6 +3,7 @@ package com.ruoyi.xkt.dto.storeProductFile;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 
@@ -13,14 +14,17 @@ import java.math.BigDecimal;
  */
 @ApiModel("档口商品文件")
 @Data
+@RequiredArgsConstructor
 public class StoreProdFileDTO {
 
-    @ApiModelProperty(name = "系统文件ID")
-    private Long fileId;
-    @ApiModelProperty(name = "文件类型")
-    private String fileType;
+    @ApiModelProperty(name = "文件名称")
+    private String fileName;
+    @ApiModelProperty(name = "文件路径")
+    private String fileUrl;
     @ApiModelProperty(name = "文件大小")
     private BigDecimal fileSize;
+    @ApiModelProperty(name = "文件类型")
+    private String fileType;
     @ApiModelProperty(name = "排序")
     private Integer orderNum;
 

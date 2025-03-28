@@ -1,7 +1,8 @@
 package com.ruoyi.xkt.domain;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.ruoyi.common.annotation.Excel;
-import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -17,12 +18,13 @@ import java.math.BigDecimal;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class StoreProductStorage extends BaseEntity {
+public class StoreProductStorage extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
      * 档口商品入库ID
      */
+    @TableId
     private Long storeProdStorId;
 
     /**
@@ -54,17 +56,6 @@ public class StoreProductStorage extends BaseEntity {
      */
     @Excel(name = "入库状态")
     private String storageStatus;
-
-    /**
-     * 版本号
-     */
-    @Excel(name = "版本号")
-    private Long version;
-
-    /**
-     * 删除标志（0代表存在 2代表删除）
-     */
-    private String delFlag;
 
 
     @Override

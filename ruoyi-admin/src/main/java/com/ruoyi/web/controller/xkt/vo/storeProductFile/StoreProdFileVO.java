@@ -17,15 +17,18 @@ import java.math.BigDecimal;
 @Data
 public class StoreProdFileVO {
 
-    @ApiModelProperty(name = "系统文件ID")
-    @NotNull(message = "系统文件ID不能为空!")
-    private Long fileId;
-    @NotBlank(message = "文件类型不能为空!")
-    @ApiModelProperty(name = "文件类型")
-    private String fileType;
+    @NotBlank(message = "文件名称不能为空!")
+    @ApiModelProperty(name = "文件名称")
+    private String fileName;
+    @NotBlank(message = "文件路径不能为空!")
+    @ApiModelProperty(name = "文件路径")
+    private String fileUrl;
     @NotNull(message = "文件大小不能为空!")
     @ApiModelProperty(name = "文件大小")
     private BigDecimal fileSize;
+    @NotBlank(message = "文件类型不能为空!")
+    @ApiModelProperty(name = "文件类型")
+    private String fileType;
     @ApiModelProperty(name = "排序")
     @NotNull(message = "排序不能为空!")
     private Integer orderNum;

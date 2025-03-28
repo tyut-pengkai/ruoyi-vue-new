@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.storeProd;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.web.controller.xkt.vo.storePordColor.StoreProdColorVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdCateAttr.StoreProdCateAttrVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdColorPrice.StoreProdColorPriceVO;
@@ -13,6 +14,7 @@ import lombok.Data;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.List;
  */
 @ApiModel("档口商品")
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreProdVO {
 
     @ApiModelProperty("档口商品名称")
@@ -33,10 +36,13 @@ public class StoreProdVO {
     @ApiModelProperty(name = "商品分类ID")
     private Long prodCateId;
     @ApiModelProperty(name = "工厂货号")
+    @Size(max = 15, message = "工厂货号不能超过60个字!")
     private String factoryArtNum;
     @ApiModelProperty(name = "商品货号")
+    @Size(max = 15, message = "商品货号不能超过60个字!")
     private String prodArtNum;
     @ApiModelProperty(name = "商品标题")
+    @Size(max = 60, message = "商品标题不能超过60个字!")
     private String prodTitle;
     @ApiModelProperty(name = "商品重量")
     private BigDecimal prodWeight;
@@ -49,7 +55,7 @@ public class StoreProdVO {
     @ApiModelProperty(name = "上架方式")
     private String listingWay;
     @ApiModelProperty(name = "定时发货时间(精确到小时)")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH")
     private Date listingWaySchedule;
     @ApiModelProperty(name = "档口文件列表")
     @NotNull(message = "档口文件不能为空!")
