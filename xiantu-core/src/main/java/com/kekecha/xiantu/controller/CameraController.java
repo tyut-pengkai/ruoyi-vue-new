@@ -68,13 +68,12 @@ public class CameraController extends BaseController {
     public AjaxResult edit(@RequestBody CameraPlatform cameraPlatform)
     {
         try {
-            CameraPlatform old_cameraPlatform = cameraService.selectByName(cameraPlatform.getName());
-            if (old_cameraPlatform != null) {
-                cameraService.update(cameraPlatform);
-                return AjaxResult.success("更新成功");
-            } else {
+            if (cameraPlatform.getId() <= 0) {
                 cameraService.insert(cameraPlatform);
                 return AjaxResult.success("创建成功");
+            } else {
+                cameraService.update(cameraPlatform);
+                return AjaxResult.success("更新成功");
             }
         } catch (Exception e) {
             return AjaxResult.error("创建失败, 内部参数错误");
@@ -106,11 +105,29 @@ public class CameraController extends BaseController {
     }
 
     @PreAuthorize("@ss.hasPermi('data:camera:list')")
+    @GetMapping("/getRef")
+    public AjaxResult link(String indexCode)
+    {
+        if (indexCode == null || indexCode.isEmpty()) {
+            return AjaxResult.error("参数错误");
+        }
+        int id = -1;
+        try {
+            id = cameraService.getCameraLink(indexCode);
+        } catch (Exception e) {
+            id = 0;
+        }
+        AjaxResult ajaxResult = AjaxResult.success();
+        ajaxResult.put("id", id);
+        return ajaxResult;
+    }
+
+    @PreAuthorize("@ss.hasPermi('data:camera:list')")
     @DeleteMapping("")
-    public AjaxResult delete(@RequestParam("name") String name)
+    public AjaxResult delete(@RequestParam("id") int id)
     {
         try {
-            cameraService.delete(name);
+            cameraService.delete(id);
             return AjaxResult.success("删除成功");
         } catch (Exception e) {
             return AjaxResult.error("删除失败");
@@ -134,9 +151,9 @@ public class CameraController extends BaseController {
     @GetMapping("/list")
     public AjaxResult getCameraList(@RequestParam(name="pageNum", defaultValue = "0") int pageNum,
                                     @RequestParam(name="pageSize", defaultValue = "0") int pageSize,
-                                    @RequestParam(name="platform", defaultValue = "") String platformName)
+                                    @RequestParam(name="platform", defaultValue = "-1") int platformId)
     {
-        if (platformName == null || platformName.isEmpty()) {
+        if (platformId <= 0) {
             return AjaxResult.error("查询的平台名称异常");
         }
 
@@ -150,7 +167,7 @@ public class CameraController extends BaseController {
             }
             AjaxResult ajaxResult = AjaxResult.success("查询成功");
             /* 获取平台信息 */
-            CameraPlatform cameraPlatform = cameraService.selectByName(platformName);
+            CameraPlatform cameraPlatform = cameraService.selectById(platformId);
             if (cameraPlatform == null) {
                 return AjaxResult.error("查询的平台不存在");
             }
@@ -185,14 +202,14 @@ public class CameraController extends BaseController {
     @Anonymous
     @GetMapping("/getPreviewURL")
     public AjaxResult getPreviewURL(
-            @RequestParam(required = true) String platform,
+            @RequestParam(required = true) int platformId,
             @RequestParam(required = true) String indexCode) throws Exception {
         try {
-            if (platform.isEmpty() || indexCode.isEmpty()) {
-                return AjaxResult.error("参数异常");
+            if (platformId <= 0) {
+                return AjaxResult.error("查询的平台名称异常");
             }
 
-            CameraPlatform cameraPlatform = cameraService.selectByName(platform);
+            CameraPlatform cameraPlatform = cameraService.selectById(platformId);
             if (cameraPlatform == null) {
                 return AjaxResult.error("平台名称异常");
             }
@@ -212,15 +229,15 @@ public class CameraController extends BaseController {
     @Anonymous
     @GetMapping("/getPlaybackURL")
     public AjaxResult getPlaybackURL(
-            @RequestParam(required = true) String platform,
+            @RequestParam(required = true) int platformId,
             @RequestParam(required = true) String indexCode,
             @RequestParam(required = true) String beginTime,
             @RequestParam(required = true) String endTime) throws Exception {
-        if (platform.isEmpty() || indexCode.isEmpty() || beginTime.isEmpty() || endTime.isEmpty()) {
+        if (platformId <= 0 || indexCode.isEmpty() || beginTime.isEmpty() || endTime.isEmpty()) {
             return AjaxResult.error("参数异常");
         }
 
-        CameraPlatform cameraPlatform = cameraService.selectByName(platform);
+        CameraPlatform cameraPlatform = cameraService.selectById(platformId);
         if (cameraPlatform == null) {
             return AjaxResult.error("平台名称异常");
         }
@@ -237,7 +254,7 @@ public class CameraController extends BaseController {
     @Anonymous
     @GetMapping("/controlling")
     public AjaxResult controlling(
-            @RequestParam(required = true) String platform,
+            @RequestParam(required = true) int platformId,
             @RequestParam(required = true) String indexCode,
             @RequestParam(required = true) Integer action,
             @RequestParam(required = true) String command,
@@ -254,11 +271,11 @@ public class CameraController extends BaseController {
         * speed 云台速度，取值范围为1-100，默认50
         */
 
-        if (platform.isEmpty() || indexCode.isEmpty() || command.isEmpty()) {
+        if (platformId <= 0 || indexCode.isEmpty() || command.isEmpty()) {
             return AjaxResult.error("参数异常");
         }
 
-        CameraPlatform cameraPlatform = cameraService.selectByName(platform);
+        CameraPlatform cameraPlatform = cameraService.selectById(platformId);
         if (cameraPlatform == null) {
             return AjaxResult.error("平台名称异常");
         }

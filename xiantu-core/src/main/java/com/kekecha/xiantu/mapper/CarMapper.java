@@ -20,7 +20,6 @@ public interface CarMapper
     public List<CarOverview> selectCarOverviewList();
 
     public Car selectCarDetailByID(int id);
-    public Car selectCarDetail(String name);
 
     public int insertCar(Car detail);
 
@@ -28,7 +27,7 @@ public interface CarMapper
     public int updateCar(Car detail);
 
 
-    public int deleteCar(String name);
+    public int deleteCar(int id);
 
 
 }

@@ -99,7 +99,7 @@
             <if test="city != null and city != ''">city=#{city},</if>
             <if test="phone != null and phone != ''">phone=#{phone},</if>
         </trim>
-        WHERE name = #{name}
+        WHERE id = #{id}
     </update>
 
     <delete id="deleteSite" parameterType="int">

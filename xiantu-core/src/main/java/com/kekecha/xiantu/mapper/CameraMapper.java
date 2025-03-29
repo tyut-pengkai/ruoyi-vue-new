@@ -6,9 +6,10 @@ import java.util.List;
 
 public interface CameraMapper {
     List<CameraPlatform> selectAll(String filter);
-    CameraPlatform selectByName(String name);
-    List<CameraPlatform> selectByRef(String refer);
+    CameraPlatform selectById(int id);
     int insert(CameraPlatform cameraPlatform);
     int update(CameraPlatform cameraPlatform);
-    int delete(String name);
+    int delete(int id);
+
+    int getRefSite(String indexCode);
 }

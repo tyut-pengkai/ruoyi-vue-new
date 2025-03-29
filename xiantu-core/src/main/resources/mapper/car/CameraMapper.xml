@@ -5,6 +5,7 @@
 <mapper namespace="com.kekecha.xiantu.mapper.CameraMapper">
 
     <resultMap type="com.kekecha.xiantu.domain.CameraPlatform" id="CameraResultMap">
+        <id property="id"               column="id"    />
         <result property="name"          column="name"    />
         <result property="supplier"        column="supplier"    />
         <result property="appKey"     column="app_key"    />
@@ -27,14 +28,14 @@
         </trim>
     </select>
 
-    <select id="selectByName" resultMap="CameraResultMap" parameterType="String">
+    <select id="selectById" resultMap="CameraResultMap" parameterType="String">
         SELECT * FROM xiantu_camera
-        WHERE name = #{name}
+        WHERE id = #{id}
     </select>
 
-    <select id="selectByRef" resultMap="CameraResultMap" parameterType="String">
-        SELECT * FROM xiantu_camera
-        WHERE ref_site = #{refer}
+    <select id="getRefSite" parameterType="String">
+        SELECT siteId FROM xiantu_site_camera
+        WHERE indexCode = #{indexCode}
     </select>
 
     <insert id="insert" parameterType="com.kekecha.xiantu.domain.CameraPlatform">
@@ -68,6 +69,7 @@
     <update id="update" parameterType="com.kekecha.xiantu.domain.CameraPlatform">
         UPDATE xiantu_camera
         <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name=#{name},</if>
             <if test="supplier != null and supplier != ''">supplier=#{supplier},</if>
             <if test="appKey != null and appKey != ''">app_key=#{appKey},</if>
             <if test="appSecret != null and appSecret != ''">app_secret=#{appSecret},</if>
@@ -78,10 +80,10 @@
             <if test="description != null and description != ''">description=#{description},</if>
             <if test="refSite != null">ref_site=#{refSite},</if>
         </trim>
-        WHERE name = #{name}
+        WHERE id = #{id}
     </update>
 
-    <delete id="delete" parameterType="String">
-        DELETE FROM xiantu_camera WHERE name = #{name}
+    <delete id="delete" parameterType="int">
+        DELETE FROM xiantu_camera WHERE id = #{id}
     </delete>
 </mapper>

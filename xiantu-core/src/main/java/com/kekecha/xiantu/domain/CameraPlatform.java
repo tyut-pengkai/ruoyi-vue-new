@@ -1,6 +1,7 @@
 package com.kekecha.xiantu.domain;
 
 public class CameraPlatform {
+    private int id;
     private String name;
     private String supplier;
     private String appKey;
@@ -12,6 +13,14 @@ public class CameraPlatform {
     private String description;
 
     private String refSite;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -95,8 +104,9 @@ public class CameraPlatform {
 
     @Override
     public String toString() {
-        return "Camera{" +
-                "name='" + name + '\'' +
+        return "CameraPlatform{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", supplier='" + supplier + '\'' +
                 ", appKey='" + appKey + '\'' +
                 ", appSecret='" + appSecret + '\'' +

@@ -51,11 +51,8 @@ public class CameraServiceImpl implements ICameraService {
         return cameraMapper.selectAll(filter);
     }
 
-    public CameraPlatform selectByName(String name) {
-        return cameraMapper.selectByName(name);
-    }
-    public List<CameraPlatform> selectByRef(String refer) {
-        return cameraMapper.selectByRef(refer);
+    public CameraPlatform selectById(int id) {
+        return cameraMapper.selectById(id);
     }
 
     public int insert(CameraPlatform cameraPlatform)
@@ -68,9 +65,9 @@ public class CameraServiceImpl implements ICameraService {
         return cameraMapper.update(cameraPlatform);
     }
 
-    public int delete(String name)
+    public int delete(int id)
     {
-        return cameraMapper.delete(name);
+        return cameraMapper.delete(id);
     }
 
     public int linkCameraToSite(String indexCode, int siteId)
@@ -81,6 +78,11 @@ public class CameraServiceImpl implements ICameraService {
     public int clearCameraLink(String indexCode)
     {
         return siteMapper.derefCameraToSite(indexCode);
+    }
+
+    public int getCameraLink(String indexCode)
+    {
+        return cameraMapper.getRefSite(indexCode);
     }
 
     public List<CameraInstance> getPlatformCameraInstances(CameraPlatform cameraPlatform)
@@ -101,21 +103,12 @@ public class CameraServiceImpl implements ICameraService {
 
         String result = null;
         try {
-            System.out.println("try getPlatformCameraInstances" + cameraPlatform.toString());
             result = doPostStringArtemis(path, body, null, null, "application/json",
                     cameraPlatform.getPlatformUrl(), cameraPlatform.getAppKey(), cameraPlatform.getAppSecret());
-            System.out.println("get result" + result);
             JSONObject camerasJson = JSONObject.parseObject(result);
             JSONArray cameraList = camerasJson.getJSONObject("data").getJSONArray("list");
-            System.out.println("cameraList" + cameraList.toString());
-            List<CameraInstance> cameraInstances = cameraList.toList(CameraInstance.class);
-
-            for (int i = 0; i < cameraInstances.size(); i++) {
-                System.out.println("元素 " + i + ": " + cameraInstances.get(i));
-            }
-            return cameraInstances;
+            return cameraList.toList(CameraInstance.class);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -166,9 +159,6 @@ public class CameraServiceImpl implements ICameraService {
         String beginDateStr = sdf.format(begin) + "+08:00"; // 手动添加时区
         String endDateStr = sdf.format(end) + "+08:00"; // 手动添加时区
 
-        System.out.println(beginDateStr); // 输出示例：2021-03-31T20:08:43.000+08:00
-        System.out.println(endDateStr); // 输出示例：2021-03-31T20:08:43.000+08:00
-
         String host = cameraPlatform.getPlatformUrl();
         String appKey = cameraPlatform.getAppKey();
         String appSecret = cameraPlatform.getAppSecret();
@@ -192,13 +182,11 @@ public class CameraServiceImpl implements ICameraService {
         jsonBody.put("lockType", 0);
         String body = jsonBody.toString();
         String result = doPostStringArtemis(path, body, null, null, "application/json", host, appKey, appSecret);
-        System.out.println(result);
 
         //{"code":"0","msg":"success","data":{"uuid":"","url":null,"list":null}}
         JSONObject jsonResult = JSONObject.parseObject(result);
         if ("0".equals(jsonResult.get("code").toString())) {
             JSONObject data = jsonResult.getJSONObject("data");
-            System.out.println(data.toString());
             JSONObject jsonUrl = data.getJSONObject("url");
             if (jsonUrl != null) {
                 return jsonUrl.toString();
@@ -233,7 +221,6 @@ public class CameraServiceImpl implements ICameraService {
         jsonBody.put("speed", speed);
         String body = jsonBody.toString();
         String result = doPostStringArtemis(path, body, null, null, "application/json", host, appKey, appSecret);
-        System.out.println(result);
 
         JSONObject jsonResult = JSONObject.parseObject(result);
         if ("0".equals(jsonResult.get("code").toString())) {

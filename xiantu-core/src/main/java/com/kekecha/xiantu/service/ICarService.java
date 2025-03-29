@@ -20,7 +20,6 @@ public interface ICarService {
      */
     List<CarOverview> selectCarOverviewList();
     Car selectCarDetailByID(int id);
-    Car selectCarDetail(String name);
     /**
      * 插入一条车辆信息
      *
@@ -29,11 +28,11 @@ public interface ICarService {
      */
     int insertCar(Car detail);
     int updateCar(Car detail);
-    int deleteCar(String name);
+    int deleteCar(int id);
 
     int removeRealPathFile(String imageFilePath);
-    Car appendImageToCar(String imageUploadMaskPath, String name);
-    Car removeImageFromCar(String imageUploadMaskPath, String name);
+    Car appendImageToCar(String imageUploadMaskPath, int id);
+    Car removeImageFromCar(String imageUploadMaskPath, int id);
 
     Car buildCarFromJson(Map<String, Object> jsonMap);
     Map<String, Object> ConverCarToJson(Car car);

@@ -88,21 +88,19 @@ public class CarServiceImpl implements ICarService
         }
         try {
             String imageRealPath = RuoYiConfig.getUploadPath() + imageFilePath.substring("/profile/upload".length());
-//            System.out.println("imageRealPath : " + imageRealPath);
             Path path = Paths.get(imageRealPath);
             Files.delete(path);
         } catch (Exception e)
         {
-//            System.out.println("exception : " + e.getMessage());
             return 2;
         }
         return 0;
     }
 
     @Override
-    public Car appendImageToCar(String imageUploadMaskPath, String name)
+    public Car appendImageToCar(String imageUploadMaskPath, int id)
     {
-        Car car = selectCarDetail(name);
+        Car car = selectCarDetailByID(id);
         if (car == null) {
             return null;
         }
@@ -130,9 +128,9 @@ public class CarServiceImpl implements ICarService
         return car;
     }
 
-    public Car removeImageFromCar(String imageUploadMaskPath, String name)
+    public Car removeImageFromCar(String imageUploadMaskPath, int id)
     {
-        Car car = selectCarDetail(name);
+        Car car = selectCarDetailByID(id);
         if (car == null) {
             return null;
         }
@@ -187,11 +185,6 @@ public class CarServiceImpl implements ICarService
     }
 
     @Override
-    public Car selectCarDetail(String name) {
-        return carMapper.selectCarDetail(name);
-    }
-
-    @Override
     public Car selectCarDetailByID(int id)  {
         return carMapper.selectCarDetailByID(id);
     }
@@ -207,8 +200,8 @@ public class CarServiceImpl implements ICarService
     }
 
     @Override
-    public int deleteCar(String name) {
-        Car car = selectCarDetail(name);
+    public int deleteCar(int id) {
+        Car car = selectCarDetailByID(id);
         if (car != null) {
             String imageUrl = car.getImageUrl();
             if (imageUrl != null) {
@@ -222,6 +215,6 @@ public class CarServiceImpl implements ICarService
                 }
             }
         }
-        return carMapper.deleteCar(name);
+        return carMapper.deleteCar(id);
     }
 }

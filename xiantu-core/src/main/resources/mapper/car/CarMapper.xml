@@ -31,11 +31,6 @@
         SELECT name, id, image_url FROM xiantu_car
     </select>
 
-    <select id="selectCarDetail" parameterType="String" resultMap="CarResultMap">
-        SELECT * FROM xiantu_car
-        WHERE name = #{name}
-    </select>
-
     <select id="selectCarDetailByID" parameterType="int" resultMap="CarResultMap">
         SELECT * FROM xiantu_car
         WHERE id = #{id}
@@ -92,10 +87,10 @@
             <if test="imageUrl != null">image_url=#{imageUrl},</if>
             <if test="videoUrl != null">video_url=#{videoUrl},</if>
         </trim>
-        WHERE NAME = #{name}
+        WHERE id = #{id}
     </update>
 
-    <delete id="deleteCar" parameterType="String">
-        DELETE FROM xiantu_car WHERE name = #{name}
+    <delete id="deleteCar" parameterType="int">
+        DELETE FROM xiantu_car WHERE id = #{id}
     </delete>
 </mapper>

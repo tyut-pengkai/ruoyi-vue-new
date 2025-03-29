@@ -5,7 +5,6 @@ import java.util.Map;
 import com.kekecha.xiantu.domain.*;
 import com.kekecha.xiantu.service.ICarService;
 import com.ruoyi.common.annotation.Anonymous;
-import com.ruoyi.framework.config.ServerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -63,12 +62,11 @@ public class CarController extends BaseController {
                                    @RequestParam(name="id", defaultValue = "-1") int id)
     {
         Car car = null;
+        if (id <= 0) {
+            return AjaxResult.error("查询的车型不存在");
+        }
         try {
-            if (id != -1) {
-                car = carService.selectCarDetailByID(id);
-            } else {
-                car = carService.selectCarDetail(name);
-            }
+            car = carService.selectCarDetailByID(id);
             if (car != null) {
                 return AjaxResult.success(carService.ConverCarToJson(car));
             } else {
@@ -85,7 +83,7 @@ public class CarController extends BaseController {
     {
         try {
             Car car = carService.buildCarFromJson(jsonMap);
-            Car db_car = carService.selectCarDetail(car.getName());
+            Car db_car = carService.selectCarDetailByID(car.getId());
 
             if (db_car != null) {
                 if (carService.updateCar(car) > 0) {
@@ -107,15 +105,15 @@ public class CarController extends BaseController {
 
     @PreAuthorize("@ss.hasPermi('data:car:list')")
     @DeleteMapping("")
-    public AjaxResult deleteCar(@RequestParam("name") String name)
+    public AjaxResult deleteCar(@RequestParam("id") int id)
     {
         try {
-            Car car = carService.selectCarDetail(name);
+            Car car = carService.selectCarDetailByID(id);
             if (car == null) {
                 return AjaxResult.error("删除车型不存在");
             }
 
-            int res = carService.deleteCar(name);
+            int res = carService.deleteCar(id);
 
             if (res > 0) {
                 return AjaxResult.success("删除成功");
