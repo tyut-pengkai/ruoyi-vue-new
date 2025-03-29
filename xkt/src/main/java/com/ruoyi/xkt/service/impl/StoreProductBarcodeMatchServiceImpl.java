@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductBarcodeMatchMapper;
 import com.ruoyi.xkt.service.IStoreProductBarcodeMatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class StoreProductBarcodeMatchServiceImpl implements IStoreProductBarcode
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductBarcodeMatch(StoreProductBarcodeMatch storeProductBarcodeMatch) {
         storeProductBarcodeMatch.setCreateTime(DateUtils.getNowDate());
         return storeProductBarcodeMatchMapper.insertStoreProductBarcodeMatch(storeProductBarcodeMatch);
@@ -61,6 +63,7 @@ public class StoreProductBarcodeMatchServiceImpl implements IStoreProductBarcode
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreProductBarcodeMatch(StoreProductBarcodeMatch storeProductBarcodeMatch) {
         storeProductBarcodeMatch.setUpdateTime(DateUtils.getNowDate());
         return storeProductBarcodeMatchMapper.updateStoreProductBarcodeMatch(storeProductBarcodeMatch);

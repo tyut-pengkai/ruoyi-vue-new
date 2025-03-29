@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductDetailMapper;
 import com.ruoyi.xkt.service.IStoreProductDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class StoreProductDetailServiceImpl implements IStoreProductDetailService
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductDetail(StoreProductDetail storeProductDetail) {
         storeProductDetail.setCreateTime(DateUtils.getNowDate());
         return storeProductDetailMapper.insertStoreProductDetail(storeProductDetail);

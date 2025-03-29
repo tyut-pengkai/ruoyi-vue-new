@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreColorMapper;
 import com.ruoyi.xkt.service.IStoreColorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreColorServiceImpl implements IStoreColorService {
      * @return 档口所有颜色
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreColor selectStoreColorByStoreColorId(Long storeColorId) {
         return storeColorMapper.selectStoreColorByStoreColorId(storeColorId);
     }
@@ -38,6 +40,7 @@ public class StoreColorServiceImpl implements IStoreColorService {
      * @return 档口所有颜色
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreColor> selectStoreColorList(StoreColor storeColor) {
         return storeColorMapper.selectStoreColorList(storeColor);
     }
@@ -49,6 +52,7 @@ public class StoreColorServiceImpl implements IStoreColorService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreColor(StoreColor storeColor) {
         storeColor.setCreateTime(DateUtils.getNowDate());
         return storeColorMapper.insertStoreColor(storeColor);
@@ -61,6 +65,7 @@ public class StoreColorServiceImpl implements IStoreColorService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreColor(StoreColor storeColor) {
         storeColor.setUpdateTime(DateUtils.getNowDate());
         return storeColorMapper.updateStoreColor(storeColor);
@@ -73,6 +78,7 @@ public class StoreColorServiceImpl implements IStoreColorService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreColorByStoreColorIds(Long[] storeColorIds) {
         return storeColorMapper.deleteStoreColorByStoreColorIds(storeColorIds);
     }
@@ -84,6 +90,7 @@ public class StoreColorServiceImpl implements IStoreColorService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreColorByStoreColorId(Long storeColorId) {
         return storeColorMapper.deleteStoreColorByStoreColorId(storeColorId);
     }

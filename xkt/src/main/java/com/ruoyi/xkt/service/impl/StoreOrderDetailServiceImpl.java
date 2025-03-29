@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreOrderDetailMapper;
 import com.ruoyi.xkt.service.IStoreOrderDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreOrderDetailServiceImpl implements IStoreOrderDetailService {
      * @return 档口代发订单明细
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreOrderDetail selectStoreOrderDetailByStoreOrderDetailId(Long storeOrderDetailId) {
         return storeOrderDetailMapper.selectStoreOrderDetailByStoreOrderDetailId(storeOrderDetailId);
     }
@@ -38,6 +40,7 @@ public class StoreOrderDetailServiceImpl implements IStoreOrderDetailService {
      * @return 档口代发订单明细
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreOrderDetail> selectStoreOrderDetailList(StoreOrderDetail storeOrderDetail) {
         return storeOrderDetailMapper.selectStoreOrderDetailList(storeOrderDetail);
     }
@@ -49,6 +52,7 @@ public class StoreOrderDetailServiceImpl implements IStoreOrderDetailService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreOrderDetail(StoreOrderDetail storeOrderDetail) {
         storeOrderDetail.setCreateTime(DateUtils.getNowDate());
         return storeOrderDetailMapper.insertStoreOrderDetail(storeOrderDetail);
@@ -61,6 +65,7 @@ public class StoreOrderDetailServiceImpl implements IStoreOrderDetailService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreOrderDetail(StoreOrderDetail storeOrderDetail) {
         storeOrderDetail.setUpdateTime(DateUtils.getNowDate());
         return storeOrderDetailMapper.updateStoreOrderDetail(storeOrderDetail);
@@ -73,6 +78,7 @@ public class StoreOrderDetailServiceImpl implements IStoreOrderDetailService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreOrderDetailByStoreOrderDetailIds(Long[] storeOrderDetailIds) {
         return storeOrderDetailMapper.deleteStoreOrderDetailByStoreOrderDetailIds(storeOrderDetailIds);
     }
@@ -84,6 +90,7 @@ public class StoreOrderDetailServiceImpl implements IStoreOrderDetailService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreOrderDetailByStoreOrderDetailId(Long storeOrderDetailId) {
         return storeOrderDetailMapper.deleteStoreOrderDetailByStoreOrderDetailId(storeOrderDetailId);
     }

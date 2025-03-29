@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductStockMapper;
 import com.ruoyi.xkt.service.IStoreProductStockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
      * @return 档口商品库存
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreProductStock selectStoreProductStockByStoreProdStockId(Long storeProdStockId) {
         return storeProductStockMapper.selectStoreProductStockByStoreProdStockId(storeProdStockId);
     }
@@ -38,6 +40,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
      * @return 档口商品库存
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreProductStock> selectStoreProductStockList(StoreProductStock storeProductStock) {
         return storeProductStockMapper.selectStoreProductStockList(storeProductStock);
     }
@@ -49,6 +52,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductStock(StoreProductStock storeProductStock) {
         storeProductStock.setCreateTime(DateUtils.getNowDate());
         return storeProductStockMapper.insertStoreProductStock(storeProductStock);
@@ -61,6 +65,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreProductStock(StoreProductStock storeProductStock) {
         storeProductStock.setUpdateTime(DateUtils.getNowDate());
         return storeProductStockMapper.updateStoreProductStock(storeProductStock);

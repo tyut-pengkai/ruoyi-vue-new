@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.UserBrowsingHistoryMapper;
 import com.ruoyi.xkt.service.IUserBrowsingHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class UserBrowsingHistoryServiceImpl implements IUserBrowsingHistoryServi
      * @return 用户浏览历史
      */
     @Override
+    @Transactional(readOnly = true)
     public UserBrowsingHistory selectUserBrowsingHistoryByUserBrowHisId(Long userBrowHisId) {
         return userBrowsingHistoryMapper.selectUserBrowsingHistoryByUserBrowHisId(userBrowHisId);
     }
@@ -38,6 +40,7 @@ public class UserBrowsingHistoryServiceImpl implements IUserBrowsingHistoryServi
      * @return 用户浏览历史
      */
     @Override
+    @Transactional(readOnly = true)
     public List<UserBrowsingHistory> selectUserBrowsingHistoryList(UserBrowsingHistory userBrowsingHistory) {
         return userBrowsingHistoryMapper.selectUserBrowsingHistoryList(userBrowsingHistory);
     }
@@ -49,6 +52,7 @@ public class UserBrowsingHistoryServiceImpl implements IUserBrowsingHistoryServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertUserBrowsingHistory(UserBrowsingHistory userBrowsingHistory) {
         userBrowsingHistory.setCreateTime(DateUtils.getNowDate());
         return userBrowsingHistoryMapper.insertUserBrowsingHistory(userBrowsingHistory);

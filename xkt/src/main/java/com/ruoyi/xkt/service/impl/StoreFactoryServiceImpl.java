@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreFactoryMapper;
 import com.ruoyi.xkt.service.IStoreFactoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
      * @return 档口合作工厂
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreFactory selectStoreFactoryByStoreFacId(Long storeFacId) {
         return storeFactoryMapper.selectStoreFactoryByStoreFacId(storeFacId);
     }
@@ -38,6 +40,7 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
      * @return 档口合作工厂
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreFactory> selectStoreFactoryList(StoreFactory storeFactory) {
         return storeFactoryMapper.selectStoreFactoryList(storeFactory);
     }
@@ -49,6 +52,7 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreFactory(StoreFactory storeFactory) {
         storeFactory.setCreateTime(DateUtils.getNowDate());
         return storeFactoryMapper.insertStoreFactory(storeFactory);
@@ -61,6 +65,7 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreFactory(StoreFactory storeFactory) {
         storeFactory.setUpdateTime(DateUtils.getNowDate());
         return storeFactoryMapper.updateStoreFactory(storeFactory);
@@ -73,6 +78,7 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreFactoryByStoreFacIds(Long[] storeFacIds) {
         return storeFactoryMapper.deleteStoreFactoryByStoreFacIds(storeFacIds);
     }
@@ -84,6 +90,7 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreFactoryByStoreFacId(Long storeFacId) {
         return storeFactoryMapper.deleteStoreFactoryByStoreFacId(storeFacId);
     }

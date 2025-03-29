@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreMapper;
 import com.ruoyi.xkt.service.IStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreServiceImpl implements IStoreService {
      * @return 档口
      */
     @Override
+    @Transactional(readOnly = true)
     public Store selectStoreByStoreId(Long storeId) {
         return storeMapper.selectStoreByStoreId(storeId);
     }
@@ -38,6 +40,7 @@ public class StoreServiceImpl implements IStoreService {
      * @return 档口
      */
     @Override
+    @Transactional(readOnly = true)
     public List<Store> selectStoreList(Store store) {
         return storeMapper.selectStoreList(store);
     }

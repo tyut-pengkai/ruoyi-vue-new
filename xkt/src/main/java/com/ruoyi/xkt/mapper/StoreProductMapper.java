@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -61,6 +62,5 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      * @return 结果
      */
     public int deleteStoreProductByStoreProdIds(Long[] storeProdIds);
-
 
 }

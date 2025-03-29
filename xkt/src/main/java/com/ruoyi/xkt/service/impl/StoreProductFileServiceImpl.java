@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductFileMapper;
 import com.ruoyi.xkt.service.IStoreProductFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class StoreProductFileServiceImpl implements IStoreProductFileService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductFile(StoreProductFile storeProductFile) {
         storeProductFile.setCreateTime(DateUtils.getNowDate());
         return storeProductFileMapper.insertStoreProductFile(storeProductFile);

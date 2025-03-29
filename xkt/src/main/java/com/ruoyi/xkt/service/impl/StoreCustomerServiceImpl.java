@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreCustomerMapper;
 import com.ruoyi.xkt.service.IStoreCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
      * @return 档口客户
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreCustomer selectStoreCustomerByStoreCusId(Long storeCusId) {
         return storeCustomerMapper.selectStoreCustomerByStoreCusId(storeCusId);
     }
@@ -38,6 +40,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
      * @return 档口客户
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreCustomer> selectStoreCustomerList(StoreCustomer storeCustomer) {
         return storeCustomerMapper.selectStoreCustomerList(storeCustomer);
     }
@@ -49,6 +52,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreCustomer(StoreCustomer storeCustomer) {
         storeCustomer.setCreateTime(DateUtils.getNowDate());
         return storeCustomerMapper.insertStoreCustomer(storeCustomer);
@@ -61,6 +65,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreCustomer(StoreCustomer storeCustomer) {
         storeCustomer.setUpdateTime(DateUtils.getNowDate());
         return storeCustomerMapper.updateStoreCustomer(storeCustomer);
@@ -73,6 +78,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreCustomerByStoreCusIds(Long[] storeCusIds) {
         return storeCustomerMapper.deleteStoreCustomerByStoreCusIds(storeCusIds);
     }
@@ -84,6 +90,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreCustomerByStoreCusId(Long storeCusId) {
         return storeCustomerMapper.deleteStoreCustomerByStoreCusId(storeCusId);
     }

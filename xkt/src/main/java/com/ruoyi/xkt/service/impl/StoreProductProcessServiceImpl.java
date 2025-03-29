@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductProcessMapper;
 import com.ruoyi.xkt.service.IStoreProductProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreProductProcessServiceImpl implements IStoreProductProcessServi
      * @return 档口商品工艺信息
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreProductProcess selectStoreProductProcessByStoreProdProcessId(Long storeProdProcessId) {
         return storeProductProcessMapper.selectStoreProductProcessByStoreProdProcessId(storeProdProcessId);
     }
@@ -38,6 +40,7 @@ public class StoreProductProcessServiceImpl implements IStoreProductProcessServi
      * @return 档口商品工艺信息
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreProductProcess> selectStoreProductProcessList(StoreProductProcess storeProductProcess) {
         return storeProductProcessMapper.selectStoreProductProcessList(storeProductProcess);
     }
@@ -49,6 +52,7 @@ public class StoreProductProcessServiceImpl implements IStoreProductProcessServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductProcess(StoreProductProcess storeProductProcess) {
         storeProductProcess.setCreateTime(DateUtils.getNowDate());
         return storeProductProcessMapper.insertStoreProductProcess(storeProductProcess);
@@ -61,6 +65,7 @@ public class StoreProductProcessServiceImpl implements IStoreProductProcessServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreProductProcess(StoreProductProcess storeProductProcess) {
         storeProductProcess.setUpdateTime(DateUtils.getNowDate());
         return storeProductProcessMapper.updateStoreProductProcess(storeProductProcess);
@@ -73,6 +78,7 @@ public class StoreProductProcessServiceImpl implements IStoreProductProcessServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductProcessByStoreProdProcessIds(Long[] storeProdProcessIds) {
         return storeProductProcessMapper.deleteStoreProductProcessByStoreProdProcessIds(storeProdProcessIds);
     }
@@ -84,6 +90,7 @@ public class StoreProductProcessServiceImpl implements IStoreProductProcessServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductProcessByStoreProdProcessId(Long storeProdProcessId) {
         return storeProductProcessMapper.deleteStoreProductProcessByStoreProdProcessId(storeProdProcessId);
     }

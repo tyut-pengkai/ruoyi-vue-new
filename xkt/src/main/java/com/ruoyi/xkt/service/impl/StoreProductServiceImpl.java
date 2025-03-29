@@ -23,6 +23,7 @@ import com.ruoyi.xkt.service.IStoreProductService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -290,5 +291,25 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional
     public int deleteStoreProductByStoreProdId(Long storeProdId) {
         return storeProdMapper.deleteStoreProductByStoreProdId(storeProdId);
+    }
+
+    /**
+     * 根据档口ID和商品货号模糊查询货号列表
+     *
+     * @param storeId    档口ID
+     * @param prodArtNum 商品货号
+     * @return List<String>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> fuzzyQueryList(Long storeId, String prodArtNum) {
+        LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, "0");
+        if (StringUtils.isNotBlank(prodArtNum)) {
+            queryWrapper.like(StoreProduct::getProdArtNum, prodArtNum);
+        }
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(queryWrapper);
+        return CollectionUtils.isEmpty(storeProdList) ? new ArrayList<>()
+                : storeProdList.stream().map(StoreProduct::getProdArtNum).distinct().collect(Collectors.toList());
     }
 }

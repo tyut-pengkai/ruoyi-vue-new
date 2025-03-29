@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductServiceMapper;
 import com.ruoyi.xkt.service.IStoreProductServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreProductServiceServiceImpl implements IStoreProductServiceServi
      * @return 档口商品服务
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreProductService selectStoreProductServiceByStoreProdSvcId(Long storeProdSvcId) {
         return storeProductServiceMapper.selectStoreProductServiceByStoreProdSvcId(storeProdSvcId);
     }
@@ -38,6 +40,7 @@ public class StoreProductServiceServiceImpl implements IStoreProductServiceServi
      * @return 档口商品服务
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreProductService> selectStoreProductServiceList(StoreProductService storeProductService) {
         return storeProductServiceMapper.selectStoreProductServiceList(storeProductService);
     }
@@ -49,6 +52,7 @@ public class StoreProductServiceServiceImpl implements IStoreProductServiceServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductService(StoreProductService storeProductService) {
         storeProductService.setCreateTime(DateUtils.getNowDate());
         return storeProductServiceMapper.insertStoreProductService(storeProductService);
@@ -61,6 +65,7 @@ public class StoreProductServiceServiceImpl implements IStoreProductServiceServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreProductService(StoreProductService storeProductService) {
         storeProductService.setUpdateTime(DateUtils.getNowDate());
         return storeProductServiceMapper.updateStoreProductService(storeProductService);

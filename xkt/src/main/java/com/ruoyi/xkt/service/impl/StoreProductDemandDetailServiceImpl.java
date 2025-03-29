@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductDemandDetailMapper;
 import com.ruoyi.xkt.service.IStoreProductDemandDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreProductDemandDetailServiceImpl implements IStoreProductDemandD
      * @return 档口商品需求单明细
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreProductDemandDetail selectStoreProductDemandDetailByStoreProdDemaDetailId(Long storeProdDemaDetailId) {
         return storeProductDemandDetailMapper.selectStoreProductDemandDetailByStoreProdDemaDetailId(storeProdDemaDetailId);
     }
@@ -38,6 +40,7 @@ public class StoreProductDemandDetailServiceImpl implements IStoreProductDemandD
      * @return 档口商品需求单明细
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreProductDemandDetail> selectStoreProductDemandDetailList(StoreProductDemandDetail storeProductDemandDetail) {
         return storeProductDemandDetailMapper.selectStoreProductDemandDetailList(storeProductDemandDetail);
     }
@@ -49,6 +52,7 @@ public class StoreProductDemandDetailServiceImpl implements IStoreProductDemandD
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductDemandDetail(StoreProductDemandDetail storeProductDemandDetail) {
         storeProductDemandDetail.setCreateTime(DateUtils.getNowDate());
         return storeProductDemandDetailMapper.insertStoreProductDemandDetail(storeProductDemandDetail);

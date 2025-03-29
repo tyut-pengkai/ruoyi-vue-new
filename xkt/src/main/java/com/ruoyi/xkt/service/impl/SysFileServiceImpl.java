@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.SysFileMapper;
 import com.ruoyi.xkt.service.ISysFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class SysFileServiceImpl implements ISysFileService {
      * @return file
      */
     @Override
+    @Transactional(readOnly = true)
     public SysFile selectSysFileByFileId(Long fileId) {
         return sysFileMapper.selectSysFileByFileId(fileId);
     }
@@ -38,6 +40,7 @@ public class SysFileServiceImpl implements ISysFileService {
      * @return file
      */
     @Override
+    @Transactional(readOnly = true)
     public List<SysFile> selectSysFileList(SysFile sysFile) {
         return sysFileMapper.selectSysFileList(sysFile);
     }
@@ -49,6 +52,7 @@ public class SysFileServiceImpl implements ISysFileService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertSysFile(SysFile sysFile) {
         sysFile.setCreateTime(DateUtils.getNowDate());
         return sysFileMapper.insertSysFile(sysFile);
@@ -61,6 +65,7 @@ public class SysFileServiceImpl implements ISysFileService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateSysFile(SysFile sysFile) {
         sysFile.setUpdateTime(DateUtils.getNowDate());
         return sysFileMapper.updateSysFile(sysFile);

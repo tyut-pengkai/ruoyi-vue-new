@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductStorageDetailMapper;
 import com.ruoyi.xkt.service.IStoreProductStorageDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreProductStorageDetailServiceImpl implements IStoreProductStorag
      * @return 档口商品入库明细
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreProductStorageDetail selectStoreProductStorageDetailByStoreProdStorDetailId(Long storeProdStorDetailId) {
         return storeProductStorageDetailMapper.selectStoreProductStorageDetailByStoreProdStorDetailId(storeProdStorDetailId);
     }
@@ -38,6 +40,7 @@ public class StoreProductStorageDetailServiceImpl implements IStoreProductStorag
      * @return 档口商品入库明细
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreProductStorageDetail> selectStoreProductStorageDetailList(StoreProductStorageDetail storeProductStorageDetail) {
         return storeProductStorageDetailMapper.selectStoreProductStorageDetailList(storeProductStorageDetail);
     }
@@ -49,6 +52,7 @@ public class StoreProductStorageDetailServiceImpl implements IStoreProductStorag
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductStorageDetail(StoreProductStorageDetail storeProductStorageDetail) {
         storeProductStorageDetail.setCreateTime(DateUtils.getNowDate());
         return storeProductStorageDetailMapper.insertStoreProductStorageDetail(storeProductStorageDetail);
@@ -61,6 +65,7 @@ public class StoreProductStorageDetailServiceImpl implements IStoreProductStorag
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreProductStorageDetail(StoreProductStorageDetail storeProductStorageDetail) {
         storeProductStorageDetail.setUpdateTime(DateUtils.getNowDate());
         return storeProductStorageDetailMapper.updateStoreProductStorageDetail(storeProductStorageDetail);

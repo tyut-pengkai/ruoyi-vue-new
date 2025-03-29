@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductStorageMapper;
 import com.ruoyi.xkt.service.IStoreProductStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
      * @return 档口商品入库
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreProductStorage selectStoreProductStorageByStoreProdStorId(Long storeProdStorId) {
         return storeProductStorageMapper.selectStoreProductStorageByStoreProdStorId(storeProdStorId);
     }
@@ -38,6 +40,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
      * @return 档口商品入库
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreProductStorage> selectStoreProductStorageList(StoreProductStorage storeProductStorage) {
         return storeProductStorageMapper.selectStoreProductStorageList(storeProductStorage);
     }
@@ -49,6 +52,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductStorage(StoreProductStorage storeProductStorage) {
         storeProductStorage.setCreateTime(DateUtils.getNowDate());
         return storeProductStorageMapper.insertStoreProductStorage(storeProductStorage);
@@ -61,6 +65,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreProductStorage(StoreProductStorage storeProductStorage) {
         storeProductStorage.setUpdateTime(DateUtils.getNowDate());
         return storeProductStorageMapper.updateStoreProductStorage(storeProductStorage);

@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreCustomerProductDiscountMapper;
 import com.ruoyi.xkt.service.IStoreCustomerProductDiscountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
      * @return 档口客户优惠
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreCustomerProductDiscount selectStoreCustomerProductDiscountByStoreCusProdDiscId(Long storeCusProdDiscId) {
         return storeCustomerProductDiscountMapper.selectStoreCustomerProductDiscountByStoreCusProdDiscId(storeCusProdDiscId);
     }
@@ -38,6 +40,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
      * @return 档口客户优惠
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreCustomerProductDiscount> selectStoreCustomerProductDiscountList(StoreCustomerProductDiscount storeCustomerProductDiscount) {
         return storeCustomerProductDiscountMapper.selectStoreCustomerProductDiscountList(storeCustomerProductDiscount);
     }
@@ -49,6 +52,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreCustomerProductDiscount(StoreCustomerProductDiscount storeCustomerProductDiscount) {
         storeCustomerProductDiscount.setCreateTime(DateUtils.getNowDate());
         return storeCustomerProductDiscountMapper.insertStoreCustomerProductDiscount(storeCustomerProductDiscount);
@@ -61,6 +65,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreCustomerProductDiscount(StoreCustomerProductDiscount storeCustomerProductDiscount) {
         storeCustomerProductDiscount.setUpdateTime(DateUtils.getNowDate());
         return storeCustomerProductDiscountMapper.updateStoreCustomerProductDiscount(storeCustomerProductDiscount);
@@ -73,6 +78,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreCustomerProductDiscountByStoreCusProdDiscIds(Long[] storeCusProdDiscIds) {
         return storeCustomerProductDiscountMapper.deleteStoreCustomerProductDiscountByStoreCusProdDiscIds(storeCusProdDiscIds);
     }
@@ -84,6 +90,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreCustomerProductDiscountByStoreCusProdDiscId(Long storeCusProdDiscId) {
         return storeCustomerProductDiscountMapper.deleteStoreCustomerProductDiscountByStoreCusProdDiscId(storeCusProdDiscId);
     }

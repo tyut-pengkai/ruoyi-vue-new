@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreCertificateMapper;
 import com.ruoyi.xkt.service.IStoreCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
      * @return 档口认证
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreCertificate selectStoreCertificateByStoreCertId(Long storeCertId) {
         return storeCertificateMapper.selectStoreCertificateByStoreCertId(storeCertId);
     }
@@ -38,6 +40,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
      * @return 档口认证
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreCertificate> selectStoreCertificateList(StoreCertificate storeCertificate) {
         return storeCertificateMapper.selectStoreCertificateList(storeCertificate);
     }
@@ -49,6 +52,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreCertificate(StoreCertificate storeCertificate) {
         storeCertificate.setCreateTime(DateUtils.getNowDate());
         return storeCertificateMapper.insertStoreCertificate(storeCertificate);
@@ -61,6 +65,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreCertificate(StoreCertificate storeCertificate) {
         storeCertificate.setUpdateTime(DateUtils.getNowDate());
         return storeCertificateMapper.updateStoreCertificate(storeCertificate);
@@ -73,6 +78,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreCertificateByStoreCertIds(Long[] storeCertIds) {
         return storeCertificateMapper.deleteStoreCertificateByStoreCertIds(storeCertIds);
     }
@@ -84,6 +90,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreCertificateByStoreCertId(Long storeCertId) {
         return storeCertificateMapper.deleteStoreCertificateByStoreCertId(storeCertId);
     }

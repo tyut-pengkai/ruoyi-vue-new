@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductColorPriceMapper;
 import com.ruoyi.xkt.service.IStoreProductColorPriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class StoreProductColorPriceServiceImpl implements IStoreProductColorPric
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductColorPrice(StoreProductColorPrice storeProductColorPrice) {
         storeProductColorPrice.setCreateTime(DateUtils.getNowDate());
         return storeProductColorPriceMapper.insertStoreProductColorPrice(storeProductColorPrice);
@@ -61,6 +63,7 @@ public class StoreProductColorPriceServiceImpl implements IStoreProductColorPric
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreProductColorPrice(StoreProductColorPrice storeProductColorPrice) {
         storeProductColorPrice.setUpdateTime(DateUtils.getNowDate());
         return storeProductColorPriceMapper.updateStoreProductColorPrice(storeProductColorPrice);

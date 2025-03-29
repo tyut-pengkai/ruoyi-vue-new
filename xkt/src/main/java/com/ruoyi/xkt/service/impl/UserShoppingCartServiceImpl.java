@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.UserShoppingCartMapper;
 import com.ruoyi.xkt.service.IUserShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class UserShoppingCartServiceImpl implements IUserShoppingCartService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertUserShoppingCart(UserShoppingCart userShoppingCart) {
         userShoppingCart.setCreateTime(DateUtils.getNowDate());
         return userShoppingCartMapper.insertUserShoppingCart(userShoppingCart);
@@ -61,6 +63,7 @@ public class UserShoppingCartServiceImpl implements IUserShoppingCartService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateUserShoppingCart(UserShoppingCart userShoppingCart) {
         userShoppingCart.setUpdateTime(DateUtils.getNowDate());
         return userShoppingCartMapper.updateUserShoppingCart(userShoppingCart);

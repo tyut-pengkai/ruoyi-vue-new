@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreHomepageMapper;
 import com.ruoyi.xkt.service.IStoreHomepageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
      * @return 档口首页
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreHomepage selectStoreHomepageByStoreHomeId(Long storeHomeId) {
         return storeHomepageMapper.selectStoreHomepageByStoreHomeId(storeHomeId);
     }
@@ -38,6 +40,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
      * @return 档口首页
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreHomepage> selectStoreHomepageList(StoreHomepage storeHomepage) {
         return storeHomepageMapper.selectStoreHomepageList(storeHomepage);
     }
@@ -49,6 +52,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreHomepage(StoreHomepage storeHomepage) {
         storeHomepage.setCreateTime(DateUtils.getNowDate());
         return storeHomepageMapper.insertStoreHomepage(storeHomepage);
@@ -61,6 +65,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreHomepage(StoreHomepage storeHomepage) {
         storeHomepage.setUpdateTime(DateUtils.getNowDate());
         return storeHomepageMapper.updateStoreHomepage(storeHomepage);
@@ -73,6 +78,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreHomepageByStoreHomeIds(Long[] storeHomeIds) {
         return storeHomepageMapper.deleteStoreHomepageByStoreHomeIds(storeHomeIds);
     }
@@ -84,6 +90,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreHomepageByStoreHomeId(Long storeHomeId) {
         return storeHomepageMapper.deleteStoreHomepageByStoreHomeId(storeHomeId);
     }

@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.UserAccountMapper;
 import com.ruoyi.xkt.service.IUserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class UserAccountServiceImpl implements IUserAccountService {
      * @return 用户账户（支付宝、微信等）
      */
     @Override
+    @Transactional(readOnly = true)
     public UserAccount selectUserAccountByUserAccId(Long userAccId) {
         return userAccountMapper.selectUserAccountByUserAccId(userAccId);
     }
@@ -38,6 +40,7 @@ public class UserAccountServiceImpl implements IUserAccountService {
      * @return 用户账户（支付宝、微信等）
      */
     @Override
+    @Transactional(readOnly = true)
     public List<UserAccount> selectUserAccountList(UserAccount userAccount) {
         return userAccountMapper.selectUserAccountList(userAccount);
     }
@@ -49,6 +52,7 @@ public class UserAccountServiceImpl implements IUserAccountService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertUserAccount(UserAccount userAccount) {
         userAccount.setCreateTime(DateUtils.getNowDate());
         return userAccountMapper.insertUserAccount(userAccount);
@@ -61,6 +65,7 @@ public class UserAccountServiceImpl implements IUserAccountService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateUserAccount(UserAccount userAccount) {
         userAccount.setUpdateTime(DateUtils.getNowDate());
         return userAccountMapper.updateUserAccount(userAccount);

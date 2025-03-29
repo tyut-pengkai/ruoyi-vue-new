@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.UserAuthenticationMapper;
 import com.ruoyi.xkt.service.IUserAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
      * @return 用户代发认证
      */
     @Override
+    @Transactional(readOnly = true)
     public UserAuthentication selectUserAuthenticationByUserAuthId(Long userAuthId) {
         return userAuthenticationMapper.selectUserAuthenticationByUserAuthId(userAuthId);
     }
@@ -38,6 +40,7 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
      * @return 用户代发认证
      */
     @Override
+    @Transactional(readOnly = true)
     public List<UserAuthentication> selectUserAuthenticationList(UserAuthentication userAuthentication) {
         return userAuthenticationMapper.selectUserAuthenticationList(userAuthentication);
     }
@@ -49,6 +52,7 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertUserAuthentication(UserAuthentication userAuthentication) {
         userAuthentication.setCreateTime(DateUtils.getNowDate());
         return userAuthenticationMapper.insertUserAuthentication(userAuthentication);
@@ -61,6 +65,7 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateUserAuthentication(UserAuthentication userAuthentication) {
         userAuthentication.setUpdateTime(DateUtils.getNowDate());
         return userAuthenticationMapper.updateUserAuthentication(userAuthentication);

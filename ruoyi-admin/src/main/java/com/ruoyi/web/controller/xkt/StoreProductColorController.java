@@ -1,14 +1,17 @@
 package com.ruoyi.web.controller.xkt;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.web.controller.xkt.vo.storePordColor.StoreProdColorResVO;
 import com.ruoyi.xkt.domain.StoreProductColor;
 import com.ruoyi.xkt.service.IStoreProductColorService;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +24,23 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Api(tags = "档口商品颜色")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/rest/v1/prod-colors")
 public class StoreProductColorController extends XktBaseController {
-    @Autowired
-    private IStoreProductColorService storeProductColorService;
+
+    final IStoreProductColorService storeProdColorService;
+
+    /**
+     * 模糊查询档口所有的商品颜色分类
+     */
+    @PreAuthorize("@ss.hasPermi('system:color:query')")
+    @GetMapping(value = "/fuzzy")
+    public R fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
+                                 @RequestParam("storeId") Long storeId) {
+        return success(BeanUtil.copyToList(storeProdColorService.fuzzyQueryColorList(storeId, prodArtNum), StoreProdColorResVO.class));
+    }
 
     /**
      * 查询档口当前商品颜色列表
@@ -34,7 +49,7 @@ public class StoreProductColorController extends XktBaseController {
     @GetMapping("/list")
     public TableDataInfo list(StoreProductColor storeProductColor) {
         startPage();
-        List<StoreProductColor> list = storeProductColorService.selectStoreProductColorList(storeProductColor);
+        List<StoreProductColor> list = storeProdColorService.selectStoreProductColorList(storeProductColor);
         return getDataTable(list);
     }
 
@@ -45,7 +60,7 @@ public class StoreProductColorController extends XktBaseController {
     @Log(title = "档口当前商品颜色", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreProductColor storeProductColor) {
-        List<StoreProductColor> list = storeProductColorService.selectStoreProductColorList(storeProductColor);
+        List<StoreProductColor> list = storeProdColorService.selectStoreProductColorList(storeProductColor);
         ExcelUtil<StoreProductColor> util = new ExcelUtil<StoreProductColor>(StoreProductColor.class);
         util.exportExcel(response, list, "档口当前商品颜色数据");
     }
@@ -56,7 +71,7 @@ public class StoreProductColorController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:color:query')")
     @GetMapping(value = "/{storeProdColorId}")
     public R getInfo(@PathVariable("storeProdColorId") Long storeProdColorId) {
-        return success(storeProductColorService.selectStoreProductColorByStoreProdColorId(storeProdColorId));
+        return success(storeProdColorService.selectStoreProductColorByStoreProdColorId(storeProdColorId));
     }
 
     /**
@@ -66,7 +81,7 @@ public class StoreProductColorController extends XktBaseController {
     @Log(title = "档口当前商品颜色", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody StoreProductColor storeProductColor) {
-        return success(storeProductColorService.insertStoreProductColor(storeProductColor));
+        return success(storeProdColorService.insertStoreProductColor(storeProductColor));
     }
 
     /**
@@ -76,7 +91,7 @@ public class StoreProductColorController extends XktBaseController {
     @Log(title = "档口当前商品颜色", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody StoreProductColor storeProductColor) {
-        return success(storeProductColorService.updateStoreProductColor(storeProductColor));
+        return success(storeProdColorService.updateStoreProductColor(storeProductColor));
     }
 
     /**
@@ -86,6 +101,7 @@ public class StoreProductColorController extends XktBaseController {
     @Log(title = "档口当前商品颜色", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdColorIds}")
     public R remove(@PathVariable Long[] storeProdColorIds) {
-        return success(storeProductColorService.deleteStoreProductColorByStoreProdColorIds(storeProdColorIds));
+        return success(storeProdColorService.deleteStoreProductColorByStoreProdColorIds(storeProdColorIds));
     }
+
 }

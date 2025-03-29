@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductBarcodeRecordMapper;
 import com.ruoyi.xkt.service.IStoreProductBarcodeRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class StoreProductBarcodeRecordServiceImpl implements IStoreProductBarcod
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductBarcodeRecord(StoreProductBarcodeRecord storeProductBarcodeRecord) {
         storeProductBarcodeRecord.setCreateTime(DateUtils.getNowDate());
         return storeProductBarcodeRecordMapper.insertStoreProductBarcodeRecord(storeProductBarcodeRecord);

@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.UserNoticeSettingMapper;
 import com.ruoyi.xkt.service.IUserNoticeSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class UserNoticeSettingServiceImpl implements IUserNoticeSettingService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertUserNoticeSetting(UserNoticeSetting userNoticeSetting) {
         userNoticeSetting.setCreateTime(DateUtils.getNowDate());
         return userNoticeSettingMapper.insertUserNoticeSetting(userNoticeSetting);
@@ -61,6 +63,7 @@ public class UserNoticeSettingServiceImpl implements IUserNoticeSettingService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateUserNoticeSetting(UserNoticeSetting userNoticeSetting) {
         userNoticeSetting.setUpdateTime(DateUtils.getNowDate());
         return userNoticeSettingMapper.updateUserNoticeSetting(userNoticeSetting);

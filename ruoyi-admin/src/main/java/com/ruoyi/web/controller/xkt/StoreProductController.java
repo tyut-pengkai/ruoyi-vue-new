@@ -7,6 +7,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.web.controller.xkt.vo.storePordColor.StoreProdColorResVO;
 import com.ruoyi.web.controller.xkt.vo.storeProd.*;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdDTO;
@@ -37,7 +38,17 @@ import java.util.List;
 @Api(tags = "档口商品")
 public class StoreProductController extends XktBaseController {
 
-    final IStoreProductService storeProductService;
+    final IStoreProductService storeProdService;
+
+    /**
+     * 模糊查询档口商品
+     */
+    @PreAuthorize("@ss.hasPermi('system:product:query')")
+    @GetMapping(value = "/fuzzy")
+    public R fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
+                                 @RequestParam("storeId") Long storeId) {
+        return success(BeanUtil.copyToList(storeProdService.fuzzyQueryList(storeId, prodArtNum), String.class));
+    }
 
     /**
      * 查询档口商品列表
@@ -47,7 +58,7 @@ public class StoreProductController extends XktBaseController {
     @PostMapping("/page")
     public TableDataInfo page(@Validated @RequestBody StoreProdPageVO pageVO) {
         startPage();
-        List<StoreProdPageResDTO> list = storeProductService.selectPage(ObjectUtils.isEmpty(pageVO) ? null : BeanUtil.toBean(pageVO, StoreProdPageDTO.class));
+        List<StoreProdPageResDTO> list = storeProdService.selectPage(ObjectUtils.isEmpty(pageVO) ? null : BeanUtil.toBean(pageVO, StoreProdPageDTO.class));
         return getDataTable(list);
     }
 
@@ -58,7 +69,7 @@ public class StoreProductController extends XktBaseController {
     @Log(title = "档口商品", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreProduct storeProduct) {
-        List<StoreProduct> list = storeProductService.selectStoreProductList(storeProduct);
+        List<StoreProduct> list = storeProdService.selectStoreProductList(storeProduct);
         ExcelUtil<StoreProduct> util = new ExcelUtil<StoreProduct>(StoreProduct.class);
         util.exportExcel(response, list, "档口商品数据");
     }
@@ -70,7 +81,7 @@ public class StoreProductController extends XktBaseController {
     @ApiOperation(value = "获取档口商品详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeProdId}")
     public R getInfo(@PathVariable("storeProdId") Long storeProdId) {
-        return success(BeanUtil.toBean(storeProductService.selectStoreProductByStoreProdId(storeProdId), StoreProdResVO.class));
+        return success(BeanUtil.toBean(storeProdService.selectStoreProductByStoreProdId(storeProdId), StoreProdResVO.class));
     }
 
     /**
@@ -81,7 +92,7 @@ public class StoreProductController extends XktBaseController {
     @ApiOperation(value = "新增档口商品", httpMethod = "POST", response = R.class)
     @PostMapping
     public R add(@Validated @RequestBody StoreProdVO storeProdVO) {
-        return success(storeProductService.insertStoreProduct(BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
+        return success(storeProdService.insertStoreProduct(BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
 
     /**
@@ -92,7 +103,7 @@ public class StoreProductController extends XktBaseController {
     @Log(title = "档口商品", businessType = BusinessType.UPDATE)
     @PutMapping("/{storeProdId}")
     public R edit(@PathVariable Long storeProdId, @Validated @RequestBody StoreProdVO storeProdVO) {
-        return success(storeProductService.updateStoreProduct(storeProdId, BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
+        return success(storeProdService.updateStoreProduct(storeProdId, BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
 
     /**
@@ -103,7 +114,7 @@ public class StoreProductController extends XktBaseController {
     @ApiOperation(value = "修改档口商品状态", httpMethod = "PUT", response = R.class)
     @PutMapping("/prod-status")
     public R editProdStatus(@Validated @RequestBody StoreProdStatusVO prodStatusVO) {
-        storeProductService.updateStoreProductStatus(BeanUtil.toBean(prodStatusVO, StoreProdStatusDTO.class));
+        storeProdService.updateStoreProductStatus(BeanUtil.toBean(prodStatusVO, StoreProdStatusDTO.class));
         return success();
     }
 
@@ -114,7 +125,7 @@ public class StoreProductController extends XktBaseController {
     @ApiOperation(value = "获取档口图片空间", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/pic-space/{storeId}")
     public R getStoreProductPicSpace(@PathVariable("storeId") Long storeId) {
-        return success(BeanUtil.toBean(storeProductService.getStoreProductPicSpace(storeId), StoreProdPicSpaceResVO.class));
+        return success(BeanUtil.toBean(storeProdService.getStoreProductPicSpace(storeId), StoreProdPicSpaceResVO.class));
     }
 
 

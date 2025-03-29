@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreQuickFunctionMapper;
 import com.ruoyi.xkt.service.IStoreQuickFunctionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreQuickFunctionServiceImpl implements IStoreQuickFunctionService
      * @return 档口快捷功能
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreQuickFunction selectStoreQuickFunctionByStoreQuickFuncId(Long storeQuickFuncId) {
         return storeQuickFunctionMapper.selectStoreQuickFunctionByStoreQuickFuncId(storeQuickFuncId);
     }
@@ -38,6 +40,7 @@ public class StoreQuickFunctionServiceImpl implements IStoreQuickFunctionService
      * @return 档口快捷功能
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreQuickFunction> selectStoreQuickFunctionList(StoreQuickFunction storeQuickFunction) {
         return storeQuickFunctionMapper.selectStoreQuickFunctionList(storeQuickFunction);
     }
@@ -49,6 +52,7 @@ public class StoreQuickFunctionServiceImpl implements IStoreQuickFunctionService
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreQuickFunction(StoreQuickFunction storeQuickFunction) {
         storeQuickFunction.setCreateTime(DateUtils.getNowDate());
         return storeQuickFunctionMapper.insertStoreQuickFunction(storeQuickFunction);
@@ -61,6 +65,7 @@ public class StoreQuickFunctionServiceImpl implements IStoreQuickFunctionService
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreQuickFunction(StoreQuickFunction storeQuickFunction) {
         storeQuickFunction.setUpdateTime(DateUtils.getNowDate());
         return storeQuickFunctionMapper.updateStoreQuickFunction(storeQuickFunction);
@@ -73,6 +78,7 @@ public class StoreQuickFunctionServiceImpl implements IStoreQuickFunctionService
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreQuickFunctionByStoreQuickFuncIds(Long[] storeQuickFuncIds) {
         return storeQuickFunctionMapper.deleteStoreQuickFunctionByStoreQuickFuncIds(storeQuickFuncIds);
     }
@@ -84,6 +90,7 @@ public class StoreQuickFunctionServiceImpl implements IStoreQuickFunctionService
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreQuickFunctionByStoreQuickFuncId(Long storeQuickFuncId) {
         return storeQuickFunctionMapper.deleteStoreQuickFunctionByStoreQuickFuncId(storeQuickFuncId);
     }

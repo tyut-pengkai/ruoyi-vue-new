@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductColorSizeMapper;
 import com.ruoyi.xkt.service.IStoreProductColorSizeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
      * @return 档口商品颜色的尺码
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreProductColorSize selectStoreProductColorSizeByStoreProdColorSizeId(Long storeProdColorSizeId) {
         return storeProductColorSizeMapper.selectStoreProductColorSizeByStoreProdColorSizeId(storeProdColorSizeId);
     }
@@ -38,6 +40,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
      * @return 档口商品颜色的尺码
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreProductColorSize> selectStoreProductColorSizeList(StoreProductColorSize storeProductColorSize) {
         return storeProductColorSizeMapper.selectStoreProductColorSizeList(storeProductColorSize);
     }
@@ -49,6 +52,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductColorSize(StoreProductColorSize storeProductColorSize) {
         storeProductColorSize.setCreateTime(DateUtils.getNowDate());
         return storeProductColorSizeMapper.insertStoreProductColorSize(storeProductColorSize);

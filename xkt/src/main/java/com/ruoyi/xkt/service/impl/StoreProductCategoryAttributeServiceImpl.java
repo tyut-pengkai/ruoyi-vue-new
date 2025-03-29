@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductCategoryAttributeMapper;
 import com.ruoyi.xkt.service.IStoreProductCategoryAttributeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreProductCategoryAttributeServiceImpl implements IStoreProductCa
      * @return 档口商品类目信息
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreProductCategoryAttribute selectStoreProductCategoryAttributeByStoreProdAttrId(Long storeProdAttrId) {
         return storeProductCategoryAttributeMapper.selectStoreProductCategoryAttributeByStoreProdAttrId(storeProdAttrId);
     }
@@ -38,6 +40,7 @@ public class StoreProductCategoryAttributeServiceImpl implements IStoreProductCa
      * @return 档口商品类目信息
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreProductCategoryAttribute> selectStoreProductCategoryAttributeList(StoreProductCategoryAttribute storeProductCategoryAttribute) {
         return storeProductCategoryAttributeMapper.selectStoreProductCategoryAttributeList(storeProductCategoryAttribute);
     }
@@ -49,6 +52,7 @@ public class StoreProductCategoryAttributeServiceImpl implements IStoreProductCa
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductCategoryAttribute(StoreProductCategoryAttribute storeProductCategoryAttribute) {
         storeProductCategoryAttribute.setCreateTime(DateUtils.getNowDate());
         return storeProductCategoryAttributeMapper.insertStoreProductCategoryAttribute(storeProductCategoryAttribute);
@@ -61,6 +65,7 @@ public class StoreProductCategoryAttributeServiceImpl implements IStoreProductCa
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreProductCategoryAttribute(StoreProductCategoryAttribute storeProductCategoryAttribute) {
         storeProductCategoryAttribute.setUpdateTime(DateUtils.getNowDate());
         return storeProductCategoryAttributeMapper.updateStoreProductCategoryAttribute(storeProductCategoryAttribute);

@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreSaleRefundRecordMapper;
 import com.ruoyi.xkt.service.IStoreSaleRefundRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class StoreSaleRefundRecordServiceImpl implements IStoreSaleRefundRecordS
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreSaleRefundRecord(StoreSaleRefundRecord storeSaleRefundRecord) {
         storeSaleRefundRecord.setCreateTime(DateUtils.getNowDate());
         return storeSaleRefundRecordMapper.insertStoreSaleRefundRecord(storeSaleRefundRecord);
@@ -61,6 +63,7 @@ public class StoreSaleRefundRecordServiceImpl implements IStoreSaleRefundRecordS
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreSaleRefundRecord(StoreSaleRefundRecord storeSaleRefundRecord) {
         storeSaleRefundRecord.setUpdateTime(DateUtils.getNowDate());
         return storeSaleRefundRecordMapper.updateStoreSaleRefundRecord(storeSaleRefundRecord);

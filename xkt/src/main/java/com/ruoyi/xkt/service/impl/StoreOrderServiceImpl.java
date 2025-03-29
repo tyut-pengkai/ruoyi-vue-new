@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreOrderMapper;
 import com.ruoyi.xkt.service.IStoreOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreOrder(StoreOrder storeOrder) {
         storeOrder.setCreateTime(DateUtils.getNowDate());
         return storeOrderMapper.insertStoreOrder(storeOrder);
@@ -61,6 +63,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreOrder(StoreOrder storeOrder) {
         storeOrder.setUpdateTime(DateUtils.getNowDate());
         return storeOrderMapper.updateStoreOrder(storeOrder);

@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductStorageDemandDeducteMapper;
 import com.ruoyi.xkt.service.IStoreProductStorageDemandDeducteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
      * @return 档口商品入库抵扣需求
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreProductStorageDemandDeducte selectStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId(Long storeProdStorDemaDeducteId) {
         return storeProductStorageDemandDeducteMapper.selectStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId(storeProdStorDemaDeducteId);
     }
@@ -38,6 +40,7 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
      * @return 档口商品入库抵扣需求
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreProductStorageDemandDeducte> selectStoreProductStorageDemandDeducteList(StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
         return storeProductStorageDemandDeducteMapper.selectStoreProductStorageDemandDeducteList(storeProductStorageDemandDeducte);
     }
@@ -49,6 +52,7 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductStorageDemandDeducte(StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
         storeProductStorageDemandDeducte.setCreateTime(DateUtils.getNowDate());
         return storeProductStorageDemandDeducteMapper.insertStoreProductStorageDemandDeducte(storeProductStorageDemandDeducte);
@@ -61,6 +65,7 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreProductStorageDemandDeducte(StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
         storeProductStorageDemandDeducte.setUpdateTime(DateUtils.getNowDate());
         return storeProductStorageDemandDeducteMapper.updateStoreProductStorageDemandDeducte(storeProductStorageDemandDeducte);

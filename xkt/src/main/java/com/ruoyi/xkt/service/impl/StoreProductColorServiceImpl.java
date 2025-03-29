@@ -2,10 +2,13 @@ package com.ruoyi.xkt.service.impl;
 
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.StoreProductColor;
+import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorResDTO;
 import com.ruoyi.xkt.mapper.StoreProductColorMapper;
 import com.ruoyi.xkt.service.IStoreProductColorService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,9 +19,10 @@ import java.util.List;
  * @date 2025-03-26
  */
 @Service
+@RequiredArgsConstructor
 public class StoreProductColorServiceImpl implements IStoreProductColorService {
-    @Autowired
-    private StoreProductColorMapper storeProductColorMapper;
+
+    final StoreProductColorMapper storeProdColorMapper;
 
     /**
      * 查询档口当前商品颜色
@@ -27,8 +31,9 @@ public class StoreProductColorServiceImpl implements IStoreProductColorService {
      * @return 档口当前商品颜色
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreProductColor selectStoreProductColorByStoreProdColorId(Long storeProdColorId) {
-        return storeProductColorMapper.selectStoreProductColorByStoreProdColorId(storeProdColorId);
+        return storeProdColorMapper.selectStoreProductColorByStoreProdColorId(storeProdColorId);
     }
 
     /**
@@ -38,8 +43,9 @@ public class StoreProductColorServiceImpl implements IStoreProductColorService {
      * @return 档口当前商品颜色
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreProductColor> selectStoreProductColorList(StoreProductColor storeProductColor) {
-        return storeProductColorMapper.selectStoreProductColorList(storeProductColor);
+        return storeProdColorMapper.selectStoreProductColorList(storeProductColor);
     }
 
     /**
@@ -49,9 +55,10 @@ public class StoreProductColorServiceImpl implements IStoreProductColorService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductColor(StoreProductColor storeProductColor) {
         storeProductColor.setCreateTime(DateUtils.getNowDate());
-        return storeProductColorMapper.insertStoreProductColor(storeProductColor);
+        return storeProdColorMapper.insertStoreProductColor(storeProductColor);
     }
 
     /**
@@ -61,9 +68,10 @@ public class StoreProductColorServiceImpl implements IStoreProductColorService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreProductColor(StoreProductColor storeProductColor) {
         storeProductColor.setUpdateTime(DateUtils.getNowDate());
-        return storeProductColorMapper.updateStoreProductColor(storeProductColor);
+        return storeProdColorMapper.updateStoreProductColor(storeProductColor);
     }
 
     /**
@@ -73,8 +81,9 @@ public class StoreProductColorServiceImpl implements IStoreProductColorService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductColorByStoreProdColorIds(Long[] storeProdColorIds) {
-        return storeProductColorMapper.deleteStoreProductColorByStoreProdColorIds(storeProdColorIds);
+        return storeProdColorMapper.deleteStoreProductColorByStoreProdColorIds(storeProdColorIds);
     }
 
     /**
@@ -84,7 +93,21 @@ public class StoreProductColorServiceImpl implements IStoreProductColorService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductColorByStoreProdColorId(Long storeProdColorId) {
-        return storeProductColorMapper.deleteStoreProductColorByStoreProdColorId(storeProdColorId);
+        return storeProdColorMapper.deleteStoreProductColorByStoreProdColorId(storeProdColorId);
+    }
+
+    /**
+     * 根据商店ID和产品款式编号模糊查询颜色列表
+     *
+     * @param storeId    商店ID，用于限定查询范围
+     * @param prodArtNum 产品款式编号，用于模糊匹配产品
+     * @return 返回一个列表，包含匹配的产品颜色信息
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<StoreProdColorResDTO> fuzzyQueryColorList(Long storeId, String prodArtNum) {
+        return storeProdColorMapper.fuzzyQueryColorList(storeId, prodArtNum);
     }
 }

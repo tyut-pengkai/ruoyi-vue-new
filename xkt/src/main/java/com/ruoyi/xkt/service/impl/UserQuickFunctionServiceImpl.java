@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.UserQuickFunctionMapper;
 import com.ruoyi.xkt.service.IUserQuickFunctionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class UserQuickFunctionServiceImpl implements IUserQuickFunctionService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertUserQuickFunction(UserQuickFunction userQuickFunction) {
         userQuickFunction.setCreateTime(DateUtils.getNowDate());
         return userQuickFunctionMapper.insertUserQuickFunction(userQuickFunction);
@@ -61,6 +63,7 @@ public class UserQuickFunctionServiceImpl implements IUserQuickFunctionService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateUserQuickFunction(UserQuickFunction userQuickFunction) {
         userQuickFunction.setUpdateTime(DateUtils.getNowDate());
         return userQuickFunctionMapper.updateUserQuickFunction(userQuickFunction);

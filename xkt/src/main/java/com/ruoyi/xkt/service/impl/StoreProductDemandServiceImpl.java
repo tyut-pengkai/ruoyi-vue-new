@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreProductDemandMapper;
 import com.ruoyi.xkt.service.IStoreProductDemandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -61,6 +62,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreProductDemand(StoreProductDemand storeProductDemand) {
         storeProductDemand.setUpdateTime(DateUtils.getNowDate());
         return storeProductDemandMapper.updateStoreProductDemand(storeProductDemand);

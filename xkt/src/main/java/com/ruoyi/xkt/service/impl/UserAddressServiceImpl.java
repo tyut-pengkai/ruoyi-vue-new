@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.UserAddressMapper;
 import com.ruoyi.xkt.service.IUserAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class UserAddressServiceImpl implements IUserAddressService {
      * @return 用户收货地址
      */
     @Override
+    @Transactional(readOnly = true)
     public UserAddress selectUserAddressByUserAddrId(Long userAddrId) {
         return userAddressMapper.selectUserAddressByUserAddrId(userAddrId);
     }
@@ -38,6 +40,7 @@ public class UserAddressServiceImpl implements IUserAddressService {
      * @return 用户收货地址
      */
     @Override
+    @Transactional(readOnly = true)
     public List<UserAddress> selectUserAddressList(UserAddress userAddress) {
         return userAddressMapper.selectUserAddressList(userAddress);
     }
@@ -49,6 +52,7 @@ public class UserAddressServiceImpl implements IUserAddressService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertUserAddress(UserAddress userAddress) {
         userAddress.setCreateTime(DateUtils.getNowDate());
         return userAddressMapper.insertUserAddress(userAddress);
@@ -61,6 +65,7 @@ public class UserAddressServiceImpl implements IUserAddressService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateUserAddress(UserAddress userAddress) {
         userAddress.setUpdateTime(DateUtils.getNowDate());
         return userAddressMapper.updateUserAddress(userAddress);

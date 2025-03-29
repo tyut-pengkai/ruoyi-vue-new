@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.UserSubscriptionsMapper;
 import com.ruoyi.xkt.service.IUserSubscriptionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertUserSubscriptions(UserSubscriptions userSubscriptions) {
         userSubscriptions.setCreateTime(DateUtils.getNowDate());
         return userSubscriptionsMapper.insertUserSubscriptions(userSubscriptions);
@@ -61,6 +63,7 @@ public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateUserSubscriptions(UserSubscriptions userSubscriptions) {
         userSubscriptions.setUpdateTime(DateUtils.getNowDate());
         return userSubscriptionsMapper.updateUserSubscriptions(userSubscriptions);

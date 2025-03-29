@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.PictureSearchMapper;
 import com.ruoyi.xkt.service.IPictureSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
      * @return 以图搜款
      */
     @Override
+    @Transactional(readOnly = true)
     public PictureSearch selectPictureSearchByPicSearchId(Long picSearchId) {
         return pictureSearchMapper.selectPictureSearchByPicSearchId(picSearchId);
     }
@@ -38,6 +40,7 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
      * @return 以图搜款
      */
     @Override
+    @Transactional(readOnly = true)
     public List<PictureSearch> selectPictureSearchList(PictureSearch pictureSearch) {
         return pictureSearchMapper.selectPictureSearchList(pictureSearch);
     }
@@ -49,6 +52,7 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertPictureSearch(PictureSearch pictureSearch) {
         pictureSearch.setCreateTime(DateUtils.getNowDate());
         return pictureSearchMapper.insertPictureSearch(pictureSearch);
@@ -61,6 +65,7 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updatePictureSearch(PictureSearch pictureSearch) {
         pictureSearch.setUpdateTime(DateUtils.getNowDate());
         return pictureSearchMapper.updatePictureSearch(pictureSearch);
@@ -73,6 +78,7 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deletePictureSearchByPicSearchIds(Long[] picSearchIds) {
         return pictureSearchMapper.deletePictureSearchByPicSearchIds(picSearchIds);
     }
@@ -84,6 +90,7 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deletePictureSearchByPicSearchId(Long picSearchId) {
         return pictureSearchMapper.deletePictureSearchByPicSearchId(picSearchId);
     }

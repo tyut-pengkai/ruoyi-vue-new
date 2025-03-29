@@ -71,4 +71,13 @@ public interface IStoreProductService {
      * @return 结果
      */
     public int deleteStoreProductByStoreProdId(Long storeProdId);
+
+    /**
+     * 根据档口ID和商品货号模糊查询货号列表
+     * @param storeId 档口ID
+     * @param prodArtNum 商品货号
+     * @return List<String>
+     */
+    List<String> fuzzyQueryList(Long storeId, String prodArtNum);
+
 }

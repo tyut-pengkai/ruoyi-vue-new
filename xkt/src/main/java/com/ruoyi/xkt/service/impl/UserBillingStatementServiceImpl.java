@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.UserBillingStatementMapper;
 import com.ruoyi.xkt.service.IUserBillingStatementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class UserBillingStatementServiceImpl implements IUserBillingStatementSer
      * @return 用户对账明细
      */
     @Override
+    @Transactional(readOnly = true)
     public UserBillingStatement selectUserBillingStatementByUserBillStatId(Long userBillStatId) {
         return userBillingStatementMapper.selectUserBillingStatementByUserBillStatId(userBillStatId);
     }
@@ -49,6 +51,7 @@ public class UserBillingStatementServiceImpl implements IUserBillingStatementSer
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertUserBillingStatement(UserBillingStatement userBillingStatement) {
         userBillingStatement.setCreateTime(DateUtils.getNowDate());
         return userBillingStatementMapper.insertUserBillingStatement(userBillingStatement);
@@ -61,6 +64,7 @@ public class UserBillingStatementServiceImpl implements IUserBillingStatementSer
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateUserBillingStatement(UserBillingStatement userBillingStatement) {
         userBillingStatement.setUpdateTime(DateUtils.getNowDate());
         return userBillingStatementMapper.updateUserBillingStatement(userBillingStatement);

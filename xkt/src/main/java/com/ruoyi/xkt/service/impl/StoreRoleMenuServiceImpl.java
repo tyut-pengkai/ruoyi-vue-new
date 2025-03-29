@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreRoleMenuMapper;
 import com.ruoyi.xkt.service.IStoreRoleMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class StoreRoleMenuServiceImpl implements IStoreRoleMenuService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreRoleMenu(StoreRoleMenu storeRoleMenu) {
         storeRoleMenu.setCreateTime(DateUtils.getNowDate());
         return storeRoleMenuMapper.insertStoreRoleMenu(storeRoleMenu);
@@ -61,6 +63,7 @@ public class StoreRoleMenuServiceImpl implements IStoreRoleMenuService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreRoleMenu(StoreRoleMenu storeRoleMenu) {
         storeRoleMenu.setUpdateTime(DateUtils.getNowDate());
         return storeRoleMenuMapper.updateStoreRoleMenu(storeRoleMenu);

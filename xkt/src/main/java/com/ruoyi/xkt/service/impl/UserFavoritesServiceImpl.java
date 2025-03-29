@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.UserFavoritesMapper;
 import com.ruoyi.xkt.service.IUserFavoritesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
      * @return 用户收藏商品
      */
     @Override
+    @Transactional(readOnly = true)
     public UserFavorites selectUserFavoritesByUserFavoId(Long userFavoId) {
         return userFavoritesMapper.selectUserFavoritesByUserFavoId(userFavoId);
     }
@@ -38,6 +40,7 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
      * @return 用户收藏商品
      */
     @Override
+    @Transactional(readOnly = true)
     public List<UserFavorites> selectUserFavoritesList(UserFavorites userFavorites) {
         return userFavoritesMapper.selectUserFavoritesList(userFavorites);
     }
@@ -49,6 +52,7 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertUserFavorites(UserFavorites userFavorites) {
         userFavorites.setCreateTime(DateUtils.getNowDate());
         return userFavoritesMapper.insertUserFavorites(userFavorites);
@@ -61,6 +65,7 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateUserFavorites(UserFavorites userFavorites) {
         userFavorites.setUpdateTime(DateUtils.getNowDate());
         return userFavoritesMapper.updateUserFavorites(userFavorites);

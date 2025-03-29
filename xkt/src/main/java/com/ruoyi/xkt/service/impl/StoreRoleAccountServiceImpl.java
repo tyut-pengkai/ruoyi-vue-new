@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.StoreRoleAccountMapper;
 import com.ruoyi.xkt.service.IStoreRoleAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class StoreRoleAccountServiceImpl implements IStoreRoleAccountService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreRoleAccount(StoreRoleAccount storeRoleAccount) {
         storeRoleAccount.setCreateTime(DateUtils.getNowDate());
         return storeRoleAccountMapper.insertStoreRoleAccount(storeRoleAccount);
@@ -61,6 +63,7 @@ public class StoreRoleAccountServiceImpl implements IStoreRoleAccountService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStoreRoleAccount(StoreRoleAccount storeRoleAccount) {
         storeRoleAccount.setUpdateTime(DateUtils.getNowDate());
         return storeRoleAccountMapper.updateStoreRoleAccount(storeRoleAccount);

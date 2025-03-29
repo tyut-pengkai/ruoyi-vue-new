@@ -128,5 +128,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="prodCateId != null "> and sp.prod_cate_id = #{prodCateId}</if>
     </select>
 
+    <select id="fuzzyQueryColorList"  resultType="com.ruoyi.xkt.dto.storeProdColor.StoreProdColorResDTO">
+        SELECT DISTINCT
+            sp.store_id AS storeId,
+            spc.store_color_id AS storeColorId,
+            sp.prod_art_num AS prodArtNum,
+            spc.color_name AS colorName,
+            spc.order_num AS orderNum
+        FROM
+            store_product_color spc
+            LEFT JOIN store_product sp ON spc.store_prod_id = sp.store_prod_id
+        WHERE
+            spc.del_flag = 0
+            AND spc.store_id = #{storeId}
+            <if test="prodArtNum != null  and prodArtNum != ''"> and sp.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
+    </select>
+
 
 </mapper>

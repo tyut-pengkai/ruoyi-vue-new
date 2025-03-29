@@ -6,6 +6,7 @@ import com.ruoyi.xkt.mapper.UserNoticeMapper;
 import com.ruoyi.xkt.service.IUserNoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class UserNoticeServiceImpl implements IUserNoticeService {
      * @return 用户所有通知
      */
     @Override
+    @Transactional(readOnly = true)
     public UserNotice selectUserNoticeByUserNoticeId(Long userNoticeId) {
         return userNoticeMapper.selectUserNoticeByUserNoticeId(userNoticeId);
     }
@@ -38,6 +40,7 @@ public class UserNoticeServiceImpl implements IUserNoticeService {
      * @return 用户所有通知
      */
     @Override
+    @Transactional(readOnly = true)
     public List<UserNotice> selectUserNoticeList(UserNotice userNotice) {
         return userNoticeMapper.selectUserNoticeList(userNotice);
     }
@@ -49,6 +52,7 @@ public class UserNoticeServiceImpl implements IUserNoticeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertUserNotice(UserNotice userNotice) {
         userNotice.setCreateTime(DateUtils.getNowDate());
         return userNoticeMapper.insertUserNotice(userNotice);
