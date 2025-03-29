@@ -19,8 +19,8 @@ import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusDTO;
 import com.ruoyi.xkt.service.IStoreProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -36,22 +36,20 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/v1/prods")
+@RequiredArgsConstructor
 @Api(tags = "档口商品")
 public class StoreProductController extends XktBaseController {
-    @Autowired
-    private IStoreProductService storeProductService;
+
+    final IStoreProductService storeProductService;
 
     /**
      * 查询档口商品列表
      */
     @PreAuthorize("@ss.hasPermi('system:product:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(StoreProdPageVO pageVO) {
+    @PostMapping("/page")
+    public TableDataInfo page(@Validated @RequestBody StoreProdPageVO pageVO) {
         startPage();
         List<StoreProdPageResDTO> list = storeProductService.selectPage(ObjectUtils.isEmpty(pageVO) ? null : BeanUtil.toBean(pageVO, StoreProdPageDTO.class));
-        // TODO 处理返回的VO
-        // TODO 处理返回的VO
-        // TODO 处理返回的VO
         return getDataTable(list);
     }
 
@@ -91,7 +89,7 @@ public class StoreProductController extends XktBaseController {
      * 修改档口商品
      */
     @PreAuthorize("@ss.hasPermi('system:product:edit')")
-    @ApiOperation(value = "修改档口商品", httpMethod = "POST", response = R.class)
+    @ApiOperation(value = "修改档口商品", httpMethod = "PUT", response = R.class)
     @Log(title = "档口商品", businessType = BusinessType.UPDATE)
     @PutMapping("/{storeProdId}")
     public R edit(@PathVariable Long storeProdId, @Validated @RequestBody StoreProdVO storeProdVO) {
@@ -102,7 +100,8 @@ public class StoreProductController extends XktBaseController {
      * 修改档口商品状态
      */
     @PreAuthorize("@ss.hasPermi('system:product:edit')")
-    @Log(title = "档口商品", businessType = BusinessType.UPDATE)
+    @Log(title = "修改档口商品状态", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "修改档口商品状态", httpMethod = "PUT", response = R.class)
     @PutMapping("/prod-status")
     public R editProdStatus(@Validated @RequestBody StoreProdStatusVO prodStatusVO) {
         storeProductService.updateStoreProductStatus(BeanUtil.toBean(prodStatusVO, StoreProdStatusDTO.class));

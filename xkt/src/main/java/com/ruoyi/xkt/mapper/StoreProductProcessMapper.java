@@ -59,4 +59,8 @@ public interface StoreProductProcessMapper extends BaseMapper<StoreProductProces
      * @return 结果
      */
     public int deleteStoreProductProcessByStoreProdProcessIds(Long[] storeProdProcessIds);
+
+    void updateDelFlagByStoreProdId(Long storeProdId);
+
+    StoreProductProcess selectByStoreProdId(Long storeProdId);
 }

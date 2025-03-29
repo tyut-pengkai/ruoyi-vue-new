@@ -6,6 +6,7 @@ import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceDTO;
 import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdColorSizeDTO;
 import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
+import com.ruoyi.xkt.dto.storeProdProcess.StoreProdProcessDTO;
 import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
 import io.swagger.annotations.ApiModel;
@@ -69,5 +70,7 @@ public class StoreProdDTO {
     private StoreProdSvcDTO svc;
     @ApiModelProperty(name = "详情内容")
     private StoreProdDetailDTO detail;
+    @ApiModelProperty(name = "档口生产工艺")
+    private StoreProdProcessDTO process;
 
 }

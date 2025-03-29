@@ -3,6 +3,7 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductFile;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 
@@ -68,9 +69,7 @@ public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
 
     List<StoreProdFileResDTO> selectListByStoreProdId(Long storeProdId);
 
-    // 指定 Map 的 key 字段
-    @MapKey("storeProdId")
-    Map<Long, String> selectMainPicByStoreProdIdList(@Param("storeProdIdList") List<Long> storeProdIdList,
-                                                     @Param("fileType") String fileType,
-                                                     @Param("orderNum") Integer orderNum);
+    List<StoreProdMainPicDTO> selectMainPicByStoreProdIdList(@Param("storeProdIdList") List<Long> storeProdIdList,
+                                                             @Param("fileType") String fileType,
+                                                             @Param("orderNum") Integer orderNum);
 }

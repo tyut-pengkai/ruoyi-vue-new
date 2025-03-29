@@ -19,14 +19,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="shoeAccessories"    column="shoe_accessories"    />
         <result property="toeCap"    column="toe_cap"    />
         <result property="edgeBinding"    column="edge_binding"    />
-        <result property="mid-outsole"    column="mid-outsole"    />
-        <result property="platform-sole"    column="platform-sole"    />
-        <result property="midsole-factory-code"    column="midsole-factory-code"    />
-        <result property="outsole-factory-code"    column="outsole-factory-code"    />
-        <result property="heel-factory-code"    column="heel-factory-code"    />
+        <result property="midOutsole"    column="mid_outsole"    />
+        <result property="platformSole"    column="platform_sole"    />
+        <result property="midsoleFactoryCode"    column="midsole_factory_code"    />
+        <result property="outsoleFactoryCode"    column="outsole_factory_code"    />
+        <result property="heelFactoryCode"    column="heel_factory_code"    />
         <result property="components"    column="components"    />
-        <result property="second-sole-material"    column="second-sole-material"    />
-        <result property="second-upper-material"    column="second-upper-material"    />
+        <result property="secondSoleMaterial"    column="second_sole_material"    />
+        <result property="secondUpperMaterial"    column="second_upper_material"    />
         <result property="customAttr"    column="custom_attr"    />
         <result property="version"    column="version"    />
         <result property="delFlag"    column="del_flag"    />
@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreProductProcessVo">
-        select store_prod_process_id, store_prod_id, shoe_type, shoe_size, main_skin, main_skin_usage, match_skin, match_skin_usage, neckline, insole, fastener, shoe_accessories, toe_cap, edge_binding, mid-outsole, platform-sole, midsole-factory-code, outsole-factory-code, heel-factory-code, components, second-sole-material, second-upper-material, custom_attr, version, del_flag, create_by, create_time, update_by, update_time from store_product_process
+        select store_prod_process_id, store_prod_id, shoe_type, shoe_size, main_skin, main_skin_usage, match_skin, match_skin_usage, neckline, insole, fastener, shoe_accessories, toe_cap, edge_binding, mid_outsole, platform_sole, midsole_factory_code, outsole_factory_code, heel_factory_code, components, second_sole_material, second_upper_material, custom_attr, version, del_flag, create_by, create_time, update_by, update_time from store_product_process
     </sql>
 
     <select id="selectStoreProductProcessList" parameterType="StoreProductProcess" resultMap="StoreProductProcessResult">
@@ -56,14 +56,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="shoeAccessories != null  and shoeAccessories != ''"> and shoe_accessories = #{shoeAccessories}</if>
             <if test="toeCap != null  and toeCap != ''"> and toe_cap = #{toeCap}</if>
             <if test="edgeBinding != null  and edgeBinding != ''"> and edge_binding = #{edgeBinding}</if>
-            <if test="mid-outsole != null  and mid-outsole != ''"> and mid-outsole = #{mid-outsole}</if>
-            <if test="platform-sole != null  and platform-sole != ''"> and platform-sole = #{platform-sole}</if>
-            <if test="midsole-factory-code != null  and midsole-factory-code != ''"> and midsole-factory-code = #{midsole-factory-code}</if>
-            <if test="outsole-factory-code != null  and outsole-factory-code != ''"> and outsole-factory-code = #{outsole-factory-code}</if>
-            <if test="heel-factory-code != null  and heel-factory-code != ''"> and heel-factory-code = #{heel-factory-code}</if>
+            <if test="mid_outsole != null  and mid_outsole != ''"> and mid_outsole = #{mid_outsole}</if>
+            <if test="platform_sole != null  and platform_sole != ''"> and platform_sole = #{platform_sole}</if>
+            <if test="midsole_factory_code != null  and midsole_factory_code != ''"> and midsole_factory_code = #{midsole_factory_code}</if>
+            <if test="outsole_factory_code != null  and outsole_factory_code != ''"> and outsole_factory_code = #{outsole_factory_code}</if>
+            <if test="heel_factory_code != null  and heel_factory_code != ''"> and heel_factory_code = #{heel_factory_code}</if>
             <if test="components != null  and components != ''"> and components = #{components}</if>
-            <if test="second-sole-material != null  and second-sole-material != ''"> and second-sole-material = #{second-sole-material}</if>
-            <if test="second-upper-material != null  and second-upper-material != ''"> and second-upper-material = #{second-upper-material}</if>
+            <if test="second_sole_material != null  and second_sole_material != ''"> and second_sole_material = #{second_sole_material}</if>
+            <if test="second_upper_material != null  and second_upper_material != ''"> and second_upper_material = #{second_upper_material}</if>
             <if test="customAttr != null  and customAttr != ''"> and custom_attr = #{customAttr}</if>
             <if test="version != null "> and version = #{version}</if>
         </where>
@@ -90,14 +90,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="shoeAccessories != null">shoe_accessories,</if>
             <if test="toeCap != null">toe_cap,</if>
             <if test="edgeBinding != null">edge_binding,</if>
-            <if test="mid-outsole != null">mid-outsole,</if>
-            <if test="platform-sole != null">platform-sole,</if>
-            <if test="midsole-factory-code != null">midsole-factory-code,</if>
-            <if test="outsole-factory-code != null">outsole-factory-code,</if>
-            <if test="heel-factory-code != null">heel-factory-code,</if>
+            <if test="mid_outsole != null">mid_outsole,</if>
+            <if test="platform_sole != null">platform_sole,</if>
+            <if test="midsole_factory_code != null">midsole_factory_code,</if>
+            <if test="outsole_factory_code != null">outsole_factory_code,</if>
+            <if test="heel_factory_code != null">heel_factory_code,</if>
             <if test="components != null">components,</if>
-            <if test="second-sole-material != null">second-sole-material,</if>
-            <if test="second-upper-material != null">second-upper-material,</if>
+            <if test="second_sole_material != null">second_sole_material,</if>
+            <if test="second_upper_material != null">second_upper_material,</if>
             <if test="customAttr != null">custom_attr,</if>
             <if test="version != null">version,</if>
             <if test="delFlag != null">del_flag,</if>
@@ -120,14 +120,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="shoeAccessories != null">#{shoeAccessories},</if>
             <if test="toeCap != null">#{toeCap},</if>
             <if test="edgeBinding != null">#{edgeBinding},</if>
-            <if test="mid-outsole != null">#{mid-outsole},</if>
-            <if test="platform-sole != null">#{platform-sole},</if>
-            <if test="midsole-factory-code != null">#{midsole-factory-code},</if>
-            <if test="outsole-factory-code != null">#{outsole-factory-code},</if>
-            <if test="heel-factory-code != null">#{heel-factory-code},</if>
+            <if test="mid_outsole != null">#{mid_outsole},</if>
+            <if test="platform_sole != null">#{platform_sole},</if>
+            <if test="midsole_factory_code != null">#{midsole_factory_code},</if>
+            <if test="outsole_factory_code != null">#{outsole_factory_code},</if>
+            <if test="heel_factory_code != null">#{heel_factory_code},</if>
             <if test="components != null">#{components},</if>
-            <if test="second-sole-material != null">#{second-sole-material},</if>
-            <if test="second-upper-material != null">#{second-upper-material},</if>
+            <if test="second_sole_material != null">#{second_sole_material},</if>
+            <if test="second_upper_material != null">#{second_upper_material},</if>
             <if test="customAttr != null">#{customAttr},</if>
             <if test="version != null">#{version},</if>
             <if test="delFlag != null">#{delFlag},</if>
@@ -154,14 +154,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="shoeAccessories != null">shoe_accessories = #{shoeAccessories},</if>
             <if test="toeCap != null">toe_cap = #{toeCap},</if>
             <if test="edgeBinding != null">edge_binding = #{edgeBinding},</if>
-            <if test="mid-outsole != null">mid-outsole = #{mid-outsole},</if>
-            <if test="platform-sole != null">platform-sole = #{platform-sole},</if>
-            <if test="midsole-factory-code != null">midsole-factory-code = #{midsole-factory-code},</if>
-            <if test="outsole-factory-code != null">outsole-factory-code = #{outsole-factory-code},</if>
-            <if test="heel-factory-code != null">heel-factory-code = #{heel-factory-code},</if>
+            <if test="mid_outsole != null">mid_outsole = #{mid_outsole},</if>
+            <if test="platform_sole != null">platform_sole = #{platform_sole},</if>
+            <if test="midsole_factory_code != null">midsole_factory_code = #{midsole_factory_code},</if>
+            <if test="outsole_factory_code != null">outsole_factory_code = #{outsole_factory_code},</if>
+            <if test="heel_factory_code != null">heel_factory_code = #{heel_factory_code},</if>
             <if test="components != null">components = #{components},</if>
-            <if test="second-sole-material != null">second-sole-material = #{second-sole-material},</if>
-            <if test="second-upper-material != null">second-upper-material = #{second-upper-material},</if>
+            <if test="second_sole_material != null">second_sole_material = #{second_sole_material},</if>
+            <if test="second_upper_material != null">second_upper_material = #{second_upper_material},</if>
             <if test="customAttr != null">custom_attr = #{customAttr},</if>
             <if test="version != null">version = #{version},</if>
             <if test="delFlag != null">del_flag = #{delFlag},</if>
@@ -183,4 +183,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{storeProdProcessId}
         </foreach>
     </delete>
+
+    <update id="updateDelFlagByStoreProdId" parameterType="Long">
+        UPDATE store_product_process SET del_flag = 2 WHERE store_prod_id = #{storeProdId}
+    </update>
+
+    <select id="selectByStoreProdId" parameterType="Long" resultMap="StoreProductProcessResult">
+        <include refid="selectStoreProductProcessVo"/>
+        WHERE
+            del_flag = 0 AND store_prod_id = #{storeProdId}
+    </select>
+
 </mapper>

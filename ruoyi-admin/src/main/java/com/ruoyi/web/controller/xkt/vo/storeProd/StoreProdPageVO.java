@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -17,5 +19,8 @@ public class StoreProdPageVO {
     private String prodArtNum;
     @ApiModelProperty(name = "商品分类ID")
     private Long prodCateId;
+    @ApiModelProperty(name = "档口ID")
+    @NotNull(message = "档口ID不能为空")
+    private Long storeId;
 
 }

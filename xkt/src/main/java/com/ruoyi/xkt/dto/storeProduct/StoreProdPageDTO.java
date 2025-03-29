@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -17,5 +19,7 @@ public class StoreProdPageDTO {
     private String prodArtNum;
     @ApiModelProperty(name = "商品分类ID")
     private Long prodCateId;
+    @ApiModelProperty(name = "档口ID")
+    private Long storeId;
 
 }

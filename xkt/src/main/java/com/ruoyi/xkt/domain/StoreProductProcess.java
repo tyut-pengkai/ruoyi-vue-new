@@ -5,6 +5,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * 档口商品工艺信息对象 store_product_process
@@ -14,6 +15,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreProductProcess extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -129,7 +131,7 @@ public class StoreProductProcess extends XktBaseEntity {
      * 跟厂编码
      */
     @Excel(name = "跟厂编码")
-    private String heelfactorycode;
+    private String heelFactoryCode;
 
     /**
      * 配料

@@ -2,10 +2,11 @@ package com.ruoyi.xkt.dto.storeProduct;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.xkt.dto.storeColor.StoreColorDTO;
-import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
+import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceDTO;
 import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
+import com.ruoyi.xkt.dto.storeProdProcess.StoreProdProcessDTO;
 import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import io.swagger.annotations.ApiModel;
@@ -66,5 +67,7 @@ public class StoreProdResDTO {
     private StoreProdSvcDTO svc;
     @ApiModelProperty(name = "详情内容")
     private StoreProdDetailDTO detail;
+    @ApiModelProperty(name = "档口生产工艺信息")
+    private StoreProdProcessDTO process;
 
 }

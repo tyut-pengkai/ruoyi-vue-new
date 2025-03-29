@@ -3,6 +3,8 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductColor;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO;
 
 import java.util.List;
 
@@ -64,5 +66,7 @@ public interface StoreProductColorMapper extends BaseMapper<StoreProductColor> {
     void updateDelFlagByStoreProdId(Long storeProdId);
 
     List<StoreProdColorDTO> selectListByStoreProdId(Long storeProdId);
+
+    List<StoreProdPageResDTO> selectStoreProdColorPage(StoreProdPageDTO pageDTO);
 
 }

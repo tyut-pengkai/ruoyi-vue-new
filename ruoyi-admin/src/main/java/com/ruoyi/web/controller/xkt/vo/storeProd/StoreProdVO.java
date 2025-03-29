@@ -7,6 +7,7 @@ import com.ruoyi.web.controller.xkt.vo.storeProdCateAttr.StoreProdCateAttrVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdColorPrice.StoreProdColorPriceVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdColorSize.StoreProdColorSizeVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdDetail.StoreProdDetailVO;
+import com.ruoyi.web.controller.xkt.vo.storeProdProcess.StoreProdProcessVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdSvc.StoreProdSvcVO;
 import com.ruoyi.web.controller.xkt.vo.storeProductFile.StoreProdFileVO;
 import io.swagger.annotations.ApiModel;
@@ -92,5 +93,7 @@ public class StoreProdVO {
     @Valid
     @ApiModelProperty(name = "详情内容")
     private StoreProdDetailVO detail;
+    @ApiModelProperty(name = "档口生产工艺")
+    private StoreProdProcessVO process;
 
 }

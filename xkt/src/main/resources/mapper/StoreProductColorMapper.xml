@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="storeProdColorId"    column="store_prod_color_id"    />
         <result property="storeColorId"    column="store_color_id"    />
         <result property="storeProdId"    column="store_prod_id"    />
+        <result property="storeId"    column="store_id"    />
         <result property="colorName"    column="color_name"    />
         <result property="version"    column="version"    />
         <result property="delFlag"    column="del_flag"    />
@@ -18,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreProductColorVo">
-        select store_prod_color_id, store_color_id, store_prod_id, color_name, version, del_flag, create_by, create_time, update_by, update_time from store_product_color
+        select store_prod_color_id, store_color_id, store_prod_id, store_id, color_name, version, del_flag, create_by, create_time, update_by, update_time from store_product_color
     </sql>
 
     <select id="selectStoreProductColorList" parameterType="StoreProductColor" resultMap="StoreProductColorResult">
@@ -103,6 +104,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             store_product_color
         WHERE
             del_flag = 0 AND store_prod_id = #{storeProdId}
+    </select>
+
+    <select id="selectStoreProdColorPage" parameterType="com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO" resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO">
+        SELECT
+            spc.store_prod_id AS storeProdId,
+            spc.store_id AS storeId,
+            sp.prod_art_num AS prodArtNum,
+            spc.color_name AS colorName,
+            sp.prod_cate_id AS prodCateId,
+            spcp.price,
+            sp.prod_status AS prodStatus,
+            spc.create_time AS createTime
+        FROM
+            store_product_color spc
+            LEFT JOIN store_product sp ON spc.store_prod_id = sp.store_prod_id
+            LEFT JOIN store_product_color_price spcp ON spc.store_color_id = spcp.store_color_id
+            AND spc.store_prod_id = spcp.store_prod_id
+            AND spc.store_color_id = spcp.store_color_id
+        WHERE
+            spc.store_id = #{storeId}
+        <if test="prodArtNum != null  and prodArtNum != ''"> and sp.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
+        <if test="prodCateId != null "> and sp.prod_cate_id = #{prodCateId}</if>
     </select>
 
 

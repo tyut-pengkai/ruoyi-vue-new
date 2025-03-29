@@ -21,6 +21,8 @@ public class StoreProdPageResDTO {
 
     @ApiModelProperty(name = "档口商品ID")
     private Long storeProdId;
+    @ApiModelProperty(name = "档口ID")
+    private Long storeId;
     @ApiModelProperty(name = "档口商品主图url")
     private String mainPicUrl;
     @ApiModelProperty(name = "商品货号")

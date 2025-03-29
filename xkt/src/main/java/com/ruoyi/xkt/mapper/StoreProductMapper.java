@@ -62,5 +62,5 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      */
     public int deleteStoreProductByStoreProdIds(Long[] storeProdIds);
 
-    List<StoreProdPageResDTO> selectStoreProdPage(StoreProdPageDTO pageDTO);
+
 }

@@ -6,6 +6,7 @@ import com.ruoyi.web.controller.xkt.vo.storePordColor.StoreProdColorVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdCateAttr.StoreProdCateAttrVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdColorPrice.StoreProdColorPriceVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdDetail.StoreProdDetailVO;
+import com.ruoyi.web.controller.xkt.vo.storeProdProcess.StoreProdProcessVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdSvc.StoreProdSvcVO;
 import com.ruoyi.web.controller.xkt.vo.storeProductFile.StoreProdFileResVO;
 import com.ruoyi.web.controller.xkt.vo.storeProductFile.StoreProdFileVO;
@@ -70,5 +71,7 @@ public class StoreProdResVO {
     private StoreProdSvcVO svc;
     @ApiModelProperty(name = "详情内容")
     private StoreProdDetailVO detail;
+    @ApiModelProperty(name = "档口商品生产工艺")
+    private StoreProdProcessVO process;
 
 }
