@@ -7,9 +7,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="StoreQuickFunction" id="StoreQuickFunctionResult">
         <result property="id"    column="id"    />
         <result property="storeId"    column="store_id"    />
-        <result property="funcName"    column="func_name"    />
-        <result property="funcIcon"    column="func_icon"    />
-        <result property="funcUrl"    column="func_url"    />
+        <result property="menuName"    column="menu_name"    />
+        <result property="icon"    column="icon"    />
+        <result property="path"    column="path"    />
         <result property="orderNum"    column="order_num"    />
         <result property="version"    column="version"    />
         <result property="delFlag"    column="del_flag"    />
@@ -20,16 +20,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreQuickFunctionVo">
-        select id, store_id, func_name, func_icon, func_url, order_num, version, del_flag, create_by, create_time, update_by, update_time from store_quick_function
+        select id, store_id, menu_name, icon, path, order_num, version, del_flag, create_by, create_time, update_by, update_time from store_quick_function
     </sql>
 
     <select id="selectStoreQuickFunctionList" parameterType="StoreQuickFunction" resultMap="StoreQuickFunctionResult">
         <include refid="selectStoreQuickFunctionVo"/>
         <where>  
             <if test="storeId != null "> and store_id = #{storeId}</if>
-            <if test="funcName != null  and funcName != ''"> and func_name like concat('%', #{funcName}, '%')</if>
-            <if test="funcIcon != null  and funcIcon != ''"> and func_icon = #{funcIcon}</if>
-            <if test="funcUrl != null  and funcUrl != ''"> and func_url = #{funcUrl}</if>
+            <if test="menuName != null  and menuName != ''"> and menu_name like concat('%', #{menuName}, '%')</if>
+            <if test="icon != null  and icon != ''"> and icon = #{icon}</if>
+            <if test="path != null  and path != ''"> and path = #{path}</if>
             <if test="orderNum != null "> and order_num = #{orderNum}</if>
             <if test="version != null "> and version = #{version}</if>
         </where>
@@ -44,9 +44,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         insert into store_quick_function
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="storeId != null">store_id,</if>
-            <if test="funcName != null">func_name,</if>
-            <if test="funcIcon != null">func_icon,</if>
-            <if test="funcUrl != null">func_url,</if>
+            <if test="menuName != null">menu_name,</if>
+            <if test="icon != null">icon,</if>
+            <if test="path != null">path,</if>
             <if test="orderNum != null">order_num,</if>
             <if test="version != null">version,</if>
             <if test="delFlag != null">del_flag,</if>
@@ -57,9 +57,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="storeId != null">#{storeId},</if>
-            <if test="funcName != null">#{funcName},</if>
-            <if test="funcIcon != null">#{funcIcon},</if>
-            <if test="funcUrl != null">#{funcUrl},</if>
+            <if test="menuName != null">#{menuName},</if>
+            <if test="icon != null">#{icon},</if>
+            <if test="path != null">#{path},</if>
             <if test="orderNum != null">#{orderNum},</if>
             <if test="version != null">#{version},</if>
             <if test="delFlag != null">#{delFlag},</if>
@@ -74,9 +74,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update store_quick_function
         <trim prefix="SET" suffixOverrides=",">
             <if test="storeId != null">store_id = #{storeId},</if>
-            <if test="funcName != null">func_name = #{funcName},</if>
-            <if test="funcIcon != null">func_icon = #{funcIcon},</if>
-            <if test="funcUrl != null">func_url = #{funcUrl},</if>
+            <if test="menuName != null">menu_name = #{menuName},</if>
+            <if test="icon != null">icon = #{icon},</if>
+            <if test="path != null">path = #{path},</if>
             <if test="orderNum != null">order_num = #{orderNum},</if>
             <if test="version != null">version = #{version},</if>
             <if test="delFlag != null">del_flag = #{delFlag},</if>
@@ -98,4 +98,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <update id="updateDelFlagByStoreId" parameterType="Long">
+        UPDATE store_quick_function SET del_flag = 2 WHERE store_id = #{storeId}
+    </update>
+
+
 </mapper>

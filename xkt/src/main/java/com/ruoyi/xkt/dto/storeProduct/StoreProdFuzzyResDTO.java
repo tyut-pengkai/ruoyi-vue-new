@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.util.List;
@@ -26,10 +27,11 @@ public class StoreProdFuzzyResDTO {
     @ApiModelProperty(name = "商品货号")
     private String prodArtNum;
     @ApiModelProperty("商品下颜色列表")
-    private List<StoreProdFuzzyColorResVO> colorList;
+    private List<StoreProdFuzzyColorResDTO> colorList;
 
     @Data
-    public static class StoreProdFuzzyColorResVO {
+    @RequiredArgsConstructor
+    public static class StoreProdFuzzyColorResDTO {
         @ApiModelProperty("档口颜色ID")
         private Long storeColorId;
         @ApiModelProperty("颜色名称")

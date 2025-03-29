@@ -5,6 +5,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -35,19 +36,19 @@ public class StoreQuickFunction extends XktBaseEntity {
      * 快捷功能名称
      */
     @Excel(name = "快捷功能名称")
-    private String funcName;
+    private String menuName;
 
     /**
      * 快捷功能图标
      */
     @Excel(name = "快捷功能图标")
-    private String funcIcon;
+    private String icon;
 
     /**
      * 快捷功能路径
      */
     @Excel(name = "快捷功能路径")
-    private String funcUrl;
+    private String path;
 
     /**
      * 排序
@@ -61,9 +62,9 @@ public class StoreQuickFunction extends XktBaseEntity {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId())
                 .append("storeId", getStoreId())
-                .append("funcName", getFuncName())
-                .append("funcIcon", getFuncIcon())
-                .append("funcUrl", getFuncUrl())
+                .append("menuName", getMenuName())
+                .append("icon", getIcon())
+                .append("path", getPath())
                 .append("orderNum", getOrderNum())
                 .append("version", getVersion())
                 .append("delFlag", getDelFlag())

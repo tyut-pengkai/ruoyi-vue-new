@@ -15,7 +15,6 @@ import com.ruoyi.xkt.dto.storeProdProcess.StoreProdProcessDTO;
 import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;
 import com.ruoyi.xkt.dto.storeProduct.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
-import com.ruoyi.xkt.dto.storeProductFile.StoreProdFilePicSpaceResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.mapper.*;
@@ -300,17 +299,42 @@ public class StoreProductServiceImpl implements IStoreProductService {
      * @param prodArtNum 商品货号
      * @return List<String>
      */
+    /**
+     * 根据商店ID和产品货号模糊查询产品列表
+     *
+     * @param storeId 商店ID，用于查询特定商店的产品
+     * @param prodArtNum 产品货号，用于模糊匹配产品
+     * @return 返回一个包含模糊查询结果的列表，每个元素包含产品信息和颜色信息
+     */
     @Override
     @Transactional(readOnly = true)
     public List<StoreProdFuzzyResDTO> fuzzyQueryList(Long storeId, String prodArtNum) {
-       /* LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>()
+        // 初始化查询条件，确保查询的是指定商店且未删除的产品
+        LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, "0");
+        // 如果产品货号非空，添加模糊查询条件
         if (StringUtils.isNotBlank(prodArtNum)) {
             queryWrapper.like(StoreProduct::getProdArtNum, prodArtNum);
         }
+        // 执行查询，获取产品列表
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(queryWrapper);
-        return CollectionUtils.isEmpty(storeProdList) ? new ArrayList<>()
-                : storeProdList.stream().map(StoreProduct::getProdArtNum).distinct().collect(Collectors.toList());*/
-        return null;
+        // 如果查询结果为空，直接返回空列表
+        if (CollectionUtils.isEmpty(storeProdList)) {
+            return new ArrayList<>();
+        }
+        // 提取查询结果中的产品ID列表
+        List<Long> storeProdIdList = storeProdList.stream().map(StoreProduct::getId).distinct().collect(Collectors.toList());
+        // 查询与产品ID列表关联的颜色信息
+        List<StoreProductColor> colorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
+                .in(StoreProductColor::getStoreProdId, storeProdIdList).eq(StoreProductColor::getDelFlag, "0"));
+        // 将颜色信息按产品ID分组，并转换为所需的颜色DTO列表
+        Map<Long, List<StoreProdFuzzyResDTO.StoreProdFuzzyColorResDTO>> colorMap = CollectionUtils.isEmpty(colorList) ? new HashMap<>()
+                : colorList.stream().collect(Collectors.groupingBy(StoreProductColor::getStoreProdId, Collectors
+                .collectingAndThen(Collectors.toList(), list -> list.stream().map(y -> BeanUtil.toBean(y, StoreProdFuzzyResDTO.StoreProdFuzzyColorResDTO.class))
+                        .collect(Collectors.toList()))));
+        // 将产品列表转换为所需的产品DTO列表，并关联颜色信息
+        return storeProdList.stream().map(x -> BeanUtil.toBean(x, StoreProdFuzzyResDTO.class).setStoreProdId(x.getId())
+                .setColorList(colorMap.getOrDefault(x.getId(), new ArrayList<>()))).collect(Collectors.toList());
     }
+
 }

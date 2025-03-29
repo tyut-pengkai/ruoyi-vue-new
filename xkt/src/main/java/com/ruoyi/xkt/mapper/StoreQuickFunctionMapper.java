@@ -59,4 +59,7 @@ public interface StoreQuickFunctionMapper extends BaseMapper<StoreQuickFunction>
      * @return 结果
      */
     public int deleteStoreQuickFunctionByStoreQuickFuncIds(Long[] storeQuickFuncIds);
+
+    void updateDelFlagByStoreId(Long storeId);
+
 }

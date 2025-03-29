@@ -5,6 +5,7 @@ import java.util.Set;
 import com.ruoyi.common.core.domain.TreeSelect;
 import com.ruoyi.common.core.domain.entity.SysMenu;
 import com.ruoyi.system.domain.vo.RouterVo;
+import com.ruoyi.system.domain.vo.menu.SysMenuDTO;
 
 /**
  * 菜单 业务层
@@ -20,6 +21,14 @@ public interface ISysMenuService
      * @return 菜单列表
      */
     public List<SysMenu> selectMenuList(Long userId);
+
+    /**
+     * 根据角色获取菜单列表
+     * @param roleId 角色ID
+     * @param menuType 菜单类型
+     * @return List<SysMenuDTO>
+     */
+    public List<SysMenuDTO> selectMenuListByRoleIdAndMenuType(Long roleId, String menuType);
 
     /**
      * 根据用户查询系统菜单列表

@@ -203,4 +203,20 @@
 	    delete from sys_menu where menu_id = #{menuId}
 	</delete>
 
-</mapper> 
+	<select id="selectMenuListByRoleIdAndMenuType" resultType="com.ruoyi.system.domain.vo.menu.SysMenuDTO">
+		SELECT
+			sm.menu_name AS menuName,
+			sm.path ,
+			sm.component ,
+			sm.icon ,
+		    sm.order_num AS orderNum
+		FROM
+			sys_role_menu srm
+				LEFT JOIN sys_menu sm ON srm.menu_id = sm.menu_id
+		WHERE
+			sm.`status` = 0
+		  AND sm.menu_type = #{menuType}
+		  AND srm.role_id = #{roleId}
+	</select>
+
+</mapper>

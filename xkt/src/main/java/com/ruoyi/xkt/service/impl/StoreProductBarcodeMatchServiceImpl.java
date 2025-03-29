@@ -77,6 +77,7 @@ public class StoreProductBarcodeMatchServiceImpl implements IStoreProductBarcode
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductBarcodeMatchByStoreProdBarcodeMatchIds(Long[] storeProdBarcodeMatchIds) {
         return storeProductBarcodeMatchMapper.deleteStoreProductBarcodeMatchByStoreProdBarcodeMatchIds(storeProdBarcodeMatchIds);
     }
@@ -88,12 +89,18 @@ public class StoreProductBarcodeMatchServiceImpl implements IStoreProductBarcode
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductBarcodeMatchByStoreProdBarcodeMatchId(Long storeProdBarcodeMatchId) {
         return storeProductBarcodeMatchMapper.deleteStoreProductBarcodeMatchByStoreProdBarcodeMatchId(storeProdBarcodeMatchId);
     }
 
     @Override
+    @Transactional
     public int updateBarcodeMatch(BarcodeMatchDTO barcodeMatchDTO) {
+        // 找到当前商品颜色所有的尺码，并转换为map
+
+        // 如果已经扫码过一次了，则更新，如果没有扫码过，则插入
+
         return 0;
     }
 }

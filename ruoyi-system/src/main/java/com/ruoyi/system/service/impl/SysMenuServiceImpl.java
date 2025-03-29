@@ -8,6 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import cn.hutool.core.bean.BeanUtil;
+import com.ruoyi.system.domain.vo.menu.SysMenuDTO;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.common.constant.Constants;
@@ -43,6 +47,19 @@ public class SysMenuServiceImpl implements ISysMenuService
 
     @Autowired
     private SysRoleMenuMapper roleMenuMapper;
+
+    /**
+     * 根据角色获取菜单列表
+     *
+     * @param roleId   角色ID
+     * @param menuType 菜单类型
+     * @return List<SysMenuDTO>
+     */
+    @Override
+    public List<SysMenuDTO> selectMenuListByRoleIdAndMenuType(Long roleId, String menuType) {
+        return this.menuMapper.selectMenuListByRoleIdAndMenuType(roleId, menuType);
+    }
+
 
     /**
      * 根据用户查询系统菜单列表

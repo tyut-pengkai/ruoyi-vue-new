@@ -2,6 +2,8 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProduct;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdFuzzyResDTO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
