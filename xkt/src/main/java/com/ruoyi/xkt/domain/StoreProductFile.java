@@ -36,6 +36,12 @@ public class StoreProductFile extends XktBaseEntity {
     private Long storeProdId;
 
     /**
+     * 档口ID
+     */
+    @Excel(name = "档口ID")
+    private Long storeId;
+
+    /**
      * 系统文件ID
      */
     @Excel(name = "系统文件ID")

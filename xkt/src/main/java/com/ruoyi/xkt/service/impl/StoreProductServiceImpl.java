@@ -15,6 +15,7 @@ import com.ruoyi.xkt.dto.storeProdProcess.StoreProdProcessDTO;
 import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;
 import com.ruoyi.xkt.dto.storeProduct.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdFilePicSpaceResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.mapper.*;
@@ -49,7 +50,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final SysFileMapper fileMapper;
     final StoreProductColorSizeMapper storeProdColorSizeMapper;
     final StoreProductProcessMapper storeProdProcMapper;
-
+    final StoreMapper storeMapper;
 
     /**
      * 查询档口商品
@@ -91,6 +92,16 @@ public class StoreProductServiceImpl implements IStoreProductService {
         return storeProdResDTO;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public StoreProdPicSpaceResDTO getStoreProductPicSpace(Long storeId) {
+        Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
+                        .eq(Store::getStoreId, storeId).eq(Store::getDelFlag, "0")))
+                .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        return StoreProdPicSpaceResDTO.builder().storeId(storeId).storeName(store.getStoreName())
+                .fileList(this.storeProdFileMapper.selectPicSpaceList(storeId, "DOWNLOAD")).build();
+    }
+
     /**
      * 查询档口商品列表
      *
@@ -98,6 +109,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
      * @return 档口商品
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreProduct> selectStoreProductList(StoreProduct storeProduct) {
         return storeProdMapper.selectStoreProductList(storeProduct);
     }
@@ -109,6 +121,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
      * @return 商店产品分页响应DTO列表
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreProdPageResDTO> selectPage(StoreProdPageDTO pageDTO) {
         // 调用Mapper方法查询商店产品分页信息
         List<StoreProdPageResDTO> page = storeProdColorMapper.selectStoreProdColorPage(pageDTO);
@@ -241,6 +254,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
      * @throws ServiceException 如果档口商品不存在，则抛出此异常
      */
     @Override
+    @Transactional
     public void updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO) {
         // 根据商品ID列表查询数据库中的商品信息
         List<StoreProduct> storeProdList = this.storeProdMapper.selectByIds(prodStatusDTO.getStoreProdIdList());

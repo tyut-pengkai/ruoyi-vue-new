@@ -7,10 +7,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdPageVO;
-import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdResVO;
-import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdStatusVO;
-import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdVO;
+import com.ruoyi.web.controller.xkt.vo.storeProd.*;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
@@ -46,6 +43,7 @@ public class StoreProductController extends XktBaseController {
      * 查询档口商品列表
      */
     @PreAuthorize("@ss.hasPermi('system:product:list')")
+    @ApiOperation(value = "查询档口商品列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public TableDataInfo page(@Validated @RequestBody StoreProdPageVO pageVO) {
         startPage();
@@ -69,6 +67,7 @@ public class StoreProductController extends XktBaseController {
      * 获取档口商品详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:product:query')")
+    @ApiOperation(value = "获取档口商品详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeProdId}")
     public R getInfo(@PathVariable("storeProdId") Long storeProdId) {
         return success(BeanUtil.toBean(storeProductService.selectStoreProductByStoreProdId(storeProdId), StoreProdResVO.class));
@@ -106,6 +105,16 @@ public class StoreProductController extends XktBaseController {
     public R editProdStatus(@Validated @RequestBody StoreProdStatusVO prodStatusVO) {
         storeProductService.updateStoreProductStatus(BeanUtil.toBean(prodStatusVO, StoreProdStatusDTO.class));
         return success();
+    }
+
+    /**
+     * 获取档口图片空间
+     */
+    @PreAuthorize("@ss.hasPermi('system:product:query')")
+    @ApiOperation(value = "获取档口图片空间", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/pic-space/{storeId}")
+    public R getStoreProductPicSpace(@PathVariable("storeId") Long storeId) {
+        return success(BeanUtil.toBean(storeProductService.getStoreProductPicSpace(storeId), StoreProdPicSpaceResVO.class));
     }
 
 

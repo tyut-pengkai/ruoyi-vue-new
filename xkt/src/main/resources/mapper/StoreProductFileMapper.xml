@@ -7,6 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="StoreProductFile" id="StoreProductFileResult">
         <result property="storeProdFileId"    column="store_prod_file_id"    />
         <result property="storeProdId"    column="store_prod_id"    />
+        <result property="storeId"    column="store_id"    />
         <result property="fileId"    column="file_id"    />
         <result property="fileType"    column="file_type"    />
         <result property="fileSize"    column="file_size"    />
@@ -20,7 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreProductFileVo">
-        select store_prod_file_id, store_prod_id, file_id, file_type, file_size, order_num, version, del_flag, create_by, create_time, update_by, update_time from store_product_file
+        select store_prod_file_id, store_prod_id, store_id, file_id, file_type, file_size, order_num, version, del_flag, create_by, create_time, update_by, update_time from store_product_file
     </sql>
 
     <select id="selectStoreProductFileList" parameterType="StoreProductFile" resultMap="StoreProductFileResult">
@@ -151,6 +152,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           AND spf.file_type = #{fileType}
           AND spf.order_num = #{orderNum}
     </select>
+
+<!--    <select id="selectPicSpaceList" resultType="com.ruoyi.xkt.dto.storeProductFile.StoreProdFilePicSpaceResDTO">-->
+    <select id="selectPicSpaceList" >
+        SELECT
+            sp.prod_art_num AS prodArtNum,
+            sp.store_prod_id AS storeProdId,
+            sf.file_url AS fileUrl
+        FROM
+            store_product_file spf
+                LEFT JOIN sys_file sf ON spf.file_id = sf.file_id
+                LEFT JOIN store_product sp ON spf.store_prod_id = sp.store_prod_id
+        WHERE
+            spf.del_flag = 0
+            AND spf.file_type = #{fileType}
+            AND spf.store_id = #{storeId}
+    </select>
+
+
 
 
 

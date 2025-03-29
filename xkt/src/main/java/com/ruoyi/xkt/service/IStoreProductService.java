@@ -21,6 +21,13 @@ public interface IStoreProductService {
     public StoreProdResDTO selectStoreProductByStoreProdId(Long storeProdId);
 
     /**
+     * 获取档口图片空间
+     * @param storeId 档口ID
+     * @return StoreProdPicSpaceResDTO
+     */
+    public StoreProdPicSpaceResDTO getStoreProductPicSpace(Long storeId);
+
+    /**
      * 查询档口商品列表
      *
      * @param storeProduct 档口商品
