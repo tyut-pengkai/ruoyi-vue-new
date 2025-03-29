@@ -25,7 +25,7 @@ public class SysFile extends XktBaseEntity {
      * 系统文件ID
      */
     @TableId
-    private Long fileId;
+    private Long id;
 
     /**
      * 文件名称
@@ -49,7 +49,7 @@ public class SysFile extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("fileId", getFileId())
+                .append("id", getId())
                 .append("fileName", getFileName())
                 .append("fileUrl", getFileUrl())
                 .append("fileSize", getFileSize())

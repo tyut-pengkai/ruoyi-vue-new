@@ -15,10 +15,10 @@ public interface StoreMapper extends BaseMapper<Store> {
     /**
      * 查询档口
      *
-     * @param storeId 档口主键
+     * @param id 档口主键
      * @return 档口
      */
-    public Store selectStoreByStoreId(Long storeId);
+    public Store selectStoreByStoreId(Long id);
 
     /**
      * 查询档口列表
@@ -47,10 +47,10 @@ public interface StoreMapper extends BaseMapper<Store> {
     /**
      * 删除档口
      *
-     * @param storeId 档口主键
+     * @param id 档口主键
      * @return 结果
      */
-    public int deleteStoreByStoreId(Long storeId);
+    public int deleteStoreByStoreId(Long id);
 
     /**
      * 批量删除档口

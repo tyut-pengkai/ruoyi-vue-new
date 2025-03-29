@@ -15,10 +15,10 @@ public interface StoreProductDetailMapper extends BaseMapper<StoreProductDetail>
     /**
      * 查询档口商品详情内容
      *
-     * @param storeProdDetailId 档口商品详情内容主键
+     * @param id 档口商品详情内容主键
      * @return 档口商品详情内容
      */
-    public StoreProductDetail selectStoreProductDetailByStoreProdDetailId(Long storeProdDetailId);
+    public StoreProductDetail selectStoreProductDetailByStoreProdDetailId(Long id);
 
     /**
      * 查询档口商品详情内容列表
@@ -47,10 +47,10 @@ public interface StoreProductDetailMapper extends BaseMapper<StoreProductDetail>
     /**
      * 删除档口商品详情内容
      *
-     * @param storeProdDetailId 档口商品详情内容主键
+     * @param id 档口商品详情内容主键
      * @return 结果
      */
-    public int deleteStoreProductDetailByStoreProdDetailId(Long storeProdDetailId);
+    public int deleteStoreProductDetailByStoreProdDetailId(Long id);
 
     /**
      * 批量删除档口商品详情内容

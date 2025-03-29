@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreOrderExpressMapper">
     
     <resultMap type="StoreOrderExpress" id="StoreOrderExpressResult">
-        <result property="storeOrderExprId"    column="store_order_expr_id"    />
+        <result property="id"    column="id"    />
         <result property="storeOrderDetailId"    column="store_order_detail_id"    />
         <result property="storeOrderId"    column="store_order_id"    />
         <result property="storeId"    column="store_id"    />
@@ -23,7 +23,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreOrderExpressVo">
-        select store_order_expr_id, store_order_detail_id, store_order_id, store_id, delivery_type, express_id, express_fee, tracking_num, expr_status, version, del_flag, create_by, create_time, update_by, update_time from store_order_express
+        select id, store_order_detail_id, store_order_id, store_id, delivery_type, express_id, express_fee, tracking_num, expr_status, version, del_flag, create_by, create_time, update_by, update_time from store_order_express
     </sql>
 
     <select id="selectStoreOrderExpressList" parameterType="StoreOrderExpress" resultMap="StoreOrderExpressResult">
@@ -43,7 +43,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreOrderExpressByStoreOrderExprId" parameterType="Long" resultMap="StoreOrderExpressResult">
         <include refid="selectStoreOrderExpressVo"/>
-        where store_order_expr_id = #{storeOrderExprId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreOrderExpress" parameterType="StoreOrderExpress" useGeneratedKeys="true" keyProperty="storeOrderExprId">
@@ -100,17 +100,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_order_expr_id = #{storeOrderExprId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreOrderExpressByStoreOrderExprId" parameterType="Long">
-        delete from store_order_express where store_order_expr_id = #{storeOrderExprId}
+        delete from store_order_express where id = #{id}
     </delete>
 
     <delete id="deleteStoreOrderExpressByStoreOrderExprIds" parameterType="String">
-        delete from store_order_express where store_order_expr_id in 
-        <foreach item="storeOrderExprId" collection="array" open="(" separator="," close=")">
-            #{storeOrderExprId}
+        delete from store_order_express where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

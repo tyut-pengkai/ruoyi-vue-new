@@ -12,6 +12,7 @@ import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -24,6 +25,7 @@ import java.util.List;
  */
 @ApiModel("创建档口商品")
 @Data
+@Accessors(chain = true)
 public class StoreProdResDTO {
 
     @ApiModelProperty("档口商品ID")

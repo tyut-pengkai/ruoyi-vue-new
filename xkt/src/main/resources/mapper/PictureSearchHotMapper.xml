@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.PictureSearchHotMapper">
     
     <resultMap type="PictureSearchHot" id="PictureSearchHotResult">
-        <result property="picSearchHotId"    column="pic_search_hot_id"    />
+        <result property="id"    column="id"    />
         <result property="storeProdFileId"    column="store_prod_file_id"    />
         <result property="fileId"    column="file_id"    />
         <result property="storeId"    column="store_id"    />
@@ -19,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectPictureSearchHotVo">
-        select pic_search_hot_id, store_prod_file_id, file_id, store_id, search_count, version, del_flag, create_by, create_time, update_by, update_time from picture_search_hot
+        select id, store_prod_file_id, file_id, store_id, search_count, version, del_flag, create_by, create_time, update_by, update_time from picture_search_hot
     </sql>
 
     <select id="selectPictureSearchHotList" parameterType="PictureSearchHot" resultMap="PictureSearchHotResult">
@@ -35,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectPictureSearchHotByPicSearchHotId" parameterType="Long" resultMap="PictureSearchHotResult">
         <include refid="selectPictureSearchHotVo"/>
-        where pic_search_hot_id = #{picSearchHotId}
+        where id = #{id}
     </select>
 
     <insert id="insertPictureSearchHot" parameterType="PictureSearchHot" useGeneratedKeys="true" keyProperty="picSearchHotId">
@@ -80,17 +80,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where pic_search_hot_id = #{picSearchHotId}
+        where id = #{id}
     </update>
 
     <delete id="deletePictureSearchHotByPicSearchHotId" parameterType="Long">
-        delete from picture_search_hot where pic_search_hot_id = #{picSearchHotId}
+        delete from picture_search_hot where id = #{id}
     </delete>
 
     <delete id="deletePictureSearchHotByPicSearchHotIds" parameterType="String">
-        delete from picture_search_hot where pic_search_hot_id in 
-        <foreach item="picSearchHotId" collection="array" open="(" separator="," close=")">
-            #{picSearchHotId}
+        delete from picture_search_hot where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

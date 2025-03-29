@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreProductStorageDetailMapper">
     
     <resultMap type="StoreProductStorageDetail" id="StoreProductStorageDetailResult">
-        <result property="storeProdStorDetailId"    column="store_prod_stor_detail_id"    />
+        <result property="id"    column="id"    />
         <result property="storeProdStorId"    column="store_prod_stor_id"    />
         <result property="storeProdColorId"    column="store_prod_color_id"    />
         <result property="storeProdId"    column="store_prod_id"    />
@@ -35,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreProductStorageDetailVo">
-        select store_prod_stor_detail_id, store_prod_stor_id, store_prod_color_id, store_prod_id, size_30, size_31, size_32, size_33, size_34, size_35, size_36, size_37, size_38, size_39, size_40, size_41, size_42, size_43, total_num, produce_price, total_produce_price, version, del_flag, create_by, create_time, update_by, update_time from store_product_storage_detail
+        select id, store_prod_stor_id, store_prod_color_id, store_prod_id, size_30, size_31, size_32, size_33, size_34, size_35, size_36, size_37, size_38, size_39, size_40, size_41, size_42, size_43, total_num, produce_price, total_produce_price, version, del_flag, create_by, create_time, update_by, update_time from store_product_storage_detail
     </sql>
 
     <select id="selectStoreProductStorageDetailList" parameterType="StoreProductStorageDetail" resultMap="StoreProductStorageDetailResult">
@@ -67,7 +67,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreProductStorageDetailByStoreProdStorDetailId" parameterType="Long" resultMap="StoreProductStorageDetailResult">
         <include refid="selectStoreProductStorageDetailVo"/>
-        where store_prod_stor_detail_id = #{storeProdStorDetailId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreProductStorageDetail" parameterType="StoreProductStorageDetail" useGeneratedKeys="true" keyProperty="storeProdStorDetailId">
@@ -160,17 +160,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_prod_stor_detail_id = #{storeProdStorDetailId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreProductStorageDetailByStoreProdStorDetailId" parameterType="Long">
-        delete from store_product_storage_detail where store_prod_stor_detail_id = #{storeProdStorDetailId}
+        delete from store_product_storage_detail where id = #{id}
     </delete>
 
     <delete id="deleteStoreProductStorageDetailByStoreProdStorDetailIds" parameterType="String">
-        delete from store_product_storage_detail where store_prod_stor_detail_id in 
-        <foreach item="storeProdStorDetailId" collection="array" open="(" separator="," close=")">
-            #{storeProdStorDetailId}
+        delete from store_product_storage_detail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

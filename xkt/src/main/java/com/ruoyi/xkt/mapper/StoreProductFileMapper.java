@@ -19,10 +19,10 @@ public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
     /**
      * 查询档口商品文件
      *
-     * @param storeProdFileId 档口商品文件主键
+     * @param id 档口商品文件主键
      * @return 档口商品文件
      */
-    public StoreProductFile selectStoreProductFileByStoreProdFileId(Long storeProdFileId);
+    public StoreProductFile selectStoreProductFileByStoreProdFileId(Long id);
 
     /**
      * 查询档口商品文件列表
@@ -51,10 +51,10 @@ public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
     /**
      * 删除档口商品文件
      *
-     * @param storeProdFileId 档口商品文件主键
+     * @param id 档口商品文件主键
      * @return 结果
      */
-    public int deleteStoreProductFileByStoreProdFileId(Long storeProdFileId);
+    public int deleteStoreProductFileByStoreProdFileId(Long id);
 
     /**
      * 批量删除档口商品文件

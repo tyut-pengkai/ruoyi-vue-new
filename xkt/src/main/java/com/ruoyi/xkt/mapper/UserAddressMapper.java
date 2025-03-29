@@ -15,10 +15,10 @@ public interface UserAddressMapper extends BaseMapper<UserAddress> {
     /**
      * 查询用户收货地址
      *
-     * @param userAddrId 用户收货地址主键
+     * @param id 用户收货地址主键
      * @return 用户收货地址
      */
-    public UserAddress selectUserAddressByUserAddrId(Long userAddrId);
+    public UserAddress selectUserAddressByUserAddrId(Long id);
 
     /**
      * 查询用户收货地址列表
@@ -47,10 +47,10 @@ public interface UserAddressMapper extends BaseMapper<UserAddress> {
     /**
      * 删除用户收货地址
      *
-     * @param userAddrId 用户收货地址主键
+     * @param id 用户收货地址主键
      * @return 结果
      */
-    public int deleteUserAddressByUserAddrId(Long userAddrId);
+    public int deleteUserAddressByUserAddrId(Long id);
 
     /**
      * 批量删除用户收货地址

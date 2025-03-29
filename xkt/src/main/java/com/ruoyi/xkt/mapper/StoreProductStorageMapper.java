@@ -15,10 +15,10 @@ public interface StoreProductStorageMapper extends BaseMapper<StoreProductStorag
     /**
      * 查询档口商品入库
      *
-     * @param storeProdStorId 档口商品入库主键
+     * @param id 档口商品入库主键
      * @return 档口商品入库
      */
-    public StoreProductStorage selectStoreProductStorageByStoreProdStorId(Long storeProdStorId);
+    public StoreProductStorage selectStoreProductStorageByStoreProdStorId(Long id);
 
     /**
      * 查询档口商品入库列表
@@ -47,10 +47,10 @@ public interface StoreProductStorageMapper extends BaseMapper<StoreProductStorag
     /**
      * 删除档口商品入库
      *
-     * @param storeProdStorId 档口商品入库主键
+     * @param id 档口商品入库主键
      * @return 结果
      */
-    public int deleteStoreProductStorageByStoreProdStorId(Long storeProdStorId);
+    public int deleteStoreProductStorageByStoreProdStorId(Long id);
 
     /**
      * 批量删除档口商品入库

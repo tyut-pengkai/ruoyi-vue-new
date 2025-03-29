@@ -15,10 +15,10 @@ public interface StoreProductProcessMapper extends BaseMapper<StoreProductProces
     /**
      * 查询档口商品工艺信息
      *
-     * @param storeProdProcessId 档口商品工艺信息主键
+     * @param id 档口商品工艺信息主键
      * @return 档口商品工艺信息
      */
-    public StoreProductProcess selectStoreProductProcessByStoreProdProcessId(Long storeProdProcessId);
+    public StoreProductProcess selectStoreProductProcessByStoreProdProcessId(Long id);
 
     /**
      * 查询档口商品工艺信息列表
@@ -47,10 +47,10 @@ public interface StoreProductProcessMapper extends BaseMapper<StoreProductProces
     /**
      * 删除档口商品工艺信息
      *
-     * @param storeProdProcessId 档口商品工艺信息主键
+     * @param id 档口商品工艺信息主键
      * @return 结果
      */
-    public int deleteStoreProductProcessByStoreProdProcessId(Long storeProdProcessId);
+    public int deleteStoreProductProcessByStoreProdProcessId(Long id);
 
     /**
      * 批量删除档口商品工艺信息

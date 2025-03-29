@@ -23,7 +23,7 @@ public class StoreQuickFunction extends XktBaseEntity {
      * 档口快捷功能ID
      */
     @TableId
-    private Long storeQuickFuncId;
+    private Long id;
 
     /**
      * store.id
@@ -59,7 +59,7 @@ public class StoreQuickFunction extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeQuickFuncId", getStoreQuickFuncId())
+                .append("id", getId())
                 .append("storeId", getStoreId())
                 .append("funcName", getFuncName())
                 .append("funcIcon", getFuncIcon())

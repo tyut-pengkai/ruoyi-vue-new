@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreOrderReceiveMapper">
     
     <resultMap type="StoreOrderReceive" id="StoreOrderReceiveResult">
-        <result property="storeOrderRcvId"    column="store_order_rcv_id"    />
+        <result property="id"    column="id"    />
         <result property="storeOrderId"    column="store_order_id"    />
         <result property="sysUserAddressId"    column="sys_user_address_id"    />
         <result property="receiveName"    column="receive_name"    />
@@ -24,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreOrderReceiveVo">
-        select store_order_rcv_id, store_order_id, sys_user_address_id, receive_name, receive_phone, province_code, city_id, district_code, detail_address, remark, version, del_flag, create_by, create_time, update_by, update_time from store_order_receive
+        select id, store_order_id, sys_user_address_id, receive_name, receive_phone, province_code, city_id, district_code, detail_address, remark, version, del_flag, create_by, create_time, update_by, update_time from store_order_receive
     </sql>
 
     <select id="selectStoreOrderReceiveList" parameterType="StoreOrderReceive" resultMap="StoreOrderReceiveResult">
@@ -44,7 +44,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreOrderReceiveByStoreOrderRcvId" parameterType="Long" resultMap="StoreOrderReceiveResult">
         <include refid="selectStoreOrderReceiveVo"/>
-        where store_order_rcv_id = #{storeOrderRcvId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreOrderReceive" parameterType="StoreOrderReceive" useGeneratedKeys="true" keyProperty="storeOrderRcvId">
@@ -104,17 +104,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_order_rcv_id = #{storeOrderRcvId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreOrderReceiveByStoreOrderRcvId" parameterType="Long">
-        delete from store_order_receive where store_order_rcv_id = #{storeOrderRcvId}
+        delete from store_order_receive where id = #{id}
     </delete>
 
     <delete id="deleteStoreOrderReceiveByStoreOrderRcvIds" parameterType="String">
-        delete from store_order_receive where store_order_rcv_id in 
-        <foreach item="storeOrderRcvId" collection="array" open="(" separator="," close=")">
-            #{storeOrderRcvId}
+        delete from store_order_receive where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

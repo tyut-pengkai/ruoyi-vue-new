@@ -16,10 +16,10 @@ public interface StoreColorMapper extends BaseMapper<StoreColor> {
     /**
      * 查询档口所有颜色
      *
-     * @param storeColorId 档口所有颜色主键
+     * @param id 档口所有颜色主键
      * @return 档口所有颜色
      */
-    public StoreColor selectStoreColorByStoreColorId(Long storeColorId);
+    public StoreColor selectStoreColorByStoreColorId(Long id);
 
     /**
      * 查询档口所有颜色列表
@@ -48,10 +48,10 @@ public interface StoreColorMapper extends BaseMapper<StoreColor> {
     /**
      * 删除档口所有颜色
      *
-     * @param storeColorId 档口所有颜色主键
+     * @param id 档口所有颜色主键
      * @return 结果
      */
-    public int deleteStoreColorByStoreColorId(Long storeColorId);
+    public int deleteStoreColorByStoreColorId(Long id);
 
     /**
      * 批量删除档口所有颜色

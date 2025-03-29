@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreSaleDetailMapper">
     
     <resultMap type="StoreSaleDetail" id="StoreSaleDetailResult">
-        <result property="storeSaleDetailId"    column="store_sale_detail_id"    />
+        <result property="id"    column="id"    />
         <result property="storeSaleId"    column="store_sale_id"    />
         <result property="storeProdId"    column="store_prod_id"    />
         <result property="storeProdColorSizeId"    column="store_prod_color_size_id"    />
@@ -24,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreSaleDetailVo">
-        select store_sale_detail_id, store_sale_id, store_prod_id, store_prod_color_size_id, sale_type, price, discounted_price, quantity, amount, other_discount, version, del_flag, create_by, create_time, update_by, update_time from store_sale_detail
+        select id, store_sale_id, store_prod_id, store_prod_color_size_id, sale_type, price, discounted_price, quantity, amount, other_discount, version, del_flag, create_by, create_time, update_by, update_time from store_sale_detail
     </sql>
 
     <select id="selectStoreSaleDetailList" parameterType="StoreSaleDetail" resultMap="StoreSaleDetailResult">
@@ -45,7 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreSaleDetailByStoreSaleDetailId" parameterType="Long" resultMap="StoreSaleDetailResult">
         <include refid="selectStoreSaleDetailVo"/>
-        where store_sale_detail_id = #{storeSaleDetailId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreSaleDetail" parameterType="StoreSaleDetail" useGeneratedKeys="true" keyProperty="storeSaleDetailId">
@@ -105,17 +105,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_sale_detail_id = #{storeSaleDetailId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreSaleDetailByStoreSaleDetailId" parameterType="Long">
-        delete from store_sale_detail where store_sale_detail_id = #{storeSaleDetailId}
+        delete from store_sale_detail where id = #{id}
     </delete>
 
     <delete id="deleteStoreSaleDetailByStoreSaleDetailIds" parameterType="String">
-        delete from store_sale_detail where store_sale_detail_id in 
-        <foreach item="storeSaleDetailId" collection="array" open="(" separator="," close=")">
-            #{storeSaleDetailId}
+        delete from store_sale_detail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

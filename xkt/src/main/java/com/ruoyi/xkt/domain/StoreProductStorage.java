@@ -25,7 +25,7 @@ public class StoreProductStorage extends XktBaseEntity {
      * 档口商品入库ID
      */
     @TableId
-    private Long storeProdStorId;
+    private Long id;
 
     /**
      * 入库CODE
@@ -61,7 +61,7 @@ public class StoreProductStorage extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeProdStorId", getStoreProdStorId())
+                .append("id", getId())
                 .append("code", getCode())
                 .append("storageType", getStorageType())
                 .append("totalNum", getTotalNum())

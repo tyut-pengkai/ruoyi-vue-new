@@ -23,7 +23,7 @@ public class UserNoticeSetting extends XktBaseEntity {
      * 用户设置是否接收通知ID
      */
     @TableId
-    private Long userNoticeSetId;
+    private Long id;
 
     /**
      * sys_user.id
@@ -47,7 +47,7 @@ public class UserNoticeSetting extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userNoticeSetId", getUserNoticeSetId())
+                .append("id", getId())
                 .append("userId", getUserId())
                 .append("noticeType", getNoticeType())
                 .append("allow", getAllow())

@@ -25,7 +25,7 @@ public class StoreOrderExpress extends XktBaseEntity {
      * 代发订单明细快递信息ID
      */
     @TableId
-    private Long storeOrderExprId;
+    private Long id;
 
     /**
      * 档口代发订单明细ID
@@ -79,7 +79,7 @@ public class StoreOrderExpress extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeOrderExprId", getStoreOrderExprId())
+                .append("id", getId())
                 .append("storeOrderDetailId", getStoreOrderDetailId())
                 .append("storeOrderId", getStoreOrderId())
                 .append("storeId", getStoreId())

@@ -23,7 +23,7 @@ public class StoreCustomer extends XktBaseEntity {
      * 档口客户ID
      */
     @TableId
-    private Long storeCusId;
+    private Long id;
 
     /**
      * 档口ID
@@ -47,7 +47,7 @@ public class StoreCustomer extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeCusId", getStoreCusId())
+                .append("id", getId())
                 .append("storeId", getStoreId())
                 .append("cusName", getCusName())
                 .append("phone", getPhone())

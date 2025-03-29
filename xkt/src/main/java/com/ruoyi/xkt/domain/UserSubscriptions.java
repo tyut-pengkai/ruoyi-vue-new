@@ -23,7 +23,7 @@ public class UserSubscriptions extends XktBaseEntity {
      * 用户关注ID
      */
     @TableId
-    private Long userSubsId;
+    private Long id;
 
     /**
      * sys_user.id
@@ -41,7 +41,7 @@ public class UserSubscriptions extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userSubsId", getUserSubsId())
+                .append("id", getId())
                 .append("userId", getUserId())
                 .append("storeId", getStoreId())
                 .append("version", getVersion())

@@ -16,10 +16,10 @@ public interface StoreProductCategoryAttributeMapper extends BaseMapper<StorePro
     /**
      * 查询档口商品类目信息
      *
-     * @param storeProdAttrId 档口商品类目信息主键
+     * @param id 档口商品类目信息主键
      * @return 档口商品类目信息
      */
-    public StoreProductCategoryAttribute selectStoreProductCategoryAttributeByStoreProdAttrId(Long storeProdAttrId);
+    public StoreProductCategoryAttribute selectStoreProductCategoryAttributeByStoreProdAttrId(Long id);
 
     /**
      * 查询档口商品类目信息列表
@@ -48,10 +48,10 @@ public interface StoreProductCategoryAttributeMapper extends BaseMapper<StorePro
     /**
      * 删除档口商品类目信息
      *
-     * @param storeProdAttrId 档口商品类目信息主键
+     * @param id 档口商品类目信息主键
      * @return 结果
      */
-    public int deleteStoreProductCategoryAttributeByStoreProdAttrId(Long storeProdAttrId);
+    public int deleteStoreProductCategoryAttributeByStoreProdAttrId(Long id);
 
     /**
      * 批量删除档口商品类目信息

@@ -10,10 +10,7 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storePordColor.StoreProdColorResVO;
 import com.ruoyi.web.controller.xkt.vo.storeProd.*;
 import com.ruoyi.xkt.domain.StoreProduct;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdDTO;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusDTO;
+import com.ruoyi.xkt.dto.storeProduct.*;
 import com.ruoyi.xkt.service.IStoreProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,7 +44,7 @@ public class StoreProductController extends XktBaseController {
     @GetMapping(value = "/fuzzy")
     public R fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
                                  @RequestParam("storeId") Long storeId) {
-        return success(BeanUtil.copyToList(storeProdService.fuzzyQueryList(storeId, prodArtNum), String.class));
+        return success(BeanUtil.copyToList(storeProdService.fuzzyQueryList(storeId, prodArtNum), StoreProdFuzzyResVO.class));
     }
 
     /**

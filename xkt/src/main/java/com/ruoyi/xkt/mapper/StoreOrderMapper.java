@@ -15,10 +15,10 @@ public interface StoreOrderMapper extends BaseMapper<StoreOrder> {
     /**
      * 查询档口代发订单
      *
-     * @param storeOrderId 档口代发订单主键
+     * @param id 档口代发订单主键
      * @return 档口代发订单
      */
-    public StoreOrder selectStoreOrderByStoreOrderId(Long storeOrderId);
+    public StoreOrder selectStoreOrderByStoreOrderId(Long id);
 
     /**
      * 查询档口代发订单列表
@@ -47,10 +47,10 @@ public interface StoreOrderMapper extends BaseMapper<StoreOrder> {
     /**
      * 删除档口代发订单
      *
-     * @param storeOrderId 档口代发订单主键
+     * @param id 档口代发订单主键
      * @return 结果
      */
-    public int deleteStoreOrderByStoreOrderId(Long storeOrderId);
+    public int deleteStoreOrderByStoreOrderId(Long id);
 
     /**
      * 批量删除档口代发订单

@@ -15,10 +15,10 @@ public interface UserShoppingCartMapper extends BaseMapper<UserShoppingCart> {
     /**
      * 查询用户进货车
      *
-     * @param userShopCartId 用户进货车主键
+     * @param id 用户进货车主键
      * @return 用户进货车
      */
-    public UserShoppingCart selectUserShoppingCartByUserShopCartId(Long userShopCartId);
+    public UserShoppingCart selectUserShoppingCartByUserShopCartId(Long id);
 
     /**
      * 查询用户进货车列表
@@ -47,10 +47,10 @@ public interface UserShoppingCartMapper extends BaseMapper<UserShoppingCart> {
     /**
      * 删除用户进货车
      *
-     * @param userShopCartId 用户进货车主键
+     * @param id 用户进货车主键
      * @return 结果
      */
-    public int deleteUserShoppingCartByUserShopCartId(Long userShopCartId);
+    public int deleteUserShoppingCartByUserShopCartId(Long id);
 
     /**
      * 批量删除用户进货车

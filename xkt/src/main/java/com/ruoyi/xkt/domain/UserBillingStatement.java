@@ -25,7 +25,7 @@ public class UserBillingStatement extends XktBaseEntity {
      * 用户账户明细ID
      */
     @TableId
-    private Long userBillStatId;
+    private Long id;
 
     /**
      * sys_user.id
@@ -85,7 +85,7 @@ public class UserBillingStatement extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userBillStatId", getUserBillStatId())
+                .append("id", getId())
                 .append("userId", getUserId())
                 .append("userAccId", getUserAccId())
                 .append("code", getCode())

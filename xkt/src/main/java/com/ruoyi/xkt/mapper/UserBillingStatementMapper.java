@@ -15,10 +15,10 @@ public interface UserBillingStatementMapper extends BaseMapper<UserBillingStatem
     /**
      * 查询用户对账明细
      *
-     * @param userBillStatId 用户对账明细主键
+     * @param id 用户对账明细主键
      * @return 用户对账明细
      */
-    public UserBillingStatement selectUserBillingStatementByUserBillStatId(Long userBillStatId);
+    public UserBillingStatement selectUserBillingStatementByUserBillStatId(Long id);
 
     /**
      * 查询用户对账明细列表
@@ -47,10 +47,10 @@ public interface UserBillingStatementMapper extends BaseMapper<UserBillingStatem
     /**
      * 删除用户对账明细
      *
-     * @param userBillStatId 用户对账明细主键
+     * @param id 用户对账明细主键
      * @return 结果
      */
-    public int deleteUserBillingStatementByUserBillStatId(Long userBillStatId);
+    public int deleteUserBillingStatementByUserBillStatId(Long id);
 
     /**
      * 批量删除用户对账明细

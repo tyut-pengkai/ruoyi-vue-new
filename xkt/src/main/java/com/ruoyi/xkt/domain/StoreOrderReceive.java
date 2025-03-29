@@ -23,7 +23,7 @@ public class StoreOrderReceive extends XktBaseEntity {
      * 代发订单收件人
      */
     @TableId
-    private Long storeOrderRcvId;
+    private Long id;
 
     /**
      * 代发订单档口ID
@@ -77,7 +77,7 @@ public class StoreOrderReceive extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeOrderRcvId", getStoreOrderRcvId())
+                .append("id", getId())
                 .append("storeOrderId", getStoreOrderId())
                 .append("sysUserAddressId", getSysUserAddressId())
                 .append("receiveName", getReceiveName())

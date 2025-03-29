@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreQuickFunctionMapper">
     
     <resultMap type="StoreQuickFunction" id="StoreQuickFunctionResult">
-        <result property="storeQuickFuncId"    column="store_quick_func_id"    />
+        <result property="id"    column="id"    />
         <result property="storeId"    column="store_id"    />
         <result property="funcName"    column="func_name"    />
         <result property="funcIcon"    column="func_icon"    />
@@ -20,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreQuickFunctionVo">
-        select store_quick_func_id, store_id, func_name, func_icon, func_url, order_num, version, del_flag, create_by, create_time, update_by, update_time from store_quick_function
+        select id, store_id, func_name, func_icon, func_url, order_num, version, del_flag, create_by, create_time, update_by, update_time from store_quick_function
     </sql>
 
     <select id="selectStoreQuickFunctionList" parameterType="StoreQuickFunction" resultMap="StoreQuickFunctionResult">
@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreQuickFunctionByStoreQuickFuncId" parameterType="Long" resultMap="StoreQuickFunctionResult">
         <include refid="selectStoreQuickFunctionVo"/>
-        where store_quick_func_id = #{storeQuickFuncId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreQuickFunction" parameterType="StoreQuickFunction" useGeneratedKeys="true" keyProperty="storeQuickFuncId">
@@ -85,17 +85,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_quick_func_id = #{storeQuickFuncId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreQuickFunctionByStoreQuickFuncId" parameterType="Long">
-        delete from store_quick_function where store_quick_func_id = #{storeQuickFuncId}
+        delete from store_quick_function where id = #{id}
     </delete>
 
     <delete id="deleteStoreQuickFunctionByStoreQuickFuncIds" parameterType="String">
-        delete from store_quick_function where store_quick_func_id in 
-        <foreach item="storeQuickFuncId" collection="array" open="(" separator="," close=")">
-            #{storeQuickFuncId}
+        delete from store_quick_function where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

@@ -23,13 +23,19 @@ public class StoreProductBarcodeMatch extends XktBaseEntity {
      * 档口条形码匹配ID
      */
     @TableId
-    private Long storeProdBarcodeMatchId;
+    private Long id;
 
     /**
      * 档口商品ID
      */
     @Excel(name = "档口商品ID")
     private Long storeProdId;
+
+    /**
+     * 档口ID
+     */
+    @Excel(name = "档口ID")
+    private Long storeId;
 
     /**
      * 档口商品颜色尺码ID
@@ -53,7 +59,7 @@ public class StoreProductBarcodeMatch extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeProdBarcodeMatchId", getStoreProdBarcodeMatchId())
+                .append("id", getId())
                 .append("storeProdId", getStoreProdId())
                 .append("storeProdColorSizeId", getStoreProdColorSizeId())
                 .append("otherSysBarcodePrefix", getOtherSysBarcodePrefix())

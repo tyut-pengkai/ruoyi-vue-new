@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.UserAuthenticationMapper">
     
     <resultMap type="UserAuthentication" id="UserAuthenticationResult">
-        <result property="userAuthId"    column="user_auth_id"    />
+        <result property="id"    column="id"    />
         <result property="userId"    column="user_id"    />
         <result property="realName"    column="real_name"    />
         <result property="phone"    column="phone"    />
@@ -22,7 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectUserAuthenticationVo">
-        select user_auth_id, user_id, real_name, phone, id_card, id_card_front_file_id, id_card_back_file_id, auth_status, version, del_flag, create_by, create_time, update_by, update_time from user_authentication
+        select id, user_id, real_name, phone, id_card, id_card_front_file_id, id_card_back_file_id, auth_status, version, del_flag, create_by, create_time, update_by, update_time from user_authentication
     </sql>
 
     <select id="selectUserAuthenticationList" parameterType="UserAuthentication" resultMap="UserAuthenticationResult">
@@ -40,7 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectUserAuthenticationByUserAuthId" parameterType="Long" resultMap="UserAuthenticationResult">
         <include refid="selectUserAuthenticationVo"/>
-        where user_auth_id = #{userAuthId}
+        where id = #{id}
     </select>
 
     <insert id="insertUserAuthentication" parameterType="UserAuthentication" useGeneratedKeys="true" keyProperty="userAuthId">
@@ -94,17 +94,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where user_auth_id = #{userAuthId}
+        where id = #{id}
     </update>
 
     <delete id="deleteUserAuthenticationByUserAuthId" parameterType="Long">
-        delete from user_authentication where user_auth_id = #{userAuthId}
+        delete from user_authentication where id = #{id}
     </delete>
 
     <delete id="deleteUserAuthenticationByUserAuthIds" parameterType="String">
-        delete from user_authentication where user_auth_id in 
-        <foreach item="userAuthId" collection="array" open="(" separator="," close=")">
-            #{userAuthId}
+        delete from user_authentication where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

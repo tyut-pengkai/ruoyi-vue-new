@@ -15,10 +15,10 @@ public interface StoreProductStorageDemandDeducteMapper extends BaseMapper<Store
     /**
      * 查询档口商品入库抵扣需求
      *
-     * @param storeProdStorDemaDeducteId 档口商品入库抵扣需求主键
+     * @param id 档口商品入库抵扣需求主键
      * @return 档口商品入库抵扣需求
      */
-    public StoreProductStorageDemandDeducte selectStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId(Long storeProdStorDemaDeducteId);
+    public StoreProductStorageDemandDeducte selectStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId(Long id);
 
     /**
      * 查询档口商品入库抵扣需求列表
@@ -47,10 +47,10 @@ public interface StoreProductStorageDemandDeducteMapper extends BaseMapper<Store
     /**
      * 删除档口商品入库抵扣需求
      *
-     * @param storeProdStorDemaDeducteId 档口商品入库抵扣需求主键
+     * @param id 档口商品入库抵扣需求主键
      * @return 结果
      */
-    public int deleteStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId(Long storeProdStorDemaDeducteId);
+    public int deleteStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId(Long id);
 
     /**
      * 批量删除档口商品入库抵扣需求

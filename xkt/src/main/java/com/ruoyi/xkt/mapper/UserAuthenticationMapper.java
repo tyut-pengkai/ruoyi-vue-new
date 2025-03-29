@@ -15,10 +15,10 @@ public interface UserAuthenticationMapper extends BaseMapper<UserAuthentication>
     /**
      * 查询用户代发认证
      *
-     * @param userAuthId 用户代发认证主键
+     * @param id 用户代发认证主键
      * @return 用户代发认证
      */
-    public UserAuthentication selectUserAuthenticationByUserAuthId(Long userAuthId);
+    public UserAuthentication selectUserAuthenticationByUserAuthId(Long id);
 
     /**
      * 查询用户代发认证列表
@@ -47,10 +47,10 @@ public interface UserAuthenticationMapper extends BaseMapper<UserAuthentication>
     /**
      * 删除用户代发认证
      *
-     * @param userAuthId 用户代发认证主键
+     * @param id 用户代发认证主键
      * @return 结果
      */
-    public int deleteUserAuthenticationByUserAuthId(Long userAuthId);
+    public int deleteUserAuthenticationByUserAuthId(Long id);
 
     /**
      * 批量删除用户代发认证

@@ -23,7 +23,7 @@ public class PictureSearchHot extends XktBaseEntity {
      * 图搜热款ID
      */
     @TableId
-    private Long picSearchHotId;
+    private Long id;
 
     /**
      * store_prod_file.id
@@ -53,7 +53,7 @@ public class PictureSearchHot extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("picSearchHotId", getPicSearchHotId())
+                .append("id", getId())
                 .append("storeProdFileId", getStoreProdFileId())
                 .append("fileId", getFileId())
                 .append("storeId", getStoreId())

@@ -15,10 +15,10 @@ public interface UserNoticeMapper extends BaseMapper<UserNotice> {
     /**
      * 查询用户所有通知
      *
-     * @param userNoticeId 用户所有通知主键
+     * @param id 用户所有通知主键
      * @return 用户所有通知
      */
-    public UserNotice selectUserNoticeByUserNoticeId(Long userNoticeId);
+    public UserNotice selectUserNoticeByUserNoticeId(Long id);
 
     /**
      * 查询用户所有通知列表
@@ -47,10 +47,10 @@ public interface UserNoticeMapper extends BaseMapper<UserNotice> {
     /**
      * 删除用户所有通知
      *
-     * @param userNoticeId 用户所有通知主键
+     * @param id 用户所有通知主键
      * @return 结果
      */
-    public int deleteUserNoticeByUserNoticeId(Long userNoticeId);
+    public int deleteUserNoticeByUserNoticeId(Long id);
 
     /**
      * 批量删除用户所有通知

@@ -15,10 +15,10 @@ public interface StoreRoleMenuMapper extends BaseMapper<StoreRoleMenu> {
     /**
      * 查询档口子角色菜单
      *
-     * @param storeRoleMenuId 档口子角色菜单主键
+     * @param id 档口子角色菜单主键
      * @return 档口子角色菜单
      */
-    public StoreRoleMenu selectStoreRoleMenuByStoreRoleMenuId(Long storeRoleMenuId);
+    public StoreRoleMenu selectStoreRoleMenuByStoreRoleMenuId(Long id);
 
     /**
      * 查询档口子角色菜单列表
@@ -47,10 +47,10 @@ public interface StoreRoleMenuMapper extends BaseMapper<StoreRoleMenu> {
     /**
      * 删除档口子角色菜单
      *
-     * @param storeRoleMenuId 档口子角色菜单主键
+     * @param id 档口子角色菜单主键
      * @return 结果
      */
-    public int deleteStoreRoleMenuByStoreRoleMenuId(Long storeRoleMenuId);
+    public int deleteStoreRoleMenuByStoreRoleMenuId(Long id);
 
     /**
      * 批量删除档口子角色菜单

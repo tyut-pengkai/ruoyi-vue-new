@@ -2,9 +2,6 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProduct;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,10 +15,10 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
     /**
      * 查询档口商品
      *
-     * @param storeProdId 档口商品主键
+     * @param id 档口商品主键
      * @return 档口商品
      */
-    public StoreProduct selectStoreProductByStoreProdId(Long storeProdId);
+    public StoreProduct selectStoreProductByStoreProdId(Long id);
 
     /**
      * 查询档口商品列表
@@ -50,10 +47,10 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
     /**
      * 删除档口商品
      *
-     * @param storeProdId 档口商品主键
+     * @param id 档口商品主键
      * @return 结果
      */
-    public int deleteStoreProductByStoreProdId(Long storeProdId);
+    public int deleteStoreProductByStoreProdId(Long id);
 
     /**
      * 批量删除档口商品

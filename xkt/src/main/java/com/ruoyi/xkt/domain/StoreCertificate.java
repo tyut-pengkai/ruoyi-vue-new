@@ -26,7 +26,7 @@ public class StoreCertificate extends XktBaseEntity {
      * 档口认证ID
      */
     @TableId
-    private Long storeCertId;
+    private Long id;
 
     /**
      * store.id
@@ -168,7 +168,7 @@ public class StoreCertificate extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeCertId", getStoreCertId())
+                .append("id", getId())
                 .append("storeId", getStoreId())
                 .append("realName", getRealName())
                 .append("phone", getPhone())

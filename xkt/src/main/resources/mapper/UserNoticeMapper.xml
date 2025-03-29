@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.UserNoticeMapper">
     
     <resultMap type="UserNotice" id="UserNoticeResult">
-        <result property="userNoticeId"    column="user_notice_id"    />
+        <result property="id"    column="id"    />
         <result property="noticeId"    column="notice_id"    />
         <result property="userId"    column="user_id"    />
         <result property="read"    column="read"    />
@@ -19,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectUserNoticeVo">
-        select user_notice_id, notice_id, user_id, read, voucher_date, version, del_flag, create_by, create_time, update_by, update_time from user_notice
+        select id, notice_id, user_id, read, voucher_date, version, del_flag, create_by, create_time, update_by, update_time from user_notice
     </sql>
 
     <select id="selectUserNoticeList" parameterType="UserNotice" resultMap="UserNoticeResult">
@@ -35,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectUserNoticeByUserNoticeId" parameterType="Long" resultMap="UserNoticeResult">
         <include refid="selectUserNoticeVo"/>
-        where user_notice_id = #{userNoticeId}
+        where id = #{id}
     </select>
 
     <insert id="insertUserNotice" parameterType="UserNotice" useGeneratedKeys="true" keyProperty="userNoticeId">
@@ -80,17 +80,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where user_notice_id = #{userNoticeId}
+        where id = #{id}
     </update>
 
     <delete id="deleteUserNoticeByUserNoticeId" parameterType="Long">
-        delete from user_notice where user_notice_id = #{userNoticeId}
+        delete from user_notice where id = #{id}
     </delete>
 
     <delete id="deleteUserNoticeByUserNoticeIds" parameterType="String">
-        delete from user_notice where user_notice_id in 
-        <foreach item="userNoticeId" collection="array" open="(" separator="," close=")">
-            #{userNoticeId}
+        delete from user_notice where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

@@ -15,10 +15,10 @@ public interface UserBrowsingHistoryMapper extends BaseMapper<UserBrowsingHistor
     /**
      * 查询用户浏览历史
      *
-     * @param userBrowHisId 用户浏览历史主键
+     * @param id 用户浏览历史主键
      * @return 用户浏览历史
      */
-    public UserBrowsingHistory selectUserBrowsingHistoryByUserBrowHisId(Long userBrowHisId);
+    public UserBrowsingHistory selectUserBrowsingHistoryByUserBrowHisId(Long id);
 
     /**
      * 查询用户浏览历史列表
@@ -47,10 +47,10 @@ public interface UserBrowsingHistoryMapper extends BaseMapper<UserBrowsingHistor
     /**
      * 删除用户浏览历史
      *
-     * @param userBrowHisId 用户浏览历史主键
+     * @param id 用户浏览历史主键
      * @return 结果
      */
-    public int deleteUserBrowsingHistoryByUserBrowHisId(Long userBrowHisId);
+    public int deleteUserBrowsingHistoryByUserBrowHisId(Long id);
 
     /**
      * 批量删除用户浏览历史

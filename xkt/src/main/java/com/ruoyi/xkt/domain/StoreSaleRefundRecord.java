@@ -25,7 +25,7 @@ public class StoreSaleRefundRecord extends XktBaseEntity {
      * 档口销售出库返单记录ID
      */
     @TableId
-    private Long storeSaleRefundRecordId;
+    private Long id;
 
     /**
      * 档口销售出库ID
@@ -85,7 +85,7 @@ public class StoreSaleRefundRecord extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeSaleRefundRecordId", getStoreSaleRefundRecordId())
+                .append("id", getId())
                 .append("storeSaleId", getStoreSaleId())
                 .append("storeId", getStoreId())
                 .append("storeCusId", getStoreCusId())

@@ -15,10 +15,10 @@ public interface PictureSearchHotMapper extends BaseMapper<PictureSearchHot> {
     /**
      * 查询图搜热款
      *
-     * @param picSearchHotId 图搜热款主键
+     * @param id 图搜热款主键
      * @return 图搜热款
      */
-    public PictureSearchHot selectPictureSearchHotByPicSearchHotId(Long picSearchHotId);
+    public PictureSearchHot selectPictureSearchHotByPicSearchHotId(Long id);
 
     /**
      * 查询图搜热款列表
@@ -47,10 +47,10 @@ public interface PictureSearchHotMapper extends BaseMapper<PictureSearchHot> {
     /**
      * 删除图搜热款
      *
-     * @param picSearchHotId 图搜热款主键
+     * @param id 图搜热款主键
      * @return 结果
      */
-    public int deletePictureSearchHotByPicSearchHotId(Long picSearchHotId);
+    public int deletePictureSearchHotByPicSearchHotId(Long id);
 
     /**
      * 批量删除图搜热款

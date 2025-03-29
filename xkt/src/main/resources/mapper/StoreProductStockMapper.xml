@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreProductStockMapper">
     
     <resultMap type="StoreProductStock" id="StoreProductStockResult">
-        <result property="storeProdStockId"    column="store_prod_stock_id"    />
+        <result property="id"    column="id"    />
         <result property="storeProdId"    column="store_prod_id"    />
         <result property="storeProdColorId"    column="store_prod_color_id"    />
         <result property="size30"    column="size_30"    />
@@ -31,7 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreProductStockVo">
-        select store_prod_stock_id, store_prod_id, store_prod_color_id, size_30, size_31, size_32, size_33, size_34, size_35, size_36, size_37, size_38, size_39, size_40, size_41, size_42, size_43, version, del_flag, create_by, create_time, update_by, update_time from store_product_stock
+        select id, store_prod_id, store_prod_color_id, size_30, size_31, size_32, size_33, size_34, size_35, size_36, size_37, size_38, size_39, size_40, size_41, size_42, size_43, version, del_flag, create_by, create_time, update_by, update_time from store_product_stock
     </sql>
 
     <select id="selectStoreProductStockList" parameterType="StoreProductStock" resultMap="StoreProductStockResult">
@@ -59,7 +59,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreProductStockByStoreProdStockId" parameterType="Long" resultMap="StoreProductStockResult">
         <include refid="selectStoreProductStockVo"/>
-        where store_prod_stock_id = #{storeProdStockId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreProductStock" parameterType="StoreProductStock" useGeneratedKeys="true" keyProperty="storeProdStockId">
@@ -140,17 +140,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_prod_stock_id = #{storeProdStockId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreProductStockByStoreProdStockId" parameterType="Long">
-        delete from store_product_stock where store_prod_stock_id = #{storeProdStockId}
+        delete from store_product_stock where id = #{id}
     </delete>
 
     <delete id="deleteStoreProductStockByStoreProdStockIds" parameterType="String">
-        delete from store_product_stock where store_prod_stock_id in 
-        <foreach item="storeProdStockId" collection="array" open="(" separator="," close=")">
-            #{storeProdStockId}
+        delete from store_product_stock where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

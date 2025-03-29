@@ -15,10 +15,10 @@ public interface StoreCustomerProductDiscountMapper extends BaseMapper<StoreCust
     /**
      * 查询档口客户优惠
      *
-     * @param storeCusProdDiscId 档口客户优惠主键
+     * @param id 档口客户优惠主键
      * @return 档口客户优惠
      */
-    public StoreCustomerProductDiscount selectStoreCustomerProductDiscountByStoreCusProdDiscId(Long storeCusProdDiscId);
+    public StoreCustomerProductDiscount selectStoreCustomerProductDiscountByStoreCusProdDiscId(Long id);
 
     /**
      * 查询档口客户优惠列表
@@ -47,10 +47,10 @@ public interface StoreCustomerProductDiscountMapper extends BaseMapper<StoreCust
     /**
      * 删除档口客户优惠
      *
-     * @param storeCusProdDiscId 档口客户优惠主键
+     * @param id 档口客户优惠主键
      * @return 结果
      */
-    public int deleteStoreCustomerProductDiscountByStoreCusProdDiscId(Long storeCusProdDiscId);
+    public int deleteStoreCustomerProductDiscountByStoreCusProdDiscId(Long id);
 
     /**
      * 批量删除档口客户优惠

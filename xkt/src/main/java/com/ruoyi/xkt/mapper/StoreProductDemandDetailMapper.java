@@ -15,10 +15,10 @@ public interface StoreProductDemandDetailMapper extends BaseMapper<StoreProductD
     /**
      * 查询档口商品需求单明细
      *
-     * @param storeProdDemaDetailId 档口商品需求单明细主键
+     * @param id 档口商品需求单明细主键
      * @return 档口商品需求单明细
      */
-    public StoreProductDemandDetail selectStoreProductDemandDetailByStoreProdDemaDetailId(Long storeProdDemaDetailId);
+    public StoreProductDemandDetail selectStoreProductDemandDetailByStoreProdDemaDetailId(Long id);
 
     /**
      * 查询档口商品需求单明细列表
@@ -47,10 +47,10 @@ public interface StoreProductDemandDetailMapper extends BaseMapper<StoreProductD
     /**
      * 删除档口商品需求单明细
      *
-     * @param storeProdDemaDetailId 档口商品需求单明细主键
+     * @param id 档口商品需求单明细主键
      * @return 结果
      */
-    public int deleteStoreProductDemandDetailByStoreProdDemaDetailId(Long storeProdDemaDetailId);
+    public int deleteStoreProductDemandDetailByStoreProdDemaDetailId(Long id);
 
     /**
      * 批量删除档口商品需求单明细

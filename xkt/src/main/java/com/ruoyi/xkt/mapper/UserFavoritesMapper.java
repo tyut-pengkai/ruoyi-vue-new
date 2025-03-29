@@ -15,10 +15,10 @@ public interface UserFavoritesMapper extends BaseMapper<UserFavorites> {
     /**
      * 查询用户收藏商品
      *
-     * @param userFavoId 用户收藏商品主键
+     * @param id 用户收藏商品主键
      * @return 用户收藏商品
      */
-    public UserFavorites selectUserFavoritesByUserFavoId(Long userFavoId);
+    public UserFavorites selectUserFavoritesByUserFavoId(Long id);
 
     /**
      * 查询用户收藏商品列表
@@ -47,10 +47,10 @@ public interface UserFavoritesMapper extends BaseMapper<UserFavorites> {
     /**
      * 删除用户收藏商品
      *
-     * @param userFavoId 用户收藏商品主键
+     * @param id 用户收藏商品主键
      * @return 结果
      */
-    public int deleteUserFavoritesByUserFavoId(Long userFavoId);
+    public int deleteUserFavoritesByUserFavoId(Long id);
 
     /**
      * 批量删除用户收藏商品

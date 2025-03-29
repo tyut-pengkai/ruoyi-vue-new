@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreRoleMenuMapper">
     
     <resultMap type="StoreRoleMenu" id="StoreRoleMenuResult">
-        <result property="storeRoleMenuId"    column="store_role_menu_id"    />
+        <result property="id"    column="id"    />
         <result property="storeRoleId"    column="store_role_id"    />
         <result property="storeId"    column="store_id"    />
         <result property="menuName"    column="menu_name"    />
@@ -19,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreRoleMenuVo">
-        select store_role_menu_id, store_role_id, store_id, menu_name, menu_status, version, del_flag, create_by, create_time, update_by, update_time from store_role_menu
+        select id, store_role_id, store_id, menu_name, menu_status, version, del_flag, create_by, create_time, update_by, update_time from store_role_menu
     </sql>
 
     <select id="selectStoreRoleMenuList" parameterType="StoreRoleMenu" resultMap="StoreRoleMenuResult">
@@ -35,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreRoleMenuByStoreRoleMenuId" parameterType="Long" resultMap="StoreRoleMenuResult">
         <include refid="selectStoreRoleMenuVo"/>
-        where store_role_menu_id = #{storeRoleMenuId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreRoleMenu" parameterType="StoreRoleMenu" useGeneratedKeys="true" keyProperty="storeRoleMenuId">
@@ -80,17 +80,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_role_menu_id = #{storeRoleMenuId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreRoleMenuByStoreRoleMenuId" parameterType="Long">
-        delete from store_role_menu where store_role_menu_id = #{storeRoleMenuId}
+        delete from store_role_menu where id = #{id}
     </delete>
 
     <delete id="deleteStoreRoleMenuByStoreRoleMenuIds" parameterType="String">
-        delete from store_role_menu where store_role_menu_id in 
-        <foreach item="storeRoleMenuId" collection="array" open="(" separator="," close=")">
-            #{storeRoleMenuId}
+        delete from store_role_menu where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

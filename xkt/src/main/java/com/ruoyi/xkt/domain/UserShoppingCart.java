@@ -23,7 +23,7 @@ public class UserShoppingCart extends XktBaseEntity {
      * 用户进货车ID
      */
     @TableId
-    private Long userShopCartId;
+    private Long id;
 
     /**
      * sys_user.id
@@ -59,7 +59,7 @@ public class UserShoppingCart extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userShopCartId", getUserShopCartId())
+                .append("id", getId())
                 .append("userId", getUserId())
                 .append("storeId", getStoreId())
                 .append("storeProdColorSizeId", getStoreProdColorSizeId())

@@ -15,10 +15,10 @@ public interface UserQuickFunctionMapper extends BaseMapper<UserQuickFunction> {
     /**
      * 查询用户快捷功能
      *
-     * @param userQuickFuncId 用户快捷功能主键
+     * @param id 用户快捷功能主键
      * @return 用户快捷功能
      */
-    public UserQuickFunction selectUserQuickFunctionByUserQuickFuncId(Long userQuickFuncId);
+    public UserQuickFunction selectUserQuickFunctionByUserQuickFuncId(Long id);
 
     /**
      * 查询用户快捷功能列表
@@ -47,10 +47,10 @@ public interface UserQuickFunctionMapper extends BaseMapper<UserQuickFunction> {
     /**
      * 删除用户快捷功能
      *
-     * @param userQuickFuncId 用户快捷功能主键
+     * @param id 用户快捷功能主键
      * @return 结果
      */
-    public int deleteUserQuickFunctionByUserQuickFuncId(Long userQuickFuncId);
+    public int deleteUserQuickFunctionByUserQuickFuncId(Long id);
 
     /**
      * 批量删除用户快捷功能

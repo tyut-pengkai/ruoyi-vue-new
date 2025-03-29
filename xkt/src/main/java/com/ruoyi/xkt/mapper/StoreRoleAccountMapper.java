@@ -15,10 +15,10 @@ public interface StoreRoleAccountMapper extends BaseMapper<StoreRoleAccount> {
     /**
      * 查询档口子角色账号
      *
-     * @param storeRoleAccId 档口子角色账号主键
+     * @param id 档口子角色账号主键
      * @return 档口子角色账号
      */
-    public StoreRoleAccount selectStoreRoleAccountByStoreRoleAccId(Long storeRoleAccId);
+    public StoreRoleAccount selectStoreRoleAccountByStoreRoleAccId(Long id);
 
     /**
      * 查询档口子角色账号列表
@@ -47,10 +47,10 @@ public interface StoreRoleAccountMapper extends BaseMapper<StoreRoleAccount> {
     /**
      * 删除档口子角色账号
      *
-     * @param storeRoleAccId 档口子角色账号主键
+     * @param id 档口子角色账号主键
      * @return 结果
      */
-    public int deleteStoreRoleAccountByStoreRoleAccId(Long storeRoleAccId);
+    public int deleteStoreRoleAccountByStoreRoleAccId(Long id);
 
     /**
      * 批量删除档口子角色账号

@@ -15,10 +15,10 @@ public interface StoreProductServiceMapper extends BaseMapper<StoreProductServic
     /**
      * 查询档口商品服务
      *
-     * @param storeProdSvcId 档口商品服务主键
+     * @param id 档口商品服务主键
      * @return 档口商品服务
      */
-    public StoreProductService selectStoreProductServiceByStoreProdSvcId(Long storeProdSvcId);
+    public StoreProductService selectStoreProductServiceByStoreProdSvcId(Long id);
 
     /**
      * 查询档口商品服务列表
@@ -47,10 +47,10 @@ public interface StoreProductServiceMapper extends BaseMapper<StoreProductServic
     /**
      * 删除档口商品服务
      *
-     * @param storeProdSvcId 档口商品服务主键
+     * @param id 档口商品服务主键
      * @return 结果
      */
-    public int deleteStoreProductServiceByStoreProdSvcId(Long storeProdSvcId);
+    public int deleteStoreProductServiceByStoreProdSvcId(Long id);
 
     /**
      * 批量删除档口商品服务

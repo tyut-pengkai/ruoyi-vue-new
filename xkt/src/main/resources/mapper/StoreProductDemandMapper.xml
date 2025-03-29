@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreProductDemandMapper">
     
     <resultMap type="StoreProductDemand" id="StoreProductDemandResult">
-        <result property="storeProdDemandId"    column="store_prod_demand_id"    />
+        <result property="id"    column="id"    />
         <result property="code"    column="code"    />
         <result property="demandStatus"    column="demand_status"    />
         <result property="version"    column="version"    />
@@ -17,7 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreProductDemandVo">
-        select store_prod_demand_id, code, demand_status, version, del_flag, create_by, create_time, update_by, update_time from store_product_demand
+        select id, code, demand_status, version, del_flag, create_by, create_time, update_by, update_time from store_product_demand
     </sql>
 
     <select id="selectStoreProductDemandList" parameterType="StoreProductDemand" resultMap="StoreProductDemandResult">
@@ -31,7 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreProductDemandByStoreProdDemandId" parameterType="Long" resultMap="StoreProductDemandResult">
         <include refid="selectStoreProductDemandVo"/>
-        where store_prod_demand_id = #{storeProdDemandId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreProductDemand" parameterType="StoreProductDemand" useGeneratedKeys="true" keyProperty="storeProdDemandId">
@@ -70,17 +70,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_prod_demand_id = #{storeProdDemandId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreProductDemandByStoreProdDemandId" parameterType="Long">
-        delete from store_product_demand where store_prod_demand_id = #{storeProdDemandId}
+        delete from store_product_demand where id = #{id}
     </delete>
 
     <delete id="deleteStoreProductDemandByStoreProdDemandIds" parameterType="String">
-        delete from store_product_demand where store_prod_demand_id in 
-        <foreach item="storeProdDemandId" collection="array" open="(" separator="," close=")">
-            #{storeProdDemandId}
+        delete from store_product_demand where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

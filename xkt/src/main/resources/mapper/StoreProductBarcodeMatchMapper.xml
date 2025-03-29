@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreProductBarcodeMatchMapper">
     
     <resultMap type="StoreProductBarcodeMatch" id="StoreProductBarcodeMatchResult">
-        <result property="storeProdBarcodeMatchId"    column="store_prod_barcode_match_id"    />
+        <result property="id"    column="id"    />
         <result property="storeProdId"    column="store_prod_id"    />
         <result property="storeProdColorSizeId"    column="store_prod_color_size_id"    />
         <result property="otherSysBarcodePrefix"    column="other_sys_barcode_prefix"    />
@@ -19,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreProductBarcodeMatchVo">
-        select store_prod_barcode_match_id, store_prod_id, store_prod_color_size_id, other_sys_barcode_prefix, other_sys_barcode, version, del_flag, create_by, create_time, update_by, update_time from store_product_barcode_match
+        select id, store_prod_id, store_prod_color_size_id, other_sys_barcode_prefix, other_sys_barcode, version, del_flag, create_by, create_time, update_by, update_time from store_product_barcode_match
     </sql>
 
     <select id="selectStoreProductBarcodeMatchList" parameterType="StoreProductBarcodeMatch" resultMap="StoreProductBarcodeMatchResult">
@@ -35,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreProductBarcodeMatchByStoreProdBarcodeMatchId" parameterType="Long" resultMap="StoreProductBarcodeMatchResult">
         <include refid="selectStoreProductBarcodeMatchVo"/>
-        where store_prod_barcode_match_id = #{storeProdBarcodeMatchId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreProductBarcodeMatch" parameterType="StoreProductBarcodeMatch" useGeneratedKeys="true" keyProperty="storeProdBarcodeMatchId">
@@ -80,17 +80,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_prod_barcode_match_id = #{storeProdBarcodeMatchId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreProductBarcodeMatchByStoreProdBarcodeMatchId" parameterType="Long">
-        delete from store_product_barcode_match where store_prod_barcode_match_id = #{storeProdBarcodeMatchId}
+        delete from store_product_barcode_match where id = #{idid}
     </delete>
 
     <delete id="deleteStoreProductBarcodeMatchByStoreProdBarcodeMatchIds" parameterType="String">
-        delete from store_product_barcode_match where store_prod_barcode_match_id in 
-        <foreach item="storeProdBarcodeMatchId" collection="array" open="(" separator="," close=")">
-            #{storeProdBarcodeMatchId}
+        delete from store_product_barcode_match where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

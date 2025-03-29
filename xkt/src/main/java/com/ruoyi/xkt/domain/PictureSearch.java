@@ -26,7 +26,7 @@ public class PictureSearch extends XktBaseEntity {
      * 文件搜索ID
      */
     @TableId
-    private Long picSearchId;
+    private Long id;
 
     /**
      * 搜索的文件ID
@@ -51,7 +51,7 @@ public class PictureSearch extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("picSearchId", getPicSearchId())
+                .append("id", getId())
                 .append("searchFileId", getSearchFileId())
                 .append("userId", getUserId())
                 .append("voucherDate", getVoucherDate())

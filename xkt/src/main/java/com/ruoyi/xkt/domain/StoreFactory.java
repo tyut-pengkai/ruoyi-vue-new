@@ -23,7 +23,7 @@ public class StoreFactory extends XktBaseEntity {
      * 档口工厂ID
      */
     @TableId
-    private Long storeFacId;
+    private Long id;
 
     /**
      * store.id
@@ -59,7 +59,7 @@ public class StoreFactory extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeFacId", getStoreFacId())
+                .append("id", getId())
                 .append("storeId", getStoreId())
                 .append("facName", getFacName())
                 .append("facAddress", getFacAddress())

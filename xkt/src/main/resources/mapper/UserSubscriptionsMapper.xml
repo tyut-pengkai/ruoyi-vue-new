@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.UserSubscriptionsMapper">
     
     <resultMap type="UserSubscriptions" id="UserSubscriptionsResult">
-        <result property="userSubsId"    column="user_subs_id"    />
+        <result property="id"    column="id"    />
         <result property="userId"    column="user_id"    />
         <result property="storeId"    column="store_id"    />
         <result property="version"    column="version"    />
@@ -17,7 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectUserSubscriptionsVo">
-        select user_subs_id, user_id, store_id, version, del_flag, create_by, create_time, update_by, update_time from user_subscriptions
+        select id, user_id, store_id, version, del_flag, create_by, create_time, update_by, update_time from user_subscriptions
     </sql>
 
     <select id="selectUserSubscriptionsList" parameterType="UserSubscriptions" resultMap="UserSubscriptionsResult">
@@ -31,7 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectUserSubscriptionsByUserSubsId" parameterType="Long" resultMap="UserSubscriptionsResult">
         <include refid="selectUserSubscriptionsVo"/>
-        where user_subs_id = #{userSubsId}
+        where id = #{id}
     </select>
 
     <insert id="insertUserSubscriptions" parameterType="UserSubscriptions" useGeneratedKeys="true" keyProperty="userSubsId">
@@ -70,17 +70,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where user_subs_id = #{userSubsId}
+        where id = #{id}
     </update>
 
     <delete id="deleteUserSubscriptionsByUserSubsId" parameterType="Long">
-        delete from user_subscriptions where user_subs_id = #{userSubsId}
+        delete from user_subscriptions where id = #{id}
     </delete>
 
     <delete id="deleteUserSubscriptionsByUserSubsIds" parameterType="String">
-        delete from user_subscriptions where user_subs_id in 
-        <foreach item="userSubsId" collection="array" open="(" separator="," close=")">
-            #{userSubsId}
+        delete from user_subscriptions where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

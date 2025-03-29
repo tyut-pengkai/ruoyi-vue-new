@@ -15,10 +15,10 @@ public interface PictureSearchMapper extends BaseMapper<PictureSearch> {
     /**
      * 查询以图搜款
      *
-     * @param picSearchId 以图搜款主键
+     * @param id 以图搜款主键
      * @return 以图搜款
      */
-    public PictureSearch selectPictureSearchByPicSearchId(Long picSearchId);
+    public PictureSearch selectPictureSearchByPicSearchId(Long id);
 
     /**
      * 查询以图搜款列表
@@ -47,10 +47,10 @@ public interface PictureSearchMapper extends BaseMapper<PictureSearch> {
     /**
      * 删除以图搜款
      *
-     * @param picSearchId 以图搜款主键
+     * @param id 以图搜款主键
      * @return 结果
      */
-    public int deletePictureSearchByPicSearchId(Long picSearchId);
+    public int deletePictureSearchByPicSearchId(Long id);
 
     /**
      * 批量删除以图搜款

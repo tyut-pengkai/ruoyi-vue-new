@@ -25,7 +25,7 @@ public class StoreProductCategoryAttribute extends XktBaseEntity {
      * 档口商品类目属性ID
      */
     @TableId
-    private Long storeProdAttrId;
+    private Long id;
 
     /**
      * 档口商品ID
@@ -49,7 +49,7 @@ public class StoreProductCategoryAttribute extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeProdAttrId", getStoreProdAttrId())
+                .append("id", getId())
                 .append("storeProdId", getStoreProdId())
                 .append("dictType", getDictType())
                 .append("version", getVersion())

@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.UserQuickFunctionMapper">
     
     <resultMap type="UserQuickFunction" id="UserQuickFunctionResult">
-        <result property="userQuickFuncId"    column="user_quick_func_id"    />
+        <result property="id"    column="id"    />
         <result property="userId"    column="user_id"    />
         <result property="funcName"    column="func_name"    />
         <result property="funcIcon"    column="func_icon"    />
@@ -20,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectUserQuickFunctionVo">
-        select user_quick_func_id, user_id, func_name, func_icon, func_url, order_num, version, del_flag, create_by, create_time, update_by, update_time from user_quick_function
+        select id, user_id, func_name, func_icon, func_url, order_num, version, del_flag, create_by, create_time, update_by, update_time from user_quick_function
     </sql>
 
     <select id="selectUserQuickFunctionList" parameterType="UserQuickFunction" resultMap="UserQuickFunctionResult">
@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectUserQuickFunctionByUserQuickFuncId" parameterType="Long" resultMap="UserQuickFunctionResult">
         <include refid="selectUserQuickFunctionVo"/>
-        where user_quick_func_id = #{userQuickFuncId}
+        where id = #{id}
     </select>
 
     <insert id="insertUserQuickFunction" parameterType="UserQuickFunction" useGeneratedKeys="true" keyProperty="userQuickFuncId">
@@ -85,17 +85,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where user_quick_func_id = #{userQuickFuncId}
+        where id = #{id}
     </update>
 
     <delete id="deleteUserQuickFunctionByUserQuickFuncId" parameterType="Long">
-        delete from user_quick_function where user_quick_func_id = #{userQuickFuncId}
+        delete from user_quick_function where id = #{id}
     </delete>
 
     <delete id="deleteUserQuickFunctionByUserQuickFuncIds" parameterType="String">
-        delete from user_quick_function where user_quick_func_id in 
-        <foreach item="userQuickFuncId" collection="array" open="(" separator="," close=")">
-            #{userQuickFuncId}
+        delete from user_quick_function where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

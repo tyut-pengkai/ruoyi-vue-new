@@ -15,10 +15,10 @@ public interface StoreOrderReceiveMapper extends BaseMapper<StoreOrderReceive> {
     /**
      * 查询档口代发订单收件人
      *
-     * @param storeOrderRcvId 档口代发订单收件人主键
+     * @param id 档口代发订单收件人主键
      * @return 档口代发订单收件人
      */
-    public StoreOrderReceive selectStoreOrderReceiveByStoreOrderRcvId(Long storeOrderRcvId);
+    public StoreOrderReceive selectStoreOrderReceiveByStoreOrderRcvId(Long id);
 
     /**
      * 查询档口代发订单收件人列表
@@ -47,10 +47,10 @@ public interface StoreOrderReceiveMapper extends BaseMapper<StoreOrderReceive> {
     /**
      * 删除档口代发订单收件人
      *
-     * @param storeOrderRcvId 档口代发订单收件人主键
+     * @param id 档口代发订单收件人主键
      * @return 结果
      */
-    public int deleteStoreOrderReceiveByStoreOrderRcvId(Long storeOrderRcvId);
+    public int deleteStoreOrderReceiveByStoreOrderRcvId(Long id);
 
     /**
      * 批量删除档口代发订单收件人

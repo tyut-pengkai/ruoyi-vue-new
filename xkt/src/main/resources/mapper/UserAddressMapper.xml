@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.UserAddressMapper">
     
     <resultMap type="UserAddress" id="UserAddressResult">
-        <result property="userAddrId"    column="user_addr_id"    />
+        <result property="id"    column="id"    />
         <result property="userId"    column="user_id"    />
         <result property="receiveName"    column="receive_name"    />
         <result property="receivePhone"    column="receive_phone"    />
@@ -22,7 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectUserAddressVo">
-        select user_addr_id, user_id, receive_name, receive_phone, province_code, city_code, district_code, detail_address, version, del_flag, create_by, create_time, update_by, update_time from user_address
+        select id, user_id, receive_name, receive_phone, province_code, city_code, district_code, detail_address, version, del_flag, create_by, create_time, update_by, update_time from user_address
     </sql>
 
     <select id="selectUserAddressList" parameterType="UserAddress" resultMap="UserAddressResult">
@@ -41,7 +41,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectUserAddressByUserAddrId" parameterType="Long" resultMap="UserAddressResult">
         <include refid="selectUserAddressVo"/>
-        where user_addr_id = #{userAddrId}
+        where id = #{id}
     </select>
 
     <insert id="insertUserAddress" parameterType="UserAddress">
@@ -97,17 +97,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where user_addr_id = #{userAddrId}
+        where id = #{id}
     </update>
 
     <delete id="deleteUserAddressByUserAddrId" parameterType="Long">
-        delete from user_address where user_addr_id = #{userAddrId}
+        delete from user_address where id = #{id}
     </delete>
 
     <delete id="deleteUserAddressByUserAddrIds" parameterType="String">
-        delete from user_address where user_addr_id in 
-        <foreach item="userAddrId" collection="array" open="(" separator="," close=")">
-            #{userAddrId}
+        delete from user_address where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

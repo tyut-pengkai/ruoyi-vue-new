@@ -23,7 +23,7 @@ public class StoreProductStorageDemandDeducte extends XktBaseEntity {
      * 档口商品入库抵扣需求ID
      */
     @TableId
-    private Long storeProdStorDemaDeducteId;
+    private Long id;
 
     /**
      * 档口商品入库明细ID
@@ -149,7 +149,7 @@ public class StoreProductStorageDemandDeducte extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeProdStorDemaDeducteId", getStoreProdStorDemaDeducteId())
+                .append("id", getId())
                 .append("storeProdStorDetailId", getStoreProdStorDetailId())
                 .append("storeProdDemandId", getStoreProdDemandId())
                 .append("storeProdColorId", getStoreProdColorId())

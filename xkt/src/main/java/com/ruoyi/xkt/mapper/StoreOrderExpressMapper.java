@@ -15,10 +15,10 @@ public interface StoreOrderExpressMapper extends BaseMapper<StoreOrderExpress> {
     /**
      * 查询档口代发订单快递
      *
-     * @param storeOrderExprId 档口代发订单快递主键
+     * @param id 档口代发订单快递主键
      * @return 档口代发订单快递
      */
-    public StoreOrderExpress selectStoreOrderExpressByStoreOrderExprId(Long storeOrderExprId);
+    public StoreOrderExpress selectStoreOrderExpressByStoreOrderExprId(Long id);
 
     /**
      * 查询档口代发订单快递列表
@@ -47,10 +47,10 @@ public interface StoreOrderExpressMapper extends BaseMapper<StoreOrderExpress> {
     /**
      * 删除档口代发订单快递
      *
-     * @param storeOrderExprId 档口代发订单快递主键
+     * @param id 档口代发订单快递主键
      * @return 结果
      */
-    public int deleteStoreOrderExpressByStoreOrderExprId(Long storeOrderExprId);
+    public int deleteStoreOrderExpressByStoreOrderExprId(Long id);
 
     /**
      * 批量删除档口代发订单快递

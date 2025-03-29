@@ -23,7 +23,7 @@ public class StoreColor extends XktBaseEntity {
      * 档口商品颜色ID
      */
     @TableId
-    private Long storeColorId;
+    private Long id;
 
     /**
      * 档口ID
@@ -47,7 +47,7 @@ public class StoreColor extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeColorId", getStoreColorId())
+                .append("id", getId())
                 .append("storeId", getStoreId())
                 .append("colorName", getColorName())
                 .append("orderNum", getOrderNum())

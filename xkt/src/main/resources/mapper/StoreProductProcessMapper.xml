@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreProductProcessMapper">
     
     <resultMap type="StoreProductProcess" id="StoreProductProcessResult">
-        <result property="storeProdProcessId"    column="store_prod_process_id"    />
+        <result property="id"    column="id"    />
         <result property="storeProdId"    column="store_prod_id"    />
         <result property="shoeType"    column="shoe_type"    />
         <result property="shoeSize"    column="shoe_size"    />
@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreProductProcessVo">
-        select store_prod_process_id, store_prod_id, shoe_type, shoe_size, main_skin, main_skin_usage, match_skin, match_skin_usage, neckline, insole, fastener, shoe_accessories, toe_cap, edge_binding, mid_outsole, platform_sole, midsole_factory_code, outsole_factory_code, heel_factory_code, components, second_sole_material, second_upper_material, custom_attr, version, del_flag, create_by, create_time, update_by, update_time from store_product_process
+        select id, store_prod_id, shoe_type, shoe_size, main_skin, main_skin_usage, match_skin, match_skin_usage, neckline, insole, fastener, shoe_accessories, toe_cap, edge_binding, mid_outsole, platform_sole, midsole_factory_code, outsole_factory_code, heel_factory_code, components, second_sole_material, second_upper_material, custom_attr, version, del_flag, create_by, create_time, update_by, update_time from store_product_process
     </sql>
 
     <select id="selectStoreProductProcessList" parameterType="StoreProductProcess" resultMap="StoreProductProcessResult">
@@ -71,7 +71,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreProductProcessByStoreProdProcessId" parameterType="Long" resultMap="StoreProductProcessResult">
         <include refid="selectStoreProductProcessVo"/>
-        where store_prod_process_id = #{storeProdProcessId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreProductProcess" parameterType="StoreProductProcess" useGeneratedKeys="true" keyProperty="storeProdProcessId">
@@ -170,17 +170,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_prod_process_id = #{storeProdProcessId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreProductProcessByStoreProdProcessId" parameterType="Long">
-        delete from store_product_process where store_prod_process_id = #{storeProdProcessId}
+        delete from store_product_process where id = #{id}
     </delete>
 
     <delete id="deleteStoreProductProcessByStoreProdProcessIds" parameterType="String">
-        delete from store_product_process where store_prod_process_id in 
-        <foreach item="storeProdProcessId" collection="array" open="(" separator="," close=")">
-            #{storeProdProcessId}
+        delete from store_product_process where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 

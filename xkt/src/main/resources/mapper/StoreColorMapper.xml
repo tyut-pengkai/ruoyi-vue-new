@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreColorMapper">
     
     <resultMap type="StoreColor" id="StoreColorResult">
-        <result property="storeColorId"    column="store_color_id"    />
+        <result property="id"    column="id"    />
         <result property="storeId"    column="store_id"    />
         <result property="colorName"    column="color_name"    />
         <result property="orderNum"    column="order_num"    />
@@ -18,7 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreColorVo">
-        select store_color_id, store_id, color_name, order_num, version, del_flag, create_by, create_time, update_by, update_time from store_color
+        select id, store_id, color_name, order_num, version, del_flag, create_by, create_time, update_by, update_time from store_color
     </sql>
 
     <select id="selectStoreColorList" parameterType="StoreColor" resultMap="StoreColorResult">
@@ -33,7 +33,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreColorByStoreColorId" parameterType="Long" resultMap="StoreColorResult">
         <include refid="selectStoreColorVo"/>
-        where store_color_id = #{storeColorId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreColor" parameterType="StoreColor" useGeneratedKeys="true" keyProperty="storeColorId">
@@ -75,23 +75,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_color_id = #{storeColorId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreColorByStoreColorId" parameterType="Long">
-        delete from store_color where store_color_id = #{storeColorId}
+        delete from store_color where id = #{id}
     </delete>
 
     <delete id="deleteStoreColorByStoreColorIds" parameterType="String">
-        delete from store_color where store_color_id in 
-        <foreach item="storeColorId" collection="array" open="(" separator="," close=")">
-            #{storeColorId}
+        delete from store_color where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 
     <select id="selectListByStoreProdId" parameterType="Long" resultType="com.ruoyi.xkt.dto.storeColor.StoreColorDTO">
         SELECT
-            store_color_id AS storeColorId,
+            id AS storeColorId,
             color_name AS colorName,
             order_num AS orderNum
         FROM

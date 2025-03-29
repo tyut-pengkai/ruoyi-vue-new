@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreProductStorageMapper">
     
     <resultMap type="StoreProductStorage" id="StoreProductStorageResult">
-        <result property="storeProdStorId"    column="store_prod_stor_id"    />
+        <result property="id"    column="id"    />
         <result property="code"    column="code"    />
         <result property="storageType"    column="storage_type"    />
         <result property="totalNum"    column="total_num"    />
@@ -20,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreProductStorageVo">
-        select store_prod_stor_id, code, storage_type, total_num, total_produce_price, storage_status, version, del_flag, create_by, create_time, update_by, update_time from store_product_storage
+        select id, code, storage_type, total_num, total_produce_price, storage_status, version, del_flag, create_by, create_time, update_by, update_time from store_product_storage
     </sql>
 
     <select id="selectStoreProductStorageList" parameterType="StoreProductStorage" resultMap="StoreProductStorageResult">
@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreProductStorageByStoreProdStorId" parameterType="Long" resultMap="StoreProductStorageResult">
         <include refid="selectStoreProductStorageVo"/>
-        where store_prod_stor_id = #{storeProdStorId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreProductStorage" parameterType="StoreProductStorage" useGeneratedKeys="true" keyProperty="storeProdStorId">
@@ -85,17 +85,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_prod_stor_id = #{storeProdStorId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreProductStorageByStoreProdStorId" parameterType="Long">
-        delete from store_product_storage where store_prod_stor_id = #{storeProdStorId}
+        delete from store_product_storage where id = #{id}
     </delete>
 
     <delete id="deleteStoreProductStorageByStoreProdStorIds" parameterType="String">
-        delete from store_product_storage where store_prod_stor_id in 
-        <foreach item="storeProdStorId" collection="array" open="(" separator="," close=")">
-            #{storeProdStorId}
+        delete from store_product_storage where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

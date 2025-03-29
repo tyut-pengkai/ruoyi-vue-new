@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreCertificateMapper">
     
     <resultMap type="StoreCertificate" id="StoreCertificateResult">
-        <result property="storeCertId"    column="store_cert_id"    />
+        <result property="id"    column="id"    />
         <result property="storeId"    column="store_id"    />
         <result property="realName"    column="real_name"    />
         <result property="phone"    column="phone"    />
@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreCertificateVo">
-        select store_cert_id, store_id, real_name, phone, id_card, id_card_front_file_id, id_card_back_file_id, license_file_id, social_credit_code, sole_proprietorship_type, market_entry_type, license_name, register_org, register_status, legal_name, real_business_address, business_scope, register_capital, establish_date, business_term_start_date, business_term_end_date, approval_date, cert_status, version, del_flag, create_by, create_time, update_by, update_time from store_certificate
+        select id, store_id, real_name, phone, id_card, id_card_front_file_id, id_card_back_file_id, license_file_id, social_credit_code, sole_proprietorship_type, market_entry_type, license_name, register_org, register_status, legal_name, real_business_address, business_scope, register_capital, establish_date, business_term_start_date, business_term_end_date, approval_date, cert_status, version, del_flag, create_by, create_time, update_by, update_time from store_certificate
     </sql>
 
     <select id="selectStoreCertificateList" parameterType="StoreCertificate" resultMap="StoreCertificateResult">
@@ -71,7 +71,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreCertificateByStoreCertId" parameterType="Long" resultMap="StoreCertificateResult">
         <include refid="selectStoreCertificateVo"/>
-        where store_cert_id = #{storeCertId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreCertificate" parameterType="StoreCertificate" useGeneratedKeys="true" keyProperty="storeCertId">
@@ -170,17 +170,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_cert_id = #{storeCertId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreCertificateByStoreCertId" parameterType="Long">
-        delete from store_certificate where store_cert_id = #{storeCertId}
+        delete from store_certificate where id = #{id}
     </delete>
 
     <delete id="deleteStoreCertificateByStoreCertIds" parameterType="String">
-        delete from store_certificate where store_cert_id in 
-        <foreach item="storeCertId" collection="array" open="(" separator="," close=")">
-            #{storeCertId}
+        delete from store_certificate where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

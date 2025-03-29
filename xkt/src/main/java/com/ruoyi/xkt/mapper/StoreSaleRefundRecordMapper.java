@@ -15,10 +15,10 @@ public interface StoreSaleRefundRecordMapper extends BaseMapper<StoreSaleRefundR
     /**
      * 查询档口销售返单
      *
-     * @param storeSaleRefundRecordId 档口销售返单主键
+     * @param id 档口销售返单主键
      * @return 档口销售返单
      */
-    public StoreSaleRefundRecord selectStoreSaleRefundRecordByStoreSaleRefundRecordId(Long storeSaleRefundRecordId);
+    public StoreSaleRefundRecord selectStoreSaleRefundRecordByStoreSaleRefundRecordId(Long id);
 
     /**
      * 查询档口销售返单列表
@@ -47,10 +47,10 @@ public interface StoreSaleRefundRecordMapper extends BaseMapper<StoreSaleRefundR
     /**
      * 删除档口销售返单
      *
-     * @param storeSaleRefundRecordId 档口销售返单主键
+     * @param id 档口销售返单主键
      * @return 结果
      */
-    public int deleteStoreSaleRefundRecordByStoreSaleRefundRecordId(Long storeSaleRefundRecordId);
+    public int deleteStoreSaleRefundRecordByStoreSaleRefundRecordId(Long id);
 
     /**
      * 批量删除档口销售返单

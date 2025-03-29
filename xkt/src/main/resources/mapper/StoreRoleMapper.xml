@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreRoleMapper">
     
     <resultMap type="StoreRole" id="StoreRoleResult">
-        <result property="storeRoleId"    column="store_role_id"    />
+        <result property="id"    column="id"    />
         <result property="storeId"    column="store_id"    />
         <result property="roleStatus"    column="role_status"    />
         <result property="version"    column="version"    />
@@ -17,7 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreRoleVo">
-        select store_role_id, store_id, role_status, version, del_flag, create_by, create_time, update_by, update_time from store_role
+        select id, store_id, role_status, version, del_flag, create_by, create_time, update_by, update_time from store_role
     </sql>
 
     <select id="selectStoreRoleList" parameterType="StoreRole" resultMap="StoreRoleResult">
@@ -31,7 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreRoleByStoreRoleId" parameterType="Long" resultMap="StoreRoleResult">
         <include refid="selectStoreRoleVo"/>
-        where store_role_id = #{storeRoleId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreRole" parameterType="StoreRole" useGeneratedKeys="true" keyProperty="storeRoleId">
@@ -70,17 +70,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_role_id = #{storeRoleId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreRoleByStoreRoleId" parameterType="Long">
-        delete from store_role where store_role_id = #{storeRoleId}
+        delete from store_role where id = #{id}
     </delete>
 
     <delete id="deleteStoreRoleByStoreRoleIds" parameterType="String">
-        delete from store_role where store_role_id in 
-        <foreach item="storeRoleId" collection="array" open="(" separator="," close=")">
-            #{storeRoleId}
+        delete from store_role where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

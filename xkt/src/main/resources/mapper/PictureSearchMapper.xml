@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.PictureSearchMapper">
     
     <resultMap type="PictureSearch" id="PictureSearchResult">
-        <result property="picSearchId"    column="pic_search_id"    />
+        <result property="id"    column="id"    />
         <result property="searchFileId"    column="search_file_id"    />
         <result property="userId"    column="user_id"    />
         <result property="voucherDate"    column="voucher_date"    />
@@ -18,7 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectPictureSearchVo">
-        select pic_search_id, search_file_id, user_id, voucher_date, version, del_flag, create_by, create_time, update_by, update_time from picture_search
+        select id, search_file_id, user_id, voucher_date, version, del_flag, create_by, create_time, update_by, update_time from picture_search
     </sql>
 
     <select id="selectPictureSearchList" parameterType="PictureSearch" resultMap="PictureSearchResult">
@@ -33,7 +33,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectPictureSearchByPicSearchId" parameterType="Long" resultMap="PictureSearchResult">
         <include refid="selectPictureSearchVo"/>
-        where pic_search_id = #{picSearchId}
+        where id = #{id}
     </select>
 
     <insert id="insertPictureSearch" parameterType="PictureSearch" useGeneratedKeys="true" keyProperty="picSearchId">
@@ -75,17 +75,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where pic_search_id = #{picSearchId}
+        where id = #{id}
     </update>
 
     <delete id="deletePictureSearchByPicSearchId" parameterType="Long">
-        delete from picture_search where pic_search_id = #{picSearchId}
+        delete from picture_search where id = #{id}
     </delete>
 
     <delete id="deletePictureSearchByPicSearchIds" parameterType="String">
-        delete from picture_search where pic_search_id in 
-        <foreach item="picSearchId" collection="array" open="(" separator="," close=")">
-            #{picSearchId}
+        delete from picture_search where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

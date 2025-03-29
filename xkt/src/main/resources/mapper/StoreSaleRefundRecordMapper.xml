@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreSaleRefundRecordMapper">
     
     <resultMap type="StoreSaleRefundRecord" id="StoreSaleRefundRecordResult">
-        <result property="storeSaleRefundRecordId"    column="store_sale_refund_record_id"    />
+        <result property="id"    column="id"    />
         <result property="storeSaleId"    column="store_sale_id"    />
         <result property="storeId"    column="store_id"    />
         <result property="storeCusId"    column="store_cus_id"    />
@@ -25,7 +25,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreSaleRefundRecordVo">
-        select store_sale_refund_record_id, store_sale_id, store_id, store_cus_id, store_prod_id, sale_type, code, quantity, amount, pay_way, remark, version, del_flag, create_by, create_time, update_by, update_time from store_sale_refund_record
+        select id, store_sale_id, store_id, store_cus_id, store_prod_id, sale_type, code, quantity, amount, pay_way, remark, version, del_flag, create_by, create_time, update_by, update_time from store_sale_refund_record
     </sql>
 
     <select id="selectStoreSaleRefundRecordList" parameterType="StoreSaleRefundRecord" resultMap="StoreSaleRefundRecordResult">
@@ -46,7 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreSaleRefundRecordByStoreSaleRefundRecordId" parameterType="Long" resultMap="StoreSaleRefundRecordResult">
         <include refid="selectStoreSaleRefundRecordVo"/>
-        where store_sale_refund_record_id = #{storeSaleRefundRecordId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreSaleRefundRecord" parameterType="StoreSaleRefundRecord" useGeneratedKeys="true" keyProperty="storeSaleRefundRecordId">
@@ -109,17 +109,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_sale_refund_record_id = #{storeSaleRefundRecordId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreSaleRefundRecordByStoreSaleRefundRecordId" parameterType="Long">
-        delete from store_sale_refund_record where store_sale_refund_record_id = #{storeSaleRefundRecordId}
+        delete from store_sale_refund_record where id = #{id}
     </delete>
 
     <delete id="deleteStoreSaleRefundRecordByStoreSaleRefundRecordIds" parameterType="String">
-        delete from store_sale_refund_record where store_sale_refund_record_id in 
-        <foreach item="storeSaleRefundRecordId" collection="array" open="(" separator="," close=")">
-            #{storeSaleRefundRecordId}
+        delete from store_sale_refund_record where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

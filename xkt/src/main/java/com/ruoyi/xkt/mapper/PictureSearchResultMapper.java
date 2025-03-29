@@ -15,10 +15,10 @@ public interface PictureSearchResultMapper extends BaseMapper<PictureSearchResul
     /**
      * 查询以图搜款结果
      *
-     * @param picSearchResId 以图搜款结果主键
+     * @param id 以图搜款结果主键
      * @return 以图搜款结果
      */
-    public PictureSearchResult selectPictureSearchResultByPicSearchResId(Long picSearchResId);
+    public PictureSearchResult selectPictureSearchResultByPicSearchResId(Long id);
 
     /**
      * 查询以图搜款结果列表
@@ -47,10 +47,10 @@ public interface PictureSearchResultMapper extends BaseMapper<PictureSearchResul
     /**
      * 删除以图搜款结果
      *
-     * @param picSearchResId 以图搜款结果主键
+     * @param id 以图搜款结果主键
      * @return 结果
      */
-    public int deletePictureSearchResultByPicSearchResId(Long picSearchResId);
+    public int deletePictureSearchResultByPicSearchResId(Long id);
 
     /**
      * 批量删除以图搜款结果

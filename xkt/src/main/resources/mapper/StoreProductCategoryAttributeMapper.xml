@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreProductCategoryAttributeMapper">
     
     <resultMap type="StoreProductCategoryAttribute" id="StoreProductCategoryAttributeResult">
-        <result property="storeProdAttrId"    column="store_prod_attr_id"    />
+        <result property="id"    column="id"    />
         <result property="storeProdId"    column="store_prod_id"    />
         <result property="sysDictType"    column="sys_dict_type"    />
         <result property="version"    column="version"    />
@@ -17,7 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreProductCategoryAttributeVo">
-        select store_prod_attr_id, store_prod_id, sys_dict_type, version, del_flag, create_by, create_time, update_by, update_time from store_product_category_attribute
+        select id, store_prod_id, sys_dict_type, version, del_flag, create_by, create_time, update_by, update_time from store_product_category_attribute
     </sql>
 
     <select id="selectStoreProductCategoryAttributeList" parameterType="StoreProductCategoryAttribute" resultMap="StoreProductCategoryAttributeResult">
@@ -31,7 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreProductCategoryAttributeByStoreProdAttrId" parameterType="Long" resultMap="StoreProductCategoryAttributeResult">
         <include refid="selectStoreProductCategoryAttributeVo"/>
-        where store_prod_attr_id = #{storeProdAttrId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreProductCategoryAttribute" parameterType="StoreProductCategoryAttribute" useGeneratedKeys="true" keyProperty="storeProdAttrId">
@@ -70,17 +70,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_prod_attr_id = #{storeProdAttrId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreProductCategoryAttributeByStoreProdAttrId" parameterType="Long">
-        delete from store_product_category_attribute where store_prod_attr_id = #{storeProdAttrId}
+        delete from store_product_category_attribute where id = #{id}
     </delete>
 
     <delete id="deleteStoreProductCategoryAttributeByStoreProdAttrIds" parameterType="String">
-        delete from store_product_category_attribute where store_prod_attr_id in 
-        <foreach item="storeProdAttrId" collection="array" open="(" separator="," close=")">
-            #{storeProdAttrId}
+        delete from store_product_category_attribute where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 

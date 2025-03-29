@@ -23,7 +23,7 @@ public class StoreHomepage extends XktBaseEntity {
      * 档口首页ID
      */
     @TableId
-    private Long storeHomeId;
+    private Long id;
 
     /**
      * 档口ID
@@ -53,7 +53,7 @@ public class StoreHomepage extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeHomeId", getStoreHomeId())
+                .append("id", getId())
                 .append("storeId", getStoreId())
                 .append("type", getType())
                 .append("fileId", getFileId())

@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.UserFavoritesMapper">
     
     <resultMap type="UserFavorites" id="UserFavoritesResult">
-        <result property="userFavoId"    column="user_favo_id"    />
+        <result property="id"    column="id"    />
         <result property="userId"    column="user_id"    />
         <result property="storeId"    column="store_id"    />
         <result property="storeProdId"    column="store_prod_id"    />
@@ -18,7 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectUserFavoritesVo">
-        select user_favo_id, user_id, store_id, store_prod_id, version, del_flag, create_by, create_time, update_by, update_time from user_favorites
+        select id, user_id, store_id, store_prod_id, version, del_flag, create_by, create_time, update_by, update_time from user_favorites
     </sql>
 
     <select id="selectUserFavoritesList" parameterType="UserFavorites" resultMap="UserFavoritesResult">
@@ -33,7 +33,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectUserFavoritesByUserFavoId" parameterType="Long" resultMap="UserFavoritesResult">
         <include refid="selectUserFavoritesVo"/>
-        where user_favo_id = #{userFavoId}
+        where id = #{id}
     </select>
 
     <insert id="insertUserFavorites" parameterType="UserFavorites" useGeneratedKeys="true" keyProperty="userFavoId">
@@ -75,17 +75,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where user_favo_id = #{userFavoId}
+        where id = #{id}
     </update>
 
     <delete id="deleteUserFavoritesByUserFavoId" parameterType="Long">
-        delete from user_favorites where user_favo_id = #{userFavoId}
+        delete from user_favorites where id = #{id}
     </delete>
 
     <delete id="deleteUserFavoritesByUserFavoIds" parameterType="String">
-        delete from user_favorites where user_favo_id in 
-        <foreach item="userFavoId" collection="array" open="(" separator="," close=")">
-            #{userFavoId}
+        delete from user_favorites where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

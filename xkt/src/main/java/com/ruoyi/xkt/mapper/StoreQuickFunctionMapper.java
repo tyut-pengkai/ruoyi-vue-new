@@ -15,10 +15,10 @@ public interface StoreQuickFunctionMapper extends BaseMapper<StoreQuickFunction>
     /**
      * 查询档口快捷功能
      *
-     * @param storeQuickFuncId 档口快捷功能主键
+     * @param id 档口快捷功能主键
      * @return 档口快捷功能
      */
-    public StoreQuickFunction selectStoreQuickFunctionByStoreQuickFuncId(Long storeQuickFuncId);
+    public StoreQuickFunction selectStoreQuickFunctionByStoreQuickFuncId(Long id);
 
     /**
      * 查询档口快捷功能列表
@@ -47,10 +47,10 @@ public interface StoreQuickFunctionMapper extends BaseMapper<StoreQuickFunction>
     /**
      * 删除档口快捷功能
      *
-     * @param storeQuickFuncId 档口快捷功能主键
+     * @param id 档口快捷功能主键
      * @return 结果
      */
-    public int deleteStoreQuickFunctionByStoreQuickFuncId(Long storeQuickFuncId);
+    public int deleteStoreQuickFunctionByStoreQuickFuncId(Long id);
 
     /**
      * 批量删除档口快捷功能

@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.SysFileMapper">
     
     <resultMap type="SysFile" id="SysFileResult">
-        <result property="fileId"    column="file_id"    />
+        <result property="id"    column="id"    />
         <result property="fileName"    column="file_name"    />
         <result property="fileUrl"    column="file_url"    />
         <result property="fileSize"    column="file_size"    />
@@ -18,7 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectSysFileVo">
-        select file_id, file_name, file_url, file_size, version, del_flag, create_by, create_time, update_by, update_time from sys_file
+        select id, file_name, file_url, file_size, version, del_flag, create_by, create_time, update_by, update_time from sys_file
     </sql>
 
     <select id="selectSysFileList" parameterType="SysFile" resultMap="SysFileResult">
@@ -33,7 +33,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectSysFileByFileId" parameterType="Long" resultMap="SysFileResult">
         <include refid="selectSysFileVo"/>
-        where file_id = #{fileId}
+        where id = #{id}
     </select>
 
     <insert id="insertSysFile" parameterType="SysFile" useGeneratedKeys="true" keyProperty="fileId">
@@ -75,17 +75,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where file_id = #{fileId}
+        where id = #{id}
     </update>
 
     <delete id="deleteSysFileByFileId" parameterType="Long">
-        delete from sys_file where file_id = #{fileId}
+        delete from sys_file where id = #{id}
     </delete>
 
     <delete id="deleteSysFileByFileIds" parameterType="String">
-        delete from sys_file where file_id in 
-        <foreach item="fileId" collection="array" open="(" separator="," close=")">
-            #{fileId}
+        delete from sys_file where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

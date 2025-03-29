@@ -15,10 +15,10 @@ public interface StoreProductDemandMapper extends BaseMapper<StoreProductDemand>
     /**
      * 查询档口商品需求单
      *
-     * @param storeProdDemandId 档口商品需求单主键
+     * @param id 档口商品需求单主键
      * @return 档口商品需求单
      */
-    public StoreProductDemand selectStoreProductDemandByStoreProdDemandId(Long storeProdDemandId);
+    public StoreProductDemand selectStoreProductDemandByStoreProdDemandId(Long id);
 
     /**
      * 查询档口商品需求单列表
@@ -47,10 +47,10 @@ public interface StoreProductDemandMapper extends BaseMapper<StoreProductDemand>
     /**
      * 删除档口商品需求单
      *
-     * @param storeProdDemandId 档口商品需求单主键
+     * @param id 档口商品需求单主键
      * @return 结果
      */
-    public int deleteStoreProductDemandByStoreProdDemandId(Long storeProdDemandId);
+    public int deleteStoreProductDemandByStoreProdDemandId(Long id);
 
     /**
      * 批量删除档口商品需求单

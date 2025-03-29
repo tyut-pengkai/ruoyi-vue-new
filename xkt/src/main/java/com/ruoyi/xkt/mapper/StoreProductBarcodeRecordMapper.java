@@ -15,10 +15,10 @@ public interface StoreProductBarcodeRecordMapper extends BaseMapper<StoreProduct
     /**
      * 查询档口打印条形码记录
      *
-     * @param storeProdBarcodeRecordId 档口打印条形码记录主键
+     * @param id 档口打印条形码记录主键
      * @return 档口打印条形码记录
      */
-    public StoreProductBarcodeRecord selectStoreProductBarcodeRecordByStoreProdBarcodeRecordId(Long storeProdBarcodeRecordId);
+    public StoreProductBarcodeRecord selectStoreProductBarcodeRecordByStoreProdBarcodeRecordId(Long id);
 
     /**
      * 查询档口打印条形码记录列表
@@ -47,10 +47,10 @@ public interface StoreProductBarcodeRecordMapper extends BaseMapper<StoreProduct
     /**
      * 删除档口打印条形码记录
      *
-     * @param storeProdBarcodeRecordId 档口打印条形码记录主键
+     * @param id 档口打印条形码记录主键
      * @return 结果
      */
-    public int deleteStoreProductBarcodeRecordByStoreProdBarcodeRecordId(Long storeProdBarcodeRecordId);
+    public int deleteStoreProductBarcodeRecordByStoreProdBarcodeRecordId(Long id);
 
     /**
      * 批量删除档口打印条形码记录

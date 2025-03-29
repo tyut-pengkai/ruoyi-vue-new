@@ -15,10 +15,10 @@ public interface StoreCertificateMapper extends BaseMapper<StoreCertificate> {
     /**
      * 查询档口认证
      *
-     * @param storeCertId 档口认证主键
+     * @param id 档口认证主键
      * @return 档口认证
      */
-    public StoreCertificate selectStoreCertificateByStoreCertId(Long storeCertId);
+    public StoreCertificate selectStoreCertificateByStoreCertId(Long id);
 
     /**
      * 查询档口认证列表
@@ -47,10 +47,10 @@ public interface StoreCertificateMapper extends BaseMapper<StoreCertificate> {
     /**
      * 删除档口认证
      *
-     * @param storeCertId 档口认证主键
+     * @param id 档口认证主键
      * @return 结果
      */
-    public int deleteStoreCertificateByStoreCertId(Long storeCertId);
+    public int deleteStoreCertificateByStoreCertId(Long id);
 
     /**
      * 批量删除档口认证

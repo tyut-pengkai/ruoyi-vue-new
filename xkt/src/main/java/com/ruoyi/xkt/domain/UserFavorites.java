@@ -23,7 +23,7 @@ public class UserFavorites extends XktBaseEntity {
      * 用户收藏ID
      */
     @TableId
-    private Long userFavoId;
+    private Long id;
 
     /**
      * sys_user.id
@@ -47,7 +47,7 @@ public class UserFavorites extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userFavoId", getUserFavoId())
+                .append("id", getId())
                 .append("userId", getUserId())
                 .append("storeId", getStoreId())
                 .append("storeProdId", getStoreProdId())

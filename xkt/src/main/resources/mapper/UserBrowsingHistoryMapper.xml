@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.UserBrowsingHistoryMapper">
     
     <resultMap type="UserBrowsingHistory" id="UserBrowsingHistoryResult">
-        <result property="userBrowHisId"    column="user_brow_his_id"    />
+        <result property="id"    column="id"    />
         <result property="userId"    column="user_id"    />
         <result property="fileId"    column="file_id"    />
         <result property="storeProdFileId"    column="store_prod_file_id"    />
@@ -24,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectUserBrowsingHistoryVo">
-        select user_brow_his_id, user_id, file_id, store_prod_file_id, store_id, store_name, prod_art_num, price, prod_title, voucher_date, version, del_flag, create_by, create_time, update_by, update_time from user_browsing_history
+        select id, user_id, file_id, store_prod_file_id, store_id, store_name, prod_art_num, price, prod_title, voucher_date, version, del_flag, create_by, create_time, update_by, update_time from user_browsing_history
     </sql>
 
     <select id="selectUserBrowsingHistoryList" parameterType="UserBrowsingHistory" resultMap="UserBrowsingHistoryResult">
@@ -45,7 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectUserBrowsingHistoryByUserBrowHisId" parameterType="Long" resultMap="UserBrowsingHistoryResult">
         <include refid="selectUserBrowsingHistoryVo"/>
-        where user_brow_his_id = #{userBrowHisId}
+        where id = #{id}
     </select>
 
     <insert id="insertUserBrowsingHistory" parameterType="UserBrowsingHistory" useGeneratedKeys="true" keyProperty="userBrowHisId">
@@ -105,17 +105,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where user_brow_his_id = #{userBrowHisId}
+        where id = #{id}
     </update>
 
     <delete id="deleteUserBrowsingHistoryByUserBrowHisId" parameterType="Long">
-        delete from user_browsing_history where user_brow_his_id = #{userBrowHisId}
+        delete from user_browsing_history where id = #{id}
     </delete>
 
     <delete id="deleteUserBrowsingHistoryByUserBrowHisIds" parameterType="String">
-        delete from user_browsing_history where user_brow_his_id in 
-        <foreach item="userBrowHisId" collection="array" open="(" separator="," close=")">
-            #{userBrowHisId}
+        delete from user_browsing_history where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

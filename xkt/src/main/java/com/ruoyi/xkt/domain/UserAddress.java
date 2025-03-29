@@ -23,7 +23,7 @@ public class UserAddress extends XktBaseEntity {
      * 用户地址ID
      */
     @TableId
-    private Long userAddrId;
+    private Long id;
 
     /**
      * sys_user.id
@@ -71,7 +71,7 @@ public class UserAddress extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userAddrId", getUserAddrId())
+                .append("id", getId())
                 .append("userId", getUserId())
                 .append("receiveName", getReceiveName())
                 .append("receivePhone", getReceivePhone())

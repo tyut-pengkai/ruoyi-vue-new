@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.StoreProductBarcodeMatch;
+import com.ruoyi.xkt.dto.storeProdBarcodeMatch.BarcodeMatchDTO;
 
 import java.util.List;
 
@@ -58,4 +59,8 @@ public interface IStoreProductBarcodeMatchService {
      * @return 结果
      */
     public int deleteStoreProductBarcodeMatchByStoreProdBarcodeMatchId(Long storeProdBarcodeMatchId);
+
+
+    int updateBarcodeMatch(BarcodeMatchDTO barcodeMatchDTO);
+
 }

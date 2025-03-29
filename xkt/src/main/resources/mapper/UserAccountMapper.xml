@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.UserAccountMapper">
     
     <resultMap type="UserAccount" id="UserAccountResult">
-        <result property="userAccId"    column="user_acc_id"    />
+        <result property="id"    column="id"    />
         <result property="userId"    column="user_id"    />
         <result property="accountType"    column="account_type"    />
         <result property="accountPhone"    column="account_phone"    />
@@ -20,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectUserAccountVo">
-        select user_acc_id, user_id, account_type, account_phone, account_name, balance, version, del_flag, create_by, create_time, update_by, update_time from user_account
+        select id, user_id, account_type, account_phone, account_name, balance, version, del_flag, create_by, create_time, update_by, update_time from user_account
     </sql>
 
     <select id="selectUserAccountList" parameterType="UserAccount" resultMap="UserAccountResult">
@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectUserAccountByUserAccId" parameterType="Long" resultMap="UserAccountResult">
         <include refid="selectUserAccountVo"/>
-        where user_acc_id = #{userAccId}
+        where id = #{id}
     </select>
 
     <insert id="insertUserAccount" parameterType="UserAccount" useGeneratedKeys="true" keyProperty="userAccId">
@@ -85,17 +85,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where user_acc_id = #{userAccId}
+        where id = #{id}
     </update>
 
     <delete id="deleteUserAccountByUserAccId" parameterType="Long">
-        delete from user_account where user_acc_id = #{userAccId}
+        delete from user_account where id = #{id}
     </delete>
 
     <delete id="deleteUserAccountByUserAccIds" parameterType="String">
-        delete from user_account where user_acc_id in 
-        <foreach item="userAccId" collection="array" open="(" separator="," close=")">
-            #{userAccId}
+        delete from user_account where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

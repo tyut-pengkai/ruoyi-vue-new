@@ -15,10 +15,10 @@ public interface StoreCustomerMapper extends BaseMapper<StoreCustomer> {
     /**
      * 查询档口客户
      *
-     * @param storeCusId 档口客户主键
+     * @param id 档口客户主键
      * @return 档口客户
      */
-    public StoreCustomer selectStoreCustomerByStoreCusId(Long storeCusId);
+    public StoreCustomer selectStoreCustomerByStoreCusId(Long id);
 
     /**
      * 查询档口客户列表
@@ -47,10 +47,10 @@ public interface StoreCustomerMapper extends BaseMapper<StoreCustomer> {
     /**
      * 删除档口客户
      *
-     * @param storeCusId 档口客户主键
+     * @param id 档口客户主键
      * @return 结果
      */
-    public int deleteStoreCustomerByStoreCusId(Long storeCusId);
+    public int deleteStoreCustomerByStoreCusId(Long id);
 
     /**
      * 批量删除档口客户

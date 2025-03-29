@@ -15,10 +15,10 @@ public interface UserAccountMapper extends BaseMapper<UserAccount> {
     /**
      * 查询用户账户（支付宝、微信等）
      *
-     * @param userAccId 用户账户（支付宝、微信等）主键
+     * @param id 用户账户（支付宝、微信等）主键
      * @return 用户账户（支付宝、微信等）
      */
-    public UserAccount selectUserAccountByUserAccId(Long userAccId);
+    public UserAccount selectUserAccountByUserAccId(Long id);
 
     /**
      * 查询用户账户（支付宝、微信等）列表
@@ -47,10 +47,10 @@ public interface UserAccountMapper extends BaseMapper<UserAccount> {
     /**
      * 删除用户账户（支付宝、微信等）
      *
-     * @param userAccId 用户账户（支付宝、微信等）主键
+     * @param id 用户账户（支付宝、微信等）主键
      * @return 结果
      */
-    public int deleteUserAccountByUserAccId(Long userAccId);
+    public int deleteUserAccountByUserAccId(Long id);
 
     /**
      * 批量删除用户账户（支付宝、微信等）

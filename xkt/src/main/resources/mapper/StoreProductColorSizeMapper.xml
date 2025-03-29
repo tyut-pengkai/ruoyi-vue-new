@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreProductColorSizeMapper">
     
     <resultMap type="StoreProductColorSize" id="StoreProductColorSizeResult">
-        <result property="storeProdColorSizeId"    column="store_prod_color_size_id"    />
+        <result property="id"    column="id"    />
         <result property="storeProdColorId"    column="store_prod_color_id"    />
         <result property="storeProdId"    column="store_prod_id"    />
         <result property="size"    column="size"    />
@@ -20,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreProductColorSizeVo">
-        select store_prod_color_size_id, store_prod_color_id, store_prod_id, size, barcode_prefix, standard, version, del_flag, create_by, create_time, update_by, update_time from store_product_color_size
+        select id, store_prod_color_id, store_prod_id, size, barcode_prefix, standard, version, del_flag, create_by, create_time, update_by, update_time from store_product_color_size
     </sql>
 
     <select id="selectStoreProductColorSizeList" parameterType="StoreProductColorSize" resultMap="StoreProductColorSizeResult">
@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreProductColorSizeByStoreProdColorSizeId" parameterType="Long" resultMap="StoreProductColorSizeResult">
         <include refid="selectStoreProductColorSizeVo"/>
-        where store_prod_color_size_id = #{storeProdColorSizeId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreProductColorSize" parameterType="StoreProductColorSize" useGeneratedKeys="true" keyProperty="storeProdColorSizeId">
@@ -85,17 +85,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_prod_color_size_id = #{storeProdColorSizeId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreProductColorSizeByStoreProdColorSizeId" parameterType="Long">
-        delete from store_product_color_size where store_prod_color_size_id = #{storeProdColorSizeId}
+        delete from store_product_color_size where id = #{id}
     </delete>
 
     <delete id="deleteStoreProductColorSizeByStoreProdColorSizeIds" parameterType="String">
-        delete from store_product_color_size where store_prod_color_size_id in 
-        <foreach item="storeProdColorSizeId" collection="array" open="(" separator="," close=")">
-            #{storeProdColorSizeId}
+        delete from store_product_color_size where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 

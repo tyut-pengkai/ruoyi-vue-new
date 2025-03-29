@@ -27,7 +27,7 @@ public class StoreProductFile extends XktBaseEntity {
      * 档口商品文件ID
      */
     @TableId
-    private Long storeProdFileId;
+    private Long id;
 
     /**
      * 档口商品ID
@@ -68,7 +68,7 @@ public class StoreProductFile extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeProdFileId", getStoreProdFileId())
+                .append("id", getId())
                 .append("storeProdId", getStoreProdId())
                 .append("fileId", getFileId())
                 .append("fileType", getFileType())

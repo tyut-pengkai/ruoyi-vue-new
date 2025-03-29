@@ -16,10 +16,10 @@ public interface StoreProductColorPriceMapper extends BaseMapper<StoreProductCol
     /**
      * 查询档口商品颜色定价
      *
-     * @param storeProdColorPriceId 档口商品颜色定价主键
+     * @param id 档口商品颜色定价主键
      * @return 档口商品颜色定价
      */
-    public StoreProductColorPrice selectStoreProductColorPriceByStoreProdColorPriceId(Long storeProdColorPriceId);
+    public StoreProductColorPrice selectStoreProductColorPriceByStoreProdColorPriceId(Long id);
 
     /**
      * 查询档口商品颜色定价列表
@@ -48,10 +48,10 @@ public interface StoreProductColorPriceMapper extends BaseMapper<StoreProductCol
     /**
      * 删除档口商品颜色定价
      *
-     * @param storeProdColorPriceId 档口商品颜色定价主键
+     * @param id 档口商品颜色定价主键
      * @return 结果
      */
-    public int deleteStoreProductColorPriceByStoreProdColorPriceId(Long storeProdColorPriceId);
+    public int deleteStoreProductColorPriceByStoreProdColorPriceId(Long id);
 
     /**
      * 批量删除档口商品颜色定价

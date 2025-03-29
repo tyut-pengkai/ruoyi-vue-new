@@ -25,7 +25,7 @@ public class StoreProductDetail extends XktBaseEntity {
      * 商品详情ID
      */
     @TableId
-    private Long storeProdDetailId;
+    private Long id;
 
     /**
      * 档口商品ID
@@ -43,7 +43,7 @@ public class StoreProductDetail extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeProdDetailId", getStoreProdDetailId())
+                .append("id", getId())
                 .append("storeProdId", getStoreProdId())
                 .append("detail", getDetail())
                 .append("version", getVersion())

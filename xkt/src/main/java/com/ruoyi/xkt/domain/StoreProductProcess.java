@@ -23,7 +23,7 @@ public class StoreProductProcess extends XktBaseEntity {
      * 档口商品工艺信息ID
      */
     @TableId
-    private Long storeProdProcessId;
+    private Long id;
 
     /**
      * 档口商品ID

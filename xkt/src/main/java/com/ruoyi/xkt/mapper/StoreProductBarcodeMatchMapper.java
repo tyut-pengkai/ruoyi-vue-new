@@ -15,10 +15,10 @@ public interface StoreProductBarcodeMatchMapper extends BaseMapper<StoreProductB
     /**
      * 查询档口条形码和第三方系统条形码匹配结果
      *
-     * @param storeProdBarcodeMatchId 档口条形码和第三方系统条形码匹配结果主键
+     * @param id 档口条形码和第三方系统条形码匹配结果主键
      * @return 档口条形码和第三方系统条形码匹配结果
      */
-    public StoreProductBarcodeMatch selectStoreProductBarcodeMatchByStoreProdBarcodeMatchId(Long storeProdBarcodeMatchId);
+    public StoreProductBarcodeMatch selectStoreProductBarcodeMatchByStoreProdBarcodeMatchId(Long id);
 
     /**
      * 查询档口条形码和第三方系统条形码匹配结果列表
@@ -47,10 +47,10 @@ public interface StoreProductBarcodeMatchMapper extends BaseMapper<StoreProductB
     /**
      * 删除档口条形码和第三方系统条形码匹配结果
      *
-     * @param storeProdBarcodeMatchId 档口条形码和第三方系统条形码匹配结果主键
+     * @param id 档口条形码和第三方系统条形码匹配结果主键
      * @return 结果
      */
-    public int deleteStoreProductBarcodeMatchByStoreProdBarcodeMatchId(Long storeProdBarcodeMatchId);
+    public int deleteStoreProductBarcodeMatchByStoreProdBarcodeMatchId(Long id);
 
     /**
      * 批量删除档口条形码和第三方系统条形码匹配结果

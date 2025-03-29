@@ -63,9 +63,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional(readOnly = true)
     public StoreProdResDTO selectStoreProductByStoreProdId(Long storeProdId) {
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
-                        .eq(StoreProduct::getStoreProdId, storeProdId).eq(StoreProduct::getDelFlag, "0")))
+                        .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, "0")))
                 .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
-        StoreProdResDTO storeProdResDTO = BeanUtil.toBean(storeProd, StoreProdResDTO.class);
+        StoreProdResDTO storeProdResDTO = BeanUtil.toBean(storeProd, StoreProdResDTO.class).setStoreProdId(storeProd.getId());
         // 档口文件（商品主图、主图视频、下载的商品详情）
         List<StoreProdFileResDTO> fileResList = this.storeProdFileMapper.selectListByStoreProdId(storeProdId);
         storeProdResDTO.setFileList(CollectionUtils.isEmpty(fileResList) ? new ArrayList<>() : BeanUtil.copyToList(fileResList, StoreProdFileResDTO.class));
@@ -97,7 +97,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional(readOnly = true)
     public StoreProdPicSpaceResDTO getStoreProductPicSpace(Long storeId) {
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
-                        .eq(Store::getStoreId, storeId).eq(Store::getDelFlag, "0")))
+                        .eq(Store::getId, storeId).eq(Store::getDelFlag, "0")))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         return StoreProdPicSpaceResDTO.builder().storeId(storeId).storeName(store.getStoreName())
                 .fileList(this.storeProdFileMapper.selectPicSpaceList(storeId, "DOWNLOAD")).build();
@@ -162,50 +162,50 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<SysFile> fileList = BeanUtil.copyToList(fileDTOList, SysFile.class);
         this.fileMapper.insert(fileList);
         // 将文件名称和文件ID映射到Map中
-        Map<String, Long> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getFileName, SysFile::getFileId));
+        Map<String, Long> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getFileName, SysFile::getId));
         // 档口文件（商品主图、主图视频、下载的商品详情）
         List<StoreProductFile> prodFileList = fileDTOList.stream()
                 .map(x -> BeanUtil.toBean(x, StoreProductFile.class).setFileId(fileMap.get(x.getFileName()))
-                        .setStoreProdId(storeProd.getStoreProdId()))
+                        .setStoreProdId(storeProd.getId()).setStoreId(storeProdDTO.getStoreId()))
                 .collect(Collectors.toList());
         this.storeProdFileMapper.insert(prodFileList);
         // 档口类目属性列表
         List<StoreProductCategoryAttribute> cateAttrList = storeProdDTO.getCateAttrList().stream()
                 .map(x -> BeanUtil.toBean(x, StoreProductCategoryAttribute.class)
-                        .setStoreProdId(storeProd.getStoreProdId()))
+                        .setStoreProdId(storeProd.getId()))
                 .collect(Collectors.toList());
         this.storeProdCateAttrMapper.insert(cateAttrList);
         // 档口颜色列表
         List<StoreProductColor> colorList = storeProdDTO.getColorList().stream()
                 .map(x -> BeanUtil.toBean(x, StoreProductColor.class)
-                        .setStoreProdId(storeProd.getStoreProdId()))
+                        .setStoreProdId(storeProd.getId()).setStoreId(storeProdDTO.getStoreId()))
                 .collect(Collectors.toList());
         this.storeProdColorMapper.insert(colorList);
         // 档口颜色尺码列表
         List<StoreProductColorSize> sizeList = storeProdDTO.getSizeList().stream()
                 .map(x -> BeanUtil.toBean(x, StoreProductColorSize.class)
-                        .setStoreProdId(storeProd.getStoreProdId()))
+                        .setStoreProdId(storeProd.getId()))
                 .collect(Collectors.toList());
         this.storeProdColorSizeMapper.insert(sizeList);
         // 档口颜色价格列表
         List<StoreProductColorPrice> priceList = storeProdDTO.getPriceList().stream()
                 .map(x -> BeanUtil.toBean(x, StoreProductColorPrice.class)
-                        .setStoreProdId(storeProd.getStoreProdId()))
+                        .setStoreProdId(storeProd.getId()))
                 .collect(Collectors.toList());
         this.storeProdColorPriceMapper.insert(priceList);
         // 档口详情内容
         StoreProductDetail storeProdDetail = BeanUtil.toBean(storeProdDTO.getDetail(), StoreProductDetail.class)
-                .setStoreProdId(storeProd.getStoreProdId());
+                .setStoreProdId(storeProd.getId());
         this.storeProdDetailMapper.insert(storeProdDetail);
         // 档口服务承诺
         if (ObjectUtils.isNotEmpty(storeProdDTO.getSvc())) {
             this.storeProdSvcMapper.insert(BeanUtil.toBean(storeProdDTO.getSvc(), StoreProductService.class)
-                    .setStoreProdId(storeProd.getStoreProdId()));
+                    .setStoreProdId(storeProd.getId()));
         }
         // 档口生产工艺信息
         if (ObjectUtils.isNotEmpty(storeProdDTO.getProcess())) {
             this.storeProdProcMapper.insert(BeanUtil.toBean(storeProdDTO.getProcess(), StoreProductProcess.class)
-                    .setStoreProdId(storeProd.getStoreProdId()));
+                    .setStoreProdId(storeProd.getId()));
         }
         return count;
     }
@@ -220,7 +220,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional
     public int updateStoreProduct(final Long storeProdId, StoreProdDTO storeProdDTO) {
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
-                        .eq(StoreProduct::getStoreProdId, storeProdId).eq(StoreProduct::getDelFlag, "0")))
+                        .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, "0")))
                 .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
         // 将档口商品的del_flag置为2
         storeProd.setDelFlag("2");
@@ -302,14 +302,15 @@ public class StoreProductServiceImpl implements IStoreProductService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<String> fuzzyQueryList(Long storeId, String prodArtNum) {
-        LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>()
+    public List<StoreProdFuzzyResDTO> fuzzyQueryList(Long storeId, String prodArtNum) {
+       /* LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, "0");
         if (StringUtils.isNotBlank(prodArtNum)) {
             queryWrapper.like(StoreProduct::getProdArtNum, prodArtNum);
         }
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(queryWrapper);
         return CollectionUtils.isEmpty(storeProdList) ? new ArrayList<>()
-                : storeProdList.stream().map(StoreProduct::getProdArtNum).distinct().collect(Collectors.toList());
+                : storeProdList.stream().map(StoreProduct::getProdArtNum).distinct().collect(Collectors.toList());*/
+        return null;
     }
 }

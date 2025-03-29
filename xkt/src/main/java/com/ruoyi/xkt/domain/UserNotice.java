@@ -26,7 +26,7 @@ public class UserNotice extends XktBaseEntity {
      * 用户通知ID
      */
     @TableId
-    private Long userNoticeId;
+    private Long id;
 
     /**
      * sys_notice.id
@@ -57,7 +57,7 @@ public class UserNotice extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userNoticeId", getUserNoticeId())
+                .append("id", getId())
                 .append("noticeId", getNoticeId())
                 .append("userId", getUserId())
                 .append("read", getRead())

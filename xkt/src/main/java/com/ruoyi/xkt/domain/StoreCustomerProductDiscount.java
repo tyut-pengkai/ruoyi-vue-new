@@ -25,7 +25,7 @@ public class StoreCustomerProductDiscount extends XktBaseEntity {
      * 档口客户销售优惠ID
      */
     @TableId
-    private Long storeCusProdDiscId;
+    private Long id;
 
     /**
      * 档口商品ID
@@ -55,7 +55,7 @@ public class StoreCustomerProductDiscount extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeCusProdDiscId", getStoreCusProdDiscId())
+                .append("id", getId())
                 .append("storeProdId", getStoreProdId())
                 .append("storeCusId", getStoreCusId())
                 .append("storeProdColorId", getStoreProdColorId())

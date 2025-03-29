@@ -15,10 +15,10 @@ public interface StoreProductColorSizeMapper extends BaseMapper<StoreProductColo
     /**
      * 查询档口商品颜色的尺码
      *
-     * @param storeProdColorSizeId 档口商品颜色的尺码主键
+     * @param id 档口商品颜色的尺码主键
      * @return 档口商品颜色的尺码
      */
-    public StoreProductColorSize selectStoreProductColorSizeByStoreProdColorSizeId(Long storeProdColorSizeId);
+    public StoreProductColorSize selectStoreProductColorSizeByStoreProdColorSizeId(Long id);
 
     /**
      * 查询档口商品颜色的尺码列表
@@ -47,10 +47,10 @@ public interface StoreProductColorSizeMapper extends BaseMapper<StoreProductColo
     /**
      * 删除档口商品颜色的尺码
      *
-     * @param storeProdColorSizeId 档口商品颜色的尺码主键
+     * @param id 档口商品颜色的尺码主键
      * @return 结果
      */
-    public int deleteStoreProductColorSizeByStoreProdColorSizeId(Long storeProdColorSizeId);
+    public int deleteStoreProductColorSizeByStoreProdColorSizeId(Long id);
 
     /**
      * 批量删除档口商品颜色的尺码

@@ -15,10 +15,10 @@ public interface UserSubscriptionsMapper extends BaseMapper<UserSubscriptions> {
     /**
      * 查询用户关注u档口
      *
-     * @param userSubsId 用户关注u档口主键
+     * @param id 用户关注u档口主键
      * @return 用户关注u档口
      */
-    public UserSubscriptions selectUserSubscriptionsByUserSubsId(Long userSubsId);
+    public UserSubscriptions selectUserSubscriptionsByUserSubsId(Long id);
 
     /**
      * 查询用户关注u档口列表
@@ -47,10 +47,10 @@ public interface UserSubscriptionsMapper extends BaseMapper<UserSubscriptions> {
     /**
      * 删除用户关注u档口
      *
-     * @param userSubsId 用户关注u档口主键
+     * @param id 用户关注u档口主键
      * @return 结果
      */
-    public int deleteUserSubscriptionsByUserSubsId(Long userSubsId);
+    public int deleteUserSubscriptionsByUserSubsId(Long id);
 
     /**
      * 批量删除用户关注u档口

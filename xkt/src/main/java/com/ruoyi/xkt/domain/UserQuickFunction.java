@@ -23,7 +23,7 @@ public class UserQuickFunction extends XktBaseEntity {
      * 用户快捷功能ID
      */
     @TableId
-    private Long userQuickFuncId;
+    private Long id;
 
     /**
      * sys_user.id
@@ -59,7 +59,7 @@ public class UserQuickFunction extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userQuickFuncId", getUserQuickFuncId())
+                .append("id", getId())
                 .append("userId", getUserId())
                 .append("funcName", getFuncName())
                 .append("funcIcon", getFuncIcon())

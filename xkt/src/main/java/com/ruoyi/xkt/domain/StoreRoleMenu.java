@@ -23,7 +23,7 @@ public class StoreRoleMenu extends XktBaseEntity {
      * 档口子角色菜单ID
      */
     @TableId
-    private Long storeRoleMenuId;
+    private Long id;
 
     /**
      * 档口角色ID
@@ -53,7 +53,7 @@ public class StoreRoleMenu extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeRoleMenuId", getStoreRoleMenuId())
+                .append("id", getId())
                 .append("storeRoleId", getStoreRoleId())
                 .append("storeId", getStoreId())
                 .append("menuName", getMenuName())

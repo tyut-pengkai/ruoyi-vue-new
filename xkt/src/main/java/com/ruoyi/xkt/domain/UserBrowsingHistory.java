@@ -27,7 +27,7 @@ public class UserBrowsingHistory extends XktBaseEntity {
      * 用户浏览足迹ID
      */
     @TableId
-    private Long userBrowHisId;
+    private Long id;
 
     /**
      * sys_user.id
@@ -88,7 +88,7 @@ public class UserBrowsingHistory extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userBrowHisId", getUserBrowHisId())
+                .append("id", getId())
                 .append("userId", getUserId())
                 .append("fileId", getFileId())
                 .append("storeProdFileId", getStoreProdFileId())

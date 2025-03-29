@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreProductFileMapper">
     
     <resultMap type="StoreProductFile" id="StoreProductFileResult">
-        <result property="storeProdFileId"    column="store_prod_file_id"    />
+        <result property="id"    column="id"    />
         <result property="storeProdId"    column="store_prod_id"    />
         <result property="storeId"    column="store_id"    />
         <result property="fileId"    column="file_id"    />
@@ -21,7 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreProductFileVo">
-        select store_prod_file_id, store_prod_id, store_id, file_id, file_type, file_size, order_num, version, del_flag, create_by, create_time, update_by, update_time from store_product_file
+        select id, store_prod_id, store_id, file_id, file_type, file_size, order_num, version, del_flag, create_by, create_time, update_by, update_time from store_product_file
     </sql>
 
     <select id="selectStoreProductFileList" parameterType="StoreProductFile" resultMap="StoreProductFileResult">
@@ -38,7 +38,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreProductFileByStoreProdFileId" parameterType="Long" resultMap="StoreProductFileResult">
         <include refid="selectStoreProductFileVo"/>
-        where store_prod_file_id = #{storeProdFileId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreProductFile" parameterType="StoreProductFile" useGeneratedKeys="true" keyProperty="storeProdFileId">
@@ -86,17 +86,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_prod_file_id = #{storeProdFileId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreProductFileByStoreProdFileId" parameterType="Long">
-        delete from store_product_file where store_prod_file_id = #{storeProdFileId}
+        delete from store_product_file where id = #{id}
     </delete>
 
     <delete id="deleteStoreProductFileByStoreProdFileIds" parameterType="String">
-        delete from store_product_file where store_prod_file_id in 
-        <foreach item="storeProdFileId" collection="array" open="(" separator="," close=")">
-            #{storeProdFileId}
+        delete from store_product_file where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 
@@ -115,24 +115,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spf.order_num AS orderNum
         FROM
             store_product_file spf
-                LEFT JOIN sys_file sf ON spf.file_id = sf.file_id AND spf.del_flag = 0
+                LEFT JOIN sys_file sf ON spf.file_id = sf.id AND spf.del_flag = 0
         WHERE spf.store_prod_id = #{storeProdId}
     </select>
 
-
-    <select id="selectListByStoreProdId" parameterType="Long" resultType="com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO">
-        SELECT
-            spf.store_prod_id AS storeProdId,
-            spf.file_id AS fileId,
-            sf.file_url AS fileUrl,
-            spf.file_type AS fileType,
-            sf.file_name AS fileName,
-            spf.order_num AS orderNum
-        FROM
-            store_product_file spf
-                LEFT JOIN sys_file sf ON spf.file_id = sf.file_id
-        WHERE spf.del_flag = 0 AND spf.store_prod_id = #{storeProdId}
-    </select>
 
     <select id="selectMainPicByStoreProdIdList" resultType="com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO">
         SELECT
@@ -140,11 +126,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sf.file_url AS fileUrl
         FROM
             store_product_file spf
-                LEFT JOIN sys_file sf ON spf.file_id = sf.file_id
+                LEFT JOIN sys_file sf ON spf.file_id = sf.id
         WHERE
             spf.del_flag = 0
             <if test="storeProdIdList != null and storeProdIdList.size() > 0">
-                AND store_prod_id in
+                AND spf.store_prod_id in
                 <foreach item="storeProdId" collection="storeProdIdList" open="(" separator="," close=")">
                     #{storeProdId}
                 </foreach>
@@ -153,16 +139,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           AND spf.order_num = #{orderNum}
     </select>
 
-<!--    <select id="selectPicSpaceList" resultType="com.ruoyi.xkt.dto.storeProductFile.StoreProdFilePicSpaceResDTO">-->
     <select id="selectPicSpaceList" >
         SELECT
             sp.prod_art_num AS prodArtNum,
-            sp.store_prod_id AS storeProdId,
+            sp.id AS storeProdId,
             sf.file_url AS fileUrl
         FROM
             store_product_file spf
-                LEFT JOIN sys_file sf ON spf.file_id = sf.file_id
-                LEFT JOIN store_product sp ON spf.store_prod_id = sp.store_prod_id
+                LEFT JOIN sys_file sf ON spf.file_id = sf.id
+                LEFT JOIN store_product sp ON spf.store_prod_id = sp.id
         WHERE
             spf.del_flag = 0
             AND spf.file_type = #{fileType}

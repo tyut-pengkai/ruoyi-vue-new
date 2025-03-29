@@ -15,10 +15,10 @@ public interface StoreHomepageMapper extends BaseMapper<StoreHomepage> {
     /**
      * 查询档口首页
      *
-     * @param storeHomeId 档口首页主键
+     * @param id 档口首页主键
      * @return 档口首页
      */
-    public StoreHomepage selectStoreHomepageByStoreHomeId(Long storeHomeId);
+    public StoreHomepage selectStoreHomepageByStoreHomeId(Long id);
 
     /**
      * 查询档口首页列表
@@ -47,10 +47,10 @@ public interface StoreHomepageMapper extends BaseMapper<StoreHomepage> {
     /**
      * 删除档口首页
      *
-     * @param storeHomeId 档口首页主键
+     * @param id 档口首页主键
      * @return 结果
      */
-    public int deleteStoreHomepageByStoreHomeId(Long storeHomeId);
+    public int deleteStoreHomepageByStoreHomeId(Long id);
 
     /**
      * 批量删除档口首页

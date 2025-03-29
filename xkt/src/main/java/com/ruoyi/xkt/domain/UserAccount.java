@@ -25,7 +25,7 @@ public class UserAccount extends XktBaseEntity {
      * 用户账户ID
      */
     @TableId
-    private Long userAccId;
+    private Long id;
 
     /**
      * sys_user.id
@@ -61,7 +61,7 @@ public class UserAccount extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userAccId", getUserAccId())
+                .append("id", getId())
                 .append("userId", getUserId())
                 .append("accountType", getAccountType())
                 .append("accountPhone", getAccountPhone())

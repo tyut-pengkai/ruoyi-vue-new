@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service.impl;
 
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.StoreProductBarcodeMatch;
+import com.ruoyi.xkt.dto.storeProdBarcodeMatch.BarcodeMatchDTO;
 import com.ruoyi.xkt.mapper.StoreProductBarcodeMatchMapper;
 import com.ruoyi.xkt.service.IStoreProductBarcodeMatchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,5 +90,10 @@ public class StoreProductBarcodeMatchServiceImpl implements IStoreProductBarcode
     @Override
     public int deleteStoreProductBarcodeMatchByStoreProdBarcodeMatchId(Long storeProdBarcodeMatchId) {
         return storeProductBarcodeMatchMapper.deleteStoreProductBarcodeMatchByStoreProdBarcodeMatchId(storeProdBarcodeMatchId);
+    }
+
+    @Override
+    public int updateBarcodeMatch(BarcodeMatchDTO barcodeMatchDTO) {
+        return 0;
     }
 }

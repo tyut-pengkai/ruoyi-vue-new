@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.UserBillingStatementMapper">
     
     <resultMap type="UserBillingStatement" id="UserBillingStatementResult">
-        <result property="userBillStatId"    column="user_bill_stat_id"    />
+        <result property="id"    column="id"    />
         <result property="userId"    column="user_id"    />
         <result property="userAccId"    column="user_acc_id"    />
         <result property="code"    column="code"    />
@@ -24,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectUserBillingStatementVo">
-        select user_bill_stat_id, user_id, user_acc_id, code, trans_type, trans_remark, pay_way, income, expenses, acc_balance, version, del_flag, create_by, create_time, update_by, update_time from user_billing_statement
+        select id, user_id, user_acc_id, code, trans_type, trans_remark, pay_way, income, expenses, acc_balance, version, del_flag, create_by, create_time, update_by, update_time from user_billing_statement
     </sql>
 
     <select id="selectUserBillingStatementList" parameterType="UserBillingStatement" resultMap="UserBillingStatementResult">
@@ -45,7 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectUserBillingStatementByUserBillStatId" parameterType="Long" resultMap="UserBillingStatementResult">
         <include refid="selectUserBillingStatementVo"/>
-        where user_bill_stat_id = #{userBillStatId}
+        where id = #{id}
     </select>
 
     <insert id="insertUserBillingStatement" parameterType="UserBillingStatement" useGeneratedKeys="true" keyProperty="userBillStatId">
@@ -105,17 +105,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where user_bill_stat_id = #{userBillStatId}
+        where id = #{id}
     </update>
 
     <delete id="deleteUserBillingStatementByUserBillStatId" parameterType="Long">
-        delete from user_billing_statement where user_bill_stat_id = #{userBillStatId}
+        delete from user_billing_statement where id = #{id}
     </delete>
 
     <delete id="deleteUserBillingStatementByUserBillStatIds" parameterType="String">
-        delete from user_billing_statement where user_bill_stat_id in 
-        <foreach item="userBillStatId" collection="array" open="(" separator="," close=")">
-            #{userBillStatId}
+        delete from user_billing_statement where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

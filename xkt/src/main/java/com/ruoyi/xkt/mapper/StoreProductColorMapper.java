@@ -20,10 +20,10 @@ public interface StoreProductColorMapper extends BaseMapper<StoreProductColor> {
     /**
      * 查询档口当前商品颜色
      *
-     * @param storeProdColorId 档口当前商品颜色主键
+     * @param id 档口当前商品颜色主键
      * @return 档口当前商品颜色
      */
-    public StoreProductColor selectStoreProductColorByStoreProdColorId(Long storeProdColorId);
+    public StoreProductColor selectStoreProductColorByStoreProdColorId(Long id);
 
     /**
      * 查询档口当前商品颜色列表
@@ -52,10 +52,10 @@ public interface StoreProductColorMapper extends BaseMapper<StoreProductColor> {
     /**
      * 删除档口当前商品颜色
      *
-     * @param storeProdColorId 档口当前商品颜色主键
+     * @param id 档口当前商品颜色主键
      * @return 结果
      */
-    public int deleteStoreProductColorByStoreProdColorId(Long storeProdColorId);
+    public int deleteStoreProductColorByStoreProdColorId(Long id);
 
     /**
      * 批量删除档口当前商品颜色

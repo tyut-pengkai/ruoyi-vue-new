@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.dto.storeProduct;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -41,6 +42,7 @@ public class StoreProdPageResDTO {
     @ApiModelProperty(name = "状态")
     private String prodStatus;
     @ApiModelProperty(name = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
 }

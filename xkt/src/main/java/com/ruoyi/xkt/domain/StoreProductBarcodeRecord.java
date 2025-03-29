@@ -23,7 +23,7 @@ public class StoreProductBarcodeRecord extends XktBaseEntity {
      * 档口商品条码打印记录ID
      */
     @TableId
-    private Long storeProdBarcodeRecordId;
+    private Long id;
 
     /**
      * 档口商品ID
@@ -47,7 +47,7 @@ public class StoreProductBarcodeRecord extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeProdBarcodeRecordId", getStoreProdBarcodeRecordId())
+                .append("id", getId())
                 .append("storeProdId", getStoreProdId())
                 .append("storeProdColorSizeId", getStoreProdColorSizeId())
                 .append("barcode", getBarcode())

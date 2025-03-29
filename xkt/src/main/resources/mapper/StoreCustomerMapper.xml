@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreCustomerMapper">
     
     <resultMap type="StoreCustomer" id="StoreCustomerResult">
-        <result property="storeCusId"    column="store_cus_id"    />
+        <result property="id"    column="id"    />
         <result property="storeId"    column="store_id"    />
         <result property="cusName"    column="cus_name"    />
         <result property="phone"    column="phone"    />
@@ -19,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreCustomerVo">
-        select store_cus_id, store_id, cus_name, phone, remark, version, del_flag, create_by, create_time, update_by, update_time from store_customer
+        select id, store_id, cus_name, phone, remark, version, del_flag, create_by, create_time, update_by, update_time from store_customer
     </sql>
 
     <select id="selectStoreCustomerList" parameterType="StoreCustomer" resultMap="StoreCustomerResult">
@@ -34,7 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectStoreCustomerByStoreCusId" parameterType="Long" resultMap="StoreCustomerResult">
         <include refid="selectStoreCustomerVo"/>
-        where store_cus_id = #{storeCusId}
+        where id = #{id}
     </select>
 
     <insert id="insertStoreCustomer" parameterType="StoreCustomer" useGeneratedKeys="true" keyProperty="storeCusId">
@@ -79,17 +79,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where store_cus_id = #{storeCusId}
+        where id = #{id}
     </update>
 
     <delete id="deleteStoreCustomerByStoreCusId" parameterType="Long">
-        delete from store_customer where store_cus_id = #{storeCusId}
+        delete from store_customer where id = #{id}
     </delete>
 
     <delete id="deleteStoreCustomerByStoreCusIds" parameterType="String">
-        delete from store_customer where store_cus_id in 
-        <foreach item="storeCusId" collection="array" open="(" separator="," close=")">
-            #{storeCusId}
+        delete from store_customer where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

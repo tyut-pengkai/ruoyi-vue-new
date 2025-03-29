@@ -15,10 +15,10 @@ public interface StoreRoleMapper extends BaseMapper<StoreRole> {
     /**
      * 查询档口子角色
      *
-     * @param storeRoleId 档口子角色主键
+     * @param id 档口子角色主键
      * @return 档口子角色
      */
-    public StoreRole selectStoreRoleByStoreRoleId(Long storeRoleId);
+    public StoreRole selectStoreRoleByStoreRoleId(Long id);
 
     /**
      * 查询档口子角色列表
@@ -47,10 +47,10 @@ public interface StoreRoleMapper extends BaseMapper<StoreRole> {
     /**
      * 删除档口子角色
      *
-     * @param storeRoleId 档口子角色主键
+     * @param id 档口子角色主键
      * @return 结果
      */
-    public int deleteStoreRoleByStoreRoleId(Long storeRoleId);
+    public int deleteStoreRoleByStoreRoleId(Long id);
 
     /**
      * 批量删除档口子角色

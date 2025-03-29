@@ -23,7 +23,7 @@ public class UserAuthentication extends XktBaseEntity {
      * 代发认证ID
      */
     @TableId
-    private Long userAuthId;
+    private Long id;
 
     /**
      * sys_user.id
@@ -70,7 +70,7 @@ public class UserAuthentication extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userAuthId", getUserAuthId())
+                .append("id", getId())
                 .append("userId", getUserId())
                 .append("realName", getRealName())
                 .append("phone", getPhone())

@@ -15,10 +15,10 @@ public interface UserNoticeSettingMapper extends BaseMapper<UserNoticeSetting> {
     /**
      * 查询用户通知接收设置
      *
-     * @param userNoticeSetId 用户通知接收设置主键
+     * @param id 用户通知接收设置主键
      * @return 用户通知接收设置
      */
-    public UserNoticeSetting selectUserNoticeSettingByUserNoticeSetId(Long userNoticeSetId);
+    public UserNoticeSetting selectUserNoticeSettingByUserNoticeSetId(Long id);
 
     /**
      * 查询用户通知接收设置列表
@@ -47,10 +47,10 @@ public interface UserNoticeSettingMapper extends BaseMapper<UserNoticeSetting> {
     /**
      * 删除用户通知接收设置
      *
-     * @param userNoticeSetId 用户通知接收设置主键
+     * @param id 用户通知接收设置主键
      * @return 结果
      */
-    public int deleteUserNoticeSettingByUserNoticeSetId(Long userNoticeSetId);
+    public int deleteUserNoticeSettingByUserNoticeSetId(Long id);
 
     /**
      * 批量删除用户通知接收设置

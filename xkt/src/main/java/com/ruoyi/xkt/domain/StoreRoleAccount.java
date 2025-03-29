@@ -23,7 +23,7 @@ public class StoreRoleAccount extends XktBaseEntity {
      * 档口子角色账号ID
      */
     @TableId
-    private Long storeRoleAccId;
+    private Long id;
 
     /**
      * 档口子角色ID
@@ -53,7 +53,7 @@ public class StoreRoleAccount extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeRoleAccId", getStoreRoleAccId())
+                .append("id", getId())
                 .append("storeRoleId", getStoreRoleId())
                 .append("storeId", getStoreId())
                 .append("userId", getUserId())

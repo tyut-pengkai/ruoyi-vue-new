@@ -27,7 +27,7 @@ public class StoreOrder extends XktBaseEntity {
      * 档口代发订单ID
      */
     @TableId
-    private Long storeOrderId;
+    private Long id;
 
     /**
      * 档口id
@@ -124,7 +124,7 @@ public class StoreOrder extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeOrderId", getStoreOrderId())
+                .append("id", getId())
                 .append("storeId", getStoreId())
                 .append("userId", getUserId())
                 .append("code", getCode())

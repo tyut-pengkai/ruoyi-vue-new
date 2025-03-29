@@ -25,7 +25,7 @@ public class StoreProductService extends XktBaseEntity {
      * 档口商品服务ID
      */
     @TableId
-    private Long storeProdSvcId;
+    private Long id;
 
     /**
      * 档口商品ID
@@ -61,7 +61,7 @@ public class StoreProductService extends XktBaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("storeProdSvcId", getStoreProdSvcId())
+                .append("id", getId())
                 .append("storeProdId", getStoreProdId())
                 .append("customRefund", getCustomRefund())
                 .append("thirtyDayRefund", getThirtyDayRefund())

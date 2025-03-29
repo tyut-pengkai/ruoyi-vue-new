@@ -15,10 +15,10 @@ public interface StoreProductStockMapper extends BaseMapper<StoreProductStock> {
     /**
      * 查询档口商品库存
      *
-     * @param storeProdStockId 档口商品库存主键
+     * @param id 档口商品库存主键
      * @return 档口商品库存
      */
-    public StoreProductStock selectStoreProductStockByStoreProdStockId(Long storeProdStockId);
+    public StoreProductStock selectStoreProductStockByStoreProdStockId(Long id);
 
     /**
      * 查询档口商品库存列表
@@ -47,10 +47,10 @@ public interface StoreProductStockMapper extends BaseMapper<StoreProductStock> {
     /**
      * 删除档口商品库存
      *
-     * @param storeProdStockId 档口商品库存主键
+     * @param id 档口商品库存主键
      * @return 结果
      */
-    public int deleteStoreProductStockByStoreProdStockId(Long storeProdStockId);
+    public int deleteStoreProductStockByStoreProdStockId(Long id);
 
     /**
      * 批量删除档口商品库存

@@ -15,10 +15,10 @@ public interface StoreFactoryMapper extends BaseMapper<StoreFactory> {
     /**
      * 查询档口合作工厂
      *
-     * @param storeFacId 档口合作工厂主键
+     * @param id 档口合作工厂主键
      * @return 档口合作工厂
      */
-    public StoreFactory selectStoreFactoryByStoreFacId(Long storeFacId);
+    public StoreFactory selectStoreFactoryByStoreFacId(Long id);
 
     /**
      * 查询档口合作工厂列表
@@ -47,10 +47,10 @@ public interface StoreFactoryMapper extends BaseMapper<StoreFactory> {
     /**
      * 删除档口合作工厂
      *
-     * @param storeFacId 档口合作工厂主键
+     * @param id 档口合作工厂主键
      * @return 结果
      */
-    public int deleteStoreFactoryByStoreFacId(Long storeFacId);
+    public int deleteStoreFactoryByStoreFacId(Long id);
 
     /**
      * 批量删除档口合作工厂

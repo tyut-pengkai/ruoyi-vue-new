@@ -15,10 +15,10 @@ public interface SysFileMapper extends BaseMapper<SysFile> {
     /**
      * 查询file
      *
-     * @param fileId file主键
+     * @param id file主键
      * @return file
      */
-    public SysFile selectSysFileByFileId(Long fileId);
+    public SysFile selectSysFileByFileId(Long id);
 
     /**
      * 查询file列表
@@ -47,10 +47,10 @@ public interface SysFileMapper extends BaseMapper<SysFile> {
     /**
      * 删除file
      *
-     * @param fileId file主键
+     * @param id file主键
      * @return 结果
      */
-    public int deleteSysFileByFileId(Long fileId);
+    public int deleteSysFileByFileId(Long id);
 
     /**
      * 批量删除file
