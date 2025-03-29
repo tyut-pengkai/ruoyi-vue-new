@@ -4,6 +4,7 @@ import com.kekecha.xiantu.service.IFileService;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.file.FileUploadUtils;
+import com.ruoyi.common.utils.uuid.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

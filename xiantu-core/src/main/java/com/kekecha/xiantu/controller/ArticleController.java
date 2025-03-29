@@ -105,6 +105,11 @@ public class ArticleController extends BaseController {
     @PostMapping("/news/edit")
     public AjaxResult newEdit(@RequestBody Article article)
     {
+        long time = Instant.now().getEpochSecond() * 1000;
+        if (article.getCreateTime() == 0) {
+            article.setCreateTime(time);
+        }
+        article.setUpdateTime(time);
         article.setTag("news");
         if (article.getId() == 0) {
             try {
@@ -123,20 +128,20 @@ public class ArticleController extends BaseController {
     @PostMapping("/knowledge/edit")
     public AjaxResult knowledgeEdit(@RequestBody Article article)
     {
+        long time = Instant.now().getEpochSecond() * 1000;
+        if (article.getCreateTime() == 0) {
+            article.setCreateTime(time);
+        }
+        article.setUpdateTime(time);
         article.setTag("knowledge");
         if (article.getId() == 0) {
             try {
-                long time = Instant.now().getEpochSecond();
-                article.setCreateTime(time);
-                article.setUpdateTime(time);
                 articleService.insert(article);
                 return AjaxResult.success("创建成功");
             } catch (Exception e) {
                 return AjaxResult.error("创建失败, 内部参数错误");
             }
         } else {
-            long time = Instant.now().getEpochSecond();
-            article.setUpdateTime(time);
             articleService.update(article);
             return AjaxResult.success("更新成功");
         }

@@ -102,13 +102,12 @@ public class SiteController extends BaseController {
     {
         site.setType(1);
         try {
-            Site old_site = siteService.selectOne(1, site.getName());
-            if (old_site != null) {
-                siteService.updateSite(site);
-                return AjaxResult.success("更新成功");
-            } else {
+            if (site.getId() <= 0) {
                 siteService.insertSite(site);
                 return AjaxResult.success("创建成功");
+            } else {
+                siteService.updateSite(site);
+                return AjaxResult.success("更新成功");
             }
         } catch (Exception e) {
             return AjaxResult.error("操作失败，请刷新重试");
@@ -121,13 +120,12 @@ public class SiteController extends BaseController {
     {
         site.setType(2);
         try {
-            Site old_site = siteService.selectOne(2, site.getName());
-            if (old_site != null) {
-                siteService.updateSite(site);
-                return AjaxResult.success("更新成功");
-            } else {
+            if (site.getId() <= 0) {
                 siteService.insertSite(site);
                 return AjaxResult.success("创建成功");
+            } else {
+                siteService.updateSite(site);
+                return AjaxResult.success("更新成功");
             }
         } catch (Exception e) {
             return AjaxResult.error("操作失败，请刷新重试");

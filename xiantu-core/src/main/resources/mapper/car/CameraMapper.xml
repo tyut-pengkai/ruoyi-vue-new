@@ -28,7 +28,7 @@
         </trim>
     </select>
 
-    <select id="selectById" resultMap="CameraResultMap" parameterType="String">
+    <select id="selectById" resultMap="CameraResultMap" parameterType="int">
         SELECT * FROM xiantu_camera
         WHERE id = #{id}
     </select>
