@@ -23,14 +23,14 @@
         <bitwalker.version>1.21</bitwalker.version>
         <swagger.version>3.0.0</swagger.version>
         <kaptcha.version>2.3.3</kaptcha.version>
-        <pagehelper.boot.version>1.4.7</pagehelper.boot.version>
+        <pagehelper.boot.version>2.1.0</pagehelper.boot.version>
         <fastjson.version>2.0.53</fastjson.version>
         <oshi.version>6.6.5</oshi.version>
         <commons.io.version>2.13.0</commons.io.version>
         <poi.version>4.1.2</poi.version>
         <velocity.version>2.3</velocity.version>
         <jwt.version>0.9.1</jwt.version>
-        <mybatisplus.version>3.5.10.1</mybatisplus.version>
+        <mybatisplus.version>3.5.11</mybatisplus.version>
         <hutool.version>5.8.36</hutool.version>
         <elasticsearch.version>8.17.4</elasticsearch.version>
         <jakarta.json-api.version>2.1.1</jakarta.json-api.version>
@@ -116,8 +116,10 @@
             <!-- mybatisplus -->
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <artifactId>mybatis-plus-bom</artifactId>
                 <version>${mybatisplus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <!-- 解析客户端操作系统、浏览器等 -->
