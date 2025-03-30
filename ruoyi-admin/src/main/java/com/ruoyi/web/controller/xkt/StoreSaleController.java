@@ -9,10 +9,12 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusGeneralSaleVO;
 import com.ruoyi.web.controller.xkt.vo.storeSale.StoreSalePageVO;
+import com.ruoyi.web.controller.xkt.vo.storeSale.StoreSalePayStatusVO;
 import com.ruoyi.web.controller.xkt.vo.storeSale.StoreSaleVO;
 import com.ruoyi.xkt.domain.StoreSale;
 import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO;
+import com.ruoyi.xkt.dto.storeSale.StoreSalePayStatusDTO;
 import com.ruoyi.xkt.service.IStoreSaleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,7 +45,7 @@ public class StoreSaleController extends XktBaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:sale:list')")
     @ApiOperation(value = "根据当前客户查询最近的销售业绩，以及欠款金额", httpMethod = "GET", response = R.class)
-    @GetMapping("/sixty-general")
+    @GetMapping("/cus-overall")
     public R getCusGeneralSale(@RequestParam("days") Integer days, @RequestParam("storeId") Long storeId,
                                @RequestParam("storeCusId") Long storeCusId) {
         return success(BeanUtil.toBean(storeSaleService.getCusGeneralSale(days, storeId, storeCusId), StoreCusGeneralSaleVO.class));
@@ -59,7 +61,6 @@ public class StoreSaleController extends XktBaseController {
         return storeSaleService.page(BeanUtil.toBean(salePageVO, StoreSalePageDTO.class));
     }
 
-
     /**
      * 新增档口销售出库
      */
@@ -68,6 +69,23 @@ public class StoreSaleController extends XktBaseController {
     @Log(title = "档口销售出库", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@Validated @RequestBody StoreSaleVO storeSaleVO) {
+
+
+        // TODO 扣件库存
+        // TODO 扣件库存
+        // TODO 扣件库存
+        // TODO 扣件库存
+        // TODO 扣件库存
+        // TODO 扣件库存
+
+
+        // TODO 增加库存
+        // TODO 增加库存
+        // TODO 增加库存
+        // TODO 增加库存
+        // TODO 增加库存
+        // TODO 增加库存
+
         return success(storeSaleService.insertStoreSale(BeanUtil.toBean(storeSaleVO, StoreSaleDTO.class)));
     }
 
@@ -79,25 +97,70 @@ public class StoreSaleController extends XktBaseController {
     @ApiOperation(value = "修改档口销售出库", httpMethod = "PUT", response = R.class)
     @PutMapping
     public R edit(@Validated @RequestBody StoreSaleVO storeSaleVO) {
+
+        // TODO 扣件库存
+        // TODO 扣件库存
+        // TODO 扣件库存
+        // TODO 扣件库存
+        // TODO 扣件库存
+        // TODO 扣件库存
+
+
+        // TODO 增加库存
+        // TODO 增加库存
+        // TODO 增加库存
+        // TODO 增加库存
+        // TODO 增加库存
+        // TODO 增加库存
         return success(storeSaleService.updateStoreSale(BeanUtil.toBean(storeSaleVO, StoreSaleDTO.class)));
     }
 
+    /**
+     * 查询档口销售出库详情
+     */
+    @PreAuthorize("@ss.hasPermi('system:sale:query')")
+    @ApiOperation(value = "查询档口销售出库详情", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/{storeSaleId}")
+    public R getInfo(@PathVariable("storeSaleId") Long storeSaleId) {
+        return success(storeSaleService.selectStoreSaleByStoreSaleId(storeSaleId));
+    }
+
+    /**
+     * 客户欠款结算
+     */
+    @PreAuthorize("@ss.hasPermi('system:sale:edit')")
+    @Log(title = "客户欠款结算", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "客户欠款结算", httpMethod = "PUT", response = R.class)
+    @PutMapping("/clear-debt")
+    public R clearStoreCusDebt(@Validated @RequestBody StoreSalePayStatusVO payStatusVO) {
+        storeSaleService.clearStoreCusDebt(BeanUtil.toBean(payStatusVO, StoreSalePayStatusDTO.class));
+        return success();
+    }
+
+    /**
+     * 删除档口销售出库
+     */
+    @PreAuthorize("@ss.hasPermi('system:sale:remove')")
+    @Log(title = "档口销售出库", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{storeSaleId}")
+    public R remove(@PathVariable Long storeSaleId) {
+
+        // TODO 扣件库存
+        // TODO 扣件库存
+        // TODO 扣件库存
+        // TODO 扣件库存
+        // TODO 扣件库存
+        // TODO 扣件库存
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        // TODO 增加库存
+        // TODO 增加库存
+        // TODO 增加库存
+        // TODO 增加库存
+        // TODO 增加库存
+        // TODO 增加库存
+        return success(storeSaleService.deleteStoreSaleByStoreSaleId(storeSaleId));
+    }
 
 
     /**
@@ -112,23 +175,8 @@ public class StoreSaleController extends XktBaseController {
         util.exportExcel(response, list, "档口销售出库数据");
     }
 
-    /**
-     * 获取档口销售出库详细信息
-     */
-    @PreAuthorize("@ss.hasPermi('system:sale:query')")
-    @GetMapping(value = "/{storeSaleId}")
-    public R getInfo(@PathVariable("storeSaleId") Long storeSaleId) {
-        return success(storeSaleService.selectStoreSaleByStoreSaleId(storeSaleId));
-    }
 
 
-    /**
-     * 删除档口销售出库
-     */
-    @PreAuthorize("@ss.hasPermi('system:sale:remove')")
-    @Log(title = "档口销售出库", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{storeSaleIds}")
-    public R remove(@PathVariable Long[] storeSaleIds) {
-        return success(storeSaleService.deleteStoreSaleByStoreSaleIds(storeSaleIds));
-    }
+
+
 }

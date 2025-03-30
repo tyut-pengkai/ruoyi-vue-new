@@ -33,6 +33,13 @@ public class StoreProductStockController extends XktBaseController {
     // TODO 商品销售/出库 时读货号，然后查询当前货号颜色的库存
 
 
+    // TODO 销售出库时扣件库存
+    // TODO 销售出库时扣件库存
+    // TODO 销售出库时扣件库存
+    // TODO 销售出库时扣件库存
+    // TODO 销售出库时扣件库存
+
+
     /**
      * 查询档口商品库存列表
      */

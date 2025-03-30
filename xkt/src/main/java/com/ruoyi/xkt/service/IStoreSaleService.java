@@ -6,6 +6,7 @@ import com.ruoyi.xkt.dto.storeCustomer.StoreCusGeneralSaleDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageResDTO;
+import com.ruoyi.xkt.dto.storeSale.StoreSalePayStatusDTO;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface IStoreSaleService {
      * @param storeSaleId 档口销售出库主键
      * @return 档口销售出库
      */
-    public StoreSale selectStoreSaleByStoreSaleId(Long storeSaleId);
+    public StoreSaleDTO selectStoreSaleByStoreSaleId(Long storeSaleId);
 
     /**
      * 查询档口销售出库列表
@@ -79,5 +80,12 @@ public interface IStoreSaleService {
      * @return Page
      */
     Page<StoreSalePageResDTO> page(StoreSalePageDTO pageDTO);
+
+    /**
+     * 批量结算客户欠款
+     * @param payStatusDTO
+     * @return int
+     */
+    void clearStoreCusDebt(StoreSalePayStatusDTO payStatusDTO);
 
 }

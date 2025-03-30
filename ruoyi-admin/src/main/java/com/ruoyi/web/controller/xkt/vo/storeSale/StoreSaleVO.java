@@ -32,18 +32,17 @@ public class StoreSaleVO {
     @ApiModelProperty(name = "档口客户ID")
     @NotNull(message = "档口客户ID不能为空!")
     private Long storeCusId;
+    @ApiModelProperty(name = "档口客户名称")
+    @NotBlank(message = "档口客户名称不能为空!")
+    private String storeCusName;
     @ApiModelProperty(name = "销售类型（普通销售 GENERAL_SALE、销售退货 SALE_REFUND、普通销售/销售退货 SALE_AND_REFUND）")
     @NotBlank(message = "销售类型不能为空!")
     private String saleType;
-    @ApiModelProperty(name = "数量")
-    @NotNull(message = "数量不能为空!")
-    private Integer quantity;
-    @ApiModelProperty(name = "总金额")
-    @NotNull(message = "总金额不能为空!")
-    private BigDecimal amount;
     @NotBlank(message = "支付方式不能为空!")
     @ApiModelProperty(name = "支付方式（支付宝、微信、现金、欠款）ALIPAY WECHAT_PAY CASH DEBT")
     private String payWay;
+    @ApiModelProperty(name = "结款状态（已结清、欠款） SETTLED、DEBT")
+    private String paymentStatus;
     @NotNull(message = "销售详情列表不能为空!")
     @Valid
     @ApiModelProperty(name = "销售详情列表")
@@ -58,6 +57,10 @@ public class StoreSaleVO {
         @NotNull(message = "档口商品颜色尺码ID不能为空!")
         @ApiModelProperty(name = "档口商品颜色尺码ID")
         private Long storeProdColorSizeId;
+        @ApiModelProperty(name = "颜色")
+        private String colorName;
+        @ApiModelProperty(name = "尺码")
+        private Integer size;
         @ApiModelProperty(name = "商品货号")
         @NotBlank(message = "商品货号不能为空!")
         private String prodArtNum;

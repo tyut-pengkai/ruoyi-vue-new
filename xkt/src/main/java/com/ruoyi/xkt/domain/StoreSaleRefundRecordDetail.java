@@ -12,7 +12,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.math.BigDecimal;
 
 /**
- * 档口销售明细对象 store_sale_detail
+ * 档口销售返单明细对象 store_sale_refund_record_detail
  *
  * @author ruoyi
  * @date 2025-03-26
@@ -20,24 +20,28 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
-public class StoreSaleDetail extends XktBaseEntity {
+public class StoreSaleRefundRecordDetail extends XktBaseEntity {
 
     private static final long serialVersionUID = 1L;
+
     /**
-     * 档口商品销售出库明细ID
+     * 档口商品销售返单出库明细ID
      */
     @TableId
     private Long id;
+
     /**
-     * 档口商品销售ID
+     * 档口商品销售返单ID
      */
     @Excel(name = "档口商品销售ID")
-    private Long storeSaleId;
+    private Long storeSaleRefundRecordId;
+
     /**
      * 档口商品ID
      */
     @Excel(name = "档口商品ID")
     private Long storeProdId;
+
     /**
      * 档口商品颜色尺码ID
      */
@@ -96,7 +100,7 @@ public class StoreSaleDetail extends XktBaseEntity {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId())
-                .append("storeSaleId", getStoreSaleId())
+                .append("storeSaleRefundRecordId", getStoreSaleRefundRecordId())
                 .append("storeProdId", getStoreProdId())
                 .append("storeProdColorSizeId", getStoreProdColorSizeId())
                 .append("saleType", getSaleType())

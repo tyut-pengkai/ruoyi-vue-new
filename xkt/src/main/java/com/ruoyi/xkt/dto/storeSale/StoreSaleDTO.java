@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -26,12 +27,10 @@ public class StoreSaleDTO {
     private Long storeId;
     @ApiModelProperty(name = "档口客户ID")
     private Long storeCusId;
+    @ApiModelProperty(name = "档口客户名称")
+    private String storeCusName;
     @ApiModelProperty(name = "销售类型（普通销售 GENERAL_SALE、销售退货 SALE_REFUND、普通销售/销售退货 SALE_AND_REFUND）")
     private String saleType;
-    @ApiModelProperty(name = "数量")
-    private Integer quantity;
-    @ApiModelProperty(name = "总金额")
-    private BigDecimal amount;
     @ApiModelProperty(name = "支付方式（支付宝、微信、现金、欠款）ALIPAY WECHAT_PAY CASH DEBT")
     private String payWay;
     @ApiModelProperty(name = "结款状态（已结清、欠款） SETTLED、DEBT")
@@ -45,6 +44,10 @@ public class StoreSaleDTO {
         private Long storeProdId;
         @ApiModelProperty(name = "档口商品颜色尺码ID")
         private Long storeProdColorSizeId;
+        @ApiModelProperty(name = "颜色")
+        private String colorName;
+        @ApiModelProperty(name = "尺码")
+        private Integer size;
         @ApiModelProperty(name = "商品货号")
         private String prodArtNum;
         @ApiModelProperty(name = "销售条码")

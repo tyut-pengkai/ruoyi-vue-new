@@ -26,7 +26,7 @@ public class StoreCusGeneralSaleDTO {
     @ApiModelProperty(name = "档口客户ID")
     private Long storeCusId;
     @ApiModelProperty(name = "档口客户名称")
-    private String cusName;
+    private String storeCusName;
     @ApiModelProperty(name = "销售多少双")
     private Long saleCount;
     @ApiModelProperty(name = "销售金额")
