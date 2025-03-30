@@ -41,6 +41,7 @@ public class StoreProductController extends XktBaseController {
      * 模糊查询档口商品
      */
     @PreAuthorize("@ss.hasPermi('system:product:query')")
+    @ApiOperation(value = "模糊查询档口商品", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy")
     public R fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
                                  @RequestParam("storeId") Long storeId) {

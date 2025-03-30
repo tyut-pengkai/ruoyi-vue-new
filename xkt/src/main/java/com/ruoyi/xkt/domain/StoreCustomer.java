@@ -5,6 +5,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -42,6 +43,13 @@ public class StoreCustomer extends XktBaseEntity {
      */
     @Excel(name = "客户联系电话")
     private String phone;
+
+    /**
+     * 客户备注
+     */
+    @Excel(name = "客户备注")
+    private String remark;
+
 
 
     @Override

@@ -1,6 +1,9 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.StoreCustomer;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageResDTO;
 
 import java.util.List;
 
@@ -17,7 +20,7 @@ public interface IStoreCustomerService {
      * @param storeCusId 档口客户主键
      * @return 档口客户
      */
-    public StoreCustomer selectStoreCustomerByStoreCusId(Long storeCusId);
+    public StoreCusDTO selectStoreCustomerByStoreCusId(Long storeCusId);
 
     /**
      * 查询档口客户列表
@@ -38,10 +41,10 @@ public interface IStoreCustomerService {
     /**
      * 修改档口客户
      *
-     * @param storeCustomer 档口客户
+     * @param storeCusDTO 档口客户
      * @return 结果
      */
-    public int updateStoreCustomer(StoreCustomer storeCustomer);
+    public int updateStoreCus(StoreCusDTO storeCusDTO);
 
     /**
      * 批量删除档口客户
@@ -58,4 +61,11 @@ public interface IStoreCustomerService {
      * @return 结果
      */
     public int deleteStoreCustomerByStoreCusId(Long storeCusId);
+
+    int create(StoreCusDTO storeCusDTO);
+
+    void deleteStoreCus(Long storeCusId);
+
+    List<StoreCusPageResDTO> selectPage(StoreCusPageDTO storeCusPageDTO);
+
 }

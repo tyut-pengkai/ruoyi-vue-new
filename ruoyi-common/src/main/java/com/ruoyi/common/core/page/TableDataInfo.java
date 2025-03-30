@@ -12,18 +12,17 @@ public class TableDataInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 当前分页 页数
+     * 分页当前页码
      */
     private long pageNum;
     /**
-     * 当前分页每页数量
+     * 分页每页记录数
      */
     private long pageSize;
-
     /**
-     * 总的页数
+     *
      */
-    private long totalPage;
+    private long pages;
 
     /**
      * 总记录数
@@ -57,9 +56,33 @@ public class TableDataInfo implements Serializable {
      * @param list  列表数据
      * @param total 总记录数
      */
-    public TableDataInfo(List<?> list, long total) {
+    public TableDataInfo(List<?> list, int total) {
         this.rows = list;
         this.total = total;
+    }
+
+    public long getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(long pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public long getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(long pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public long getPages() {
+        return pages;
+    }
+
+    public void setPages(long pages) {
+        this.pages = pages;
     }
 
     public long getTotal() {
@@ -92,29 +115,5 @@ public class TableDataInfo implements Serializable {
 
     public void setMsg(String msg) {
         this.msg = msg;
-    }
-
-    public long getPageNum() {
-        return pageNum;
-    }
-
-    public void setPageNum(long pageNum) {
-        this.pageNum = pageNum;
-    }
-
-    public long getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(long pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public long getTotalPage() {
-        return totalPage;
-    }
-
-    public void setTotalPage(long totalPage) {
-        this.totalPage = totalPage;
     }
 }

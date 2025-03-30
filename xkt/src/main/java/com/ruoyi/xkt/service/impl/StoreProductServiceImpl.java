@@ -155,59 +155,11 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 组装StoreProduct数据
         StoreProduct storeProd = BeanUtil.toBean(storeProdDTO, StoreProduct.class).setVoucherDate(DateUtils.getNowDate());
         int count = this.storeProdMapper.insert(storeProd);
-        // 上传的文件列表
-        final List<StoreProdFileDTO> fileDTOList = storeProdDTO.getFileList();
-        // 将文件插入到SysFile表中
-        List<SysFile> fileList = BeanUtil.copyToList(fileDTOList, SysFile.class);
-        this.fileMapper.insert(fileList);
-        // 将文件名称和文件ID映射到Map中
-        Map<String, Long> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getFileName, SysFile::getId));
-        // 档口文件（商品主图、主图视频、下载的商品详情）
-        List<StoreProductFile> prodFileList = fileDTOList.stream()
-                .map(x -> BeanUtil.toBean(x, StoreProductFile.class).setFileId(fileMap.get(x.getFileName()))
-                        .setStoreProdId(storeProd.getId()).setStoreId(storeProdDTO.getStoreId()))
-                .collect(Collectors.toList());
-        this.storeProdFileMapper.insert(prodFileList);
-        // 档口类目属性列表
-        List<StoreProductCategoryAttribute> cateAttrList = storeProdDTO.getCateAttrList().stream()
-                .map(x -> BeanUtil.toBean(x, StoreProductCategoryAttribute.class)
-                        .setStoreProdId(storeProd.getId()))
-                .collect(Collectors.toList());
-        this.storeProdCateAttrMapper.insert(cateAttrList);
-        // 档口颜色列表
-        List<StoreProductColor> colorList = storeProdDTO.getColorList().stream()
-                .map(x -> BeanUtil.toBean(x, StoreProductColor.class)
-                        .setStoreProdId(storeProd.getId()).setStoreId(storeProdDTO.getStoreId()))
-                .collect(Collectors.toList());
-        this.storeProdColorMapper.insert(colorList);
-        // 档口颜色尺码列表
-        List<StoreProductColorSize> sizeList = storeProdDTO.getSizeList().stream()
-                .map(x -> BeanUtil.toBean(x, StoreProductColorSize.class)
-                        .setStoreProdId(storeProd.getId()))
-                .collect(Collectors.toList());
-        this.storeProdColorSizeMapper.insert(sizeList);
-        // 档口颜色价格列表
-        List<StoreProductColorPrice> priceList = storeProdDTO.getPriceList().stream()
-                .map(x -> BeanUtil.toBean(x, StoreProductColorPrice.class)
-                        .setStoreProdId(storeProd.getId()))
-                .collect(Collectors.toList());
-        this.storeProdColorPriceMapper.insert(priceList);
-        // 档口详情内容
-        StoreProductDetail storeProdDetail = BeanUtil.toBean(storeProdDTO.getDetail(), StoreProductDetail.class)
-                .setStoreProdId(storeProd.getId());
-        this.storeProdDetailMapper.insert(storeProdDetail);
-        // 档口服务承诺
-        if (ObjectUtils.isNotEmpty(storeProdDTO.getSvc())) {
-            this.storeProdSvcMapper.insert(BeanUtil.toBean(storeProdDTO.getSvc(), StoreProductService.class)
-                    .setStoreProdId(storeProd.getId()));
-        }
-        // 档口生产工艺信息
-        if (ObjectUtils.isNotEmpty(storeProdDTO.getProcess())) {
-            this.storeProdProcMapper.insert(BeanUtil.toBean(storeProdDTO.getProcess(), StoreProductProcess.class)
-                    .setStoreProdId(storeProd.getId()));
-        }
+        // 处理StoreProduct其它属性
+        this.handleStoreProdProperties(storeProd, storeProdDTO);
         return count;
     }
+
 
     /**
      * 修改档口商品
@@ -221,9 +173,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
                         .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, "0")))
                 .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
-        // 将档口商品的del_flag置为2
-        storeProd.setDelFlag("2");
-        this.storeProdMapper.updateById(storeProd);
+        // 更新档口商品信息
+        BeanUtil.copyProperties(storeProdDTO, storeProd);
+        int count = this.storeProdMapper.updateById(storeProd);
         // 档口文件（商品主图、主图视频、下载的商品详情）的del_flag置为2
         this.storeProdFileMapper.updateDelFlagByStoreProdId(storeProdId);
         // 档口类目属性列表的 del_flag置为2
@@ -240,8 +192,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.storeProdSvcMapper.updateDelFlagByStoreProdId(storeProdId);
         // 档口工艺信息的del_flag置为2
         this.storeProdProcMapper.updateDelFlagByStoreProdId(storeProdId);
-        // 重新执行插入数据操作
-        return this.insertStoreProduct(storeProdDTO);
+        // 处理更新逻辑
+        this.handleStoreProdProperties(storeProd, storeProdDTO);
+        return count;
     }
 
 
@@ -335,6 +288,66 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 将产品列表转换为所需的产品DTO列表，并关联颜色信息
         return storeProdList.stream().map(x -> BeanUtil.toBean(x, StoreProdFuzzyResDTO.class).setStoreProdId(x.getId())
                 .setColorList(colorMap.getOrDefault(x.getId(), new ArrayList<>()))).collect(Collectors.toList());
+    }
+
+    /**
+     * 处理档口商品属性
+     *
+     * @param storeProd 档口商品实体
+     * @param storeProdDTO 档口商品数据传输对象
+     */
+    private void handleStoreProdProperties(StoreProduct storeProd, StoreProdDTO storeProdDTO) {
+        // 上传的文件列表
+        final List<StoreProdFileDTO> fileDTOList = storeProdDTO.getFileList();
+        // 将文件插入到SysFile表中
+        List<SysFile> fileList = BeanUtil.copyToList(fileDTOList, SysFile.class);
+        this.fileMapper.insert(fileList);
+        // 将文件名称和文件ID映射到Map中
+        Map<String, Long> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getFileName, SysFile::getId));
+        // 档口文件（商品主图、主图视频、下载的商品详情）
+        List<StoreProductFile> prodFileList = fileDTOList.stream()
+                .map(x -> BeanUtil.toBean(x, StoreProductFile.class).setFileId(fileMap.get(x.getFileName()))
+                        .setStoreProdId(storeProd.getId()).setStoreId(storeProdDTO.getStoreId()))
+                .collect(Collectors.toList());
+        this.storeProdFileMapper.insert(prodFileList);
+        // 档口类目属性列表
+        List<StoreProductCategoryAttribute> cateAttrList = storeProdDTO.getCateAttrList().stream()
+                .map(x -> BeanUtil.toBean(x, StoreProductCategoryAttribute.class)
+                        .setStoreProdId(storeProd.getId()))
+                .collect(Collectors.toList());
+        this.storeProdCateAttrMapper.insert(cateAttrList);
+        // 档口颜色列表
+        List<StoreProductColor> colorList = storeProdDTO.getColorList().stream()
+                .map(x -> BeanUtil.toBean(x, StoreProductColor.class)
+                        .setStoreProdId(storeProd.getId()).setStoreId(storeProdDTO.getStoreId()))
+                .collect(Collectors.toList());
+        this.storeProdColorMapper.insert(colorList);
+        // 档口颜色尺码列表
+        List<StoreProductColorSize> sizeList = storeProdDTO.getSizeList().stream()
+                .map(x -> BeanUtil.toBean(x, StoreProductColorSize.class)
+                        .setStoreProdId(storeProd.getId()))
+                .collect(Collectors.toList());
+        this.storeProdColorSizeMapper.insert(sizeList);
+        // 档口颜色价格列表
+        List<StoreProductColorPrice> priceList = storeProdDTO.getPriceList().stream()
+                .map(x -> BeanUtil.toBean(x, StoreProductColorPrice.class)
+                        .setStoreProdId(storeProd.getId()))
+                .collect(Collectors.toList());
+        this.storeProdColorPriceMapper.insert(priceList);
+        // 档口详情内容
+        StoreProductDetail storeProdDetail = BeanUtil.toBean(storeProdDTO.getDetail(), StoreProductDetail.class)
+                .setStoreProdId(storeProd.getId());
+        this.storeProdDetailMapper.insert(storeProdDetail);
+        // 档口服务承诺
+        if (ObjectUtils.isNotEmpty(storeProdDTO.getSvc())) {
+            this.storeProdSvcMapper.insert(BeanUtil.toBean(storeProdDTO.getSvc(), StoreProductService.class)
+                    .setStoreProdId(storeProd.getId()));
+        }
+        // 档口生产工艺信息
+        if (ObjectUtils.isNotEmpty(storeProdDTO.getProcess())) {
+            this.storeProdProcMapper.insert(BeanUtil.toBean(storeProdDTO.getProcess(), StoreProductProcess.class)
+                    .setStoreProdId(storeProd.getId()));
+        }
     }
 
 }

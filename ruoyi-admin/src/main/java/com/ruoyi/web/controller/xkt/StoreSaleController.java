@@ -8,6 +8,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.xkt.domain.StoreSale;
 import com.ruoyi.xkt.service.IStoreSaleService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +23,11 @@ import java.util.List;
  * @date 2025-03-26
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/rest/v1/store-sales")
 public class StoreSaleController extends XktBaseController {
-    @Autowired
-    private IStoreSaleService storeSaleService;
+
+    final IStoreSaleService storeSaleService;
 
     /**
      * 查询档口销售出库列表

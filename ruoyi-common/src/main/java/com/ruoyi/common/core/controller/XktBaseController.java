@@ -75,7 +75,7 @@ public class XktBaseController {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected TableDataInfo getDataTable(List<?> list) {
-        PageDomain pageDomain = TableSupport.buildPageRequest();
+        /*PageDomain pageDomain = TableSupport.buildPageRequest();
         TableDataInfo rspData = new TableDataInfo();
         rspData.setCode(HttpStatus.SUCCESS);
         rspData.setMsg("查询成功");
@@ -84,8 +84,18 @@ public class XktBaseController {
         rspData.setPageSize(pageDomain.getPageSize());
         long total = new PageInfo(list).getTotal();
         rspData.setTotal(total);
-        rspData.setTotalPage((long) Math.ceil((double) total / pageDomain.getPageSize()));
+        rspData.setPages((long) Math.ceil((double) total / pageDomain.getPageSize()));
+        return rspData;*/
+
+        TableDataInfo rspData = new TableDataInfo();
+        rspData.setCode(HttpStatus.SUCCESS);
+        rspData.setMsg("查询成功");
+        rspData.setRows(list);
+        PageInfo pageInfo = new PageInfo<>(list);
+        System.err.println(pageInfo);
+        rspData.setTotal(new PageInfo(list).getTotal());
         return rspData;
+
     }
 
     /**
