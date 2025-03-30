@@ -132,7 +132,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<StoreProdPageResDTO> prodList = storeProdColorMapper.selectStoreProdColorPage(pageDTO);
         // 如果查询结果为空，则直接返回空列表
         if (CollectionUtils.isEmpty(prodList)) {
-            return Page.empty();
+            return Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum());
         }
         // 提取查询结果中的商店产品ID列表
         List<Long> storeProdIdList = prodList.stream().map(StoreProdPageResDTO::getStoreProdId).collect(Collectors.toList());

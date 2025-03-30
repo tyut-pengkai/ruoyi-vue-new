@@ -55,8 +55,8 @@ public class StoreProductController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:product:list')")
     @ApiOperation(value = "查询档口商品列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
-    public Page<StoreProdPageDTO> page(@Validated @RequestBody StoreProdPageVO pageVO) {
-        return storeProdService.page(ObjectUtils.isEmpty(pageVO) ? null : BeanUtil.toBean(pageVO, StoreProdPageDTO.class));
+    public Page page(@Validated @RequestBody StoreProdPageVO pageVO) {
+        return storeProdService.page(BeanUtil.toBean(pageVO, StoreProdPageDTO.class));
     }
 
     /**

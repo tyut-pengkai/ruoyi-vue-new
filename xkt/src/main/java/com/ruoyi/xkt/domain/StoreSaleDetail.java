@@ -54,6 +54,12 @@ public class StoreSaleDetail extends XktBaseEntity {
     private String saleType;
 
     /**
+     * 商品货号
+     */
+    @Excel(name = "商品货号")
+    private String prodArtNum;
+
+    /**
      * 销售单价
      */
     @Excel(name = "销售单价")

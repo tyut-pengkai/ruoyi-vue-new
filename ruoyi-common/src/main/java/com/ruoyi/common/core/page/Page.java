@@ -58,18 +58,23 @@ public class Page<T> implements Serializable {
      */
     private String msg = "操作成功";
 
+    public static <T> Page<T> convert(PageInfo<?> pageInfo) {
+        return BeanUtil.toBean(pageInfo, Page.class);
+    }
+
     public static <T> Page<T> convert(PageInfo<?> pageInfo, List<T> list) {
         Page<T> page = BeanUtil.toBean(pageInfo, Page.class);
         page.setList(CollectionUtils.isEmpty(list) ? new ArrayList<>() : list);
         return page;
     }
 
-    public static <T> Page<T> empty() {
+
+    public static <T> Page<T> empty(int pageSize, int pageNum) {
         Page<T> page = new Page<>();
         page.setList(new ArrayList<>());
         page.setTotal(0);
-        page.setPageNum(1);
-        page.setPageSize(10);
+        page.setPageNum(pageNum);
+        page.setPageSize(pageSize);
         return page;
     }
 

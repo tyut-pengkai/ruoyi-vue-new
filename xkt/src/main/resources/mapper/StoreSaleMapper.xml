@@ -117,4 +117,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectPage" parameterType="com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO" resultType="com.ruoyi.xkt.dto.storeSale.StoreSalePageResDTO">
+        SELECT
+            ss.id AS storeSaleId,  ss.store_id,  ss.`code`, ss.store_cus_name AS cusName, ss.create_time, ss.sale_type, ss.quantity, ss.amount, ss.payment_status,
+            ss.pay_way,  ss.operator_name, ss.remark
+        FROM
+            store_sale ss
+            <if test="prodArtNum != null  and prodArtNum != ''"> join store_sale_detail ssd on ss.id = ssd.store_sale_id</if>
+        WHERE
+            ss.del_flag = 0 AND ss.store_id = #{storeId}
+            <if test="prodArtNum != null  and prodArtNum != ''"> and ssd.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
+            <if test="cusName != null  and cusName != ''"> and ss.store_cus_name like concat('%', #{cusName}, '%')</if>
+            <if test="saleType != null  and saleType != ''"> and ss.sale_type = #{saleType}</if>
+            <if test="paymentStatus != null  and paymentStatus != ''"> and ss.payment_status = #{paymentStatus}</if>
+            <if test="payWay != null  and payWay != ''"> and ss.pay_way = #{payWay}</if>
+            <if test="createTimeStart != null"> and ss.voucher_date &gt;= #{createTimeStart}</if>
+            <if test="createTimeEnd != null"> and ss.voucher_date &lt;= #{createTimeEnd}</if>
+    </select>
+
+
 </mapper>

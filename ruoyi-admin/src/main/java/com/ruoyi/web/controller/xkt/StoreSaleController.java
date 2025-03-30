@@ -4,13 +4,15 @@ import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusGeneralSaleVO;
+import com.ruoyi.web.controller.xkt.vo.storeSale.StoreSalePageVO;
 import com.ruoyi.web.controller.xkt.vo.storeSale.StoreSaleVO;
 import com.ruoyi.xkt.domain.StoreSale;
 import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
+import com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO;
 import com.ruoyi.xkt.service.IStoreSaleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -48,6 +50,17 @@ public class StoreSaleController extends XktBaseController {
     }
 
     /**
+     * 查询档口销售出库列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:sale:list')")
+    @ApiOperation(value = "查询档口销售出库列表", httpMethod = "POST", response = R.class)
+    @PostMapping("/page")
+    public Page page(@Validated @RequestBody StoreSalePageVO salePageVO) {
+        return storeSaleService.page(BeanUtil.toBean(salePageVO, StoreSalePageDTO.class));
+    }
+
+
+    /**
      * 新增档口销售出库
      */
     @PreAuthorize("@ss.hasPermi('system:sale:add')")
@@ -58,31 +71,34 @@ public class StoreSaleController extends XktBaseController {
         return success(storeSaleService.insertStoreSale(BeanUtil.toBean(storeSaleVO, StoreSaleDTO.class)));
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
-     * 查询档口销售出库列表
+     * 修改档口销售出库
      */
-    @PreAuthorize("@ss.hasPermi('system:sale:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(StoreSale storeSale) {
-        startPage();
-        List<StoreSale> list = storeSaleService.selectStoreSaleList(storeSale);
-        return getDataTable(list);
+    @PreAuthorize("@ss.hasPermi('system:sale:edit')")
+    @Log(title = "修改档口销售出库", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "修改档口销售出库", httpMethod = "PUT", response = R.class)
+    @PutMapping
+    public R edit(@Validated @RequestBody StoreSaleVO storeSaleVO) {
+        return success(storeSaleService.updateStoreSale(BeanUtil.toBean(storeSaleVO, StoreSaleDTO.class)));
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * 导出档口销售出库列表
@@ -105,16 +121,6 @@ public class StoreSaleController extends XktBaseController {
         return success(storeSaleService.selectStoreSaleByStoreSaleId(storeSaleId));
     }
 
-
-    /**
-     * 修改档口销售出库
-     */
-    @PreAuthorize("@ss.hasPermi('system:sale:edit')")
-    @Log(title = "档口销售出库", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public R edit(@RequestBody StoreSale storeSale) {
-        return success(storeSaleService.updateStoreSale(storeSale));
-    }
 
     /**
      * 删除档口销售出库

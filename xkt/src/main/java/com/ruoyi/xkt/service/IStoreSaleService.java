@@ -1,8 +1,11 @@
 package com.ruoyi.xkt.service;
 
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.domain.StoreSale;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusGeneralSaleDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
+import com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO;
+import com.ruoyi.xkt.dto.storeSale.StoreSalePageResDTO;
 
 import java.util.List;
 
@@ -40,10 +43,10 @@ public interface IStoreSaleService {
     /**
      * 修改档口销售出库
      *
-     * @param storeSale 档口销售出库
+     * @param storeSaleDTO 档口销售出库
      * @return 结果
      */
-    public int updateStoreSale(StoreSale storeSale);
+    public int updateStoreSale(StoreSaleDTO storeSaleDTO);
 
     /**
      * 批量删除档口销售出库
@@ -69,5 +72,12 @@ public interface IStoreSaleService {
      * @return StoreCusGeneralSaleDTO
      */
     StoreCusGeneralSaleDTO getCusGeneralSale(Integer days, Long storeId, Long storeCusId);
+
+    /**
+     * 分页查询销售出库列表
+     * @param pageDTO 入参
+     * @return Page
+     */
+    Page<StoreSalePageResDTO> page(StoreSalePageDTO pageDTO);
 
 }

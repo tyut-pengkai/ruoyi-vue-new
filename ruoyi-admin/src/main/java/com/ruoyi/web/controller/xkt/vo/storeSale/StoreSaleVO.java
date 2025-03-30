@@ -21,6 +21,11 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreSaleVO {
 
+    @NotNull(message = "是否为返单不能为空!")
+    @ApiModelProperty(name = "是否为返单", notes = "true 是返单  false 不是返单")
+    private Boolean refund;
+    @ApiModelProperty(name = "storeSaleId", notes = "新增为空，编辑必传")
+    private Long storeSaleId;
     @ApiModelProperty(name = "档口ID")
     @NotNull(message = "档口ID不能为空!")
     private Long storeId;
@@ -53,6 +58,9 @@ public class StoreSaleVO {
         @NotNull(message = "档口商品颜色尺码ID不能为空!")
         @ApiModelProperty(name = "档口商品颜色尺码ID")
         private Long storeProdColorSizeId;
+        @ApiModelProperty(name = "商品货号")
+        @NotBlank(message = "商品货号不能为空!")
+        private String prodArtNum;
         @ApiModelProperty(name = "销售条码")
         private String sns;
         @NotNull(message = "销售单价不能为空!")

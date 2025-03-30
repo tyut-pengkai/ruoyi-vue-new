@@ -2,7 +2,10 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.StoreCustomer;
@@ -10,6 +13,8 @@ import com.ruoyi.xkt.domain.StoreSale;
 import com.ruoyi.xkt.domain.StoreSaleDetail;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusGeneralSaleDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
+import com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO;
+import com.ruoyi.xkt.dto.storeSale.StoreSalePageResDTO;
 import com.ruoyi.xkt.mapper.StoreCustomerMapper;
 import com.ruoyi.xkt.mapper.StoreSaleDetailMapper;
 import com.ruoyi.xkt.mapper.StoreSaleMapper;
@@ -48,8 +53,8 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     /**
      * 获取当前档口客户的销售业绩
      *
-     * @param days    查询时间diff
-     * @param storeId 档口ID
+     * @param days       查询时间diff
+     * @param storeId    档口ID
      * @param storeCusId 档口客户ID
      * @return StoreCusGeneralSaleDTO
      */
@@ -86,6 +91,20 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     }
 
     /**
+     * 销售出库列表查询
+     *
+     * @param pageDTO 入参
+     * @return Page<StoreSalePageResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<StoreSalePageResDTO> page(StoreSalePageDTO pageDTO) {
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        List<StoreSalePageResDTO> list = storeSaleMapper.selectPage(pageDTO);
+        return Page.convert(new PageInfo<>(list));
+    }
+
+    /**
      * 新增档口销售出库
      *
      * @param storeSaleDTO 档口销售出库
@@ -105,54 +124,6 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         this.storeSaleDetailMapper.insert(saleDetailList);
         return count;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -181,12 +152,19 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     /**
      * 修改档口销售出库
      *
-     * @param storeSale 档口销售出库
+     * @param storeSaleDTO 档口销售出库
      * @return 结果
      */
     @Override
     @Transactional
-    public int updateStoreSale(StoreSale storeSale) {
+    public int updateStoreSale(StoreSaleDTO storeSaleDTO) {
+        StoreSale storeSale = Optional.ofNullable(this.storeSaleMapper.selectOne(new LambdaQueryWrapper<StoreSale>()
+                        .eq(StoreSale::getId, storeSaleDTO.getStoreSaleId()).eq(StoreSale::getDelFlag, "0")))
+                .orElseThrow(() -> new ServiceException("档口销售出库订单不存在!", HttpStatus.ERROR));
+        // 若为返单，则将之前数据记录到返单记录表中
+        if (Objects.equals(storeSaleDTO.getRefund(), Boolean.TRUE)) {
+
+        }
         storeSale.setUpdateTime(DateUtils.getNowDate());
         return storeSaleMapper.updateStoreSale(storeSale);
     }
