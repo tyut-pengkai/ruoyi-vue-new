@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.service;
 
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.domain.StoreCustomer;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusFuzzyResDTO;
@@ -67,7 +68,7 @@ public interface IStoreCustomerService {
 
     void deleteStoreCus(Long storeCusId);
 
-    List<StoreCusPageResDTO> selectPage(StoreCusPageDTO storeCusPageDTO);
+    Page<StoreCusPageResDTO> selectPage(StoreCusPageDTO storeCusPageDTO);
 
     /**
      * 模糊查询客户名称列表

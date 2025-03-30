@@ -1,8 +1,10 @@
 package com.ruoyi.web.controller.xkt.vo.storeCustomer;
 
+import com.ruoyi.web.controller.xkt.vo.BasePageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotNull;
 
@@ -11,11 +13,10 @@ import javax.validation.constraints.NotNull;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
+@EqualsAndHashCode(callSuper = true)
 @ApiModel("档口客户分页查询入参")
 @Data
-public class StoreCusPageVO {
-    private long pageNum;
-    private long pageSize;
+public class StoreCusPageVO extends BasePageVO {
 
     @ApiModelProperty(name = "客户名称")
     private String cusName;

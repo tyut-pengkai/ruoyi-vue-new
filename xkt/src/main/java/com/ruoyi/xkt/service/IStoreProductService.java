@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.service;
 
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeProduct.*;
 
@@ -35,7 +36,7 @@ public interface IStoreProductService {
      */
     public List<StoreProduct> selectStoreProductList(StoreProduct storeProduct);
 
-    public List<StoreProdPageResDTO> selectPage(StoreProdPageDTO pageDTO);
+    public Page<StoreProdPageDTO> page(StoreProdPageDTO pageDTO);
 
 
     /**

@@ -2,11 +2,15 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeColor.StoreColorDTO;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageResDTO;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceDTO;
@@ -122,15 +126,16 @@ public class StoreProductServiceImpl implements IStoreProductService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<StoreProdPageResDTO> selectPage(StoreProdPageDTO pageDTO) {
+    public Page<StoreProdPageDTO> page(StoreProdPageDTO pageDTO) {
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         // 调用Mapper方法查询商店产品分页信息
-        List<StoreProdPageResDTO> page = storeProdColorMapper.selectStoreProdColorPage(pageDTO);
+        List<StoreProdPageResDTO> prodList = storeProdColorMapper.selectStoreProdColorPage(pageDTO);
         // 如果查询结果为空，则直接返回空列表
-        if (CollectionUtils.isEmpty(page)) {
-            return new ArrayList<>();
+        if (CollectionUtils.isEmpty(prodList)) {
+            return Page.empty();
         }
         // 提取查询结果中的商店产品ID列表
-        List<Long> storeProdIdList = page.stream().map(StoreProdPageResDTO::getStoreProdId).collect(Collectors.toList());
+        List<Long> storeProdIdList = prodList.stream().map(StoreProdPageResDTO::getStoreProdId).collect(Collectors.toList());
         // 查找排名第一个商品主图列表
         List<StoreProdMainPicDTO> mainPicList = this.storeProdFileMapper.selectMainPicByStoreProdIdList(storeProdIdList, "MAIN_PIC", 1);
         Map<Long, String> mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
@@ -143,10 +148,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         Map<Long, List<Integer>> standardSizeMap = CollectionUtils.isEmpty(standardSizeList) ? new HashMap<>() : standardSizeList.stream().collect(Collectors
                 .groupingBy(StoreProductColorSize::getStoreProdId, Collectors.mapping(StoreProductColorSize::getSize, Collectors.toList())));
         // 为每个产品设置主图URL和标准尺码列表
-        page.forEach(x -> x.setMainPicUrl(mainPicMap.get(x.getStoreProdId())).setStandardSizeList(standardSizeMap.get(x.getStoreProdId())));
-        // 打印查询结果
-        System.err.println(page);
-        return page;
+        prodList.forEach(x -> x.setMainPicUrl(mainPicMap.get(x.getStoreProdId())).setStandardSizeList(standardSizeMap.get(x.getStoreProdId())));
+        // 使用公共方法转换 PageInfo 到 Page
+        return Page.convert(new PageInfo<>(prodList), BeanUtil.copyToList(prodList, StoreProdPageDTO.class));
     }
 
     @Override

@@ -2,9 +2,10 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.StoreCustomer;
@@ -12,6 +13,7 @@ import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusFuzzyResDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageResDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
 import com.ruoyi.xkt.mapper.StoreCustomerMapper;
 import com.ruoyi.xkt.service.IStoreCustomerService;
 import lombok.RequiredArgsConstructor;
@@ -75,20 +77,16 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<StoreCusPageResDTO> selectPage(StoreCusPageDTO storeCusPageDTO) {
+    public Page<StoreCusPageResDTO> selectPage(StoreCusPageDTO storeCusPageDTO) {
         LambdaQueryWrapper<StoreCustomer> queryWrapper = new LambdaQueryWrapper<StoreCustomer>()
                 .eq(StoreCustomer::getStoreId, storeCusPageDTO.getStoreId()).eq(StoreCustomer::getDelFlag, "0");
         if (StringUtils.isNotBlank(storeCusPageDTO.getCusName())) {
             queryWrapper.like(StoreCustomer::getCusName, storeCusPageDTO.getCusName());
         }
-//        PageHelper.startPage((int)storeCusPageDTO.getPageNum(), (int)storeCusPageDTO.getPageSize());
-        Page<StoreCustomer> page = new Page<>(storeCusPageDTO.getPageNum(), storeCusPageDTO.getPageSize());
-        Page<StoreCustomer> cusList = this.storeCusMapper.selectPage(page, queryWrapper);
-//        List<StoreCusPageResDTO> cusPageResDTOS = this.storeCusMapper.selectList(cusList, StoreCusPageResDTO.class);
-//        List<StoreCustomer> cusList = this.storeCusMapper.selectList(queryWrapper);
-//        System.err.println(cusList);
-//        return null;
-        return CollectionUtils.isEmpty(cusList.getRecords()) ? new ArrayList<>() : BeanUtil.copyToList(cusList.getRecords(), StoreCusPageResDTO.class);
+        PageHelper.startPage(storeCusPageDTO.getPageNum(), storeCusPageDTO.getPageSize());
+        List<StoreCustomer> cusList = this.storeCusMapper.selectList(queryWrapper);
+        // 使用公共方法转换 PageInfo 到 Page
+        return Page.convert(new PageInfo<>(cusList), BeanUtil.copyToList(cusList, StoreCusPageResDTO.class));
     }
 
 

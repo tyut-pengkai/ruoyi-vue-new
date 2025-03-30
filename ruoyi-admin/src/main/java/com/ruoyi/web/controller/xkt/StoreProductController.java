@@ -4,14 +4,13 @@ import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storeProd.*;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusDTO;
 import com.ruoyi.xkt.service.IStoreProductService;
 import io.swagger.annotations.Api;
@@ -56,10 +55,8 @@ public class StoreProductController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:product:list')")
     @ApiOperation(value = "查询档口商品列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
-    public TableDataInfo page(@Validated @RequestBody StoreProdPageVO pageVO) {
-        startPage();
-        List<StoreProdPageResDTO> list = storeProdService.selectPage(ObjectUtils.isEmpty(pageVO) ? null : BeanUtil.toBean(pageVO, StoreProdPageDTO.class));
-        return getDataTable(list);
+    public Page<StoreProdPageDTO> page(@Validated @RequestBody StoreProdPageVO pageVO) {
+        return storeProdService.page(ObjectUtils.isEmpty(pageVO) ? null : BeanUtil.toBean(pageVO, StoreProdPageDTO.class));
     }
 
     /**
