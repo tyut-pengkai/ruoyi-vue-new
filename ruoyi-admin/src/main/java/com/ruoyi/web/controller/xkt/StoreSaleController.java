@@ -1,16 +1,22 @@
 package com.ruoyi.web.controller.xkt;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusGeneralSaleVO;
+import com.ruoyi.web.controller.xkt.vo.storeSale.StoreSaleVO;
 import com.ruoyi.xkt.domain.StoreSale;
+import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
 import com.ruoyi.xkt.service.IStoreSaleService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -22,12 +28,50 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Api(tags = "档口销售出库")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/rest/v1/store-sales")
 public class StoreSaleController extends XktBaseController {
 
     final IStoreSaleService storeSaleService;
+
+    /**
+     * 根据当前客户查询最近的销售业绩，以及欠款金额
+     */
+    @PreAuthorize("@ss.hasPermi('system:sale:list')")
+    @ApiOperation(value = "根据当前客户查询最近的销售业绩，以及欠款金额", httpMethod = "GET", response = R.class)
+    @GetMapping("/sixty-general")
+    public R getCusGeneralSale(@RequestParam("days") Integer days, @RequestParam("storeId") Long storeId,
+                               @RequestParam("storeCusId") Long storeCusId) {
+        return success(BeanUtil.toBean(storeSaleService.getCusGeneralSale(days, storeId, storeCusId), StoreCusGeneralSaleVO.class));
+    }
+
+    /**
+     * 新增档口销售出库
+     */
+    @PreAuthorize("@ss.hasPermi('system:sale:add')")
+    @ApiOperation(value = "新增档口销售出库", httpMethod = "POST", response = R.class)
+    @Log(title = "档口销售出库", businessType = BusinessType.INSERT)
+    @PostMapping
+    public R add(@Validated @RequestBody StoreSaleVO storeSaleVO) {
+        return success(storeSaleService.insertStoreSale(BeanUtil.toBean(storeSaleVO, StoreSaleDTO.class)));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * 查询档口销售出库列表
@@ -61,15 +105,6 @@ public class StoreSaleController extends XktBaseController {
         return success(storeSaleService.selectStoreSaleByStoreSaleId(storeSaleId));
     }
 
-    /**
-     * 新增档口销售出库
-     */
-    @PreAuthorize("@ss.hasPermi('system:sale:add')")
-    @Log(title = "档口销售出库", businessType = BusinessType.INSERT)
-    @PostMapping
-    public R add(@RequestBody StoreSale storeSale) {
-        return success(storeSaleService.insertStoreSale(storeSale));
-    }
 
     /**
      * 修改档口销售出库

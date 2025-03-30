@@ -9,6 +9,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.StoreCustomer;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusFuzzyResDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageResDTO;
 import com.ruoyi.xkt.mapper.StoreCustomerMapper;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 档口客户Service业务层处理
@@ -34,6 +36,26 @@ import java.util.Optional;
 public class StoreCustomerServiceImpl implements IStoreCustomerService {
 
     final StoreCustomerMapper storeCusMapper;
+
+    /**
+     * 模糊查询客户名称列表
+     *
+     * @param storeId 档口ID
+     * @param cusName 客户名称
+     * @return List<StoreCusFuzzyResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<StoreCusFuzzyResDTO> fuzzyQueryList(Long storeId, String cusName) {
+        LambdaQueryWrapper<StoreCustomer> queryWrapper = new LambdaQueryWrapper<StoreCustomer>()
+                .eq(StoreCustomer::getStoreId, storeId).eq(StoreCustomer::getDelFlag, "0");
+        if (StringUtils.isNotBlank(cusName)) {
+            queryWrapper.like(StoreCustomer::getCusName, cusName);
+        }
+        List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(queryWrapper);
+        return CollectionUtils.isEmpty(storeCusList) ? new ArrayList<>() : storeCusList.stream()
+                .map(x -> BeanUtil.toBean(x, StoreCusFuzzyResDTO.class).setStoreCusId(x.getId())).collect(Collectors.toList());
+    }
 
     @Override
     @Transactional
@@ -68,6 +90,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
 //        return null;
         return CollectionUtils.isEmpty(cusList.getRecords()) ? new ArrayList<>() : BeanUtil.copyToList(cusList.getRecords(), StoreCusPageResDTO.class);
     }
+
 
     @Override
     @Transactional

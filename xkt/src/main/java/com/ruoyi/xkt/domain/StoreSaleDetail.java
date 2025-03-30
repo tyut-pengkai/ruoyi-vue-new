@@ -5,6 +5,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreSaleDetail extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -49,7 +51,7 @@ public class StoreSaleDetail extends XktBaseEntity {
      * 销售类型（普通销售、销售退货）
      */
     @Excel(name = "销售类型", readConverterExp = "普=通销售、销售退货")
-    private Long saleType;
+    private String saleType;
 
     /**
      * 销售单价
@@ -80,6 +82,12 @@ public class StoreSaleDetail extends XktBaseEntity {
      */
     @Excel(name = "其它优惠")
     private BigDecimal otherDiscount;
+
+    /**
+     * 条码
+     */
+    @Excel(name = "条码")
+    private String sns;
 
 
     @Override

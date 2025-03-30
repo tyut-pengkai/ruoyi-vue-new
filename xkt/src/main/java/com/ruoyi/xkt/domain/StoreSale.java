@@ -6,6 +6,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -20,6 +21,7 @@ import java.util.Date;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreSale extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -44,8 +46,8 @@ public class StoreSale extends XktBaseEntity {
     /**
      * 销售类型（普通销售、销售退货、普通销售/销售退货）
      */
-    @Excel(name = "销售类型", readConverterExp = "普=通销售、销售退货、普通销售/销售退货")
-    private Long saleType;
+    @Excel(name = "销售类型")
+    private String saleType;
 
     /**
      * 单据编号
@@ -76,7 +78,7 @@ public class StoreSale extends XktBaseEntity {
      * 支付方式（支付宝、微信、现金、欠款）
      */
     @Excel(name = "支付方式", readConverterExp = "支=付宝、微信、现金、欠款")
-    private Long payWay;
+    private String payWay;
 
 
     @Override

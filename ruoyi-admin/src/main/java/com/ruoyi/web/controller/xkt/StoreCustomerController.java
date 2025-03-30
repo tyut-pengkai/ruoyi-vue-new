@@ -4,9 +4,9 @@ import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusFuzzyResVO;
 import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusPageVO;
 import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusVO;
 import com.ruoyi.xkt.domain.StoreCustomer;
@@ -38,6 +38,18 @@ import java.util.List;
 public class StoreCustomerController extends XktBaseController {
 
     final IStoreCustomerService storeCusService;
+
+    /**
+     * 模糊查询档口客户
+     */
+    @PreAuthorize("@ss.hasPermi('system:customer:query')")
+    @ApiOperation(value = "模糊查询档口客户", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/fuzzy")
+    public R fuzzyQueryColorList(@RequestParam(value = "cusName", required = false) String cusName,
+                                 @RequestParam("storeId") Long storeId) {
+        return success(BeanUtil.copyToList(storeCusService.fuzzyQueryList(storeId, cusName), StoreCusFuzzyResVO.class));
+    }
+
 
     /**
      * 新增档口客户

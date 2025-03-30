@@ -27,6 +27,10 @@ public class StoreProductBarcodeRecordController extends XktBaseController {
     @Autowired
     private IStoreProductBarcodeRecordService storeProductBarcodeRecordService;
 
+    // TODO 商品 销售/出库 时扫条码查询信息
+    // TODO 商品 销售/出库 时扫条码查询信息
+    // TODO 商品 销售/出库 时扫条码查询信息
+
     /**
      * 查询档口打印条形码记录列表
      */

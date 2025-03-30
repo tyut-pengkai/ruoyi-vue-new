@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.dto.storeProduct;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.xkt.dto.storeColor.StoreColorDTO;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceDTO;
@@ -60,7 +61,10 @@ public class StoreProdDTO {
     private List<StoreProdFileDTO> fileList;
     @ApiModelProperty(name = "档口类目属性列表")
     private List<StoreProdCateAttrDTO> cateAttrList;
-    @ApiModelProperty(name = "档口颜色列表")
+    @NotNull(message = "档口所有颜色列表不能为空!")
+    @ApiModelProperty(name = "档口所有颜色列表")
+    private List<StoreColorDTO> allColorList;
+    @ApiModelProperty(name = "商品颜色列表")
     private List<StoreProdColorDTO> colorList;
     @ApiModelProperty(name = "档口尺码列表")
     private List<StoreProdColorSizeDTO> sizeList;

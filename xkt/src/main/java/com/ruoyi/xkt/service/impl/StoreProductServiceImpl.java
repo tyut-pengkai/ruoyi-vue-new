@@ -316,7 +316,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
                         .setStoreProdId(storeProd.getId()))
                 .collect(Collectors.toList());
         this.storeProdCateAttrMapper.insert(cateAttrList);
-        // 档口颜色列表
+        // 商品颜色列表
         List<StoreProductColor> colorList = storeProdDTO.getColorList().stream()
                 .map(x -> BeanUtil.toBean(x, StoreProductColor.class)
                         .setStoreProdId(storeProd.getId()).setStoreId(storeProdDTO.getStoreId()))
@@ -348,6 +348,17 @@ public class StoreProductServiceImpl implements IStoreProductService {
             this.storeProdProcMapper.insert(BeanUtil.toBean(storeProdDTO.getProcess(), StoreProductProcess.class)
                     .setStoreProdId(storeProd.getId()));
         }
+        // 处理档口所有颜色列表
+        List<StoreColor> storeColorList = this.storeColorMapper.selectList(new LambdaQueryWrapper<StoreColor>()
+                .eq(StoreColor::getStoreId, storeProdDTO.getStoreId()).eq(StoreColor::getDelFlag, "0"));
+        List<Long> dbStoreColorIdList = storeColorList.stream().map(StoreColor::getId).collect(Collectors.toList());
+        // 新增的颜色列表
+        List<StoreColor> addColorList =storeProdDTO.getAllColorList().stream().filter(x -> !dbStoreColorIdList.contains(x.getStoreColorId()))
+                .map(x -> BeanUtil.toBean(x, StoreColor.class).setStoreId(storeProdDTO.getStoreId())).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(addColorList)) {
+            this.storeColorMapper.insert(addColorList);
+        }
+
     }
 
 }

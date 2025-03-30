@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.StoreCustomer;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusFuzzyResDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageResDTO;
 
@@ -67,5 +68,13 @@ public interface IStoreCustomerService {
     void deleteStoreCus(Long storeCusId);
 
     List<StoreCusPageResDTO> selectPage(StoreCusPageDTO storeCusPageDTO);
+
+    /**
+     * 模糊查询客户名称列表
+     * @param storeId 档口ID
+     * @param cusName 客户名称
+     * @return List<StoreCusFuzzyResDTO>
+     */
+    List<StoreCusFuzzyResDTO> fuzzyQueryList(Long storeId, String cusName);
 
 }

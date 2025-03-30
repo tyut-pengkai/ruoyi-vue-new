@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.xkt.vo.storeProd;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.ruoyi.web.controller.xkt.vo.storeColor.StoreColorVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -68,9 +69,12 @@ public class StoreProdVO {
     @Valid
     @ApiModelProperty(name = "档口类目属性列表")
     private List<StoreProdCateAttrVO> cateAttrList;
-    @NotNull(message = "档口颜色列表不能为空!")
+    @NotNull(message = "档口所有颜色列表不能为空!")
+    @ApiModelProperty(name = "档口所有颜色列表")
+    private List<StoreColorVO> allColorList;
+    @NotNull(message = "商品颜色列表不能为空!")
     @Valid
-    @ApiModelProperty(name = "档口颜色列表")
+    @ApiModelProperty(name = "商品颜色列表")
     private List<StoreProdColorVO> colorList;
     @NotNull(message = "档口尺码列表不能为空!")
     @Valid

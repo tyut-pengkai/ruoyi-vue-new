@@ -55,6 +55,10 @@ public class StoreProductBarcodeMatch extends XktBaseEntity {
     @Excel(name = "其它系统条形码")
     private String otherSysBarcode;
 
+    /**
+     * 其它系统条码类型
+     */
+    private String otherSysType;
 
     @Override
     public String toString() {

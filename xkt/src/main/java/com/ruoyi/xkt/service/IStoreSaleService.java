@@ -1,6 +1,8 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.StoreSale;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusGeneralSaleDTO;
+import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
 
 import java.util.List;
 
@@ -30,10 +32,10 @@ public interface IStoreSaleService {
     /**
      * 新增档口销售出库
      *
-     * @param storeSale 档口销售出库
+     * @param storeSaleDTO 档口销售出库
      * @return 结果
      */
-    public int insertStoreSale(StoreSale storeSale);
+    public int insertStoreSale(StoreSaleDTO storeSaleDTO);
 
     /**
      * 修改档口销售出库
@@ -58,4 +60,14 @@ public interface IStoreSaleService {
      * @return 结果
      */
     public int deleteStoreSaleByStoreSaleId(Long storeSaleId);
+
+    /**
+     * 获取当前档口客户的销售业绩
+     * @param days 查询时间ditff
+     * @param storeId 档口ID
+     * @param storeCusId 档口客户ID
+     * @return StoreCusGeneralSaleDTO
+     */
+    StoreCusGeneralSaleDTO getCusGeneralSale(Integer days, Long storeId, Long storeCusId);
+
 }

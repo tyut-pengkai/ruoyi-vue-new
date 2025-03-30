@@ -24,8 +24,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/rest/v1/prod-stocks")
 public class StoreProductStockController extends XktBaseController {
+
     @Autowired
     private IStoreProductStockService storeProductStockService;
+
+
+    // TODO 商品销售/出库 时读货号，然后查询当前货号颜色的库存
+    // TODO 商品销售/出库 时读货号，然后查询当前货号颜色的库存
+
 
     /**
      * 查询档口商品库存列表

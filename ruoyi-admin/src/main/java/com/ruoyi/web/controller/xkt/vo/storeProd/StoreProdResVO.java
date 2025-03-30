@@ -6,8 +6,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -52,10 +50,10 @@ public class StoreProdResVO {
     private List<StoreProdFileVO> fileList;
     @ApiModelProperty(name = "档口类目属性列表")
     private List<StoreProdCateAttrVO> cateAttrList;
-    @ApiModelProperty(name = "档口宿友颜色列表")
+    @ApiModelProperty(name = "档口所有颜色列表")
     private List<StoreColorVO> allColorList;
-    @ApiModelProperty(name = "档口颜色列表")
-    private List<StoreProdColorVO> colorList;
+    @ApiModelProperty(name = "商品颜色列表")
+    private List<StoreColorVO> colorList;
     @ApiModelProperty(name = "档口颜色价格列表")
     private List<StoreProdColorPriceVO> priceList;
     @ApiModelProperty(name = "档口服务承诺")
@@ -68,20 +66,15 @@ public class StoreProdResVO {
 
     @Data
     public static class StoreProdFileVO {
-        @NotBlank(message = "文件名称不能为空!")
         @ApiModelProperty(name = "文件名称")
         private String fileName;
-        @NotBlank(message = "文件路径不能为空!")
         @ApiModelProperty(name = "文件路径")
         private String fileUrl;
-        @NotNull(message = "文件大小不能为空!")
         @ApiModelProperty(name = "文件大小")
         private BigDecimal fileSize;
-        @NotBlank(message = "文件类型不能为空!")
         @ApiModelProperty(name = "文件类型")
         private String fileType;
         @ApiModelProperty(name = "排序")
-        @NotNull(message = "排序不能为空!")
         private Integer orderNum;
     }
 
@@ -94,37 +87,19 @@ public class StoreProdResVO {
     }
 
     @Data
-    public static class StoreProdColorVO {
-        @NotNull(message = "档口颜色ID不能为空!")
-        @ApiModelProperty(name = "档口颜色ID")
-        private Long storeColorId;
-        @NotBlank(message = "颜色名称不能为空!")
-        @ApiModelProperty(name = "颜色名称")
-        private String colorName;
-        @NotNull(message = "排序不能为空!")
-        @ApiModelProperty(name = "排序")
-        private Integer orderNum;
-    }
-
-    @Data
     public static class StoreProdColorSizeVO {
-        @NotNull(message = "档口颜色ID不能为空!")
         @ApiModelProperty(name = "档口颜色ID")
         private Long storeColorId;
         @ApiModelProperty(name = "商品尺码")
-        @NotNull(message = "档口商品定价不能为空!")
         private Integer size;
-        @NotBlank(message = "是否是标准尺码不能为空!")
         @ApiModelProperty(name = "是否是标准尺码")
         private String standard;
     }
 
     @Data
     public static class StoreProdColorPriceVO {
-        @NotNull(message = "档口商品颜色ID不能为空!")
         @ApiModelProperty(name = "档口商品颜色ID")
         private Long storeColorId;
-        @NotNull(message = "档口商品定价不能为空!")
         @ApiModelProperty(name = "档口商品定价")
         private BigDecimal price;
     }
@@ -143,7 +118,6 @@ public class StoreProdResVO {
 
     @Data
     public static class StoreProdDetailVO {
-        @NotBlank(message = "详情内容不能为空!")
         @ApiModelProperty(name = "详情内容")
         private String detail;
     }
