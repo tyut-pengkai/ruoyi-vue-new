@@ -5,6 +5,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -18,7 +19,9 @@ import java.math.BigDecimal;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreProductStorage extends XktBaseEntity {
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -26,47 +29,48 @@ public class StoreProductStorage extends XktBaseEntity {
      */
     @TableId
     private Long id;
-
+    /**
+     * 档口ID
+     */
+    private Long storeId;
     /**
      * 入库CODE
      */
     @Excel(name = "入库CODE")
     private String code;
-
     /**
-     * 入库类型
+     * 入库类型 生产入库 PROD_STORAGE  其它入库 OTHER_STORAGE  维修入库 REPAIR_STORAGE
      */
     @Excel(name = "入库类型")
-    private Long storageType;
-
+    private String storageType;
     /**
      * 数量
      */
     @Excel(name = "数量")
-    private Integer totalNum;
-
+    private Integer quantity;
     /**
      * 生产成本金额
      */
     @Excel(name = "生产成本金额")
-    private BigDecimal totalProducePrice;
-
+    private BigDecimal produceAmount;
     /**
-     * 入库状态
+     * 操作人ID
      */
-    @Excel(name = "入库状态")
-    private String storageStatus;
-
+    private Long operatorId;
+    /**
+     * 操作人名称
+     */
+    private String operatorName;
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId())
+                .append("storeId", getStoreId())
                 .append("code", getCode())
                 .append("storageType", getStorageType())
-                .append("totalNum", getTotalNum())
-                .append("totalProducePrice", getTotalProducePrice())
-                .append("storageStatus", getStorageStatus())
+                .append("quantity", getQuantity())
+                .append("produceAmount", getProduceAmount())
                 .append("version", getVersion())
                 .append("delFlag", getDelFlag())
                 .append("createBy", getCreateBy())

@@ -102,8 +102,8 @@ public class StoreCustomerController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:customer:list')")
     @ApiOperation(value = "查询档口客户列表", httpMethod = "GET", response = R.class)
     @PostMapping("/page")
-    public Page selectPage(@Validated @RequestBody StoreCusPageVO pageVO) {
-        return storeCusService.selectPage(BeanUtil.toBean(pageVO, StoreCusPageDTO.class));
+    public R<Page> selectPage(@Validated @RequestBody StoreCusPageVO pageVO) {
+        return R.ok(storeCusService.selectPage(BeanUtil.toBean(pageVO, StoreCusPageDTO.class)));
     }
 
 

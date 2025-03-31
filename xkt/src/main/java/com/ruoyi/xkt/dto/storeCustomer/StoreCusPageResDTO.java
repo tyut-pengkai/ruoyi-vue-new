@@ -2,6 +2,7 @@ package com.ruoyi.xkt.dto.storeCustomer;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -19,10 +20,11 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreCusPageResDTO {
 
+    @ApiModelProperty(name = "档口客户ID", notes = "新增为空，编辑必传")
+    @JsonProperty("storeCusId")
+    private Long id;
     @ApiModelProperty(name = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "档口客户ID", notes = "新增为空，编辑必传")
-    private Long storeCusId;
     @NotBlank(message = "客户名称不能为空!")
     @ApiModelProperty(name = "客户名称")
     private String cusName;

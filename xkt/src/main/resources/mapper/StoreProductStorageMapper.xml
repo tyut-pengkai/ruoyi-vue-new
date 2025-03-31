@@ -98,4 +98,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectStoragePage" parameterType="com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageDTO" resultType="com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageResDTO">
+        SELECT
+             sps.id AS storeProdStorId, sps.store_id, sps.`code`, sps.storage_type, sps.produce_amount, sps.quantity, sps.create_time, sps.operator_name
+        FROM
+            store_product_storage sps
+            <if test="prodArtNum != null  and prodArtNum != ''"> join store_product_storage_detail spsd on sps.id = spsd.store_prod_stor_id </if>
+        WHERE
+            sps.del_flag = 0 AND sps.store_id = #{storeId}
+            <if test="prodArtNum != null  and prodArtNum != ''"> and spsd.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
+            <if test="storageType != null  and storageType != ''"> and sps.storage_type = #{storageType} </if>
+            <if test="createTimeStart != null"> and sps.voucher_date &gt;= #{createTimeStart}</if>
+            <if test="createTimeEnd != null"> and sps.voucher_date &lt;= #{createTimeEnd}</if>
+    </select>
+
+
 </mapper>

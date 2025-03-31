@@ -36,7 +36,7 @@ public interface IStoreProductService {
      */
     public List<StoreProduct> selectStoreProductList(StoreProduct storeProduct);
 
-    public Page<StoreProdPageDTO> page(StoreProdPageDTO pageDTO);
+    public Page<StoreProdPageResDTO> page(StoreProdPageDTO pageDTO);
 
 
     /**

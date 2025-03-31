@@ -2,6 +2,8 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductStorage;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageDTO;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageResDTO;
 
 import java.util.List;
 
@@ -59,4 +61,12 @@ public interface StoreProductStorageMapper extends BaseMapper<StoreProductStorag
      * @return 结果
      */
     public int deleteStoreProductStorageByStoreProdStorIds(Long[] storeProdStorIds);
+
+    /**
+     * 查询出库单分页
+     * @param storagePageDTO 查询入参
+     * @return  List<StoreProdStoragePageResDTO>
+     */
+    List<StoreProdStoragePageResDTO> selectStoragePage(StoreProdStoragePageDTO storagePageDTO);
+
 }

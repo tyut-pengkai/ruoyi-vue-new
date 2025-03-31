@@ -1,6 +1,11 @@
 package com.ruoyi.xkt.service;
 
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.domain.StoreProductStorage;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStorageDTO;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageDTO;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageResDTO;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStorageResDTO;
 
 import java.util.List;
 
@@ -17,7 +22,7 @@ public interface IStoreProductStorageService {
      * @param storeProdStorId 档口商品入库主键
      * @return 档口商品入库
      */
-    public StoreProductStorage selectStoreProductStorageByStoreProdStorId(Long storeProdStorId);
+    public StoreProdStorageResDTO selectByStoreProdStorId(Long storeProdStorId);
 
     /**
      * 查询档口商品入库列表
@@ -30,10 +35,10 @@ public interface IStoreProductStorageService {
     /**
      * 新增档口商品入库
      *
-     * @param storeProductStorage 档口商品入库
+     * @param storeProdStorageDTO 档口商品入库
      * @return 结果
      */
-    public int insertStoreProductStorage(StoreProductStorage storeProductStorage);
+    public int create(StoreProdStorageDTO storeProdStorageDTO);
 
     /**
      * 修改档口商品入库
@@ -44,12 +49,12 @@ public interface IStoreProductStorageService {
     public int updateStoreProductStorage(StoreProductStorage storeProductStorage);
 
     /**
-     * 批量删除档口商品入库
+     * 撤销档口商品入库
      *
-     * @param storeProdStorIds 需要删除的档口商品入库主键集合
+     * @param storeProdStorId 需要删除的档口商品入库主键集合
      * @return 结果
      */
-    public int deleteStoreProductStorageByStoreProdStorIds(Long[] storeProdStorIds);
+    public int deleteByStoreProdStorId(Long storeProdStorId);
 
     /**
      * 删除档口商品入库信息
@@ -58,4 +63,12 @@ public interface IStoreProductStorageService {
      * @return 结果
      */
     public int deleteStoreProductStorageByStoreProdStorId(Long storeProdStorId);
+
+    /**
+     * 分页查询
+     * @param storagePageDTO 查询入参
+     * @return Page
+     */
+    Page<StoreProdStoragePageResDTO> page(StoreProdStoragePageDTO storagePageDTO);
+
 }

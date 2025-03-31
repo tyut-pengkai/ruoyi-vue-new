@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.StoreCustomerProductDiscount;
+import com.ruoyi.xkt.dto.storeCusProdDiscount.StoreCusProdDiscountDTO;
 
 import java.util.List;
 
@@ -38,10 +39,10 @@ public interface IStoreCustomerProductDiscountService {
     /**
      * 修改档口客户优惠
      *
-     * @param storeCustomerProductDiscount 档口客户优惠
+     * @param cusProdDisDTO 档口客户优惠
      * @return 结果
      */
-    public int updateStoreCustomerProductDiscount(StoreCustomerProductDiscount storeCustomerProductDiscount);
+    public Integer updateStoreCusProdDiscount(StoreCusProdDiscountDTO cusProdDisDTO);
 
     /**
      * 批量删除档口客户优惠

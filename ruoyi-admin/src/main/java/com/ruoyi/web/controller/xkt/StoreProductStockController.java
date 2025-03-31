@@ -40,6 +40,17 @@ public class StoreProductStockController extends XktBaseController {
     // TODO 销售出库时扣件库存
 
 
+
+    // TODO 新增入款单库存会变化
+    // TODO 新增入款单库存会变化
+    // TODO 新增入款单库存会变化
+    // TODO 新增入款单库存会变化
+    // TODO 新增入款单库存会变化
+    // TODO 新增入款单库存会变化
+    // TODO 新增入款单库存会变化
+
+
+
     /**
      * 查询档口商品库存列表
      */

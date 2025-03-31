@@ -126,7 +126,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<StoreProdPageDTO> page(StoreProdPageDTO pageDTO) {
+    public Page<StoreProdPageResDTO> page(StoreProdPageDTO pageDTO) {
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         // 调用Mapper方法查询商店产品分页信息
         List<StoreProdPageResDTO> prodList = storeProdColorMapper.selectStoreProdColorPage(pageDTO);
@@ -150,7 +150,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 为每个产品设置主图URL和标准尺码列表
         prodList.forEach(x -> x.setMainPicUrl(mainPicMap.get(x.getStoreProdId())).setStandardSizeList(standardSizeMap.get(x.getStoreProdId())));
         // 使用公共方法转换 PageInfo 到 Page
-        return Page.convert(new PageInfo<>(prodList), BeanUtil.copyToList(prodList, StoreProdPageDTO.class));
+        return Page.convert(new PageInfo<>(prodList), BeanUtil.copyToList(prodList, StoreProdPageResDTO.class));
     }
 
     @Override

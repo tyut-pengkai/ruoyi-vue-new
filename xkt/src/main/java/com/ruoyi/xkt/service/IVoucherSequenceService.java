@@ -1,10 +1,5 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.Store;
-import com.ruoyi.xkt.domain.UserSubscriptions;
-
-import java.util.List;
-
 /**
  * 单据编号Service接口
  *
@@ -15,8 +10,9 @@ public interface IVoucherSequenceService {
 
     /**
      * 获取档口单据编号
-     * @param storeId 档口ID
-     * @param type 单据类型
+     *
+     * @param storeId     档口ID
+     * @param type        单据类型 STORE_SALE STORAGE  DEMAND STORE_ORDER
      * @param voucherDate 单据日期 默认为当天
      * @return String
      */

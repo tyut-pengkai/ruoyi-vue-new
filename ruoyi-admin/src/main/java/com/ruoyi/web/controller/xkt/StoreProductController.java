@@ -11,6 +11,7 @@ import com.ruoyi.web.controller.xkt.vo.storeProd.*;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusDTO;
 import com.ruoyi.xkt.service.IStoreProductService;
 import io.swagger.annotations.Api;
@@ -55,8 +56,8 @@ public class StoreProductController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:product:list')")
     @ApiOperation(value = "查询档口商品列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
-    public Page page(@Validated @RequestBody StoreProdPageVO pageVO) {
-        return storeProdService.page(BeanUtil.toBean(pageVO, StoreProdPageDTO.class));
+    public R<Page<StoreProdPageResDTO>> page(@Validated @RequestBody StoreProdPageVO pageVO) {
+        return R.ok(storeProdService.page(BeanUtil.toBean(pageVO, StoreProdPageDTO.class)));
     }
 
     /**

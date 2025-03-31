@@ -27,6 +27,14 @@ public class StoreProductDemandController extends XktBaseController {
     @Autowired
     private IStoreProductDemandService storeProductDemandService;
 
+
+    // TODO 入库单判断需求单是否存在
+    // TODO 入库单判断需求单是否存在
+    // TODO 入库单判断需求单是否存在
+    // TODO 入库单判断需求单是否存在
+
+
+
     /**
      * 查询档口商品需求单列表
      */
