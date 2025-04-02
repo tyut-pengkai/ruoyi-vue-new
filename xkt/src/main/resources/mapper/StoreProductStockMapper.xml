@@ -153,4 +153,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectStockPage" parameterType="com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO" resultType="com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO">
+        SELECT
+            id AS stockProdStockId, store_prod_id,  prod_art_num, color_name,
+            size_30 AS size30, size_31 AS size31, size_32 AS size32, size_33 AS size33, size_34 AS size34, size_35 AS size35, size_36 AS size36, size_37 AS size37,
+            size_38 AS size38, size_39 AS size39, size_40 AS size40, size_41 AS size41, size_42 AS size42, size_43 AS size43,
+            (IFNULL(size_30, 0) + IFNULL(size_31, 0) + IFNULL(size_32, 0) + IFNULL(size_33, 0) +
+            IFNULL(size_34, 0) + IFNULL(size_35, 0) + IFNULL(size_36, 0) + IFNULL(size_37, 0) +
+            IFNULL(size_38, 0) + IFNULL(size_39, 0) + IFNULL(size_40, 0) + IFNULL(size_41, 0) +
+            IFNULL(size_42, 0) + IFNULL(size_43, 0)) AS totalStock
+        FROM
+            store_product_stock
+        WHERE
+            del_flag = 0
+            AND store_id = #{storeId}
+            <if test="prodArtNum != null  and prodArtNum != ''"> and prod_art_num like concat('%', #{prodArtNum}, '%')</if>
+    </select>
+
 </mapper>

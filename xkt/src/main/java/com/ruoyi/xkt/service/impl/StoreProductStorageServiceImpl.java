@@ -16,15 +16,14 @@ import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStorageDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageResDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStorageResDTO;
-import com.ruoyi.xkt.dto.storeSale.StoreSalePageResDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockUpdateDTO;
 import com.ruoyi.xkt.mapper.StoreProductStorageDetailMapper;
 import com.ruoyi.xkt.mapper.StoreProductStorageMapper;
+import com.ruoyi.xkt.service.IStoreProductStockService;
 import com.ruoyi.xkt.service.IStoreProductStorageService;
 import com.ruoyi.xkt.service.IVoucherSequenceService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +45,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
     final StoreProductStorageMapper storageMapper;
     final StoreProductStorageDetailMapper storageDetailMapper;
     final IVoucherSequenceService sequenceService;
+    final IStoreProductStockService stockService;
 
 
     /**
@@ -87,6 +87,10 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         List<StoreProductStorageDetail> detailList  = storeProdStorageDTO.getDetailList().stream().map(x -> BeanUtil.toBean(x, StoreProductStorageDetail.class)
                 .setStoreProdStorId(storeProdStorage.getId())).collect(Collectors.toList());
         this.storageDetailMapper.insert(detailList);
+        // 构造增加库存的入参DTO
+        List<StoreProdStockUpdateDTO> increaseStockList = BeanUtil.copyToList(detailList, StoreProdStockUpdateDTO.class);
+        // 增加档口商品的库存
+        this.stockService.increaseStock(storeProdStorageDTO.getStoreId(), increaseStockList);
         return count;
     }
 
@@ -144,12 +148,9 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
                 .eq(StoreProductStorageDetail::getStoreProdStorId, storeProdStorId).eq(StoreProductStorageDetail::getDelFlag, "0"));
         storageDetailList.forEach(x -> x.setDelFlag("2"));
         this.storageDetailMapper.updateById(storageDetailList);
-
-        // TODO 更新档口商品库存
-        // TODO 更新档口商品库存
-        // TODO 更新档口商品库存
-        // TODO 更新档口商品库存
-
+       // 减少档口商品库存
+        this.stockService.decreaseStock(storage.getStoreId(), storageDetailList.stream()
+                .map(x -> BeanUtil.toBean(x, StoreProdStockUpdateDTO.class)).collect(Collectors.toList()));
         return count;
     }
 

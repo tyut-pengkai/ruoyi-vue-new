@@ -10,18 +10,21 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.common.utils.bigDecimal.CollectorsUtil;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusGeneralSaleDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockUpdateDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageResDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePayStatusDTO;
 import com.ruoyi.xkt.mapper.*;
+import com.ruoyi.xkt.service.IStoreProductStockService;
 import com.ruoyi.xkt.service.IStoreSaleService;
 import com.ruoyi.xkt.service.IVoucherSequenceService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +51,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     final StoreSaleDetailMapper storeSaleDetailMapper;
     final StoreSaleRefundRecordMapper refundRecordMapper;
     final StoreSaleRefundRecordDetailMapper refundRecordDetailMapper;
+    final IStoreProductStockService storeProdStockService;
 
     /**
      * 获取当前档口客户的销售业绩
@@ -152,19 +153,17 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         List<StoreSaleDetail> saleDetailList = storeSaleDTO.getDetailList().stream().map(x -> BeanUtil.toBean(x, StoreSaleDetail.class)
                 .setSaleType(storeSaleDTO.getSaleType()).setStoreSaleId(storeSale.getId())).collect(Collectors.toList());
         this.storeSaleDetailMapper.insert(saleDetailList);
-
-
-        // TODO 扣件库存
-        // TODO 扣件库存
-        // TODO 扣件库存
-        // TODO 扣件库存
-        // TODO 扣件库存
-        // TODO 扣件库存
-
-
-
+        // 先汇总当前这笔订单商品明细的销售数量，包括销售及退货 key： prodArtNum + storeProdId + storeProdColorId + colorName, value: map(key:size,value:count)
+        Map<String, Map<Integer, Integer>> saleCountMap = storeSaleDTO.getDetailList().stream().collect(Collectors
+                .groupingBy(x -> x.getProdArtNum() + ":" + x.getStoreProdId() + ":" + x.getStoreProdColorId() + ":" + x.getColorName(), Collectors
+                        .groupingBy(StoreSaleDTO.SaleDetailVO::getSize, Collectors
+                                .mapping(StoreSaleDTO.SaleDetailVO::getQuantity, Collectors.reducing(0, Integer::sum)))));
+        // 组装库存调整入参调整库存
+        this.storeProdStockService.updateStock(storeSale.getStoreId(), this.getStockDiffList(saleCountMap, -1), 1);
         return count;
     }
+
+
 
     /**
      * 修改档口销售出库
@@ -204,27 +203,21 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
                 .setOperatorId(loginUser.getUserId()).setOperatorName(loginUser.getUsername()));
         // 先将所有明细置为无效，再新增
         this.storeSaleDetailMapper.updateById(saleDetailList.stream().peek(x -> x.setDelFlag("2")).collect(Collectors.toList()));
-
-        // TODO 扣件库存
-        // TODO 扣件库存
-        // TODO 扣件库存
-        // TODO 扣件库存
-        // TODO 扣件库存
-        // TODO 扣件库存
-
-
-        // TODO 增加库存
-        // TODO 增加库存
-        // TODO 增加库存
-        // TODO 增加库存
-        // TODO 增加库存
-        // TODO 增加库存
-
-
         // 再新增档口销售出库明细数据
         List<StoreSaleDetail> detailList = storeSaleDTO.getDetailList().stream().map(x -> BeanUtil.toBean(x, StoreSaleDetail.class)
                 .setSaleType(storeSaleDTO.getSaleType()).setStoreSaleId(storeSale.getId())).collect(Collectors.toList());
         this.storeSaleDetailMapper.insert(detailList);
+        // 汇总编辑的存货总数量
+        final List<StoreSaleDetail> totalList = new ArrayList<StoreSaleDetail>(saleDetailList){{
+            addAll(detailList);
+        }};
+        // 先汇总当前这笔订单商品明细的销售数量，包括销售及退货 key： prodArtNum + storeProdId + storeProdColorId + colorName, value: map(key:size,value:count)
+        Map<String, Map<Integer, Integer>> saleCountMap = totalList.stream().collect(Collectors
+                .groupingBy(x -> x.getProdArtNum() + ":" + x.getStoreProdId() + ":" + x.getStoreProdColorId() + ":" + x.getColorName(), Collectors
+                        .groupingBy(StoreSaleDetail::getSize, Collectors
+                                .mapping(StoreSaleDetail::getQuantity, Collectors.reducing(0, Integer::sum)))));
+        // 调整库存
+        this.storeProdStockService.updateStock(storeSale.getStoreId(), this.getStockDiffList(saleCountMap, 1), 1);
         return count;
     }
 
@@ -255,16 +248,8 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreSaleByStoreSaleId(Long storeSaleId) {
-
-        // TODO 增加库存
-        // TODO 增加库存
-        // TODO 增加库存
-        // TODO 增加库存
-        // TODO 增加库存
-
-        // TODO 客户销售金额扣减、商品销售金额扣减
-
         // 删除档口销售出库数据
         StoreSale storeSale = Optional.ofNullable(this.storeSaleMapper.selectOne(new LambdaQueryWrapper<StoreSale>()
                         .eq(StoreSale::getId, storeSaleId).eq(StoreSale::getDelFlag, "0")))
@@ -275,6 +260,13 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         List<StoreSaleDetail> saleDetailList = this.storeSaleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
                 .eq(StoreSaleDetail::getStoreSaleId, storeSaleId).eq(StoreSaleDetail::getDelFlag, "0"));
         this.storeSaleDetailMapper.updateById(saleDetailList.stream().peek(x -> x.setDelFlag("2")).collect(Collectors.toList()));
+        // 先汇总当前这笔订单商品明细的销售数量，包括销售及退货 key： prodArtNum + storeProdId + storeProdColorId + colorName, value: map(key:size,value:count)
+        Map<String, Map<Integer, Integer>> saleCountMap = saleDetailList.stream().collect(Collectors
+                .groupingBy(x -> x.getProdArtNum() + ":" + x.getStoreProdId() + ":" + x.getStoreProdColorId() + ":" + x.getColorName(), Collectors
+                        .groupingBy(StoreSaleDetail::getSize, Collectors
+                                .mapping(StoreSaleDetail::getQuantity, Collectors.reducing(0, Integer::sum)))));
+        // 组装库存调整库存
+        this.storeProdStockService.updateStock(storeSale.getStoreId(), this.getStockDiffList(saleCountMap, 1), 1);
         return count;
     }
 
@@ -286,6 +278,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreSaleByStoreSaleIds(Long[] storeSaleIds) {
         return storeSaleMapper.deleteStoreSaleByStoreSaleIds(storeSaleIds);
     }
@@ -302,6 +295,76 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         return null;
     }
 
-
+    /**
+     * 获取库存变更列表
+     * @param saleCountMap 销售出库的map数量
+     * @param multiplierFactor 1 返回当前库存 -1 减少库存
+     * @return List<StoreProdStockUpdateDTO>
+     */
+    private List<StoreProdStockUpdateDTO> getStockDiffList(Map<String, Map<Integer, Integer>> saleCountMap, int multiplierFactor) {
+        return MapUtils.isEmpty(saleCountMap) ? new ArrayList<>() : saleCountMap.entrySet().stream()
+                .map(entry -> {
+                    String[] keys = entry.getKey().split(":");
+                    String prodArtNum = keys[0];
+                    Long storeProdId = Long.parseLong(keys[1]);
+                    Long storeProdColorId = Long.parseLong(keys[2]);
+                    String colorName = keys[3];
+                    StoreProdStockUpdateDTO dto = new StoreProdStockUpdateDTO().setProdArtNum(prodArtNum)
+                            .setStoreProdId(storeProdId).setStoreProdColorId(storeProdColorId).setColorName(colorName);
+                    entry.getValue().forEach((size, diffQuantity) -> {
+                        // 库存变更数量乘以正负1
+                        diffQuantity = diffQuantity * multiplierFactor;
+                        switch (size) {
+                            case 30:
+                                dto.setSize30(diffQuantity);
+                                break;
+                            case 31:
+                                dto.setSize31(diffQuantity);
+                                break;
+                            case 32:
+                                dto.setSize32(diffQuantity);
+                                break;
+                            case 33:
+                                dto.setSize33(diffQuantity);
+                                break;
+                            case 34:
+                                dto.setSize34(diffQuantity);
+                                break;
+                            case 35:
+                                dto.setSize35(diffQuantity);
+                                break;
+                            case 36:
+                                dto.setSize36(diffQuantity);
+                                break;
+                            case 37:
+                                dto.setSize37(diffQuantity);
+                                break;
+                            case 38:
+                                dto.setSize38(diffQuantity);
+                                break;
+                            case 39:
+                                dto.setSize39(diffQuantity);
+                                break;
+                            case 40:
+                                dto.setSize40(diffQuantity);
+                                break;
+                            case 41:
+                                dto.setSize41(diffQuantity);
+                                break;
+                            case 42:
+                                dto.setSize42(diffQuantity);
+                                break;
+                            case 43:
+                                dto.setSize43(diffQuantity);
+                                break;
+                            default:
+                                // 处理不在预期范围内的尺码
+                                throw new IllegalArgumentException("Unexpected size: " + size);
+                        }
+                    });
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 
 }

@@ -76,6 +76,7 @@ public class StoreServiceImpl implements IStoreService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreByStoreIds(Long[] storeIds) {
         return storeMapper.deleteStoreByStoreIds(storeIds);
     }
@@ -87,6 +88,7 @@ public class StoreServiceImpl implements IStoreService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreByStoreId(Long storeId) {
         return storeMapper.deleteStoreByStoreId(storeId);
     }

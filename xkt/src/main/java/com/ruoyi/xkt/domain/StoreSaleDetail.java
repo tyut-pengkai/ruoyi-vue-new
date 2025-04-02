@@ -39,10 +39,10 @@ public class StoreSaleDetail extends XktBaseEntity {
     @Excel(name = "档口商品ID")
     private Long storeProdId;
     /**
-     * 档口商品颜色尺码ID
+     * 档口商品颜色ID
      */
-    @Excel(name = "档口商品颜色尺码ID")
-    private Long storeProdColorSizeId;
+    @Excel(name = "档口商品颜色ID")
+    private Long storeProdColorId;
     /**
      * 颜色
      */
@@ -98,7 +98,7 @@ public class StoreSaleDetail extends XktBaseEntity {
                 .append("id", getId())
                 .append("storeSaleId", getStoreSaleId())
                 .append("storeProdId", getStoreProdId())
-                .append("storeProdColorSizeId", getStoreProdColorSizeId())
+                .append("storeProdColorId", getStoreProdColorId())
                 .append("saleType", getSaleType())
                 .append("price", getPrice())
                 .append("discountedPrice", getDiscountedPrice())

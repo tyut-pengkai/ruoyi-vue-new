@@ -76,6 +76,7 @@ public class StoreRoleMenuServiceImpl implements IStoreRoleMenuService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreRoleMenuByStoreRoleMenuIds(Long[] storeRoleMenuIds) {
         return storeRoleMenuMapper.deleteStoreRoleMenuByStoreRoleMenuIds(storeRoleMenuIds);
     }
@@ -87,6 +88,7 @@ public class StoreRoleMenuServiceImpl implements IStoreRoleMenuService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreRoleMenuByStoreRoleMenuId(Long storeRoleMenuId) {
         return storeRoleMenuMapper.deleteStoreRoleMenuByStoreRoleMenuId(storeRoleMenuId);
     }

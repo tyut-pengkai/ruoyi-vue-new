@@ -48,16 +48,6 @@ public class Page<T> implements Serializable {
      */
     private List<T> list;
 
-    /**
-     * 消息状态码
-     */
-    private int code = HttpStatus.SUCCESS;
-
-    /**
-     * 消息内容
-     */
-    private String msg = "操作成功";
-
     public static <T> Page<T> convert(PageInfo<?> pageInfo) {
         return BeanUtil.toBean(pageInfo, Page.class);
     }

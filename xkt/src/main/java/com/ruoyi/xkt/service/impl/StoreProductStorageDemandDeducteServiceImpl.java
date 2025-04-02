@@ -78,6 +78,7 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteIds(Long[] storeProdStorDemaDeducteIds) {
         return storeProductStorageDemandDeducteMapper.deleteStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteIds(storeProdStorDemaDeducteIds);
     }
@@ -89,6 +90,7 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId(Long storeProdStorDemaDeducteId) {
         return storeProductStorageDemandDeducteMapper.deleteStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId(storeProdStorDemaDeducteId);
     }

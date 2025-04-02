@@ -47,7 +47,7 @@ public class StoreProductController extends XktBaseController {
     @GetMapping(value = "/fuzzy")
     public R fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
                                  @RequestParam("storeId") Long storeId) {
-        return success(BeanUtil.copyToList(storeProdService.fuzzyQueryList(storeId, prodArtNum), StoreProdFuzzyResVO.class));
+        return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryList(storeId, prodArtNum), StoreProdFuzzyResVO.class));
     }
 
     /**
@@ -79,7 +79,7 @@ public class StoreProductController extends XktBaseController {
     @ApiOperation(value = "获取档口商品详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeProdId}")
     public R getInfo(@PathVariable("storeProdId") Long storeProdId) {
-        return success(BeanUtil.toBean(storeProdService.selectStoreProductByStoreProdId(storeProdId), StoreProdResVO.class));
+        return R.ok(BeanUtil.toBean(storeProdService.selectStoreProductByStoreProdId(storeProdId), StoreProdResVO.class));
     }
 
     /**
@@ -90,7 +90,7 @@ public class StoreProductController extends XktBaseController {
     @ApiOperation(value = "新增档口商品", httpMethod = "POST", response = R.class)
     @PostMapping
     public R add(@Validated @RequestBody StoreProdVO storeProdVO) {
-        return success(storeProdService.insertStoreProduct(BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
+        return R.ok(storeProdService.insertStoreProduct(BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
 
     /**
@@ -101,7 +101,7 @@ public class StoreProductController extends XktBaseController {
     @Log(title = "档口商品", businessType = BusinessType.UPDATE)
     @PutMapping("/{storeProdId}")
     public R edit(@PathVariable Long storeProdId, @Validated @RequestBody StoreProdVO storeProdVO) {
-        return success(storeProdService.updateStoreProduct(storeProdId, BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
+        return R.ok(storeProdService.updateStoreProduct(storeProdId, BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
 
     /**
@@ -123,7 +123,7 @@ public class StoreProductController extends XktBaseController {
     @ApiOperation(value = "获取档口图片空间", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/pic-space/{storeId}")
     public R getStoreProductPicSpace(@PathVariable("storeId") Long storeId) {
-        return success(BeanUtil.toBean(storeProdService.getStoreProductPicSpace(storeId), StoreProdPicSpaceResVO.class));
+        return R.ok(BeanUtil.toBean(storeProdService.getStoreProductPicSpace(storeId), StoreProdPicSpaceResVO.class));
     }
 
 

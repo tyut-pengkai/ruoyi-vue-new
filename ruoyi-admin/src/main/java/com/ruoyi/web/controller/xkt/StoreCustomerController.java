@@ -48,7 +48,7 @@ public class StoreCustomerController extends XktBaseController {
     @GetMapping(value = "/fuzzy")
     public R fuzzyQueryColorList(@RequestParam(value = "cusName", required = false) String cusName,
                                  @RequestParam("storeId") Long storeId) {
-        return success(BeanUtil.copyToList(storeCusService.fuzzyQueryList(storeId, cusName), StoreCusFuzzyResVO.class));
+        return R.ok(BeanUtil.copyToList(storeCusService.fuzzyQueryList(storeId, cusName), StoreCusFuzzyResVO.class));
     }
 
 
@@ -60,7 +60,7 @@ public class StoreCustomerController extends XktBaseController {
     @Log(title = "新增档口客户", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@Validated @RequestBody StoreCusVO storeCusVO) {
-        return success(storeCusService.create(BeanUtil.toBean(storeCusVO, StoreCusDTO.class)));
+        return R.ok(storeCusService.create(BeanUtil.toBean(storeCusVO, StoreCusDTO.class)));
     }
 
     /**
@@ -71,7 +71,7 @@ public class StoreCustomerController extends XktBaseController {
     @Log(title = "修改档口客户", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@Validated @RequestBody StoreCusVO storeCusVO) {
-        return success(storeCusService.updateStoreCus(BeanUtil.toBean(storeCusVO, StoreCusDTO.class)));
+        return R.ok(storeCusService.updateStoreCus(BeanUtil.toBean(storeCusVO, StoreCusDTO.class)));
     }
 
     /**
@@ -93,7 +93,7 @@ public class StoreCustomerController extends XktBaseController {
     @ApiOperation(value = "获取档口客户详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeCusId}")
     public R getInfo(@PathVariable("storeCusId") Long storeCusId) {
-        return success(BeanUtil.toBean(storeCusService.selectStoreCustomerByStoreCusId(storeCusId), StoreCusVO.class));
+        return R.ok(BeanUtil.toBean(storeCusService.selectStoreCustomerByStoreCusId(storeCusId), StoreCusVO.class));
     }
 
     /**

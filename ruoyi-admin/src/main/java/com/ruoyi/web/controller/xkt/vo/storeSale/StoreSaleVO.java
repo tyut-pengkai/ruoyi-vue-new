@@ -56,7 +56,7 @@ public class StoreSaleVO {
         private Long storeProdId;
         @NotNull(message = "档口商品颜色尺码ID不能为空!")
         @ApiModelProperty(name = "档口商品颜色尺码ID")
-        private Long storeProdColorSizeId;
+        private Long storeProdColorId;
         @ApiModelProperty(name = "颜色")
         private String colorName;
         @ApiModelProperty(name = "尺码")

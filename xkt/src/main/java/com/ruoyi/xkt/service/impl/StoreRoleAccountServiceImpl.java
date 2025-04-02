@@ -76,6 +76,7 @@ public class StoreRoleAccountServiceImpl implements IStoreRoleAccountService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreRoleAccountByStoreRoleAccIds(Long[] storeRoleAccIds) {
         return storeRoleAccountMapper.deleteStoreRoleAccountByStoreRoleAccIds(storeRoleAccIds);
     }
@@ -87,6 +88,7 @@ public class StoreRoleAccountServiceImpl implements IStoreRoleAccountService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreRoleAccountByStoreRoleAccId(Long storeRoleAccId) {
         return storeRoleAccountMapper.deleteStoreRoleAccountByStoreRoleAccId(storeRoleAccId);
     }

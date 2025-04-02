@@ -77,6 +77,7 @@ public class StoreProductDemandDetailServiceImpl implements IStoreProductDemandD
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductDemandDetailByStoreProdDemaDetailIds(Long[] storeProdDemaDetailIds) {
         return storeProductDemandDetailMapper.deleteStoreProductDemandDetailByStoreProdDemaDetailIds(storeProdDemaDetailIds);
     }
@@ -88,6 +89,7 @@ public class StoreProductDemandDetailServiceImpl implements IStoreProductDemandD
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductDemandDetailByStoreProdDemaDetailId(Long storeProdDemaDetailId) {
         return storeProductDemandDetailMapper.deleteStoreProductDemandDetailByStoreProdDemaDetailId(storeProdDemaDetailId);
     }

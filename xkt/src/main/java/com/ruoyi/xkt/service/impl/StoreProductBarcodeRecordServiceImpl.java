@@ -75,6 +75,7 @@ public class StoreProductBarcodeRecordServiceImpl implements IStoreProductBarcod
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductBarcodeRecordByStoreProdBarcodeRecordIds(Long[] storeProdBarcodeRecordIds) {
         return storeProductBarcodeRecordMapper.deleteStoreProductBarcodeRecordByStoreProdBarcodeRecordIds(storeProdBarcodeRecordIds);
     }

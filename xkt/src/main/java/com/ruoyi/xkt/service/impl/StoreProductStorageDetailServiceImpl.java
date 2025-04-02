@@ -78,6 +78,7 @@ public class StoreProductStorageDetailServiceImpl implements IStoreProductStorag
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductStorageDetailByStoreProdStorDetailIds(Long[] storeProdStorDetailIds) {
         return storeProductStorageDetailMapper.deleteStoreProductStorageDetailByStoreProdStorDetailIds(storeProdStorDetailIds);
     }

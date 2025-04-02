@@ -42,8 +42,8 @@ public class StoreSaleDTO {
     public static class SaleDetailVO {
         @ApiModelProperty(name = "档口商品ID")
         private Long storeProdId;
-        @ApiModelProperty(name = "档口商品颜色尺码ID")
-        private Long storeProdColorSizeId;
+        @ApiModelProperty(name = "档口商品颜色ID")
+        private Long storeProdColorId;
         @ApiModelProperty(name = "颜色")
         private String colorName;
         @ApiModelProperty(name = "尺码")

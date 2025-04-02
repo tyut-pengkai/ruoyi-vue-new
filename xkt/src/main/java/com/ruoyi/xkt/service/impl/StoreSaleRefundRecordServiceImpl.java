@@ -76,6 +76,7 @@ public class StoreSaleRefundRecordServiceImpl implements IStoreSaleRefundRecordS
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreSaleRefundRecordByStoreSaleRefundRecordIds(Long[] storeSaleRefundRecordIds) {
         return storeSaleRefundRecordMapper.deleteStoreSaleRefundRecordByStoreSaleRefundRecordIds(storeSaleRefundRecordIds);
     }
@@ -87,6 +88,7 @@ public class StoreSaleRefundRecordServiceImpl implements IStoreSaleRefundRecordS
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreSaleRefundRecordByStoreSaleRefundRecordId(Long storeSaleRefundRecordId) {
         return storeSaleRefundRecordMapper.deleteStoreSaleRefundRecordByStoreSaleRefundRecordId(storeSaleRefundRecordId);
     }

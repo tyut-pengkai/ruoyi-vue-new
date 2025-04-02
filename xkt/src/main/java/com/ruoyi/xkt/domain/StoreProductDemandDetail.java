@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
@@ -47,84 +48,86 @@ public class StoreProductDemandDetail extends XktBaseEntity {
      * 尺码30
      */
     @Excel(name = "尺码30")
+    @TableField("size_30")
     private Integer size30;
-
     /**
      * 尺码31
      */
     @Excel(name = "尺码31")
+    @TableField("size_31")
     private Integer size31;
-
     /**
      * 尺码32
      */
     @Excel(name = "尺码32")
+    @TableField("size_32")
     private Integer size32;
-
     /**
      * 尺码33
      */
     @Excel(name = "尺码33")
+    @TableField("size_33")
     private Integer size33;
-
     /**
      * 尺码34
      */
-    @Excel(name = "尺码34")
-    private Integer size34;
 
+    @Excel(name = "尺码34")
+    @TableField("size_34")
+    private Integer size34;
     /**
      * 尺码35
      */
     @Excel(name = "尺码35")
+    @TableField("size_35")
     private Integer size35;
-
     /**
      * 尺码36
      */
     @Excel(name = "尺码36")
+    @TableField("size_36")
     private Integer size36;
-
     /**
      * 尺码37
      */
     @Excel(name = "尺码37")
+    @TableField("size_37")
     private Integer size37;
-
     /**
      * 尺码38
      */
     @Excel(name = "尺码38")
+    @TableField("size_38")
     private Integer size38;
-
     /**
      * 尺码39
      */
     @Excel(name = "尺码39")
+    @TableField("size_39")
     private Integer size39;
-
     /**
      * 尺码40
      */
     @Excel(name = "尺码40")
+    @TableField("size_40")
     private Integer size40;
-
     /**
      * 尺码41
      */
     @Excel(name = "尺码41")
+    @TableField("size_41")
     private Integer size41;
-
     /**
      * 尺码42
      */
     @Excel(name = "尺码42")
+    @TableField("size_42")
     private Integer size42;
-
     /**
      * 尺码43
      */
     @Excel(name = "尺码43")
+    @TableField("size_43")
     private Integer size43;
 
     /**

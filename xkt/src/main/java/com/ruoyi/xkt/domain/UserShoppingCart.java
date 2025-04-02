@@ -38,10 +38,10 @@ public class UserShoppingCart extends XktBaseEntity {
     private Long storeId;
 
     /**
-     * store_prod_color_size.id
+     * store_prod_color.id
      */
-    @Excel(name = "store_prod_color_size.id")
-    private Long storeProdColorSizeId;
+    @Excel(name = "store_prod_color.id")
+    private Long storeProdColorId;
 
     /**
      * store_prod.id
@@ -62,7 +62,7 @@ public class UserShoppingCart extends XktBaseEntity {
                 .append("id", getId())
                 .append("userId", getUserId())
                 .append("storeId", getStoreId())
-                .append("storeProdColorSizeId", getStoreProdColorSizeId())
+                .append("storeProdColorId", getStoreProdColorId())
                 .append("storeProdId", getStoreProdId())
                 .append("quantity", getQuantity())
                 .append("version", getVersion())

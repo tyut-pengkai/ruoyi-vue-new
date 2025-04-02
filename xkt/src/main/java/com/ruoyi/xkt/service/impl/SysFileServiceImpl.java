@@ -78,6 +78,7 @@ public class SysFileServiceImpl implements ISysFileService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteSysFileByFileIds(Long[] fileIds) {
         return sysFileMapper.deleteSysFileByFileIds(fileIds);
     }
@@ -89,6 +90,7 @@ public class SysFileServiceImpl implements ISysFileService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteSysFileByFileId(Long fileId) {
         return sysFileMapper.deleteSysFileByFileId(fileId);
     }

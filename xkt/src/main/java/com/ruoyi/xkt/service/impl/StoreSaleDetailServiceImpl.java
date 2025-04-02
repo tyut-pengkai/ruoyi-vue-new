@@ -76,6 +76,7 @@ public class StoreSaleDetailServiceImpl implements IStoreSaleDetailService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreSaleDetailByStoreSaleDetailIds(Long[] storeSaleDetailIds) {
         return storeSaleDetailMapper.deleteStoreSaleDetailByStoreSaleDetailIds(storeSaleDetailIds);
     }
@@ -87,6 +88,7 @@ public class StoreSaleDetailServiceImpl implements IStoreSaleDetailService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreSaleDetailByStoreSaleDetailId(Long storeSaleDetailId) {
         return storeSaleDetailMapper.deleteStoreSaleDetailByStoreSaleDetailId(storeSaleDetailId);
     }

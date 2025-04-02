@@ -2,6 +2,9 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductStock;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageResDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
 
 import java.util.List;
 
@@ -59,4 +62,12 @@ public interface StoreProductStockMapper extends BaseMapper<StoreProductStock> {
      * @return 结果
      */
     public int deleteStoreProductStockByStoreProdStockIds(Long[] storeProdStockIds);
+
+    /**
+     * 档口商品库存分页查询
+     * @param pageDTO 查询参数
+     * @return 结果
+     */
+    List<StoreProdStockPageResDTO> selectStockPage(StoreProdStockPageDTO pageDTO);
+
 }

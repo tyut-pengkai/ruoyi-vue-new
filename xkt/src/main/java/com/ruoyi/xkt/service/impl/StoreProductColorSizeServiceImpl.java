@@ -77,6 +77,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductColorSizeByStoreProdColorSizeIds(Long[] storeProdColorSizeIds) {
         return storeProductColorSizeMapper.deleteStoreProductColorSizeByStoreProdColorSizeIds(storeProdColorSizeIds);
     }
@@ -88,6 +89,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductColorSizeByStoreProdColorSizeId(Long storeProdColorSizeId) {
         return storeProductColorSizeMapper.deleteStoreProductColorSizeByStoreProdColorSizeId(storeProdColorSizeId);
     }
