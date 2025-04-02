@@ -1,10 +1,6 @@
-package com.ruoyi.xkt.domain;
+package com.ruoyi.xkt.dto.order;
 
-import com.baomidou.mybatisplus.annotation.Version;
-import com.ruoyi.common.core.domain.SimpleEntity;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -16,9 +12,11 @@ import java.util.Date;
  * @date 2025-04-01 11:57:52.566
  **/
 @Data
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-public class StoreOrder extends SimpleEntity {
+public class StoreOrderDTO {
+    /**
+     * 订单ID
+     */
+    private Long id;
     /**
      * 档口ID
      */
@@ -148,8 +146,27 @@ public class StoreOrder extends SimpleEntity {
      */
     private Date voucherDate;
     /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+    /**
+     * 创建者
+     */
+    private String createBy;
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+    /**
+     * 更新者
+     */
+    private String updateBy;
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
+    /**
      * 版本号
      */
-    @Version
-    private Long version;
+    private Integer version;
 }
