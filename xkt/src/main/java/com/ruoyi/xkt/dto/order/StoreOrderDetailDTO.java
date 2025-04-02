@@ -116,5 +116,5 @@ public class StoreOrderDetailDTO {
     /**
      * 版本号
      */
-    private Integer version;
+    private Long version;
 }

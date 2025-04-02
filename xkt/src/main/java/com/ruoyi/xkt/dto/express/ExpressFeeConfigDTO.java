@@ -2,44 +2,37 @@ package com.ruoyi.xkt.dto.express;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 物流信息
+ * 物流费用配置
  *
  * @author liangyq
- * @date 2025-04-01 11:57:52.434
- **/
+ * @date 2025-04-02 15:00
+ */
 @Data
-public class ExpressDTO {
+public class ExpressFeeConfigDTO {
     /**
-     * 物流ID
+     * ID
      */
     private Long id;
     /**
-     * 物流编码
+     * 地区编码，基于行政区划代码做扩展，唯一约束
      */
-    private String expressCode;
+    private String regionCode;
     /**
-     * 物流名称
+     * 上级地区编码，没有上级的默认空
      */
-    private String expressName;
+    private String parentRegionCode;
     /**
-     * 系统发货可选
+     * 首件运费
      */
-    private Boolean systemDeliverAccess;
+    private BigDecimal firstItemAmount;
     /**
-     * 档口发货可选
+     * 续费
      */
-    private Boolean storeDeliverAccess;
-    /**
-     * 用户退货可选
-     */
-    private Boolean userRefundAccess;
-    /**
-     * 系统配置
-     */
-    private String systemConfig;
+    private BigDecimal nextItemAmount;
     /**
      * 删除标志（0代表存在 2代表删除）
      */

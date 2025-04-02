@@ -5,41 +5,37 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * 物流信息
+ * 物流行政区划
  *
  * @author liangyq
- * @date 2025-04-01 11:57:52.434
- **/
+ * @date 2025-04-02 15:00
+ */
 @Data
-public class ExpressDTO {
+public class ExpressRegionDTO {
     /**
-     * 物流ID
+     * ID
      */
     private Long id;
     /**
-     * 物流编码
+     * 地区编码，基于行政区划代码做扩展，唯一约束
      */
-    private String expressCode;
+    private String regionCode;
     /**
-     * 物流名称
+     * 地区名称
      */
-    private String expressName;
+    private String regionName;
     /**
-     * 系统发货可选
+     * 地区级别[1:省 2:市 3:区县]
      */
-    private Boolean systemDeliverAccess;
+    private Integer regionLevel;
     /**
-     * 档口发货可选
+     * 上级地区编码，没有上级的默认空
      */
-    private Boolean storeDeliverAccess;
+    private String parentRegionCode;
     /**
-     * 用户退货可选
+     * 上级地区名称，冗余
      */
-    private Boolean userRefundAccess;
-    /**
-     * 系统配置
-     */
-    private String systemConfig;
+    private String parentRegionName;
     /**
      * 删除标志（0代表存在 2代表删除）
      */
