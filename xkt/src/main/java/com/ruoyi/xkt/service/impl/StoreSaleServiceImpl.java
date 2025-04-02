@@ -138,7 +138,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     public int insertStoreSale(StoreSaleDTO storeSaleDTO) {
         StoreSale storeSale = BeanUtil.toBean(storeSaleDTO, StoreSale.class);
         // 生成code
-        String code = this.sequenceService.generateCode(storeSaleDTO.getStoreId(), "STORE_SALE", DateUtils.getDate());
+        String code = this.sequenceService.generateCode(storeSaleDTO.getStoreId(), "STORE_SALE", DateUtils.parseDateToStr(DateUtils.YYYYMMDD, new Date()));
         // 总的数量
         Integer quantity = storeSaleDTO.getDetailList().stream().map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
         // 总的金额

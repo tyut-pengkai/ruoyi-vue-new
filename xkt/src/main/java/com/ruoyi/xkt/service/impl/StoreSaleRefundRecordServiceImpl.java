@@ -1,14 +1,25 @@
 package com.ruoyi.xkt.service.impl;
 
-import com.ruoyi.common.utils.DateUtils;
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.xkt.domain.StoreSale;
 import com.ruoyi.xkt.domain.StoreSaleRefundRecord;
+import com.ruoyi.xkt.dto.storeSaleRefundRecord.StoreSaleRefundRecordDTO;
+import com.ruoyi.xkt.mapper.StoreSaleMapper;
 import com.ruoyi.xkt.mapper.StoreSaleRefundRecordMapper;
 import com.ruoyi.xkt.service.IStoreSaleRefundRecordService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 档口销售返单Service业务层处理
@@ -17,79 +28,36 @@ import java.util.List;
  * @date 2025-03-26
  */
 @Service
+@RequiredArgsConstructor
 public class StoreSaleRefundRecordServiceImpl implements IStoreSaleRefundRecordService {
-    @Autowired
-    private StoreSaleRefundRecordMapper storeSaleRefundRecordMapper;
 
-    /**
-     * 查询档口销售返单
-     *
-     * @param storeSaleRefundRecordId 档口销售返单主键
-     * @return 档口销售返单
-     */
-    @Override
-    public StoreSaleRefundRecord selectStoreSaleRefundRecordByStoreSaleRefundRecordId(Long storeSaleRefundRecordId) {
-        return storeSaleRefundRecordMapper.selectStoreSaleRefundRecordByStoreSaleRefundRecordId(storeSaleRefundRecordId);
-    }
+    final StoreSaleRefundRecordMapper refundRecordMapper;
+    final StoreSaleMapper storeSaleMapper;
 
     /**
      * 查询档口销售返单列表
      *
-     * @param storeSaleRefundRecord 档口销售返单
-     * @return 档口销售返单
+     * @param storeId     档口ID
+     * @param storeSaleId 档口销售ID
+     * @return 档口销售返单集合
      */
     @Override
-    public List<StoreSaleRefundRecord> selectStoreSaleRefundRecordList(StoreSaleRefundRecord storeSaleRefundRecord) {
-        return storeSaleRefundRecordMapper.selectStoreSaleRefundRecordList(storeSaleRefundRecord);
+    @Transactional(readOnly = true)
+    public List<StoreSaleRefundRecordDTO> selectList(Long storeId, Long storeSaleId) {
+        List<StoreSaleRefundRecord> refundRecordList = this.refundRecordMapper.selectList(new LambdaQueryWrapper<StoreSaleRefundRecord>()
+                .eq(StoreSaleRefundRecord::getStoreId, storeId).eq(StoreSaleRefundRecord::getStoreSaleId, storeSaleId).eq(StoreSaleRefundRecord::getDelFlag, "0"));
+        if (CollectionUtils.isEmpty(refundRecordList)) {
+            return new ArrayList<>();
+        }
+        List<StoreSaleRefundRecordDTO> refundRecordDTOList = refundRecordList.stream().map(x -> BeanUtil.toBean(x, StoreSaleRefundRecordDTO.class)
+                .setStoreSaleRefundRecordId(x.getId())).collect(Collectors.toList());
+        // 获取当前最新数据
+        StoreSale storeSale = Optional.ofNullable(storeSaleMapper.selectById(storeSaleId))
+                .orElseThrow(() -> new ServiceException("档口销售出库订单不存在!", HttpStatus.ERROR));
+        refundRecordDTOList.add(BeanUtil.toBean(storeSale, StoreSaleRefundRecordDTO.class).setStoreSaleRefundRecordId(-1L));
+        // 将最新数据放在第一位
+        Collections.reverse(refundRecordDTOList);
+        return refundRecordDTOList;
     }
 
-    /**
-     * 新增档口销售返单
-     *
-     * @param storeSaleRefundRecord 档口销售返单
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int insertStoreSaleRefundRecord(StoreSaleRefundRecord storeSaleRefundRecord) {
-        storeSaleRefundRecord.setCreateTime(DateUtils.getNowDate());
-        return storeSaleRefundRecordMapper.insertStoreSaleRefundRecord(storeSaleRefundRecord);
-    }
-
-    /**
-     * 修改档口销售返单
-     *
-     * @param storeSaleRefundRecord 档口销售返单
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int updateStoreSaleRefundRecord(StoreSaleRefundRecord storeSaleRefundRecord) {
-        storeSaleRefundRecord.setUpdateTime(DateUtils.getNowDate());
-        return storeSaleRefundRecordMapper.updateStoreSaleRefundRecord(storeSaleRefundRecord);
-    }
-
-    /**
-     * 批量删除档口销售返单
-     *
-     * @param storeSaleRefundRecordIds 需要删除的档口销售返单主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreSaleRefundRecordByStoreSaleRefundRecordIds(Long[] storeSaleRefundRecordIds) {
-        return storeSaleRefundRecordMapper.deleteStoreSaleRefundRecordByStoreSaleRefundRecordIds(storeSaleRefundRecordIds);
-    }
-
-    /**
-     * 删除档口销售返单信息
-     *
-     * @param storeSaleRefundRecordId 档口销售返单主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreSaleRefundRecordByStoreSaleRefundRecordId(Long storeSaleRefundRecordId) {
-        return storeSaleRefundRecordMapper.deleteStoreSaleRefundRecordByStoreSaleRefundRecordId(storeSaleRefundRecordId);
-    }
 }

@@ -80,21 +80,6 @@ public class StoreSaleController extends XktBaseController {
     @ApiOperation(value = "返单后，更新档口销售出库", httpMethod = "PUT", response = R.class)
     @PutMapping
     public R edit(@Validated @RequestBody StoreSaleVO storeSaleVO) {
-
-        // TODO 扣件库存
-        // TODO 扣件库存
-        // TODO 扣件库存
-        // TODO 扣件库存
-        // TODO 扣件库存
-        // TODO 扣件库存
-
-
-        // TODO 增加库存
-        // TODO 增加库存
-        // TODO 增加库存
-        // TODO 增加库存
-        // TODO 增加库存
-        // TODO 增加库存
         return R.ok(storeSaleService.updateStoreSale(BeanUtil.toBean(storeSaleVO, StoreSaleDTO.class)));
     }
 

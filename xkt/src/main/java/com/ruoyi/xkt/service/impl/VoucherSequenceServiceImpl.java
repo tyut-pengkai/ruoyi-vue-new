@@ -23,7 +23,7 @@ public class VoucherSequenceServiceImpl implements IVoucherSequenceService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public synchronized String generateCode(Long storeId, String type, String voucherDate) {
         VoucherSequence voucherSequence = this.sequenceMapper.queryByStoreIdAndType(storeId, type);
-        String code = voucherSequence.getPrefix() + "-" + voucherDate + "-"
+        String code = voucherSequence.getPrefix() + "-" + voucherDate + storeId + "-"
                 + String.format(voucherSequence.getSequenceFormat(), voucherSequence.getNextSequence());
         sequenceMapper.updateById(voucherSequence.setNextSequence(voucherSequence.getNextSequence() + 1));
         return code;

@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -72,7 +73,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
     @Transactional
     public int create(StoreProdStorageDTO storeProdStorageDTO) {
         // 生成code
-        String code = this.sequenceService.generateCode(storeProdStorageDTO.getStoreId(), "STORAGE", DateUtils.getDate());
+        String code = this.sequenceService.generateCode(storeProdStorageDTO.getStoreId(), "STORAGE", DateUtils.parseDateToStr(DateUtils.YYYYMMDD, new Date()));
         // 总的数量
         Integer totalNum = storeProdStorageDTO.getDetailList().stream().map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
         // 总的金额

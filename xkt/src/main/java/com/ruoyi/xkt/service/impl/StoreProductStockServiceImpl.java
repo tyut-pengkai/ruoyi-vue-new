@@ -134,7 +134,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     /**
      * 清空库存
      *
-     * @param storeId
+     * @param storeId 档口ID
      * @param storeProdStockId 清空库存
      * @return int
      */

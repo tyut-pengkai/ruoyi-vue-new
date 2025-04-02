@@ -44,23 +44,17 @@ public class StoreProductStorageController extends XktBaseController {
 
     final IStoreProductStorageService storeProdStorageService;
 
-
-    // TODO 新增入款单库存会变化
-    // TODO 新增入款单库存会变化
-    // TODO 新增入款单库存会变化
-
-
-    // TODO 撤销入款单库存会变化
-    // TODO 撤销入款单库存会变化
-    // TODO 撤销入款单库存会变化
-
-
     // TODO 需求抵扣明细没做
     // TODO 需求抵扣明细没做
     // TODO 需求抵扣明细没做
     // TODO 需求抵扣明细没做
-
-
+    // TODO 需求抵扣明细没做
+    // TODO 需求抵扣明细没做
+    // TODO 需求抵扣明细没做
+    // TODO 需求抵扣明细没做
+    // TODO 需求抵扣明细没做
+    // TODO 需求抵扣明细没做
+    // TODO 需求抵扣明细没做
 
     /**
      * 新增档口商品入库
