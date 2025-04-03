@@ -9,17 +9,21 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum EPayStatus {
+public enum EExpressStatus {
 
-    INIT(1, "初始化"),
-    PAYING(2, "支付中"),
-    PAID(3, "已支付");
+    INIT(1, "初始"),
+    PLACING(2, "下单中"),
+    PLACED(3, "已下单"),
+    CANCELLING(4, "取消中"),
+    PICKED_UP(5, "已揽件"),
+    INTERCEPTING(6, "拦截中"),
+    COMPLETED(99, "已结束");
 
     private final Integer value;
     private final String label;
 
-    public static EPayStatus of(Integer value) {
-        for (EPayStatus e : EPayStatus.values()) {
+    public static EExpressStatus of(Integer value) {
+        for (EExpressStatus e : EExpressStatus.values()) {
             if (e.getValue().equals(value)) {
                 return e;
             }

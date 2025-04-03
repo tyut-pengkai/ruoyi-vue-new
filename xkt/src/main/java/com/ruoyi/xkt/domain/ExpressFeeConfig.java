@@ -19,6 +19,10 @@ import java.math.BigDecimal;
 @ToString(callSuper = true)
 public class ExpressFeeConfig extends SimpleEntity {
     /**
+     * 物流ID
+     */
+    private Long expressId;
+    /**
      * 地区编码，基于行政区划代码做扩展，唯一约束
      */
     private String regionCode;

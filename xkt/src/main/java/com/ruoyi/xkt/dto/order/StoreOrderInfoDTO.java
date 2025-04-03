@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.List;
+
 /**
  * @author liangyq
  * @date 2025-04-02 22:37
@@ -11,7 +13,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class StoreOrderInfoDTO extends StoreOrderDTO{
+public class StoreOrderInfoDTO extends StoreOrderDTO {
 
-    
+    private List<StoreOrderDetailInfoDTO> detailList;
 }

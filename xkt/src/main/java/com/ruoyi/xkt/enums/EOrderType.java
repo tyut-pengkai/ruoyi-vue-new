@@ -14,10 +14,10 @@ public enum EOrderType {
     SALES_ORDER(1, "销售订单"),
     RETURN_ORDER(2, "退货订单");
 
-    private Integer value;
-    private String label;
+    private final Integer value;
+    private final String label;
 
-    public static EOrderType of(String value) {
+    public static EOrderType of(Integer value) {
         for (EOrderType e : EOrderType.values()) {
             if (e.getValue().equals(value)) {
                 return e;

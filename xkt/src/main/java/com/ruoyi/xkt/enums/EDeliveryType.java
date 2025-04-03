@@ -14,10 +14,10 @@ public enum EDeliveryType {
     SHIP_COMPLETE(1, "货齐再发"),
     PARTIAL_SHIPMENT(2, "有货先发");
 
-    private Integer value;
-    private String label;
+    private final Integer value;
+    private final String label;
 
-    public static EDeliveryType of(String value) {
+    public static EDeliveryType of(Integer value) {
         for (EDeliveryType e : EDeliveryType.values()) {
             if (e.getValue().equals(value)) {
                 return e;

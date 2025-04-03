@@ -16,6 +16,18 @@ public class StoreOrderAddDTO {
      */
     private Long storeId;
     /**
+     * 下单用户ID
+     */
+    private Long orderUserId;
+    /**
+     * 订单备注
+     */
+    private String orderRemark;
+    /**
+     * 物流ID
+     */
+    private Long expressId;
+    /**
      * 收货人-名称
      */
     private String destinationContactName;
@@ -50,10 +62,10 @@ public class StoreOrderAddDTO {
     /**
      * 明细列表
      */
-    private List<OrderDetail> detailList;
+    private List<Detail> detailList;
 
     @Data
-    public static class OrderDetail {
+    public static class Detail {
         /**
          * 商品颜色尺码ID
          */

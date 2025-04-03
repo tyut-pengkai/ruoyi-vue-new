@@ -24,10 +24,10 @@ public enum EOrderStatus {
     PLATFORM_INTERVENED(23, "平台介入"),
     AFTER_SALE_COMPLETED(24, "售后完成");
 
-    private Integer value;
-    private String label;
+    private final Integer value;
+    private final String label;
 
-    public static EOrderStatus of(String value) {
+    public static EOrderStatus of(Integer value) {
         for (EOrderStatus e : EOrderStatus.values()) {
             if (e.getValue().equals(value)) {
                 return e;

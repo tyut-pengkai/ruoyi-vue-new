@@ -1,7 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.dto.order.StoreOrderAddDTO;
-import com.ruoyi.xkt.dto.order.StoreOrderDetailInfoDTO;
+import com.ruoyi.xkt.dto.order.StoreOrderInfoDTO;
 
 /**
  * @author liangyq
@@ -14,5 +14,5 @@ public interface IStoreOrderService {
      * @param storeOrderAddDTO
      * @return
      */
-    StoreOrderDetailInfoDTO createOrder(StoreOrderAddDTO storeOrderAddDTO);
+    StoreOrderInfoDTO createOrder(StoreOrderAddDTO storeOrderAddDTO);
 }

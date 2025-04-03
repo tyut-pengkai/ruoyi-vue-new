@@ -14,10 +14,10 @@ public enum EExpressType {
     PLATFORM(1, "平台物流"),
     STORE(2, "档口物流");
 
-    private Integer value;
-    private String label;
+    private final Integer value;
+    private final String label;
 
-    public static EExpressType of(String value) {
+    public static EExpressType of(Integer value) {
         for (EExpressType e : EExpressType.values()) {
             if (e.getValue().equals(value)) {
                 return e;
