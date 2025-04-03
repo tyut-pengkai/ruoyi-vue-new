@@ -50,6 +50,11 @@ public class StoreFactory extends XktBaseEntity {
     private String facPhone;
 
     /**
+     * 备注
+     */
+    private String remark;
+
+    /**
      * 工厂状态
      */
     @Excel(name = "工厂状态")
