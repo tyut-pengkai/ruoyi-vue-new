@@ -8,25 +8,20 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusPageVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdStock.StoreProdStockPageVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdStock.StoreProdStockVO;
 import com.ruoyi.xkt.domain.StoreProductStock;
-import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockUpdateDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
 import com.ruoyi.xkt.service.IStoreProductStockService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.compress.utils.Lists;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,12 +42,11 @@ public class StoreProductStockController extends XktBaseController {
 
     // TODO 商品销售/出库 时读货号，然后查询当前货号颜色的库存
     // TODO 商品销售/出库 时读货号，然后查询当前货号颜色的库存
+    // TODO 商品销售/出库 时读货号，然后查询当前货号颜色的库存
+    // TODO 商品销售/出库 时读货号，然后查询当前货号颜色的库存
+    // TODO 商品销售/出库 时读货号，然后查询当前货号颜色的库存
+    // TODO 商品销售/出库 时读货号，然后查询当前货号颜色的库存
 
-    // TODO 销售出库时扣件库存
-    // TODO 销售出库时扣件库存
-    // TODO 销售出库时扣件库存
-    // TODO 销售出库时扣件库存
-    // TODO 销售出库时扣件库存
 
     /**
      * 查询档口库存列表
@@ -84,7 +78,7 @@ public class StoreProductStockController extends XktBaseController {
     @Log(title = "直接调整档口商品库存值", businessType = BusinessType.UPDATE)
     @PutMapping("/update-stock/{storeId}")
     public R<Integer> updateStock(@PathVariable("storeId") Long storeId, @RequestBody StoreProdStockVO prodStockVO) {
-        return R.ok(storeProdStockService.updateStock(storeId, Collections.singletonList(BeanUtil.toBean(prodStockVO, StoreProdStockUpdateDTO.class)), 0));
+        return R.ok(storeProdStockService.updateStock(storeId, Collections.singletonList(BeanUtil.toBean(prodStockVO, StoreProdStockDTO.class)), 0));
     }
 
     /**

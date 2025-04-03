@@ -1,6 +1,11 @@
 package com.ruoyi.xkt.service;
 
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.domain.StoreProductDemand;
+import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandDTO;
+import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageDTO;
+import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageResDTO;
+import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandQuantityDTO;
 
 import java.util.List;
 
@@ -58,4 +63,34 @@ public interface IStoreProductDemandService {
      * @return 结果
      */
     public int deleteStoreProductDemandByStoreProdDemandId(Long storeProdDemandId);
+
+    /**
+     * 获取指定门店及商品的库存和生产数量
+     * 此方法用于查询特定门店中特定商品的库存和生产数量信息，帮助进行库存管理和生产计划制定
+     *
+     * @param storeId     门店ID，用于指定查询的门店
+     * @param storeProdId 门店商品ID，用于指定查询的商品
+     * @return 返回一个列表，包含门店商品的库存和生产数量信息的DTO对象
+     */
+    List<StoreProdDemandQuantityDTO> getStockAndProduceQuantity(Long storeId, Long storeProdId);
+
+
+    /**
+     * 创建需求订单
+     *
+     * @param demandDTO 商店产品需求信息，包含需求订单的相关数据，如产品ID、需求数量等
+     * @return 返回一个字符串，通常包含需求订单的唯一标识或创建状态
+     */
+    Integer createDemand(StoreProdDemandDTO demandDTO);
+
+    /**
+     * 根据需求选择页面
+     * 此方法用于根据提供的页面查询条件，返回相应的页面数据
+     * 主要用于处理分页查询请求，以便在界面上展示特定的需求信息
+     *
+     * @param demandPageDTO 包含页面查询条件的DTO对象，如页码、每页条数等
+     * @return Page<StoreProdDemandPageResDTO>
+     */
+    Page<StoreProdDemandPageResDTO> selectPage(StoreProdDemandPageDTO demandPageDTO);
+
 }

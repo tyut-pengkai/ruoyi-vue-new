@@ -1,8 +1,8 @@
 package com.ruoyi.xkt.service.impl;
 
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.xkt.domain.StoreProductStorageDemandDeducte;
-import com.ruoyi.xkt.mapper.StoreProductStorageDemandDeducteMapper;
+import com.ruoyi.xkt.domain.StoreProductStorageDemandDeduct;
+import com.ruoyi.xkt.mapper.StoreProductStorageDemandDeductMapper;
 import com.ruoyi.xkt.service.IStoreProductStorageDemandDeducteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProductStorageDemandDeducteService {
     @Autowired
-    private StoreProductStorageDemandDeducteMapper storeProductStorageDemandDeducteMapper;
+    private StoreProductStorageDemandDeductMapper storeProductStorageDemandDeducteMapper;
 
     /**
      * 查询档口商品入库抵扣需求
@@ -29,7 +29,7 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
      */
     @Override
     @Transactional(readOnly = true)
-    public StoreProductStorageDemandDeducte selectStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId(Long storeProdStorDemaDeducteId) {
+    public StoreProductStorageDemandDeduct selectStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId(Long storeProdStorDemaDeducteId) {
         return storeProductStorageDemandDeducteMapper.selectStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId(storeProdStorDemaDeducteId);
     }
 
@@ -41,7 +41,7 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
      */
     @Override
     @Transactional(readOnly = true)
-    public List<StoreProductStorageDemandDeducte> selectStoreProductStorageDemandDeducteList(StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
+    public List<StoreProductStorageDemandDeduct> selectStoreProductStorageDemandDeducteList(StoreProductStorageDemandDeduct storeProductStorageDemandDeducte) {
         return storeProductStorageDemandDeducteMapper.selectStoreProductStorageDemandDeducteList(storeProductStorageDemandDeducte);
     }
 
@@ -53,7 +53,7 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
      */
     @Override
     @Transactional
-    public int insertStoreProductStorageDemandDeducte(StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
+    public int insertStoreProductStorageDemandDeducte(StoreProductStorageDemandDeduct storeProductStorageDemandDeducte) {
         storeProductStorageDemandDeducte.setCreateTime(DateUtils.getNowDate());
         return storeProductStorageDemandDeducteMapper.insertStoreProductStorageDemandDeducte(storeProductStorageDemandDeducte);
     }
@@ -66,7 +66,7 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
      */
     @Override
     @Transactional
-    public int updateStoreProductStorageDemandDeducte(StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
+    public int updateStoreProductStorageDemandDeducte(StoreProductStorageDemandDeduct storeProductStorageDemandDeducte) {
         storeProductStorageDemandDeducte.setUpdateTime(DateUtils.getNowDate());
         return storeProductStorageDemandDeducteMapper.updateStoreProductStorageDemandDeducte(storeProductStorageDemandDeducte);
     }

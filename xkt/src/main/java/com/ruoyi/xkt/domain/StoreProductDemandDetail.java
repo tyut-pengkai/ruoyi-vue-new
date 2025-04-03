@@ -6,6 +6,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -17,6 +18,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreProductDemandDetail extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -25,6 +27,11 @@ public class StoreProductDemandDetail extends XktBaseEntity {
      */
     @TableId
     private Long id;
+
+    /**
+     * 档口ID
+     */
+    private Long storeId;
 
     /**
      * 档口商品需求ID
@@ -39,10 +46,37 @@ public class StoreProductDemandDetail extends XktBaseEntity {
     private Long storeProdColorId;
 
     /**
+     * 档口商品货号
+     */
+    private String prodArtNum;
+
+    /**
+     * 档口商品颜色
+     */
+    private String colorName;
+
+    /**
      * 档口商品ID
      */
     @Excel(name = "档口商品ID")
     private Long storeProdId;
+
+    /**
+     * 是否紧急单（0正常 1紧急）
+     */
+    @Excel(name = "是否紧急单", readConverterExp = "0=正常,1=紧急")
+    private Integer emergency;
+
+    /**
+     * 档口商品需求明细状态
+     */
+    @Excel(name = "档口商品需求明细状态")
+    private Integer detailStatus;
+
+    /**
+     * 总的数量
+     */
+    private Integer quantity;
 
     /**
      * 尺码30
@@ -129,18 +163,6 @@ public class StoreProductDemandDetail extends XktBaseEntity {
     @Excel(name = "尺码43")
     @TableField("size_43")
     private Integer size43;
-
-    /**
-     * 是否紧急单（0正常 1紧急）
-     */
-    @Excel(name = "是否紧急单", readConverterExp = "0=正常,1=紧急")
-    private String emergency;
-
-    /**
-     * 档口商品需求明细状态
-     */
-    @Excel(name = "档口商品需求明细状态")
-    private String detailStatus;
 
 
     @Override

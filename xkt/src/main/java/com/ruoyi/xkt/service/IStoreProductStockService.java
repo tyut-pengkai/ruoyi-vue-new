@@ -5,7 +5,7 @@ import com.ruoyi.xkt.domain.StoreProductStock;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockResDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockUpdateDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
 
 import java.util.List;
 
@@ -72,7 +72,7 @@ public interface IStoreProductStockService {
      * @param increaseStockList 增加库存入参
      * @return int
      */
-    int increaseStock(Long storeId, List<StoreProdStockUpdateDTO> increaseStockList);
+    int increaseStock(Long storeId, List<StoreProdStockDTO> increaseStockList);
 
     /**
      * 减少库存
@@ -80,7 +80,7 @@ public interface IStoreProductStockService {
      * @param decreaseStockList 减少库存入参
      * @return int
      */
-    int decreaseStock(Long storeId, List<StoreProdStockUpdateDTO> decreaseStockList);
+    int decreaseStock(Long storeId, List<StoreProdStockDTO> decreaseStockList);
 
     /**
      * 清空库存
@@ -97,7 +97,7 @@ public interface IStoreProductStockService {
      * @param multiplierFactor 乘积因子 0 直接调整库存，将库存更新为页面输入的数量 1 不变数量
      * @return int
      */
-    int updateStock(Long storeId, List<StoreProdStockUpdateDTO> updateStockList, Integer multiplierFactor);
+    int updateStock(Long storeId, List<StoreProdStockDTO> updateStockList, Integer multiplierFactor);
 
     /**
      * 查询档口商品分页

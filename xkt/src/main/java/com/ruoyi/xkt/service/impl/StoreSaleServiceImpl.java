@@ -12,7 +12,7 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusGeneralSaleDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockUpdateDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageResDTO;
@@ -23,7 +23,6 @@ import com.ruoyi.xkt.service.IStoreSaleService;
 import com.ruoyi.xkt.service.IVoucherSequenceService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
@@ -301,7 +300,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
      * @param multiplierFactor 1 返回当前库存 -1 减少库存
      * @return List<StoreProdStockUpdateDTO>
      */
-    private List<StoreProdStockUpdateDTO> getStockDiffList(Map<String, Map<Integer, Integer>> saleCountMap, int multiplierFactor) {
+    private List<StoreProdStockDTO> getStockDiffList(Map<String, Map<Integer, Integer>> saleCountMap, int multiplierFactor) {
         return MapUtils.isEmpty(saleCountMap) ? new ArrayList<>() : saleCountMap.entrySet().stream()
                 .map(entry -> {
                     String[] keys = entry.getKey().split(":");
@@ -309,7 +308,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
                     Long storeProdId = Long.parseLong(keys[1]);
                     Long storeProdColorId = Long.parseLong(keys[2]);
                     String colorName = keys[3];
-                    StoreProdStockUpdateDTO dto = new StoreProdStockUpdateDTO().setProdArtNum(prodArtNum)
+                    StoreProdStockDTO dto = new StoreProdStockDTO().setProdArtNum(prodArtNum)
                             .setStoreProdId(storeProdId).setStoreProdColorId(storeProdColorId).setColorName(colorName);
                     entry.getValue().forEach((size, diffQuantity) -> {
                         // 库存变更数量乘以正负1

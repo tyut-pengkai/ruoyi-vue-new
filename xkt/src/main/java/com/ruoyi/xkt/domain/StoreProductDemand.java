@@ -5,6 +5,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreProductDemand extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -26,16 +28,31 @@ public class StoreProductDemand extends XktBaseEntity {
     private Long id;
 
     /**
+     * 档口ID
+     */
+    private Long storeId;
+
+    /**
+     * 档口工厂ID
+     */
+    private Long storeFactoryId;
+
+    /**
      * 档口商品需求code
      */
     @Excel(name = "档口商品需求code")
     private String code;
 
     /**
-     * 需求状态
+     * 需求状态 1 待生产 2 生产中 3 生产完成
      */
     @Excel(name = "需求状态")
-    private String demandStatus;
+    private Integer demandStatus;
+
+    /**
+     * 备注
+     */
+    private String remark;
 
 
     @Override

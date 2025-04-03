@@ -16,7 +16,7 @@ import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStorageDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageResDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStorageResDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockUpdateDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
 import com.ruoyi.xkt.mapper.StoreProductStorageDetailMapper;
 import com.ruoyi.xkt.mapper.StoreProductStorageMapper;
 import com.ruoyi.xkt.service.IStoreProductStockService;
@@ -89,7 +89,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
                 .setStoreProdStorId(storeProdStorage.getId())).collect(Collectors.toList());
         this.storageDetailMapper.insert(detailList);
         // 构造增加库存的入参DTO
-        List<StoreProdStockUpdateDTO> increaseStockList = BeanUtil.copyToList(detailList, StoreProdStockUpdateDTO.class);
+        List<StoreProdStockDTO> increaseStockList = BeanUtil.copyToList(detailList, StoreProdStockDTO.class);
         // 增加档口商品的库存
         this.stockService.increaseStock(storeProdStorageDTO.getStoreId(), increaseStockList);
         return count;
@@ -151,7 +151,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         this.storageDetailMapper.updateById(storageDetailList);
        // 减少档口商品库存
         this.stockService.decreaseStock(storage.getStoreId(), storageDetailList.stream()
-                .map(x -> BeanUtil.toBean(x, StoreProdStockUpdateDTO.class)).collect(Collectors.toList()));
+                .map(x -> BeanUtil.toBean(x, StoreProdStockDTO.class)).collect(Collectors.toList()));
         return count;
     }
 

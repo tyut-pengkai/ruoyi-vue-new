@@ -10,10 +10,10 @@ import lombok.experimental.Accessors;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("增加档口商品库存入参")
+@ApiModel("档口商品库存数据传输类")
 @Data
 @Accessors(chain = true)
-public class StoreProdStockUpdateDTO {
+public class StoreProdStockDTO {
 
     @ApiModelProperty(name = "档口商品库存ID")
     private Long storeProdStockId;

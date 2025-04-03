@@ -168,4 +168,37 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+
+    <select id="selectDemandPage" parameterType="com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageDTO" resultType="com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageResDTO">
+        SELECT spdd.store_id, spdd.id AS storeProdDemandDetailId, spdd.store_prod_demand_id AS storeProdDemandId, sf.fac_name, spdd.create_time, spd.`code`, spdd.prod_art_num,
+               spdd.color_name, spdd.quantity, spd.remark,
+        CASE
+            spdd.detail_status
+            WHEN 1 THEN '待生产'
+            WHEN 2 THEN '生产中'
+            ELSE '生产完成'
+            END AS detail_status,
+        CASE
+            spdd.emergency
+            WHEN 0 THEN
+            '正常单'
+            WHEN 1 THEN
+            '紧急单'
+            END AS emergency,
+        spdd.size_30 AS size30, spdd.size_31 AS size33, spdd.size_32 AS size32, spdd.size_33 AS size33, spdd.size_34 AS size34, spdd.size_35 AS size35, spdd.size_36 AS size36,
+        spdd.size_37 AS size37, spdd.size_38 AS size38, spdd.size_39 AS size39, spdd.size_40 AS size40, spdd.size_41 AS size41, spdd.size_42 AS size42, spdd.size_43 AS size43
+        FROM
+            store_product_demand_detail spdd
+            LEFT JOIN store_product_demand spd ON spdd.store_prod_demand_id = spd.id
+            LEFT JOIN store_factory sf ON spd.store_factory_id = sf.id
+        WHERE
+            spdd.del_flag = 0 AND spdd.store_id = #{storeId}
+            <if test="prodArtNum != null  and prodArtNum != ''"> and spdd.prod_art_num = #{prodArtNum}</if>
+            <if test="storeFactoryId != null "> and sf.id = #{storeFactoryId}</if>
+            <if test="remark != null  and remark != ''"> and menu_name like concat('%', #{menuName}, '%')</if>
+            <if test="emergency != null "> and spdd.emergency = #{emergency}</if>
+    </select>
+
+
 </mapper>

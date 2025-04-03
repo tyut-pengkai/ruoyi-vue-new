@@ -16,6 +16,6 @@ public interface IVoucherSequenceService {
      * @param voucherDate 单据日期 默认为当天
      * @return String
      */
-    public String generateCode(Long storeId, String type, String voucherDate);
+    String generateCode(Long storeId, String type, String voucherDate);
 
 }

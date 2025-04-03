@@ -172,4 +172,7 @@ public class Constants
             "org.springframework", "org.apache", "com.ruoyi.common.utils.file", "com.ruoyi.common.config", "com.ruoyi.generator" };
 
     public static final String UNDELETED = "0";
+
+    public static final String DELETED = "2";
+
 }

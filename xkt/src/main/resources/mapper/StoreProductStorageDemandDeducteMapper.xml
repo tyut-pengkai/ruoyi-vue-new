@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.xkt.mapper.StoreProductStorageDemandDeducteMapper">
+<mapper namespace="com.ruoyi.xkt.mapper.StoreProductStorageDemandDeductMapper">
     
-    <resultMap type="StoreProductStorageDemandDeducte" id="StoreProductStorageDemandDeducteResult">
+    <resultMap type="StoreProductStorageDemandDeduct" id="StoreProductStorageDemandDeductResult">
         <result property="id"    column="id"    />
         <result property="storeProdStorDetailId"    column="store_prod_stor_detail_id"    />
         <result property="storeProdDemandId"    column="store_prod_demand_id"    />
@@ -34,12 +34,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
-    <sql id="selectStoreProductStorageDemandDeducteVo">
-        select id, store_prod_stor_detail_id, store_prod_demand_id, store_prod_color_id, store_prod_id, storage_code, demand_code, size_30, size_31, size_32, size_33, size_34, size_35, size_36, size_37, size_38, size_39, size_40, size_41, size_42, size_43, version, del_flag, create_by, create_time, update_by, update_time from store_product_storage_demand_deducte
+    <sql id="selectStoreProductStorageDemandDeductVo">
+        select id, store_prod_stor_detail_id, store_prod_demand_id, store_prod_color_id, store_prod_id, storage_code, demand_code, size_30, size_31, size_32, size_33, size_34, size_35, size_36, size_37, size_38, size_39, size_40, size_41, size_42, size_43, version, del_flag, create_by, create_time, update_by, update_time from store_product_storage_demand_Deduct
     </sql>
 
-    <select id="selectStoreProductStorageDemandDeducteList" parameterType="StoreProductStorageDemandDeducte" resultMap="StoreProductStorageDemandDeducteResult">
-        <include refid="selectStoreProductStorageDemandDeducteVo"/>
+    <select id="selectStoreProductStorageDemandDeductList" parameterType="StoreProductStorageDemandDeduct" resultMap="StoreProductStorageDemandDeductResult">
+        <include refid="selectStoreProductStorageDemandDeductVo"/>
         <where>  
             <if test="storeProdStorDetailId != null "> and store_prod_stor_detail_id = #{storeProdStorDetailId}</if>
             <if test="storeProdDemandId != null "> and store_prod_demand_id = #{storeProdDemandId}</if>
@@ -65,13 +65,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
     
-    <select id="selectStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId" parameterType="Long" resultMap="StoreProductStorageDemandDeducteResult">
-        <include refid="selectStoreProductStorageDemandDeducteVo"/>
+    <select id="selectStoreProductStorageDemandDeductByStoreProdStorDemaDeductId" parameterType="Long" resultMap="StoreProductStorageDemandDeductResult">
+        <include refid="selectStoreProductStorageDemandDeductVo"/>
         where id = #{id}
     </select>
 
-    <insert id="insertStoreProductStorageDemandDeducte" parameterType="StoreProductStorageDemandDeducte" useGeneratedKeys="true" keyProperty="storeProdStorDemaDeducteId">
-        insert into store_product_storage_demand_deducte
+    <insert id="insertStoreProductStorageDemandDeduct" parameterType="StoreProductStorageDemandDeduct" useGeneratedKeys="true" keyProperty="storeProdStorDemaDeductId">
+        insert into store_product_storage_demand_Deduct
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="storeProdStorDetailId != null">store_prod_stor_detail_id,</if>
             <if test="storeProdDemandId != null">store_prod_demand_id,</if>
@@ -130,8 +130,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateStoreProductStorageDemandDeducte" parameterType="StoreProductStorageDemandDeducte">
-        update store_product_storage_demand_deducte
+    <update id="updateStoreProductStorageDemandDeduct" parameterType="StoreProductStorageDemandDeduct">
+        update store_product_storage_demand_Deduct
         <trim prefix="SET" suffixOverrides=",">
             <if test="storeProdStorDetailId != null">store_prod_stor_detail_id = #{storeProdStorDetailId},</if>
             <if test="storeProdDemandId != null">store_prod_demand_id = #{storeProdDemandId},</if>
@@ -163,12 +163,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
 
-    <delete id="deleteStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteId" parameterType="Long">
-        delete from store_product_storage_demand_deducte where id = #{id}
+    <delete id="deleteStoreProductStorageDemandDeductByStoreProdStorDemaDeductId" parameterType="Long">
+        delete from store_product_storage_demand_Deduct where id = #{id}
     </delete>
 
-    <delete id="deleteStoreProductStorageDemandDeducteByStoreProdStorDemaDeducteIds" parameterType="String">
-        delete from store_product_storage_demand_deducte where id in
+    <delete id="deleteStoreProductStorageDemandDeductByStoreProdStorDemaDeductIds" parameterType="String">
+        delete from store_product_storage_demand_Deduct where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

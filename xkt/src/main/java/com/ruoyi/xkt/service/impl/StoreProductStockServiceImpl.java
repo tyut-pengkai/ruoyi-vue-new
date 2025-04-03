@@ -15,7 +15,7 @@ import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockResDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockUpdateDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
 import com.ruoyi.xkt.mapper.StoreProductFileMapper;
 import com.ruoyi.xkt.mapper.StoreProductStockMapper;
 import com.ruoyi.xkt.mapper.SysFileMapper;
@@ -90,12 +90,12 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
      */
     @Override
     @Transactional
-    public int increaseStock(Long storeId, List<StoreProdStockUpdateDTO> increaseStockList) {
+    public int increaseStock(Long storeId, List<StoreProdStockDTO> increaseStockList) {
         // 根据关键信息找到已存在的库存
         List<StoreProductStock> existStockList = this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
                 .eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getDelFlag, "0")
-                .in(StoreProductStock::getStoreProdId, increaseStockList.stream().map(StoreProdStockUpdateDTO::getStoreProdId).collect(Collectors.toList()))
-                .in(StoreProductStock::getStoreProdColorId, increaseStockList.stream().map(StoreProdStockUpdateDTO::getStoreProdColorId).collect(Collectors.toList())));
+                .in(StoreProductStock::getStoreProdId, increaseStockList.stream().map(StoreProdStockDTO::getStoreProdId).collect(Collectors.toList()))
+                .in(StoreProductStock::getStoreProdColorId, increaseStockList.stream().map(StoreProdStockDTO::getStoreProdColorId).collect(Collectors.toList())));
         // 已存在的档口商品颜色库存map
         Map<Long, StoreProductStock> existStockMap = existStockList.stream().collect(Collectors.toMap(StoreProductStock::getStoreProdColorId, Function.identity()));
         // 总的待更新的库存列表
@@ -118,14 +118,14 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
      */
     @Override
     @Transactional
-    public int decreaseStock(Long storeId, List<StoreProdStockUpdateDTO> decreaseStockList) {
+    public int decreaseStock(Long storeId, List<StoreProdStockDTO> decreaseStockList) {
         // 根据关键信息找到已存在的库存
         List<StoreProductStock> existStockList = this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
                 .eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getDelFlag, "0")
-                .in(StoreProductStock::getStoreProdId, decreaseStockList.stream().map(StoreProdStockUpdateDTO::getStoreProdId).collect(Collectors.toList()))
-                .in(StoreProductStock::getStoreProdColorId, decreaseStockList.stream().map(StoreProdStockUpdateDTO::getStoreProdColorId).collect(Collectors.toList())));
+                .in(StoreProductStock::getStoreProdId, decreaseStockList.stream().map(StoreProdStockDTO::getStoreProdId).collect(Collectors.toList()))
+                .in(StoreProductStock::getStoreProdColorId, decreaseStockList.stream().map(StoreProdStockDTO::getStoreProdColorId).collect(Collectors.toList())));
         // 待扣减的库存map
-        Map<Long, StoreProdStockUpdateDTO> decreaseStockMap = decreaseStockList.stream().collect(Collectors.toMap(StoreProdStockUpdateDTO::getStoreProdColorId, Function.identity()));
+        Map<Long, StoreProdStockDTO> decreaseStockMap = decreaseStockList.stream().collect(Collectors.toMap(StoreProdStockDTO::getStoreProdColorId, Function.identity()));
         existStockList.forEach(stock -> this.adjustStock(stock, decreaseStockMap.get(stock.getStoreProdColorId()), Boolean.FALSE));
         List<BatchResult> list = this.storeProdStockMapper.updateById(existStockList);
         return list.size();
@@ -160,18 +160,18 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
      */
     @Override
     @Transactional
-    public int updateStock(Long storeId, List<StoreProdStockUpdateDTO> updateStockList, Integer multiplierFactor) {
+    public int updateStock(Long storeId, List<StoreProdStockDTO> updateStockList, Integer multiplierFactor) {
         List<StoreProductStock> stockList = Optional.ofNullable(this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
-                        .in(StoreProductStock::getStoreProdId, updateStockList.stream().map(StoreProdStockUpdateDTO::getStoreProdId).collect(Collectors.toList()))
+                        .in(StoreProductStock::getStoreProdId, updateStockList.stream().map(StoreProdStockDTO::getStoreProdId).collect(Collectors.toList()))
                         .eq(StoreProductStock::getStoreId, storeId)
                         .eq(StoreProductStock::getDelFlag, "0")))
                 .orElseThrow(() -> new ServiceException("档口商品库存不存在!", HttpStatus.ERROR));
         // 数据库数据map
-        Map<String, StoreProdStockUpdateDTO> diffStockMap = updateStockList.stream().collect(Collectors
+        Map<String, StoreProdStockDTO> diffStockMap = updateStockList.stream().collect(Collectors
                 .toMap(stock -> stock.getProdArtNum() + stock.getStoreProdId() + stock.getStoreProdColorId(), Function.identity()));
         List<StoreProductStock> updateList = new ArrayList<>();
         stockList.forEach(stock -> {
-            StoreProdStockUpdateDTO updateStock = diffStockMap.get(stock.getProdArtNum() + stock.getStoreProdId() + stock.getStoreProdColorId());
+            StoreProdStockDTO updateStock = diffStockMap.get(stock.getProdArtNum() + stock.getStoreProdId() + stock.getStoreProdColorId());
             if (ObjectUtils.isEmpty(updateStock)) {
                 return;
             }
@@ -322,7 +322,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
      * @param isInCrease true 增加库存 false 减少库存
      * @return StoreProductStock
      */
-    private StoreProductStock adjustStock(StoreProductStock stock, StoreProdStockUpdateDTO adjustDTO, Boolean isInCrease) {
+    private StoreProductStock adjustStock(StoreProductStock stock, StoreProdStockDTO adjustDTO, Boolean isInCrease) {
         if (ObjectUtils.isEmpty(adjustDTO)) {
             return stock;
         }

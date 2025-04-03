@@ -2,6 +2,8 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductDemandDetail;
+import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageDTO;
+import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageResDTO;
 
 import java.util.List;
 
@@ -59,4 +61,13 @@ public interface StoreProductDemandDetailMapper extends BaseMapper<StoreProductD
      * @return 结果
      */
     public int deleteStoreProductDemandDetailByStoreProdDemaDetailIds(Long[] storeProdDemaDetailIds);
+
+    /**
+     * 分页查询档口商品需求单明细
+     *
+     * @param pageDTO 分页查询参数
+     * @return 档口商品需求单明细分页列表
+     */
+    List<StoreProdDemandPageResDTO> selectDemandPage(StoreProdDemandPageDTO pageDTO);
+
 }

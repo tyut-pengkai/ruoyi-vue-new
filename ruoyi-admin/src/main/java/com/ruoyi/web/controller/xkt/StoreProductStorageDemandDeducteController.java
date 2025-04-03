@@ -6,7 +6,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.xkt.domain.StoreProductStorageDemandDeducte;
+import com.ruoyi.xkt.domain.StoreProductStorageDemandDeduct;
 import com.ruoyi.xkt.service.IStoreProductStorageDemandDeducteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,9 +32,9 @@ public class StoreProductStorageDemandDeducteController extends XktBaseControlle
      */
     @PreAuthorize("@ss.hasPermi('system:deducte:list')")
     @GetMapping("/list")
-    public TableDataInfo list(StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
+    public TableDataInfo list(StoreProductStorageDemandDeduct storeProductStorageDemandDeducte) {
         startPage();
-        List<StoreProductStorageDemandDeducte> list = storeProductStorageDemandDeducteService.selectStoreProductStorageDemandDeducteList(storeProductStorageDemandDeducte);
+        List<StoreProductStorageDemandDeduct> list = storeProductStorageDemandDeducteService.selectStoreProductStorageDemandDeducteList(storeProductStorageDemandDeducte);
         return getDataTable(list);
     }
 
@@ -44,9 +44,9 @@ public class StoreProductStorageDemandDeducteController extends XktBaseControlle
     @PreAuthorize("@ss.hasPermi('system:deducte:export')")
     @Log(title = "档口商品入库抵扣需求", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
-        List<StoreProductStorageDemandDeducte> list = storeProductStorageDemandDeducteService.selectStoreProductStorageDemandDeducteList(storeProductStorageDemandDeducte);
-        ExcelUtil<StoreProductStorageDemandDeducte> util = new ExcelUtil<StoreProductStorageDemandDeducte>(StoreProductStorageDemandDeducte.class);
+    public void export(HttpServletResponse response, StoreProductStorageDemandDeduct storeProductStorageDemandDeducte) {
+        List<StoreProductStorageDemandDeduct> list = storeProductStorageDemandDeducteService.selectStoreProductStorageDemandDeducteList(storeProductStorageDemandDeducte);
+        ExcelUtil<StoreProductStorageDemandDeduct> util = new ExcelUtil<StoreProductStorageDemandDeduct>(StoreProductStorageDemandDeduct.class);
         util.exportExcel(response, list, "档口商品入库抵扣需求数据");
     }
 
@@ -65,7 +65,7 @@ public class StoreProductStorageDemandDeducteController extends XktBaseControlle
     @PreAuthorize("@ss.hasPermi('system:deducte:add')")
     @Log(title = "档口商品入库抵扣需求", businessType = BusinessType.INSERT)
     @PostMapping
-    public R add(@RequestBody StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
+    public R add(@RequestBody StoreProductStorageDemandDeduct storeProductStorageDemandDeducte) {
         return success(storeProductStorageDemandDeducteService.insertStoreProductStorageDemandDeducte(storeProductStorageDemandDeducte));
     }
 
@@ -75,7 +75,7 @@ public class StoreProductStorageDemandDeducteController extends XktBaseControlle
     @PreAuthorize("@ss.hasPermi('system:deducte:edit')")
     @Log(title = "档口商品入库抵扣需求", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R edit(@RequestBody StoreProductStorageDemandDeducte storeProductStorageDemandDeducte) {
+    public R edit(@RequestBody StoreProductStorageDemandDeduct storeProductStorageDemandDeducte) {
         return success(storeProductStorageDemandDeducteService.updateStoreProductStorageDemandDeducte(storeProductStorageDemandDeducte));
     }
 
