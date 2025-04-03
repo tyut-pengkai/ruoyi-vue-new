@@ -3,6 +3,7 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductColorPrice;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceDTO;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Repository
 public interface StoreProductColorPriceMapper extends BaseMapper<StoreProductColorPrice> {
     /**
      * 查询档口商品颜色定价

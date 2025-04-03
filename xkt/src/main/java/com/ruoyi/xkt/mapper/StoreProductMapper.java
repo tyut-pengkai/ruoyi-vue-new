@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdFuzzyResDTO;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Repository
 public interface StoreProductMapper extends BaseMapper<StoreProduct> {
     /**
      * 查询档口商品

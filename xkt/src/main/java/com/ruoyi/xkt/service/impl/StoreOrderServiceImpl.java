@@ -1,20 +1,19 @@
 package com.ruoyi.xkt.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.domain.XktBaseEntity;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.order.StoreOrderAddDTO;
-import com.ruoyi.xkt.dto.order.StoreOrderDetailInfoDTO;
-import com.ruoyi.xkt.dto.order.StoreOrderInfoDTO;
+import com.ruoyi.xkt.dto.order.StoreOrderAddResultDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
+import com.ruoyi.xkt.service.IExpressService;
 import com.ruoyi.xkt.service.IStoreOrderService;
 import com.ruoyi.xkt.service.IVoucherSequenceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,47 +39,47 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Autowired
     private StoreOrderExpressTrackMapper storeOrderExpressTrackMapper;
     @Autowired
-    private ExpressMapper expressMapper;
-    @Autowired
-    private ExpressFeeConfigMapper expressFeeConfigMapper;
+    private IExpressService expressService;
     @Autowired
     private StoreProductMapper storeProductMapper;
     @Autowired
     private StoreProductColorSizeMapper storeProductColorSizeMapper;
     @Autowired
+    private StoreProductColorPriceMapper storeProductColorPriceMapper;
+    @Autowired
     private IVoucherSequenceService voucherSequenceService;
 
     @Transactional
     @Override
-    public StoreOrderInfoDTO createOrder(StoreOrderAddDTO storeOrderAddDTO) {
+    public StoreOrderAddResultDTO createOrder(StoreOrderAddDTO storeOrderAddDTO) {
         Long orderUserId = storeOrderAddDTO.getOrderUserId();
         Long storeId = storeOrderAddDTO.getStoreId();
         Long expressId = storeOrderAddDTO.getExpressId();
         //校验
-        checkExpress(expressId);
-        checkDelivery(storeOrderAddDTO.getDeliveryType(),
-                storeOrderAddDTO.getDeliveryEndTime());
+        expressService.checkExpress(expressId);
+        checkDelivery(storeOrderAddDTO.getDeliveryType(), storeOrderAddDTO.getDeliveryEndTime());
         Map<Long, StoreProductColorSize> spcsMap = checkOrderDetailThenRtnSpcsMap(storeId,
                 storeOrderAddDTO.getDetailList());
         //快递费配置
-        ExpressFeeConfig expressFeeConfig = getExpressFeeConfig(expressId,
+        ExpressFeeConfig expressFeeConfig = expressService.getExpressFeeConfig(expressId,
                 storeOrderAddDTO.getDestinationProvinceCode(), storeOrderAddDTO.getDestinationCityCode(),
                 storeOrderAddDTO.getDestinationCountyCode());
+        Assert.isTrue(BeanValidators.exists(expressFeeConfig), "无快递费用配置");
         boolean isFirstExpressItem = true;
         //生成订单明细
-        List<StoreOrderDetail> storeOrderDetailList = new ArrayList<>(storeOrderAddDTO.getDetailList().size());
+        List<StoreOrderDetail> orderDetailList = new ArrayList<>(storeOrderAddDTO.getDetailList().size());
         int orderGoodsQuantity = 0;
         BigDecimal orderGoodsAmount = BigDecimal.ZERO;
         BigDecimal orderExpressFee = BigDecimal.ZERO;
         for (StoreOrderAddDTO.Detail detail : storeOrderAddDTO.getDetailList()) {
             StoreProductColorSize spcs = spcsMap.get(detail.getStoreProdColorSizeId());
-            StoreOrderDetail storeOrderDetail = new StoreOrderDetail();
-            storeOrderDetailList.add(storeOrderDetail);
-            storeOrderDetail.setStoreProdColorSizeId(spcs.getId());
-            storeOrderDetail.setStoreProdId(spcs.getStoreProdId());
-            storeOrderDetail.setDetailStatus(EOrderStatus.PENDING_PAYMENT.getValue());
-            storeOrderDetail.setPayStatus(EPayStatus.INIT.getValue());
-            storeOrderDetail.setExpressStatus(EExpressStatus.INIT.getValue());
+            StoreOrderDetail orderDetail = new StoreOrderDetail();
+            orderDetailList.add(orderDetail);
+            orderDetail.setStoreProdColorSizeId(spcs.getId());
+            orderDetail.setStoreProdId(spcs.getStoreProdId());
+            orderDetail.setDetailStatus(EOrderStatus.PENDING_PAYMENT.getValue());
+            orderDetail.setPayStatus(EPayStatus.INIT.getValue());
+            orderDetail.setExpressStatus(EExpressStatus.INIT.getValue());
             //计算明细费用
             BigDecimal goodsPrice = calcPrice(orderUserId, spcs);
             Integer goodsQuantity = detail.getGoodsQuantity();
@@ -99,13 +98,13 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 expressFee = NumberUtil.mul(expressFeeConfig.getNextItemAmount(), BigDecimal.valueOf(goodsQuantity));
             }
             BigDecimal totalAmount = NumberUtil.add(goodsAmount, expressFee);
-            storeOrderDetail.setGoodsPrice(goodsPrice);
-            storeOrderDetail.setGoodsQuantity(goodsQuantity);
-            storeOrderDetail.setGoodsAmount(goodsAmount);
-            storeOrderDetail.setExpressFee(expressFee);
-            storeOrderDetail.setTotalAmount(totalAmount);
-            storeOrderDetail.setDelFlag(Constants.UNDELETED);
-            storeOrderDetail.setVersion(0L);
+            orderDetail.setGoodsPrice(goodsPrice);
+            orderDetail.setGoodsQuantity(goodsQuantity);
+            orderDetail.setGoodsAmount(goodsAmount);
+            orderDetail.setExpressFee(expressFee);
+            orderDetail.setTotalAmount(totalAmount);
+            orderDetail.setDelFlag(Constants.UNDELETED);
+            orderDetail.setVersion(0L);
             //计算订单费用
             orderGoodsQuantity = orderGoodsQuantity + goodsQuantity;
             orderGoodsAmount = NumberUtil.add(orderGoodsAmount, goodsAmount);
@@ -146,18 +145,15 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //落库
         storeOrderMapper.insert(order);
         Long orderId = order.getId();
-        List<Long> orderDetailIdList = new ArrayList<>(storeOrderDetailList.size());
-        storeOrderDetailList.forEach(storeOrderDetail -> {
+        List<Long> orderDetailIdList = new ArrayList<>(orderDetailList.size());
+        orderDetailList.forEach(storeOrderDetail -> {
             storeOrderDetail.setStoreOrderId(orderId);
             storeOrderDetailMapper.insert(storeOrderDetail);
             orderDetailIdList.add(storeOrderDetail.getId());
         });
         //操作记录
         //TODO
-        //返回
-        StoreOrderInfoDTO infoDTO = BeanUtil.toBean(order, StoreOrderInfoDTO.class);
-        infoDTO.setDetailList(BeanUtil.copyToList(storeOrderDetailList, StoreOrderDetailInfoDTO.class));
-        return infoDTO;
+        return new StoreOrderAddResultDTO(order, orderDetailList);
     }
 
     /**
@@ -168,49 +164,22 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
      * @return
      */
     private BigDecimal calcPrice(Long orderUserId, StoreProductColorSize storeProductColorSize) {
-        //TODO
-        return BigDecimal.ONE;
-    }
 
-    /**
-     * 获取快递费配置
-     *
-     * @param expressId
-     * @param provinceCode
-     * @param cityCode
-     * @param countyCode
-     * @return
-     */
-    private ExpressFeeConfig getExpressFeeConfig(Long expressId, String provinceCode, String cityCode,
-                                                 String countyCode) {
-        Assert.notNull(expressId);
-        Assert.notEmpty(provinceCode);
-        Assert.notEmpty(cityCode);
-        Assert.notEmpty(countyCode);
-        Map<String, ExpressFeeConfig> map = expressFeeConfigMapper.selectList(Wrappers.lambdaQuery(ExpressFeeConfig.class)
-                .eq(ExpressFeeConfig::getExpressId, expressId)
-                .in(ExpressFeeConfig::getRegionCode, Arrays.asList(provinceCode, cityCode, countyCode)))
-                .stream()
-                //过滤掉已被删除的配置
-                .filter(BeanValidators::exists)
-                .collect(Collectors.toMap(o -> o.getRegionCode(), o -> o, (n, o) -> n));
-        ExpressFeeConfig expressFeeConfig = null;
-        if (CollUtil.isNotEmpty(map)) {
-            if (map.size() == 1) {
-                expressFeeConfig = CollUtil.getFirst(map.values());
-            } else {
-                expressFeeConfig = map.get(countyCode);
-                //按区市省从小到大去匹配
-                if (expressFeeConfig == null) {
-                    expressFeeConfig = map.get(cityCode);
-                    if (expressFeeConfig == null) {
-                        expressFeeConfig = map.get(provinceCode);
-                    }
-                }
-            }
+        StoreProductColorPrice productColorPrice = storeProductColorPriceMapper.selectOne(Wrappers
+                .lambdaQuery(StoreProductColorPrice.class)
+                .eq(StoreProductColorPrice::getStoreProdId, storeProductColorSize.getStoreProdId())
+                .eq(StoreProductColorPrice::getStoreColorId, storeProductColorSize.getStoreColorId())
+                .eq(XktBaseEntity::getDelFlag, Constants.UNDELETED));
+        Assert.notNull(productColorPrice, "无法获取商品定价");
+        BigDecimal price = productColorPrice.getPrice();
+        if ("0".equals(storeProductColorSize.getStandard())) {
+            //非标准尺码
+            StoreProduct product = storeProductMapper.selectById(storeProductColorSize.getStoreProdId());
+            BigDecimal addPrice = BigDecimal.valueOf(NumberUtil.nullToZero(product.getOverPrice()));
+            price = NumberUtil.add(price, addPrice);
         }
-        Assert.isTrue(BeanValidators.exists(expressFeeConfig), "快递费用配置不存在");
-        return expressFeeConfig;
+        //TODO  客户优惠
+        return price;
     }
 
     /**
@@ -226,18 +195,6 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 && deliveryTypeEnum != EDeliveryType.PARTIAL_SHIPMENT) {
             throw new ServiceException("有货先发才能设置最晚发货时间");
         }
-    }
-
-    /**
-     * 检查快递
-     *
-     * @param expressId
-     */
-    private void checkExpress(Long expressId) {
-        Assert.notNull(expressId);
-        Express express = expressMapper.selectById(expressId);
-        Assert.isTrue(BeanValidators.exists(express), "快递不存在");
-        Assert.isTrue(express.getSystemDeliverAccess(), "快递不可用");
     }
 
     /**
