@@ -84,9 +84,14 @@ public class CameraController extends BaseController {
     @PostMapping("/link")
     public AjaxResult link(@RequestParam(required = false, defaultValue = "2") int type,
                            @RequestParam String indexCode,
-                           @RequestParam int site)
+                           @RequestParam int site,
+                           @RequestParam String name,
+                           @RequestParam String platform,
+                           @RequestParam int platformId)
     {
-        if (indexCode == null || indexCode.isEmpty()) {
+        if (indexCode == null || indexCode.isEmpty()
+                || name == null || name.isEmpty()
+                || platform == null || platform.isEmpty()) {
             return AjaxResult.error("参数错误");
         }
 
@@ -96,7 +101,7 @@ public class CameraController extends BaseController {
 
         try {
             cameraService.clearCameraLink(indexCode);
-            cameraService.linkCameraToSite(indexCode, site);
+            cameraService.linkCameraToSite(indexCode, site, name, platform, platformId);
             return AjaxResult.success();
         } catch (Exception e) {
             return AjaxResult.error("创建失败, 内部参数错误" + e.getMessage());
@@ -202,16 +207,16 @@ public class CameraController extends BaseController {
     @Anonymous
     @GetMapping("/getPreviewURL")
     public AjaxResult getPreviewURL(
-            @RequestParam(required = true) int platform,
+            @RequestParam(required = true) int platformId,
             @RequestParam(required = true) String indexCode) throws Exception {
         try {
-            if (platform <= 0) {
-                return AjaxResult.error("查询的平台名称异常");
+            if (platformId <= 0) {
+                return AjaxResult.error("查询的平台异常");
             }
 
-            CameraPlatform cameraPlatform = cameraService.selectById(platform);
+            CameraPlatform cameraPlatform = cameraService.selectById(platformId);
             if (cameraPlatform == null) {
-                return AjaxResult.error("平台名称异常");
+                return AjaxResult.error("查询的平台不存在");
             }
 
             String url = cameraService.getHikvisionPreviewURL(cameraPlatform, indexCode);
@@ -229,15 +234,15 @@ public class CameraController extends BaseController {
     @Anonymous
     @GetMapping("/getPlaybackURL")
     public AjaxResult getPlaybackURL(
-            @RequestParam(required = true) int platform,
+            @RequestParam(required = true) int platformId,
             @RequestParam(required = true) String indexCode,
             @RequestParam(required = true) String beginTime,
             @RequestParam(required = true) String endTime) throws Exception {
-        if (platform <= 0 || indexCode.isEmpty() || beginTime.isEmpty() || endTime.isEmpty()) {
+        if (platformId <= 0 || indexCode.isEmpty() || beginTime.isEmpty() || endTime.isEmpty()) {
             return AjaxResult.error("参数异常");
         }
 
-        CameraPlatform cameraPlatform = cameraService.selectById(platform);
+        CameraPlatform cameraPlatform = cameraService.selectById(platformId);
         if (cameraPlatform == null) {
             return AjaxResult.error("平台名称异常");
         }
@@ -254,7 +259,7 @@ public class CameraController extends BaseController {
     @Anonymous
     @GetMapping("/controlling")
     public AjaxResult controlling(
-            @RequestParam(required = true) int platform,
+            @RequestParam(required = true) int platformId,
             @RequestParam(required = true) String indexCode,
             @RequestParam(required = true) Integer action,
             @RequestParam(required = true) String command,
@@ -271,11 +276,11 @@ public class CameraController extends BaseController {
         * speed 云台速度，取值范围为1-100，默认50
         */
 
-        if (platform <= 0 || indexCode.isEmpty() || command.isEmpty()) {
+        if (platformId <= 0 || indexCode.isEmpty() || command.isEmpty()) {
             return AjaxResult.error("参数异常");
         }
 
-        CameraPlatform cameraPlatform = cameraService.selectById(platform);
+        CameraPlatform cameraPlatform = cameraService.selectById(platformId);
         if (cameraPlatform == null) {
             return AjaxResult.error("平台名称异常");
         }

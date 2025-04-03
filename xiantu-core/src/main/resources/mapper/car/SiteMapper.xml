@@ -117,11 +117,17 @@
             <if test="siteId != null and siteId != ''">siteId,</if>
             type,
             <if test="indexCode != null and indexCode != ''">indexCode,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="platform != null and platform != ''">platform,</if>
+            <if test="platformId != 0">platformId,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="siteId != null and siteId != ''">#{siteId},</if>
             2,
             <if test="indexCode != null and indexCode != ''">#{indexCode},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="platform != null and platform != ''">#{platform},</if>
+            <if test="platformId != 0">#{platformId},</if>
         </trim>
     </insert>
 

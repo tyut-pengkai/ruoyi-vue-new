@@ -6,24 +6,24 @@ public class Car {
     private String imageUrl;
     private String videoUrl;
     // 货箱长度
-    private int containerLength;
+    private float containerLength;
     // 货箱宽度
-    private int containerWidth;
+    private float containerWidth;
     // 货箱高度
-    private int containerHeight;
+    private float containerHeight;
 
     // 车身长度
-    private int bodyLength;
+    private float bodyLength;
     // 车身宽度
-    private int bodyWidth;
+    private float bodyWidth;
     // 车身高度
-    private int bodyHeight;
+    private float bodyHeight;
     // 容积
-    private int curbWeight;
+    private float curbWeight;
     // 额定载重
-    private int ratedLoadCapacity;
+    private float ratedLoadCapacity;
     // 总质量
-    private int grossWeight;
+    private float grossWeight;
     // 能源类型
     private String energyType;
 
@@ -59,75 +59,75 @@ public class Car {
         this.videoUrl = videoUrl;
     }
 
-    public int getContainerLength() {
+    public float getContainerLength() {
         return containerLength;
     }
 
-    public void setContainerLength(int containerLength) {
+    public void setContainerLength(float containerLength) {
         this.containerLength = containerLength;
     }
 
-    public int getContainerWidth() {
+    public float getContainerWidth() {
         return containerWidth;
     }
 
-    public void setContainerWidth(int containerWidth) {
+    public void setContainerWidth(float containerWidth) {
         this.containerWidth = containerWidth;
     }
 
-    public int getContainerHeight() {
+    public float getContainerHeight() {
         return containerHeight;
     }
 
-    public void setContainerHeight(int containerHeight) {
+    public void setContainerHeight(float containerHeight) {
         this.containerHeight = containerHeight;
     }
 
-    public int getBodyLength() {
+    public float getBodyLength() {
         return bodyLength;
     }
 
-    public void setBodyLength(int bodyLength) {
+    public void setBodyLength(float bodyLength) {
         this.bodyLength = bodyLength;
     }
 
-    public int getBodyWidth() {
+    public float getBodyWidth() {
         return bodyWidth;
     }
 
-    public void setBodyWidth(int bodyWidth) {
+    public void setBodyWidth(float bodyWidth) {
         this.bodyWidth = bodyWidth;
     }
 
-    public int getBodyHeight() {
+    public float getBodyHeight() {
         return bodyHeight;
     }
 
-    public void setBodyHeight(int bodyHeight) {
+    public void setBodyHeight(float bodyHeight) {
         this.bodyHeight = bodyHeight;
     }
 
-    public int getCurbWeight() {
+    public float getCurbWeight() {
         return curbWeight;
     }
 
-    public void setCurbWeight(int curbWeight) {
+    public void setCurbWeight(float curbWeight) {
         this.curbWeight = curbWeight;
     }
 
-    public int getRatedLoadCapacity() {
+    public float getRatedLoadCapacity() {
         return ratedLoadCapacity;
     }
 
-    public void setRatedLoadCapacity(int ratedLoadCapacity) {
+    public void setRatedLoadCapacity(float ratedLoadCapacity) {
         this.ratedLoadCapacity = ratedLoadCapacity;
     }
 
-    public int getGrossWeight() {
+    public float getGrossWeight() {
         return grossWeight;
     }
 
-    public void setGrossWeight(int grossWeight) {
+    public void setGrossWeight(float grossWeight) {
         this.grossWeight = grossWeight;
     }
 
@@ -155,7 +155,7 @@ public class Car {
                 ", curbWeight=" + curbWeight +
                 ", ratedLoadCapacity=" + ratedLoadCapacity +
                 ", grossWeight=" + grossWeight +
-                ", energyType=" + energyType +
+                ", energyType='" + energyType + '\'' +
                 '}';
     }
 }

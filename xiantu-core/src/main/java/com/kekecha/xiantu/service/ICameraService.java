@@ -12,7 +12,7 @@ public interface ICameraService {
     int update(CameraPlatform cameraPlatform);
     int delete(int id);
 
-    int linkCameraToSite(String indexCode, int siteId);
+    int linkCameraToSite(String indexCode, int siteId, String name, String platform, int platformId);
     int clearCameraLink(String indexCode);
 
     int getCameraLink(String indexCode);

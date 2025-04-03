@@ -70,9 +70,9 @@ public class CameraServiceImpl implements ICameraService {
         return cameraMapper.delete(id);
     }
 
-    public int linkCameraToSite(String indexCode, int siteId)
+    public int linkCameraToSite(String indexCode, int siteId, String name, String platform, int platformId)
     {
-        return siteMapper.refCameraToSite(indexCode, siteId);
+        return siteMapper.refCameraToSite(indexCode, siteId, name, platform, platformId);
     }
 
     public int clearCameraLink(String indexCode)
@@ -143,7 +143,13 @@ public class CameraServiceImpl implements ICameraService {
             JSONObject data = jsonResult.getJSONObject("data");
             return data.get("url").toString();
         } else {
-            throw new RuntimeException(result);
+            if (jsonResult.get("msg").toString().contains("No media online")) {
+                //{"code":"0x01b01302","msg":"No media online. [\"No media online. {groupIndexCode=default, groupName=mls.mediaGroup.name.default, groupType=null}," +
+                //        "relatedAbility:[\\\"openApi\\\",\\\"transCode\\\",\\\"openApi\\\",\\\"notRtsp\\\"],netzoneCode:1\"]","data":null}
+                throw new RuntimeException("摄像头离线");
+            } else {
+                throw new RuntimeException(result);
+            }
         }
     }
 
