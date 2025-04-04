@@ -5,30 +5,20 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdPageVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdStorage.StoreProdStoragePageVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdStorage.StoreProdStorageResVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdStorage.StoreProdStorageVO;
-import com.ruoyi.xkt.domain.StoreProductStorage;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStorageDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageResDTO;
-import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStorageResDTO;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
 import com.ruoyi.xkt.service.IStoreProductStorageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * 档口商品入库Controller
@@ -43,18 +33,6 @@ import java.util.List;
 public class StoreProductStorageController extends XktBaseController {
 
     final IStoreProductStorageService storeProdStorageService;
-
-    // TODO 需求抵扣明细没做
-    // TODO 需求抵扣明细没做
-    // TODO 需求抵扣明细没做
-    // TODO 需求抵扣明细没做
-    // TODO 需求抵扣明细没做
-    // TODO 需求抵扣明细没做
-    // TODO 需求抵扣明细没做
-    // TODO 需求抵扣明细没做
-    // TODO 需求抵扣明细没做
-    // TODO 需求抵扣明细没做
-    // TODO 需求抵扣明细没做
 
     /**
      * 新增档口商品入库
@@ -97,49 +75,6 @@ public class StoreProductStorageController extends XktBaseController {
     public R remove(@PathVariable Long storeProdStorId) {
         return R.ok(storeProdStorageService.deleteByStoreProdStorId(storeProdStorId));
     }
-
-
-
-
-
-
-    /**
-     * 查询档口商品入库列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:storage:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(StoreProductStorage storeProductStorage) {
-        startPage();
-        List<StoreProductStorage> list = storeProdStorageService.selectStoreProductStorageList(storeProductStorage);
-        return getDataTable(list);
-    }
-
-    /**
-     * 导出档口商品入库列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:storage:export')")
-    @Log(title = "档口商品入库", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, StoreProductStorage storeProductStorage) {
-        List<StoreProductStorage> list = storeProdStorageService.selectStoreProductStorageList(storeProductStorage);
-        ExcelUtil<StoreProductStorage> util = new ExcelUtil<StoreProductStorage>(StoreProductStorage.class);
-        util.exportExcel(response, list, "档口商品入库数据");
-    }
-
-
-
-
-
-    /**
-     * 修改档口商品入库
-     */
-    @PreAuthorize("@ss.hasPermi('system:storage:edit')")
-    @Log(title = "档口商品入库", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public R edit(@RequestBody StoreProductStorage storeProductStorage) {
-        return success(storeProdStorageService.updateStoreProductStorage(storeProductStorage));
-    }
-
 
 
 }

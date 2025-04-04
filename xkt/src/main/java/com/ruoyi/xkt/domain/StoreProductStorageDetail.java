@@ -56,6 +56,27 @@ public class StoreProductStorageDetail extends XktBaseEntity {
     @Excel(name = "档口商品ID")
     private Long storeProdId;
     /**
+     * 总数量
+     */
+    @Excel(name = "总数量")
+    private Integer quantity;
+    /**
+     * 生产价格
+     */
+    @Excel(name = "生产价格")
+    private BigDecimal producePrice;
+    /**
+     * 总的生产价格
+     */
+    @Excel(name = "总的生产价格")
+    private BigDecimal produceAmount;
+
+    /**
+     * 抵扣状态：0.未抵扣 1.部分抵扣 2.已抵扣
+     */
+    private Integer deductStatus;
+
+    /**
      * 尺码30
      */
     @Excel(name = "尺码30")
@@ -139,21 +160,6 @@ public class StoreProductStorageDetail extends XktBaseEntity {
     @Excel(name = "尺码43")
     @TableField("size_43")
     private Integer size43;
-    /**
-     * 总数量
-     */
-    @Excel(name = "总数量")
-    private Integer quantity;
-    /**
-     * 生产价格
-     */
-    @Excel(name = "生产价格")
-    private BigDecimal producePrice;
-    /**
-     * 总的生产价格
-     */
-    @Excel(name = "总的生产价格")
-    private BigDecimal produceAmount;
 
     @Override
     public String toString() {

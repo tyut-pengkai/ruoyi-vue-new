@@ -169,10 +169,10 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         List<Long> demandDetailIdList = demandList.stream().map(StoreProdDemandPageResDTO::getStoreProdDemandDetailId).distinct().collect(Collectors.toList());
         // 找到需求单抵扣的数据
         List<StoreProductStorageDemandDeduct> deductList = this.storageDemandDeductMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDemandDeduct>()
-                .in(StoreProductStorageDemandDeduct::getStoreProdStorDetailId, demandDetailIdList).eq(StoreProductStorageDemandDeduct::getDelFlag, "0"));
+                .in(StoreProductStorageDemandDeduct::getStoreProdStorageDetailId, demandDetailIdList).eq(StoreProductStorageDemandDeduct::getDelFlag, "0"));
         // 明细抵扣的数量
         Map<Long, Integer> deductQuantityMap = CollectionUtils.isEmpty(deductList) ? new HashMap<>()
-                : deductList.stream().collect(Collectors.groupingBy(StoreProductStorageDemandDeduct::getStoreProdStorDetailId, Collectors.summingInt(StoreProductStorageDemandDeduct::getQuantity)));
+                : deductList.stream().collect(Collectors.groupingBy(StoreProductStorageDemandDeduct::getStoreProdStorageDetailId, Collectors.summingInt(StoreProductStorageDemandDeduct::getQuantity)));
         // 更新需求列表中的每个项，设置库存数量和生产中数量
         demandList.forEach(x -> {
             final Integer deductQuantity = deductQuantityMap.getOrDefault(x.getStoreProdDemandDetailId(), 0);

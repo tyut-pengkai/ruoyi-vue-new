@@ -30,13 +30,13 @@ public class StoreProductStorageDemandDeduct extends XktBaseEntity {
      * 档口商品入库明细ID
      */
     @Excel(name = "档口商品入库明细ID")
-    private Long storeProdStorDetailId;
+    private Long storeProdStorageDetailId;
 
     /**
-     * 档口商品需求ID
+     * 档口商品需求明细ID
      */
-    @Excel(name = "档口商品需求ID")
-    private Long storeProdDemandId;
+    @Excel(name = "档口商品需求明细ID")
+    private Long storeProdDemandDetailId;
 
     /**
      * 档口商品颜色ID
@@ -153,13 +153,18 @@ public class StoreProductStorageDemandDeduct extends XktBaseEntity {
     @TableField("size_43")
     private Integer size43;
 
+    /**
+     * 备注说明
+     */
+    private String remark;
+
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId())
-                .append("storeProdStorDetailId", getStoreProdStorDetailId())
-                .append("storeProdDemandId", getStoreProdDemandId())
+                .append("storeProdStorDetailId", getStoreProdStorageDetailId())
+                .append("storeProdDemandId", getStoreProdDemandDetailId())
                 .append("storeProdColorId", getStoreProdColorId())
                 .append("storeProdId", getStoreProdId())
                 .append("storageCode", getStorageCode())

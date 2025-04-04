@@ -83,4 +83,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <update id="updateStatusByIds">
+        UPDATE
+            store_product_demand SET demand_status = 3,  update_time = NOW()
+        WHERE
+            del_flag = 0
+            <if test="demandIdList != null and demandIdList.size > 0">
+                AND id IN
+                <foreach collection="demandIdList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+    </update>
+
+
 </mapper>

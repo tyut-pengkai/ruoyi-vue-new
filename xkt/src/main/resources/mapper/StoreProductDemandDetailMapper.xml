@@ -201,4 +201,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
 
+    <select id="selectDemandCodeList" resultType="com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandSimpleDTO">
+        SELECT
+            spdd.id AS storeProdDemandDetailId,
+            spd.`code`
+        FROM
+            store_product_demand_detail spdd JOIN store_product_demand spd ON spdd.store_prod_demand_id = spd.id
+        WHERE
+            spdd.del_flag = 0
+            <if test="detailIdList != null and detailIdList.size > 0">
+                AND spdd.id IN
+                <foreach item="id" collection="detailIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+    </select>
+
 </mapper>

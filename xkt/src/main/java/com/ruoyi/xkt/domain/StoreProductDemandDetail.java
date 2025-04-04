@@ -68,7 +68,7 @@ public class StoreProductDemandDetail extends XktBaseEntity {
     private Integer emergency;
 
     /**
-     * 档口商品需求明细状态
+     * 档口商品需求明细状态 1 待生产 2 生产中 3 生产完成
      */
     @Excel(name = "档口商品需求明细状态")
     private Integer detailStatus;
