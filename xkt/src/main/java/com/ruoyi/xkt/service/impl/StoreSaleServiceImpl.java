@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.ibatis.executor.BatchResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -109,16 +110,19 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     }
 
     /**
-     * 批量结算客户欠款
+     * 清除店铺顾客债务信息
+     * <p>
+     * 该方法旨在根据提供的店铺销售支付状态信息来清除或更新店铺顾客的债务记录
+     * 它通常在完成销售交易、债务偿还或其他需要调整顾客债务的情况下调用
      *
-     * @param payStatusDTO 入参
-     * @return int
+     * @param payStatusDTO 包含店铺销售支付状态的DTO对象，用于确定是否需要清除顾客债务
+     * @return 返回一个整数，表示受影响的债务记录数量或状态更新结果
      */
     @Override
     @Transactional
-    public void clearStoreCusDebt(StoreSalePayStatusDTO payStatusDTO) {
+    public Integer clearStoreCusDebt(StoreSalePayStatusDTO payStatusDTO) {
         List<StoreSale> storeSaleList = Optional.ofNullable(this.storeSaleMapper.selectList(new LambdaQueryWrapper<StoreSale>()
-                .in(StoreSale::getId, payStatusDTO.getStoreSaleIdList()).eq(StoreSale::getDelFlag, Constants.UNDELETED)))
+                        .in(StoreSale::getId, payStatusDTO.getStoreSaleIdList()).eq(StoreSale::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("没有找到对应的销售出库单!", HttpStatus.ERROR));
         // 勾选订单是否有已结算的
         List<StoreSale> settledList = storeSaleList.stream().filter(x -> Objects.equals(x.getPaymentStatus(), PaymentStatus.SETTLED.getValue())).collect(Collectors.toList());
@@ -126,7 +130,8 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
             throw new ServiceException("当前订单已结算!" + settledList.stream().map(StoreSale::getCode).collect(Collectors.toList()), HttpStatus.ERROR);
         }
         storeSaleList.forEach(x -> x.setPaymentStatus(PaymentStatus.SETTLED.getValue()));
-        this.storeSaleMapper.updateById(storeSaleList);
+        List<BatchResult> list = this.storeSaleMapper.updateById(storeSaleList);
+        return list.size();
     }
 
     /**
@@ -164,7 +169,6 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         this.storeProdStockService.updateStock(storeSale.getStoreId(), this.getStockDiffList(saleCountMap, -1), 1);
         return count;
     }
-
 
 
     /**
@@ -210,7 +214,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
                 .setSaleType(storeSaleDTO.getSaleType()).setStoreSaleId(storeSale.getId())).collect(Collectors.toList());
         this.storeSaleDetailMapper.insert(detailList);
         // 汇总编辑的存货总数量
-        final List<StoreSaleDetail> totalList = new ArrayList<StoreSaleDetail>(saleDetailList){{
+        final List<StoreSaleDetail> totalList = new ArrayList<StoreSaleDetail>(saleDetailList) {{
             addAll(detailList);
         }};
         // 先汇总当前这笔订单商品明细的销售数量，包括销售及退货 key： prodArtNum + storeProdId + storeProdColorId + colorName, value: map(key:size,value:count)
@@ -274,32 +278,9 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
 
 
     /**
-     * 批量删除档口销售出库
-     *
-     * @param storeSaleIds 需要删除的档口销售出库主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreSaleByStoreSaleIds(Long[] storeSaleIds) {
-        return storeSaleMapper.deleteStoreSaleByStoreSaleIds(storeSaleIds);
-    }
-
-
-    /**
-     * 查询档口销售出库列表
-     *
-     * @param storeSale 档口销售出库
-     * @return 档口销售出库集合
-     */
-    @Override
-    public List<StoreSale> selectStoreSaleList(StoreSale storeSale) {
-        return null;
-    }
-
-    /**
      * 获取库存变更列表
-     * @param saleCountMap 销售出库的map数量
+     *
+     * @param saleCountMap     销售出库的map数量
      * @param multiplierFactor 1 返回当前库存 -1 减少库存
      * @return List<StoreProdStockUpdateDTO>
      */

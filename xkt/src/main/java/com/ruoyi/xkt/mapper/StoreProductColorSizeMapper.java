@@ -2,6 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductColorSize;
+import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdColorSizeDTO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -63,5 +64,12 @@ public interface StoreProductColorSizeMapper extends BaseMapper<StoreProductColo
     public int deleteStoreProductColorSizeByStoreProdColorSizeIds(Long[] storeProdColorSizeIds);
 
     void updateDelFlagByStoreProdId(Long storeProdId);
+
+    /**
+     * 根据商品ID查询商品尺码列表
+     * @param storeProdId 档口商品ID
+     * @return List<StoreProdColorSizeDTO>
+     */
+    List<StoreProdColorSizeDTO> selectListByStoreProdId(Long storeProdId);
 
 }

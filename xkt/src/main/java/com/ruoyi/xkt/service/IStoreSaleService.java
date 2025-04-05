@@ -26,14 +26,6 @@ public interface IStoreSaleService {
     public StoreSaleDTO selectStoreSaleByStoreSaleId(Long storeSaleId);
 
     /**
-     * 查询档口销售出库列表
-     *
-     * @param storeSale 档口销售出库
-     * @return 档口销售出库集合
-     */
-    public List<StoreSale> selectStoreSaleList(StoreSale storeSale);
-
-    /**
      * 新增档口销售出库
      *
      * @param storeSaleDTO 档口销售出库
@@ -48,14 +40,6 @@ public interface IStoreSaleService {
      * @return 结果
      */
     public int updateStoreSale(StoreSaleDTO storeSaleDTO);
-
-    /**
-     * 批量删除档口销售出库
-     *
-     * @param storeSaleIds 需要删除的档口销售出库主键集合
-     * @return 结果
-     */
-    public int deleteStoreSaleByStoreSaleIds(Long[] storeSaleIds);
 
     /**
      * 删除档口销售出库信息
@@ -82,10 +66,14 @@ public interface IStoreSaleService {
     Page<StoreSalePageResDTO> page(StoreSalePageDTO pageDTO);
 
     /**
-     * 批量结算客户欠款
-     * @param payStatusDTO
-     * @return int
+     * 清除店铺顾客债务信息
+     *
+     * 该方法旨在根据提供的店铺销售支付状态信息来清除或更新店铺顾客的债务记录
+     * 它通常在完成销售交易、债务偿还或其他需要调整顾客债务的情况下调用
+     *
+     * @param payStatusDTO 包含店铺销售支付状态的DTO对象，用于确定是否需要清除顾客债务
+     * @return 返回一个整数，表示受影响的债务记录数量或状态更新结果
      */
-    void clearStoreCusDebt(StoreSalePayStatusDTO payStatusDTO);
+    Integer clearStoreCusDebt(StoreSalePayStatusDTO payStatusDTO);
 
 }

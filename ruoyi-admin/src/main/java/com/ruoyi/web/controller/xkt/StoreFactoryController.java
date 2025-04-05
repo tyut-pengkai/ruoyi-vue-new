@@ -58,7 +58,7 @@ public class StoreFactoryController extends XktBaseController {
     @ApiOperation(value = "修改档口合作工厂", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口合作工厂", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R edit(@Validated @RequestBody StoreFactoryVO storeFactoryVO) {
+    public R<Integer> edit(@Validated @RequestBody StoreFactoryVO storeFactoryVO) {
         return R.ok(storeFactoryService.updateStoreFactory(BeanUtil.toBean(storeFactoryVO, StoreFactoryDTO.class)));
     }
 
@@ -79,11 +79,8 @@ public class StoreFactoryController extends XktBaseController {
     @ApiOperation(value = "获取档口合作工厂详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}/{storeFactoryId}")
     public R<StoreFactoryVO> getInfo(@PathVariable("storeId") Long storeId, @PathVariable("storeFactoryId") Long storeFactoryId) {
-        StoreFactoryResDTO res = storeFactoryService.selectByStoreFacId(storeId ,storeFactoryId);
-        return ObjectUtils.isEmpty(res) ? R.ok() : R.ok(BeanUtil.toBean(res, StoreFactoryVO.class));
+        return R.ok(BeanUtil.toBean(storeFactoryService.selectByStoreFacId(storeId ,storeFactoryId), StoreFactoryVO.class));
     }
-
-
 
 
 

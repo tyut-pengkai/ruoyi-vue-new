@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.dto.storeProdColor;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 @Data
 public class StoreProdColorDTO {
 
+    @ApiModelProperty(name = "档口商品颜色ID")
+    private Long storeProdColorId;
     @ApiModelProperty(name = "档口颜色ID")
     private Long storeColorId;
     @ApiModelProperty(name = "颜色名称")

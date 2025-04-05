@@ -5,14 +5,13 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storeProdStock.StoreProdStockPageVO;
+import com.ruoyi.web.controller.xkt.vo.storeProdStock.StoreProdStockResVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdStock.StoreProdStockVO;
-import com.ruoyi.xkt.domain.StoreProductStock;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
 import com.ruoyi.xkt.service.IStoreProductStockService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,7 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,7 +52,7 @@ public class StoreProductStockController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:stock:list')")
     @ApiOperation(value = "查询档口库存列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
-    public R<Page> selectPage(@Validated @RequestBody StoreProdStockPageVO pageVO) {
+    public R<Page<StoreProdStockPageResDTO>> selectPage(@Validated @RequestBody StoreProdStockPageVO pageVO) {
         return R.ok(storeProdStockService.selectPage(BeanUtil.toBean(pageVO, StoreProdStockPageDTO.class)));
     }
 
@@ -87,8 +85,8 @@ public class StoreProductStockController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:stock:query')")
     @ApiOperation(value = "查询档口商品库存详情", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}/{storeProdStockId}")
-    public R getInfo(@PathVariable("storeId") Long storeId, @PathVariable("storeProdStockId") Long storeProdStockId) {
-        return R.ok(storeProdStockService.selectByStoreProdStockId(storeId, storeProdStockId));
+    public R<StoreProdStockResVO> getInfo(@PathVariable("storeId") Long storeId, @PathVariable("storeProdStockId") Long storeProdStockId) {
+        return R.ok(BeanUtil.toBean(storeProdStockService.selectByStoreProdStockId(storeId, storeProdStockId), StoreProdStockResVO.class));
     }
 
     /**
@@ -97,68 +95,8 @@ public class StoreProductStockController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:stock:query')")
     @ApiOperation(value = "根据货号查询档口商品库存", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}/prod-art-num/{prodArtNum}")
-    public R getInfo(@PathVariable("storeId") Long storeId, @PathVariable("prodArtNum") String prodArtNum) {
-        return R.ok(storeProdStockService.selectByStoreIdAndProdArtNum(storeId, prodArtNum));
+    public R<List<StoreProdStockResVO>> getInfo(@PathVariable("storeId") Long storeId, @PathVariable("prodArtNum") String prodArtNum) {
+        return R.ok(BeanUtil.copyToList(storeProdStockService.selectByStoreIdAndProdArtNum(storeId, prodArtNum), StoreProdStockResVO.class));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * 查询档口商品库存列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:stock:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(StoreProductStock storeProductStock) {
-        startPage();
-        List<StoreProductStock> list = storeProdStockService.selectStoreProductStockList(storeProductStock);
-        return getDataTable(list);
-    }
-
-    /**
-     * 导出档口商品库存列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:stock:export')")
-    @Log(title = "档口商品库存", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, StoreProductStock storeProductStock) {
-        List<StoreProductStock> list = storeProdStockService.selectStoreProductStockList(storeProductStock);
-        ExcelUtil<StoreProductStock> util = new ExcelUtil<StoreProductStock>(StoreProductStock.class);
-        util.exportExcel(response, list, "档口商品库存数据");
-    }
-
-
-    /**
-     * 新增档口商品库存
-     */
-    @PreAuthorize("@ss.hasPermi('system:stock:add')")
-    @Log(title = "档口商品库存", businessType = BusinessType.INSERT)
-    @PostMapping
-    public R add(@RequestBody StoreProductStock storeProductStock) {
-        return success(storeProdStockService.insertStoreProductStock(storeProductStock));
-    }
-
-
-
-    /**
-     * 删除档口商品库存
-     */
-    @PreAuthorize("@ss.hasPermi('system:stock:remove')")
-    @Log(title = "档口商品库存", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{storeProdStockIds}")
-    public R remove(@PathVariable Long[] storeProdStockIds) {
-        return success(storeProdStockService.deleteStoreProductStockByStoreProdStockIds(storeProdStockIds));
-    }
-
 
 }

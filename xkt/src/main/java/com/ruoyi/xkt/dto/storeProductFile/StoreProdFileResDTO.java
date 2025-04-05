@@ -22,7 +22,7 @@ public class StoreProdFileResDTO {
     @ApiModelProperty(name = "文件路径")
     private String fileUrl;
     @ApiModelProperty(name = "文件类型")
-    private String fileType;
+    private Integer fileType;
     @ApiModelProperty(name = "文件名称")
     private String fileName;
     @ApiModelProperty(name = "文件大小")

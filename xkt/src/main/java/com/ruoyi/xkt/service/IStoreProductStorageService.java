@@ -34,10 +34,10 @@ public interface IStoreProductStorageService {
     /**
      * 撤销档口商品入库
      *
-     * @param storeProdStorId 需要删除的档口商品入库主键集合
+     * @param storeProdStorageId 需要删除的档口商品入库主键集合
      * @return 结果
      */
-    public int deleteByStoreProdStorId(Long storeProdStorId);
+    public int deleteByStoreProdStorId(Long storeProdStorageId);
 
     /**
      * 分页查询

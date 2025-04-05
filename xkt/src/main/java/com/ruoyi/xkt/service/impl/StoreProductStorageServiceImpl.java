@@ -473,21 +473,21 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
     /**
      * 撤销档口商品入库
      *
-     * @param storeProdStorId 需要撤销档口商品入库主键
+     * @param storeProdStorageId 需要撤销档口商品入库主键
      * @return 结果
      */
     @Override
     @Transactional
-    public int deleteByStoreProdStorId(Long storeProdStorId) {
+    public int deleteByStoreProdStorId(Long storeProdStorageId) {
         // 档口商品入库
         StoreProductStorage storage = Optional.ofNullable(this.storageMapper.selectOne(new LambdaQueryWrapper<StoreProductStorage>()
-                        .eq(StoreProductStorage::getId, storeProdStorId).eq(StoreProductStorage::getDelFlag, Constants.UNDELETED)))
+                        .eq(StoreProductStorage::getId, storeProdStorageId).eq(StoreProductStorage::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品入库不存在!", HttpStatus.ERROR));
         storage.setDelFlag(Constants.DELETED);
         int count = this.storageMapper.updateById(storage);
         // 档口商品入库明细
         List<StoreProductStorageDetail> storageDetailList = storageDetailMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDetail>()
-                .eq(StoreProductStorageDetail::getStoreProdStorId, storeProdStorId).eq(StoreProductStorageDetail::getDelFlag, Constants.UNDELETED));
+                .eq(StoreProductStorageDetail::getStoreProdStorId, storeProdStorageId).eq(StoreProductStorageDetail::getDelFlag, Constants.UNDELETED));
         storageDetailList.forEach(x -> x.setDelFlag(Constants.DELETED));
         this.storageDetailMapper.updateById(storageDetailList);
         // 减少档口商品库存

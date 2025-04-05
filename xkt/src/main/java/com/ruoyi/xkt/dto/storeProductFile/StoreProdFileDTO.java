@@ -24,7 +24,7 @@ public class StoreProdFileDTO {
     @ApiModelProperty(name = "文件大小")
     private BigDecimal fileSize;
     @ApiModelProperty(name = "文件类型")
-    private String fileType;
+    private Integer fileType;
     @ApiModelProperty(name = "排序")
     private Integer orderNum;
 

@@ -105,7 +105,7 @@ public class StoreProdVO {
         private BigDecimal fileSize;
         @NotBlank(message = "文件类型不能为空!")
         @ApiModelProperty(name = "文件类型")
-        private String fileType;
+        private Integer fileType;
         @ApiModelProperty(name = "排序")
         @NotNull(message = "排序不能为空!")
         private Integer orderNum;
@@ -142,7 +142,7 @@ public class StoreProdVO {
         private Integer size;
         @NotBlank(message = "是否是标准尺码不能为空!")
         @ApiModelProperty(name = "是否是标准尺码")
-        private String standard;
+        private Integer standard;
     }
 
     @Data

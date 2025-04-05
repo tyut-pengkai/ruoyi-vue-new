@@ -71,9 +71,9 @@ public class StoreProductStorageController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:storage:remove')")
     @ApiOperation(value = "撤销档口商品入库", httpMethod = "DELETE", response = R.class)
     @Log(title = "撤销档口商品入库", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{storeProdStorId}")
-    public R remove(@PathVariable Long storeProdStorId) {
-        return R.ok(storeProdStorageService.deleteByStoreProdStorId(storeProdStorId));
+    @DeleteMapping("/{storeProdStorageId}")
+    public R remove(@PathVariable Long storeProdStorageId) {
+        return R.ok(storeProdStorageService.deleteByStoreProdStorId(storeProdStorageId));
     }
 
 

@@ -17,7 +17,6 @@ import com.ruoyi.xkt.service.IStoreProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -45,8 +44,8 @@ public class StoreProductController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:product:query')")
     @ApiOperation(value = "模糊查询档口商品", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy")
-    public R fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
-                                 @RequestParam("storeId") Long storeId) {
+    public R<List<StoreProdFuzzyResVO>> fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
+                                                            @RequestParam("storeId") Long storeId) {
         return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryList(storeId, prodArtNum), StoreProdFuzzyResVO.class));
     }
 
@@ -61,24 +60,12 @@ public class StoreProductController extends XktBaseController {
     }
 
     /**
-     * 导出档口商品列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:product:export')")
-    @Log(title = "档口商品", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, StoreProduct storeProduct) {
-        List<StoreProduct> list = storeProdService.selectStoreProductList(storeProduct);
-        ExcelUtil<StoreProduct> util = new ExcelUtil<StoreProduct>(StoreProduct.class);
-        util.exportExcel(response, list, "档口商品数据");
-    }
-
-    /**
      * 获取档口商品详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:product:query')")
     @ApiOperation(value = "获取档口商品详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeProdId}")
-    public R getInfo(@PathVariable("storeProdId") Long storeProdId) {
+    public R<StoreProdResVO> getInfo(@PathVariable("storeProdId") Long storeProdId) {
         return R.ok(BeanUtil.toBean(storeProdService.selectStoreProductByStoreProdId(storeProdId), StoreProdResVO.class));
     }
 
@@ -89,7 +76,7 @@ public class StoreProductController extends XktBaseController {
     @Log(title = "档口商品", businessType = BusinessType.INSERT)
     @ApiOperation(value = "新增档口商品", httpMethod = "POST", response = R.class)
     @PostMapping
-    public R add(@Validated @RequestBody StoreProdVO storeProdVO) {
+    public R<Integer> add(@Validated @RequestBody StoreProdVO storeProdVO) {
         return R.ok(storeProdService.insertStoreProduct(BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
 
@@ -100,7 +87,7 @@ public class StoreProductController extends XktBaseController {
     @ApiOperation(value = "修改档口商品", httpMethod = "PUT", response = R.class)
     @Log(title = "档口商品", businessType = BusinessType.UPDATE)
     @PutMapping("/{storeProdId}")
-    public R edit(@PathVariable Long storeProdId, @Validated @RequestBody StoreProdVO storeProdVO) {
+    public R<Integer> edit(@PathVariable Long storeProdId, @Validated @RequestBody StoreProdVO storeProdVO) {
         return R.ok(storeProdService.updateStoreProduct(storeProdId, BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
 
@@ -122,8 +109,21 @@ public class StoreProductController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:product:query')")
     @ApiOperation(value = "获取档口图片空间", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/pic-space/{storeId}")
-    public R getStoreProductPicSpace(@PathVariable("storeId") Long storeId) {
+    public R<StoreProdPicSpaceResVO> getStoreProductPicSpace(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeProdService.getStoreProductPicSpace(storeId), StoreProdPicSpaceResVO.class));
+    }
+
+
+    /**
+     * 导出档口商品列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:product:export')")
+    @Log(title = "档口商品", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, StoreProduct storeProduct) {
+        List<StoreProduct> list = storeProdService.selectStoreProductList(storeProduct);
+        ExcelUtil<StoreProduct> util = new ExcelUtil<StoreProduct>(StoreProduct.class);
+        util.exportExcel(response, list, "档口商品数据");
     }
 
 

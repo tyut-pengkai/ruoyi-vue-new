@@ -60,8 +60,7 @@ public class StoreProductDemandController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:demand:query')")
     @GetMapping(value = "/exists-quantity/{storeId}/{storeProdId}")
     public R<List<StoreProdDemandQuantityVO>> getStockAndProduceQuantity(@PathVariable("storeId") Long storeId, @PathVariable("storeProdId") Long storeProdId) {
-        List<StoreProdDemandQuantityDTO> list = storeProdDemandService.getStockAndProduceQuantity(storeId, storeProdId);
-        return CollectionUtils.isEmpty(list) ? R.ok() : R.ok(BeanUtil.copyToList(list, StoreProdDemandQuantityVO.class));
+        return  R.ok(BeanUtil.copyToList(storeProdDemandService.getStockAndProduceQuantity(storeId, storeProdId), StoreProdDemandQuantityVO.class));
     }
 
     /**
@@ -86,34 +85,6 @@ public class StoreProductDemandController extends XktBaseController {
     }
 
 
-
-
-
-
-
-    /**
-     * 查询档口商品需求单列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:demand:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(StoreProductDemand storeProductDemand) {
-        startPage();
-        List<StoreProductDemand> list = storeProdDemandService.selectStoreProductDemandList(storeProductDemand);
-        return getDataTable(list);
-    }
-
-    /**
-     * 导出档口商品需求单列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:demand:export')")
-    @Log(title = "档口商品需求单", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, StoreProductDemand storeProductDemand) {
-        List<StoreProductDemand> list = storeProdDemandService.selectStoreProductDemandList(storeProductDemand);
-        ExcelUtil<StoreProductDemand> util = new ExcelUtil<StoreProductDemand>(StoreProductDemand.class);
-        util.exportExcel(response, list, "档口商品需求单数据");
-    }
-
     /**
      * 获取档口商品需求单详细信息
      */
@@ -122,7 +93,6 @@ public class StoreProductDemandController extends XktBaseController {
     public R getInfo(@PathVariable("storeProdDemandId") Long storeProdDemandId) {
         return success(storeProdDemandService.selectStoreProductDemandByStoreProdDemandId(storeProdDemandId));
     }
-
 
 
     /**
