@@ -14,7 +14,6 @@ import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusFuzzyResDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageResDTO;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
 import com.ruoyi.xkt.mapper.StoreCustomerMapper;
 import com.ruoyi.xkt.service.IStoreCustomerService;
 import lombok.RequiredArgsConstructor;

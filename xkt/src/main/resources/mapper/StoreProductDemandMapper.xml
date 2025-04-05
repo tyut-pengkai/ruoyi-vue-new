@@ -97,5 +97,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
     </update>
 
+    <delete id="deleteDemandList" >
+        UPDATE store_product_demand SET del_flag = 2 WHERE id in
+        <foreach item="id" collection="deleteDemandIdList" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+
 
 </mapper>

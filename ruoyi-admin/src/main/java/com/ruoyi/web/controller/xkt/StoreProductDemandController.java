@@ -1,30 +1,21 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusPageVO;
 import com.ruoyi.web.controller.xkt.vo.storeProductDemand.*;
-import com.ruoyi.xkt.domain.StoreProductDemand;
-import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
 import com.ruoyi.xkt.dto.storeProductDemand.*;
 import com.ruoyi.xkt.service.IStoreProductDemandService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -41,22 +32,17 @@ public class StoreProductDemandController extends XktBaseController {
 
     final IStoreProductDemandService storeProdDemandService;
 
-
-    // TODO 入库单判断需求单是否存在
-    // TODO 入库单判断需求单是否存在
-    // TODO 入库单判断需求单是否存在
-    // TODO 入库单判断需求单是否存在
-
-
-    // TODO 删除需求单，若该需求单有已完成的入库单，则该需求单状态改为已完成，并将数量改为已完成的入库单数量
-    // TODO 删除需求单，若该需求单有已完成的入库单，则该需求单状态改为已完成，并将数量改为已完成的入库单数量
-    // TODO 删除需求单，若该需求单有已完成的入库单，则该需求单状态改为已完成，并将数量改为已完成的入库单数量
-    // TODO 删除需求单，若该需求单有已完成的入库单，则该需求单状态改为已完成，并将数量改为已完成的入库单数量
-
-
-    // TODO 点击安排生产，状态才会变成：生产中，若仅仅是由入库单来反推，则不能变更状态
-    // TODO 点击安排生产，状态才会变成：生产中，若仅仅是由入库单来反推，则不能变更状态
-    // TODO 点击安排生产，状态才会变成：生产中，若仅仅是由入库单来反推，则不能变更状态
+    /**
+     * 商品入库校验是否存在需求单
+     */
+    @PreAuthorize("@ss.hasPermi('system:demand:query')")
+    @ApiOperation(value = "商品入库校验是否存在需求单", httpMethod = "POST", response = R.class)
+    @Log(title = "商品入库校验是否存在需求单", businessType = BusinessType.INSERT)
+    @PostMapping("/verify")
+    public R<StoreProdDemandVerifyResVO> verifyDemandExist(@Validated @RequestBody StoreProdDemandVerifyVO demandVerifyVO) {
+        return R.ok(BeanUtil.toBean(storeProdDemandService
+                .verifyDemandExist(BeanUtil.toBean(demandVerifyVO, StoreProdDemandVerifyDTO.class)), StoreProdDemandVerifyResVO.class));
+    }
 
     /**
      * 根据货号获取所有颜色的库存数量、在产数量
@@ -65,7 +51,7 @@ public class StoreProductDemandController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:demand:query')")
     @GetMapping(value = "/exists-quantity/{storeId}/{storeProdId}")
     public R<List<StoreProdDemandQuantityVO>> getStockAndProduceQuantity(@PathVariable("storeId") Long storeId, @PathVariable("storeProdId") Long storeProdId) {
-        return  R.ok(BeanUtil.copyToList(storeProdDemandService.getStockAndProduceQuantity(storeId, storeProdId), StoreProdDemandQuantityVO.class));
+        return R.ok(BeanUtil.copyToList(storeProdDemandService.getStockAndProduceQuantity(storeId, storeProdId), StoreProdDemandQuantityVO.class));
     }
 
     /**
@@ -98,39 +84,22 @@ public class StoreProductDemandController extends XktBaseController {
     @PutMapping
     public R<Integer> updateWorkingStatus(@Validated @RequestBody StoreProdDemandWorkingVO workingVO) {
         return R.ok(storeProdDemandService.updateWorkingStatus(BeanUtil.toBean(workingVO, StoreProdDemandWorkingDTO.class)));
+
+        // TODO 是否需要导出excel表格
+        // TODO 是否需要导出excel表格
+        // TODO 是否需要导出excel表格
+
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * 获取档口商品需求单详细信息
-     */
-    @PreAuthorize("@ss.hasPermi('system:demand:query')")
-    @GetMapping(value = "/{storeProdDemandId}")
-    public R getInfo(@PathVariable("storeProdDemandId") Long storeProdDemandId) {
-        return success(storeProdDemandService.selectStoreProductDemandByStoreProdDemandId(storeProdDemandId));
-    }
-
-
-
 
     /**
      * 删除档口商品需求单
      */
     @PreAuthorize("@ss.hasPermi('system:demand:remove')")
-    @Log(title = "档口商品需求单", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{storeProdDemandIds}")
-    public R remove(@PathVariable Long[] storeProdDemandIds) {
-        return success(storeProdDemandService.deleteStoreProductDemandByStoreProdDemandIds(storeProdDemandIds));
+    @ApiOperation(value = "删除档口商品需求单", httpMethod = "DELETE", response = R.class)
+    @Log(title = "删除档口商品需求单", businessType = BusinessType.DELETE)
+    @DeleteMapping("")
+    public R<Integer> remove(@Validated @RequestBody StoreProdDemandDeleteVO deleteVO) {
+        return R.ok(storeProdDemandService.deleteByStoreProdDemandIds(BeanUtil.toBean(deleteVO, StoreProdDemandDeleteDTO.class)));
     }
+
 }

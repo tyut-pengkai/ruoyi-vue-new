@@ -12,7 +12,6 @@ import com.ruoyi.xkt.domain.StoreProductBarcodeMatch;
 import com.ruoyi.xkt.dto.storeProdBarcodeMatch.BarcodeMatchDTO;
 import com.ruoyi.xkt.service.IStoreProductBarcodeMatchService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +41,6 @@ public class StoreProductBarcodeMatchController extends XktBaseController {
     public R updateBarcodeMatch(@Validated @RequestBody BarcodeMatchVO barcodeMatchVO) {
         return success(barcodeMatchService.updateBarcodeMatch(BeanUtil.toBean(barcodeMatchVO, BarcodeMatchDTO.class)));
     }
-
 
 
     /**

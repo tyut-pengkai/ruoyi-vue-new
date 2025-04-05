@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.xkt.domain.StoreProductDemand;
 import com.ruoyi.xkt.dto.storeProductDemand.*;
 
 import java.util.List;
@@ -13,53 +12,14 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface IStoreProductDemandService {
-    /**
-     * 查询档口商品需求单
-     *
-     * @param storeProdDemandId 档口商品需求单主键
-     * @return 档口商品需求单
-     */
-    public StoreProductDemand selectStoreProductDemandByStoreProdDemandId(Long storeProdDemandId);
-
-    /**
-     * 查询档口商品需求单列表
-     *
-     * @param storeProductDemand 档口商品需求单
-     * @return 档口商品需求单集合
-     */
-    public List<StoreProductDemand> selectStoreProductDemandList(StoreProductDemand storeProductDemand);
-
-    /**
-     * 新增档口商品需求单
-     *
-     * @param storeProductDemand 档口商品需求单
-     * @return 结果
-     */
-    public int insertStoreProductDemand(StoreProductDemand storeProductDemand);
-
-    /**
-     * 修改档口商品需求单
-     *
-     * @param storeProductDemand 档口商品需求单
-     * @return 结果
-     */
-    public int updateStoreProductDemand(StoreProductDemand storeProductDemand);
 
     /**
      * 批量删除档口商品需求单
      *
-     * @param storeProdDemandIds 需要删除的档口商品需求单主键集合
+     * @param deleteDTO 需要删除的档口商品需求单主键集合
      * @return 结果
      */
-    public int deleteStoreProductDemandByStoreProdDemandIds(Long[] storeProdDemandIds);
-
-    /**
-     * 删除档口商品需求单信息
-     *
-     * @param storeProdDemandId 档口商品需求单主键
-     * @return 结果
-     */
-    public int deleteStoreProductDemandByStoreProdDemandId(Long storeProdDemandId);
+    public int deleteByStoreProdDemandIds(StoreProdDemandDeleteDTO deleteDTO);
 
     /**
      * 获取指定门店及商品的库存和生产数量
@@ -70,7 +30,6 @@ public interface IStoreProductDemandService {
      * @return 返回一个列表，包含门店商品的库存和生产数量信息的DTO对象
      */
     List<StoreProdDemandQuantityDTO> getStockAndProduceQuantity(Long storeId, Long storeProdId);
-
 
     /**
      * 创建需求订单
@@ -99,5 +58,15 @@ public interface IStoreProductDemandService {
      * @return
      */
     Integer updateWorkingStatus(StoreProdDemandWorkingDTO workingDTO);
+
+    /**
+     * 校验产品需求是否存在
+     * 该方法用于验证给定的产品需求信息，在库存中是否存在有效的匹配
+     * 主要用于在进行产品需求处理前，确保需求是可满足的或者已存在的
+     *
+     * @param demandVerifyDTO 包含需求验证信息的DTO对象，用于传递需求校验所需的参数
+     * @return 返回一个包含校验结果的DTO对象，包括是否存在以及相关的验证信息
+     */
+    StoreProdDemandVerifyResDTO verifyDemandExist(StoreProdDemandVerifyDTO demandVerifyDTO);
 
 }

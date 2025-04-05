@@ -172,7 +172,24 @@ public class Constants
             "org.springframework", "org.apache", "com.ruoyi.common.utils.file", "com.ruoyi.common.config", "com.ruoyi.generator" };
 
     public static final String UNDELETED = "0";
-
     public static final String DELETED = "2";
+
+    public static final Integer SIZE_30 = 30;
+    public static final Integer SIZE_31 = 31;
+    public static final Integer SIZE_32 = 32;
+    public static final Integer SIZE_33 = 33;
+    public static final Integer SIZE_34 = 34;
+    public static final Integer SIZE_35 = 35;
+    public static final Integer SIZE_36 = 36;
+    public static final Integer SIZE_37 = 37;
+    public static final Integer SIZE_38 = 38;
+    public static final Integer SIZE_39 = 39;
+    public static final Integer SIZE_40 = 40;
+    public static final Integer SIZE_41 = 41;
+    public static final Integer SIZE_42 = 42;
+    public static final Integer SIZE_43 = 43;
+
+
+
 
 }

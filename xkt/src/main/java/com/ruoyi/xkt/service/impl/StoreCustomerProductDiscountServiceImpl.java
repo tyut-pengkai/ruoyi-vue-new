@@ -85,7 +85,6 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
     }
 
 
-
     /**
      * 查询档口客户优惠
      *
@@ -149,6 +148,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
 
     /**
      * 新增档口客户
+     *
      * @param cusProdDisDTO 新增档口客户入参
      * @return StoreCustomer
      */

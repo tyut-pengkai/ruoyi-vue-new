@@ -14,7 +14,6 @@ import com.ruoyi.xkt.service.IStoreCustomerProductDiscountService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -46,12 +45,6 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     public R<Integer> edit(@Validated @RequestBody StoreCusProdDiscountVO cusProdDisVO) {
         return R.ok(storeCusProdDiscountSvc.updateStoreCusProdDiscount(BeanUtil.toBean(cusProdDisVO, StoreCusProdDiscountDTO.class)));
     }
-
-
-
-
-
-
 
 
     /**
@@ -95,7 +88,6 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     public R add(@RequestBody StoreCustomerProductDiscount storeCustomerProductDiscount) {
         return success(storeCusProdDiscountSvc.insertStoreCustomerProductDiscount(storeCustomerProductDiscount));
     }
-
 
 
     /**

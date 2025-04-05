@@ -13,10 +13,10 @@ import com.ruoyi.xkt.domain.StoreProductFile;
 import com.ruoyi.xkt.domain.StoreProductStock;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockResDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
 import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.mapper.StoreProductFileMapper;
 import com.ruoyi.xkt.mapper.StoreProductStockMapper;
@@ -136,7 +136,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     /**
      * 清空库存
      *
-     * @param storeId 档口ID
+     * @param storeId          档口ID
      * @param storeProdStockId 清空库存
      * @return int
      */
@@ -155,8 +155,8 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     /**
      * 调整库存
      *
-     * @param storeId     档口ID
-     * @param updateStockList 库存更新diff list  要包含正负数
+     * @param storeId          档口ID
+     * @param updateStockList  库存更新diff list  要包含正负数
      * @param multiplierFactor 乘积因子 0 直接调整库存，将库存更新为页面输入的数量 1 不变数量
      * @return int
      */
@@ -319,8 +319,9 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
 
     /**
      * 通过数量diff增减或扣减库存
-     * @param stock 数据库库存表
-     * @param adjustDTO diff数据
+     *
+     * @param stock      数据库库存表
+     * @param adjustDTO  diff数据
      * @param isInCrease true 增加库存 false 减少库存
      * @return StoreProductStock
      */

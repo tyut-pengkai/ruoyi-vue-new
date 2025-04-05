@@ -101,16 +101,10 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
     @Transactional(readOnly = true)
     public StoreFactoryResDTO selectByStoreFacId(Long storeId, Long storeFacId) {
         StoreFactory storeFactory = Optional.ofNullable(this.storeFactoryMapper.selectOne(new LambdaQueryWrapper<StoreFactory>()
-                .eq(StoreFactory::getId, storeFacId).eq(StoreFactory::getDelFlag, Constants.UNDELETED).eq(StoreFactory::getStoreId, storeId)))
+                        .eq(StoreFactory::getId, storeFacId).eq(StoreFactory::getDelFlag, Constants.UNDELETED).eq(StoreFactory::getStoreId, storeId)))
                 .orElseThrow(() -> new ServiceException("档口合作工厂不存在!", HttpStatus.ERROR));
         return BeanUtil.toBean(storeFactory, StoreFactoryResDTO.class);
     }
-
-
-
-
-
-
 
 
     /**
@@ -124,8 +118,6 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
     public List<StoreFactory> selectStoreFactoryList(StoreFactory storeFactory) {
         return storeFactoryMapper.selectStoreFactoryList(storeFactory);
     }
-
-
 
 
     /**

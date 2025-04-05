@@ -35,6 +35,8 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.ruoyi.common.constant.Constants.*;
+
 /**
  * 档口商品入库Service业务层处理
  *
@@ -244,34 +246,34 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         Map<Long, Map<Integer, Integer>> latestDeductSizeQuantityMap = new LinkedHashMap<>();
         latestDeductMap.forEach((storeProdDemandDetailId, latestDeductList) -> {
             Map<Integer, Integer> sizeQuantityMap = new LinkedHashMap<>();
-            Integer size30Quantity = latestDeductList.stream().filter(x -> x.getSize() == 30).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(30, size30Quantity);
-            Integer size31Quantity = latestDeductList.stream().filter(x -> x.getSize() == 31).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(31, size31Quantity);
-            Integer size32Quantity = latestDeductList.stream().filter(x -> x.getSize() == 32).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(32, size32Quantity);
-            Integer size33Quantity = latestDeductList.stream().filter(x -> x.getSize() == 33).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(33, size33Quantity);
-            Integer size34Quantity = latestDeductList.stream().filter(x -> x.getSize() == 34).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(34, size34Quantity);
-            Integer size35Quantity = latestDeductList.stream().filter(x -> x.getSize() == 35).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(35, size35Quantity);
-            Integer size36Quantity = latestDeductList.stream().filter(x -> x.getSize() == 36).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(36, size36Quantity);
-            Integer size37Quantity = latestDeductList.stream().filter(x -> x.getSize() == 37).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(37, size37Quantity);
-            Integer size38Quantity = latestDeductList.stream().filter(x -> x.getSize() == 38).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(38, size38Quantity);
-            Integer size39Quantity = latestDeductList.stream().filter(x -> x.getSize() == 39).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(39, size39Quantity);
-            Integer size40Quantity = latestDeductList.stream().filter(x -> x.getSize() == 40).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(40, size40Quantity);
-            Integer size41Quantity = latestDeductList.stream().filter(x -> x.getSize() == 41).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(41, size41Quantity);
-            Integer size42Quantity = latestDeductList.stream().filter(x -> x.getSize() == 42).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(42, size42Quantity);
-            Integer size43Quantity = latestDeductList.stream().filter(x -> x.getSize() == 43).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-            sizeQuantityMap.put(43, size43Quantity);
+            Integer size30Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_30)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_30, size30Quantity);
+            Integer size31Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_31)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_31, size31Quantity);
+            Integer size32Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_32)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_32, size32Quantity);
+            Integer size33Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_33)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_33, size33Quantity);
+            Integer size34Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_34)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_34, size34Quantity);
+            Integer size35Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_35)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_35, size35Quantity);
+            Integer size36Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_36)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_36, size36Quantity);
+            Integer size37Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_37)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_37, size37Quantity);
+            Integer size38Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_38)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_38, size38Quantity);
+            Integer size39Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_39)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_39, size39Quantity);
+            Integer size40Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_40)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_40, size40Quantity);
+            Integer size41Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_41)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_41, size41Quantity);
+            Integer size42Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_42)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_42, size42Quantity);
+            Integer size43Quantity = latestDeductList.stream().filter(x -> Objects.equals(x.getSize(), SIZE_43)).map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            sizeQuantityMap.put(SIZE_43, size43Quantity);
             latestDeductSizeQuantityMap.put(storeProdDemandDetailId, sizeQuantityMap);
         });
         // 筛选出所有和本次需求单抵扣有关的需求单列表
@@ -407,46 +409,46 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         for (StoreProductStorageDetail storageDetail : detailList) {
             Map<Integer, Integer> sizeStorageMap = new LinkedHashMap<>();
             if (ObjectUtils.isNotEmpty(storageDetail.getSize30())) {
-                sizeStorageMap.put(30, storageDetail.getSize30());
+                sizeStorageMap.put(SIZE_30, storageDetail.getSize30());
             }
             if (ObjectUtils.isNotEmpty(storageDetail.getSize31())) {
-                sizeStorageMap.put(31, storageDetail.getSize31());
+                sizeStorageMap.put(SIZE_31, storageDetail.getSize31());
             }
             if (ObjectUtils.isNotEmpty(storageDetail.getSize32())) {
-                sizeStorageMap.put(32, storageDetail.getSize32());
+                sizeStorageMap.put(SIZE_32, storageDetail.getSize32());
             }
             if (ObjectUtils.isNotEmpty(storageDetail.getSize33())) {
-                sizeStorageMap.put(33, storageDetail.getSize33());
+                sizeStorageMap.put(SIZE_33, storageDetail.getSize33());
             }
             if (ObjectUtils.isNotEmpty(storageDetail.getSize34())) {
-                sizeStorageMap.put(34, storageDetail.getSize34());
+                sizeStorageMap.put(SIZE_34, storageDetail.getSize34());
             }
             if (ObjectUtils.isNotEmpty(storageDetail.getSize35())) {
-                sizeStorageMap.put(35, storageDetail.getSize35());
+                sizeStorageMap.put(SIZE_35, storageDetail.getSize35());
             }
             if (ObjectUtils.isNotEmpty(storageDetail.getSize36())) {
-                sizeStorageMap.put(36, storageDetail.getSize36());
+                sizeStorageMap.put(SIZE_36, storageDetail.getSize36());
             }
             if (ObjectUtils.isNotEmpty(storageDetail.getSize37())) {
-                sizeStorageMap.put(37, storageDetail.getSize37());
+                sizeStorageMap.put(SIZE_37, storageDetail.getSize37());
             }
             if (ObjectUtils.isNotEmpty(storageDetail.getSize38())) {
-                sizeStorageMap.put(38, storageDetail.getSize38());
+                sizeStorageMap.put(SIZE_38, storageDetail.getSize38());
             }
             if (ObjectUtils.isNotEmpty(storageDetail.getSize39())) {
-                sizeStorageMap.put(39, storageDetail.getSize39());
+                sizeStorageMap.put(SIZE_39, storageDetail.getSize39());
             }
             if (ObjectUtils.isNotEmpty(storageDetail.getSize40())) {
-                sizeStorageMap.put(40, storageDetail.getSize40());
+                sizeStorageMap.put(SIZE_40, storageDetail.getSize40());
             }
             if (ObjectUtils.isNotEmpty(storageDetail.getSize41())) {
-                sizeStorageMap.put(41, storageDetail.getSize41());
+                sizeStorageMap.put(SIZE_41, storageDetail.getSize41());
             }
             if (ObjectUtils.isNotEmpty(storageDetail.getSize42())) {
-                sizeStorageMap.put(42, storageDetail.getSize42());
+                sizeStorageMap.put(SIZE_42, storageDetail.getSize42());
             }
             if (ObjectUtils.isNotEmpty(storageDetail.getSize43())) {
-                sizeStorageMap.put(43, storageDetail.getSize43());
+                sizeStorageMap.put(SIZE_43, storageDetail.getSize43());
             }
             if (MapUtils.isNotEmpty(sizeStorageMap)) {
                 storageQuantityMap.put(storageDetail.getStoreProdColorId(), new LinkedHashMap<Long, Map<Integer, Integer>>() {{
@@ -524,46 +526,46 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
                 size43Deduct = this.handleSize43RequireQuantity(size43Deduct, size43DemandMap, demandDetail);
             }
             if (MapUtils.isNotEmpty(size30DemandMap)) {
-                sizeRequireMap.put(30, size30DemandMap);
+                sizeRequireMap.put(SIZE_30, size30DemandMap);
             }
             if (MapUtils.isNotEmpty(size31DemandMap)) {
-                sizeRequireMap.put(31, size31DemandMap);
+                sizeRequireMap.put(SIZE_31, size31DemandMap);
             }
             if (MapUtils.isNotEmpty(size32DemandMap)) {
-                sizeRequireMap.put(32, size32DemandMap);
+                sizeRequireMap.put(SIZE_32, size32DemandMap);
             }
             if (MapUtils.isNotEmpty(size33DemandMap)) {
-                sizeRequireMap.put(33, size33DemandMap);
+                sizeRequireMap.put(SIZE_33, size33DemandMap);
             }
             if (MapUtils.isNotEmpty(size34DemandMap)) {
-                sizeRequireMap.put(34, size34DemandMap);
+                sizeRequireMap.put(SIZE_34, size34DemandMap);
             }
             if (MapUtils.isNotEmpty(size35DemandMap)) {
-                sizeRequireMap.put(35, size35DemandMap);
+                sizeRequireMap.put(SIZE_35, size35DemandMap);
             }
             if (MapUtils.isNotEmpty(size36DemandMap)) {
-                sizeRequireMap.put(36, size36DemandMap);
+                sizeRequireMap.put(SIZE_36, size36DemandMap);
             }
             if (MapUtils.isNotEmpty(size37DemandMap)) {
-                sizeRequireMap.put(37, size37DemandMap);
+                sizeRequireMap.put(SIZE_37, size37DemandMap);
             }
             if (MapUtils.isNotEmpty(size38DemandMap)) {
-                sizeRequireMap.put(38, size38DemandMap);
+                sizeRequireMap.put(SIZE_38, size38DemandMap);
             }
             if (MapUtils.isNotEmpty(size39DemandMap)) {
-                sizeRequireMap.put(39, size39DemandMap);
+                sizeRequireMap.put(SIZE_39, size39DemandMap);
             }
             if (MapUtils.isNotEmpty(size40DemandMap)) {
-                sizeRequireMap.put(40, size40DemandMap);
+                sizeRequireMap.put(SIZE_40, size40DemandMap);
             }
             if (MapUtils.isNotEmpty(size41DemandMap)) {
-                sizeRequireMap.put(41, size41DemandMap);
+                sizeRequireMap.put(SIZE_41, size41DemandMap);
             }
             if (MapUtils.isNotEmpty(size42DemandMap)) {
-                sizeRequireMap.put(42, size42DemandMap);
+                sizeRequireMap.put(SIZE_42, size42DemandMap);
             }
             if (MapUtils.isNotEmpty(size43DemandMap)) {
-                sizeRequireMap.put(43, size43DemandMap);
+                sizeRequireMap.put(SIZE_43, size43DemandMap);
             }
             if (MapUtils.isNotEmpty(sizeRequireMap)) {
                 unDeductMap.put(storeProdColorId, sizeRequireMap);

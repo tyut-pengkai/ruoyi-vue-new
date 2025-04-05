@@ -17,7 +17,6 @@ import com.ruoyi.xkt.service.IStoreFactoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -79,9 +78,8 @@ public class StoreFactoryController extends XktBaseController {
     @ApiOperation(value = "获取档口合作工厂详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}/{storeFactoryId}")
     public R<StoreFactoryVO> getInfo(@PathVariable("storeId") Long storeId, @PathVariable("storeFactoryId") Long storeFactoryId) {
-        return R.ok(BeanUtil.toBean(storeFactoryService.selectByStoreFacId(storeId ,storeFactoryId), StoreFactoryVO.class));
+        return R.ok(BeanUtil.toBean(storeFactoryService.selectByStoreFacId(storeId, storeFactoryId), StoreFactoryVO.class));
     }
-
 
 
     /**
