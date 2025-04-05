@@ -35,44 +35,44 @@ public class StoreProdResDTO {
     private Long storeId;
     @ApiModelProperty("档口商品名称")
     private String prodName;
-    @ApiModelProperty(name = "商品分类ID")
+    @ApiModelProperty(value = "商品分类ID")
     private Long prodCateId;
-    @ApiModelProperty(name = "工厂货号")
+    @ApiModelProperty(value = "工厂货号")
     private String factoryArtNum;
-    @ApiModelProperty(name = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
-    @ApiModelProperty(name = "商品标题")
+    @ApiModelProperty(value = "商品标题")
     private String prodTitle;
-    @ApiModelProperty(name = "商品重量")
+    @ApiModelProperty(value = "商品重量")
     private BigDecimal prodWeight;
-    @ApiModelProperty(name = "生产价格")
+    @ApiModelProperty(value = "生产价格")
     private Integer producePrice;
-    @ApiModelProperty(name = "大小码加价")
+    @ApiModelProperty(value = "大小码加价")
     private Integer overPrice;
-    @ApiModelProperty(name = "发货时效")
+    @ApiModelProperty(value = "发货时效")
     private Integer deliveryTime;
-    @ApiModelProperty(name = "上架方式")
+    @ApiModelProperty(value = "上架方式")
     private Integer listingWay;
-    @ApiModelProperty(name = "定时发货时间(精确到小时)")
+    @ApiModelProperty(value = "定时发货时间(精确到小时)")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date listingWaySchedule;
-    @ApiModelProperty(name = "档口文件列表")
+    @ApiModelProperty(value = "档口文件列表")
     private List<StoreProdFileResDTO> fileList;
-    @ApiModelProperty(name = "档口类目属性列表")
+    @ApiModelProperty(value = "档口类目属性列表")
     private List<StoreProdCateAttrDTO> cateAttrList;
-    @ApiModelProperty(name = "档口宿友颜色列表")
+    @ApiModelProperty(value = "档口宿友颜色列表")
     private List<StoreColorDTO> allColorList;
-    @ApiModelProperty(name = "档口颜色列表")
+    @ApiModelProperty(value = "档口颜色列表")
     private List<StoreProdColorDTO> colorList;
-    @ApiModelProperty(name = "档口商品尺码列表")
+    @ApiModelProperty(value = "档口商品尺码列表")
     private List<StoreProdColorSizeDTO> sizeList;
-    @ApiModelProperty(name = "档口颜色价格列表")
+    @ApiModelProperty(value = "档口颜色价格列表")
     private List<StoreProdColorPriceDTO> priceList;
-    @ApiModelProperty(name = "档口服务承诺")
+    @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcDTO svc;
-    @ApiModelProperty(name = "详情内容")
+    @ApiModelProperty(value = "详情内容")
     private StoreProdDetailDTO detail;
-    @ApiModelProperty(name = "档口生产工艺信息")
+    @ApiModelProperty(value = "档口生产工艺信息")
     private StoreProdProcessDTO process;
 
 }

@@ -18,18 +18,18 @@ import javax.validation.constraints.NotNull;
 @Data
 public class StoreProdDemandPageDTO extends BasePageDTO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     @NotNull(message = "档口ID不能为空")
     private Long storeId;
-    @ApiModelProperty(name = "需求状态" ,notes = "1 待生产 2 生产中 3 生产完成")
+    @ApiModelProperty(value = "需求状态" ,notes = "1 待生产 2 生产中 3 生产完成")
     private Integer demandStatus;
-    @ApiModelProperty(name = "档口工厂ID")
+    @ApiModelProperty(value = "档口工厂ID")
     private Long storeFactoryId;
-    @ApiModelProperty(name = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
-    @ApiModelProperty(name = "备注")
+    @ApiModelProperty(value = "备注")
     private String remark;
-    @ApiModelProperty(name = "是否紧急单", notes = "0=正常,1=紧急")
+    @ApiModelProperty(value = "是否紧急单", notes = "0=正常,1=紧急")
     private Integer emergency;
 
 }

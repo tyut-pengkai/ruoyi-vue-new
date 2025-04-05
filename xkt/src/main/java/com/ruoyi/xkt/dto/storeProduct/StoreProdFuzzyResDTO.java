@@ -24,7 +24,7 @@ public class StoreProdFuzzyResDTO {
     private Long storeProdId;
     @ApiModelProperty("档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
     @ApiModelProperty("商品下颜色列表")
     private List<StoreProdFuzzyColorResDTO> colorList;

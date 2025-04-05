@@ -22,23 +22,23 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreQuickFuncDTO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "档口勾选的快捷功能")
+    @ApiModelProperty(value = "档口勾选的快捷功能")
     List<DetailDTO> checkedList;
 
     @Data
     @Accessors(chain = true)
     public static class DetailDTO {
-        @ApiModelProperty(name = "菜单名称")
+        @ApiModelProperty(value = "菜单名称")
         private String menuName;
-        @ApiModelProperty(name = "显示顺序")
+        @ApiModelProperty(value = "显示顺序")
         private Integer orderNum;
-        @ApiModelProperty(name = "路由地址")
+        @ApiModelProperty(value = "路由地址")
         private String path;
-        @ApiModelProperty(name = "组件路径")
+        @ApiModelProperty(value = "组件路径")
         private String component;
-        @ApiModelProperty(name = "菜单图标")
+        @ApiModelProperty(value = "菜单图标")
         private String icon;
     }
 

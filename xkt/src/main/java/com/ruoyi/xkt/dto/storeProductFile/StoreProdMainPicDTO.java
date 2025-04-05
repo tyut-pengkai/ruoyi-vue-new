@@ -15,7 +15,7 @@ public class StoreProdMainPicDTO {
 
     @ApiModelProperty("档口商品名称")
     private Long storeProdId;
-    @ApiModelProperty(name = "文件路径")
+    @ApiModelProperty(value = "文件路径")
     private String fileUrl;
 
 }

@@ -41,7 +41,7 @@ public class StoreProdResVO {
     private Integer overPrice;
     @ApiModelProperty(value = "发货时效")
     private Integer deliveryTime;
-    @ApiModelProperty(value = "上架方式")
+    @ApiModelProperty(value = "上架方式 1 立即上架 2 定时上架")
     private Integer listingWay;
     @ApiModelProperty(value = "定时发货时间(精确到小时)")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
@@ -73,7 +73,7 @@ public class StoreProdResVO {
         private String fileUrl;
         @ApiModelProperty(value = "文件大小")
         private BigDecimal fileSize;
-        @ApiModelProperty(value = "文件类型")
+        @ApiModelProperty(value = "文件类型 1商品主图  2商品主图视频 3下载图片包")
         private Integer fileType;
         @ApiModelProperty(value = "排序")
         private Integer orderNum;
@@ -95,7 +95,7 @@ public class StoreProdResVO {
         private Long storeColorId;
         @ApiModelProperty(value = "商品尺码")
         private Integer size;
-        @ApiModelProperty(value = "是否是标准尺码")
+        @ApiModelProperty(value = "是否是标准尺码 1是 2不是")
         private Integer standard;
     }
 

@@ -20,16 +20,16 @@ import java.util.Date;
 @Data
 public class StoreProdStoragePageDTO extends BasePageDTO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
-    @ApiModelProperty(name = "入库类型")
+    @ApiModelProperty(value = "入库类型")
     private Integer storageType;
-    @ApiModelProperty(name = "销售开始时间")
+    @ApiModelProperty(value = "销售开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date createTimeStart;
-    @ApiModelProperty(name = "销售结束时间")
+    @ApiModelProperty(value = "销售结束时间")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date createTimeEnd;
 

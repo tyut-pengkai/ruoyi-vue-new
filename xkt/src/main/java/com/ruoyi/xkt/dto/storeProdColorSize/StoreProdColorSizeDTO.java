@@ -13,13 +13,13 @@ import lombok.Data;
 @Data
 public class StoreProdColorSizeDTO {
 
-    @ApiModelProperty(name = "档口商品颜色尺码ID")
+    @ApiModelProperty(value = "档口商品颜色尺码ID")
     private Long storeProdColorSizeId;
-    @ApiModelProperty(name = "档口颜色ID")
+    @ApiModelProperty(value = "档口颜色ID")
     private Long storeColorId;
-    @ApiModelProperty(name = "商品尺码")
+    @ApiModelProperty(value = "商品尺码")
     private Integer size;
-    @ApiModelProperty(name = "是否是标准尺码")
+    @ApiModelProperty(value = "是否是标准尺码")
     private Integer standard;
 
 }

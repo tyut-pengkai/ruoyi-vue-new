@@ -18,9 +18,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class StoreFactoryPageDTO extends BasePageDTO {
 
-    @ApiModelProperty(name = "工厂名称")
+    @ApiModelProperty(value = "工厂名称")
     private String facName;
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     @NotNull(message = "档口ID不能为空")
     private Long storeId;
 

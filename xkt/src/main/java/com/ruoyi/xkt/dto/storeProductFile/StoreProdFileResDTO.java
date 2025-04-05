@@ -17,17 +17,17 @@ public class StoreProdFileResDTO {
 
     @ApiModelProperty("档口商品名称")
     private Long storeProdId;
-    @ApiModelProperty(name = "系统文件ID")
+    @ApiModelProperty(value = "系统文件ID")
     private Long fileId;
-    @ApiModelProperty(name = "文件路径")
+    @ApiModelProperty(value = "文件路径")
     private String fileUrl;
-    @ApiModelProperty(name = "文件类型")
+    @ApiModelProperty(value = "文件类型")
     private Integer fileType;
-    @ApiModelProperty(name = "文件名称")
+    @ApiModelProperty(value = "文件名称")
     private String fileName;
-    @ApiModelProperty(name = "文件大小")
+    @ApiModelProperty(value = "文件大小")
     private BigDecimal fileSize;
-    @ApiModelProperty(name = "排序")
+    @ApiModelProperty(value = "排序")
     private Integer orderNum;
 
 }

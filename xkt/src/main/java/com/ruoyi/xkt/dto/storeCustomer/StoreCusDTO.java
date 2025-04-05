@@ -18,13 +18,13 @@ import javax.validation.constraints.NotNull;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreCusDTO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "档口客户ID")
+    @ApiModelProperty(value = "档口客户ID")
     private Long storeCusId;
-    @ApiModelProperty(name = "客户名称")
+    @ApiModelProperty(value = "客户名称")
     private String cusName;
-    @ApiModelProperty(name = "客户联系电话")
+    @ApiModelProperty(value = "客户联系电话")
     private String phone;
     @ApiModelProperty("备注")
     private String remark;

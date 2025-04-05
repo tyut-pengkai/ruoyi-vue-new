@@ -18,13 +18,13 @@ import javax.validation.constraints.NotNull;
 @Data
 public class StoreProdPageDTO extends BasePageDTO {
 
-    @ApiModelProperty(name = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
-    @ApiModelProperty(name = "商品分类ID")
+    @ApiModelProperty(value = "商品分类ID")
     private Long prodCateId;
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "商品状态")
+    @ApiModelProperty(value = "商品状态")
     private Integer prodStatus;
 
 }

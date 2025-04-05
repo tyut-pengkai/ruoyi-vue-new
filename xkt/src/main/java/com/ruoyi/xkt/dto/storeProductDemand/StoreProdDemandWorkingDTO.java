@@ -15,11 +15,11 @@ import java.util.List;
 @Data
 public class StoreProdDemandWorkingDTO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "档口需求明细ID")
+    @ApiModelProperty(value = "档口需求明细ID")
     private List<Long> storeProdDemandDetailIdList;
-    @ApiModelProperty(name = "是否导出生产单")
+    @ApiModelProperty(value = "是否导出生产单")
     private Boolean download;
 
 }

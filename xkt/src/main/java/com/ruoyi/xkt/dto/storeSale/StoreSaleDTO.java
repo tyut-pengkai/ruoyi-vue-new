@@ -19,48 +19,48 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreSaleDTO {
 
-    @ApiModelProperty(name = "是否为返单", notes = "true 是返单  false 不是返单")
+    @ApiModelProperty(value = "是否为返单", notes = "true 是返单  false 不是返单")
     private Boolean refund;
     @ApiModelProperty("档口销售ID")
     private Long storeSaleId;
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "档口客户ID")
+    @ApiModelProperty(value = "档口客户ID")
     private Long storeCusId;
-    @ApiModelProperty(name = "档口客户名称")
+    @ApiModelProperty(value = "档口客户名称")
     private String storeCusName;
-    @ApiModelProperty(name = "销售类型（销售 1、退货 2、销售/退货 3）")
+    @ApiModelProperty(value = "销售类型（销售 1、退货 2、销售/退货 3）")
     private Integer saleType;
-    @ApiModelProperty(name = "支付方式（支付宝、微信、现金、欠款）1ALIPAY 2WECHAT_PAY 3CASH 4DEBT")
+    @ApiModelProperty(value = "支付方式（支付宝、微信、现金、欠款）1ALIPAY 2WECHAT_PAY 3CASH 4DEBT")
     private Integer payWay;
-    @ApiModelProperty(name = "结款状态（已结清、欠款） 1、2")
+    @ApiModelProperty(value = "结款状态（已结清、欠款） 1、2")
     private Integer paymentStatus;
-    @ApiModelProperty(name = "销售详情列表")
+    @ApiModelProperty(value = "销售详情列表")
     private List<SaleDetailVO> detailList;
 
     @Data
     public static class SaleDetailVO {
-        @ApiModelProperty(name = "档口商品ID")
+        @ApiModelProperty(value = "档口商品ID")
         private Long storeProdId;
-        @ApiModelProperty(name = "档口商品颜色ID")
+        @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeProdColorId;
-        @ApiModelProperty(name = "颜色")
+        @ApiModelProperty(value = "颜色")
         private String colorName;
-        @ApiModelProperty(name = "尺码")
+        @ApiModelProperty(value = "尺码")
         private Integer size;
-        @ApiModelProperty(name = "商品货号")
+        @ApiModelProperty(value = "商品货号")
         private String prodArtNum;
-        @ApiModelProperty(name = "销售条码")
+        @ApiModelProperty(value = "销售条码")
         private String sns;
-        @ApiModelProperty(name = "销售单价")
+        @ApiModelProperty(value = "销售单价")
         private BigDecimal price;
-        @ApiModelProperty(name = "给客户优惠后单价")
+        @ApiModelProperty(value = "给客户优惠后单价")
         private BigDecimal discountedPrice;
-        @ApiModelProperty(name = "数量")
+        @ApiModelProperty(value = "数量")
         private Integer quantity;
-        @ApiModelProperty(name = "总金额")
+        @ApiModelProperty(value = "总金额")
         private BigDecimal amount;
-        @ApiModelProperty(name = "其它优惠")
+        @ApiModelProperty(value = "其它优惠")
         private BigDecimal otherDiscount;
     }
 

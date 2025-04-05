@@ -15,9 +15,9 @@ import lombok.Data;
 @Builder
 public class StoreProdDemandSimpleDTO {
 
-    @ApiModelProperty(name = "档口需求详情ID")
+    @ApiModelProperty(value = "档口需求详情ID")
     private Long storeProdDemandDetailId;
-    @ApiModelProperty(name = "档口需求code")
+    @ApiModelProperty(value = "档口需求code")
     private String code;
 
 }

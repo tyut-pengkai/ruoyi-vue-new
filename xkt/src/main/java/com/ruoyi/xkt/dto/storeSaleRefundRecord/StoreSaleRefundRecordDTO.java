@@ -23,17 +23,17 @@ public class StoreSaleRefundRecordDTO {
 
     @ApiModelProperty("返单ID")
     private Long storeSaleRefundRecordId;
-    @ApiModelProperty(name = "单据编号")
+    @ApiModelProperty(value = "单据编号")
     private String code;
-    @ApiModelProperty(name = "档口销售客户名称")
+    @ApiModelProperty(value = "档口销售客户名称")
     private String storeCusName;
     @JsonFormat(pattern = "HH:mm", timezone = "GMT+8")
     private Date createTime;
-    @ApiModelProperty(name = "支付方式（支付宝、微信、现金、欠款）ALIPAY WECHAT_PAY CASH DEBT")
+    @ApiModelProperty(value = "支付方式（支付宝、微信、现金、欠款）ALIPAY WECHAT_PAY CASH DEBT")
     private Integer payWay;
-    @ApiModelProperty(name = "数量")
+    @ApiModelProperty(value = "数量")
     private Integer quantity;
-    @ApiModelProperty(name = "总金额")
+    @ApiModelProperty(value = "总金额")
     private BigDecimal amount;
 
 }

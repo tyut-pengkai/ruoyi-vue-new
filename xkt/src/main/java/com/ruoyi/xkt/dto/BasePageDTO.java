@@ -13,9 +13,9 @@ import lombok.Data;
 @Data
 public class BasePageDTO {
 
-    @ApiModelProperty(name = "pageNum")
+    @ApiModelProperty(value = "pageNum")
     private int pageNum;
-    @ApiModelProperty(name = "pageSize")
+    @ApiModelProperty(value = "pageSize")
     private int pageSize;
 
 }

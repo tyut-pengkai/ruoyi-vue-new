@@ -13,49 +13,49 @@ import lombok.Data;
 @Data
 public class StoreProdProcessDTO {
 
-    @ApiModelProperty(name = "档口商品ID")
+    @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
-    @ApiModelProperty(name = "鞋型")
+    @ApiModelProperty(value = "鞋型")
     private String shoeType;
-    @ApiModelProperty(name = "楦号")
+    @ApiModelProperty(value = "楦号")
     private String shoeSize;
-    @ApiModelProperty(name = "主皮")
+    @ApiModelProperty(value = "主皮")
     private String mainSkin;
-    @ApiModelProperty(name = "主皮用量")
+    @ApiModelProperty(value = "主皮用量")
     private String mainSkinUsage;
-    @ApiModelProperty(name = "配皮")
+    @ApiModelProperty(value = "配皮")
     private String matchSkin;
-    @ApiModelProperty(name = "配皮用量")
+    @ApiModelProperty(value = "配皮用量")
     private String matchSkinUsage;
-    @ApiModelProperty(name = "领口")
+    @ApiModelProperty(value = "领口")
     private String neckline;
-    @ApiModelProperty(name = "膛底")
+    @ApiModelProperty(value = "膛底")
     private String insole;
-    @ApiModelProperty(name = "扣件/拉头")
+    @ApiModelProperty(value = "扣件/拉头")
     private String fastener;
-    @ApiModelProperty(name = "辅料")
+    @ApiModelProperty(value = "辅料")
     private String shoeAccessories;
-    @ApiModelProperty(name = "包头")
+    @ApiModelProperty(value = "包头")
     private String toeCap;
-    @ApiModelProperty(name = "包边")
+    @ApiModelProperty(value = "包边")
     private String edgeBinding;
-    @ApiModelProperty(name = "中大底")
+    @ApiModelProperty(value = "中大底")
     private String midOutsole;
-    @ApiModelProperty(name = "防水台")
+    @ApiModelProperty(value = "防水台")
     private String platformSole;
-    @ApiModelProperty(name = "中底厂家编码")
+    @ApiModelProperty(value = "中底厂家编码")
     private String midsoleFactoryCode;
-    @ApiModelProperty(name = "外底厂家编码")
+    @ApiModelProperty(value = "外底厂家编码")
     private String outsoleFactoryCode;
-    @ApiModelProperty(name = "跟厂编码")
+    @ApiModelProperty(value = "跟厂编码")
     private String heelFactoryCode;
-    @ApiModelProperty(name = "配料")
+    @ApiModelProperty(value = "配料")
     private String components;
-    @ApiModelProperty(name = "第二底料")
+    @ApiModelProperty(value = "第二底料")
     private String secondSoleMaterial;
-    @ApiModelProperty(name = "第二配料")
+    @ApiModelProperty(value = "第二配料")
     private String secondUpperMaterial;
-    @ApiModelProperty(name = "自定义")
+    @ApiModelProperty(value = "自定义")
     private String customAttr;
 
 }

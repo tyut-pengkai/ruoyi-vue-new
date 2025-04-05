@@ -17,15 +17,15 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class StoreProdFileDTO {
 
-    @ApiModelProperty(name = "文件名称")
+    @ApiModelProperty(value = "文件名称")
     private String fileName;
-    @ApiModelProperty(name = "文件路径")
+    @ApiModelProperty(value = "文件路径")
     private String fileUrl;
-    @ApiModelProperty(name = "文件大小")
+    @ApiModelProperty(value = "文件大小")
     private BigDecimal fileSize;
-    @ApiModelProperty(name = "文件类型")
+    @ApiModelProperty(value = "文件类型")
     private Integer fileType;
-    @ApiModelProperty(name = "排序")
+    @ApiModelProperty(value = "排序")
     private Integer orderNum;
 
 }

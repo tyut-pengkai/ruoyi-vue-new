@@ -16,9 +16,9 @@ import lombok.EqualsAndHashCode;
 @Data
 public class StoreCusPageDTO extends BasePageDTO {
 
-    @ApiModelProperty(name = "客户名称")
+    @ApiModelProperty(value = "客户名称")
     private String cusName;
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
 
 }

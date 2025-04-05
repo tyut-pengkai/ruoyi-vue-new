@@ -13,13 +13,13 @@ import lombok.Data;
 @Data
 public class StoreProdSvcDTO {
 
-    @ApiModelProperty(name = "大小码及定制款可退")
+    @ApiModelProperty(value = "大小码及定制款可退")
     private Integer customRefund;
-    @ApiModelProperty(name = "30天包退")
+    @ApiModelProperty(value = "30天包退")
     private Integer thirtyDayRefund;
-    @ApiModelProperty(name = "一件起批")
+    @ApiModelProperty(value = "一件起批")
     private Integer oneBatchSale;
-    @ApiModelProperty(name = "退款72小时到账")
+    @ApiModelProperty(value = "退款72小时到账")
     private Integer refundWithinThreeDay;
 
 }

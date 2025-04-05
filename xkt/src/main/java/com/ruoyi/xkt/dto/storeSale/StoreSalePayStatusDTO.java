@@ -18,7 +18,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreSalePayStatusDTO {
 
-    @ApiModelProperty(name = "结算的storeSaleId列表")
+    @ApiModelProperty(value = "结算的storeSaleId列表")
     private List<Long> storeSaleIdList;
 
 }

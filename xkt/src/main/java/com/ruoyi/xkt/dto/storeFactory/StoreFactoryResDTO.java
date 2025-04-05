@@ -19,16 +19,16 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreFactoryResDTO {
 
-    @ApiModelProperty(name = "档口工厂ID")
+    @ApiModelProperty(value = "档口工厂ID")
     @JsonProperty("storeFactoryId")
     private Long id;
-    @ApiModelProperty(name = "store.id")
+    @ApiModelProperty(value = "store.id")
     private Long storeId;
-    @ApiModelProperty(name = "工厂名称")
+    @ApiModelProperty(value = "工厂名称")
     private String facName;
-    @ApiModelProperty(name = "工厂地址")
+    @ApiModelProperty(value = "工厂地址")
     private String facAddress;
-    @ApiModelProperty(name = "工厂联系电话")
+    @ApiModelProperty(value = "工厂联系电话")
     private String facPhone;
     @ApiModelProperty("备注")
     private String remark;

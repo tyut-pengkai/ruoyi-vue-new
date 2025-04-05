@@ -20,28 +20,28 @@ import java.util.List;
 @Accessors(chain = true)
 public class StoreProdPageResDTO {
 
-    @ApiModelProperty(name = "档口商品ID", value = "档口商品ID")
+    @ApiModelProperty(value = "档口商品ID" )
     private Long storeProdId;
-    @ApiModelProperty(name = "档口ID", value = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "档口商品主图url", value = "档口商品主图url")
+    @ApiModelProperty(value = "档口商品主图url")
     private String mainPicUrl;
-    @ApiModelProperty(name = "商品货号", value = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
-    @ApiModelProperty(name = "颜色", value = "颜色")
+    @ApiModelProperty(value = "颜色")
     private String colorName;
 
     private Long prodCateId;
 
-    @ApiModelProperty(name = "分类类目", value = "分类类目")
+    @ApiModelProperty(value = "分类类目")
     private String prodCateName;
-    @ApiModelProperty(name = "标准尺码", value = "标准尺码")
+    @ApiModelProperty(value = "标准尺码")
     private List<Integer> standardSizeList;
-    @ApiModelProperty(name = "销售金额（元）", value = "销售金额（元）")
+    @ApiModelProperty(value = "销售金额（元）")
     private BigDecimal price;
-    @ApiModelProperty(name = "状态", value = "状态:1未发布，2在售，3尾货，4已下架，5已删除")
+    @ApiModelProperty(value = "状态:1未发布，2在售，3尾货，4已下架，5已删除")
     private Integer prodStatus;
-    @ApiModelProperty(name = "创建时间", value = "创建时间")
+    @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 

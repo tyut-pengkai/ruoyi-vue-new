@@ -13,7 +13,7 @@ import lombok.Data;
 @Data
 public class StoreProdDetailDTO {
 
-    @ApiModelProperty(name = "详情内容")
+    @ApiModelProperty(value = "详情内容")
     private String detail;
 
 }

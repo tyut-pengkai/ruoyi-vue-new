@@ -15,9 +15,9 @@ import java.util.List;
 @Data
 public class StoreProdCateAttrDTO {
 
-    @ApiModelProperty(name = "系统设置类目")
+    @ApiModelProperty(value = "系统设置类目")
     private String dictType;
-    @ApiModelProperty(name = "系统设置类目值")
+    @ApiModelProperty(value = "系统设置类目值")
     private String dictValue;
 
 }

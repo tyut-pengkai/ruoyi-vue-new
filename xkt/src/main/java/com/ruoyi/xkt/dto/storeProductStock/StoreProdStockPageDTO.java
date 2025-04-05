@@ -18,9 +18,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class StoreProdStockPageDTO extends BasePageDTO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
 
 }

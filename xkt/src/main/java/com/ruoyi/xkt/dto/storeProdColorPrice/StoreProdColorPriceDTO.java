@@ -16,9 +16,9 @@ import java.math.BigDecimal;
 @Data
 public class StoreProdColorPriceDTO {
 
-    @ApiModelProperty(name = "档口商品颜色ID")
+    @ApiModelProperty(value = "档口商品颜色ID")
     private Long storeColorId;
-    @ApiModelProperty(name = "档口商品定价")
+    @ApiModelProperty(value = "档口商品定价")
     private BigDecimal price;
 
 }

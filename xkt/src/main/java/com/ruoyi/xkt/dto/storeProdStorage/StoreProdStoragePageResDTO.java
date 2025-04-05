@@ -17,21 +17,21 @@ import java.util.Date;
 @Data
 public class StoreProdStoragePageResDTO {
 
-    @ApiModelProperty(name = "storeProdStorageId")
+    @ApiModelProperty(value = "storeProdStorageId")
     private Long storeProdStorageId;
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "单据编号")
+    @ApiModelProperty(value = "单据编号")
     private String code;
-    @ApiModelProperty(name = "入库类型")
+    @ApiModelProperty(value = "入库类型")
     private Integer storageType;
-    @ApiModelProperty(name = "数量")
+    @ApiModelProperty(value = "数量")
     private Integer quantity;
-    @ApiModelProperty(name = "生产成本金额")
+    @ApiModelProperty(value = "生产成本金额")
     private BigDecimal produceAmount;
-    @ApiModelProperty(name = "操作人名称")
+    @ApiModelProperty(value = "操作人名称")
     private String operatorName;
-    @ApiModelProperty(name = "创建时间")
+    @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 

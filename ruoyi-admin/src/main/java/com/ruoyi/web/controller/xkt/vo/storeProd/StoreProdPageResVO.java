@@ -29,7 +29,7 @@ public class StoreProdPageResVO {
     private List<Integer> standardSizeList;
     @ApiModelProperty(value = "销售金额（元）")
     private BigDecimal price;
-    @ApiModelProperty(value = "状态")
+    @ApiModelProperty(value = "状态 1.未发布 2. 在售 3. 尾货 4.已下架 4. 已删除")
     private Integer prodStatus;
     @ApiModelProperty(value = "创建时间")
     private Date createTime;

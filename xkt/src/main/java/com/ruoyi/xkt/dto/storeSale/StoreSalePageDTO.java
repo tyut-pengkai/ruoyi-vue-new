@@ -21,22 +21,22 @@ import java.util.Date;
 public class StoreSalePageDTO extends BasePageDTO {
 
     @NotNull(message = "档口ID不能为空")
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
-    @ApiModelProperty(name = "客户名称")
+    @ApiModelProperty(value = "客户名称")
     private String cusName;
-    @ApiModelProperty(name = "销售类型", notes = "销售、退货、销售/退货 1 2 3")
+    @ApiModelProperty(value = "销售类型", notes = "销售、退货、销售/退货 1 2 3")
     private Integer saleType;
-    @ApiModelProperty(name = "结款状态")
+    @ApiModelProperty(value = "结款状态")
     private Integer paymentStatus;
-    @ApiModelProperty(name = "支付方式")
+    @ApiModelProperty(value = "支付方式")
     private Integer payWay;
-    @ApiModelProperty(name = "销售开始时间")
+    @ApiModelProperty(value = "销售开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date createTimeStart;
-    @ApiModelProperty(name = "销售结束时间")
+    @ApiModelProperty(value = "销售结束时间")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date createTimeEnd;
 
