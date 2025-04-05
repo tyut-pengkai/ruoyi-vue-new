@@ -27,12 +27,12 @@ public class StoreSalePageVO extends BasePageVO {
     private String prodArtNum;
     @ApiModelProperty(name = "客户名称")
     private String cusName;
-    @ApiModelProperty(name = "销售类型", notes = "普通销售、销售退货、普通销售/销售退货 GENERAL_SALE SALE_REFUND SALE_AND_REFUND")
-    private String saleType;
+    @ApiModelProperty(name = "销售类型", notes = "销售、退货、销售/退货 1 2 3")
+    private Integer saleType;
     @ApiModelProperty(name = "结款状态")
-    private String paymentStatus;
+    private Integer paymentStatus;
     @ApiModelProperty(name = "支付方式")
-    private String payWay;
+    private Integer payWay;
     @ApiModelProperty(name = "销售开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date createTimeStart;

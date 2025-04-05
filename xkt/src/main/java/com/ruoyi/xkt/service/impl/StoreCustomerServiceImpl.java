@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
@@ -50,7 +51,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
     @Transactional(readOnly = true)
     public List<StoreCusFuzzyResDTO> fuzzyQueryList(Long storeId, String cusName) {
         LambdaQueryWrapper<StoreCustomer> queryWrapper = new LambdaQueryWrapper<StoreCustomer>()
-                .eq(StoreCustomer::getStoreId, storeId).eq(StoreCustomer::getDelFlag, "0");
+                .eq(StoreCustomer::getStoreId, storeId).eq(StoreCustomer::getDelFlag, Constants.UNDELETED);
         if (StringUtils.isNotBlank(cusName)) {
             queryWrapper.like(StoreCustomer::getCusName, cusName);
         }
@@ -69,9 +70,9 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
     @Transactional
     public void deleteStoreCus(Long storeCusId) {
         StoreCustomer storeCus = Optional.ofNullable(this.storeCusMapper.selectOne(new LambdaQueryWrapper<StoreCustomer>()
-                        .eq(StoreCustomer::getId, storeCusId).eq(StoreCustomer::getDelFlag, "0")))
+                        .eq(StoreCustomer::getId, storeCusId).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口客户不存在!"));
-        storeCus.setDelFlag("2");
+        storeCus.setDelFlag(Constants.DELETED);
         this.storeCusMapper.updateById(storeCus);
     }
 
@@ -79,7 +80,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
     @Transactional(readOnly = true)
     public Page<StoreCusPageResDTO> selectPage(StoreCusPageDTO storeCusPageDTO) {
         LambdaQueryWrapper<StoreCustomer> queryWrapper = new LambdaQueryWrapper<StoreCustomer>()
-                .eq(StoreCustomer::getStoreId, storeCusPageDTO.getStoreId()).eq(StoreCustomer::getDelFlag, "0");
+                .eq(StoreCustomer::getStoreId, storeCusPageDTO.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED);
         if (StringUtils.isNotBlank(storeCusPageDTO.getCusName())) {
             queryWrapper.like(StoreCustomer::getCusName, storeCusPageDTO.getCusName());
         }
@@ -95,7 +96,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
     public int updateStoreCus(StoreCusDTO storeCusDTO) {
         Optional.ofNullable(storeCusDTO.getStoreCusId()).orElseThrow(() -> new ServiceException("档口客户ID不可为空!"));
         StoreCustomer storeCus = Optional.ofNullable(this.storeCusMapper.selectOne(new LambdaQueryWrapper<StoreCustomer>()
-                        .eq(StoreCustomer::getId, storeCusDTO.getStoreCusId()).eq(StoreCustomer::getDelFlag, "0")))
+                        .eq(StoreCustomer::getId, storeCusDTO.getStoreCusId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口客户不存在!"));
         BeanUtil.copyProperties(storeCusDTO, storeCus);
         return storeCusMapper.updateStoreCustomer(storeCus);
@@ -112,7 +113,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
     @Transactional(readOnly = true)
     public StoreCusDTO selectStoreCustomerByStoreCusId(Long storeCusId) {
         StoreCustomer storeCus = Optional.ofNullable(storeCusMapper.selectOne(new LambdaQueryWrapper<StoreCustomer>()
-                        .eq(StoreCustomer::getId, storeCusId).eq(StoreCustomer::getDelFlag, "0")))
+                        .eq(StoreCustomer::getId, storeCusId).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口客户不存在!", HttpStatus.ERROR));
         return BeanUtil.toBean(storeCus, StoreCusDTO.class);
     }

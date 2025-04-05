@@ -29,12 +29,12 @@ public class StoreSaleDTO {
     private Long storeCusId;
     @ApiModelProperty(name = "档口客户名称")
     private String storeCusName;
-    @ApiModelProperty(name = "销售类型（普通销售 GENERAL_SALE、销售退货 SALE_REFUND、普通销售/销售退货 SALE_AND_REFUND）")
-    private String saleType;
-    @ApiModelProperty(name = "支付方式（支付宝、微信、现金、欠款）ALIPAY WECHAT_PAY CASH DEBT")
-    private String payWay;
-    @ApiModelProperty(name = "结款状态（已结清、欠款） SETTLED、DEBT")
-    private String paymentStatus;
+    @ApiModelProperty(name = "销售类型（销售 1、退货 2、销售/退货 3）")
+    private Integer saleType;
+    @ApiModelProperty(name = "支付方式（支付宝、微信、现金、欠款）1ALIPAY 2WECHAT_PAY 3CASH 4DEBT")
+    private Integer payWay;
+    @ApiModelProperty(name = "结款状态（已结清、欠款） 1、2")
+    private Integer paymentStatus;
     @ApiModelProperty(name = "销售详情列表")
     private List<SaleDetailVO> detailList;
 

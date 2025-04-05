@@ -39,10 +39,10 @@ public class StoreProductStorage extends XktBaseEntity {
     @Excel(name = "入库CODE")
     private String code;
     /**
-     * 入库类型 生产入库 PROD_STORAGE  其它入库 OTHER_STORAGE  维修入库 REPAIR_STORAGE
+     * 入库类型 生产入库 1 PROD_STORAGE  其它入库 2 OTHER_STORAGE  维修入库 3 REPAIR_STORAGE
      */
     @Excel(name = "入库类型")
-    private String storageType;
+    private Integer storageType;
     /**
      * 数量
      */

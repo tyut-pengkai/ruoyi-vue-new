@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.StoreQuickFunction;
 import com.ruoyi.xkt.dto.storeQuickFunction.StoreQuickFuncDTO;
@@ -31,7 +32,7 @@ public class StoreQuickFunctionServiceImpl implements IStoreQuickFunctionService
     @Transactional(readOnly = true)
     public List<StoreQuickFuncDTO.DetailDTO> getCheckedMenuList(Long storeId) {
         List<StoreQuickFunction> storeQuickFuncList = storeQuickFuncMapper.selectList(new LambdaQueryWrapper<StoreQuickFunction>()
-                .eq(StoreQuickFunction::getStoreId,storeId).eq(StoreQuickFunction::getDelFlag,"0"));
+                .eq(StoreQuickFunction::getStoreId,storeId).eq(StoreQuickFunction::getDelFlag, Constants.UNDELETED));
         return CollectionUtils.isEmpty(storeQuickFuncList) ? new ArrayList<>() : BeanUtil.copyToList(storeQuickFuncList, StoreQuickFuncDTO.DetailDTO.class);
     }
 

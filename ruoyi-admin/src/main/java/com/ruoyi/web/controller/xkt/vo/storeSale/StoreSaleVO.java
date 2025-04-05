@@ -35,14 +35,14 @@ public class StoreSaleVO {
     @ApiModelProperty(name = "档口客户名称")
     @NotBlank(message = "档口客户名称不能为空!")
     private String storeCusName;
-    @ApiModelProperty(name = "销售类型（普通销售 GENERAL_SALE、销售退货 SALE_REFUND、普通销售/销售退货 SALE_AND_REFUND）")
+    @ApiModelProperty(name = "销售类型（销售 1、退货 2、销售/退货 3）")
     @NotBlank(message = "销售类型不能为空!")
-    private String saleType;
+    private Integer saleType;
     @NotBlank(message = "支付方式不能为空!")
     @ApiModelProperty(name = "支付方式（支付宝、微信、现金、欠款）ALIPAY WECHAT_PAY CASH DEBT")
-    private String payWay;
+    private Integer payWay;
     @ApiModelProperty(name = "结款状态（已结清、欠款） SETTLED、DEBT")
-    private String paymentStatus;
+    private Integer paymentStatus;
     @NotNull(message = "销售详情列表不能为空!")
     @Valid
     @ApiModelProperty(name = "销售详情列表")

@@ -74,11 +74,11 @@ public class StoreSale extends XktBaseEntity {
      * 支付方式（支付宝、微信、现金、欠款）
      */
     @Excel(name = "支付方式", readConverterExp = "支=付宝、微信、现金、欠款")
-    private String payWay;
+    private Integer payWay;
     /**
      * 结款状态（已结清、欠款） SETTLED、DEBT
      */
-    private String paymentStatus;
+    private Integer paymentStatus;
     /**
      * 操作人ID
      */

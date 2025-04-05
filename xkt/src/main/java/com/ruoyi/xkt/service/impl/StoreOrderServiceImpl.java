@@ -172,7 +172,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 .eq(XktBaseEntity::getDelFlag, Constants.UNDELETED));
         Assert.notNull(productColorPrice, "无法获取商品定价");
         BigDecimal price = productColorPrice.getPrice();
-        if ("0".equals(storeProductColorSize.getStandard())) {
+        if (ProductSizeStatus.UN_STANDARD.getValue().equals(storeProductColorSize.getStandard())) {
             //非标准尺码
             StoreProduct product = storeProductMapper.selectById(storeProductColorSize.getStoreProdId());
             BigDecimal addPrice = BigDecimal.valueOf(NumberUtil.nullToZero(product.getOverPrice()));

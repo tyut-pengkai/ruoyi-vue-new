@@ -28,7 +28,7 @@ public class StoreProdStorageVO {
     private Long storeId;
     @NotBlank(message = "入库类型不能为空!")
     @ApiModelProperty(name = "入库类型")
-    private String storageType;
+    private Integer storageType;
     @Valid
     @NotNull(message = "商品入库明细列表不能为空!")
     @ApiModelProperty(name = "商品入库明细列表")

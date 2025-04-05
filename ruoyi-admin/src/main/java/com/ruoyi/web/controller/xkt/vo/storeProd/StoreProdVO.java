@@ -54,10 +54,10 @@ public class StoreProdVO {
     private Integer deliveryTime;
     @ApiModelProperty(name = "上架方式")
     @NotBlank(message = "上架方式不能为空!")
-    private String listingWay;
+    private Integer listingWay;
     @ApiModelProperty(name = "商品状态")
     @NotBlank(message = "商品状态不能为空!")
-    private String prodStatus;
+    private Integer prodStatus;
     @ApiModelProperty(name = "定时发货时间(精确到小时)")
     @JsonFormat(pattern = "yyyy-MM-dd HH")
     private Date listingWaySchedule;

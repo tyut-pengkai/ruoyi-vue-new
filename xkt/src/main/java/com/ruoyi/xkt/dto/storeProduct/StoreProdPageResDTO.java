@@ -40,7 +40,7 @@ public class StoreProdPageResDTO {
     @ApiModelProperty(name = "销售金额（元）")
     private BigDecimal price;
     @ApiModelProperty(name = "状态")
-    private String prodStatus;
+    private Integer prodStatus;
     @ApiModelProperty(name = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;

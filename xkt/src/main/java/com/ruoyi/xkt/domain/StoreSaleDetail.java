@@ -52,10 +52,10 @@ public class StoreSaleDetail extends XktBaseEntity {
      */
     private Integer size;
     /**
-     * 销售类型（普通销售、销售退货）
+     * 销售类型（1销售、2退货、3销售/退货）
      */
     @Excel(name = "销售类型", readConverterExp = "普=通销售、销售退货")
-    private String saleType;
+    private Integer saleType;
     /**
      * 商品货号
      */

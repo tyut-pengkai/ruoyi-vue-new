@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
@@ -16,6 +17,7 @@ import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockResDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
+import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.mapper.StoreProductFileMapper;
 import com.ruoyi.xkt.mapper.StoreProductStockMapper;
 import com.ruoyi.xkt.mapper.SysFileMapper;
@@ -56,7 +58,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
         // 提取查询结果中的商店产品ID列表
         List<Long> storeProdIdList = stockList.stream().map(StoreProdStockPageResDTO::getStoreProdId).collect(Collectors.toList());
         // 查找排名第一个商品主图列表
-        List<StoreProdMainPicDTO> mainPicList = this.storeProdFileMapper.selectMainPicByStoreProdIdList(storeProdIdList, "MAIN_PIC", 1);
+        List<StoreProdMainPicDTO> mainPicList = this.storeProdFileMapper.selectMainPicByStoreProdIdList(storeProdIdList, FileType.MAIN_PIC.getValue(), 1);
         Map<Long, String> mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
                 .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
         // 为每个产品设置主图URL和标准尺码列表
@@ -76,7 +78,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     public List<StoreProdStockResDTO> selectByStoreIdAndProdArtNum(Long storeId, String prodArtNum) {
         List<StoreProductStock> stockList = this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
                 .eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getProdArtNum, prodArtNum)
-                .eq(StoreProductStock::getDelFlag, "0"));
+                .eq(StoreProductStock::getDelFlag, Constants.UNDELETED));
         return CollectionUtils.isEmpty(stockList) ? new ArrayList<>()
                 : stockList.stream().map(x -> BeanUtil.toBean(x, StoreProdStockResDTO.class).setStoreProdStockId(x.getId())).collect(Collectors.toList());
     }
@@ -93,7 +95,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     public int increaseStock(Long storeId, List<StoreProdStockDTO> increaseStockList) {
         // 根据关键信息找到已存在的库存
         List<StoreProductStock> existStockList = this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
-                .eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getDelFlag, "0")
+                .eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getDelFlag, Constants.UNDELETED)
                 .in(StoreProductStock::getStoreProdId, increaseStockList.stream().map(StoreProdStockDTO::getStoreProdId).collect(Collectors.toList()))
                 .in(StoreProductStock::getStoreProdColorId, increaseStockList.stream().map(StoreProdStockDTO::getStoreProdColorId).collect(Collectors.toList())));
         // 已存在的档口商品颜色库存map
@@ -121,7 +123,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     public int decreaseStock(Long storeId, List<StoreProdStockDTO> decreaseStockList) {
         // 根据关键信息找到已存在的库存
         List<StoreProductStock> existStockList = this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
-                .eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getDelFlag, "0")
+                .eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getDelFlag, Constants.UNDELETED)
                 .in(StoreProductStock::getStoreProdId, decreaseStockList.stream().map(StoreProdStockDTO::getStoreProdId).collect(Collectors.toList()))
                 .in(StoreProductStock::getStoreProdColorId, decreaseStockList.stream().map(StoreProdStockDTO::getStoreProdColorId).collect(Collectors.toList())));
         // 待扣减的库存map
@@ -142,7 +144,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     @Transactional
     public int clearStockToZero(Long storeId, Long storeProdStockId) {
         StoreProductStock stock = Optional.ofNullable(this.storeProdStockMapper.selectOne(new LambdaQueryWrapper<StoreProductStock>()
-                        .eq(StoreProductStock::getId, storeProdStockId).eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getDelFlag, "0")))
+                        .eq(StoreProductStock::getId, storeProdStockId).eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品库存不存在!", HttpStatus.ERROR));
         stock.setSize30(0).setSize31(0).setSize32(0).setSize33(0).setSize34(0).setSize35(0).setSize36(0).setSize37(0)
                 .setSize38(0).setSize39(0).setSize40(0).setSize41(0).setSize42(0).setSize43(0);
@@ -164,7 +166,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
         List<StoreProductStock> stockList = Optional.ofNullable(this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
                         .in(StoreProductStock::getStoreProdId, updateStockList.stream().map(StoreProdStockDTO::getStoreProdId).collect(Collectors.toList()))
                         .eq(StoreProductStock::getStoreId, storeId)
-                        .eq(StoreProductStock::getDelFlag, "0")))
+                        .eq(StoreProductStock::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品库存不存在!", HttpStatus.ERROR));
         // 数据库数据map
         Map<String, StoreProdStockDTO> diffStockMap = updateStockList.stream().collect(Collectors
@@ -236,17 +238,17 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     public StoreProdStockResDTO selectByStoreProdStockId(Long storeId, Long storeProdStockId) {
         StoreProductStock stock = Optional.ofNullable(this.storeProdStockMapper.selectOne(new LambdaQueryWrapper<StoreProductStock>()
                         .eq(StoreProductStock::getId, storeProdStockId).eq(StoreProductStock::getStoreId, storeId)
-                        .eq(StoreProductStock::getDelFlag, "0")))
+                        .eq(StoreProductStock::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品库存不存在!", HttpStatus.ERROR));
         // 档口商品第一张主图
         StoreProductFile mainPic = Optional.ofNullable(this.storeProdFileMapper.selectOne(new LambdaQueryWrapper<StoreProductFile>()
                         .eq(StoreProductFile::getStoreProdId, stock.getStoreProdId()).eq(StoreProductFile::getStoreId, storeId)
-                        .eq(StoreProductFile::getDelFlag, "0").eq(StoreProductFile::getFileType, "MAIN_PIC")
+                        .eq(StoreProductFile::getDelFlag, Constants.UNDELETED).eq(StoreProductFile::getFileType, FileType.MAIN_PIC.getValue())
                         .eq(StoreProductFile::getOrderNum, 1)))
                 .orElseThrow(() -> new ServiceException("商品主图不存在!", HttpStatus.ERROR));
         // 图片
         SysFile file = Optional.ofNullable(this.fileMapper.selectOne(new LambdaQueryWrapper<SysFile>()
-                        .eq(SysFile::getId, mainPic.getFileId()).eq(SysFile::getDelFlag, "0")))
+                        .eq(SysFile::getId, mainPic.getFileId()).eq(SysFile::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("商品主图不存在!", HttpStatus.ERROR));
         return BeanUtil.toBean(stock, StoreProdStockResDTO.class)
                 .setStoreProdStockId(stock.getId()).setMainPicUrl(file.getFileUrl());

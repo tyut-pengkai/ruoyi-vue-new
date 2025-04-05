@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.domain.StoreSale;
@@ -45,7 +46,7 @@ public class StoreSaleRefundRecordServiceImpl implements IStoreSaleRefundRecordS
     @Transactional(readOnly = true)
     public List<StoreSaleRefundRecordDTO> selectList(Long storeId, Long storeSaleId) {
         List<StoreSaleRefundRecord> refundRecordList = this.refundRecordMapper.selectList(new LambdaQueryWrapper<StoreSaleRefundRecord>()
-                .eq(StoreSaleRefundRecord::getStoreId, storeId).eq(StoreSaleRefundRecord::getStoreSaleId, storeSaleId).eq(StoreSaleRefundRecord::getDelFlag, "0"));
+                .eq(StoreSaleRefundRecord::getStoreId, storeId).eq(StoreSaleRefundRecord::getStoreSaleId, storeSaleId).eq(StoreSaleRefundRecord::getDelFlag, Constants.UNDELETED));
         if (CollectionUtils.isEmpty(refundRecordList)) {
             return new ArrayList<>();
         }

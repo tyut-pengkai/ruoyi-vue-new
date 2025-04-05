@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
@@ -49,7 +50,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
     @Transactional
     public Integer updateStoreCusProdDiscount(StoreCusProdDiscountDTO cusProdDisDTO) {
         List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(new LambdaQueryWrapper<StoreCustomer>()
-                .eq(StoreCustomer::getStoreId, cusProdDisDTO.getStoreId()).eq(StoreCustomer::getDelFlag, "0")
+                .eq(StoreCustomer::getStoreId, cusProdDisDTO.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)
                 .eq(StoreCustomer::getCusName, cusProdDisDTO.getStoreCusName()));
         if (ObjectUtils.isNotEmpty(storeCusList) && storeCusList.size() > 1) {
             throw new ServiceException("客户名称重复，请修改客户名称!", HttpStatus.CONFLICT);
@@ -57,7 +58,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         StoreCustomer storeCus = CollectionUtils.isNotEmpty(storeCusList) ? storeCusList.get(0) : this.createStoreCustomer(cusProdDisDTO);
         // 获取当前档口客户已有的优惠
         List<StoreCustomerProductDiscount> cusProdDisList = Optional.ofNullable(cusProdDiscountMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
-                .eq(StoreCustomerProductDiscount::getStoreCusName, cusProdDisDTO.getStoreCusName()).eq(StoreCustomerProductDiscount::getDelFlag, "0")
+                .eq(StoreCustomerProductDiscount::getStoreCusName, cusProdDisDTO.getStoreCusName()).eq(StoreCustomerProductDiscount::getDelFlag, Constants.UNDELETED)
                 .eq(StoreCustomerProductDiscount::getStoreId, cusProdDisDTO.getStoreId()))).orElse(new ArrayList<>());
         // 已存在优惠但优惠额度低于当前优惠，则更新该部分优惠
         List<StoreCustomerProductDiscount> updateList = cusProdDisList.stream()
@@ -69,7 +70,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         List<Long> existDiscountProdColorIdList = cusProdDisList.stream().map(StoreCustomerProductDiscount::getStoreProdColorId).collect(Collectors.toList());
         // 档口所有的商品
         List<StoreProductColor> storeProdColorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
-                .eq(StoreProductColor::getStoreId, cusProdDisDTO.getStoreId()).eq(StoreProductColor::getDelFlag, "0"));
+                .eq(StoreProductColor::getStoreId, cusProdDisDTO.getStoreId()).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
         // 绑定其它商品的优惠
         List<StoreCustomerProductDiscount> addDiscountList = storeProdColorList.stream().filter(x -> !existDiscountProdColorIdList.contains(x.getId()))
                 .map(x -> BeanUtil.toBean(x, StoreCustomerProductDiscount.class).setDiscount(cusProdDisDTO.getDiscount()).setStoreProdColorId(x.getId())

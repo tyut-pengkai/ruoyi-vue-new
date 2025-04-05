@@ -26,7 +26,7 @@ public class StoreProdStoragePageVO extends BasePageVO {
     @ApiModelProperty(name = "商品货号")
     private String prodArtNum;
     @ApiModelProperty(name = "入库类型")
-    private String storageType;
+    private Integer storageType;
     @ApiModelProperty(name = "销售开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date createTimeStart;

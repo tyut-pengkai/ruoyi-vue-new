@@ -21,6 +21,7 @@ import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageResDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStorageResDTO;
 import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandSimpleDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
+import com.ruoyi.xkt.enums.EVoucherSequenceType;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IStoreProductStockService;
 import com.ruoyi.xkt.service.IStoreProductStorageService;
@@ -80,7 +81,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
     @Transactional
     public int create(StoreProdStorageDTO storeProdStorageDTO) {
         // 生成code
-        String code = this.sequenceService.generateCode(storeProdStorageDTO.getStoreId(), "STORAGE", DateUtils.parseDateToStr(DateUtils.YYYYMMDD, new Date()));
+        String code = this.sequenceService.generateCode(storeProdStorageDTO.getStoreId(), EVoucherSequenceType.STORAGE.getValue(), DateUtils.parseDateToStr(DateUtils.YYYYMMDD, new Date()));
         // 总的数量
         Integer totalNum = storeProdStorageDTO.getDetailList().stream().map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
         // 总的金额
@@ -102,7 +103,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
 
         // 根据明细列表找到所有提交的需求
         List<StoreProductDemandDetail> demandDetailList = this.demandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
-                .eq(StoreProductDemandDetail::getStoreId, storeProdStorageDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, "0")
+                .eq(StoreProductDemandDetail::getStoreId, storeProdStorageDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
                 .in(StoreProductDemandDetail::getDetailStatus, Arrays.asList(1, 2))
                 .in(StoreProductDemandDetail::getStoreProdColorId, detailList.stream().map(StoreProductStorageDetail::getStoreProdColorId).collect(Collectors.toList())));
         // 若没有任何需求则不抵扣，直接结束流程
@@ -110,10 +111,10 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
             return count;
         }
         // 所有的需求单ID列表
-       final List<Long> demandIdList = demandDetailList.stream().map(StoreProductDemandDetail::getStoreProdDemandId).distinct().collect(Collectors.toList());
+        final List<Long> demandIdList = demandDetailList.stream().map(StoreProductDemandDetail::getStoreProdDemandId).distinct().collect(Collectors.toList());
         List<StoreProductStorageDemandDeductNew> deductedNewList = this.deductNewMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDemandDeductNew>()
                 .in(StoreProductStorageDemandDeductNew::getStoreProdColorId, detailList.stream().map(StoreProductStorageDetail::getStoreProdColorId).collect(Collectors.toList()))
-                .eq(StoreProductStorageDemandDeductNew::getDelFlag, "0"));
+                .eq(StoreProductStorageDemandDeductNew::getDelFlag, Constants.UNDELETED));
         // 已存在的需求抵扣明细列表
         Map<Long, Map<Integer, Integer>> deductedExistsMap = deductedNewList.stream().collect(Collectors.groupingBy(StoreProductStorageDemandDeductNew::getStoreProdColorId,
                 Collectors.groupingBy(StoreProductStorageDemandDeductNew::getSize, Collectors.summingInt(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)))));
@@ -271,7 +272,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
                 sizeStorageMap.put(43, storageDetail.getSize43());
             }
             if (MapUtils.isNotEmpty(sizeStorageMap)) {
-                storageQuantityMap.put(storageDetail.getStoreProdColorId(), new LinkedHashMap<Long, Map<Integer, Integer>>(){{
+                storageQuantityMap.put(storageDetail.getStoreProdColorId(), new LinkedHashMap<Long, Map<Integer, Integer>>() {{
                     put(storageDetail.getId(), sizeStorageMap);
                 }});
             }
@@ -336,7 +337,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         }
 
         List<StoreProdDemandSimpleDTO> demandSimpleList = Optional.ofNullable(this.demandDetailMapper.selectDemandCodeList(demandDetailList.stream()
-                .map(StoreProductDemandDetail::getId).distinct().collect(Collectors.toList())))
+                        .map(StoreProductDemandDetail::getId).distinct().collect(Collectors.toList())))
                 .orElseThrow(() -> new ServiceException("获取需求单号失败", HttpStatus.ERROR));
         // demandDetailId 与 demandCode 的映射关系
         Map<Long, String> demandCodeMap = demandSimpleList.stream().collect(Collectors.toMap(StoreProdDemandSimpleDTO::getStoreProdDemandDetailId, StoreProdDemandSimpleDTO::getCode));
@@ -365,7 +366,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         this.deductNewMapper.insert(deductList);
 
         List<StoreProductStorageDemandDeductNew> listAfterInsert = this.deductNewMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDemandDeductNew>()
-                .eq(StoreProductStorageDemandDeductNew::getDelFlag, "0").in(StoreProductStorageDemandDeductNew::getStoreProdDemandDetailId, updateDetailIdList));
+                .eq(StoreProductStorageDemandDeductNew::getDelFlag, Constants.UNDELETED).in(StoreProductStorageDemandDeductNew::getStoreProdDemandDetailId, updateDetailIdList));
         if (CollectionUtils.isEmpty(listAfterInsert)) {
             return count;
         }
@@ -405,10 +406,10 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         });
         // 筛选出所有和本次需求单抵扣有关的需求单列表
         List<StoreProductDemandDetail> updateDemandDetailList = Optional.ofNullable(this.demandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
-                        .in(StoreProductDemandDetail::getStoreProdDemandId, demandIdList).eq(StoreProductDemandDetail::getDelFlag, "0")))
+                        .in(StoreProductDemandDetail::getStoreProdDemandId, demandIdList).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("获取需求单明细失败", HttpStatus.ERROR));
         // 依次对比需求单明细不同size的完成数量，并更新需求单明细的detailStatus
-        List<StoreProductDemandDetail> demandDetailListAfterUpdate =   updateDemandDetailList.stream().map(updateDetail -> {
+        List<StoreProductDemandDetail> demandDetailListAfterUpdate = updateDemandDetailList.stream().map(updateDetail -> {
             Map<Integer, Integer> latestSizeQuantityMap = latestDeductSizeQuantityMap.get(updateDetail.getId());
             if (MapUtils.isEmpty(latestSizeQuantityMap)) {
                 return updateDetail;
@@ -448,7 +449,6 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
     }
 
 
-
     /**
      * 查询档口商品入库
      *
@@ -460,11 +460,11 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
     public StoreProdStorageResDTO selectByStoreProdStorId(Long storeProdStorId) {
         // 档口商品入库
         StoreProductStorage storage = Optional.ofNullable(this.storageMapper.selectOne(new LambdaQueryWrapper<StoreProductStorage>()
-                        .eq(StoreProductStorage::getId, storeProdStorId).eq(StoreProductStorage::getDelFlag, "0")))
+                        .eq(StoreProductStorage::getId, storeProdStorId).eq(StoreProductStorage::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品入库不存在!", HttpStatus.ERROR));
         // 档口商品入库明细
         List<StoreProductStorageDetail> storageDetailList = storageDetailMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDetail>()
-                .eq(StoreProductStorageDetail::getStoreProdStorId, storeProdStorId).eq(StoreProductStorageDetail::getDelFlag, "0"));
+                .eq(StoreProductStorageDetail::getStoreProdStorId, storeProdStorId).eq(StoreProductStorageDetail::getDelFlag, Constants.UNDELETED));
         return BeanUtil.toBean(storage, StoreProdStorageResDTO.class)
                 .setDetailList(storageDetailList.stream().map(x -> BeanUtil.toBean(x, StoreProdStorageResDTO.StorageDetailDTO.class)).collect(Collectors.toList()));
     }
@@ -481,14 +481,14 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
     public int deleteByStoreProdStorId(Long storeProdStorId) {
         // 档口商品入库
         StoreProductStorage storage = Optional.ofNullable(this.storageMapper.selectOne(new LambdaQueryWrapper<StoreProductStorage>()
-                        .eq(StoreProductStorage::getId, storeProdStorId).eq(StoreProductStorage::getDelFlag, "0")))
+                        .eq(StoreProductStorage::getId, storeProdStorId).eq(StoreProductStorage::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品入库不存在!", HttpStatus.ERROR));
-        storage.setDelFlag("2");
+        storage.setDelFlag(Constants.DELETED);
         int count = this.storageMapper.updateById(storage);
         // 档口商品入库明细
         List<StoreProductStorageDetail> storageDetailList = storageDetailMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDetail>()
-                .eq(StoreProductStorageDetail::getStoreProdStorId, storeProdStorId).eq(StoreProductStorageDetail::getDelFlag, "0"));
-        storageDetailList.forEach(x -> x.setDelFlag("2"));
+                .eq(StoreProductStorageDetail::getStoreProdStorId, storeProdStorId).eq(StoreProductStorageDetail::getDelFlag, Constants.UNDELETED));
+        storageDetailList.forEach(x -> x.setDelFlag(Constants.DELETED));
         this.storageDetailMapper.updateById(storageDetailList);
         // 减少档口商品库存
         this.stockService.decreaseStock(storage.getStoreId(), storageDetailList.stream()
@@ -735,90 +735,5 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         return size30Deduct;
     }
 
-
-  /*  // 找到入库需求抵扣明细中间表，查看哪些是已经抵扣了的
-    List<StoreProductStorageDemandDeduct> deductedList = this.deductMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDemandDeduct>()
-            .in(StoreProductStorageDemandDeduct::getStoreProdDemandDetailId, detailList.stream().map(StoreProductStorageDetail::getId).collect(Collectors.toList())));
-    Map<Long, List<StoreProductStorageDemandDeduct>> deductedQuantityMap = deductedList.stream().collect(Collectors.groupingBy(StoreProductStorageDemandDeduct::getStoreProdDemandDetailId));
-    // 存货每一个货品颜色，不同尺码已抵扣数量
-    Map<Long, Map<Integer, Integer>> deductedDetailMap = new HashMap<>();
-        deductedQuantityMap.forEach((prodColorId, deductList) -> {
-        Map<Integer, Integer> sizeDeductedMap = new HashMap<>();
-        Integer size30Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize30).filter(size30 -> ObjectUtils.defaultIfNull(size30, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(30, size30Quantity);
-        Integer size31Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize31).filter(size31 -> ObjectUtils.defaultIfNull(size31, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(31, size31Quantity);
-        Integer size32Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize32).filter(size32 -> ObjectUtils.defaultIfNull(size32, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(32, size32Quantity);
-        Integer size33Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize33).filter(size33 -> ObjectUtils.defaultIfNull(size33, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(33, size33Quantity);
-        Integer size34Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize34).filter(size34 -> ObjectUtils.defaultIfNull(size34, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(34, size34Quantity);
-        Integer size35Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize35).filter(size35 -> ObjectUtils.defaultIfNull(size35, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(35, size35Quantity);
-        Integer size36Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize36).filter(size36 -> ObjectUtils.defaultIfNull(size36, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(36, size36Quantity);
-        Integer size37Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize37).filter(size37 -> ObjectUtils.defaultIfNull(size37, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(37, size37Quantity);
-        Integer size38Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize38).filter(size38 -> ObjectUtils.defaultIfNull(size38, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(38, size38Quantity);
-        Integer size39Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize39).filter(size39 -> ObjectUtils.defaultIfNull(size39, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(39, size39Quantity);
-        Integer size40Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize40).filter(size40 -> ObjectUtils.defaultIfNull(size40, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(40, size40Quantity);
-        Integer size41Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize41).filter(size41 -> ObjectUtils.defaultIfNull(size41, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(41, size41Quantity);
-        Integer size42Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize42).filter(size42 -> ObjectUtils.defaultIfNull(size42, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(42, size42Quantity);
-        Integer size43Quantity = deductList.stream().map(StoreProductStorageDemandDeduct::getSize43).filter(size43 -> ObjectUtils.defaultIfNull(size43, 0) > 0).reduce(0, Integer::sum);
-        sizeDeductedMap.put(43, size43Quantity);
-        deductedDetailMap.put(prodColorId, sizeDeductedMap);
-    });
-*/
-
-
-
-/*
-    // 拷贝一份需求明细列表，避免修改原集合，避免数据污染
-    List<StoreProductDemandDetail> copyDemandDetailList = new ArrayList<>(demandDetailList);
-
-
-    // 如果有档口生产需求订单，则直接抵扣
-    Map<Long, List<StoreProductDemandDetail>> demandDetailMap = copyDemandDetailList.stream().collect(Collectors.groupingBy(StoreProductDemandDetail::getStoreProdColorId));
-
-    // 先按照需求明细的每个尺码处理，将入库的数据插入到抵扣需求明细表中，然后再将需求的对应的中间表数据筛选出来，依次对比需求单明细的状态，如果状态都为: 3 生产完成，则更新生产需求单 整体状态
-
-
-
-
-    // 拷贝一份入库明细列表，避免修改原集合，避免数据污染
-    List<StoreProductStorageDetail> tempCopyList = new ArrayList<>(detailList);
-
-    List<StoreProductStorageDemandDeduct> targetList = new ArrayList<>();
-        tempCopyList.forEach(storageDetail -> {
-        List<StoreProductDemandDetail> targetDemandList = demandDetailMap.get(storageDetail.getStoreProdColorId());
-        if (CollectionUtils.isEmpty(targetDemandList)) {
-            return;
-        }
-        // 抵扣规则：1.优先按照：生产中（2）、待生产（1） 排序  2. 再按照需求创建时间升序排列
-        targetDemandList =  targetDemandList.stream().sorted(Comparator.comparing(StoreProductDemandDetail::getDetailStatus).reversed()
-                .thenComparing(StoreProductDemandDetail::getCreateTime)).collect(Collectors.toList());
-
-
-        // 可能存在需求单没抵扣完，抵扣了部分，这个如何提现出来？？？？
-
-
-
-        // 可能出现的情况 生产数量小于需求数量   生产数量等于需求数量  生产数量大于需求数量
-
-        // 依次抵扣需求单数量，如果还有多的则继续抵扣，如果没有则结束循环
-
-        // 还要更改需求单的需求状态
-
-
-
-
-
-    });*/
 
 }

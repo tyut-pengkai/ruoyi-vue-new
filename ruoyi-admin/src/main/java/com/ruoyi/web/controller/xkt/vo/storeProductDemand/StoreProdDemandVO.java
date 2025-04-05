@@ -46,8 +46,8 @@ public class StoreProdDemandVO {
         @ApiModelProperty(name = "颜色")
         private String colorName;
         @NotBlank(message = "是否紧急单不能为空")
-        @ApiModelProperty(name = "是否紧急单", notes = "0=正常,1=紧急")
-        private String emergency;
+        @ApiModelProperty(name = "是否紧急单", notes = "2=正常,1=紧急")
+        private Integer emergency;
         @ApiModelProperty(name = "总的数量")
         private Integer quantity;
         @ApiModelProperty(name = "尺码30")

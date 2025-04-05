@@ -38,7 +38,7 @@ public class StoreProdDemandPageResVO {
     @ApiModelProperty(name = "生产状态")
     private String detailStatus;
     @ApiModelProperty(name = "紧急单还是正常单")
-    private String emergency;
+    private Integer emergency;
     @ApiModelProperty(name = "计划生产数量")
     private Integer quantity;
     @ApiModelProperty(name = "入库数量")

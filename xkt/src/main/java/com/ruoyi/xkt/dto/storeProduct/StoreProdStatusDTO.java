@@ -18,6 +18,6 @@ public class StoreProdStatusDTO {
     @ApiModelProperty("档口商品名称")
     private List<Long> storeProdIdList;
     @ApiModelProperty("档口商品状态")
-    private String prodStatus;
+    private Integer prodStatus;
 
 }

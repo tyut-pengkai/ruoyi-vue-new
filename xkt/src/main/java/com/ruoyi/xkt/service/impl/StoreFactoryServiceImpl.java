@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
@@ -60,7 +61,7 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
             throw new ServiceException("storeFactoryId不可为空!", HttpStatus.ERROR);
         }
         StoreFactory storeFactory = Optional.ofNullable(this.storeFactoryMapper.selectOne(new LambdaQueryWrapper<StoreFactory>()
-                        .eq(StoreFactory::getId, storeFactoryDTO.getStoreFactoryId()).eq(StoreFactory::getDelFlag, "0")))
+                        .eq(StoreFactory::getId, storeFactoryDTO.getStoreFactoryId()).eq(StoreFactory::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口合作工厂不存在!", HttpStatus.ERROR));
         BeanUtil.copyProperties(storeFactoryDTO, storeFactory);
         return storeFactoryMapper.updateById(storeFactory);
@@ -77,7 +78,7 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
     public Page<StoreFactoryResDTO> selectFactoryPage(StoreFactoryPageDTO pageDTO) {
         // 创建查询条件对象，用于构建SQL查询语句
         LambdaQueryWrapper<StoreFactory> queryWrapper = new LambdaQueryWrapper<StoreFactory>()
-                .eq(StoreFactory::getStoreId, pageDTO.getStoreId()).eq(StoreFactory::getDelFlag, "0");
+                .eq(StoreFactory::getStoreId, pageDTO.getStoreId()).eq(StoreFactory::getDelFlag, Constants.UNDELETED);
         // 如果工厂名称不为空，则添加模糊查询条件
         if (StringUtils.isNotBlank(pageDTO.getFacName())) {
             queryWrapper.like(StoreFactory::getFacName, pageDTO.getFacName());
@@ -100,7 +101,7 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
     @Transactional(readOnly = true)
     public StoreFactoryResDTO selectByStoreFacId(Long storeId, Long storeFacId) {
         StoreFactory storeFactory = Optional.ofNullable(this.storeFactoryMapper.selectOne(new LambdaQueryWrapper<StoreFactory>()
-                .eq(StoreFactory::getId, storeFacId).eq(StoreFactory::getDelFlag, "0").eq(StoreFactory::getStoreId, storeId)))
+                .eq(StoreFactory::getId, storeFacId).eq(StoreFactory::getDelFlag, Constants.UNDELETED).eq(StoreFactory::getStoreId, storeId)))
                 .orElseThrow(() -> new ServiceException("档口合作工厂不存在!", HttpStatus.ERROR));
         return BeanUtil.toBean(storeFactory, StoreFactoryResDTO.class);
     }

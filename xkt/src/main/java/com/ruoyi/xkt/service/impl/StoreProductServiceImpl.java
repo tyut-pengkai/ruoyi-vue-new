@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
@@ -21,6 +22,8 @@ import com.ruoyi.xkt.dto.storeProduct.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
+import com.ruoyi.xkt.enums.FileType;
+import com.ruoyi.xkt.enums.ProductSizeStatus;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IStoreProductService;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +69,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional(readOnly = true)
     public StoreProdResDTO selectStoreProductByStoreProdId(Long storeProdId) {
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
-                        .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, "0")))
+                        .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
         StoreProdResDTO storeProdResDTO = BeanUtil.toBean(storeProd, StoreProdResDTO.class).setStoreProdId(storeProd.getId());
         // 档口文件（商品主图、主图视频、下载的商品详情）
@@ -100,10 +103,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional(readOnly = true)
     public StoreProdPicSpaceResDTO getStoreProductPicSpace(Long storeId) {
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
-                        .eq(Store::getId, storeId).eq(Store::getDelFlag, "0")))
+                        .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         return StoreProdPicSpaceResDTO.builder().storeId(storeId).storeName(store.getStoreName())
-                .fileList(this.storeProdFileMapper.selectPicSpaceList(storeId, "DOWNLOAD")).build();
+                .fileList(this.storeProdFileMapper.selectPicSpaceList(storeId, FileType.DOWNLOAD.getValue())).build();
     }
 
     /**
@@ -137,12 +140,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 提取查询结果中的商店产品ID列表
         List<Long> storeProdIdList = prodList.stream().map(StoreProdPageResDTO::getStoreProdId).collect(Collectors.toList());
         // 查找排名第一个商品主图列表
-        List<StoreProdMainPicDTO> mainPicList = this.storeProdFileMapper.selectMainPicByStoreProdIdList(storeProdIdList, "MAIN_PIC", 1);
+        List<StoreProdMainPicDTO> mainPicList = this.storeProdFileMapper.selectMainPicByStoreProdIdList(storeProdIdList, FileType.MAIN_PIC.getValue(), 1);
         Map<Long, String> mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
                 .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
         // 查找档口商品的标准尺码
         LambdaQueryWrapper<StoreProductColorSize> queryWrapper = new LambdaQueryWrapper<StoreProductColorSize>().in(StoreProductColorSize::getStoreProdId, storeProdIdList)
-                .eq(StoreProductColorSize::getDelFlag, "0").eq(StoreProductColorSize::getStandard, "1");
+                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED).eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue());
         List<StoreProductColorSize> standardSizeList = this.storeProdColorSizeMapper.selectList(queryWrapper);
         // 将标准尺码列表转换为映射，以便后续处理
         Map<Long, List<Integer>> standardSizeMap = CollectionUtils.isEmpty(standardSizeList) ? new HashMap<>() : standardSizeList.stream().collect(Collectors
@@ -175,7 +178,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional
     public int updateStoreProduct(final Long storeProdId, StoreProdDTO storeProdDTO) {
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
-                        .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, "0")))
+                        .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
         // 更新档口商品信息
         BeanUtil.copyProperties(storeProdDTO, storeProd);
@@ -268,7 +271,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     public List<StoreProdFuzzyResDTO> fuzzyQueryList(Long storeId, String prodArtNum) {
         // 初始化查询条件，确保查询的是指定商店且未删除的产品
         LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>()
-                .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, "0");
+                .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED);
         // 如果产品货号非空，添加模糊查询条件
         if (StringUtils.isNotBlank(prodArtNum)) {
             queryWrapper.like(StoreProduct::getProdArtNum, prodArtNum);
@@ -283,7 +286,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<Long> storeProdIdList = storeProdList.stream().map(StoreProduct::getId).distinct().collect(Collectors.toList());
         // 查询与产品ID列表关联的颜色信息
         List<StoreProductColor> colorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
-                .in(StoreProductColor::getStoreProdId, storeProdIdList).eq(StoreProductColor::getDelFlag, "0"));
+                .in(StoreProductColor::getStoreProdId, storeProdIdList).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
         // 将颜色信息按产品ID分组，并转换为所需的颜色DTO列表
         Map<Long, List<StoreProdFuzzyResDTO.StoreProdFuzzyColorResDTO>> colorMap = CollectionUtils.isEmpty(colorList) ? new HashMap<>()
                 : colorList.stream().collect(Collectors.groupingBy(StoreProductColor::getStoreProdId, Collectors
@@ -354,7 +357,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         }
         // 处理档口所有颜色列表
         List<StoreColor> storeColorList = this.storeColorMapper.selectList(new LambdaQueryWrapper<StoreColor>()
-                .eq(StoreColor::getStoreId, storeProdDTO.getStoreId()).eq(StoreColor::getDelFlag, "0"));
+                .eq(StoreColor::getStoreId, storeProdDTO.getStoreId()).eq(StoreColor::getDelFlag, Constants.UNDELETED));
         List<Long> dbStoreColorIdList = storeColorList.stream().map(StoreColor::getId).collect(Collectors.toList());
         // 新增的颜色列表
         List<StoreColor> addColorList =storeProdDTO.getAllColorList().stream().filter(x -> !dbStoreColorIdList.contains(x.getStoreColorId()))

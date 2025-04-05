@@ -22,6 +22,6 @@ public class StoreProdStatusVO {
     private List<Long> storeProdIdList;
     @NotBlank(message = "档口商品状态不能为空!")
     @ApiModelProperty("档口商品状态")
-    private String prodStatus;
+    private Integer prodStatus;
 
 }

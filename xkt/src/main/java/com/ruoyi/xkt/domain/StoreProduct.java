@@ -94,7 +94,7 @@ public class StoreProduct extends XktBaseEntity {
      * 上架方式（立即上架、定时上架）
      */
     @Excel(name = "上架方式", readConverterExp = "立=即上架、定时上架")
-    private String listingWay;
+    private Integer listingWay;
 
     /**
      * 下一个生成的条形码尾号
@@ -120,7 +120,7 @@ public class StoreProduct extends XktBaseEntity {
      * 商品状态
      */
     @Excel(name = "商品状态")
-    private String prodStatus;
+    private Integer prodStatus;
 
     @Override
     public String toString() {

@@ -51,9 +51,9 @@ public class StoreProdDTO {
     @ApiModelProperty(name = "发货时效")
     private Integer deliveryTime;
     @ApiModelProperty(name = "上架方式")
-    private String listingWay;
+    private Integer listingWay;
     @ApiModelProperty(name = "商品状态")
-    private String prodStatus;
+    private Integer prodStatus;
     @ApiModelProperty(name = "定时发货时间(精确到小时)")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date listingWaySchedule;

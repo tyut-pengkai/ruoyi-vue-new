@@ -30,7 +30,7 @@ public class StoreSaleRefundRecordDTO {
     @JsonFormat(pattern = "HH:mm", timezone = "GMT+8")
     private Date createTime;
     @ApiModelProperty(name = "支付方式（支付宝、微信、现金、欠款）ALIPAY WECHAT_PAY CASH DEBT")
-    private String payWay;
+    private Integer payWay;
     @ApiModelProperty(name = "数量")
     private Integer quantity;
     @ApiModelProperty(name = "总金额")

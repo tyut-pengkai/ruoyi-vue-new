@@ -83,7 +83,7 @@ public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
      * @return 返回匹配条件的主图DTO列表
      */
     List<StoreProdMainPicDTO> selectMainPicByStoreProdIdList(@Param("storeProdIdList") List<Long> storeProdIdList,
-                                                             @Param("fileType") String fileType,
+                                                             @Param("fileType") Integer fileType,
                                                              @Param("orderNum") Integer orderNum);
 
     /**
@@ -93,6 +93,6 @@ public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
      * @param fileType 文件类型
      * @return List<StoreProdFilePicSpaceResDTO>
      */
-    List<StoreProdFilePicSpaceResDTO> selectPicSpaceList(@Param("storeId") Long storeId, @Param("fileType") String fileType);
+    List<StoreProdFilePicSpaceResDTO> selectPicSpaceList(@Param("storeId") Long storeId, @Param("fileType") Integer fileType);
 
 }

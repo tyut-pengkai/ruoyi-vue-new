@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.*;
@@ -12,6 +13,7 @@ import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageDTO;
 import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageResDTO;
 import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandQuantityDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
+import com.ruoyi.xkt.enums.EVoucherSequenceType;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IStoreProductDemandService;
 import com.ruoyi.xkt.service.IVoucherSequenceService;
@@ -55,22 +57,22 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     @Transactional(readOnly = true)
     public  List<StoreProdDemandQuantityDTO> getStockAndProduceQuantity(Long storeId, Long storeProdId) {
         List<StoreProductColor> prodColorList = Optional.ofNullable(this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
-                        .eq(StoreProductColor::getStoreId, storeId).eq(StoreProductColor::getDelFlag, "0").eq(StoreProductColor::getStoreProdId, storeProdId)))
+                        .eq(StoreProductColor::getStoreId, storeId).eq(StoreProductColor::getDelFlag, Constants.UNDELETED).eq(StoreProductColor::getStoreProdId, storeProdId)))
                 .orElseThrow(() -> new RuntimeException("该档口下没有商品及颜色"));
         // 找到档口下该商品
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
-                        .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, "0")))
+                        .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new RuntimeException("该档口下没有商品"));
         List<Long> storeProdColorIdList = prodColorList.stream().map(StoreProductColor::getId).collect(Collectors.toList());
         // 根据各个颜色查询库存信息
         List<StoreProductStock> prodStockList = this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
-                .in(StoreProductStock::getStoreProdColorId, storeProdColorIdList).eq(StoreProductStock::getDelFlag, "0").eq(StoreProductStock::getStoreId, storeId));
+                .in(StoreProductStock::getStoreProdColorId, storeProdColorIdList).eq(StoreProductStock::getDelFlag, Constants.UNDELETED).eq(StoreProductStock::getStoreId, storeId));
         // 将库存信息封装成Map
         Map<Long, StoreProdStockDTO> stockMap = prodStockList.stream().collect(Collectors
                 .toMap(StoreProductStock::getStoreProdColorId, x -> BeanUtil.toBean(x, StoreProdStockDTO.class)));
         // 查询待产及生产中的库存
         List<StoreProductDemandDetail> prodDemandList = this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
-                .in(StoreProductDemandDetail::getStoreProdColorId, storeProdColorIdList).eq(StoreProductDemandDetail::getDelFlag, "0")
+                .in(StoreProductDemandDetail::getStoreProdColorId, storeProdColorIdList).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
                 .in(StoreProductDemandDetail::getDetailStatus, Arrays.asList("待生产", "生产中")));
         // 将生产需求信息封转在map中
         Map<Long, List<StoreProductDemandDetail>> demandMap = prodDemandList.stream().collect(Collectors.groupingBy(StoreProductDemandDetail::getStoreProdColorId));
@@ -94,20 +96,20 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
             Integer size42Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize42).reduce(0, Integer::sum)).orElse(0);
             Integer size43Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize43).reduce(0, Integer::sum)).orElse(0);
             // 尺码为30的数组
-            List<String> size30List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize30()) ? stock.getSize30().toString() : "0", size30Demand.toString());
-            List<String> size31List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize31()) ? stock.getSize31().toString() : "0", size31Demand.toString());
-            List<String> size32List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize32()) ? stock.getSize32().toString() : "0", size32Demand.toString());
-            List<String> size33List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize33()) ? stock.getSize33().toString() : "0", size33Demand.toString());
-            List<String> size34List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize34()) ? stock.getSize34().toString() : "0", size34Demand.toString());
-            List<String> size35List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize35()) ? stock.getSize35().toString() : "0", size35Demand.toString());
-            List<String> size36List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize36()) ? stock.getSize36().toString() : "0", size36Demand.toString());
-            List<String> size37List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize37()) ? stock.getSize37().toString() : "0", size37Demand.toString());
-            List<String> size38List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize38()) ? stock.getSize38().toString() : "0", size38Demand.toString());
-            List<String> size39List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize39()) ? stock.getSize39().toString() : "0", size39Demand.toString());
-            List<String> size40List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize40()) ? stock.getSize40().toString() : "0", size40Demand.toString());
-            List<String> size41List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize41()) ? stock.getSize41().toString() : "0", size41Demand.toString());
-            List<String> size42List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize42()) ? stock.getSize42().toString() : "0", size42Demand.toString());
-            List<String> size43List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize43()) ? stock.getSize43().toString() : "0", size43Demand.toString());
+            List<String> size30List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize30()) ? stock.getSize30().toString() : Constants.UNDELETED, size30Demand.toString());
+            List<String> size31List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize31()) ? stock.getSize31().toString() : Constants.UNDELETED, size31Demand.toString());
+            List<String> size32List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize32()) ? stock.getSize32().toString() : Constants.UNDELETED, size32Demand.toString());
+            List<String> size33List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize33()) ? stock.getSize33().toString() : Constants.UNDELETED, size33Demand.toString());
+            List<String> size34List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize34()) ? stock.getSize34().toString() : Constants.UNDELETED, size34Demand.toString());
+            List<String> size35List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize35()) ? stock.getSize35().toString() : Constants.UNDELETED, size35Demand.toString());
+            List<String> size36List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize36()) ? stock.getSize36().toString() : Constants.UNDELETED, size36Demand.toString());
+            List<String> size37List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize37()) ? stock.getSize37().toString() : Constants.UNDELETED, size37Demand.toString());
+            List<String> size38List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize38()) ? stock.getSize38().toString() : Constants.UNDELETED, size38Demand.toString());
+            List<String> size39List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize39()) ? stock.getSize39().toString() : Constants.UNDELETED, size39Demand.toString());
+            List<String> size40List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize40()) ? stock.getSize40().toString() : Constants.UNDELETED, size40Demand.toString());
+            List<String> size41List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize41()) ? stock.getSize41().toString() : Constants.UNDELETED, size41Demand.toString());
+            List<String> size42List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize42()) ? stock.getSize42().toString() : Constants.UNDELETED, size42Demand.toString());
+            List<String> size43List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize43()) ? stock.getSize43().toString() : Constants.UNDELETED, size43Demand.toString());
             return StoreProdDemandQuantityDTO.builder().storeId(storeId).storeProdId(storeProd.getId()).storeProdColorId(prodColor.getId())
                     .prodArtNum(storeProd.getProdArtNum()).colorName(prodColor.getColorName()).compareStrList(compareStrList)
                     // 判断 demandDetailList 中是否有 createTime 为当天的对象
@@ -129,7 +131,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     public Integer createDemand(StoreProdDemandDTO demandDTO) {
         StoreProductDemand demand = new StoreProductDemand();
         // 生成code
-        demand.setCode(this.sequenceService.generateCode(demandDTO.getStoreId(), "DEMAND", DateUtils.parseDateToStr(DateUtils.YYYYMMDD, new Date())))
+        demand.setCode(this.sequenceService.generateCode(demandDTO.getStoreId(), EVoucherSequenceType.DEMAND.getValue(), DateUtils.parseDateToStr(DateUtils.YYYYMMDD, new Date())))
                 .setDemandStatus(1).setStoreId(demandDTO.getStoreId()).setStoreFactoryId(demandDTO.getStoreFactoryId());
         int count = this.storeProdDemandMapper.insert(demand);
         // 生产需求详情
@@ -169,7 +171,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         List<Long> demandDetailIdList = demandList.stream().map(StoreProdDemandPageResDTO::getStoreProdDemandDetailId).distinct().collect(Collectors.toList());
         // 找到需求单抵扣的数据
         List<StoreProductStorageDemandDeduct> deductList = this.storageDemandDeductMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDemandDeduct>()
-                .in(StoreProductStorageDemandDeduct::getStoreProdStorageDetailId, demandDetailIdList).eq(StoreProductStorageDemandDeduct::getDelFlag, "0"));
+                .in(StoreProductStorageDemandDeduct::getStoreProdStorageDetailId, demandDetailIdList).eq(StoreProductStorageDemandDeduct::getDelFlag, Constants.UNDELETED));
         // 明细抵扣的数量
         Map<Long, Integer> deductQuantityMap = CollectionUtils.isEmpty(deductList) ? new HashMap<>()
                 : deductList.stream().collect(Collectors.groupingBy(StoreProductStorageDemandDeduct::getStoreProdStorageDetailId, Collectors.summingInt(StoreProductStorageDemandDeduct::getQuantity)));

@@ -30,7 +30,7 @@ public class StoreProdPageResVO {
     @ApiModelProperty(name = "销售金额（元）")
     private BigDecimal price;
     @ApiModelProperty(name = "状态")
-    private String prodStatus;
+    private Integer prodStatus;
     @ApiModelProperty(name = "创建时间")
     private Date createTime;
 

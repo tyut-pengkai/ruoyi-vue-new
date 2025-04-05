@@ -48,10 +48,10 @@ public class StoreProductFile extends XktBaseEntity {
     private Long fileId;
 
     /**
-     * 文件类型（主图、视频、下载）
+     * 文件类型（1主图、2视频、3下载）
      */
     @Excel(name = "文件类型", readConverterExp = "主=图、视频、下载")
-    private String fileType;
+    private Integer fileType;
 
     /**
      * 文件大小（M）

@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.Page;
@@ -17,6 +18,8 @@ import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageResDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePayStatusDTO;
+import com.ruoyi.xkt.enums.EVoucherSequenceType;
+import com.ruoyi.xkt.enums.PaymentStatus;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IStoreProductStockService;
 import com.ruoyi.xkt.service.IStoreSaleService;
@@ -64,7 +67,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     @Transactional(readOnly = true)
     public StoreCusGeneralSaleDTO getCusGeneralSale(Integer days, Long storeId, Long storeCusId) {
         StoreCustomer storeCus = Optional.ofNullable(this.storeCusMapper.selectOne(new LambdaQueryWrapper<StoreCustomer>()
-                        .eq(StoreCustomer::getId, storeCusId).eq(StoreCustomer::getDelFlag, "0")))
+                        .eq(StoreCustomer::getId, storeCusId).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口客户不存在!", HttpStatus.ERROR));
         // 当前时间
         Date nowDate = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -73,7 +76,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         // 查询当前档口客户在这段时间内的销售业绩情况
         List<StoreSale> saleList = this.storeSaleMapper.selectList(new LambdaQueryWrapper<StoreSale>()
                 .eq(StoreSale::getStoreId, storeId).eq(StoreSale::getStoreCusId, storeCusId)
-                .eq(StoreSale::getDelFlag, "0").between(StoreSale::getVoucherDate, pastDate, nowDate));
+                .eq(StoreSale::getDelFlag, Constants.UNDELETED).between(StoreSale::getVoucherDate, pastDate, nowDate));
         // 初始化返回对象
         StoreCusGeneralSaleDTO generalSaleDTO = StoreCusGeneralSaleDTO.builder().storeId(storeId).storeCusId(storeCusId)
                 .storeCusName(storeCus.getCusName()).saleAmount(BigDecimal.ZERO).debtAmount(BigDecimal.ZERO)
@@ -86,7 +89,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         // 总的销售数量
         Long saleCount = saleList.stream().map(x -> x.getQuantity() == null ? 0L : x.getQuantity()).reduce(0L, Long::sum);
         // 总的欠款金额
-        BigDecimal debtAmount = saleList.stream().filter(x -> Objects.equals(x.getPaymentStatus(), "DEBT"))
+        BigDecimal debtAmount = saleList.stream().filter(x -> Objects.equals(x.getPaymentStatus(), PaymentStatus.DEBT.getValue()))
                 .map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
         return generalSaleDTO.setSaleAmount(saleAmount).setSaleCount(saleCount).setDebtAmount(debtAmount);
     }
@@ -115,14 +118,14 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     @Transactional
     public void clearStoreCusDebt(StoreSalePayStatusDTO payStatusDTO) {
         List<StoreSale> storeSaleList = Optional.ofNullable(this.storeSaleMapper.selectList(new LambdaQueryWrapper<StoreSale>()
-                .in(StoreSale::getId, payStatusDTO.getStoreSaleIdList()).eq(StoreSale::getDelFlag, "0")))
+                .in(StoreSale::getId, payStatusDTO.getStoreSaleIdList()).eq(StoreSale::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("没有找到对应的销售出库单!", HttpStatus.ERROR));
         // 勾选订单是否有已结算的
-        List<StoreSale> settledList = storeSaleList.stream().filter(x -> Objects.equals(x.getPaymentStatus(), "SETTLED")).collect(Collectors.toList());
+        List<StoreSale> settledList = storeSaleList.stream().filter(x -> Objects.equals(x.getPaymentStatus(), PaymentStatus.SETTLED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(settledList)) {
             throw new ServiceException("当前订单已结算!" + settledList.stream().map(StoreSale::getCode).collect(Collectors.toList()), HttpStatus.ERROR);
         }
-        storeSaleList.forEach(x -> x.setPaymentStatus("SETTLED"));
+        storeSaleList.forEach(x -> x.setPaymentStatus(PaymentStatus.SETTLED.getValue()));
         this.storeSaleMapper.updateById(storeSaleList);
     }
 
@@ -137,7 +140,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     public int insertStoreSale(StoreSaleDTO storeSaleDTO) {
         StoreSale storeSale = BeanUtil.toBean(storeSaleDTO, StoreSale.class);
         // 生成code
-        String code = this.sequenceService.generateCode(storeSaleDTO.getStoreId(), "STORE_SALE", DateUtils.parseDateToStr(DateUtils.YYYYMMDD, new Date()));
+        String code = this.sequenceService.generateCode(storeSaleDTO.getStoreId(), EVoucherSequenceType.STORE_SALE.getValue(), DateUtils.parseDateToStr(DateUtils.YYYYMMDD, new Date()));
         // 总的数量
         Integer quantity = storeSaleDTO.getDetailList().stream().map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
         // 总的金额
@@ -176,11 +179,11 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         // 当前登录用户
         LoginUser loginUser = SecurityUtils.getLoginUser();
         StoreSale storeSale = Optional.ofNullable(this.storeSaleMapper.selectOne(new LambdaQueryWrapper<StoreSale>()
-                        .eq(StoreSale::getId, storeSaleDTO.getStoreSaleId()).eq(StoreSale::getDelFlag, "0")))
+                        .eq(StoreSale::getId, storeSaleDTO.getStoreSaleId()).eq(StoreSale::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口销售出库订单不存在!", HttpStatus.ERROR));
         // 档口销售出库明细列表
         List<StoreSaleDetail> saleDetailList = this.storeSaleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
-                .eq(StoreSaleDetail::getStoreSaleId, storeSaleDTO.getStoreSaleId()).eq(StoreSaleDetail::getDelFlag, "0"));
+                .eq(StoreSaleDetail::getStoreSaleId, storeSaleDTO.getStoreSaleId()).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED));
         // 若为返单，则将之前数据记录到返单记录表中
         if (Objects.equals(storeSaleDTO.getRefund(), Boolean.TRUE)) {
             // 订单记录到StoreSaleRefundRecord
@@ -201,7 +204,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         int count = this.storeSaleMapper.updateById(storeSale.setQuantity(quantity).setAmount(amount)
                 .setOperatorId(loginUser.getUserId()).setOperatorName(loginUser.getUsername()));
         // 先将所有明细置为无效，再新增
-        this.storeSaleDetailMapper.updateById(saleDetailList.stream().peek(x -> x.setDelFlag("2")).collect(Collectors.toList()));
+        this.storeSaleDetailMapper.updateById(saleDetailList.stream().peek(x -> x.setDelFlag(Constants.DELETED)).collect(Collectors.toList()));
         // 再新增档口销售出库明细数据
         List<StoreSaleDetail> detailList = storeSaleDTO.getDetailList().stream().map(x -> BeanUtil.toBean(x, StoreSaleDetail.class)
                 .setSaleType(storeSaleDTO.getSaleType()).setStoreSaleId(storeSale.getId())).collect(Collectors.toList());
@@ -230,12 +233,12 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     @Transactional(readOnly = true)
     public StoreSaleDTO selectStoreSaleByStoreSaleId(Long storeSaleId) {
         StoreSale storeSale = Optional.ofNullable(this.storeSaleMapper.selectOne(new LambdaQueryWrapper<StoreSale>()
-                        .eq(StoreSale::getId, storeSaleId).eq(StoreSale::getDelFlag, "0")))
+                        .eq(StoreSale::getId, storeSaleId).eq(StoreSale::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口销售出库订单不存在!", HttpStatus.ERROR));
         StoreSaleDTO storeSaleDTO = BeanUtil.toBean(storeSale, StoreSaleDTO.class);
         // 查询销售出库明细
         List<StoreSaleDetail> saleDetailList = this.storeSaleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
-                .eq(StoreSaleDetail::getStoreSaleId, storeSaleId).eq(StoreSaleDetail::getDelFlag, "0"));
+                .eq(StoreSaleDetail::getStoreSaleId, storeSaleId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED));
         storeSaleDTO.setDetailList(saleDetailList.stream().map(x -> BeanUtil.toBean(x, StoreSaleDTO.SaleDetailVO.class)).collect(Collectors.toList()));
         return storeSaleDTO;
     }
@@ -251,14 +254,14 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     public int deleteStoreSaleByStoreSaleId(Long storeSaleId) {
         // 删除档口销售出库数据
         StoreSale storeSale = Optional.ofNullable(this.storeSaleMapper.selectOne(new LambdaQueryWrapper<StoreSale>()
-                        .eq(StoreSale::getId, storeSaleId).eq(StoreSale::getDelFlag, "0")))
+                        .eq(StoreSale::getId, storeSaleId).eq(StoreSale::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口销售出库订单不存在!", HttpStatus.ERROR));
-        storeSale.setDelFlag("2");
+        storeSale.setDelFlag(Constants.DELETED);
         int count = this.storeSaleMapper.updateById(storeSale);
         // 删除档口销售出库明细数据
         List<StoreSaleDetail> saleDetailList = this.storeSaleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
-                .eq(StoreSaleDetail::getStoreSaleId, storeSaleId).eq(StoreSaleDetail::getDelFlag, "0"));
-        this.storeSaleDetailMapper.updateById(saleDetailList.stream().peek(x -> x.setDelFlag("2")).collect(Collectors.toList()));
+                .eq(StoreSaleDetail::getStoreSaleId, storeSaleId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED));
+        this.storeSaleDetailMapper.updateById(saleDetailList.stream().peek(x -> x.setDelFlag(Constants.DELETED)).collect(Collectors.toList()));
         // 先汇总当前这笔订单商品明细的销售数量，包括销售及退货 key： prodArtNum + storeProdId + storeProdColorId + colorName, value: map(key:size,value:count)
         Map<String, Map<Integer, Integer>> saleCountMap = saleDetailList.stream().collect(Collectors
                 .groupingBy(x -> x.getProdArtNum() + ":" + x.getStoreProdId() + ":" + x.getStoreProdColorId() + ":" + x.getColorName(), Collectors

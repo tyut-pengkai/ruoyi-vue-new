@@ -31,7 +31,7 @@ public class StoreProdStorageResVO {
     @ApiModelProperty(name = "单据编号")
     private String code;
     @ApiModelProperty(name = "入库类型")
-    private String storageType;
+    private Integer storageType;
     @ApiModelProperty(name = "数量")
     private Integer quantity;
     @ApiModelProperty(name = "生产成本金额")
