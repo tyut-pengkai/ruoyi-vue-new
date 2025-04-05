@@ -48,8 +48,7 @@
         <div class="header-info">
           <div class="info-form">
             <div class="info-item">
-              <span class="info-label">运单号码：</span
-              ><span>KH0267407035443</span>
+              <span class="info-label">运单号码：</span><span>KH0267407035443</span>
             </div>
             <div class="info-item">
               <span class="info-label">车牌号码：</span><span>AB0105C</span>
@@ -315,7 +314,7 @@ export default {
           .info-item {
             margin-bottom: 10px;
             width: 50%;
-            .info-label {
+            .info-label{
               color: #666666;
             }
           }
