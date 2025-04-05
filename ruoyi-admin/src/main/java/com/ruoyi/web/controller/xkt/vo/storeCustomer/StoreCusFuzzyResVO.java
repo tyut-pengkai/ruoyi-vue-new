@@ -17,11 +17,11 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class StoreCusFuzzyResVO {
 
-    @ApiModelProperty("档口客户ID")
+    @ApiModelProperty(value = "档口客户ID")
     private Long storeCusId;
-    @ApiModelProperty("档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "客户名称")
+    @ApiModelProperty(value = "客户名称")
     private String cusName;
 
 }

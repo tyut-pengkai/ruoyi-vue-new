@@ -19,16 +19,16 @@ import javax.validation.constraints.NotNull;
 public class StoreCusVO {
 
     @NotNull(message = "档口ID不能为空!")
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;
-    @ApiModelProperty(name = "档口客户ID", notes = "新增为空，编辑必传")
+    @ApiModelProperty(value = "档口客户ID 新增为空，编辑必传")
     private Long storeCusId;
     @NotBlank(message = "客户名称不能为空!")
-    @ApiModelProperty(name = "客户名称")
+    @ApiModelProperty(value = "客户名称", required = true)
     private String cusName;
-    @ApiModelProperty(name = "客户联系电话")
+    @ApiModelProperty(value = "客户联系电话")
     private String phone;
-    @ApiModelProperty("备注")
+    @ApiModelProperty(value = "备注")
     private String remark;
 
 }

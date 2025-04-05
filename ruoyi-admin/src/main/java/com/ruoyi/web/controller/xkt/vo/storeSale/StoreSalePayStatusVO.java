@@ -18,7 +18,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreSalePayStatusVO {
 
-    @ApiModelProperty(name = "结算的storeSaleId列表")
+    @ApiModelProperty(value = "结算的storeSaleId列表", required = true)
     @NotNull(message = "结算的storeSaleId列表不能为空!")
     private List<Long> storeSaleIdList;
 

@@ -21,27 +21,28 @@ import java.util.List;
 @AllArgsConstructor
 public class StoreQuickFuncVO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空!")
     private Long storeId;
-    @ApiModelProperty(name = "档口勾选的快捷功能")
+    @ApiModelProperty(value = "档口勾选的快捷功能", required = true)
     @NotNull(message = "档口勾选的快捷功能不能为空!")
     private List<QuickFuncDetailVO> checkedList;
-    @ApiModelProperty(name = "系统所有的二级菜单列表")
+    @ApiModelProperty(value = "系统所有的二级菜单列表")
     private List<QuickFuncDetailVO> menuList;
 
     @Data
+    @ApiModel(value = "快捷功能菜单")
     @RequiredArgsConstructor
     public static class QuickFuncDetailVO {
-        @ApiModelProperty(name = "菜单名称")
+        @ApiModelProperty(value = "菜单名称")
         private String menuName;
-        @ApiModelProperty(name = "显示顺序")
+        @ApiModelProperty(value = "显示顺序")
         private Integer orderNum;
-        @ApiModelProperty(name = "路由地址")
+        @ApiModelProperty(value = "路由地址")
         private String path;
-        @ApiModelProperty(name = "组件路径")
+        @ApiModelProperty(value = "组件路径")
         private String component;
-        @ApiModelProperty(name = "菜单图标")
+        @ApiModelProperty(value = "菜单图标")
         private String icon;
     }
 

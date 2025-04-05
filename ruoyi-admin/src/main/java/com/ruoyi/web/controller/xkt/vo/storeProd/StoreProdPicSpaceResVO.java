@@ -16,11 +16,11 @@ import java.util.List;
 @Data
 public class StoreProdPicSpaceResVO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "档口名称")
+    @ApiModelProperty(value = "档口名称")
     private String storeName;
-    @ApiModelProperty(name = "档口文件列表")
+    @ApiModelProperty(value = "档口文件列表")
     private List<StoreProdFilePicSpaceResVO> fileList;
 
 }

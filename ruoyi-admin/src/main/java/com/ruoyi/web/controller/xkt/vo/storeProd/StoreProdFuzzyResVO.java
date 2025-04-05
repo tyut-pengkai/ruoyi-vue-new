@@ -2,13 +2,10 @@ package com.ruoyi.web.controller.xkt.vo.storeProd;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -22,20 +19,21 @@ import java.util.List;
 @Accessors(chain = true)
 public class StoreProdFuzzyResVO {
 
-    @ApiModelProperty("档口商品ID")
+    @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
-    @ApiModelProperty("档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
-    @ApiModelProperty("商品下颜色列表")
+    @ApiModelProperty(value = "商品颜色列表")
     private List<StoreProdFuzzyColorResVO> colorList;
 
     @Data
+    @ApiModel(value = "商品颜色列表")
     public static class StoreProdFuzzyColorResVO {
-        @ApiModelProperty("档口颜色ID")
+        @ApiModelProperty(value = "档口颜色ID")
         private Long storeColorId;
-        @ApiModelProperty("颜色名称")
+        @ApiModelProperty(value = "颜色名称")
         private String colorName;
     }
 }

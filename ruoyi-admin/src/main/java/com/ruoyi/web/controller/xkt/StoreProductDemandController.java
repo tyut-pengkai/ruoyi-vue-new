@@ -10,16 +10,10 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusPageVO;
-import com.ruoyi.web.controller.xkt.vo.storeProductDemand.StoreProdDemandPageResVO;
-import com.ruoyi.web.controller.xkt.vo.storeProductDemand.StoreProdDemandPageVO;
-import com.ruoyi.web.controller.xkt.vo.storeProductDemand.StoreProdDemandQuantityVO;
-import com.ruoyi.web.controller.xkt.vo.storeProductDemand.StoreProdDemandVO;
+import com.ruoyi.web.controller.xkt.vo.storeProductDemand.*;
 import com.ruoyi.xkt.domain.StoreProductDemand;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandDTO;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageDTO;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageResDTO;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandQuantityDTO;
+import com.ruoyi.xkt.dto.storeProductDemand.*;
 import com.ruoyi.xkt.service.IStoreProductDemandService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,6 +47,17 @@ public class StoreProductDemandController extends XktBaseController {
     // TODO 入库单判断需求单是否存在
     // TODO 入库单判断需求单是否存在
 
+
+    // TODO 删除需求单，若该需求单有已完成的入库单，则该需求单状态改为已完成，并将数量改为已完成的入库单数量
+    // TODO 删除需求单，若该需求单有已完成的入库单，则该需求单状态改为已完成，并将数量改为已完成的入库单数量
+    // TODO 删除需求单，若该需求单有已完成的入库单，则该需求单状态改为已完成，并将数量改为已完成的入库单数量
+    // TODO 删除需求单，若该需求单有已完成的入库单，则该需求单状态改为已完成，并将数量改为已完成的入库单数量
+
+
+    // TODO 点击安排生产，状态才会变成：生产中，若仅仅是由入库单来反推，则不能变更状态
+    // TODO 点击安排生产，状态才会变成：生产中，若仅仅是由入库单来反推，则不能变更状态
+    // TODO 点击安排生产，状态才会变成：生产中，若仅仅是由入库单来反推，则不能变更状态
+
     /**
      * 根据货号获取所有颜色的库存数量、在产数量
      */
@@ -84,6 +89,28 @@ public class StoreProductDemandController extends XktBaseController {
         return R.ok(storeProdDemandService.selectPage(BeanUtil.toBean(pageVO, StoreProdDemandPageDTO.class)));
     }
 
+    /**
+     * 点击安排生产
+     */
+    @PreAuthorize("@ss.hasPermi('system:demand:edit')")
+    @ApiOperation(value = "点击安排生产", httpMethod = "PUT", response = R.class)
+    @Log(title = "点击安排生产", businessType = BusinessType.UPDATE)
+    @PutMapping
+    public R<Integer> updateWorkingStatus(@Validated @RequestBody StoreProdDemandWorkingVO workingVO) {
+        return R.ok(storeProdDemandService.updateWorkingStatus(BeanUtil.toBean(workingVO, StoreProdDemandWorkingDTO.class)));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * 获取档口商品需求单详细信息
@@ -95,15 +122,7 @@ public class StoreProductDemandController extends XktBaseController {
     }
 
 
-    /**
-     * 修改档口商品需求单
-     */
-    @PreAuthorize("@ss.hasPermi('system:demand:edit')")
-    @Log(title = "档口商品需求单", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public R edit(@RequestBody StoreProductDemand storeProductDemand) {
-        return success(storeProdDemandService.updateStoreProductDemand(storeProductDemand));
-    }
+
 
     /**
      * 删除档口商品需求单

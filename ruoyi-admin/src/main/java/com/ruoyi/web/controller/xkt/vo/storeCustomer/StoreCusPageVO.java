@@ -18,9 +18,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class StoreCusPageVO extends BasePageVO {
 
-    @ApiModelProperty(name = "客户名称")
+    @ApiModelProperty(value = "客户名称")
     private String cusName;
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空")
     private Long storeId;
 

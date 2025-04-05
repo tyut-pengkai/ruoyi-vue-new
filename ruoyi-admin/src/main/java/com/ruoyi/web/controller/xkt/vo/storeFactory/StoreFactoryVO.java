@@ -18,19 +18,19 @@ import javax.validation.constraints.NotNull;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreFactoryVO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空!")
     private Long storeId;
-    @ApiModelProperty(name = "档口工厂ID", notes = "新增不传 编辑必传")
+    @ApiModelProperty(value = "档口工厂ID[新增不传 编辑必传]")
     private Long storeFactoryId;
     @NotBlank(message = "工厂名称不能为空!")
-    @ApiModelProperty(name = "工厂名称")
+    @ApiModelProperty(value = "工厂名称", required = true)
     private String facName;
-    @ApiModelProperty(name = "工厂地址")
+    @ApiModelProperty(value = "工厂地址")
     private String facAddress;
-    @ApiModelProperty(name = "工厂联系电话")
+    @ApiModelProperty(value = "工厂联系电话")
     private String facPhone;
-    @ApiModelProperty("备注")
+    @ApiModelProperty(value = "备注")
     private String remark;
 
 }

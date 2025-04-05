@@ -21,6 +21,8 @@ public class StoreProdDemandPageDTO extends BasePageDTO {
     @ApiModelProperty(name = "档口ID")
     @NotNull(message = "档口ID不能为空")
     private Long storeId;
+    @ApiModelProperty(name = "需求状态" ,notes = "1 待生产 2 生产中 3 生产完成")
+    private Integer demandStatus;
     @ApiModelProperty(name = "档口工厂ID")
     private Long storeFactoryId;
     @ApiModelProperty(name = "商品货号")

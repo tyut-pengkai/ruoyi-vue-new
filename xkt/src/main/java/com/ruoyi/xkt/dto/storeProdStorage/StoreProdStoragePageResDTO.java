@@ -17,8 +17,8 @@ import java.util.Date;
 @Data
 public class StoreProdStoragePageResDTO {
 
-    @ApiModelProperty(name = "storeProdStorId")
-    private Long storeProdStorId;
+    @ApiModelProperty(name = "storeProdStorageId")
+    private Long storeProdStorageId;
     @ApiModelProperty(name = "档口ID")
     private Long storeId;
     @ApiModelProperty(name = "单据编号")

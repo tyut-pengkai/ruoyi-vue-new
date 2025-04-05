@@ -60,9 +60,9 @@ public class StoreProductStorageController extends XktBaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:storage:query')")
     @ApiOperation(value = "获取档口商品入库详细信息", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/{storeProdStorId}")
-    public R<StoreProdStorageResVO> getInfo(@PathVariable("storeProdStorId") Long storeProdStorId) {
-        return R.ok(BeanUtil.toBean(storeProdStorageService.selectByStoreProdStorId(storeProdStorId), StoreProdStorageResVO.class));
+    @GetMapping(value = "/{storeProdStorageId}")
+    public R<StoreProdStorageResVO> getInfo(@PathVariable("storeProdStorageId") Long storeProdStorageId) {
+        return R.ok(BeanUtil.toBean(storeProdStorageService.selectByStoreProdStorageId(storeProdStorageId), StoreProdStorageResVO.class));
     }
 
     /**
@@ -72,8 +72,8 @@ public class StoreProductStorageController extends XktBaseController {
     @ApiOperation(value = "撤销档口商品入库", httpMethod = "DELETE", response = R.class)
     @Log(title = "撤销档口商品入库", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdStorageId}")
-    public R remove(@PathVariable Long storeProdStorageId) {
-        return R.ok(storeProdStorageService.deleteByStoreProdStorId(storeProdStorageId));
+    public R<Integer> remove(@PathVariable Long storeProdStorageId) {
+        return R.ok(storeProdStorageService.deleteByStoreProdStorageId(storeProdStorageId));
     }
 
 

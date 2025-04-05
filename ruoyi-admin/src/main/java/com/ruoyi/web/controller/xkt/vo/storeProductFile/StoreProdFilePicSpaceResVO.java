@@ -15,11 +15,11 @@ import lombok.Data;
 @Builder
 public class StoreProdFilePicSpaceResVO {
 
-    @ApiModelProperty(name = "档口商品ID")
+    @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
-    @ApiModelProperty(name = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
-    @ApiModelProperty(name = "文件路径")
+    @ApiModelProperty(value = "文件路径")
     private String fileUrl;
 
 }

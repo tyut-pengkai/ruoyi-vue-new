@@ -17,21 +17,21 @@ import java.util.List;
 @Data
 public class StoreProdPageResVO {
 
-    @ApiModelProperty(name = "档口商品主图url")
+    @ApiModelProperty(value = "档口商品主图url")
     private String mainPicUrl;
-    @ApiModelProperty(name = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
-    @ApiModelProperty(name = "颜色")
+    @ApiModelProperty(value = "颜色")
     private String colorName;
-    @ApiModelProperty(name = "分类类目")
+    @ApiModelProperty(value = "分类类目")
     private String prodCateName;
-    @ApiModelProperty(name = "标准尺码")
+    @ApiModelProperty(value = "标准尺码")
     private List<Integer> standardSizeList;
-    @ApiModelProperty(name = "销售金额（元）")
+    @ApiModelProperty(value = "销售金额（元）")
     private BigDecimal price;
-    @ApiModelProperty(name = "状态")
+    @ApiModelProperty(value = "状态")
     private Integer prodStatus;
-    @ApiModelProperty(name = "创建时间")
+    @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
 }

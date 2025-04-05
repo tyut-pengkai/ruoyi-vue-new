@@ -72,11 +72,6 @@ public class StoreProductStorageDetail extends XktBaseEntity {
     private BigDecimal produceAmount;
 
     /**
-     * 抵扣状态：0.未抵扣 1.部分抵扣 2.已抵扣
-     */
-    private Integer deductStatus;
-
-    /**
      * 尺码30
      */
     @Excel(name = "尺码30")

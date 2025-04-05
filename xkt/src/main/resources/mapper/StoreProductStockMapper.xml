@@ -169,6 +169,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             del_flag = 0
             AND store_id = #{storeId}
             <if test="prodArtNum != null  and prodArtNum != ''"> and prod_art_num like concat('%', #{prodArtNum}, '%')</if>
+        ORDER BY
+            create_time DESC
     </select>
 
 </mapper>

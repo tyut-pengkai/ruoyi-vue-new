@@ -2,10 +2,7 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.domain.StoreProductDemand;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandDTO;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageDTO;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageResDTO;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandQuantityDTO;
+import com.ruoyi.xkt.dto.storeProductDemand.*;
 
 import java.util.List;
 
@@ -92,5 +89,15 @@ public interface IStoreProductDemandService {
      * @return Page<StoreProdDemandPageResDTO>
      */
     Page<StoreProdDemandPageResDTO> selectPage(StoreProdDemandPageDTO demandPageDTO);
+
+    /**
+     * 更新产品的生产状态
+     * 此方法通过接收一个包含产品生产信息的DTO对象来更新数据库中对应产品的生产状态
+     * 主要用于在生产流程中更新产品当前的加工状态或者生产阶段
+     *
+     * @param workingDTO 包含产品生产信息的数据传输对象用于更新产品生产状态
+     * @return
+     */
+    Integer updateWorkingStatus(StoreProdDemandWorkingDTO workingDTO);
 
 }

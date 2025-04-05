@@ -80,7 +80,8 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
     @Transactional(readOnly = true)
     public Page<StoreCusPageResDTO> selectPage(StoreCusPageDTO storeCusPageDTO) {
         LambdaQueryWrapper<StoreCustomer> queryWrapper = new LambdaQueryWrapper<StoreCustomer>()
-                .eq(StoreCustomer::getStoreId, storeCusPageDTO.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED);
+                .eq(StoreCustomer::getStoreId, storeCusPageDTO.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)
+                .orderByDesc(StoreCustomer::getCreateTime);
         if (StringUtils.isNotBlank(storeCusPageDTO.getCusName())) {
             queryWrapper.like(StoreCustomer::getCusName, storeCusPageDTO.getCusName());
         }

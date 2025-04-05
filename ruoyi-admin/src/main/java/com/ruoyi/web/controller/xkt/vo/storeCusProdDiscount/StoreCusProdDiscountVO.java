@@ -19,18 +19,18 @@ import java.math.BigDecimal;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreCusProdDiscountVO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空!")
     private Long storeId;
-    @ApiModelProperty(name = "档口客户ID")
+    @ApiModelProperty(value = "档口客户ID")
     private Long storeCusId;
     @NotBlank(message = "客户名称不能为空!")
-    @ApiModelProperty(name = "客户名称")
+    @ApiModelProperty(value = "客户名称", required = true)
     private String storeCusName;
-    @ApiModelProperty(name = "客户联系电话")
+    @ApiModelProperty(value = "客户联系电话")
     private String phone;
     @NotNull(message = "优惠金额不能为空!")
-    @ApiModelProperty(name = "优惠金额")
+    @ApiModelProperty(value = "优惠金额", required = true)
     private BigDecimal discount;
 
 }

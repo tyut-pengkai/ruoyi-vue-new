@@ -4,9 +4,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 /**
  * @author liujiang
  * @version v1.0
@@ -16,17 +13,17 @@ import javax.validation.constraints.NotNull;
 @Data
 public class StoreProdColorResVO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "档口颜色ID")
+    @ApiModelProperty(value = "档口颜色ID")
     private Long storeColorId;
-    @ApiModelProperty(name = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
-    @ApiModelProperty(name = "商品分类名称")
+    @ApiModelProperty(value = "商品分类名称")
     private String prodCateName;
-    @ApiModelProperty(name = "颜色名称")
+    @ApiModelProperty(value = "颜色名称")
     private String colorName;
-    @ApiModelProperty(name = "排序")
+    @ApiModelProperty(value = "排序")
     private Integer orderNum;
 
 }

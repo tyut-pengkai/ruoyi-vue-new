@@ -13,11 +13,11 @@ import lombok.Data;
 @Data
 public class StoreColorVO {
 
-    @ApiModelProperty(name = "档口颜色ID")
+    @ApiModelProperty(value = "档口颜色ID")
     private Long storeColorId;
-    @ApiModelProperty(name = "颜色名称")
+    @ApiModelProperty(value = "颜色名称")
     private String colorName;
-    @ApiModelProperty(name = "排序")
+    @ApiModelProperty(value = "排序")
     private Integer orderNum;
 
 }

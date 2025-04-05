@@ -3,6 +3,7 @@ package com.ruoyi.xkt.dto.storeColor;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * @author liujiang
@@ -11,6 +12,7 @@ import lombok.Data;
  */
 @ApiModel("档口所有颜色")
 @Data
+@Accessors(chain = true)
 public class StoreColorDTO {
 
     @ApiModelProperty(name = "档口颜色ID")

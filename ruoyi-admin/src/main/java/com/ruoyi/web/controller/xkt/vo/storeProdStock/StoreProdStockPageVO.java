@@ -18,10 +18,10 @@ import javax.validation.constraints.NotNull;
 @Data
 public class StoreProdStockPageVO extends BasePageVO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空")
     private Long storeId;
-    @ApiModelProperty(name = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
 
 }

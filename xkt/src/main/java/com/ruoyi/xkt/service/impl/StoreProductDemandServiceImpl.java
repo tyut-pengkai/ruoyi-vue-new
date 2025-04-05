@@ -5,14 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.*;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandDTO;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageDTO;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageResDTO;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandQuantityDTO;
+import com.ruoyi.xkt.dto.storeProductDemand.*;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
+import com.ruoyi.xkt.enums.DemandStatus;
 import com.ruoyi.xkt.enums.EVoucherSequenceType;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IStoreProductDemandService;
@@ -20,6 +20,7 @@ import com.ruoyi.xkt.service.IVoucherSequenceService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.ibatis.executor.BatchResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -184,6 +185,26 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         return Page.convert(new PageInfo<>(demandList));
     }
 
+    /**
+     * 更新产品的生产状态
+     * 此方法通过接收一个包含产品生产信息的DTO对象来更新数据库中对应产品的生产状态
+     * 主要用于在生产流程中更新产品当前的加工状态或者生产阶段
+     *
+     * @param workingDTO 包含产品生产信息的数据传输对象用于更新产品生产状态
+     * @return
+     */
+    @Override
+    @Transactional
+    public Integer updateWorkingStatus(StoreProdDemandWorkingDTO workingDTO) {
+        List<StoreProductDemandDetail> demandDetailList = Optional.ofNullable(this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
+                        .eq(StoreProductDemandDetail::getStoreId, workingDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
+                        .in(StoreProductDemandDetail::getId, workingDTO.getStoreProdDemandDetailIdList())))
+                .orElseThrow(() -> new ServiceException("需求单明细不存在!", HttpStatus.ERROR));
+        demandDetailList.forEach(x -> x.setDetailStatus(DemandStatus.IN_PRODUCTION.getValue()));
+        List<BatchResult> list = this.storeProdDemandDetailMapper.updateById(demandDetailList);
+        return list.size();
+    }
+
 
     /**
      * 查询档口商品需求单
@@ -192,6 +213,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
      * @return 档口商品需求单
      */
     @Override
+    @Transactional(readOnly = true)
     public StoreProductDemand selectStoreProductDemandByStoreProdDemandId(Long storeProdDemandId) {
         return storeProdDemandMapper.selectStoreProductDemandByStoreProdDemandId(storeProdDemandId);
     }
@@ -203,6 +225,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
      * @return 档口商品需求单
      */
     @Override
+    @Transactional(readOnly = true)
     public List<StoreProductDemand> selectStoreProductDemandList(StoreProductDemand storeProductDemand) {
         return storeProdDemandMapper.selectStoreProductDemandList(storeProductDemand);
     }
@@ -214,6 +237,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertStoreProductDemand(StoreProductDemand storeProductDemand) {
         storeProductDemand.setCreateTime(DateUtils.getNowDate());
         return storeProdDemandMapper.insertStoreProductDemand(storeProductDemand);
@@ -239,6 +263,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductDemandByStoreProdDemandIds(Long[] storeProdDemandIds) {
         return storeProdDemandMapper.deleteStoreProductDemandByStoreProdDemandIds(storeProdDemandIds);
     }
@@ -250,6 +275,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteStoreProductDemandByStoreProdDemandId(Long storeProdDemandId) {
         return storeProdDemandMapper.deleteStoreProductDemandByStoreProdDemandId(storeProdDemandId);
     }

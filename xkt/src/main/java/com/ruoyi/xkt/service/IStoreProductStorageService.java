@@ -17,10 +17,10 @@ public interface IStoreProductStorageService {
     /**
      * 查询档口商品入库
      *
-     * @param storeProdStorId 档口商品入库主键
+     * @param storeProdStorageId 档口商品入库主键
      * @return 档口商品入库
      */
-    public StoreProdStorageResDTO selectByStoreProdStorId(Long storeProdStorId);
+    public StoreProdStorageResDTO selectByStoreProdStorageId(Long storeProdStorageId);
 
     /**
      * 新增档口商品入库
@@ -37,7 +37,7 @@ public interface IStoreProductStorageService {
      * @param storeProdStorageId 需要删除的档口商品入库主键集合
      * @return 结果
      */
-    public int deleteByStoreProdStorId(Long storeProdStorageId);
+    public int deleteByStoreProdStorageId(Long storeProdStorageId);
 
     /**
      * 分页查询

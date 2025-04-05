@@ -23,8 +23,7 @@ import java.util.List;
 @Accessors(chain = true)
 public class StoreProdStorageResDTO {
 
-    @ApiModelProperty(name = "storeProdStorId")
-    @JsonProperty("storeProdStorId")
+    @ApiModelProperty(name = "storeProdStorageId")
     private Long id;
     @ApiModelProperty(name = "档口ID")
     private Long storeId;

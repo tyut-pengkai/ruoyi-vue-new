@@ -18,10 +18,10 @@ import java.util.List;
 public class StoreProdStatusVO {
 
     @NotNull(message = "档口商品ID不能为空!")
-    @ApiModelProperty("档口商品ID")
+    @ApiModelProperty(value = "档口商品ID", required = true)
     private List<Long> storeProdIdList;
     @NotBlank(message = "档口商品状态不能为空!")
-    @ApiModelProperty("档口商品状态")
+    @ApiModelProperty(value = "档口商品状态", required = true)
     private Integer prodStatus;
 
 }

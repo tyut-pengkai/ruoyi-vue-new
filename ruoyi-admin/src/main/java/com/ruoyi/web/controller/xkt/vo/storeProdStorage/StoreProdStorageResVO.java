@@ -23,63 +23,63 @@ import java.util.List;
 @Accessors(chain = true)
 public class StoreProdStorageResVO {
 
-    @ApiModelProperty(name = "storeProdStorId")
-    @JsonProperty("storeProdStorId")
+    @ApiModelProperty(value = "storeProdStorageId")
+    @JsonProperty("storeProdStorageId")
     private Long id;
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "单据编号")
+    @ApiModelProperty(value = "单据编号")
     private String code;
-    @ApiModelProperty(name = "入库类型")
+    @ApiModelProperty(value = "入库类型")
     private Integer storageType;
-    @ApiModelProperty(name = "数量")
+    @ApiModelProperty(value = "数量")
     private Integer quantity;
-    @ApiModelProperty(name = "生产成本金额")
+    @ApiModelProperty(value = "生产成本金额")
     private BigDecimal produceAmount;
-    @ApiModelProperty(name = "操作人名称")
+    @ApiModelProperty(value = "操作人名称")
     private String operatorName;
-    @ApiModelProperty(name = "创建时间")
+    @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
-    @ApiModelProperty(name = "商品入库明细列表")
+    @ApiModelProperty(value = "商品入库明细列表")
     private List<StorageDetailVO> detailList;
 
     @Data
     public static class StorageDetailVO {
 
-        @ApiModelProperty(name = "商品货号")
+        @ApiModelProperty(value = "商品货号")
         private String prodArtNum;
-        @ApiModelProperty(name = "颜色名称")
+        @ApiModelProperty(value = "颜色名称")
         private String colorName;
-        @ApiModelProperty(name = "尺码30")
+        @ApiModelProperty(value = "尺码30")
         private Integer size30;
-        @ApiModelProperty(name = "尺码31")
+        @ApiModelProperty(value = "尺码31")
         private Integer size31;
-        @ApiModelProperty(name = "尺码32")
+        @ApiModelProperty(value = "尺码32")
         private Integer size32;
-        @ApiModelProperty(name = "尺码33")
+        @ApiModelProperty(value = "尺码33")
         private Integer size33;
-        @ApiModelProperty(name = "尺码34")
+        @ApiModelProperty(value = "尺码34")
         private Integer size34;
-        @ApiModelProperty(name = "尺码35")
+        @ApiModelProperty(value = "尺码35")
         private Integer size35;
-        @ApiModelProperty(name = "尺码36")
+        @ApiModelProperty(value = "尺码36")
         private Integer size36;
-        @ApiModelProperty(name = "尺码37")
+        @ApiModelProperty(value = "尺码37")
         private Integer size37;
-        @ApiModelProperty(name = "尺码38")
+        @ApiModelProperty(value = "尺码38")
         private Integer size38;
-        @ApiModelProperty(name = "尺码39")
+        @ApiModelProperty(value = "尺码39")
         private Integer size39;
-        @ApiModelProperty(name = "尺码40")
+        @ApiModelProperty(value = "尺码40")
         private Integer size40;
-        @ApiModelProperty(name = "尺码41")
+        @ApiModelProperty(value = "尺码41")
         private Integer size41;
-        @ApiModelProperty(name = "尺码42")
+        @ApiModelProperty(value = "尺码42")
         private Integer size42;
-        @ApiModelProperty(name = "尺码43")
+        @ApiModelProperty(value = "尺码43")
         private Integer size43;
-        @ApiModelProperty(name = "总数量")
+        @ApiModelProperty(value = "总数量")
         private Integer quantity;
 
     }

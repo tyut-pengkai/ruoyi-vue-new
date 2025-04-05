@@ -17,17 +17,17 @@ import java.math.BigDecimal;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreCusGeneralSaleVO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "档口客户ID")
+    @ApiModelProperty(value = "档口客户ID")
     private Long storeCusId;
-    @ApiModelProperty(name = "档口客户名称")
+    @ApiModelProperty(value = "档口客户名称")
     private String storeCusName;
-    @ApiModelProperty(name = "销售多少双")
+    @ApiModelProperty(value = "销售多少双")
     private Long saleCount;
-    @ApiModelProperty(name = "销售金额")
+    @ApiModelProperty(value = "销售金额")
     private BigDecimal saleAmount;
-    @ApiModelProperty(name = "欠款金额")
+    @ApiModelProperty(value = "欠款金额")
     private BigDecimal debtAmount;
 
 }

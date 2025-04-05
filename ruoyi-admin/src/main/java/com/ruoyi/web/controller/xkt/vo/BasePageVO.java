@@ -16,10 +16,10 @@ import javax.validation.constraints.NotNull;
 public class BasePageVO {
 
     @NotNull(message = "pageNum不能为空")
-    @ApiModelProperty(name = "pageNum")
+    @ApiModelProperty(value = "pageNum", required = true)
     private int pageNum;
     @NotNull(message = "pageSize不能为空")
-    @ApiModelProperty(name = "pageSize")
+    @ApiModelProperty(value = "pageSize", required = true)
     private int pageSize;
 
 }
