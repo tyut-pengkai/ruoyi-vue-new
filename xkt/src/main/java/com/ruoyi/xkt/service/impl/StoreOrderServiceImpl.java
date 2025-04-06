@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.NumberUtil;
@@ -9,11 +10,14 @@ import com.ruoyi.common.core.domain.XktBaseEntity;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.dto.express.ExpressContactDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderAddDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderAddResultDTO;
+import com.ruoyi.xkt.dto.order.StoreOrderOperationRecordAddDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IExpressService;
+import com.ruoyi.xkt.service.IOperationRecordService;
 import com.ruoyi.xkt.service.IStoreOrderService;
 import com.ruoyi.xkt.service.IVoucherSequenceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +39,9 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Autowired
     private StoreOrderDetailMapper storeOrderDetailMapper;
     @Autowired
-    private StoreOrderOperationRecordMapper storeOrderOperationRecordMapper;
-    @Autowired
-    private StoreOrderExpressTrackMapper storeOrderExpressTrackMapper;
-    @Autowired
     private IExpressService expressService;
+    @Autowired
+    private IOperationRecordService operationRecordService;
     @Autowired
     private StoreProductMapper storeProductMapper;
     @Autowired
@@ -127,7 +129,13 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         order.setTotalAmount(NumberUtil.add(orderGoodsAmount, orderExpressFee));
         order.setExpressId(expressId);
         //发货人信息
-        //TODO
+        ExpressContactDTO expressContactDTO = expressService.getStoreContact(storeId);
+        order.setOriginContactName(expressContactDTO.getContactName());
+        order.setOriginContactPhoneNumber(expressContactDTO.getContactPhoneNumber());
+        order.setOriginProvinceCode(expressContactDTO.getProvinceCode());
+        order.setOriginCityCode(expressContactDTO.getCityCode());
+        order.setOriginCountyCode(expressContactDTO.getCountyCode());
+        order.setOriginDetailAddress(expressContactDTO.getDetailAddress());
         //收货人信息
         order.setDestinationContactName(storeOrderAddDTO.getDestinationContactName());
         order.setDestinationContactPhoneNumber(storeOrderAddDTO.getDestinationContactPhoneNumber());
@@ -138,8 +146,6 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         order.setDeliveryType(storeOrderAddDTO.getDeliveryType());
         order.setDeliveryEndTime(storeOrderAddDTO.getDeliveryEndTime());
         order.setVoucherDate(DateUtil.date());
-        //自动完成时间
-        //TODO
         order.setVersion(0L);
         order.setDelFlag(Constants.UNDELETED);
         //落库
@@ -152,8 +158,40 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderDetailIdList.add(storeOrderDetail.getId());
         });
         //操作记录
-        //TODO
+        addOperationRecords(orderId, orderDetailIdList, orderUserId, new Date(), EOrderAction.ADD_ORDER);
         return new StoreOrderAddResultDTO(order, orderDetailList);
+    }
+
+    /**
+     * 添加操作记录
+     *
+     * @param orderId
+     * @param orderDetailIds
+     * @param operatorId
+     * @param operationTime
+     * @param action
+     */
+    private void addOperationRecords(Long orderId, List<Long> orderDetailIds, Long operatorId, Date operationTime,
+                                     EOrderAction action) {
+        List<StoreOrderOperationRecordAddDTO> addDTOList = new ArrayList<>(1 +
+                CollUtil.emptyIfNull(orderDetailIds).size());
+        StoreOrderOperationRecordAddDTO addDTO = new StoreOrderOperationRecordAddDTO();
+        addDTO.setTargetId(orderId);
+        addDTO.setTargetType(EOrderTargetTypeAction.ORDER.getValue());
+        addDTO.setAction(action.getValue());
+        addDTO.setOperatorId(operatorId);
+        addDTO.setOperationTime(operationTime);
+        addDTOList.add(addDTO);
+        for (Long orderDetailId : orderDetailIds) {
+            StoreOrderOperationRecordAddDTO detailAddDTO = new StoreOrderOperationRecordAddDTO();
+            detailAddDTO.setTargetId(orderDetailId);
+            detailAddDTO.setTargetType(EOrderTargetTypeAction.ORDER_DETAIL.getValue());
+            addDTO.setAction(action.getValue());
+            addDTO.setOperatorId(operatorId);
+            addDTO.setOperationTime(operationTime);
+            addDTOList.add(addDTO);
+        }
+        operationRecordService.addOrderOperationRecords(addDTOList);
     }
 
     /**

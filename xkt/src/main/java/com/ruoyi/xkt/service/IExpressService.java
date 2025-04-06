@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.ExpressFeeConfig;
+import com.ruoyi.xkt.dto.express.ExpressContactDTO;
 
 /**
  * @author liangyq
@@ -25,4 +26,12 @@ public interface IExpressService {
      * @return
      */
     ExpressFeeConfig getExpressFeeConfig(Long expressId, String provinceCode, String cityCode, String countyCode);
+
+    /**
+     * 获取档口联系方式
+     *
+     * @param storeId
+     * @return
+     */
+    ExpressContactDTO getStoreContact(Long storeId);
 }

@@ -64,6 +64,16 @@ public class GlobalExceptionHandler
     }
 
     /**
+     * 断言异常
+     * {@link cn.hutool.core.lang.Assert}
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public AjaxResult illegalArgumentException(IllegalArgumentException e) {
+        log.error(e.getMessage(), e);
+        return AjaxResult.error(e.getMessage());
+    }
+
+    /**
      * 请求路径中缺少必需的路径变量
      */
     @ExceptionHandler(MissingPathVariableException.class)

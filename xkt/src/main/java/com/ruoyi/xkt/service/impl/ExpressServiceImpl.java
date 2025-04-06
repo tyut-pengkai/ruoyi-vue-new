@@ -6,10 +6,15 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.Express;
 import com.ruoyi.xkt.domain.ExpressFeeConfig;
+import com.ruoyi.xkt.domain.Store;
+import com.ruoyi.xkt.dto.express.ExpressContactDTO;
 import com.ruoyi.xkt.mapper.ExpressFeeConfigMapper;
 import com.ruoyi.xkt.mapper.ExpressMapper;
+import com.ruoyi.xkt.mapper.StoreMapper;
+import com.ruoyi.xkt.mapper.StoreOrderExpressTrackMapper;
 import com.ruoyi.xkt.service.IExpressService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -23,10 +28,21 @@ import java.util.stream.Collectors;
 @Service
 public class ExpressServiceImpl implements IExpressService {
 
+    @Value("${express.default.province:510000}")
+    private String expressDefaultProvince;
+    @Value("${express.default.city:510100}")
+    private String expressDefaultCity;
+    @Value("${express.default.county:510114}")
+    private String expressDefaultCounty;
+
     @Autowired
     private ExpressMapper expressMapper;
     @Autowired
     private ExpressFeeConfigMapper expressFeeConfigMapper;
+    @Autowired
+    private StoreOrderExpressTrackMapper storeOrderExpressTrackMapper;
+    @Autowired
+    private StoreMapper storeMapper;
 
     @Override
     public void checkExpress(Long expressId) {
@@ -44,8 +60,8 @@ public class ExpressServiceImpl implements IExpressService {
         Assert.notEmpty(cityCode);
         Assert.notEmpty(countyCode);
         Map<String, ExpressFeeConfig> map = expressFeeConfigMapper.selectList(Wrappers.lambdaQuery(ExpressFeeConfig.class)
-                        .eq(ExpressFeeConfig::getExpressId, expressId)
-                        .in(ExpressFeeConfig::getRegionCode, Arrays.asList(provinceCode, cityCode, countyCode)))
+                .eq(ExpressFeeConfig::getExpressId, expressId)
+                .in(ExpressFeeConfig::getRegionCode, Arrays.asList(provinceCode, cityCode, countyCode)))
                 .stream()
                 //过滤掉已被删除的配置
                 .filter(BeanValidators::exists)
@@ -66,5 +82,20 @@ public class ExpressServiceImpl implements IExpressService {
             }
         }
         return expressFeeConfig;
+    }
+
+    @Override
+    public ExpressContactDTO getStoreContact(Long storeId) {
+        Assert.notNull(storeId);
+        ExpressContactDTO expressContactDTO = new ExpressContactDTO();
+        expressContactDTO.setProvinceCode(expressDefaultProvince);
+        expressContactDTO.setCityCode(expressDefaultCity);
+        expressContactDTO.setCountyCode(expressDefaultCounty);
+        Store store = storeMapper.selectById(storeId);
+        Assert.notNull(store);
+        expressContactDTO.setDetailAddress(store.getStoreAddress());
+        expressContactDTO.setContactName(store.getContactName());
+        expressContactDTO.setContactPhoneNumber(store.getContactPhone());
+        return expressContactDTO;
     }
 }
