@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.dto.store.StoreCreateDTO;
 import com.ruoyi.xkt.dto.store.StoreUpdateDTO;
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -52,7 +50,7 @@ public class StoreServiceImpl implements IStoreService {
         // 当前时间往后推1年为试用期时间
         Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         store.setTrialEndTime(oneYearAfter);
-       return this.storeMapper.insert(store);
+        return this.storeMapper.insert(store);
     }
 
     /**
@@ -76,81 +74,4 @@ public class StoreServiceImpl implements IStoreService {
         return storeMapper.updateById(store);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * 新增档口
-     *
-     * @param store 档口
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int insertStore(Store store) {
-        store.setCreateTime(DateUtils.getNowDate());
-        return storeMapper.insertStore(store);
-    }
-
-    /**
-     * 查询档口
-     *
-     * @param storeId 档口主键
-     * @return 档口
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public Store selectStoreByStoreId(Long storeId) {
-        return storeMapper.selectStoreByStoreId(storeId);
-    }
-
-    /**
-     * 查询档口列表
-     *
-     * @param store 档口
-     * @return 档口
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<Store> selectStoreList(Store store) {
-        return storeMapper.selectStoreList(store);
-    }
-
-
-
-
-    /**
-     * 批量删除档口
-     *
-     * @param storeIds 需要删除的档口主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreByStoreIds(Long[] storeIds) {
-        return storeMapper.deleteStoreByStoreIds(storeIds);
-    }
-
-    /**
-     * 删除档口信息
-     *
-     * @param storeId 档口主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreByStoreId(Long storeId) {
-        return storeMapper.deleteStoreByStoreId(storeId);
-    }
 }

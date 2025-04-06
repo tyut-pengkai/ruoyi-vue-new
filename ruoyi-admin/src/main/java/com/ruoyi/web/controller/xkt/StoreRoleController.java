@@ -1,18 +1,25 @@
 package com.ruoyi.web.controller.xkt;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.xkt.domain.StoreRole;
+import com.ruoyi.web.controller.xkt.vo.storeRole.StoreRolePageVO;
+import com.ruoyi.web.controller.xkt.vo.storeRole.StoreRoleUpdateStatusVO;
+import com.ruoyi.web.controller.xkt.vo.storeRole.StoreRoleVO;
+import com.ruoyi.xkt.dto.storeRole.StoreRoleDTO;
+import com.ruoyi.xkt.dto.storeRole.StoreRolePageDTO;
+import com.ruoyi.xkt.dto.storeRole.StoreRoleResDTO;
+import com.ruoyi.xkt.dto.storeRole.StoreRoleUpdateStatusDTO;
 import com.ruoyi.xkt.service.IStoreRoleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -21,71 +28,66 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Api(tags = "档口子角色")
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/rest/v1/store-roles")
 public class StoreRoleController extends XktBaseController {
-    @Autowired
-    private IStoreRoleService storeRoleService;
+
+    final IStoreRoleService storeRoleService;
 
     /**
-     * 查询档口子角色列表
+     * 新增档口子角色
      */
-    @PreAuthorize("@ss.hasPermi('system:role:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(StoreRole storeRole) {
-        startPage();
-        List<StoreRole> list = storeRoleService.selectStoreRoleList(storeRole);
-        return getDataTable(list);
+    @PreAuthorize("@ss.hasPermi('system:role:add')")
+    @ApiOperation(value = "新增档口子角色", httpMethod = "POST", response = R.class)
+    @Log(title = "新增档口子角色", businessType = BusinessType.INSERT)
+    @PostMapping
+    public R<Integer> add(@Validated @RequestBody StoreRoleVO storeRoleVO) {
+        return R.ok(storeRoleService.insertStoreRole(BeanUtil.toBean(storeRoleVO, StoreRoleDTO.class)));
     }
 
+
     /**
-     * 导出档口子角色列表
+     * 编辑档口子角色
      */
-    @PreAuthorize("@ss.hasPermi('system:role:export')")
-    @Log(title = "档口子角色", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, StoreRole storeRole) {
-        List<StoreRole> list = storeRoleService.selectStoreRoleList(storeRole);
-        ExcelUtil<StoreRole> util = new ExcelUtil<StoreRole>(StoreRole.class);
-        util.exportExcel(response, list, "档口子角色数据");
+    @PreAuthorize("@ss.hasPermi('system:role:edit')")
+    @ApiOperation(value = "编辑档口子角色", httpMethod = "PUT", response = R.class)
+    @Log(title = "编辑档口子角色", businessType = BusinessType.UPDATE)
+    @PutMapping
+    public R<Integer> edit(@Validated @RequestBody StoreRoleVO storeRoleVO) {
+        return R.ok(storeRoleService.update(BeanUtil.toBean(storeRoleVO, StoreRoleDTO.class)));
     }
 
     /**
      * 获取档口子角色详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:role:query')")
+    @ApiOperation(value = "获取档口子角色详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeRoleId}")
-    public R getInfo(@PathVariable("storeRoleId") Long storeRoleId) {
-        return success(storeRoleService.selectStoreRoleByStoreRoleId(storeRoleId));
+    public R<StoreRoleVO> getInfo(@PathVariable("storeRoleId") Long storeRoleId) {
+        return R.ok(BeanUtil.toBean(storeRoleService.selectByStoreRoleId(storeRoleId), StoreRoleVO.class));
     }
 
     /**
-     * 新增档口子角色
+     * 获取档口子角色列表
      */
-    @PreAuthorize("@ss.hasPermi('system:role:add')")
-    @Log(title = "档口子角色", businessType = BusinessType.INSERT)
-    @PostMapping
-    public R add(@RequestBody StoreRole storeRole) {
-        return success(storeRoleService.insertStoreRole(storeRole));
+    @PreAuthorize("@ss.hasPermi('system:role:list')")
+    @ApiOperation(value = "查询档口销售出库列表", httpMethod = "POST", response = R.class)
+    @PostMapping("/list")
+    public R<List<StoreRoleResDTO>> list(@Validated @RequestBody StoreRolePageVO rolePageVO) {
+        return R.ok(storeRoleService.list(BeanUtil.toBean(rolePageVO, StoreRolePageDTO.class)));
     }
 
     /**
-     * 修改档口子角色
+     * 停用/启用档口子角色
      */
     @PreAuthorize("@ss.hasPermi('system:role:edit')")
-    @Log(title = "档口子角色", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public R edit(@RequestBody StoreRole storeRole) {
-        return success(storeRoleService.updateStoreRole(storeRole));
+    @ApiOperation(value = "停用/启用档口子角色", httpMethod = "PUT", response = R.class)
+    @Log(title = "停用/启用档口子角色", businessType = BusinessType.UPDATE)
+    @PutMapping("/status")
+    public R<Integer> updateRoleStatus(@Validated @RequestBody StoreRoleUpdateStatusVO roleUpdateStatusVO) {
+        return R.ok(storeRoleService.updateRoleStatus(BeanUtil.toBean(roleUpdateStatusVO, StoreRoleUpdateStatusDTO.class)));
     }
 
-    /**
-     * 删除档口子角色
-     */
-    @PreAuthorize("@ss.hasPermi('system:role:remove')")
-    @Log(title = "档口子角色", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{storeRoleIds}")
-    public R remove(@PathVariable Long[] storeRoleIds) {
-        return success(storeRoleService.deleteStoreRoleByStoreRoleIds(storeRoleIds));
-    }
 }

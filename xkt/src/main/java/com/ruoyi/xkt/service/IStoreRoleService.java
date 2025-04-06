@@ -1,6 +1,9 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.StoreRole;
+import com.ruoyi.xkt.dto.storeRole.StoreRoleDTO;
+import com.ruoyi.xkt.dto.storeRole.StoreRolePageDTO;
+import com.ruoyi.xkt.dto.storeRole.StoreRoleResDTO;
+import com.ruoyi.xkt.dto.storeRole.StoreRoleUpdateStatusDTO;
 
 import java.util.List;
 
@@ -11,51 +14,45 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface IStoreRoleService {
-    /**
-     * 查询档口子角色
-     *
-     * @param storeRoleId 档口子角色主键
-     * @return 档口子角色
-     */
-    public StoreRole selectStoreRoleByStoreRoleId(Long storeRoleId);
-
-    /**
-     * 查询档口子角色列表
-     *
-     * @param storeRole 档口子角色
-     * @return 档口子角色集合
-     */
-    public List<StoreRole> selectStoreRoleList(StoreRole storeRole);
 
     /**
      * 新增档口子角色
      *
-     * @param storeRole 档口子角色
+     * @param storeRoleDTO 档口子角色
      * @return 结果
      */
-    public int insertStoreRole(StoreRole storeRole);
+    public int insertStoreRole(StoreRoleDTO storeRoleDTO);
 
     /**
-     * 修改档口子角色
+     * 更新档口子角色
      *
-     * @param storeRole 档口子角色
-     * @return 结果
+     * @param storeRoleDTO 档口子角色信息
+     * @return
      */
-    public int updateStoreRole(StoreRole storeRole);
+    Integer update(StoreRoleDTO storeRoleDTO);
 
     /**
-     * 批量删除档口子角色
+     * 查询档口子角色菜单详情
      *
-     * @param storeRoleIds 需要删除的档口子角色主键集合
-     * @return 结果
+     * @param storeRoleId 档口子角色ID
+     * @return
      */
-    public int deleteStoreRoleByStoreRoleIds(Long[] storeRoleIds);
+    StoreRoleDTO selectByStoreRoleId(Long storeRoleId);
 
     /**
-     * 删除档口子角色信息
+     * 档口子角色分页查询
      *
-     * @param storeRoleId 档口子角色主键
-     * @return 结果
+     * @param pageDTO 档口子角色分页查询入参
+     * @return
      */
-    public int deleteStoreRoleByStoreRoleId(Long storeRoleId);
+    List<StoreRoleResDTO> list(StoreRolePageDTO pageDTO);
+
+    /**
+     * 更新档口子角色状态
+     *
+     * @param updateStatusDTO 子角色状态更新入参
+     * @return
+     */
+    Integer updateRoleStatus(StoreRoleUpdateStatusDTO updateStatusDTO);
+
 }

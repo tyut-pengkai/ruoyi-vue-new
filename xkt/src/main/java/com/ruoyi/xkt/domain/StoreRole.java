@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,22 +27,37 @@ public class StoreRole extends XktBaseEntity {
     /**
      * store.id
      */
-    @Excel(name = "store.id")
     private Long storeId;
 
     /**
-     * 档口角色状态（0正常 1停用）
+     * 角色名称
      */
-    @Excel(name = "档口角色状态", readConverterExp = "0=正常,1=停用")
-    private String roleStatus;
+    private String roleName;
 
+    /**
+     * 系统角色ID
+     */
+    private Long roleId;
+
+    /**
+     * 备注
+     */
+    private String remark;
+
+    /**
+     * 操作人ID
+     */
+    private Long operatorId;
+    /**
+     * 操作人名称
+     */
+    private String operatorName;
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId())
                 .append("storeId", getStoreId())
-                .append("roleStatus", getRoleStatus())
                 .append("version", getVersion())
                 .append("delFlag", getDelFlag())
                 .append("createBy", getCreateBy())

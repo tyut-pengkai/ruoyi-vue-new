@@ -5,6 +5,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreRoleMenu extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -43,13 +45,6 @@ public class StoreRoleMenu extends XktBaseEntity {
     @Excel(name = "菜单名称")
     private String menuName;
 
-    /**
-     * 菜单使用状态（0正常 1停用）
-     */
-    @Excel(name = "菜单使用状态", readConverterExp = "0=正常,1=停用")
-    private String menuStatus;
-
-
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -57,7 +52,6 @@ public class StoreRoleMenu extends XktBaseEntity {
                 .append("storeRoleId", getStoreRoleId())
                 .append("storeId", getStoreId())
                 .append("menuName", getMenuName())
-                .append("menuStatus", getMenuStatus())
                 .append("version", getVersion())
                 .append("delFlag", getDelFlag())
                 .append("createBy", getCreateBy())
