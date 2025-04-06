@@ -1,4 +1,4 @@
-package com.ruoyi.xkt.dto.storeRole;
+package com.ruoyi.web.controller.xkt.vo.storeRole;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -16,7 +16,7 @@ import java.util.Date;
 @ApiModel("档口子角色列表数据")
 @Data
 @Accessors(chain = true)
-public class StoreRoleResDTO {
+public class StoreRoleResVO {
 
     @ApiModelProperty(value = "档口ID")
     private Long storeId;

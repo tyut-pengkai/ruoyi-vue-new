@@ -5,11 +5,12 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.web.controller.xkt.vo.storeRole.StoreRolePageVO;
+import com.ruoyi.web.controller.xkt.vo.storeRole.StoreRoleListVO;
+import com.ruoyi.web.controller.xkt.vo.storeRole.StoreRoleResVO;
 import com.ruoyi.web.controller.xkt.vo.storeRole.StoreRoleUpdateStatusVO;
 import com.ruoyi.web.controller.xkt.vo.storeRole.StoreRoleVO;
 import com.ruoyi.xkt.dto.storeRole.StoreRoleDTO;
-import com.ruoyi.xkt.dto.storeRole.StoreRolePageDTO;
+import com.ruoyi.xkt.dto.storeRole.StoreRoleListDTO;
 import com.ruoyi.xkt.dto.storeRole.StoreRoleResDTO;
 import com.ruoyi.xkt.dto.storeRole.StoreRoleUpdateStatusDTO;
 import com.ruoyi.xkt.service.IStoreRoleService;
@@ -35,6 +36,11 @@ import java.util.List;
 public class StoreRoleController extends XktBaseController {
 
     final IStoreRoleService storeRoleService;
+
+    // TODO 还要返回档口角色所有的菜单
+    // TODO 还要返回档口角色所有的菜单
+    // TODO 还要返回档口角色所有的菜单
+    // TODO 还要返回档口角色所有的菜单
 
     /**
      * 新增档口子角色
@@ -66,6 +72,12 @@ public class StoreRoleController extends XktBaseController {
     @ApiOperation(value = "获取档口子角色详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeRoleId}")
     public R<StoreRoleVO> getInfo(@PathVariable("storeRoleId") Long storeRoleId) {
+
+        // TODO 还要返回档口角色所有的菜单
+        // TODO 还要返回档口角色所有的菜单
+        // TODO 还要返回档口角色所有的菜单
+        // TODO 还要返回档口角色所有的菜单
+
         return R.ok(BeanUtil.toBean(storeRoleService.selectByStoreRoleId(storeRoleId), StoreRoleVO.class));
     }
 
@@ -75,8 +87,8 @@ public class StoreRoleController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:role:list')")
     @ApiOperation(value = "查询档口销售出库列表", httpMethod = "POST", response = R.class)
     @PostMapping("/list")
-    public R<List<StoreRoleResDTO>> list(@Validated @RequestBody StoreRolePageVO rolePageVO) {
-        return R.ok(storeRoleService.list(BeanUtil.toBean(rolePageVO, StoreRolePageDTO.class)));
+    public R<List<StoreRoleResVO>> list(@Validated @RequestBody StoreRoleListVO roleListVO) {
+        return R.ok(BeanUtil.copyToList(storeRoleService.list(BeanUtil.toBean(roleListVO, StoreRoleListDTO.class)), StoreRoleResVO.class));
     }
 
     /**
@@ -89,5 +101,7 @@ public class StoreRoleController extends XktBaseController {
     public R<Integer> updateRoleStatus(@Validated @RequestBody StoreRoleUpdateStatusVO roleUpdateStatusVO) {
         return R.ok(storeRoleService.updateRoleStatus(BeanUtil.toBean(roleUpdateStatusVO, StoreRoleUpdateStatusDTO.class)));
     }
+
+
 
 }

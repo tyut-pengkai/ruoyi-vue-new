@@ -11,7 +11,7 @@ import com.ruoyi.xkt.domain.StoreRole;
 import com.ruoyi.xkt.domain.StoreRoleAccount;
 import com.ruoyi.xkt.domain.StoreRoleMenu;
 import com.ruoyi.xkt.dto.storeRole.StoreRoleDTO;
-import com.ruoyi.xkt.dto.storeRole.StoreRolePageDTO;
+import com.ruoyi.xkt.dto.storeRole.StoreRoleListDTO;
 import com.ruoyi.xkt.dto.storeRole.StoreRoleResDTO;
 import com.ruoyi.xkt.dto.storeRole.StoreRoleUpdateStatusDTO;
 import com.ruoyi.xkt.mapper.StoreRoleAccountMapper;
@@ -124,6 +124,13 @@ public class StoreRoleServiceImpl implements IStoreRoleService {
         List<StoreRoleMenu> menuList = this.storeRoleMenuMapper.selectList(new LambdaQueryWrapper<StoreRoleMenu>()
                 .eq(StoreRoleMenu::getStoreRoleId, storeRoleId).eq(StoreRoleMenu::getDelFlag, Constants.UNDELETED)
                 .eq(StoreRoleMenu::getStoreId, storeRole.getStoreId()));
+
+        // TODO 还要返回档口角色所有的菜单
+        // TODO 还要返回档口角色所有的菜单
+        // TODO 还要返回档口角色所有的菜单
+        // TODO 还要返回档口角色所有的菜单
+
+
         return BeanUtil.toBean(storeRole, StoreRoleDTO.class)
                 .setMenuList(menuList.stream().map(StoreRoleMenu::getMenuName).collect(Collectors.toList()));
     }
@@ -136,7 +143,7 @@ public class StoreRoleServiceImpl implements IStoreRoleService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<StoreRoleResDTO> list(StoreRolePageDTO pageDTO) {
+    public List<StoreRoleResDTO> list(StoreRoleListDTO pageDTO) {
         List<StoreRole> storeRoleList = this.storeRoleMapper.selectList(new LambdaQueryWrapper<StoreRole>()
                 .eq(StoreRole::getStoreId, pageDTO.getStoreId()).eq(StoreRole::getDelFlag, Constants.UNDELETED));
         return storeRoleList.stream().map(x -> BeanUtil.toBean(x, StoreRoleResDTO.class).setStoreRoleId(x.getId()))

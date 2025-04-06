@@ -32,6 +32,16 @@ public class StoreRoleAccount extends XktBaseEntity {
     private Long storeRoleId;
 
     /**
+     * 手机号
+     */
+    private String phone;
+
+    /**
+     * 子账户名称
+     */
+    private String accountName;
+
+    /**
      * 档口ID
      */
     @Excel(name = "档口ID")
@@ -43,12 +53,15 @@ public class StoreRoleAccount extends XktBaseEntity {
     @Excel(name = "sys_user.id")
     private Long userId;
 
-    /**
-     * 当前档口子账号状态（0正常 1停用）
-     */
-    @Excel(name = "当前档口子账号状态", readConverterExp = "0=正常,1=停用")
-    private String accStatus;
 
+    /**
+     * 操作人ID
+     */
+    private Long operatorId;
+    /**
+     * 操作人名称
+     */
+    private String operatorName;
 
     @Override
     public String toString() {
@@ -57,7 +70,6 @@ public class StoreRoleAccount extends XktBaseEntity {
                 .append("storeRoleId", getStoreRoleId())
                 .append("storeId", getStoreId())
                 .append("userId", getUserId())
-                .append("accStatus", getAccStatus())
                 .append("version", getVersion())
                 .append("delFlag", getDelFlag())
                 .append("createBy", getCreateBy())

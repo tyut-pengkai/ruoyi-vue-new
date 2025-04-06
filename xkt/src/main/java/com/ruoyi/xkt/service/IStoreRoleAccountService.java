@@ -1,6 +1,6 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.StoreRoleAccount;
+import com.ruoyi.xkt.dto.storeRoleAccount.*;
 
 import java.util.List;
 
@@ -11,51 +11,44 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface IStoreRoleAccountService {
-    /**
-     * 查询档口子角色账号
-     *
-     * @param storeRoleAccId 档口子角色账号主键
-     * @return 档口子角色账号
-     */
-    public StoreRoleAccount selectStoreRoleAccountByStoreRoleAccId(Long storeRoleAccId);
 
     /**
-     * 查询档口子角色账号列表
+     * 新增档口子账号
      *
-     * @param storeRoleAccount 档口子角色账号
-     * @return 档口子角色账号集合
+     * @param accDTO 子账号入参
+     * @return
      */
-    public List<StoreRoleAccount> selectStoreRoleAccountList(StoreRoleAccount storeRoleAccount);
+    Integer insert(StoreRoleAccDTO accDTO);
 
     /**
-     * 新增档口子角色账号
+     * 编辑档口子账号
      *
-     * @param storeRoleAccount 档口子角色账号
-     * @return 结果
+     * @param accUpdateDTO 档口子账号编辑入参
+     * @return
      */
-    public int insertStoreRoleAccount(StoreRoleAccount storeRoleAccount);
+    Integer update(StoreRoleAccUpdateDTO accUpdateDTO);
 
     /**
-     * 修改档口子角色账号
+     * 档口子账号列表
      *
-     * @param storeRoleAccount 档口子角色账号
-     * @return 结果
+     * @param listDTO
+     * @return
      */
-    public int updateStoreRoleAccount(StoreRoleAccount storeRoleAccount);
+    List<StoreRoleAccResDTO> list(StoreRoleAccListDTO listDTO);
 
     /**
-     * 批量删除档口子角色账号
+     * 获取档口子账号详情
      *
-     * @param storeRoleAccIds 需要删除的档口子角色账号主键集合
-     * @return 结果
+     * @param storeRoleAccId 档口子账号ID
+     * @return
      */
-    public int deleteStoreRoleAccountByStoreRoleAccIds(Long[] storeRoleAccIds);
+    StoreRoleAccDetailResDTO selectByStoreRoleAccId(Long storeRoleAccId);
 
     /**
-     * 删除档口子角色账号信息
-     *
-     * @param storeRoleAccId 档口子角色账号主键
-     * @return 结果
+     * 停用/启用档口子账号
+     * @param updateStatusDTO
+     * @return
      */
-    public int deleteStoreRoleAccountByStoreRoleAccId(Long storeRoleAccId);
+    Integer updateAccountStatus(StoreRoleAccUpdateStatusDTO updateStatusDTO);
+
 }

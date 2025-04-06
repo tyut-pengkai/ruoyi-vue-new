@@ -1,7 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.dto.storeRole.StoreRoleDTO;
-import com.ruoyi.xkt.dto.storeRole.StoreRolePageDTO;
+import com.ruoyi.xkt.dto.storeRole.StoreRoleListDTO;
 import com.ruoyi.xkt.dto.storeRole.StoreRoleResDTO;
 import com.ruoyi.xkt.dto.storeRole.StoreRoleUpdateStatusDTO;
 
@@ -45,7 +45,7 @@ public interface IStoreRoleService {
      * @param pageDTO 档口子角色分页查询入参
      * @return
      */
-    List<StoreRoleResDTO> list(StoreRolePageDTO pageDTO);
+    List<StoreRoleResDTO> list(StoreRoleListDTO pageDTO);
 
     /**
      * 更新档口子角色状态

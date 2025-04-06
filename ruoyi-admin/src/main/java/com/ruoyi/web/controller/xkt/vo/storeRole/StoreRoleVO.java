@@ -23,7 +23,7 @@ public class StoreRoleVO {
     @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空!")
     private Long storeId;
-    @ApiModelProperty(value = "档口ID，新增为空 编辑必传")
+    @ApiModelProperty(value = "档口子角色ID，新增为空 编辑必传")
     private Long storeRoleId;
     @ApiModelProperty(value = "角色名称")
     @NotBlank(message = "角色名称不能为空!")

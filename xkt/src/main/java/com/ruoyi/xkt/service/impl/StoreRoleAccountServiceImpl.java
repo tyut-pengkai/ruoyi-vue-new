@@ -1,14 +1,27 @@
 package com.ruoyi.xkt.service.impl;
 
-import com.ruoyi.common.utils.DateUtils;
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.xkt.domain.StoreRole;
 import com.ruoyi.xkt.domain.StoreRoleAccount;
+import com.ruoyi.xkt.dto.storeRoleAccount.*;
 import com.ruoyi.xkt.mapper.StoreRoleAccountMapper;
+import com.ruoyi.xkt.mapper.StoreRoleMapper;
 import com.ruoyi.xkt.service.IStoreRoleAccountService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 档口子角色账号Service业务层处理
@@ -17,79 +30,123 @@ import java.util.List;
  * @date 2025-03-26
  */
 @Service
+@RequiredArgsConstructor
 public class StoreRoleAccountServiceImpl implements IStoreRoleAccountService {
-    @Autowired
-    private StoreRoleAccountMapper storeRoleAccountMapper;
+
+    final StoreRoleAccountMapper storeRoleAccMapper;
+    final StoreRoleMapper storeRoleMapper;
 
     /**
-     * 查询档口子角色账号
+     * 新增档口子账号
      *
-     * @param storeRoleAccId 档口子角色账号主键
-     * @return 档口子角色账号
-     */
-    @Override
-    public StoreRoleAccount selectStoreRoleAccountByStoreRoleAccId(Long storeRoleAccId) {
-        return storeRoleAccountMapper.selectStoreRoleAccountByStoreRoleAccId(storeRoleAccId);
-    }
-
-    /**
-     * 查询档口子角色账号列表
-     *
-     * @param storeRoleAccount 档口子角色账号
-     * @return 档口子角色账号
-     */
-    @Override
-    public List<StoreRoleAccount> selectStoreRoleAccountList(StoreRoleAccount storeRoleAccount) {
-        return storeRoleAccountMapper.selectStoreRoleAccountList(storeRoleAccount);
-    }
-
-    /**
-     * 新增档口子角色账号
-     *
-     * @param storeRoleAccount 档口子角色账号
-     * @return 结果
+     * @param accDTO 子账号入参
+     * @return
      */
     @Override
     @Transactional
-    public int insertStoreRoleAccount(StoreRoleAccount storeRoleAccount) {
-        storeRoleAccount.setCreateTime(DateUtils.getNowDate());
-        return storeRoleAccountMapper.insertStoreRoleAccount(storeRoleAccount);
+    public Integer insert(StoreRoleAccDTO accDTO) {
+        // 当前登录用户
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        StoreRoleAccount account = BeanUtil.toBean(accDTO, StoreRoleAccount.class);
+        account.setOperatorId(loginUser.getUserId());
+        account.setOperatorName(loginUser.getUsername());
+        // 若为系统未注册用户，则重新走注册电商卖家角色流程
+        if (ObjectUtils.isEmpty(accDTO.getUserId())) {
+
+            // TODO 走注册电商卖家角色流程
+            // TODO 走注册电商卖家角色流程
+            // TODO 走注册电商卖家角色流程
+            // TODO 走注册电商卖家角色流程
+
+            account.setUserId(1000L);
+        }
+        return this.storeRoleAccMapper.insert(account);
     }
 
     /**
-     * 修改档口子角色账号
+     * 编辑档口子账号
      *
-     * @param storeRoleAccount 档口子角色账号
-     * @return 结果
+     * @param accUpdateDTO 档口子账号
+     * @return
      */
     @Override
     @Transactional
-    public int updateStoreRoleAccount(StoreRoleAccount storeRoleAccount) {
-        storeRoleAccount.setUpdateTime(DateUtils.getNowDate());
-        return storeRoleAccountMapper.updateStoreRoleAccount(storeRoleAccount);
+    public Integer update(StoreRoleAccUpdateDTO accUpdateDTO) {
+        StoreRoleAccount account = Optional.ofNullable(this.storeRoleAccMapper.selectOne(new LambdaQueryWrapper<StoreRoleAccount>()
+                        .eq(StoreRoleAccount::getId, accUpdateDTO.getStoreRoleAccId()).eq(StoreRoleAccount::getDelFlag, Constants.UNDELETED)
+                        .eq(StoreRoleAccount::getStoreId, accUpdateDTO.getStoreId())))
+                .orElseThrow(() -> new RuntimeException("未找到该子账号信息"));
+        account.setAccountName(accUpdateDTO.getAccountName());
+        account.setStoreRoleId(accUpdateDTO.getStoreRoleId());
+        return this.storeRoleAccMapper.updateById(account);
     }
 
     /**
-     * 批量删除档口子角色账号
+     * 档口子账号列表
      *
-     * @param storeRoleAccIds 需要删除的档口子角色账号主键
-     * @return 结果
+     * @param listDTO
+     * @return
      */
     @Override
-    @Transactional
-    public int deleteStoreRoleAccountByStoreRoleAccIds(Long[] storeRoleAccIds) {
-        return storeRoleAccountMapper.deleteStoreRoleAccountByStoreRoleAccIds(storeRoleAccIds);
+    @Transactional(readOnly = true)
+    public List<StoreRoleAccResDTO> list(StoreRoleAccListDTO listDTO) {
+        List<StoreRoleAccount> accountList = this.storeRoleAccMapper.selectList(new LambdaQueryWrapper<StoreRoleAccount>()
+                .eq(StoreRoleAccount::getStoreId, listDTO.getStoreId()).eq(StoreRoleAccount::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(accountList)) {
+            return new ArrayList<>();
+        }
+        // 找到所有的子账号角色
+        List<StoreRole> roleList = Optional.ofNullable(this.storeRoleMapper.selectList(new LambdaQueryWrapper<StoreRole>()
+                        .in(StoreRole::getId, accountList.stream().map(StoreRoleAccount::getStoreRoleId).collect(Collectors.toList()))
+                        .eq(StoreRole::getDelFlag, Constants.UNDELETED).eq(StoreRole::getStoreId, listDTO.getStoreId())))
+                .orElseThrow(() -> new RuntimeException("未找到子账号角色信息"));
+        Map<Long, StoreRole> roleMap = roleList.stream().collect(Collectors.toMap(StoreRole::getId, storeRole -> storeRole));
+        return accountList.stream().map(account -> {
+            StoreRoleAccResDTO accResDTO = BeanUtil.toBean(account, StoreRoleAccResDTO.class);
+            accResDTO.setStoreRoleAccId(account.getId());
+            accResDTO.setStoreRoleName(ObjectUtils.isNotEmpty(roleMap.get(account.getStoreRoleId()))
+                    ? roleMap.get(account.getStoreRoleId()).getRoleName() : "");
+            return accResDTO;
+        }).collect(Collectors.toList());
     }
 
     /**
-     * 删除档口子角色账号信息
+     * 获取档口子账号详情
      *
-     * @param storeRoleAccId 档口子角色账号主键
-     * @return 结果
+     * @param storeRoleAccId 档口子账号ID
+     * @return StoreRoleAccDetailResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreRoleAccDetailResDTO selectByStoreRoleAccId(Long storeRoleAccId) {
+        StoreRoleAccount account = Optional.ofNullable(this.storeRoleAccMapper.selectOne(new LambdaQueryWrapper<StoreRoleAccount>()
+                        .eq(StoreRoleAccount::getId, storeRoleAccId).eq(StoreRoleAccount::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new RuntimeException("未找到该子账号信息"));
+        // 找打当前档口所有的子角色
+        List<StoreRole> roleList = this.storeRoleMapper.selectList(new LambdaQueryWrapper<StoreRole>()
+                .eq(StoreRole::getStoreId, account.getStoreId()).eq(StoreRole::getDelFlag, Constants.UNDELETED));
+        return BeanUtil.toBean(account, StoreRoleAccDetailResDTO.class)
+                .setStoreRoleAccId(account.getId())
+                .setRoleList(roleList.stream().map(x -> new StoreRoleAccDetailResDTO.StoreRoleDTO() {{
+                    setStoreRoleId(x.getId());
+                    setStoreRoleName(x.getRoleName());
+                }}).collect(Collectors.toList()));
+    }
+
+    /**
+     * 停用/启用档口子账号
+     *
+     * @param updateStatusDTO 停用/启用账号子账号入参
+     * @return Integer
      */
     @Override
     @Transactional
-    public int deleteStoreRoleAccountByStoreRoleAccId(Long storeRoleAccId) {
-        return storeRoleAccountMapper.deleteStoreRoleAccountByStoreRoleAccId(storeRoleAccId);
+    public Integer updateAccountStatus(StoreRoleAccUpdateStatusDTO updateStatusDTO) {
+        StoreRoleAccount account = Optional.ofNullable(this.storeRoleAccMapper.selectOne(new LambdaQueryWrapper<StoreRoleAccount>()
+                        .eq(StoreRoleAccount::getId, updateStatusDTO.getStoreRoleAccId()).eq(StoreRoleAccount::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new RuntimeException("未找到该子账号信息"));
+        account.setDelFlag(updateStatusDTO.getDelFlag());
+        return this.storeRoleAccMapper.updateById(account);
     }
+
 }
