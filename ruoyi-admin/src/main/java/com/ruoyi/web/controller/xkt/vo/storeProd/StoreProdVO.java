@@ -34,14 +34,14 @@ public class StoreProdVO {
     @NotNull(message = "商品分类ID不能为空!")
     private Long prodCateId;
     @ApiModelProperty(value = "工厂货号")
-    @Size(max = 15, message = "工厂货号不能超过60个字!")
+    @Size(min = 1, max = 15, message = "工厂货号不能超过60个字!")
     private String factoryArtNum;
     @ApiModelProperty(value = "商品货号", required = true)
-    @Size(max = 15, message = "商品货号不能超过60个字!")
+    @Size(min = 1, max = 15, message = "商品货号不能超过60个字!")
     @NotBlank(message = "商品货号不能为空!")
     private String prodArtNum;
     @ApiModelProperty(value = "商品标题", required = true)
-    @Size(max = 60, message = "商品标题不能超过60个字!")
+    @Size(min = 1, max = 60, message = "商品标题不能超过60个字!")
     @NotBlank(message = "商品标题不能为空!")
     private String prodTitle;
     @ApiModelProperty(value = "商品重量")
@@ -53,10 +53,10 @@ public class StoreProdVO {
     @ApiModelProperty(value = "发货时效")
     private Integer deliveryTime;
     @ApiModelProperty(value = "上架方式:1 立即上架 2 定时上架", required = true)
-    @NotBlank(message = "上架方式不能为空!")
+    @NotNull(message = "上架方式不能为空!")
     private Integer listingWay;
     @ApiModelProperty(value = "商品状态：1.未发布 2. 在售 3. 尾货 4.已下架 4. 已删除", required = true)
-    @NotBlank(message = "商品状态不能为空!")
+    @NotNull(message = "商品状态不能为空!")
     private Integer prodStatus;
     @ApiModelProperty(value = "定时发货时间(精确到小时)")
     @JsonFormat(pattern = "yyyy-MM-dd HH")
@@ -105,7 +105,7 @@ public class StoreProdVO {
         @NotNull(message = "文件大小不能为空!")
         @ApiModelProperty(value = "文件大小", required = true)
         private BigDecimal fileSize;
-        @NotBlank(message = "文件类型不能为空!")
+        @NotNull(message = "文件类型不能为空!")
         @ApiModelProperty(value = "文件类型", required = true)
         private Integer fileType;
         @ApiModelProperty(value = "排序", required = true)
@@ -145,7 +145,7 @@ public class StoreProdVO {
         @ApiModelProperty(value = "商品尺码", required = true)
         @NotNull(message = "档口商品定价不能为空!")
         private Integer size;
-        @NotBlank(message = "是否是标准尺码不能为空!")
+        @NotNull(message = "是否是标准尺码不能为空!")
         @ApiModelProperty(value = "是否是标准尺码", required = true)
         private Integer standard;
     }

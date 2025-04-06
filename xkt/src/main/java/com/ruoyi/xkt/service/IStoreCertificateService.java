@@ -1,8 +1,7 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.StoreCertificate;
-
-import java.util.List;
+import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
+import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
 
 /**
  * 档口认证Service接口
@@ -11,51 +10,29 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface IStoreCertificateService {
-    /**
-     * 查询档口认证
-     *
-     * @param storeCertId 档口认证主键
-     * @return 档口认证
-     */
-    public StoreCertificate selectStoreCertificateByStoreCertId(Long storeCertId);
-
-    /**
-     * 查询档口认证列表
-     *
-     * @param storeCertificate 档口认证
-     * @return 档口认证集合
-     */
-    public List<StoreCertificate> selectStoreCertificateList(StoreCertificate storeCertificate);
 
     /**
      * 新增档口认证
      *
-     * @param storeCertificate 档口认证
-     * @return 结果
+     * @param certDTO 档口认证入参
+     * @return int
      */
-    public int insertStoreCertificate(StoreCertificate storeCertificate);
+    Integer create(StoreCertDTO certDTO);
 
     /**
-     * 修改档口认证
+     * 根据档口ID获取档口详情信息
      *
-     * @param storeCertificate 档口认证
-     * @return 结果
+     * @param storeId 档口ID
+     * @return StoreCertResDTO
      */
-    public int updateStoreCertificate(StoreCertificate storeCertificate);
+    StoreCertResDTO getInfo(Long storeId);
 
     /**
-     * 批量删除档口认证
+     * 编辑档口认证信息
      *
-     * @param storeCertIds 需要删除的档口认证主键集合
-     * @return 结果
+     * @param certDTO 档口认证信息
+     * @return Integer
      */
-    public int deleteStoreCertificateByStoreCertIds(Long[] storeCertIds);
+    Integer update(StoreCertDTO certDTO);
 
-    /**
-     * 删除档口认证信息
-     *
-     * @param storeCertId 档口认证主键
-     * @return 结果
-     */
-    public int deleteStoreCertificateByStoreCertId(Long storeCertId);
 }

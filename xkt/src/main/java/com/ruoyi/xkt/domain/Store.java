@@ -21,6 +21,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class Store extends XktBaseEntity {
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -46,12 +47,6 @@ public class Store extends XktBaseEntity {
      */
     @Excel(name = "品牌名称")
     private String brandName;
-
-    /**
-     * 登录账号
-     */
-    @Excel(name = "登录账号")
-    private String loginAccount;
 
     /**
      * 联系人
@@ -111,7 +106,7 @@ public class Store extends XktBaseEntity {
      * 生产规模
      */
     @Excel(name = "生产规模")
-    private Long prodScale;
+    private Integer prodScale;
 
     /**
      * 保证金
@@ -136,7 +131,7 @@ public class Store extends XktBaseEntity {
      * 档口状态
      */
     @Excel(name = "档口状态")
-    private String storeStatus;
+    private Integer storeStatus;
 
     /**
      * 档口模板ID
@@ -152,7 +147,6 @@ public class Store extends XktBaseEntity {
                 .append("userId", getUserId())
                 .append("storeName", getStoreName())
                 .append("brandName", getBrandName())
-                .append("loginAccount", getLoginAccount())
                 .append("contactName", getContactName())
                 .append("contactPhone", getContactPhone())
                 .append("contactBackPhone", getContactBackPhone())

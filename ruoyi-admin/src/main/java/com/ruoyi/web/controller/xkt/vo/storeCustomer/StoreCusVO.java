@@ -7,6 +7,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * @author liujiang
@@ -27,6 +28,7 @@ public class StoreCusVO {
     @ApiModelProperty(value = "客户名称", required = true)
     private String cusName;
     @ApiModelProperty(value = "客户联系电话")
+    @Pattern(regexp = "^1[3-9]\\d{9}$", message = "联系电话格式不正确，请输入有效的中国大陆手机号")
     private String phone;
     @ApiModelProperty(value = "备注")
     private String remark;

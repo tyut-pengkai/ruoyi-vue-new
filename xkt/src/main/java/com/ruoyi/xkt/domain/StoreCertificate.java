@@ -6,6 +6,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -19,6 +20,7 @@ import java.util.Date;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreCertificate extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -56,13 +58,13 @@ public class StoreCertificate extends XktBaseEntity {
      * 身份证人脸文件ID
      */
     @Excel(name = "身份证人脸文件ID")
-    private Long idCardFrontFileId;
+    private Long idCardFaceFileId;
 
     /**
      * 身份证国徽文件ID
      */
     @Excel(name = "身份证国徽文件ID")
-    private Long idCardBackFileId;
+    private Long idCardEmblemFileId;
 
     /**
      * 营业执照文件ID
@@ -74,19 +76,19 @@ public class StoreCertificate extends XktBaseEntity {
      * 统一社会信用代码
      */
     @Excel(name = "统一社会信用代码")
-    private String socialCreditCode;
+    private Integer socialCreditCode;
 
     /**
      * 经营类型
      */
     @Excel(name = "经营类型")
-    private Long soleProprietorshipType;
+    private Integer soleProprietorshipType;
 
     /**
      * 市场主体类型
      */
     @Excel(name = "市场主体类型")
-    private Long marketEntryType;
+    private Integer marketEntryType;
 
     /**
      * 营业执照名称
@@ -104,7 +106,7 @@ public class StoreCertificate extends XktBaseEntity {
      * 登记状态
      */
     @Excel(name = "登记状态")
-    private String registerStatus;
+    private Integer registerStatus;
 
     /**
      * 法定代表人/负责人名称
@@ -158,13 +160,6 @@ public class StoreCertificate extends XktBaseEntity {
     @Excel(name = "核准日期", width = 30, dateFormat = "yyyy-MM-dd")
     private Date approvalDate;
 
-    /**
-     * 档口认证状态
-     */
-    @Excel(name = "档口认证状态")
-    private String certStatus;
-
-
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -173,8 +168,6 @@ public class StoreCertificate extends XktBaseEntity {
                 .append("realName", getRealName())
                 .append("phone", getPhone())
                 .append("idCard", getIdCard())
-                .append("idCardFrontFileId", getIdCardFrontFileId())
-                .append("idCardBackFileId", getIdCardBackFileId())
                 .append("licenseFileId", getLicenseFileId())
                 .append("socialCreditCode", getSocialCreditCode())
                 .append("soleProprietorshipType", getSoleProprietorshipType())
@@ -190,7 +183,6 @@ public class StoreCertificate extends XktBaseEntity {
                 .append("businessTermStartDate", getBusinessTermStartDate())
                 .append("businessTermEndDate", getBusinessTermEndDate())
                 .append("approvalDate", getApprovalDate())
-                .append("certStatus", getCertStatus())
                 .append("version", getVersion())
                 .append("delFlag", getDelFlag())
                 .append("createBy", getCreateBy())

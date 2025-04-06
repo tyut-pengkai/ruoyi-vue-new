@@ -1,19 +1,20 @@
 package com.ruoyi.web.controller.xkt;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.xkt.domain.StoreCertificate;
+import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertResVO;
+import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertVO;
+import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import com.ruoyi.xkt.service.IStoreCertificateService;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * 档口认证Controller
@@ -21,71 +22,44 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Api(tags = "档口认证")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/rest/v1/store-certs")
 public class StoreCertificateController extends XktBaseController {
-    @Autowired
-    private IStoreCertificateService storeCertificateService;
+
+    final IStoreCertificateService storeCertService;
 
     /**
-     * 查询档口认证列表
+     * 新增档口认证
      */
-    @PreAuthorize("@ss.hasPermi('system:certificate:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(StoreCertificate storeCertificate) {
-        startPage();
-        List<StoreCertificate> list = storeCertificateService.selectStoreCertificateList(storeCertificate);
-        return getDataTable(list);
-    }
-
-    /**
-     * 导出档口认证列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:certificate:export')")
-    @Log(title = "档口认证", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, StoreCertificate storeCertificate) {
-        List<StoreCertificate> list = storeCertificateService.selectStoreCertificateList(storeCertificate);
-        ExcelUtil<StoreCertificate> util = new ExcelUtil<StoreCertificate>(StoreCertificate.class);
-        util.exportExcel(response, list, "档口认证数据");
+    @PreAuthorize("@ss.hasPermi('system:certificate:add')")
+    @ApiOperation(value = "新增档口认证", httpMethod = "POST", response = R.class)
+    @Log(title = "新增档口认证", businessType = BusinessType.INSERT)
+    @PostMapping
+    public R<Integer> add(@Validated @RequestBody StoreCertVO storeCertVO) {
+        return R.ok(storeCertService.create(BeanUtil.toBean(storeCertVO, StoreCertDTO.class)));
     }
 
     /**
      * 获取档口认证详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:certificate:query')")
-    @GetMapping(value = "/{storeCertId}")
-    public R getInfo(@PathVariable("storeCertId") Long storeCertId) {
-        return success(storeCertificateService.selectStoreCertificateByStoreCertId(storeCertId));
-    }
-
-    /**
-     * 新增档口认证
-     */
-    @PreAuthorize("@ss.hasPermi('system:certificate:add')")
-    @Log(title = "档口认证", businessType = BusinessType.INSERT)
-    @PostMapping
-    public R add(@RequestBody StoreCertificate storeCertificate) {
-        return success(storeCertificateService.insertStoreCertificate(storeCertificate));
+    @ApiOperation(value = "获取档口认证详细信息", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/{storeId}")
+    public R<StoreCertResVO> getInfo(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeCertService.getInfo(storeId), StoreCertResVO.class));
     }
 
     /**
      * 修改档口认证
      */
     @PreAuthorize("@ss.hasPermi('system:certificate:edit')")
-    @Log(title = "档口认证", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "修改档口认证", httpMethod = "PUT", response = R.class)
+    @Log(title = "修改档口认证", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R edit(@RequestBody StoreCertificate storeCertificate) {
-        return success(storeCertificateService.updateStoreCertificate(storeCertificate));
+    public R<Integer> edit(@Validated @RequestBody StoreCertVO storeCertVO) {
+        return R.ok(storeCertService.update(BeanUtil.toBean(storeCertVO, StoreCertDTO.class)));
     }
 
-    /**
-     * 删除档口认证
-     */
-    @PreAuthorize("@ss.hasPermi('system:certificate:remove')")
-    @Log(title = "档口认证", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{storeCertIds}")
-    public R remove(@PathVariable Long[] storeCertIds) {
-        return success(storeCertificateService.deleteStoreCertificateByStoreCertIds(storeCertIds));
-    }
 }
