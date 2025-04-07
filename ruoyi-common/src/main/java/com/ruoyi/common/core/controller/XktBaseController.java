@@ -109,7 +109,7 @@ public class XktBaseController {
     /**
      * 返回成功消息
      */
-    public R success(Object data) {
+    public <T> R<T> success(T data) {
         return R.ok(data);
     }
 

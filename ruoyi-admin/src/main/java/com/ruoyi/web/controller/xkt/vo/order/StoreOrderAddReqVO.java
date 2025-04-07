@@ -19,10 +19,6 @@ public class StoreOrderAddReqVO {
      */
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
-//    /**
-//     * 下单用户ID
-//     */
-//    private Long orderUserId;
     /**
      * 订单备注
      */
@@ -78,6 +74,12 @@ public class StoreOrderAddReqVO {
      */
     @ApiModelProperty(value = "明细列表")
     private List<Detail> detailList;
+
+    @ApiModelProperty(value = "支付渠道[1:支付宝]")
+    private Integer payChannel;
+
+    @ApiModelProperty(value = "支付来源[1:电脑网站 2:手机网站]")
+    private Integer payFrom;
 
     @ApiModel(value = "明细")
     @Data

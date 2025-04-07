@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StoreOrderAddResultDTO {
+public class StoreOrderInfo {
 
     private StoreOrder order;
 

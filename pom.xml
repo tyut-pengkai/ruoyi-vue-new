@@ -41,6 +41,7 @@
         <spring-framework.version>5.3.39</spring-framework.version>
         <!-- aliyun -->
         <aliyun-sdk-oss.version>3.17.4</aliyun-sdk-oss.version>
+        <alipay-sdk.version>4.40.54.ALL</alipay-sdk.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -250,6 +251,12 @@
                 <groupId>com.aliyun.oss</groupId>
                 <artifactId>aliyun-sdk-oss</artifactId>
                 <version>${aliyun-sdk-oss.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-sdk-java</artifactId>
+                <version>${alipay-sdk.version}</version>
             </dependency>
 
             <!-- ES相关 begin-->

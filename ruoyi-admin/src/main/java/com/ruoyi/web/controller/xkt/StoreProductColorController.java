@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * 档口当前商品颜色Controller
  *
@@ -34,8 +36,8 @@ public class StoreProductColorController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:color:query')")
     @ApiOperation(value = "模糊查询档口所有的商品颜色分类", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy")
-    public R<StoreProdColorResVO> fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
-                                                      @RequestParam("storeId") Long storeId) {
+    public R<List<StoreProdColorResVO>> fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
+                                                            @RequestParam("storeId") Long storeId) {
         return success(BeanUtil.copyToList(storeProdColorService.fuzzyQueryColorList(storeId, prodArtNum), StoreProdColorResVO.class));
     }
 

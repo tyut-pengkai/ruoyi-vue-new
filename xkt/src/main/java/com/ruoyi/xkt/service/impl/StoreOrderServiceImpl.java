@@ -6,13 +6,14 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.express.ExpressContactDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderAddDTO;
-import com.ruoyi.xkt.dto.order.StoreOrderAddResultDTO;
+import com.ruoyi.xkt.dto.order.StoreOrderInfo;
 import com.ruoyi.xkt.dto.order.StoreOrderOperationRecordAddDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
@@ -53,7 +54,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
 
     @Transactional
     @Override
-    public StoreOrderAddResultDTO createOrder(StoreOrderAddDTO storeOrderAddDTO) {
+    public StoreOrderInfo createOrder(StoreOrderAddDTO storeOrderAddDTO) {
         Long orderUserId = storeOrderAddDTO.getOrderUserId();
         Long storeId = storeOrderAddDTO.getStoreId();
         Long expressId = storeOrderAddDTO.getExpressId();
@@ -159,7 +160,48 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         });
         //操作记录
         addOperationRecords(orderId, orderDetailIdList, orderUserId, new Date(), EOrderAction.ADD_ORDER);
-        return new StoreOrderAddResultDTO(order, orderDetailList);
+        return new StoreOrderInfo(order, orderDetailList);
+    }
+
+    @Transactional
+    @Override
+    public StoreOrderInfo preparePayOrder(Long storeOrderId) {
+        Assert.notNull(storeOrderId);
+        StoreOrder order = storeOrderMapper.selectById(storeOrderId);
+        Assert.isTrue(EOrderType.SALES_ORDER.getValue().equals(order.getOrderType()),
+                "非销售订单无法发起支付");
+        Assert.isTrue(BeanValidators.exists(order), "订单不存在");
+        List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectList(
+                Wrappers.lambdaQuery(StoreOrderDetail.class)
+                        .eq(StoreOrderDetail::getStoreOrderId, storeOrderId)
+                        .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        checkPreparePayStatus(order.getPayStatus());
+        StoreOrder updateOrder = new StoreOrder();
+        updateOrder.setId(storeOrderId);
+        updateOrder.setPayStatus(EPayStatus.PAYING.getValue());
+        updateOrder.setVersion(order.getVersion());
+        int orderSuccess = storeOrderMapper.updateById(updateOrder);
+        if (orderSuccess == 0) {
+            throw new ServiceException("系统繁忙请稍后再试");
+        }
+        for (StoreOrderDetail orderDetail : orderDetails) {
+            checkPreparePayStatus(orderDetail.getPayStatus());
+            StoreOrderDetail orderDetailUpdate = new StoreOrderDetail();
+            orderDetailUpdate.setId(orderDetail.getId());
+            orderDetailUpdate.setPayStatus(EPayStatus.PAYING.getValue());
+            orderDetailUpdate.setVersion(orderDetail.getVersion());
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetailUpdate);
+            if (orderDetailSuccess == 0) {
+                throw new ServiceException("系统繁忙请稍后再试");
+            }
+        }
+        return new StoreOrderInfo(order, orderDetails);
+    }
+
+    private void checkPreparePayStatus(Integer payStatus) {
+        if (!EPayStatus.INIT.getValue().equals(payStatus) && !EPayStatus.PAYING.getValue().equals(payStatus)) {
+            throw new ServiceException("订单状态异常无法发起支付");
+        }
     }
 
     /**
@@ -212,11 +254,12 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         BigDecimal price = productColorPrice.getPrice();
         if (ProductSizeStatus.UN_STANDARD.getValue().equals(storeProductColorSize.getStandard())) {
             //非标准尺码
-            StoreProduct product = storeProductMapper.selectById(storeProductColorSize.getStoreProdId());
-            BigDecimal addPrice = BigDecimal.valueOf(NumberUtil.nullToZero(product.getOverPrice()));
-            price = NumberUtil.add(price, addPrice);
+//            StoreProduct product = storeProductMapper.selectById(storeProductColorSize.getStoreProdId());
+//            BigDecimal addPrice = BigDecimal.valueOf(NumberUtil.nullToZero(product.getOverPrice()));
+//            price = NumberUtil.add(price, addPrice);
+            //非标准尺码不存在线上下单
+            throw new ServiceException("商品尺码异常");
         }
-        //TODO  客户优惠
         return price;
     }
 
