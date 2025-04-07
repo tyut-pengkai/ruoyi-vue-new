@@ -8,7 +8,8 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.web.controller.xkt.vo.order.StoreOrderAddReqVO;
-import com.ruoyi.web.controller.xkt.vo.order.StoreOrderAddRespVO;
+import com.ruoyi.web.controller.xkt.vo.order.StoreOrderPayReqVO;
+import com.ruoyi.web.controller.xkt.vo.order.StoreOrderPayRespVO;
 import com.ruoyi.xkt.dto.order.StoreOrderAddDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderInfo;
 import com.ruoyi.xkt.enums.EPayChannel;
@@ -17,7 +18,9 @@ import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.service.IStoreOrderService;
 import io.jsonwebtoken.lang.Assert;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,13 +42,11 @@ public class StoreOrderController extends XktBaseController {
     @Autowired
     private List<PaymentManager> paymentManagers;
 
-    /**
-     * 创建订单
-     */
-//    @PreAuthorize("@ss.hasPermi('system:order:add')")
+    @PreAuthorize("@ss.hasPermi('system:order:add')")
     @Log(title = "订单", businessType = BusinessType.INSERT)
-    @PostMapping
-    public R<StoreOrderAddRespVO> create(@RequestBody StoreOrderAddReqVO vo) {
+    @ApiOperation("创建订单并发起支付")
+    @PostMapping("create")
+    public R<StoreOrderPayRespVO> create(@RequestBody StoreOrderAddReqVO vo) {
         StoreOrderAddDTO dto = BeanUtil.toBean(vo, StoreOrderAddDTO.class);
         dto.setOrderUserId(SecurityUtils.getUserId());
         //初始化订单
@@ -54,8 +55,18 @@ public class StoreOrderController extends XktBaseController {
         PaymentManager paymentManager = getPaymentManager(EPayChannel.of(vo.getPayChannel()));
         String rtnStr = paymentManager.payForOrder(orderInfo.getOrder().getId(), EPayFrom.of(vo.getPayFrom()));
         //返回信息
-        StoreOrderAddRespVO respVO = new StoreOrderAddRespVO(orderInfo.getOrder().getId(),
-                orderInfo.getOrder().getOrderNo(), rtnStr);
+        StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(orderInfo.getOrder().getId(), rtnStr);
+        return success(respVO);
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:order:add')")
+    @Log(title = "订单", businessType = BusinessType.OTHER)
+    @ApiOperation("重新发起订单支付")
+    @PostMapping("pay")
+    public R<StoreOrderPayRespVO> pay(@RequestBody StoreOrderPayReqVO vo) {
+        PaymentManager paymentManager = getPaymentManager(EPayChannel.of(vo.getPayChannel()));
+        String rtnStr = paymentManager.payForOrder(vo.getStoreOrderId(), EPayFrom.of(vo.getPayFrom()));
+        StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(vo.getStoreOrderId(), rtnStr);
         return success(respVO);
     }
 
