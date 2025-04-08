@@ -1,8 +1,6 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.StoreHomepage;
-
-import java.util.List;
+import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDTO;
 
 /**
  * 档口首页Service接口
@@ -11,51 +9,33 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface IStoreHomepageService {
-    /**
-     * 查询档口首页
-     *
-     * @param storeHomeId 档口首页主键
-     * @return 档口首页
-     */
-    public StoreHomepage selectStoreHomepageByStoreHomeId(Long storeHomeId);
 
     /**
-     * 查询档口首页列表
+     * 新增档口首页各部分图
      *
-     * @param storeHomepage 档口首页
-     * @return 档口首页集合
+     * @param storeId     档口ID
+     * @param templateNum 选择的模板No
+     * @param homepageDTO 新增档口首页各部分图
+     * @return Integer
      */
-    public List<StoreHomepage> selectStoreHomepageList(StoreHomepage storeHomepage);
+    Integer insert(Long storeId, Integer templateNum, StoreHomeDTO homepageDTO);
 
     /**
-     * 新增档口首页
+     * 获取档口首页各个部分的图信息
      *
-     * @param storeHomepage 档口首页
-     * @return 结果
+     * @param storeId 档口ID
+     * @return StoreHomeDTO
      */
-    public int insertStoreHomepage(StoreHomepage storeHomepage);
+    StoreHomeDTO selectByStoreId(Long storeId);
 
     /**
-     * 修改档口首页
+     * 更新档口首页各部分图信息
      *
-     * @param storeHomepage 档口首页
-     * @return 结果
+     * @param storeId     档口ID
+     * @param templateNum 选择的模板Num
+     * @param homeDTO     更新的dto
+     * @return Integer
      */
-    public int updateStoreHomepage(StoreHomepage storeHomepage);
+    Integer updateStoreHomepage(Long storeId, Integer templateNum, StoreHomeDTO homeDTO);
 
-    /**
-     * 批量删除档口首页
-     *
-     * @param storeHomeIds 需要删除的档口首页主键集合
-     * @return 结果
-     */
-    public int deleteStoreHomepageByStoreHomeIds(Long[] storeHomeIds);
-
-    /**
-     * 删除档口首页信息
-     *
-     * @param storeHomeId 档口首页主键
-     * @return 结果
-     */
-    public int deleteStoreHomepageByStoreHomeId(Long storeHomeId);
 }

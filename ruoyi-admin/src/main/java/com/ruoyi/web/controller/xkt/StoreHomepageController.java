@@ -1,91 +1,66 @@
 package com.ruoyi.web.controller.xkt;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.xkt.domain.StoreHomepage;
+import com.ruoyi.web.controller.xkt.vo.storeHomepage.StoreHomeVO;
+import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDTO;
 import com.ruoyi.xkt.service.IStoreHomepageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-
 /**
- * 档口首页Controller
+ * 档口首页装修Controller
  *
  * @author ruoyi
  * @date 2025-03-26
  */
+@Api(tags = "档口首页装修")
 @RestController
-@RequestMapping("/rest/v1/store-homepages")
+@RequiredArgsConstructor
+@RequestMapping("/rest/v1/store-homes")
 public class StoreHomepageController extends XktBaseController {
-    @Autowired
-    private IStoreHomepageService storeHomepageService;
+
+    final IStoreHomepageService storeHomeService;
 
     /**
-     * 查询档口首页列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:homepage:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(StoreHomepage storeHomepage) {
-        startPage();
-        List<StoreHomepage> list = storeHomepageService.selectStoreHomepageList(storeHomepage);
-        return getDataTable(list);
-    }
-
-    /**
-     * 导出档口首页列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:homepage:export')")
-    @Log(title = "档口首页", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, StoreHomepage storeHomepage) {
-        List<StoreHomepage> list = storeHomepageService.selectStoreHomepageList(storeHomepage);
-        ExcelUtil<StoreHomepage> util = new ExcelUtil<StoreHomepage>(StoreHomepage.class);
-        util.exportExcel(response, list, "档口首页数据");
-    }
-
-    /**
-     * 获取档口首页详细信息
-     */
-    @PreAuthorize("@ss.hasPermi('system:homepage:query')")
-    @GetMapping(value = "/{storeHomeId}")
-    public R getInfo(@PathVariable("storeHomeId") Long storeHomeId) {
-        return success(storeHomepageService.selectStoreHomepageByStoreHomeId(storeHomeId));
-    }
-
-    /**
-     * 新增档口首页
+     * 新增档口首页装修数据
      */
     @PreAuthorize("@ss.hasPermi('system:homepage:add')")
-    @Log(title = "档口首页", businessType = BusinessType.INSERT)
-    @PostMapping
-    public R add(@RequestBody StoreHomepage storeHomepage) {
-        return success(storeHomepageService.insertStoreHomepage(storeHomepage));
+    @ApiOperation(value = "新增档口首页装修数据", httpMethod = "POST", response = R.class)
+    @Log(title = "新增档口首页装修数据", businessType = BusinessType.INSERT)
+    @PostMapping("/{storeId}/{templateNum}")
+    public R<Integer> add(@PathVariable("storeId") Long storeId, @PathVariable("templateNum") Integer templateNum,
+                          @Validated @RequestBody StoreHomeVO homepageVO) {
+        return R.ok(storeHomeService.insert(storeId, templateNum, BeanUtil.toBean(homepageVO, StoreHomeDTO.class)));
     }
 
     /**
-     * 修改档口首页
+     * 查询档口首页装修数据
+     */
+    @PreAuthorize("@ss.hasPermi('system:sale:query')")
+    @ApiOperation(value = "查询档口首页装修数据", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/{storeId}")
+    public R<StoreHomeVO> getInfo(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeHomeService.selectByStoreId(storeId), StoreHomeVO.class));
+    }
+
+    /**
+     * 修改档口首页装修数据
      */
     @PreAuthorize("@ss.hasPermi('system:homepage:edit')")
-    @Log(title = "档口首页", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public R edit(@RequestBody StoreHomepage storeHomepage) {
-        return success(storeHomepageService.updateStoreHomepage(storeHomepage));
+    @ApiOperation(value = "修改档口首页装修数据", httpMethod = "PUT", response = R.class)
+    @Log(title = "修改档口首页装修数据", businessType = BusinessType.UPDATE)
+    @PutMapping("/{storeId}/{templateNum}")
+    public R<Integer> edit(@PathVariable("storeId") Long storeId, @PathVariable("templateNum") Integer templateNum,
+                           @Validated @RequestBody StoreHomeVO homepageVO) {
+        return R.ok(storeHomeService.updateStoreHomepage(storeId, templateNum, BeanUtil.toBean(homepageVO, StoreHomeDTO.class)));
     }
 
-    /**
-     * 删除档口首页
-     */
-    @PreAuthorize("@ss.hasPermi('system:homepage:remove')")
-    @Log(title = "档口首页", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{storeHomeIds}")
-    public R remove(@PathVariable Long[] storeHomeIds) {
-        return success(storeHomepageService.deleteStoreHomepageByStoreHomeIds(storeHomeIds));
-    }
 }

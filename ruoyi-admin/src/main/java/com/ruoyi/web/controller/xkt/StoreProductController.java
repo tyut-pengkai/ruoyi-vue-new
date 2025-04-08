@@ -100,7 +100,7 @@ public class StoreProductController extends XktBaseController {
     @PutMapping("/prod-status")
     public R editProdStatus(@Validated @RequestBody StoreProdStatusVO prodStatusVO) {
         storeProdService.updateStoreProductStatus(BeanUtil.toBean(prodStatusVO, StoreProdStatusDTO.class));
-        return success();
+        return R.ok();
     }
 
     /**
