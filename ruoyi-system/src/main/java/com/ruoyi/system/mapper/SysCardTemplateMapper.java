@@ -81,4 +81,6 @@ public interface SysCardTemplateMapper
      */
     @MapKey("id")
     public Map<Long, CountVo> selectSysCardTemplateOnSaleCountGroupByAppId();
+
+    public SysCardTemplate selectSysCardTemplateByShopUrl(String shopUrl);
 }

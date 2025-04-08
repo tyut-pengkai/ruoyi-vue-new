@@ -16,8 +16,12 @@ const whiteList = ['regx:/login/.*', '/auth-redirect', '/bind', '/register', '/c
 
 const navWhiteList = ['/shop', '/queryOrder', '/queryCard', '/chargeCenter', '/unbindDevice']
 
+const isNavWhiteList = (path) => {
+  return navWhiteList.some(nav => nav === path || path.startsWith(nav + "/a/") || path.startsWith(nav + "/c/"))
+}
+
 const isWhiteList = (path) => {
-  return whiteList.some(pattern => isPathMatch(pattern, path)) || whiteList.indexOf(path) !== -1 || path.startsWith("/shop/a/") || path.startsWith("/shop/c/")
+  return whiteList.some(pattern => isPathMatch(pattern, path)) || isNavWhiteList(path)
 }
 
 router.beforeEach((to, from, next) => {
@@ -30,7 +34,7 @@ router.beforeEach((to, from, next) => {
       next({ path: '/index' })
       NProgress.done()
     } else if (isWhiteList(to.path)) {
-      if(navWhiteList.indexOf(to.path) !== -1 || to.path.startsWith("/shop/a/") || to.path.startsWith("/shop/c/")) {
+      if(isNavWhiteList(to.path)) {
         if(store.state.settings.navList.length === 0) {
           store.dispatch('settings/GetNavList').then((res) => {
             let navList = res.data;
@@ -93,7 +97,7 @@ router.beforeEach((to, from, next) => {
     // console.log(to.path);
     // 没有token
     if (isWhiteList(to.path)) {
-      if(navWhiteList.indexOf(to.path) !== -1 || to.path.startsWith("/shop/a/") || to.path.startsWith("/shop/c/")) {
+      if(isNavWhiteList(to.path)) {
         if(store.state.settings.navList.length === 0) {
           store.dispatch('settings/GetNavList').then((res) => {
             let navList = res.data;

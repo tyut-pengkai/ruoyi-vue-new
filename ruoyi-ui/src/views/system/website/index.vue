@@ -61,8 +61,9 @@
               </el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="网站域名，格式如 http://11.22.33.44/、https://www.xxx.com/ 等，注意http和https不能写错，否则会造成验证功能异常">
+          <el-form-item label="网站地址，格式如 http://11.22.33.44/、https://www.xxx.com/ 等，注意http和https不能写错，否则会造成验证功能异常">
             <el-input v-model="form.domain"></el-input>
+            <el-button type="primary" size="mini" @click="checkDomain">点击验证地址正确性</el-button> <span :style="{color: checkDomainResultColor}">{{checkDomainResult}}</span>
           </el-form-item>
           <el-form-item label="联系方式">
             <el-input v-model="form.contact"></el-input>
@@ -94,7 +95,7 @@
               >
                 <i
                   class="el-icon-question"
-                  style="margin-left: -12px; margin-right: 10px"
+                  style="margin-left: -12px; margin-right: 10px;"
                 ></i>
               </el-tooltip>
             </span>
@@ -115,7 +116,8 @@
 <script>
 import ImageUpload from "@/components/ImageUpload";
 import ImagePreview from "@/components/ImagePreview";
-import {getWebsiteConfig, updateWebsiteConfig} from "@/api/system/website";
+import {getWebsiteConfig, updateWebsiteConfig, checkWebsiteDomain} from "@/api/system/website";
+import { green } from 'chalk'
 
 export default {
   name: "Website",
@@ -134,12 +136,15 @@ export default {
         description: "",
         safeEntrance: "",
       },
+      checkDomainResult: '',
+      checkDomainResultColor: 'green'
     };
   },
   created() {
     this.init();
   },
   methods: {
+    green,
     init() {
       getWebsiteConfig().then((response) => {
         this.form = response.data;
@@ -161,6 +166,17 @@ export default {
             this.$modal.msgSuccess("修改成功");
           });
         }
+      });
+    },
+    checkDomain() {
+      checkWebsiteDomain({"domain": this.form.domain}).then((response) => {
+        this.$modal.msgSuccess(response.msg);
+        if (response.data === 'pass') {
+          this.checkDomainResultColor = '#7fc784'
+        } else {
+          this.checkDomainResultColor = 'red'
+        }
+        this.checkDomainResult = response.msg;
       });
     },
   },

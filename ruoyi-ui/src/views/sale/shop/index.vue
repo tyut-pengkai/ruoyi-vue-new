@@ -664,6 +664,19 @@ export default {
       }
     },
   },
+  beforeRouteLeave(to, from, next) {
+    // console.log("/shop to----", to); //跳转后路由
+    // console.log("/shop from----", from); //跳转前路由
+    if(from.params.appUrl && from.params.appUrl !== '' && to.path.indexOf('/a/') === -1) {
+      // console.log("/shop newto.path----", to.path + '/a/' + from.params.appUrl);
+      next({'path': to.path + '/a/' + from.params.appUrl})
+    }
+    if(from.params.cardUrl && from.params.cardUrl !== '' && to.path.indexOf('/c/') === -1) {
+      // console.log("/shop newto.path----", to.path + '/c/' + from.params.cardUrl);
+      next({'path': to.path + '/c/' + from.params.cardUrl})
+    }
+    next();
+  },
 };
 </script>
 

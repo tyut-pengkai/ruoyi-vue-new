@@ -86,4 +86,6 @@ public interface SysAppMapper
      * @return 软件
      */
     public SysApp selectSysAppByAppName(String appName);
+
+    public SysApp selectSysAppByShopUrl(String shopUrl);
 }

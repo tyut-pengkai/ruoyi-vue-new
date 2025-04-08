@@ -9,7 +9,7 @@
         <span>查询登录码/卡密</span>
       </div>
       <el-tabs style="margin-top: 20px">
-        <el-tab-pane label="查询登录码">
+        <el-tab-pane label="查询登录码" v-if="authType === '0' || authType === 'all'">
           <div style="max-width: 90vw; width: 500px; margin: 20px auto">
             <el-form ref="formLoginCode" :model="formLoginCode" :rules="rules">
               <el-form-item label="登录码" prop="loginCode">
@@ -34,7 +34,7 @@
             </el-form>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="查询卡密">
+        <el-tab-pane label="查询卡密" v-if="authType === '1' || authType === 'all'">
           <div style="max-width: 90vw; width: 500px; margin: 20px auto">
             <el-form ref="formCard" :model="formCard" :rules="rules">
               <el-form-item label="充值卡号" prop="cardNo">
@@ -202,7 +202,7 @@
 </template>
 
 <script>
-import {queryCard} from "@/api/sale/saleShop";
+import { getAppAuthType, queryCard } from '@/api/sale/saleShop'
 import {parseSeconds, parseUnit} from "@/utils/my";
 
 export default {
@@ -242,6 +242,9 @@ export default {
           {required: true, message: "请输入登录码", trigger: "blur"},
         ],
       },
+      appUrl: null,
+      cardUrl: null,
+      authType: 'all',
     };
   },
   methods: {
@@ -304,6 +307,28 @@ export default {
         return seconds + "点";
       }
     },
+  },
+  created() {
+    this.appUrl = this.$route.params.appUrl;
+    this.cardUrl = this.$route.params.cardUrl;
+    if((this.appUrl && this.appUrl !== '') || (this.cardUrl && this.cardUrl !== '')) {
+      getAppAuthType({shopUrl: this.appUrl, cardUrl: this.cardUrl}).then((response) => {
+        this.authType = response.data;
+      })
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    // console.log("/queryCard to----", to); //跳转后路由
+    // console.log("/queryCard from----", from); //跳转前路由
+    if(from.params.appUrl && from.params.appUrl !== '' && to.path.indexOf('/a/') === -1) {
+      // console.log("/queryCard newto.path----", to.path + '/a/' + from.params.appUrl);
+      next({'path': to.path + '/a/' + from.params.appUrl})
+    }
+    if(from.params.cardUrl && from.params.cardUrl !== '' && to.path.indexOf('/c/') === -1) {
+      // console.log("/queryCard newto.path----", to.path + '/c/' + from.params.cardUrl);
+      next({'path': to.path + '/c/' + from.params.cardUrl})
+    }
+    next();
   },
 };
 </script>

@@ -863,4 +863,33 @@ public class SysSaleShopController extends BaseController {
         return AjaxResult.success(tree);
     }
 
+    /**
+     * 查询软件列表
+     */
+    @GetMapping("/getAppAuthType")
+    @RateLimiter(limitType = LimitType.IP)
+    public AjaxResult getAppAuthType(SysApp sysApp) {
+        if(StringUtils.isBlank(sysApp.getShopUrl()) && StringUtils.isBlank(sysApp.getCardUrl())) {
+            return AjaxResult.success("all");
+        }
+        SysApp app = null;
+        if(StringUtils.isBlank(sysApp.getCardUrl())) {
+            app = sysAppMapper.selectSysAppByShopUrl(sysApp.getShopUrl());
+        } else {
+            SysCardTemplate ct = sysCardTemplateMapper.selectSysCardTemplateByShopUrl(sysApp.getCardUrl());
+            if (ct != null) {
+                app = sysAppMapper.selectSysAppByAppId(ct.getAppId());
+            } else {
+                SysLoginCodeTemplate ct2 = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateByShopUrl(sysApp.getCardUrl());
+                if (ct2 != null) {
+                    app = sysAppMapper.selectSysAppByAppId(ct2.getAppId());
+                }
+            }
+        }
+        if(app == null) {
+            return AjaxResult.success("all").put("appId", 0L);
+        }
+        return AjaxResult.success(app.getAuthType()).put("appId", app.getAppId());
+    }
+
 }

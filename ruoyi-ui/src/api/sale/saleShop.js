@@ -158,3 +158,12 @@ export function getNavInfo() {
     method: 'get'
   })
 }
+
+// 查询软件类型，查询软件的登录类型
+export function getAppAuthType(data) {
+  return request({
+    url: '/sale/shop/getAppAuthType',
+    method: 'get',
+    params: data
+  })
+}

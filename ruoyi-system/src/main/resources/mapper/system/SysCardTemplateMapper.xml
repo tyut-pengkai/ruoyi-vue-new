@@ -270,4 +270,9 @@
     <select id="selectSysCardTemplateOnSaleCountGroupByAppId" resultType="CountVo">
         select app_id as id, count(1) as count from sys_card_template where on_sale = 'Y' group by app_id
     </select>
+
+    <select id="selectSysCardTemplateByShopUrl" resultMap="SysCardTemplateResult">
+        <include refid="selectSysCardTemplateVo"/>
+        where ct.shop_url = #{shopUrl} and ct.del_flag = '0'
+    </select>
 </mapper>

@@ -81,4 +81,6 @@ public interface SysLoginCodeTemplateMapper {
      * @return 卡密模板
      */
     public SysLoginCodeTemplate selectSysLoginCodeTemplateByAppIdAndTemplateName(@Param("appId") Long appId, @Param("templateName") String templateName);
+
+    public SysLoginCodeTemplate selectSysLoginCodeTemplateByShopUrl(String shopUrl);
 }

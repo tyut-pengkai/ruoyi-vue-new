@@ -79,16 +79,12 @@ export const constantRoutes = [{
       path: '/',
       component: () => import('@/views/sale/home/index'),
       name: 'Home',
-    }, {
+    }
+      // ----
+    , {
       path: '/shop',
       component: () => import('@/views/sale/shop/index'),
       name: 'Shop',
-      // redirect: '/shop/index',
-      // children: [{
-      //   path: ':filter(\\S+)',
-      //   component: () => import('@/views/sale/shop/index'),
-      //   name: 'Shop1',
-      // },]
     }, {
       path: '/shop/a/:appUrl(\\S+)',
       component: () => import('@/views/sale/shop/index'),
@@ -97,31 +93,85 @@ export const constantRoutes = [{
       path: '/shop/c/:cardUrl(\\S+)',
       component: () => import('@/views/sale/shop/index'),
       name: 'ShopCardTemplate',
-    }, {
+    }
+      // ----
+    , {
       path: '/queryOrder',
       component: () => import('@/views/sale/shop/queryOrder'),
       name: 'QueryOrder',
     }, {
+      path: '/queryOrder/a/:appUrl(\\S+)',
+      component: () => import('@/views/sale/shop/queryOrder'),
+      name: 'QueryOrderApp',
+    }, {
+      path: '/queryOrder/c/:cardUrl(\\S+)',
+      component: () => import('@/views/sale/shop/queryOrder'),
+      name: 'QueryOrderCardTemplate',
+    }
+      // ----
+    , {
       path: '/billOrder',
       component: () => import('@/views/sale/shop/billOrder'),
       name: 'BillOrder',
-    }, {
+    }
+      // ----
+    , {
       path: '/getLicense',
       component: () => import('@/views/sale/license/index'),
       name: 'GetLicense',
     }, {
+      path: '/getLicense/a/:appUrl(\\S+)',
+      component: () => import('@/views/sale/license/index'),
+      name: 'GetLicenseApp',
+    }, {
+      path: '/getLicense/c/:cardUrl(\\S+)',
+      component: () => import('@/views/sale/license/index'),
+      name: 'GetLicenseCardTemplate',
+    }
+      // ----
+    , {
       path: '/queryCard',
       component: () => import('@/views/sale/queryCard/index'),
       name: 'QueryCard',
     }, {
+      path: '/queryCard/a/:appUrl(\\S+)',
+      component: () => import('@/views/sale/queryCard/index'),
+      name: 'QueryCardApp',
+    }
+    , {
+      path: '/queryCard/c/:cardUrl(\\S+)',
+      component: () => import('@/views/sale/queryCard/index'),
+      name: 'QueryCardCardTemplate',
+    }
+      // ----
+    , {
       path: '/chargeCenter',
       component: () => import('@/views/sale/chargeCenter/index'),
       name: 'ChargeCenter',
     }, {
-      path: '/unbindDevice',
+        path: '/chargeCenter/a/:appUrl(\\S+)',
+        component: () => import('@/views/sale/chargeCenter/index'),
+        name: 'ChargeCenterApp',
+    }
+    , {
+      path: '/chargeCenter/c/:cardUrl(\\S+)',
+      component: () => import('@/views/sale/chargeCenter/index'),
+      name: 'ChargeCenterCardTemplate',
+    }
+      // ----
+  , {
+    path: '/unbindDevice',
+    component: () => import('@/views/sale/unbindDevice/index'),
+    name: 'UnbindDevice',
+  }, {
+      path: '/unbindDevice/a/:appUrl(\\S+)',
       component: () => import('@/views/sale/unbindDevice/index'),
-      name: 'UnbindDevice',
-    },]
+      name: 'UnbindDeviceApp',
+    }, {
+      path: '/unbindDevice/c/:cardUrl(\\S+)',
+      component: () => import('@/views/sale/unbindDevice/index'),
+      name: 'UnbindDeviceCardTemplate',
+    }]
   },
   {
     path: '/index',

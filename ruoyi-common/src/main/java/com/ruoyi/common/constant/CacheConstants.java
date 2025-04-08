@@ -90,4 +90,9 @@ public class CacheConstants {
      * user
      */
     public static final String SYS_USER_KEY = "sys_user:";
+
+    /**
+     * checkDomain
+     */
+    public static final String SYS_CHECK_DOMAIN_CAPTCHA_KEY = "sys_check_domain:";
 }

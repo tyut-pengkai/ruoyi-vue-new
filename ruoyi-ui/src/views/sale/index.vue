@@ -179,6 +179,8 @@ export default {
   created() {
     this.getNavigation();
     this.getSysInfo();
+    this.appUrl = this.$route.params && this.$route.params.appUrl;
+    this.cardUrl = this.$route.params && this.$route.params.cardUrl;
   },
   methods: {
     getNavigation() {
@@ -229,8 +231,8 @@ export default {
     },
   },
   beforeRouteEnter(to, from, next) {
-    // console.log("fe2 to.path----", to); //跳转后路由
-    // console.log("fe2 from----", from); //跳转前路由
+    // console.log("/ to----", to); //跳转后路由
+    // console.log("/ from----", from); //跳转前路由
     next(vm => {
       // 通过 `vm` 访问组件实例
       if(to.path === '/billOrder') {

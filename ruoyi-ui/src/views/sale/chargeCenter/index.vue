@@ -9,7 +9,7 @@
         <span>充值续费</span>
       </div>
       <el-tabs style="margin-top: 20px" @tab-click="tabChange">
-        <el-tab-pane label="使用登录码充值">
+        <el-tab-pane label="使用登录码充值" v-if="authType === '0' || authType === 'all'">
           <div style="max-width: 90vw; width: 500px; margin: 20px auto">
             <el-form ref="formLoginCode" :model="formLoginCode" :rules="rules">
               <el-form-item label="目标软件" prop="appId">
@@ -58,7 +58,7 @@
             </el-form>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="使用卡密充值">
+        <el-tab-pane label="使用卡密充值" v-if="authType === '1' || authType === 'all'">
           <div style="max-width: 90vw; width: 500px; margin: 20px auto">
             <el-form ref="formCard" :model="formCard" :rules="rules">
               <el-form-item label="目标软件" prop="appId">
@@ -149,7 +149,7 @@
 </template>
 
 <script>
-import {chargeCard, listApp} from "@/api/sale/saleShop";
+import { chargeCard, getAppAuthType, listApp } from '@/api/sale/saleShop'
 
 export default {
   name: "ChargeCenter",
@@ -200,15 +200,41 @@ export default {
           {required: true, message: "请输入新登录码", trigger: "blur"},
         ],
       },
+      appUrl: null,
+      cardUrl: null,
+      authType: 'all',
+      filterAppId: 0,
     };
   },
   created() {
-    this.getAppList(1);
+    this.appUrl = this.$route.params.appUrl;
+    this.cardUrl = this.$route.params.cardUrl;
+    if((this.appUrl && this.appUrl !== '') || (this.cardUrl && this.cardUrl !== '')) {
+      getAppAuthType({shopUrl: this.appUrl, cardUrl: this.cardUrl}).then((response) => {
+        this.authType = response.data;
+        this.filterAppId = response.appId;
+        this.loadAppList();
+      })
+    } else {
+      this.loadAppList();
+    }
   },
   methods: {
+    loadAppList() {
+      if(this.authType === 'all') {
+        this.getAppList(1, 0);
+      } else {
+        this.getAppList(this.authType, this.filterAppId);
+        if(this.authType === '0') {
+          this.formLoginCode.appId = this.filterAppId
+        } else if(this.authType === '1') {
+          this.formCard.appId = this.filterAppId
+        }
+      }
+    },
     /** 查询软件列表 */
-    getAppList(authType) {
-      listApp({authType: authType, enableFeCharge: "Y"}).then((response) => {
+    getAppList(authType, filterAppId) {
+      listApp({authType: authType, enableFeCharge: "Y", appId: filterAppId}).then((response) => {
         this.appList = response.rows;
       });
     },
@@ -267,6 +293,19 @@ export default {
     tabChange(data) {
       this.getAppList(data.index == 0 ? "1" : "0");
     },
+  },
+  beforeRouteLeave(to, from, next) {
+    // console.log("/chargeCenter to----", to); //跳转后路由
+    // console.log("/chargeCenter from----", from); //跳转前路由
+    if(from.params.appUrl && from.params.appUrl !== '' && to.path.indexOf('/a/') === -1) {
+      // console.log("/chargeCenter newto.path----", to.path + '/a/' + from.params.appUrl);
+      next({'path': to.path + '/a/' + from.params.appUrl})
+    }
+    if(from.params.cardUrl && from.params.cardUrl !== '' && to.path.indexOf('/c/') === -1) {
+      // console.log("/chargeCenter newto.path----", to.path + '/c/' + from.params.cardUrl);
+      next({'path': to.path + '/c/' + from.params.cardUrl})
+    }
+    next();
   },
 };
 </script>

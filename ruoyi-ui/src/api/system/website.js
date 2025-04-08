@@ -16,3 +16,12 @@ export function updateWebsiteConfig(data) {
     data: data
   })
 }
+
+// 检测网站域名正确性
+export function checkWebsiteDomain(data) {
+  return request({
+    url: '/system/website/config/checkDomain',
+    method: 'post',
+    data: data
+  })
+}

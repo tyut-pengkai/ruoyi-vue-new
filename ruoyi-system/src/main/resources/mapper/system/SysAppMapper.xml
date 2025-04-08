@@ -157,6 +157,7 @@
 	<select id="selectSysAppList" parameterType="SysApp" resultMap="SysAppResult">
 		<include refid="selectSysAppVo"/>
 		where a.del_flag = '0'
+		<if test="appId != null and appId > 0">and a.app_id = #{appId}</if>
 		<if test="appName != null  and appName != ''">and a.app_name like concat('%', #{appName}, '%')</if>
 		<if test="description != null  and description != ''">and a.description like concat('%', #{description}, '%')
 		</if>
@@ -195,6 +196,11 @@
         <include refid="selectSysAppVo"/>
         where a.del_flag = '0' and app_key = #{appKey}
     </select>
+
+	<select id="selectSysAppByShopUrl" parameterType="String" resultMap="SysAppResult">
+		<include refid="selectSysAppVo"/>
+		where a.del_flag = '0' and shop_url = #{shopUrl}
+	</select>
 
     <insert id="insertSysApp" parameterType="SysApp">
         insert into sys_app

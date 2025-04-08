@@ -260,4 +260,9 @@
         where ct.app_id = #{appId} and ct.card_name = #{templateName} and ct.del_flag = '0'
     </select>
 
+    <select id="selectSysLoginCodeTemplateByShopUrl" resultMap="SysLoginCodeTemplateResult">
+        <include refid="selectSysLoginCodeTemplateVo"/>
+        where ct.shop_url = #{shopUrl} and ct.del_flag = '0'
+    </select>
+
 </mapper>

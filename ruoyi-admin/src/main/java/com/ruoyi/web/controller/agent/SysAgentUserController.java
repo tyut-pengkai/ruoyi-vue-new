@@ -181,7 +181,7 @@ public class SysAgentUserController extends BaseController {
     public AjaxResult edit(@RequestBody SysAgent sysAgent) {
         // 检查是否有变更状态权限
         SysAgent oAgent = sysAgentService.selectSysAgentByAgentId(sysAgent.getAgentId());
-        if(sysAgent.getStatus() != null && !Objects.equals(sysAgent.getStatus(), oAgent.getStatus()) && !permissionService.hasAgentPermi("enableUpdateSubagentStatus")) {
+        if(sysAgent.getStatus() != null && !Objects.equals(sysAgent.getStatus(), oAgent.getStatus()) && !permissionService.hasAnyRoles("sadmin,admin") && !permissionService.hasAgentPermi("enableUpdateSubagentStatus")) {
             throw new ServiceException("您没有该操作的权限（代理系统）");
         }
         if (sysAgent.getParentAgentId() == null || sysAgent.getParentAgentId() <= 0) {

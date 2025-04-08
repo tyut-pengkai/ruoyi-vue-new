@@ -117,7 +117,7 @@ public class SecurityConfig {
                 .antMatchers("/checkSafeEntrance").permitAll()
                 .antMatchers("/license/**").permitAll() // 官网的授权模块
                 .antMatchers("/system/license/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/common/sysInfo", "/system/website/config").permitAll()
+                .antMatchers(HttpMethod.GET, "/common/sysInfo", "/system/website/config", "/system/website/config/checkDomainCaptcha").permitAll()
                 .antMatchers(HttpMethod.GET, "/common/download", "/common/globalFileDownload/*/*").permitAll()
                 .antMatchers("/system/appVersion/scan/*/*").permitAll()
                 .antMatchers("/system/notice/listAllForUser").permitAll()
