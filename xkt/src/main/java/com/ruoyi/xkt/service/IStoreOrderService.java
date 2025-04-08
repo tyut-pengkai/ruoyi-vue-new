@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.service;
 
+import com.ruoyi.xkt.domain.StoreOrder;
 import com.ruoyi.xkt.dto.order.StoreOrderAddDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderInfo;
 
@@ -15,6 +16,14 @@ public interface IStoreOrderService {
      * @return
      */
     StoreOrderInfo createOrder(StoreOrderAddDTO storeOrderAddDTO);
+
+    /**
+     * 通过订单号获取订单
+     *
+     * @param orderNo
+     * @return
+     */
+    StoreOrder getByOrderNo(String orderNo);
 
     /**
      * 准备支付订单

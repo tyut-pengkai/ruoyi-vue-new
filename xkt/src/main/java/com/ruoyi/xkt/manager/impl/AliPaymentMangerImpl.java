@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.manager.impl;
 
+import cn.hutool.core.util.NumberUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -7,23 +8,29 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.xkt.domain.AlipayCallback;
 import com.ruoyi.xkt.dto.order.StoreOrderInfo;
 import com.ruoyi.xkt.dto.payment.AlipayReqDTO;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayFrom;
 import com.ruoyi.xkt.manager.PaymentManager;
+import com.ruoyi.xkt.service.IAlipayCallbackService;
 import com.ruoyi.xkt.service.IStoreOrderService;
 import io.jsonwebtoken.lang.Assert;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
 
 /**
  * @author liangyq
  * @date 2025-04-06 19:36
  */
 @Slf4j
+@Getter
 @Component
 public class AliPaymentMangerImpl implements PaymentManager {
     /**
@@ -39,7 +46,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
     /**
      * 支付宝公钥,查看地址：https://openhome.alipay.com/platform/keyManage.htm 对应APPID下的支付宝公钥。
      */
-    @Value("${alipay.publicKey:MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkiTTeQLIkyVHnYiNmRKEtsdlwKftUySN1SLkrhn6CgmHl5ovjPeYteweZEZmsf2kt6wRnaLkODVP7xUQiRVC2cu6StdJyvDzyiYI00u72PvSOvaWHcpzgKqTFpGiQseJQlHnI8U3ob4PxfJylBy8RDQHG9fZwNY1WOCsnSb3m2ufV1EQIjndzTq13yQE6jCz639rO8atlAG3PtJW/QRiGUzyGaOuKsS4HRzPbbpmVtsXoN76+x+WLWkeqlTBEu35X4Hdbkf1C36wp3b68sI5fVyLksF6elRv/It4aUzjXSXbO/Dx+zvMIN01FgwaFV6nLh++k3qlmo87p4I+hvsGiQIDAQAB}")
+    @Value("${alipay.alipayPublicKey:MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkiTTeQLIkyVHnYiNmRKEtsdlwKftUySN1SLkrhn6CgmHl5ovjPeYteweZEZmsf2kt6wRnaLkODVP7xUQiRVC2cu6StdJyvDzyiYI00u72PvSOvaWHcpzgKqTFpGiQseJQlHnI8U3ob4PxfJylBy8RDQHG9fZwNY1WOCsnSb3m2ufV1EQIjndzTq13yQE6jCz639rO8atlAG3PtJW/QRiGUzyGaOuKsS4HRzPbbpmVtsXoN76+x+WLWkeqlTBEu35X4Hdbkf1C36wp3b68sI5fVyLksF6elRv/It4aUzjXSXbO/Dx+zvMIN01FgwaFV6nLh++k3qlmo87p4I+hvsGiQIDAQAB}")
     private String alipayPublicKey;
     /**
      * 服务器异步通知页面路径
@@ -69,6 +76,8 @@ public class AliPaymentMangerImpl implements PaymentManager {
 
     @Autowired
     private IStoreOrderService storeOrderService;
+    @Autowired
+    private IAlipayCallbackService alipayCallbackService;
 
     @Override
     public EPayChannel channel() {
@@ -115,6 +124,21 @@ public class AliPaymentMangerImpl implements PaymentManager {
             default:
                 throw new ServiceException("未知的支付来源");
         }
+    }
+
+    public void processAlipayCallback(AlipayCallback alipayCallback) {
+        AlipayCallback info = alipayCallbackService.getByNotifyId(alipayCallback.getNotifyId());
+        if (info == null) {
+            //保存到数据库
+            info = alipayCallback;
+            alipayCallbackService.insertAlipayCallback(info);
+        }
+        if (info.getRefundFee() != null &&
+                !NumberUtil.equals(info.getRefundFee(), BigDecimal.ZERO)) {
+            //如果有退款金额，可能是部分退款的回调，这里不做处理
+            return;
+        }
+        //TODO
     }
 
 }

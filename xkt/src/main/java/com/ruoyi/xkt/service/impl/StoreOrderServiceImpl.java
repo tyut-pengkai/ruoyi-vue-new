@@ -163,6 +163,13 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         return new StoreOrderInfo(order, orderDetailList);
     }
 
+    @Override
+    public StoreOrder getByOrderNo(String orderNo) {
+        Assert.notNull(orderNo);
+        return storeOrderMapper.selectOne(Wrappers.lambdaQuery(StoreOrder.class)
+                .eq(StoreOrder::getOrderNo, orderNo));
+    }
+
     @Transactional
     @Override
     public StoreOrderInfo preparePayOrder(Long storeOrderId) {

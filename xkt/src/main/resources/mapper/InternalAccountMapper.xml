@@ -2,4 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.InternalAccountMapper">
 
+    <select id="getForUpdate" resultType="com.ruoyi.xkt.domain.InternalAccount">
+        SELECT *
+        FROM internal_account
+        WHERE id = #{id} FOR UPDATE
+    </select>
+    <select id="listForUpdate" resultType="com.ruoyi.xkt.domain.InternalAccount">
+        SELECT *
+        FROM internal_account
+        WHERE id IN
+        <foreach collection="ids" item="id" separator="," open="(" close=")">#{id}</foreach> FOR UPDATE
+    </select>
 </mapper>

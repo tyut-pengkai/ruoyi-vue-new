@@ -188,6 +188,10 @@ public class Constants
     public static final Integer SIZE_41 = 41;
     public static final Integer SIZE_42 = 42;
     public static final Integer SIZE_43 = 43;
+    /**
+     * 平台内部账户ID
+     */
+    public static final Long PLATFORM_INTERNAL_ACCOUNT_ID = 1L;
 
 
 
