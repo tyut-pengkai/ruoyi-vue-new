@@ -23,6 +23,8 @@ public class StoreProdStockDTO {
     private String prodArtNum;
     @ApiModelProperty(value = "档口商品颜色ID")
     private Long storeProdColorId;
+    @ApiModelProperty(value = "档口颜色ID")
+    private Long storeColorId;
     @ApiModelProperty(value = "颜色名称")
     private String colorName;
     @ApiModelProperty(value = "尺码30")

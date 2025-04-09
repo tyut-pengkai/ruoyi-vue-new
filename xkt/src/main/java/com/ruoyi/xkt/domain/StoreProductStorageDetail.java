@@ -46,6 +46,11 @@ public class StoreProductStorageDetail extends XktBaseEntity {
     @Excel(name = "档口商品颜色ID")
     private Long storeProdColorId;
     /**
+     * 档口商品颜色ID
+     */
+    @Excel(name = "档口颜色ID")
+    private Long storeColorId;
+    /**
      * 颜色名称
      */
     @Excel(name = "颜色名称")

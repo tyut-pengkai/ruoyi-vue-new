@@ -72,6 +72,7 @@ public interface IStoreCustomerService {
 
     /**
      * 模糊查询客户名称列表
+     *
      * @param storeId 档口ID
      * @param cusName 客户名称
      * @return List<StoreCusFuzzyResDTO>

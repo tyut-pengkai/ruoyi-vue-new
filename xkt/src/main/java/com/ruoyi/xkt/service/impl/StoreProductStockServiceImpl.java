@@ -33,6 +33,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.ruoyi.common.constant.Constants.ORDER_NUM_1;
+
 /**
  * 档口商品库存Service业务层处理
  *
@@ -244,7 +246,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
         StoreProductFile mainPic = Optional.ofNullable(this.storeProdFileMapper.selectOne(new LambdaQueryWrapper<StoreProductFile>()
                         .eq(StoreProductFile::getStoreProdId, stock.getStoreProdId()).eq(StoreProductFile::getStoreId, storeId)
                         .eq(StoreProductFile::getDelFlag, Constants.UNDELETED).eq(StoreProductFile::getFileType, FileType.MAIN_PIC.getValue())
-                        .eq(StoreProductFile::getOrderNum, 1)))
+                        .eq(StoreProductFile::getOrderNum, ORDER_NUM_1)))
                 .orElseThrow(() -> new ServiceException("商品主图不存在!", HttpStatus.ERROR));
         // 图片
         SysFile file = Optional.ofNullable(this.fileMapper.selectOne(new LambdaQueryWrapper<SysFile>()

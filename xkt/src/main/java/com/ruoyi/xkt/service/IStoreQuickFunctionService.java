@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.StoreQuickFunction;
 import com.ruoyi.xkt.dto.storeQuickFunction.StoreQuickFuncDTO;
 
 import java.util.List;
@@ -14,6 +13,7 @@ import java.util.List;
 public interface IStoreQuickFunctionService {
     /**
      * 获取当前档口绑定的快捷功能
+     *
      * @param storeId 当前档口ID
      * @return List<StoreQuickFuncDTO.DetailDTO>
      */
@@ -21,6 +21,7 @@ public interface IStoreQuickFunctionService {
 
     /**
      * 更新档口绑定的快捷功能
+     *
      * @param storeQuickFuncDTO 绑定档口快捷功能的DTO
      * @return
      */

@@ -29,6 +29,8 @@ public class StoreHomeDecorationVO {
 
         @ApiModelProperty(value = "业务类型ID，如果选择：不跳转 不传，选择：跳转店铺，传storeId，选择：跳转商品，传storeProdId")
         private Long bizId;
+        @ApiModelProperty(value = "业务名称")
+        private String bizName;
         @ApiModelProperty(value = "跳转类型 1. 不跳转 2. 跳转店铺 3. 跳转商品")
         private Integer jumpType;
         @ApiModelProperty(value = "文件名称")
@@ -50,6 +52,8 @@ public class StoreHomeDecorationVO {
 
         @ApiModelProperty(value = "文件大小")
         private Long bizId;
+        @ApiModelProperty(value = "业务名称")
+        private String bizName;
         @ApiModelProperty(value = "文件大小")
         private Integer jumpType;
         @ApiModelProperty(value = "文件类型 2轮播小图 3店家推荐 4人气爆款 5当季新品 6销量排行")

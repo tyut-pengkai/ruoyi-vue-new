@@ -5,18 +5,20 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.xkt.domain.Store;
-import com.ruoyi.xkt.domain.StoreHomepage;
-import com.ruoyi.xkt.domain.StoreProduct;
-import com.ruoyi.xkt.domain.SysFile;
+import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDecorationDTO;
 import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDecorationResDTO;
+import com.ruoyi.xkt.dto.storeHomepage.StoreHomeProdResDTO;
+import com.ruoyi.xkt.dto.storeHomepage.StoreHomeResDTO;
+import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
+import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountDTO;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
+import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.enums.HomepageJumpType;
 import com.ruoyi.xkt.enums.HomepageType;
-import com.ruoyi.xkt.mapper.StoreHomepageMapper;
-import com.ruoyi.xkt.mapper.StoreMapper;
-import com.ruoyi.xkt.mapper.StoreProductMapper;
-import com.ruoyi.xkt.mapper.SysFileMapper;
+import com.ruoyi.xkt.enums.ProductSizeStatus;
+import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IStoreHomepageService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,6 +31,8 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.ruoyi.common.constant.Constants.*;
 
 /**
  * 档口首页Service业务层处理
@@ -44,6 +48,13 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     final StoreHomepageMapper storeHomeMapper;
     final StoreMapper storeMapper;
     final StoreProductMapper storeProdMapper;
+    final StoreProductDetailMapper prodDetailMapper;
+    final StoreProductColorMapper prodColorMapper;
+    final StoreProductColorSizeMapper prodColorSizeMapper;
+    final StoreProductStockMapper prodStockMapper;
+    final StoreProductColorPriceMapper prodColorPriceMapper;
+    final StoreProductFileMapper prodFileMapper;
+    final StoreProductCategoryAttributeMapper prodCateAttrMapper;
 
 
     /**
@@ -102,7 +113,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                     StoreHomeDecorationResDTO.DecorationDTO decorationDTO = BeanUtil.toBean(x, StoreHomeDecorationResDTO.DecorationDTO.class)
                             .setBizName((Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_PRODUCT.getValue()))
                                     ? (storeProdMap.containsKey(x.getBizId()) ? storeProdMap.get(x.getBizId()).getProdName() : null)
-                                    : (ObjectUtils.isEmpty(x.getJumpType()) ? null : store.getStoreName()));
+                                    : (ObjectUtils.isEmpty(x.getBizId()) ? null : store.getStoreName()));
                     if (fileMap.containsKey(x.getFileId())) {
                         decorationDTO.setFileType(x.getFileType()).setFileName(fileMap.get(x.getFileId()).getFileName())
                                 .setFileUrl(fileMap.get(x.getFileId()).getFileUrl()).setFileSize(fileMap.get(x.getFileId()).getFileSize());
@@ -154,6 +165,237 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         store.setTemplateNum(templateNum);
         this.storeMapper.updateById(store);
         return homepageList.size();
+    }
+
+    /**
+     * 获取档口首页数据
+     *
+     * @param storeId 档口ID
+     * @return StoreHomeResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreHomeResDTO getHomepageInfo(Long storeId) {
+        // 档口基本信息
+        Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
+                        .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        // 档口各个状态的数量
+        StoreProdStatusCountDTO statusCountDTO = this.storeProdMapper.selectStatusCount(storeId);
+
+        // TODO 根据模板Num返回具体的模板数据
+        // TODO 根据模板Num返回具体的模板数据
+        // TODO 根据模板Num返回具体的模板数据
+
+
+        return new StoreHomeResDTO() {{
+            setStore(BeanUtil.toBean(store, StoreBasicDTO.class).setStoreId(storeId));
+            setStoreProdStatusCount(statusCountDTO);
+        }};
+    }
+
+    /**
+     * 首页查询档口商品详情
+     *
+     * @param storeId     档口ID
+     * @param storeProdId 档口商品详情ID
+     * @return StoreHomeProdResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreHomeProdResDTO getStoreProdInfo(Long storeId, Long storeProdId) {
+
+        // TODO 获取当前登录者，判断是否关注当前档口是否收藏当前商品
+        // TODO 获取当前登录者，判断是否关注当前档口是否收藏当前商品
+        // TODO 获取当前登录者，判断是否关注当前档口是否收藏当前商品
+
+        // 档口基本信息
+        Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
+                        .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        // 获取商品基本信息
+        StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
+                        .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
+                        .eq(StoreProduct::getStoreId, storeId)))
+                .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
+        // 档口各个状态的数量
+        StoreProdStatusCountDTO statusCountDTO = this.storeProdMapper.selectStatusCount(storeId);
+        // 获取商品详情内容
+        StoreProductDetail detail = this.prodDetailMapper.selectOne(new LambdaQueryWrapper<StoreProductDetail>()
+                .eq(StoreProductDetail::getStoreProdId, storeProdId).eq(StoreProductDetail::getDelFlag, Constants.UNDELETED));
+        // 获取商品颜色列表
+        List<StoreProductColor> colorList = this.prodColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
+                .eq(StoreProductColor::getStoreProdId, storeProdId).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
+        // 档口商品主图列表
+        List<StoreProdFileResDTO> mainPicDTOList = this.prodFileMapper.selectTotalMainPicList(storeProdId, storeId, FileType.MAIN_PIC.getValue());
+        // 档口商品颜色价格列表
+        List<StoreProductColorPrice> colorPriceList = this.prodColorPriceMapper.selectList(new LambdaQueryWrapper<StoreProductColorPrice>()
+                .eq(StoreProductColorPrice::getStoreProdId, storeProdId).eq(StoreProductColorPrice::getDelFlag, Constants.UNDELETED));
+        Map<String, StoreProductColorPrice> colorPriceMap = colorPriceList.stream().collect(Collectors
+                .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString(), Function.identity()));
+        // 档口商品属性
+        List<StoreProductCategoryAttribute> prodAttrList = this.prodCateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
+                .eq(StoreProductCategoryAttribute::getStoreProdId, storeProdId).eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED));
+        // 档口商品标准尺码
+        List<StoreProductColorSize> standardSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
+                .eq(StoreProductColorSize::getStoreProdId, storeProdId).eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
+        Map<String, List<StoreProductColorSize>> colorSizeMap = standardSizeList.stream().collect(Collectors
+                .groupingBy(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString()));
+        // 根据标准尺码去找对应尺码的库存数量
+        List<StoreProductStock> prodStockList = this.prodStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
+                .eq(StoreProductStock::getStoreProdId, storeProdId)
+                .in(StoreProductStock::getStoreProdColorId, colorList.stream().map(StoreProductColor::getId).distinct().collect(Collectors.toList()))
+                .eq(StoreProductStock::getDelFlag, Constants.UNDELETED));
+        // 获取档口颜色尺码的库存数量
+        Map<String, List<StoreHomeProdResDTO.StoreProdSizeStockDTO>> colorSizeStockMap = this.convertSizeStock(prodStockList, standardSizeList);
+        List<StoreHomeProdResDTO.StoreProdColorDTO> colorSizeStockList = colorList.stream()
+                .map(color -> BeanUtil.toBean(color, StoreHomeProdResDTO.StoreProdColorDTO.class)
+                        .setStoreProdColorId(color.getId())
+                        // 获取颜色设定的价格
+                        .setPrice(colorPriceMap.containsKey(color.getStoreProdId().toString() + color.getStoreColorId().toString())
+                                ? colorPriceMap.get(color.getStoreProdId().toString() + color.getStoreColorId().toString()).getPrice() : null)
+                        // 设定库存
+                        .setSizeStockList(colorSizeMap.containsKey(color.getStoreProdId().toString() + color.getStoreColorId().toString())
+                                ? colorSizeStockMap.get(color.getStoreProdId().toString() + color.getStoreColorId().toString()) : null))
+                .collect(Collectors.toList());
+        // 商品基础信息
+        StoreHomeProdResDTO.StoreProdInfoDTO storeProdDTO = BeanUtil.toBean(storeProd, StoreHomeProdResDTO.StoreProdInfoDTO.class)
+                .setStoreProdId(storeProdId).setMainPicList(mainPicDTOList)
+                .setDetail(BeanUtil.toBean(detail, StoreProdDetailDTO.class))
+                .setCateAttrList(BeanUtil.copyToList(prodAttrList, StoreProdCateAttrDTO.class))
+                .setColorList(colorSizeStockList);
+        return new StoreHomeProdResDTO() {{
+            setStore(BeanUtil.toBean(store, StoreBasicDTO.class).setStoreId(storeId));
+            setStoreProd(storeProdDTO);
+            setStoreProdStatusCount(statusCountDTO);
+
+            // TODO 还有关注的档口及收藏的商品
+            // TODO 还有关注的档口及收藏的商品
+            // TODO 还有关注的档口及收藏的商品
+            // TODO 还有关注的档口及收藏的商品
+
+        }};
+    }
+
+    /**
+     * 获取档口商品颜色尺码的库存
+     *
+     * @param stockList        库存数量
+     * @param standardSizeList 当前商品的标准尺码
+     * @return Map<Long, Map < Integer, Integer>>
+     */
+    private Map<String, List<StoreHomeProdResDTO.StoreProdSizeStockDTO>> convertSizeStock(List<StoreProductStock> stockList, List<StoreProductColorSize> standardSizeList) {
+        Map<String, List<StoreHomeProdResDTO.StoreProdSizeStockDTO>> colorSizeStockMap = new HashMap<>();
+        if (CollectionUtils.isEmpty(stockList)) {
+            return colorSizeStockMap;
+        }
+        // 标准尺码map
+        Map<Integer, StoreProductColorSize> standardSizeMap = standardSizeList.stream().collect(Collectors.toMap(StoreProductColorSize::getSize, Function.identity()));
+        Map<String, List<StoreProductStock>> map = stockList.stream().collect(Collectors.groupingBy(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString()));
+        map.forEach((unionId, tempStockList) -> {
+            List<StoreHomeProdResDTO.StoreProdSizeStockDTO> sizeStockList = new ArrayList<>();
+            Integer size30Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize30(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_30)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_30);
+                    setStock(size30Stock);
+                }});
+            }
+            Integer size31Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize31(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_31)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_31);
+                    setStock(size31Stock);
+                }});
+            }
+            Integer size32Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize32(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_32)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_32);
+                    setStock(size32Stock);
+                }});
+            }
+            Integer size33Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize33(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_33)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_33);
+                    setStock(size33Stock);
+                }});
+            }
+            Integer size34Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize34(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_34)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_34);
+                    setStock(size34Stock);
+                }});
+            }
+            Integer size35Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize35(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_35)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_35);
+                    setStock(size35Stock);
+                }});
+            }
+            Integer size36Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize36(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_36)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_36);
+                    setStock(size36Stock);
+                }});
+            }
+            Integer size37Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize37(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_37)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_37);
+                    setStock(size37Stock);
+                }});
+            }
+            Integer size38Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize38(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_38)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_38);
+                    setStock(size38Stock);
+                }});
+            }
+            Integer size39Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize39(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_39)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_39);
+                    setStock(size39Stock);
+                }});
+            }
+            Integer size40Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize40(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_40)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_40);
+                    setStock(size40Stock);
+                }});
+            }
+            Integer size41Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize41(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_41)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_41);
+                    setStock(size41Stock);
+                }});
+            }
+            Integer size42Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize42(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_42)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_42);
+                    setStock(size42Stock);
+                }});
+            }
+            Integer size43Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize43(), 0)).reduce(0, Integer::sum);
+            if (standardSizeMap.containsKey(SIZE_43)) {
+                sizeStockList.add(new StoreHomeProdResDTO.StoreProdSizeStockDTO() {{
+                    setSize(SIZE_43);
+                    setStock(size43Stock);
+                }});
+            }
+            colorSizeStockMap.put(unionId, sizeStockList);
+        });
+        return colorSizeStockMap;
     }
 
 

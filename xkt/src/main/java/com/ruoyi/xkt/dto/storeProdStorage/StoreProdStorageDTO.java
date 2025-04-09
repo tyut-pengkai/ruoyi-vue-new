@@ -42,6 +42,9 @@ public class StoreProdStorageDTO {
         @NotNull(message = "档口商品颜色ID不能为空!")
         @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeProdColorId;
+        @NotNull(message = "档口颜色ID不能为空!")
+        @ApiModelProperty(value = "档口颜色ID")
+        private Long storeColorId;
         @NotBlank(message = "颜色名称不能为空!")
         @ApiModelProperty(value = "颜色名称")
         private String colorName;

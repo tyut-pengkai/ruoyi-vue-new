@@ -19,14 +19,15 @@ public interface IStoreProductService {
      * @param storeProdId 档口商品主键
      * @return 档口商品
      */
-    public StoreProdResDTO selectStoreProductByStoreProdId(Long storeProdId);
+    StoreProdResDTO selectStoreProductByStoreProdId(Long storeProdId);
 
     /**
      * 获取档口图片空间
+     *
      * @param storeId 档口ID
      * @return StoreProdPicSpaceResDTO
      */
-    public StoreProdPicSpaceResDTO getStoreProductPicSpace(Long storeId);
+    StoreProdPicSpaceResDTO getStoreProductPicSpace(Long storeId);
 
     /**
      * 查询档口商品列表
@@ -34,9 +35,9 @@ public interface IStoreProductService {
      * @param storeProduct 档口商品
      * @return 档口商品集合
      */
-    public List<StoreProduct> selectStoreProductList(StoreProduct storeProduct);
+    List<StoreProduct> selectStoreProductList(StoreProduct storeProduct);
 
-    public Page<StoreProdPageResDTO> page(StoreProdPageDTO pageDTO);
+    Page<StoreProdPageResDTO> page(StoreProdPageDTO pageDTO);
 
 
     /**
@@ -45,7 +46,7 @@ public interface IStoreProductService {
      * @param storeProdDTO 档口商品
      * @return 结果
      */
-    public int insertStoreProduct(StoreProdDTO storeProdDTO);
+    int insertStoreProduct(StoreProdDTO storeProdDTO);
 
     /**
      * 修改档口商品
@@ -55,6 +56,11 @@ public interface IStoreProductService {
      */
     public int updateStoreProduct(Long storeProdId, StoreProdDTO storeProdDTO);
 
+    /**
+     * 更新档口商品状态
+     *
+     * @param prodStatusDTO 更新状态入参
+     */
     public void updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO);
 
     /**
@@ -75,10 +81,19 @@ public interface IStoreProductService {
 
     /**
      * 根据档口ID和商品货号模糊查询货号列表
-     * @param storeId 档口ID
+     *
+     * @param storeId    档口ID
      * @param prodArtNum 商品货号
      * @return List<StoreProdFuzzyResDTO>
      */
     List<StoreProdFuzzyResDTO> fuzzyQueryList(Long storeId, String prodArtNum);
 
+    /**
+     * 根据档口ID和商品货号模糊查询货号列表，返回数据带上商品主图
+     *
+     * @param storeId    档口ID
+     * @param prodArtNum 商品货号
+     * @return List<StoreProdFuzzyResPicDTO>
+     */
+    List<StoreProdFuzzyResPicDTO> fuzzyQueryResPicList(Long storeId, String prodArtNum);
 }

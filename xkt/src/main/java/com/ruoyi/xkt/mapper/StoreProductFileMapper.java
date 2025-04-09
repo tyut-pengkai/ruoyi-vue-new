@@ -95,4 +95,16 @@ public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
      */
     List<StoreProdFilePicSpaceResDTO> selectPicSpaceList(@Param("storeId") Long storeId, @Param("fileType") Integer fileType);
 
+    /**
+     * 查询所有的商品主图
+     *
+     * @param storeProdId 档口商品ID
+     * @param storeId     档口ID
+     * @param fileType    文件类型
+     * @return
+     */
+    List<StoreProdFileResDTO> selectTotalMainPicList(@Param("storeProdId") Long storeProdId,
+                                                     @Param("storeId") Long storeId,
+                                                     @Param("fileType") Integer fileType);
+
 }

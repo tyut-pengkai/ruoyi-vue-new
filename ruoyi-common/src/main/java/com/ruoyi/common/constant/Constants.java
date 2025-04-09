@@ -193,6 +193,11 @@ public class Constants
      */
     public static final Long PLATFORM_INTERNAL_ACCOUNT_ID = 1L;
 
+    /**
+     * 排序值1
+     */
+    public static final Integer ORDER_NUM_1 = 1;
+
 
 
 

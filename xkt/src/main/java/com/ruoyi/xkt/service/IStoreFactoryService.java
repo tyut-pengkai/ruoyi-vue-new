@@ -18,7 +18,7 @@ public interface IStoreFactoryService {
     /**
      * 查询档口合作工厂
      *
-     * @param storeId 档口ID
+     * @param storeId    档口ID
      * @param storeFacId 档口合作工厂主键
      * @return 档口合作工厂
      */

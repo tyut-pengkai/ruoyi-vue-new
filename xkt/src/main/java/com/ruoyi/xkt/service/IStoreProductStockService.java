@@ -2,10 +2,10 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.domain.StoreProductStock;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockResDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
 
 import java.util.List;
 
@@ -19,8 +19,7 @@ public interface IStoreProductStockService {
     /**
      * 查询档口商品库存
      *
-     *
-     * @param storeId 档口ID
+     * @param storeId          档口ID
      * @param storeProdStockId 档口商品库存主键
      * @return 档口商品库存
      */
@@ -68,7 +67,8 @@ public interface IStoreProductStockService {
 
     /**
      * 增加库存
-     * @param storeId 档口ID
+     *
+     * @param storeId           档口ID
      * @param increaseStockList 增加库存入参
      * @return int
      */
@@ -76,7 +76,8 @@ public interface IStoreProductStockService {
 
     /**
      * 减少库存
-     * @param storeId 档口ID
+     *
+     * @param storeId           档口ID
      * @param decreaseStockList 减少库存入参
      * @return int
      */
@@ -84,7 +85,8 @@ public interface IStoreProductStockService {
 
     /**
      * 清空库存
-     * @param storeId 档口ID
+     *
+     * @param storeId          档口ID
      * @param storeProdStockId 清空库存
      * @return int
      */
@@ -92,8 +94,9 @@ public interface IStoreProductStockService {
 
     /**
      * 直接调整库存
-     * @param storeId 档口ID
-     * @param updateStockList 调整库存入参
+     *
+     * @param storeId          档口ID
+     * @param updateStockList  调整库存入参
      * @param multiplierFactor 乘积因子 0 直接调整库存，将库存更新为页面输入的数量 1 不变数量
      * @return int
      */
@@ -101,6 +104,7 @@ public interface IStoreProductStockService {
 
     /**
      * 查询档口商品分页
+     *
      * @param pageDTO 分页入参
      * @return List<StoreProdStockPageResDTO>
      */
@@ -108,7 +112,8 @@ public interface IStoreProductStockService {
 
     /**
      * 根据档口ID和商品货号查询档口商品库存
-     * @param storeId 档口ID
+     *
+     * @param storeId    档口ID
      * @param prodArtNum 商品货号
      * @return String
      */

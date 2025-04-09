@@ -50,6 +50,18 @@ public class StoreProductController extends XktBaseController {
     }
 
     /**
+     * 模糊查询档口商品
+     */
+    @PreAuthorize("@ss.hasPermi('system:product:query')")
+    @ApiOperation(value = "模糊查询档口商品", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/fuzzy/pic")
+    public R<List<StoreProdFuzzyResPicVO>> fuzzyQueryResPicList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
+                                                            @RequestParam("storeId") Long storeId) {
+        return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryResPicList(storeId, prodArtNum), StoreProdFuzzyResPicVO.class));
+    }
+
+
+    /**
      * 查询档口商品列表
      */
     @PreAuthorize("@ss.hasPermi('system:product:list')")
@@ -64,7 +76,7 @@ public class StoreProductController extends XktBaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:product:query')")
     @ApiOperation(value = "获取档口商品详细信息", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/{storeProdId}")
+    @GetMapping(value = "/detail/{storeProdId}")
     public R<StoreProdResVO> getInfo(@PathVariable("storeProdId") Long storeProdId) {
         return R.ok(BeanUtil.toBean(storeProdService.selectStoreProductByStoreProdId(storeProdId), StoreProdResVO.class));
     }

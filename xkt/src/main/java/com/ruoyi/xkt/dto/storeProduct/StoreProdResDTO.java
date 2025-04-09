@@ -60,7 +60,7 @@ public class StoreProdResDTO {
     private List<StoreProdFileResDTO> fileList;
     @ApiModelProperty(value = "档口类目属性列表")
     private List<StoreProdCateAttrDTO> cateAttrList;
-    @ApiModelProperty(value = "档口宿友颜色列表")
+    @ApiModelProperty(value = "档口所有颜色列表")
     private List<StoreColorDTO> allColorList;
     @ApiModelProperty(value = "档口颜色列表")
     private List<StoreProdColorDTO> colorList;

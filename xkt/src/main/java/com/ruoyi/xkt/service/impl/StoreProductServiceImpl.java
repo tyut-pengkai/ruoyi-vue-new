@@ -37,6 +37,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.ruoyi.common.constant.Constants.ORDER_NUM_1;
+
 /**
  * 档口商品Service业务层处理
  *
@@ -405,6 +407,19 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 将产品列表转换为所需的产品DTO列表，并关联颜色信息
         return storeProdList.stream().map(x -> BeanUtil.toBean(x, StoreProdFuzzyResDTO.class).setStoreProdId(x.getId())
                 .setColorList(colorMap.getOrDefault(x.getId(), new ArrayList<>()))).collect(Collectors.toList());
+    }
+
+    /**
+     * 根据档口ID和商品货号模糊查询货号列表，返回数据带上商品主图
+     *
+     * @param storeId    档口ID
+     * @param prodArtNum 商品货号
+     * @return List<StoreProdFuzzyResPicDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<StoreProdFuzzyResPicDTO> fuzzyQueryResPicList(Long storeId, String prodArtNum) {
+        return this.storeProdMapper.fuzzyQueryResPicList(storeId, prodArtNum);
     }
 
     /**

@@ -155,7 +155,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
 
-
+    <select id="selectTotalMainPicList" resultType="com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO">
+        SELECT
+            spf.store_prod_id AS storeProdId,
+            spf.file_id AS fileId,
+            sf.file_url AS fileUrl,
+            spf.file_type AS fileType,
+            spf.file_size AS fileSize,
+            sf.file_name AS fileName,
+            spf.order_num AS orderNum
+        FROM
+            store_product_file spf
+                LEFT JOIN sys_file sf ON spf.file_id = sf.id
+        WHERE
+            spf.del_flag = 0
+            AND spf.file_type = #{fileType}
+            AND spf.store_id = #{storeId}
+    </select>
 
 
 

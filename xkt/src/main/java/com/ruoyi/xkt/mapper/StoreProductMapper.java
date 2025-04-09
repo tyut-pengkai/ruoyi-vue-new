@@ -2,7 +2,9 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProduct;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdFuzzyResDTO;
+import com.ruoyi.xkt.dto.storeHomepage.StoreHomeResDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdFuzzyResPicDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -64,4 +66,19 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      */
     public int deleteStoreProductByStoreProdIds(Long[] storeProdIds);
 
+    /**
+     * 根据商品货号模糊查询档口商品并返回商品主图
+     *
+     * @param storeId    档口ID
+     * @param prodArtNum 货号
+     * @return List<StoreProdFuzzyResPicDTO>
+     */
+    List<StoreProdFuzzyResPicDTO> fuzzyQueryResPicList(@Param("storeId") Long storeId, @Param("prodArtNum") String prodArtNum);
+
+    /**
+     * 查询档口的在售、尾货、下架数量
+     * @param storeId 档口ID
+     * @return StoreProdCountDTO
+     */
+    StoreProdStatusCountDTO selectStatusCount(Long storeId);
 }
