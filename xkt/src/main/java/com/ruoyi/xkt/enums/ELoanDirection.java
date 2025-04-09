@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.enums;
 
-import com.ruoyi.common.constant.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,17 +9,17 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum EPayChannel {
+public enum ELoanDirection {
 
-    ALI_PAY(1, "支付宝", "ALIPAY_", Constants.PLATFORM_ALIPAY_EXTERNAL_ACCOUNT_ID);
+    DEBIT(1, "借", "D"),
+    CREDIT(2, "贷", "C");
 
     private final Integer value;
     private final String label;
-    private final String prefix;
-    private final Long platformExternalAccountId;
+    private final String code;
 
-    public static EPayChannel of(Integer value) {
-        for (EPayChannel e : EPayChannel.values()) {
+    public static ELoanDirection of(Integer value) {
+        for (ELoanDirection e : ELoanDirection.values()) {
             if (e.getValue().equals(value)) {
                 return e;
             }

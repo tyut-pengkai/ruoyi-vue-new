@@ -192,6 +192,10 @@ public class Constants
      * 平台内部账户ID
      */
     public static final Long PLATFORM_INTERNAL_ACCOUNT_ID = 1L;
+    /**
+     * 平台外部账户ID-支付宝账户
+     */
+    public static final Long PLATFORM_ALIPAY_EXTERNAL_ACCOUNT_ID = 1L;
 
     /**
      * 排序值1
