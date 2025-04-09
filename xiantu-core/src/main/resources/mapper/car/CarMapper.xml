@@ -40,30 +40,30 @@
         INSERT INTO xiantu_car
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>
-            <if test="containerLength != null">container_length,</if>
-            <if test="containerWidth != null">container_width,</if>
-            <if test="containerHeight != null">container_height,</if>
-            <if test="bodyLength != null">body_length,</if>
-            <if test="bodyWidth != null">body_width,</if>
-            <if test="bodyHeight != null">body_height,</if>
-            <if test="curbWeight != null">curb_weight,</if>
-            <if test="ratedLoadCapacity != null">rated_load_capacity,</if>
-            <if test="grossWeight != null">gross_weight,</if>
+            <if test="containerLength != null and containerLength != 0">container_length,</if>
+            <if test="containerWidth != null and containerWidth != 0">container_width,</if>
+            <if test="containerHeight != null and containerHeight != 0">container_height,</if>
+            <if test="bodyLength != null and bodyLength != 0">body_length,</if>
+            <if test="bodyWidth != null and bodyWidth != 0">body_width,</if>
+            <if test="bodyHeight != null and bodyHeight != 0">body_height,</if>
+            <if test="curbWeight != null and curbWeight != 0">curb_weight,</if>
+            <if test="ratedLoadCapacity != null and ratedLoadCapacity != 0">rated_load_capacity,</if>
+            <if test="grossWeight != null and grossWeight != 0">gross_weight,</if>
             <if test="energyType != null">energy_type,</if>
             <if test="imageUrl != null">image_url,</if>
             <if test="videoUrl != null">video_url,</if>
         </trim>
         <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
-            <if test="containerLength != null">#{containerLength},</if>
-            <if test="containerWidth != null">#{containerWidth},</if>
-            <if test="containerHeight != null">#{containerHeight},</if>
-            <if test="bodyLength != null">#{bodyLength},</if>
-            <if test="bodyWidth != null">#{bodyWidth},</if>
-            <if test="bodyHeight != null">#{bodyHeight},</if>
-            <if test="curbWeight != null">#{curbWeight},</if>
-            <if test="ratedLoadCapacity != null">#{ratedLoadCapacity},</if>
-            <if test="grossWeight != null">#{grossWeight},</if>
+            <if test="containerLength != null and containerLength != 0">#{containerLength},</if>
+            <if test="containerWidth != null and containerWidth != 0">#{containerWidth},</if>
+            <if test="containerHeight != null and containerHeight != 0">#{containerHeight},</if>
+            <if test="bodyLength != null and bodyLength != 0">#{bodyLength},</if>
+            <if test="bodyWidth != null and bodyWidth != 0">#{bodyWidth},</if>
+            <if test="bodyHeight != null and bodyHeight != 0">#{bodyHeight},</if>
+            <if test="curbWeight != null and curbWeight != 0">#{curbWeight},</if>
+            <if test="ratedLoadCapacity != null and ratedLoadCapacity != 0">#{ratedLoadCapacity},</if>
+            <if test="grossWeight != null and grossWeight != 0">#{grossWeight},</if>
             <if test="energyType != null">#{energyType},</if>
             <if test="imageUrl != null">#{imageUrl},</if>
             <if test="videoUrl != null">#{videoUrl},</if>
@@ -74,16 +74,16 @@
         UPDATE xiantu_car
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null and name != ''">name=#{name},</if>
-            <if test="bodyLength != null">body_length=#{bodyLength},</if>
-            <if test="bodyWidth != null">body_width=#{bodyWidth},</if>
-            <if test="bodyHeight != null">body_height=#{bodyHeight},</if>
-            <if test="grossWeight != null">gross_weight=#{grossWeight},</if>
-            <if test="curbWeight != null">curb_weight=#{curbWeight},</if>
+            <if test="bodyLength != null and bodyLength != 0">body_length=#{bodyLength},</if>
+            <if test="bodyWidth != null and bodyWidth != 0">body_width=#{bodyWidth},</if>
+            <if test="bodyHeight != null and bodyHeight != 0">body_height=#{bodyHeight},</if>
+            <if test="grossWeight != null and grossWeight != 0">gross_weight=#{grossWeight},</if>
+            <if test="curbWeight != null and curbWeight != 0">curb_weight=#{curbWeight},</if>
             <if test="energyType != null">energy_type=#{energyType},</if>
-            <if test="containerLength != null">container_length=#{containerLength},</if>
-            <if test="containerWidth != null">container_width=#{containerWidth},</if>
-            <if test="ratedLoadCapacity != null">rated_load_capacity=#{ratedLoadCapacity},</if>
-            <if test="containerHeight != null">container_height=#{containerHeight},</if>
+            <if test="containerLength != null and containerLength != 0">container_length=#{containerLength},</if>
+            <if test="containerWidth != null and containerWidth != 0">container_width=#{containerWidth},</if>
+            <if test="ratedLoadCapacity != null and ratedLoadCapacity != 0">rated_load_capacity=#{ratedLoadCapacity},</if>
+            <if test="containerHeight != null and containerHeight != 0">container_height=#{containerHeight},</if>
             <if test="imageUrl != null">image_url=#{imageUrl},</if>
             <if test="videoUrl != null">video_url=#{videoUrl},</if>
         </trim>

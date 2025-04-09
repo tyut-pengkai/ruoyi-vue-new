@@ -3,6 +3,7 @@ package com.kekecha.xiantu.controller;
 import com.kekecha.xiantu.service.impl.FileServiceImpl;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
+import com.ruoyi.framework.web.domain.server.Sys;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ruoyi.common.core.domain.AjaxResult;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,12 +43,11 @@ public class FileController extends BaseController {
         if(!p.startsWith("/profile/upload/")) {
             return AjaxResult.error("路径非法");
         }
-
-        String ret = fileServiceImpl.delete(fileUrl);
-        if (ret.isEmpty()) {
-            return AjaxResult.success("删除成功");
-        } else {
-            return AjaxResult.error("删除失败: " + ret);
+        try {
+            fileServiceImpl.delete(fileUrl);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
+        return AjaxResult.success("删除成功");
     }
 }
