@@ -1,4 +1,4 @@
-package com.ruoyi.xkt.dto.payment;
+package com.ruoyi.xkt.dto.finance;
 
 import lombok.Data;
 

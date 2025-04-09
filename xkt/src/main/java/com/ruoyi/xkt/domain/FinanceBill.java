@@ -1,22 +1,23 @@
-package com.ruoyi.xkt.dto.payment;
+package com.ruoyi.xkt.domain;
 
+import com.baomidou.mybatisplus.annotation.Version;
+import com.ruoyi.common.core.domain.SimpleEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
- * 支付单据
+ * 财务单据
  *
  * @author liangyq
  * @date 2025-04-01 11:57:52.533
  **/
 @Data
-public class PaymentBillDTO {
-    /**
-     * 支付单据ID
-     */
-    private Long id;
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class FinanceBill extends SimpleEntity {
     /**
      * 单号
      */
@@ -46,6 +47,10 @@ public class PaymentBillDTO {
      */
     private Long relId;
     /**
+     * 业务唯一键
+     */
+    private String businessUniqueKey;
+    /**
      * 收入内部账户ID
      */
     private Long inputInternalAccountId;
@@ -74,27 +79,8 @@ public class PaymentBillDTO {
      */
     private String remark;
     /**
-     * 删除标志（0代表存在 2代表删除）
-     */
-    private String delFlag;
-    /**
-     * 创建者
-     */
-    private String createBy;
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-    /**
-     * 更新者
-     */
-    private String updateBy;
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-    /**
      * 版本号
      */
+    @Version
     private Long version;
 }

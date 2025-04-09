@@ -10,7 +10,7 @@ import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.domain.AlipayCallback;
 import com.ruoyi.xkt.dto.order.StoreOrderInfo;
-import com.ruoyi.xkt.dto.payment.AlipayReqDTO;
+import com.ruoyi.xkt.dto.finance.AlipayReqDTO;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayFrom;
 import com.ruoyi.xkt.manager.PaymentManager;

@@ -1,7 +1,7 @@
 package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ruoyi.xkt.domain.PaymentBill;
+import com.ruoyi.xkt.domain.FinanceBill;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
  * @date 2025-04-02 12:48
  */
 @Repository
-public interface PaymentBillMapper extends BaseMapper<PaymentBill> {
+public interface FinanceBillMapper extends BaseMapper<FinanceBill> {
 }

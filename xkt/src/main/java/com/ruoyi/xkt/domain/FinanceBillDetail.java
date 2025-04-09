@@ -8,7 +8,7 @@ import lombok.ToString;
 import java.math.BigDecimal;
 
 /**
- * 支付单据明细
+ * 财务单据明细
  *
  * @author liangyq
  * @date 2025-04-01 11:57:52.550
@@ -16,11 +16,11 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class PaymentBillDetail extends SimpleEntity {
+public class FinanceBillDetail extends SimpleEntity {
     /**
-     * 支付单据ID
+     * 财务单据ID
      */
-    private Long paymentBillId;
+    private Long financeBillId;
     /**
      * 关联类型[1:代发订单明细]
      */

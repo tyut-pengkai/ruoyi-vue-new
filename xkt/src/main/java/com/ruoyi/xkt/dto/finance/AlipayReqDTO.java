@@ -1,4 +1,4 @@
-package com.ruoyi.xkt.dto.payment;
+package com.ruoyi.xkt.dto.finance;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
