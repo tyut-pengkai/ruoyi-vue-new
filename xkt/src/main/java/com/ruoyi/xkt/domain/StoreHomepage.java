@@ -35,10 +35,20 @@ public class StoreHomepage extends XktBaseEntity {
     private Long storeId;
 
     /**
+     * 业务ID 1.不跳转 为null 2.跳转店铺 为storeId 3.跳转商品 为storeProdId
+     */
+    private Long bizId;
+
+    /**
+     * 跳转类型 1.不跳转 2.跳转店铺 3.跳转商品
+     */
+    private Integer jumpType;
+
+    /**
      * 档口各位置类型
      */
     @Excel(name = "档口各位置类型")
-    private Integer type;
+    private Integer fileType;
 
     /**
      * 档口各位置文件ID
@@ -58,7 +68,7 @@ public class StoreHomepage extends XktBaseEntity {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId())
                 .append("storeId", getStoreId())
-                .append("type", getType())
+                .append("fileType", getFileType())
                 .append("fileId", getFileId())
                 .append("orderNum", getOrderNum())
                 .append("version", getVersion())

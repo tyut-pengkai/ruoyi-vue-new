@@ -17,27 +17,38 @@ import java.util.List;
 @ApiModel("档口首页装修")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StoreHomeDTO {
+public class StoreHomeDecorationResDTO {
 
     @ApiModelProperty(value = "档口首页装修模板Num")
     private Integer templateNum;
-    @ApiModelProperty(value = "档口首页装修")
-    List<HomePageFileDTO> fileList;
+    @ApiModelProperty(value = "档口首页装修大轮播图")
+    private List<DecorationDTO> bigBannerList;
+    @ApiModelProperty(value = "档口首页装修其它图部分")
+    private List<DecorationDTO> decorList;
 
     @Data
-    @ApiModel(value = "档口首页文件")
+    @ApiModel(value = "档口首页各模块")
     @Accessors(chain = true)
-    public static class HomePageFileDTO {
+    public static class DecorationDTO {
+
+        @ApiModelProperty(value = "业务ID")
+        private Long bizId;
+        @ApiModelProperty(value = "业务名称")
+        private String bizName;
+        @ApiModelProperty(value = "文件大小")
+        private Integer jumpType;
         @ApiModelProperty(value = "文件名称")
         private String fileName;
         @ApiModelProperty(value = "文件路径")
         private String fileUrl;
         @ApiModelProperty(value = "文件大小")
         private BigDecimal fileSize;
-        @ApiModelProperty(value = "文件类型 1轮播大图  2轮播小图 3店家推荐 4人气爆款 5当季新品 6销量排行")
+        @ApiModelProperty(value = "文件类型 1轮播大图")
         private Integer fileType;
         @ApiModelProperty(value = "排序")
         private Integer orderNum;
+
     }
+
 
 }

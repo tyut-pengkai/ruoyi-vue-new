@@ -5,8 +5,8 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.web.controller.xkt.vo.storeHomepage.StoreHomeVO;
-import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDTO;
+import com.ruoyi.web.controller.xkt.vo.storeHomepage.StoreHomeDecorationVO;
+import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDecorationDTO;
 import com.ruoyi.xkt.service.IStoreHomepageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "档口首页装修")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/rest/v1/store-homes")
+@RequestMapping("/rest/v1/store-home")
 public class StoreHomepageController extends XktBaseController {
 
     final IStoreHomepageService storeHomeService;
@@ -35,10 +35,10 @@ public class StoreHomepageController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:homepage:add')")
     @ApiOperation(value = "新增档口首页装修数据", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口首页装修数据", businessType = BusinessType.INSERT)
-    @PostMapping("/{storeId}/{templateNum}")
-    public R<Integer> add(@PathVariable("storeId") Long storeId, @PathVariable("templateNum") Integer templateNum,
-                          @Validated @RequestBody StoreHomeVO homepageVO) {
-        return R.ok(storeHomeService.insert(storeId, templateNum, BeanUtil.toBean(homepageVO, StoreHomeDTO.class)));
+    @PostMapping("/decoration/{storeId}/{templateNum}")
+    public R<Integer> addDecoration(@PathVariable("storeId") Long storeId, @PathVariable("templateNum") Integer templateNum,
+                                    @Validated @RequestBody StoreHomeDecorationVO decorationVO) {
+        return R.ok(storeHomeService.insert(storeId, templateNum, BeanUtil.toBean(decorationVO, StoreHomeDecorationDTO.class)));
     }
 
     /**
@@ -46,9 +46,9 @@ public class StoreHomepageController extends XktBaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:sale:query')")
     @ApiOperation(value = "查询档口首页装修数据", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/{storeId}")
-    public R<StoreHomeVO> getInfo(@PathVariable("storeId") Long storeId) {
-        return R.ok(BeanUtil.toBean(storeHomeService.selectByStoreId(storeId), StoreHomeVO.class));
+    @GetMapping(value = "/decoration/{storeId}")
+    public R<StoreHomeDecorationVO> getDecorationInfo(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeHomeService.selectByStoreId(storeId), StoreHomeDecorationVO.class));
     }
 
     /**
@@ -57,10 +57,11 @@ public class StoreHomepageController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:homepage:edit')")
     @ApiOperation(value = "修改档口首页装修数据", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口首页装修数据", businessType = BusinessType.UPDATE)
-    @PutMapping("/{storeId}/{templateNum}")
-    public R<Integer> edit(@PathVariable("storeId") Long storeId, @PathVariable("templateNum") Integer templateNum,
-                           @Validated @RequestBody StoreHomeVO homepageVO) {
-        return R.ok(storeHomeService.updateStoreHomepage(storeId, templateNum, BeanUtil.toBean(homepageVO, StoreHomeDTO.class)));
+    @PutMapping("/decoration/{storeId}/{templateNum}")
+    public R<Integer> editDecoration(@PathVariable("storeId") Long storeId, @PathVariable("templateNum") Integer templateNum,
+                                     @Validated @RequestBody StoreHomeDecorationVO homepageVO) {
+        return R.ok(storeHomeService.updateStoreHomepage(storeId, templateNum, BeanUtil.toBean(homepageVO, StoreHomeDecorationDTO.class)));
     }
+
 
 }

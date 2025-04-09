@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDTO;
+import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDecorationDTO;
+import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDecorationResDTO;
 
 /**
  * 档口首页Service接口
@@ -18,7 +19,7 @@ public interface IStoreHomepageService {
      * @param homepageDTO 新增档口首页各部分图
      * @return Integer
      */
-    Integer insert(Long storeId, Integer templateNum, StoreHomeDTO homepageDTO);
+    Integer insert(Long storeId, Integer templateNum, StoreHomeDecorationDTO homepageDTO);
 
     /**
      * 获取档口首页各个部分的图信息
@@ -26,7 +27,7 @@ public interface IStoreHomepageService {
      * @param storeId 档口ID
      * @return StoreHomeDTO
      */
-    StoreHomeDTO selectByStoreId(Long storeId);
+    StoreHomeDecorationResDTO selectByStoreId(Long storeId);
 
     /**
      * 更新档口首页各部分图信息
@@ -36,6 +37,6 @@ public interface IStoreHomepageService {
      * @param homeDTO     更新的dto
      * @return Integer
      */
-    Integer updateStoreHomepage(Long storeId, Integer templateNum, StoreHomeDTO homeDTO);
+    Integer updateStoreHomepage(Long storeId, Integer templateNum, StoreHomeDecorationDTO homeDTO);
 
 }
