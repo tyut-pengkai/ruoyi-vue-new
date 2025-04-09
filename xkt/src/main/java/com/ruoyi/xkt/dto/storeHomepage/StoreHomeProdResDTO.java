@@ -35,6 +35,30 @@ public class StoreHomeProdResDTO {
     private Integer followStore;
     @ApiModelProperty(value = "是否已收藏商品")
     private Integer collectProd;
+    @ApiModelProperty(value = "推荐商品列表")
+    private List<DecorationVO> recommendedList;
+
+    @Data
+    @ApiModel(value = "档口首页大轮播图")
+    @Accessors(chain = true)
+    public static class DecorationVO {
+        @ApiModelProperty(value = "业务类型ID，如果选择：不跳转 不传，选择：跳转店铺，传storeId，选择：跳转商品，传storeProdId")
+        private Long bizId;
+        @ApiModelProperty(value = "业务名称")
+        private String bizName;
+        @ApiModelProperty(value = "跳转类型 1. 不跳转 2. 跳转店铺 3. 跳转商品")
+        private Integer jumpType;
+        @ApiModelProperty(value = "文件名称")
+        private String fileName;
+        @ApiModelProperty(value = "文件路径")
+        private String fileUrl;
+        @ApiModelProperty(value = "文件大小")
+        private BigDecimal fileSize;
+        @ApiModelProperty(value = "文件类型 1轮播大图")
+        private Integer fileType;
+        @ApiModelProperty(value = "排序")
+        private Integer orderNum;
+    }
 
     @Data
     @ApiModel(value = "档口基本信息")

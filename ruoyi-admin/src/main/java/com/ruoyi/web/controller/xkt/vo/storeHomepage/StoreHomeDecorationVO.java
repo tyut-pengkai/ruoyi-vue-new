@@ -21,7 +21,7 @@ public class StoreHomeDecorationVO {
     @ApiModelProperty(value = "档口首页装修大轮播图")
     private List<BigBannerVO> bigBannerList;
     @ApiModelProperty(value = "档口首页装修其它图部分")
-    private List<DecorationVO> decorList;
+    private List<DecorationVO> decorationList;
 
     @Data
     @ApiModel(value = "档口首页大轮播图")

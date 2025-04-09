@@ -135,7 +135,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         return new StoreHomeDecorationResDTO() {{
             setTemplateNum(store.getTemplateNum());
             setBigBannerList(bigBannerList);
-            setDecorList(decorList);
+            setDecorationList(decorList);
         }};
     }
 
@@ -265,10 +265,26 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                 .setDetail(BeanUtil.toBean(detail, StoreProdDetailDTO.class))
                 .setCateAttrList(BeanUtil.copyToList(prodAttrList, StoreProdCateAttrDTO.class))
                 .setColorList(colorSizeStockList);
+        // 档口推荐图片
+        List<StoreHomepage> storeRecommendedList = this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
+                .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED)
+                // 查询店铺推荐图片
+                .eq(StoreHomepage::getFileType, HomepageType.STORE_RECOMMENDED.getValue()));
+        List<Long> fileIdList = storeRecommendedList.stream().map(StoreHomepage::getFileId).filter(Objects::nonNull).collect(Collectors.toList());
+        Map<Long, SysFile> fileMap = CollectionUtils.isEmpty(fileIdList) ? new HashMap<>()
+                : this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>().in(SysFile::getId, fileIdList).eq(SysFile::getDelFlag, Constants.UNDELETED))
+                .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
+        // 其它图部分
+        List<StoreHomeProdResDTO.DecorationVO> recommendedList = storeRecommendedList.stream().map(x -> {
+            StoreHomeProdResDTO.DecorationVO decorationDTO = BeanUtil.toBean(x, StoreHomeProdResDTO.DecorationVO.class).setBizName(storeProd.getProdName());
+            return fileMap.containsKey(x.getFileId()) ? decorationDTO.setFileType(x.getFileType()).setFileName(fileMap.get(x.getFileId()).getFileName())
+                    .setFileUrl(fileMap.get(x.getFileId()).getFileUrl()).setFileSize(fileMap.get(x.getFileId()).getFileSize()) : decorationDTO;
+        }).collect(Collectors.toList());
         return new StoreHomeProdResDTO() {{
             setStore(BeanUtil.toBean(store, StoreBasicDTO.class).setStoreId(storeId));
             setStoreProd(storeProdDTO);
             setStoreProdStatusCount(statusCountDTO);
+            setRecommendedList(recommendedList);
 
             // TODO 还有关注的档口及收藏的商品
             // TODO 还有关注的档口及收藏的商品

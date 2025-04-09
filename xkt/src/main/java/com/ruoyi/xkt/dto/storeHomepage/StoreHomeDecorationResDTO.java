@@ -24,7 +24,7 @@ public class StoreHomeDecorationResDTO {
     @ApiModelProperty(value = "档口首页装修大轮播图")
     private List<DecorationDTO> bigBannerList;
     @ApiModelProperty(value = "档口首页装修其它图部分")
-    private List<DecorationDTO> decorList;
+    private List<DecorationDTO> decorationList;
 
     @Data
     @ApiModel(value = "档口首页各模块")

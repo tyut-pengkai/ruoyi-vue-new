@@ -16,9 +16,9 @@ import lombok.Data;
 public class StoreHomeResVO {
 
     @ApiModelProperty(value = "档口基本信息")
-    private StoreBasicVO storeBasic;
+    private StoreBasicVO store;
     @ApiModelProperty(value = "档口首页商品基本信息")
-    private StoreProdBasicVO storeProdBasic;
+    private StoreProdStatusCountVO storeProdStatusCount;
 
     @Data
     @ApiModel(value = "档口基本信息")
@@ -45,7 +45,7 @@ public class StoreHomeResVO {
 
     @Data
     @ApiModel(value = "档口商品基本信息")
-    public static class StoreProdBasicVO {
+    public static class StoreProdStatusCountVO {
         @ApiModelProperty(value = "在售数量")
         private Integer onSaleNum;
         @ApiModelProperty(value = "尾货数量")
@@ -53,5 +53,6 @@ public class StoreHomeResVO {
         @ApiModelProperty(value = "已下架数量")
         private Integer offSaleNum;
     }
+
 
 }
