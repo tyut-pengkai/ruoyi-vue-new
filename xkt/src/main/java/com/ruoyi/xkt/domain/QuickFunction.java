@@ -17,7 +17,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class StoreQuickFunction extends XktBaseEntity {
+@Accessors(chain = true)
+public class QuickFunction extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -27,10 +28,14 @@ public class StoreQuickFunction extends XktBaseEntity {
     private Long id;
 
     /**
-     * store.id
+     * store.id  or user.id
      */
-    @Excel(name = "store.id")
-    private Long storeId;
+    private Long bizId;
+
+    /**
+     * 角色ID
+     */
+    private Long roleId;
 
     /**
      * 快捷功能名称
@@ -61,7 +66,7 @@ public class StoreQuickFunction extends XktBaseEntity {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId())
-                .append("storeId", getStoreId())
+                .append("bizId", getBizId())
                 .append("menuName", getMenuName())
                 .append("icon", getIcon())
                 .append("path", getPath())

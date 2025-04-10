@@ -1,15 +1,11 @@
-package com.ruoyi.xkt.dto.storeQuickFunction;
+package com.ruoyi.xkt.dto.quickFunction;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -20,10 +16,12 @@ import java.util.List;
 @ApiModel("档口快捷功能")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StoreQuickFuncDTO {
+public class QuickFuncDTO {
 
-    @ApiModelProperty(value = "档口ID")
-    private Long storeId;
+    @ApiModelProperty(value = "bizId 根据roleId确定，为storeId或者userId")
+    private Long bizId;
+    @ApiModelProperty(value = "角色ID")
+    private Long roleId;
     @ApiModelProperty(value = "档口勾选的快捷功能")
     List<DetailDTO> checkedList;
 

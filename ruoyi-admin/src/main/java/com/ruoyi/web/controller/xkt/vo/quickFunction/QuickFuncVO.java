@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.vo.storeQuickFunction;
+package com.ruoyi.web.controller.xkt.vo.quickFunction;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
@@ -19,11 +19,14 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 @AllArgsConstructor
-public class StoreQuickFuncVO {
+public class QuickFuncVO {
 
-    @ApiModelProperty(value = "档口ID", required = true)
-    @NotNull(message = "档口ID不能为空!")
-    private Long storeId;
+    @ApiModelProperty(value = "业务ID 根据roleId确定，可能为store_id、user_id", required = true)
+    @NotNull(message = "业务ID不能为空!")
+    private Long bizId;
+    @ApiModelProperty(value = "角色ID")
+    @NotNull(message = "角色ID不能为空!")
+    private Long roleId;
     @ApiModelProperty(value = "档口勾选的快捷功能", required = true)
     @NotNull(message = "档口勾选的快捷功能不能为空!")
     private List<QuickFuncDetailVO> checkedList;
