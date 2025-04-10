@@ -11,9 +11,10 @@ import com.ruoyi.web.controller.xkt.vo.order.StoreOrderAddReqVO;
 import com.ruoyi.web.controller.xkt.vo.order.StoreOrderPayReqVO;
 import com.ruoyi.web.controller.xkt.vo.order.StoreOrderPayRespVO;
 import com.ruoyi.xkt.dto.order.StoreOrderAddDTO;
+import com.ruoyi.xkt.dto.order.StoreOrderAddResult;
 import com.ruoyi.xkt.dto.order.StoreOrderInfo;
 import com.ruoyi.xkt.enums.EPayChannel;
-import com.ruoyi.xkt.enums.EPayFrom;
+import com.ruoyi.xkt.enums.EPayPage;
 import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.service.IStoreOrderService;
 import io.jsonwebtoken.lang.Assert;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -44,28 +46,30 @@ public class StoreOrderController extends XktBaseController {
 
     @PreAuthorize("@ss.hasPermi('system:order:add')")
     @Log(title = "订单", businessType = BusinessType.INSERT)
-    @ApiOperation("创建订单并发起支付")
+    @ApiOperation("创建订单")
     @PostMapping("create")
-    public R<StoreOrderPayRespVO> create(@RequestBody StoreOrderAddReqVO vo) {
+    public R<StoreOrderPayRespVO> create(@Valid @RequestBody StoreOrderAddReqVO vo) {
         StoreOrderAddDTO dto = BeanUtil.toBean(vo, StoreOrderAddDTO.class);
         dto.setOrderUserId(SecurityUtils.getUserId());
-        //初始化订单
-        StoreOrderInfo orderInfo = storeOrderService.createOrder(dto);
-        //发起支付
-        PaymentManager paymentManager = getPaymentManager(EPayChannel.of(vo.getPayChannel()));
-        String rtnStr = paymentManager.payForOrder(orderInfo.getOrder().getId(), EPayFrom.of(vo.getPayFrom()));
+        //创建订单并根据参数决定是否发起支付
+        StoreOrderAddResult result = storeOrderService.createOrder(dto, vo.getBeginPay(),
+                EPayChannel.of(vo.getPayChannel()), EPayPage.of(vo.getPayFrom()));
         //返回信息
-        StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(orderInfo.getOrder().getId(), rtnStr);
+        StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(result.getOrderInfo().getOrder().getId(),
+                result.getPayRtnStr());
         return success(respVO);
     }
 
     @PreAuthorize("@ss.hasPermi('system:order:add')")
     @Log(title = "订单", businessType = BusinessType.OTHER)
-    @ApiOperation("重新发起订单支付")
+    @ApiOperation("支付订单")
     @PostMapping("pay")
-    public R<StoreOrderPayRespVO> pay(@RequestBody StoreOrderPayReqVO vo) {
+    public R<StoreOrderPayRespVO> pay(@Valid @RequestBody StoreOrderPayReqVO vo) {
         PaymentManager paymentManager = getPaymentManager(EPayChannel.of(vo.getPayChannel()));
-        String rtnStr = paymentManager.payForOrder(vo.getStoreOrderId(), EPayFrom.of(vo.getPayFrom()));
+        //订单支付状态->支付中
+        StoreOrderInfo storeOrderInfo = storeOrderService.preparePayOrder(vo.getStoreOrderId());
+        //调用支付
+        String rtnStr = paymentManager.payOrder(storeOrderInfo, EPayPage.of(vo.getPayFrom()));
         StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(vo.getStoreOrderId(), rtnStr);
         return success(respVO);
     }

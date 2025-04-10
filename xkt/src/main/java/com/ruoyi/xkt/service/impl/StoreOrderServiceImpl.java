@@ -13,9 +13,11 @@ import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.express.ExpressContactDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderAddDTO;
+import com.ruoyi.xkt.dto.order.StoreOrderAddResult;
 import com.ruoyi.xkt.dto.order.StoreOrderInfo;
 import com.ruoyi.xkt.dto.order.StoreOrderOperationRecordAddDTO;
 import com.ruoyi.xkt.enums.*;
+import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IExpressService;
 import com.ruoyi.xkt.service.IOperationRecordService;
@@ -40,21 +42,24 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Autowired
     private StoreOrderDetailMapper storeOrderDetailMapper;
     @Autowired
-    private IExpressService expressService;
-    @Autowired
-    private IOperationRecordService operationRecordService;
-    @Autowired
     private StoreProductMapper storeProductMapper;
     @Autowired
     private StoreProductColorSizeMapper storeProductColorSizeMapper;
     @Autowired
     private StoreProductColorPriceMapper storeProductColorPriceMapper;
     @Autowired
+    private IExpressService expressService;
+    @Autowired
+    private IOperationRecordService operationRecordService;
+    @Autowired
     private IVoucherSequenceService voucherSequenceService;
+    @Autowired
+    private List<PaymentManager> paymentManagers;
 
     @Transactional
     @Override
-    public StoreOrderInfo createOrder(StoreOrderAddDTO storeOrderAddDTO) {
+    public StoreOrderAddResult createOrder(StoreOrderAddDTO storeOrderAddDTO, boolean beginPay, EPayChannel payChannel,
+                                           EPayPage payPage) {
         Long orderUserId = storeOrderAddDTO.getOrderUserId();
         Long storeId = storeOrderAddDTO.getStoreId();
         Long expressId = storeOrderAddDTO.getExpressId();
@@ -81,7 +86,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderDetail.setStoreProdColorSizeId(spcs.getId());
             orderDetail.setStoreProdId(spcs.getStoreProdId());
             orderDetail.setDetailStatus(EOrderStatus.PENDING_PAYMENT.getValue());
-            orderDetail.setPayStatus(EPayStatus.INIT.getValue());
+            orderDetail.setPayStatus(beginPay ? EPayStatus.PAYING.getValue() : EPayStatus.INIT.getValue());
             orderDetail.setExpressStatus(EExpressStatus.INIT.getValue());
             //计算明细费用
             BigDecimal goodsPrice = calcPrice(orderUserId, spcs);
@@ -122,7 +127,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         order.setOrderNo(orderNo);
         order.setOrderType(EOrderType.SALES_ORDER.getValue());
         order.setOrderStatus(EOrderStatus.PENDING_PAYMENT.getValue());
-        order.setPayStatus(EPayStatus.INIT.getValue());
+        order.setPayStatus(beginPay ? EPayStatus.PAYING.getValue() : EPayStatus.INIT.getValue());
         order.setOrderRemark(storeOrderAddDTO.getOrderRemark());
         order.setGoodsQuantity(orderGoodsQuantity);
         order.setGoodsAmount(orderGoodsAmount);
@@ -160,7 +165,14 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         });
         //操作记录
         addOperationRecords(orderId, orderDetailIdList, orderUserId, new Date(), EOrderAction.ADD_ORDER);
-        return new StoreOrderInfo(order, orderDetailList);
+        StoreOrderInfo orderInfo = new StoreOrderInfo(order, orderDetailList);
+        String rtnStr = null;
+        if (beginPay) {
+            //发起支付
+            PaymentManager paymentManager = getPaymentManager(payChannel);
+            rtnStr = paymentManager.payOrder(orderInfo, payPage);
+        }
+        return new StoreOrderAddResult(orderInfo, rtnStr);
     }
 
     @Override
@@ -178,30 +190,61 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         Assert.isTrue(EOrderType.SALES_ORDER.getValue().equals(order.getOrderType()),
                 "非销售订单无法发起支付");
         Assert.isTrue(BeanValidators.exists(order), "订单不存在");
+        checkPreparePayStatus(order.getPayStatus());
+        order.setPayStatus(EPayStatus.PAYING.getValue());
+        int orderSuccess = storeOrderMapper.updateById(order);
+        if (orderSuccess == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
         List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectList(
                 Wrappers.lambdaQuery(StoreOrderDetail.class)
                         .eq(StoreOrderDetail::getStoreOrderId, storeOrderId)
                         .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
-        checkPreparePayStatus(order.getPayStatus());
-        StoreOrder updateOrder = new StoreOrder();
-        updateOrder.setId(storeOrderId);
-        updateOrder.setPayStatus(EPayStatus.PAYING.getValue());
-        updateOrder.setVersion(order.getVersion());
-        int orderSuccess = storeOrderMapper.updateById(updateOrder);
-        if (orderSuccess == 0) {
-            throw new ServiceException("系统繁忙请稍后再试");
-        }
         for (StoreOrderDetail orderDetail : orderDetails) {
             checkPreparePayStatus(orderDetail.getPayStatus());
-            StoreOrderDetail orderDetailUpdate = new StoreOrderDetail();
-            orderDetailUpdate.setId(orderDetail.getId());
-            orderDetailUpdate.setPayStatus(EPayStatus.PAYING.getValue());
-            orderDetailUpdate.setVersion(orderDetail.getVersion());
-            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetailUpdate);
+            orderDetail.setPayStatus(EPayStatus.PAYING.getValue());
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
             if (orderDetailSuccess == 0) {
-                throw new ServiceException("系统繁忙请稍后再试");
+                throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
             }
         }
+        return new StoreOrderInfo(order, orderDetails);
+    }
+
+    @Transactional
+    @Override
+    public StoreOrderInfo paySuccess(Long storeOrderId) {
+        Assert.notNull(storeOrderId);
+        StoreOrder order = storeOrderMapper.selectById(storeOrderId);
+        Assert.isTrue(EOrderType.SALES_ORDER.getValue().equals(order.getOrderType()),
+                "订单类型异常");
+        Assert.isTrue(BeanValidators.exists(order), "订单不存在");
+        Assert.isTrue(order.getPayStatus().equals(EPayStatus.PAYING.getValue()), "订单支付状态异常");
+        order.setPayStatus(EPayStatus.PAID.getValue());
+        //TODO 暂时使用总金额
+        order.setRealTotalAmount(order.getTotalAmount());
+        int orderSuccess = storeOrderMapper.updateById(order);
+        if (orderSuccess == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
+        List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectList(
+                Wrappers.lambdaQuery(StoreOrderDetail.class)
+                        .eq(StoreOrderDetail::getStoreOrderId, storeOrderId)
+                        .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
+        for (StoreOrderDetail orderDetail : orderDetails) {
+            Assert.isTrue(orderDetail.getPayStatus().equals(EPayStatus.PAYING.getValue()),
+                    "订单明细支付状态异常");
+            orderDetail.setPayStatus(EPayStatus.PAID.getValue());
+            orderDetail.setRealTotalAmount(orderDetail.getTotalAmount());
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            if (orderDetailSuccess == 0) {
+                throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+            }
+            orderDetailIdList.add(orderDetail.getId());
+        }
+        //操作记录
+        addOperationRecords(storeOrderId, orderDetailIdList, null, new Date(), EOrderAction.PAID_ORDER);
         return new StoreOrderInfo(order, orderDetails);
     }
 
@@ -327,5 +370,23 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             spcsIdCheckSet.add(spcs.getId());
         }
         return spcsMap;
+    }
+
+    /**
+     * 根据支付渠道匹配支付类
+     *
+     * @param payChannel
+     * @return
+     */
+    private PaymentManager getPaymentManager(EPayChannel payChannel) {
+        if (payChannel == null) {
+            throw new ServiceException("请先选择支付渠道");
+        }
+        for (PaymentManager paymentManager : paymentManagers) {
+            if (paymentManager.channel() == payChannel) {
+                return paymentManager;
+            }
+        }
+        throw new ServiceException("未知支付渠道");
     }
 }

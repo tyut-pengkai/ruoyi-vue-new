@@ -9,6 +9,7 @@ import com.ruoyi.xkt.domain.AlipayCallback;
 import com.ruoyi.xkt.domain.StoreOrder;
 import com.ruoyi.xkt.enums.EProcessStatus;
 import com.ruoyi.xkt.manager.impl.AliPaymentMangerImpl;
+import com.ruoyi.xkt.service.IAlipayCallbackService;
 import com.ruoyi.xkt.service.IStoreOrderService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class AlipayController extends XktBaseController {
 
     @Autowired
     private IStoreOrderService storeOrderService;
+    @Autowired
+    private IAlipayCallbackService alipayCallbackService;
     @Autowired
     private AliPaymentMangerImpl paymentManger;
 
@@ -85,7 +88,25 @@ public class AlipayController extends XktBaseController {
                 return FAILURE;
             }
             //5. 处理支付宝回调信息
-            paymentManger.processAlipayCallback(alipayCallback);
+            AlipayCallback info = alipayCallbackService.getByNotifyId(alipayCallback.getNotifyId());
+            if (info == null) {
+                //保存到数据库
+                info = alipayCallback;
+                alipayCallbackService.insertAlipayCallback(info);
+            }
+            if (!"TRADE_SUCCESS".equals(info.getTradeStatus())) {
+                //非交易支付成功的回调不处理
+                return SUCCESS;
+            }
+            if (info.getRefundFee() != null && !NumberUtil.equals(info.getRefundFee(), BigDecimal.ZERO)) {
+                //如果有退款金额，可能是部分退款的回调，这里不做处理
+                return SUCCESS;
+            }
+            if (EProcessStatus.INIT.getValue().equals(info.getProcessStatus())) {
+                alipayCallbackService.processOrderPay(info);
+            } else {
+                logger.warn("支付回调重复请求处理: {}", info.getId());
+            }
             return SUCCESS;
         } else {
             logger.info("支付宝验签未通过:{}", params);

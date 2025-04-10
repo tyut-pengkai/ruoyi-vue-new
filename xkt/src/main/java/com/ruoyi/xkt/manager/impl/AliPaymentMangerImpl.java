@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.manager.impl;
 
-import cn.hutool.core.util.NumberUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -8,22 +7,17 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.xkt.domain.AlipayCallback;
-import com.ruoyi.xkt.dto.order.StoreOrderInfo;
 import com.ruoyi.xkt.dto.finance.AlipayReqDTO;
+import com.ruoyi.xkt.dto.order.StoreOrderInfo;
 import com.ruoyi.xkt.enums.EPayChannel;
-import com.ruoyi.xkt.enums.EPayFrom;
+import com.ruoyi.xkt.enums.EPayPage;
+import com.ruoyi.xkt.enums.EPayStatus;
 import com.ruoyi.xkt.manager.PaymentManager;
-import com.ruoyi.xkt.service.IAlipayCallbackService;
-import com.ruoyi.xkt.service.IStoreOrderService;
 import io.jsonwebtoken.lang.Assert;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
 
 /**
  * @author liangyq
@@ -33,6 +27,9 @@ import java.math.BigDecimal;
 @Getter
 @Component
 public class AliPaymentMangerImpl implements PaymentManager {
+
+    private static final String DEFAULT_FORMAT = "json";
+    private static final String PAY_PRODUCT_CODE = "FAST_INSTANT_TRADE_PAY";
     /**
      * 应用ID,您的APPID，收款账号既是您的APPID对应支付宝账号
      */
@@ -74,29 +71,25 @@ public class AliPaymentMangerImpl implements PaymentManager {
     @Value("${alipay.gatewayUrl:https://openapi-sandbox.dl.alipaydev.com/gateway.do}")
     private String gatewayUrl;
 
-    @Autowired
-    private IStoreOrderService storeOrderService;
-    @Autowired
-    private IAlipayCallbackService alipayCallbackService;
-
     @Override
     public EPayChannel channel() {
         return EPayChannel.ALI_PAY;
     }
 
     @Override
-    public String payForOrder(Long storeOrderId, EPayFrom payFrom) {
-        Assert.notNull(storeOrderId);
+    public String payOrder(StoreOrderInfo orderInfo, EPayPage payFrom) {
+        Assert.notNull(orderInfo);
         Assert.notNull(payFrom);
-        //订单状态更新为支付中
-        StoreOrderInfo order = storeOrderService.preparePayOrder(storeOrderId);
+        if (!EPayStatus.PAYING.getValue().equals(orderInfo.getOrder().getPayStatus())) {
+            throw new ServiceException("订单[" + orderInfo.getOrder().getOrderNo() + "]支付状态异常");
+        }
         AlipayReqDTO reqDTO = new AlipayReqDTO();
-        reqDTO.setOutTradeNo(order.getOrder().getOrderNo());
-        reqDTO.setTotalAmount(order.getOrder().getTotalAmount().toPlainString());
-        reqDTO.setSubject("代发订单" + order.getOrder().getOrderNo());
-        reqDTO.setProductCode("FAST_INSTANT_TRADE_PAY"); //这个是固定的
+        reqDTO.setOutTradeNo(orderInfo.getOrder().getOrderNo());
+        reqDTO.setTotalAmount(orderInfo.getOrder().getTotalAmount().toPlainString());
+        reqDTO.setSubject("代发订单" + orderInfo.getOrder().getOrderNo());
+        reqDTO.setProductCode(PAY_PRODUCT_CODE); //这个是固定的
         String reqStr = JSON.toJSONString(reqDTO);
-        AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, "json", charset,
+        AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
                 alipayPublicKey, signType);
         switch (payFrom) {
             case WEB:
@@ -124,21 +117,6 @@ public class AliPaymentMangerImpl implements PaymentManager {
             default:
                 throw new ServiceException("未知的支付来源");
         }
-    }
-
-    public void processAlipayCallback(AlipayCallback alipayCallback) {
-        AlipayCallback info = alipayCallbackService.getByNotifyId(alipayCallback.getNotifyId());
-        if (info == null) {
-            //保存到数据库
-            info = alipayCallback;
-            alipayCallbackService.insertAlipayCallback(info);
-        }
-        if (info.getRefundFee() != null &&
-                !NumberUtil.equals(info.getRefundFee(), BigDecimal.ZERO)) {
-            //如果有退款金额，可能是部分退款的回调，这里不做处理
-            return;
-        }
-        //TODO
     }
 
 }

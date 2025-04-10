@@ -24,4 +24,10 @@ public interface IAlipayCallbackService {
      */
     int insertAlipayCallback(AlipayCallback alipayCallback);
 
+    /**
+     * 处理订单支付结果
+     *
+     * @param info
+     */
+    void processOrderPay(AlipayCallback info);
 }

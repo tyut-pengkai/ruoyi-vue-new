@@ -12,6 +12,7 @@ import lombok.Getter;
 public enum EOrderAction {
 
     ADD_ORDER(1, "下单"),
+    PAID_ORDER(2, "支付"),
     ;
 
     private final Integer value;

@@ -9,7 +9,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum EPayFrom {
+public enum EPayPage {
 
     WEB(1, "电脑网站"),
     WAP(2, "手机网站"),
@@ -18,8 +18,8 @@ public enum EPayFrom {
     private final Integer value;
     private final String label;
 
-    public static EPayFrom of(Integer value) {
-        for (EPayFrom e : EPayFrom.values()) {
+    public static EPayPage of(Integer value) {
+        for (EPayPage e : EPayPage.values()) {
             if (e.getValue().equals(value)) {
                 return e;
             }

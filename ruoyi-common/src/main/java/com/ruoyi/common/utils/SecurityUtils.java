@@ -1,23 +1,27 @@
 package com.ruoyi.common.utils;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.util.PatternMatchUtils;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.exception.ServiceException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.util.PatternMatchUtils;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 安全服务工具类
  * 
  * @author ruoyi
  */
+@Slf4j
 public class SecurityUtils
 {
 
@@ -64,6 +68,25 @@ public class SecurityUtils
         {
             throw new ServiceException("获取用户账户异常", HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    /**
+     * 获取用户账户
+     *
+     * @return
+     */
+    public static String getUsernameSafe() {
+        String username = null;
+        try {
+            Authentication auth = getAuthentication();
+            if (auth != null) {
+                LoginUser user = (LoginUser) auth.getPrincipal();
+                username = Optional.ofNullable(user).map(LoginUser::getUsername).orElse(null);
+            }
+        } catch (Exception e) {
+            log.error("获取用户账户异常", e);
+        }
+        return username;
     }
 
     /**
