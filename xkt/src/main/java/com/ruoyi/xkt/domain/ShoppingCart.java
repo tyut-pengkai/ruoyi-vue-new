@@ -5,6 +5,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -16,7 +17,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UserShoppingCart extends XktBaseEntity {
+@Accessors(chain = true)
+public class ShoppingCart extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -36,24 +38,16 @@ public class UserShoppingCart extends XktBaseEntity {
      */
     @Excel(name = "store.id")
     private Long storeId;
-
-    /**
-     * store_prod_color.id
-     */
-    @Excel(name = "store_prod_color.id")
-    private Long storeProdColorId;
-
     /**
      * store_prod.id
      */
     @Excel(name = "store_prod.id")
     private Long storeProdId;
-
     /**
-     * 商品数量
+     * 商品货号
      */
-    @Excel(name = "商品数量")
-    private Integer quantity;
+    @Excel(name = "商品货号")
+    private String prodArtNum;
 
 
     @Override
@@ -62,9 +56,6 @@ public class UserShoppingCart extends XktBaseEntity {
                 .append("id", getId())
                 .append("userId", getUserId())
                 .append("storeId", getStoreId())
-                .append("storeProdColorId", getStoreProdColorId())
-                .append("storeProdId", getStoreProdId())
-                .append("quantity", getQuantity())
                 .append("version", getVersion())
                 .append("delFlag", getDelFlag())
                 .append("createBy", getCreateBy())
