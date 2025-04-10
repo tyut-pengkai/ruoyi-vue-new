@@ -3,6 +3,7 @@ package com.ruoyi.xkt.service;
 import com.ruoyi.xkt.domain.ExternalAccount;
 import com.ruoyi.xkt.dto.finance.TransInfo;
 import com.ruoyi.xkt.enums.EEntryStatus;
+import com.ruoyi.xkt.enums.EFinBillType;
 import com.ruoyi.xkt.enums.ELoanDirection;
 
 /**
@@ -29,5 +30,13 @@ public interface IExternalAccountService {
      */
     int addTransDetail(Long externalAccountId, TransInfo transInfo, ELoanDirection loanDirection,
                        EEntryStatus entryStatus);
+
+    /**
+     * 交易明细入账
+     *
+     * @param srcBillId
+     * @param srcBillType
+     */
+    void entryTransDetail(Long srcBillId, EFinBillType srcBillType);
 
 }

@@ -73,4 +73,8 @@ public class ExternalAccountTransDetailDTO {
      * 更新时间
      */
     private Date updateTime;
+    /**
+     * 版本号
+     */
+    private Long version;
 }

@@ -202,6 +202,8 @@ public class Constants
      */
     public static final Integer ORDER_NUM_1 = 1;
 
+    public static final String VERSION_LOCK_ERROR_COMMON_MSG = "系统繁忙，请稍后再试";
+
 
 
 

@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.domain;
 
+import com.baomidou.mybatisplus.annotation.Version;
 import com.ruoyi.common.core.domain.SimpleEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -54,4 +55,9 @@ public class ExternalAccountTransDetail extends SimpleEntity {
      * 备注
      */
     private String remark;
+    /**
+     * 版本号
+     */
+    @Version
+    private Long version;
 }

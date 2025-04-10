@@ -4,7 +4,6 @@ import cn.hutool.core.util.IdUtil;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.xkt.domain.FinanceBill;
 import com.ruoyi.xkt.domain.FinanceBillDetail;
-import com.ruoyi.xkt.domain.InternalAccount;
 import com.ruoyi.xkt.domain.StoreOrderDetail;
 import com.ruoyi.xkt.dto.finance.FinanceBillInfo;
 import com.ruoyi.xkt.dto.finance.TransInfo;
@@ -48,7 +47,6 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         Assert.notNull(payId);
         Assert.notNull(payChannel);
         //获取平台内部账户并加锁
-        InternalAccount ia = internalAccountService.getWithLock(Constants.PLATFORM_INTERNAL_ACCOUNT_ID);
         FinanceBill bill = new FinanceBill();
         bill.setBillNo(generateBillNo(EFinBillType.COLLECTION));
         bill.setBillType(EFinBillType.COLLECTION.getValue());
@@ -61,7 +59,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         //支付渠道+回调ID构成业务唯一键，防止重复创建收款单
         String businessUniqueKey = payChannel.getPrefix() + payId;
         bill.setBusinessUniqueKey(businessUniqueKey);
-        bill.setInputInternalAccountId(ia.getId());
+        bill.setInputInternalAccountId(Constants.PLATFORM_INTERNAL_ACCOUNT_ID);
         bill.setInputExternalAccountId(payChannel.getPlatformExternalAccountId());
         bill.setBusinessAmount(orderInfo.getOrder().getTotalAmount());
         bill.setTransAmount(orderInfo.getOrder().getRealTotalAmount());
@@ -89,7 +87,8 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
                 .remark("订单支付完成")
                 .build();
         //内部账户
-        internalAccountService.addTransDetail(ia, transInfo, ELoanDirection.DEBIT, EEntryStatus.FINISH);
+        internalAccountService.addTransDetail(Constants.PLATFORM_INTERNAL_ACCOUNT_ID, transInfo,
+                ELoanDirection.DEBIT, EEntryStatus.FINISH);
         //外部账户
         externalAccountService.addTransDetail(payChannel.getPlatformExternalAccountId(), transInfo,
                 ELoanDirection.DEBIT, EEntryStatus.FINISH);
