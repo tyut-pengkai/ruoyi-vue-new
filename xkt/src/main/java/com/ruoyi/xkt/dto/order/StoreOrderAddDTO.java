@@ -62,17 +62,6 @@ public class StoreOrderAddDTO {
     /**
      * 明细列表
      */
-    private List<Detail> detailList;
+    private List<StoreOrderDetailAddDTO> detailList;
 
-    @Data
-    public static class Detail {
-        /**
-         * 商品颜色尺码ID
-         */
-        private Long storeProdColorSizeId;
-        /**
-         * 商品数量
-         */
-        private Integer goodsQuantity;
-    }
 }

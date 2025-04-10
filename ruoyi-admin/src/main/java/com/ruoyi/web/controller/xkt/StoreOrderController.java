@@ -10,9 +10,11 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.web.controller.xkt.vo.order.StoreOrderAddReqVO;
 import com.ruoyi.web.controller.xkt.vo.order.StoreOrderPayReqVO;
 import com.ruoyi.web.controller.xkt.vo.order.StoreOrderPayRespVO;
+import com.ruoyi.web.controller.xkt.vo.order.StoreOrderUpdateReqVO;
 import com.ruoyi.xkt.dto.order.StoreOrderAddDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderAddResult;
 import com.ruoyi.xkt.dto.order.StoreOrderInfo;
+import com.ruoyi.xkt.dto.order.StoreOrderUpdateDTO;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 import com.ruoyi.xkt.manager.PaymentManager;
@@ -58,6 +60,17 @@ public class StoreOrderController extends XktBaseController {
         StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(result.getOrderInfo().getOrder().getId(),
                 result.getPayRtnStr());
         return success(respVO);
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:order:add')")
+    @Log(title = "订单", businessType = BusinessType.UPDATE)
+    @ApiOperation("修改订单")
+    @PostMapping("modify")
+    public R<Long> modify(@Valid @RequestBody StoreOrderUpdateReqVO vo) {
+        StoreOrderUpdateDTO dto = BeanUtil.toBean(vo, StoreOrderUpdateDTO.class);
+        dto.setOrderUserId(SecurityUtils.getUserId());
+        StoreOrderInfo result = storeOrderService.modifyOrder(dto);
+        return success(result.getOrder().getId());
     }
 
     @PreAuthorize("@ss.hasPermi('system:order:add')")

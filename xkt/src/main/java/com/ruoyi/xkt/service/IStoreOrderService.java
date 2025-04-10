@@ -4,8 +4,11 @@ import com.ruoyi.xkt.domain.StoreOrder;
 import com.ruoyi.xkt.dto.order.StoreOrderAddDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderAddResult;
 import com.ruoyi.xkt.dto.order.StoreOrderInfo;
+import com.ruoyi.xkt.dto.order.StoreOrderUpdateDTO;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
+
+import java.math.BigDecimal;
 
 /**
  * @author liangyq
@@ -23,6 +26,14 @@ public interface IStoreOrderService {
      */
     StoreOrderAddResult createOrder(StoreOrderAddDTO storeOrderAddDTO, boolean beginPay, EPayChannel payChannel,
                                     EPayPage payPage);
+
+    /**
+     * 更新订单
+     *
+     * @param storeOrderUpdateDTO
+     * @return
+     */
+    StoreOrderInfo modifyOrder(StoreOrderUpdateDTO storeOrderUpdateDTO);
 
     /**
      * 通过订单号获取订单
@@ -44,7 +55,9 @@ public interface IStoreOrderService {
      * TODO 更新扣除手续费后的金额
      *
      * @param storeOrderId
+     * @param totalAmount
+     * @param realTotalAmount
      * @return
      */
-    StoreOrderInfo paySuccess(Long storeOrderId);
+    StoreOrderInfo paySuccess(Long storeOrderId, BigDecimal totalAmount, BigDecimal realTotalAmount);
 }

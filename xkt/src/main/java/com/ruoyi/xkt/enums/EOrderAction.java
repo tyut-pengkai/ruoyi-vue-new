@@ -11,8 +11,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum EOrderAction {
 
-    ADD_ORDER(1, "下单"),
-    PAID_ORDER(2, "支付"),
+    INSERT(1, "新增"),
+    UPDATE(2, "修改"),
+    DELETE(3, "删除"),
+    PAY(4, "支付"),
     ;
 
     private final Integer value;

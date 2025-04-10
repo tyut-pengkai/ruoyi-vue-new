@@ -72,19 +72,19 @@ public class AlipayController extends XktBaseController {
             //1. 商家需要验证该通知数据中的 out_trade_no 是否为商家系统中创建的订单号。
             StoreOrder order = storeOrderService.getByOrderNo(alipayCallback.getOutTradeNo());
             if (order == null) {
-                logger.info("支付宝回调订单匹配失败:{}", params);
+                logger.warn("支付宝回调订单匹配失败:{}", params);
                 return FAILURE;
             }
             //2. 判断 total_amount 是否确实为该订单的实际金额（即商家订单创建时的金额）。
             if (!NumberUtil.equals(order.getTotalAmount(), alipayCallback.getTotalAmount())) {
-                logger.info("支付宝回调订单金额匹配失败:{}", params);
+                logger.warn("支付宝回调订单金额匹配失败:{}", params);
                 return FAILURE;
             }
             //3. 校验通知中的 seller_id（或者 seller_email）是否为 out_trade_no 这笔单据的对应的操作方
             // （有的时候，一个商家可能有多个 seller_id/seller_email）。
             //4. 验证 app_id 是否为该商家本身。
             if (!StrUtil.equals(paymentManger.getAppId(), alipayCallback.getAppId())) {
-                logger.info("支付宝回调应用ID异常:{}", params);
+                logger.warn("支付宝回调应用ID异常:{}", params);
                 return FAILURE;
             }
             //5. 处理支付宝回调信息
@@ -103,13 +103,14 @@ public class AlipayController extends XktBaseController {
                 return SUCCESS;
             }
             if (EProcessStatus.INIT.getValue().equals(info.getProcessStatus())) {
-                alipayCallbackService.processOrderPay(info);
+                //更新回调状态和订单状态，创建收款单
+                alipayCallbackService.processOrderPaid(info);
             } else {
                 logger.warn("支付回调重复请求处理: {}", info.getId());
             }
             return SUCCESS;
         } else {
-            logger.info("支付宝验签未通过:{}", params);
+            logger.warn("支付宝验签未通过:{}", params);
             return FAILURE;
         }
     }

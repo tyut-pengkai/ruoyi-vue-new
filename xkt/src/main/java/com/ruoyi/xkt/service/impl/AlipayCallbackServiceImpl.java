@@ -46,14 +46,15 @@ public class AlipayCallbackServiceImpl implements IAlipayCallbackService {
 
     @Transactional
     @Override
-    public void processOrderPay(AlipayCallback info) {
+    public void processOrderPaid(AlipayCallback info) {
         //更新回调状态
         info.setProcessStatus(EProcessStatus.SUCCESS.getValue());
         alipayCallbackMapper.updateById(info);
         //更新订单状态
         StoreOrder order = storeOrderService.getByOrderNo(info.getOutTradeNo());
         Assert.notNull(order);
-        StoreOrderInfo orderInfo = storeOrderService.paySuccess(order.getId());
+        StoreOrderInfo orderInfo = storeOrderService.paySuccess(order.getId(), info.getTotalAmount(),
+                info.getReceiptAmount());
         //创建收款单
         financeBillService.createCollectionBillAfterOrderPaid(orderInfo, info.getId(), EPayChannel.ALI_PAY);
     }

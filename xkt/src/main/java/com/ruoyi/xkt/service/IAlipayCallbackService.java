@@ -29,5 +29,5 @@ public interface IAlipayCallbackService {
      *
      * @param info
      */
-    void processOrderPay(AlipayCallback info);
+    void processOrderPaid(AlipayCallback info);
 }
