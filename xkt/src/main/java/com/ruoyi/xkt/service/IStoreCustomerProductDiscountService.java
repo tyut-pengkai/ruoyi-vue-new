@@ -3,6 +3,8 @@ package com.ruoyi.xkt.service;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.storeCusProdDiscount.*;
 
+import java.util.List;
+
 /**
  * 档口客户优惠Service接口
  *
@@ -20,7 +22,7 @@ public interface IStoreCustomerProductDiscountService {
     Integer updateStoreCusProdDiscount(StoreCusProdDiscountDTO cusProdDisDTO);
 
     /**
-     * 档口客户 批量减价、批量抹零减价
+     * 客户销售管理 批量减价、批量抹零减价、新增客户定价优惠
      *
      * @param batchDiscDTO 批量减价入参
      * @return Integer
@@ -38,8 +40,8 @@ public interface IStoreCustomerProductDiscountService {
     /**
      * 客户销售管理，新增客户优惠时，判断是否已存在优惠
      * @param existDTO 优惠是否存在DTO
-     * @return String
+     * @return StoreCusProdDiscExistResDTO
      */
-    void discountExist(StoreCusProdDiscExistDTO existDTO);
+    List<StoreCusProdDiscExistResDTO> discountExist(StoreCusProdDiscExistDTO existDTO);
 
 }

@@ -19,6 +19,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 档口客户优惠Controller
  *
@@ -45,11 +47,11 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     }
 
     /**
-     * 客户销售管理 批量减价、批量抹零减价
+     * 客户销售管理 批量减价、批量抹零减价、新增客户定价优惠
      */
     @PreAuthorize("@ss.hasPermi('system:discount:edit')")
-    @ApiOperation(value = "客户销售管理 批量减价、批量抹零减价", httpMethod = "PUT", response = R.class)
-    @Log(title = "客户销售管理 批量减价、批量抹零减价", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "客户销售管理 批量减价、批量抹零减价、新增客户定价优惠", httpMethod = "PUT", response = R.class)
+    @Log(title = "客户销售管理 批量减价、批量抹零减价、新增客户定价优惠", businessType = BusinessType.UPDATE)
     @PutMapping("/batch")
     public R<Integer> batchDiscount(@Validated @RequestBody StoreCusProdBatchDiscountVO batchDiscVO) {
         return R.ok(storeCusProdDiscService.batchDiscount(BeanUtil.toBean(batchDiscVO, StoreCusProdBatchDiscountDTO.class)));
@@ -71,9 +73,8 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:customer:list')")
     @ApiOperation(value = "新增客户销售定价时，根据入参查询是否已存在优惠", httpMethod = "POST", response = R.class)
     @PostMapping("/exists")
-    public R discountExist(@Validated @RequestBody StoreCusProdDiscExistVO existVO) {
-        storeCusProdDiscService.discountExist(BeanUtil.toBean(existVO, StoreCusProdDiscExistDTO.class));
-        return R.ok();
+    public R<List<StoreCusProdDiscExistResDTO>> discountExist(@Validated @RequestBody StoreCusProdDiscExistVO existVO) {
+        return R.ok(storeCusProdDiscService.discountExist(BeanUtil.toBean(existVO, StoreCusProdDiscExistDTO.class)));
     }
 
 

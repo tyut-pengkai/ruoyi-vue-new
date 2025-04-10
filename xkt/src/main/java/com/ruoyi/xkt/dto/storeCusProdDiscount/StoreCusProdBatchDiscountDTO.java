@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -20,6 +21,8 @@ public class StoreCusProdBatchDiscountDTO {
 
     @ApiModelProperty(name = "档口ID")
     private Long storeId;
+    @ApiModelProperty(name = "业务类型：true:新增客户定价   false:批量减价、批量优惠")
+    private Boolean isInsert;
     @ApiModelProperty(value = "优惠列表")
     private List<DiscountItemDTO> discountList;
 

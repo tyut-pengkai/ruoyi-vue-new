@@ -23,6 +23,9 @@ public class StoreCusProdBatchDiscountVO {
     @NotNull(message = "档口ID不能为空!")
     @ApiModelProperty(name = "档口ID")
     private Long storeId;
+    @NotNull(message = "业务类型不能为空!")
+    @ApiModelProperty(name = "业务类型：true:新增客户定价   false:批量减价、批量优惠")
+    private Boolean isInsert;
     @NotNull(message = "优惠列表不能为空!")
     @Valid
     @ApiModelProperty(value = "优惠列表", required = true)

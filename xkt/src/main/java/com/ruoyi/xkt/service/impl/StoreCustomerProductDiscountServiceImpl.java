@@ -88,7 +88,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
     }
 
     /**
-     * 档口客户 批量减价、批量抹零减价
+     * 客户销售管理 批量减价、批量抹零减价、新增客户定价优惠
      *
      * @param batchDiscDTO 批量减价入参
      * @return Integer
@@ -114,8 +114,13 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
             // 如果已存在优惠则叠加
             if (prodCusDiscMap.containsKey(itemDTO.getStoreCusId().toString() + itemDTO.getStoreProdColorId().toString())) {
                 StoreCustomerProductDiscount prodColorDisc = prodCusDiscMap.get(itemDTO.getStoreCusId().toString() + itemDTO.getStoreProdColorId().toString());
-                // 优惠金额进行累加
-                prodColorDisc.setDiscount(ObjectUtils.defaultIfNull(prodColorDisc.getDiscount(), 0) + ObjectUtils.defaultIfNull(itemDTO.getDiscount(), 0));
+                // 如果是批量优惠、批量减价则进行叠加 反之为新增客户优惠，直接覆盖
+                if (batchDiscDTO.getIsInsert()) {
+                    prodColorDisc.setDiscount(ObjectUtils.defaultIfNull(itemDTO.getDiscount(), 0));
+                } else {
+                    // 优惠金额进行累加
+                    prodColorDisc.setDiscount(ObjectUtils.defaultIfNull(prodColorDisc.getDiscount(), 0) + ObjectUtils.defaultIfNull(itemDTO.getDiscount(), 0));
+                }
                 updateList.add(prodColorDisc);
                 // 不存在优惠则新增
             } else {
@@ -158,30 +163,33 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
      */
     @Override
     @Transactional(readOnly = true)
-    public void discountExist(StoreCusProdDiscExistDTO existDTO) {
+    public List<StoreCusProdDiscExistResDTO> discountExist(StoreCusProdDiscExistDTO existDTO) {
         List<StoreCustomerProductDiscount> discountList = this.cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
                 .eq(StoreCustomerProductDiscount::getStoreId, existDTO.getStoreId())
                 .in(StoreCustomerProductDiscount::getStoreProdColorId, existDTO.getDiscountList().stream().map(StoreCusProdDiscExistDTO.DiscountItemDTO::getStoreProdColorId).collect(Collectors.toList()))
                 .in(StoreCustomerProductDiscount::getStoreCusId, existDTO.getDiscountList().stream().map(StoreCusProdDiscExistDTO.DiscountItemDTO::getStoreCusId).collect(Collectors.toList()))
                 .eq(StoreCustomerProductDiscount::getDelFlag, Constants.UNDELETED));
         if (CollectionUtils.isEmpty(discountList)) {
-            return;
+            return new ArrayList<>();
         }
-        StringBuilder sb = new StringBuilder();
         // 判断存在哪些优惠，给与提示
         Map<String, StoreCustomerProductDiscount> existDiscMap = discountList.stream().collect(Collectors
                 .toMap(x -> x.getStoreCusId().toString() + x.getStoreProdColorId().toString(), Function.identity()));
         // 根据入参一次确认
+        List<StoreCusProdDiscExistResDTO> existResList = new ArrayList<>();
         existDTO.getDiscountList().forEach(x -> {
             final String existKey = x.getStoreCusId().toString() + x.getStoreProdColorId().toString();
             if (existDiscMap.containsKey(existKey)) {
-                sb.append("客户:").append(x.getStoreCusName()).append("、商品:").append(x.getProdArtNum()).append(x.getColorName())
-                        .append("、已存在优惠:").append(existDiscMap.get(existKey).getDiscount()).append("元").append("\n");
+                existResList.add(new StoreCusProdDiscExistResDTO() {{
+                    setExitDiscount(existDiscMap.get(existKey).getDiscount());
+                    setDiscount(x.getDiscount());
+                    setColorName(x.getColorName());
+                    setProdArtNum(x.getProdArtNum());
+                    setStoreCusName(x.getStoreCusName());
+                }});
             }
         });
-        if (sb.length() > 0) {
-            throw new ServiceException(sb.toString(), HttpStatus.ERROR);
-        }
+        return existResList;
     }
 
     /**
