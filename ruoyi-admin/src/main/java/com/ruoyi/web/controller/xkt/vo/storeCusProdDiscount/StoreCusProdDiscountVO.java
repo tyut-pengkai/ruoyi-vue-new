@@ -33,6 +33,6 @@ public class StoreCusProdDiscountVO {
     private String phone;
     @NotNull(message = "优惠金额不能为空!")
     @ApiModelProperty(value = "优惠金额", required = true)
-    private BigDecimal discount;
+    private Integer discount;
 
 }

@@ -4,12 +4,13 @@ import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.StoreCusProdBatchDiscountVO;
+import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.StoreCusProdDiscExistVO;
+import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.StoreCusProdDiscPageVO;
 import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.StoreCusProdDiscountVO;
-import com.ruoyi.xkt.domain.StoreCustomerProductDiscount;
-import com.ruoyi.xkt.dto.storeCusProdDiscount.StoreCusProdDiscountDTO;
+import com.ruoyi.xkt.dto.storeCusProdDiscount.*;
 import com.ruoyi.xkt.service.IStoreCustomerProductDiscountService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,9 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * 档口客户优惠Controller
@@ -30,10 +28,10 @@ import java.util.List;
 @Api(tags = "档口客户优惠")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/rest/v1/cus-discounts")
+@RequestMapping("/rest/v1/cus-disc")
 public class StoreCustomerProductDiscountController extends XktBaseController {
 
-    final IStoreCustomerProductDiscountService storeCusProdDiscountSvc;
+    final IStoreCustomerProductDiscountService storeCusProdDiscService;
 
     /**
      * 销售出库时，新增或修改档口客户优惠
@@ -43,60 +41,40 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     @Log(title = "销售出库时，新增或修改档口客户优惠", businessType = BusinessType.UPDATE)
     @PutMapping
     public R<Integer> edit(@Validated @RequestBody StoreCusProdDiscountVO cusProdDisVO) {
-        return R.ok(storeCusProdDiscountSvc.updateStoreCusProdDiscount(BeanUtil.toBean(cusProdDisVO, StoreCusProdDiscountDTO.class)));
-    }
-
-
-    /**
-     * 查询档口客户优惠列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:discount:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(StoreCustomerProductDiscount storeCustomerProductDiscount) {
-        startPage();
-        List<StoreCustomerProductDiscount> list = storeCusProdDiscountSvc.selectStoreCustomerProductDiscountList(storeCustomerProductDiscount);
-        return getDataTable(list);
+        return R.ok(storeCusProdDiscService.updateStoreCusProdDiscount(BeanUtil.toBean(cusProdDisVO, StoreCusProdDiscountDTO.class)));
     }
 
     /**
-     * 导出档口客户优惠列表
+     * 客户销售管理 批量减价、批量抹零减价
      */
-    @PreAuthorize("@ss.hasPermi('system:discount:export')")
-    @Log(title = "档口客户优惠", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, StoreCustomerProductDiscount storeCustomerProductDiscount) {
-        List<StoreCustomerProductDiscount> list = storeCusProdDiscountSvc.selectStoreCustomerProductDiscountList(storeCustomerProductDiscount);
-        ExcelUtil<StoreCustomerProductDiscount> util = new ExcelUtil<StoreCustomerProductDiscount>(StoreCustomerProductDiscount.class);
-        util.exportExcel(response, list, "档口客户优惠数据");
+    @PreAuthorize("@ss.hasPermi('system:discount:edit')")
+    @ApiOperation(value = "客户销售管理 批量减价、批量抹零减价", httpMethod = "PUT", response = R.class)
+    @Log(title = "客户销售管理 批量减价、批量抹零减价", businessType = BusinessType.UPDATE)
+    @PutMapping("/batch")
+    public R<Integer> batchDiscount(@Validated @RequestBody StoreCusProdBatchDiscountVO batchDiscVO) {
+        return R.ok(storeCusProdDiscService.batchDiscount(BeanUtil.toBean(batchDiscVO, StoreCusProdBatchDiscountDTO.class)));
     }
 
     /**
-     * 获取档口客户优惠详细信息
+     * 查询客户销售管理列表
      */
-    @PreAuthorize("@ss.hasPermi('system:discount:query')")
-    @GetMapping(value = "/{storeCusProdDiscId}")
-    public R getInfo(@PathVariable("storeCusProdDiscId") Long storeCusProdDiscId) {
-        return success(storeCusProdDiscountSvc.selectStoreCustomerProductDiscountByStoreCusProdDiscId(storeCusProdDiscId));
+    @PreAuthorize("@ss.hasPermi('system:customer:list')")
+    @ApiOperation(value = "查询客户销售管理列表", httpMethod = "POST", response = R.class)
+    @PostMapping("/page")
+    public R<Page<StoreCusProdDiscPageResDTO>> selectPage(@Validated @RequestBody StoreCusProdDiscPageVO pageVO) {
+        return R.ok(storeCusProdDiscService.selectPage(BeanUtil.toBean(pageVO, StoreCusProdDiscPageDTO.class)));
     }
 
     /**
-     * 新增档口客户优惠
+     * 新增客户销售定价时，根据入参查询是否已存在优惠
      */
-    @PreAuthorize("@ss.hasPermi('system:discount:add')")
-    @Log(title = "档口客户优惠", businessType = BusinessType.INSERT)
-    @PostMapping
-    public R add(@RequestBody StoreCustomerProductDiscount storeCustomerProductDiscount) {
-        return success(storeCusProdDiscountSvc.insertStoreCustomerProductDiscount(storeCustomerProductDiscount));
+    @PreAuthorize("@ss.hasPermi('system:customer:list')")
+    @ApiOperation(value = "新增客户销售定价时，根据入参查询是否已存在优惠", httpMethod = "POST", response = R.class)
+    @PostMapping("/exists")
+    public R discountExist(@Validated @RequestBody StoreCusProdDiscExistVO existVO) {
+        storeCusProdDiscService.discountExist(BeanUtil.toBean(existVO, StoreCusProdDiscExistDTO.class));
+        return R.ok();
     }
 
 
-    /**
-     * 删除档口客户优惠
-     */
-    @PreAuthorize("@ss.hasPermi('system:discount:remove')")
-    @Log(title = "档口客户优惠", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{storeCusProdDiscIds}")
-    public R remove(@PathVariable Long[] storeCusProdDiscIds) {
-        return success(storeCusProdDiscountSvc.deleteStoreCustomerProductDiscountByStoreCusProdDiscIds(storeCusProdDiscIds));
-    }
 }

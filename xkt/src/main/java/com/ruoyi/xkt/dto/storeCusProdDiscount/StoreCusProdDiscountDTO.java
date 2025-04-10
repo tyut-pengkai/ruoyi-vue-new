@@ -28,6 +28,6 @@ public class StoreCusProdDiscountDTO {
     @ApiModelProperty(value = "客户联系电话")
     private String phone;
     @ApiModelProperty(value = "优惠金额")
-    private BigDecimal discount;
+    private Integer discount;
 
 }

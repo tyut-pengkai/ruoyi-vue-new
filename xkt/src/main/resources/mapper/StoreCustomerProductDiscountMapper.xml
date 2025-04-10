@@ -93,4 +93,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+
+    <select id="selectDiscPage" resultType="com.ruoyi.xkt.dto.storeCusProdDiscount.StoreCusProdDiscPageResDTO">
+        SELECT
+            scpd.id AS storeCusProdDiscId,
+            sp.prod_art_num AS prodArtNum,
+            scpd.store_id AS storeId,
+            scpd.store_prod_id AS storeProdId,
+            scpd.store_cus_id AS storeCusId,
+            scpd.store_cus_name AS storeCusName,
+            scpd.store_prod_color_id AS storeProdColorId,
+            scpd.discount,
+            scpd.update_time
+        FROM
+            store_customer_product_discount scpd
+            LEFT JOIN store_product sp ON scpd.store_prod_id = sp.id
+        WHERE
+            scpd.del_flag = 0 AND scpd.store_id = #{storeId}
+            <if test="cusName != null  and cusName != ''"> AND scpd.store_cus_name = #{cusName}</if>
+            <if test="prodArtNum != null  and prodArtNum != ''"> AND sp.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
+    </select>
+
+
 </mapper>

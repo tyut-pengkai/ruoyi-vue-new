@@ -1,0 +1,46 @@
+package com.ruoyi.xkt.dto.storeCusProdDiscount;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
+import java.util.List;
+
+/**
+ * @author liujiang
+ * @version v1.0
+ * @date 2025/3/27 15:12
+ */
+@ApiModel("档口客户批量减价、批量抹零")
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class StoreCusProdDiscExistDTO {
+
+    @ApiModelProperty(name = "档口ID")
+    private Long storeId;
+    @ApiModelProperty(value = "优惠列表")
+    List<DiscountItemDTO> discountList;
+
+    @Data
+    @ApiModel(value = "档口优惠列表")
+    public static class DiscountItemDTO {
+        @ApiModelProperty(name = "档口商品ID")
+        private Long storeProdId;
+        @ApiModelProperty(name = "商品货号")
+        private String prodArtNum;
+        @ApiModelProperty(name = "商品颜色名称")
+        private String colorName;
+        @ApiModelProperty(name = "档口商品颜色ID")
+        private Long storeProdColorId;
+        @ApiModelProperty(value = "优惠金额")
+        private Integer discount;
+        @ApiModelProperty(value = "档口客户ID")
+        private Long storeCusId;
+        @ApiModelProperty(value = "档口客户名称")
+        private String storeCusName;
+    }
+
+
+}

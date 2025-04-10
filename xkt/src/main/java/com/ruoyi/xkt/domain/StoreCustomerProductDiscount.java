@@ -59,7 +59,7 @@ public class StoreCustomerProductDiscount extends XktBaseEntity {
      * 优惠金额
      */
     @Excel(name = "优惠金额")
-    private BigDecimal discount;
+    private Integer discount;
 
 
     @Override

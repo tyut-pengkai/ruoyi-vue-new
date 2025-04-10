@@ -37,8 +37,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.ruoyi.common.constant.Constants.ORDER_NUM_1;
-
 /**
  * 档口商品Service业务层处理
  *

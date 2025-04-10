@@ -22,7 +22,7 @@ public interface IStoreCustomerService {
      * @param storeCusId 档口客户主键
      * @return 档口客户
      */
-    public StoreCusDTO selectStoreCustomerByStoreCusId(Long storeCusId);
+    public StoreCusDTO selectByStoreCusId(Long storeCusId);
 
     /**
      * 查询档口客户列表

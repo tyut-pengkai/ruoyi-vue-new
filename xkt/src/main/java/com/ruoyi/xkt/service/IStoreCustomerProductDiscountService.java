@@ -1,9 +1,7 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.StoreCustomerProductDiscount;
-import com.ruoyi.xkt.dto.storeCusProdDiscount.StoreCusProdDiscountDTO;
-
-import java.util.List;
+import com.ruoyi.common.core.page.Page;
+import com.ruoyi.xkt.dto.storeCusProdDiscount.*;
 
 /**
  * 档口客户优惠Service接口
@@ -12,29 +10,6 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface IStoreCustomerProductDiscountService {
-    /**
-     * 查询档口客户优惠
-     *
-     * @param storeCusProdDiscId 档口客户优惠主键
-     * @return 档口客户优惠
-     */
-    public StoreCustomerProductDiscount selectStoreCustomerProductDiscountByStoreCusProdDiscId(Long storeCusProdDiscId);
-
-    /**
-     * 查询档口客户优惠列表
-     *
-     * @param storeCustomerProductDiscount 档口客户优惠
-     * @return 档口客户优惠集合
-     */
-    public List<StoreCustomerProductDiscount> selectStoreCustomerProductDiscountList(StoreCustomerProductDiscount storeCustomerProductDiscount);
-
-    /**
-     * 新增档口客户优惠
-     *
-     * @param storeCustomerProductDiscount 档口客户优惠
-     * @return 结果
-     */
-    public int insertStoreCustomerProductDiscount(StoreCustomerProductDiscount storeCustomerProductDiscount);
 
     /**
      * 修改档口客户优惠
@@ -42,21 +17,29 @@ public interface IStoreCustomerProductDiscountService {
      * @param cusProdDisDTO 档口客户优惠
      * @return 结果
      */
-    public Integer updateStoreCusProdDiscount(StoreCusProdDiscountDTO cusProdDisDTO);
+    Integer updateStoreCusProdDiscount(StoreCusProdDiscountDTO cusProdDisDTO);
 
     /**
-     * 批量删除档口客户优惠
+     * 档口客户 批量减价、批量抹零减价
      *
-     * @param storeCusProdDiscIds 需要删除的档口客户优惠主键集合
-     * @return 结果
+     * @param batchDiscDTO 批量减价入参
+     * @return Integer
      */
-    public int deleteStoreCustomerProductDiscountByStoreCusProdDiscIds(Long[] storeCusProdDiscIds);
+    Integer batchDiscount(StoreCusProdBatchDiscountDTO batchDiscDTO);
 
     /**
-     * 删除档口客户优惠信息
+     * 查询客户销售管理列表
      *
-     * @param storeCusProdDiscId 档口客户优惠主键
-     * @return 结果
+     * @param pageDTO 分页入参
+     * @return Page<StoreCusProdDiscPageResDTO>
      */
-    public int deleteStoreCustomerProductDiscountByStoreCusProdDiscId(Long storeCusProdDiscId);
+    Page<StoreCusProdDiscPageResDTO> selectPage(StoreCusProdDiscPageDTO pageDTO);
+
+    /**
+     * 客户销售管理，新增客户优惠时，判断是否已存在优惠
+     * @param existDTO 优惠是否存在DTO
+     * @return String
+     */
+    void discountExist(StoreCusProdDiscExistDTO existDTO);
+
 }

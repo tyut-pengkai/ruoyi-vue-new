@@ -2,14 +2,16 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.StoreCustomer;
 import com.ruoyi.xkt.domain.StoreCustomerProductDiscount;
 import com.ruoyi.xkt.domain.StoreProductColor;
-import com.ruoyi.xkt.dto.storeCusProdDiscount.StoreCusProdDiscountDTO;
+import com.ruoyi.xkt.dto.storeCusProdDiscount.*;
 import com.ruoyi.xkt.mapper.StoreCustomerMapper;
 import com.ruoyi.xkt.mapper.StoreCustomerProductDiscountMapper;
 import com.ruoyi.xkt.mapper.StoreProductColorMapper;
@@ -20,10 +22,11 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +39,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerProductDiscountService {
 
-    final StoreCustomerProductDiscountMapper cusProdDiscountMapper;
+    final StoreCustomerProductDiscountMapper cusProdDiscMapper;
     final StoreCustomerMapper storeCusMapper;
     final StoreProductColorMapper storeProdColorMapper;
 
@@ -57,13 +60,13 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         }
         StoreCustomer storeCus = CollectionUtils.isNotEmpty(storeCusList) ? storeCusList.get(0) : this.createStoreCustomer(cusProdDisDTO);
         // 获取当前档口客户已有的优惠
-        List<StoreCustomerProductDiscount> cusProdDisList = Optional.ofNullable(cusProdDiscountMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
+        List<StoreCustomerProductDiscount> cusProdDisList = Optional.ofNullable(cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
                 .eq(StoreCustomerProductDiscount::getStoreCusName, cusProdDisDTO.getStoreCusName()).eq(StoreCustomerProductDiscount::getDelFlag, Constants.UNDELETED)
                 .eq(StoreCustomerProductDiscount::getStoreId, cusProdDisDTO.getStoreId()))).orElse(new ArrayList<>());
         // 已存在优惠但优惠额度低于当前优惠，则更新该部分优惠
         List<StoreCustomerProductDiscount> updateList = cusProdDisList.stream()
                 // 找到所有优惠低于当前优惠额度的列表
-                .filter(x -> cusProdDisDTO.getDiscount().compareTo(ObjectUtils.defaultIfNull(x.getDiscount(), BigDecimal.ZERO)) > 0)
+                .filter(x -> cusProdDisDTO.getDiscount().compareTo(ObjectUtils.defaultIfNull(x.getDiscount(), 0)) > 0)
                 // 更新最新的优惠
                 .peek(x -> x.setDiscount(cusProdDisDTO.getDiscount())).collect(Collectors.toList());
         // 已有优惠的id
@@ -81,69 +84,104 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
             updateList.addAll(addDiscountList);
         }
         // 更新及新增当前客户优惠
-        return this.cusProdDiscountMapper.insertOrUpdate(updateList).size();
+        return this.cusProdDiscMapper.insertOrUpdate(updateList).size();
     }
 
+    /**
+     * 档口客户 批量减价、批量抹零减价
+     *
+     * @param batchDiscDTO 批量减价入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer batchDiscount(StoreCusProdBatchDiscountDTO batchDiscDTO) {
+        // 获取当前客户已有优惠列表
+        List<StoreCustomerProductDiscount> prodCusDiscList = this.cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
+                .in(StoreCustomerProductDiscount::getStoreCusId, batchDiscDTO.getDiscountList().stream()
+                        .map(StoreCusProdBatchDiscountDTO.DiscountItemDTO::getStoreCusId).distinct().collect(Collectors.toList()))
+                .eq(StoreCustomerProductDiscount::getDelFlag, Constants.UNDELETED)
+                .eq(StoreCustomerProductDiscount::getStoreId, batchDiscDTO.getStoreId())
+                .in(StoreCustomerProductDiscount::getStoreProdColorId, batchDiscDTO.getDiscountList().stream()
+                        .map(StoreCusProdBatchDiscountDTO.DiscountItemDTO::getStoreProdColorId).distinct().collect(Collectors.toList())));
+        // 数据库已有的客户优惠map
+        Map<String, StoreCustomerProductDiscount> prodCusDiscMap = prodCusDiscList.stream().collect(Collectors
+                .toMap(item -> item.getStoreCusId().toString() + item.getStoreProdColorId().toString(), Function.identity()));
+        // 最新的优惠金额
+        List<StoreCustomerProductDiscount> updateList = new ArrayList<>();
+        // 入参优惠列表
+        batchDiscDTO.getDiscountList().forEach(itemDTO -> {
+            // 如果已存在优惠则叠加
+            if (prodCusDiscMap.containsKey(itemDTO.getStoreCusId().toString() + itemDTO.getStoreProdColorId().toString())) {
+                StoreCustomerProductDiscount prodColorDisc = prodCusDiscMap.get(itemDTO.getStoreCusId().toString() + itemDTO.getStoreProdColorId().toString());
+                // 优惠金额进行累加
+                prodColorDisc.setDiscount(ObjectUtils.defaultIfNull(prodColorDisc.getDiscount(), 0) + ObjectUtils.defaultIfNull(itemDTO.getDiscount(), 0));
+                updateList.add(prodColorDisc);
+                // 不存在优惠则新增
+            } else {
+                // 新增优惠
+                updateList.add(new StoreCustomerProductDiscount() {{
+                    setDiscount(itemDTO.getDiscount());
+                    setStoreId(batchDiscDTO.getStoreId());
+                    setStoreCusName(itemDTO.getStoreCusName());
+                    setStoreCusId(itemDTO.getStoreCusId());
+                    setStoreProdColorId(itemDTO.getStoreProdColorId());
+                    setStoreProdId(itemDTO.getStoreProdId());
+                }});
+            }
+        });
+        if (CollectionUtils.isEmpty(updateList)) {
+            return 0;
+        }
+        return this.cusProdDiscMapper.updateById(updateList).size();
+    }
 
     /**
-     * 查询档口客户优惠
+     * 查询客户销售管理列表
      *
-     * @param storeCusProdDiscId 档口客户优惠主键
-     * @return 档口客户优惠
+     * @param pageDTO 分页入参
+     * @return Page<StoreCusProdDiscPageResDTO>
      */
     @Override
     @Transactional(readOnly = true)
-    public StoreCustomerProductDiscount selectStoreCustomerProductDiscountByStoreCusProdDiscId(Long storeCusProdDiscId) {
-        return cusProdDiscountMapper.selectStoreCustomerProductDiscountByStoreCusProdDiscId(storeCusProdDiscId);
+    public Page<StoreCusProdDiscPageResDTO> selectPage(StoreCusProdDiscPageDTO pageDTO) {
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        List<StoreCusProdDiscPageResDTO> list = this.cusProdDiscMapper.selectDiscPage(pageDTO);
+        return Page.convert(new PageInfo<>(list));
     }
 
     /**
-     * 查询档口客户优惠列表
+     * 客户销售管理，新增客户优惠时，判断是否已存在优惠
      *
-     * @param storeCustomerProductDiscount 档口客户优惠
-     * @return 档口客户优惠
+     * @param existDTO 优惠是否存在DTO
+     * @return String
      */
     @Override
     @Transactional(readOnly = true)
-    public List<StoreCustomerProductDiscount> selectStoreCustomerProductDiscountList(StoreCustomerProductDiscount storeCustomerProductDiscount) {
-        return cusProdDiscountMapper.selectStoreCustomerProductDiscountList(storeCustomerProductDiscount);
-    }
-
-    /**
-     * 新增档口客户优惠
-     *
-     * @param storeCustomerProductDiscount 档口客户优惠
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int insertStoreCustomerProductDiscount(StoreCustomerProductDiscount storeCustomerProductDiscount) {
-        storeCustomerProductDiscount.setCreateTime(DateUtils.getNowDate());
-        return cusProdDiscountMapper.insertStoreCustomerProductDiscount(storeCustomerProductDiscount);
-    }
-
-    /**
-     * 批量删除档口客户优惠
-     *
-     * @param storeCusProdDiscIds 需要删除的档口客户优惠主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreCustomerProductDiscountByStoreCusProdDiscIds(Long[] storeCusProdDiscIds) {
-        return cusProdDiscountMapper.deleteStoreCustomerProductDiscountByStoreCusProdDiscIds(storeCusProdDiscIds);
-    }
-
-    /**
-     * 删除档口客户优惠信息
-     *
-     * @param storeCusProdDiscId 档口客户优惠主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreCustomerProductDiscountByStoreCusProdDiscId(Long storeCusProdDiscId) {
-        return cusProdDiscountMapper.deleteStoreCustomerProductDiscountByStoreCusProdDiscId(storeCusProdDiscId);
+    public void discountExist(StoreCusProdDiscExistDTO existDTO) {
+        List<StoreCustomerProductDiscount> discountList = this.cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
+                .eq(StoreCustomerProductDiscount::getStoreId, existDTO.getStoreId())
+                .in(StoreCustomerProductDiscount::getStoreProdColorId, existDTO.getDiscountList().stream().map(StoreCusProdDiscExistDTO.DiscountItemDTO::getStoreProdColorId).collect(Collectors.toList()))
+                .in(StoreCustomerProductDiscount::getStoreCusId, existDTO.getDiscountList().stream().map(StoreCusProdDiscExistDTO.DiscountItemDTO::getStoreCusId).collect(Collectors.toList()))
+                .eq(StoreCustomerProductDiscount::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(discountList)) {
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        // 判断存在哪些优惠，给与提示
+        Map<String, StoreCustomerProductDiscount> existDiscMap = discountList.stream().collect(Collectors
+                .toMap(x -> x.getStoreCusId().toString() + x.getStoreProdColorId().toString(), Function.identity()));
+        // 根据入参一次确认
+        existDTO.getDiscountList().forEach(x -> {
+            final String existKey = x.getStoreCusId().toString() + x.getStoreProdColorId().toString();
+            if (existDiscMap.containsKey(existKey)) {
+                sb.append("客户:").append(x.getStoreCusName()).append("、商品:").append(x.getProdArtNum()).append(x.getColorName())
+                        .append("、已存在优惠:").append(existDiscMap.get(existKey).getDiscount()).append("元").append("\n");
+            }
+        });
+        if (sb.length() > 0) {
+            throw new ServiceException(sb.toString(), HttpStatus.ERROR);
+        }
     }
 
     /**

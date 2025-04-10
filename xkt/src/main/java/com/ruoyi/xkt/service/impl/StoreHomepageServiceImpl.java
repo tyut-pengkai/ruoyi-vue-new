@@ -55,7 +55,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     final StoreProductColorPriceMapper prodColorPriceMapper;
     final StoreProductFileMapper prodFileMapper;
     final StoreProductCategoryAttributeMapper prodCateAttrMapper;
-
+    final StoreCertificateMapper storeCertMapper;
 
     /**
      * 新增档口首页各部分图
@@ -213,6 +213,9 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                         .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        // 档口认证
+        StoreCertificate storeCert = this.storeCertMapper.selectOne(new LambdaQueryWrapper<StoreCertificate>()
+                .eq(StoreCertificate::getStoreId, storeId).eq(StoreCertificate::getDelFlag, Constants.UNDELETED));
         // 获取商品基本信息
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
                         .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
@@ -281,7 +284,8 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                     .setFileUrl(fileMap.get(x.getFileId()).getFileUrl()).setFileSize(fileMap.get(x.getFileId()).getFileSize()) : decorationDTO;
         }).collect(Collectors.toList());
         return new StoreHomeProdResDTO() {{
-            setStore(BeanUtil.toBean(store, StoreBasicDTO.class).setStoreId(storeId));
+            setStore(BeanUtil.toBean(store, StoreBasicDTO.class).setStoreId(storeId)
+                    .setLicenseName(ObjectUtils.isNotEmpty(storeCert) ? storeCert.getLicenseName() : null));
             setStoreProd(storeProdDTO);
             setStoreProdStatusCount(statusCountDTO);
             setRecommendedList(recommendedList);

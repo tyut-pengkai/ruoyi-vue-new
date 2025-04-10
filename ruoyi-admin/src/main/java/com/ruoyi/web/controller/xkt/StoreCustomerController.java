@@ -89,14 +89,14 @@ public class StoreCustomerController extends XktBaseController {
     @ApiOperation(value = "获取档口客户详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeCusId}")
     public R<StoreCusVO> getInfo(@PathVariable("storeCusId") Long storeCusId) {
-        return R.ok(BeanUtil.toBean(storeCusService.selectStoreCustomerByStoreCusId(storeCusId), StoreCusVO.class));
+        return R.ok(BeanUtil.toBean(storeCusService.selectByStoreCusId(storeCusId), StoreCusVO.class));
     }
 
     /**
      * 查询档口客户列表
      */
     @PreAuthorize("@ss.hasPermi('system:customer:list')")
-    @ApiOperation(value = "查询档口客户列表", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "查询档口客户列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreCusPageResDTO>> selectPage(@Validated @RequestBody StoreCusPageVO pageVO) {
         return R.ok(storeCusService.selectPage(BeanUtil.toBean(pageVO, StoreCusPageDTO.class)));

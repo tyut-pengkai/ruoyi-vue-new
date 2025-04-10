@@ -111,7 +111,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
      */
     @Override
     @Transactional(readOnly = true)
-    public StoreCusDTO selectStoreCustomerByStoreCusId(Long storeCusId) {
+    public StoreCusDTO selectByStoreCusId(Long storeCusId) {
         StoreCustomer storeCus = Optional.ofNullable(storeCusMapper.selectOne(new LambdaQueryWrapper<StoreCustomer>()
                         .eq(StoreCustomer::getId, storeCusId).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口客户不存在!", HttpStatus.ERROR));
