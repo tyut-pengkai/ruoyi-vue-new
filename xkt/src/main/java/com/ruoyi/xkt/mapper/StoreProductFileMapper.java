@@ -6,6 +6,7 @@ import com.ruoyi.xkt.dto.storeProductFile.StoreProdFilePicSpaceResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Repository
 public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
     /**
      * 查询档口商品文件

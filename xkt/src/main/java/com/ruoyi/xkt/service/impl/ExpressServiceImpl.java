@@ -1,23 +1,24 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.Express;
 import com.ruoyi.xkt.domain.ExpressFeeConfig;
+import com.ruoyi.xkt.domain.ExpressRegion;
 import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.dto.express.ExpressContactDTO;
-import com.ruoyi.xkt.mapper.ExpressFeeConfigMapper;
-import com.ruoyi.xkt.mapper.ExpressMapper;
-import com.ruoyi.xkt.mapper.StoreMapper;
-import com.ruoyi.xkt.mapper.StoreOrderExpressTrackMapper;
+import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IExpressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,8 @@ public class ExpressServiceImpl implements IExpressService {
     @Autowired
     private StoreOrderExpressTrackMapper storeOrderExpressTrackMapper;
     @Autowired
+    private ExpressRegionMapper expressRegionMapper;
+    @Autowired
     private StoreMapper storeMapper;
 
     @Override
@@ -53,6 +56,11 @@ public class ExpressServiceImpl implements IExpressService {
     }
 
     @Override
+    public Express getById(Long expressId) {
+        return expressMapper.selectById(expressId);
+    }
+
+    @Override
     public ExpressFeeConfig getExpressFeeConfig(Long expressId, String provinceCode, String cityCode,
                                                 String countyCode) {
         Assert.notNull(expressId);
@@ -60,8 +68,8 @@ public class ExpressServiceImpl implements IExpressService {
         Assert.notEmpty(cityCode);
         Assert.notEmpty(countyCode);
         Map<String, ExpressFeeConfig> map = expressFeeConfigMapper.selectList(Wrappers.lambdaQuery(ExpressFeeConfig.class)
-                        .eq(ExpressFeeConfig::getExpressId, expressId)
-                        .in(ExpressFeeConfig::getRegionCode, Arrays.asList(provinceCode, cityCode, countyCode)))
+                .eq(ExpressFeeConfig::getExpressId, expressId)
+                .in(ExpressFeeConfig::getRegionCode, Arrays.asList(provinceCode, cityCode, countyCode)))
                 .stream()
                 //过滤掉已被删除的配置
                 .filter(BeanValidators::exists)
@@ -97,5 +105,14 @@ public class ExpressServiceImpl implements IExpressService {
         expressContactDTO.setContactName(store.getContactName());
         expressContactDTO.setContactPhoneNumber(store.getContactPhone());
         return expressContactDTO;
+    }
+
+    @Override
+    public List<ExpressRegion> listRegionByCode(Collection<String> regionCodes) {
+        if (CollUtil.isEmpty(regionCodes)) {
+            return ListUtil.empty();
+        }
+        return expressRegionMapper.selectList(Wrappers.lambdaQuery(ExpressRegion.class)
+                .in(ExpressRegion::getRegionCode, regionCodes));
     }
 }

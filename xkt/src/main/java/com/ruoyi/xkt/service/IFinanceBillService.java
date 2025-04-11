@@ -1,7 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.dto.finance.FinanceBillInfo;
-import com.ruoyi.xkt.dto.order.StoreOrderInfo;
+import com.ruoyi.xkt.dto.order.StoreOrderExt;
 import com.ruoyi.xkt.enums.EPayChannel;
 
 /**
@@ -12,10 +12,10 @@ public interface IFinanceBillService {
     /**
      * 根据订单创建收款单
      *
-     * @param orderInfo
+     * @param orderExt
      * @param payId
      * @param payChannel
      * @return
      */
-    FinanceBillInfo createCollectionBillAfterOrderPaid(StoreOrderInfo orderInfo, Long payId, EPayChannel payChannel);
+    FinanceBillInfo createCollectionBillAfterOrderPaid(StoreOrderExt orderExt, Long payId, EPayChannel payChannel);
 }

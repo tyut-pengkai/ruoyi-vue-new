@@ -1,7 +1,12 @@
 package com.ruoyi.xkt.service;
 
+import com.ruoyi.xkt.domain.Express;
 import com.ruoyi.xkt.domain.ExpressFeeConfig;
+import com.ruoyi.xkt.domain.ExpressRegion;
 import com.ruoyi.xkt.dto.express.ExpressContactDTO;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author liangyq
@@ -15,6 +20,14 @@ public interface IExpressService {
      * @param expressId
      */
     void checkExpress(Long expressId);
+
+    /**
+     * 获取物流
+     *
+     * @param expressId
+     * @return
+     */
+    Express getById(Long expressId);
 
     /**
      * 获取快递费配置
@@ -34,4 +47,12 @@ public interface IExpressService {
      * @return
      */
     ExpressContactDTO getStoreContact(Long storeId);
+
+    /**
+     * 获取行政区划
+     *
+     * @param regionCodes
+     * @return
+     */
+    List<ExpressRegion> listRegionByCode(Collection<String> regionCodes);
 }

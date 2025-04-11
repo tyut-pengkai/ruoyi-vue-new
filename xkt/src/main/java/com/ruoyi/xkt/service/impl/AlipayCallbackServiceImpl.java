@@ -3,7 +3,7 @@ package com.ruoyi.xkt.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.xkt.domain.AlipayCallback;
 import com.ruoyi.xkt.domain.StoreOrder;
-import com.ruoyi.xkt.dto.order.StoreOrderInfo;
+import com.ruoyi.xkt.dto.order.StoreOrderExt;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EProcessStatus;
 import com.ruoyi.xkt.mapper.AlipayCallbackMapper;
@@ -53,9 +53,9 @@ public class AlipayCallbackServiceImpl implements IAlipayCallbackService {
         //更新订单状态
         StoreOrder order = storeOrderService.getByOrderNo(info.getOutTradeNo());
         Assert.notNull(order);
-        StoreOrderInfo orderInfo = storeOrderService.paySuccess(order.getId(), info.getTotalAmount(),
+        StoreOrderExt orderExt = storeOrderService.paySuccess(order.getId(), info.getTotalAmount(),
                 info.getReceiptAmount());
         //创建收款单
-        financeBillService.createCollectionBillAfterOrderPaid(orderInfo, info.getId(), EPayChannel.ALI_PAY);
+        financeBillService.createCollectionBillAfterOrderPaid(orderExt, info.getId(), EPayChannel.ALI_PAY);
     }
 }

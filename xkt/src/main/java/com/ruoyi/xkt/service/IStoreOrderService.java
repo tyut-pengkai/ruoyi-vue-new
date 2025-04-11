@@ -1,10 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.StoreOrder;
-import com.ruoyi.xkt.dto.order.StoreOrderAddDTO;
-import com.ruoyi.xkt.dto.order.StoreOrderAddResult;
-import com.ruoyi.xkt.dto.order.StoreOrderInfo;
-import com.ruoyi.xkt.dto.order.StoreOrderUpdateDTO;
+import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 
@@ -33,7 +30,7 @@ public interface IStoreOrderService {
      * @param storeOrderUpdateDTO
      * @return
      */
-    StoreOrderInfo modifyOrder(StoreOrderUpdateDTO storeOrderUpdateDTO);
+    StoreOrderExt modifyOrder(StoreOrderUpdateDTO storeOrderUpdateDTO);
 
     /**
      * 通过订单号获取订单
@@ -44,11 +41,19 @@ public interface IStoreOrderService {
     StoreOrder getByOrderNo(String orderNo);
 
     /**
+     * 获取订单详情
+     *
+     * @param storeOrderId
+     * @return
+     */
+    StoreOrderInfoDTO getInfo(Long storeOrderId);
+
+    /**
      * 准备支付订单
      *
      * @param storeOrderId
      */
-    StoreOrderInfo preparePayOrder(Long storeOrderId);
+    StoreOrderExt preparePayOrder(Long storeOrderId);
 
     /**
      * 订单支付成果
@@ -59,5 +64,5 @@ public interface IStoreOrderService {
      * @param realTotalAmount
      * @return
      */
-    StoreOrderInfo paySuccess(Long storeOrderId, BigDecimal totalAmount, BigDecimal realTotalAmount);
+    StoreOrderExt paySuccess(Long storeOrderId, BigDecimal totalAmount, BigDecimal realTotalAmount);
 }

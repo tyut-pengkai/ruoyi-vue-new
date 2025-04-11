@@ -8,7 +8,7 @@ import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.dto.finance.AlipayReqDTO;
-import com.ruoyi.xkt.dto.order.StoreOrderInfo;
+import com.ruoyi.xkt.dto.order.StoreOrderExt;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 import com.ruoyi.xkt.enums.EPayStatus;
@@ -77,16 +77,16 @@ public class AliPaymentMangerImpl implements PaymentManager {
     }
 
     @Override
-    public String payOrder(StoreOrderInfo orderInfo, EPayPage payFrom) {
-        Assert.notNull(orderInfo);
+    public String payOrder(StoreOrderExt orderExt, EPayPage payFrom) {
+        Assert.notNull(orderExt);
         Assert.notNull(payFrom);
-        if (!EPayStatus.PAYING.getValue().equals(orderInfo.getOrder().getPayStatus())) {
-            throw new ServiceException("订单[" + orderInfo.getOrder().getOrderNo() + "]支付状态异常");
+        if (!EPayStatus.PAYING.getValue().equals(orderExt.getOrder().getPayStatus())) {
+            throw new ServiceException("订单[" + orderExt.getOrder().getOrderNo() + "]支付状态异常");
         }
         AlipayReqDTO reqDTO = new AlipayReqDTO();
-        reqDTO.setOutTradeNo(orderInfo.getOrder().getOrderNo());
-        reqDTO.setTotalAmount(orderInfo.getOrder().getTotalAmount().toPlainString());
-        reqDTO.setSubject("代发订单" + orderInfo.getOrder().getOrderNo());
+        reqDTO.setOutTradeNo(orderExt.getOrder().getOrderNo());
+        reqDTO.setTotalAmount(orderExt.getOrder().getTotalAmount().toPlainString());
+        reqDTO.setSubject("代发订单" + orderExt.getOrder().getOrderNo());
         reqDTO.setProductCode(PAY_PRODUCT_CODE); //这个是固定的
         String reqStr = JSON.toJSONString(reqDTO);
         AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,

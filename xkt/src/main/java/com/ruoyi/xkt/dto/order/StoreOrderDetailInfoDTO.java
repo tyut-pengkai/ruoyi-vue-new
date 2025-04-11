@@ -1,8 +1,11 @@
 package com.ruoyi.xkt.dto.order;
 
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import java.util.List;
 
 /**
  * @author liangyq
@@ -13,4 +16,17 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class StoreOrderDetailInfoDTO extends StoreOrderDetailDTO {
 
+    private String prodName;
+
+    private String prodArtNum;
+
+    private String prodTitle;
+
+    private Long storeColorId;
+
+    private String colorName;
+
+    private Integer size;
+
+    private List<StoreProdFileResDTO> fileList;
 }

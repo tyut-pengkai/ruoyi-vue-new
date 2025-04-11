@@ -15,7 +15,7 @@ public class StoreOrderAddResult {
     /**
      * 订单信息
      */
-    private StoreOrderInfo orderInfo;
+    private StoreOrderExt orderExt;
     /**
      * 三方支付返回信息
      */

@@ -11,7 +11,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class StoreOrderUpdateDTO extends StoreOrderAddDTO{
+public class StoreOrderUpdateDTO extends StoreOrderAddDTO {
     /**
      * 订单ID
      */

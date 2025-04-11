@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +48,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     private StoreProductColorSizeMapper storeProductColorSizeMapper;
     @Autowired
     private StoreProductColorPriceMapper storeProductColorPriceMapper;
+    @Autowired
+    private StoreColorMapper storeColorMapper;
+    @Autowired
+    private StoreProductFileMapper storeProductFileMapper;
     @Autowired
     private IExpressService expressService;
     @Autowired
@@ -165,19 +171,19 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //操作记录
         addOperationRecords(orderId, EOrderAction.INSERT, orderDetailIdList, EOrderAction.INSERT, orderUserId,
                 new Date());
-        StoreOrderInfo orderInfo = new StoreOrderInfo(order, orderDetailList);
+        StoreOrderExt orderExt = new StoreOrderExt(order, orderDetailList);
         String rtnStr = null;
         if (beginPay) {
             //发起支付
             PaymentManager paymentManager = getPaymentManager(payChannel);
-            rtnStr = paymentManager.payOrder(orderInfo, payPage);
+            rtnStr = paymentManager.payOrder(orderExt, payPage);
         }
-        return new StoreOrderAddResult(orderInfo, rtnStr);
+        return new StoreOrderAddResult(orderExt, rtnStr);
     }
 
     @Transactional
     @Override
-    public StoreOrderInfo modifyOrder(StoreOrderUpdateDTO storeOrderUpdateDTO) {
+    public StoreOrderExt modifyOrder(StoreOrderUpdateDTO storeOrderUpdateDTO) {
         //原订单
         StoreOrder order = storeOrderMapper.selectById(storeOrderUpdateDTO.getId());
         if (!BeanValidators.exists(order)) {
@@ -291,7 +297,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //操作记录
         addOperationRecords(orderId, EOrderAction.UPDATE, orderDetailIdList, EOrderAction.INSERT, orderUserId,
                 new Date());
-        return new StoreOrderInfo(order, orderDetailList);
+        return new StoreOrderExt(order, orderDetailList);
     }
 
     @Override
@@ -301,9 +307,68 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 .eq(StoreOrder::getOrderNo, orderNo));
     }
 
+    @Override
+    public StoreOrderInfoDTO getInfo(Long storeOrderId) {
+        StoreOrder order = storeOrderMapper.selectById(storeOrderId);
+        if (order == null) {
+            return null;
+        }
+        List<StoreOrderDetail> details = storeOrderDetailMapper.selectList(Wrappers.lambdaQuery(StoreOrderDetail.class)
+                .eq(StoreOrderDetail::getStoreOrderId, storeOrderId)
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        StoreOrderInfoDTO orderInfo = BeanUtil.toBean(order, StoreOrderInfoDTO.class);
+        List<StoreOrderDetailInfoDTO> detailInfos = BeanUtil.copyToList(details,
+                StoreOrderDetailInfoDTO.class);
+        orderInfo.setOrderDetails(detailInfos);
+        //物流信息
+        Express express = expressService.getById(order.getExpressId());
+        orderInfo.setExpressName(Optional.ofNullable(express).map(Express::getExpressName).orElse(null));
+        Map<String, String> regionNameMap = expressService.listRegionByCode(Arrays
+                .asList(order.getDestinationProvinceCode(), order.getDestinationCityCode(),
+                        order.getDestinationCountyCode(), order.getOriginProvinceCode(),
+                        order.getOriginCityCode(), order.getOriginCountyCode()))
+                .stream()
+                .collect(Collectors.toMap(ExpressRegion::getRegionCode, ExpressRegion::getRegionName));
+        orderInfo.setDestinationProvinceName(regionNameMap.get(orderInfo.getDestinationProvinceCode()));
+        orderInfo.setDestinationCityName(regionNameMap.get(orderInfo.getDestinationCityCode()));
+        orderInfo.setDestinationCountyName(regionNameMap.get(orderInfo.getDestinationCountyCode()));
+        orderInfo.setOriginProvinceName(regionNameMap.get(orderInfo.getOriginProvinceCode()));
+        orderInfo.setOriginCityName(regionNameMap.get(orderInfo.getOriginCityCode()));
+        orderInfo.setOriginCountyName(regionNameMap.get(orderInfo.getOriginCountyCode()));
+        //商品信息
+        Set<Long> spcsIds = detailInfos.stream().map(StoreOrderDetailDTO::getStoreProdColorSizeId)
+                .collect(Collectors.toSet());
+        List<StoreProductColorSize> spcsList = storeProductColorSizeMapper.selectByIds(spcsIds);
+        Map<Long, StoreProductColorSize> spcsMap = spcsList.stream()
+                .collect(Collectors.toMap(StoreProductColorSize::getId, Function.identity()));
+        Set<Long> scIds = spcsList.stream().map(StoreProductColorSize::getStoreColorId).collect(Collectors.toSet());
+        Map<Long, StoreColor> scMap = storeColorMapper.selectByIds(scIds).stream()
+                .collect(Collectors.toMap(StoreColor::getId, Function.identity()));
+        Set<Long> pIds = spcsList.stream().map(StoreProductColorSize::getStoreProdId).collect(Collectors.toSet());
+        Map<Long, StoreProduct> storeProductMap = storeProductMapper.selectByIds(pIds).stream()
+                .collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
+        for (StoreOrderDetailInfoDTO detailInfo : detailInfos) {
+            StoreProductColorSize spcs = spcsMap.get(detailInfo.getStoreProdColorSizeId());
+            if (spcs != null) {
+                detailInfo.setSize(spcs.getSize());
+                detailInfo.setStoreColorId(spcs.getStoreColorId());
+                detailInfo.setColorName(Optional.ofNullable(scMap.get(spcs.getStoreColorId()))
+                        .map(StoreColor::getColorName).orElse(null));
+                StoreProduct sp = storeProductMap.get(spcs.getStoreProdId());
+                if (sp != null) {
+                    detailInfo.setProdName(sp.getProdName());
+                    detailInfo.setProdArtNum(sp.getProdArtNum());
+                    detailInfo.setProdTitle(sp.getProdTitle());
+                }
+                detailInfo.setFileList(storeProductFileMapper.selectListByStoreProdId(spcs.getStoreProdId()));
+            }
+        }
+        return orderInfo;
+    }
+
     @Transactional
     @Override
-    public StoreOrderInfo preparePayOrder(Long storeOrderId) {
+    public StoreOrderExt preparePayOrder(Long storeOrderId) {
         Assert.notNull(storeOrderId);
         StoreOrder order = storeOrderMapper.selectById(storeOrderId);
         Assert.isTrue(EOrderType.SALES_ORDER.getValue().equals(order.getOrderType()),
@@ -327,12 +392,12 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
             }
         }
-        return new StoreOrderInfo(order, orderDetails);
+        return new StoreOrderExt(order, orderDetails);
     }
 
     @Transactional
     @Override
-    public StoreOrderInfo paySuccess(Long storeOrderId, BigDecimal totalAmount, BigDecimal realTotalAmount) {
+    public StoreOrderExt paySuccess(Long storeOrderId, BigDecimal totalAmount, BigDecimal realTotalAmount) {
         Assert.notNull(storeOrderId);
         StoreOrder order = storeOrderMapper.selectById(storeOrderId);
         Assert.isTrue(EOrderType.SALES_ORDER.getValue().equals(order.getOrderType()),
@@ -379,7 +444,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //操作记录
         addOperationRecords(storeOrderId, EOrderAction.PAY, orderDetailIdList, EOrderAction.PAY, null,
                 new Date());
-        return new StoreOrderInfo(order, orderDetails);
+        return new StoreOrderExt(order, orderDetails);
     }
 
     private void checkPreparePayStatus(Integer payStatus) {

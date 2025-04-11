@@ -15,5 +15,19 @@ import java.util.List;
 @ToString(callSuper = true)
 public class StoreOrderInfoDTO extends StoreOrderDTO {
 
-    private List<StoreOrderDetailInfoDTO> detailList;
+    private String expressName;
+
+    private String originProvinceName;
+
+    private String originCityName;
+
+    private String originCountyName;
+
+    private String destinationProvinceName;
+
+    private String destinationCityName;
+
+    private String destinationCountyName;
+
+    private List<StoreOrderDetailInfoDTO> orderDetails;
 }

@@ -7,14 +7,8 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.web.controller.xkt.vo.order.StoreOrderAddReqVO;
-import com.ruoyi.web.controller.xkt.vo.order.StoreOrderPayReqVO;
-import com.ruoyi.web.controller.xkt.vo.order.StoreOrderPayRespVO;
-import com.ruoyi.web.controller.xkt.vo.order.StoreOrderUpdateReqVO;
-import com.ruoyi.xkt.dto.order.StoreOrderAddDTO;
-import com.ruoyi.xkt.dto.order.StoreOrderAddResult;
-import com.ruoyi.xkt.dto.order.StoreOrderInfo;
-import com.ruoyi.xkt.dto.order.StoreOrderUpdateDTO;
+import com.ruoyi.web.controller.xkt.vo.order.*;
+import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 import com.ruoyi.xkt.manager.PaymentManager;
@@ -24,10 +18,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -57,7 +48,7 @@ public class StoreOrderController extends XktBaseController {
         StoreOrderAddResult result = storeOrderService.createOrder(dto, vo.getBeginPay(),
                 EPayChannel.of(vo.getPayChannel()), EPayPage.of(vo.getPayFrom()));
         //返回信息
-        StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(result.getOrderInfo().getOrder().getId(),
+        StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(result.getOrderExt().getOrder().getId(),
                 result.getPayRtnStr());
         return success(respVO);
     }
@@ -65,11 +56,11 @@ public class StoreOrderController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:order:add')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @ApiOperation("修改订单")
-    @PostMapping("modify")
-    public R<Long> modify(@Valid @RequestBody StoreOrderUpdateReqVO vo) {
+    @PutMapping("edit")
+    public R<Long> edit(@Valid @RequestBody StoreOrderUpdateReqVO vo) {
         StoreOrderUpdateDTO dto = BeanUtil.toBean(vo, StoreOrderUpdateDTO.class);
         dto.setOrderUserId(SecurityUtils.getUserId());
-        StoreOrderInfo result = storeOrderService.modifyOrder(dto);
+        StoreOrderExt result = storeOrderService.modifyOrder(dto);
         return success(result.getOrder().getId());
     }
 
@@ -80,11 +71,20 @@ public class StoreOrderController extends XktBaseController {
     public R<StoreOrderPayRespVO> pay(@Valid @RequestBody StoreOrderPayReqVO vo) {
         PaymentManager paymentManager = getPaymentManager(EPayChannel.of(vo.getPayChannel()));
         //订单支付状态->支付中
-        StoreOrderInfo storeOrderInfo = storeOrderService.preparePayOrder(vo.getStoreOrderId());
+        StoreOrderExt orderExt = storeOrderService.preparePayOrder(vo.getStoreOrderId());
         //调用支付
-        String rtnStr = paymentManager.payOrder(storeOrderInfo, EPayPage.of(vo.getPayFrom()));
+        String rtnStr = paymentManager.payOrder(orderExt, EPayPage.of(vo.getPayFrom()));
         StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(vo.getStoreOrderId(), rtnStr);
         return success(respVO);
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:order:query')")
+    @ApiOperation(value = "订单详情")
+    @GetMapping(value = "/{id}")
+    public R<StoreOrderInfoVO> getInfo(@PathVariable("id") Long id) {
+        StoreOrderInfoDTO infoDTO = storeOrderService.getInfo(id);
+        //TODO 非下单人，非所属档口不允许查询
+        return success(BeanUtil.toBean(infoDTO, StoreOrderInfoVO.class));
     }
 
     /**
