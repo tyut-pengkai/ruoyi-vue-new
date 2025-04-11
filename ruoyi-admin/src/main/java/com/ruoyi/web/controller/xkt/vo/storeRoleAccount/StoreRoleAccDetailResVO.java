@@ -1,13 +1,10 @@
 package com.ruoyi.web.controller.xkt.vo.storeRoleAccount;
 
-import com.ruoyi.web.controller.xkt.vo.storeProdBarcodeMatch.BarcodeMatchVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**

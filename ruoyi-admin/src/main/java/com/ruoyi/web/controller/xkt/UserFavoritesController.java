@@ -1,19 +1,23 @@
 package com.ruoyi.web.controller.xkt;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.xkt.domain.UserFavorites;
+import com.ruoyi.web.controller.xkt.vo.userFavorite.UserFavBatchAddToShopCartVO;
+import com.ruoyi.web.controller.xkt.vo.userFavorite.UserFavBatchDeleteVO;
+import com.ruoyi.web.controller.xkt.vo.userFavorite.UserFavoritePageVO;
+import com.ruoyi.web.controller.xkt.vo.userFavorite.UserFavoriteVO;
+import com.ruoyi.xkt.dto.userFavorite.*;
 import com.ruoyi.xkt.service.IUserFavoritesService;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * 用户收藏商品Controller
@@ -21,71 +25,58 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Api(tags = "用户收藏（只有电商卖家可操作）")
 @RestController
-@RequestMapping("/rest/v1/user-faves")
+@RequiredArgsConstructor
+@RequestMapping("/rest/v1/user-favorites")
 public class UserFavoritesController extends XktBaseController {
-    @Autowired
-    private IUserFavoritesService userFavoritesService;
 
-    /**
-     * 查询用户收藏商品列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:favorites:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(UserFavorites userFavorites) {
-        startPage();
-        List<UserFavorites> list = userFavoritesService.selectUserFavoritesList(userFavorites);
-        return getDataTable(list);
-    }
-
-    /**
-     * 导出用户收藏商品列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:favorites:export')")
-    @Log(title = "用户收藏商品", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, UserFavorites userFavorites) {
-        List<UserFavorites> list = userFavoritesService.selectUserFavoritesList(userFavorites);
-        ExcelUtil<UserFavorites> util = new ExcelUtil<UserFavorites>(UserFavorites.class);
-        util.exportExcel(response, list, "用户收藏商品数据");
-    }
-
-    /**
-     * 获取用户收藏商品详细信息
-     */
-    @PreAuthorize("@ss.hasPermi('system:favorites:query')")
-    @GetMapping(value = "/{userFavoId}")
-    public R getInfo(@PathVariable("userFavoId") Long userFavoId) {
-        return success(userFavoritesService.selectUserFavoritesByUserFavoId(userFavoId));
-    }
+    final IUserFavoritesService userFavService;
 
     /**
      * 新增用户收藏商品
      */
     @PreAuthorize("@ss.hasPermi('system:favorites:add')")
+    @ApiOperation(value = "用户收藏商品", httpMethod = "POST", response = R.class)
     @Log(title = "用户收藏商品", businessType = BusinessType.INSERT)
     @PostMapping
-    public R add(@RequestBody UserFavorites userFavorites) {
-        return success(userFavoritesService.insertUserFavorites(userFavorites));
+    public R<Integer> create(@Validated @RequestBody UserFavoriteVO favoriteVO) {
+        return success(userFavService.create(BeanUtil.toBean(favoriteVO, UserFavoriteDTO.class)));
     }
 
     /**
-     * 修改用户收藏商品
+     * 获取用户收藏列表
      */
-    @PreAuthorize("@ss.hasPermi('system:favorites:edit')")
-    @Log(title = "用户收藏商品", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public R edit(@RequestBody UserFavorites userFavorites) {
-        return success(userFavoritesService.updateUserFavorites(userFavorites));
+    @PreAuthorize("@ss.hasPermi('system:favorites:list')")
+    @ApiOperation(value = "获取用户收藏列表", httpMethod = "POST", response = R.class)
+    @PostMapping("/page")
+    public R<Page<UserFavoritePageResDTO>> page(@Validated @RequestBody UserFavoritePageVO pageVO) {
+        return R.ok(userFavService.page(BeanUtil.toBean(pageVO, UserFavoritePageDTO.class)));
     }
 
+
     /**
-     * 删除用户收藏商品
+     * 批量加入进货车
      */
-    @PreAuthorize("@ss.hasPermi('system:favorites:remove')")
-    @Log(title = "用户收藏商品", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{userFavoIds}")
-    public R remove(@PathVariable Long[] userFavoIds) {
-        return success(userFavoritesService.deleteUserFavoritesByUserFavoIds(userFavoIds));
+    @PreAuthorize("@ss.hasPermi('system:favorites:add')")
+    @ApiOperation(value = "批量加入进货车", httpMethod = "POST", response = R.class)
+    @Log(title = "批量加入进货车", businessType = BusinessType.INSERT)
+    @PostMapping("/batch/shopping-cart")
+    public R<Integer> batchAddToShoppingCart(@Validated @RequestBody UserFavBatchAddToShopCartVO batchVO) {
+        return success(userFavService.batchAddToShoppingCart(BeanUtil.toBean(batchVO, UserFavBatchAddToShopCartDTO.class)));
     }
+
+
+    /**
+     * 批量取消收藏
+     */
+    @PreAuthorize("@ss.hasPermi('system:favorites:add')")
+    @ApiOperation(value = "批量取消收藏", httpMethod = "DELETE", response = R.class)
+    @Log(title = "批量取消收藏", businessType = BusinessType.INSERT)
+    @DeleteMapping("/batch")
+    public R<Integer> batchDelete(@Validated @RequestBody UserFavBatchDeleteVO batchDeleteVO) {
+        return success(userFavService.batchDelete(BeanUtil.toBean(batchDeleteVO, UserFavBatchDeleteDTO.class)));
+    }
+
+
 }

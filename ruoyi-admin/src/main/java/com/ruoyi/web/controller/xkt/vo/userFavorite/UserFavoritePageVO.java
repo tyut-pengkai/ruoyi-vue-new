@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.vo.userShoppingCart;
+package com.ruoyi.web.controller.xkt.vo.userFavorite;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
@@ -16,10 +16,10 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @EqualsAndHashCode(callSuper = true)
-@ApiModel("电商卖家进货车列表")
+@ApiModel("用户收藏列表查询入参")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ShopCartPageVO extends BasePageVO {
+public class UserFavoritePageVO extends BasePageVO {
 
     @NotNull(message = "商品状态不可为空!")
     @ApiModelProperty(value = "商品状态，在售传：2， 已失效传：4,5")

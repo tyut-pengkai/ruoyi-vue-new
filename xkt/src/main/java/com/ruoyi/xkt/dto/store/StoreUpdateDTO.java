@@ -38,11 +38,11 @@ public class StoreUpdateDTO {
     private String alipayAccount;
     @ApiModelProperty(value = "经营年限")
     private Integer operateYears;
-    @ApiModelProperty(name = "档口地址")
+    @ApiModelProperty(value = "档口地址")
     private String storeAddress;
-    @ApiModelProperty(name = "工厂地址")
+    @ApiModelProperty(value = "工厂地址")
     private String facAddress;
-    @ApiModelProperty(name = "生产规模")
+    @ApiModelProperty(value = "生产规模")
     private Integer prodScale;
 
 }

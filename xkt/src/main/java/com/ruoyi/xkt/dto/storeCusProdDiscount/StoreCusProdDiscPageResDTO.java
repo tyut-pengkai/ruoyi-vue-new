@@ -23,15 +23,15 @@ public class StoreCusProdDiscPageResDTO {
     private Long storeCusProdDiscId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "档口商品ID")
+    @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
-    @ApiModelProperty(name = "档口客户ID")
+    @ApiModelProperty(value = "档口客户ID")
     private Long storeCusId;
-    @ApiModelProperty(name = "档口客户名称")
+    @ApiModelProperty(value = "档口客户名称")
     private String storeCusName;
-    @ApiModelProperty(name = "档口商品颜色ID")
+    @ApiModelProperty(value = "档口商品颜色ID")
     private Long storeProdColorId;
-    @ApiModelProperty(name = "优惠金额")
+    @ApiModelProperty(value = "优惠金额")
     private Integer discount;
     @ApiModelProperty("更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

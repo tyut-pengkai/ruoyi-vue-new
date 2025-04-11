@@ -48,23 +48,23 @@ public class StoreCertDTO {
     private Integer registerStatus;
     @ApiModelProperty(value = "法定代表人/负责人名称", required = true)
     private String legalName;
-    @ApiModelProperty(name = "注册资本(万)")
+    @ApiModelProperty(value = "注册资本(万)")
     private Integer registerCapital;
     @ApiModelProperty(value = "实际经营地址", required = true)
     private String realBusinessAddress;
     @ApiModelProperty(value = "经营范围")
     private String businessScope;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @ApiModelProperty(name = "营业期限开始时间")
+    @ApiModelProperty(value = "营业期限开始时间")
     private Date businessTermStartDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @ApiModelProperty(name = "营业期限截止时间")
+    @ApiModelProperty(value = "营业期限截止时间")
     private Date businessTermEndDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @ApiModelProperty(name = "成立日期")
+    @ApiModelProperty(value = "成立日期")
     private Date establishDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @ApiModelProperty(name = "核准日期")
+    @ApiModelProperty(value = "核准日期")
     private Date approvalDate;
 
     @Data

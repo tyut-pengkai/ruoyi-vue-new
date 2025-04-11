@@ -42,17 +42,11 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     final ShoppingCartMapper shopCartMapper;
     final ShoppingCartDetailMapper shopCartDetailMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
-    final SysFileMapper fileMapper;
-    final StoreHomepageMapper storeHomeMapper;
-    final StoreMapper storeMapper;
-    final StoreProductMapper storeProdMapper;
-    final StoreProductDetailMapper prodDetailMapper;
     final StoreProductColorMapper prodColorMapper;
     final StoreProductStockMapper prodStockMapper;
     final StoreProductColorPriceMapper prodColorPriceMapper;
     final StoreProductFileMapper prodFileMapper;
     final StoreProductCategoryAttributeMapper prodCateAttrMapper;
-    final StoreCertificateMapper storeCertMapper;
 
 
     /**

@@ -19,9 +19,9 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreCusProdBatchDiscountDTO {
 
-    @ApiModelProperty(name = "档口ID")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "业务类型：true:新增客户定价   false:批量减价、批量优惠")
+    @ApiModelProperty(value = "业务类型：true:新增客户定价   false:批量减价、批量优惠")
     private Boolean isInsert;
     @ApiModelProperty(value = "优惠列表")
     private List<DiscountItemDTO> discountList;
@@ -30,9 +30,9 @@ public class StoreCusProdBatchDiscountDTO {
     @Valid
     @ApiModel(value = "档口优惠列表")
     public static class DiscountItemDTO {
-        @ApiModelProperty(name = "档口商品ID")
+        @ApiModelProperty(value = "档口商品ID")
         private Long storeProdId;
-        @ApiModelProperty(name = "档口商品颜色ID")
+        @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeProdColorId;
         @ApiModelProperty(value = "优惠金额")
         private Integer discount;

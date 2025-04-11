@@ -1,8 +1,7 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.UserFavorites;
-
-import java.util.List;
+import com.ruoyi.common.core.page.Page;
+import com.ruoyi.xkt.dto.userFavorite.*;
 
 /**
  * 用户收藏商品Service接口
@@ -12,50 +11,35 @@ import java.util.List;
  */
 public interface IUserFavoritesService {
     /**
-     * 查询用户收藏商品
-     *
-     * @param userFavoId 用户收藏商品主键
-     * @return 用户收藏商品
-     */
-    public UserFavorites selectUserFavoritesByUserFavoId(Long userFavoId);
-
-    /**
-     * 查询用户收藏商品列表
-     *
-     * @param userFavorites 用户收藏商品
-     * @return 用户收藏商品集合
-     */
-    public List<UserFavorites> selectUserFavoritesList(UserFavorites userFavorites);
-
-    /**
      * 新增用户收藏商品
      *
-     * @param userFavorites 用户收藏商品
-     * @return 结果
+     * @param favoriteDTO 新增收藏入参
+     * @return Integer
      */
-    public int insertUserFavorites(UserFavorites userFavorites);
+    Integer create(UserFavoriteDTO favoriteDTO);
 
     /**
-     * 修改用户收藏商品
+     * 获取用户收藏列表
      *
-     * @param userFavorites 用户收藏商品
-     * @return 结果
+     * @param pageDTO 查询入参
+     * @return Page<UserFavoritePageResDTO>
      */
-    public int updateUserFavorites(UserFavorites userFavorites);
+    Page<UserFavoritePageResDTO> page(UserFavoritePageDTO pageDTO);
 
     /**
-     * 批量删除用户收藏商品
+     * 批量加入进货车
      *
-     * @param userFavoIds 需要删除的用户收藏商品主键集合
-     * @return 结果
+     * @param batchDTO 批量操作入参
+     * @return Integer
      */
-    public int deleteUserFavoritesByUserFavoIds(Long[] userFavoIds);
+    Integer batchAddToShoppingCart(UserFavBatchAddToShopCartDTO batchDTO);
 
     /**
-     * 删除用户收藏商品信息
+     * 批量取消收藏
      *
-     * @param userFavoId 用户收藏商品主键
-     * @return 结果
+     * @param batchDTO 批量操作入参
+     * @return Integer
      */
-    public int deleteUserFavoritesByUserFavoId(Long userFavoId);
+    Integer batchDelete(UserFavBatchDeleteDTO batchDTO);
+
 }

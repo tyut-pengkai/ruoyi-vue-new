@@ -28,6 +28,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="storeName" column="store_name"/>
         <result property="prodArtNum" column="prod_art_num"/>
         <result property="prodTitle" column="prod_title"/>
+        <result property="prodStatus" column="prod_status"/>
 
         <!-- 使用 collection 映射 detailList -->
         <collection property="detailList" ofType="com.ruoyi.xkt.dto.userShoppingCart.ShopCartPageDetailResDTO">
@@ -60,6 +61,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             scd.quantity,
             spcp.price,
             (scd.quantity * spcp.price) AS amount,
+            CASE
+                sp.prod_status
+                WHEN 2 THEN '在售'
+                WHEN 4 THEN '已下架'
+                WHEN 5 THEN '已删除'
+                END AS prod_status,
         FROM
             shopping_cart sc
             LEFT JOIN shopping_cart_detail scd ON sc.id = scd.shopping_cart_id

@@ -56,7 +56,7 @@ public class StoreProductController extends XktBaseController {
     @ApiOperation(value = "模糊查询档口商品", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy/pic")
     public R<List<StoreProdFuzzyResPicVO>> fuzzyQueryResPicList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
-                                                            @RequestParam("storeId") Long storeId) {
+                                                                @RequestParam("storeId") Long storeId) {
         return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryResPicList(storeId, prodArtNum), StoreProdFuzzyResPicVO.class));
     }
 

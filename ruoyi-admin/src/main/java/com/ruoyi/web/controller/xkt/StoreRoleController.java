@@ -11,7 +11,6 @@ import com.ruoyi.web.controller.xkt.vo.storeRole.StoreRoleUpdateStatusVO;
 import com.ruoyi.web.controller.xkt.vo.storeRole.StoreRoleVO;
 import com.ruoyi.xkt.dto.storeRole.StoreRoleDTO;
 import com.ruoyi.xkt.dto.storeRole.StoreRoleListDTO;
-import com.ruoyi.xkt.dto.storeRole.StoreRoleResDTO;
 import com.ruoyi.xkt.dto.storeRole.StoreRoleUpdateStatusDTO;
 import com.ruoyi.xkt.service.IStoreRoleService;
 import io.swagger.annotations.Api;
@@ -101,7 +100,6 @@ public class StoreRoleController extends XktBaseController {
     public R<Integer> updateRoleStatus(@Validated @RequestBody StoreRoleUpdateStatusVO roleUpdateStatusVO) {
         return R.ok(storeRoleService.updateRoleStatus(BeanUtil.toBean(roleUpdateStatusVO, StoreRoleUpdateStatusDTO.class)));
     }
-
 
 
 }

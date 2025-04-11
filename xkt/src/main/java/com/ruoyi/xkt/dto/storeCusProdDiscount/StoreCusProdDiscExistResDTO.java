@@ -17,9 +17,9 @@ public class StoreCusProdDiscExistResDTO {
 
     @ApiModelProperty(value = "档口客户名称")
     private String storeCusName;
-    @ApiModelProperty(name = "商品货号")
+    @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
-    @ApiModelProperty(name = "商品颜色名称")
+    @ApiModelProperty(value = "商品颜色名称")
     private String colorName;
     @ApiModelProperty(value = "已有优惠金额")
     private Integer exitDiscount;

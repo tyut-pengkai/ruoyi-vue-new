@@ -25,12 +25,14 @@ public class ShopCartPageResDTO {
     private Long storeId;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
-    @ApiModelProperty(name = "档口商品ID")
+    @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
-    @ApiModelProperty(name = "商品标题")
+    @ApiModelProperty(value = "商品标题")
     private String prodTitle;
+    @ApiModelProperty(value = "商品状态")
+    private String prodStatus;
     @ApiModelProperty(value = "进货车明细列表")
     List<ShopCartPageDetailResDTO> detailList;
 

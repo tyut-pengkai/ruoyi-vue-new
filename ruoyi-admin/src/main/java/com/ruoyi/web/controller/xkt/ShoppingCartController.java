@@ -1,3 +1,5 @@
+package com.ruoyi.web.controller.xkt;
+
 import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;

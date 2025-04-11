@@ -88,4 +88,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectUserFavPage"  resultType="com.ruoyi.xkt.dto.userFavorite.UserFavoritePageResDTO">
+        SELECT
+            uf.id AS user_favorite_id,
+            s.id AS store_id,
+            uf.store_prod_id,
+            s.store_name,
+            sp.prod_title,
+            uf.create_time,
+            sp.prod_art_num
+        FROM
+            user_favorites uf
+                LEFT JOIN store_product sp ON uf.store_prod_id = sp.id
+                LEFT JOIN store s ON uf.store_id = s.id
+        WHERE
+            uf.del_flag = 0 AND uf.user_id = #{userId}
+    </select>
+
+
 </mapper>

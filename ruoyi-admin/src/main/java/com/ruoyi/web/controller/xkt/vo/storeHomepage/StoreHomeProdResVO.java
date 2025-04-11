@@ -87,7 +87,7 @@ public class StoreHomeProdResVO {
         private String qqAccount;
         @ApiModelProperty(value = "档口地址")
         private String storeAddress;
-        @ApiModelProperty(name = "营业执照名称")
+        @ApiModelProperty(value = "营业执照名称")
         private String licenseName;
     }
 

@@ -1,14 +1,34 @@
 package com.ruoyi.xkt.service.impl;
 
-import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.xkt.domain.UserFavorites;
-import com.ruoyi.xkt.mapper.UserFavoritesMapper;
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.page.Page;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
+import com.ruoyi.xkt.dto.userFavorite.*;
+import com.ruoyi.xkt.enums.FileType;
+import com.ruoyi.xkt.enums.ProductSizeStatus;
+import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IUserFavoritesService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static com.ruoyi.common.constant.Constants.ORDER_NUM_1;
 
 /**
  * 用户收藏商品Service业务层处理
@@ -16,80 +36,173 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+
 @Service
+@RequiredArgsConstructor
 public class UserFavoritesServiceImpl implements IUserFavoritesService {
-    @Autowired
-    private UserFavoritesMapper userFavoritesMapper;
 
-    /**
-     * 查询用户收藏商品
-     *
-     * @param userFavoId 用户收藏商品主键
-     * @return 用户收藏商品
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public UserFavorites selectUserFavoritesByUserFavoId(Long userFavoId) {
-        return userFavoritesMapper.selectUserFavoritesByUserFavoId(userFavoId);
-    }
-
-    /**
-     * 查询用户收藏商品列表
-     *
-     * @param userFavorites 用户收藏商品
-     * @return 用户收藏商品
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserFavorites> selectUserFavoritesList(UserFavorites userFavorites) {
-        return userFavoritesMapper.selectUserFavoritesList(userFavorites);
-    }
+    final UserFavoritesMapper userFavMapper;
+    final StoreProductFileMapper prodFileMapper;
+    final StoreProductColorSizeMapper prodColorSizeMapper;
+    final ShoppingCartMapper shopCartMapper;
+    final StoreProductColorPriceMapper prodColorPriceMapper;
+    final StoreProductColorMapper prodColorMapper;
+    final ShoppingCartDetailMapper shopCartDetailMapper;
 
     /**
      * 新增用户收藏商品
      *
-     * @param userFavorites 用户收藏商品
-     * @return 结果
+     * @param favoriteDTO 新增收藏入参
+     * @return Integer
      */
     @Override
     @Transactional
-    public int insertUserFavorites(UserFavorites userFavorites) {
-        userFavorites.setCreateTime(DateUtils.getNowDate());
-        return userFavoritesMapper.insertUserFavorites(userFavorites);
+    public Integer create(UserFavoriteDTO favoriteDTO) {
+        // 获取当前登录用户
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        // 判断当前商品是否已加入进货车
+        UserFavorites exist = this.userFavMapper.selectOne(new LambdaQueryWrapper<UserFavorites>()
+                .eq(UserFavorites::getUserId, loginUser.getUserId()).eq(UserFavorites::getStoreProdId, favoriteDTO.getStoreProdId())
+                .eq(UserFavorites::getDelFlag, Constants.UNDELETED));
+        if (ObjectUtils.isNotEmpty(exist)) {
+            throw new ServiceException("当前商品已加入收藏", HttpStatus.ERROR);
+        }
+        UserFavorites userFavorites = BeanUtil.toBean(favoriteDTO, UserFavorites.class);
+        userFavorites.setUserId(loginUser.getUserId());
+        return this.userFavMapper.insert(userFavorites);
     }
 
     /**
-     * 修改用户收藏商品
+     * 获取用户收藏列表
      *
-     * @param userFavorites 用户收藏商品
-     * @return 结果
+     * @param pageDTO 查询入参
+     * @return Page<UserFavoritePageResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserFavoritePageResDTO> page(UserFavoritePageDTO pageDTO) {
+        // 获取当前登录用户
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        pageDTO.setUserId(loginUser.getUserId());
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        List<UserFavoritePageResDTO> favoriteList = this.userFavMapper.selectUserFavPage(pageDTO);
+        if (CollectionUtils.isEmpty(favoriteList)) {
+            return Page.empty(pageDTO.getPageNum(), pageDTO.getPageSize());
+        }
+        // 找到商品的定价
+        List<StoreProductColorPrice> priceList = this.prodColorPriceMapper.selectList(new LambdaQueryWrapper<StoreProductColorPrice>()
+                .in(StoreProductColorPrice::getStoreProdId, favoriteList.stream().map(UserFavoritePageResDTO::getStoreProdId).collect(Collectors.toList()))
+                .eq(StoreProductColorPrice::getDelFlag, Constants.UNDELETED));
+        // 按照storeProdId分组，并取价格最低的价格
+        Map<Long, BigDecimal> minPriceMap = priceList.stream().collect(Collectors.groupingBy(StoreProductColorPrice::getStoreProdId,
+                Collectors.collectingAndThen(Collectors.toList(), list -> list.stream().map(StoreProductColorPrice::getPrice)
+                        .min(Comparator.comparing(Function.identity())).orElseThrow(() -> new ServiceException("商品价格不存在", HttpStatus.ERROR)))));
+        // 找到第一张商品主图
+        List<StoreProdMainPicDTO> mainPicList = this.prodFileMapper.selectMainPicByStoreProdIdList(favoriteList.stream()
+                .map(UserFavoritePageResDTO::getStoreProdId).collect(Collectors.toList()), FileType.MAIN_PIC.getValue(), ORDER_NUM_1);
+        Map<Long, String> mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
+                .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
+        // 商品的标准尺码
+        List<StoreProductColorSize> standardSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
+                .in(StoreProductColorSize::getStoreProdId, favoriteList.stream().map(UserFavoritePageResDTO::getStoreProdId).collect(Collectors.toList()))
+                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
+        // 以storeProdId为key, 取标准尺码的最大值和最小值组成字符串 eg: 34 - 40
+        Map<Long, String> minAndMaxSizeMap = standardSizeList.stream().collect(Collectors.groupingBy(
+                StoreProductColorSize::getStoreProdId,
+                Collectors.collectingAndThen(
+                        Collectors.mapping(StoreProductColorSize::getSize, Collectors.toList()),
+                        sizeList -> {
+                            if (sizeList.isEmpty()) {
+                                return ""; // 处理空列表的情况，返回空字符串或其他默认值
+                            }
+                            int minSize = Collections.min(sizeList);
+                            int maxSize = Collections.max(sizeList);
+                            return minSize + "-" + maxSize;
+                        })));
+        favoriteList.forEach(x -> x.setStandardSize(minAndMaxSizeMap.getOrDefault(x.getStoreProdId(), ""))
+                .setMainPicUrl(mainPicMap.getOrDefault(x.getStoreProdId(), null))
+                .setPrice(minPriceMap.getOrDefault(x.getStoreProdId(), null)));
+        return Page.convert(new PageInfo<>(favoriteList));
+    }
+
+    /**
+     * 批量加入进货车
+     *
+     * @param batchDTO 批量操作入参
+     * @return Integer
      */
     @Override
     @Transactional
-    public int updateUserFavorites(UserFavorites userFavorites) {
-        userFavorites.setUpdateTime(DateUtils.getNowDate());
-        return userFavoritesMapper.updateUserFavorites(userFavorites);
+    public Integer batchAddToShoppingCart(UserFavBatchAddToShopCartDTO batchDTO) {
+        // 获取当前登录用户
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        // 判断哪些已经加入过进货车中
+        List<ShoppingCart> existList = this.shopCartMapper.selectList(new LambdaQueryWrapper<ShoppingCart>()
+                .eq(ShoppingCart::getUserId, loginUser.getUserId()).eq(ShoppingCart::getDelFlag, Constants.UNDELETED)
+                .in(ShoppingCart::getStoreProdId, batchDTO.getBatchList().stream()
+                        .map(UserFavBatchAddToShopCartDTO.BatchDTO::getStoreProdId).collect(Collectors.toList())));
+        Map<Long, ShoppingCart> existMap = existList.stream().collect(Collectors.toMap(ShoppingCart::getStoreProdId, x -> x));
+        // 有哪些还未加入到进货车
+        List<UserFavBatchAddToShopCartDTO.BatchDTO> notAddList = batchDTO.getBatchList().stream().filter(x -> !existMap.containsKey(x.getStoreProdId()))
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(notAddList)) {
+            return 0;
+        }
+        // 找到当前商品的颜色
+        List<StoreProductColor> prodColorList = this.prodColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
+                .in(StoreProductColor::getStoreProdId, notAddList.stream().map(UserFavBatchAddToShopCartDTO.BatchDTO::getStoreProdId).collect(Collectors.toList()))
+                .eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
+        // 按照storeProdId分组，若商品有多个颜色则任取其一
+        Map<Long, StoreProductColor> prodColorMap = prodColorList.stream().collect(Collectors.toMap(StoreProductColor::getStoreProdId, Function.identity(), (x, y) -> x));
+        // 找到当前商品的标准码
+        List<StoreProductColorSize> colorSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
+                .in(StoreProductColorSize::getStoreProdId, notAddList.stream().map(UserFavBatchAddToShopCartDTO.BatchDTO::getStoreProdId).collect(Collectors.toList()))
+                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
+        // key:storeProdId+storeColorId 并取最小的标准尺码
+        Map<String, StoreProductColorSize> minSizeMap = colorSizeList.stream().collect(Collectors
+                .groupingBy(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString(), Collectors
+                        .collectingAndThen(Collectors.toList(), x -> x.stream()
+                                .min(Comparator.comparingInt(StoreProductColorSize::getSize))
+                                .orElseThrow(() -> new ServiceException("当前商品没有标准尺码", HttpStatus.ERROR)))));
+        notAddList.forEach(x -> {
+            StoreProductColor storeProdColor = Optional.ofNullable(prodColorMap.get(x.getStoreProdId())).orElseThrow(() -> new ServiceException("当前商品没有颜色", HttpStatus.ERROR));
+            StoreProductColorSize standardSize = minSizeMap.getOrDefault(x.getStoreProdId().toString() + storeProdColor.getStoreColorId().toString(), null);
+            ShoppingCart shoppingCart = BeanUtil.toBean(x, ShoppingCart.class).setUserId(loginUser.getUserId());
+            this.shopCartMapper.insert(shoppingCart);
+            this.shopCartDetailMapper.insert(new ShoppingCartDetail() {{
+                setShoppingCartId(shoppingCart.getId());
+                setStoreColorId(storeProdColor.getStoreColorId());
+                setColorName(storeProdColor.getColorName());
+                setStoreProdColorId(storeProdColor.getId());
+                setSize(ObjectUtils.isNotEmpty(standardSize) ? standardSize.getSize() : 36);
+                setQuantity(1);
+            }});
+        });
+        return notAddList.size();
     }
 
     /**
-     * 批量删除用户收藏商品
+     * 批量取消收藏
      *
-     * @param userFavoIds 需要删除的用户收藏商品主键
-     * @return 结果
+     * @param batchDTO 批量操作入参
+     * @return Integer
      */
     @Override
-    public int deleteUserFavoritesByUserFavoIds(Long[] userFavoIds) {
-        return userFavoritesMapper.deleteUserFavoritesByUserFavoIds(userFavoIds);
+    @Transactional
+    public Integer batchDelete(UserFavBatchDeleteDTO batchDTO) {
+        // 获取当前登录用户
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        List<UserFavorites> favoriteList = this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
+                .eq(UserFavorites::getUserId, loginUser.getUserId()).in(UserFavorites::getId, batchDTO.getUserFavoriteIdList())
+                .eq(UserFavorites::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(favoriteList)) {
+            return 0;
+        }
+        favoriteList.forEach(x -> x.setDelFlag(Constants.DELETED));
+        return this.userFavMapper.updateById(favoriteList).size();
     }
 
-    /**
-     * 删除用户收藏商品信息
-     *
-     * @param userFavoId 用户收藏商品主键
-     * @return 结果
-     */
-    @Override
-    public int deleteUserFavoritesByUserFavoId(Long userFavoId) {
-        return userFavoritesMapper.deleteUserFavoritesByUserFavoId(userFavoId);
-    }
+
 }
