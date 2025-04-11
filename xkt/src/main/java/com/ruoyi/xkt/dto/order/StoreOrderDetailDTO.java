@@ -30,6 +30,30 @@ public class StoreOrderDetailDTO {
      */
     private Long storeProdId;
     /**
+     * 商品名称
+     */
+    private String prodName;
+    /**
+     * 商品货号
+     */
+    private String prodArtNum;
+    /**
+     * 商品标题
+     */
+    private String prodTitle;
+    /**
+     * 档口颜色ID
+     */
+    private Long storeColorId;
+    /**
+     * 颜色名称
+     */
+    private String colorName;
+    /**
+     * 商品尺码
+     */
+    private Integer size;
+    /**
      * 订单明细状态（同订单状态）[10:已取消 11:待付款 12:待发货 13:已发货 14:已完成 21:售后中 22:售后拒绝 23:平台介入 24:售后完成]
      */
     private Integer detailStatus;

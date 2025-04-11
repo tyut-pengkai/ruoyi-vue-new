@@ -21,6 +21,9 @@ import com.ruoyi.xkt.service.IExpressService;
 import com.ruoyi.xkt.service.IOperationRecordService;
 import com.ruoyi.xkt.service.IStoreOrderService;
 import com.ruoyi.xkt.service.IVoucherSequenceService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,8 +74,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //校验
         expressService.checkExpress(expressId);
         checkDelivery(storeOrderAddDTO.getDeliveryType(), storeOrderAddDTO.getDeliveryEndTime());
-        Map<Long, StoreProductColorSize> spcsMap = checkOrderDetailThenRtnSpcsMap(storeId,
-                storeOrderAddDTO.getDetailList());
+        OrderDetailCheckRtn detailCheckRtn = checkOrderDetailThenRtnUsedMap(storeId, storeOrderAddDTO.getDetailList());
+        Map<Long, StoreProductColorSize> spcsMap = detailCheckRtn.getSpcsMap();
+        Map<Long, StoreProduct> spMap = detailCheckRtn.getSpMap();
+        Map<Long, StoreColor> scMap = detailCheckRtn.getScMap();
         //快递费配置
         ExpressFeeConfig expressFeeConfig = expressService.getExpressFeeConfig(expressId,
                 storeOrderAddDTO.getDestinationProvinceCode(), storeOrderAddDTO.getDestinationCityCode(),
@@ -89,7 +94,17 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             StoreOrderDetail orderDetail = new StoreOrderDetail();
             orderDetailList.add(orderDetail);
             orderDetail.setStoreProdColorSizeId(spcs.getId());
-            orderDetail.setStoreProdId(spcs.getStoreProdId());
+            //快照部分
+            StoreProduct sp = spMap.get(spcs.getStoreProdId());
+            StoreColor sc = scMap.get(spcs.getStoreColorId());
+            orderDetail.setStoreProdId(sp.getId());
+            orderDetail.setProdName(sp.getProdName());
+            orderDetail.setProdArtNum(sp.getProdArtNum());
+            orderDetail.setProdTitle(sp.getProdTitle());
+            orderDetail.setStoreColorId(sc.getId());
+            orderDetail.setColorName(sc.getColorName());
+            orderDetail.setSize(spcs.getSize());
+            //状态
             orderDetail.setDetailStatus(EOrderStatus.PENDING_PAYMENT.getValue());
             orderDetail.setPayStatus(beginPay ? EPayStatus.PAYING.getValue() : EPayStatus.INIT.getValue());
             orderDetail.setExpressStatus(EExpressStatus.INIT.getValue());
@@ -199,8 +214,11 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         expressService.checkExpress(expressId);
         checkDelivery(storeOrderUpdateDTO.getDeliveryType(), storeOrderUpdateDTO.getDeliveryEndTime());
-        Map<Long, StoreProductColorSize> spcsMap = checkOrderDetailThenRtnSpcsMap(storeId,
+        OrderDetailCheckRtn detailCheckRtn = checkOrderDetailThenRtnUsedMap(storeId,
                 storeOrderUpdateDTO.getDetailList());
+        Map<Long, StoreProductColorSize> spcsMap = detailCheckRtn.getSpcsMap();
+        Map<Long, StoreProduct> spMap = detailCheckRtn.getSpMap();
+        Map<Long, StoreColor> scMap = detailCheckRtn.getScMap();
         //快递费配置
         ExpressFeeConfig expressFeeConfig = expressService.getExpressFeeConfig(expressId,
                 storeOrderUpdateDTO.getDestinationProvinceCode(), storeOrderUpdateDTO.getDestinationCityCode(),
@@ -217,7 +235,17 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             StoreOrderDetail orderDetail = new StoreOrderDetail();
             orderDetailList.add(orderDetail);
             orderDetail.setStoreProdColorSizeId(spcs.getId());
-            orderDetail.setStoreProdId(spcs.getStoreProdId());
+            //快照部分
+            StoreProduct sp = spMap.get(spcs.getStoreProdId());
+            StoreColor sc = scMap.get(spcs.getStoreColorId());
+            orderDetail.setStoreProdId(sp.getId());
+            orderDetail.setProdName(sp.getProdName());
+            orderDetail.setProdArtNum(sp.getProdArtNum());
+            orderDetail.setProdTitle(sp.getProdTitle());
+            orderDetail.setStoreColorId(sc.getId());
+            orderDetail.setColorName(sc.getColorName());
+            orderDetail.setSize(spcs.getSize());
+            //状态
             orderDetail.setDetailStatus(EOrderStatus.PENDING_PAYMENT.getValue());
             orderDetail.setPayStatus(order.getPayStatus());
             orderDetail.setExpressStatus(EExpressStatus.INIT.getValue());
@@ -336,32 +364,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         orderInfo.setOriginCityName(regionNameMap.get(orderInfo.getOriginCityCode()));
         orderInfo.setOriginCountyName(regionNameMap.get(orderInfo.getOriginCountyCode()));
         //商品信息
-        Set<Long> spcsIds = detailInfos.stream().map(StoreOrderDetailDTO::getStoreProdColorSizeId)
-                .collect(Collectors.toSet());
-        List<StoreProductColorSize> spcsList = storeProductColorSizeMapper.selectByIds(spcsIds);
-        Map<Long, StoreProductColorSize> spcsMap = spcsList.stream()
-                .collect(Collectors.toMap(StoreProductColorSize::getId, Function.identity()));
-        Set<Long> scIds = spcsList.stream().map(StoreProductColorSize::getStoreColorId).collect(Collectors.toSet());
-        Map<Long, StoreColor> scMap = storeColorMapper.selectByIds(scIds).stream()
-                .collect(Collectors.toMap(StoreColor::getId, Function.identity()));
-        Set<Long> pIds = spcsList.stream().map(StoreProductColorSize::getStoreProdId).collect(Collectors.toSet());
-        Map<Long, StoreProduct> storeProductMap = storeProductMapper.selectByIds(pIds).stream()
-                .collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
         for (StoreOrderDetailInfoDTO detailInfo : detailInfos) {
-            StoreProductColorSize spcs = spcsMap.get(detailInfo.getStoreProdColorSizeId());
-            if (spcs != null) {
-                detailInfo.setSize(spcs.getSize());
-                detailInfo.setStoreColorId(spcs.getStoreColorId());
-                detailInfo.setColorName(Optional.ofNullable(scMap.get(spcs.getStoreColorId()))
-                        .map(StoreColor::getColorName).orElse(null));
-                StoreProduct sp = storeProductMap.get(spcs.getStoreProdId());
-                if (sp != null) {
-                    detailInfo.setProdName(sp.getProdName());
-                    detailInfo.setProdArtNum(sp.getProdArtNum());
-                    detailInfo.setProdTitle(sp.getProdTitle());
-                }
-                detailInfo.setFileList(storeProductFileMapper.selectListByStoreProdId(spcs.getStoreProdId()));
-            }
+            detailInfo.setFileList(storeProductFileMapper.selectListByStoreProdId(detailInfo.getStoreProdId()));
         }
         return orderInfo;
     }
@@ -539,8 +543,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
      * @param detailList
      * @return 商品颜色尺码集合
      */
-    private Map<Long, StoreProductColorSize> checkOrderDetailThenRtnSpcsMap(Long storeId,
-                                                                            List<StoreOrderDetailAddDTO> detailList) {
+    private OrderDetailCheckRtn checkOrderDetailThenRtnUsedMap(Long storeId,
+                                                               List<StoreOrderDetailAddDTO> detailList) {
         Assert.notNull(storeId, "档口不能为空");
         Assert.notEmpty(detailList, "商品不能为空");
         Set<Long> spcsIds = detailList.stream()
@@ -550,10 +554,15 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //下单商品颜色尺码
         Map<Long, StoreProductColorSize> spcsMap = storeProductColorSizeMapper.selectByIds(spcsIds).stream()
                 .collect(Collectors.toMap(StoreProductColorSize::getId, o -> o));
+        //下单商品档口颜色
+        Map<Long, StoreColor> scMap = storeColorMapper.selectByIds(spcsMap.values().stream()
+                .map(StoreProductColorSize::getStoreColorId)
+                .collect(Collectors.toSet())).stream()
+                .collect(Collectors.toMap(StoreColor::getId, Function.identity()));
+        //下单商品
         List<Long> spIdList = spcsMap.values().stream()
                 .map(StoreProductColorSize::getStoreProdId)
                 .collect(Collectors.toList());
-        //下单商品
         Map<Long, StoreProduct> spMap = storeProductMapper.selectByIds(spIdList).stream()
                 .collect(Collectors.toMap(StoreProduct::getId, o -> o));
         Set<Long> spcsIdCheckSet = new HashSet<>(detailList.size());
@@ -565,6 +574,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
             StoreProductColorSize spcs = spcsMap.get(detail.getStoreProdColorSizeId());
             Assert.isTrue(BeanValidators.exists(spcs), "商品颜色尺码不存在");
+            StoreColor sc = scMap.get(spcs.getStoreColorId());
+            Assert.isTrue(BeanValidators.exists(sc), "商品颜色不存在");
             StoreProduct sp = spMap.get(spcs.getStoreProdId());
             Assert.isTrue(BeanValidators.exists(sp), "商品不存在");
             Assert.isTrue(storeId.equals(sp.getStoreId()), "系统不支持跨档口下单");
@@ -573,7 +584,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             Assert.isFalse(spcsIdCheckSet.contains(spcs.getId()), "商品明细异常");
             spcsIdCheckSet.add(spcs.getId());
         }
-        return spcsMap;
+        return new OrderDetailCheckRtn(spcsMap, spMap, scMap);
     }
 
     /**
@@ -592,5 +603,14 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
         }
         throw new ServiceException("未知支付渠道");
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class OrderDetailCheckRtn {
+        private Map<Long, StoreProductColorSize> spcsMap;
+        private Map<Long, StoreProduct> spMap;
+        private Map<Long, StoreColor> scMap;
     }
 }

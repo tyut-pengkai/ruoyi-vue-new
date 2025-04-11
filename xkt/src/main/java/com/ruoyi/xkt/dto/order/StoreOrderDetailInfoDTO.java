@@ -16,17 +16,5 @@ import java.util.List;
 @ToString(callSuper = true)
 public class StoreOrderDetailInfoDTO extends StoreOrderDetailDTO {
 
-    private String prodName;
-
-    private String prodArtNum;
-
-    private String prodTitle;
-
-    private Long storeColorId;
-
-    private String colorName;
-
-    private Integer size;
-
     private List<StoreProdFileResDTO> fileList;
 }
