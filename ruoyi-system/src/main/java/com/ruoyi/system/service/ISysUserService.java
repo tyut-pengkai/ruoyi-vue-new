@@ -59,14 +59,6 @@ public interface ISysUserService
     public String selectUserRoleGroup(String userName);
 
     /**
-     * 根据用户ID查询用户所属岗位组
-     * 
-     * @param userName 用户名
-     * @return 结果
-     */
-    public String selectUserPostGroup(String userName);
-
-    /**
      * 校验用户名称是否唯一
      * 
      * @param user 用户信息
@@ -180,7 +172,7 @@ public interface ISysUserService
 
     /**
      * 通过用户ID删除用户
-     * 
+     *
      * @param userId 用户ID
      * @return 结果
      */
