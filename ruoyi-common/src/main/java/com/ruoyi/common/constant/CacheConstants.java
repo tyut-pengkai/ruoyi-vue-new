@@ -41,4 +41,9 @@ public class CacheConstants
      * 登录账户密码错误次数 redis key
      */
     public static final String PWD_ERR_CNT_KEY = "pwd_err_cnt:";
+
+    /**
+     * 系统用户数据权限： data_permission:{userId}
+     */
+    public static final String DATA_PERMISSION = "data_permission:%s";
 }

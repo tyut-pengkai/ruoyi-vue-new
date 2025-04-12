@@ -2,6 +2,7 @@ package com.ruoyi.system.service;
 
 import java.util.List;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.model.DataPermissionModel;
 
 /**
  * 用户 业务层
@@ -203,4 +204,13 @@ public interface ISysUserService
      * @return 结果
      */
     public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
+
+    /**
+     * 获取某个用户的数据权限
+     * @Author DuanYangYang
+     * @Date 10:51 2025/1/15/015
+     * @Param
+     * @Return
+     **/
+    public DataPermissionModel getCurrentUserDataPermission();
 }

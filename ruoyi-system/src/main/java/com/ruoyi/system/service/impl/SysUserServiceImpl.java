@@ -2,8 +2,21 @@ package com.ruoyi.system.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.validation.Validator;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.constant.CacheConstants;
+import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.common.core.domain.model.DataPermissionModel;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.enums.CommonEnum;
+import com.ruoyi.common.enums.DataPermissionType;
+import com.ruoyi.common.enums.DataScopeType;
+import com.ruoyi.system.mapper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +35,6 @@ import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.domain.SysUserPost;
 import com.ruoyi.system.domain.SysUserRole;
-import com.ruoyi.system.mapper.SysPostMapper;
-import com.ruoyi.system.mapper.SysRoleMapper;
-import com.ruoyi.system.mapper.SysUserMapper;
-import com.ruoyi.system.mapper.SysUserPostMapper;
-import com.ruoyi.system.mapper.SysUserRoleMapper;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysUserService;
@@ -57,6 +65,9 @@ public class SysUserServiceImpl implements ISysUserService
     private SysUserPostMapper userPostMapper;
 
     @Autowired
+    private SysDeptMapper sysDeptMapper;
+
+    @Autowired
     private ISysConfigService configService;
 
     @Autowired
@@ -64,6 +75,10 @@ public class SysUserServiceImpl implements ISysUserService
 
     @Autowired
     protected Validator validator;
+
+    @Autowired
+    private RedisCache redisCache;
+
 
     /**
      * 根据条件分页查询用户列表
@@ -546,5 +561,74 @@ public class SysUserServiceImpl implements ISysUserService
             successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
         }
         return successMsg.toString();
+    }
+
+    @Override
+    public DataPermissionModel getCurrentUserDataPermission() {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        SysUser currentUser = loginUser.getUser();
+        Long userId = currentUser.getUserId();
+
+        //先从缓存中获取
+        String cacheKey = String.format(CacheConstants.DATA_PERMISSION, userId);
+        DataPermissionModel dataPermissionModel = redisCache.getCacheObject(cacheKey);
+        if (dataPermissionModel != null) {
+            return dataPermissionModel;
+        }
+
+        //如果缓存中没有，则重新计算，并放入缓存
+        dataPermissionModel = DataPermissionModel.builder().build();
+
+        //roles
+        SysUser user = userMapper.selectUserById(userId);
+        List<Long> roleIds = userRoleMapper.selectList(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, user.getUserId()))
+                .stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+        List<SysRole> roles = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(roleIds)){
+            roles = roleMapper.selectBatchIds(roleIds);
+        }
+
+        //判断用户是否为超级管理员
+        if(currentUser.isAdmin()){
+            dataPermissionModel.setIsAdmin(CommonEnum.YES.getCode());
+        }else {
+            dataPermissionModel.setIsAdmin(CommonEnum.NO.getCode());
+        }
+
+        boolean matched = roles.stream().map(SysRole::getDataScope).anyMatch(ds -> DataScopeType.ALL.getCode().equals(ds));
+        if (matched) {
+            //全部数据权限
+            dataPermissionModel.setType(DataPermissionType.ALL.getCode());
+        } else {
+            //deptIds
+            List<Long> deptIds = new ArrayList<>();
+            for (SysRole role : roles) {
+                String dataScope = role.getDataScope();
+                if (DataScopeType.CUSTOM.getCode().equals(dataScope)) {
+                    List<Long> deptIdList = sysDeptMapper.selectDeptListByRoleId(role.getRoleId(), role.isDeptCheckStrictly());
+                    deptIds.addAll(deptIdList);
+                } else if (DataScopeType.DEPT.getCode().equals(dataScope)) {
+                    deptIds.add(user.getDeptId());
+                } else if (DataScopeType.DEPT_AND_CHILD.getCode().equals(dataScope)) {
+                    List<SysDept> sysDeptList = sysDeptMapper.selectChildrenDeptById(user.getDeptId());
+                    List<Long> deptIdList = sysDeptList.stream().map(SysDept::getDeptId).collect(Collectors.toList());
+                    deptIds.addAll(deptIdList);
+                    deptIds.add(user.getDeptId());
+                }
+            }
+            deptIds = deptIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(deptIds)) {
+                //部门数据权限
+                dataPermissionModel.setType(DataPermissionType.DEPT.getCode());
+                dataPermissionModel.setDeptIds(deptIds);
+            } else {
+                //仅本人数据权限
+                dataPermissionModel.setType(DataPermissionType.SELF.getCode());
+                dataPermissionModel.setUserId(userId);
+            }
+        }
+
+        redisCache.setCacheObject(cacheKey, dataPermissionModel, 1, TimeUnit.HOURS);
+        return dataPermissionModel;
     }
 }
