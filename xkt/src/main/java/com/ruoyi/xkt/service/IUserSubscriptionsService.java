@@ -1,61 +1,42 @@
 package com.ruoyi.xkt.service;
 
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.domain.UserSubscriptions;
+import com.ruoyi.xkt.dto.userFavorite.UserFavoritePageDTO;
+import com.ruoyi.xkt.dto.userSubscriptions.UserSubscDTO;
+import com.ruoyi.xkt.dto.userSubscriptions.UserSubscDeleteDTO;
+import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageDTO;
+import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageResDTO;
 
 import java.util.List;
 
 /**
- * 用户关注u档口Service接口
+ * 用户关注档口Service接口
  *
  * @author ruoyi
  * @date 2025-03-26
  */
 public interface IUserSubscriptionsService {
-    /**
-     * 查询用户关注u档口
-     *
-     * @param userSubsId 用户关注u档口主键
-     * @return 用户关注u档口
-     */
-    public UserSubscriptions selectUserSubscriptionsByUserSubsId(Long userSubsId);
 
     /**
-     * 查询用户关注u档口列表
-     *
-     * @param userSubscriptions 用户关注u档口
-     * @return 用户关注u档口集合
+     * 新增用户关注档口
+     * @param subscDTO 新增用户关注档口入参
+     * @return Integer
      */
-    public List<UserSubscriptions> selectUserSubscriptionsList(UserSubscriptions userSubscriptions);
+    Integer create(UserSubscDTO subscDTO);
 
     /**
-     * 新增用户关注u档口
-     *
-     * @param userSubscriptions 用户关注u档口
-     * @return 结果
+     * 用户批量取消关注档口
+     * @param deleteDTO 取消关注档口入参
+     * @return Integer
      */
-    public int insertUserSubscriptions(UserSubscriptions userSubscriptions);
+    Integer delete(UserSubscDeleteDTO deleteDTO);
 
     /**
-     * 修改用户关注u档口
-     *
-     * @param userSubscriptions 用户关注u档口
-     * @return 结果
+     * 用户关注档口列表
+     * @param pageDTO 查询入参
+     * @return  Page<UserSubscPageResDTO>
      */
-    public int updateUserSubscriptions(UserSubscriptions userSubscriptions);
+    Page<UserSubscPageResDTO> page(UserSubscPageDTO pageDTO);
 
-    /**
-     * 批量删除用户关注u档口
-     *
-     * @param userSubsIds 需要删除的用户关注u档口主键集合
-     * @return 结果
-     */
-    public int deleteUserSubscriptionsByUserSubsIds(Long[] userSubsIds);
-
-    /**
-     * 删除用户关注u档口信息
-     *
-     * @param userSubsId 用户关注u档口主键
-     * @return 结果
-     */
-    public int deleteUserSubscriptionsByUserSubsId(Long userSubsId);
 }

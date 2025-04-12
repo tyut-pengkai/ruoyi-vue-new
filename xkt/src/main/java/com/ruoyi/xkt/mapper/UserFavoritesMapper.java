@@ -15,54 +15,6 @@ import java.util.List;
  */
 public interface UserFavoritesMapper extends BaseMapper<UserFavorites> {
     /**
-     * 查询用户收藏商品
-     *
-     * @param id 用户收藏商品主键
-     * @return 用户收藏商品
-     */
-    public UserFavorites selectUserFavoritesByUserFavoId(Long id);
-
-    /**
-     * 查询用户收藏商品列表
-     *
-     * @param userFavorites 用户收藏商品
-     * @return 用户收藏商品集合
-     */
-    public List<UserFavorites> selectUserFavoritesList(UserFavorites userFavorites);
-
-    /**
-     * 新增用户收藏商品
-     *
-     * @param userFavorites 用户收藏商品
-     * @return 结果
-     */
-    public int insertUserFavorites(UserFavorites userFavorites);
-
-    /**
-     * 修改用户收藏商品
-     *
-     * @param userFavorites 用户收藏商品
-     * @return 结果
-     */
-    public int updateUserFavorites(UserFavorites userFavorites);
-
-    /**
-     * 删除用户收藏商品
-     *
-     * @param id 用户收藏商品主键
-     * @return 结果
-     */
-    public int deleteUserFavoritesByUserFavoId(Long id);
-
-    /**
-     * 批量删除用户收藏商品
-     *
-     * @param userFavoIds 需要删除的数据主键集合
-     * @return 结果
-     */
-    public int deleteUserFavoritesByUserFavoIds(Long[] userFavoIds);
-
-    /**
      * 查询用户收藏列表
      * @param pageDTO 收藏列表入参
      * @return List<UserFavoritePageResDTO>

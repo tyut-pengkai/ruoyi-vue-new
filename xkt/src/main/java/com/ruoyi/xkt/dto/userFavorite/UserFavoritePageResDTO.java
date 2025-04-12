@@ -2,7 +2,6 @@ package com.ruoyi.xkt.dto.userFavorite;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ruoyi.common.annotation.Excel;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -40,6 +39,8 @@ public class UserFavoritePageResDTO {
     private String prodTitle;
     @ApiModelProperty(value = "商品标准尺码列表")
     private String standardSize;
+    @ApiModelProperty(name = "商品状态")
+    private Integer prodStatus;
     @ApiModelProperty(value = "收藏时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;

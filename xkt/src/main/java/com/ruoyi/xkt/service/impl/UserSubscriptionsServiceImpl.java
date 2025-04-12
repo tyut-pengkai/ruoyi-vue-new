@@ -1,93 +1,107 @@
 package com.ruoyi.xkt.service.impl;
 
-import com.ruoyi.common.utils.DateUtils;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.page.Page;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.UserSubscriptions;
+import com.ruoyi.xkt.dto.userSubscriptions.UserSubscDTO;
+import com.ruoyi.xkt.dto.userSubscriptions.UserSubscDeleteDTO;
+import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageDTO;
+import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageResDTO;
 import com.ruoyi.xkt.mapper.UserSubscriptionsMapper;
 import com.ruoyi.xkt.service.IUserSubscriptionsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
- * 用户关注u档口Service业务层处理
+ * 用户关注档口Service业务层处理
  *
  * @author ruoyi
  * @date 2025-03-26
  */
+@RequiredArgsConstructor
 @Service
 public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
-    @Autowired
-    private UserSubscriptionsMapper userSubscriptionsMapper;
+
+    final UserSubscriptionsMapper userSubscMapper;
+
 
     /**
-     * 查询用户关注u档口
+     * 新增用户关注档口
      *
-     * @param userSubsId 用户关注u档口主键
-     * @return 用户关注u档口
-     */
-    @Override
-    public UserSubscriptions selectUserSubscriptionsByUserSubsId(Long userSubsId) {
-        return userSubscriptionsMapper.selectUserSubscriptionsByUserSubsId(userSubsId);
-    }
-
-    /**
-     * 查询用户关注u档口列表
-     *
-     * @param userSubscriptions 用户关注u档口
-     * @return 用户关注u档口
-     */
-    @Override
-    public List<UserSubscriptions> selectUserSubscriptionsList(UserSubscriptions userSubscriptions) {
-        return userSubscriptionsMapper.selectUserSubscriptionsList(userSubscriptions);
-    }
-
-    /**
-     * 新增用户关注u档口
-     *
-     * @param userSubscriptions 用户关注u档口
-     * @return 结果
+     * @param subscDTO 新增用户关注档口入参
+     * @return Integer
      */
     @Override
     @Transactional
-    public int insertUserSubscriptions(UserSubscriptions userSubscriptions) {
-        userSubscriptions.setCreateTime(DateUtils.getNowDate());
-        return userSubscriptionsMapper.insertUserSubscriptions(userSubscriptions);
+    public Integer create(UserSubscDTO subscDTO) {
+        // 获取当前登录用户
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        // 判断是否已关注过
+        UserSubscriptions exist = this.userSubscMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>()
+                .eq(UserSubscriptions::getUserId, loginUser.getUserId()).eq(UserSubscriptions::getStoreId, subscDTO.getStoreId())
+                .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
+        if (ObjectUtils.isNotEmpty(exist)) {
+            throw new ServiceException("已关注过当前档口!", HttpStatus.ERROR);
+        }
+        UserSubscriptions userSubscriptions = new UserSubscriptions();
+        userSubscriptions.setUserId(loginUser.getUserId());
+        userSubscriptions.setStoreId(subscDTO.getStoreId());
+        return this.userSubscMapper.insert(userSubscriptions);
     }
 
     /**
-     * 修改用户关注u档口
+     * 用户批量取消关注档口
      *
-     * @param userSubscriptions 用户关注u档口
-     * @return 结果
+     * @param deleteDTO 取消关注档口入参
+     * @return Integer
      */
     @Override
     @Transactional
-    public int updateUserSubscriptions(UserSubscriptions userSubscriptions) {
-        userSubscriptions.setUpdateTime(DateUtils.getNowDate());
-        return userSubscriptionsMapper.updateUserSubscriptions(userSubscriptions);
+    public Integer delete(UserSubscDeleteDTO deleteDTO) {
+        // 获取当前登录用户
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        List<UserSubscriptions> list = Optional.ofNullable(this.userSubscMapper.selectList(new LambdaQueryWrapper<UserSubscriptions>()
+                        .eq(UserSubscriptions::getUserId, loginUser.getUserId()).in(UserSubscriptions::getId, deleteDTO.getUserSubscIdList())
+                        .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("用户关注档口不存在!", HttpStatus.ERROR));
+        list.forEach(x -> x.setDelFlag(Constants.DELETED));
+        return this.userSubscMapper.updateById(list).size();
     }
 
     /**
-     * 批量删除用户关注u档口
+     * 用户关注档口列表
      *
-     * @param userSubsIds 需要删除的用户关注u档口主键
-     * @return 结果
+     * @param pageDTO 查询入参
+     * @return Page<UserSubscPageResDTO>
      */
     @Override
-    public int deleteUserSubscriptionsByUserSubsIds(Long[] userSubsIds) {
-        return userSubscriptionsMapper.deleteUserSubscriptionsByUserSubsIds(userSubsIds);
+    @Transactional(readOnly = true)
+    public Page<UserSubscPageResDTO> page(UserSubscPageDTO pageDTO) {
+        // 获取当前登录用户
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        List<UserSubscPageResDTO> list = this.userSubscMapper.selectUserSubscPage(loginUser.getUserId(), pageDTO.getStoreName());
+        if (CollectionUtils.isEmpty(list)) {
+            return Page.empty(pageDTO.getPageNum(), pageDTO.getPageSize());
+        }
+
+        // TODO 获取档口最近30天销量和近7日上新数量
+        // TODO 获取档口最近30天销量和近7日上新数量
+
+        return Page.convert(new PageInfo<>(list));
     }
 
-    /**
-     * 删除用户关注u档口信息
-     *
-     * @param userSubsId 用户关注u档口主键
-     * @return 结果
-     */
-    @Override
-    public int deleteUserSubscriptionsByUserSubsId(Long userSubsId) {
-        return userSubscriptionsMapper.deleteUserSubscriptionsByUserSubsId(userSubsId);
-    }
 }

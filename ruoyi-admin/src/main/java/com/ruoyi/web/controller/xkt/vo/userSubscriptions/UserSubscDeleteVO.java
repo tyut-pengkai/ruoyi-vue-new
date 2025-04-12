@@ -1,0 +1,25 @@
+package com.ruoyi.web.controller.xkt.vo.userSubscriptions;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+/**
+ * @author liujiang
+ * @version v1.0
+ * @date 2025/3/27 15:12
+ */
+@ApiModel("电商卖家新增店铺关注")
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class UserSubscDeleteVO {
+
+    @NotNull(message = "用户关注ID列表不能为空!")
+    @ApiModelProperty(value = "用户关注ID")
+    private List<Long> userSubscIdList;
+
+}

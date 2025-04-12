@@ -17,78 +17,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
-    <sql id="selectUserFavoritesVo">
-        select id, user_id, store_id, store_prod_id, version, del_flag, create_by, create_time, update_by, update_time from user_favorites
-    </sql>
-
-    <select id="selectUserFavoritesList" parameterType="UserFavorites" resultMap="UserFavoritesResult">
-        <include refid="selectUserFavoritesVo"/>
-        <where>  
-            <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="storeId != null "> and store_id = #{storeId}</if>
-            <if test="storeProdId != null "> and store_prod_id = #{storeProdId}</if>
-            <if test="version != null "> and version = #{version}</if>
-        </where>
-    </select>
-    
-    <select id="selectUserFavoritesByUserFavoId" parameterType="Long" resultMap="UserFavoritesResult">
-        <include refid="selectUserFavoritesVo"/>
-        where id = #{id}
-    </select>
-
-    <insert id="insertUserFavorites" parameterType="UserFavorites" useGeneratedKeys="true" keyProperty="userFavoId">
-        insert into user_favorites
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="userId != null">user_id,</if>
-            <if test="storeId != null">store_id,</if>
-            <if test="storeProdId != null">store_prod_id,</if>
-            <if test="version != null">version,</if>
-            <if test="delFlag != null">del_flag,</if>
-            <if test="createBy != null">create_by,</if>
-            <if test="createTime != null">create_time,</if>
-            <if test="updateBy != null">update_by,</if>
-            <if test="updateTime != null">update_time,</if>
-         </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="userId != null">#{userId},</if>
-            <if test="storeId != null">#{storeId},</if>
-            <if test="storeProdId != null">#{storeProdId},</if>
-            <if test="version != null">#{version},</if>
-            <if test="delFlag != null">#{delFlag},</if>
-            <if test="createBy != null">#{createBy},</if>
-            <if test="createTime != null">#{createTime},</if>
-            <if test="updateBy != null">#{updateBy},</if>
-            <if test="updateTime != null">#{updateTime},</if>
-         </trim>
-    </insert>
-
-    <update id="updateUserFavorites" parameterType="UserFavorites">
-        update user_favorites
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="userId != null">user_id = #{userId},</if>
-            <if test="storeId != null">store_id = #{storeId},</if>
-            <if test="storeProdId != null">store_prod_id = #{storeProdId},</if>
-            <if test="version != null">version = #{version},</if>
-            <if test="delFlag != null">del_flag = #{delFlag},</if>
-            <if test="createBy != null">create_by = #{createBy},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
-            <if test="updateBy != null">update_by = #{updateBy},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
-        </trim>
-        where id = #{id}
-    </update>
-
-    <delete id="deleteUserFavoritesByUserFavoId" parameterType="Long">
-        delete from user_favorites where id = #{id}
-    </delete>
-
-    <delete id="deleteUserFavoritesByUserFavoIds" parameterType="String">
-        delete from user_favorites where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </delete>
-
     <select id="selectUserFavPage"  resultType="com.ruoyi.xkt.dto.userFavorite.UserFavoritePageResDTO">
         SELECT
             uf.id AS user_favorite_id,
@@ -97,7 +25,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             s.store_name,
             sp.prod_title,
             uf.create_time,
-            sp.prod_art_num
+            sp.prod_art_num,
+            sp.prod_status
         FROM
             user_favorites uf
                 LEFT JOIN store_product sp ON uf.store_prod_id = sp.id
