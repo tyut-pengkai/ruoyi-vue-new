@@ -6,6 +6,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.web.controller.xkt.vo.storeSaleRefundRecord.StoreSaleRefundRecordVO;
 import com.ruoyi.xkt.dto.storeSaleRefundRecord.StoreSaleRefundRecordDTO;
 import com.ruoyi.xkt.service.IStoreSaleRefundRecordService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,6 +23,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Api(tags = "档口销售返单")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/rest/v1/sale-refund-records")

@@ -85,5 +85,4 @@ public class StoreHomepageController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeHomeService.getStoreProdInfo(storeId, storeProdId), StoreHomeProdResVO.class));
     }
 
-
 }
