@@ -34,34 +34,6 @@ insert into sys_user values(2,  105, 'ry',    '若依', '00', 'ry@qq.com',  '156
 
 
 -- ----------------------------
--- 3、岗位信息表
--- ----------------------------
-drop table if exists sys_post;
-create table sys_post
-(
-  post_id       bigint(20)      not null auto_increment    comment '岗位ID',
-  post_code     varchar(64)     not null                   comment '岗位编码',
-  post_name     varchar(50)     not null                   comment '岗位名称',
-  post_sort     int(4)          not null                   comment '显示顺序',
-  status        char(1)         not null                   comment '状态（0正常 1停用）',
-  create_by     varchar(64)     default ''                 comment '创建者',
-  create_time   datetime                                   comment '创建时间',
-  update_by     varchar(64)     default ''			       comment '更新者',
-  update_time   datetime                                   comment '更新时间',
-  remark        varchar(500)    default null               comment '备注',
-  primary key (post_id)
-) engine=innodb comment = '岗位信息表';
-
--- ----------------------------
--- 初始化-岗位信息表数据
--- ----------------------------
-insert into sys_post values(1, 'ceo',  '董事长',    1, '0', 'admin', sysdate(), '', null, '');
-insert into sys_post values(2, 'se',   '项目经理',  2, '0', 'admin', sysdate(), '', null, '');
-insert into sys_post values(3, 'hr',   '人力资源',  3, '0', 'admin', sysdate(), '', null, '');
-insert into sys_post values(4, 'user', '普通员工',  4, '0', 'admin', sysdate(), '', null, '');
-
-
--- ----------------------------
 -- 4、角色信息表
 -- ----------------------------
 drop table if exists sys_role;
@@ -129,7 +101,6 @@ insert into sys_menu values('4', '若依官网', '0', '4', 'http://ruoyi.vip', n
 insert into sys_menu values('100',  '用户管理', '1',   '1', 'user',       'system/user/index',        '', '', 1, 0, 'C', '0', '0', 'system:user:list',        'user',          'admin', sysdate(), '', null, '用户管理菜单');
 insert into sys_menu values('101',  '角色管理', '1',   '2', 'role',       'system/role/index',        '', '', 1, 0, 'C', '0', '0', 'system:role:list',        'peoples',       'admin', sysdate(), '', null, '角色管理菜单');
 insert into sys_menu values('102',  '菜单管理', '1',   '3', 'menu',       'system/menu/index',        '', '', 1, 0, 'C', '0', '0', 'system:menu:list',        'tree-table',    'admin', sysdate(), '', null, '菜单管理菜单');
-insert into sys_menu values('104',  '岗位管理', '1',   '5', 'post',       'system/post/index',        '', '', 1, 0, 'C', '0', '0', 'system:post:list',        'post',          'admin', sysdate(), '', null, '岗位管理菜单');
 insert into sys_menu values('105',  '字典管理', '1',   '6', 'dict',       'system/dict/index',        '', '', 1, 0, 'C', '0', '0', 'system:dict:list',        'dict',          'admin', sysdate(), '', null, '字典管理菜单');
 insert into sys_menu values('106',  '参数设置', '1',   '7', 'config',     'system/config/index',      '', '', 1, 0, 'C', '0', '0', 'system:config:list',      'edit',          'admin', sysdate(), '', null, '参数设置菜单');
 insert into sys_menu values('107',  '通知公告', '1',   '8', 'notice',     'system/notice/index',      '', '', 1, 0, 'C', '0', '0', 'system:notice:list',      'message',       'admin', sysdate(), '', null, '通知公告菜单');
@@ -165,12 +136,6 @@ insert into sys_menu values('1012', '菜单查询', '102', '1',  '', '', '', '',
 insert into sys_menu values('1013', '菜单新增', '102', '2',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:menu:add',            '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1014', '菜单修改', '102', '3',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:menu:edit',           '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1015', '菜单删除', '102', '4',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:menu:remove',         '#', 'admin', sysdate(), '', null, '');
--- 岗位管理按钮
-insert into sys_menu values('1020', '岗位查询', '104', '1',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:post:query',          '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1021', '岗位新增', '104', '2',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:post:add',            '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1022', '岗位修改', '104', '3',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:post:edit',           '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1023', '岗位删除', '104', '4',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:post:remove',         '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1024', '岗位导出', '104', '5',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:post:export',         '#', 'admin', sysdate(), '', null, '');
 -- 字典管理按钮
 insert into sys_menu values('1025', '字典查询', '105', '1', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:dict:query',          '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1026', '字典新增', '105', '2', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:dict:add',            '#', 'admin', sysdate(), '', null, '');
@@ -332,25 +297,6 @@ insert into sys_role_menu values ('2', '1057');
 insert into sys_role_menu values ('2', '1058');
 insert into sys_role_menu values ('2', '1059');
 insert into sys_role_menu values ('2', '1060');
-
-
-
--- ----------------------------
--- 9、用户与岗位关联表  用户1-N岗位
--- ----------------------------
-drop table if exists sys_user_post;
-create table sys_user_post
-(
-  user_id   bigint(20) not null comment '用户ID',
-  post_id   bigint(20) not null comment '岗位ID',
-  primary key (user_id, post_id)
-) engine=innodb comment = '用户与岗位关联表';
-
--- ----------------------------
--- 初始化-用户与岗位关联表数据
--- ----------------------------
-insert into sys_user_post values ('1', '1');
-insert into sys_user_post values ('2', '2');
 
 
 -- ----------------------------
