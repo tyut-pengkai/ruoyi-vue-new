@@ -3,76 +3,51 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.ShoppingCartMapper">
-    
-    <resultMap type="ShoppingCart" id="UserShoppingCartResult">
-        <result property="id"    column="id"    />
-        <result property="userId"    column="user_id"    />
-        <result property="storeId"    column="store_id"    />
-        <result property="storeProdColorSizeId"    column="store_prod_color_size_id"    />
-        <result property="storeProdId"    column="store_prod_id"    />
-        <result property="quantity"    column="quantity"    />
-        <result property="version"    column="version"    />
-        <result property="delFlag"    column="del_flag"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-    </resultMap>
 
-    <!-- 主 resultMap -->
-    <resultMap id="shopCartPageResultMap" type="com.ruoyi.xkt.dto.userShoppingCart.ShopCartPageResDTO">
-        <!-- 映射主表字段 -->
-        <id property="shoppingCartId" column="shopping_cart_id"/>
-        <result property="storeId" column="store_id"/>
-        <result property="storeProdId" column="store_prod_id"/>
-        <result property="storeName" column="store_name"/>
-        <result property="prodArtNum" column="prod_art_num"/>
-        <result property="prodTitle" column="prod_title"/>
-        <result property="prodStatus" column="prod_status"/>
 
-        <!-- 使用 collection 映射 detailList -->
-        <collection property="detailList" ofType="com.ruoyi.xkt.dto.userShoppingCart.ShopCartPageDetailResDTO">
-            <id property="shoppingCartDetailId" column="shopping_cart_detail_id"/>
-            <result property="storeProdColorId" column="store_prod_color_id"/>
-            <result property="size" column="size"/>
-            <result property="storeColorId" column="store_color_id"/>
-            <result property="colorName" column="color_name"/>
-            <result property="quantity" column="quantity"/>
-            <result property="standardSize" column="standard_size"/>
-            <result property="price" column="price"/>
-            <result property="amount" column="amount"/>
-        </collection>
-    </resultMap>
-
-    <!-- 查询语句 -->
-    <select id="selectShopCartPage" resultMap="shopCartPageResultMap">
+    <select id="selectDetailList" parameterType="Long" resultType="com.ruoyi.xkt.dto.userShoppingCart.ShopCartPageDetailResDTO">
         SELECT
+            scd.id AS shopping_cart_detail_id,
+            scd.shopping_cart_id,
+            scd.store_prod_color_id,
+            scd.size,
+            scd.store_color_id,
+            scd.color_name,
+            scd.quantity,
+            spcp.price,
+            ( scd.quantity * spcp.price ) AS amount
+        FROM
+            shopping_cart_detail scd
+                LEFT JOIN store_product_color_price spcp ON scd.store_prod_color_id = spcp.id
+        WHERE
+            scd.del_flag = 0
+            AND scd.shopping_cart_id IN
+            <foreach item="id" collection="shoppingCartIdList" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+    </select>
+
+    <select id="selectShopCartPage" resultType="com.ruoyi.xkt.dto.userShoppingCart.ShopCartPageResDTO">
+        SELECT DISTINCT
             sc.id AS shopping_cart_id,
-            s.id AS store_id,
+            sc.store_id,
             sc.store_prod_id,
             s.store_name,
             sp.prod_art_num,
             sp.prod_title,
-            scd.id AS shopping_cart_detail_id,
-            scd.store_prod_color_id,
-            scd.store_color_id,
-            scd.color_name,
-            scd.size,
-            scd.quantity,
-            spcp.price,
-            (scd.quantity * spcp.price) AS amount,
             CASE
                 sp.prod_status
-                WHEN 2 THEN '在售'
-                WHEN 4 THEN '已下架'
-                WHEN 5 THEN '已删除'
-                END AS prod_status,
+                WHEN 2 THEN
+                    '在售'
+                WHEN 4 THEN
+                    '已下架'
+                WHEN 5 THEN
+                    '已删除'
+                END AS prod_status
         FROM
             shopping_cart sc
-            LEFT JOIN shopping_cart_detail scd ON sc.id = scd.shopping_cart_id
-            LEFT JOIN store_product sp ON sc.store_prod_id = sp.id
-            LEFT JOIN store_product_color_price spcp ON scd.store_prod_color_id = spcp.id
-            LEFT JOIN store s ON sc.store_id = s.id
+                LEFT JOIN store s ON sc.store_id = s.id
+                LEFT JOIN store_product sp ON sc.store_prod_id = sp.id
         WHERE
             sc.del_flag = 0
             AND sc.user_id = #{userId}
@@ -84,8 +59,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 AND sp.prod_art_num = #{prodArtNum}
             </if>
             <if test="storeName != null and storeName != ''">
-                AND s.store_name = #{storeName}
+                AND s.store_name like concat('%', #{storeName}, '%')
             </if>
+        ORDER BY
+            sc.store_id,
+            sc.id DESC
     </select>
 
 

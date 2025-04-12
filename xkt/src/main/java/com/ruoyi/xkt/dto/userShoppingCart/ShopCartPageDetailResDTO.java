@@ -20,6 +20,8 @@ public class ShopCartPageDetailResDTO {
 
     @ApiModelProperty(value = "进货车明细ID")
     private Long shoppingCartDetailId;
+    @ApiModelProperty(value = "进货单ID")
+    private Long shoppingCartId;
     @ApiModelProperty(value = "档口商品颜色ID")
     private Long storeProdColorId;
     @ApiModelProperty(value = "尺码")

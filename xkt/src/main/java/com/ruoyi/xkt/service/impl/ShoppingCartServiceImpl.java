@@ -95,6 +95,14 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         pageDTO.setUserId(loginUser.getUserId());
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<ShopCartPageResDTO> shoppingCartList = this.shopCartMapper.selectShopCartPage(pageDTO);
+        if (CollectionUtils.isEmpty(shoppingCartList)) {
+            return Page.empty(pageDTO.getPageNum(), pageDTO.getPageSize());
+        }
+        // 进货单明细列表
+        List<ShopCartPageDetailResDTO> detailList = this.shopCartMapper.selectDetailList(shoppingCartList.stream()
+                .map(ShopCartPageResDTO::getShoppingCartId).distinct().collect(Collectors.toList()));
+        Map<Long, List<ShopCartPageDetailResDTO>> detailMap = detailList.stream().collect(Collectors.groupingBy(ShopCartPageDetailResDTO::getShoppingCartId));
+        shoppingCartList.forEach(x -> x.setDetailList(detailMap.getOrDefault(x.getShoppingCartId(), new ArrayList<>())));
         // 查找排名第一个商品主图列表
         List<StoreProdMainPicDTO> mainPicList = this.prodFileMapper.selectMainPicByStoreProdIdList(shoppingCartList.stream()
                 .map(ShopCartPageResDTO::getStoreProdId).collect(Collectors.toList()), FileType.MAIN_PIC.getValue(), ORDER_NUM_1);
