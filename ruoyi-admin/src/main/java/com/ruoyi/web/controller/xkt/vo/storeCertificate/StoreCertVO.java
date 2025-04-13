@@ -31,7 +31,7 @@ public class StoreCertVO {
     private Long storeId;
     @ApiModelProperty(value = "真实姓名", required = true)
     @NotBlank(message = "真实姓名不能为空")
-    @Size(min = 1, max = 30, message = "真实姓名长度必须在1到30个字之间")
+    @Size(min = 0, max = 30, message = "真实姓名长度必须在1到30个字之间")
     private String realName;
     @ApiModelProperty(value = "联系电话", required = true)
     @NotBlank(message = "联系电话不能为空")
@@ -65,29 +65,29 @@ public class StoreCertVO {
     private Integer soleProprietorshipType;
     @ApiModelProperty(value = "营业执照名称", required = true)
     @NotBlank(message = "营业执照名称不能为空")
-    @Size(min = 1, max = 100, message = "营业执照名称长度必须在1到100个字之间")
+    @Size(min = 0, max = 100, message = "营业执照名称长度必须在1到100个字之间")
     private String licenseName;
     @ApiModelProperty(value = "市场主体类型", required = true)
     @NotNull(message = "市场主体类型不能为空")
     private Integer marketEntryType;
     @ApiModelProperty(value = "登记机关", required = true)
     @NotBlank(message = "登记机关不能为空")
-    @Size(min = 1, max = 100, message = "登记机关长度必须在1到100个字之间")
+    @Size(min = 0, max = 100, message = "登记机关长度必须在1到100个字之间")
     private String registerOrg;
     @ApiModelProperty(value = "登记状态", required = true)
     private Integer registerStatus;
     @ApiModelProperty(value = "法定代表人/负责人名称", required = true)
     @NotBlank(message = "法定代表人/负责人名称不能为空")
-    @Size(min = 1, max = 30, message = "法定代表人/负责人名称长度必须在1到30个字之间")
+    @Size(min = 0, max = 30, message = "法定代表人/负责人名称长度必须在1到30个字之间")
     private String legalName;
     @ApiModelProperty(value = "注册资本(万)")
     private Integer registerCapital;
     @ApiModelProperty(value = "实际经营地址", required = true)
     @NotBlank(message = "实际经营地址不能为空")
-    @Size(min = 1, max = 100, message = "实际经营地址长度必须在1到100个字之间")
+    @Size(min = 0, max = 100, message = "实际经营地址长度必须在1到100个字之间")
     private String realBusinessAddress;
     @ApiModelProperty(value = "经营范围")
-    @Size(min = 1, max = 500, message = "经营范围长度必须在1到500个字之间")
+    @Size(min = 0, max = 500, message = "经营范围长度必须在1到500个字之间")
     private String businessScope;
     @JsonFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty(value = "营业期限开始时间")

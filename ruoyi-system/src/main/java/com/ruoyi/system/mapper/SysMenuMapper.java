@@ -1,5 +1,6 @@
 package com.ruoyi.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.common.core.domain.entity.SysMenu;
 import com.ruoyi.system.domain.vo.menu.SysMenuDTO;
 import org.apache.ibatis.annotations.Param;
@@ -11,7 +12,7 @@ import java.util.List;
  *
  * @author ruoyi
  */
-public interface SysMenuMapper {
+public interface SysMenuMapper extends BaseMapper<SysMenu> {
     /**
      * 查询系统菜单列表
      *
@@ -34,6 +35,18 @@ public interface SysMenuMapper {
      * @return 菜单列表
      */
     public List<SysMenu> selectMenuListByUserId(SysMenu menu);
+
+    /**
+     * 根据userId获取用户菜单列表
+     *
+     * @param menuName 菜单名称
+     * @param status   状态
+     * @param userId   用户ID
+     * @return List<SysMenu>
+     */
+    List<SysMenu> getMenuListByUserId(@Param("menuName") String menuName,
+                                      @Param("status") String status,
+                                      @Param("userId") Long userId);
 
     /**
      * 根据角色ID查询权限
@@ -125,5 +138,6 @@ public interface SysMenuMapper {
     public SysMenu checkMenuNameUnique(@Param("menuName") String menuName, @Param("parentId") Long parentId);
 
     List<SysMenuDTO> selectMenuListByRoleIdAndMenuType(@Param("roleId") Long roleId, @Param("menuType") String menuType);
+
 
 }

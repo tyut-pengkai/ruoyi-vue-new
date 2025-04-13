@@ -22,7 +22,7 @@ public class StoreRoleAccUpdateVO {
     @NotNull(message = "档口子账号ID不能为空!")
     private Long storeRoleAccId;
     @ApiModelProperty(value = "子账户名称")
-    @Size(min = 1, max = 30, message = "子账户名称长度不能超过30个字!")
+    @Size(min = 0, max = 30, message = "子账户名称长度不能超过30个字!")
     private String accountName;
     @ApiModelProperty(value = "档口子角色ID")
     @NotNull(message = "档口子角色ID不能为空!")

@@ -2,6 +2,9 @@ package com.ruoyi.system.service;
 
 import com.ruoyi.common.core.domain.TreeSelect;
 import com.ruoyi.common.core.domain.entity.SysMenu;
+import com.ruoyi.common.core.domain.vo.menu.MenuResVo;
+import com.ruoyi.common.core.domain.vo.menu.UserRoleTreeSelectVO;
+import com.ruoyi.system.domain.dto.menu.*;
 import com.ruoyi.system.domain.vo.RouterVo;
 import com.ruoyi.system.domain.vo.menu.SysMenuDTO;
 
@@ -151,4 +154,49 @@ public interface ISysMenuService {
      * @return 结果
      */
     public boolean checkMenuNameUnique(SysMenu menu);
+
+    /**
+     * 新增菜单
+     * @param menuDTO 菜单入参
+     * @return Integer
+     */
+    Integer create(MenuDTO menuDTO);
+
+    /**
+     * 编辑菜单
+     * @param menuDTO 编辑菜单
+     * @return Integer
+     */
+    Integer update(MenuDTO menuDTO);
+
+    /**
+     * 菜单详情
+     * @param menuId 菜单ID
+     * @return MenuResDTO
+     */
+    MenuResDTO getById(Long menuId);
+
+    /**
+     * 删除菜单
+     * @param menuId 菜单ID
+     * @return Integer
+     */
+    Integer delete(Long menuId);
+
+    List<MenuResDTO> list(MenuListDTO listDTO);
+
+    /**
+     * 获取菜单列表树
+     * @param listDTO 菜单查询入参
+     * @return   List<MenuResDTO>
+     */
+    List<TreeSelectDTO> treeSelect(MenuListDTO listDTO);
+
+    /**
+     * 获取用户选中的菜单数据
+     * @param roleId 角色ID
+     * @return UserRoleTreeSelectDTO
+     */
+    UserRoleTreeSelectDTO roleMenuTreeSelect(Long roleId);
+
 }
