@@ -82,6 +82,9 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
     @Override
     @Transactional
     public Integer create(DictTypeDTO typeDTO) {
+        if (ObjectUtils.isNotEmpty(typeDTO.getDictId())) {
+            throw new ServiceException("新增字典类型dictId必须为空!", HttpStatus.ERROR);
+        }
         // 如果字典名称已存在,则报错
         if (!this.checkDictTypeUnique(typeDTO)) {
             throw new ServiceException("新增字典'" + typeDTO.getDictName() + "'失败，字典类型已存在", HttpStatus.ERROR);
@@ -107,8 +110,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
             throw new ServiceException("修改字典'" + typeDTO.getDictName() + "'失败，字典类型已存在", HttpStatus.ERROR);
         }
         SysDictType dict = Optional.ofNullable(this.dictTypeMapper.selectOne(new LambdaQueryWrapper<SysDictType>()
-                        .eq(SysDictType::getDictId, typeDTO.getDictId()).eq(SysDictType::getDelFlag, Constants.UNDELETED)
-                        .eq(SysDictType::getStatus, typeDTO.getStatus())))
+                        .eq(SysDictType::getDictId, typeDTO.getDictId()).eq(SysDictType::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("字典类型不存在!", HttpStatus.ERROR));
         dict.setUpdateBy(getUsername());
         BeanUtil.copyProperties(typeDTO, dict);
@@ -180,8 +182,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
     @Transactional(readOnly = true)
     public DictTypeResDTO selectById(Long dictId) {
         SysDictType dict = Optional.ofNullable(this.dictTypeMapper.selectOne(new LambdaQueryWrapper<SysDictType>()
-                        .eq(SysDictType::getDictId, dictId).eq(SysDictType::getDelFlag, Constants.UNDELETED)
-                        .eq(SysDictType::getStatus, STATUS_NORMAL)))
+                        .eq(SysDictType::getDictId, dictId).eq(SysDictType::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("字典类型不存在!", HttpStatus.ERROR));
         return BeanUtil.toBean(dict, DictTypeResDTO.class);
     }

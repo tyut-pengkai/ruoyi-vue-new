@@ -18,11 +18,10 @@ import com.ruoyi.system.domain.dto.dictData.DictDataResDTO;
 import com.ruoyi.system.mapper.SysDictDataMapper;
 import com.ruoyi.system.service.ISysDictDataService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +44,9 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
     @Override
     @Transactional
     public Integer create(DictDataDTO dataDTO) {
+        if (ObjectUtils.isNotEmpty(dataDTO.getDictDataId())) {
+            throw new ServiceException("新增字典数据dictDataId必须为空!", HttpStatus.ERROR);
+        }
         SysDictData dictData = BeanUtil.toBean(dataDTO, SysDictData.class);
         dictData.setCreateBy(getUsername());
         return this.dictDataMapper.insert(dictData);
@@ -54,8 +56,7 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
     @Transactional
     public Integer update(DictDataDTO dataDTO) {
         SysDictData dict = Optional.ofNullable(this.dictDataMapper.selectOne(new LambdaQueryWrapper<SysDictData>()
-                .eq(SysDictData::getId, dataDTO.getDictDataId()).eq(SysDictData::getDelFlag, Constants.UNDELETED)
-                .eq(SysDictData::getStatus, dataDTO.getStatus())))
+                .eq(SysDictData::getId, dataDTO.getDictDataId()).eq(SysDictData::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("字典数据不存在!", HttpStatus.ERROR));
         dict.setUpdateBy(getUsername());
         BeanUtil.copyProperties(dataDTO, dict);

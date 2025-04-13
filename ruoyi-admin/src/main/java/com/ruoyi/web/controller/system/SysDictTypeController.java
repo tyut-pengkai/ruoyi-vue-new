@@ -35,7 +35,7 @@ import java.util.Optional;
  *
  * @author ruoyi
  */
-@Api(tags = "字典类型")
+@Api(tags = "系统基础数据 - 字典类型")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/system/dict/type")

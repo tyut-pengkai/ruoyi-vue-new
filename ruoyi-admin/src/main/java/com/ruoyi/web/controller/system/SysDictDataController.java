@@ -43,7 +43,7 @@ import java.util.List;
  * @author ruoyi
  */
 @RequiredArgsConstructor
-@Api(tags = "字典数据明细")
+@Api(tags = "系统基础数据 - 字典数据明细")
 @RestController
 @RequestMapping("/system/dict/data")
 public class SysDictDataController extends BaseController {
