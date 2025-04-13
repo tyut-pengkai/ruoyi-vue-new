@@ -1,23 +1,114 @@
 package com.ruoyi.system.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysDictData;
+import com.ruoyi.common.core.page.Page;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DictUtils;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.system.domain.dto.dictData.DictDataDTO;
+import com.ruoyi.system.domain.dto.dictData.DictDataDeleteDTO;
+import com.ruoyi.system.domain.dto.dictData.DictDataPageDTO;
+import com.ruoyi.system.domain.dto.dictData.DictDataResDTO;
 import com.ruoyi.system.mapper.SysDictDataMapper;
 import com.ruoyi.system.service.ISysDictDataService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static com.ruoyi.common.utils.SecurityUtils.getUsername;
 
 /**
  * 字典 业务层处理
  *
  * @author ruoyi
  */
+@RequiredArgsConstructor
 @Service
 public class SysDictDataServiceImpl implements ISysDictDataService {
-    @Autowired
-    private SysDictDataMapper dictDataMapper;
+
+    final SysDictDataMapper dictDataMapper;
+
+    private final static String STATUS_NORMAL = "0";
+
+
+    @Override
+    @Transactional
+    public Integer create(DictDataDTO dataDTO) {
+        SysDictData dictData = BeanUtil.toBean(dataDTO, SysDictData.class);
+        dictData.setCreateBy(getUsername());
+        return this.dictDataMapper.insert(dictData);
+    }
+
+    @Override
+    @Transactional
+    public Integer update(DictDataDTO dataDTO) {
+        SysDictData dict = Optional.ofNullable(this.dictDataMapper.selectOne(new LambdaQueryWrapper<SysDictData>()
+                .eq(SysDictData::getId, dataDTO.getDictDataId()).eq(SysDictData::getDelFlag, Constants.UNDELETED)
+                .eq(SysDictData::getStatus, dataDTO.getStatus())))
+                .orElseThrow(() -> new ServiceException("字典数据不存在!", HttpStatus.ERROR));
+        dict.setUpdateBy(getUsername());
+        BeanUtil.copyProperties(dataDTO, dict);
+        return this.dictDataMapper.updateById(dict);
+    }
+
+    @Override
+    @Transactional
+    public Integer delete(DictDataDeleteDTO deleteDTO) {
+        List<SysDictData> dataList = Optional.ofNullable(this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
+                        .in(SysDictData::getId, deleteDTO.getDictDataIdList()).eq(SysDictData::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("字典数据不存在!", HttpStatus.ERROR));
+        dataList.forEach(x -> x.setDelFlag(Constants.DELETED));
+        return this.dictDataMapper.updateById(dataList).size();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DictDataResDTO selectById(Long dictDataId) {
+        SysDictData dictData = Optional.ofNullable(this.dictDataMapper.selectOne(new LambdaQueryWrapper<SysDictData>()
+                        .eq(SysDictData::getId, dictDataId).eq(SysDictData::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("字典数据不存在!", HttpStatus.ERROR));
+        return BeanUtil.toBean(dictData, DictDataResDTO.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DictDataResDTO> selectByDictType(String dictType) {
+        List<SysDictData> dataList = this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
+                .eq(SysDictData::getDictType, dictType).eq(SysDictData::getDelFlag, Constants.UNDELETED));
+        return BeanUtil.copyToList(dataList, DictDataResDTO.class);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ===================================================================================================
+    // ===================================================================================================
+    // ===================================================================================================
+
 
     /**
      * 根据条件分页查询字典数据
@@ -99,4 +190,6 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
         }
         return row;
     }
+
+
 }

@@ -108,7 +108,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
         }
         SysDictType dict = Optional.ofNullable(this.dictTypeMapper.selectOne(new LambdaQueryWrapper<SysDictType>()
                         .eq(SysDictType::getDictId, typeDTO.getDictId()).eq(SysDictType::getDelFlag, Constants.UNDELETED)
-                        .eq(SysDictType::getStatus, STATUS_NORMAL)))
+                        .eq(SysDictType::getStatus, typeDTO.getStatus())))
                 .orElseThrow(() -> new ServiceException("字典类型不存在!", HttpStatus.ERROR));
         dict.setUpdateBy(getUsername());
         BeanUtil.copyProperties(typeDTO, dict);
@@ -125,8 +125,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
     @Transactional
     public Integer delete(DictTypeDeleteDTO deleteDTO) {
         List<SysDictType> dictList = Optional.ofNullable(this.dictTypeMapper.selectList(new LambdaQueryWrapper<SysDictType>()
-                        .in(SysDictType::getDictId, deleteDTO.getDictIdList()).eq(SysDictType::getDelFlag, Constants.UNDELETED)
-                        .eq(SysDictType::getStatus, STATUS_NORMAL)))
+                        .in(SysDictType::getDictId, deleteDTO.getDictIdList()).eq(SysDictType::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("字典类型不存在!", HttpStatus.ERROR));
         dictList.forEach(x -> x.setDelFlag(Constants.DELETED));
         return this.dictTypeMapper.updateById(dictList).size();
@@ -144,7 +143,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
     public Page<DictTypePageResVO> page(DictTypePageDTO pageDTO) {
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         LambdaQueryWrapper<SysDictType> queryWrapper = new LambdaQueryWrapper<SysDictType>()
-                .eq(SysDictType::getStatus, STATUS_NORMAL).eq(SysDictType::getDelFlag, Constants.UNDELETED);
+                .eq(SysDictType::getDelFlag, Constants.UNDELETED);
         if (StringUtils.isNotBlank(pageDTO.getDictName())) {
             queryWrapper.like(SysDictType::getDictName, pageDTO.getDictName());
         }

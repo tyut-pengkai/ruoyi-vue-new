@@ -1,6 +1,12 @@
 package com.ruoyi.system.service;
 
 import com.ruoyi.common.core.domain.entity.SysDictData;
+import com.ruoyi.common.core.domain.vo.dictData.DictDataResVO;
+import com.ruoyi.common.core.page.Page;
+import com.ruoyi.system.domain.dto.dictData.DictDataDTO;
+import com.ruoyi.system.domain.dto.dictData.DictDataDeleteDTO;
+import com.ruoyi.system.domain.dto.dictData.DictDataPageDTO;
+import com.ruoyi.system.domain.dto.dictData.DictDataResDTO;
 
 import java.util.List;
 
@@ -57,4 +63,15 @@ public interface ISysDictDataService {
      * @return 结果
      */
     public int updateDictData(SysDictData dictData);
+
+    Integer create(DictDataDTO dataDTO);
+
+    Integer update(DictDataDTO dataDTO);
+
+    Integer delete(DictDataDeleteDTO deleteDTO);
+
+    DictDataResDTO selectById(Long dictDataId);
+
+    List<DictDataResDTO> selectByDictType(String dictType);
+
 }

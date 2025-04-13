@@ -33,5 +33,7 @@ public class DictTypeVO {
     private String dictType;
     @Size(min = 1, max = 100, message = "字典类型类型长度不能超过100个字符")
     private String remark;
+    @ApiModelProperty(value = "状态（0正常 1停用）")
+    private String status;
 
 }

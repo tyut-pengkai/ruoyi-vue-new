@@ -364,7 +364,7 @@ insert into sys_dict_type values(10, '系统状态', 'sys_common_status',   '0',
 drop table if exists sys_dict_data;
 create table sys_dict_data
 (
-  dict_code        bigint(20)      not null auto_increment    comment '字典编码',
+  id        bigint(20)      not null auto_increment    comment '字典编码',
   dict_sort        int(4)          default 0                  comment '字典排序',
   dict_label       varchar(100)    default ''                 comment '字典标签',
   dict_value       varchar(100)    default ''                 comment '字典键值',
