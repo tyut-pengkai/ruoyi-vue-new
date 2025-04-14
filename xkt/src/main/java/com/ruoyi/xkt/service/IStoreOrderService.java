@@ -61,8 +61,9 @@ public interface IStoreOrderService {
      * 准备支付订单
      *
      * @param storeOrderId
+     * @param payChannel
      */
-    StoreOrderExt preparePayOrder(Long storeOrderId);
+    StoreOrderExt preparePayOrder(Long storeOrderId, EPayChannel payChannel);
 
     /**
      * 订单支付成果

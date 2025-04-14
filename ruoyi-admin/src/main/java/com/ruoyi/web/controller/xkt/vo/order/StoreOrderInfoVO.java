@@ -61,6 +61,11 @@ public class StoreOrderInfoVO {
     @ApiModelProperty(value = "支付状态[1:初始 2:支付中 3:已支付]")
     private Integer payStatus;
     /**
+     * 支付渠道[1:支付宝]
+     */
+    @ApiModelProperty(value = "支付渠道[1:支付宝]")
+    private Integer payChannel;
+    /**
      * 订单备注
      */
     @ApiModelProperty(value = "订单备注")

@@ -42,6 +42,10 @@ public class StoreOrderDTO {
      */
     private Integer payStatus;
     /**
+     * 支付渠道[1:支付宝]
+     */
+    private Integer payChannel;
+    /**
      * 订单备注
      */
     private String orderRemark;

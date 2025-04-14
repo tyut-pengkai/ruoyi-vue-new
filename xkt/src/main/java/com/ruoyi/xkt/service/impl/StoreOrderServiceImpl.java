@@ -79,6 +79,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         Long storeId = storeOrderAddDTO.getStoreId();
         Long expressId = storeOrderAddDTO.getExpressId();
         //校验
+        Assert.notNull(payChannel);
         expressService.checkExpress(expressId);
         checkDelivery(storeOrderAddDTO.getDeliveryType(), storeOrderAddDTO.getDeliveryEndTime());
         OrderDetailCheckRtn detailCheckRtn = checkOrderDetailThenRtnUsedMap(storeId, storeOrderAddDTO.getDetailList());
@@ -155,6 +156,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         order.setOrderType(EOrderType.SALES_ORDER.getValue());
         order.setOrderStatus(EOrderStatus.PENDING_PAYMENT.getValue());
         order.setPayStatus(beginPay ? EPayStatus.PAYING.getValue() : EPayStatus.INIT.getValue());
+        order.setPayChannel(payChannel.getValue());
         order.setOrderRemark(storeOrderAddDTO.getOrderRemark());
         order.setGoodsQuantity(orderGoodsQuantity);
         order.setGoodsAmount(orderGoodsAmount);
@@ -431,12 +433,16 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public StoreOrderExt preparePayOrder(Long storeOrderId) {
+    public StoreOrderExt preparePayOrder(Long storeOrderId, EPayChannel payChannel) {
         Assert.notNull(storeOrderId);
+        Assert.notNull(payChannel);
         StoreOrder order = storeOrderMapper.selectById(storeOrderId);
         Assert.isTrue(EOrderType.SALES_ORDER.getValue().equals(order.getOrderType()),
                 "非销售订单无法发起支付");
         Assert.isTrue(BeanValidators.exists(order), "订单不存在");
+        if (payChannel != EPayChannel.of(order.getPayChannel())) {
+            throw new ServiceException("订单支付渠道不允许修改");
+        }
         checkPreparePayStatus(order.getPayStatus());
         order.setPayStatus(EPayStatus.PAYING.getValue());
         int orderSuccess = storeOrderMapper.updateById(order);
@@ -524,8 +530,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         if (EPayStatus.PAID == pStatus) {
             throw new ServiceException("订单[" + order.getOrderNo() + "]已支付完成，无法取消");
         }
-        //目前只有支付宝
-        PaymentManager paymentManager = getPaymentManager(EPayChannel.ALI_PAY);
+        PaymentManager paymentManager = getPaymentManager(EPayChannel.of(order.getPayChannel()));
         boolean isPaid = paymentManager.isOrderPaid(order.getOrderNo());
         if (isPaid) {
             throw new ServiceException("订单[" + order.getOrderNo() + "]已支付，无法取消");

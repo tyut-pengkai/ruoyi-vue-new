@@ -73,9 +73,10 @@ public class StoreOrderController extends XktBaseController {
     @ApiOperation("支付订单")
     @PostMapping("pay")
     public R<StoreOrderPayRespVO> pay(@Valid @RequestBody StoreOrderPayReqVO vo) {
-        PaymentManager paymentManager = getPaymentManager(EPayChannel.of(vo.getPayChannel()));
+        EPayChannel payChannel = EPayChannel.of(vo.getPayChannel());
+        PaymentManager paymentManager = getPaymentManager(payChannel);
         //订单支付状态->支付中
-        StoreOrderExt orderExt = storeOrderService.preparePayOrder(vo.getStoreOrderId());
+        StoreOrderExt orderExt = storeOrderService.preparePayOrder(vo.getStoreOrderId(), payChannel);
         //调用支付
         String rtnStr = paymentManager.payOrder(orderExt, EPayPage.of(vo.getPayFrom()));
         StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(vo.getStoreOrderId(), rtnStr);
@@ -84,6 +85,7 @@ public class StoreOrderController extends XktBaseController {
 
     @PreAuthorize("@ss.hasPermi('system:order:edit')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
+    @ApiOperation("取消订单")
     @PutMapping("cancel")
     public R cancel(@Valid @RequestBody StoreOrderCancelReqVO vo) {
         OrderOptDTO dto = OrderOptDTO.builder()
