@@ -37,10 +37,10 @@ public class DictDataVO {
     @Size(min = 1, max = 100, message = "字典类型长度不能超过100个字符")
     @ApiModelProperty(value = "字典标签")
     private String dictType;
-    @ApiModelProperty(name = "状态")
+    @ApiModelProperty(value = "状态")
     @NotBlank(message = "状态不能为空")
     private String status;
-    @ApiModelProperty(name = "备注")
+    @ApiModelProperty(value = "备注")
     private String remark;
 
 }

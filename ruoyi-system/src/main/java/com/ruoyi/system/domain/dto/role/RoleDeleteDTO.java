@@ -1,23 +1,23 @@
-package com.ruoyi.common.core.domain.vo.productCategory;
+package com.ruoyi.system.domain.dto.role;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author liujiang
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("系统商品分类列表")
+@ApiModel("系统删除角色")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProdCateListVO {
+public class RoleDeleteDTO {
 
-    @ApiModelProperty(value = "分类名称")
-    private String name;
-    @ApiModelProperty(value = "状态")
-    private String status;
+    @ApiModelProperty(value = "角色ID列表")
+    private List<Long> roleIdList;
 
 }

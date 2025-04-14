@@ -1,7 +1,9 @@
 package com.ruoyi.system.service;
 
 import com.ruoyi.common.core.domain.entity.SysRole;
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.system.domain.SysUserRole;
+import com.ruoyi.system.domain.dto.role.*;
 
 import java.util.List;
 import java.util.Set;
@@ -170,4 +172,46 @@ public interface ISysRoleService {
      * @return 结果
      */
     public int insertAuthUsers(Long roleId, Long[] userIds);
+
+    /**
+     * 新增角色
+     * @param roleDTO 新增角色入参
+     * @return Integer
+     */
+    Integer create(RoleDTO roleDTO);
+
+    /**
+     * 编辑角色
+     * @param updateDTO 编辑角色入参
+     * @return Integer
+     */
+    Integer update(RoleUpdateDTO updateDTO);
+
+    /**
+     * 更新角色状态
+     * @param statusDTO 更新角色状态入参
+     * @return Integer
+     */
+    Integer updateStatus(RoleUpdateStatusDTO statusDTO);
+
+    /**
+     * 删除角色
+     * @param deleteDTO 删除角色ID列表
+     * @return Integer
+     */
+    Integer batchRemove(RoleDeleteDTO deleteDTO);
+
+    /**
+     * 获取角色详情
+     * @param roleId 角色ID
+     * @return RoleResDTO
+     */
+    RoleResDTO getRoleInfo(Long roleId);
+
+    /**
+     * 获取角色分页
+     * @param pageDTO 角色分页入参
+     * @return Page<RolePageResDTO>
+     */
+    Page<RolePageResDTO> page(RolePageDTO pageDTO);
 }

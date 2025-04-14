@@ -1,5 +1,6 @@
 package com.ruoyi.framework.web.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,7 +57,7 @@ public class SysPermissionService
      */
     public Set<String> getMenuPermission(SysUser user)
     {
-        Set<String> perms = new HashSet<String>();
+        /*Set<String> perms = new HashSet<String>();
         // 管理员拥有所有权限
         if (user.isAdmin())
         {
@@ -83,6 +84,7 @@ public class SysPermissionService
                 perms.addAll(menuService.selectMenuPermsByUserId(user.getUserId()));
             }
         }
-        return perms;
+        return perms;*/
+        return new HashSet<>();
     }
 }

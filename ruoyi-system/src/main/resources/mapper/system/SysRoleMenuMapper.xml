@@ -16,7 +16,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<delete id="deleteRoleMenuByRoleId" parameterType="Long">
 		delete from sys_role_menu where role_id=#{roleId}
 	</delete>
-	
+
+
 	<delete id="deleteRoleMenu" parameterType="Long">
  		delete from sys_role_menu where role_id in
  		<foreach collection="array" item="roleId" open="(" separator="," close=")">

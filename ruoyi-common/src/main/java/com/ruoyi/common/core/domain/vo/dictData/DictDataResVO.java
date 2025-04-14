@@ -28,7 +28,7 @@ public class DictDataResVO {
     private String dictValue;
     @ApiModelProperty(value = "字典类型")
     private String dictType;
-    @ApiModelProperty(name = "状态")
+    @ApiModelProperty(value = "状态")
     private String status;
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

@@ -23,20 +23,20 @@ public class ProdCateListResVO {
 
     @ApiModelProperty(value = "商品分类主键, 新增不传 编辑必传")
     private Long prodCateId;
-    @ApiModelProperty(name = "分类名称")
+    @ApiModelProperty(value = "分类名称")
     private String name;
-    @ApiModelProperty(name = "分类名称")
+    @ApiModelProperty(value = "分类名称")
     private Long parentId;
-    @ApiModelProperty(name = "显示顺序")
+    @ApiModelProperty(value = "显示顺序")
     private Integer orderNum;
-    @ApiModelProperty(name = "状态")
+    @ApiModelProperty(value = "状态")
     private String status;
-    @ApiModelProperty(name = "备注")
+    @ApiModelProperty(value = "备注")
     private String remark;
-    @ApiModelProperty(name = "创建时间")
+    @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
-    @ApiModelProperty(name = "子分类")
+    @ApiModelProperty(value = "子分类")
     private List<ProdCateListResVO> children;
 
 }
