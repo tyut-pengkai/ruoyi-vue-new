@@ -8,12 +8,12 @@ import java.util.List;
 
 /**
  * @author liangyq
- * @date 2025-04-02 22:37
+ * @date 2025-04-14 11:18
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class StoreOrderInfoDTO extends StoreOrderDTO {
+public class StoreOrderPageItemDTO extends StoreOrderDTO {
 
     private String storeName;
 
@@ -33,5 +33,14 @@ public class StoreOrderInfoDTO extends StoreOrderDTO {
 
     private String destinationCountyName;
 
-    private List<StoreOrderDetailInfoDTO> orderDetails;
+    private List<Detail> orderDetails;
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    @ToString(callSuper = true)
+    public static class Detail extends StoreOrderDetailDTO {
+
+        private String firstMainPicUrl;
+    }
+
 }

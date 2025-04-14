@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 /**
  * 物流行政区划
  *
@@ -15,7 +17,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class ExpressRegion extends SimpleEntity {
+public class ExpressRegion extends SimpleEntity implements Serializable {
     /**
      * 地区编码，基于行政区划代码做扩展，唯一约束
      */

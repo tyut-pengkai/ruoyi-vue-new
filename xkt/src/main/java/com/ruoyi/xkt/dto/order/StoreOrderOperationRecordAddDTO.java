@@ -19,7 +19,7 @@ public class StoreOrderOperationRecordAddDTO {
      */
     private Integer targetType;
     /**
-     * 节点事件[1:下单 2:支付 3:取消 4:发货 5:完成 6:申请售后 7:寄回 8:售后拒绝 9:平台介入 10:售后完成]
+     * 节点事件
      */
     private Integer action;
     /**

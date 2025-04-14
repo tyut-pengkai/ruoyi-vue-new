@@ -1,8 +1,11 @@
 package com.ruoyi.web.controller.xkt.vo.order;
 
+import com.ruoyi.xkt.dto.order.StoreOrderDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -10,11 +13,12 @@ import java.util.List;
 
 /**
  * @author liangyq
- * @date 2025-04-11 13:43
+ * @date 2025-04-14 11:18
  */
-@ApiModel("订单信息")
 @Data
-public class StoreOrderInfoVO {
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class StoreOrderPageItemVO extends StoreOrderDTO {
     /**
      * 订单ID
      */
@@ -240,10 +244,14 @@ public class StoreOrderInfoVO {
     @ApiModelProperty(value = "订单明细")
     private List<Detail> orderDetails;
 
-
     @ApiModel
     @Data
     public static class Detail {
+        /**
+         * 预览图url
+         */
+        @ApiModelProperty(value = "预览图url")
+        private String firstMainPicUrl;
         /**
          * 订单明细ID
          */
@@ -387,23 +395,5 @@ public class StoreOrderInfoVO {
 
         @ApiModelProperty(value = "商品尺码")
         private Integer size;
-
-        @ApiModelProperty(value = "档口商品文件")
-        private List<StoreProdFileVO> fileList;
-    }
-
-    @Data
-    @ApiModel(value = "档口商品文件")
-    public static class StoreProdFileVO {
-        @ApiModelProperty(value = "文件名称")
-        private String fileName;
-        @ApiModelProperty(value = "文件路径")
-        private String fileUrl;
-        @ApiModelProperty(value = "文件大小")
-        private BigDecimal fileSize;
-        @ApiModelProperty(value = "文件类型 1商品主图  2商品主图视频 3下载图片包")
-        private Integer fileType;
-        @ApiModelProperty(value = "排序")
-        private Integer orderNum;
     }
 }

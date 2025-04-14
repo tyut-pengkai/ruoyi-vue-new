@@ -2,7 +2,6 @@ package com.ruoyi.common.core.page;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.github.pagehelper.PageInfo;
-import com.ruoyi.common.constant.HttpStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -55,6 +54,15 @@ public class Page<T> implements Serializable {
     public static <T> Page<T> convert(PageInfo<?> pageInfo, List<T> list) {
         Page<T> page = BeanUtil.toBean(pageInfo, Page.class);
         page.setList(CollectionUtils.isEmpty(list) ? new ArrayList<>() : list);
+        return page;
+    }
+
+    public static <T> Page<T> convert(com.github.pagehelper.Page<T> srcPage) {
+        Page<T> page = new Page<>();
+        page.setTotal(srcPage.getTotal());
+        page.setPageNum(srcPage.getPageNum());
+        page.setPageSize(srcPage.getPageSize());
+        page.setList(srcPage.getResult());
         return page;
     }
 

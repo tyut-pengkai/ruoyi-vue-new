@@ -2,4 +2,52 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.StoreOrderMapper">
 
+    <select id="listStoreOrderPageItem" parameterType="com.ruoyi.xkt.dto.order.StoreOrderQueryDTO"
+            resultType="com.ruoyi.xkt.dto.order.StoreOrderPageItemDTO">
+        SELECT
+            so.*,
+            s.store_name,
+            s.brand_name,
+            e.express_name
+        FROM
+            store_order so
+            LEFT JOIN store s ON so.store_id = s.id
+            LEFT JOIN express e ON so.express_id = e.id
+        <where>
+            so.del_flag = '0'
+            <if test="storeId != null">
+                AND so.store_id = #{storeId}
+            </if>
+            <if test="orderUserId != null">
+                AND so.order_user_id = #{orderUserId}
+            </if>
+            <if test="orderNo != null and orderNo !=''">
+                AND so.order_no LIKE CONCAT('%', #{orderNo}, '%')
+            </if>
+            <if test="orderStatus != null">
+                AND so.order_status = #{orderStatus}
+            </if>
+            <if test="destinationContactName != null and destinationContactName !=''">
+                AND so.destination_contact_name LIKE CONCAT('%', #{destinationContactName}, '%')
+            </if>
+            <if test="destinationContactPhoneNumber != null and destinationContactPhoneNumber !=''">
+                AND so.destination_contact_phone_number LIKE CONCAT('%', #{destinationContactPhoneNumber}, '%')
+            </if>
+            <if test="deliveryType != null">
+                AND so.delivery_type = #{deliveryType}
+            </if>
+            <if test="orderTimeBegin != null and orderTimeEnd != null">
+                AND EXISTS (SELECT 1 FROM store_order_operation_record r WHERE r.target_type = 1 AND r.target_id = so.id AND r.action = 1 AND r.operation_time BETWEEN #{orderTimeBegin} AND #{orderTimeEnd})
+            </if>
+            <if test="payTimeBegin != null and payTimeEnd != null">
+                AND EXISTS (SELECT 1 FROM store_order_operation_record r WHERE r.target_type = 1 AND r.target_id = so.id AND r.action = 4 AND r.operation_time BETWEEN #{payTimeBegin} AND #{payTimeEnd})
+            </if>
+            <if test="expressWaybillNo != null and expressWaybillNo !=''">
+                AND EXISTS (SELECT 1 FROM store_order_detail sod WHERE sod.store_order_id = so.id AND sod.del_flag = '0' AND sod.express_waybill_no LIKE CONCAT('%', #{expressWaybillNo}, '%'))
+            </if>
+            <if test="prodArtNum != null and prodArtNum !=''">
+                AND EXISTS (SELECT 1 FROM store_order_detail sod WHERE sod.store_order_id = so.id AND sod.del_flag = '0' AND sod.prod_art_num LIKE CONCAT('%', #{prodArtNum}, '%'))
+            </if>
+        </where>
+    </select>
 </mapper>

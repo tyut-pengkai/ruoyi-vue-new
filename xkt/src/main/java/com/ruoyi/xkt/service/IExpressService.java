@@ -7,6 +7,7 @@ import com.ruoyi.xkt.dto.express.ExpressContactDTO;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author liangyq
@@ -55,4 +56,11 @@ public interface IExpressService {
      * @return
      */
     List<ExpressRegion> listRegionByCode(Collection<String> regionCodes);
+
+    /**
+     * 获取缓存的行政编码
+     *
+     * @return
+     */
+    Map<String, ExpressRegion> getRegionMapCache();
 }

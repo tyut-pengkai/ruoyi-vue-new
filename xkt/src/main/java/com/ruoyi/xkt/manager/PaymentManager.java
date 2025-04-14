@@ -25,4 +25,13 @@ public interface PaymentManager {
      */
     String payOrder(StoreOrderExt order, EPayPage payFrom);
 
+    /**
+     * 是否已支付
+     * 此方法通常用来判否，如果返回true还需要核对支付金额等相关信息才可确定是否完成支付！！
+     *
+     * @param orderNo 订单号
+     * @return
+     */
+    boolean isOrderPaid(String orderNo);
+
 }

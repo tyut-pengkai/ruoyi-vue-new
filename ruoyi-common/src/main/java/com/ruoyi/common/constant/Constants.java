@@ -204,6 +204,8 @@ public class Constants
 
     public static final String VERSION_LOCK_ERROR_COMMON_MSG = "系统繁忙，请稍后再试";
 
+    public static final String REGION_MAP_CACHE_KEY = "REGION_MAP";
+
 
 
 

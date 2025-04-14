@@ -6,6 +6,8 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.core.domain.XktBaseEntity;
@@ -14,6 +16,7 @@ import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.express.ExpressContactDTO;
 import com.ruoyi.xkt.dto.order.*;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.mapper.*;
@@ -34,6 +37,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.ruoyi.common.constant.Constants.ORDER_NUM_1;
+
 /**
  * @author liangyq
  * @date 2025-04-02 13:19
@@ -45,6 +50,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     private StoreOrderMapper storeOrderMapper;
     @Autowired
     private StoreOrderDetailMapper storeOrderDetailMapper;
+    @Autowired
+    private StoreMapper storeMapper;
     @Autowired
     private StoreProductMapper storeProductMapper;
     @Autowired
@@ -64,7 +71,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Autowired
     private List<PaymentManager> paymentManagers;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public StoreOrderAddResult createOrder(StoreOrderAddDTO storeOrderAddDTO, boolean beginPay, EPayChannel payChannel,
                                            EPayPage payPage) {
@@ -196,7 +203,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         return new StoreOrderAddResult(orderExt, rtnStr);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public StoreOrderExt modifyOrder(StoreOrderUpdateDTO storeOrderUpdateDTO) {
         //原订单
@@ -348,21 +355,28 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         List<StoreOrderDetailInfoDTO> detailInfos = BeanUtil.copyToList(details,
                 StoreOrderDetailInfoDTO.class);
         orderInfo.setOrderDetails(detailInfos);
+        //档口信息
+        Store store = storeMapper.selectById(order.getStoreId());
+        if (store != null) {
+            orderInfo.setStoreName(store.getStoreName());
+            orderInfo.setBrandName(store.getBrandName());
+        }
         //物流信息
         Express express = expressService.getById(order.getExpressId());
         orderInfo.setExpressName(Optional.ofNullable(express).map(Express::getExpressName).orElse(null));
-        Map<String, String> regionNameMap = expressService.listRegionByCode(Arrays
-                .asList(order.getDestinationProvinceCode(), order.getDestinationCityCode(),
-                        order.getDestinationCountyCode(), order.getOriginProvinceCode(),
-                        order.getOriginCityCode(), order.getOriginCountyCode()))
-                .stream()
-                .collect(Collectors.toMap(ExpressRegion::getRegionCode, ExpressRegion::getRegionName));
-        orderInfo.setDestinationProvinceName(regionNameMap.get(orderInfo.getDestinationProvinceCode()));
-        orderInfo.setDestinationCityName(regionNameMap.get(orderInfo.getDestinationCityCode()));
-        orderInfo.setDestinationCountyName(regionNameMap.get(orderInfo.getDestinationCountyCode()));
-        orderInfo.setOriginProvinceName(regionNameMap.get(orderInfo.getOriginProvinceCode()));
-        orderInfo.setOriginCityName(regionNameMap.get(orderInfo.getOriginCityCode()));
-        orderInfo.setOriginCountyName(regionNameMap.get(orderInfo.getOriginCountyCode()));
+        Map<String, ExpressRegion> regionMap = expressService.getRegionMapCache();
+        orderInfo.setDestinationProvinceName(Optional.ofNullable(regionMap.get(orderInfo.getDestinationProvinceCode()))
+                .map(ExpressRegion::getParentRegionName).orElse(null));
+        orderInfo.setDestinationCityName(Optional.ofNullable(regionMap.get(orderInfo.getDestinationCityCode()))
+                .map(ExpressRegion::getParentRegionName).orElse(null));
+        orderInfo.setDestinationCountyName(Optional.ofNullable(regionMap.get(orderInfo.getDestinationCountyCode()))
+                .map(ExpressRegion::getParentRegionName).orElse(null));
+        orderInfo.setOriginProvinceName(Optional.ofNullable(regionMap.get(orderInfo.getOriginProvinceCode()))
+                .map(ExpressRegion::getParentRegionName).orElse(null));
+        orderInfo.setOriginCityName(Optional.ofNullable(regionMap.get(orderInfo.getOriginCityCode()))
+                .map(ExpressRegion::getParentRegionName).orElse(null));
+        orderInfo.setOriginCountyName(Optional.ofNullable(regionMap.get(orderInfo.getOriginCountyCode()))
+                .map(ExpressRegion::getParentRegionName).orElse(null));
         //商品信息
         for (StoreOrderDetailInfoDTO detailInfo : detailInfos) {
             detailInfo.setFileList(storeProductFileMapper.selectListByStoreProdId(detailInfo.getStoreProdId()));
@@ -370,7 +384,52 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         return orderInfo;
     }
 
-    @Transactional
+    @Override
+    public Page<StoreOrderPageItemDTO> page(StoreOrderQueryDTO queryDTO) {
+        Page<StoreOrderPageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize());
+        storeOrderMapper.listStoreOrderPageItem(queryDTO);
+        if (CollUtil.isNotEmpty(page.getResult())) {
+            List<StoreOrderPageItemDTO> list = page.getResult();
+            Set<Long> soIds = list.stream().map(StoreOrderPageItemDTO::getId).collect(Collectors.toSet());
+            List<StoreOrderDetail> orderDetailList = storeOrderDetailMapper.selectList(Wrappers
+                    .lambdaQuery(StoreOrderDetail.class).eq(SimpleEntity::getDelFlag, Constants.UNDELETED)
+                    .in(StoreOrderDetail::getStoreOrderId, soIds));
+            List<Long> spIds = orderDetailList.stream().map(StoreOrderDetail::getStoreProdId).distinct()
+                    .collect(Collectors.toList());
+            Map<Long, String> mainPicMap = storeProductFileMapper.selectMainPicByStoreProdIdList(spIds,
+                    FileType.MAIN_PIC.getValue(), ORDER_NUM_1).stream()
+                    .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl,
+                            (o, n) -> n));
+            Map<Long, List<StoreOrderPageItemDTO.Detail>> orderDetailGroup = BeanUtil.copyToList(orderDetailList,
+                    StoreOrderPageItemDTO.Detail.class)
+                    .stream()
+                    .collect(Collectors.groupingBy(StoreOrderDetailDTO::getStoreOrderId));
+            Map<String, ExpressRegion> regionMap = expressService.getRegionMapCache();
+            for (StoreOrderPageItemDTO order : list) {
+                //物流信息
+                order.setDestinationProvinceName(Optional.ofNullable(regionMap.get(order.getDestinationProvinceCode()))
+                        .map(ExpressRegion::getParentRegionName).orElse(null));
+                order.setDestinationCityName(Optional.ofNullable(regionMap.get(order.getDestinationCityCode()))
+                        .map(ExpressRegion::getParentRegionName).orElse(null));
+                order.setDestinationCountyName(Optional.ofNullable(regionMap.get(order.getDestinationCountyCode()))
+                        .map(ExpressRegion::getParentRegionName).orElse(null));
+                order.setOriginProvinceName(Optional.ofNullable(regionMap.get(order.getOriginProvinceCode()))
+                        .map(ExpressRegion::getParentRegionName).orElse(null));
+                order.setOriginCityName(Optional.ofNullable(regionMap.get(order.getOriginCityCode()))
+                        .map(ExpressRegion::getParentRegionName).orElse(null));
+                order.setOriginCountyName(Optional.ofNullable(regionMap.get(order.getOriginCountyCode()))
+                        .map(ExpressRegion::getParentRegionName).orElse(null));
+                order.setOrderDetails(orderDetailGroup.get(order.getId()));
+                for (StoreOrderPageItemDTO.Detail detail : order.getOrderDetails()) {
+                    //首图
+                    detail.setFirstMainPicUrl(mainPicMap.get(detail.getStoreProdId()));
+                }
+            }
+        }
+        return page;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public StoreOrderExt preparePayOrder(Long storeOrderId) {
         Assert.notNull(storeOrderId);
@@ -399,7 +458,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         return new StoreOrderExt(order, orderDetails);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public StoreOrderExt paySuccess(Long storeOrderId, BigDecimal totalAmount, BigDecimal realTotalAmount) {
         Assert.notNull(storeOrderId);
@@ -449,6 +508,51 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         addOperationRecords(storeOrderId, EOrderAction.PAY, orderDetailIdList, EOrderAction.PAY, null,
                 new Date());
         return new StoreOrderExt(order, orderDetails);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void cancelOrder(OrderOptDTO opt) {
+        Assert.notNull(opt.getStoreOrderId());
+        StoreOrder order = storeOrderMapper.selectById(opt.getStoreOrderId());
+        Assert.isTrue(BeanValidators.exists(order), "订单不存在");
+        EOrderStatus oStatus = EOrderStatus.of(order.getOrderStatus());
+        EPayStatus pStatus = EPayStatus.of(order.getPayStatus());
+        if (EOrderStatus.PENDING_PAYMENT != oStatus) {
+            throw new ServiceException("订单[" + order.getOrderNo() + "]状态为[" + oStatus.getLabel() + "]，无法取消");
+        }
+        if (EPayStatus.PAID == pStatus) {
+            throw new ServiceException("订单[" + order.getOrderNo() + "]已支付完成，无法取消");
+        }
+        //目前只有支付宝
+        PaymentManager paymentManager = getPaymentManager(EPayChannel.ALI_PAY);
+        boolean isPaid = paymentManager.isOrderPaid(order.getOrderNo());
+        if (isPaid) {
+            throw new ServiceException("订单[" + order.getOrderNo() + "]已支付，无法取消");
+        }
+        //订单已取消
+        order.setOrderStatus(EOrderStatus.CANCELLED.getValue());
+        int orderSuccess = storeOrderMapper.updateById(order);
+        if (orderSuccess == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
+        List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectList(
+                Wrappers.lambdaQuery(StoreOrderDetail.class)
+                        .eq(StoreOrderDetail::getStoreOrderId, order.getId())
+                        .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
+        for (StoreOrderDetail orderDetail : orderDetails) {
+            //明细已取消
+            orderDetail.setDetailStatus(EOrderStatus.CANCELLED.getValue());
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            if (orderDetailSuccess == 0) {
+                throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+            }
+            orderDetailIdList.add(orderDetail.getId());
+        }
+        //操作记录
+        addOperationRecords(order.getId(), EOrderAction.CANCEL, orderDetailIdList, EOrderAction.CANCEL,
+                opt.getOperatorId(), new Date());
     }
 
     private void checkPreparePayStatus(Integer payStatus) {

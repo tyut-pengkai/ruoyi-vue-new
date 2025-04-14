@@ -1,9 +1,11 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.github.pagehelper.Page;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.page.PageVO;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -18,6 +20,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -53,7 +56,7 @@ public class StoreOrderController extends XktBaseController {
         return success(respVO);
     }
 
-    @PreAuthorize("@ss.hasPermi('system:order:add')")
+    @PreAuthorize("@ss.hasPermi('system:order:edit')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @ApiOperation("修改订单")
     @PutMapping("edit")
@@ -61,6 +64,7 @@ public class StoreOrderController extends XktBaseController {
         StoreOrderUpdateDTO dto = BeanUtil.toBean(vo, StoreOrderUpdateDTO.class);
         dto.setOrderUserId(SecurityUtils.getUserId());
         StoreOrderExt result = storeOrderService.modifyOrder(dto);
+        //TODO 非下单人，不允许修改
         return success(result.getOrder().getId());
     }
 
@@ -78,6 +82,19 @@ public class StoreOrderController extends XktBaseController {
         return success(respVO);
     }
 
+    @PreAuthorize("@ss.hasPermi('system:order:edit')")
+    @Log(title = "订单", businessType = BusinessType.UPDATE)
+    @PutMapping("cancel")
+    public R cancel(@Valid @RequestBody StoreOrderCancelReqVO vo) {
+        OrderOptDTO dto = OrderOptDTO.builder()
+                .storeOrderId(vo.getStoreOrderId())
+                .operatorId(SecurityUtils.getUserId())
+                .build();
+        storeOrderService.cancelOrder(dto);
+        //TODO 非下单人，不允许取消
+        return success();
+    }
+
     @PreAuthorize("@ss.hasPermi('system:order:query')")
     @ApiOperation(value = "订单详情")
     @GetMapping(value = "/{id}")
@@ -85,6 +102,21 @@ public class StoreOrderController extends XktBaseController {
         StoreOrderInfoDTO infoDTO = storeOrderService.getInfo(id);
         //TODO 非下单人，非所属档口不允许查询
         return success(BeanUtil.toBean(infoDTO, StoreOrderInfoVO.class));
+    }
+
+
+    @PreAuthorize("@ss.hasPermi('system:order:list')")
+    @ApiOperation(value = "订单分页查询")
+    @PostMapping("/page")
+    public R<PageVO<StoreOrderPageItemVO>> page(@Validated @RequestBody StoreOrderQueryVO vo) {
+        StoreOrderQueryDTO queryDTO = BeanUtil.toBean(vo, StoreOrderQueryDTO.class);
+        if (1 == vo.getSrcPage()) {
+            queryDTO.setOrderUserId(SecurityUtils.getUserId());
+        } else {
+            //TODO 当前档口
+        }
+        Page<StoreOrderPageItemDTO> pageDTO = storeOrderService.page(queryDTO);
+        return success(PageVO.of(pageDTO, StoreOrderPageItemVO.class));
     }
 
     /**

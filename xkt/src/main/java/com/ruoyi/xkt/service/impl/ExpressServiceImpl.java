@@ -4,6 +4,8 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.Express;
 import com.ruoyi.xkt.domain.ExpressFeeConfig;
@@ -20,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +49,8 @@ public class ExpressServiceImpl implements IExpressService {
     private ExpressRegionMapper expressRegionMapper;
     @Autowired
     private StoreMapper storeMapper;
+    @Autowired
+    private RedisCache redisCache;
 
     @Override
     public void checkExpress(Long expressId) {
@@ -114,5 +119,16 @@ public class ExpressServiceImpl implements IExpressService {
         }
         return expressRegionMapper.selectList(Wrappers.lambdaQuery(ExpressRegion.class)
                 .in(ExpressRegion::getRegionCode, regionCodes));
+    }
+
+    @Override
+    public Map<String, ExpressRegion> getRegionMapCache() {
+        Map<String, ExpressRegion> regionMap = redisCache.getCacheMap(Constants.REGION_MAP_CACHE_KEY);
+        if (regionMap == null || regionMap.isEmpty()) {
+            regionMap = expressRegionMapper.selectList(Wrappers.emptyWrapper()).stream()
+                    .collect(Collectors.toMap(ExpressRegion::getRegionCode, Function.identity()));
+            redisCache.setCacheMap(Constants.REGION_MAP_CACHE_KEY, regionMap);
+        }
+        return regionMap;
     }
 }

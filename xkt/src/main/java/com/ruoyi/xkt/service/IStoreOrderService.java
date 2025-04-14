@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.service;
 
+import com.github.pagehelper.Page;
 import com.ruoyi.xkt.domain.StoreOrder;
 import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.enums.EPayChannel;
@@ -49,6 +50,14 @@ public interface IStoreOrderService {
     StoreOrderInfoDTO getInfo(Long storeOrderId);
 
     /**
+     * 分页查询订单
+     *
+     * @param queryDTO
+     * @return
+     */
+    Page<StoreOrderPageItemDTO> page(StoreOrderQueryDTO queryDTO);
+
+    /**
      * 准备支付订单
      *
      * @param storeOrderId
@@ -65,4 +74,11 @@ public interface IStoreOrderService {
      * @return
      */
     StoreOrderExt paySuccess(Long storeOrderId, BigDecimal totalAmount, BigDecimal realTotalAmount);
+
+    /**
+     * 取消订单
+     *
+     * @param opt
+     */
+    void cancelOrder(OrderOptDTO opt);
 }

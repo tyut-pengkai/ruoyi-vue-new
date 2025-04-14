@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.enums;
 
+import com.ruoyi.common.exception.ServiceException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

@@ -1,11 +1,16 @@
 package com.ruoyi.xkt.manager.impl;
 
+import cn.hutool.core.lang.Assert;
 import com.alibaba.fastjson2.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.diagnosis.DiagnosisUtils;
+import com.alipay.api.domain.AlipayTradeQueryModel;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.dto.finance.AlipayReqDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderExt;
@@ -13,7 +18,6 @@ import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 import com.ruoyi.xkt.enums.EPayStatus;
 import com.ruoyi.xkt.manager.PaymentManager;
-import io.jsonwebtoken.lang.Assert;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -117,6 +121,49 @@ public class AliPaymentMangerImpl implements PaymentManager {
             default:
                 throw new ServiceException("未知的支付来源");
         }
+    }
+
+    @Override
+    public boolean isOrderPaid(String orderNo) {
+        Assert.notEmpty(orderNo);
+        AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
+                alipayPublicKey, signType);
+        // 构造请求参数以调用接口
+        AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+        AlipayTradeQueryModel model = new AlipayTradeQueryModel();
+        model.setOutTradeNo(orderNo);
+        request.setBizModel(model);
+        AlipayTradeQueryResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+            if (response.isSuccess()) {
+                String tradeStatus = JSON.parseObject(response.getBody())
+                        .getJSONObject("alipay_trade_query_response")
+                        .getString("trade_status");
+                //交易支付成功
+                if ("TRADE_SUCCESS".equals(tradeStatus)
+                        //交易结束，不可退款
+                        || "TRADE_FINISHED".equals(tradeStatus)) {
+                    return true;
+                }
+                return false;
+            } else {
+                //获取诊断链接
+                String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(response);
+                log.warn("查询订单支付结果异常: {}", diagnosisUrl);
+                //获取错误码
+                String subCode = JSON.parseObject(response.getBody())
+                        .getJSONObject("alipay_trade_query_response")
+                        .getString("sub_code");
+                if ("ACQ.TRADE_NOT_EXIST".equals(subCode)) {
+                    //交易不存在
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            log.error("查询订单支付结果异常", e);
+        }
+        throw new ServiceException("查询订单支付结果失败");
     }
 
 }
