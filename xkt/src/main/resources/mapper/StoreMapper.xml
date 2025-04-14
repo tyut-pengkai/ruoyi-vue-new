@@ -172,4 +172,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+
+    <select id="selectStorePage" resultType="com.ruoyi.xkt.dto.store.StorePageResDTO">
+        SELECT
+            s.id AS storeId,
+            s.store_name,
+            u.user_name,
+            s.contact_phone,
+            s.contact_back_phone,
+            s.store_status,
+            s.del_flag
+        FROM
+            store s
+                LEFT JOIN sys_user u ON s.user_id = u.user_id
+            <if test="storeName != null  and storeName != ''"> and s.store_name like concat('%', #{storeName}, '%')</if>
+            <if test="storeStatus != null  and storeStatus != ''"> and s.store_status = #{storeStatus}</if>
+    </select>
+
+
+
+
+
 </mapper>

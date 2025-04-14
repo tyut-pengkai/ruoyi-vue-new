@@ -2,6 +2,8 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.Store;
+import com.ruoyi.xkt.dto.store.StorePageDTO;
+import com.ruoyi.xkt.dto.store.StorePageResDTO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -61,4 +63,7 @@ public interface StoreMapper extends BaseMapper<Store> {
      * @return 结果
      */
     public int deleteStoreByStoreIds(Long[] storeIds);
+
+    List<StorePageResDTO> selectStorePage(StorePageDTO pageDTO);
+
 }

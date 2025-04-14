@@ -134,6 +134,11 @@ public class Store extends XktBaseEntity {
     private Integer storeStatus;
 
     /**
+     * 拒绝理由
+     */
+    private String rejectReason;
+
+    /**
      * 档口模板ID
      */
     @Excel(name = "档口模板ID")
