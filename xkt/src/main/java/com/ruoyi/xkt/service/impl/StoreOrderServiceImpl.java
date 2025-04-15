@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.Page;
@@ -19,6 +20,7 @@ import com.ruoyi.xkt.dto.express.ExpressRegionDTO;
 import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.enums.*;
+import com.ruoyi.xkt.manager.ExpressManager;
 import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IExpressService;
@@ -71,6 +73,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     private IVoucherSequenceService voucherSequenceService;
     @Autowired
     private List<PaymentManager> paymentManagers;
+    @Autowired
+    private List<ExpressManager> expressManagers;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -210,10 +214,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Override
     public StoreOrderExt modifyOrder(StoreOrderUpdateDTO storeOrderUpdateDTO) {
         //原订单
-        StoreOrder order = storeOrderMapper.selectById(storeOrderUpdateDTO.getId());
-        if (!BeanValidators.exists(order)) {
-            throw new ServiceException("订单[" + storeOrderUpdateDTO.getId() + "]不存在");
-        }
+        StoreOrder order = getAndBaseCheck(storeOrderUpdateDTO.getId());
         Long orderUserId = storeOrderUpdateDTO.getOrderUserId();
         Long storeId = storeOrderUpdateDTO.getStoreId();
         Long expressId = storeOrderUpdateDTO.getExpressId();
@@ -441,12 +442,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public StoreOrderExt preparePayOrder(Long storeOrderId, EPayChannel payChannel) {
-        Assert.notNull(storeOrderId);
         Assert.notNull(payChannel);
-        StoreOrder order = storeOrderMapper.selectById(storeOrderId);
+        StoreOrder order = getAndBaseCheck(storeOrderId);
         Assert.isTrue(EOrderType.SALES_ORDER.getValue().equals(order.getOrderType()),
                 "非销售订单无法发起支付");
-        Assert.isTrue(BeanValidators.exists(order), "订单不存在");
         if (payChannel != EPayChannel.of(order.getPayChannel())) {
             throw new ServiceException("订单支付渠道不允许修改");
         }
@@ -474,11 +473,9 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public StoreOrderExt paySuccess(Long storeOrderId, BigDecimal totalAmount, BigDecimal realTotalAmount) {
-        Assert.notNull(storeOrderId);
-        StoreOrder order = storeOrderMapper.selectById(storeOrderId);
+        StoreOrder order = getAndBaseCheck(storeOrderId);
         Assert.isTrue(EOrderType.SALES_ORDER.getValue().equals(order.getOrderType()),
                 "订单类型异常");
-        Assert.isTrue(BeanValidators.exists(order), "订单不存在");
         if (!order.getPayStatus().equals(EPayStatus.PAYING.getValue())
                 || !order.getOrderStatus().equals(EOrderStatus.PENDING_PAYMENT.getValue())) {
             log.error("订单状态异常，更新支付结果失败: id = {}", storeOrderId);
@@ -526,9 +523,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void cancelOrder(OrderOptDTO opt) {
-        Assert.notNull(opt.getStoreOrderId());
-        StoreOrder order = storeOrderMapper.selectById(opt.getStoreOrderId());
-        Assert.isTrue(BeanValidators.exists(order), "订单不存在");
+        StoreOrder order = getAndBaseCheck(opt.getStoreOrderId());
         EOrderStatus oStatus = EOrderStatus.of(order.getOrderStatus());
         EPayStatus pStatus = EPayStatus.of(order.getPayStatus());
         if (EOrderStatus.PENDING_PAYMENT != oStatus) {
@@ -567,9 +562,139 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 opt.getOperatorId(), new Date());
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public StoreOrderExt preparePlaceOrder(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId) {
-        return null;
+    public StoreOrderExt prepareShipOrderByPlatform(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
+                                                    Long operatorId) {
+        Assert.notEmpty(storeOrderDetailIds);
+//        ExpressManager expressManager = getExpressManager(expressId);
+        Express express = expressService.getById(expressId);
+        if (!BeanValidators.exists(express) || !express.getSystemDeliverAccess()) {
+            throw new ServiceException("快递[" + expressId + "]不可用");
+        }
+        StoreOrder order = getAndBaseCheck(storeOrderId);
+        if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(order.getOrderStatus())
+                && !EOrderStatus.SHIPPED.getValue().equals(order.getOrderStatus())) {
+            throw new ServiceException("订单[" + order.getId() + "]当前状态无法发货");
+        }
+        List<StoreOrderDetail> containDetails = storeOrderDetailMapper.selectList(
+                Wrappers.lambdaQuery(StoreOrderDetail.class)
+                        .eq(StoreOrderDetail::getStoreOrderId, order.getId())
+                        .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        for (StoreOrderDetail containDetail : containDetails) {
+            if (EDeliveryType.SHIP_COMPLETE.getValue().equals(order.getDeliveryType())) {
+                //如果是货齐再发，此次发货需要包含所有明细
+                if (!storeOrderDetailIds.contains(containDetail.getId())) {
+                    throw new ServiceException("订单[" + order.getId() + "]不可拆单发货");
+                }
+            }
+            if (EExpressType.STORE.getValue().equals(containDetail.getExpressType())) {
+                //已存在档口发货的明细
+                throw new ServiceException("订单[" + order.getId() + "]由档口物流发货！");
+            }
+        }
+        List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectByIds(storeOrderDetailIds);
+        //订单->已发货
+        order.setOrderStatus(EOrderStatus.SHIPPED.getValue());
+        int orderSuccess = storeOrderMapper.updateById(order);
+        if (orderSuccess == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
+        //生成请求号
+        String expressReqNo = IdUtil.simpleUUID();
+        List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
+        for (StoreOrderDetail orderDetail : orderDetails) {
+            if (!BeanValidators.exists(orderDetail)) {
+                throw new ServiceException("订单明细[" + orderDetail.getId() + "]不存在");
+            }
+            if (!order.getId().equals(orderDetail.getStoreOrderId())) {
+                throw new ServiceException("发货订单[" + order.getId() + "]与明细[" + orderDetail.getId() + "]不匹配");
+            }
+            if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(orderDetail.getDetailStatus())) {
+                throw new ServiceException("订单明细[" + order.getId() + "]当前状态无法发货");
+            }
+            //明细->已发货
+            orderDetail.setDetailStatus(EOrderStatus.SHIPPED.getValue());
+            orderDetail.setExpressId(expressId);
+            orderDetail.setExpressType(EExpressType.PLATFORM.getValue());
+            orderDetail.setExpressStatus(EExpressStatus.PLACING.getValue());
+            orderDetail.setExpressReqNo(expressReqNo);
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            if (orderDetailSuccess == 0) {
+                throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+            }
+            orderDetailIdList.add(orderDetail.getId());
+        }
+        //操作记录
+        addOperationRecords(order.getId(), EOrderAction.SHIP, orderDetailIdList, EOrderAction.SHIP,
+                "平台物流发货", operatorId, new Date());
+        return new StoreOrderExt(order, orderDetails);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public StoreOrderExt shipOrderByStore(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
+                                          String expressWaybillNo, Long operatorId) {
+        Assert.notEmpty(storeOrderDetailIds);
+        Express express = expressService.getById(expressId);
+        if (!BeanValidators.exists(express) || !express.getStoreDeliverAccess()) {
+            throw new ServiceException("快递[" + expressId + "]不可用");
+        }
+        StoreOrder order = getAndBaseCheck(storeOrderId);
+        if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(order.getOrderStatus())
+                && !EOrderStatus.SHIPPED.getValue().equals(order.getOrderStatus())) {
+            throw new ServiceException("订单[" + order.getId() + "]当前状态无法发货");
+        }
+        List<StoreOrderDetail> containDetails = storeOrderDetailMapper.selectList(
+                Wrappers.lambdaQuery(StoreOrderDetail.class)
+                        .eq(StoreOrderDetail::getStoreOrderId, order.getId())
+                        .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        for (StoreOrderDetail containDetail : containDetails) {
+            if (EDeliveryType.SHIP_COMPLETE.getValue().equals(order.getDeliveryType())) {
+                //如果是货齐再发，此次发货需要包含所有明细
+                if (!storeOrderDetailIds.contains(containDetail.getId())) {
+                    throw new ServiceException("订单[" + order.getId() + "]不可拆单发货");
+                }
+            }
+            if (EExpressType.PLATFORM.getValue().equals(containDetail.getExpressType())) {
+                //已存在平台发货的明细
+                throw new ServiceException("订单[" + order.getId() + "]由平台物流发货！");
+            }
+        }
+        List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectByIds(storeOrderDetailIds);
+        //订单->已发货
+        order.setOrderStatus(EOrderStatus.SHIPPED.getValue());
+        int orderSuccess = storeOrderMapper.updateById(order);
+        if (orderSuccess == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
+        List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
+        for (StoreOrderDetail orderDetail : orderDetails) {
+            if (!BeanValidators.exists(orderDetail)) {
+                throw new ServiceException("订单明细[" + orderDetail.getId() + "]不存在");
+            }
+            if (!order.getId().equals(orderDetail.getStoreOrderId())) {
+                throw new ServiceException("发货订单[" + order.getId() + "]与明细[" + orderDetail.getId() + "]不匹配");
+            }
+            if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(orderDetail.getDetailStatus())) {
+                throw new ServiceException("订单明细[" + order.getId() + "]当前状态无法发货");
+            }
+            //明细->已发货
+            orderDetail.setDetailStatus(EOrderStatus.SHIPPED.getValue());
+            orderDetail.setExpressId(expressId);
+            orderDetail.setExpressType(EExpressType.STORE.getValue());
+            orderDetail.setExpressStatus(EExpressStatus.COMPLETED.getValue());
+            orderDetail.setExpressWaybillNo(expressWaybillNo);
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            if (orderDetailSuccess == 0) {
+                throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+            }
+            orderDetailIdList.add(orderDetail.getId());
+        }
+        //操作记录
+        addOperationRecords(order.getId(), EOrderAction.SHIP, orderDetailIdList, EOrderAction.SHIP,
+                "档口物流发货", operatorId, new Date());
+        return new StoreOrderExt(order, orderDetails);
     }
 
     private void checkPreparePayStatus(Integer payStatus) {
@@ -729,6 +854,15 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         return new OrderDetailCheckRtn(spcsMap, spMap, scMap);
     }
 
+    private StoreOrder getAndBaseCheck(Long storeOrderId) {
+        Assert.notNull(storeOrderId);
+        StoreOrder order = storeOrderMapper.selectById(storeOrderId);
+        if (!BeanValidators.exists(order)) {
+            throw new ServiceException("订单[" + storeOrderId + "]不存在");
+        }
+        return order;
+    }
+
     /**
      * 根据支付渠道匹配支付类
      *
@@ -745,6 +879,22 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
         }
         throw new ServiceException("未知支付渠道");
+    }
+
+    /**
+     * 匹配物流类
+     *
+     * @param expressId
+     * @return
+     */
+    private ExpressManager getExpressManager(Long expressId) {
+        Assert.notNull(expressId);
+        for (ExpressManager expressManager : expressManagers) {
+            if (expressManager.channel().getExpressId().equals(expressId)) {
+                return expressManager;
+            }
+        }
+        throw new ServiceException("未知物流渠道");
     }
 
     @Data

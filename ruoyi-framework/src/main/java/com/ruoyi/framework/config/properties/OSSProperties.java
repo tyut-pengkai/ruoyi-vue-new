@@ -28,4 +28,6 @@ public class OSSProperties {
     private Long expiredDuration;
 
     private String tempDir;
+
+    private Long stsCacheDuration;
 }

@@ -37,11 +37,6 @@ public class CommonController {
     private OSSProperties ossProperties;
     @Autowired
     private RedisCache redisCache;
-    /**
-     * STS缓存时间(秒)
-     */
-    @Value("${sts_cache_duration:1800}")
-    private Integer stsCacheDuration;
 
     @ApiOperation("获取OSS临时访问凭证")
     @GetMapping("/oss/getCredentials")
@@ -63,11 +58,11 @@ public class CommonController {
         vo.setBucketName(ossProperties.getBucketName());
         vo.setRegionId(ossProperties.getRegionId());
         vo.setEndPoint(ossProperties.getEndPoint());
-        vo.setExpiredDuration(ossProperties.getExpiredDuration() - stsCacheDuration);
+        vo.setExpiredDuration(ossProperties.getExpiredDuration() - ossProperties.getStsCacheDuration());
         vo.setHttpsFlag(ossProperties.isHttps());
         //缓存
         redisCache.setCacheObject(CacheConstants.USER_STS_KEY + currentUserId, JSONUtil.toJsonStr(vo),
-                stsCacheDuration, TimeUnit.SECONDS);
+                ossProperties.getStsCacheDuration(), TimeUnit.SECONDS);
         return R.ok(vo);
     }
 

@@ -90,7 +90,22 @@ public interface IStoreOrderService {
      * @param storeOrderId
      * @param storeOrderDetailIds
      * @param expressId
+     * @param operatorId
      * @return
      */
-    StoreOrderExt preparePlaceOrder(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId);
+    StoreOrderExt prepareShipOrderByPlatform(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
+                                             Long operatorId);
+
+    /**
+     * 发货（档口物流）
+     *
+     * @param storeOrderId
+     * @param storeOrderDetailIds
+     * @param expressId
+     * @param expressWaybillNo
+     * @param operatorId
+     * @return
+     */
+    StoreOrderExt shipOrderByStore(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
+                                   String expressWaybillNo, Long operatorId);
 }
