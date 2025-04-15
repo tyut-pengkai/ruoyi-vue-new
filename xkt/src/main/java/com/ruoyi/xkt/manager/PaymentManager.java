@@ -23,7 +23,7 @@ public interface PaymentManager {
      * @param payFrom
      * @return 跳转页面数据/签名字符串/支付跳转链接/预支付交易会话标识（根据支付渠道&支付来源确定）
      */
-    String payOrder(StoreOrderExt order, EPayPage payFrom);
+    String payStoreOrder(StoreOrderExt order, EPayPage payFrom);
 
     /**
      * 是否已支付
@@ -32,6 +32,6 @@ public interface PaymentManager {
      * @param orderNo 订单号
      * @return
      */
-    boolean isOrderPaid(String orderNo);
+    boolean isStoreOrderPaid(String orderNo);
 
 }

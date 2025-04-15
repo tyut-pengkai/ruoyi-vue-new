@@ -81,7 +81,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
     }
 
     @Override
-    public String payOrder(StoreOrderExt orderExt, EPayPage payFrom) {
+    public String payStoreOrder(StoreOrderExt orderExt, EPayPage payFrom) {
         Assert.notNull(orderExt);
         Assert.notNull(payFrom);
         if (!EPayStatus.PAYING.getValue().equals(orderExt.getOrder().getPayStatus())) {
@@ -124,7 +124,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
     }
 
     @Override
-    public boolean isOrderPaid(String orderNo) {
+    public boolean isStoreOrderPaid(String orderNo) {
         Assert.notEmpty(orderNo);
         AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
                 alipayPublicKey, signType);

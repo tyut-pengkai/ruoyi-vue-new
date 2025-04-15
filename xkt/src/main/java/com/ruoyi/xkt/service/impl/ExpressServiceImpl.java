@@ -1,8 +1,10 @@
 package com.ruoyi.xkt.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -12,6 +14,8 @@ import com.ruoyi.xkt.domain.ExpressFeeConfig;
 import com.ruoyi.xkt.domain.ExpressRegion;
 import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.dto.express.ExpressContactDTO;
+import com.ruoyi.xkt.dto.express.ExpressRegionDTO;
+import com.ruoyi.xkt.dto.express.ExpressRegionTreeNodeDTO;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IExpressService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,13 +126,51 @@ public class ExpressServiceImpl implements IExpressService {
     }
 
     @Override
-    public Map<String, ExpressRegion> getRegionMapCache() {
-        Map<String, ExpressRegion> regionMap = redisCache.getCacheMap(Constants.REGION_MAP_CACHE_KEY);
+    public List<ExpressRegionDTO> getRegionListCache() {
+        List<ExpressRegionDTO> regionList = redisCache.getCacheList(Constants.EXPRESS_REGION_LIST_CACHE_KEY);
+        if (CollUtil.isEmpty(regionList)) {
+            List<ExpressRegion> list = expressRegionMapper.selectList(Wrappers.emptyWrapper());
+            regionList = BeanUtil.copyToList(list, ExpressRegionDTO.class);
+            redisCache.setCacheList(Constants.EXPRESS_REGION_LIST_CACHE_KEY, regionList);
+        }
+        return regionList;
+    }
+
+    @Override
+    public Map<String, ExpressRegionDTO> getRegionMapCache() {
+        Map<String, ExpressRegionDTO> regionMap = redisCache.getCacheMap(Constants.EXPRESS_REGION_MAP_CACHE_KEY);
         if (regionMap == null || regionMap.isEmpty()) {
-            regionMap = expressRegionMapper.selectList(Wrappers.emptyWrapper()).stream()
-                    .collect(Collectors.toMap(ExpressRegion::getRegionCode, Function.identity()));
-            redisCache.setCacheMap(Constants.REGION_MAP_CACHE_KEY, regionMap);
+            regionMap = getRegionListCache().stream()
+                    .collect(Collectors.toMap(ExpressRegionDTO::getRegionCode, Function.identity()));
+            redisCache.setCacheMap(Constants.EXPRESS_REGION_MAP_CACHE_KEY, regionMap);
         }
         return regionMap;
+    }
+
+    @Override
+    public List<ExpressRegionTreeNodeDTO> getRegionTreeCache() {
+        List<ExpressRegionTreeNodeDTO> treeNodeList = redisCache.getCacheList(Constants.EXPRESS_REGION_TREE_CACHE_KEY);
+        if (CollUtil.isEmpty(treeNodeList)) {
+            List<ExpressRegionDTO> dtoList = getRegionListCache().stream()
+                    .filter(o -> Constants.UNDELETED.equals(o.getDelFlag()))
+                    .collect(Collectors.toList());
+            List<ExpressRegionTreeNodeDTO> list = BeanUtil.copyToList(dtoList, ExpressRegionTreeNodeDTO.class);
+            treeNodeList = CollUtil.newArrayList();
+            // 按parentCode进行分组
+            Map<String, List<ExpressRegionTreeNodeDTO>> treeNodeMap = list.stream()
+                    .filter(region -> StrUtil.isNotBlank(region.getParentRegionCode()))
+                    .collect(Collectors.groupingBy(ExpressRegionTreeNodeDTO::getParentRegionCode));
+            for (ExpressRegionTreeNodeDTO treeNodeDTO : list) {
+                // 如果没有父级, 设置为根节点
+                if (StrUtil.isBlank(treeNodeDTO.getParentRegionCode())) {
+                    treeNodeList.add(treeNodeDTO);
+                }
+                // 为当前节点添加子节点
+                List<ExpressRegionTreeNodeDTO> subTreeNodeList = treeNodeMap.get(treeNodeDTO.getRegionCode());
+                treeNodeDTO.setChildren(CollUtil.emptyIfNull(subTreeNodeList));
+            }
+            redisCache.setCacheList(Constants.EXPRESS_REGION_TREE_CACHE_KEY, treeNodeList);
+        }
+        return treeNodeList;
     }
 }

@@ -4,6 +4,8 @@ import com.ruoyi.xkt.domain.Express;
 import com.ruoyi.xkt.domain.ExpressFeeConfig;
 import com.ruoyi.xkt.domain.ExpressRegion;
 import com.ruoyi.xkt.dto.express.ExpressContactDTO;
+import com.ruoyi.xkt.dto.express.ExpressRegionDTO;
+import com.ruoyi.xkt.dto.express.ExpressRegionTreeNodeDTO;
 
 import java.util.Collection;
 import java.util.List;
@@ -62,5 +64,21 @@ public interface IExpressService {
      *
      * @return
      */
-    Map<String, ExpressRegion> getRegionMapCache();
+    List<ExpressRegionDTO> getRegionListCache();
+
+    /**
+     * 获取缓存的行政编码
+     *
+     * @return
+     */
+    Map<String, ExpressRegionDTO> getRegionMapCache();
+
+    /**
+     * 获取缓存的行政编码
+     *
+     * @return
+     */
+    List<ExpressRegionTreeNodeDTO> getRegionTreeCache();
+
+
 }

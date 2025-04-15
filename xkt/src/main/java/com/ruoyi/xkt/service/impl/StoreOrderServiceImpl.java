@@ -15,6 +15,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.express.ExpressContactDTO;
+import com.ruoyi.xkt.dto.express.ExpressRegionDTO;
 import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.enums.*;
@@ -200,7 +201,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         if (beginPay) {
             //发起支付
             PaymentManager paymentManager = getPaymentManager(payChannel);
-            rtnStr = paymentManager.payOrder(orderExt, payPage);
+            rtnStr = paymentManager.payStoreOrder(orderExt, payPage);
         }
         return new StoreOrderAddResult(orderExt, rtnStr);
     }
@@ -366,22 +367,28 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //物流信息
         Express express = expressService.getById(order.getExpressId());
         orderInfo.setExpressName(Optional.ofNullable(express).map(Express::getExpressName).orElse(null));
-        Map<String, ExpressRegion> regionMap = expressService.getRegionMapCache();
+        Map<String, ExpressRegionDTO> regionMap = expressService.getRegionMapCache();
         orderInfo.setDestinationProvinceName(Optional.ofNullable(regionMap.get(orderInfo.getDestinationProvinceCode()))
-                .map(ExpressRegion::getParentRegionName).orElse(null));
+                .map(ExpressRegionDTO::getParentRegionName).orElse(null));
         orderInfo.setDestinationCityName(Optional.ofNullable(regionMap.get(orderInfo.getDestinationCityCode()))
-                .map(ExpressRegion::getParentRegionName).orElse(null));
+                .map(ExpressRegionDTO::getParentRegionName).orElse(null));
         orderInfo.setDestinationCountyName(Optional.ofNullable(regionMap.get(orderInfo.getDestinationCountyCode()))
-                .map(ExpressRegion::getParentRegionName).orElse(null));
+                .map(ExpressRegionDTO::getParentRegionName).orElse(null));
         orderInfo.setOriginProvinceName(Optional.ofNullable(regionMap.get(orderInfo.getOriginProvinceCode()))
-                .map(ExpressRegion::getParentRegionName).orElse(null));
+                .map(ExpressRegionDTO::getParentRegionName).orElse(null));
         orderInfo.setOriginCityName(Optional.ofNullable(regionMap.get(orderInfo.getOriginCityCode()))
-                .map(ExpressRegion::getParentRegionName).orElse(null));
+                .map(ExpressRegionDTO::getParentRegionName).orElse(null));
         orderInfo.setOriginCountyName(Optional.ofNullable(regionMap.get(orderInfo.getOriginCountyCode()))
-                .map(ExpressRegion::getParentRegionName).orElse(null));
+                .map(ExpressRegionDTO::getParentRegionName).orElse(null));
         //商品信息
+        List<Long> spIds = detailInfos.stream().map(StoreOrderDetailInfoDTO::getStoreProdId).distinct()
+                .collect(Collectors.toList());
+        Map<Long, String> mainPicMap = storeProductFileMapper.selectMainPicByStoreProdIdList(spIds,
+                FileType.MAIN_PIC.getValue(), ORDER_NUM_1).stream()
+                .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl,
+                        (o, n) -> n));
         for (StoreOrderDetailInfoDTO detailInfo : detailInfos) {
-            detailInfo.setFileList(storeProductFileMapper.selectListByStoreProdId(detailInfo.getStoreProdId()));
+            detailInfo.setFirstMainPicUrl(mainPicMap.get(detailInfo.getStoreProdId()));
         }
         return orderInfo;
     }
@@ -406,21 +413,21 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                     StoreOrderPageItemDTO.Detail.class)
                     .stream()
                     .collect(Collectors.groupingBy(StoreOrderDetailDTO::getStoreOrderId));
-            Map<String, ExpressRegion> regionMap = expressService.getRegionMapCache();
+            Map<String, ExpressRegionDTO> regionMap = expressService.getRegionMapCache();
             for (StoreOrderPageItemDTO order : list) {
                 //物流信息
                 order.setDestinationProvinceName(Optional.ofNullable(regionMap.get(order.getDestinationProvinceCode()))
-                        .map(ExpressRegion::getParentRegionName).orElse(null));
+                        .map(ExpressRegionDTO::getParentRegionName).orElse(null));
                 order.setDestinationCityName(Optional.ofNullable(regionMap.get(order.getDestinationCityCode()))
-                        .map(ExpressRegion::getParentRegionName).orElse(null));
+                        .map(ExpressRegionDTO::getParentRegionName).orElse(null));
                 order.setDestinationCountyName(Optional.ofNullable(regionMap.get(order.getDestinationCountyCode()))
-                        .map(ExpressRegion::getParentRegionName).orElse(null));
+                        .map(ExpressRegionDTO::getParentRegionName).orElse(null));
                 order.setOriginProvinceName(Optional.ofNullable(regionMap.get(order.getOriginProvinceCode()))
-                        .map(ExpressRegion::getParentRegionName).orElse(null));
+                        .map(ExpressRegionDTO::getParentRegionName).orElse(null));
                 order.setOriginCityName(Optional.ofNullable(regionMap.get(order.getOriginCityCode()))
-                        .map(ExpressRegion::getParentRegionName).orElse(null));
+                        .map(ExpressRegionDTO::getParentRegionName).orElse(null));
                 order.setOriginCountyName(Optional.ofNullable(regionMap.get(order.getOriginCountyCode()))
-                        .map(ExpressRegion::getParentRegionName).orElse(null));
+                        .map(ExpressRegionDTO::getParentRegionName).orElse(null));
                 order.setOrderDetails(orderDetailGroup.get(order.getId()));
                 for (StoreOrderPageItemDTO.Detail detail : order.getOrderDetails()) {
                     //首图
@@ -531,7 +538,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             throw new ServiceException("订单[" + order.getOrderNo() + "]已支付完成，无法取消");
         }
         PaymentManager paymentManager = getPaymentManager(EPayChannel.of(order.getPayChannel()));
-        boolean isPaid = paymentManager.isOrderPaid(order.getOrderNo());
+        boolean isPaid = paymentManager.isStoreOrderPaid(order.getOrderNo());
         if (isPaid) {
             throw new ServiceException("订单[" + order.getOrderNo() + "]已支付，无法取消");
         }
@@ -556,8 +563,13 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderDetailIdList.add(orderDetail.getId());
         }
         //操作记录
-        addOperationRecords(order.getId(), EOrderAction.CANCEL, orderDetailIdList, EOrderAction.CANCEL,
+        addOperationRecords(order.getId(), EOrderAction.CANCEL, orderDetailIdList, EOrderAction.CANCEL, opt.getRemark(),
                 opt.getOperatorId(), new Date());
+    }
+
+    @Override
+    public StoreOrderExt preparePlaceOrder(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId) {
+        return null;
     }
 
     private void checkPreparePayStatus(Integer payStatus) {
@@ -578,23 +590,44 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
      */
     private void addOperationRecords(Long orderId, EOrderAction orderAction, List<Long> orderDetailIds,
                                      EOrderAction detailAction, Long operatorId, Date operationTime) {
-        List<StoreOrderOperationRecordAddDTO> addDTOList = new ArrayList<>(1 +
-                CollUtil.emptyIfNull(orderDetailIds).size());
-        StoreOrderOperationRecordAddDTO addDTO = new StoreOrderOperationRecordAddDTO();
-        addDTO.setTargetId(orderId);
-        addDTO.setTargetType(EOrderTargetTypeAction.ORDER.getValue());
-        addDTO.setAction(orderAction.getValue());
-        addDTO.setOperatorId(operatorId);
-        addDTO.setOperationTime(operationTime);
-        addDTOList.add(addDTO);
-        for (Long orderDetailId : orderDetailIds) {
-            StoreOrderOperationRecordAddDTO detailAddDTO = new StoreOrderOperationRecordAddDTO();
-            detailAddDTO.setTargetId(orderDetailId);
-            detailAddDTO.setTargetType(EOrderTargetTypeAction.ORDER_DETAIL.getValue());
-            addDTO.setAction(detailAction.getValue());
+        addOperationRecords(orderId, orderAction, orderDetailIds, detailAction, null, operatorId, operationTime);
+    }
+
+    /**
+     * 添加操作记录
+     *
+     * @param orderId
+     * @param orderAction
+     * @param orderDetailIds
+     * @param detailAction
+     * @param remark
+     * @param operatorId
+     * @param operationTime
+     */
+    private void addOperationRecords(Long orderId, EOrderAction orderAction, List<Long> orderDetailIds,
+                                     EOrderAction detailAction, String remark, Long operatorId, Date operationTime) {
+        List<StoreOrderOperationRecordAddDTO> addDTOList = new ArrayList<>();
+        if (orderId != null) {
+            StoreOrderOperationRecordAddDTO addDTO = new StoreOrderOperationRecordAddDTO();
+            addDTO.setTargetId(orderId);
+            addDTO.setTargetType(EOrderTargetTypeAction.ORDER.getValue());
+            addDTO.setAction(orderAction.getValue());
+            addDTO.setRemark(remark);
             addDTO.setOperatorId(operatorId);
             addDTO.setOperationTime(operationTime);
             addDTOList.add(addDTO);
+        }
+        if (CollUtil.isNotEmpty(orderDetailIds)) {
+            for (Long orderDetailId : orderDetailIds) {
+                StoreOrderOperationRecordAddDTO detailAddDTO = new StoreOrderOperationRecordAddDTO();
+                detailAddDTO.setTargetId(orderDetailId);
+                detailAddDTO.setTargetType(EOrderTargetTypeAction.ORDER_DETAIL.getValue());
+                detailAddDTO.setAction(detailAction.getValue());
+                detailAddDTO.setRemark(remark);
+                detailAddDTO.setOperatorId(operatorId);
+                detailAddDTO.setOperationTime(operationTime);
+                addDTOList.add(detailAddDTO);
+            }
         }
         operationRecordService.addOrderOperationRecords(addDTOList);
     }

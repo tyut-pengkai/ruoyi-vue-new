@@ -204,7 +204,12 @@ public class Constants
 
     public static final String VERSION_LOCK_ERROR_COMMON_MSG = "系统繁忙，请稍后再试";
 
-    public static final String REGION_MAP_CACHE_KEY = "REGION_MAP";
+    /**
+     * 行政区划缓存
+     */
+    public static final String EXPRESS_REGION_MAP_CACHE_KEY = "EXPRESS_REGION_MAP";
+    public static final String EXPRESS_REGION_LIST_CACHE_KEY = "EXPRESS_REGION_LIST";
+    public static final String EXPRESS_REGION_TREE_CACHE_KEY = "EXPRESS_REGION_TREE";
 
 
 

@@ -78,7 +78,7 @@ public class StoreOrderController extends XktBaseController {
         //订单支付状态->支付中
         StoreOrderExt orderExt = storeOrderService.preparePayOrder(vo.getStoreOrderId(), payChannel);
         //调用支付
-        String rtnStr = paymentManager.payOrder(orderExt, EPayPage.of(vo.getPayFrom()));
+        String rtnStr = paymentManager.payStoreOrder(orderExt, EPayPage.of(vo.getPayFrom()));
         StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(vo.getStoreOrderId(), rtnStr);
         return success(respVO);
     }

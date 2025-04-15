@@ -250,6 +250,11 @@ public class StoreOrderInfoVO {
     @Data
     public static class Detail {
         /**
+         * 预览图url
+         */
+        @ApiModelProperty(value = "预览图url")
+        private String firstMainPicUrl;
+        /**
          * 订单明细ID
          */
         @ApiModelProperty(value = "订单明细ID")
@@ -393,22 +398,6 @@ public class StoreOrderInfoVO {
         @ApiModelProperty(value = "商品尺码")
         private Integer size;
 
-        @ApiModelProperty(value = "档口商品文件")
-        private List<StoreProdFileVO> fileList;
     }
 
-    @Data
-    @ApiModel(value = "档口商品文件")
-    public static class StoreProdFileVO {
-        @ApiModelProperty(value = "文件名称")
-        private String fileName;
-        @ApiModelProperty(value = "文件路径")
-        private String fileUrl;
-        @ApiModelProperty(value = "文件大小")
-        private BigDecimal fileSize;
-        @ApiModelProperty(value = "文件类型 1商品主图  2商品主图视频 3下载图片包")
-        private Integer fileType;
-        @ApiModelProperty(value = "排序")
-        private Integer orderNum;
-    }
 }

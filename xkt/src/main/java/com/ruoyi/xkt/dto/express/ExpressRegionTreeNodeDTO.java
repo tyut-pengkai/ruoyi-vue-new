@@ -3,16 +3,14 @@ package com.ruoyi.xkt.dto.express;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 
 /**
- * 物流行政区划
- *
  * @author liangyq
- * @date 2025-04-02 15:00
+ * @date 2025-04-15 14:57
  */
 @Data
-public class ExpressRegionDTO implements Serializable {
+public class ExpressRegionTreeNodeDTO implements Serializable {
     /**
      * ID
      */
@@ -42,23 +40,8 @@ public class ExpressRegionDTO implements Serializable {
      */
     private String delFlag;
     /**
-     * 创建者
+     * 下级地区列表
      */
-    private String createBy;
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-    /**
-     * 更新者
-     */
-    private String updateBy;
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-    /**
-     * 版本号
-     */
-    private Long version;
+    private List<ExpressRegionTreeNodeDTO> children;
+
 }

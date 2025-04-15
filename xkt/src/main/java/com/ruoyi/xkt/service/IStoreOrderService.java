@@ -7,6 +7,7 @@ import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author liangyq
@@ -82,4 +83,14 @@ public interface IStoreOrderService {
      * @param opt
      */
     void cancelOrder(OrderOptDTO opt);
+
+    /**
+     * 准备发货（平台物流）
+     *
+     * @param storeOrderId
+     * @param storeOrderDetailIds
+     * @param expressId
+     * @return
+     */
+    StoreOrderExt preparePlaceOrder(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId);
 }
