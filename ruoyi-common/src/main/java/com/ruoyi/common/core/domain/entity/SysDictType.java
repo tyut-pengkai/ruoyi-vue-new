@@ -17,7 +17,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class SysDictType extends XktBaseEntity {
-//public class SysDictType extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 

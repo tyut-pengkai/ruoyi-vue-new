@@ -36,7 +36,7 @@ public class SysProductCategoryController extends XktBaseController {
     /**
      * 新增商品分类
      */
-    @PreAuthorize("@ss.hasPermi('system:category:add')")
+//    @PreAuthorize("@ss.hasPermi('system:category:add')")
     @ApiOperation(value = "新增商品分类", httpMethod = "POST", response = R.class)
     @Log(title = "新增商品分类", businessType = BusinessType.INSERT)
     @PostMapping
@@ -47,7 +47,7 @@ public class SysProductCategoryController extends XktBaseController {
     /**
      * 修改商品分类
      */
-    @PreAuthorize("@ss.hasPermi('system:category:edit')")
+//    @PreAuthorize("@ss.hasPermi('system:category:edit')")
     @ApiOperation(value = "修改商品分类", httpMethod = "PUT", response = R.class)
     @Log(title = "修改商品分类", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -58,7 +58,7 @@ public class SysProductCategoryController extends XktBaseController {
     /**
      * 删除商品分类
      */
-    @PreAuthorize("@ss.hasPermi('system:category:remove')")
+//    @PreAuthorize("@ss.hasPermi('system:category:remove')")
     @ApiOperation(value = "删除商品分类", httpMethod = "DELETE", response = R.class)
     @Log(title = "删除商品分类", businessType = BusinessType.DELETE)
     @DeleteMapping("/{prodCateId}")
@@ -70,7 +70,7 @@ public class SysProductCategoryController extends XktBaseController {
     /**
      * 查询商品分类详细
      */
-    @PreAuthorize("@ss.hasPermi('system:category:query')")
+//    @PreAuthorize("@ss.hasPermi('system:category:query')")
     @ApiOperation(value = "查询商品分类详细", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{prodCateId}")
     public R<ProdCateVO> getInfo(@PathVariable Long prodCateId) {
@@ -80,7 +80,7 @@ public class SysProductCategoryController extends XktBaseController {
     /**
      * 获取商品分类列表
      */
-    @PreAuthorize("@ss.hasPermi('system:category:list')")
+//    @PreAuthorize("@ss.hasPermi('system:category:list')")
     @ApiOperation(value = "获取商品分类列表", httpMethod = "POST", response = R.class)
     @PostMapping("/list")
     public R<List<ProdCateListResDTO>> list(@RequestBody ProdCateListVO listVO) {

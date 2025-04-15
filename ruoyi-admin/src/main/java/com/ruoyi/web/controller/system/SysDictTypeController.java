@@ -2,33 +2,35 @@ package com.ruoyi.web.controller.system;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.entity.SysDictData;
 import com.ruoyi.common.core.domain.entity.SysDictType;
 import com.ruoyi.common.core.domain.vo.dictType.*;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.dto.dictType.DictTypeDTO;
 import com.ruoyi.system.domain.dto.dictType.DictTypeDeleteDTO;
 import com.ruoyi.system.domain.dto.dictType.DictTypePageDTO;
-import com.ruoyi.system.domain.dto.dictType.DictTypeResDTO;
+import com.ruoyi.system.mapper.SysDictDataMapper;
+import com.ruoyi.system.mapper.SysDictTypeMapper;
 import com.ruoyi.system.service.ISysDictTypeService;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 数据字典信息
@@ -115,6 +117,41 @@ public class SysDictTypeController extends BaseController {
     @GetMapping("/optionselect")
     public R<List<DictTypeResVO>> optionSelect() {
         return R.ok(BeanUtil.copyToList(dictTypeService.selectAll(), DictTypeResVO.class));
+    }
+
+    final SysDictTypeMapper typeMapper;
+    final SysDictDataMapper dataMapper;
+
+    @PostMapping("/importData")
+    @Transactional
+    public R importData(MultipartFile file) throws Exception {
+        final String importType = "fashion_elements";
+        final String nameA = "流行元素";
+        SysDictType dictType = new SysDictType();
+        dictType.setDictType(importType);
+        dictType.setDictName(nameA);
+        dictType.setStatus("0");
+        dictType.setRemark(nameA);
+        dictType.setCreateBy("admin");
+        typeMapper.insert(dictType);
+
+        ExcelUtil<SysDictData> util = new ExcelUtil<>(SysDictData.class);
+        List<SysDictData> list = util.importExcel(file.getInputStream());
+        List<String> dataList = list.stream().map(SysDictData::getDictValue).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        List<SysDictData> insertList = new ArrayList<>();
+        for (int i = 0; i < dataList.size(); i++) {
+            SysDictData data = new SysDictData();
+            data.setDictSort((long) i + 1);
+            data.setDictValue(dataList.get(i));
+            data.setDictLabel(dataList.get(i));
+            data.setDictType(importType);
+            data.setStatus("0");
+            data.setCreateBy("admin");
+            data.setRemark(nameA + "子项");
+            insertList.add(data);
+        }
+        this.dataMapper.insert(insertList);
+        return R.ok();
     }
 
 
