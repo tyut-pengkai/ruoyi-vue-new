@@ -8,10 +8,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
 import com.ruoyi.xkt.enums.EExpressChannel;
 import com.ruoyi.xkt.manager.ExpressManager;
-import com.ruoyi.xkt.thirdpart.zto.EncryptionType;
-import com.ruoyi.xkt.thirdpart.zto.ZopClient;
-import com.ruoyi.xkt.thirdpart.zto.ZopPublicRequest;
-import com.ruoyi.xkt.thirdpart.zto.ZtoCreateOrderReqDTO;
+import com.ruoyi.xkt.thirdpart.zto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,6 +24,8 @@ public class ZtoExpressManagerImpl implements ExpressManager {
     private static final String CREATE_ORDER_URI = "zto.open.createOrder";
 
     private static final String STRUCTURE_ADDRESS_URI = "zto.innovate.structureNamePhoneAddress";
+
+    public static final String ORDER_PRINT_URI = "zto.open.order.print";
 
     @Value("${zto.appKey:}")
     private String appKey;
@@ -71,6 +70,29 @@ public class ZtoExpressManagerImpl implements ExpressManager {
             log.error("中通订单创建异常", e);
         }
         throw new ServiceException("中通订单创建失败");
+    }
+
+    @Override
+    public String printOrder(String waybillNo) {
+        Assert.notEmpty(waybillNo);
+        ZopClient client = new ZopClient(appKey, appSecret);
+        ZopPublicRequest request = new ZopPublicRequest();
+        request.setBody(JSONUtil.toJsonStr(new ZtoPrintOrderReqDTO(1,waybillNo,true)));
+        request.setUrl(gatewayUrl + ORDER_PRINT_URI);
+        request.setEncryptionType(EncryptionType.MD5);
+        try {
+            String bodyStr = client.execute(request);
+            log.info("中通订单打印返回信息: {}", bodyStr);
+            JSONObject bodyJson = JSONUtil.parseObj(bodyStr);
+            boolean success = bodyJson.getBool("status");
+            if (success) {
+                //TODO 测试环境接口不通
+                return bodyJson.getJSONObject("result").getStr("billCode");
+            }
+        } catch (Exception e) {
+            log.error("中通订单打印异常", e);
+        }
+        throw new ServiceException("中通订单打印失败");
     }
 
     /**

@@ -23,4 +23,12 @@ public interface ExpressManager {
      */
     String shipStoreOrder(ExpressShipReqDTO shipReqDTO);
 
+    /**
+     * 打印面单
+     *
+     * @param waybillNo
+     * @return 文件流Base64编码
+     */
+    String printOrder(String waybillNo);
+
 }
