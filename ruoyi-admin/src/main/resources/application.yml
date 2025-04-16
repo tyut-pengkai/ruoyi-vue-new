@@ -171,10 +171,12 @@ express:
     county: 510114
 
 # 中通配置
-zt:
+zto:
   appKey: 95dc4ecf72fce1a2fbe79
   appSecret: 694ea7e3ea89e3b6aa21aea1a0285d25
   gatewayUrl: https://japi-test.zto.com/
+  accountId: test
+  accountPassword: ZTO123
 
 # 支付宝配置
 alipay:

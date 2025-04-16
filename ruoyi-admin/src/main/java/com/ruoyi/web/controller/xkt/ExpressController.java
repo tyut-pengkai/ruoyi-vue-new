@@ -6,7 +6,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.web.controller.xkt.vo.express.ExpressRegionTreeNodeVO;
 import com.ruoyi.xkt.dto.express.ExpressRegionTreeNodeDTO;
 import com.ruoyi.xkt.manager.ExpressManager;
-import com.ruoyi.xkt.manager.impl.ZtExpressManagerImpl;
+import com.ruoyi.xkt.manager.impl.ZtoExpressManagerImpl;
 import com.ruoyi.xkt.service.IExpressService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,7 +32,7 @@ public class ExpressController extends XktBaseController {
     @Autowired
     private List<ExpressManager> expressManagers;
     @Autowired
-    private ZtExpressManagerImpl ztExpressManager;
+    private ZtoExpressManagerImpl ztoExpressManager;
 
     @PreAuthorize("@ss.hasPermi('system:express:query')")
     @ApiOperation("获取行政规划树")

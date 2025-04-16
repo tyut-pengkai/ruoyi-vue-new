@@ -17,6 +17,7 @@ import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.express.ExpressContactDTO;
 import com.ruoyi.xkt.dto.express.ExpressRegionDTO;
+import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
 import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.enums.*;
@@ -564,10 +565,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public StoreOrderExt prepareShipOrderByPlatform(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
-                                                    Long operatorId) {
+    public StoreOrderExt shipOrderByPlatform(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
+                                             Long operatorId) {
         Assert.notEmpty(storeOrderDetailIds);
-//        ExpressManager expressManager = getExpressManager(expressId);
+        ExpressManager expressManager = getExpressManager(expressId);
         Express express = expressService.getById(expressId);
         if (!BeanValidators.exists(express) || !express.getSystemDeliverAccess()) {
             throw new ServiceException("快递[" + expressId + "]不可用");
@@ -600,10 +601,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
-        //生成请求号
-        String expressReqNo = IdUtil.simpleUUID();
-        List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
         for (StoreOrderDetail orderDetail : orderDetails) {
+            //校验明细状态
             if (!BeanValidators.exists(orderDetail)) {
                 throw new ServiceException("订单明细[" + orderDetail.getId() + "]不存在");
             }
@@ -613,12 +612,20 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(orderDetail.getDetailStatus())) {
                 throw new ServiceException("订单明细[" + order.getId() + "]当前状态无法发货");
             }
+        }
+        //发货
+        ExpressShipReqDTO shipReq = trans2ShipReq(order, orderDetails);
+        String expressWaybillNo = expressManager.shipStoreOrder(shipReq);
+
+        List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
+        for (StoreOrderDetail orderDetail : orderDetails) {
             //明细->已发货
             orderDetail.setDetailStatus(EOrderStatus.SHIPPED.getValue());
             orderDetail.setExpressId(expressId);
             orderDetail.setExpressType(EExpressType.PLATFORM.getValue());
-            orderDetail.setExpressStatus(EExpressStatus.PLACING.getValue());
-            orderDetail.setExpressReqNo(expressReqNo);
+            orderDetail.setExpressStatus(EExpressStatus.PLACED.getValue());
+            orderDetail.setExpressReqNo(shipReq.getExpressReqNo());
+            orderDetail.setExpressWaybillNo(expressWaybillNo);
             int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
@@ -895,6 +902,27 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
         }
         throw new ServiceException("未知物流渠道");
+    }
+
+    private ExpressShipReqDTO trans2ShipReq(StoreOrder order, List<StoreOrderDetail> orderDetails) {
+        ExpressShipReqDTO reqDTO = BeanUtil.toBean(order, ExpressShipReqDTO.class);
+        //生成请求号
+        reqDTO.setExpressReqNo(IdUtil.simpleUUID());
+        //行政区划信息
+        Map<String, ExpressRegionDTO> regionMap = expressService.getRegionMapCache();
+        reqDTO.setDestinationProvinceName(Optional.ofNullable(regionMap.get(order.getDestinationProvinceCode()))
+                .map(ExpressRegionDTO::getParentRegionName).orElse(null));
+        reqDTO.setDestinationCityName(Optional.ofNullable(regionMap.get(order.getDestinationCityCode()))
+                .map(ExpressRegionDTO::getParentRegionName).orElse(null));
+        reqDTO.setDestinationCountyName(Optional.ofNullable(regionMap.get(order.getDestinationCountyCode()))
+                .map(ExpressRegionDTO::getParentRegionName).orElse(null));
+        reqDTO.setOriginProvinceName(Optional.ofNullable(regionMap.get(order.getOriginProvinceCode()))
+                .map(ExpressRegionDTO::getParentRegionName).orElse(null));
+        reqDTO.setOriginCityName(Optional.ofNullable(regionMap.get(order.getOriginCityCode()))
+                .map(ExpressRegionDTO::getParentRegionName).orElse(null));
+        reqDTO.setOriginCountyName(Optional.ofNullable(regionMap.get(order.getOriginCountyCode()))
+                .map(ExpressRegionDTO::getParentRegionName).orElse(null));
+        return reqDTO;
     }
 
     @Data

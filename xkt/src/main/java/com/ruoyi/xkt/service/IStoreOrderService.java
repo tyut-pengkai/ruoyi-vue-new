@@ -93,8 +93,8 @@ public interface IStoreOrderService {
      * @param operatorId
      * @return
      */
-    StoreOrderExt prepareShipOrderByPlatform(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
-                                             Long operatorId);
+    StoreOrderExt shipOrderByPlatform(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
+                                      Long operatorId);
 
     /**
      * 发货（档口物流）

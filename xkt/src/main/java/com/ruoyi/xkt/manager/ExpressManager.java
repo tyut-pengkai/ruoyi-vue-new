@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.manager;
 
+import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
 import com.ruoyi.xkt.enums.EExpressChannel;
 
 /**
@@ -13,5 +14,13 @@ public interface ExpressManager {
      * @return
      */
     EExpressChannel channel();
+
+    /**
+     * 订单发货
+     *
+     * @param shipReqDTO
+     * @return 运单号
+     */
+    String shipStoreOrder(ExpressShipReqDTO shipReqDTO);
 
 }

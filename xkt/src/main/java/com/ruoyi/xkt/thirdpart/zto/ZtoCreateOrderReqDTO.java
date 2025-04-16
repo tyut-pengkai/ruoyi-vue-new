@@ -1,4 +1,4 @@
-package com.ruoyi.xkt.dto.express.zt;
+package com.ruoyi.xkt.thirdpart.zto;
 
 import lombok.Data;
 
@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2025-04-15 19:20
  */
 @Data
-public class CreateOrderReqDTO {
+public class ZtoCreateOrderReqDTO {
     /**
      * 合作模式 ，1：集团客户；2：非集团客户
      */
