@@ -1,8 +1,11 @@
 package com.ruoyi.xkt.dto.express;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
  * @author liangyq
@@ -70,5 +73,48 @@ public class ExpressShipReqDTO {
      * 收货人-详细地址
      */
     private String destinationDetailAddress;
+    /**
+     * 物品信息
+     */
+    private List<OrderItem> orderItems;
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class OrderItem {
+        /**
+         * 货品名称
+         */
+        private String name;
+        /**
+         * 商品分类
+         */
+        private String category;
+        /**
+         * 商品材质
+         */
+        private String material;
+        /**
+         * 大小（长,宽,高）(单位：厘米), 用半角的逗号来分隔长宽高
+         */
+        private String size;
+        /**
+         * 重量（单位：克)
+         */
+        private Long weight;
+        /**
+         * 单价(单位:元)
+         */
+        private Integer unitprice;
+        /**
+         * 货品数量
+         */
+        private Integer quantity;
+        /**
+         * 货品备注
+         */
+        private String remark;
+    }
 
 }

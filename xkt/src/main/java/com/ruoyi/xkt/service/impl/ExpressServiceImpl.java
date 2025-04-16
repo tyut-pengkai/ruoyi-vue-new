@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -16,6 +17,8 @@ import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.dto.express.ExpressContactDTO;
 import com.ruoyi.xkt.dto.express.ExpressRegionDTO;
 import com.ruoyi.xkt.dto.express.ExpressRegionTreeNodeDTO;
+import com.ruoyi.xkt.dto.express.ExpressStructAddressDTO;
+import com.ruoyi.xkt.manager.impl.ZtoExpressManagerImpl;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IExpressService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +39,13 @@ import java.util.stream.Collectors;
 @Service
 public class ExpressServiceImpl implements IExpressService {
 
+    private ExpressRegionDTO emptyRegion = new ExpressRegionDTO();
     @Value("${express.default.province:510000}")
     private String expressDefaultProvince;
     @Value("${express.default.city:510100}")
     private String expressDefaultCity;
     @Value("${express.default.county:510114}")
     private String expressDefaultCounty;
-
     @Autowired
     private ExpressMapper expressMapper;
     @Autowired
@@ -55,6 +58,8 @@ public class ExpressServiceImpl implements IExpressService {
     private StoreMapper storeMapper;
     @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private ZtoExpressManagerImpl ztoExpressManager;
 
     @Override
     public void checkExpress(Long expressId) {
@@ -172,5 +177,40 @@ public class ExpressServiceImpl implements IExpressService {
             redisCache.setCacheList(Constants.EXPRESS_REGION_TREE_CACHE_KEY, treeNodeList);
         }
         return treeNodeList;
+    }
+
+    @Override
+    public ExpressStructAddressDTO parseNamePhoneAddress(String str) {
+        /**
+         * {"address":{"province":"重庆","town":"","city":"重庆市","countyId":"500107","county":"九龙坡区",
+         * "cityId":"500100","detail":"杨九路志龙·观江岭1号","provinceId":"500000"},"phone":"15888888888","name":"张三丰"}
+         */
+        JSONObject rtn = ztoExpressManager.structureNamePhoneAddress(str);
+        JSONObject address = rtn.getJSONObject("address");
+        Assert.notNull(address, "获取行政区划失败");
+        String provinceCode = address.getStr("province");
+        String cityCode = address.getStr("cityId");
+        String countyCode = address.getStr("countyId");
+        String name = rtn.getStr("name");
+        String phone = rtn.getStr("phone");
+        String detailAddress = rtn.getStr("detail");
+//        Assert.notEmpty(provinceCode, "获取省失败");
+//        Assert.notEmpty(cityCode, "获取市失败");
+//        Assert.notEmpty(countyCode, "获取区县失败");
+//        Assert.notEmpty(detailAddress, "获取详细地址失败");
+//        Assert.notEmpty(name, "获取联系人失败");
+//        Assert.isTrue(PhoneUtil.isPhone(phone), "获取联系电话失败");
+        Map<String, ExpressRegionDTO> regionMap = getRegionMapCache();
+        return ExpressStructAddressDTO.builder()
+                .contactName(name)
+                .contactPhoneNumber(phone)
+                .provinceCode(provinceCode)
+                .provinceName(regionMap.getOrDefault(provinceCode, emptyRegion).getRegionName())
+                .cityCode(cityCode)
+                .cityName(regionMap.getOrDefault(cityCode, emptyRegion).getRegionName())
+                .countyCode(countyCode)
+                .countyName(regionMap.getOrDefault(countyCode, emptyRegion).getRegionName())
+                .detailAddress(detailAddress)
+                .build();
     }
 }

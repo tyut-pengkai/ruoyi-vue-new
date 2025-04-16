@@ -614,7 +614,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
         }
         //发货
-        ExpressShipReqDTO shipReq = trans2ShipReq(order, orderDetails);
+        ExpressShipReqDTO shipReq = createShipReq(order, orderDetails);
         String expressWaybillNo = expressManager.shipStoreOrder(shipReq);
 
         List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
@@ -904,7 +904,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         throw new ServiceException("未知物流渠道");
     }
 
-    private ExpressShipReqDTO trans2ShipReq(StoreOrder order, List<StoreOrderDetail> orderDetails) {
+    private ExpressShipReqDTO createShipReq(StoreOrder order, List<StoreOrderDetail> orderDetails) {
         ExpressShipReqDTO reqDTO = BeanUtil.toBean(order, ExpressShipReqDTO.class);
         //生成请求号
         reqDTO.setExpressReqNo(IdUtil.simpleUUID());
@@ -922,6 +922,17 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 .map(ExpressRegionDTO::getParentRegionName).orElse(null));
         reqDTO.setOriginCountyName(Optional.ofNullable(regionMap.get(order.getOriginCountyCode()))
                 .map(ExpressRegionDTO::getParentRegionName).orElse(null));
+        //货物信息
+        List<ExpressShipReqDTO.OrderItem> orderItems = CollUtil.emptyIfNull(orderDetails).stream()
+                .map(o -> ExpressShipReqDTO.OrderItem
+                        .builder()
+                        //TODO 其他信息？
+                        .name(o.getProdTitle())
+                        .quantity(o.getGoodsQuantity())
+                        .build())
+                .collect(Collectors.toList());
+        reqDTO.setOrderItems(orderItems);
+
         return reqDTO;
     }
 

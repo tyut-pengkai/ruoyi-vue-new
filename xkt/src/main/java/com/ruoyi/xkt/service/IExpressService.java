@@ -6,6 +6,7 @@ import com.ruoyi.xkt.domain.ExpressRegion;
 import com.ruoyi.xkt.dto.express.ExpressContactDTO;
 import com.ruoyi.xkt.dto.express.ExpressRegionDTO;
 import com.ruoyi.xkt.dto.express.ExpressRegionTreeNodeDTO;
+import com.ruoyi.xkt.dto.express.ExpressStructAddressDTO;
 
 import java.util.Collection;
 import java.util.List;
@@ -79,6 +80,14 @@ public interface IExpressService {
      * @return
      */
     List<ExpressRegionTreeNodeDTO> getRegionTreeCache();
+
+    /**
+     * 智能解析地址信息
+     *
+     * @param str
+     * @return
+     */
+    ExpressStructAddressDTO parseNamePhoneAddress(String str);
 
 
 }

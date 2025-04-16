@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.manager.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -72,6 +73,34 @@ public class ZtoExpressManagerImpl implements ExpressManager {
         throw new ServiceException("中通订单创建失败");
     }
 
+    /**
+     * 智能解析
+     *
+     * @param str
+     * @return
+     */
+    public JSONObject structureNamePhoneAddress(String str) {
+        ZopClient client = new ZopClient(appKey, appSecret);
+        ZopPublicRequest request = new ZopPublicRequest();
+        JSONObject body = new JSONObject();
+        body.set("address", str);
+        request.setBody(body.toString());
+        request.setUrl(gatewayUrl + STRUCTURE_ADDRESS_URI);
+        request.setEncryptionType(EncryptionType.MD5);
+        try {
+            String bodyStr = client.execute(request);
+            log.info("中通智能解析返回信息: {}", bodyStr);
+            JSONObject bodyJson = JSONUtil.parseObj(bodyStr);
+            boolean success = bodyJson.getBool("status");
+            if (success) {
+                return bodyJson.getJSONObject("result");
+            }
+        } catch (Exception e) {
+            log.error("中通智能解析异常", e);
+        }
+        throw new ServiceException("中通智能解析失败");
+    }
+
     private ZtoCreateOrderReqDTO trans2CreateOrderReq(ExpressShipReqDTO expressShipReqDTO) {
         ZtoCreateOrderReqDTO reqDTO = new ZtoCreateOrderReqDTO();
         //合作模式 ，1：集团客户；2：非集团客户
@@ -112,6 +141,10 @@ public class ZtoExpressManagerImpl implements ExpressManager {
         receiveInfo.setReceiverCity(expressShipReqDTO.getDestinationCityName());
         receiveInfo.setReceiverDistrict(expressShipReqDTO.getDestinationCountyName());
         receiveInfo.setReceiverAddress(expressShipReqDTO.getDestinationDetailAddress());
+
+        //货物信息
+        reqDTO.setOrderItems(BeanUtil.copyToList(expressShipReqDTO.getOrderItems(),
+                ZtoCreateOrderReqDTO.OrderItem.class));
 
         return reqDTO;
     }
