@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.quartz.mapper.DailySaleProductMapper">
+
+    <select id="selectDailySale" resultType="com.ruoyi.quartz.dto.DailySaleProdDTO">
+        SELECT
+            sp.store_id,
+            sp.id AS store_prod_id,
+            sp.prod_art_num,
+            COALESCE ( SUM( CASE WHEN ssd.sale_type = 1 THEN ssd.amount ELSE 0 END ), 0 ) AS saleAmount,
+            COALESCE ( SUM( CASE WHEN ssd.sale_type = 2 THEN ssd.amount ELSE 0 END ), 0 ) AS returnAmount,
+            COALESCE ( SUM( CASE WHEN ssd.sale_type = 1 THEN ssd.quantity ELSE 0 END ), 0 ) AS saleNum,
+            COALESCE ( SUM( CASE WHEN ssd.sale_type = 2 THEN ssd.quantity ELSE 0 END ), 0 ) AS returnNum
+        FROM
+            store_sale_detail ssd
+                JOIN store_product sp ON ssd.store_prod_id = sp.id
+        WHERE
+            ssd.del_flag = 0
+          AND ssd.voucher_date = #{voucherDate}
+        GROUP BY
+            sp.store_id,
+            sp.id
+    </select>
+
+</mapper> 

@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
@@ -10,6 +11,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 档口销售明细对象 store_sale_detail
@@ -91,6 +93,11 @@ public class StoreSaleDetail extends XktBaseEntity {
      */
     @Excel(name = "条码")
     private String sns;
+    /**
+     * 单据日期
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date voucherDate;
 
     @Override
     public String toString() {

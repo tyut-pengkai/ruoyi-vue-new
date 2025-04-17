@@ -89,7 +89,8 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         LoginUser loginUser = SecurityUtils.getLoginUser();
         // 新增档口商品入库
         StoreProductStorage storeProdStorage = BeanUtil.toBean(storeProdStorageDTO, StoreProductStorage.class)
-                .setCode(code).setQuantity(totalNum).setProduceAmount(produceAmount).setOperatorId(loginUser.getUserId()).setOperatorName(loginUser.getUsername());
+                .setCode(code).setQuantity(totalNum).setProduceAmount(produceAmount).setOperatorId(loginUser.getUserId())
+                .setOperatorName(loginUser.getUsername()).setVoucherDate(DateUtils.getNowDate());
         int count = this.storageMapper.insert(storeProdStorage);
         // 新增档口商品入库明细
         List<StoreProductStorageDetail> detailList = storeProdStorageDTO.getDetailList().stream().map(x -> BeanUtil.toBean(x, StoreProductStorageDetail.class)
