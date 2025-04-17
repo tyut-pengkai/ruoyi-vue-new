@@ -116,7 +116,9 @@ public class SecurityConfig
                     .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**").permitAll()
                     .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs", "/druid/**").permitAll()
                     //支付宝回调
-                    .antMatchers("/rest/v1/alipay-notify").permitAll()
+                    .antMatchers("/rest/v1/alipay-callback/**").permitAll()
+                    //物流回调
+                    .antMatchers("/rest/v1/express-callback/**").permitAll()
                     // 除上面外的所有请求全部需要鉴权认证
                     .anyRequest().authenticated();
             })

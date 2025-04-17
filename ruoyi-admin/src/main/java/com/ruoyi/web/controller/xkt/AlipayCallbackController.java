@@ -29,8 +29,8 @@ import java.util.Map;
  */
 @Api(tags = "支付宝回调接口")
 @RestController
-@RequestMapping("/rest/v1/alipay")
-public class AlipayController extends XktBaseController {
+@RequestMapping("/rest/v1/alipay-callback")
+public class AlipayCallbackController extends XktBaseController {
 
     private static final String SUCCESS = "success";
     private static final String FAILURE = "failure";

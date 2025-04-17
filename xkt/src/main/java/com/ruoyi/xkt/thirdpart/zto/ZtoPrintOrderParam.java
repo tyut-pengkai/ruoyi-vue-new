@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ZtoPrintOrderReqDTO {
+public class ZtoPrintOrderParam {
     /**
      * 打印类型(0:JPG, 1:PDF.默认为PDF)
      */

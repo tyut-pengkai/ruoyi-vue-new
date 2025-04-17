@@ -11,7 +11,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum EExpressChannel {
 
-    ZTO(1, "中通", 1L, "ZTO");
+    ZTO(1, "中通", 1L, "ZTO"),
+    YTO(2, "圆通", 2L, "YTO"),
+    ;
 
     private final Integer value;
     private final String label;

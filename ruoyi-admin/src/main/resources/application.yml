@@ -178,6 +178,14 @@ zto:
   accountId: test
   accountPassword: ZTO123
 
+# 圆通配置
+yto:
+  appKey: K9991024989
+  appSecret: u2Z1F7Fh
+  appKey2: TEST
+  appSecret2: 123456
+  gatewayUrl: https://openuat.yto56test.com:6443/
+
 # 支付宝配置
 alipay:
   appId: 9021000144616672

@@ -2,16 +2,22 @@ package com.ruoyi.xkt.manager.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
 import com.ruoyi.xkt.enums.EExpressChannel;
 import com.ruoyi.xkt.manager.ExpressManager;
 import com.ruoyi.xkt.thirdpart.zto.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author liangyq
@@ -19,7 +25,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class ZtoExpressManagerImpl implements ExpressManager {
+public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
 
     private static final String CREATE_ORDER_URI = "zto.open.createOrder";
 
@@ -42,19 +48,23 @@ public class ZtoExpressManagerImpl implements ExpressManager {
     @Value("${zto.accountPassword:}")
     private String accountPassword;
 
+    @Autowired
+    private RedisCache redisCache;
+
+    private ZopClient client;
+
     @Override
     public EExpressChannel channel() {
-        return EExpressChannel.ZTO;
+        return EExpressChannel.YTO;
     }
 
     @Override
     public String shipStoreOrder(ExpressShipReqDTO shipReqDTO) {
         Assert.notNull(shipReqDTO);
         Assert.notEmpty(shipReqDTO.getExpressReqNo());
-        ZtoCreateOrderReqDTO createOrderReq = trans2CreateOrderReq(shipReqDTO);
-        ZopClient client = new ZopClient(appKey, appSecret);
+        ZtoCreateOrderParam createOrderParam = trans2CreateOrderReq(shipReqDTO);
         ZopPublicRequest request = new ZopPublicRequest();
-        request.setBody(JSONUtil.toJsonStr(createOrderReq));
+        request.setBody(JSONUtil.toJsonStr(createOrderParam));
         request.setUrl(gatewayUrl + CREATE_ORDER_URI);
         request.setEncryptionType(EncryptionType.MD5);
         try {
@@ -75,9 +85,8 @@ public class ZtoExpressManagerImpl implements ExpressManager {
     @Override
     public String printOrder(String waybillNo) {
         Assert.notEmpty(waybillNo);
-        ZopClient client = new ZopClient(appKey, appSecret);
         ZopPublicRequest request = new ZopPublicRequest();
-        request.setBody(JSONUtil.toJsonStr(new ZtoPrintOrderReqDTO(1,waybillNo,true)));
+        request.setBody(JSONUtil.toJsonStr(new ZtoPrintOrderParam(1, waybillNo, true)));
         request.setUrl(gatewayUrl + ORDER_PRINT_URI);
         request.setEncryptionType(EncryptionType.MD5);
         try {
@@ -87,7 +96,12 @@ public class ZtoExpressManagerImpl implements ExpressManager {
             boolean success = bodyJson.getBool("status");
             if (success) {
                 //TODO 测试环境接口不通
-                return bodyJson.getJSONObject("result").getStr("billCode");
+                //等待推送
+                TimeUnit.SECONDS.sleep(3);
+                String rtn = redisCache.getCacheObject("ZTO_" + waybillNo);
+                if (StrUtil.isNotEmpty(rtn)) {
+                    return rtn;
+                }
             }
         } catch (Exception e) {
             log.error("中通订单打印异常", e);
@@ -102,7 +116,6 @@ public class ZtoExpressManagerImpl implements ExpressManager {
      * @return
      */
     public JSONObject structureNamePhoneAddress(String str) {
-        ZopClient client = new ZopClient(appKey, appSecret);
         ZopPublicRequest request = new ZopPublicRequest();
         JSONObject body = new JSONObject();
         body.set("address", str);
@@ -123,8 +136,8 @@ public class ZtoExpressManagerImpl implements ExpressManager {
         throw new ServiceException("中通智能解析失败");
     }
 
-    private ZtoCreateOrderReqDTO trans2CreateOrderReq(ExpressShipReqDTO expressShipReqDTO) {
-        ZtoCreateOrderReqDTO reqDTO = new ZtoCreateOrderReqDTO();
+    private ZtoCreateOrderParam trans2CreateOrderReq(ExpressShipReqDTO expressShipReqDTO) {
+        ZtoCreateOrderParam reqDTO = new ZtoCreateOrderParam();
         //合作模式 ，1：集团客户；2：非集团客户
         reqDTO.setPartnerType("2");
         //partnerType为1时，orderType：1：全网件 2：预约件。 partnerType为2时，orderType：1：全网件 2：预约件（返回运单号） 3：预约件（不返回运单号） 4：星联全网件
@@ -133,7 +146,7 @@ public class ZtoExpressManagerImpl implements ExpressManager {
         reqDTO.setPartnerOrderCode(expressShipReqDTO.getExpressReqNo());
 
         //账号信息
-        ZtoCreateOrderReqDTO.AccountInfo accountInfo = new ZtoCreateOrderReqDTO.AccountInfo();
+        ZtoCreateOrderParam.AccountInfo accountInfo = new ZtoCreateOrderParam.AccountInfo();
         reqDTO.setAccountInfo(accountInfo);
         //电子面单账号（partnerType为2，orderType传1,2,4时必传）
         accountInfo.setAccountId(accountId);
@@ -145,7 +158,7 @@ public class ZtoExpressManagerImpl implements ExpressManager {
         accountInfo.setCustomerId(null);
 
         //发件人信息
-        ZtoCreateOrderReqDTO.SenderInfo senderInfo = new ZtoCreateOrderReqDTO.SenderInfo();
+        ZtoCreateOrderParam.SenderInfo senderInfo = new ZtoCreateOrderParam.SenderInfo();
         reqDTO.setSenderInfo(senderInfo);
         senderInfo.setSenderName(expressShipReqDTO.getOriginCountyName());
         senderInfo.setSenderPhone(expressShipReqDTO.getOriginContactPhoneNumber());
@@ -155,7 +168,7 @@ public class ZtoExpressManagerImpl implements ExpressManager {
         senderInfo.setSenderAddress(expressShipReqDTO.getOriginDetailAddress());
 
         //收件人信息
-        ZtoCreateOrderReqDTO.ReceiveInfo receiveInfo = new ZtoCreateOrderReqDTO.ReceiveInfo();
+        ZtoCreateOrderParam.ReceiveInfo receiveInfo = new ZtoCreateOrderParam.ReceiveInfo();
         reqDTO.setReceiveInfo(receiveInfo);
         receiveInfo.setReceiverName(expressShipReqDTO.getDestinationContactName());
         receiveInfo.setReceiverPhone(expressShipReqDTO.getDestinationContactPhoneNumber());
@@ -166,10 +179,14 @@ public class ZtoExpressManagerImpl implements ExpressManager {
 
         //货物信息
         reqDTO.setOrderItems(BeanUtil.copyToList(expressShipReqDTO.getOrderItems(),
-                ZtoCreateOrderReqDTO.OrderItem.class));
+                ZtoCreateOrderParam.OrderItem.class));
 
         return reqDTO;
     }
 
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.client = new ZopClient(appKey, appSecret);
+    }
 }

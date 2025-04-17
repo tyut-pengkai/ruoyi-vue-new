@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2025-04-15 19:20
  */
 @Data
-public class ZtoCreateOrderReqDTO {
+public class ZtoCreateOrderParam {
     /**
      * 合作模式 ，1：集团客户；2：非集团客户
      */
