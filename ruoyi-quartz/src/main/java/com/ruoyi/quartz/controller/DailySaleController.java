@@ -39,4 +39,10 @@ public class DailySaleController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/cate-sort")
+    public R dailyCateSort(SysJob sysJob) {
+        task.categorySort();
+        return R.ok();
+    }
+
 }

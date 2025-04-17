@@ -18,10 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.ruoyi.common.utils.SecurityUtils.getUsername;
@@ -110,8 +107,10 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
     @Transactional(readOnly = true)
     public List<ProdCateListResDTO> selectList(ProdCateListDTO listDTO) {
         LambdaQueryWrapper<SysProductCategory> queryWrapper = new LambdaQueryWrapper<SysProductCategory>()
+                // 筛选第一级菜单
+                .ne(SysProductCategory::getParentId, 0L)
                 .eq(SysProductCategory::getDelFlag, Constants.UNDELETED)
-                .orderByAsc(SysProductCategory::getOrderNum);
+                .orderByAsc(Arrays.asList(SysProductCategory::getOrderNum, SysProductCategory::getId));
         if (StringUtils.isNotBlank(listDTO.getName())) {
             queryWrapper.like(SysProductCategory::getName, listDTO.getName());
         }
