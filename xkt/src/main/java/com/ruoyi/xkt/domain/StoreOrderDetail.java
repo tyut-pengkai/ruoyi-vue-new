@@ -113,7 +113,7 @@ public class StoreOrderDetail extends SimpleEntity {
     /**
      * 退货原因
      */
-    private Integer refundReasonCode;
+    private String refundReasonCode;
     /**
      * 退货拒绝原因
      */

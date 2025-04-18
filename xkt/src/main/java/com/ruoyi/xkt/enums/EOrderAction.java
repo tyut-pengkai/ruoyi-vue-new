@@ -17,6 +17,7 @@ public enum EOrderAction {
     PAY(4, "支付"),
     CANCEL(5, "取消"),
     SHIP(6, "发货"),
+    COMPLETE(7, "完成"),
     ;
 
     private final Integer value;

@@ -10,6 +10,8 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.web.controller.xkt.vo.order.*;
+import com.ruoyi.xkt.domain.StoreOrderDetail;
+import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
 import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
@@ -24,7 +26,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author liangyq
@@ -59,7 +63,7 @@ public class StoreOrderController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:order:edit')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @ApiOperation("修改订单")
-    @PutMapping("edit")
+    @PostMapping("edit")
     public R<Long> edit(@Valid @RequestBody StoreOrderUpdateReqVO vo) {
         StoreOrderUpdateDTO dto = BeanUtil.toBean(vo, StoreOrderUpdateDTO.class);
         dto.setOrderUserId(SecurityUtils.getUserId());
@@ -86,7 +90,7 @@ public class StoreOrderController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:order:edit')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @ApiOperation("取消订单")
-    @PutMapping("cancel")
+    @PostMapping("cancel")
     public R cancel(@Valid @RequestBody StoreOrderCancelReqVO vo) {
         OrderOptDTO dto = OrderOptDTO.builder()
                 .storeOrderId(vo.getStoreOrderId())
@@ -120,6 +124,67 @@ public class StoreOrderController extends XktBaseController {
         Page<StoreOrderPageItemDTO> pageDTO = storeOrderService.page(queryDTO);
         return success(PageVO.of(pageDTO, StoreOrderPageItemVO.class));
     }
+
+    @PreAuthorize("@ss.hasPermi('system:order:add')")
+    @Log(title = "订单", businessType = BusinessType.OTHER)
+    @ApiOperation("发货-平台物流")
+    @PostMapping("ship-platform")
+    public R<List<StoreOrderShipRespVO>> shipByPlatform(@Valid @RequestBody StoreOrderShipByPlatformReqVO vo) {
+        //TODO 权限
+        StoreOrderExt orderExt = storeOrderService.shipOrderByPlatform(vo.getStoreOrderId(),
+                vo.getStoreOrderDetailIds(), vo.getExpressId(), SecurityUtils.getUserId());
+        List<StoreOrderShipRespVO> respList = new ArrayList<>(vo.getStoreOrderDetailIds().size());
+        for (StoreOrderDetail detail : orderExt.getOrderDetails()) {
+            if (vo.getStoreOrderDetailIds().contains(detail.getId())) {
+                respList.add(new StoreOrderShipRespVO(detail.getId(), detail.getExpressWaybillNo()));
+            }
+        }
+        return success(respList);
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:order:add')")
+    @Log(title = "订单", businessType = BusinessType.OTHER)
+    @ApiOperation("发货-档口物流")
+    @PostMapping("ship-store")
+    public R<List<StoreOrderShipRespVO>> shipByStore(@Valid @RequestBody StoreOrderShipByStoreReqVO vo) {
+        //TODO 权限
+        StoreOrderExt orderExt = storeOrderService.shipOrderByStore(vo.getStoreOrderId(),
+                vo.getStoreOrderDetailIds(), vo.getExpressId(), vo.getExpressWaybillNo(), SecurityUtils.getUserId());
+        List<StoreOrderShipRespVO> respList = new ArrayList<>(vo.getStoreOrderDetailIds().size());
+        for (StoreOrderDetail detail : orderExt.getOrderDetails()) {
+            if (vo.getStoreOrderDetailIds().contains(detail.getId())) {
+                respList.add(new StoreOrderShipRespVO(detail.getId(), detail.getExpressWaybillNo()));
+            }
+        }
+        return success(respList);
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:order:add')")
+    @Log(title = "订单", businessType = BusinessType.OTHER)
+    @ApiOperation("打印面单")
+    @PostMapping("print")
+    public R<List<StoreOrderPrintRespVO>> print(@Valid @RequestBody StoreOrderPrintReqVO vo) {
+        //TODO 权限
+        List<ExpressPrintDTO> dtoList = storeOrderService.printOrder(vo.getStoreOrderDetailIds());
+        List<StoreOrderPrintRespVO> rtnList = dtoList.stream().map(o -> {
+            StoreOrderPrintRespVO rtn = new StoreOrderPrintRespVO();
+            rtn.setExpressWaybillNo(o.getWaybillNo());
+            rtn.setResult(o.getResult());
+            return rtn;
+        }).collect(Collectors.toList());
+        return success(rtnList);
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:order:add')")
+    @Log(title = "订单", businessType = BusinessType.OTHER)
+    @ApiOperation("确认收货")
+    @PostMapping("receipt")
+    public R receipt(@Valid @RequestBody StoreOrderReceiptReqVO vo) {
+        //TODO 权限
+        storeOrderService.receiptOrder(vo.getStoreOrderId(), SecurityUtils.getUserId());
+        return success();
+    }
+
 
     /**
      * 根据支付渠道匹配支付类

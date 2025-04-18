@@ -1,10 +1,12 @@
 package com.ruoyi.xkt.manager.impl;
 
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
 import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
 import com.ruoyi.xkt.enums.EExpressChannel;
 import com.ruoyi.xkt.manager.ExpressManager;
@@ -17,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author liangyq
@@ -72,28 +76,34 @@ public class YtoExpressManagerImpl implements ExpressManager {
     }
 
     @Override
-    public String printOrder(String waybillNo) {
-        YtoPrintOrderParam printOrderParam = YtoPrintOrderParam.builder().waybillNo(waybillNo).build();
-        try {
-            String param = JSONUtil.toJsonStr(printOrderParam);
-            String sign = YtoSignUtil.sign("waybill_print_adapter", "v1", param, appSecret);
-            YtoPublicRequest request = YtoPublicRequest.builder()
-                    .timestamp(System.currentTimeMillis())
-                    .param(param)
-                    .format(YtoPublicRequest.EFormat.JSON)
-                    .sign(sign).build();
-            String rtnStr = HttpUtil.post(gatewayUrl + "open/waybill_print_adapter/v1/N364gM/" + appKey,
-                    JSONUtil.toJsonStr(request));
-            log.info("圆通打印回单返回信息: {}", rtnStr);
-            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
-            String rtn = rtnJson.getJSONObject("data").getStr("pdfBase64");
-            if (StrUtil.isNotEmpty(rtn)) {
-                return rtn;
+    public List<ExpressPrintDTO> printOrder(Collection<String> waybillNos) {
+        Assert.notEmpty(waybillNos);
+        List<ExpressPrintDTO> list = new ArrayList<>(waybillNos.size());
+        for (String waybillNo : waybillNos) {
+            YtoPrintOrderParam printOrderParam = YtoPrintOrderParam.builder().waybillNo(waybillNo).build();
+            try {
+                String param = JSONUtil.toJsonStr(printOrderParam);
+                String sign = YtoSignUtil.sign("waybill_print_adapter", "v1", param, appSecret);
+                YtoPublicRequest request = YtoPublicRequest.builder()
+                        .timestamp(System.currentTimeMillis())
+                        .param(param)
+                        .format(YtoPublicRequest.EFormat.JSON)
+                        .sign(sign).build();
+                String rtnStr = HttpUtil.post(gatewayUrl + "open/waybill_print_adapter/v1/N364gM/" + appKey,
+                        JSONUtil.toJsonStr(request));
+                log.info("圆通打印面单返回信息: {}", rtnStr);
+                JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
+                String rtn = rtnJson.getJSONObject("data").getStr("pdfBase64");
+                if (StrUtil.isNotEmpty(rtn)) {
+                    list.add(new ExpressPrintDTO(waybillNo, rtn));
+                    continue;
+                }
+            } catch (Exception e) {
+                log.error("圆通打印面单异常" + waybillNo, e);
             }
-        } catch (Exception e) {
-            log.error("圆通打印回单异常", e);
+            throw new ServiceException("圆通打印面单失败");
         }
-        throw new ServiceException("圆通打印回单失败");
+        return list;
     }
 
 

@@ -1,7 +1,11 @@
 package com.ruoyi.xkt.manager;
 
+import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
 import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
 import com.ruoyi.xkt.enums.EExpressChannel;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author liangyq
@@ -26,9 +30,9 @@ public interface ExpressManager {
     /**
      * 打印面单
      *
-     * @param waybillNo
-     * @return 文件流Base64编码
+     * @param waybillNos
+     * @return
      */
-    String printOrder(String waybillNo);
+    List<ExpressPrintDTO> printOrder(Collection<String> waybillNos);
 
 }

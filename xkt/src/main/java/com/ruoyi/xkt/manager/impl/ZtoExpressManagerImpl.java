@@ -7,6 +7,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
 import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
 import com.ruoyi.xkt.enums.EExpressChannel;
 import com.ruoyi.xkt.manager.ExpressManager;
@@ -17,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -83,30 +87,43 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
     }
 
     @Override
-    public String printOrder(String waybillNo) {
-        Assert.notEmpty(waybillNo);
-        ZopPublicRequest request = new ZopPublicRequest();
-        request.setBody(JSONUtil.toJsonStr(new ZtoPrintOrderParam(1, waybillNo, true)));
-        request.setUrl(gatewayUrl + ORDER_PRINT_URI);
-        request.setEncryptionType(EncryptionType.MD5);
-        try {
-            String bodyStr = client.execute(request);
-            log.info("中通订单打印返回信息: {}", bodyStr);
-            JSONObject bodyJson = JSONUtil.parseObj(bodyStr);
-            boolean success = bodyJson.getBool("status");
-            if (success) {
-                //TODO 测试环境接口不通
-                //等待推送
-                TimeUnit.SECONDS.sleep(3);
-                String rtn = redisCache.getCacheObject("ZTO_" + waybillNo);
-                if (StrUtil.isNotEmpty(rtn)) {
-                    return rtn;
+    public List<ExpressPrintDTO> printOrder(Collection<String> waybillNos) {
+        Assert.notEmpty(waybillNos);
+        List<ExpressPrintDTO> list = new ArrayList<>(waybillNos.size());
+        for (String waybillNo : waybillNos) {
+            ZopPublicRequest request = new ZopPublicRequest();
+            request.setBody(JSONUtil.toJsonStr(new ZtoPrintOrderParam(1, waybillNo, true)));
+            request.setUrl(gatewayUrl + ORDER_PRINT_URI);
+            request.setEncryptionType(EncryptionType.MD5);
+            try {
+                String bodyStr = client.execute(request);
+                log.info("中通订单打印返回信息: {}", bodyStr);
+                JSONObject bodyJson = JSONUtil.parseObj(bodyStr);
+                boolean success = bodyJson.getBool("status");
+                if (success) {
+                    continue;
                 }
+            } catch (Exception e) {
+                log.error("中通订单打印异常", e);
             }
-        } catch (Exception e) {
-            log.error("中通订单打印异常", e);
+            throw new ServiceException("中通订单打印失败");
         }
-        throw new ServiceException("中通订单打印失败");
+        //等待推送
+        try {
+            //TODO 等待时间？
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            throw new ServiceException("系统异常");
+        }
+        for (String waybillNo : waybillNos) {
+            //从缓存中获取
+            String rtn = redisCache.getCacheObject("ZTO_" + waybillNo);
+            if (StrUtil.isEmpty(rtn)) {
+                throw new ServiceException("中通订单打印失败，未能获取面单");
+            }
+            list.add(new ExpressPrintDTO(waybillNo, rtn));
+        }
+        return list;
     }
 
     /**

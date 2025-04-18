@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service;
 
 import com.github.pagehelper.Page;
 import com.ruoyi.xkt.domain.StoreOrder;
+import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
 import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
@@ -85,7 +86,7 @@ public interface IStoreOrderService {
     void cancelOrder(OrderOptDTO opt);
 
     /**
-     * 准备发货（平台物流）
+     * 发货（平台物流）
      *
      * @param storeOrderId
      * @param storeOrderDetailIds
@@ -108,4 +109,31 @@ public interface IStoreOrderService {
      */
     StoreOrderExt shipOrderByStore(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
                                    String expressWaybillNo, Long operatorId);
+
+    /**
+     * 打印面单
+     *
+     * @param storeOrderDetailIds
+     * @return
+     */
+    List<ExpressPrintDTO> printOrder(List<Long> storeOrderDetailIds);
+
+    /**
+     * 确认收货
+     *
+     * @param storeOrderId
+     * @param operatorId
+     * @return
+     */
+    StoreOrderExt receiptOrder(Long storeOrderId, Long operatorId);
+
+    /**
+     * 创建售后订单
+     *
+     * @param afterSaleDTO
+     * @return
+     */
+    StoreOrderExt createAfterSaleOrder(StoreOrderAfterSaleDTO afterSaleDTO);
+
+
 }

@@ -108,7 +108,7 @@ public class StoreOrderPageItemVO extends StoreOrderDTO {
      * 退货原因
      */
     @ApiModelProperty(value = "退货原因")
-    private Integer refundReasonCode;
+    private String refundReasonCode;
     /**
      * 退货拒绝原因
      */
@@ -351,7 +351,7 @@ public class StoreOrderPageItemVO extends StoreOrderDTO {
          * 退货原因
          */
         @ApiModelProperty(value = "退货原因")
-        private Integer refundReasonCode;
+        private String refundReasonCode;
         /**
          * 退货拒绝原因
          */
