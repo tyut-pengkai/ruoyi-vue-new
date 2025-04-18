@@ -2,6 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.UserSubscriptions;
+import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageResDTO;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,5 +24,11 @@ public interface UserSubscriptionsMapper extends BaseMapper<UserSubscriptions> {
      * @return
      */
     List<UserSubscPageResDTO> selectUserSubscPage(@Param("userId") Long userId, @Param("storeName") String storeName);
+
+    /**
+     * 获取档口关注前10
+     * @return
+     */
+    List<DailyStoreTagDTO> selectTop10List();
 
 }

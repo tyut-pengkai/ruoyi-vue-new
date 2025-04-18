@@ -35,5 +35,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             uf.del_flag = 0 AND uf.user_id = #{userId}
     </select>
 
+    <select id="selectTop10List"  resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">
+        SELECT
+            uf.store_id,
+            COUNT( uf.id ) AS count
+        FROM
+            user_favorites uf
+        WHERE
+            uf.del_flag = 0
+        GROUP BY
+            uf.store_id
+        ORDER BY
+            count DESC
+            LIMIT 10
+    </select>
+
 
 </mapper>

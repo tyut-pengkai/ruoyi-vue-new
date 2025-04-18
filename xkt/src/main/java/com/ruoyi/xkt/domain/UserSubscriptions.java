@@ -9,7 +9,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * 用户关注u档口对象 user_subscriptions
+ * 用户关注档口对象 user_subscriptions
  *
  * @author ruoyi
  * @date 2025-03-26

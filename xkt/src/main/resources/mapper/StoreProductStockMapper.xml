@@ -173,4 +173,37 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             create_time DESC
     </select>
 
+    <select id="selectTop10List" resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">
+        SELECT
+            sps.store_id,
+            SUM(
+                IFNULL(size_30, 0) +
+                IFNULL(size_31, 0) +
+                IFNULL(size_32, 0) +
+                IFNULL(size_33, 0) +
+                IFNULL(size_34, 0) +
+                IFNULL(size_35, 0) +
+                IFNULL(size_36, 0) +
+                IFNULL(size_37, 0) +
+                IFNULL(size_38, 0) +
+                IFNULL(size_39, 0) +
+                IFNULL(size_40, 0) +
+                IFNULL(size_41, 0) +
+                IFNULL(size_42, 0) +
+                IFNULL(size_43, 0)
+                ) AS count
+        FROM
+            store_product_stock sps
+        WHERE
+            sps.del_flag = 0
+            AND sps.create_time &gt;= #{oneMonthAgo}
+            AND sps.create_time &lt;= #{yesterday}
+        GROUP BY
+            sps.store_id
+        ORDER BY
+            count DESC
+            LIMIT 10
+    </select>
+
+
 </mapper>

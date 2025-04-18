@@ -2,10 +2,13 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductStock;
+import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageResDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -70,4 +73,11 @@ public interface StoreProductStockMapper extends BaseMapper<StoreProductStock> {
      */
     List<StoreProdStockPageResDTO> selectStockPage(StoreProdStockPageDTO pageDTO);
 
+    /**
+     * 筛选库存前10的档口
+     * @param yesterday 昨天
+     * @param oneMonthAgo 一月前
+     * @return
+     */
+    List<DailyStoreTagDTO> selectTop10List(@Param("yesterday") Date yesterday,@Param("oneMonthAgo") Date oneMonthAgo);
 }

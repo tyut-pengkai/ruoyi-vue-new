@@ -45,4 +45,10 @@ public class DailySaleController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/store-tag")
+    public R dailyStoreTag(SysJob sysJob) {
+        task.dailyStoreTag();
+        return R.ok();
+    }
+
 }

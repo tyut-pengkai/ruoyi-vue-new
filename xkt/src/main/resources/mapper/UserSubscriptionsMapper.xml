@@ -34,5 +34,19 @@
         <if test="storeName != null  and storeName != ''">and s.store_name = #{storeName}</if>
     </select>
 
+    <select id="selectTop10List" resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">
+        SELECT
+            us.store_id,
+            SUM( us.id ) AS count
+        FROM
+            user_subscriptions us
+        WHERE
+            us.del_flag = 0
+        GROUP BY
+            us.store_id
+        ORDER BY
+            count DESC
+    </select>
+
 
 </mapper>
