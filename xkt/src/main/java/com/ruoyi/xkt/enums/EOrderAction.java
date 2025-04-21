@@ -18,6 +18,10 @@ public enum EOrderAction {
     CANCEL(5, "取消"),
     SHIP(6, "发货"),
     COMPLETE(7, "完成"),
+    APPLY_AFTER_SALE(8, "申请售后"),
+    REJECT_AFTER_SALE(9, "拒绝售后"),
+    CONFIRM_AFTER_SALE(10, "确认售后"),
+    REFUND(11, "退款"),
     ;
 
     private final Integer value;

@@ -1,19 +1,26 @@
 package com.ruoyi.xkt.manager.impl;
 
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.NumberUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.diagnosis.DiagnosisUtils;
 import com.alipay.api.domain.AlipayTradeQueryModel;
+import com.alipay.api.domain.AlipayTradeRefundModel;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.xkt.domain.StoreOrderDetail;
 import com.ruoyi.xkt.dto.finance.AlipayReqDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderExt;
+import com.ruoyi.xkt.dto.order.StoreOrderRefund;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 import com.ruoyi.xkt.enums.EPayStatus;
@@ -22,6 +29,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
 
 /**
  * @author liangyq
@@ -121,6 +130,46 @@ public class AliPaymentMangerImpl implements PaymentManager {
             default:
                 throw new ServiceException("未知的支付来源");
         }
+    }
+
+    @Override
+    public void refundStoreOrder(StoreOrderRefund orderRefund) {
+        Assert.notNull(orderRefund);
+        Assert.notNull(orderRefund.getOriginOrder());
+        Assert.notNull(orderRefund.getRefundOrder());
+        Assert.notEmpty(orderRefund.getRefundOrderDetails());
+        Assert.notEmpty(orderRefund.getOriginOrder().getPayTradeNo());
+        AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
+                alipayPublicKey, signType);
+        // 构造请求参数以调用接口
+        AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
+        AlipayTradeRefundModel model = new AlipayTradeRefundModel();
+        // 设置商户订单号
+        model.setOutTradeNo(orderRefund.getOriginOrder().getOrderNo());
+        // 设置支付宝交易号
+        model.setTradeNo(orderRefund.getOriginOrder().getPayTradeNo());
+        // 设置退款金额
+        BigDecimal amount = BigDecimal.ZERO;
+        for (StoreOrderDetail orderDetail:orderRefund.getRefundOrderDetails()){
+            //TODO 暂时商品金额+快递费一起退，需调整为实际退款金额
+            amount = NumberUtil.add(amount,orderDetail.getTotalAmount());
+        }
+        model.setRefundAmount(amount.toPlainString());
+        // 设置退款原因说明
+        model.setRefundReason("正常退款");
+        // 设置退款请求号
+        model.setOutRequestNo(orderRefund.getRefundOrder().getOrderNo());
+        try {
+            AlipayTradeRefundResponse response = alipayClient.execute(request);
+            log.info("支付宝退款：{}",response.getBody());
+            if (response.isSuccess()){
+                //TODO 沙箱环境接口不通
+                return;
+            }
+        }catch (Exception e){
+            log.error("退款异常", e);
+        }
+        throw new ServiceException("退款失败");
     }
 
     @Override

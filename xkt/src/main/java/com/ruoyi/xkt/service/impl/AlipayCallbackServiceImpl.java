@@ -53,7 +53,7 @@ public class AlipayCallbackServiceImpl implements IAlipayCallbackService {
         //更新订单状态
         StoreOrder order = storeOrderService.getByOrderNo(info.getOutTradeNo());
         Assert.notNull(order);
-        StoreOrderExt orderExt = storeOrderService.paySuccess(order.getId(), info.getTotalAmount(),
+        StoreOrderExt orderExt = storeOrderService.paySuccess(order.getId(), info.getTradeNo(), info.getTotalAmount(),
                 info.getReceiptAmount());
         //创建收款单
         financeBillService.createCollectionBillAfterOrderPaid(orderExt, info.getId(), EPayChannel.ALI_PAY);

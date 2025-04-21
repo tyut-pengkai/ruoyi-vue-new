@@ -9,7 +9,7 @@ import java.util.List;
  * @date 2025-04-18 16:17
  */
 @Data
-public class StoreOrderAfterSaleDTO {
+public class StoreOrderRefundRejectDTO {
 
     private Long storeOrderId;
 
@@ -17,9 +17,6 @@ public class StoreOrderAfterSaleDTO {
 
     private Long operatorId;
 
-    private String refundReasonCode;
+    private String refundRejectReason;
 
-    private Long expressId;
-
-    private String expressWaybillNo;
 }

@@ -72,18 +72,19 @@ public interface IStoreOrderService {
      * TODO 更新扣除手续费后的金额
      *
      * @param storeOrderId
+     * @param payTradeNo
      * @param totalAmount
      * @param realTotalAmount
      * @return
      */
-    StoreOrderExt paySuccess(Long storeOrderId, BigDecimal totalAmount, BigDecimal realTotalAmount);
+    StoreOrderExt paySuccess(Long storeOrderId, String payTradeNo, BigDecimal totalAmount, BigDecimal realTotalAmount);
 
     /**
      * 取消订单
      *
      * @param opt
      */
-    void cancelOrder(OrderOptDTO opt);
+    void cancelOrder(StoreOrderCancelDTO opt);
 
     /**
      * 发货（平台物流）
@@ -134,6 +135,28 @@ public interface IStoreOrderService {
      * @return
      */
     StoreOrderExt createAfterSaleOrder(StoreOrderAfterSaleDTO afterSaleDTO);
+
+    /**
+     * 拒绝退款
+     *
+     * @param refundRejectDTO
+     */
+    void rejectRefundOrder(StoreOrderRefundRejectDTO refundRejectDTO);
+
+    /**
+     * 准备退款
+     *
+     * @param refundConfirmDTO
+     * @return
+     */
+    StoreOrderRefund prepareRefundOrder(StoreOrderRefundConfirmDTO refundConfirmDTO);
+
+    /**
+     * 退款成功
+     *
+     * @param storeOrderRefund
+     */
+    void refundSuccess(StoreOrderRefund storeOrderRefund);
 
 
 }

@@ -14,23 +14,17 @@ import java.util.List;
  */
 @ApiModel
 @Data
-public class StoreOrderAfterSaleReqVO {
+public class StoreOrderRefundRejectVO {
 
     @NotNull(message = "订单ID不能为空")
     @ApiModelProperty(value = "订单ID")
     private Long storeOrderId;
 
-    @NotEmpty(message = "订单明细ID不能为空")
-    @ApiModelProperty(value = "订单明细ID")
+    @NotEmpty(message = "明细ID不能为空")
+    @ApiModelProperty(value = "明细ID集合")
     private List<Long> storeOrderDetailIds;
 
-    @NotNull(message = "退货原因不能为空")
-    @ApiModelProperty(value = "退货原因code")
-    private String refundReasonCode;
+    @ApiModelProperty(value = "原因")
+    private String refundRejectReason;
 
-    @ApiModelProperty(value = "物流ID")
-    private Long expressId;
-
-    @ApiModelProperty(value = "物流运单号")
-    private String expressWaybillNo;
 }

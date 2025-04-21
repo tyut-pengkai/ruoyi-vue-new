@@ -92,7 +92,7 @@ public class StoreOrderController extends XktBaseController {
     @ApiOperation("取消订单")
     @PostMapping("cancel")
     public R cancel(@Valid @RequestBody StoreOrderCancelReqVO vo) {
-        OrderOptDTO dto = OrderOptDTO.builder()
+        StoreOrderCancelDTO dto = StoreOrderCancelDTO.builder()
                 .storeOrderId(vo.getStoreOrderId())
                 .operatorId(SecurityUtils.getUserId())
                 .build();
@@ -185,6 +185,47 @@ public class StoreOrderController extends XktBaseController {
         return success();
     }
 
+    @PreAuthorize("@ss.hasPermi('system:order:add')")
+    @Log(title = "订单", businessType = BusinessType.OTHER)
+    @ApiOperation("申请售后（创建售后订单）")
+    @PostMapping("apply-refund")
+    public R<Long> applyRefund(@Valid @RequestBody StoreOrderAfterSaleReqVO vo) {
+        //TODO 权限
+        StoreOrderAfterSaleDTO dto = BeanUtil.toBean(vo, StoreOrderAfterSaleDTO.class);
+        dto.setOperatorId(SecurityUtils.getUserId());
+        StoreOrderExt orderExt = storeOrderService.createAfterSaleOrder(dto);
+        return success(orderExt.getOrder().getId());
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:order:add')")
+    @Log(title = "订单", businessType = BusinessType.OTHER)
+    @ApiOperation("确认退款")
+    @PostMapping("confirm-refund")
+    public R confirmRefund(@Valid @RequestBody StoreOrderRefundConfirmVO vo) {
+        //TODO 权限
+        StoreOrderRefundConfirmDTO dto = BeanUtil.toBean(vo, StoreOrderRefundConfirmDTO.class);
+        dto.setOperatorId(SecurityUtils.getUserId());
+        //售后状态->售后完成，支付状态->支付中
+        StoreOrderRefund storeOrderRefund = storeOrderService.prepareRefundOrder(dto);
+        //三方退款
+        PaymentManager paymentManager = getPaymentManager(EPayChannel.of(storeOrderRefund.getRefundOrder().getPayChannel()));
+        paymentManager.refundStoreOrder(storeOrderRefund);
+        //支付状态->已支付，创建收款单
+        storeOrderService.refundSuccess(storeOrderRefund);
+        return success();
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:order:add')")
+    @Log(title = "订单", businessType = BusinessType.OTHER)
+    @ApiOperation("拒绝退款")
+    @PostMapping("reject-refund")
+    public R rejectRefund(@Valid @RequestBody StoreOrderRefundRejectVO vo) {
+        //TODO 权限
+        StoreOrderRefundRejectDTO dto = BeanUtil.toBean(vo, StoreOrderRefundRejectDTO.class);
+        dto.setOperatorId(SecurityUtils.getUserId());
+        storeOrderService.rejectRefundOrder(dto);
+        return success();
+    }
 
     /**
      * 根据支付渠道匹配支付类

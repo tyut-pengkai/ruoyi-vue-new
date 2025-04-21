@@ -48,6 +48,10 @@ public class StoreOrder extends SimpleEntity {
      */
     private Integer payChannel;
     /**
+     * 支付交易号
+     */
+    private String payTradeNo;
+    /**
      * 订单备注
      */
     private String orderRemark;

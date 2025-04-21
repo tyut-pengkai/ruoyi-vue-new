@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.manager;
 
 import com.ruoyi.xkt.dto.order.StoreOrderExt;
+import com.ruoyi.xkt.dto.order.StoreOrderRefund;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 
@@ -24,6 +25,13 @@ public interface PaymentManager {
      * @return 跳转页面数据/签名字符串/支付跳转链接/预支付交易会话标识（根据支付渠道&支付来源确定）
      */
     String payStoreOrder(StoreOrderExt order, EPayPage payFrom);
+
+    /**
+     * 订单退款
+     *
+     * @param orderRefund
+     */
+    void refundStoreOrder(StoreOrderRefund orderRefund);
 
     /**
      * 是否已支付
