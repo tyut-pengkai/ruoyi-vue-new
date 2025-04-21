@@ -122,6 +122,25 @@ public class StoreProduct extends XktBaseEntity {
     @Excel(name = "商品状态")
     private Integer prodStatus;
 
+    /**
+     * 推荐数值
+     * @return
+     */
+    private Long recommendWeight;
+
+    /**
+     * 销量数值
+     * @return
+     */
+    private Long saleWeight;
+
+    /**
+     * 人气数值
+     * @return
+     */
+    private Long popularityWeight;
+
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)

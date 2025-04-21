@@ -36,6 +36,10 @@ public class StoreSaleDetail extends XktBaseEntity {
     @Excel(name = "档口商品销售ID")
     private Long storeSaleId;
     /**
+     * 档口ID
+     */
+    private Long storeId;
+    /**
      * 档口商品ID
      */
     @Excel(name = "档口商品ID")

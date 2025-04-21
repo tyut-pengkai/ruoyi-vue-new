@@ -51,4 +51,16 @@ public class DailySaleController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/prod-tag")
+    public R dailyProdTag(SysJob sysJob) {
+        task.dailyProdTag();
+        return R.ok();
+    }
+
+    @PostMapping("/prod-weight")
+    public R dailyProdWeight(SysJob sysJob) {
+        task.dailyProdWeight();
+        return R.ok();
+    }
+
 }

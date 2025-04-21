@@ -158,7 +158,8 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         int count = storeSaleMapper.insert(storeSale);
         // 处理订单明细
         List<StoreSaleDetail> saleDetailList = storeSaleDTO.getDetailList().stream().map(x -> BeanUtil.toBean(x, StoreSaleDetail.class)
-                .setSaleType(storeSaleDTO.getSaleType()).setStoreSaleId(storeSale.getId())).collect(Collectors.toList());
+                .setSaleType(storeSaleDTO.getSaleType()).setStoreSaleId(storeSale.getId()).setStoreId(storeSale.getStoreId()))
+                .collect(Collectors.toList());
         this.storeSaleDetailMapper.insert(saleDetailList);
         // 先汇总当前这笔订单商品明细的销售数量，包括销售及退货 key： prodArtNum + storeProdId + storeProdColorId + colorName, value: map(key:size,value:count)
         Map<String, Map<Integer, Integer>> saleCountMap = storeSaleDTO.getDetailList().stream().collect(Collectors
@@ -211,7 +212,8 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         this.storeSaleDetailMapper.updateById(saleDetailList.stream().peek(x -> x.setDelFlag(Constants.DELETED)).collect(Collectors.toList()));
         // 再新增档口销售出库明细数据
         List<StoreSaleDetail> detailList = storeSaleDTO.getDetailList().stream().map(x -> BeanUtil.toBean(x, StoreSaleDetail.class)
-                .setSaleType(storeSaleDTO.getSaleType()).setStoreSaleId(storeSale.getId())).collect(Collectors.toList());
+                .setSaleType(storeSaleDTO.getSaleType()).setStoreSaleId(storeSale.getId()).setStoreId(storeSale.getStoreId()))
+                .collect(Collectors.toList());
         this.storeSaleDetailMapper.insert(detailList);
         // 汇总编辑的存货总数量
         final List<StoreSaleDetail> totalList = new ArrayList<StoreSaleDetail>(saleDetailList) {{

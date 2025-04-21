@@ -88,4 +88,5 @@ public interface StoreSaleDetailMapper extends BaseMapper<StoreSaleDetail> {
      */
     List<DailyStoreTagDTO> selectTop20List(@Param("yesterday") Date yesterday, @Param("oneWeekAgo") Date oneWeekAgo);
 
+
 }
