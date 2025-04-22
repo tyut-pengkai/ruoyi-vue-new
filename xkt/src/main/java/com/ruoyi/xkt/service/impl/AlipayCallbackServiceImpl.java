@@ -37,14 +37,14 @@ public class AlipayCallbackServiceImpl implements IAlipayCallbackService {
                 .eq(AlipayCallback::getNotifyId, notifyId));
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int insertAlipayCallback(AlipayCallback alipayCallback) {
         Assert.notNull(alipayCallback);
         return alipayCallbackMapper.insert(alipayCallback);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void processOrderPaid(AlipayCallback info) {
         //更新回调状态
@@ -56,6 +56,6 @@ public class AlipayCallbackServiceImpl implements IAlipayCallbackService {
         StoreOrderExt orderExt = storeOrderService.paySuccess(order.getId(), info.getTradeNo(), info.getTotalAmount(),
                 info.getReceiptAmount());
         //创建收款单
-        financeBillService.createCollectionBillAfterOrderPaid(orderExt, info.getId(), EPayChannel.ALI_PAY);
+        financeBillService.createOrderPaidCollectionBill(orderExt, info.getId(), EPayChannel.ALI_PAY);
     }
 }

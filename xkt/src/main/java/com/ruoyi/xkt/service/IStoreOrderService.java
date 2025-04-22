@@ -154,9 +154,11 @@ public interface IStoreOrderService {
     /**
      * 退款成功
      *
-     * @param storeOrderRefund
+     * @param storeOrderId
+     * @param storeOrderDetailIds
+     * @param operatorId
      */
-    void refundSuccess(StoreOrderRefund storeOrderRefund);
+    void refundSuccess(Long storeOrderId, List<Long> storeOrderDetailIds, Long operatorId);
 
 
 }

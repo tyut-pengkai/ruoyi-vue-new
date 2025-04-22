@@ -47,7 +47,7 @@ public class ExternalAccountServiceImpl implements IExternalAccountService {
         return externalAccountMapper.selectById(id);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int addTransDetail(Long externalAccountId, TransInfo transInfo, ELoanDirection loanDirection,
                               EEntryStatus entryStatus) {
@@ -72,7 +72,7 @@ public class ExternalAccountServiceImpl implements IExternalAccountService {
         return externalAccountTransDetailMapper.insert(transDetail);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void entryTransDetail(Long srcBillId, EFinBillType srcBillType) {
         Assert.notNull(srcBillId);

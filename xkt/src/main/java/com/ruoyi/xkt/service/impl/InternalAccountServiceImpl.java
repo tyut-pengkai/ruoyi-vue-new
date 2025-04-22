@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.constant.Constants;
@@ -45,7 +46,21 @@ public class InternalAccountServiceImpl implements IInternalAccountService {
         return internalAccountMapper.selectById(id);
     }
 
-    @Transactional
+    @Override
+    public InternalAccount getInternalAccount(Long ownerId, EAccountOwnerType ownerType) {
+        Assert.notNull(ownerId);
+        Assert.notNull(ownerType);
+        InternalAccount account = internalAccountMapper.selectOne(Wrappers.lambdaQuery(InternalAccount.class)
+                .eq(InternalAccount::getOwnerId, ownerId)
+                .eq(InternalAccount::getOwnerType, ownerType.getValue()));
+        if (!BeanValidators.exists(account)) {
+            throw new ServiceException(CharSequenceUtil.format("{}[{}]内部账户不存在", ownerType.getLabel(),
+                    ownerId));
+        }
+        return account;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int addTransDetail(Long internalAccountId, TransInfo transInfo, ELoanDirection loanDirection,
                               EEntryStatus entryStatus) {
@@ -122,7 +137,7 @@ public class InternalAccountServiceImpl implements IInternalAccountService {
         return internalAccountTransDetailMapper.insert(transDetail);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void entryTransDetail(Long srcBillId, EFinBillType srcBillType) {
         Assert.notNull(srcBillId);

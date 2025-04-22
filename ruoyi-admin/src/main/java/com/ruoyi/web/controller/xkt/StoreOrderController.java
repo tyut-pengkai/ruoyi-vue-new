@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.core.page.PageVO;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
@@ -205,13 +206,15 @@ public class StoreOrderController extends XktBaseController {
         //TODO 权限
         StoreOrderRefundConfirmDTO dto = BeanUtil.toBean(vo, StoreOrderRefundConfirmDTO.class);
         dto.setOperatorId(SecurityUtils.getUserId());
-        //售后状态->售后完成，支付状态->支付中
+        //售后状态->售后完成，支付状态->支付中，创建收款单
         StoreOrderRefund storeOrderRefund = storeOrderService.prepareRefundOrder(dto);
         //三方退款
         PaymentManager paymentManager = getPaymentManager(EPayChannel.of(storeOrderRefund.getRefundOrder().getPayChannel()));
         paymentManager.refundStoreOrder(storeOrderRefund);
-        //支付状态->已支付，创建收款单
-        storeOrderService.refundSuccess(storeOrderRefund);
+        //支付状态->已支付，收款单到账
+        storeOrderService.refundSuccess(storeOrderRefund.getRefundOrder().getId(),
+                storeOrderRefund.getRefundOrderDetails().stream().map(SimpleEntity::getId).collect(Collectors.toList()),
+                SecurityUtils.getUserId());
         return success();
     }
 

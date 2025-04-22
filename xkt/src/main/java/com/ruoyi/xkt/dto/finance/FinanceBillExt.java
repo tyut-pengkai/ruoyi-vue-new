@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FinanceBillInfo {
+public class FinanceBillExt {
 
     private FinanceBill financeBill;
 

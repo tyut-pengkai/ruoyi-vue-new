@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.InternalAccount;
 import com.ruoyi.xkt.dto.finance.TransInfo;
+import com.ruoyi.xkt.enums.EAccountOwnerType;
 import com.ruoyi.xkt.enums.EEntryStatus;
 import com.ruoyi.xkt.enums.EFinBillType;
 import com.ruoyi.xkt.enums.ELoanDirection;
@@ -18,6 +19,15 @@ public interface IInternalAccountService {
      * @return
      */
     InternalAccount getById(Long id);
+
+    /**
+     * 获取内部账户
+     *
+     * @param ownerId
+     * @param ownerType
+     * @return
+     */
+    InternalAccount getInternalAccount(Long ownerId, EAccountOwnerType ownerType);
 
     /**
      * 添加交易明细

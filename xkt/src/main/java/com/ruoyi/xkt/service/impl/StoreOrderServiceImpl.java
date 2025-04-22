@@ -27,10 +27,7 @@ import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.manager.ExpressManager;
 import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.mapper.*;
-import com.ruoyi.xkt.service.IExpressService;
-import com.ruoyi.xkt.service.IOperationRecordService;
-import com.ruoyi.xkt.service.IStoreOrderService;
-import com.ruoyi.xkt.service.IVoucherSequenceService;
+import com.ruoyi.xkt.service.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -75,6 +72,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     private IOperationRecordService operationRecordService;
     @Autowired
     private IVoucherSequenceService voucherSequenceService;
+    @Autowired
+    private IFinanceBillService financeBillService;
     @Autowired
     private List<PaymentManager> paymentManagers;
     @Autowired
@@ -813,7 +812,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //操作记录
         addOperationRecords(order.getId(), EOrderAction.COMPLETE, orderDetailIdList, EOrderAction.COMPLETE,
                 "确认收货", operatorId, new Date());
-        return new StoreOrderExt(order, orderDetails);
+        StoreOrderExt orderExt = new StoreOrderExt(order, orderDetails);
+        //创建转移单
+        financeBillService.createOrderCompletedTransferBill(orderExt);
+        return orderExt;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -1028,13 +1030,50 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 EOrderAction.CONFIRM_AFTER_SALE,
                 refundConfirmDTO.getOperatorId(),
                 new Date());
+        //创建付款单
+        financeBillService.createRefundOrderPaymentBill(new StoreOrderExt(order, refundOrderDetails));
         return new StoreOrderRefund(order, refundOrderDetails, getAndBaseCheck(order.getRefundOrderId()));
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void refundSuccess(StoreOrderRefund storeOrderRefund) {
-        //TODO
+    public void refundSuccess(Long storeOrderId, List<Long> storeOrderDetailIds, Long operatorId) {
+        StoreOrder order = getAndBaseCheck(storeOrderId);
+        Map<Long, StoreOrderDetail> orderDetailMap = storeOrderDetailMapper.selectList(Wrappers
+                .lambdaQuery(StoreOrderDetail.class)
+                .eq(StoreOrderDetail::getStoreOrderId, order.getId())
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED))
+                .stream()
+                .collect(Collectors.toMap(SimpleEntity::getId, Function.identity()));
+        for (Long storeOrderDetailId : storeOrderDetailIds) {
+            StoreOrderDetail orderDetail = orderDetailMap.get(storeOrderDetailId);
+            if (!BeanValidators.exists(orderDetail)) {
+                throw new ServiceException(CharSequenceUtil.format("订单明细[{}]不存在或与订单[{}]不匹配",
+                        storeOrderDetailId, storeOrderId));
+            }
+            if (!EOrderStatus.COMPLETED.getValue().equals(orderDetail.getDetailStatus())
+                    || !EPayStatus.PAYING.getValue().equals(orderDetail.getPayStatus())) {
+                throw new ServiceException(CharSequenceUtil.format("订单明细[{}]状态异常", storeOrderDetailId));
+            }
+            orderDetail.setPayStatus(EPayStatus.PAID.getValue());
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            if (orderDetailSuccess == 0) {
+                throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+            }
+        }
+        int orderSuccess = storeOrderMapper.updateById(order);
+        if (orderSuccess == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
+        //操作记录
+        addOperationRecords(order.getId(),
+                EOrderAction.REFUND,
+                storeOrderDetailIds,
+                EOrderAction.REFUND,
+                operatorId,
+                new Date());
+        //付款单到账
+        financeBillService.entryRefundOrderPaymentBill(order.getId());
     }
 
     /**

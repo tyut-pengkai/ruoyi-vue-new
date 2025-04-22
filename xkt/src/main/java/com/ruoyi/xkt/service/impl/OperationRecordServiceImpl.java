@@ -22,7 +22,7 @@ public class OperationRecordServiceImpl implements IOperationRecordService {
     @Autowired
     private StoreOrderOperationRecordMapper storeOrderOperationRecordMapper;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void addOrderOperationRecords(List<StoreOrderOperationRecordAddDTO> recordList) {
         if (CollUtil.isEmpty(recordList)) {
