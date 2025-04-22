@@ -1,5 +1,7 @@
 package com.ruoyi.xkt.service.impl;
 
+import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.NumberUtil;
@@ -19,7 +21,6 @@ import com.ruoyi.xkt.mapper.FinanceBillMapper;
 import com.ruoyi.xkt.service.IExternalAccountService;
 import com.ruoyi.xkt.service.IFinanceBillService;
 import com.ruoyi.xkt.service.IInternalAccountService;
-import io.jsonwebtoken.lang.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -221,6 +222,68 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         }
         //内部账户入账
         internalAccountService.entryTransDetail(financeBill.getId(), EFinBillType.of(financeBill.getBillType()));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public FinanceBillExt createWithdrawPaymentBill(Long storeId, BigDecimal amount, EPayChannel payChannel) {
+        Assert.notNull(storeId);
+        Assert.isTrue(NumberUtil.isLessOrEqual(amount, BigDecimal.ZERO), "提现金额异常");
+        Assert.notNull(payChannel);
+        FinanceBill bill = new FinanceBill();
+        bill.setBillNo(generateBillNo(EFinBillType.PAYMENT));
+        bill.setBillType(EFinBillType.PAYMENT.getValue());
+        //执行中
+        bill.setBillStatus(EFinBillStatus.PROCESSING.getValue());
+        bill.setSrcType(EFinBillSrcType.WITHDRAW.getValue());
+        bill.setSrcId(storeId);
+        //业务唯一键
+        String businessUniqueKey = IdUtil.simpleUUID();
+        bill.setBusinessUniqueKey(businessUniqueKey);
+        Long outputInternalAccountId = internalAccountService.getInternalAccount(storeId, EAccountOwnerType.STORE)
+                .getId();
+        Long inputExternalAccountId = externalAccountService.getExternalAccount(storeId, EAccountOwnerType.STORE,
+                EAccountType.getByChannel(payChannel)).getId();
+        bill.setOutputInternalAccountId(outputInternalAccountId);
+        bill.setInputExternalAccountId(inputExternalAccountId);
+        bill.setOutputExternalAccountId(payChannel.getPlatformExternalAccountId());
+        bill.setBusinessAmount(amount);
+        bill.setTransAmount(amount);
+        bill.setVersion(0L);
+        bill.setDelFlag(Constants.UNDELETED);
+        financeBillMapper.insert(bill);
+        TransInfo transInfo = TransInfo.builder()
+                .srcBillId(bill.getId())
+                .srcBillType(bill.getBillType())
+                .transAmount(bill.getTransAmount())
+                .transTime(new Date())
+                .handlerId(null)
+                .remark("账户提现")
+                .build();
+        //内部账户
+        internalAccountService.addTransDetail(outputInternalAccountId, transInfo,
+                ELoanDirection.CREDIT, EEntryStatus.WAITING);
+        //外部账户
+        externalAccountService.addTransDetail(inputExternalAccountId, transInfo,
+                ELoanDirection.DEBIT, EEntryStatus.WAITING);
+        externalAccountService.addTransDetail(payChannel.getPlatformExternalAccountId(), transInfo,
+                ELoanDirection.CREDIT, EEntryStatus.WAITING);
+        return new FinanceBillExt(bill, ListUtil.empty());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void entryWithdrawPaymentBill(Long financeBillId) {
+        Assert.notNull(financeBillId);
+        //业务唯一键
+        FinanceBill financeBill = financeBillMapper.selectById(financeBillId);
+        if (!BeanValidators.exists(financeBill)) {
+            throw new ServiceException(CharSequenceUtil.format("提现付款单[{}]不存在", financeBillId));
+        }
+        //内部账户入账
+        internalAccountService.entryTransDetail(financeBill.getId(), EFinBillType.of(financeBill.getBillType()));
+        //外部账户入账
+        externalAccountService.entryTransDetail(financeBill.getId(), EFinBillType.of(financeBill.getBillType()));
     }
 
 

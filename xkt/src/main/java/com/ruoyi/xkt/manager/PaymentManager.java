@@ -5,6 +5,8 @@ import com.ruoyi.xkt.dto.order.StoreOrderRefund;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 
+import java.math.BigDecimal;
+
 /**
  * @author liangyq
  * @date 2025-04-06 19:36
@@ -41,5 +43,15 @@ public interface PaymentManager {
      * @return
      */
     boolean isStoreOrderPaid(String orderNo);
+
+    /**
+     * 转账
+     *
+     * @param bizNo
+     * @param identity
+     * @param realName
+     * @param amount
+     */
+    void transfer(String bizNo, String identity, String realName, BigDecimal amount);
 
 }

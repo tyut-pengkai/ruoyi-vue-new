@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.constant.Constants;
@@ -10,10 +11,7 @@ import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.ExternalAccount;
 import com.ruoyi.xkt.domain.ExternalAccountTransDetail;
 import com.ruoyi.xkt.dto.finance.TransInfo;
-import com.ruoyi.xkt.enums.EAccountStatus;
-import com.ruoyi.xkt.enums.EEntryStatus;
-import com.ruoyi.xkt.enums.EFinBillType;
-import com.ruoyi.xkt.enums.ELoanDirection;
+import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.ExternalAccountMapper;
 import com.ruoyi.xkt.mapper.ExternalAccountTransDetailMapper;
 import com.ruoyi.xkt.service.IExternalAccountService;
@@ -45,6 +43,22 @@ public class ExternalAccountServiceImpl implements IExternalAccountService {
     public ExternalAccount getById(Long id) {
         Assert.notNull(id);
         return externalAccountMapper.selectById(id);
+    }
+
+    @Override
+    public ExternalAccount getExternalAccount(Long ownerId, EAccountOwnerType ownerType, EAccountType accountType) {
+        Assert.notNull(ownerId);
+        Assert.notNull(ownerType);
+        Assert.notNull(accountType);
+        ExternalAccount account = externalAccountMapper.selectOne(Wrappers.lambdaQuery(ExternalAccount.class)
+                .eq(ExternalAccount::getOwnerId, ownerId)
+                .eq(ExternalAccount::getOwnerType, ownerType.getValue())
+                .eq(ExternalAccount::getAccountType, accountType.getValue()));
+        if (!BeanValidators.exists(account)) {
+            throw new ServiceException(CharSequenceUtil.format("{}[{}]未设置{}账户", ownerType.getLabel(),
+                    ownerId, accountType.getLabel()));
+        }
+        return account;
     }
 
     @Transactional(rollbackFor = Exception.class)

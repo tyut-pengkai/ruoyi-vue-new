@@ -1,19 +1,18 @@
 package com.ruoyi.xkt.manager.impl;
 
 import cn.hutool.core.lang.Assert;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.NumberUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.diagnosis.DiagnosisUtils;
+import com.alipay.api.domain.AlipayFundTransUniTransferModel;
 import com.alipay.api.domain.AlipayTradeQueryModel;
 import com.alipay.api.domain.AlipayTradeRefundModel;
-import com.alipay.api.request.AlipayTradePagePayRequest;
-import com.alipay.api.request.AlipayTradeQueryRequest;
-import com.alipay.api.request.AlipayTradeRefundRequest;
-import com.alipay.api.request.AlipayTradeWapPayRequest;
+import com.alipay.api.domain.Participant;
+import com.alipay.api.request.*;
+import com.alipay.api.response.AlipayFundTransUniTransferResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.ruoyi.common.exception.ServiceException;
@@ -150,9 +149,9 @@ public class AliPaymentMangerImpl implements PaymentManager {
         model.setTradeNo(orderRefund.getOriginOrder().getPayTradeNo());
         // 设置退款金额
         BigDecimal amount = BigDecimal.ZERO;
-        for (StoreOrderDetail orderDetail:orderRefund.getRefundOrderDetails()){
+        for (StoreOrderDetail orderDetail : orderRefund.getRefundOrderDetails()) {
             //TODO 暂时商品金额+快递费一起退，需调整为实际退款金额
-            amount = NumberUtil.add(amount,orderDetail.getTotalAmount());
+            amount = NumberUtil.add(amount, orderDetail.getTotalAmount());
         }
         model.setRefundAmount(amount.toPlainString());
         // 设置退款原因说明
@@ -161,12 +160,12 @@ public class AliPaymentMangerImpl implements PaymentManager {
         model.setOutRequestNo(orderRefund.getRefundOrder().getOrderNo());
         try {
             AlipayTradeRefundResponse response = alipayClient.execute(request);
-            log.info("支付宝退款：{}",response.getBody());
-            if (response.isSuccess()){
+            log.info("支付宝退款：{}", response.getBody());
+            if (response.isSuccess()) {
                 //TODO 沙箱环境接口不通
                 return;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("退款异常", e);
         }
         throw new ServiceException("退款失败");
@@ -213,6 +212,53 @@ public class AliPaymentMangerImpl implements PaymentManager {
             log.error("查询订单支付结果异常", e);
         }
         throw new ServiceException("查询订单支付结果失败");
+    }
+
+    @Override
+    public void transfer(String bizNo, String identity, String realName, BigDecimal amount) {
+        Assert.notEmpty(bizNo);
+        Assert.notEmpty(identity);
+        Assert.notEmpty(realName);
+        Assert.notNull(amount);
+        AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
+                alipayPublicKey, signType);
+        // 构造请求参数以调用接口
+        AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
+        AlipayFundTransUniTransferModel model = new AlipayFundTransUniTransferModel();
+        // 设置商家侧唯一订单号
+        model.setOutBizNo(bizNo);
+        // 设置订单总金额
+        model.setTransAmount(amount.toPlainString());
+        // 设置描述特定的业务场景
+        model.setBizScene("DIRECT_TRANSFER");
+        // 设置业务产品码
+        model.setProductCode("TRANS_ACCOUNT_NO_PWD");
+        // 设置收款方信息
+        Participant payeeInfo = new Participant();
+        payeeInfo.setIdentity(identity);
+        payeeInfo.setIdentityType("ALIPAY_LOGON_ID");
+        payeeInfo.setName(realName);
+        model.setPayeeInfo(payeeInfo);
+        // 设置业务备注
+        model.setRemark("档口提现");
+        // 设置转账业务请求的扩展参数
+        model.setBusinessParams("{\"payer_show_name_use_alias\":\"true\"}");
+        request.setBizModel(model);
+        AlipayFundTransUniTransferResponse response;
+        try {
+            response = alipayClient.certificateExecute(request);
+            if (response.isSuccess()) {
+                //TODO 接口未调通
+                return;
+            } else {
+                //获取诊断链接
+                String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(response);
+                log.warn("支付宝转账异常: {}", diagnosisUrl);
+            }
+        } catch (Exception e) {
+            log.error("支付宝转账异常", e);
+        }
+        throw new ServiceException("支付宝转账失败");
     }
 
 }

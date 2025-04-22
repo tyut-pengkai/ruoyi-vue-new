@@ -49,6 +49,10 @@ public class ExternalAccountDTO {
      */
     private Boolean accountAuthAccess;
     /**
+     * 密码
+     */
+    private String password;
+    /**
      * 备注
      */
     private String remark;

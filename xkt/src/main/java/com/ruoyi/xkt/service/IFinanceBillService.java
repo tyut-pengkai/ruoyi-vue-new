@@ -4,6 +4,8 @@ import com.ruoyi.xkt.dto.finance.FinanceBillExt;
 import com.ruoyi.xkt.dto.order.StoreOrderExt;
 import com.ruoyi.xkt.enums.EPayChannel;
 
+import java.math.BigDecimal;
+
 /**
  * @author liangyq
  * @date 2025-04-08 21:14
@@ -41,6 +43,23 @@ public interface IFinanceBillService {
      * @param storeOrderId
      */
     void entryRefundOrderPaymentBill(Long storeOrderId);
+
+    /**
+     * 提现创建付款单（未入账）
+     *
+     * @param storeId
+     * @param amount
+     * @param payChannel
+     * @return
+     */
+    FinanceBillExt createWithdrawPaymentBill(Long storeId, BigDecimal amount, EPayChannel payChannel);
+
+    /**
+     * 提现付款单入账
+     *
+     * @param financeBillId
+     */
+    void entryWithdrawPaymentBill(Long financeBillId);
 
 
 }

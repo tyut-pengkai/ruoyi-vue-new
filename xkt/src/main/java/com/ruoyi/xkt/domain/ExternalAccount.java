@@ -48,6 +48,10 @@ public class ExternalAccount extends SimpleEntity {
      */
     private Boolean accountAuthAccess;
     /**
+     * 密码
+     */
+    private String password;
+    /**
      * 备注
      */
     private String remark;
