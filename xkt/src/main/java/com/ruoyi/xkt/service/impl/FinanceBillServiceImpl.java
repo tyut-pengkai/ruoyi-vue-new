@@ -117,7 +117,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         //业务唯一键
         String businessUniqueKey = "STORE_ORDER_COMPLETED_" + orderExt.getOrder().getId();
         bill.setBusinessUniqueKey(businessUniqueKey);
-        Long inputInternalAccountId = internalAccountService.getInternalAccount(orderExt.getOrder().getStoreId(),
+        Long inputInternalAccountId = internalAccountService.getAccountAndCheck(orderExt.getOrder().getStoreId(),
                 EAccountOwnerType.STORE).getId();
         bill.setInputInternalAccountId(inputInternalAccountId);
         bill.setOutputInternalAccountId(Constants.PLATFORM_INTERNAL_ACCOUNT_ID);
@@ -240,9 +240,9 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         //业务唯一键
         String businessUniqueKey = IdUtil.simpleUUID();
         bill.setBusinessUniqueKey(businessUniqueKey);
-        Long outputInternalAccountId = internalAccountService.getInternalAccount(storeId, EAccountOwnerType.STORE)
+        Long outputInternalAccountId = internalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE)
                 .getId();
-        Long inputExternalAccountId = externalAccountService.getExternalAccount(storeId, EAccountOwnerType.STORE,
+        Long inputExternalAccountId = externalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE,
                 EAccountType.getByChannel(payChannel)).getId();
         bill.setOutputInternalAccountId(outputInternalAccountId);
         bill.setInputExternalAccountId(inputExternalAccountId);

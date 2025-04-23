@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.ExternalAccount;
+import com.ruoyi.xkt.dto.account.ExternalAccountAddDTO;
 import com.ruoyi.xkt.dto.finance.TransInfo;
 import com.ruoyi.xkt.enums.*;
 
@@ -25,7 +26,17 @@ public interface IExternalAccountService {
      * @param accountType
      * @return
      */
-    ExternalAccount getExternalAccount(Long ownerId, EAccountOwnerType ownerType, EAccountType accountType);
+    ExternalAccount getAccount(Long ownerId, EAccountOwnerType ownerType, EAccountType accountType);
+
+    /**
+     * 获取外部账户
+     *
+     * @param ownerId
+     * @param ownerType
+     * @param accountType
+     * @return
+     */
+    ExternalAccount getAccountAndCheck(Long ownerId, EAccountOwnerType ownerType, EAccountType accountType);
 
     /**
      * 添加交易明细
@@ -47,4 +58,18 @@ public interface IExternalAccountService {
      */
     void entryTransDetail(Long srcBillId, EFinBillType srcBillType);
 
+    /**
+     * 创建账户
+     *
+     * @param add
+     */
+    ExternalAccount createAccount(ExternalAccountAddDTO add);
+
+    /**
+     * 修改账户
+     *
+     * @param externalAccount
+     * @return
+     */
+    int modifyAccount(ExternalAccount externalAccount);
 }

@@ -1,4 +1,4 @@
-package com.ruoyi.xkt.dto.finance;
+package com.ruoyi.xkt.dto.account;
 
 import lombok.Data;
 
@@ -6,27 +6,27 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 内部账户交易明细
+ * 外部账户交易明细
  *
  * @author liangyq
- * @date 2025-04-01 11:57:52.516
+ * @date 2025-04-01 11:57:52.470
  **/
 @Data
-public class InternalAccountTransDetailDTO {
+public class ExternalAccountTransDetailDTO {
     /**
-     * 内部账户交易明细ID
+     * 外部账户交易明细ID
      */
     private Long id;
     /**
-     * 内部账户ID
+     * 外部账户ID
      */
-    private Long internalAccountId;
+    private Long externalAccountId;
     /**
      * 来源单据ID
      */
     private Long srcBillId;
     /**
-     * 来源单据类型[1:收款 2:付款 3:转移]
+     * 来源单据类型[2:付款]
      */
     private Integer srcBillType;
     /**
@@ -49,10 +49,6 @@ public class InternalAccountTransDetailDTO {
      * 入账状态 [1:已入账 2:未入账]
      */
     private Integer entryStatus;
-    /**
-     * 入账执行标识[1:已执行 2:未执行]
-     */
-    private Integer entryExecuted;
     /**
      * 备注
      */

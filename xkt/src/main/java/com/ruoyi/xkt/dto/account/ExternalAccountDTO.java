@@ -1,20 +1,19 @@
-package com.ruoyi.xkt.dto.finance;
+package com.ruoyi.xkt.dto.account;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 内部账户
+ * 外部账户
  *
  * @author liangyq
- * @date 2025-04-01 11:57:52.493
+ * @date 2025-04-01 11:57:52.450
  **/
 @Data
-public class InternalAccountDTO {
+public class ExternalAccountDTO {
     /**
-     * 内部账户ID
+     * 外部账户ID
      */
     private Long id;
     /**
@@ -22,7 +21,7 @@ public class InternalAccountDTO {
      */
     private Integer ownerType;
     /**
-     * 归属ID（平台=-1，档口=store_id）
+     * 归属ID（平台=-1，档口=store_id，用户=user_id）
      */
     private Long ownerId;
     /**
@@ -30,21 +29,25 @@ public class InternalAccountDTO {
      */
     private Integer accountStatus;
     /**
-     * 交易密码
+     * 账户类型[1:支付宝账户]
      */
-    private String transactionPassword;
+    private Integer accountType;
     /**
-     * 余额
+     * 归属人实际账户
      */
-    private BigDecimal balance;
+    private String accountOwnerNumber;
     /**
-     * 可用余额
+     * 归属人真实姓名
      */
-    private BigDecimal usableBalance;
+    private String accountOwnerName;
     /**
-     * 支付中金额
+     * 归属人手机号
      */
-    private BigDecimal paymentAmount;
+    private String accountOwnerPhoneNumber;
+    /**
+     * 归属人认证通过
+     */
+    private Boolean accountAuthAccess;
     /**
      * 备注
      */

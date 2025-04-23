@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.InternalAccount;
+import com.ruoyi.xkt.dto.account.InternalAccountAddDTO;
 import com.ruoyi.xkt.dto.finance.TransInfo;
 import com.ruoyi.xkt.enums.EAccountOwnerType;
 import com.ruoyi.xkt.enums.EEntryStatus;
@@ -27,7 +28,16 @@ public interface IInternalAccountService {
      * @param ownerType
      * @return
      */
-    InternalAccount getInternalAccount(Long ownerId, EAccountOwnerType ownerType);
+    InternalAccount getAccount(Long ownerId, EAccountOwnerType ownerType);
+
+    /**
+     * 获取内部账户
+     *
+     * @param ownerId
+     * @param ownerType
+     * @return
+     */
+    InternalAccount getAccountAndCheck(Long ownerId, EAccountOwnerType ownerType);
 
     /**
      * 添加交易明细
@@ -50,4 +60,19 @@ public interface IInternalAccountService {
      */
     void entryTransDetail(Long srcBillId, EFinBillType srcBillType);
 
+    /**
+     * 创建账户
+     *
+     * @param add
+     * @return
+     */
+    InternalAccount createAccount(InternalAccountAddDTO add);
+
+    /**
+     * 设置支付密码
+     *
+     * @param id                  ID
+     * @param transactionPassword md5
+     */
+    void setTransactionPassword(Long id, String transactionPassword);
 }

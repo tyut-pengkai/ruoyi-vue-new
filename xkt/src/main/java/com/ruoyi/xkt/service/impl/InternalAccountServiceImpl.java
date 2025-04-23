@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -10,12 +11,12 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.InternalAccount;
 import com.ruoyi.xkt.domain.InternalAccountTransDetail;
+import com.ruoyi.xkt.dto.account.InternalAccountAddDTO;
 import com.ruoyi.xkt.dto.finance.TransInfo;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.InternalAccountMapper;
 import com.ruoyi.xkt.mapper.InternalAccountTransDetailMapper;
 import com.ruoyi.xkt.service.IInternalAccountService;
-import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,17 @@ public class InternalAccountServiceImpl implements IInternalAccountService {
     }
 
     @Override
-    public InternalAccount getInternalAccount(Long ownerId, EAccountOwnerType ownerType) {
+    public InternalAccount getAccount(Long ownerId, EAccountOwnerType ownerType) {
+        Assert.notNull(ownerId);
+        Assert.notNull(ownerType);
+        return internalAccountMapper.selectOne(Wrappers.lambdaQuery(InternalAccount.class)
+                .eq(InternalAccount::getOwnerId, ownerId)
+                .eq(InternalAccount::getOwnerType, ownerType.getValue())
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+    }
+
+    @Override
+    public InternalAccount getAccountAndCheck(Long ownerId, EAccountOwnerType ownerType) {
         Assert.notNull(ownerId);
         Assert.notNull(ownerType);
         InternalAccount account = internalAccountMapper.selectOne(Wrappers.lambdaQuery(InternalAccount.class)
@@ -202,6 +213,35 @@ public class InternalAccountServiceImpl implements IInternalAccountService {
                 log.warn("单据重复调用入账方法:{}{}", srcBillType.getLabel(), srcBillId);
             }
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public InternalAccount createAccount(InternalAccountAddDTO add) {
+        Assert.notNull(add.getOwnerId());
+        Assert.notNull(add.getOwnerType());
+        InternalAccount internalAccount = new InternalAccount();
+        internalAccount.setOwnerType(add.getOwnerType());
+        internalAccount.setOwnerId(add.getOwnerId());
+        internalAccount.setAccountStatus(EAccountStatus.NORMAL.getValue());
+        internalAccount.setBalance(BigDecimal.ZERO);
+        internalAccount.setUsableBalance(BigDecimal.ZERO);
+        internalAccount.setPaymentAmount(BigDecimal.ZERO);
+        internalAccount.setRemark(add.getRemark());
+        internalAccount.setDelFlag(Constants.UNDELETED);
+        internalAccountMapper.insert(internalAccount);
+        return internalAccount;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void setTransactionPassword(Long id, String transactionPassword) {
+        Assert.notNull(id);
+        Assert.notEmpty(transactionPassword);
+        InternalAccount update = new InternalAccount();
+        update.setId(id);
+        update.setTransactionPassword(transactionPassword);
+        internalAccountMapper.updateById(update);
     }
 
 

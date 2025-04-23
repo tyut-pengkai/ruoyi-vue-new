@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.NumberUtil;
@@ -10,6 +11,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.ExternalAccount;
 import com.ruoyi.xkt.domain.ExternalAccountTransDetail;
+import com.ruoyi.xkt.dto.account.ExternalAccountAddDTO;
 import com.ruoyi.xkt.dto.finance.TransInfo;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.ExternalAccountMapper;
@@ -46,7 +48,19 @@ public class ExternalAccountServiceImpl implements IExternalAccountService {
     }
 
     @Override
-    public ExternalAccount getExternalAccount(Long ownerId, EAccountOwnerType ownerType, EAccountType accountType) {
+    public ExternalAccount getAccount(Long ownerId, EAccountOwnerType ownerType, EAccountType accountType) {
+        Assert.notNull(ownerId);
+        Assert.notNull(ownerType);
+        Assert.notNull(accountType);
+        return externalAccountMapper.selectOne(Wrappers.lambdaQuery(ExternalAccount.class)
+                .eq(ExternalAccount::getOwnerId, ownerId)
+                .eq(ExternalAccount::getOwnerType, ownerType.getValue())
+                .eq(ExternalAccount::getAccountType, accountType.getValue())
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+    }
+
+    @Override
+    public ExternalAccount getAccountAndCheck(Long ownerId, EAccountOwnerType ownerType, EAccountType accountType) {
         Assert.notNull(ownerId);
         Assert.notNull(ownerType);
         Assert.notNull(accountType);
@@ -122,6 +136,31 @@ public class ExternalAccountServiceImpl implements IExternalAccountService {
                 log.warn("单据重复调用入账方法:{}{}", srcBillType.getLabel(), srcBillId);
             }
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public ExternalAccount createAccount(ExternalAccountAddDTO add) {
+        Assert.notNull(add.getOwnerType());
+        Assert.notNull(add.getOwnerId());
+        Assert.notNull(add.getAccountType());
+        ExternalAccount externalAccount = BeanUtil.toBean(add, ExternalAccount.class);
+        externalAccount.setAccountStatus(EAccountStatus.NORMAL.getValue());
+        externalAccount.setDelFlag(Constants.UNDELETED);
+        externalAccountMapper.insert(externalAccount);
+        return externalAccount;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int modifyAccount(ExternalAccount externalAccount) {
+        Assert.notNull(externalAccount);
+        Assert.notNull(externalAccount.getId());
+        int r = externalAccountMapper.updateById(externalAccount);
+        if (r == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
+        return r;
     }
 
     /**
