@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
@@ -42,7 +43,6 @@ public class IndexSearchServiceImpl implements IIndexSearchService {
     @Transactional(readOnly = true)
     public Page<ESProductDTO> search(IndexSearchDTO searchDTO) throws IOException {
 
-        String indexName = "product_info";
         /*// 查询索引
         GetIndexResponse res = esClientWrapper.getEsClient().indices().get(request -> request.index(indexName));
         System.err.println(res);
@@ -55,70 +55,8 @@ public class IndexSearchServiceImpl implements IIndexSearchService {
         System.err.println(response);*/
         // 分页查询
 
-        // 如果有搜索词，则要分词
-        if (StringUtils.isNotBlank(searchDTO.getSearch())) {
-        }
-
-
-        // 多个query 根据入参是否为空 分别赋值，有multi_match , terms , range
-
-
-        /*SearchResponse<ESProductInfo> list = esClientWrapper.getEsClient().search(s -> s
-                        .index(indexName)
-                        .query(q -> q
-                                .bool(b -> b
-                                        .must(m -> m
-                                                .multiMatch(mm -> mm
-                                                .query(searchDTO.getSearch())
-                                                .fields("prodTitle", "prodArtNum", "storeName"))
-                                        )
-                                        .filter(f -> f
-                                                .terms(t -> t
-                                                        .field("prodCateId")
-                                                        .terms(new TermsQueryField.Builder()
-                                                                .value(searchDTO.getProdCateIdList().stream()
-                                                                        .map(IndexSearchServiceImpl::newFieldValue)
-                                                                        .collect(Collectors.toList()))
-                                                                .build()
-                                                        ))
-                                        )
-                                       .filter(f -> f
-                                                .terms(t -> t
-                                                        .field("parCateId")
-                                                        .terms(new TermsQueryField.Builder()
-                                                                .value(searchDTO.getParCateIdList().stream()
-                                                                        .map(IndexSearchServiceImpl::newFieldValue)
-                                                                        .collect(Collectors.toList()))
-                                                                .build())))
-                                        .filter(f -> f
-                                                .terms(t -> t
-                                                        .field("style.keyword")
-                                                        .terms(new TermsQueryField.Builder()
-                                                                .value(searchDTO.getStyleList().stream()
-                                                                        .map(IndexSearchServiceImpl::newFieldValue)
-                                                                        .collect(Collectors.toList()))
-                                                                .build())))
-                                        .filter(f -> f
-                                                .terms(t -> t
-                                                        .field("season.keyword")
-                                                        .terms(new TermsQueryField.Builder()
-                                                                .value(searchDTO.getSeasonList().stream()
-                                                                        .map(IndexSearchServiceImpl::newFieldValue)
-                                                                        .collect(Collectors.toList()))
-                                                                .build())))
-                                )
-                        )
-                        .from(0)
-                        .size(10)
-                        .sort(sort -> sort.field(f -> f.field("recommendWeight").order(SortOrder.Desc)))
-                ,
-                ESProductInfo.class
-        );*/
-
-
         // 构建 bool 查询
         BoolQuery.Builder boolQuery = new BoolQuery.Builder();
-
         // 添加 price 范围查询
         if (searchDTO.getMinPrice() != null && searchDTO.getMaxPrice() != null) {
             RangeQuery.Builder builder = new RangeQuery.Builder();
@@ -173,7 +111,7 @@ public class IndexSearchServiceImpl implements IIndexSearchService {
         // 构建最终的查询
         Query query = new Query.Builder().bool(boolQuery.build()).build();
         // 执行搜索
-        SearchResponse<ESProductDTO> resList = esClientWrapper.getEsClient().search(s -> s.index(indexName)
+        SearchResponse<ESProductDTO> resList = esClientWrapper.getEsClient().search(s -> s.index(Constants.ES_IDX_PRODUCT_INFO)
                         .query(query).from(searchDTO.getPageNum() - 1).size(searchDTO.getPageSize())
                         .sort(sort -> sort.field(f -> f.field(searchDTO.getSort()).order(SortOrder.Desc))),
                 ESProductDTO.class);

@@ -1,6 +1,10 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import co.elastic.clients.elasticsearch.core.BulkResponse;
+import co.elastic.clients.elasticsearch.core.CreateResponse;
+import co.elastic.clients.elasticsearch.core.UpdateResponse;
+import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -9,7 +13,11 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.framework.es.EsClientWrapper;
+import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
+import com.ruoyi.system.mapper.SysProductCategoryMapper;
 import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.storeColor.StoreColorDTO;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
@@ -22,6 +30,7 @@ import com.ruoyi.xkt.dto.storeProduct.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
+import com.ruoyi.xkt.enums.EProductStatus;
 import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.enums.ProductSizeStatus;
 import com.ruoyi.xkt.mapper.*;
@@ -33,6 +42,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -59,6 +70,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final StoreProductColorSizeMapper storeProdColorSizeMapper;
     final StoreProductProcessMapper storeProdProcMapper;
     final StoreMapper storeMapper;
+    final EsClientWrapper esClientWrapper;
+    final SysProductCategoryMapper prodCateMapper;
+
 
     /**
      * 查询档口商品
@@ -157,9 +171,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
 
     @Override
     @Transactional
-    public int insertStoreProduct(StoreProdDTO storeProdDTO) {
+    public int insertStoreProduct(StoreProdDTO storeProdDTO) throws IOException {
         // 组装StoreProduct数据
-        StoreProduct storeProd = BeanUtil.toBean(storeProdDTO, StoreProduct.class).setVoucherDate(DateUtils.getNowDate());
+        StoreProduct storeProd = BeanUtil.toBean(storeProdDTO, StoreProduct.class).setVoucherDate(DateUtils.getNowDate())
+                .setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
         int count = this.storeProdMapper.insert(storeProd);
         // 处理编辑档口商品颜色
         this.handleStoreProdColorList(storeProdDTO.getColorList(), storeProd.getId(), storeProd.getStoreId(), Boolean.TRUE);
@@ -167,6 +182,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.handleStoreProdColorSizeList(storeProdDTO.getSizeList(), storeProd.getId(), Boolean.TRUE);
         // 处理StoreProduct其它属性
         this.handleStoreProdProperties(storeProd, storeProdDTO);
+        // 向ES索引: product_info 创建文档
+        this.createESDoc(storeProd, storeProdDTO);
         return count;
     }
 
@@ -179,7 +196,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
      */
     @Override
     @Transactional
-    public int updateStoreProduct(final Long storeProdId, StoreProdDTO storeProdDTO) {
+    public int updateStoreProduct(final Long storeProdId, StoreProdDTO storeProdDTO) throws IOException {
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
                         .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
@@ -204,8 +221,11 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.handleStoreProdColorList(storeProdDTO.getColorList(), storeProdId, storeProd.getStoreId(), Boolean.FALSE);
         // 处理编辑档口商品颜色尺码
         this.handleStoreProdColorSizeList(storeProdDTO.getSizeList(), storeProdId, Boolean.FALSE);
+        // 更新索引: product_info 的文档
+        this.updateESDoc(storeProd, storeProdDTO);
         return count;
     }
+
 
     /**
      * 处理店铺商品颜色尺码列表
@@ -325,18 +345,35 @@ public class StoreProductServiceImpl implements IStoreProductService {
      */
     @Override
     @Transactional
-    public void updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO) {
+    public void updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO) throws IOException {
         // 根据商品ID列表查询数据库中的商品信息
         List<StoreProduct> storeProdList = this.storeProdMapper.selectByIds(prodStatusDTO.getStoreProdIdList());
         // 检查查询结果是否为空，如果为空，则抛出异常
         if (CollectionUtils.isEmpty(storeProdList)) {
             throw new ServiceException("档口商品不存在!", HttpStatus.ERROR);
         }
+        List<StoreProduct> reSaleList = new ArrayList<>();
         // 遍历查询到的商品列表，设置新的商品状态
-        storeProdList.forEach(x -> x.setProdStatus(prodStatusDTO.getProdStatus()));
+        storeProdList.forEach(x -> {
+            // 已下架上的商品重新上架
+            if (Objects.equals(x.getProdStatus(), EProductStatus.OFF_SALE.getValue())
+                    && Objects.equals(prodStatusDTO.getProdStatus(), EProductStatus.ON_SALE.getValue())) {
+                reSaleList.add(x);
+            }
+            x.setProdStatus(prodStatusDTO.getProdStatus());
+        });
         // 保存更新后的商品列表到数据库
         this.storeProdMapper.updateById(storeProdList);
+        // 筛选商品状态为已下架，则删除ES文档
+        if (Objects.equals(prodStatusDTO.getProdStatus(), EProductStatus.OFF_SALE.getValue())) {
+            this.deleteESDoc(prodStatusDTO.getStoreProdIdList());
+        }
+        // 已下架的商品重新上架
+        if (CollectionUtils.isNotEmpty(reSaleList)) {
+            this.reSaleCreateESDoc(reSaleList);
+        }
     }
+
 
     /**
      * 批量删除档口商品
@@ -476,6 +513,107 @@ public class StoreProductServiceImpl implements IStoreProductService {
         if (CollectionUtils.isNotEmpty(addColorList)) {
             this.storeColorMapper.insert(addColorList);
         }
+    }
+
+    /**
+     * 向ES索引新增文档
+     *
+     * @param storeProd    档口产品
+     * @param storeProdDTO 档口产品新增入参
+     * @throws IOException
+     */
+    private void createESDoc(StoreProduct storeProd, StoreProdDTO storeProdDTO) throws IOException {
+        ESProductDTO esProductDTO = this.getESDTO(storeProd, storeProdDTO);
+        // 向索引中添加数据
+        CreateResponse createResponse = esClientWrapper.getEsClient().create(e -> e.index(Constants.ES_IDX_PRODUCT_INFO)
+                .id(storeProd.getId().toString()).document(esProductDTO));
+        System.out.println("createResponse.result() = " + createResponse.result());
+    }
+
+    /**
+     * 向ES索引更新文档
+     *
+     * @param storeProd    档口商品
+     * @param storeProdDTO 档口商品更新入参
+     * @throws IOException
+     */
+    private void updateESDoc(StoreProduct storeProd, StoreProdDTO storeProdDTO) throws IOException {
+        ESProductDTO esProductDTO = this.getESDTO(storeProd, storeProdDTO);
+        UpdateResponse<ESProductDTO> updateResponse = esClientWrapper.getEsClient().update(u -> u
+                .index(Constants.ES_IDX_PRODUCT_INFO).doc(esProductDTO).id(storeProd.getId().toString()), ESProductDTO.class);
+        System.out.println("deleteResponse.result() = " + updateResponse.result());
+    }
+
+    /**
+     * 组装ES 入参 DTO
+     *
+     * @param storeProd    档口商品
+     * @param storeProdDTO 档口商品更新入参
+     * @return
+     */
+    private ESProductDTO getESDTO(StoreProduct storeProd, StoreProdDTO storeProdDTO) {
+        // 获取第一张主图
+        String firstMainPic = storeProdDTO.getFileList().stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
+                .min(Comparator.comparing(StoreProdFileDTO::getOrderNum)).map(StoreProdFileDTO::getFileUrl)
+                .orElseThrow(() -> new ServiceException("商品主图不存在!", HttpStatus.ERROR));
+        // 获取上一级分类的分类ID 及 分类名称
+        ProdCateDTO parCate = this.prodCateMapper.getParentCate(storeProdDTO.getProdCateId());
+        // 获取当前商品的最低价格
+        BigDecimal minPrice = storeProdDTO.getPriceList().stream().min(Comparator.comparing(StoreProdColorPriceDTO::getPrice))
+                .map(StoreProdColorPriceDTO::getPrice).orElseThrow(() -> new ServiceException("商品价格不存在!", HttpStatus.ERROR));
+        // 获取使用季节
+        String season = storeProdDTO.getCateAttrList().stream().filter(x -> Objects.equals(x.getDictType(), "suitable_season"))
+                .map(StoreProdCateAttrDTO::getDictValue).findAny().orElse("");
+        // 获取风格
+        String style = storeProdDTO.getCateAttrList().stream().filter(x -> Objects.equals(x.getDictType(), "style"))
+                .map(StoreProdCateAttrDTO::getDictValue).findAny().orElse("");
+        return BeanUtil.toBean(storeProd, ESProductDTO.class)
+                .setProdCateName(storeProdDTO.getProdCateName()).setSaleWeight("0").setRecommendWeight("0").setPopularityWeight("0")
+                .setCreateTime(DateUtils.getTime()).setStoreName(storeProdDTO.getStoreName()).setMainPic(firstMainPic)
+                .setParCateId(parCate.getProdCateId().toString()).setParCateName(parCate.getName()).setProdPrice(minPrice.toString())
+                .setSeason(season).setStyle(style).setTags(Collections.singletonList(style));
+    }
+
+    /**
+     * 删除ES索引文档
+     *
+     * @param storeProdIdList 文档ID列表
+     * @throws IOException
+     */
+    private void deleteESDoc(List<Long> storeProdIdList) throws IOException {
+        List<BulkOperation> list = storeProdIdList.stream().map(x -> new BulkOperation.Builder().delete(
+                d -> d.id(String.valueOf(x)).index(Constants.ES_IDX_PRODUCT_INFO)).build()).collect(Collectors.toList());
+        // 调用bulk方法执行批量插入操作
+        BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+        System.out.println("bulkResponse.items() = " + bulkResponse.items());
+    }
+
+    /**
+     * 重新创建ES索引下的文档
+     *
+     * @param reSaleList 重新上架商品列表
+     * @throws IOException
+     */
+    private void reSaleCreateESDoc(List<StoreProduct> reSaleList) throws IOException {
+        if (CollectionUtils.isEmpty(reSaleList)) {
+            return;
+        }
+        List<ProductESDTO> esDTOList = this.storeProdMapper.selectESDTOList(reSaleList.stream()
+                .map(StoreProduct::getId).distinct().collect(Collectors.toList()));
+        Map<Long, ProductESDTO> esDTOMap = esDTOList.stream().collect(Collectors.toMap(ProductESDTO::getId, Function.identity()));
+        // 构建一个批量数据集合
+        List<BulkOperation> list = reSaleList.stream().map(x -> {
+            final String createTime = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, x.getCreateTime());
+            final ProductESDTO esDTO = Optional.ofNullable(esDTOMap.get(x.getId())).orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
+            ESProductDTO esProductDTO = BeanUtil.toBean(x, ESProductDTO.class).setProdCateName(esDTO.getProdCateName()).setMainPic(esDTO.getMainPic())
+                    .setParCateId(esDTO.getParCateId()).setParCateName(esDTO.getParCateName()).setProdPrice(esDTO.getProdPrice()).setStoreName(esDTO.getStoreName())
+                    .setSeason(esDTO.getSeason()).setStyle(esDTO.getStyle()).setCreateTime(createTime);
+            return new BulkOperation.Builder().create(d -> d.document(esProductDTO).id(String.valueOf(x.getId()))
+                            .index(Constants.ES_IDX_PRODUCT_INFO)).build();
+        }).collect(Collectors.toList());
+        // 调用bulk方法执行批量插入操作
+        BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+        System.out.println("bulkResponse.items() = " + bulkResponse.items());
     }
 
 }

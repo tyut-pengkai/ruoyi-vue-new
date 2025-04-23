@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysProductCategoryMapper">
+
+    <select id="getParentCate" parameterType="Long" resultType="com.ruoyi.system.domain.dto.productCategory.ProdCateDTO">
+        SELECT
+            spc2.id AS prodCateId,
+            spc2.`name` AS `name`
+        FROM
+            sys_product_category spc1
+                LEFT JOIN sys_product_category spc2 ON spc1.parent_id = spc2.id
+        WHERE
+            spc1.del_flag = 0
+            AND spc1.id = #{prodCateId}
+    </select>
+
+</mapper>

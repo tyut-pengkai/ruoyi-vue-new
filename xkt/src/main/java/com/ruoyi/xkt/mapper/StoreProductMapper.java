@@ -3,6 +3,7 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeHomepage.StoreHomeResDTO;
+import com.ruoyi.xkt.dto.storeProduct.ProductESDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdFuzzyResPicDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountDTO;
 import org.apache.ibatis.annotations.Param;
@@ -81,4 +82,12 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      * @return StoreProdCountDTO
      */
     StoreProdStatusCountDTO selectStatusCount(Long storeId);
+
+    /**
+     * 档口商品ID列表
+     * @param idList id列表
+     * @return List<ProductESDTO>
+     */
+    List<ProductESDTO> selectESDTOList(@Param("idList") List<Long> idList);
+
 }

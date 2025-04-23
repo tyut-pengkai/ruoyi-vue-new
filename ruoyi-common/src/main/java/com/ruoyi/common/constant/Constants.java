@@ -211,6 +211,8 @@ public class Constants
     public static final String EXPRESS_REGION_LIST_CACHE_KEY = "EXPRESS_REGION_LIST";
     public static final String EXPRESS_REGION_TREE_CACHE_KEY = "EXPRESS_REGION_TREE";
 
+    // ES 索引 product_info
+    public static final String ES_IDX_PRODUCT_INFO = "product_info";
 
 
 

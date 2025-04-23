@@ -22,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -84,33 +85,33 @@ public class StoreProductController extends XktBaseController {
     /**
      * 新增档口商品
      */
-    @PreAuthorize("@ss.hasPermi('system:product:add')")
+//    @PreAuthorize("@ss.hasPermi('system:product:add')")
     @Log(title = "档口商品", businessType = BusinessType.INSERT)
     @ApiOperation(value = "新增档口商品", httpMethod = "POST", response = R.class)
     @PostMapping
-    public R<Integer> add(@Validated @RequestBody StoreProdVO storeProdVO) {
+    public R<Integer> add(@Validated @RequestBody StoreProdVO storeProdVO) throws IOException {
         return R.ok(storeProdService.insertStoreProduct(BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
 
     /**
      * 修改档口商品
      */
-    @PreAuthorize("@ss.hasPermi('system:product:edit')")
+//    @PreAuthorize("@ss.hasPermi('system:product:edit')")
     @ApiOperation(value = "修改档口商品", httpMethod = "PUT", response = R.class)
     @Log(title = "档口商品", businessType = BusinessType.UPDATE)
     @PutMapping("/{storeProdId}")
-    public R<Integer> edit(@PathVariable Long storeProdId, @Validated @RequestBody StoreProdVO storeProdVO) {
+    public R<Integer> edit(@PathVariable Long storeProdId, @Validated @RequestBody StoreProdVO storeProdVO) throws IOException {
         return R.ok(storeProdService.updateStoreProduct(storeProdId, BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
 
     /**
      * 修改档口商品状态
      */
-    @PreAuthorize("@ss.hasPermi('system:product:edit')")
+//    @PreAuthorize("@ss.hasPermi('system:product:edit')")
     @Log(title = "修改档口商品状态", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "修改档口商品状态", httpMethod = "PUT", response = R.class)
     @PutMapping("/prod-status")
-    public R editProdStatus(@Validated @RequestBody StoreProdStatusVO prodStatusVO) {
+    public R editProdStatus(@Validated @RequestBody StoreProdStatusVO prodStatusVO) throws IOException {
         storeProdService.updateStoreProductStatus(BeanUtil.toBean(prodStatusVO, StoreProdStatusDTO.class));
         return R.ok();
     }
@@ -118,7 +119,7 @@ public class StoreProductController extends XktBaseController {
     /**
      * 获取档口图片空间
      */
-    @PreAuthorize("@ss.hasPermi('system:product:query')")
+//    @PreAuthorize("@ss.hasPermi('system:product:query')")
     @ApiOperation(value = "获取档口图片空间", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/pic-space/{storeId}")
     public R<StoreProdPicSpaceResVO> getStoreProductPicSpace(@PathVariable("storeId") Long storeId) {
@@ -129,7 +130,7 @@ public class StoreProductController extends XktBaseController {
     /**
      * 导出档口商品列表
      */
-    @PreAuthorize("@ss.hasPermi('system:product:export')")
+//    @PreAuthorize("@ss.hasPermi('system:product:export')")
     @Log(title = "档口商品", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreProduct storeProduct) {

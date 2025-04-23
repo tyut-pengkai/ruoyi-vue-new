@@ -1,4 +1,4 @@
-package com.ruoyi.xkt.dto.es;
+package com.ruoyi.xkt.dto.storeProduct;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,8 +15,10 @@ import java.util.List;
 @ApiModel("ES返回商品数据")
 @Data
 @Accessors(chain = true)
-public class ESProductDTO {
+public class ProductESDTO {
 
+    @ApiModelProperty(value = "档口商品ID")
+    private Long id;
     @ApiModelProperty(value = "货号")
     private String prodArtNum;
     @ApiModelProperty(value = "档口商品分类ID")

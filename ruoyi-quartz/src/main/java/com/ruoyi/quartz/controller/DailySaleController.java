@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 /**
  * 调度任务信息操作处理
  *
@@ -52,7 +54,7 @@ public class DailySaleController extends BaseController {
     }
 
     @PostMapping("/prod-tag")
-    public R dailyProdTag(SysJob sysJob) {
+    public R dailyProdTag(SysJob sysJob) throws IOException {
         task.dailyProdTag();
         return R.ok();
     }

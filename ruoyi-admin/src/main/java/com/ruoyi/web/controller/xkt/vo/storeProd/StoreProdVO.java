@@ -30,9 +30,15 @@ public class StoreProdVO {
     @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空!")
     private Long storeId;
+    @ApiModelProperty(value = "档口名称")
+    @NotBlank(message = "档口名称不能为空!")
+    private String storeName;
     @ApiModelProperty(value = "商品分类ID", required = true)
     @NotNull(message = "商品分类ID不能为空!")
     private Long prodCateId;
+    @ApiModelProperty(value = "商品分类名称")
+    @NotBlank(message = "商品分类名称不能为空!")
+    private String prodCateName;
     @ApiModelProperty(value = "工厂货号")
     @Size(min = 0, max = 15, message = "工厂货号不能超过60个字!")
     private String factoryArtNum;

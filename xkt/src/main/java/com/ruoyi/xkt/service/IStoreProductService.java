@@ -4,6 +4,7 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeProduct.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -46,7 +47,7 @@ public interface IStoreProductService {
      * @param storeProdDTO 档口商品
      * @return 结果
      */
-    int insertStoreProduct(StoreProdDTO storeProdDTO);
+    int insertStoreProduct(StoreProdDTO storeProdDTO) throws IOException;
 
     /**
      * 修改档口商品
@@ -54,14 +55,14 @@ public interface IStoreProductService {
      * @param storeProdDTO 档口商品
      * @return 结果
      */
-    public int updateStoreProduct(Long storeProdId, StoreProdDTO storeProdDTO);
+    public int updateStoreProduct(Long storeProdId, StoreProdDTO storeProdDTO) throws IOException;
 
     /**
      * 更新档口商品状态
      *
      * @param prodStatusDTO 更新状态入参
      */
-    public void updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO);
+    public void updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO) throws IOException;
 
     /**
      * 批量删除档口商品

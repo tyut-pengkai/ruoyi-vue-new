@@ -1,11 +1,14 @@
 package com.ruoyi.quartz.task;
 
 import cn.hutool.core.bean.BeanUtil;
+import co.elastic.clients.elasticsearch.core.BulkResponse;
+import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysProductCategory;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.quartz.domain.*;
 import com.ruoyi.quartz.dto.DailySaleCusDTO;
 import com.ruoyi.quartz.dto.DailySaleDTO;
@@ -19,11 +22,11 @@ import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -56,6 +59,7 @@ public class XktTask {
     final DailyProdTagMapper dailyProdTagMapper;
     final StoreProductCategoryAttributeMapper cateAttrMapper;
     final StoreProductStatisticsMapper prodStatMapper;
+    final EsClientWrapper esClientWrapper;
 
     /**
      * 每晚1点同步档口销售数据
@@ -211,7 +215,7 @@ public class XktTask {
      * 给商品打标
      */
     @Transactional
-    public void dailyProdTag() {
+    public void dailyProdTag() throws IOException {
         // 先删除所有的商品标签，保证数据唯一性
         List<DailyProdTag> existList = this.dailyProdTagMapper.selectList(new LambdaQueryWrapper<DailyProdTag>()
                 .eq(DailyProdTag::getDelFlag, Constants.UNDELETED));
@@ -241,12 +245,15 @@ public class XktTask {
             return;
         }
         this.dailyProdTagMapper.insert(tagList);
+        // 更新商品的标签到ES
+        this.updateESTags(tagList);
     }
 
 
     /**
      * 每日更新档口商品的各项权重数据
      */
+    @Transactional
     public void dailyProdWeight() {
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED));
@@ -309,10 +316,10 @@ public class XktTask {
     /**
      * 给商品打标 七日上新
      *
-     * @param yesterday 昨天
-     * @param fourDaysAgo  4天前
-     * @param oneWeekAgo 一周前
-     * @param tagList    标签列表
+     * @param yesterday   昨天
+     * @param fourDaysAgo 4天前
+     * @param oneWeekAgo  一周前
+     * @param tagList     标签列表
      */
     private void tagSevenDayNew(Date yesterday, Date fourDaysAgo, Date oneWeekAgo, List<DailyProdTag> tagList) {
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
@@ -543,6 +550,31 @@ public class XktTask {
                         .build());
             }
         }
+    }
+
+    /**
+     * 更新商品的标签到ES
+     *
+     * @param tagList 标签集合
+     * @throws IOException
+     */
+    private void updateESTags(List<DailyProdTag> tagList) throws IOException {
+        // 构建一个批量数据集合
+        List<BulkOperation> list = new ArrayList<>();
+        tagList.stream().collect(Collectors.groupingBy(DailyProdTag::getStoreProdId))
+                .forEach((storeProdId, tags) -> {
+                    // 构建部分文档更新请求
+                    list.add(new BulkOperation.Builder().update(u -> u
+                                    .action(a -> a.doc(new HashMap<String, Object>() {{
+                                        put("tags", tags.stream().map(DailyProdTag::getTag).collect(Collectors.toList()));
+                                    }}))
+                                    .id(String.valueOf(storeProdId))
+                                    .index(Constants.ES_IDX_PRODUCT_INFO))
+                            .build());
+                });
+        // 调用bulk方法执行批量更新操作
+        BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+        System.out.println("bulkResponse.items() = " + bulkResponse.items());
     }
 
 }
