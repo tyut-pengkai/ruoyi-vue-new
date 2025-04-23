@@ -12,6 +12,7 @@ import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.ExternalAccount;
 import com.ruoyi.xkt.domain.ExternalAccountTransDetail;
 import com.ruoyi.xkt.dto.account.ExternalAccountAddDTO;
+import com.ruoyi.xkt.dto.account.ExternalAccountUpdateDTO;
 import com.ruoyi.xkt.dto.finance.TransInfo;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.ExternalAccountMapper;
@@ -153,14 +154,11 @@ public class ExternalAccountServiceImpl implements IExternalAccountService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int modifyAccount(ExternalAccount externalAccount) {
-        Assert.notNull(externalAccount);
-        Assert.notNull(externalAccount.getId());
-        int r = externalAccountMapper.updateById(externalAccount);
-        if (r == 0) {
-            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
-        }
-        return r;
+    public int modifyAccount(ExternalAccountUpdateDTO update) {
+        Assert.notNull(update);
+        Assert.notNull(update.getId());
+        ExternalAccount updateParams = BeanUtil.toBean(update, ExternalAccount.class);
+        return externalAccountMapper.updateById(updateParams);
     }
 
     /**

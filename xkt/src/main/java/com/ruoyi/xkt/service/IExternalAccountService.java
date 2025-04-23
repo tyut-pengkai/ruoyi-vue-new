@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.ExternalAccount;
 import com.ruoyi.xkt.dto.account.ExternalAccountAddDTO;
+import com.ruoyi.xkt.dto.account.ExternalAccountUpdateDTO;
 import com.ruoyi.xkt.dto.finance.TransInfo;
 import com.ruoyi.xkt.enums.*;
 
@@ -68,8 +69,8 @@ public interface IExternalAccountService {
     /**
      * 修改账户
      *
-     * @param externalAccount
+     * @param update
      * @return
      */
-    int modifyAccount(ExternalAccount externalAccount);
+    int modifyAccount(ExternalAccountUpdateDTO update);
 }

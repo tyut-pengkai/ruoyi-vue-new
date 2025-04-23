@@ -121,11 +121,13 @@ public class AccountServiceImpl implements IAccountService {
                 EAccountOwnerType.STORE, EAccountType.ALI_PAY);
         if (alipayExternalAccount != null) {
             //修改
-            alipayExternalAccount.setAccountOwnerName(alipayBind.getAccountOwnerName());
-            alipayExternalAccount.setAccountOwnerNumber(alipayBind.getAccountOwnerNumber());
-            alipayExternalAccount.setAccountOwnerPhoneNumber(alipayBind.getAccountOwnerPhoneNumber());
-            alipayExternalAccount.setAccountAuthAccess(true);
-            externalAccountService.modifyAccount(alipayExternalAccount);
+            ExternalAccountUpdateDTO updateDTO = new ExternalAccountUpdateDTO();
+            updateDTO.setId(alipayExternalAccount.getId());
+            updateDTO.setAccountOwnerName(alipayBind.getAccountOwnerName());
+            updateDTO.setAccountOwnerNumber(alipayBind.getAccountOwnerNumber());
+            updateDTO.setAccountOwnerPhoneNumber(alipayBind.getAccountOwnerPhoneNumber());
+            updateDTO.setAccountAuthAccess(true);
+            externalAccountService.modifyAccount(updateDTO);
         } else {
             //新增
             ExternalAccountAddDTO addDTO = new ExternalAccountAddDTO();
