@@ -12,9 +12,9 @@ import lombok.Getter;
 public enum EFinBillSrcType {
 
     STORE_ORDER_PAID(1, "代发订单支付"),
-    STORE_ORDER_COMPLETED(2, "代发订单完成"),
+    STORE_ORDER_COMPLETED(2, "档口代发订单"),
     WITHDRAW(3, "提现"),
-    STORE_ORDER_REFUND(4, "代发订单退款"),
+    STORE_ORDER_REFUND(4, "档口代发退货"),
     ;
 
     private final Integer value;

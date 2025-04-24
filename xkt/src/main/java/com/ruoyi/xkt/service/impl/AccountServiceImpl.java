@@ -104,7 +104,7 @@ public class AccountServiceImpl implements IAccountService {
         //TODO 验证码
         InternalAccount internalAccount = internalAccountService.getAccountAndCheck(transactionPasswordSet.getStoreId(),
                 EAccountOwnerType.STORE);
-        internalAccountService.setTransactionPassword(internalAccount.getId(),
+        internalAccountService.setTransactionPassword(internalAccount.getId(), transactionPasswordSet.getPhoneNumber(),
                 SecureUtil.md5(transactionPasswordSet.getTransactionPassword()));
         return getStoreAccountInfo(transactionPasswordSet.getStoreId());
     }

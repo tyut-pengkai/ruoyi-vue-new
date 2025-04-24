@@ -34,6 +34,10 @@ public class InternalAccountDTO {
      */
     private String transactionPassword;
     /**
+     * 电话号码
+     */
+    private String phoneNumber;
+    /**
      * 余额
      */
     private BigDecimal balance;

@@ -34,6 +34,10 @@ public class InternalAccount extends SimpleEntity {
      */
     private String transactionPassword;
     /**
+     * 电话号码
+     */
+    private String phoneNumber;
+    /**
      * 余额
      */
     private BigDecimal balance;

@@ -784,6 +784,14 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             throw new ServiceException(CharSequenceUtil.format("订单[{}]当前状态无法确认收货",
                     order.getOrderNo()));
         }
+        //存在售后订单
+        long afterSaleOrderCount = storeOrderMapper.selectCount(Wrappers.lambdaQuery(StoreOrder.class)
+                .eq(StoreOrder::getRefundOrderId, storeOrderId)
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        if (afterSaleOrderCount > 0) {
+            throw new ServiceException(CharSequenceUtil.format("订单[{}]存在售后，无法确认收货",
+                    order.getOrderNo()));
+        }
         //订单->已完成
         order.setOrderStatus(EOrderStatus.COMPLETED.getValue());
         int orderSuccess = storeOrderMapper.updateById(order);
@@ -802,7 +810,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                         order.getOrderNo()));
             }
             //订单明细->已完成
-            orderDetail.setDetailStatus(EOrderStatus.SHIPPED.getValue());
+            orderDetail.setDetailStatus(EOrderStatus.COMPLETED.getValue());
             int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
@@ -815,6 +823,89 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         StoreOrderExt orderExt = new StoreOrderExt(order, orderDetails);
         //创建转移单
         financeBillService.createOrderCompletedTransferBill(orderExt);
+        return orderExt;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public StoreOrderExt completeOrder(Long storeOrderId, Long operatorId) {
+        StoreOrder order = getAndBaseCheck(storeOrderId);
+        if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(order.getOrderStatus())
+                && !EOrderStatus.SHIPPED.getValue().equals(order.getOrderStatus())) {
+            throw new ServiceException(CharSequenceUtil.format("订单[{}]当前状态无法完成",
+                    order.getOrderNo()));
+        }
+        //售后订单
+        List<StoreOrder> afterSaleOrderList = storeOrderMapper.selectList(Wrappers.lambdaQuery(StoreOrder.class)
+                .eq(StoreOrder::getRefundOrderId, storeOrderId)
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        List<StoreOrderExt> afterSaleOrderExts = new ArrayList<>(afterSaleOrderList.size());
+        if (afterSaleOrderList.size() > 0) {
+            List<Long> afterSaleOrderIds = afterSaleOrderList.stream().map(SimpleEntity::getId)
+                    .collect(Collectors.toList());
+            Map<Long, List<StoreOrderDetail>> afterSaleOrderDetailGroupMap = storeOrderDetailMapper.selectList(
+                    Wrappers.lambdaQuery(StoreOrderDetail.class)
+                            .in(StoreOrderDetail::getStoreOrderId, afterSaleOrderIds)
+                            .eq(SimpleEntity::getDelFlag, Constants.UNDELETED))
+                    .stream()
+                    .filter(o -> {
+                        if (!EOrderStatus.AFTER_SALE_COMPLETED.getValue().equals(o.getDetailStatus())) {
+                            throw new ServiceException(CharSequenceUtil.format("订单明细[{}]未完成售后",
+                                    o.getId()));
+                        }
+                        if (EPayStatus.PAYING.getValue().equals(o.getPayStatus())) {
+                            throw new ServiceException(CharSequenceUtil.format("订单明细[{}]未完成售后",
+                                    o.getId()));
+                        }
+                        return true;
+                    })
+                    .collect(Collectors.groupingBy(StoreOrderDetail::getStoreOrderId));
+            for (StoreOrder afterSaleOrder : afterSaleOrderList) {
+                List<StoreOrderDetail> afterSaleOrderDetailList = afterSaleOrderDetailGroupMap
+                        .get(afterSaleOrder.getId());
+                afterSaleOrderExts.add(new StoreOrderExt(afterSaleOrder, afterSaleOrderDetailList));
+                if (!EOrderStatus.AFTER_SALE_COMPLETED.getValue().equals(afterSaleOrder.getOrderStatus())) {
+                    throw new ServiceException(CharSequenceUtil.format("订单[{}]未完成售后",
+                            afterSaleOrder.getOrderNo()));
+                }
+                //售后订单更新一次，触发乐观锁
+                int r = storeOrderMapper.updateById(afterSaleOrder);
+                if (r == 0) {
+                    throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+                }
+            }
+        }
+        //订单->已完成
+        order.setOrderStatus(EOrderStatus.COMPLETED.getValue());
+        int orderSuccess = storeOrderMapper.updateById(order);
+        if (orderSuccess == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
+        List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectList(
+                Wrappers.lambdaQuery(StoreOrderDetail.class)
+                        .eq(StoreOrderDetail::getStoreOrderId, order.getId())
+                        .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
+        for (StoreOrderDetail orderDetail : orderDetails) {
+            if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(order.getOrderStatus())
+                    && !EOrderStatus.SHIPPED.getValue().equals(order.getOrderStatus())) {
+                throw new ServiceException(CharSequenceUtil.format("订单明细[{}]当前状态无法确认收货",
+                        order.getOrderNo()));
+            }
+            //订单明细->已完成
+            orderDetail.setDetailStatus(EOrderStatus.COMPLETED.getValue());
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            if (orderDetailSuccess == 0) {
+                throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+            }
+            orderDetailIdList.add(orderDetail.getId());
+        }
+        //操作记录
+        addOperationRecords(order.getId(), EOrderAction.COMPLETE, orderDetailIdList, EOrderAction.COMPLETE,
+                "确认收货", operatorId, new Date());
+        StoreOrderExt orderExt = new StoreOrderExt(order, orderDetails);
+        //创建转移单
+        financeBillService.createOrderCompletedTransferBill(orderExt, afterSaleOrderExts);
         return orderExt;
     }
 

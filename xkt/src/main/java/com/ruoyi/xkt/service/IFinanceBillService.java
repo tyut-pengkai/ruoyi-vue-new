@@ -5,6 +5,7 @@ import com.ruoyi.xkt.dto.order.StoreOrderExt;
 import com.ruoyi.xkt.enums.EPayChannel;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author liangyq
@@ -28,6 +29,16 @@ public interface IFinanceBillService {
      * @return
      */
     FinanceBillExt createOrderCompletedTransferBill(StoreOrderExt orderExt);
+
+    /**
+     * 订单完成创建转移单（入账）
+     *
+     *
+     * @param orderExt
+     * @param afterSaleOrderExts
+     * @return
+     */
+    FinanceBillExt createOrderCompletedTransferBill(StoreOrderExt orderExt, List<StoreOrderExt> afterSaleOrderExts);
 
     /**
      * 售后订单创建付款单（未入账）

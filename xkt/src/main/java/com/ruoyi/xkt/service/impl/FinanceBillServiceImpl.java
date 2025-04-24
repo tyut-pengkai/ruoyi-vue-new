@@ -1,12 +1,15 @@
 package com.ruoyi.xkt.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.FinanceBill;
@@ -21,19 +24,21 @@ import com.ruoyi.xkt.mapper.FinanceBillMapper;
 import com.ruoyi.xkt.service.IExternalAccountService;
 import com.ruoyi.xkt.service.IFinanceBillService;
 import com.ruoyi.xkt.service.IInternalAccountService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author liangyq
  * @date 2025-04-08 21:14
  */
+@Slf4j
 @Service
 public class FinanceBillServiceImpl implements IFinanceBillService {
 
@@ -69,6 +74,9 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         bill.setInputExternalAccountId(payChannel.getPlatformExternalAccountId());
         bill.setBusinessAmount(orderExt.getOrder().getTotalAmount());
         bill.setTransAmount(orderExt.getOrder().getRealTotalAmount());
+        bill.setRemark(CharSequenceUtil.format("档口代发订单{}双，共计{}元",
+                orderExt.getOrder().getGoodsQuantity(),
+                orderExt.getOrder().getRealTotalAmount().toPlainString()));
         bill.setVersion(0L);
         bill.setDelFlag(Constants.UNDELETED);
         financeBillMapper.insert(bill);
@@ -123,6 +131,9 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         bill.setOutputInternalAccountId(Constants.PLATFORM_INTERNAL_ACCOUNT_ID);
         bill.setBusinessAmount(orderExt.getOrder().getTotalAmount());
         bill.setTransAmount(orderExt.getOrder().getRealTotalAmount());
+        bill.setRemark(CharSequenceUtil.format("档口代发订单{}双，共计{}元",
+                orderExt.getOrder().getGoodsQuantity(),
+                orderExt.getOrder().getRealTotalAmount().toPlainString()));
         bill.setVersion(0L);
         bill.setDelFlag(Constants.UNDELETED);
         financeBillMapper.insert(bill);
@@ -137,6 +148,118 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
             billDetail.setDelFlag(Constants.UNDELETED);
             financeBillDetailMapper.insert(billDetail);
             billDetails.add(billDetail);
+        }
+        TransInfo transInfo = TransInfo.builder()
+                .srcBillId(bill.getId())
+                .srcBillType(bill.getBillType())
+                .transAmount(bill.getTransAmount())
+                .transTime(new Date())
+                .handlerId(null)
+                .remark("订单完成")
+                .build();
+        //内部账户
+        internalAccountService.addTransDetail(Constants.PLATFORM_INTERNAL_ACCOUNT_ID, transInfo,
+                ELoanDirection.CREDIT, EEntryStatus.FINISH);
+        internalAccountService.addTransDetail(inputInternalAccountId, transInfo,
+                ELoanDirection.DEBIT, EEntryStatus.FINISH);
+        return new FinanceBillExt(bill, billDetails);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public FinanceBillExt createOrderCompletedTransferBill(StoreOrderExt orderExt,
+                                                           List<StoreOrderExt> afterSaleOrderExts) {
+        Assert.notNull(orderExt);
+        FinanceBill bill = new FinanceBill();
+        bill.setBillNo(generateBillNo(EFinBillType.TRANSFER));
+        bill.setBillType(EFinBillType.TRANSFER.getValue());
+        //直接标记成功
+        bill.setBillStatus(EFinBillStatus.SUCCESS.getValue());
+        bill.setSrcType(EFinBillSrcType.STORE_ORDER_COMPLETED.getValue());
+        bill.setSrcId(orderExt.getOrder().getId());
+        bill.setRelType(EFinBillRelType.STORE_ORDER.getValue());
+        bill.setRelId(orderExt.getOrder().getId());
+        //业务唯一键
+        String businessUniqueKey = "STORE_ORDER_COMPLETED_" + orderExt.getOrder().getId();
+        bill.setBusinessUniqueKey(businessUniqueKey);
+        Long inputInternalAccountId = internalAccountService.getAccountAndCheck(orderExt.getOrder().getStoreId(),
+                EAccountOwnerType.STORE).getId();
+        bill.setInputInternalAccountId(inputInternalAccountId);
+        bill.setOutputInternalAccountId(Constants.PLATFORM_INTERNAL_ACCOUNT_ID);
+
+        List<String> afterSaleBillUks = new ArrayList<>(afterSaleOrderExts.size());
+        Map<Long, StoreOrderDetail> afterSaleOrderDetailMap = new HashMap<>();
+        for (StoreOrderExt afterSaleOrderExt : afterSaleOrderExts) {
+            afterSaleBillUks.add("STORE_ORDER_REFUND_" + afterSaleOrderExt.getOrder().getId());
+            for (StoreOrderDetail afterSaleOrderDetail : CollUtil.emptyIfNull(afterSaleOrderExt.getOrderDetails())) {
+                afterSaleOrderDetailMap.put(afterSaleOrderDetail.getRefundOrderDetailId(), afterSaleOrderDetail);
+            }
+        }
+        Map<Long, FinanceBill> refundPaymentBillMap = MapUtil.empty();
+        Map<Long, FinanceBillDetail> refundPaymentBillDetailMap = MapUtil.empty();
+        if (CollUtil.isNotEmpty(afterSaleBillUks)) {
+            refundPaymentBillMap = financeBillMapper.selectList(
+                    Wrappers.lambdaQuery(FinanceBill.class)
+                            .in(FinanceBill::getBusinessUniqueKey, afterSaleBillUks)
+                            .eq(SimpleEntity::getDelFlag, Constants.UNDELETED))
+                    .stream()
+                    .collect(Collectors.toMap(SimpleEntity::getId, Function.identity()));
+            Assert.notEmpty(refundPaymentBillMap);
+            refundPaymentBillDetailMap = financeBillDetailMapper.selectList(
+                    Wrappers.lambdaQuery(FinanceBillDetail.class)
+                            .in(FinanceBillDetail::getFinanceBillId, refundPaymentBillMap.keySet())
+                            .eq(SimpleEntity::getDelFlag, Constants.UNDELETED)).stream()
+                    .collect(Collectors.toMap(FinanceBillDetail::getRelId, Function.identity()));
+        }
+        BigDecimal businessAmount = BigDecimal.ZERO;
+        BigDecimal transAmount = BigDecimal.ZERO;
+        Integer goodsQuantity = 0;
+        List<FinanceBillDetail> billDetails = new ArrayList<>(orderExt.getOrderDetails().size());
+        for (StoreOrderDetail orderDetail : orderExt.getOrderDetails()) {
+            FinanceBillDetail billDetail = new FinanceBillDetail();
+            billDetail.setRelType(EFinBillDetailRelType.STORE_ORDER_DETAIL.getValue());
+            billDetail.setRelId(orderDetail.getId());
+            billDetail.setBusinessAmount(orderDetail.getTotalAmount());
+            billDetail.setTransAmount(orderDetail.getRealTotalAmount());
+            goodsQuantity += orderDetail.getGoodsQuantity();
+            billDetail.setDelFlag(Constants.UNDELETED);
+            billDetails.add(billDetail);
+            StoreOrderDetail afterSaleOrderDetail = afterSaleOrderDetailMap.get(orderDetail.getId());
+            if (afterSaleOrderDetail != null
+                    && EPayStatus.PAID.getValue().equals(afterSaleOrderDetail.getPayStatus())) {
+                //扣除已退款部分数量
+                goodsQuantity -= afterSaleOrderDetail.getGoodsQuantity();
+                //退款单据
+                FinanceBillDetail refundPaymentBillDetail = refundPaymentBillDetailMap
+                        .get(afterSaleOrderDetail.getId());
+                Assert.notNull(refundPaymentBillDetail);
+                FinanceBill refundPaymentBill = refundPaymentBillMap
+                        .get(refundPaymentBillDetail.getFinanceBillId());
+                Assert.notNull(refundPaymentBill);
+                Assert.isTrue(EFinBillStatus.SUCCESS.getValue().equals(refundPaymentBill.getBillStatus()));
+                //扣除已退款部分金额
+                billDetail.setBusinessAmount(NumberUtil.sub(billDetail.getBusinessAmount(),
+                        refundPaymentBillDetail.getBusinessAmount()));
+                billDetail.setTransAmount(NumberUtil.sub(billDetail.getTransAmount(),
+                        refundPaymentBillDetail.getTransAmount()));
+            }
+            businessAmount = NumberUtil.add(businessAmount, billDetail.getBusinessAmount());
+            transAmount = NumberUtil.add(transAmount, billDetail.getTransAmount());
+        }
+        if (NumberUtil.equals(BigDecimal.ZERO, transAmount)) {
+            log.info("订单[{}]已全部退款，完成时不再创建转移单", orderExt.getOrder().getId());
+            return null;
+        }
+        bill.setBusinessAmount(businessAmount);
+        bill.setTransAmount(transAmount);
+        bill.setRemark(CharSequenceUtil.format("档口代发订单{}双，共计{}元", goodsQuantity,
+                transAmount.toPlainString()));
+        bill.setVersion(0L);
+        bill.setDelFlag(Constants.UNDELETED);
+        financeBillMapper.insert(bill);
+        for (FinanceBillDetail billDetail : billDetails) {
+            billDetail.setFinanceBillId(bill.getId());
+            financeBillDetailMapper.insert(billDetail);
         }
         TransInfo transInfo = TransInfo.builder()
                 .srcBillId(bill.getId())
@@ -174,12 +297,16 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         //售后订单金额以明细为准
         BigDecimal businessAmount = BigDecimal.ZERO;
         BigDecimal transferAmount = BigDecimal.ZERO;
+        Integer goodsQuantity = 0;
         for (StoreOrderDetail orderDetail : orderExt.getOrderDetails()) {
             businessAmount = NumberUtil.add(businessAmount, orderDetail.getTotalAmount());
             transferAmount = NumberUtil.add(transferAmount, orderDetail.getRealTotalAmount());
+            goodsQuantity += orderDetail.getGoodsQuantity();
         }
         bill.setBusinessAmount(businessAmount);
         bill.setTransAmount(transferAmount);
+        bill.setRemark(CharSequenceUtil.format("档口代发退货{}双，共计{}元", goodsQuantity,
+                transferAmount.toPlainString()));
         bill.setVersion(0L);
         bill.setDelFlag(Constants.UNDELETED);
         financeBillMapper.insert(bill);
@@ -220,6 +347,14 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         if (!BeanValidators.exists(financeBill)) {
             throw new ServiceException(CharSequenceUtil.format("售后订单[{}]对应付款单不存在", storeOrderId));
         }
+        if (!EFinBillStatus.PROCESSING.getValue().equals(financeBill.getBillStatus())) {
+            throw new ServiceException(CharSequenceUtil.format("付款单[{}]状态异常", financeBill.getId()));
+        }
+        financeBill.setBillStatus(EFinBillStatus.SUCCESS.getValue());
+        int r = financeBillMapper.updateById(financeBill);
+        if (r == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
         //内部账户入账
         internalAccountService.entryTransDetail(financeBill.getId(), EFinBillType.of(financeBill.getBillType()));
     }
@@ -249,6 +384,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         bill.setOutputExternalAccountId(payChannel.getPlatformExternalAccountId());
         bill.setBusinessAmount(amount);
         bill.setTransAmount(amount);
+        bill.setRemark(CharSequenceUtil.format("账户提现{}元", amount.toPlainString()));
         bill.setVersion(0L);
         bill.setDelFlag(Constants.UNDELETED);
         financeBillMapper.insert(bill);
@@ -279,6 +415,14 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         FinanceBill financeBill = financeBillMapper.selectById(financeBillId);
         if (!BeanValidators.exists(financeBill)) {
             throw new ServiceException(CharSequenceUtil.format("提现付款单[{}]不存在", financeBillId));
+        }
+        if (!EFinBillStatus.PROCESSING.getValue().equals(financeBill.getBillStatus())) {
+            throw new ServiceException(CharSequenceUtil.format("付款单[{}]状态异常", financeBill.getId()));
+        }
+        financeBill.setBillStatus(EFinBillStatus.SUCCESS.getValue());
+        int r = financeBillMapper.updateById(financeBill);
+        if (r == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
         //内部账户入账
         internalAccountService.entryTransDetail(financeBill.getId(), EFinBillType.of(financeBill.getBillType()));

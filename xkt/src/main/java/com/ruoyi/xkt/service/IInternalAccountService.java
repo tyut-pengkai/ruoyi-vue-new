@@ -72,7 +72,8 @@ public interface IInternalAccountService {
      * 设置支付密码
      *
      * @param id                  ID
+     * @param phoneNumber         电话号码
      * @param transactionPassword md5
      */
-    void setTransactionPassword(Long id, String transactionPassword);
+    void setTransactionPassword(Long id, String phoneNumber, String transactionPassword);
 }

@@ -129,6 +129,15 @@ public interface IStoreOrderService {
     StoreOrderExt receiptOrder(Long storeOrderId, Long operatorId);
 
     /**
+     * 完成订单
+     *
+     * @param storeOrderId
+     * @param operatorId
+     * @return
+     */
+    StoreOrderExt completeOrder(Long storeOrderId, Long operatorId);
+
+    /**
      * 创建售后订单
      *
      * @param afterSaleDTO

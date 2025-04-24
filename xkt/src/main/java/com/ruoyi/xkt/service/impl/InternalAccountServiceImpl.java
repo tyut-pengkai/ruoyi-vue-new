@@ -235,11 +235,13 @@ public class InternalAccountServiceImpl implements IInternalAccountService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void setTransactionPassword(Long id, String transactionPassword) {
+    public void setTransactionPassword(Long id, String phoneNumber, String transactionPassword) {
         Assert.notNull(id);
+        Assert.notEmpty(phoneNumber);
         Assert.notEmpty(transactionPassword);
         InternalAccount update = new InternalAccount();
         update.setId(id);
+        update.setPhoneNumber(phoneNumber);
         update.setTransactionPassword(transactionPassword);
         internalAccountMapper.updateById(update);
     }
