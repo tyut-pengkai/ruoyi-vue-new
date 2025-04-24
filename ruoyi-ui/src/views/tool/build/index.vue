@@ -171,15 +171,15 @@ export default {
       selectComponents,
       layoutComponents,
       labelWidth: 100,
-      drawingList: drawingDefault,
+      drawingList: JSON.parse(JSON.stringify(drawingDefalut)),
       drawingData: {},
-      activeId: drawingDefault[0].formId,
+      activeId: this.drawingList[0].formId,
       drawerVisible: false,
       formData: {},
       dialogVisible: false,
       generateConf: null,
       showFileName: false,
-      activeData: drawingDefault[0]
+      activeData: this.drawingList[0]
     }
   },
   created() {
