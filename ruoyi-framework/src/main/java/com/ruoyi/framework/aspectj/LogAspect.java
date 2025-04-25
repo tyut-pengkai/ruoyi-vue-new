@@ -177,7 +177,7 @@ public class LogAspect
         if (StringUtils.isEmpty(paramsMap) && StringUtils.equalsAny(requestMethod, HttpMethod.PUT.name(), HttpMethod.POST.name(), HttpMethod.DELETE.name()))
         {
             String params = argsArrayToString(joinPoint.getArgs(), excludeParamNames);
-            operLog.setOperParam(StringUtils.substring(params, 0, 2000));
+            operLog.setOperParam(params);
         }
         else
         {
@@ -190,7 +190,7 @@ public class LogAspect
      */
     private String argsArrayToString(Object[] paramsArray, String[] excludeParamNames)
     {
-        String params = "";
+        StringBuilder params = new StringBuilder();
         if (paramsArray != null && paramsArray.length > 0)
         {
             for (Object o : paramsArray)
@@ -200,15 +200,20 @@ public class LogAspect
                     try
                     {
                         String jsonObj = JSON.toJSONString(o, excludePropertyPreFilter(excludeParamNames));
-                        params += jsonObj.toString() + " ";
+                        params.append(jsonObj).append(" ");
+                        if (params.length() >= 2000)
+                        {
+                            return StringUtils.substring(params.toString(), 0, 2000).trim();
+                        }
                     }
                     catch (Exception e)
                     {
+                        log.error("请求参数拼装异常 msg:{}, 参数:{}", e.getMessage(), paramsArray, e);
                     }
                 }
             }
         }
-        return params.trim();
+        return params.toString().trim();
     }
 
     /**
