@@ -23,6 +23,14 @@ oss:
   expiredDuration: 3600
   tempDir: E:/temp/
   stsCacheDuration: 1800
+img-search:
+  endPoint: imagesearch.cn-hangzhou.aliyuncs.com
+  accessKeyId: LTAI5tPv4ED9EQec2zJSW6Bt
+  accessKeySecret: XriRpnOTW8I6SAuByr3vfFYfM8D1wq
+  regionId: cn-hangzhou
+  instanceName: liuboboer
+  # 如果是内网访问图像搜索服务，则endpointType为必填项，值统一为"internal"
+  endpointType:
 es:
   #多个用","分割
   hosts: 49.234.41.39:9222
