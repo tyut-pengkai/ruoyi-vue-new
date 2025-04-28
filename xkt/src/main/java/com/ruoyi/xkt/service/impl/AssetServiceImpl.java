@@ -5,6 +5,8 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.domain.ExternalAccount;
 import com.ruoyi.xkt.domain.InternalAccount;
@@ -164,6 +166,25 @@ public class AssetServiceImpl implements IAssetService {
             return getUserAssetInfo(alipayBind.getOwnerId());
         }
         return getStoreAssetInfo(alipayBind.getOwnerId());
+    }
+
+    @Override
+    public Page<TransDetailStorePageItemDTO> pageStoreTransDetail(TransDetailStoreQueryDTO queryDTO) {
+        Assert.notNull(queryDTO.getStoreId());
+        InternalAccount internalAccount = internalAccountService.getAccount(queryDTO.getStoreId(),
+                EAccountOwnerType.STORE);
+        Assert.notNull(internalAccount);
+        Page<TransDetailStorePageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize());
+        internalAccountService.listStoreTransDetailPageItem(internalAccount.getId());
+        return page;
+    }
+
+    @Override
+    public Page<TransDetailUserPageItemDTO> pageUserTransDetail(TransDetailUserQueryDTO queryDTO) {
+        Assert.notNull(queryDTO.getUserId());
+        Page<TransDetailUserPageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize());
+        internalAccountService.listUserTransDetailPageItem(queryDTO.getUserId());
+        return page;
     }
 
 

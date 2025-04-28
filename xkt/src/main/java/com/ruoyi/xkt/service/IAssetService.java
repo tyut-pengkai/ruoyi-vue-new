@@ -1,9 +1,7 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.dto.account.AlipayBindDTO;
-import com.ruoyi.xkt.dto.account.AssetInfoDTO;
-import com.ruoyi.xkt.dto.account.TransactionPasswordSetDTO;
-import com.ruoyi.xkt.dto.account.WithdrawPrepareResult;
+import com.github.pagehelper.Page;
+import com.ruoyi.xkt.dto.account.*;
 import com.ruoyi.xkt.enums.EPayChannel;
 
 import java.math.BigDecimal;
@@ -71,5 +69,21 @@ public interface IAssetService {
      * @return
      */
     AssetInfoDTO bindAlipay(AlipayBindDTO alipayBind);
+
+    /**
+     * 分页查询档口交易明细
+     *
+     * @param queryDTO
+     * @return
+     */
+    Page<TransDetailStorePageItemDTO> pageStoreTransDetail(TransDetailStoreQueryDTO queryDTO);
+
+    /**
+     * 分页查询卖家交易明细
+     *
+     * @param queryDTO
+     * @return
+     */
+    Page<TransDetailUserPageItemDTO> pageUserTransDetail(TransDetailUserQueryDTO queryDTO);
 
 }

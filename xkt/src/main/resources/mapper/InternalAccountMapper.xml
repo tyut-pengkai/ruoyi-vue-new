@@ -13,4 +13,51 @@
         WHERE id IN
         <foreach collection="ids" item="id" separator="," open="(" close=")">#{id}</foreach> FOR UPDATE
     </select>
+
+    <select id="listStoreTransDetailPageItem" resultType="com.ruoyi.xkt.dto.account.TransDetailStorePageItemDTO">
+        SELECT
+            so.order_no,
+            iatd.trans_time,
+            fb.src_type,
+            CASE fb.src_type
+            WHEN 2 THEN '档口代发订单'
+            WHEN 3 THEN '提现'
+            ELSE '推广费' END trans_type,
+            fb.remark,
+            fb.bill_type,
+            CASE fb.bill_type
+            WHEN 3 THEN '余额'
+            ELSE '支付宝' END pay_type,
+            iatd.trans_amount,
+            iatd.loan_direction,
+            IF(iatd.loan_direction = 1, iatd.trans_amount, 0) input_amount,
+            IF(iatd.loan_direction = 2, iatd.trans_amount, 0) output_amount
+        FROM
+            internal_account_trans_detail iatd
+            LEFT JOIN finance_bill fb ON iatd.src_bill_id = fb.id
+            LEFT JOIN store_order so ON fb.rel_id = so.id AND fb.rel_type = 1
+        WHERE
+            iatd.internal_account_id = #{id}
+            AND iatd.del_flag = '0'
+    </select>
+
+    <select id="listUserTransDetailPageItem" resultType="com.ruoyi.xkt.dto.account.TransDetailUserPageItemDTO">
+        SELECT
+            so.order_no,
+            fb.create_time trans_time,
+            fb.remark,
+            IF(fb.src_type = 1, '下单', '退款') trans_type,
+            '鞋库通平台发货' trans_target,
+            '支付宝' pay_type,
+            IF(fb.src_type = 1, fb.trans_amount, 0) output_amount,
+            IF(fb.src_type = 2, fb.trans_amount, 0) input_amount
+        FROM
+            finance_bill fb
+            LEFT JOIN store_order so ON fb.src_id = so.id AND fb.src_type IN (1, 4)
+        WHERE
+            so.order_user_id = #{userId}
+            AND fb.bill_status = 3
+            AND so.del_flag = '0'
+    </select>
+
 </mapper>

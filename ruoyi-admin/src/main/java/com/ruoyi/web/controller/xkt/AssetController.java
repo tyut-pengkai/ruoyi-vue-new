@@ -1,14 +1,14 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.github.pagehelper.Page;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.page.PageVO;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.web.controller.xkt.vo.BasePageVO;
 import com.ruoyi.web.controller.xkt.vo.account.*;
-import com.ruoyi.xkt.dto.account.AlipayBindDTO;
-import com.ruoyi.xkt.dto.account.AssetInfoDTO;
-import com.ruoyi.xkt.dto.account.TransactionPasswordSetDTO;
-import com.ruoyi.xkt.dto.account.WithdrawPrepareResult;
+import com.ruoyi.xkt.dto.account.*;
 import com.ruoyi.xkt.enums.EAccountOwnerType;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.manager.impl.AliPaymentMangerImpl;
@@ -93,5 +93,26 @@ public class AssetController extends XktBaseController {
         assetService.withdrawSuccess(prepareResult.getFinanceBillId());
         return success();
     }
+
+    @PreAuthorize("@ss.hasPermi('system:asset:list')")
+    @ApiOperation(value = "档口交易明细")
+    @PostMapping("store/trans-detail/page")
+    public R<PageVO<TransDetailStorePageItemVO>> pageStoreTransDetail(@Validated @RequestBody BasePageVO vo) {
+        TransDetailStoreQueryDTO queryDTO = BeanUtil.toBean(vo, TransDetailStoreQueryDTO.class);
+        queryDTO.setStoreId(SecurityUtils.getStoreId());
+        Page<TransDetailStorePageItemDTO> pageDTO = assetService.pageStoreTransDetail(queryDTO);
+        return success(PageVO.of(pageDTO, TransDetailStorePageItemVO.class));
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:asset:list')")
+    @ApiOperation(value = "卖家交易明细")
+    @PostMapping("user/trans-detail/page")
+    public R<PageVO<TransDetailUserPageItemVO>> pageUserTransDetail(@Validated @RequestBody BasePageVO vo) {
+        TransDetailUserQueryDTO queryDTO = BeanUtil.toBean(vo, TransDetailUserQueryDTO.class);
+        queryDTO.setUserId(SecurityUtils.getUserId());
+        Page<TransDetailUserPageItemDTO> pageDTO = assetService.pageUserTransDetail(queryDTO);
+        return success(PageVO.of(pageDTO, TransDetailUserPageItemVO.class));
+    }
+
 
 }

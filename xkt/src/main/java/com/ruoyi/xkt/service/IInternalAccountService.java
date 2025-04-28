@@ -2,11 +2,15 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.InternalAccount;
 import com.ruoyi.xkt.dto.account.InternalAccountAddDTO;
+import com.ruoyi.xkt.dto.account.TransDetailStorePageItemDTO;
+import com.ruoyi.xkt.dto.account.TransDetailUserPageItemDTO;
 import com.ruoyi.xkt.dto.finance.TransInfo;
 import com.ruoyi.xkt.enums.EAccountOwnerType;
 import com.ruoyi.xkt.enums.EEntryStatus;
 import com.ruoyi.xkt.enums.EFinBillType;
 import com.ruoyi.xkt.enums.ELoanDirection;
+
+import java.util.List;
 
 /**
  * @author liangyq
@@ -76,4 +80,20 @@ public interface IInternalAccountService {
      * @param transactionPassword md5
      */
     void setTransactionPassword(Long id, String phoneNumber, String transactionPassword);
+
+    /**
+     * 档口交易明细
+     *
+     * @param internalAccountId
+     * @return
+     */
+    List<TransDetailStorePageItemDTO> listStoreTransDetailPageItem(Long internalAccountId);
+
+    /**
+     * 卖家交易明细
+     *
+     * @param userId
+     * @return
+     */
+    List<TransDetailUserPageItemDTO> listUserTransDetailPageItem(Long userId);
 }

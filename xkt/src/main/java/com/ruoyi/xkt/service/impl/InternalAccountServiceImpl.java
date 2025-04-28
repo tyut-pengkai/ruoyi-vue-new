@@ -12,6 +12,8 @@ import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.InternalAccount;
 import com.ruoyi.xkt.domain.InternalAccountTransDetail;
 import com.ruoyi.xkt.dto.account.InternalAccountAddDTO;
+import com.ruoyi.xkt.dto.account.TransDetailStorePageItemDTO;
+import com.ruoyi.xkt.dto.account.TransDetailUserPageItemDTO;
 import com.ruoyi.xkt.dto.finance.TransInfo;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.InternalAccountMapper;
@@ -244,6 +246,16 @@ public class InternalAccountServiceImpl implements IInternalAccountService {
         update.setPhoneNumber(phoneNumber);
         update.setTransactionPassword(transactionPassword);
         internalAccountMapper.updateById(update);
+    }
+
+    @Override
+    public List<TransDetailStorePageItemDTO> listStoreTransDetailPageItem(Long internalAccountId) {
+        return internalAccountMapper.listStoreTransDetailPageItem(internalAccountId);
+    }
+
+    @Override
+    public List<TransDetailUserPageItemDTO> listUserTransDetailPageItem(Long userId) {
+        return internalAccountMapper.listUserTransDetailPageItem(userId);
     }
 
 
