@@ -1,9 +1,9 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.dto.account.AccountInfoDTO;
 import com.ruoyi.xkt.dto.account.AlipayBindDTO;
+import com.ruoyi.xkt.dto.account.AssetInfoDTO;
 import com.ruoyi.xkt.dto.account.TransactionPasswordSetDTO;
-import com.ruoyi.xkt.dto.finance.FinanceBillExt;
+import com.ruoyi.xkt.dto.account.WithdrawPrepareResult;
 import com.ruoyi.xkt.enums.EPayChannel;
 
 import java.math.BigDecimal;
@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  * @author liangyq
  * @date 2025-04-22 21:06
  */
-public interface IAccountService {
+public interface IAssetService {
     /**
      * 档口提现准备
      *
@@ -22,7 +22,8 @@ public interface IAccountService {
      * @param payChannel
      * @return
      */
-    FinanceBillExt prepareWithdraw(Long storeId, BigDecimal amount, String transactionPassword, EPayChannel payChannel);
+    WithdrawPrepareResult prepareWithdraw(Long storeId, BigDecimal amount, String transactionPassword,
+                                          EPayChannel payChannel);
 
     /**
      * 档口提现成功
@@ -32,12 +33,20 @@ public interface IAccountService {
     void withdrawSuccess(Long financeBillId);
 
     /**
-     * 获取档口账户信息
+     * 获取档口资产信息
      *
      * @param storeId
      * @return
      */
-    AccountInfoDTO getStoreAccountInfo(Long storeId);
+    AssetInfoDTO getStoreAssetInfo(Long storeId);
+
+    /**
+     * 获取用户资产信息
+     *
+     * @param userId
+     * @return
+     */
+    AssetInfoDTO getUserAssetInfo(Long userId);
 
     /**
      * 创建档口账户
@@ -45,7 +54,7 @@ public interface IAccountService {
      * @param storeId
      * @return
      */
-    AccountInfoDTO createInternalAccountIfNotExists(Long storeId);
+    AssetInfoDTO createInternalAccountIfNotExists(Long storeId);
 
     /**
      * 设置支付密码
@@ -53,7 +62,7 @@ public interface IAccountService {
      * @param transactionPasswordSet
      * @return
      */
-    AccountInfoDTO setTransactionPassword(TransactionPasswordSetDTO transactionPasswordSet);
+    AssetInfoDTO setTransactionPassword(TransactionPasswordSetDTO transactionPasswordSet);
 
     /**
      * 绑定支付宝
@@ -61,6 +70,6 @@ public interface IAccountService {
      * @param alipayBind
      * @return
      */
-    AccountInfoDTO bindAlipay(AlipayBindDTO alipayBind);
+    AssetInfoDTO bindAlipay(AlipayBindDTO alipayBind);
 
 }

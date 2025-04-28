@@ -9,9 +9,13 @@ import lombok.Data;
 @Data
 public class AlipayBindDTO {
     /**
-     * 档口ID
+     * 归属ID（平台=-1，档口=store_id，用户=user_id）
      */
-    private Long storeId;
+    private Long ownerId;
+    /**
+     * 归属[1:平台 2:档口 3:用户]
+     */
+    private Integer ownerType;
     /**
      * 账号
      */

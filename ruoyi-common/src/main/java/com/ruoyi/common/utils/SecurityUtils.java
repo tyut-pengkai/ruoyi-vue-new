@@ -36,6 +36,16 @@ public class SecurityUtils {
     }
 
     /**
+     * 档口ID
+     *
+     * @return
+     */
+    public static Long getStoreId() {
+        //TODO
+        return 1L;
+    }
+
+    /**
      * 获取用户账户
      **/
     public static String getUsername() {

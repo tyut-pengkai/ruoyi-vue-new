@@ -14,7 +14,7 @@ import com.ruoyi.xkt.enums.EAccountOwnerType;
 import com.ruoyi.xkt.enums.EAccountStatus;
 import com.ruoyi.xkt.enums.EAccountType;
 import com.ruoyi.xkt.enums.EPayChannel;
-import com.ruoyi.xkt.service.IAccountService;
+import com.ruoyi.xkt.service.IAssetService;
 import com.ruoyi.xkt.service.IExternalAccountService;
 import com.ruoyi.xkt.service.IFinanceBillService;
 import com.ruoyi.xkt.service.IInternalAccountService;
@@ -31,7 +31,7 @@ import java.math.BigDecimal;
  */
 @Slf4j
 @Service
-public class AccountServiceImpl implements IAccountService {
+public class AssetServiceImpl implements IAssetService {
 
     @Autowired
     private IFinanceBillService financeBillService;
@@ -43,8 +43,8 @@ public class AccountServiceImpl implements IAccountService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public FinanceBillExt prepareWithdraw(Long storeId, BigDecimal amount, String transactionPassword,
-                                          EPayChannel payChannel) {
+    public WithdrawPrepareResult prepareWithdraw(Long storeId, BigDecimal amount, String transactionPassword,
+                                                 EPayChannel payChannel) {
         Assert.notNull(storeId);
         Assert.notEmpty(transactionPassword);
         Assert.isTrue(NumberUtil.isLessOrEqual(amount, BigDecimal.ZERO), "提现金额异常");
@@ -61,7 +61,13 @@ public class AccountServiceImpl implements IAccountService {
         if (!StrUtil.equals(SecureUtil.md5(transactionPassword), internalAccount.getTransactionPassword())) {
             throw new ServiceException("支付密码错误");
         }
-        return financeBillService.createWithdrawPaymentBill(storeId, amount, payChannel);
+        FinanceBillExt financeBillExt = financeBillService.createWithdrawPaymentBill(storeId, amount, payChannel);
+        return new WithdrawPrepareResult(financeBillExt.getFinanceBill().getId(),
+                financeBillExt.getFinanceBill().getBillNo(),
+                financeBillExt.getFinanceBill().getTransAmount(),
+                externalAccount.getAccountOwnerNumber(),
+                externalAccount.getAccountOwnerName(),
+                externalAccount.getAccountOwnerPhoneNumber());
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -71,18 +77,27 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public AccountInfoDTO getStoreAccountInfo(Long storeId) {
+    public AssetInfoDTO getStoreAssetInfo(Long storeId) {
         Assert.notNull(storeId);
         InternalAccount internalAccount = internalAccountService.getAccount(storeId, EAccountOwnerType.STORE);
         ExternalAccount alipayExternalAccount = externalAccountService.getAccount(storeId, EAccountOwnerType.STORE,
                 EAccountType.ALI_PAY);
-        return new AccountInfoDTO(BeanUtil.toBean(internalAccount, InternalAccountDTO.class),
+        return new AssetInfoDTO(BeanUtil.toBean(internalAccount, InternalAccountDTO.class),
+                BeanUtil.toBean(alipayExternalAccount, ExternalAccountDTO.class));
+    }
+
+    @Override
+    public AssetInfoDTO getUserAssetInfo(Long userId) {
+        Assert.notNull(userId);
+        ExternalAccount alipayExternalAccount = externalAccountService.getAccount(userId, EAccountOwnerType.USER,
+                EAccountType.ALI_PAY);
+        return new AssetInfoDTO(null,
                 BeanUtil.toBean(alipayExternalAccount, ExternalAccountDTO.class));
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public AccountInfoDTO createInternalAccountIfNotExists(Long storeId) {
+    public AssetInfoDTO createInternalAccountIfNotExists(Long storeId) {
         Assert.notNull(storeId);
         InternalAccount internalAccount = internalAccountService.getAccount(storeId, EAccountOwnerType.STORE);
         if (internalAccount == null) {
@@ -91,12 +106,12 @@ public class AccountServiceImpl implements IAccountService {
             addDTO.setOwnerType(EAccountOwnerType.STORE.getValue());
             internalAccountService.createAccount(addDTO);
         }
-        return getStoreAccountInfo(storeId);
+        return getStoreAssetInfo(storeId);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public AccountInfoDTO setTransactionPassword(TransactionPasswordSetDTO transactionPasswordSet) {
+    public AssetInfoDTO setTransactionPassword(TransactionPasswordSetDTO transactionPasswordSet) {
         Assert.notNull(transactionPasswordSet.getStoreId());
         Assert.notEmpty(transactionPasswordSet.getPhoneNumber());
         Assert.notEmpty(transactionPasswordSet.getVerifyCode());
@@ -106,19 +121,24 @@ public class AccountServiceImpl implements IAccountService {
                 EAccountOwnerType.STORE);
         internalAccountService.setTransactionPassword(internalAccount.getId(), transactionPasswordSet.getPhoneNumber(),
                 SecureUtil.md5(transactionPasswordSet.getTransactionPassword()));
-        return getStoreAccountInfo(transactionPasswordSet.getStoreId());
+        return getStoreAssetInfo(transactionPasswordSet.getStoreId());
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public AccountInfoDTO bindAlipay(AlipayBindDTO alipayBind) {
-        Assert.notNull(alipayBind.getStoreId());
+    public AssetInfoDTO bindAlipay(AlipayBindDTO alipayBind) {
+        Assert.notNull(alipayBind.getOwnerId());
+        EAccountOwnerType ownerType = EAccountOwnerType.of(alipayBind.getOwnerType());
+        if (EAccountOwnerType.STORE != ownerType
+                && EAccountOwnerType.USER != ownerType) {
+            throw new ServiceException("账户归属异常");
+        }
         Assert.notEmpty(alipayBind.getAccountOwnerName());
         Assert.notEmpty(alipayBind.getAccountOwnerNumber());
         Assert.notEmpty(alipayBind.getAccountOwnerPhoneNumber());
         //TODO 验证码
-        ExternalAccount alipayExternalAccount = externalAccountService.getAccount(alipayBind.getStoreId(),
-                EAccountOwnerType.STORE, EAccountType.ALI_PAY);
+        ExternalAccount alipayExternalAccount = externalAccountService.getAccount(alipayBind.getOwnerId(),
+                ownerType, EAccountType.ALI_PAY);
         if (alipayExternalAccount != null) {
             //修改
             ExternalAccountUpdateDTO updateDTO = new ExternalAccountUpdateDTO();
@@ -131,8 +151,8 @@ public class AccountServiceImpl implements IAccountService {
         } else {
             //新增
             ExternalAccountAddDTO addDTO = new ExternalAccountAddDTO();
-            addDTO.setOwnerId(alipayBind.getStoreId());
-            addDTO.setOwnerType(EAccountOwnerType.STORE.getValue());
+            addDTO.setOwnerId(alipayBind.getOwnerId());
+            addDTO.setOwnerType(ownerType.getValue());
             addDTO.setAccountType(EAccountType.ALI_PAY.getValue());
             addDTO.setAccountOwnerName(alipayBind.getAccountOwnerName());
             addDTO.setAccountOwnerNumber(alipayBind.getAccountOwnerNumber());
@@ -140,7 +160,10 @@ public class AccountServiceImpl implements IAccountService {
             addDTO.setAccountAuthAccess(true);
             externalAccountService.createAccount(addDTO);
         }
-        return getStoreAccountInfo(alipayBind.getStoreId());
+        if (EAccountOwnerType.USER == ownerType) {
+            return getUserAssetInfo(alipayBind.getOwnerId());
+        }
+        return getStoreAssetInfo(alipayBind.getOwnerId());
     }
 
 

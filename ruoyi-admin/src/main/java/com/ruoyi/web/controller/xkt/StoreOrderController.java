@@ -120,7 +120,7 @@ public class StoreOrderController extends XktBaseController {
         if (1 == vo.getSrcPage()) {
             queryDTO.setOrderUserId(SecurityUtils.getUserId());
         } else {
-            //TODO 当前档口
+            queryDTO.setStoreId(SecurityUtils.getStoreId());
         }
         Page<StoreOrderPageItemDTO> pageDTO = storeOrderService.page(queryDTO);
         return success(PageVO.of(pageDTO, StoreOrderPageItemVO.class));

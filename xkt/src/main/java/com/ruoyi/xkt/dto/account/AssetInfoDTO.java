@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountInfoDTO {
+public class AssetInfoDTO {
     /**
      * 内部账户
      */
