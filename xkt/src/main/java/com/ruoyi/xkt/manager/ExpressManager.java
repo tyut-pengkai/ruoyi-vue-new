@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.manager;
 
 import com.ruoyi.xkt.dto.express.ExpressCancelReqDTO;
+import com.ruoyi.xkt.dto.express.ExpressInterceptReqDTO;
 import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
 import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
 import com.ruoyi.xkt.enums.EExpressChannel;
@@ -34,7 +35,14 @@ public interface ExpressManager {
      * @param cancelReqDTO
      * @return
      */
-    boolean cancelShipOrder(ExpressCancelReqDTO cancelReqDTO);
+    boolean cancelShip(ExpressCancelReqDTO cancelReqDTO);
+
+    /**
+     * 拦截
+     *
+     * @return
+     */
+    boolean interceptShip(ExpressInterceptReqDTO interceptReqDTO);
 
     /**
      * 打印面单

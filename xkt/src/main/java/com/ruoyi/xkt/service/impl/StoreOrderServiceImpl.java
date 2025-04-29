@@ -609,11 +609,11 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                             order.getOrderNo()));
                 }
             }
-            if (EExpressType.STORE.getValue().equals(containDetail.getExpressType())) {
-                //已存在档口发货的明细
-                throw new ServiceException(CharSequenceUtil.format("订单[{}]由档口物流发货！",
-                        order.getOrderNo()));
-            }
+//            if (EExpressType.STORE.getValue().equals(containDetail.getExpressType())) {
+//                //已存在档口发货的明细
+//                throw new ServiceException(CharSequenceUtil.format("订单[{}]由档口物流发货！",
+//                        order.getOrderNo()));
+//            }
         }
         List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectByIds(storeOrderDetailIds);
         for (StoreOrderDetail orderDetail : orderDetails) {
@@ -699,11 +699,11 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                             order.getOrderNo()));
                 }
             }
-            if (EExpressType.PLATFORM.getValue().equals(containDetail.getExpressType())) {
-                //已存在平台发货的明细
-                throw new ServiceException(CharSequenceUtil.format("订单[{}]由平台物流发货！",
-                        order.getOrderNo()));
-            }
+//            if (EExpressType.PLATFORM.getValue().equals(containDetail.getExpressType())) {
+//                //已存在平台发货的明细
+//                throw new ServiceException(CharSequenceUtil.format("订单[{}]由平台物流发货！",
+//                        order.getOrderNo()));
+//            }
         }
         List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectByIds(storeOrderDetailIds);
         List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());

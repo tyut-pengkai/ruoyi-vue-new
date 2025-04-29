@@ -7,6 +7,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.dto.express.ExpressCancelReqDTO;
+import com.ruoyi.xkt.dto.express.ExpressInterceptReqDTO;
 import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
 import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
 import com.ruoyi.xkt.enums.EExpressChannel;
@@ -74,7 +75,7 @@ public class YtoExpressManagerImpl implements ExpressManager {
     }
 
     @Override
-    public boolean cancelShipOrder(ExpressCancelReqDTO cancelReqDTO) {
+    public boolean cancelShip(ExpressCancelReqDTO cancelReqDTO) {
         Assert.notNull(cancelReqDTO);
         Assert.notEmpty(cancelReqDTO.getExpressReqNo());
         YtoCancelOrderParam cancelOrderParam = new YtoCancelOrderParam();
@@ -101,6 +102,36 @@ public class YtoExpressManagerImpl implements ExpressManager {
             log.error("圆通订单取消异常", e);
         }
         log.warn("圆通订单取消失败: {}", cancelReqDTO);
+        return false;
+    }
+
+    @Override
+    public boolean interceptShip(ExpressInterceptReqDTO interceptReqDTO) {
+        Assert.notNull(interceptReqDTO);
+        Assert.notEmpty(interceptReqDTO.getExpressWaybillNo());
+        YtoInterceptReturnParam interceptReturnParam = new YtoInterceptReturnParam();
+        interceptReturnParam.setWaybillNo(interceptReqDTO.getExpressWaybillNo());
+        interceptReturnParam.setWantedDesc("拦截退回");
+        try {
+            String param = JSONUtil.toJsonStr(interceptReturnParam);
+            String sign = YtoSignUtil.sign("wanted_report_adapter", "v1", param, appSecret);
+            YtoPublicRequest request = YtoPublicRequest.builder()
+                    .timestamp(System.currentTimeMillis())
+                    .param(param)
+                    .format(YtoPublicRequest.EFormat.JSON)
+                    .sign(sign).build();
+            String rtnStr = HttpUtil.post(gatewayUrl + "open/wanted_report_adapter/v1/N364gM/" + appKey,
+                    JSONUtil.toJsonStr(request));
+            log.info("圆通订单拦截返回信息: {}", rtnStr);
+            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
+            Integer statusCode = rtnJson.getInt("statusCode");
+            if (statusCode != null && statusCode == 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            log.error("圆通订单拦截异常", e);
+        }
+        log.warn("圆通订单拦截失败: {}", interceptReqDTO);
         return false;
     }
 
