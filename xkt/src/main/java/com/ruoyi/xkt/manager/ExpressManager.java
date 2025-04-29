@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.manager;
 
+import com.ruoyi.xkt.dto.express.ExpressCancelReqDTO;
 import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
 import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
 import com.ruoyi.xkt.enums.EExpressChannel;
@@ -26,6 +27,14 @@ public interface ExpressManager {
      * @return 运单号
      */
     String shipStoreOrder(ExpressShipReqDTO shipReqDTO);
+
+    /**
+     * 取消发货
+     *
+     * @param cancelReqDTO
+     * @return
+     */
+    boolean cancelShipOrder(ExpressCancelReqDTO cancelReqDTO);
 
     /**
      * 打印面单

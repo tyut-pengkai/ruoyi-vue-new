@@ -7,6 +7,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.xkt.dto.express.ExpressCancelReqDTO;
 import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
 import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
 import com.ruoyi.xkt.enums.EExpressChannel;
@@ -32,6 +33,8 @@ import java.util.concurrent.TimeUnit;
 public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
 
     private static final String CREATE_ORDER_URI = "zto.open.createOrder";
+
+    private static final String CANCEL_ORDER_URI = "zto.open.cancelPreOrder";
 
     private static final String STRUCTURE_ADDRESS_URI = "zto.innovate.structureNamePhoneAddress";
 
@@ -84,6 +87,32 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
             log.error("中通订单创建异常", e);
         }
         throw new ServiceException("中通订单创建失败");
+    }
+
+    @Override
+    public boolean cancelShipOrder(ExpressCancelReqDTO cancelReqDTO) {
+        Assert.notNull(cancelReqDTO);
+        Assert.notEmpty(cancelReqDTO.getExpressWaybillNo());
+        ZtoCancelOrderParam cancelOrderParam = new ZtoCancelOrderParam();
+        cancelOrderParam.setBillCode(cancelReqDTO.getExpressWaybillNo());
+        cancelOrderParam.setCancelType("1");
+        ZopPublicRequest request = new ZopPublicRequest();
+        request.setBody(JSONUtil.toJsonStr(cancelOrderParam));
+        request.setUrl(gatewayUrl + CANCEL_ORDER_URI);
+        request.setEncryptionType(EncryptionType.MD5);
+        try {
+            String bodyStr = client.execute(request);
+            log.info("中通订单取消返回信息: {}", bodyStr);
+            JSONObject bodyJson = JSONUtil.parseObj(bodyStr);
+            boolean success = bodyJson.getBool("status");
+            if (success) {
+                return true;
+            }
+        } catch (Exception e) {
+            log.error("中通订单取消异常", e);
+        }
+        log.warn("中通订单取消失败: {}", cancelReqDTO);
+        return false;
     }
 
     @Override

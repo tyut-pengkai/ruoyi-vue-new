@@ -6,14 +6,12 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.xkt.dto.express.ExpressCancelReqDTO;
 import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
 import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
 import com.ruoyi.xkt.enums.EExpressChannel;
 import com.ruoyi.xkt.manager.ExpressManager;
-import com.ruoyi.xkt.thirdpart.yto.YtoCreateOrderParam;
-import com.ruoyi.xkt.thirdpart.yto.YtoPrintOrderParam;
-import com.ruoyi.xkt.thirdpart.yto.YtoPublicRequest;
-import com.ruoyi.xkt.thirdpart.yto.YtoSignUtil;
+import com.ruoyi.xkt.thirdpart.yto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -73,6 +71,37 @@ public class YtoExpressManagerImpl implements ExpressManager {
             log.error("圆通订单创建异常", e);
         }
         throw new ServiceException("圆通订单创建失败");
+    }
+
+    @Override
+    public boolean cancelShipOrder(ExpressCancelReqDTO cancelReqDTO) {
+        Assert.notNull(cancelReqDTO);
+        Assert.notEmpty(cancelReqDTO.getExpressReqNo());
+        YtoCancelOrderParam cancelOrderParam = new YtoCancelOrderParam();
+        cancelOrderParam.setLogisticsNo(cancelReqDTO.getExpressReqNo());
+        cancelOrderParam.setCancelDesc("订单取消");
+        try {
+            String param = JSONUtil.toJsonStr(cancelOrderParam);
+            String sign = YtoSignUtil.sign("korder_cancel_adapter", "v1", param, appSecret);
+            YtoPublicRequest request = YtoPublicRequest.builder()
+                    .timestamp(System.currentTimeMillis())
+                    .param(param)
+                    .format(YtoPublicRequest.EFormat.JSON)
+                    .sign(sign).build();
+            String rtnStr = HttpUtil.post(gatewayUrl + "open/korder_cancel_adapter/v1/N364gM/" + appKey,
+                    JSONUtil.toJsonStr(request));
+            log.info("圆通订单取消返回信息: {}", rtnStr);
+            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
+            String logisticsNo = rtnJson.getStr("logisticsNo");
+            if (StrUtil.isNotEmpty(logisticsNo)
+                    && logisticsNo.equals(cancelOrderParam.getLogisticsNo())) {
+                return true;
+            }
+        } catch (Exception e) {
+            log.error("圆通订单取消异常", e);
+        }
+        log.warn("圆通订单取消失败: {}", cancelReqDTO);
+        return false;
     }
 
     @Override
