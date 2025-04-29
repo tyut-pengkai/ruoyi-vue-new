@@ -4,17 +4,17 @@ import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.vo.productCategory.AppHomeProdCateListResVO;
+import com.ruoyi.common.core.domain.vo.productCategory.ProdCateListResVO;
 import com.ruoyi.common.core.domain.vo.productCategory.ProdCateListVO;
 import com.ruoyi.common.core.domain.vo.productCategory.ProdCateVO;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateListDTO;
-import com.ruoyi.system.domain.dto.productCategory.ProdCateListResDTO;
 import com.ruoyi.system.service.ISysProductCategoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -83,8 +83,29 @@ public class SysProductCategoryController extends XktBaseController {
 //    @PreAuthorize("@ss.hasPermi('system:category:list')")
     @ApiOperation(value = "获取商品分类列表", httpMethod = "POST", response = R.class)
     @PostMapping("/list")
-    public R<List<ProdCateListResDTO>> list(@RequestBody ProdCateListVO listVO) {
-        return R.ok(BeanUtil.copyToList(prodCateService.selectList(BeanUtil.toBean(listVO, ProdCateListDTO.class)), ProdCateListResDTO.class));
+    public R<List<ProdCateListResVO>> list(@RequestBody ProdCateListVO listVO) {
+        return R.ok(BeanUtil.copyToList(prodCateService.selectList(BeanUtil.toBean(listVO, ProdCateListDTO.class)), ProdCateListResVO.class));
+    }
+
+
+    /**
+     * APP首页获取商品分类
+     */
+//    @PreAuthorize("@ss.hasPermi('system:category:list')")
+    @ApiOperation(value = "APP首页获取商品分类", httpMethod = "GET", response = R.class)
+    @GetMapping("/app/home/list")
+    public R<List<AppHomeProdCateListResVO>> appHomeCate() {
+        return R.ok(BeanUtil.copyToList(prodCateService.selectAppHomeCate(), AppHomeProdCateListResVO.class));
+    }
+
+    /**
+     * APP分类页
+     */
+//    @PreAuthorize("@ss.hasPermi('system:category:list')")
+    @ApiOperation(value = "APP分类页", httpMethod = "GET", response = R.class)
+    @GetMapping("/app/list")
+    public R<List<AppHomeProdCateListResVO>> appCate() {
+        return R.ok(BeanUtil.copyToList(prodCateService.appCate(), AppHomeProdCateListResVO.class));
     }
 
 

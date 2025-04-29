@@ -1,6 +1,6 @@
 package com.ruoyi.system.service;
 
-import com.ruoyi.common.core.domain.vo.productCategory.ProdCateVO;
+import com.ruoyi.system.domain.dto.productCategory.AppHomeProdCateListResDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateListDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateListResDTO;
@@ -40,6 +40,7 @@ public interface ISysProductCategoryService {
 
     /**
      * 获取商品分类详情
+     *
      * @param prodCateId 商品分类ID
      * @return ProdCateDTO
      */
@@ -47,9 +48,24 @@ public interface ISysProductCategoryService {
 
     /**
      * 获取商品分类列表
+     *
      * @param listDTO 查询入参
      * @return List<ProdCateListResDTO>
      */
     List<ProdCateListResDTO> selectList(ProdCateListDTO listDTO);
+
+    /**
+     * 获取APP首页商品分类
+     *
+     * @return List<AppHomeProdCateListResDTO>
+     */
+    List<AppHomeProdCateListResDTO> selectAppHomeCate();
+
+    /**
+     * 获取APP分类页
+     *
+     * @return List<AppHomeProdCateListResDTO>
+     */
+    List<AppHomeProdCateListResDTO> appCate();
 
 }

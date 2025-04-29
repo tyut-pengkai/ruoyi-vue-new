@@ -6,6 +6,7 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysProductCategory;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.system.domain.dto.productCategory.AppHomeProdCateListResDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateListDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateListResDTO;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.ruoyi.common.constant.Constants.TOPMOST_PRODUCT_CATEGORY_ID;
 import static com.ruoyi.common.utils.SecurityUtils.getUsername;
 
 /**
@@ -123,6 +125,40 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
         }
         List<ProdCateListResDTO> resList = BeanUtil.copyToList(prodCateList, ProdCateListResDTO.class);
         return this.buildCateTree(resList);
+    }
+
+    /**
+     * 获取APP首页商品分类
+     *
+     * @return List<AppHomeProdCateListResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<AppHomeProdCateListResDTO> selectAppHomeCate() {
+        List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED)
+                .eq(SysProductCategory::getParentId, TOPMOST_PRODUCT_CATEGORY_ID));
+        // 返回前4个排序的分类
+        return CollectionUtils.isEmpty(prodCateList) ? new ArrayList<>()
+                : prodCateList.stream().sorted(Comparator.comparing(SysProductCategory::getOrderNum)).limit(4)
+                .map(x -> BeanUtil.toBean(x, AppHomeProdCateListResDTO.class)).collect(Collectors.toList());
+    }
+
+    /**
+     * 获取APP分类页
+     *
+     * @return List<AppHomeProdCateListResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<AppHomeProdCateListResDTO> appCate() {
+        List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED)
+                .eq(SysProductCategory::getParentId, TOPMOST_PRODUCT_CATEGORY_ID));
+        return CollectionUtils.isEmpty(prodCateList) ? new ArrayList<>()
+                : prodCateList.stream().sorted(Comparator.comparing(SysProductCategory::getOrderNum)
+                        .thenComparing(SysProductCategory::getId))
+                .map(x -> BeanUtil.toBean(x, AppHomeProdCateListResDTO.class)).collect(Collectors.toList());
     }
 
 

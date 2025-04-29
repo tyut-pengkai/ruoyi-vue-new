@@ -210,10 +210,13 @@ public class Constants
     public static final String EXPRESS_REGION_MAP_CACHE_KEY = "EXPRESS_REGION_MAP";
     public static final String EXPRESS_REGION_LIST_CACHE_KEY = "EXPRESS_REGION_LIST";
     public static final String EXPRESS_REGION_TREE_CACHE_KEY = "EXPRESS_REGION_TREE";
-
-    // ES 索引 product_info
+    /**
+     * ES 索引 product_info
+     */
     public static final String ES_IDX_PRODUCT_INFO = "product_info";
-
-
+    /**
+     * 最顶层商品分类ID
+     */
+    public static final Long TOPMOST_PRODUCT_CATEGORY_ID = 1L;
 
 }
