@@ -31,6 +31,8 @@ public class ProdCateListResVO {
     private Integer orderNum;
     @ApiModelProperty(value = "状态")
     private String status;
+    @ApiModelProperty(value = "图标url")
+    private String iconUrl;
     @ApiModelProperty(value = "备注")
     private String remark;
     @ApiModelProperty(value = "创建时间")

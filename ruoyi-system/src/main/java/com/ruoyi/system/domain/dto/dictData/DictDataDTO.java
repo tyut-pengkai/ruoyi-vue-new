@@ -27,9 +27,9 @@ public class DictDataDTO {
     private String dictValue;
     @ApiModelProperty(value = "字典类型")
     private String dictType;
-    @ApiModelProperty(name = "状态")
+    @ApiModelProperty(value = "状态")
     private String status;
-    @ApiModelProperty(name = "备注")
+    @ApiModelProperty(value = "备注")
     private String remark;
 
 }

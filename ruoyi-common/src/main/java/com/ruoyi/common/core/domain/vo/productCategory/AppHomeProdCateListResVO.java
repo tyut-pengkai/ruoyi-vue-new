@@ -19,9 +19,11 @@ public class AppHomeProdCateListResVO {
     @ApiModelProperty(value = "商品分类主键")
     @JsonProperty(value = "prodCateId")
     private Long id;
-    @ApiModelProperty(name = "分类名称")
+    @ApiModelProperty(value = "分类名称")
     private String name;
-    @ApiModelProperty(name = "显示顺序")
+    @ApiModelProperty(value = "显示顺序")
     private Integer orderNum;
+    @ApiModelProperty(value = "图标url")
+    private String iconUrl;
 
 }

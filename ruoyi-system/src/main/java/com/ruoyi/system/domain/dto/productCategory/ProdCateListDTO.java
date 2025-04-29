@@ -15,9 +15,9 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProdCateListDTO {
 
-    @ApiModelProperty(name = "分类名称")
+    @ApiModelProperty(value = "分类名称")
     private String name;
-    @ApiModelProperty(name = "状态")
+    @ApiModelProperty(value = "状态")
     private String status;
 
 }

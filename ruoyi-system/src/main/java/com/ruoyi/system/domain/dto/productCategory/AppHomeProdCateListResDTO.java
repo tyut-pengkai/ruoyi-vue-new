@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * @author liujiang
@@ -14,13 +15,16 @@ import lombok.Data;
 @ApiModel("APP首页商品分类")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Accessors(chain = true)
 public class AppHomeProdCateListResDTO {
 
     @ApiModelProperty(value = "商品分类主键")
     private Long id;
-    @ApiModelProperty(name = "分类名称")
+    @ApiModelProperty(value = "分类名称")
     private String name;
-    @ApiModelProperty(name = "显示顺序")
+    @ApiModelProperty(value = "显示顺序")
     private Integer orderNum;
+    @ApiModelProperty(value = "图标url")
+    private String iconUrl;
 
 }
