@@ -23,8 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.DateTimeException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -149,9 +149,13 @@ public class SysCardTemplateServiceImpl implements ISysCardTemplateService
                 sysCard.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE));
             } else {
 //                sysCard.setExpireTime(DateUtils.addSeconds(new Date(), cardTpl.getEffectiveDuration().intValue()));
-                LocalDateTime ldt = DateUtils.toLocalDateTime(new Date());
-                ldt = ldt.plus(cardTpl.getEffectiveDuration(), ChronoUnit.SECONDS);
-                sysCard.setExpireTime(DateUtils.toDate(ldt));
+                try {
+                    Instant ldt = Instant.now();
+                    ldt = ldt.plusSeconds(cardTpl.getEffectiveDuration());
+                    sysCard.setExpireTime(Date.from(ldt));
+                }  catch (DateTimeException e) {
+                    sysCard.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE));
+                }
             }
             sysCard.setIsCharged(UserConstants.NO);
             sysCard.setIsSold(UserConstants.NO);

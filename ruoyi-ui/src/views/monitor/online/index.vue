@@ -6,6 +6,7 @@
       :model="queryParams"
       label-width="68px"
       size="small"
+      v-show="showSearch"
     >
       <el-form-item label="用户账号" prop="userName">
         <el-input
@@ -94,11 +95,35 @@
         >
       </el-form-item>
     </el-form>
+
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
+          :disabled="multiple"
+          @click="handleForceLogout"
+          v-hasPermi="['monitor:online:forceLogout']"
+        >批量强退</el-button
+        >
+      </el-col>
+
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+      ></right-toolbar>
+    </el-row>
+
     <el-table
       v-loading="loading"
       :data="list.slice((pageNum - 1) * pageSize, pageNum * pageSize)"
       style="width: 100%"
+      row-key="tokenId"
+      @selection-change="handleSelectionChange"
     >
+      <el-table-column align="center" type="selection" width="55" reserve-selection />
       <el-table-column label="序号" type="index" align="center">
         <template slot-scope="scope">
           <span>{{ (pageNum - 1) * pageSize + scope.$index + 1 }}</span>
@@ -220,6 +245,14 @@ export default {
         ipaddr: undefined,
         userName: undefined,
       },
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 显示搜索条件
+      showSearch: true,
     };
   },
   created() {
@@ -245,12 +278,25 @@ export default {
       this.resetForm("queryForm");
       this.handleQuery();
     },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map((item) => item.tokenId);
+      this.single = selection.length !== 1;
+      this.multiple = !selection.length;
+    },
     /** 强退按钮操作 */
     handleForceLogout(row) {
+      const tokenIds = row.tokenId || this.ids;
+      let msg = '';
+      if(row.tokenId) {
+        msg = '是否确认强退名称为"' + row.userName + '"的用户？';
+      } else {
+        msg = '是否确认强退选中的' + tokenIds.length + '条数据项？';
+      }
       this.$modal
-        .confirm('是否确认强退名称为"' + row.userName + '"的用户？')
+        .confirm(msg)
         .then(function () {
-          return forceLogout(row.tokenId);
+          return forceLogout(tokenIds);
         })
         .then(() => {
           this.getList();

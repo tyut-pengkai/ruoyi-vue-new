@@ -28,8 +28,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.DateTimeException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -146,9 +146,13 @@ public class SysLoginCodeTemplateServiceImpl implements ISysLoginCodeTemplateSer
                 sysLoginCode.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE));
             } else {
 //                sysLoginCode.setExpireTime(DateUtils.addSeconds(new Date(), loginCodeTpl.getEffectiveDuration().intValue()));
-                LocalDateTime ldt = DateUtils.toLocalDateTime(new Date());
-                ldt = ldt.plus(loginCodeTpl.getEffectiveDuration(), ChronoUnit.SECONDS);
-                sysLoginCode.setExpireTime(DateUtils.toDate(ldt));
+                try {
+                    Instant ldt = Instant.now();
+                    ldt = ldt.plusSeconds(loginCodeTpl.getEffectiveDuration());
+                    sysLoginCode.setExpireTime(Date.from(ldt));
+                }  catch (DateTimeException e) {
+                    sysLoginCode.setExpireTime(DateUtils.parseDate(UserConstants.MAX_DATE));
+                }
             }
             sysLoginCode.setIsCharged(UserConstants.NO);
             sysLoginCode.setIsSold(UserConstants.NO);

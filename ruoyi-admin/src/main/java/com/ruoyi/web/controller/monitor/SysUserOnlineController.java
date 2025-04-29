@@ -196,12 +196,14 @@ public class SysUserOnlineController extends BaseController {
     @PreAuthorize("@ss.hasPermi('monitor:online:forceLogout')")
     @Log(title = "在线用户", businessType = BusinessType.FORCE)
     @DeleteMapping("/{tokenId}")
-    public AjaxResult forceLogout(@PathVariable String tokenId) {
-        Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + tokenId + "*");
-        for (String key : keys) {
-            redisCache.deleteObject(key);
-            SysCache.delete(key);
-            Constants.LAST_ERROR_REASON_MAP.put(tokenId, "您已被系统强制下线");
+    public AjaxResult forceLogout(@PathVariable String[] tokenId) {
+        for (String id : tokenId) {
+            Collection<String> keys = redisCache.scan(CacheConstants.LOGIN_TOKEN_KEY + id + "*");
+            for (String key : keys) {
+                redisCache.deleteObject(key);
+                SysCache.delete(key);
+                Constants.LAST_ERROR_REASON_MAP.put(id, "您已被系统强制下线");
+            }
         }
         return AjaxResult.success();
     }
