@@ -96,6 +96,12 @@ public class SysCardTemplateController extends BaseController {
         if (sysCardTemplate.getCardPassGenRule() == GenRule.REGEX && StringUtils.isBlank(sysCardTemplate.getCardPassRegex())) {
             throw new ServiceException("密码正则表达式不能为空");
         }
+        if(sysCardTemplate.getQuota() < 0 || sysCardTemplate.getQuota() > 1000 * 365 * DAY) {
+            throw new ServiceException("面值设置错误，面值需在0-1000年之间");
+        }
+        if(sysCardTemplate.getEffectiveDuration() < -1 || sysCardTemplate.getEffectiveDuration() > 1000 * 365 * DAY) {
+            throw new ServiceException("有效期设置错误，有效期需在-1-1000年(-1代表永久)之间");
+        }
         SysCardTemplate template = sysCardTemplateService.selectSysCardTemplateByAppIdAndTemplateName(sysCardTemplate.getAppId(), sysCardTemplate.getCardName());
         if(template != null) {
             throw new ServiceException("卡类不能重名，此软件下已存在名为[" + sysCardTemplate.getCardName() + "]的卡类");
@@ -116,6 +122,12 @@ public class SysCardTemplateController extends BaseController {
         }
         if (sysCardTemplate.getCardPassGenRule() == GenRule.REGEX && StringUtils.isBlank(sysCardTemplate.getCardPassRegex())) {
             throw new ServiceException("密码正则表达式不能为空");
+        }
+        if(sysCardTemplate.getQuota() < 0 || sysCardTemplate.getQuota() > 1000 * 365 * DAY) {
+            throw new ServiceException("面值设置错误，面值需在0-1000年之间");
+        }
+        if(sysCardTemplate.getEffectiveDuration() < -1 || sysCardTemplate.getEffectiveDuration() > 1000 * 365 * DAY) {
+            throw new ServiceException("有效期设置错误，有效期需在-1-1000年(-1代表永久)之间");
         }
         SysCardTemplate template = sysCardTemplateService.selectSysCardTemplateByAppIdAndTemplateName(sysCardTemplate.getAppId(), sysCardTemplate.getCardName());
         if(template != null && !Objects.equals(template.getTemplateId(), sysCardTemplate.getTemplateId())) {

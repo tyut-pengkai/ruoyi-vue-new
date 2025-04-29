@@ -57,6 +57,8 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     @Resource
     private ISysAgentUserService sysAgentService;
 
+    static Long DAY = 86400L; // 86400秒为一天
+
     /**
      * 查询单码
      *
@@ -107,6 +109,9 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     public int insertSysLoginCode(SysLoginCode sysLoginCode) {
         sysLoginCode.setCreateTime(DateUtils.getNowDate());
         sysLoginCode.setCreateBy(SecurityUtils.getUsernameNoException());
+        if(sysLoginCode.getQuota() < 0 || sysLoginCode.getQuota() > 1000 * 365 * DAY) {
+            throw new ServiceException("面值设置错误，面值需在0-1000年之间");
+        }
         SysLoginCode loginCode = selectSysLoginCodeByCardNo(sysLoginCode.getCardNo());
         if(loginCode != null) {
             throw new ServiceException("单码不可重复，此单码已存在");
@@ -124,6 +129,9 @@ public class SysLoginCodeServiceImpl implements ISysLoginCodeService {
     public int updateSysLoginCode(SysLoginCode sysLoginCode) {
         sysLoginCode.setUpdateTime(DateUtils.getNowDate());
         sysLoginCode.setUpdateBy(SecurityUtils.getUsernameNoException());
+        if(sysLoginCode.getQuota() < 0 || sysLoginCode.getQuota() > 1000 * 365 * DAY) {
+            throw new ServiceException("面值设置错误，面值需在0-1000年之间");
+        }
         SysLoginCode loginCode = selectSysLoginCodeByCardNo(sysLoginCode.getCardNo());
         if(loginCode != null && !Objects.equals(loginCode.getCardId(), sysLoginCode.getCardId())) {
             throw new ServiceException("单码不可重复，此单码已存在");

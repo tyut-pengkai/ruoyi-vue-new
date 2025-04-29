@@ -55,6 +55,8 @@ public class SysCardServiceImpl implements ISysCardService {
     @Resource
     private ISysAgentUserService sysAgentService;
 
+    static Long DAY = 86400L; // 86400秒为一天
+
     /**
      * 查询卡密
      *
@@ -115,6 +117,13 @@ public class SysCardServiceImpl implements ISysCardService {
     public int insertSysCard(SysCard sysCard) {
         sysCard.setCreateTime(DateUtils.getNowDate());
         sysCard.setCreateBy(SecurityUtils.getUsernameNoException());
+        if(sysCard.getQuota() < 0 || sysCard.getQuota() > 1000 * 365 * DAY) {
+            throw new ServiceException("面值设置错误，面值需在0-1000年之间");
+        }
+        SysCard card = selectSysCardByCardNo(sysCard.getCardNo());
+        if(card != null && !Objects.equals(card.getCardId(), sysCard.getCardId())) {
+            throw new ServiceException("卡号不可重复，此卡号已存在");
+        }
         return sysCardMapper.insertSysCard(sysCard);
     }
 
@@ -128,6 +137,9 @@ public class SysCardServiceImpl implements ISysCardService {
     public int updateSysCard(SysCard sysCard) {
         sysCard.setUpdateTime(DateUtils.getNowDate());
         sysCard.setUpdateBy(SecurityUtils.getUsernameNoException());
+        if(sysCard.getQuota() < 0 || sysCard.getQuota() > 1000 * 365 * DAY) {
+            throw new ServiceException("面值设置错误，面值需在0-1000年之间");
+        }
         SysCard card = selectSysCardByCardNo(sysCard.getCardNo());
         if(card != null && !Objects.equals(card.getCardId(), sysCard.getCardId())) {
             throw new ServiceException("卡号不可重复，此卡号已存在");

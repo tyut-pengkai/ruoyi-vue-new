@@ -252,21 +252,21 @@ public class SysLoginCodeController extends BaseController {
                                     appUser = sysAppUserService.selectSysAppUserByAppIdAndLoginCode(loginCode.getAppId(), item);
                                 }
                                 if(template.getReplaceThreshold() == -1) {
-                                    result.get(c).add(item + "【单码已使用】");
+                                    result.get(c).add(item + "【单码已使用，只能更换未使用的卡[可在单码类别中配置换卡额度限制]】");
                                 } else if(loginCode.getChargeType() == ChargeType.CHARGE || appUser == null) {
                                     result.get(c).add(item + "【单码已使用且已经以卡充卡到软件用户】");
                                 } else {
                                     if(app.getBillType() == BillType.TIME) {
                                         long second = DateUtils.differentMillisecond(DateUtils.getNowDate(), appUser.getExpireTime()) / 1000;
                                         if(second < template.getReplaceThreshold() || second <= 0) {
-                                            result.get(c).add(item + "【单码已使用且不满足可换卡条件或单码已无剩余时间】");
+                                            result.get(c).add(item + "【单码已使用且不满足可换卡条件或单码已无剩余时间，剩余：" + second + "<" + template.getReplaceThreshold() + "[可在单码类别中配置换卡额度限制]】");
                                         } else {
                                             // 符合换卡条件
                                             doReplace(vo, item, template, loginCode, batchNo, result, a, e);
                                         }
                                     }  else if(app.getBillType() == BillType.POINT) {
                                         if(appUser.getPoint().compareTo(BigDecimal.valueOf(template.getReplaceThreshold())) < 0 || appUser.getPoint().compareTo(BigDecimal.ZERO) < 0) {
-                                            result.get(c).add(item + "【单码已使用且不满足可换卡条件或单码已无剩余点数】");
+                                            result.get(c).add(item + "【单码已使用且不满足可换卡条件或单码已无剩余点数，剩余：" + appUser.getPoint() + "<" + template.getReplaceThreshold() + "[可在单码类别中配置换卡额度限制]】");
                                         } else {
                                             // 符合换卡条件
                                             doReplace(vo, item, template, loginCode, batchNo, result, a, e);
