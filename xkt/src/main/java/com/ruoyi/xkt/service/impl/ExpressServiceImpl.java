@@ -9,6 +9,7 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.Express;
 import com.ruoyi.xkt.domain.ExpressFeeConfig;
@@ -18,6 +19,7 @@ import com.ruoyi.xkt.dto.express.ExpressContactDTO;
 import com.ruoyi.xkt.dto.express.ExpressRegionDTO;
 import com.ruoyi.xkt.dto.express.ExpressRegionTreeNodeDTO;
 import com.ruoyi.xkt.dto.express.ExpressStructAddressDTO;
+import com.ruoyi.xkt.manager.ExpressManager;
 import com.ruoyi.xkt.manager.impl.ZtoExpressManagerImpl;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IExpressService;
@@ -60,6 +62,8 @@ public class ExpressServiceImpl implements IExpressService {
     private RedisCache redisCache;
     @Autowired
     private ZtoExpressManagerImpl ztoExpressManager;
+    @Autowired
+    private List<ExpressManager> expressManagers;
 
     @Override
     public void checkExpress(Long expressId) {
@@ -212,5 +216,16 @@ public class ExpressServiceImpl implements IExpressService {
                 .countyName(regionMap.getOrDefault(countyCode, emptyRegion).getRegionName())
                 .detailAddress(detailAddress)
                 .build();
+    }
+
+    @Override
+    public ExpressManager getExpressManager(Long expressId) {
+        Assert.notNull(expressId);
+        for (ExpressManager expressManager : expressManagers) {
+            if (expressManager.channel().getExpressId().equals(expressId)) {
+                return expressManager;
+            }
+        }
+        throw new ServiceException("未知物流渠道" + expressId);
     }
 }

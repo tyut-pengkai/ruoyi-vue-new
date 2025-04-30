@@ -12,11 +12,16 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.web.controller.xkt.vo.order.*;
 import com.ruoyi.xkt.domain.StoreOrderDetail;
+import com.ruoyi.xkt.dto.express.ExpressCancelReqDTO;
+import com.ruoyi.xkt.dto.express.ExpressInterceptReqDTO;
 import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
 import com.ruoyi.xkt.dto.order.*;
+import com.ruoyi.xkt.enums.EExpressStatus;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
+import com.ruoyi.xkt.manager.ExpressManager;
 import com.ruoyi.xkt.manager.PaymentManager;
+import com.ruoyi.xkt.service.IExpressService;
 import com.ruoyi.xkt.service.IStoreOrderService;
 import io.jsonwebtoken.lang.Assert;
 import io.swagger.annotations.Api;
@@ -29,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +48,8 @@ public class StoreOrderController extends XktBaseController {
 
     @Autowired
     private IStoreOrderService storeOrderService;
+    @Autowired
+    private IExpressService expressService;
     @Autowired
     private List<PaymentManager> paymentManagers;
 
@@ -189,19 +197,43 @@ public class StoreOrderController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:order:add')")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("申请售后（创建售后订单）")
-    @PostMapping("apply-refund")
+    @PostMapping("refund/apply")
     public R<Long> applyRefund(@Valid @RequestBody StoreOrderAfterSaleReqVO vo) {
         //TODO 权限
         StoreOrderAfterSaleDTO dto = BeanUtil.toBean(vo, StoreOrderAfterSaleDTO.class);
         dto.setOperatorId(SecurityUtils.getUserId());
-        StoreOrderExt orderExt = storeOrderService.createAfterSaleOrder(dto);
-        return success(orderExt.getOrder().getId());
+        //创建售后订单
+        AfterSaleApplyResultDTO afterSaleApplyResult = storeOrderService.createAfterSaleOrder(dto);
+        //取消/拦截物流
+        //TODO 调用失败如何补偿？
+        Set<ExpressSimpleDTO> stopExpresses = afterSaleApplyResult.getNeedStopExpresses();
+        for (ExpressSimpleDTO express : stopExpresses) {
+            boolean cancelSuccess = true;
+            ExpressManager expressManager = expressService.getExpressManager(express.getExpressId());
+            if (EExpressStatus.PLACING.getValue().equals(express.getExpressStatus())
+                    || EExpressStatus.PLACED.getValue().equals(express.getExpressStatus())) {
+                cancelSuccess = expressManager.cancelShip(new ExpressCancelReqDTO(
+                        express.getExpressReqNo(),
+                        express.getExpressWaybillNo()
+                ));
+                logger.info("物流订单取消：waybillNo={},result={}", express.getExpressWaybillNo(), cancelSuccess);
+            }
+            if (!cancelSuccess ||
+                    EExpressStatus.PICKED_UP.getValue().equals(express.getExpressStatus())) {
+                boolean interceptSuccess = expressManager.interceptShip(new ExpressInterceptReqDTO(
+                        express.getExpressReqNo(),
+                        express.getExpressWaybillNo()
+                ));
+                logger.info("物流订单拦截：waybillNo={},result={}", express.getExpressWaybillNo(), interceptSuccess);
+            }
+        }
+        return success(afterSaleApplyResult.getStoreOrderId());
     }
 
     @PreAuthorize("@ss.hasPermi('system:order:add')")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("确认退款")
-    @PostMapping("confirm-refund")
+    @PostMapping("refund/confirm")
     public R confirmRefund(@Valid @RequestBody StoreOrderRefundConfirmVO vo) {
         //TODO 权限
         StoreOrderRefundConfirmDTO dto = BeanUtil.toBean(vo, StoreOrderRefundConfirmDTO.class);
@@ -221,7 +253,7 @@ public class StoreOrderController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:order:add')")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("拒绝退款")
-    @PostMapping("reject-refund")
+    @PostMapping("refund/reject")
     public R rejectRefund(@Valid @RequestBody StoreOrderRefundRejectVO vo) {
         //TODO 权限
         StoreOrderRefundRejectDTO dto = BeanUtil.toBean(vo, StoreOrderRefundRejectDTO.class);

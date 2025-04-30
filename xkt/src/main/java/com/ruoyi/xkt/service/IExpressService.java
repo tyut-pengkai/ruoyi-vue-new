@@ -7,6 +7,7 @@ import com.ruoyi.xkt.dto.express.ExpressContactDTO;
 import com.ruoyi.xkt.dto.express.ExpressRegionDTO;
 import com.ruoyi.xkt.dto.express.ExpressRegionTreeNodeDTO;
 import com.ruoyi.xkt.dto.express.ExpressStructAddressDTO;
+import com.ruoyi.xkt.manager.ExpressManager;
 
 import java.util.Collection;
 import java.util.List;
@@ -88,6 +89,14 @@ public interface IExpressService {
      * @return
      */
     ExpressStructAddressDTO parseNamePhoneAddress(String str);
+
+    /**
+     * ExpressManager
+     *
+     * @param expressId
+     * @return
+     */
+    ExpressManager getExpressManager(Long expressId);
 
 
 }

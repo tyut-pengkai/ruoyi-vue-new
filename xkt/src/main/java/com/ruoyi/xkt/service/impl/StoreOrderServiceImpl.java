@@ -76,8 +76,6 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     private IFinanceBillService financeBillService;
     @Autowired
     private List<PaymentManager> paymentManagers;
-    @Autowired
-    private List<ExpressManager> expressManagers;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -587,7 +585,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     public StoreOrderExt shipOrderByPlatform(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
                                              Long operatorId) {
         Assert.notEmpty(storeOrderDetailIds);
-        ExpressManager expressManager = getExpressManager(expressId);
+        ExpressManager expressManager = expressService.getExpressManager(expressId);
         Express express = expressService.getById(expressId);
         if (!BeanValidators.exists(express) || !express.getSystemDeliverAccess()) {
             throw new ServiceException(CharSequenceUtil.format("快递[{}]不可用", expressId));
@@ -765,7 +763,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 .collect(Collectors.groupingBy(StoreOrderDetail::getExpressId));
         List<ExpressPrintDTO> rtnList = new ArrayList<>();
         for (Map.Entry<Long, List<StoreOrderDetail>> entry : detailMap.entrySet()) {
-            ExpressManager expressManager = getExpressManager(entry.getKey());
+            ExpressManager expressManager = expressService.getExpressManager(entry.getKey());
             Map<Long, String> detailMap2 = entry.getValue()
                     .stream()
                     .collect(Collectors.toMap(SimpleEntity::getId, StoreOrderDetail::getExpressWaybillNo));
@@ -911,7 +909,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public StoreOrderExt createAfterSaleOrder(StoreOrderAfterSaleDTO afterSaleDTO) {
+    public AfterSaleApplyResultDTO createAfterSaleOrder(StoreOrderAfterSaleDTO afterSaleDTO) {
         Assert.notEmpty(afterSaleDTO.getStoreOrderDetailIds());
         if (afterSaleDTO.getExpressId() != null) {
             expressService.checkExpress(afterSaleDTO.getExpressId());
@@ -929,12 +927,34 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                         .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
         Map<Long, StoreOrderDetail> originOrderDetailMap = originOrderDetails.stream()
                 .collect(Collectors.toMap(SimpleEntity::getId, Function.identity()));
+        Map<String, Set<Long>> originOrderDetailIdGroupByWaybillNo = originOrderDetails.stream()
+                .filter(o -> StrUtil.isNotBlank(o.getExpressWaybillNo()))
+                .collect(Collectors.groupingBy(StoreOrderDetail::getExpressWaybillNo,
+                        Collectors.mapping(SimpleEntity::getId, Collectors.toSet())));
         Set<Long> originOrderDetailIds = originOrderDetailMap.keySet();
+        Set<ExpressSimpleDTO> needStopExpresses = new HashSet<>();
         for (Long orderDetailId : afterSaleDTO.getStoreOrderDetailIds()) {
             //检查明细归属
             if (!originOrderDetailIds.contains(orderDetailId)) {
                 throw new ServiceException(CharSequenceUtil.format("订单[{}]明细[{}]不匹配",
                         originOrder.getId(), orderDetailId));
+            }
+            StoreOrderDetail originOrderDetail = originOrderDetailMap.get(orderDetailId);
+            if (EExpressType.PLATFORM.getValue().equals(originOrderDetail.getExpressType())
+                    && !EExpressStatus.INIT.getValue().equals(originOrderDetail.getExpressStatus())
+                    && !EExpressStatus.COMPLETED.getValue().equals(originOrderDetail.getExpressStatus())) {
+                //使用平台物流的未收货的订单明细必须一起申请退款
+                Assert.notEmpty(originOrderDetail.getExpressWaybillNo(), "物流信息异常");
+                Set<Long> originOrderDetailIdGroup = originOrderDetailIdGroupByWaybillNo.get(originOrderDetail
+                        .getExpressWaybillNo());
+                if (!afterSaleDTO.getStoreOrderDetailIds().containsAll(originOrderDetailIdGroup)) {
+                    throw new ServiceException("同批次物流的在途商品不可单独申请退款");
+                }
+                needStopExpresses.add(new ExpressSimpleDTO(originOrderDetail.getExpressId(),
+                        originOrderDetail.getExpressType(),
+                        originOrderDetail.getExpressStatus(),
+                        originOrderDetail.getExpressReqNo(),
+                        originOrderDetail.getExpressWaybillNo()));
             }
         }
         //已存在的售后订单
@@ -1015,7 +1035,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 afterSaleDTO.getOperatorId(), new Date());
         addOperationRecords(originOrder.getId(), EOrderAction.APPLY_AFTER_SALE, afterSaleOrderDetailIds,
                 EOrderAction.APPLY_AFTER_SALE, afterSaleDTO.getOperatorId(), new Date());
-        return new StoreOrderExt(order, orderDetails);
+        return new AfterSaleApplyResultDTO(order.getId(), needStopExpresses);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -1341,21 +1361,6 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         throw new ServiceException("未知支付渠道");
     }
 
-    /**
-     * 匹配物流类
-     *
-     * @param expressId
-     * @return
-     */
-    private ExpressManager getExpressManager(Long expressId) {
-        Assert.notNull(expressId);
-        for (ExpressManager expressManager : expressManagers) {
-            if (expressManager.channel().getExpressId().equals(expressId)) {
-                return expressManager;
-            }
-        }
-        throw new ServiceException("未知物流渠道");
-    }
 
     private ExpressShipReqDTO createShipReq(StoreOrder order, List<StoreOrderDetail> orderDetails) {
         ExpressShipReqDTO reqDTO = BeanUtil.toBean(order, ExpressShipReqDTO.class);

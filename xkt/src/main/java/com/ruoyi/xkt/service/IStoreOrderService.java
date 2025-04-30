@@ -143,7 +143,7 @@ public interface IStoreOrderService {
      * @param afterSaleDTO
      * @return
      */
-    StoreOrderExt createAfterSaleOrder(StoreOrderAfterSaleDTO afterSaleDTO);
+    AfterSaleApplyResultDTO createAfterSaleOrder(StoreOrderAfterSaleDTO afterSaleDTO);
 
     /**
      * 拒绝退款
