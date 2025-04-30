@@ -1,8 +1,8 @@
 <template>
   <div class="home">
-    <el-alert :closable="false" title="公告" type="info">
-      <p>只支持查询最近5笔订单</p>
-    </el-alert>
+<!--    <el-alert :closable="false" title="公告" type="info">-->
+<!--      <p>只支持查询最近5笔订单</p>-->
+<!--    </el-alert>-->
     <el-card class="box-card" style="max-width: 90vw; margin-top: 15px">
       <div class="my-title">
         <img src="../../../assets/images/category.svg"/>&nbsp;

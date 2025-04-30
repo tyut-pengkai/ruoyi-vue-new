@@ -95,6 +95,8 @@ public class SysSaleShopController extends BaseController {
     private ISysConfigWebsiteService sysConfigWebsiteService;
     @Resource
     private ISysNavigationService sysNavigationService;
+    @Resource
+    private ISysConfigService sysConfigService;
 
     private static final SnowflakeIdWorker sf = new SnowflakeIdWorker();
 
@@ -550,7 +552,9 @@ public class SysSaleShopController extends BaseController {
     @GetMapping("/querySaleOrderByContact")
     @RateLimiter(limitType = LimitType.IP)
     public TableDataInfo querySaleOrderByContact(SysSaleOrder sysSaleOrder) {
-        List<SysSaleOrder> list = sysSaleOrderService.selectSysSaleOrderQueryLimit5(sysSaleOrder);
+        String limitStr = sysConfigService.selectConfigByKey("sys.frontend.queryOrderLimit");
+        int limit = Convert.toInt(limitStr, 5);
+        List<SysSaleOrder> list = sysSaleOrderService.selectSysSaleOrderQueryLimit(sysSaleOrder, limit);
         return getDataTable(list);
     }
 

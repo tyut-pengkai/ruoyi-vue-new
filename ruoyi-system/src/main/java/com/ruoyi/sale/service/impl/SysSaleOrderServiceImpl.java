@@ -6,6 +6,7 @@ import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.domain.SysSaleOrderItem;
 import com.ruoyi.sale.mapper.SysSaleOrderMapper;
 import com.ruoyi.sale.service.ISysSaleOrderService;
+import com.ruoyi.system.domain.vo.SysSaleOrderLimitVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,8 +66,9 @@ public class SysSaleOrderServiceImpl implements ISysSaleOrderService {
      * @return 销售订单
      */
     @Override
-    public List<SysSaleOrder> selectSysSaleOrderQueryLimit5(SysSaleOrder sysSaleOrder) {
-        return sysSaleOrderMapper.selectSysSaleOrderQueryLimit5(sysSaleOrder);
+    public List<SysSaleOrder> selectSysSaleOrderQueryLimit(SysSaleOrder sysSaleOrder, int limit) {
+        SysSaleOrderLimitVo order = new SysSaleOrderLimitVo(sysSaleOrder, limit);
+        return sysSaleOrderMapper.selectSysSaleOrderQueryLimit(order);
     }
 
     /**

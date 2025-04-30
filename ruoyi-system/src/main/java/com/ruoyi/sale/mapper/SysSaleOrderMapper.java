@@ -2,6 +2,7 @@ package com.ruoyi.sale.mapper;
 
 import com.ruoyi.sale.domain.SysSaleOrder;
 import com.ruoyi.sale.domain.SysSaleOrderItem;
+import com.ruoyi.system.domain.vo.SysSaleOrderLimitVo;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public interface SysSaleOrderMapper {
      * @param sysSaleOrder 销售订单
      * @return 销售订单集合
      */
-    public List<SysSaleOrder> selectSysSaleOrderQueryLimit5(SysSaleOrder sysSaleOrder);
+    public List<SysSaleOrder> selectSysSaleOrderQueryLimit(SysSaleOrderLimitVo sysSaleOrder);
 
     /**
      * 新增销售订单

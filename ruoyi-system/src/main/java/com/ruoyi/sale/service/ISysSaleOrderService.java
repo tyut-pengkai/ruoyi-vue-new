@@ -41,7 +41,7 @@ public interface ISysSaleOrderService {
      * @param sysSaleOrder 销售订单
      * @return 销售订单集合
      */
-    public List<SysSaleOrder> selectSysSaleOrderQueryLimit5(SysSaleOrder sysSaleOrder);
+    public List<SysSaleOrder> selectSysSaleOrderQueryLimit(SysSaleOrder sysSaleOrder, int limit);
 
     /**
      * 新增销售订单

@@ -96,7 +96,7 @@
     </select>
 
     <!--suppress SqlResolve -->
-    <select id="selectSysSaleOrderQueryLimit5" parameterType="SysSaleOrder" resultMap="SysSaleOrderResult">
+    <select id="selectSysSaleOrderQueryLimit" parameterType="SysSaleOrder" resultMap="SysSaleOrderResult">
         <include refid="selectSysSaleOrderVo"/>
         where del_flag = '0'
         <if test="orderNo != null  and orderNo != ''">and order_no = #{orderNo}</if>
@@ -106,7 +106,7 @@
         <if test="status != null ">and status = #{status}</if>
         <if test="contact != null  and contact != ''">and contact = #{contact}</if>
         <if test="queryPass != null  and queryPass != ''">and query_pass = #{queryPass}</if>
-        order by order_id desc limit 5
+        order by order_id desc limit #{limit}
     </select>
 
     <select id="selectSysSaleOrderByOrderId" parameterType="Long" resultMap="SysSaleOrderSysSaleOrderItemResult">
