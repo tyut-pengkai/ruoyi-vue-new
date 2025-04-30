@@ -43,6 +43,12 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
+        <!-- redisson -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+        </dependency>
+
         <!-- 核心模块-->
         <dependency>
             <groupId>com.ruoyi</groupId>
