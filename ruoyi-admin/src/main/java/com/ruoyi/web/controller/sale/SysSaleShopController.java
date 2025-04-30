@@ -132,12 +132,15 @@ public class SysSaleShopController extends BaseController {
         Map<Long, CountVo> loginCodeTemplateCountMap = sysLoginCodeTemplateMapper.selectSysLoginCodeTemplateOnSaleCountGroupByAppId();
         for (SysApp app : appList) {
             if (app.getAuthType().equals(AuthType.ACCOUNT)) {
-                saleAppVoList.add(new SaleAppVo(app.getAppId(), app.getAppName(), cardTemplateCountMap.getOrDefault(app.getAppId(), new CountVo()).getCount()));
+                saleAppVoList.add(new SaleAppVo(app.getAppId(), app.getAppName(), cardTemplateCountMap.getOrDefault(app.getAppId(), new CountVo()).getCount(), app.getSort()));
             } else {
-                saleAppVoList.add(new SaleAppVo(app.getAppId(), app.getAppName(), loginCodeTemplateCountMap.getOrDefault(app.getAppId(), new CountVo()).getCount()));
+                saleAppVoList.add(new SaleAppVo(app.getAppId(), app.getAppName(), loginCodeTemplateCountMap.getOrDefault(app.getAppId(), new CountVo()).getCount(), app.getSort()));
             }
         }
-        return getDataTable(saleAppVoList);
+        List<SaleAppVo> collect = saleAppVoList.stream()
+                .peek(item -> {if (item.getSort() == null) item.setSort(0);})
+                .sorted(Comparator.comparing(SaleAppVo::getSort)).collect(Collectors.toList());
+        return getDataTable(collect);
     }
 
     /**
@@ -169,7 +172,7 @@ public class SysSaleShopController extends BaseController {
                             }
                         }
                     }
-                    saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount, ct.getMinBuyNum()));
+                    saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount, ct.getMinBuyNum(), ct.getSort()));
                     return null;
                 }
             ).collect(Collectors.toList());
@@ -205,7 +208,7 @@ public class SysSaleShopController extends BaseController {
                         }
                     }
                 }
-                saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount, ct.getMinBuyNum()));
+                saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount, ct.getMinBuyNum(), ct.getSort()));
                 return null;
             }).collect(Collectors.toList());
 //            for (SysLoginCodeTemplate ct : list) {
@@ -221,7 +224,9 @@ public class SysSaleShopController extends BaseController {
 //                saleCardTemplateVoList.add(new SaleCardTemplateVo(ct.getTemplateId(), ct.getCardName(), ct.getPrice(), cardCount, ct.getMinBuyNum()));
 //            }
         }
-        List<SaleCardTemplateVo> collect = saleCardTemplateVoList.stream().sorted(Comparator.comparing(SaleCardTemplateVo::getTemplateId)).collect(Collectors.toList());
+        List<SaleCardTemplateVo> collect = saleCardTemplateVoList.stream()
+                .peek(item -> {if(item.getSort() == null) item.setSort(0);})
+                .sorted(Comparator.comparing(SaleCardTemplateVo::getSort)).collect(Collectors.toList());
         return getDataTable(collect);
     }
 

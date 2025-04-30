@@ -9,13 +9,15 @@ public class SaleCardTemplateVo {
     private BigDecimal price;
     private Long cardCount;
     private Integer minBuyNum;
+    private Integer sort;
 
-    public SaleCardTemplateVo(Long templateId, String cardName, BigDecimal price, Long cardCount, Integer minBuyNum) {
+    public SaleCardTemplateVo(Long templateId, String cardName, BigDecimal price, Long cardCount, Integer minBuyNum, Integer sort) {
         this.templateId = templateId;
         this.cardName = cardName;
         this.price = price;
         this.cardCount = cardCount;
         this.minBuyNum = minBuyNum;
+        this.sort = sort;
     }
 
     public Long getTemplateId() {
@@ -56,5 +58,13 @@ public class SaleCardTemplateVo {
 
     public void setMinBuyNum(Integer minBuyNum) {
         this.minBuyNum = minBuyNum;
+    }
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
     }
 }

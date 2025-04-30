@@ -596,7 +596,7 @@
         </el-form-item>
         <el-divider></el-divider>
         <updown>
-          <el-form-item label="购卡地址" label-width="80px" prop="shopUrl">
+          <el-form-item label="前台商城购卡地址" label-width="140px" prop="shopUrl">
             <el-col :span="20">
               <el-input v-model="form.shopUrl" placeholder="请输入购卡地址" maxlength="50" show-word-limit>
                 <template slot="prepend">{{ getShopUrlPrefix() }}</template>
@@ -918,6 +918,27 @@
                   :min="-1"
                   controls-position="right"
                   :disabled="form.enableReplace === 'N'"
+                />
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item prop="">
+            <el-col :span="12">
+              <el-form-item label="商城展示顺序" prop="sort">
+                <span>
+                  <el-tooltip
+                    content="商城展示顺序，整数，数字越大越靠后，默认值为0"
+                    placement="top"
+                  >
+                    <i
+                      class="el-icon-question"
+                      style="margin-left: -12px; margin-right: 10px"
+                    ></i>
+                  </el-tooltip>
+                </span>
+                <el-input-number
+                  v-model="form.sort"
+                  controls-position="right"
                 />
               </el-form-item>
             </el-col>

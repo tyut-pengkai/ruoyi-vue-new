@@ -39,6 +39,7 @@
         <result property="minBuyNum" column="min_buy_num"/>
         <result property="enableReplace" column="enable_replace"/>
         <result property="replaceThreshold" column="replace_threshold"/>
+        <result property="sort" column="sort"/>
         <association property="app" column="app_id" javaType="SysApp" resultMap="SysAppResult"/>
     </resultMap>
 
@@ -85,6 +86,7 @@
                ct.min_buy_num,
                ct.enable_replace,
                ct.replace_threshold,
+               ct.sort,
                a.app_id,
                a.app_name,
                a.auth_type,
@@ -160,6 +162,7 @@
             <if test="minBuyNum != null">min_buy_num,</if>
             <if test="enableReplace != null">enable_replace,</if>
             <if test="replaceThreshold != null">replace_threshold,</if>
+            <if test="sort != null">sort,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="appId != null">#{appId},</if>
@@ -195,6 +198,7 @@
             <if test="minBuyNum != null">#{minBuyNum},</if>
             <if test="enableReplace != null">#{enableReplace},</if>
             <if test="replaceThreshold != null">#{replaceThreshold},</if>
+            <if test="sort != null">#{sort},</if>
         </trim>
     </insert>
 
@@ -234,6 +238,7 @@
             <if test="minBuyNum != null">min_buy_num = #{minBuyNum},</if>
             <if test="enableReplace != null">enable_replace = #{enableReplace},</if>
             <if test="replaceThreshold != null">replace_threshold = #{replaceThreshold},</if>
+            <if test="sort != null">sort = #{sort},</if>
         </trim>
         where template_id = #{templateId}
     </update>

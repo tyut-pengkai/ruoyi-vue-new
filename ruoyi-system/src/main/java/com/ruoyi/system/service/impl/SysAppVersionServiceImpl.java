@@ -449,7 +449,8 @@ public class SysAppVersionServiceImpl implements ISysAppVersionService {
     }
 
     private String rename(String appName, String filename, String versionName, String remark) {
-        return "__" + appName + "_" + (versionName.replaceAll("\\.", "_")) + (StringUtils.isNotBlank(remark) ? "_" + remark : "") + "." + FileNameUtil.extName(filename);
+//        return "__" + appName + "_" + (versionName.replaceAll("\\.", "_")) + (StringUtils.isNotBlank(remark) ? "_" + remark : "") + "." + FileNameUtil.extName(filename);
+        return UUID.randomUUID() + "_" + appName + "_" + (versionName.replaceAll("\\.", "_")) + (StringUtils.isNotBlank(remark) ? "_" + remark : "")  + "_" + DateUtils.dateTimeNow() + "." + FileNameUtil.extName(filename);
     }
 
     /**

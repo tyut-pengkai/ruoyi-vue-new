@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/system")
@@ -92,9 +93,11 @@ public class SysSystemController extends BaseController {
             fileList.add(new File(pathPrefix + "sys-error.log"));
             fileList.add(new File(pathPrefix + "sys-info.log"));
             fileList.add(new File(pathPrefix + "sys-user.log"));
+            fileList.add(new File(PathUtils.getUserPath() + File.separator + "nohup.out"));
             // 压缩多个文件,压缩后会将压缩临时文件删除
-            ZipUtil.zip(tempFile, false, fileList.toArray(new File[0]));
-            String destFileName = "__error_log_" + DateUtils.dateTimeNow() +".zip";
+            ZipUtil.zip(tempFile, false, fileList.stream().filter(File::exists).toArray(File[]::new));
+//            String destFileName = "__error_log_" + DateUtils.dateTimeNow() +".zip";
+            String destFileName = UUID.randomUUID() + "_" + "error_log_" + DateUtils.dateTimeNow() +".zip";
             FileUtils.copyFile(tempFile, new File(RuoYiConfig.getDownloadPath() + File.separator + destFileName));
             return AjaxResult.success(destFileName);
         }catch (Exception e) {

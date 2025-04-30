@@ -169,6 +169,17 @@ public class SysLoginCodeTemplate extends BaseEntity {
     @Excel(name = "换卡至少剩余额度，0不限制 -1未使用")
     private Long replaceThreshold;
 
+    @Excel(name = "排序")
+    private Integer sort;
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
+    }
+
     public String getEnableReplace() {
         return enableReplace;
     }

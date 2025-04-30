@@ -1403,7 +1403,7 @@ public class ExcelUtil<T>
      */
     public String encodingFilename(String filename)
     {
-        filename = UUID.randomUUID() + "_" + filename + ".xlsx";
+        filename = UUID.randomUUID() + "_" + filename + DateUtils.dateTimeNow() + ".xlsx";
         return filename;
     }
 

@@ -58,6 +58,7 @@
 		<result property="enableFeCharge" column="enable_fe_charge"/>
 		<result property="enableFirstLogoutLocalMachine" column="enable_first_logout_local_machine"/>
 		<result property="unbindCycle" column="unbind_cycle"/>
+		<result property="sort" column="sort"/>
 		<association property="developer" column="create_by" javaType="SysUser" resultMap="SysUserResult"/>
 	</resultMap>
 
@@ -121,6 +122,7 @@
 			   a.enable_fe_charge,
 			   a.enable_first_logout_local_machine,
 			   a.unbind_cycle,
+			   a.sort,
 			   u.user_id,
 			   u.user_name,
 			   u.nick_name
@@ -258,6 +260,7 @@
 			<if test="enableFeCharge != null">enable_fe_charge,</if>
 			<if test="enableFirstLogoutLocalMachine != null">enable_first_logout_local_machine,</if>
 			<if test="unbindCycle != null">unbind_cycle,</if>
+			<if test="sort != null">sort,</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="appId != null">#{appId},</if>
@@ -313,6 +316,7 @@
 			<if test="enableFeCharge != null">#{enableFeCharge},</if>
 			<if test="enableFirstLogoutLocalMachine != null">#{enableFirstLogoutLocalMachine},</if>
 			<if test="unbindCycle != null">#{unbindCycle},</if>
+			<if test="sort != null">#{sort},</if>
 		</trim>
 	</insert>
 
@@ -373,6 +377,7 @@
 			<if test="enableFeCharge != null">enable_fe_charge = #{enableFeCharge},</if>
 			<if test="enableFirstLogoutLocalMachine != null">enable_first_logout_local_machine = #{enableFirstLogoutLocalMachine},</if>
 			<if test="unbindCycle != null">unbind_cycle = #{unbindCycle},</if>
+			<if test="sort != null">sort = #{sort},</if>
 		</trim>
 		where app_id = #{appId}
 	</update>
