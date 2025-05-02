@@ -107,7 +107,8 @@ public class SysLicenseRecordController extends BaseController {
         try {
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             if (StringUtils.isNotBlank(webUrl)) {
-                Future<RuoYiConfig> future = executorService.submit(() -> {
+                Future<Map<String, Object>> future = executorService.submit(() -> {
+                    Map<String, Object> map = new HashMap<>();
                     String url = webUrl;
                     url = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
                     String response = HttpUtils.sendGet(url + "/prod-api/common/sysInfo");
@@ -115,11 +116,18 @@ public class SysLicenseRecordController extends BaseController {
                     if (StringUtils.isBlank(response)) {
                         throw new ServiceException("获取目标网站版本信息失败，返回空白信息");
                     }
-                    return JSON.parseObject(response, RuoYiConfig.class);
+                    map.put("sysInfo", JSON.parseObject(response, RuoYiConfig.class));
+                    String response2 = HttpUtils.sendGet(url + "/prod-api/system/license/info");
+                    String response3 = HttpUtils.sendGet(url + "/prod-api/system/license/simpleInfo");
+                    Map<String, Object> licenseInfoMap = (Map<String, Object>) JSON.parseObject(response2, AjaxResult.class).get(AjaxResult.DATA_TAG);
+                    licenseInfoMap.put("simpleInfo", JSON.parseObject(response3, AjaxResult.class).get(AjaxResult.DATA_TAG));
+                    map.put("licenseInfo", licenseInfoMap);
+                    return map;
                 });
                 executorService.shutdown();
-                RuoYiConfig config = future.get(5, TimeUnit.SECONDS);
-                return AjaxResult.success(config);
+                Map<String, Object> map = future.get(5, TimeUnit.SECONDS);
+                RuoYiConfig config = (RuoYiConfig) map.remove("sysInfo");
+                return AjaxResult.success(config).put("extraInfo", map.get("licenseInfo"));
             } else {
                 throw new ServiceException("URL为空");
             }

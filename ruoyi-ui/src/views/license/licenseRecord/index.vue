@@ -158,15 +158,23 @@
       :key="isUpdate"
     >
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="编号" prop="id"/>
+      <el-table-column align="center" label="编号" prop="id" width="80"/>
       <el-table-column align="center" label="网站URL" prop="webUrl"/>
-      <el-table-column align="center" label="设备码" prop="deviceCode"/>
+      <el-table-column align="center" label="设备码" prop="deviceCode">
+        <template slot-scope="scope">
+          {{scope.row.deviceCode}} / {{ scope.row.deviceCode === scope.row.extraInfo.serverInfo.sn ? '一致' : (scope.row.extraInfo.serverInfo.sn || '获取失败') }}
+        </template>
+      </el-table-column>
       <el-table-column
         :show-overflow-tooltip="true"
         align="center"
         label="当前版本"
         prop="version"
-      />
+      >
+        <template slot-scope="scope">
+          {{scope.row.data.version || '获取失败' }} / {{ (scope.row.data.version || '获取失败') === scope.row.data.dbVersion ? '一致' : (scope.row.data.dbVersion || '获取失败') }}
+        </template>
+        </el-table-column>
       <el-table-column align="center" label="姓名" prop="name"/>
       <el-table-column align="center" label="联系方式" prop="contact"/>
       <el-table-column align="center" label="授权状态" prop="status">
@@ -203,8 +211,17 @@
         align="center"
         class-name="small-padding fixed-width"
         label="操作"
+        width="200"
       >
         <template slot-scope="scope">
+          <el-button
+            v-hasPermi="['license:licenseRecord:query']"
+            icon="el-icon-tickets"
+            size="mini"
+            type="text"
+            @click="handleView(scope.row)"
+          >详情
+          </el-button>
           <el-button
             v-hasPermi="['license:licenseRecord:edit']"
             icon="el-icon-edit"
@@ -219,7 +236,7 @@
             size="mini"
             type="text"
             @click="handleRemove(scope.row)"
-          >解除授权
+          >解除
           </el-button>
           <el-button
             v-hasPermi="['license:licenseRecord:remove']"
@@ -306,6 +323,18 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="站点详情" :visible.sync="openView" append-to-body width="800px">
+      <el-card shadow="never">
+        <div>
+          <pre>{{ JSON.stringify(detailData, null, 2) }}</pre>
+        </div>
+      </el-card>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelView">取 消</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -364,6 +393,8 @@ export default {
       form: {},
       // 表单校验
       rules: {},
+      openView: false,
+      detailData: {},
     };
   },
   created() {
@@ -386,10 +417,17 @@ export default {
         this.total = response.total;
         for (let i = 0; i < response.rows.length; i++) {
           getSystemInfo({webUrl: response.rows[i]["webUrl"]}).then((res) => {
+            let initExtraInfo = {
+              serverInfo: {},
+              simpleInfo: {},
+              licenseInfo: {},
+            }
             if (res.data) {
-              response.rows[i]["version"] = res.data.version;
+              response.rows[i]["data"] = res.data;
+              response.rows[i]["extraInfo"] = res.extraInfo || initExtraInfo;
             } else {
-              response.rows[i]["version"] = res.msg;
+              response.rows[i]["data"] = res.msg;
+              response.rows[i]["extraInfo"] = initExtraInfo;
             }
             this.isUpdate = !this.isUpdate;
           });
@@ -402,6 +440,9 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
+    },
+    cancelView() {
+      this.openView = false;
     },
     // 表单重置
     reset() {
@@ -445,6 +486,11 @@ export default {
       this.reset();
       this.open = true;
       this.title = "添加验证授权用户";
+    },
+    /** 查看详情 */
+    handleView(row) {
+      this.openView = true;
+      this.detailData = Object.assign({}, row.data, row.extraInfo);
     },
     /** 修改按钮操作 */
     handleUpdate(row) {

@@ -5,9 +5,9 @@ ruoyi:
   # 简称
   shortName: 红叶网络验证
   # 版本
-  version: v1.9.1
+  version: v2.0.0
   # 版本号
-  versionNo: 20250205152800
+  versionNo: 20250502152800
   # 若依框架版本
   ruoyiVersion: 3.8.9
   # URL
