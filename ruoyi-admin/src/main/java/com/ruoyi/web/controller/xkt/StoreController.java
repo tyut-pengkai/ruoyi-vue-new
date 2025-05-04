@@ -7,11 +7,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.web.controller.xkt.vo.store.*;
-import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdPageVO;
-import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdResVO;
 import com.ruoyi.xkt.dto.store.*;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO;
 import com.ruoyi.xkt.service.IStoreService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,8 +36,8 @@ public class StoreController extends XktBaseController {
     @PreAuthorize("@ss.hasPermi('system:store:edit')")
     @Log(title = "新增档口", businessType = BusinessType.UPDATE)
     @PostMapping
-    public R<Integer> create(@Validated @RequestBody StoreCreateDTO createDTO) {
-        return R.ok(storeService.create(createDTO));
+    public R<Integer> create(@Validated @RequestBody StoreCreateVO createVO) {
+        return R.ok(storeService.create(BeanUtil.toBean(createVO, StoreCreateDTO.class)));
     }
 
     /**
@@ -106,8 +102,6 @@ public class StoreController extends XktBaseController {
     public R<StoreApproveResVO> getApproveInfo(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeService.getApproveInfo(storeId), StoreApproveResVO.class));
     }
-
-
 
 
 }
