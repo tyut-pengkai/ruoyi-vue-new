@@ -44,7 +44,7 @@ public class AdvertUpdateVO {
     private Integer playInterval;
     @NotNull(message = "播放轮次不能为空!")
     @ApiModelProperty(value = "播放轮次")
-    private Integer playTimes;
+    private Integer playRound;
     @NotNull(message = "播放数量不能为空!")
     @ApiModelProperty(value = "播放数量")
     private Integer playNum;

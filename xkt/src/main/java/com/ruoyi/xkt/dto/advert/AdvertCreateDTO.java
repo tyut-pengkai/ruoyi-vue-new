@@ -34,7 +34,7 @@ public class AdvertCreateDTO {
     @ApiModelProperty(value = "播放间隔")
     private Integer playInterval;
     @ApiModelProperty(value = "播放轮次")
-    private Integer playTimes;
+    private Integer playRound;
     @ApiModelProperty(value = "播放数量")
     private Integer playNum;
     @ApiModelProperty(value = "推广范例图片")

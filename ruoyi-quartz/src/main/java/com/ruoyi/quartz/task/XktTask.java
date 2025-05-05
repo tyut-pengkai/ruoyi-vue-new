@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -60,6 +61,8 @@ public class XktTask {
     final StoreProductCategoryAttributeMapper cateAttrMapper;
     final StoreProductStatisticsMapper prodStatMapper;
     final EsClientWrapper esClientWrapper;
+    final AdvertMapper advertMapper;
+    final AdvertRoundMapper advertRoundMapper;
 
     /**
      * 每晚1点同步档口销售数据
@@ -288,6 +291,93 @@ public class XktTask {
             x.setRecommendWeight(recommendWeight).setSaleWeight(saleWeight).setPopularityWeight(popularityWeight);
         });
         this.storeProdMapper.updateById(storeProdList);
+    }
+
+    /**
+     * 每晚定时任务更新推广的播放轮次，这个要次日凌晨更新
+     */
+    @Transactional
+    public void dailyAdvertRound(){
+        List<Advert> advertList = this.advertMapper.selectList(new LambdaQueryWrapper<Advert>()
+                .eq(Advert::getDelFlag, Constants.UNDELETED).eq(Advert::getOnlineStatus, AdOnlineStatus.ONLINE.getValue()));
+        if (CollectionUtils.isEmpty(advertList)) {
+            return;
+        }
+        // 正在投放 或 待投放列表
+        List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
+                .eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                .in(AdvertRound::getLaunchStatus,
+                        Arrays.asList(AdLaunchStatus.UN_LAUNCH.getValue(), AdLaunchStatus.LAUNCHING.getValue())));
+        // 投放轮次按照advertId进行分组
+        Map<Long, List<AdvertRound>> advertRoundMap = advertRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getAdvertId));
+        // 待更新或待新增的推广轮次列表
+        List<AdvertRound> updateList = new ArrayList<>();
+        advertList.forEach(advert -> {
+            List<AdvertRound> roundList = advertRoundMap.get(advert.getId());
+            // 如果没有 投放中 或 待投放的推广轮次，则 一次性创建所有的轮次
+            if (CollectionUtils.isEmpty(roundList)) {
+                // 播放的轮次
+                for (int i = 0; i < advert.getPlayRound(); i++) {
+                    // 如果i = 0 则表明从未创建过推广位，直接新建所有
+                    final Integer launchStatus = i == 0 ? AdLaunchStatus.LAUNCHING.getValue() : AdLaunchStatus.UN_LAUNCH.getValue();
+                    final LocalDate now = i == 0 ? LocalDate.now() : LocalDate.now().plusDays((long) advert.getPlayInterval() * i);
+                    // 间隔时间
+                    final LocalDate endDate = now.plusDays(advert.getPlayInterval() - 1);
+                    // 按照播放数量依次生成下一轮播放的推广位
+                    for (int j = 0; j < advert.getPlayNum(); j++) {
+                        updateList.add(new AdvertRound().setAdvertId(advert.getId()).setRoundId(i + 1).setLaunchStatus(launchStatus)
+                                .setStartTime(java.sql.Date.valueOf(now)).setEndTime(java.sql.Date.valueOf(endDate))
+                                // 依次按照26个字母顺序 如果i == 0 则A i == 1 则B i==2则C
+                                .setPosition(String.valueOf((char) ('A' + j))));
+                    }
+                }
+            } else {
+                // 判断当天是否为播放轮次最小结束时间的下一天 最小结束时间为：yyyy-MM-dd格式
+                final Date compareDate = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
+                final Date minEndTime = roundList.stream().min(Comparator.comparing(AdvertRound::getEndTime)).get().getEndTime();
+                if (Objects.equals(minEndTime, compareDate)) {
+                    // 将播放轮次为1的推广轮置为：已过期
+                    roundList.stream().filter(x -> Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())).forEach(x -> x.setLaunchStatus(AdLaunchStatus.EXPIRED.getValue()));
+                    // 将播放轮次 大于 1 的推广轮 依次减1
+                    roundList.stream().filter(x -> x.getRoundId() > AdRoundType.PLAY_ROUND.getValue()).forEach(x -> x.setRoundId(x.getRoundId() - 1));
+                    // 将播放轮次为1 且 投放状态为：待投放的 置为投放中
+                    roundList.stream().filter(x -> Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())
+                            && Objects.equals(x.getLaunchStatus(), AdLaunchStatus.UN_LAUNCH.getValue())).forEach(x -> x.setLaunchStatus(AdLaunchStatus.LAUNCHING.getValue()));
+                    updateList.addAll(roundList);
+                    // 如果播放轮次有更新，则需重新判断
+                    int diff = advert.getPlayRound() - roundList.stream().mapToInt(AdvertRound::getRoundId).max().getAsInt();
+                    // 当前最大轮次
+                    int maxRoundId = roundList.stream().mapToInt(AdvertRound::getRoundId).max().getAsInt();
+                    // diff < 0 代表轮次有减少，则不新增播放轮， diff == 0 则代表播放轮次不增不减，不做调整
+                    if (diff > 0) {
+                        // 最大轮次的结束时间
+                        final LocalDate maxEndTime = roundList.stream().max(Comparator.comparing(AdvertRound::getEndTime))
+                                .map(round -> round.getEndTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                                .orElseThrow(() -> new ServiceException("获取推广轮次最大结束时间失败", HttpStatus.ERROR));
+                        LocalDate maxEndTimeNextDay = maxEndTime.plusDays(1);
+                        // 根据轮次差来判断当前需要补多少播放轮
+                        for (int j = 0; j < diff; j++) {
+                            // 推广轮次 + 1
+                            maxRoundId += 1;
+                            final LocalDate startDate = j == 0 ? maxEndTimeNextDay : maxEndTimeNextDay.plusDays((long) advert.getPlayInterval() * j);
+                            // 间隔时间
+                            final LocalDate endDate = startDate.plusDays(advert.getPlayInterval() - 1);
+                            // 每一轮的播放数量
+                            for (int i = 0; i < advert.getPlayNum(); i++) {
+                                // 生成最新的下一轮推广位
+                                updateList.add(new AdvertRound().setAdvertId(advert.getId()).setRoundId(maxRoundId).setLaunchStatus(AdLaunchStatus.UN_LAUNCH.getValue())
+                                        .setStartTime(java.sql.Date.valueOf(startDate)).setEndTime(java.sql.Date.valueOf(endDate))
+                                        // 依次按照26个字母顺序 如果i == 0 则A i == 1 则B i==2则C
+                                        .setPosition(String.valueOf((char) ('A' + i))));
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        if (CollectionUtils.isNotEmpty(updateList)) {
+            this.advertRoundMapper.insertOrUpdate(updateList);
+        }
     }
 
 

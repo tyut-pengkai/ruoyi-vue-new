@@ -1,5 +1,7 @@
 package com.ruoyi.xkt.enums;
 
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.exception.ServiceException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -24,6 +26,6 @@ public enum StorageType {
                 return e;
             }
         }
-        return null;
+        throw new ServiceException("档口入库类型不存在!", HttpStatus.ERROR);
     }
 }

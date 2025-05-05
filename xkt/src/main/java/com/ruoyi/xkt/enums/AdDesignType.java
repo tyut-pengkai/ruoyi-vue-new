@@ -6,28 +6,32 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 推广营销平台类型
+ * 推广营销图片设计类型
  * @author liujiang
  * @date 2025-04-02 23:42
  */
 @Getter
 @AllArgsConstructor
-public enum AdPlatformType {
+public enum AdDesignType {
 
-    PC(1, "电脑端"),
-    APP(2, "APP"),
+    // 自主设计
+    STORE_DESIGN(1, "自主设计"),
+    // 平台设计
+    SYS_DESIGN(2, "平台设计");
+
+
 
     ;
 
     private final Integer value;
     private final String label;
 
-    public static AdPlatformType of(Integer value) {
-        for (AdPlatformType e : AdPlatformType.values()) {
+    public static AdDesignType of(Integer value) {
+        for (AdDesignType e : AdDesignType.values()) {
             if (e.getValue().equals(value)) {
                 return e;
             }
         }
-        throw new ServiceException("推广营销平台类型不存在!", HttpStatus.ERROR);
+        throw new ServiceException("推广营销图片设计类型不存在!", HttpStatus.ERROR);
     }
 }

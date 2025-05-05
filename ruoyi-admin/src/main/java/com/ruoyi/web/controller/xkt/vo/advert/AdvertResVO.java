@@ -16,7 +16,7 @@ import java.util.Date;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("创建推广营销")
+@ApiModel("推广营销返回数据")
 @Data
 @Accessors(chain = true)
 public class AdvertResVO {
@@ -34,7 +34,7 @@ public class AdvertResVO {
     @ApiModelProperty(value = "播放间隔")
     private Integer playInterval;
     @ApiModelProperty(value = "播放轮次")
-    private Integer playTimes;
+    private Integer playRound;
     @ApiModelProperty(value = "播放数量")
     private Integer playNum;
     @ApiModelProperty(value = "推广状态")

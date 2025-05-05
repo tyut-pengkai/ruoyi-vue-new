@@ -6,10 +6,7 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.web.controller.xkt.vo.advert.AdvertCreateVO;
-import com.ruoyi.web.controller.xkt.vo.advert.AdvertPageVO;
-import com.ruoyi.web.controller.xkt.vo.advert.AdvertResVO;
-import com.ruoyi.web.controller.xkt.vo.advert.AdvertUpdateVO;
+import com.ruoyi.web.controller.xkt.vo.advert.*;
 import com.ruoyi.xkt.dto.advert.AdvertCreateDTO;
 import com.ruoyi.xkt.dto.advert.AdvertPageDTO;
 import com.ruoyi.xkt.dto.advert.AdvertResDTO;
@@ -21,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 管理员管理推广营销Controller
  *
@@ -30,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "推广营销")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/rest/v1/adverts")
+@RequestMapping("/rest/v1/ads")
 public class AdvertController extends XktBaseController {
 
     final IAdvertService advertService;
@@ -82,6 +81,15 @@ public class AdvertController extends XktBaseController {
     @PutMapping("/offline/{advertId}")
     public R<Integer> offline(@PathVariable Long advertId) {
         return R.ok(advertService.offline(advertId));
+    }
+
+    /**
+     * 档口营销推广初始化数据
+     */
+    @ApiOperation(value = "档口营销推广初始化数据", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/platform-list")
+    public R<List<AdvertPlatformResVO>> getPlatformList() {
+        return R.ok(BeanUtil.copyToList(advertService.getPlatformList(), AdvertPlatformResVO.class));
     }
 
 

@@ -56,7 +56,7 @@ public class Advert extends XktBaseEntity {
     /**
      * 播放轮次
      */
-    private Integer playTimes;
+    private Integer playRound;
     /**
      * 播放数量
      */
@@ -73,6 +73,10 @@ public class Advert extends XktBaseEntity {
      * 推广图片大小
      */
     private String picSize;
+    /**
+     * 如果是播放商品，或者图及商品  最多可容纳的商品数量
+     */
+    private Integer prodMaxNum;
     /**
      * 推广折扣类型（现金、直接打折）
      */

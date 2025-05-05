@@ -12,12 +12,11 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.Advert;
 import com.ruoyi.xkt.domain.SysFile;
-import com.ruoyi.xkt.dto.advert.AdvertCreateDTO;
-import com.ruoyi.xkt.dto.advert.AdvertPageDTO;
-import com.ruoyi.xkt.dto.advert.AdvertResDTO;
-import com.ruoyi.xkt.dto.advert.AdvertUpdateDTO;
-import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageResDTO;
+import com.ruoyi.xkt.dto.advert.*;
 import com.ruoyi.xkt.enums.AdOnlineStatus;
+import com.ruoyi.xkt.enums.AdPlatformType;
+import com.ruoyi.xkt.enums.AdTab;
+import com.ruoyi.xkt.enums.AdType;
 import com.ruoyi.xkt.mapper.AdvertMapper;
 import com.ruoyi.xkt.mapper.SysFileMapper;
 import com.ruoyi.xkt.service.IAdvertService;
@@ -27,9 +26,11 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 推广营销Service业务层处理
@@ -171,6 +172,39 @@ public class AdvertServiceImpl implements IAdvertService {
         }
         advert.setOnlineStatus(AdOnlineStatus.OFFLINE.getValue());
        return this.advertMapper.updateById(advert);
+    }
+
+    /**
+     * 获取初始化平台列表
+     *
+     * @return List<AdvertGroupResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<AdvertPlatformResDTO> getPlatformList() {
+        List<AdvertPlatTabDTO> list = this.advertMapper.selectPlatTabList();
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        // 所有的推广平台
+        List<AdvertPlatformResDTO> platformList = new ArrayList<>();
+        list.stream().collect(Collectors
+                        .groupingBy(AdvertPlatTabDTO::getPlatformId, Collectors
+                                .groupingBy(AdvertPlatTabDTO::getTabId)))
+                .forEach((platformId, tabMap) -> {
+                    // 平台下所有的tab
+                    List<AdvertPlatformResDTO.APTabDTO> tabList = new ArrayList<>();
+                    tabMap.forEach((tabId, typeList) -> tabList.add(new AdvertPlatformResDTO.APTabDTO()
+                            .setTabId(tabId).setTabName(AdTab.of(tabId).getLabel())
+                            // tab下所有的推广类型
+                            .setTypeList(typeList.stream().map(type -> new AdvertPlatformResDTO.APTypeDTO()
+                                    .setAdvertId(type.getAdvertId()).setTypeId(type.getTypeId()).setTypeName(AdType.of(type.getTypeId()).getLabel())
+                                    .setDemoUrl(AdType.of(type.getTypeId()).getDemoUrl())).collect(Collectors.toList()))));
+                    platformList.add(new AdvertPlatformResDTO().setPlatformId(platformId)
+                            .setPlatformName(AdPlatformType.of(platformId).getLabel())
+                            .setTabList(tabList));
+                });
+        return platformList;
     }
 
     /**

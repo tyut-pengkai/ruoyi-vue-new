@@ -1,10 +1,9 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.xkt.dto.advert.AdvertCreateDTO;
-import com.ruoyi.xkt.dto.advert.AdvertPageDTO;
-import com.ruoyi.xkt.dto.advert.AdvertResDTO;
-import com.ruoyi.xkt.dto.advert.AdvertUpdateDTO;
+import com.ruoyi.xkt.dto.advert.*;
+
+import java.util.List;
 
 /**
  * 推广营销Service接口
@@ -53,5 +52,12 @@ public interface IAdvertService {
      * @return Integer
      */
     Integer offline(Long advertId);
+
+    /**
+     * 获取初始化平台列表
+     *
+     * @return List<AdvertGroupResDTO>
+     */
+    List<AdvertPlatformResDTO> getPlatformList();
 
 }

@@ -1,10 +1,12 @@
 package com.ruoyi.xkt.enums;
 
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.exception.ServiceException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 推广营销类型
+ * 推广营销上线类型
  *
  * @author liujiang
  * @date 2025-04-02 23:42
@@ -30,6 +32,6 @@ public enum AdOnlineStatus {
                 return e;
             }
         }
-        return null;
+        throw new ServiceException("营销推广上线状态不存在!", HttpStatus.ERROR);
     }
 }

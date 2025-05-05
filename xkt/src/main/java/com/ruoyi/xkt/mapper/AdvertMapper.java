@@ -2,8 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.Advert;
-import com.ruoyi.xkt.dto.advert.AdvertPageDTO;
-import com.ruoyi.xkt.dto.advert.AdvertResDTO;
+import com.ruoyi.xkt.dto.advert.AdvertPlatTabDTO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,11 +16,6 @@ import java.util.List;
 @Repository
 public interface AdvertMapper extends BaseMapper<Advert> {
 
-    /**
-     * 查询推广营销分页列表
-     * @param pageDTO 查询入参
-     * @return
-     */
-//    List<AdvertResDTO> selectAdvertPage(AdvertPageDTO pageDTO);
+    List<AdvertPlatTabDTO> selectPlatTabList();
 
 }

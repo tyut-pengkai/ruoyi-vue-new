@@ -18,8 +18,8 @@ import java.io.IOException;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/rest/v1/daily-sale")
-public class DailySaleController extends BaseController {
+@RequestMapping("/rest/v1/daily-task")
+public class DailyTaskController extends BaseController {
 
     final XktTask task;
 
@@ -62,6 +62,12 @@ public class DailySaleController extends BaseController {
     @PostMapping("/prod-weight")
     public R dailyProdWeight(SysJob sysJob) {
         task.dailyProdWeight();
+        return R.ok();
+    }
+
+    @PostMapping("/advert-round")
+    public R dailyRound(SysJob sysJob) {
+        task.dailyAdvertRound();
         return R.ok();
     }
 
