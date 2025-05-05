@@ -2,4 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.StoreOrderDetailMapper">
 
+    <select id="listInfoByStoreOrderIds" resultType="com.ruoyi.xkt.dto.order.StoreOrderDetailInfoDTO">
+        SELECT
+            sod1.*,
+            sod2.id AS refund_order_detail_id,
+            sod2.detail_status AS refund_order_detail_status,
+            sod2.goods_quantity AS refund_goods_quantity
+        FROM
+            store_order_detail sod1
+            LEFT JOIN store_order_detail sod2 ON sod1.id = sod2.origin_order_detail_id AND sod2.del_flag = '0'
+        WHERE
+            sod1.del_flag = '0'
+            AND sod1.store_order_id IN
+            <foreach collection="storeOrderIds" item="storeOrderId" open="(" separator="," close=")">
+                #{storeOrderId}
+            </foreach>
+    </select>
 </mapper>

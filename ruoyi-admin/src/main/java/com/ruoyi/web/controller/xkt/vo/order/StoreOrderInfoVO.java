@@ -398,6 +398,15 @@ public class StoreOrderInfoVO {
         @ApiModelProperty(value = "商品尺码")
         private Integer size;
 
+        @ApiModelProperty(value = "退货订单明细ID")
+        private Long refundOrderDetailId;
+
+        @ApiModelProperty(value = "退货订单明细状态[10:已取消 11:待付款 12:待发货 13:已发货 14:已完成 21:售后中 22:售后拒绝 23:平台介入 24:售后完成]")
+        private Integer refundOrderDetailStatus;
+
+        @ApiModelProperty(value = "退货商品数量")
+        private Integer refundGoodsQuantity;
+
     }
 
 }

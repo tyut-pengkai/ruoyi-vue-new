@@ -2,7 +2,12 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreOrderDetail;
+import com.ruoyi.xkt.dto.order.StoreOrderDetailInfoDTO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author liangyq
@@ -10,4 +15,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface StoreOrderDetailMapper extends BaseMapper<StoreOrderDetail> {
+
+    List<StoreOrderDetailInfoDTO> listInfoByStoreOrderIds(@Param("storeOrderIds") Collection<Long> storeOrderIds);
 }

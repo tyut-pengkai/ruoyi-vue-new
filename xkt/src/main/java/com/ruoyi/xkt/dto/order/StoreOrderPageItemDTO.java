@@ -33,14 +33,6 @@ public class StoreOrderPageItemDTO extends StoreOrderDTO {
 
     private String destinationCountyName;
 
-    private List<Detail> orderDetails;
-
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    @ToString(callSuper = true)
-    public static class Detail extends StoreOrderDetailDTO {
-
-        private String firstMainPicUrl;
-    }
+    private List<StoreOrderDetailInfoDTO> orderDetails;
 
 }

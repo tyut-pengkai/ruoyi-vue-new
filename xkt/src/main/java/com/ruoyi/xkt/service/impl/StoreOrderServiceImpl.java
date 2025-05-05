@@ -85,6 +85,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         Long storeId = storeOrderAddDTO.getStoreId();
         Long expressId = storeOrderAddDTO.getExpressId();
         //校验
+        Assert.notNull(orderUserId);
         Assert.notNull(payChannel);
         expressService.checkExpress(expressId);
         checkDelivery(storeOrderAddDTO.getDeliveryType(), storeOrderAddDTO.getDeliveryEndTime());
@@ -354,12 +355,9 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         if (order == null) {
             return null;
         }
-        List<StoreOrderDetail> details = storeOrderDetailMapper.selectList(Wrappers.lambdaQuery(StoreOrderDetail.class)
-                .eq(StoreOrderDetail::getStoreOrderId, storeOrderId)
-                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        List<StoreOrderDetailInfoDTO> detailInfos = storeOrderDetailMapper.listInfoByStoreOrderIds(
+                Collections.singletonList(storeOrderId));
         StoreOrderInfoDTO orderInfo = BeanUtil.toBean(order, StoreOrderInfoDTO.class);
-        List<StoreOrderDetailInfoDTO> detailInfos = BeanUtil.copyToList(details,
-                StoreOrderDetailInfoDTO.class);
         orderInfo.setOrderDetails(detailInfos);
         //档口信息
         Store store = storeMapper.selectById(order.getStoreId());
@@ -403,17 +401,14 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         if (CollUtil.isNotEmpty(page.getResult())) {
             List<StoreOrderPageItemDTO> list = page.getResult();
             Set<Long> soIds = list.stream().map(StoreOrderPageItemDTO::getId).collect(Collectors.toSet());
-            List<StoreOrderDetail> orderDetailList = storeOrderDetailMapper.selectList(Wrappers
-                    .lambdaQuery(StoreOrderDetail.class).eq(SimpleEntity::getDelFlag, Constants.UNDELETED)
-                    .in(StoreOrderDetail::getStoreOrderId, soIds));
-            List<Long> spIds = orderDetailList.stream().map(StoreOrderDetail::getStoreProdId).distinct()
+            List<StoreOrderDetailInfoDTO> orderDetailList = storeOrderDetailMapper.listInfoByStoreOrderIds(soIds);
+            List<Long> spIds = orderDetailList.stream().map(StoreOrderDetailInfoDTO::getStoreProdId).distinct()
                     .collect(Collectors.toList());
             Map<Long, String> mainPicMap = storeProductFileMapper.selectMainPicByStoreProdIdList(spIds,
                     FileType.MAIN_PIC.getValue(), ORDER_NUM_1).stream()
                     .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl,
                             (o, n) -> n));
-            Map<Long, List<StoreOrderPageItemDTO.Detail>> orderDetailGroup = BeanUtil.copyToList(orderDetailList,
-                    StoreOrderPageItemDTO.Detail.class)
+            Map<Long, List<StoreOrderDetailInfoDTO>> orderDetailGroup = orderDetailList
                     .stream()
                     .collect(Collectors.groupingBy(StoreOrderDetailDTO::getStoreOrderId));
             Map<String, ExpressRegionDTO> regionMap = expressService.getRegionMapCache();
@@ -432,7 +427,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 order.setOriginCountyName(Optional.ofNullable(regionMap.get(order.getOriginCountyCode()))
                         .map(ExpressRegionDTO::getParentRegionName).orElse(null));
                 order.setOrderDetails(orderDetailGroup.get(order.getId()));
-                for (StoreOrderPageItemDTO.Detail detail : order.getOrderDetails()) {
+                for (StoreOrderDetailInfoDTO detail : order.getOrderDetails()) {
                     //首图
                     detail.setFirstMainPicUrl(mainPicMap.get(detail.getStoreProdId()));
                 }

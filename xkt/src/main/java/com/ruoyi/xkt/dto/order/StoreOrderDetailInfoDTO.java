@@ -14,4 +14,10 @@ import lombok.ToString;
 public class StoreOrderDetailInfoDTO extends StoreOrderDetailDTO {
 
     private String firstMainPicUrl;
+
+    private Long refundOrderDetailId;
+
+    private Integer refundOrderDetailStatus;
+
+    private Integer refundGoodsQuantity;
 }
