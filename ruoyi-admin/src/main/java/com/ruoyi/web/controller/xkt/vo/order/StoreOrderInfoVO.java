@@ -99,7 +99,7 @@ public class StoreOrderInfoVO {
      * 退货原订单ID
      */
     @ApiModelProperty(value = "退货原订单ID")
-    private Long refundOrderId;
+    private Long originOrderId;
     /**
      * 退货原因
      */
@@ -343,7 +343,7 @@ public class StoreOrderInfoVO {
          * 退货原订单明细ID
          */
         @ApiModelProperty(value = "退货原订单明细ID")
-        private Long refundOrderDetailId;
+        private Long originOrderDetailId;
         /**
          * 退货原因
          */

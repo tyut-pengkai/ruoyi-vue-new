@@ -784,7 +784,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         //存在售后订单
         long afterSaleOrderCount = storeOrderMapper.selectCount(Wrappers.lambdaQuery(StoreOrder.class)
-                .eq(StoreOrder::getRefundOrderId, storeOrderId)
+                .eq(StoreOrder::getOriginOrderId, storeOrderId)
                 .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
         if (afterSaleOrderCount > 0) {
             throw new ServiceException(CharSequenceUtil.format("订单[{}]存在售后，无法确认收货",
@@ -835,7 +835,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         //售后订单
         List<StoreOrder> afterSaleOrderList = storeOrderMapper.selectList(Wrappers.lambdaQuery(StoreOrder.class)
-                .eq(StoreOrder::getRefundOrderId, storeOrderId)
+                .eq(StoreOrder::getOriginOrderId, storeOrderId)
                 .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
         List<StoreOrderExt> afterSaleOrderExts = new ArrayList<>(afterSaleOrderList.size());
         if (afterSaleOrderList.size() > 0) {
@@ -960,10 +960,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //已存在的售后订单
         List<StoreOrderDetail> existsAfterSaleOrderDetails = storeOrderDetailMapper
                 .selectList(Wrappers.lambdaQuery(StoreOrderDetail.class)
-                        .in(StoreOrderDetail::getRefundOrderDetailId, afterSaleDTO.getStoreOrderDetailIds())
+                        .in(StoreOrderDetail::getOriginOrderDetailId, afterSaleDTO.getStoreOrderDetailIds())
                         .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
         Set<Long> existsAfterSaleOrderDetailIds = existsAfterSaleOrderDetails.stream()
-                .map(StoreOrderDetail::getRefundOrderDetailId).collect(Collectors.toSet());
+                .map(StoreOrderDetail::getOriginOrderDetailId).collect(Collectors.toSet());
         List<Long> afterSaleOrderDetailIds = afterSaleDTO.getStoreOrderDetailIds().stream()
                 .filter(o -> !existsAfterSaleOrderDetailIds.contains(o)).distinct().collect(Collectors.toList());
         Assert.notEmpty(afterSaleOrderDetailIds, "已存在售后订单");
@@ -986,7 +986,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderDetail.setExpressStatus(EExpressStatus.INIT.getValue());
             orderDetail.setExpressReqNo(null);
             orderDetail.setExpressWaybillNo(afterSaleDTO.getExpressWaybillNo());
-            orderDetail.setRefundOrderDetailId(afterSaleOrderDetailId);
+            orderDetail.setOriginOrderDetailId(afterSaleOrderDetailId);
             orderDetail.setRefundReasonCode(afterSaleDTO.getRefundReasonCode());
             orderDetail.setVersion(0L);
             orderDetail.setDelFlag(Constants.UNDELETED);
@@ -1012,7 +1012,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         order.setExpressFee(orderExpressFee);
         order.setTotalAmount(orderTotalAmount);
         order.setRealTotalAmount(orderRealTotalAmount);
-        order.setRefundOrderId(afterSaleDTO.getStoreOrderId());
+        order.setOriginOrderId(afterSaleDTO.getStoreOrderId());
         order.setRefundReasonCode(afterSaleDTO.getRefundReasonCode());
         order.setExpressId(afterSaleDTO.getExpressId());
         order.setVersion(0L);
@@ -1093,7 +1093,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 .eq(StoreOrderDetail::getStoreOrderId, order.getId())
                 .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
 //        Set<Long> originOrderDetailIds = orderDetails.stream()
-//                .map(StoreOrderDetail::getRefundOrderDetailId)
+//                .map(StoreOrderDetail::getOriginOrderDetailId)
 //                .collect(Collectors.toSet());
 //        Map<Long,StoreOrderDetail> originOrderDetailMap = storeOrderDetailMapper.selectList(Wrappers
 //                .lambdaQuery(StoreOrderDetail.class)
@@ -1143,7 +1143,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 new Date());
         //创建付款单
         financeBillService.createRefundOrderPaymentBill(new StoreOrderExt(order, refundOrderDetails));
-        return new StoreOrderRefund(order, refundOrderDetails, getAndBaseCheck(order.getRefundOrderId()));
+        return new StoreOrderRefund(order, refundOrderDetails, getAndBaseCheck(order.getOriginOrderId()));
     }
 
     @Transactional(rollbackFor = Exception.class)

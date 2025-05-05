@@ -192,7 +192,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         for (StoreOrderExt afterSaleOrderExt : afterSaleOrderExts) {
             afterSaleBillUks.add("STORE_ORDER_REFUND_" + afterSaleOrderExt.getOrder().getId());
             for (StoreOrderDetail afterSaleOrderDetail : CollUtil.emptyIfNull(afterSaleOrderExt.getOrderDetails())) {
-                afterSaleOrderDetailMap.put(afterSaleOrderDetail.getRefundOrderDetailId(), afterSaleOrderDetail);
+                afterSaleOrderDetailMap.put(afterSaleOrderDetail.getOriginOrderDetailId(), afterSaleOrderDetail);
             }
         }
         Map<Long, FinanceBill> refundPaymentBillMap = MapUtil.empty();

@@ -78,7 +78,7 @@ public class StoreOrder extends SimpleEntity {
     /**
      * 退货原订单ID
      */
-    private Long refundOrderId;
+    private Long originOrderId;
     /**
      * 退货原因
      */
