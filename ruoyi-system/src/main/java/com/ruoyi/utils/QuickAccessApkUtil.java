@@ -237,6 +237,7 @@ public class QuickAccessApkUtil {
             log.info("[注入]未找到dex文件");
             throw new ServiceException("未找到dex文件");
         } else {
+            log.info("正在分析dex...");
             String targetDexName;
             if (dexNameList.size() == 1) {
                 targetDexName = "classes.dex";

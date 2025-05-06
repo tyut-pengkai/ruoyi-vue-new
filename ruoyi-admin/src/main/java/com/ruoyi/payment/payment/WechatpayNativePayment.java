@@ -49,6 +49,7 @@ public class WechatpayNativePayment extends Payment {
             throw new ServiceException("支付方式【" + this.getName() + "】未配置参数");
         }
         WechatpayConfig config = JSON.parseObject(payment.getConfig(), WechatpayConfig.class);
+//        log.debug("微信支付配置：" + payment.getConfig());
         // 配置参数
         if (StringUtils.isNotBlank(payment.getIcon())) {
             this.setIcon(payment.getIcon());

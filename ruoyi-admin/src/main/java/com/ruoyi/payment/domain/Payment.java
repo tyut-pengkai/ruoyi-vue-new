@@ -1,5 +1,7 @@
 package com.ruoyi.payment.domain;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ruoyi.api.v1.support.BaseAutoAware;
 import com.ruoyi.common.enums.SaleOrderStatus;
 import com.ruoyi.common.exception.ServiceException;
@@ -24,8 +26,14 @@ public abstract class Payment extends BaseAutoAware {
 
     @Value("${swagger.pathMapping}")
     private String pathMapping;
+    @JsonIgnore
+    @JSONField(serialize = false)
     private ISysConfigWebsiteService sysConfigWebsiteService;
+    @JsonIgnore
+    @JSONField(serialize = false)
     private ISysSaleOrderService sysSaleOrderService;
+    @JsonIgnore
+    @JSONField(serialize = false)
     private ISysSaleShopService sysSaleShopService;
 
     /**
