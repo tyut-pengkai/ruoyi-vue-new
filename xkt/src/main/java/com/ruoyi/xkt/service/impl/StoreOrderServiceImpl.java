@@ -17,10 +17,7 @@ import com.ruoyi.common.core.domain.XktBaseEntity;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.*;
-import com.ruoyi.xkt.dto.express.ExpressContactDTO;
-import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
-import com.ruoyi.xkt.dto.express.ExpressRegionDTO;
-import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
+import com.ruoyi.xkt.dto.express.*;
 import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.enums.*;
@@ -54,6 +51,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     private StoreOrderMapper storeOrderMapper;
     @Autowired
     private StoreOrderDetailMapper storeOrderDetailMapper;
+    @Autowired
+    private StoreOrderExpressTrackMapper storeOrderExpressTrackMapper;
     @Autowired
     private StoreMapper storeMapper;
     @Autowired
@@ -627,6 +626,11 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //发货
         ExpressShipReqDTO shipReq = createShipReq(order, orderDetails);
         String expressWaybillNo = expressManager.shipStoreOrder(shipReq);
+        //订阅轨迹
+        ExpressTrackSubReqDTO trackSubReq = new ExpressTrackSubReqDTO(shipReq.getExpressReqNo(),
+                expressWaybillNo, shipReq.getOriginContactPhoneNumber(), shipReq.getDestinationContactPhoneNumber());
+        boolean trackSubSuccess = expressManager.subscribeTrack(trackSubReq);
+        Assert.isTrue(trackSubSuccess, "物流轨迹订阅失败");
 
         List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
         for (StoreOrderDetail orderDetail : orderDetails) {
@@ -1180,6 +1184,58 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 new Date());
         //付款单到账
         financeBillService.entryRefundOrderPaymentBill(order.getId());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void addTrack(StoreOrderExpressTrackAddDTO trackAddDTO) {
+        Assert.notNull(trackAddDTO.getExpressId());
+        Assert.notEmpty(trackAddDTO.getExpressWaybillNo());
+        List<StoreOrderDetail> storeOrderDetails = storeOrderDetailMapper.selectList(
+                Wrappers.lambdaQuery(StoreOrderDetail.class)
+                        .eq(StoreOrderDetail::getExpressId, trackAddDTO.getExpressId())
+                        .eq(StoreOrderDetail::getExpressWaybillNo, trackAddDTO.getExpressWaybillNo())
+                        .eq(SimpleEntity::getDelFlag, Constants.UNDELETED)
+        );
+        for (StoreOrderDetail storeOrderDetail : storeOrderDetails) {
+            if (storeOrderDetail.getDetailStatus() > 20) {
+                //售后订单
+                continue;
+            }
+            if (EExpressStatus.PICKED_UP == trackAddDTO.getExpressStatus()) {
+                if (storeOrderDetail.getExpressStatus() == null) {
+                    storeOrderDetail.setExpressStatus(EExpressStatus.PICKED_UP.getValue());
+                    int orderDetailSuccess = storeOrderDetailMapper.updateById(storeOrderDetail);
+                    if (orderDetailSuccess == 0) {
+                        throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+                    }
+                } else {
+                    if (storeOrderDetail.getExpressStatus() < EExpressStatus.PICKED_UP.getValue()) {
+                        storeOrderDetail.setExpressStatus(EExpressStatus.PICKED_UP.getValue());
+                        int orderDetailSuccess = storeOrderDetailMapper.updateById(storeOrderDetail);
+                        if (orderDetailSuccess == 0) {
+                            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+                        }
+                    }
+                }
+            }
+            if (EExpressStatus.COMPLETED == trackAddDTO.getExpressStatus()) {
+                storeOrderDetail.setExpressStatus(EExpressStatus.COMPLETED.getValue());
+                int orderDetailSuccess = storeOrderDetailMapper.updateById(storeOrderDetail);
+                if (orderDetailSuccess == 0) {
+                    throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+                }
+            }
+            StoreOrderExpressTrack storeOrderExpressTrack = new StoreOrderExpressTrack();
+            storeOrderExpressTrack.setStoreOrderId(storeOrderDetail.getStoreOrderId());
+            storeOrderExpressTrack.setStoreOrderIdDetailId(storeOrderDetail.getId());
+            storeOrderExpressTrack.setSort(0);
+            storeOrderExpressTrack.setAction(trackAddDTO.getAction());
+            storeOrderExpressTrack.setDescription(trackAddDTO.getDescription());
+            storeOrderExpressTrack.setRemark(trackAddDTO.getRemark());
+            storeOrderExpressTrack.setDelFlag(Constants.UNDELETED);
+            storeOrderExpressTrackMapper.insert(storeOrderExpressTrack);
+        }
     }
 
     /**

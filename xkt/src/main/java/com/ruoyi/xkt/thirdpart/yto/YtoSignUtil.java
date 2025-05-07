@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.thirdpart.yto;
 
 import cn.hutool.core.codec.Base64;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 
 /**
@@ -22,10 +23,23 @@ public class YtoSignUtil {
     }
 
 
-    public static String sign(String data, String secret) {
+    public static String sign(String data1, String data2) {
         //进行md5加密,然后对数组进行base64编码
-        byte[] bytes = DigestUtil.md5(data + secret);
+        byte[] bytes = DigestUtil.md5(data1 + data2);
         return Base64.encodeStr(bytes, false, false);
     }
 
+    /**
+     * 假设xml内容为：<order></order> ， partnerId（客户密钥）为123456，
+     * 则要签名的内容为<order></order>123456，然后对<order></order>123456先进行MD5加密，再转换为base64字符串。
+     * 即经过md5(16位byte)和base64后的内容就为LghTkEmsD2tbQ3fsIBRcBg== 。
+     *
+     * @param digest
+     * @param param
+     * @param secret
+     * @return
+     */
+    public static boolean verify(String digest, String param, String secret) {
+        return StrUtil.equals(digest, sign(StrUtil.emptyIfNull(param), StrUtil.emptyIfNull(secret)));
+    }
 }

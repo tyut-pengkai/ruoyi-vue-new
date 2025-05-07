@@ -1,9 +1,6 @@
 package com.ruoyi.xkt.manager;
 
-import com.ruoyi.xkt.dto.express.ExpressCancelReqDTO;
-import com.ruoyi.xkt.dto.express.ExpressInterceptReqDTO;
-import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
-import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
+import com.ruoyi.xkt.dto.express.*;
 import com.ruoyi.xkt.enums.EExpressChannel;
 
 import java.util.Collection;
@@ -52,4 +49,11 @@ public interface ExpressManager {
      */
     List<ExpressPrintDTO> printOrder(Collection<String> waybillNos);
 
+    /**
+     * 订阅轨迹
+     *
+     * @param trackSubReq
+     * @return
+     */
+    boolean subscribeTrack(ExpressTrackSubReqDTO trackSubReq);
 }

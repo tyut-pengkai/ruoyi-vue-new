@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.thirdpart.zto;
 
+import cn.hutool.core.util.StrUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -55,6 +56,11 @@ public class ZopDigestUtil {
             }
         }
         return mac.doFinal(body.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static boolean verify(String digest, String param, String secret) {
+        return StrUtil.equals(digest, Base64.encodeBase64String(DigestUtils.md5(StrUtil.emptyIfNull(param) +
+                StrUtil.emptyIfNull(secret))));
     }
 
 }

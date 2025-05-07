@@ -2,16 +2,14 @@ package com.ruoyi.xkt.manager.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.xkt.dto.express.ExpressCancelReqDTO;
-import com.ruoyi.xkt.dto.express.ExpressInterceptReqDTO;
-import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
-import com.ruoyi.xkt.dto.express.ExpressShipReqDTO;
+import com.ruoyi.xkt.dto.express.*;
 import com.ruoyi.xkt.enums.EExpressChannel;
 import com.ruoyi.xkt.manager.ExpressManager;
 import com.ruoyi.xkt.thirdpart.zto.*;
@@ -43,6 +41,8 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
     private static final String STRUCTURE_ADDRESS_URI = "zto.innovate.structureNamePhoneAddress";
 
     public static final String ORDER_PRINT_URI = "zto.open.order.print";
+
+    public static final String TRACK_SUB_URI = "zto.merchant.waybill.track.subsrcibe";
 
     @Value("${zto.appKey:}")
     private String appKey;
@@ -82,7 +82,7 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
             String bodyStr = client.execute(request);
             log.info("中通订单创建返回信息: {}", bodyStr);
             JSONObject bodyJson = JSONUtil.parseObj(bodyStr);
-            boolean success = bodyJson.getBool("status");
+            boolean success = BooleanUtil.isTrue(bodyJson.getBool("status"));
             if (success) {
                 return bodyJson.getJSONObject("result").getStr("billCode");
             }
@@ -108,7 +108,7 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
             String bodyStr = client.execute(request);
             log.info("中通订单取消返回信息: {}", bodyStr);
             JSONObject bodyJson = JSONUtil.parseObj(bodyStr);
-            boolean success = bodyJson.getBool("status");
+            boolean success = BooleanUtil.isTrue(bodyJson.getBool("status"));
             if (success) {
                 return true;
             }
@@ -137,120 +137,46 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
             String bodyStr = client.execute(request);
             log.info("中通订单拦截返回信息: {}", bodyStr);
             /**
-             * E23101
-             * 快件已签收
-             * 更换未签收运单发起
-             * E23102
-             * 订单信息不存在
-             * 联系管理员处理
-             * E23108
-             * 无效的拦截、退改方式
-             * 检查入参destinationType
-             * E23110
-             * 无揽收与面单使用网点
-             * 联系管理员处理
-             * E23111
-             * 时效件，无法拦截
-             * 更换运单
-             * E23112
-             * 已第三方进站不允许拦截
-             * 更换运单
-             * E23113
-             * 有转单信息不允许拦截
-             * 更换运单
-             * E23114
-             * 派件网点不支持到付业务
-             * 更换运单
-             * E23115
-             * 派件网点不支持代收业务
-             * 更换运单
-             * E23116
-             * 渠道不一致，不允许重复发起拦截/超过最大拦截次数
-             * 更换运单
-             * E23118
-             * 订购渠道不存在/该渠道不允许拦截
-             * 检查入参platform，如确认无误，联系管理员处理
-             * E23119
-             * 无任何轨迹不允许发起拦截
-             * 揽收后再重试
-             * E23120
-             * 有派件扫描不允许拦截
-             * 更换运单
-             * E23121
-             * 存在相同渠道的拦截件,不允许再次发起
-             * 更换运单
-             * E23122
-             * 目的地停发不允许拦截
-             * 更换运单
-             * E23123
-             * 存在退改件信息不允许拦截
-             * 更换运单
-             * E23124
-             * 轨迹异常不允许拦截
-             * 更换运单
-             * E23127
-             * 已经有相同诉求,不允许再次发起
-             * 更换运单或更改入参destinationType或改地址的收件地址
-             * E23130
-             * 非拦截中拦截件,不能取消
-             * 此运单已无法取消拦截，如仍需取消，请再次拦截改回原址
-             * E23131
-             * 取消网点与订购网点或原单揽收网点不一致,不能取消
-             * 联系管理员处理
-             * E23135
-             * 同拦截发起方不一致,无权取消
-             * 联系管理员处理
-             * E23136
-             * 已发往港澳台，暂不允许拦截
-             * 更换运单
-             * E23137
-             * 有派件网点到件不允许拦截
-             * 更换运单
-             * E23138
-             * 国际件不允许发起拦截
-             * 更换运单
-             * E23139
-             * 不满足拦截发起业务规则
-             * 更换运单
-             * E23140
-             * 包裹已确认遗失
-             * 更换运单
-             * E23141
-             * 包裹已确认弃件
-             * 更换运单
-             * E23144
-             * CRM无权限
-             * 联系合作网点在客户管理系统开通拦截权限
-             * E23146
-             * 跨境客户，不允许发起改地址/退回指定地址
-             * 更换运单
-             * E23148
-             * 联系方式格式错误，请检查后提交或不填写
-             * 检查入参receivePhone
-             * E23149
-             * 联系方式是虚拟号，请补全分机号或不填写
-             * 检查入参receivePhone
-             * E23150
-             * 联系方式超过16位，请删减
-             * 检查入参receivePhone
-             * E23151
-             * 已经有相同诉求,不允许再次发起
-             * 更换运单或更改入参destinationType或改地址的收件地址
-             * E23153
-             * 发起人不属于发起网点
-             * 联系管理员处理
-             * E23154
-             * 单号不属于当前网点，不允许发起
-             * 联系管理员处理
-             * E23157
-             * 该渠道不支持重复发起拦截
-             * 更换运单
-             * E23160
-             * 已存在外部平台发起的拦截，不允许发起
-             * 更换运单
+             * E23101	快件已签收	更换未签收运单发起
+             * E23102	订单信息不存在	联系管理员处理
+             * E23108	无效的拦截、退改方式	检查入参destinationType
+             * E23110	无揽收与面单使用网点	联系管理员处理
+             * E23111	时效件，无法拦截	更换运单
+             * E23112	已第三方进站不允许拦截	更换运单
+             * E23113	有转单信息不允许拦截	更换运单
+             * E23114	派件网点不支持到付业务	更换运单
+             * E23115	派件网点不支持代收业务	更换运单
+             * E23116	渠道不一致，不允许重复发起拦截/超过最大拦截次数	更换运单
+             * E23118	订购渠道不存在/该渠道不允许拦截	检查入参platform，如确认无误，联系管理员处理
+             * E23119	无任何轨迹不允许发起拦截	揽收后再重试
+             * E23120	有派件扫描不允许拦截	更换运单
+             * E23121	存在相同渠道的拦截件,不允许再次发起	更换运单
+             * E23122	目的地停发不允许拦截	更换运单
+             * E23123	存在退改件信息不允许拦截	更换运单
+             * E23124	轨迹异常不允许拦截	更换运单
+             * E23127	已经有相同诉求,不允许再次发起	更换运单或更改入参destinationType或改地址的收件地址
+             * E23130	非拦截中拦截件,不能取消	此运单已无法取消拦截，如仍需取消，请再次拦截改回原址
+             * E23131	取消网点与订购网点或原单揽收网点不一致,不能取消	联系管理员处理
+             * E23135	同拦截发起方不一致,无权取消	联系管理员处理
+             * E23136	已发往港澳台，暂不允许拦截	更换运单
+             * E23137	有派件网点到件不允许拦截	更换运单
+             * E23138	国际件不允许发起拦截	更换运单
+             * E23139	不满足拦截发起业务规则	更换运单
+             * E23140	包裹已确认遗失	更换运单
+             * E23141	包裹已确认弃件	更换运单
+             * E23144	CRM无权限	联系合作网点在客户管理系统开通拦截权限
+             * E23146	跨境客户，不允许发起改地址/退回指定地址	更换运单
+             * E23148	联系方式格式错误，请检查后提交或不填写	检查入参receivePhone
+             * E23149	联系方式是虚拟号，请补全分机号或不填写	检查入参receivePhone
+             * E23150	联系方式超过16位，请删减	检查入参receivePhone
+             * E23151	已经有相同诉求,不允许再次发起	更换运单或更改入参destinationType或改地址的收件地址
+             * E23153	发起人不属于发起网点	联系管理员处理
+             * E23154	单号不属于当前网点，不允许发起	联系管理员处理
+             * E23157	该渠道不支持重复发起拦截	更换运单
+             * E23160	已存在外部平台发起的拦截，不允许发起	更换运单
              */
             JSONObject bodyJson = JSONUtil.parseObj(bodyStr);
-            boolean success = bodyJson.getBool("status");
+            boolean success = BooleanUtil.isTrue(bodyJson.getBool("status"));
             if (success) {
                 return true;
             }
@@ -274,7 +200,7 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
                 String bodyStr = client.execute(request);
                 log.info("中通订单打印返回信息: {}", bodyStr);
                 JSONObject bodyJson = JSONUtil.parseObj(bodyStr);
-                boolean success = bodyJson.getBool("status");
+                boolean success = BooleanUtil.isTrue(bodyJson.getBool("status"));
                 if (success) {
                     continue;
                 }
@@ -301,6 +227,34 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
         return list;
     }
 
+    @Override
+    public boolean subscribeTrack(ExpressTrackSubReqDTO trackSubReq) {
+        Assert.notNull(trackSubReq);
+        Assert.notEmpty(trackSubReq.getExpressWaybillNo());
+        Assert.notEmpty(trackSubReq.getDestinationContactPhoneNumber());
+        ZtoSubTrackParam ztoSubTrackParam = new ZtoSubTrackParam();
+        ztoSubTrackParam.setBillCode(trackSubReq.getExpressWaybillNo());
+        ztoSubTrackParam.setMobilePhone(StrUtil.sub(trackSubReq.getDestinationContactPhoneNumber(),
+                -1, 4));
+        ZopPublicRequest request = new ZopPublicRequest();
+        request.setBody(JSONUtil.toJsonStr(ztoSubTrackParam));
+        request.setUrl(gatewayUrl + TRACK_SUB_URI);
+        request.setEncryptionType(EncryptionType.MD5);
+        try {
+            String bodyStr = client.execute(request);
+            log.info("中通轨迹订阅返回信息: {}", bodyStr);
+            JSONObject bodyJson = JSONUtil.parseObj(bodyStr);
+            boolean success = BooleanUtil.isTrue(bodyJson.getBool("status"));
+            if (success) {
+                return true;
+            }
+        } catch (Exception e) {
+            log.error("中通轨迹订阅异常", e);
+        }
+        log.warn("中通轨迹订阅失败: {}", trackSubReq);
+        return false;
+    }
+
     /**
      * 智能解析
      *
@@ -318,7 +272,7 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
             String bodyStr = client.execute(request);
             log.info("中通智能解析返回信息: {}", bodyStr);
             JSONObject bodyJson = JSONUtil.parseObj(bodyStr);
-            boolean success = bodyJson.getBool("status");
+            boolean success = BooleanUtil.isTrue(bodyJson.getBool("status"));
             if (success) {
                 return bodyJson.getJSONObject("result");
             }

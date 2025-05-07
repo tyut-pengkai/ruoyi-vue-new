@@ -169,5 +169,10 @@ public interface IStoreOrderService {
      */
     void refundSuccess(Long storeOrderId, List<Long> storeOrderDetailIds, Long operatorId);
 
-
+    /**
+     * 添加轨迹信息
+     *
+     * @param trackAddDTO
+     */
+    void addTrack(StoreOrderExpressTrackAddDTO trackAddDTO);
 }

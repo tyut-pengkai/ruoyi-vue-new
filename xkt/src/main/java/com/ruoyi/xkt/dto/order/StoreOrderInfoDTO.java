@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.dto.order;
 
+import com.ruoyi.xkt.dto.express.ExpressTrackDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -34,4 +35,6 @@ public class StoreOrderInfoDTO extends StoreOrderDTO {
     private String destinationCountyName;
 
     private List<StoreOrderDetailInfoDTO> orderDetails;
+
+    private List<ExpressTrackDTO> expressTracks;
 }
