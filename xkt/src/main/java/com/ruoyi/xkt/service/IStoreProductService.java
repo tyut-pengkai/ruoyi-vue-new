@@ -97,4 +97,10 @@ public interface IStoreProductService {
      * @return List<StoreProdFuzzyResPicDTO>
      */
     List<StoreProdFuzzyResPicDTO> fuzzyQueryResPicList(Long storeId, String prodArtNum);
+
+    /**
+     * 获取商品所有的风格
+     * @return
+     */
+    List<String> getStyleList();
 }

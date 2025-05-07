@@ -1,4 +1,4 @@
-package com.ruoyi.quartz.dto;
+package com.ruoyi.xkt.dto.dailySale;
 
 import lombok.Data;
 

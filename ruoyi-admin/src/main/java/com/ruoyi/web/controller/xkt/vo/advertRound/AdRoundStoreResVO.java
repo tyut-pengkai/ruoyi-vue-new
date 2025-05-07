@@ -1,4 +1,4 @@
-package com.ruoyi.xkt.dto.advertRoundPlay;
+package com.ruoyi.web.controller.xkt.vo.advertRound;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @ApiModel("当前类型档口营销推广数据")
 @Data
 @Accessors(chain = true)
-public class AdPlayStoreResDTO {
+public class AdRoundStoreResVO {
 
 
 }

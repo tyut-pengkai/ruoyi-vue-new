@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.quartz.mapper.DailySaleCustomerMapper">
+<mapper namespace="com.ruoyi.xkt.mapper.DailySaleCustomerMapper">
 
-    <select id="selectDailySale" resultType="com.ruoyi.quartz.dto.DailySaleCusDTO">
+    <select id="selectDailySale" resultType="com.ruoyi.xkt.dto.dailySale.DailySaleCusDTO">
         SELECT
             ss.store_id,
             ss.store_cus_id,

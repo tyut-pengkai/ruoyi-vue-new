@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 /**
  * 调度任务信息操作处理
@@ -70,5 +71,13 @@ public class DailyTaskController extends BaseController {
         task.dailyAdvertRound();
         return R.ok();
     }
+
+    @PostMapping("/advert-round-filter")
+    public R dailyRoundFilterTime(SysJob sysJob) throws ParseException {
+        task.saveAdvertDeadlineToRedis();
+        return R.ok();
+    }
+
+
 
 }

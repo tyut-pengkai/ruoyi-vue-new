@@ -6,18 +6,22 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.mapper.SysUserMapper;
+import com.ruoyi.xkt.domain.DailyStoreTag;
 import com.ruoyi.xkt.domain.Store;
+import com.ruoyi.xkt.domain.UserSubscriptions;
 import com.ruoyi.xkt.dto.store.*;
-import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
 import com.ruoyi.xkt.enums.StoreStatus;
+import com.ruoyi.xkt.mapper.DailyStoreTagMapper;
 import com.ruoyi.xkt.mapper.StoreMapper;
+import com.ruoyi.xkt.mapper.UserSubscriptionsMapper;
 import com.ruoyi.xkt.service.IStoreCertificateService;
 import com.ruoyi.xkt.service.IStoreService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 档口Service业务层处理
@@ -41,6 +46,8 @@ public class StoreServiceImpl implements IStoreService {
     final StoreMapper storeMapper;
     final IStoreCertificateService storeCertService;
     final SysUserMapper userMapper;
+    final DailyStoreTagMapper storeTagMapper;
+    final UserSubscriptionsMapper userSubMapper;
 
     /**
      * 注册时新增档口数据
@@ -156,6 +163,31 @@ public class StoreServiceImpl implements IStoreService {
             setBasic(getInfo(storeId));
             setCertificate(storeCertService.getInfo(storeId));
         }};
+    }
+
+    /**
+     * 获取APP档口基本信息
+     *
+     * @param storeId 档口ID
+     * @return StoreAppResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreAppResDTO getAppInfo(Long storeId) {
+        Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
+                        .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        // 获取档口的标签
+        List<DailyStoreTag> storeTagList = this.storeTagMapper.selectList(new LambdaQueryWrapper<DailyStoreTag>()
+                .eq(DailyStoreTag::getStoreId, storeId).eq(DailyStoreTag::getDelFlag, Constants.UNDELETED)
+                .orderByAsc(DailyStoreTag::getType));
+        // 判断当前用户是否已关注档口
+        UserSubscriptions userSub = this.userSubMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>()
+                .eq(UserSubscriptions::getUserId, SecurityUtils.getUserId()).eq(UserSubscriptions::getStoreId, storeId)
+                .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
+        return BeanUtil.toBean(store, StoreAppResDTO.class)
+                .setAttention(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE)
+                .setTagList(storeTagList.stream().map(DailyStoreTag::getTag).collect(Collectors.toList()));
     }
 
     /**

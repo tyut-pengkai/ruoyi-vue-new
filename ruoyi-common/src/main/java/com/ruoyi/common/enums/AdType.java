@@ -1,4 +1,4 @@
-package com.ruoyi.xkt.enums;
+package com.ruoyi.common.enums;
 
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;

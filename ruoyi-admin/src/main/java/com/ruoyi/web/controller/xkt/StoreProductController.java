@@ -40,6 +40,15 @@ public class StoreProductController extends XktBaseController {
     final IStoreProductService storeProdService;
 
     /**
+     * 查询档口商品所有的风格
+     */
+    @ApiOperation(value = "查询档口商品所有的风格", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/styles")
+    public R<List<String>> getStyleList() {
+        return R.ok(storeProdService.getStyleList());
+    }
+
+    /**
      * 模糊查询档口商品
      */
     @PreAuthorize("@ss.hasPermi('system:product:query')")

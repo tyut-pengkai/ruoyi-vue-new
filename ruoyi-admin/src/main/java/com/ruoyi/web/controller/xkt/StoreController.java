@@ -103,5 +103,14 @@ public class StoreController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeService.getApproveInfo(storeId), StoreApproveResVO.class));
     }
 
+    /**
+     * APP获取档口基本信息
+     */
+    @ApiOperation(value = "档口审核是获取档口基本信息", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/app/{storeId}")
+    public R<StoreAppResVO> getAppInfo(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeService.getAppInfo(storeId), StoreAppResVO.class));
+    }
+
 
 }

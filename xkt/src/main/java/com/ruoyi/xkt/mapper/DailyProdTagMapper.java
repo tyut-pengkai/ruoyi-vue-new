@@ -1,7 +1,7 @@
-package com.ruoyi.quartz.mapper;
+package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ruoyi.quartz.domain.DailyProdTag;
+import com.ruoyi.xkt.domain.DailyProdTag;
 
 /**
  * 调度任务信息 数据层

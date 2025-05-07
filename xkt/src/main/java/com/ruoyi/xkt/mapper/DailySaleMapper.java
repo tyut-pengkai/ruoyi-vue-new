@@ -1,8 +1,8 @@
-package com.ruoyi.quartz.mapper;
+package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ruoyi.quartz.domain.DailySale;
-import com.ruoyi.quartz.dto.DailySaleDTO;
+import com.ruoyi.xkt.domain.DailySale;
+import com.ruoyi.xkt.dto.dailySale.DailySaleDTO;
 
 import java.util.Date;
 import java.util.List;

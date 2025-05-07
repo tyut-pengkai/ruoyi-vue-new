@@ -7,19 +7,20 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysProductCategory;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
-import com.ruoyi.quartz.domain.*;
-import com.ruoyi.quartz.dto.DailySaleCusDTO;
-import com.ruoyi.quartz.dto.DailySaleDTO;
-import com.ruoyi.quartz.dto.DailySaleProdDTO;
-import com.ruoyi.quartz.dto.WeekCateSaleDTO;
-import com.ruoyi.quartz.mapper.*;
 import com.ruoyi.system.mapper.SysProductCategoryMapper;
 import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.dto.dailySale.DailySaleCusDTO;
+import com.ruoyi.xkt.dto.dailySale.DailySaleDTO;
+import com.ruoyi.xkt.dto.dailySale.DailySaleProdDTO;
+import com.ruoyi.xkt.dto.dailySale.WeekCateSaleDTO;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
+import com.ruoyi.xkt.service.IAdvertRoundService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -27,10 +28,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -63,6 +67,8 @@ public class XktTask {
     final EsClientWrapper esClientWrapper;
     final AdvertMapper advertMapper;
     final AdvertRoundMapper advertRoundMapper;
+    final RedisCache redisCache;
+    final IAdvertRoundService advertRoundService;
 
     /**
      * 每晚1点同步档口销售数据
@@ -297,7 +303,7 @@ public class XktTask {
      * 每晚定时任务更新推广的播放轮次，这个要次日凌晨更新
      */
     @Transactional
-    public void dailyAdvertRound(){
+    public void dailyAdvertRound() {
         List<Advert> advertList = this.advertMapper.selectList(new LambdaQueryWrapper<Advert>()
                 .eq(Advert::getDelFlag, Constants.UNDELETED).eq(Advert::getOnlineStatus, AdOnlineStatus.ONLINE.getValue()));
         if (CollectionUtils.isEmpty(advertList)) {
@@ -325,10 +331,15 @@ public class XktTask {
                     final LocalDate endDate = now.plusDays(advert.getPlayInterval() - 1);
                     // 按照播放数量依次生成下一轮播放的推广位
                     for (int j = 0; j < advert.getPlayNum(); j++) {
-                        updateList.add(new AdvertRound().setAdvertId(advert.getId()).setRoundId(i + 1).setLaunchStatus(launchStatus)
-                                .setStartTime(java.sql.Date.valueOf(now)).setEndTime(java.sql.Date.valueOf(endDate))
-                                // 依次按照26个字母顺序 如果i == 0 则A i == 1 则B i==2则C
-                                .setPosition(String.valueOf((char) ('A' + j))));
+                        // 依次按照26个字母顺序 如果i == 0 则A i == 1 则B i==2则C
+                        final String position = String.valueOf((char) ('A' + j));
+                        // 当前播放轮次id
+                        final int roundId = i + 1;
+                        updateList.add(new AdvertRound().setAdvertId(advert.getId()).setTypeId(advert.getTypeId()).setRoundId(roundId).setLaunchStatus(launchStatus)
+                                .setStartTime(java.sql.Date.valueOf(now)).setEndTime(java.sql.Date.valueOf(endDate)).setPosition(position)
+                                .setSymbol(Constants.posEnumTypeList.contains(advert.getTypeId())
+                                        // 如果是位置枚举的推广位，则需要精确到某一个position的推广位，反之，若是时间范围，则直接精确到播放轮次即可
+                                        ? advert.getBasicSymbol() + roundId + position : advert.getBasicSymbol() + roundId));
                     }
                 }
             } else {
@@ -364,13 +375,20 @@ public class XktTask {
                             final LocalDate endDate = startDate.plusDays(advert.getPlayInterval() - 1);
                             // 每一轮的播放数量
                             for (int i = 0; i < advert.getPlayNum(); i++) {
+                                // 依次按照26个字母顺序 如果i == 0 则A i == 1 则B i==2则C
+                                final String position = String.valueOf((char) ('A' + j));
                                 // 生成最新的下一轮推广位
-                                updateList.add(new AdvertRound().setAdvertId(advert.getId()).setRoundId(maxRoundId).setLaunchStatus(AdLaunchStatus.UN_LAUNCH.getValue())
+                                updateList.add(new AdvertRound().setAdvertId(advert.getId()).setTypeId(advert.getTypeId()).setRoundId(maxRoundId)
+                                        .setLaunchStatus(AdLaunchStatus.UN_LAUNCH.getValue()).setPosition(position)
+                                        // java.sql.Date 直接转化成yyyy-MM-dd格式
                                         .setStartTime(java.sql.Date.valueOf(startDate)).setEndTime(java.sql.Date.valueOf(endDate))
-                                        // 依次按照26个字母顺序 如果i == 0 则A i == 1 则B i==2则C
-                                        .setPosition(String.valueOf((char) ('A' + i))));
+                                        .setSymbol(Constants.posEnumTypeList.contains(advert.getTypeId())
+                                                // 如果是位置枚举的推广位，则需要精确到某一个position的推广位，反之，若是时间范围，则直接精确到播放轮次即可
+                                                ? advert.getBasicSymbol() + maxRoundId + position : advert.getBasicSymbol() + maxRoundId));
                             }
                         }
+                        // 需要更新推广位轮次最新的资源锁
+                        this.advertRoundService.initAdvertLockMap();
                     }
                 }
             }
@@ -379,6 +397,22 @@ public class XktTask {
             this.advertRoundMapper.insertOrUpdate(updateList);
         }
     }
+
+
+    /**
+     * 通过定时任务（每天晚上9:00）往redis中放当前推广位 当前播放轮 或 即将播放轮 的截止时间；
+     * 比如：5.1 - 5.3
+     *      a. 现在是4.30 则截止时间是 4.30 22:00
+     *      b. 现在是5.2，则截止时间是 5.2 22:00:00 。
+     *      c. 现在是5.3，则第一轮还有请求，肯定是人为的不用管。请求第三轮 或者 第四轮 不报错。只处理第二轮请求
+     *
+     * @throws ParseException
+     */
+    public void saveAdvertDeadlineToRedis() throws ParseException {
+        // 直接调service方法，若当时redis出了问题，也方便第一时间 通过业务流程弥补 两边都有一个补偿机制
+        advertRoundService.saveAdvertDeadlineToRedis();
+    }
+
 
 
     /**

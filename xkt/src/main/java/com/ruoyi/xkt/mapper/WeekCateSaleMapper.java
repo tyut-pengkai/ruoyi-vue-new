@@ -1,6 +1,6 @@
-package com.ruoyi.quartz.mapper;
+package com.ruoyi.xkt.mapper;
 
-import com.ruoyi.quartz.dto.WeekCateSaleDTO;
+import com.ruoyi.xkt.dto.dailySale.WeekCateSaleDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;

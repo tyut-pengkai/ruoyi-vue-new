@@ -1,7 +1,11 @@
 package com.ruoyi.common.constant;
 
-import java.util.Locale;
+import com.ruoyi.common.enums.AdType;
 import io.jsonwebtoken.Claims;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * 通用常量信息
@@ -218,6 +222,24 @@ public class Constants
      * 最顶层商品分类ID
      */
     public static final Long TOPMOST_PRODUCT_CATEGORY_ID = 1L;
+
+    /**
+     * 枚举的广告位类型
+     */
+    public final static List<Integer> posEnumTypeList = new ArrayList<Integer>() {{
+        // 人气榜中上侧
+        add(AdType.PC_HOME_POP_MID_TOP.getValue());
+        // 人气榜中下侧
+        add(AdType.PC_HOME_POP_MID_BOTTOM.getValue());
+        // 人气榜右上侧
+        add(AdType.PC_HOME_POP_RIGHT_TOP.getValue());
+        // 人气榜右下侧
+        add(AdType.PC_HOME_POP_RIGHT_BOTTOM.getValue());
+        // 新品馆热卖榜右推广商品
+        add(AdType.PC_NEW_PROD_HOT_RIGHT_PRODUCT.getValue());
+        // PC下载页
+        add(AdType.PC_DOWNLOAD.getValue());
+    }};
 
 
 }

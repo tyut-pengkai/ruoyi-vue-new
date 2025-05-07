@@ -458,6 +458,17 @@ public class StoreProductServiceImpl implements IStoreProductService {
     }
 
     /**
+     * 获取商品所有的风格
+     *
+     * @return List<String>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getStyleList() {
+        return this.storeProdMapper.getStyleList();
+    }
+
+    /**
      * 处理档口商品属性
      *
      * @param storeProd    档口商品实体

@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.service.impl;
 
+import java.security.SecureRandom;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
@@ -16,7 +17,7 @@ import com.ruoyi.xkt.dto.advert.*;
 import com.ruoyi.xkt.enums.AdOnlineStatus;
 import com.ruoyi.xkt.enums.AdPlatformType;
 import com.ruoyi.xkt.enums.AdTab;
-import com.ruoyi.xkt.enums.AdType;
+import com.ruoyi.common.enums.AdType;
 import com.ruoyi.xkt.mapper.AdvertMapper;
 import com.ruoyi.xkt.mapper.SysFileMapper;
 import com.ruoyi.xkt.service.IAdvertService;
@@ -64,6 +65,7 @@ public class AdvertServiceImpl implements IAdvertService {
         SysFile file = BeanUtil.toBean(createDTO.getExample(), SysFile.class);
         this.fileMapper.insert(file);
         Advert advert = BeanUtil.toBean(createDTO, Advert.class);
+        advert.setBasicSymbol(random10Str());
         advert.setOnlineStatus(AdOnlineStatus.ONLINE.getValue());
         advert.setExamplePicId(file.getId());
         return this.advertMapper.insert(advert);
@@ -220,6 +222,26 @@ public class AdvertServiceImpl implements IAdvertService {
             throw new ServiceException("当前用户不是超级管理员，不可操作!", HttpStatus.ERROR);
         }
     }
+
+
+    /**
+     * 随机生成10位，包含大小写字母、数字的字符串
+     * @return
+     */
+    public static String random10Str() {
+        final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                + "abcdefghijklmnopqrstuvwxyz"
+                + "0123456789";
+        final int STRING_LENGTH = 10;
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder(STRING_LENGTH);
+        for (int i = 0; i < STRING_LENGTH; i++) {
+            int index = random.nextInt(CHARACTERS.length());
+            sb.append(CHARACTERS.charAt(index));
+        }
+        return sb.toString();
+    }
+
 
 
 }

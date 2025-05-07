@@ -17,6 +17,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class ESProductDTO {
 
+    @ApiModelProperty(value = "档口商品ID")
+    private String storeProdId;
     @ApiModelProperty(value = "货号")
     private String prodArtNum;
     @ApiModelProperty(value = "档口商品分类ID")

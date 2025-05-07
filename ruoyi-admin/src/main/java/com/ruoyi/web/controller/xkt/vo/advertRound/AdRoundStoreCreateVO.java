@@ -1,10 +1,12 @@
-package com.ruoyi.web.controller.xkt.vo.advertRoundPlay;
+package com.ruoyi.web.controller.xkt.vo.advertRound;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
@@ -16,14 +18,20 @@ import java.math.BigDecimal;
 @ApiModel("档口购买推广营销位")
 @Data
 @Accessors(chain = true)
-public class AdPlayStoreCreateVO {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class AdRoundStoreCreateVO {
 
     @NotNull(message = "广告ID不能为空!")
     @ApiModelProperty(value = "广告ID")
     private Long advertId;
     @NotNull(message = "广告轮次ID不能为空!")
     @ApiModelProperty(value = "广告轮次ID")
-    private Long advertRoundId;
+    private Long roundId;
+    @NotNull(message = "typeId不能为空!")
+    @ApiModelProperty(value = "typeId")
+    private Integer typeId;
+    @ApiModelProperty(value = "[不一定传]广告位置 A B C D E")
+    private String position;
     @NotNull(message = "推广档口ID不能为空!")
     @ApiModelProperty(value = "推广档口ID")
     private Long storeId;
@@ -34,5 +42,8 @@ public class AdPlayStoreCreateVO {
     private Integer picDesignType;
     @ApiModelProperty(value = "推广商品ID列表")
     private String prodIdStr;
+    @NotBlank(message = "对象锁符号不能为空!")
+    @ApiModelProperty(value = "对象锁符号")
+    private String symbol;
 
 }

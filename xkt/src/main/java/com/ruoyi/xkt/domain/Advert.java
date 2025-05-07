@@ -26,6 +26,14 @@ public class Advert extends XktBaseEntity {
     @TableId
     private Long id;
     /**
+     * 每一个广告位基础锁符号 10位大小写、字母组成的字符串
+     */
+    private String basicSymbol;
+    /**
+     * 每个档口可以购买当前广告位数量限制
+     */
+    private Integer storeBuyLimit;
+    /**
      * 推广平台 电脑端 、APP
      */
     private Integer platformId;

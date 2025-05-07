@@ -1,5 +1,6 @@
-package com.ruoyi.quartz.dto;
+package com.ruoyi.xkt.dto.dailySale;
 
+import com.ruoyi.common.annotation.Excel;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -10,16 +11,20 @@ import java.math.BigDecimal;
  * @date 2025/4/16 23:06
  */
 @Data
-public class DailySaleCusDTO {
+public class DailySaleProdDTO {
 
     /**
      * 档口ID
      */
     private Long storeId;
     /**
-     * 档口客户ID
+     * 档口商品ID
      */
-    private Long storeCusId;
+    private Long storeProdId;
+    /**
+     * 档口商品货号
+     */
+    private String prodArtNum;
     /**
      * 销售金额
      */

@@ -32,9 +32,17 @@ public class AdvertRound extends XktBaseEntity {
      */
     private Long advertId;
     /**
+     * 推广类型
+     */
+    private Integer typeId;
+    /**
      * 轮次ID
      */
     private Integer roundId;
+    /**
+     * 资源锁标识 位置枚举的推广位精确到A B C D E 等，时间范围的推广位精确到具体类型
+     */
+    private String symbol;
     /**
      * 投放状态
      */
@@ -51,21 +59,6 @@ public class AdvertRound extends XktBaseEntity {
      * 广告位置 A B C D E...  对应advert中的playNum
      */
     private String position;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * 推广档口ID
      */
@@ -75,9 +68,13 @@ public class AdvertRound extends XktBaseEntity {
      */
     private BigDecimal payPrice;
     /**
-     * 竞价状态
+     * 只要有人出价：这个就被置为 已出价   晚上定时任务改为 竞价成功
      */
     private Integer biddingStatus;
+    /**
+     * 竞价状态 竞价成功  竞价失败的进入到 advert_round_record表中
+     */
+    private Integer biddingTempStatus;
     /**
      * 图片审核状态
      */

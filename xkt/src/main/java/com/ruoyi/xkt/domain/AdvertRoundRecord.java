@@ -4,39 +4,61 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
- * 广告营销每一轮播放 advert_round_play
+ * 广告营销每一轮竞价历史数据 advert_round_record
  *
  * @author liujiang
  * @date 2025-05-03
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class AdvertRoundPlay extends XktBaseEntity {
+@Accessors(chain = true)
+public class AdvertRoundRecord extends XktBaseEntity {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 广告轮次播放ID
+     * 广告营销每一轮历史竞价记录ID
      */
     @TableId
     private Long id;
+    /**
+     * 推广营销轮次位置ID
+     */
+    private Long advertRoundId;
     /**
      * 广告ID
      */
     private Long advertId;
     /**
-     * 广告轮次ID
+     * 轮次ID
      */
-    private Long advertRoundId;
-
-
-
-
-
+    private Integer roundId;
+    /**
+     * 资源锁标识 位置枚举的推广位精确到A B C D E 等，时间范围的推广位精确到具体类型
+     */
+    private String symbol;
+    /**
+     * 投放状态
+     */
+    private Integer launchStatus;
+    /**
+     * 投放开始时间
+     */
+    private Date startTime;
+    /**
+     * 投放结束时间
+     */
+    private Date endTime;
+    /**
+     * 广告位置 A B C D E...  对应advert中的playNum
+     */
+    private String position;
     /**
      * 推广档口ID
      */

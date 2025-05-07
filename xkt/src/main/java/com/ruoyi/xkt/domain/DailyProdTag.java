@@ -1,4 +1,4 @@
-package com.ruoyi.quartz.domain;
+package com.ruoyi.xkt.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 import java.util.Date;
 
 /**
- * 档口每天销售数据统计 daily_sale
+ * 档口商品每天的标签更新 daily_prod_tag
  *
  * @author ruoyi
  * @date 2025-03-26
@@ -20,7 +20,7 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 @Builder
-public class DailyStoreTag extends XktBaseEntity {
+public class DailyProdTag extends XktBaseEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,6 +33,10 @@ public class DailyStoreTag extends XktBaseEntity {
      * 档口ID
      */
     private Long storeId;
+    /**
+     * 档口商品ID
+     */
+    private Long storeProdId;
     /**
      * 标签类型
      */

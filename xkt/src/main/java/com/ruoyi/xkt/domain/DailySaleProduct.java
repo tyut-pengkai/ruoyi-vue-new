@@ -1,17 +1,18 @@
-package com.ruoyi.quartz.domain;
+package com.ruoyi.xkt.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 档口商品每天的标签更新 daily_prod_tag
+ * 档口客户每天销售数据统计 daily_sale_customer
  *
  * @author ruoyi
  * @date 2025-03-26
@@ -19,32 +20,43 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
-@Builder
-public class DailyProdTag extends XktBaseEntity {
+public class DailySaleProduct extends XktBaseEntity {
 
     private static final long serialVersionUID = 1L;
-
     /**
-     * 每日标签统计ID
+     * 档口销售出库ID
      */
     @TableId
     private Long id;
     /**
      * 档口ID
      */
+    @Excel(name = "档口ID")
     private Long storeId;
     /**
      * 档口商品ID
      */
     private Long storeProdId;
     /**
-     * 标签类型
+     * 档口商品货号
      */
-    private Integer type;
+    private String prodArtNum;
     /**
-     * 具体标签
+     * 销售金额
      */
-    private String tag;
+    private BigDecimal saleAmount;
+    /**
+     * 退货金额
+     */
+    private BigDecimal returnAmount;
+    /**
+     * 销售数量
+     */
+    private Integer saleNum;
+    /**
+     * 退货数量
+     */
+    private Integer returnNum;
     /**
      * 统计时间
      */

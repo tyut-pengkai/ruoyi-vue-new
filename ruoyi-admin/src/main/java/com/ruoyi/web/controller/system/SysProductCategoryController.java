@@ -87,6 +87,17 @@ public class SysProductCategoryController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(prodCateService.selectList(BeanUtil.toBean(listVO, ProdCateListDTO.class)), ProdCateListResVO.class));
     }
 
+    /**
+     * 根据1级分类获取二级分类列表
+     */
+//    @PreAuthorize("@ss.hasPermi('system:category:list')")
+    @ApiOperation(value = "根据1级分类获取二级分类列表", httpMethod = "GET", response = R.class)
+    @GetMapping("/sub/{parCateId}")
+    public R<List<ProdCateVO>> getSubList(@PathVariable Long parCateId) {
+        return R.ok(BeanUtil.copyToList(prodCateService.getSubList(parCateId), ProdCateVO.class));
+    }
+
+
 
     /**
      * APP首页获取商品分类
@@ -107,6 +118,8 @@ public class SysProductCategoryController extends XktBaseController {
     public R<List<AppHomeProdCateListResVO>> appCate() {
         return R.ok(BeanUtil.copyToList(prodCateService.appCate(), AppHomeProdCateListResVO.class));
     }
+
+
 
 
 }

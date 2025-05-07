@@ -90,4 +90,10 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      */
     List<ProductESDTO> selectESDTOList(@Param("idList") List<Long> idList);
 
+    /**
+     * 获取风格列表
+     * @return
+     */
+    List<String> getStyleList();
+
 }

@@ -161,6 +161,20 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
                 .map(x -> BeanUtil.toBean(x, AppHomeProdCateListResDTO.class)).collect(Collectors.toList());
     }
 
+    /**
+     * 根据1级分类获取二级分类列表
+     *
+     * @param parCateId 一级分类ID
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProdCateDTO> getSubList(Long parCateId) {
+        List<SysProductCategory> subCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getParentId, parCateId).eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
+        return BeanUtil.copyToList(subCateList, ProdCateDTO.class);
+    }
+
 
     /**
      * 组装商品分类树

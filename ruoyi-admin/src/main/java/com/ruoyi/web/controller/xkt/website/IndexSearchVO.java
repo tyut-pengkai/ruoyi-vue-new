@@ -20,6 +20,8 @@ public class IndexSearchVO extends BasePageVO {
 
     @ApiModelProperty(value = "搜索内容")
     private String search;
+    @ApiModelProperty(value = "商品状态列表")
+    private List<String> prodStatusList;
     @ApiModelProperty(value = "一级类目ID列表")
     private List<String> parCateIdList;
     @ApiModelProperty(value = "二级类目ID列表")

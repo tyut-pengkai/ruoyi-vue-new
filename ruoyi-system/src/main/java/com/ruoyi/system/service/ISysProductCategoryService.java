@@ -68,4 +68,12 @@ public interface ISysProductCategoryService {
      */
     List<AppHomeProdCateListResDTO> appCate();
 
+    /**
+     * 根据1级分类获取二级分类列表
+     *
+     * @param parCateId 一级分类ID
+     * @return
+     */
+    List<ProdCateDTO> getSubList(Long parCateId);
+
 }

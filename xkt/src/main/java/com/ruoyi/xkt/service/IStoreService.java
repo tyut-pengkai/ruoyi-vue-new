@@ -67,4 +67,11 @@ public interface IStoreService {
      */
     StoreApproveResDTO getApproveInfo(Long storeId);
 
+    /**
+     * 获取APP档口基本信息
+     *
+     * @param storeId 档口ID
+     * @return StoreAppResDTO
+     */
+    StoreAppResDTO getAppInfo(Long storeId);
 }

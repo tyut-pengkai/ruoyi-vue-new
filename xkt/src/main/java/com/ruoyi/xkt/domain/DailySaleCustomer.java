@@ -1,4 +1,4 @@
-package com.ruoyi.quartz.domain;
+package com.ruoyi.xkt.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
