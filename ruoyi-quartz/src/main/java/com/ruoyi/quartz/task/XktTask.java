@@ -398,6 +398,13 @@ public class XktTask {
         }
     }
 
+    /**
+     * 每晚11:30更新广告位轮次状态 将biddingTempStatus赋值给biddingStatus
+     */
+    @Transactional
+    public void updateAdvertRoundBiddingStatus() throws ParseException {
+        this.advertRoundService.updateBiddingStatus();
+    }
 
     /**
      * 通过定时任务（每天晚上9:00）往redis中放当前推广位 当前播放轮 或 即将播放轮 的截止时间；
@@ -410,9 +417,22 @@ public class XktTask {
      */
     public void saveAdvertDeadlineToRedis() throws ParseException {
         // 直接调service方法，若当时redis出了问题，也方便第一时间 通过业务流程弥补 两边都有一个补偿机制
-        advertRoundService.saveAdvertDeadlineToRedis();
+        this.advertRoundService.saveAdvertDeadlineToRedis();
     }
 
+    /**
+     * 通过定时任务（每天晚上9:00）将store数据暂存到reidis中
+     */
+    public void saveStoreToRedis() {
+        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
+                .eq(Store::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(storeList)) {
+            return;
+        }
+        storeList.forEach(store -> {
+            redisCache.setCacheObject(store.getId().toString(), store, 90, TimeUnit.MINUTES);
+        });
+    }
 
 
     /**

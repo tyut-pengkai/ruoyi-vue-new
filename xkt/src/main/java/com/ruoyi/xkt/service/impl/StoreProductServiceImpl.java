@@ -13,6 +13,7 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
 import com.ruoyi.system.mapper.SysProductCategoryMapper;
@@ -45,8 +46,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.ruoyi.common.constant.Constants.*;
 
 /**
  * 档口商品Service业务层处理
@@ -72,6 +76,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final StoreMapper storeMapper;
     final EsClientWrapper esClientWrapper;
     final SysProductCategoryMapper prodCateMapper;
+    final UserFavoritesMapper userFavMapper;
+    final DailyProdTagMapper prodTagMapper;
+    final StoreProductStockMapper prodStockMapper;
 
 
     /**
@@ -469,6 +476,116 @@ public class StoreProductServiceImpl implements IStoreProductService {
     }
 
     /**
+     * APP获取档口商品详情
+     *
+     * @param storeProdId 档口商品ID
+     * @return StoreProdAppResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreProdAppResDTO getAppInfo(Long storeProdId) {
+        StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
+                        .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
+        StoreProdAppResDTO appResDTO = BeanUtil.toBean(storeProd, StoreProdAppResDTO.class).setStoreProdId(storeProd.getId());
+        // 档口文件（商品主图、主图视频、下载的商品详情）
+        List<StoreProdFileResDTO> fileResList = this.storeProdFileMapper.selectListByStoreProdId(storeProdId);
+        // 档口类目属性列表
+        List<StoreProdCateAttrDTO> cateAttrList = this.storeProdCateAttrMapper.selectListByStoreProdId(storeProdId);
+        // 档口当前商品颜色列表
+        List<StoreProdColorDTO> colorList = this.storeProdColorMapper.selectListByStoreProdId(storeProdId);
+        // 档口商品颜色尺码列表
+        List<StoreProdColorSizeDTO> sizeList = this.storeProdColorSizeMapper.selectListByStoreProdId(storeProdId);
+        // 档口颜色价格列表
+        List<StoreProdColorPriceDTO> priceList = this.storeProdColorPriceMapper.selectListByStoreProdId(storeProdId);
+        // 档口商品详情
+        StoreProductDetail prodDetail = this.storeProdDetailMapper.selectByStoreProdId(storeProdId);
+        // 档口服务承诺
+        StoreProductService storeProductSvc = this.storeProdSvcMapper.selectByStoreProdId(storeProdId);
+        // 是否已收藏
+        UserFavorites favorite = this.userFavMapper.selectOne(new LambdaQueryWrapper<UserFavorites>()
+                .eq(UserFavorites::getDelFlag, Constants.UNDELETED).eq(UserFavorites::getStoreProdId, storeProdId)
+                .eq(UserFavorites::getUserId, SecurityUtils.getUserId()));
+        // 获取商品标签
+        List<DailyProdTag> tagList = this.prodTagMapper.selectList(new LambdaQueryWrapper<DailyProdTag>()
+                .eq(DailyProdTag::getDelFlag, Constants.UNDELETED).eq(DailyProdTag::getStoreProdId, storeProdId)
+                .orderByAsc(DailyProdTag::getType));
+        return appResDTO.setFileList(fileResList).setCateAttrList(cateAttrList)
+                .setTagList(CollectionUtils.isNotEmpty(tagList) ? tagList.stream().map(DailyProdTag::getTag).distinct().collect(Collectors.toList()) : null)
+                .setCollectProd(ObjectUtils.isNotEmpty(favorite) ? Boolean.TRUE : Boolean.FALSE)
+                .setSpecification(colorList.size() + "色" + sizeList.stream().filter(x -> Objects.equals(x.getStandard(), ProductSizeStatus.STANDARD.getValue())).count() + "码")
+                .setMinPrice(priceList.stream().min(Comparator.comparing(StoreProdColorPriceDTO::getPrice))
+                        .orElseThrow(() -> new ServiceException("获取商品价格失败，请联系客服!", HttpStatus.ERROR)).getPrice())
+                .setDetail(ObjectUtils.isEmpty(prodDetail) ? null : BeanUtil.toBean(prodDetail, StoreProdDetailDTO.class))
+                .setSvc(ObjectUtils.isEmpty(storeProductSvc) ? null : BeanUtil.toBean(storeProductSvc, StoreProdSvcDTO.class));
+    }
+
+    /**
+     * 获取档口商品颜色及sku等
+     *
+     * @param storeProdId 档口商品ID
+     * @return StoreProdSkuResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreProdSkuResDTO getSkuList(Long storeProdId) {
+        StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
+                        .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
+        // 档口商品的sku列表
+        List<StoreProdSkuDTO> prodSkuList = this.storeProdMapper.selectSkuList(storeProdId);
+        if (CollectionUtils.isEmpty(prodSkuList)) {
+            return BeanUtil.toBean(storeProd, StoreProdSkuResDTO.class);
+        }
+        // 获取当前档口商品的sku列表
+        Map<String, Integer> colorSizeStockMap = this.getProdStockList(storeProdId);
+        // 组装所有的档口商品sku
+        List<StoreProdSkuResDTO.SPColorDTO> colorList = prodSkuList.stream().map(x -> BeanUtil.toBean(x, StoreProdSkuResDTO.SPColorDTO.class)).distinct().collect(Collectors.toList());
+        // storeColorId的sku列表
+        Map<Long, List<StoreProdSkuDTO>> colorSizeMap = prodSkuList.stream().collect(Collectors.groupingBy(StoreProdSkuDTO::getStoreColorId));
+        colorList.forEach(color -> {
+            List<StoreProdSkuDTO> sizeList = Optional.ofNullable(colorSizeMap.get(color.getStoreColorId()))
+                    .orElseThrow(() -> new ServiceException("获取商品sku失败，请联系客服!", HttpStatus.ERROR));
+            color.setSizeStockList(sizeList.stream().map(size -> new StoreProdSkuResDTO.SPSizeStockDTO()
+                            .setStoreProdColorSizeId(size.getStoreProdColorSizeId()).setSize(size.getSize()).setStandard(size.getStandard())
+                            .setStock(colorSizeStockMap.get(color.getStoreColorId() + ":" + size.getSize())))
+                    .collect(Collectors.toList()));
+        });
+        return BeanUtil.toBean(storeProd, StoreProdSkuResDTO.class).setStoreProdId(storeProdId).setColorList(colorList);
+    }
+
+    /**
+     * 获取当前商品的sku列表
+     *
+     * @param storeProdId 档口商品ID
+     * @return Map<String, Integer>
+     */
+    private Map<String, Integer> getProdStockList(Long storeProdId) {
+        // 获取当前商品的库存列表
+        List<StoreProductStock> stockList = this.prodStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
+                .eq(StoreProductStock::getStoreProdId, storeProdId).eq(StoreProductStock::getDelFlag, Constants.UNDELETED));
+        // 该商品storeColorId + size的库存maps
+        Map<String, Integer> colorSizeStockMap = new ConcurrentHashMap<>();
+        stockList.stream().collect(Collectors.groupingBy(StoreProductStock::getStoreColorId)).forEach((storeColorId, tempStockList) -> {
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_30, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize30(), 0)).reduce(0, Integer::sum));
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_31, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize31(), 0)).reduce(0, Integer::sum));
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_32, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize32(), 0)).reduce(0, Integer::sum));
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_33, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize33(), 0)).reduce(0, Integer::sum));
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_34, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize34(), 0)).reduce(0, Integer::sum));
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_35, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize35(), 0)).reduce(0, Integer::sum));
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_36, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize36(), 0)).reduce(0, Integer::sum));
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_37, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize37(), 0)).reduce(0, Integer::sum));
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_38, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize38(), 0)).reduce(0, Integer::sum));
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_39, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize39(), 0)).reduce(0, Integer::sum));
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_40, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize40(), 0)).reduce(0, Integer::sum));
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_41, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize41(), 0)).reduce(0, Integer::sum));
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_42, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize42(), 0)).reduce(0, Integer::sum));
+            colorSizeStockMap.put(storeColorId + ":" + SIZE_43, tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize43(), 0)).reduce(0, Integer::sum));
+        });
+        return colorSizeStockMap;
+    }
+
+    /**
      * 处理档口商品属性
      *
      * @param storeProd    档口商品实体
@@ -620,7 +737,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
                     .setParCateId(esDTO.getParCateId()).setParCateName(esDTO.getParCateName()).setProdPrice(esDTO.getProdPrice()).setStoreName(esDTO.getStoreName())
                     .setSeason(esDTO.getSeason()).setStyle(esDTO.getStyle()).setCreateTime(createTime);
             return new BulkOperation.Builder().create(d -> d.document(esProductDTO).id(String.valueOf(x.getId()))
-                            .index(Constants.ES_IDX_PRODUCT_INFO)).build();
+                    .index(Constants.ES_IDX_PRODUCT_INFO)).build();
         }).collect(Collectors.toList());
         // 调用bulk方法执行批量插入操作
         BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));

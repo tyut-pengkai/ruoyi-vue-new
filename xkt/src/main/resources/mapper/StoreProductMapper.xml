@@ -219,4 +219,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           AND del_flag = 0
     </select>
 
+
+    <select id="selectSkuList"  resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdSkuDTO" >
+        SELECT
+            spc.store_prod_id,
+            spc.store_color_id,
+            spc.color_name,
+            spc.order_num,
+            spcp.price,
+            spcs.size,
+            spcs.standard,
+            spcs.id AS store_prod_color_size_id
+        FROM
+            store_product_color spc
+                JOIN store_product_color_price spcp ON spc.store_color_id = spcp.store_color_id
+                AND spc.store_prod_id = spcp.store_prod_id
+                JOIN store_product_color_size spcs ON spc.store_color_id = spcs.store_color_id
+                AND spc.store_prod_id = spcs.store_prod_id
+        WHERE
+            spc.del_flag = 0
+          AND spcs.standard = 1
+          AND spc.store_prod_id = #{storeProdId}
+    </select>
+
+
+
 </mapper>

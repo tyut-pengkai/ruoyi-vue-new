@@ -16,6 +16,7 @@ import com.ruoyi.xkt.enums.AdLaunchStatus;
 import com.ruoyi.xkt.enums.AdRoundType;
 import com.ruoyi.xkt.mapper.AdvertRoundMapper;
 import com.ruoyi.xkt.mapper.AdvertRoundRecordMapper;
+import com.ruoyi.xkt.mapper.StoreMapper;
 import com.ruoyi.xkt.service.IAdvertRoundService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,6 +48,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     final AdvertRoundMapper advertRoundMapper;
     final AdvertRoundRecordMapper advertRoundRecordMapper;
     final RedisCache redisCache;
+    final StoreMapper storeMapper;
 
     // 推广营销位锁 key：symbol + roundId 或者 symbol + roundId + position 。value都是new Object()
     public static Map<String, Object> advertLockMap = new ConcurrentHashMap<>();
@@ -70,9 +72,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 .forEach((typeId, roundList) -> roundList
                         // 初始化  锁资源对象
                         .forEach(round -> advertLockMap.putIfAbsent(round.getSymbol(), new Object())));
-
         System.err.println(advertLockMap);
-
     }
 
     public void  test() {
@@ -80,22 +80,136 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     }
 
 
+    /**
+     * 更新广告位轮次的竞价状态
+     * 此方法主要用于根据当前日期更新广告位轮次的竞价状态，以确保广告投放的正确性
+     * 它首先查询符合条件的广告位轮次，然后根据当前时间与第一轮结束时间的比较，更新相应的竞价状态
+     * 如果当前时间小于第一轮最后一天，则更新第一轮的竞价状态；如果等于第一轮最后一天，则更新第二轮的竞价状态
+     *
+     * @throws ParseException 如果日期解析失败
+     */
+    @Override
+    @Transactional
+    public void updateBiddingStatus() throws ParseException {
+        List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
+                .eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                .in(AdvertRound::getRoundId, Arrays.asList(AdRoundType.PLAY_ROUND.getValue(), AdRoundType.SECOND_ROUND.getValue()))
+                .in(AdvertRound::getLaunchStatus, Arrays.asList(AdLaunchStatus.LAUNCHING.getValue(), AdLaunchStatus.UN_LAUNCH.getValue())));
+        if (CollectionUtils.isEmpty(advertRoundList)) {
+            return;
+        }
+        // 待更新的推广位轮次
+        List<AdvertRound> updateList = new ArrayList<>();
+        // 如果当前时间小于第一轮最后一天则修改第一轮的竞价状态，若等于第一轮最后一天，则更新第二轮的竞价状态
+        final Date now = DateUtils.parseDate(DateUtils.getDate(), DateUtils.YYYY_MM_DD);
+        advertRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getAdvertId))
+                .forEach((advertId, roundList) -> {
+                    // 判断当前时间所处的阶段 小于第一轮播放时间（有可能新广告还未开播）、处于第一轮中间、处于第一轮最后一天
+                    final Date firstRoundEndTime = roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.PLAY_ROUND.getValue()))
+                            .max(Comparator.comparing(AdvertRound::getEndTime))
+                            .orElseThrow(() -> new ServiceException("获取推广结束时间失败，请联系客服!", HttpStatus.ERROR)).getEndTime();
+                    // 判断当前时间是否为第一轮最后一天
+                    if (now.before(firstRoundEndTime)) {
+                        // 将广告位第 一 轮，出价状态从已出价 改为 竞价成功
+                        roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.PLAY_ROUND.getValue()))
+                                // 将出价状态和竞价状态不一致的播放轮次位置 筛选出来
+                                .filter(x -> ObjectUtils.isNotEmpty(x.getBiddingStatus()) && ObjectUtils.isNotEmpty(x.getBiddingTempStatus())
+                                        && !Objects.equals(x.getBiddingStatus(), x.getBiddingTempStatus()))
+                                .forEach(x -> updateList.add(x.setBiddingStatus(x.getBiddingTempStatus())));
+
+                    } else if (now.equals(firstRoundEndTime)) {
+                        // 广告第二轮
+                        List<AdvertRound> secondRoundList = roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.SECOND_ROUND.getValue())).collect(Collectors.toList());
+                        // 有可能广告下线，没有第二轮广告了
+                        if (CollectionUtils.isNotEmpty(secondRoundList)) {
+                            // 将广告位第 二 轮，出价状态从已出价 改为 竞价成功
+                            secondRoundList.stream()
+                                    // 将出价状态和竞价状态不一致的播放轮次位置 筛选出来
+                                    .filter(x -> ObjectUtils.isNotEmpty(x.getBiddingStatus()) && ObjectUtils.isNotEmpty(x.getBiddingTempStatus())
+                                            && !Objects.equals(x.getBiddingStatus(), x.getBiddingTempStatus()))
+                                    .forEach(x -> updateList.add(x.setBiddingStatus(x.getBiddingTempStatus())));
+                        }
+                    }
+                });
+        if (CollectionUtils.isEmpty(updateList)) {
+            return;
+        }
+        this.advertRoundMapper.updateById(updateList);
+    }
+
 
     /**
-     * 获取当前类型下档口的推广营销数据
+     * 根据广告ID获取推广轮次列表，并返回当前档口在这些推广轮次的数据
      *
      * @param storeId 档口ID
-     * @param typeId  推广类型ID
+     * @param advertId  推广ID
+     * @param typeId 类型ID
+     * @return AdRoundPlayStoreResDTO
+     */
+
+    /**
+     * 根据广告ID获取推广轮次列表，并返回当前档口在这些推广轮次的数据
+     *
+     * @param storeId  档口ID
+     * @param advertId 广告ID
+     * @param typeId
      * @return AdRoundPlayStoreResDTO
      */
     @Override
     @Transactional(readOnly = true)
-    public AdRoundStoreResDTO getStoreAdInfo(Long storeId, Integer typeId) {
-        // 先获取所有 投放中 待投放的营销推广
+    public AdRoundStoreResDTO getStoreAdInfo(final Long storeId,final Long advertId,final Integer typeId) {
+        // 获取当前 正在播放 和 待播放的推广轮次
+        List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
+                .eq(AdvertRound::getAdvertId, advertId)
+                .eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                .in(AdvertRound::getLaunchStatus, Arrays.asList(AdLaunchStatus.LAUNCHING.getValue(), AdLaunchStatus.UN_LAUNCH.getValue())));
+        if (CollectionUtils.isEmpty(advertRoundList)) {
+            return AdRoundStoreResDTO.builder().build();
+        }
+
+        // 如果投放类型是：时间范围，则只需要返回每一轮的开始时间和结束时间；如果投放类型是：位置枚举，则需要返回每一个位置的详细情况
+        if (!Constants.posEnumTypeList.contains(typeId)) {
+            List<AdRoundStoreResDTO.ADRSRoundTimeRangeDTO> rangeList = new ArrayList<>();
+            // 提取每一轮的广告数据
+            Map<Integer, List<AdvertRound>> roundMap = advertRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getRoundId));
+            roundMap.forEach((roundId, roundList) -> {
+                AdvertRound targetRound = roundList.stream().filter(x -> Objects.equals(x.getStoreId(), storeId)).findFirst().orElse(null);
+
+                final AdvertRound curRound = roundList.get(0);
+                AdRoundStoreResDTO.ADRSRoundTimeRangeDTO roundDTO = AdRoundStoreResDTO.ADRSRoundTimeRangeDTO.builder()
+                        .roundId(roundId).advertId(advertId).symbol(curRound.getSymbol()).typeId(typeId).build();
+                // 判断当前轮是否有该档口竞价的数据
+                if (roundList.stream().anyMatch(x -> Objects.equals(x.getStoreId(), storeId))) {
+//                    roundDTO.setStoreId(storeId).setBiddingStatus(0)
+
+                }
+            });
+        } else {
+            // 位置枚举
+        }
+
+
+
+
+
+        // 根据广告ID获取所有推广轮次列表，如果有其他档口的数据则 需要过滤
+
+        // 这里要返回两个部分的数据 1. 左边的档口广告列表  2. 右边的已购推广位竞价结果
+
+        // 如果左边某个推广位竞价失败，则失败的当天展示；第二天该推广位就不再展示竞价失败 字样了。但是右边的“已订购推广列表”，一直展示知道该推广位播放完毕
+
+        // 当天不是第一轮最后一天，类型位：时间范围，则显示前4轮推广位；类型为：位置枚举，则显示前1轮。是最后一天，类型为：时间范围，显示第2轮到第4轮；类型为：位置枚举，则显示第二轮
+
+
+
+
+
+
         // 再判断当前当前与每一轮推广营销中的关系，已出价、竞价失败、竞价成功等
 
         return null;
     }
+
 
     /**
      * 档口购买推广营销
@@ -115,26 +229,29 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Override
     @Transactional
     public Integer create(AdRoundStoreCreateDTO createDTO) {
-
         // 截止时间都是当天 22:00:00，并且只会处理马上播放的这一轮。比如 5.1-5.3，当前为4.30，处理这一轮；当前为5.2，处理这一轮；当前为5.3（最后一天），处理下一轮。
         if (DateUtils.getTime().compareTo(this.getDeadline(createDTO.getSymbol())) > 0) {
             throw new ServiceException("竞价结束，已经有档口出价更高了噢!", HttpStatus.ERROR);
         }
-
-        // 校验position位置是否必传
-        this.isPositionRequired(createDTO);
-
-        // 判断当前推广位的这一轮每个档口可以买几个，不可超买
-        boolean isOverBuy = this.advertRoundMapper.isStallOverBuy(createDTO.getAdvertId(), createDTO.getRoundId(), createDTO.getStoreId(), createDTO.getPosition());
-        if (isOverBuy) {
-            throw new ServiceException("已购买过该推广位，不可超买哦!", HttpStatus.ERROR);
+        if (StringUtils.isEmpty(redisCache.getCacheObject(createDTO.getStoreId().toString()))) {
+            throw new ServiceException("档口不存在!", HttpStatus.ERROR);
         }
-
-
+        // 如果是位置枚举的推广位，则需要传position
+        if (Constants.posEnumTypeList.contains(createDTO.getTypeId()) && StringUtils.isEmpty(createDTO.getPosition())) {
+            throw new ServiceException("当前推广类型position：必传!", HttpStatus.ERROR);
+        }
+        // 如果是时间范围的推广位，则不需要传position
+        if (!Constants.posEnumTypeList.contains(createDTO.getTypeId()) && StringUtils.isNotBlank(createDTO.getPosition())) {
+            throw new ServiceException("当前推广类型position：不传!", HttpStatus.ERROR);
+        }
         // 当前营销推广位的锁
         Object lockObj = Optional.ofNullable(advertLockMap.get(createDTO.getSymbol())).orElseThrow(() -> new ServiceException("symbol不存在!", HttpStatus.ERROR));
-        // 锁当前推广营销位
         synchronized (lockObj) {
+            // 判断当前推广位的这一轮每个档口可以买几个，不可超买
+            boolean isOverBuy = this.advertRoundMapper.isStallOverBuy(createDTO.getAdvertId(), createDTO.getRoundId(), createDTO.getStoreId(), createDTO.getPosition());
+            if (isOverBuy) {
+                throw new ServiceException("已购买过该推广位，不可超买哦!", HttpStatus.ERROR);
+            }
             LambdaQueryWrapper<AdvertRound> queryWrapper = new LambdaQueryWrapper<AdvertRound>()
                     .eq(AdvertRound::getAdvertId, createDTO.getAdvertId()).eq(AdvertRound::getRoundId, createDTO.getRoundId())
                     .eq(AdvertRound::getDelFlag, Constants.UNDELETED).orderByAsc(AdvertRound::getPayPrice).last("LIMIT 1");
@@ -219,19 +336,6 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 });
     }
 
-    /**
-     * 判断当前类型position是否必传
-     * @param createDTO 购买广告位入参
-     */
-    private void isPositionRequired(AdRoundStoreCreateDTO createDTO) {
-        // 如果是位置枚举的推广位，则需要传position
-        if (Constants.posEnumTypeList.contains(createDTO.getTypeId()) && StringUtils.isEmpty(createDTO.getPosition())) {
-            throw new ServiceException("当前推广类型position：必传!", HttpStatus.ERROR);
-        }
-        if (!Constants.posEnumTypeList.contains(createDTO.getTypeId()) && StringUtils.isNotBlank(createDTO.getPosition())) {
-            throw new ServiceException("当前推广类型position：不传!", HttpStatus.ERROR);
-        }
-    }
 
     /**
      * 获取当前推广轮次的过期时间
@@ -242,10 +346,6 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         final String deadline = redisCache.getCacheObject(symbol);
         return StringUtils.isNotBlank(deadline) ? deadline : "";
     }
-
-    // TODO 在每晚11:30起定时任务，重新梳理，每个广告位的大小顺序
-    // TODO 在每晚11:30起定时任务，重新梳理，每个广告位的大小顺序
-
 
     /**
      * 记录竞价失败档口推广营销
@@ -260,10 +360,5 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         record.setBiddingStatus(AdBiddingStatus.BIDDING_FAIL.getValue());
         this.advertRoundRecordMapper.insert(record);
     }
-
-
-    // TODO 新增档口广告购买时，需要加锁，一定要锁住
-    // TODO 新增档口广告购买时，需要加锁，一定要锁住
-    // TODO 新增档口广告购买时，需要加锁，一定要锁住
 
 }

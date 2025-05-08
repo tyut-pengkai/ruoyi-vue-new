@@ -50,4 +50,13 @@ public interface IShoppingCartService {
      * @return
      */
     Integer delete(Long shoppingCartId);
+
+    /**
+     * 根据storeProdid获取进货车详情
+     *
+     * @param storeProdId 商品ID
+     * @return ShoppingCartDTO
+     */
+    ShoppingCartDTO getByStoreProdId(Long storeProdId);
+    
 }

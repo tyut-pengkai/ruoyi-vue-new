@@ -43,14 +43,16 @@ public class AdvertRoundController extends XktBaseController {
 
 
     /**
-     * 根据类型查询当前档口的推广营销数据
+     * 根据广告ID获取推广轮次列表，并返回当前档口在这些推广轮次的数据
      */
-    @ApiOperation(value = "根据类型查询当前档口的推广营销数据", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/{typeId}/{storeId}")
-    public R<AdRoundStoreResVO> getStoreAdInfo(@PathVariable("typeId") Integer typeId,
+    @ApiOperation(value = "根据广告ID获取推广轮次列表，并返回当前档口在这些推广轮次的数据", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/{advertId}/{storeId}/{typeId}")
+    public R<AdRoundStoreResVO> getStoreAdInfo(@PathVariable("advertId") Long advertId,
+                                               @PathVariable("typeId") Integer typeId,
                                                @PathVariable("storeId") Long storeId) {
-        return R.ok(BeanUtil.toBean(advertRoundService.getStoreAdInfo(storeId, typeId), AdRoundStoreResVO.class));
+        return R.ok(BeanUtil.toBean(advertRoundService.getStoreAdInfo(storeId, advertId, typeId), AdRoundStoreResVO.class));
     }
+
 
 
     @GetMapping("/test")
@@ -62,16 +64,10 @@ public class AdvertRoundController extends XktBaseController {
 
     // TODO 退订
 
-    // TODO 每晚定时任务 调整 推广营销的offerStatus
-
 
 
     // TODO 获取最受欢迎推广位8个，固定不动了
     // TODO 获取最受欢迎推广位8个，固定不动了
-
-
-
-
 
 
 

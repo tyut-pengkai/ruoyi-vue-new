@@ -89,17 +89,6 @@ public class StoreProdResVO {
     }
 
     @Data
-    @ApiModel(value = "档口商品颜色尺码")
-    public static class StoreProdColorSizeVO {
-        @ApiModelProperty(value = "档口颜色ID")
-        private Long storeColorId;
-        @ApiModelProperty(value = "商品尺码")
-        private Integer size;
-        @ApiModelProperty(value = "是否是标准尺码 1是 2不是")
-        private Integer standard;
-    }
-
-    @Data
     @ApiModel(value = "档口商品颜色价格")
     public static class StoreProdColorPriceVO {
         @ApiModelProperty(value = "档口商品颜色ID")

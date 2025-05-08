@@ -100,7 +100,24 @@ public interface IStoreProductService {
 
     /**
      * 获取商品所有的风格
+     *
      * @return
      */
     List<String> getStyleList();
+
+    /**
+     * APP获取档口商品详情
+     *
+     * @param storeProdId 档口商品ID
+     * @return StoreProdAppResDTO
+     */
+    StoreProdAppResDTO getAppInfo(Long storeProdId);
+
+    /**
+     * 获取档口商品颜色及sku等
+     *
+     * @param storeProdId 档口商品ID
+     * @return StoreProdSkuResDTO
+     */
+    StoreProdSkuResDTO getSkuList(Long storeProdId);
 }

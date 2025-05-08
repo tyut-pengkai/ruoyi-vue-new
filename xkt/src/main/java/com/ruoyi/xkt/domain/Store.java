@@ -43,6 +43,11 @@ public class Store extends XktBaseEntity {
     private String storeName;
 
     /**
+     * 档口LOGO
+     */
+    private String storeLogo;
+
+    /**
      * 品牌名称
      */
     @Excel(name = "品牌名称")

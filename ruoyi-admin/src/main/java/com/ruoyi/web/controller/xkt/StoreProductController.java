@@ -92,9 +92,27 @@ public class StoreProductController extends XktBaseController {
     }
 
     /**
+     * APP获取档口商品详细信息
+     */
+    @ApiOperation(value = "APP获取档口商品详细信息", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/app/detail/{storeProdId}")
+    public R<StoreProdAppResVO> getAppInfo(@PathVariable("storeProdId") Long storeProdId) {
+        return R.ok(BeanUtil.toBean(storeProdService.getAppInfo(storeProdId), StoreProdAppResVO.class));
+    }
+
+
+    /**
+     * 获取档口商品颜色及sku等
+     */
+    @ApiOperation(value = "获取档口商品颜色及sku等", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/sku/{storeProdId}")
+    public R<StoreProdSkuResVO> getSkuList(@PathVariable("storeProdId") Long storeProdId) {
+        return R.ok(BeanUtil.toBean(storeProdService.getSkuList(storeProdId), StoreProdSkuResVO.class));
+    }
+
+    /**
      * 新增档口商品
      */
-//    @PreAuthorize("@ss.hasPermi('system:product:add')")
     @Log(title = "档口商品", businessType = BusinessType.INSERT)
     @ApiOperation(value = "新增档口商品", httpMethod = "POST", response = R.class)
     @PostMapping

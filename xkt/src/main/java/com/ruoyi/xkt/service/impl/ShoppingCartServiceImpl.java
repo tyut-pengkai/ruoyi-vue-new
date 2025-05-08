@@ -248,6 +248,25 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     }
 
     /**
+     * 根据storeProdid获取进货车详情
+     *
+     * @param storeProdId 商品ID
+     * @return ShoppingCartDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ShoppingCartDTO getByStoreProdId(Long storeProdId) {
+        ShoppingCart shoppingCart = this.shopCartMapper.selectOne(new LambdaQueryWrapper<ShoppingCart>()
+                .eq(ShoppingCart::getStoreProdId, storeProdId).eq(ShoppingCart::getDelFlag, Constants.UNDELETED)
+                .eq(ShoppingCart::getUserId, SecurityUtils.getUserId()));
+        List<ShoppingCartDetail> detailList = this.shopCartDetailMapper.selectList(new LambdaQueryWrapper<ShoppingCartDetail>()
+                .eq(ShoppingCartDetail::getShoppingCartId, shoppingCart.getId())
+                .eq(ShoppingCartDetail::getDelFlag, Constants.UNDELETED));
+        return BeanUtil.toBean(shoppingCart, ShoppingCartDTO.class)
+                .setDetailList(BeanUtil.copyToList(detailList, ShoppingCartDTO.SCDetailDTO.class));
+    }
+
+    /**
      * 获取档口商品颜色尺码的库存
      *
      * @param stockList        库存数量

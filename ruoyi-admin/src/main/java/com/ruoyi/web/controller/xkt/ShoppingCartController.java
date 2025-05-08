@@ -6,10 +6,7 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.web.controller.xkt.vo.userShoppingCart.ShopCartDetailResVO;
-import com.ruoyi.web.controller.xkt.vo.userShoppingCart.ShopCartEditVO;
-import com.ruoyi.web.controller.xkt.vo.userShoppingCart.ShopCartPageVO;
-import com.ruoyi.web.controller.xkt.vo.userShoppingCart.ShopCartVO;
+import com.ruoyi.web.controller.xkt.vo.userShoppingCart.*;
 import com.ruoyi.xkt.dto.userShoppingCart.ShopCartPageDTO;
 import com.ruoyi.xkt.dto.userShoppingCart.ShopCartPageResDTO;
 import com.ruoyi.xkt.dto.userShoppingCart.ShoppingCartDTO;
@@ -69,13 +66,22 @@ public class ShoppingCartController extends XktBaseController {
     }
 
     /**
-     * 用户进货车列表点击编辑
+     * 用户进货车列表点击编辑获取数据
      */
     @PreAuthorize("@ss.hasPermi('system:cart:list')")
-    @ApiOperation(value = "用户进货车列表点击编辑", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "用户进货车列表点击编辑获取数据", httpMethod = "GET", response = R.class)
     @GetMapping("/{shoppingCartId}")
     public R<ShopCartDetailResVO> getInfo(@PathVariable Long shoppingCartId) {
         return R.ok(BeanUtil.toBean(shopCartService.getInfo(shoppingCartId), ShopCartDetailResVO.class));
+    }
+
+    /**
+     * 根据storeProdId获取进货车详情
+     */
+    @ApiOperation(value = "根据storeProdId获取进货车详情", httpMethod = "GET", response = R.class)
+    @GetMapping("/storeProdId/{storeProdId}")
+    public R<ShopCartResVO> getByStoreProdId(@PathVariable Long storeProdId) {
+        return R.ok(BeanUtil.toBean(shopCartService.getByStoreProdId(storeProdId), ShopCartResVO.class));
     }
 
 
@@ -89,6 +95,7 @@ public class ShoppingCartController extends XktBaseController {
     public R<Integer> remove(@PathVariable Long shoppingCartId) {
         return R.ok(shopCartService.delete(shoppingCartId));
     }
+
 
 
 }

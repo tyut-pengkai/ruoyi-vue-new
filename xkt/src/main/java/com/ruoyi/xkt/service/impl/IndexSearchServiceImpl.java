@@ -77,6 +77,10 @@ public class IndexSearchServiceImpl implements IIndexSearchService {
             );
             boolQuery.must(multiMatchQuery._toQuery());
         }
+        // 档口ID 过滤条件
+        if (ObjectUtils.isNotEmpty(searchDTO.getStoreId())) {
+            boolQuery.filter(f -> f.term(t -> t.field("storeId").value(searchDTO.getStoreId())));
+        }
         // 添加prodStatus 过滤条件
         if (CollectionUtils.isNotEmpty(searchDTO.getProdStatusList())) {
             TermsQueryField termsQueryField = new TermsQueryField.Builder()

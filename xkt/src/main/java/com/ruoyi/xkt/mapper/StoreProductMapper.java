@@ -5,6 +5,7 @@ import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeHomepage.StoreHomeResDTO;
 import com.ruoyi.xkt.dto.storeProduct.ProductESDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdFuzzyResPicDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdSkuDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -96,4 +97,12 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      */
     List<String> getStyleList();
 
+    /**
+     * 获取档口商品的sku列表
+     * @param storeProdId 档口商品ID
+     * @return  List<StoreProdSkuDTO>
+     */
+    List<StoreProdSkuDTO> selectSkuList(Long storeProdId);
+
 }
+

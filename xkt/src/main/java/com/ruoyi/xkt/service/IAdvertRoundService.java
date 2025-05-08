@@ -14,13 +14,14 @@ import java.text.ParseException;
 public interface IAdvertRoundService {
 
     /**
-     * 获取当前类型下档口的推广营销数据
+     * 根据广告ID获取推广轮次列表，并返回当前档口在这些推广轮次的数据
      *
      * @param storeId 档口ID
-     * @param typeId  推广类型ID
+     * @param advertId  广告ID
+     * @param typeId
      * @return AdRoundPlayStoreResDTO
      */
-    AdRoundStoreResDTO getStoreAdInfo(Long storeId, Integer typeId);
+    AdRoundStoreResDTO getStoreAdInfo(Long storeId, Long advertId, Integer typeId);
 
     /**
      * 档口购买推广营销
@@ -44,4 +45,5 @@ public interface IAdvertRoundService {
 
     void test();
 
+    void updateBiddingStatus() throws ParseException;
 }

@@ -17,58 +17,23 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface StoreProductColorMapper extends BaseMapper<StoreProductColor> {
-    /**
-     * 查询档口当前商品颜色
-     *
-     * @param id 档口当前商品颜色主键
-     * @return 档口当前商品颜色
-     */
-    public StoreProductColor selectStoreProductColorByStoreProdColorId(Long id);
-
-    /**
-     * 查询档口当前商品颜色列表
-     *
-     * @param storeProductColor 档口当前商品颜色
-     * @return 档口当前商品颜色集合
-     */
-    public List<StoreProductColor> selectStoreProductColorList(StoreProductColor storeProductColor);
-
-    /**
-     * 新增档口当前商品颜色
-     *
-     * @param storeProductColor 档口当前商品颜色
-     * @return 结果
-     */
-    public int insertStoreProductColor(StoreProductColor storeProductColor);
-
-    /**
-     * 修改档口当前商品颜色
-     *
-     * @param storeProductColor 档口当前商品颜色
-     * @return 结果
-     */
-    public int updateStoreProductColor(StoreProductColor storeProductColor);
-
-    /**
-     * 删除档口当前商品颜色
-     *
-     * @param id 档口当前商品颜色主键
-     * @return 结果
-     */
-    public int deleteStoreProductColorByStoreProdColorId(Long id);
-
-    /**
-     * 批量删除档口当前商品颜色
-     *
-     * @param storeProdColorIds 需要删除的数据主键集合
-     * @return 结果
-     */
-    public int deleteStoreProductColorByStoreProdColorIds(Long[] storeProdColorIds);
 
     void updateDelFlagByStoreProdId(Long storeProdId);
 
+    /**
+     * 获取档口商品列表
+     *
+     * @param storeProdId 档口商品ID
+     * @return List<StoreProdColorDTO>
+     */
     List<StoreProdColorDTO> selectListByStoreProdId(Long storeProdId);
 
+    /**
+     * 获取档口商品颜色列表
+     *
+     * @param pageDTO 入参
+     * @return
+     */
     List<StoreProdPageResDTO> selectStoreProdColorPage(StoreProdPageDTO pageDTO);
 
     /**

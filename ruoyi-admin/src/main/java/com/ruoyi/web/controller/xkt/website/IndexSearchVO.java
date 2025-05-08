@@ -18,6 +18,8 @@ import java.util.List;
 @Data
 public class IndexSearchVO extends BasePageVO {
 
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
     @ApiModelProperty(value = "搜索内容")
     private String search;
     @ApiModelProperty(value = "商品状态列表")

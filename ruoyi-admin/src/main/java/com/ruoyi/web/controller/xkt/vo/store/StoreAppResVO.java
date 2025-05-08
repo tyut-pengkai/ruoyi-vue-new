@@ -15,6 +15,8 @@ import java.util.List;
 @Data
 public class StoreAppResVO {
 
+    @ApiModelProperty(value = "档口头像")
+    private String storeLogo;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "档口名称")
