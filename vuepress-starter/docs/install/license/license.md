@@ -15,10 +15,12 @@
 5. 授权有效期内可随意更换访问端口及域名，无需重新授权。  
 :::
 
-
 ## 一、购买授权
 购买请访问商城：[https://shop.coordsoft.com/](https://shop.coordsoft.com/)  
-购买成功后系统将会自动弹出授权码
+购买成功后系统将会自动弹出授权码  
+:::tip
+如果系统未及时弹出授权码，请尝试等待5分钟后，尝试[查询订单](https://shop.coordsoft.com/queryOrder)  
+:::
 
 ## 二、激活授权
-购买授权码后点击 [激活授权](https://shop.coordsoft.com/getLicense) 根据网站指引为您的网站进行授权
+购买授权码后点击 [激活授权](https://shop.coordsoft.com/getLicense) 根据网站指引为您的网站进行授权  

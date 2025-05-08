@@ -61,7 +61,7 @@ Mysql、Redis、Nginx这三个软件可以在宝塔面板软件商店里直接�
 将`upload`文件夹的内容上传到服务器，此处上传到`/opt/app/hywlyz`目录为例，后文中出现的此路径均应修改为您使用的路径（建议您使用此路径，后续文中需修改安装路径的指令可无需修改直接复制粘贴）
 
 ### 2、修改配置文件
-#### （1）修改数据库连接
+#### （1）修改数据库密码
 编辑`application-config.yml`，将`数据库密码`更改为您的数据库密码，此处请注意`jdbc:mysql://127.0.0.1:3306/hywlyz?useUnicode=`中的`hywlyz`为数据库名，若与您不一致请注意修改
 
 ```{6-8}
@@ -74,7 +74,10 @@ Mysql、Redis、Nginx这三个软件可以在宝塔面板软件商店里直接�
         username: hywlyz
         password: <数据库密码>
 ```
-
+#### （2）修改Redis密码
+::: tip
+如果您是刚安装的Redis，默认是没有密码的，此处无需修改，请忽略此步骤
+:::
 如果配置了Redis数据库密码，需要将`Redis密码`处更改为您的密码（如果您未配置过Redis密码，默认密码为空，此处无需修改）
 ```{8}
 # redis 配置
@@ -124,31 +127,47 @@ location /profile/ {
 ```
 cd /opt/app/hywlyz && chmod 755 bin/hy && sh hy.sh restart && tail -f nohup.out
 ```
+::: tip
+更多指令：  
+启动：`sh hy.sh start`  
+停止：`sh hy.sh stop`  
+重启：`sh hy.sh restart`  
+查看状态：`sh hy.sh status`  
+查看日志：`tail -f nohup.out`  
+:::
 
 如果出现以下提示代表启动成功
 ![image](./4.jpg)
 
 :::tip
-请记录此处提示的`机器码`，需要凭此码获取授权信息
+`设备码`为您服务器的唯一标识，若果您是内网环境搭建，需要凭此码获取授权信息（未获得授权时在管理员登录页尝试登录也会弹出此设备码）
+![image](./11.jpg)
 :::
 
 此时即可通过您的域名尝试访问网站`http://域名/admin`，默认管理员账号密码为：admin/admin123，如果登录时提示未授权说明部署成功，如果提示后端连接异常，请检查上述步骤，并重新启动后端程序
 
 ## 三、设置开机启动
-登入宝塔后台，打开`计划任务`页面，任务类型选择`Shell脚本`，任务名称可随意设置，执行周期选择`N分钟`-`1分钟`，脚本内容如下：  
+服务器终端中输入以下命令将红叶安装为系统服务即可（注意其中的/opt/app/hywlyz使用自己的实际路径） 
+```
+cd /opt/app/hywlyz && chmod 755 bin/hy && sh hy.sh install
+```
+
+如下图所示，提示：`Service installed and started successfully`代表安装成功，重启服务器后红叶服务将自动启动
 ![image](./9.jpg)
 
-```shell{6}
-# 脚本代码（注意其中的/opt/app/hywlyz使用自己的实际路径）
+::: tip
+将红叶成功安装为系统服务后，您可以使用系统服务来管理红叶服务，具体指令为：  
+启动：`systemctl start hywlyz`  
+停止：`systemctl stop hywlyz`  
+重启：`systemctl restart hywlyz`  
+查看状态：`systemctl status hywlyz`  
+删除：`systemctl disable hywlyz`  
 
-pid=`ps -ef|grep hywlyz-.*-release.jar|grep -v grep|awk '{print $2}' `
-# 如果不存在返回1，存在返回0 
-if [ -z "${pid}" ]; then
- cd /opt/app/hywlyz && sh hy.sh start
-else
- echo "hywlyz is already running. pid=${pid} ."
-fi
+卸载红叶服务指令为（注意其中的/opt/app/hywlyz使用自己的实际路径）
 ```
+cd /opt/app/hywlyz && chmod 755 bin/hy && sh hy.sh uninstall
+```
+:::
 
 ## 四、购买授权
 购买请访问商城：[https://shop.coordsoft.com/](https://shop.coordsoft.com/)
