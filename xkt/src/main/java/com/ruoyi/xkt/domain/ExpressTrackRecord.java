@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 /**
- * 代发订单物流轨迹
+ * 物流轨迹
  *
  * @author liangyq
  * @date 2025-04-01 11:57:52.599
@@ -14,15 +14,15 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class StoreOrderExpressTrack extends SimpleEntity {
+public class ExpressTrackRecord extends SimpleEntity {
     /**
-     * 订单ID
+     * 物流运单号
      */
-    private Long storeOrderId;
+    private String expressWaybillNo;
     /**
-     * 订单明细ID
+     * 物流ID
      */
-    private Long storeOrderIdDetailId;
+    private Long expressId;
     /**
      * 排序
      */

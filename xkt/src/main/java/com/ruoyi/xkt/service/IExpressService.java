@@ -3,10 +3,7 @@ package com.ruoyi.xkt.service;
 import com.ruoyi.xkt.domain.Express;
 import com.ruoyi.xkt.domain.ExpressFeeConfig;
 import com.ruoyi.xkt.domain.ExpressRegion;
-import com.ruoyi.xkt.dto.express.ExpressContactDTO;
-import com.ruoyi.xkt.dto.express.ExpressRegionDTO;
-import com.ruoyi.xkt.dto.express.ExpressRegionTreeNodeDTO;
-import com.ruoyi.xkt.dto.express.ExpressStructAddressDTO;
+import com.ruoyi.xkt.dto.express.*;
 import com.ruoyi.xkt.manager.ExpressManager;
 
 import java.util.Collection;
@@ -98,5 +95,26 @@ public interface IExpressService {
      */
     ExpressManager getExpressManager(Long expressId);
 
+    /**
+     * 添加轨迹记录
+     *
+     * @param addDTO
+     * @return
+     */
+    Long addTrackRecord(ExpressTrackRecordAddDTO addDTO);
 
+    /**
+     * 获取所有物流名称
+     *
+     * @return
+     */
+    Map<Long, String> getAllExpressNameMap();
+
+    /**
+     * 获取轨迹记录
+     *
+     * @param expressWaybillNos
+     * @return
+     */
+    List<ExpressTrackRecordDTO> listTrackRecord(Collection<String> expressWaybillNos);
 }

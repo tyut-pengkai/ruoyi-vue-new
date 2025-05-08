@@ -2,7 +2,10 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.Express;
+import com.ruoyi.xkt.dto.express.ExpressNameDTO;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author liangyq
@@ -10,4 +13,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ExpressMapper extends BaseMapper<Express> {
+
+    List<ExpressNameDTO> listAllExpressName();
+
 }

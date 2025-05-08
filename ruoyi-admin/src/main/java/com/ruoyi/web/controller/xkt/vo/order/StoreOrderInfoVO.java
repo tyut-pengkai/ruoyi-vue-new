@@ -245,6 +245,9 @@ public class StoreOrderInfoVO {
     @ApiModelProperty(value = "订单明细")
     private List<Detail> orderDetails;
 
+    @ApiModelProperty(value = "轨迹信息")
+    private List<Track> expressTracks;
+
 
     @ApiModel
     @Data
@@ -407,6 +410,40 @@ public class StoreOrderInfoVO {
         @ApiModelProperty(value = "退货商品数量")
         private Integer refundGoodsQuantity;
 
+    }
+
+    @ApiModel
+    @Data
+    public static class Track {
+
+        @ApiModelProperty(value = "物流运单号（快递单号）")
+        private String expressWaybillNo;
+
+        @ApiModelProperty(value = "物流ID")
+        private Long expressId;
+
+        @ApiModelProperty(value = "物流名称")
+        private String expressName;
+
+        @ApiModelProperty(value = "记录")
+        private List<Record> records;
+
+        @ApiModel
+        @Data
+        public static class Record {
+
+            @ApiModelProperty(value = "节点事件")
+            private String action;
+
+            @ApiModelProperty(value = "描述")
+            private String description;
+
+            @ApiModelProperty(value = "备注")
+            private String remark;
+
+            @ApiModelProperty(value = "创建时间")
+            private Date createTime;
+        }
     }
 
 }

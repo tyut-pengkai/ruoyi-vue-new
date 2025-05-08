@@ -8,17 +8,12 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
-import com.ruoyi.xkt.domain.Express;
-import com.ruoyi.xkt.domain.ExpressFeeConfig;
-import com.ruoyi.xkt.domain.ExpressRegion;
-import com.ruoyi.xkt.domain.Store;
-import com.ruoyi.xkt.dto.express.ExpressContactDTO;
-import com.ruoyi.xkt.dto.express.ExpressRegionDTO;
-import com.ruoyi.xkt.dto.express.ExpressRegionTreeNodeDTO;
-import com.ruoyi.xkt.dto.express.ExpressStructAddressDTO;
+import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.dto.express.*;
 import com.ruoyi.xkt.manager.ExpressManager;
 import com.ruoyi.xkt.manager.impl.ZtoExpressManagerImpl;
 import com.ruoyi.xkt.mapper.*;
@@ -26,6 +21,7 @@ import com.ruoyi.xkt.service.IExpressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,7 +49,7 @@ public class ExpressServiceImpl implements IExpressService {
     @Autowired
     private ExpressFeeConfigMapper expressFeeConfigMapper;
     @Autowired
-    private StoreOrderExpressTrackMapper storeOrderExpressTrackMapper;
+    private ExpressTrackRecordMapper expressTrackRecordMapper;
     @Autowired
     private ExpressRegionMapper expressRegionMapper;
     @Autowired
@@ -227,5 +223,43 @@ public class ExpressServiceImpl implements IExpressService {
             }
         }
         throw new ServiceException("未知物流渠道" + expressId);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Long addTrackRecord(ExpressTrackRecordAddDTO addDTO) {
+        Assert.notNull(addDTO);
+        Assert.notEmpty(addDTO.getExpressWaybillNo());
+        ExpressTrackRecord expressTrackRecord = new ExpressTrackRecord();
+        expressTrackRecord.setExpressId(addDTO.getExpressId());
+        expressTrackRecord.setExpressWaybillNo(addDTO.getExpressWaybillNo());
+        expressTrackRecord.setSort(addDTO.getSort());
+        expressTrackRecord.setAction(addDTO.getAction());
+        expressTrackRecord.setDescription(addDTO.getDescription());
+        expressTrackRecord.setRemark(addDTO.getRemark());
+        expressTrackRecord.setDelFlag(Constants.UNDELETED);
+        expressTrackRecordMapper.insert(expressTrackRecord);
+        return expressTrackRecord.getId();
+    }
+
+    @Override
+    public Map<Long, String> getAllExpressNameMap() {
+        List<ExpressNameDTO> expressNames = expressMapper.listAllExpressName();
+        return expressNames.stream().collect(Collectors.toMap(ExpressNameDTO::getId,
+                ExpressNameDTO::getExpressName));
+    }
+
+    @Override
+    public List<ExpressTrackRecordDTO> listTrackRecord(Collection<String> expressWaybillNos) {
+        if (CollUtil.isEmpty(expressWaybillNos)) {
+            return ListUtil.empty();
+        }
+        List<ExpressTrackRecord> expressTrackRecords = expressTrackRecordMapper.selectList(
+                Wrappers.lambdaQuery(ExpressTrackRecord.class)
+                        .in(ExpressTrackRecord::getExpressWaybillNo, expressWaybillNos)
+                        .eq(SimpleEntity::getDelFlag, Constants.UNDELETED)
+//                        .orderByAsc(SimpleEntity::getCreateTime)
+        );
+        return BeanUtil.copyToList(expressTrackRecords, ExpressTrackRecordDTO.class);
     }
 }

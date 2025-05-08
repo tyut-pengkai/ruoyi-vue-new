@@ -52,8 +52,6 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Autowired
     private StoreOrderDetailMapper storeOrderDetailMapper;
     @Autowired
-    private StoreOrderExpressTrackMapper storeOrderExpressTrackMapper;
-    @Autowired
     private StoreMapper storeMapper;
     @Autowired
     private StoreProductMapper storeProductMapper;
@@ -365,8 +363,26 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderInfo.setBrandName(store.getBrandName());
         }
         //物流信息
-        Express express = expressService.getById(order.getExpressId());
-        orderInfo.setExpressName(Optional.ofNullable(express).map(Express::getExpressName).orElse(null));
+        Map<Long, String> expressNameMap = expressService.getAllExpressNameMap();
+        orderInfo.setExpressName(expressNameMap.get(order.getExpressId()));
+        Set<String> expressWaybillNos = detailInfos.stream()
+                .filter(o -> StrUtil.isNotEmpty(o.getExpressWaybillNo()))
+                .map(StoreOrderDetailDTO::getExpressWaybillNo)
+                .collect(Collectors.toSet());
+        Map<String, List<ExpressTrackRecordDTO>> trackRecordGroupMap = expressService.listTrackRecord(expressWaybillNos)
+                .stream()
+                .collect(Collectors.groupingBy(ExpressTrackRecordDTO::getExpressWaybillNo));
+        List<ExpressTrackDTO> expressTracks = new ArrayList<>(trackRecordGroupMap.size());
+        for (Map.Entry<String, List<ExpressTrackRecordDTO>> entry : trackRecordGroupMap.entrySet()) {
+            ExpressTrackDTO expressTrackDTO = new ExpressTrackDTO();
+            Long expressId = CollUtil.getFirst(entry.getValue()).getExpressId();
+            expressTrackDTO.setExpressId(expressId);
+            expressTrackDTO.setExpressName(expressNameMap.get(expressId));
+            expressTrackDTO.setExpressWaybillNo(entry.getKey());
+            expressTrackDTO.setRecords(entry.getValue());
+            expressTracks.add(expressTrackDTO);
+        }
+        orderInfo.setExpressTracks(expressTracks);
         Map<String, ExpressRegionDTO> regionMap = expressService.getRegionMapCache();
         orderInfo.setDestinationProvinceName(Optional.ofNullable(regionMap.get(orderInfo.getDestinationProvinceCode()))
                 .map(ExpressRegionDTO::getParentRegionName).orElse(null));
@@ -1226,16 +1242,16 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                     throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
                 }
             }
-            StoreOrderExpressTrack storeOrderExpressTrack = new StoreOrderExpressTrack();
-            storeOrderExpressTrack.setStoreOrderId(storeOrderDetail.getStoreOrderId());
-            storeOrderExpressTrack.setStoreOrderIdDetailId(storeOrderDetail.getId());
-            storeOrderExpressTrack.setSort(0);
-            storeOrderExpressTrack.setAction(trackAddDTO.getAction());
-            storeOrderExpressTrack.setDescription(trackAddDTO.getDescription());
-            storeOrderExpressTrack.setRemark(trackAddDTO.getRemark());
-            storeOrderExpressTrack.setDelFlag(Constants.UNDELETED);
-            storeOrderExpressTrackMapper.insert(storeOrderExpressTrack);
         }
+        ExpressTrackRecordAddDTO expressTrackRecordAddDTO = ExpressTrackRecordAddDTO.builder()
+                .expressId(trackAddDTO.getExpressId())
+                .expressWaybillNo(trackAddDTO.getExpressWaybillNo())
+                .sort(0)
+                .action(trackAddDTO.getAction())
+                .description(trackAddDTO.getDescription())
+                .remark(trackAddDTO.getRemark())
+                .build();
+        expressService.addTrackRecord(expressTrackRecordAddDTO);
     }
 
     /**

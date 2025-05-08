@@ -2,7 +2,6 @@ package com.ruoyi.xkt.dto.express;
 
 import lombok.Data;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,27 +21,11 @@ public class ExpressTrackDTO {
      */
     private Long expressId;
     /**
-     * 详情
+     * 物流名称
      */
-    private List<Item> items;
-
-    @Data
-    public static class Item {
-        /**
-         * 节点事件
-         */
-        private String action;
-        /**
-         * 描述
-         */
-        private String description;
-        /**
-         * 备注
-         */
-        private String remark;
-        /**
-         * 创建时间
-         */
-        private Date createTime;
-    }
+    private String expressName;
+    /**
+     * 记录
+     */
+    private List<ExpressTrackRecordDTO> records;
 }
