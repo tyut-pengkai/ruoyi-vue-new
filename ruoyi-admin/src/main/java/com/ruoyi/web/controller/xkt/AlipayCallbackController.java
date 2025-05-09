@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.ruoyi.common.core.controller.XktBaseController;
@@ -72,6 +73,7 @@ public class AlipayCallbackController extends XktBaseController {
         }
         if (signVerified) {
             AlipayCallback alipayCallback = trans2DO(params);
+            logger.info("支付宝支付回调数据:{}", JSONUtil.toJsonStr(alipayCallback));
             //需要严格按照如下描述校验通知数据的正确性：
             //3. 校验通知中的 seller_id（或者 seller_email）是否为 out_trade_no 这笔单据的对应的操作方
             // （有的时候，一个商家可能有多个 seller_id/seller_email）。

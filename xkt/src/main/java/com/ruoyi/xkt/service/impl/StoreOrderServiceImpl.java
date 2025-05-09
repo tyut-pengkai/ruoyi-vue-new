@@ -505,7 +505,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             log.error("订单状态异常，更新支付结果失败: id = {}", storeOrderId);
             throw new ServiceException("订单状态异常");
         }
-        if (NumberUtil.equals(order.getTotalAmount(), totalAmount)) {
+        if (!NumberUtil.equals(order.getTotalAmount(), totalAmount)) {
             log.error("订单支付金额异常，更新支付结果失败: id = {} totalAmount = {} realTotalAmount = {}",
                     storeOrderId, totalAmount, realTotalAmount);
             throw new ServiceException("订单支付金额异常");
