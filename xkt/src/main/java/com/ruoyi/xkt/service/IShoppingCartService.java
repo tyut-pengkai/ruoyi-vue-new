@@ -33,7 +33,7 @@ public interface IShoppingCartService {
      * @param shoppingCartId 购物车ID
      * @return ShopCartDetailResDTO
      */
-    ShopCartDetailResDTO getInfo(Long shoppingCartId);
+    ShopCartDetailResDTO getEditInfo(Long shoppingCartId);
 
     /**
      * 用户编辑进货车商品
@@ -58,5 +58,5 @@ public interface IShoppingCartService {
      * @return ShoppingCartDTO
      */
     ShoppingCartDTO getByStoreProdId(Long storeProdId);
-    
+
 }

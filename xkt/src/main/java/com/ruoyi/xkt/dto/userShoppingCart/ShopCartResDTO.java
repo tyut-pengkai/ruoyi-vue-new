@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.vo.userShoppingCart;
+package com.ruoyi.xkt.dto.userShoppingCart;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
@@ -15,7 +15,7 @@ import java.util.List;
 @ApiModel("电商卖家进货车数据")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ShopCartResVO {
+public class ShopCartResDTO {
 
     @ApiModelProperty(value = "进货车ID")
     private Long shoppingCartId;
@@ -28,11 +28,11 @@ public class ShopCartResVO {
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
     @ApiModelProperty(value = "进货车明细列表")
-    List<SCDetailVO> detailList;
+    List<SCDetailDTO> detailList;
 
     @Data
     @ApiModel(value = "档口优惠列表")
-    public static class SCDetailVO {
+    public static class SCDetailDTO {
         @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeProdColorId;
         @ApiModelProperty(value = "尺码")

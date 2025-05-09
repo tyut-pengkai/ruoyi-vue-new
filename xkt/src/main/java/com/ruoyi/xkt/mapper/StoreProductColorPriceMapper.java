@@ -2,7 +2,9 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductColorPrice;
-import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceSimpleDTO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,56 +17,18 @@ import java.util.List;
  */
 @Repository
 public interface StoreProductColorPriceMapper extends BaseMapper<StoreProductColorPrice> {
-    /**
-     * 查询档口商品颜色定价
-     *
-     * @param id 档口商品颜色定价主键
-     * @return 档口商品颜色定价
-     */
-    public StoreProductColorPrice selectStoreProductColorPriceByStoreProdColorPriceId(Long id);
-
-    /**
-     * 查询档口商品颜色定价列表
-     *
-     * @param storeProductColorPrice 档口商品颜色定价
-     * @return 档口商品颜色定价集合
-     */
-    public List<StoreProductColorPrice> selectStoreProductColorPriceList(StoreProductColorPrice storeProductColorPrice);
-
-    /**
-     * 新增档口商品颜色定价
-     *
-     * @param storeProductColorPrice 档口商品颜色定价
-     * @return 结果
-     */
-    public int insertStoreProductColorPrice(StoreProductColorPrice storeProductColorPrice);
-
-    /**
-     * 修改档口商品颜色定价
-     *
-     * @param storeProductColorPrice 档口商品颜色定价
-     * @return 结果
-     */
-    public int updateStoreProductColorPrice(StoreProductColorPrice storeProductColorPrice);
-
-    /**
-     * 删除档口商品颜色定价
-     *
-     * @param id 档口商品颜色定价主键
-     * @return 结果
-     */
-    public int deleteStoreProductColorPriceByStoreProdColorPriceId(Long id);
-
-    /**
-     * 批量删除档口商品颜色定价
-     *
-     * @param storeProdColorPriceIds 需要删除的数据主键集合
-     * @return 结果
-     */
-    public int deleteStoreProductColorPriceByStoreProdColorPriceIds(Long[] storeProdColorPriceIds);
 
     void updateDelFlagByStoreProdId(Long storeProdId);
 
-    List<StoreProdColorPriceDTO> selectListByStoreProdId(Long storeProdId);
+    List<StoreProdColorPriceSimpleDTO> selectListByStoreProdId(Long storeProdId);
+
+    /**
+     * 根据档口商品ID及档口ID获取所有颜色列表及定价
+     *
+     * @param storeProdId 档口商品ID
+     * @param storeId     档口ID
+     * @return List<StoreProdColorPriceResDTO>
+     */
+    List<StoreProdColorPriceResDTO> selectListByStoreProdIdAndStoreId(@Param("storeProdId") Long storeProdId, @Param("storeId") Long storeId);
 
 }

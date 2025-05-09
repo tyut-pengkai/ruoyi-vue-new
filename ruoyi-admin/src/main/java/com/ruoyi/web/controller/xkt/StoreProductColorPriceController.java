@@ -1,18 +1,18 @@
 package com.ruoyi.web.controller.xkt;
 
-import com.ruoyi.common.annotation.Log;
+import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.xkt.domain.StoreProductColorPrice;
+import com.ruoyi.web.controller.xkt.vo.storeProdColorPrice.StoreProdColorPriceVO;
 import com.ruoyi.xkt.service.IStoreProductColorPriceService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -21,71 +21,21 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@RequiredArgsConstructor
+@Api(tags = "档口商品颜色定价")
 @RestController
 @RequestMapping("/rest/v1/prod-color-prices")
 public class StoreProductColorPriceController extends XktBaseController {
-    @Autowired
-    private IStoreProductColorPriceService storeProductColorPriceService;
+
+    final IStoreProductColorPriceService prodColorPriceService;
 
     /**
-     * 查询档口商品颜色定价列表
+     * 根据storeProdId获取所有颜色分类及定价
      */
-    @PreAuthorize("@ss.hasPermi('system:price:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(StoreProductColorPrice storeProductColorPrice) {
-        startPage();
-        List<StoreProductColorPrice> list = storeProductColorPriceService.selectStoreProductColorPriceList(storeProductColorPrice);
-        return getDataTable(list);
+    @ApiOperation(value = "根据storeProdId获取所有颜色分类及定价", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/{storeId}/{storeProdId}")
+    public R<List<StoreProdColorPriceVO>> getColorPriceByStoreProdId(@PathVariable(value = "storeProdId") Long storeProdId, @PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.copyToList(prodColorPriceService.getColorPriceByStoreProdId(storeId, storeProdId), StoreProdColorPriceVO.class));
     }
 
-    /**
-     * 导出档口商品颜色定价列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:price:export')")
-    @Log(title = "档口商品颜色定价", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, StoreProductColorPrice storeProductColorPrice) {
-        List<StoreProductColorPrice> list = storeProductColorPriceService.selectStoreProductColorPriceList(storeProductColorPrice);
-        ExcelUtil<StoreProductColorPrice> util = new ExcelUtil<StoreProductColorPrice>(StoreProductColorPrice.class);
-        util.exportExcel(response, list, "档口商品颜色定价数据");
-    }
-
-    /**
-     * 获取档口商品颜色定价详细信息
-     */
-    @PreAuthorize("@ss.hasPermi('system:price:query')")
-    @GetMapping(value = "/{storeProdColorPriceId}")
-    public R getInfo(@PathVariable("storeProdColorPriceId") Long storeProdColorPriceId) {
-        return success(storeProductColorPriceService.selectStoreProductColorPriceByStoreProdColorPriceId(storeProdColorPriceId));
-    }
-
-    /**
-     * 新增档口商品颜色定价
-     */
-    @PreAuthorize("@ss.hasPermi('system:price:add')")
-    @Log(title = "档口商品颜色定价", businessType = BusinessType.INSERT)
-    @PostMapping
-    public R add(@RequestBody StoreProductColorPrice storeProductColorPrice) {
-        return success(storeProductColorPriceService.insertStoreProductColorPrice(storeProductColorPrice));
-    }
-
-    /**
-     * 修改档口商品颜色定价
-     */
-    @PreAuthorize("@ss.hasPermi('system:price:edit')")
-    @Log(title = "档口商品颜色定价", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public R edit(@RequestBody StoreProductColorPrice storeProductColorPrice) {
-        return success(storeProductColorPriceService.updateStoreProductColorPrice(storeProductColorPrice));
-    }
-
-    /**
-     * 删除档口商品颜色定价
-     */
-    @PreAuthorize("@ss.hasPermi('system:price:remove')")
-    @Log(title = "档口商品颜色定价", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{storeProdColorPriceIds}")
-    public R remove(@PathVariable Long[] storeProdColorPriceIds) {
-        return success(storeProductColorPriceService.deleteStoreProductColorPriceByStoreProdColorPriceIds(storeProdColorPriceIds));
-    }
 }

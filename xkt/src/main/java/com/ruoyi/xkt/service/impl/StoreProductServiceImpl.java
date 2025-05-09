@@ -22,7 +22,7 @@ import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.storeColor.StoreColorDTO;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
-import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceSimpleDTO;
 import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdColorSizeDTO;
 import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
 import com.ruoyi.xkt.dto.storeProdProcess.StoreProdProcessDTO;
@@ -105,7 +105,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 档口商品颜色尺码列表
         List<StoreProdColorSizeDTO> sizeList = this.storeProdColorSizeMapper.selectListByStoreProdId(storeProdId);
         // 档口颜色价格列表
-        List<StoreProdColorPriceDTO> priceList = this.storeProdColorPriceMapper.selectListByStoreProdId(storeProdId);
+        List<StoreProdColorPriceSimpleDTO> priceList = this.storeProdColorPriceMapper.selectListByStoreProdId(storeProdId);
         // 档口商品详情
         StoreProductDetail prodDetail = this.storeProdDetailMapper.selectByStoreProdId(storeProdId);
         // 档口服务承诺
@@ -497,7 +497,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 档口商品颜色尺码列表
         List<StoreProdColorSizeDTO> sizeList = this.storeProdColorSizeMapper.selectListByStoreProdId(storeProdId);
         // 档口颜色价格列表
-        List<StoreProdColorPriceDTO> priceList = this.storeProdColorPriceMapper.selectListByStoreProdId(storeProdId);
+        List<StoreProdColorPriceSimpleDTO> priceList = this.storeProdColorPriceMapper.selectListByStoreProdId(storeProdId);
         // 档口商品详情
         StoreProductDetail prodDetail = this.storeProdDetailMapper.selectByStoreProdId(storeProdId);
         // 档口服务承诺
@@ -514,7 +514,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 .setTagList(CollectionUtils.isNotEmpty(tagList) ? tagList.stream().map(DailyProdTag::getTag).distinct().collect(Collectors.toList()) : null)
                 .setCollectProd(ObjectUtils.isNotEmpty(favorite) ? Boolean.TRUE : Boolean.FALSE)
                 .setSpecification(colorList.size() + "色" + sizeList.stream().filter(x -> Objects.equals(x.getStandard(), ProductSizeStatus.STANDARD.getValue())).count() + "码")
-                .setMinPrice(priceList.stream().min(Comparator.comparing(StoreProdColorPriceDTO::getPrice))
+                .setMinPrice(priceList.stream().min(Comparator.comparing(StoreProdColorPriceSimpleDTO::getPrice))
                         .orElseThrow(() -> new ServiceException("获取商品价格失败，请联系客服!", HttpStatus.ERROR)).getPrice())
                 .setDetail(ObjectUtils.isEmpty(prodDetail) ? null : prodDetail.getDetail())
                 .setSvc(ObjectUtils.isEmpty(storeProductSvc) ? null : BeanUtil.toBean(storeProductSvc, StoreProdSvcDTO.class));
@@ -552,64 +552,6 @@ public class StoreProductServiceImpl implements IStoreProductService {
                     .collect(Collectors.toList()));
         });
         return BeanUtil.toBean(storeProd, StoreProdSkuResDTO.class).setStoreProdId(storeProdId).setColorList(colorList);
-    }
-
-    @Override
-    @Transactional
-    public Integer update111(Long storeProdId) {
-        String htmlContent = "<!DOCTYPE html>\n" +
-                "<html lang=\"zh-CN\">\n" +
-                "<head>\n" +
-                "    <meta charset=\"UTF-8\">\n" +
-                "    <title>富文本示例</title>\n" +
-                "</head>\n" +
-                "<body>\n" +
-                "    <h1>美丽的自然风光</h1>\n" +
-                "    <p>让我们一起欣赏一些美丽的自然风光照片。</p>\n" +
-                "    \n" +
-                "    <!-- 第一张图片：日出 -->\n" +
-                "    <figure>\n" +
-                "        <img src=\"https://example.com/sunrise.jpg\" alt=\"日出的美景\" width=\"800\" height=\"600\">\n" +
-                "        <figcaption>图1：清晨的日出，象征着新的开始。</figcaption>\n" +
-                "    </figure>\n" +
-                "\n" +
-                "    <!-- 文字描述 -->\n" +
-                "    <p>每天早晨太阳升起的时候，整个世界仿佛都被赋予了新生。\n" +
-                "    这张照片捕捉了那令人叹为观止的瞬间，当第一缕阳光穿透晨雾，给大地带来了光明和温暖。</p>\n" +
-                "\n" +
-                "    <!-- 第二张图片：森林 -->\n" +
-                "    <figure>\n" +
-                "        <img src=\"https://example.com/forest.jpg\" alt=\"茂密的森林\" width=\"800\" height=\"600\">\n" +
-                "        <figcaption>图2：一片宁静祥和的森林景象。</figcaption>\n" +
-                "    </figure>\n" +
-                "\n" +
-                "    <!-- 文字描述 -->\n" +
-                "    <p>走进这片古老的森林，你会感受到一种无与伦比的宁静和平和。\n" +
-                "    树木高耸入云，阳光透过树叶间的缝隙洒落，形成一片片光斑，宛如置身于童话世界中。</p>\n" +
-                "\n" +
-                "    <!-- 第三张图片：瀑布 -->\n" +
-                "    <figure>\n" +
-                "        <img src=\"https://example.com/waterfall.jpg\" alt=\"壮观的瀑布\" width=\"800\" height=\"600\">\n" +
-                "        <figcaption>图3：大自然的力量——壮观的瀑布。</figcaption>\n" +
-                "    </figure>\n" +
-                "\n" +
-                "    <!-- 文字描述 -->\n" +
-                "    <p>没有什么能比站在瀑布前更能让人感受到大自然的磅礴力量了。\n" +
-                "    巨大的水体从高处倾泻而下，撞击在岩石上溅起层层白沫，发出雷鸣般的声响，令人心潮澎湃。</p>\n" +
-                "</body>\n" +
-                "</html>";
-
-        StoreProductDetail detail = this.storeProdDetailMapper.selectOne(new LambdaQueryWrapper<StoreProductDetail>()
-                .eq(StoreProductDetail::getStoreProdId, storeProdId));
-
-//        StoreProductDetail detail1 = this.storeProdDetailMapper.selectByStoreProdId(storeProdId);
-        detail.setDetail(htmlContent);
-        this.storeProdDetailMapper.updateById(detail);
-
-        System.err.println(detail.getDetail());
-
-        return 1;
-
     }
 
     /**
@@ -745,8 +687,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 获取上一级分类的分类ID 及 分类名称
         ProdCateDTO parCate = this.prodCateMapper.getParentCate(storeProdDTO.getProdCateId());
         // 获取当前商品的最低价格
-        BigDecimal minPrice = storeProdDTO.getPriceList().stream().min(Comparator.comparing(StoreProdColorPriceDTO::getPrice))
-                .map(StoreProdColorPriceDTO::getPrice).orElseThrow(() -> new ServiceException("商品价格不存在!", HttpStatus.ERROR));
+        BigDecimal minPrice = storeProdDTO.getPriceList().stream().min(Comparator.comparing(StoreProdColorPriceSimpleDTO::getPrice))
+                .map(StoreProdColorPriceSimpleDTO::getPrice).orElseThrow(() -> new ServiceException("商品价格不存在!", HttpStatus.ERROR));
         // 获取使用季节
         String season = storeProdDTO.getCateAttrList().stream().filter(x -> Objects.equals(x.getDictType(), "suitable_season"))
                 .map(StoreProdCateAttrDTO::getDictValue).findAny().orElse("");

@@ -27,7 +27,7 @@ public class AdRoundStoreResVO {
     @ApiModelProperty(value = "位置枚举的广告轮次列表")
     private List<ADRSRoundPositionVO> positionList;
     @ApiModelProperty(value = "已订购的推广轮次记录")
-    private List<ADRSRoundRecordVO> recordList;
+    private List<ADRSRoundRecordVO> boughtRoundList;
 
     @Data
     @Accessors(chain = true)
@@ -72,8 +72,8 @@ public class AdRoundStoreResVO {
         private Integer typeId;
         @ApiModelProperty(value = "广告位置 A B C D E")
         private String position;
-        @ApiModelProperty(value = "推广档口ID")
-        private Long storeId;
+//        @ApiModelProperty(value = "推广档口ID")
+//        private Long storeId;
         @ApiModelProperty(value = "对象锁符号")
         private String symbol;
     }

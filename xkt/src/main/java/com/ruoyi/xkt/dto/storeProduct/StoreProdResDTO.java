@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.xkt.dto.storeColor.StoreColorDTO;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
-import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceSimpleDTO;
 import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdColorSizeDTO;
 import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
 import com.ruoyi.xkt.dto.storeProdProcess.StoreProdProcessDTO;
@@ -67,7 +67,7 @@ public class StoreProdResDTO {
     @ApiModelProperty(value = "档口商品尺码列表")
     private List<StoreProdColorSizeDTO> sizeList;
     @ApiModelProperty(value = "档口颜色价格列表")
-    private List<StoreProdColorPriceDTO> priceList;
+    private List<StoreProdColorPriceSimpleDTO> priceList;
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcDTO svc;
     @ApiModelProperty(value = "详情内容")

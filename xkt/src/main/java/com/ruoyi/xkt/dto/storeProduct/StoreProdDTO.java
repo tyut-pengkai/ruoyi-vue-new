@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.xkt.dto.storeColor.StoreColorDTO;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
-import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceSimpleDTO;
 import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdColorSizeDTO;
 import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
 import com.ruoyi.xkt.dto.storeProdProcess.StoreProdProcessDTO;
@@ -15,7 +15,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -74,7 +73,7 @@ public class StoreProdDTO {
     @ApiModelProperty(value = "档口商品尺码列表")
     private List<StoreProdColorSizeDTO> sizeList;
     @ApiModelProperty(value = "档口价格列表")
-    private List<StoreProdColorPriceDTO> priceList;
+    private List<StoreProdColorPriceSimpleDTO> priceList;
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcDTO svc;
     @ApiModelProperty(value = "详情内容")

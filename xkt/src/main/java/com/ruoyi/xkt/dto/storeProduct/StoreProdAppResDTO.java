@@ -2,8 +2,6 @@ package com.ruoyi.xkt.dto.storeProduct;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
-import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceDTO;
-import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
 import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import io.swagger.annotations.ApiModel;

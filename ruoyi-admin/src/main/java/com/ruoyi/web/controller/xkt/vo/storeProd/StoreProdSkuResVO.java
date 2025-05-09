@@ -30,6 +30,8 @@ public class StoreProdSkuResVO {
     @Data
     @ApiModel(value = "档口商品SKU")
     public static class SPColorVO {
+        @ApiModelProperty(value = "档口商品颜色ID")
+        private Long storeProdColorId;
         @ApiModelProperty(value = "档口颜色ID")
         private Long storeColorId;
         @ApiModelProperty(value = "颜色名称")

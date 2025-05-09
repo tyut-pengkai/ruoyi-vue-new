@@ -222,6 +222,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectSkuList"  resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdSkuDTO" >
         SELECT
+            spc.id AS storeProdColorId,
             spc.store_prod_id,
             spc.store_color_id,
             spc.color_name,

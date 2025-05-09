@@ -38,7 +38,7 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     /**
      * 销售出库时，新增或修改档口客户优惠
      */
-    @PreAuthorize("@ss.hasPermi('system:discount:edit')")
+//    @PreAuthorize("@ss.hasPermi('system:discount:edit')")
     @ApiOperation(value = "销售出库时，新增或修改档口客户优惠", httpMethod = "PUT", response = R.class)
     @Log(title = "销售出库时，新增或修改档口客户优惠", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -49,7 +49,7 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     /**
      * 客户销售管理 批量减价、批量抹零减价、新增客户定价优惠
      */
-    @PreAuthorize("@ss.hasPermi('system:discount:edit')")
+//    @PreAuthorize("@ss.hasPermi('system:discount:edit')")
     @ApiOperation(value = "客户销售管理 批量减价、批量抹零减价、新增客户定价优惠", httpMethod = "PUT", response = R.class)
     @Log(title = "客户销售管理 批量减价、批量抹零减价、新增客户定价优惠", businessType = BusinessType.UPDATE)
     @PutMapping("/batch")
@@ -60,7 +60,7 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     /**
      * 查询客户销售管理列表
      */
-    @PreAuthorize("@ss.hasPermi('system:customer:list')")
+//    @PreAuthorize("@ss.hasPermi('system:customer:list')")
     @ApiOperation(value = "查询客户销售管理列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreCusProdDiscPageResDTO>> selectPage(@Validated @RequestBody StoreCusProdDiscPageVO pageVO) {
@@ -70,7 +70,7 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     /**
      * 新增客户销售定价时，根据入参查询是否已存在优惠
      */
-    @PreAuthorize("@ss.hasPermi('system:customer:list')")
+//    @PreAuthorize("@ss.hasPermi('system:customer:list')")
     @ApiOperation(value = "新增客户销售定价时，根据入参查询是否已存在优惠", httpMethod = "POST", response = R.class)
     @PostMapping("/exists")
     public R<List<StoreCusProdDiscExistResDTO>> discountExist(@Validated @RequestBody StoreCusProdDiscExistVO existVO) {

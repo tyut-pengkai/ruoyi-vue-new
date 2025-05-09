@@ -27,7 +27,7 @@ public class AdRoundStoreResDTO {
     @ApiModelProperty(value = "位置枚举的广告轮次列表")
     private List<ADRSRoundPositionDTO> positionList;
     @ApiModelProperty(value = "已订购的推广轮次记录")
-    private List<ADRSRoundRecordDTO> recordList;
+    private List<ADRSRoundRecordDTO> boughtRoundList;
 
     @Data
     @Accessors(chain = true)
@@ -76,8 +76,14 @@ public class AdRoundStoreResDTO {
         private Integer typeId;
         @ApiModelProperty(value = "广告位置 A B C D E")
         private String position;
-        @ApiModelProperty(value = "推广档口ID")
-        private Long storeId;
+        @ApiModelProperty(value = "投放开始时间")
+        @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+        private Date startTime;
+        @ApiModelProperty(value = "投放结束时间")
+        @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+        private Date endTime;
+//        @ApiModelProperty(value = "推广档口ID")
+//        private Long storeId;
         @ApiModelProperty(value = "对象锁符号")
         private String symbol;
     }

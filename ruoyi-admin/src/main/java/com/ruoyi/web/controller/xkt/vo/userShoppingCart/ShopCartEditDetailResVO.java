@@ -17,7 +17,7 @@ import java.util.List;
 @ApiModel("档口商品详情返回数据")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ShopCartDetailResVO {
+public class ShopCartEditDetailResVO {
 
     @ApiModelProperty("档口商品ID")
     private Long storeProdId;

@@ -121,5 +121,4 @@ public interface IStoreProductService {
      */
     StoreProdSkuResDTO getSkuList(Long storeProdId);
 
-    Integer update111(Long storeProdId);
 }
