@@ -137,6 +137,7 @@ public class ExpressServiceImpl implements IExpressService {
         expressFeeConfig.setExpressId(expressId);
         expressFeeConfig.setFirstItemAmount(BigDecimal.valueOf(5));
         expressFeeConfig.setNextItemAmount(BigDecimal.valueOf(5));
+        expressFeeConfig.setDelFlag(Constants.UNDELETED);
         return expressFeeConfig;
     }
 
