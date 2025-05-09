@@ -120,4 +120,6 @@ public interface IStoreProductService {
      * @return StoreProdSkuResDTO
      */
     StoreProdSkuResDTO getSkuList(Long storeProdId);
+
+    Integer update111(Long storeProdId);
 }

@@ -224,9 +224,14 @@ public class Constants
     public static final Long TOPMOST_PRODUCT_CATEGORY_ID = 1L;
 
     /**
+     * redis store前缀
+     */
+    public static final String STORE_REDIS_PREFIX = "store_";
+
+    /**
      * 枚举的广告位类型
      */
-    public final static List<Integer> posEnumTypeList = new ArrayList<Integer>() {{
+/*    public final static List<Integer> posEnumTypeList = new ArrayList<Integer>() {{
         // 人气榜中上侧
         add(AdType.PC_HOME_POP_MID_TOP.getValue());
         // 人气榜中下侧
@@ -239,7 +244,7 @@ public class Constants
         add(AdType.PC_NEW_PROD_HOT_RIGHT_PRODUCT.getValue());
         // PC下载页
         add(AdType.PC_DOWNLOAD.getValue());
-    }};
+    }};*/
 
 
 }

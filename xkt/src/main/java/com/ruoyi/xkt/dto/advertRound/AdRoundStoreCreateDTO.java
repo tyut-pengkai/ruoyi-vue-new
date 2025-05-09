@@ -23,8 +23,8 @@ public class AdRoundStoreCreateDTO {
     private Long advertId;
     @ApiModelProperty(value = "广告轮次ID")
     private Long roundId;
-    @ApiModelProperty(value = "typeId")
-    private Integer typeId;
+    @ApiModelProperty(value = "推广展示类型 时间范围  位置枚举")
+    private Integer showType;
     @ApiModelProperty(value = "广告位置 A B C D E")
     private String position;
     @ApiModelProperty(value = "推广档口ID")

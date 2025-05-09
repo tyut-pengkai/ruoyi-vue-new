@@ -14,6 +14,7 @@ import com.ruoyi.xkt.dto.advertRound.AdRoundStoreResDTO;
 import com.ruoyi.xkt.enums.AdBiddingStatus;
 import com.ruoyi.xkt.enums.AdLaunchStatus;
 import com.ruoyi.xkt.enums.AdRoundType;
+import com.ruoyi.xkt.enums.AdShowType;
 import com.ruoyi.xkt.mapper.AdvertRoundMapper;
 import com.ruoyi.xkt.mapper.AdvertRoundRecordMapper;
 import com.ruoyi.xkt.mapper.StoreMapper;
@@ -27,12 +28,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -152,12 +160,12 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
      *
      * @param storeId  档口ID
      * @param advertId 广告ID
-     * @param typeId
+     * @param showType 显示类型 时间范围 位置枚举
      * @return AdRoundPlayStoreResDTO
      */
     @Override
     @Transactional(readOnly = true)
-    public AdRoundStoreResDTO getStoreAdInfo(final Long storeId,final Long advertId,final Integer typeId) {
+    public AdRoundStoreResDTO getStoreAdInfo(final Long storeId,final Long advertId,final Integer showType) {
         // 获取当前 正在播放 和 待播放的推广轮次
         List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
                 .eq(AdvertRound::getAdvertId, advertId)
@@ -166,29 +174,75 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         if (CollectionUtils.isEmpty(advertRoundList)) {
             return AdRoundStoreResDTO.builder().build();
         }
-
+        // 当天
+        final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
+        // 第一轮结束投放时间
+        final Date firstRoundEndTime = advertRoundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.PLAY_ROUND.getValue()))
+                .max(Comparator.comparing(AdvertRound::getEndTime))
+                .orElseThrow(() -> new ServiceException("获取推广结束时间失败，请联系客服!", HttpStatus.ERROR)).getEndTime();
+        // 如果当前非第一轮最后一天，则展示前4轮；如果当前是第一轮最后一天，则展示第2到第5轮。
+        advertRoundList = voucherDate.before(firstRoundEndTime)
+                ? advertRoundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.FIFTH_ROUND.getValue())).collect(Collectors.toList())
+                : advertRoundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())).collect(Collectors.toList());
         // 如果投放类型是：时间范围，则只需要返回每一轮的开始时间和结束时间；如果投放类型是：位置枚举，则需要返回每一个位置的详细情况
-        if (!Constants.posEnumTypeList.contains(typeId)) {
-            List<AdRoundStoreResDTO.ADRSRoundTimeRangeDTO> rangeList = new ArrayList<>();
-            // 提取每一轮的广告数据
-            Map<Integer, List<AdvertRound>> roundMap = advertRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getRoundId));
-            roundMap.forEach((roundId, roundList) -> {
-                AdvertRound targetRound = roundList.stream().filter(x -> Objects.equals(x.getStoreId(), storeId)).findFirst().orElse(null);
-
-                final AdvertRound curRound = roundList.get(0);
-                AdRoundStoreResDTO.ADRSRoundTimeRangeDTO roundDTO = AdRoundStoreResDTO.ADRSRoundTimeRangeDTO.builder()
-                        .roundId(roundId).advertId(advertId).symbol(curRound.getSymbol()).typeId(typeId).build();
-                // 判断当前轮是否有该档口竞价的数据
-                if (roundList.stream().anyMatch(x -> Objects.equals(x.getStoreId(), storeId))) {
-//                    roundDTO.setStoreId(storeId).setBiddingStatus(0)
-
+        if (Objects.equals(showType, AdShowType.TIME_RANGE.getValue())) {
+            // 构建当前round基础数据
+            List<AdRoundStoreResDTO.ADRSRoundTimeRangeDTO> rangeDTOList = advertRoundList.stream().map(x -> new AdRoundStoreResDTO.ADRSRoundTimeRangeDTO()
+                            .setAdvertId(x.getAdvertId()).setRoundId(x.getRoundId()).setSymbol(x.getSymbol()).setStartTime(x.getStartTime()).setEndTime(x.getEndTime())
+                            .setStartWeekDay(getDayOfWeek(x.getStartTime())).setEndWeekDay(getDayOfWeek(x.getEndTime())).setStartPrice(x.getStartPrice())
+                            .setDurationDay(calculateDurationDay(x.getStartTime(), x.getEndTime())))
+                    .distinct().collect(Collectors.toList());
+            // 当前档口购买的推广轮次
+            Map<Integer, AdvertRound> boughtRoundMap = advertRoundList.stream().filter(x -> Objects.equals(x.getStoreId(), storeId))
+                    .collect(Collectors.toMap(AdvertRound::getRoundId, Function.identity()));
+            // 所有的轮次
+            Set<Integer> roundIdSet = advertRoundList.stream().map(AdvertRound::getRoundId).collect(Collectors.toSet());
+            // 未购买的轮次 = 所有的轮次 - 已购买轮次
+            roundIdSet.removeAll(boughtRoundMap.keySet());
+            Map<Integer, AdvertRoundRecord> recordMap = new ConcurrentHashMap<>();
+            // 有未购买轮次，则查找未购买轮次是否有竞价
+            if (CollectionUtils.isNotEmpty(roundIdSet)) {
+                List<AdvertRoundRecord> recordList = this.advertRoundRecordMapper.selectRecordList(advertId, storeId, voucherDate, roundIdSet);
+                Optional.ofNullable(recordList).ifPresent(list -> list.forEach(x -> recordMap.put(x.getRoundId(), x)));
+            }
+            final Date date = new Date();
+            // 设置当前档口在推广轮次中的数据详情
+            rangeDTOList.forEach(x -> {
+                // 只有播放轮才按照时间计算折扣价
+                if (Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
+                    // 根据当前日期与截止日期的占比修改推广价格
+                    final BigDecimal curStartPrice = BigDecimal.valueOf(calculateDurationDay(date, x.getEndTime()))
+                            .divide(BigDecimal.valueOf(x.getDurationDay()), 10, RoundingMode.DOWN).multiply(x.getStartPrice())
+                            .setScale(0, RoundingMode.DOWN);
+                    x.setStartPrice(curStartPrice);
+                }
+                // 已购买推广位轮次
+                final AdvertRound boughtRound = boughtRoundMap.get(x.getRoundId());
+                if (ObjectUtils.isNotEmpty(boughtRound) && ObjectUtils.isNotEmpty(boughtRound.getBiddingStatus())) {
+                    x.setBiddingStatus(boughtRound.getBiddingStatus());
+                    x.setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(boughtRound.getBiddingStatus())).getLabel());
+                }
+                // 未购买推广位轮次
+                final AdvertRoundRecord record = recordMap.get(x.getRoundId());
+                if (ObjectUtils.isNotEmpty(record)) {
+                    x.setBiddingStatus(record.getBiddingStatus());
+                    x.setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(record.getBiddingStatus())).getLabel());
                 }
             });
+            return AdRoundStoreResDTO.builder().timeRangeList(rangeDTOList).build();
         } else {
             // 位置枚举
+
         }
 
 
+        // 写 sql 从advertRound中获取 advertId 和 roundId 最高的价格
+     /*   Map<Integer, BigDecimal> otherRoundMaxPriceMap = advertRoundList.stream().filter(x -> ObjectUtils.isNotEmpty(x.getPayPrice()))
+                .filter(x -> remainRoundIdList.contains(x.getRoundId()))
+                .collect(Collectors.groupingBy(
+                        AdvertRound::getRoundId,
+                        Collectors.reducing(BigDecimal.ZERO, AdvertRound::getPayPrice, BigDecimal::max)
+                ));*/
 
 
 
@@ -233,15 +287,15 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         if (DateUtils.getTime().compareTo(this.getDeadline(createDTO.getSymbol())) > 0) {
             throw new ServiceException("竞价结束，已经有档口出价更高了噢!", HttpStatus.ERROR);
         }
-        if (StringUtils.isEmpty(redisCache.getCacheObject(createDTO.getStoreId().toString()))) {
+        if (ObjectUtils.isEmpty(redisCache.getCacheObject(Constants.STORE_REDIS_PREFIX + createDTO.getStoreId()))) {
             throw new ServiceException("档口不存在!", HttpStatus.ERROR);
         }
         // 如果是位置枚举的推广位，则需要传position
-        if (Constants.posEnumTypeList.contains(createDTO.getTypeId()) && StringUtils.isEmpty(createDTO.getPosition())) {
+        if (Objects.equals(createDTO.getShowType(), AdShowType.POSITION_ENUM.getValue()) && StringUtils.isEmpty(createDTO.getPosition())) {
             throw new ServiceException("当前推广类型position：必传!", HttpStatus.ERROR);
         }
         // 如果是时间范围的推广位，则不需要传position
-        if (!Constants.posEnumTypeList.contains(createDTO.getTypeId()) && StringUtils.isNotBlank(createDTO.getPosition())) {
+        if (Objects.equals(createDTO.getShowType(), AdShowType.TIME_RANGE.getValue()) && StringUtils.isNotBlank(createDTO.getPosition())) {
             throw new ServiceException("当前推广类型position：不传!", HttpStatus.ERROR);
         }
         // 当前营销推广位的锁
@@ -257,7 +311,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     .eq(AdvertRound::getDelFlag, Constants.UNDELETED).orderByAsc(AdvertRound::getPayPrice).last("LIMIT 1");
             AdvertRound minPriceAdvert = Optional.ofNullable(this.advertRoundMapper.selectOne(queryWrapper)).orElseThrow(() -> new ServiceException("获取推广营销位置失败，请联系客服!", HttpStatus.ERROR));
             // 判断当前档口出价是否低于该推广位最低价格，若是，则提示:"已经有档口出价更高了噢，请重新出价!".
-            if (createDTO.getPayPrice().compareTo(ObjectUtils.defaultIfNull(minPriceAdvert.getPayPrice(), BigDecimal.ZERO)) < 0) {
+            if (createDTO.getPayPrice().compareTo(ObjectUtils.defaultIfNull(minPriceAdvert.getPayPrice(), BigDecimal.ZERO)) <= 0) {
                 throw new ServiceException("已经有档口出价更高了噢，请重新出价!", HttpStatus.ERROR);
             }
 
@@ -273,6 +327,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
             // 更新出价最低的广告位
             minPriceAdvert.setStoreId(createDTO.getStoreId()).setPayPrice(createDTO.getPayPrice())
+                    .setVoucherDate(java.sql.Date.valueOf(LocalDate.now()))
                     .setBiddingStatus(AdBiddingStatus.BIDDING.getValue())
                     .setBiddingTempStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue())
                     .setPicDesignType(createDTO.getPicDesignType()).setProdIdStr(createDTO.getProdIdStr());
@@ -331,8 +386,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                             .map(AdvertRound::getSymbol).findAny().orElseThrow(() -> new ServiceException("获取推广第一轮symbol失败，请联系客服!", HttpStatus.ERROR))
                             : roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.SECOND_ROUND.getValue()))
                             .map(AdvertRound::getSymbol).findAny().orElseThrow(() -> new ServiceException("获取推广第二轮symbol失败，请联系客服!", HttpStatus.ERROR));*/
-                    // 存放到redis中 有效期90分钟
-                    redisCache.setCacheObject(symbol, filterTime, 90, TimeUnit.MINUTES);
+                    // 存放到redis中 有效期1天
+                    redisCache.setCacheObject(symbol, filterTime, 1, TimeUnit.DAYS);
                 });
     }
 
@@ -360,5 +415,29 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         record.setBiddingStatus(AdBiddingStatus.BIDDING_FAIL.getValue());
         this.advertRoundRecordMapper.insert(record);
     }
+
+    /**
+     * 根据Date获取当前星期几
+     * @param date 时间yyyy-MM-dd
+     * @return 星期几
+     */
+    public static String getDayOfWeek(Date date) {
+        LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        DayOfWeek dayOfWeek = localDateTime.getDayOfWeek();
+        return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
+    }
+
+    /**
+     * 计算两天之间相差多少天
+     * @param startDate 开始日期
+     * @param endDate 截止日期
+     * @return diffDay
+     */
+    public static int calculateDurationDay(Date startDate, Date endDate) {
+        LocalDate start = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate end = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return (int) start.until(end, ChronoUnit.DAYS) + 1;
+    }
+
 
 }

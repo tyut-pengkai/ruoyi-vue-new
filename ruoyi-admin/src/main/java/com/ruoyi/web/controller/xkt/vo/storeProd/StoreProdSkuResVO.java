@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -35,6 +36,8 @@ public class StoreProdSkuResVO {
         private String colorName;
         @ApiModelProperty(value = "排序")
         private Integer orderNum;
+        @ApiModelProperty(value = "档口商品定价")
+        private BigDecimal price;
         @ApiModelProperty(value = "尺码库存列表")
         List<SPSizeStockVO> sizeStockList;
     }
@@ -43,6 +46,8 @@ public class StoreProdSkuResVO {
     @Data
     @ApiModel(value = "尺码库存")
     public static class SPSizeStockVO {
+        @ApiModelProperty(value = "档口商品颜色尺码ID")
+        private Long storeProdColorSizeId;
         @ApiModelProperty(value = "商品尺码")
         private Integer size;
         @ApiModelProperty(value = "是否是标准尺码")

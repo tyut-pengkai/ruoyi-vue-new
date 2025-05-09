@@ -7,6 +7,7 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.mapper.SysUserMapper;
@@ -48,6 +49,7 @@ public class StoreServiceImpl implements IStoreService {
     final SysUserMapper userMapper;
     final DailyStoreTagMapper storeTagMapper;
     final UserSubscriptionsMapper userSubMapper;
+    final RedisCache redisCache;
 
     /**
      * 注册时新增档口数据
@@ -66,7 +68,10 @@ public class StoreServiceImpl implements IStoreService {
         // 当前时间往后推1年为试用期时间
         Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         store.setTrialEndTime(oneYearAfter);
-        return this.storeMapper.insert(store);
+        int count = this.storeMapper.insert(store);
+        // 放到redis中
+        redisCache.setCacheObject(Constants.STORE_REDIS_PREFIX + store.getId(), store.getId());
+        return count;
     }
 
     /**

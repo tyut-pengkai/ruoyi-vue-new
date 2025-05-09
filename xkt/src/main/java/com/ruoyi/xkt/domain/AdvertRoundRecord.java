@@ -28,6 +28,10 @@ public class AdvertRoundRecord extends XktBaseEntity {
     @TableId
     private Long id;
     /**
+     * 凭证日期
+     */
+    private Date voucherDate;
+    /**
      * 推广营销轮次位置ID
      */
     private Long advertRoundId;

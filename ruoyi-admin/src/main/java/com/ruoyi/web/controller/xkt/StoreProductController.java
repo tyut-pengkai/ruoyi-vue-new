@@ -166,5 +166,15 @@ public class StoreProductController extends XktBaseController {
         util.exportExcel(response, list, "档口商品数据");
     }
 
+    /**
+     * 修改档口商品  不要掉不要掉
+     */
+//    @PreAuthorize("@ss.hasPermi('system:product:edit')")
+    @ApiOperation(value = "修改档口商品", httpMethod = "PUT", response = R.class)
+    @Log(title = "档口商品", businessType = BusinessType.UPDATE)
+    @PutMapping("/update/{storeProdId}")
+    public R<Integer> update111(@PathVariable Long storeProdId) throws IOException {
+        return R.ok(storeProdService.update111(storeProdId));
+    }
 
 }

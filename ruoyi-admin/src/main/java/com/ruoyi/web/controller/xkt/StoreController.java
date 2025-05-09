@@ -33,7 +33,7 @@ public class StoreController extends XktBaseController {
     /**
      * 新增档口
      */
-    @PreAuthorize("@ss.hasPermi('system:store:edit')")
+//    @PreAuthorize("@ss.hasPermi('system:store:edit')")
     @Log(title = "新增档口", businessType = BusinessType.UPDATE)
     @PostMapping
     public R<Integer> create(@Validated @RequestBody StoreCreateVO createVO) {
@@ -43,7 +43,7 @@ public class StoreController extends XktBaseController {
     /**
      * 修改档口基本信息
      */
-    @PreAuthorize("@ss.hasPermi('system:store:edit')")
+//    @PreAuthorize("@ss.hasPermi('system:store:edit')")
     @ApiOperation(value = "修改档口基本信息", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口基本信息", businessType = BusinessType.UPDATE)
     @PutMapping

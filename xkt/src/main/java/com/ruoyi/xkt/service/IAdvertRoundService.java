@@ -18,10 +18,10 @@ public interface IAdvertRoundService {
      *
      * @param storeId 档口ID
      * @param advertId  广告ID
-     * @param typeId
+     * @param showType 时间范围 位置枚举
      * @return AdRoundPlayStoreResDTO
      */
-    AdRoundStoreResDTO getStoreAdInfo(Long storeId, Long advertId, Integer typeId);
+    AdRoundStoreResDTO getStoreAdInfo(Long storeId, Long advertId, Integer showType);
 
     /**
      * 档口购买推广营销

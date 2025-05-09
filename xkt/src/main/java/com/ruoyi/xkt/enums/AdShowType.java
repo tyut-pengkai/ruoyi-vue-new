@@ -6,24 +6,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 推广营销竞价轮次
+ * 推广营销展示类型
  * @author liujiang
  * @date 2025-04-02 23:42
  */
 @Getter
 @AllArgsConstructor
-public enum AdRoundType {
+public enum AdShowType {
 
-    // 播放轮
-    PLAY_ROUND(1, "播放轮"),
-    // 第二轮
-    SECOND_ROUND(2, "第二轮"),
-    // 第三轮
-    THIRD_ROUND(3, "第三轮"),
-    // 第四轮
-    FOURTH_ROUND(4, "第四轮"),
-    // 第五轮
-    FIFTH_ROUND(5, "第五轮"),
+    // 时间范围
+    TIME_RANGE(1, "时间范围"),
+    // 位置枚举
+    POSITION_ENUM(2, "位置枚举"),
 
 
     ;
@@ -31,8 +25,8 @@ public enum AdRoundType {
     private final Integer value;
     private final String label;
 
-    public static AdRoundType of(Integer value) {
-        for (AdRoundType e : AdRoundType.values()) {
+    public static AdShowType of(Integer value) {
+        for (AdShowType e : AdShowType.values()) {
             if (e.getValue().equals(value)) {
                 return e;
             }

@@ -53,7 +53,7 @@ public class StoreProdAppResDTO {
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcDTO svc;
     @ApiModelProperty(value = "详情内容")
-    private StoreProdDetailDTO detail;
+    private String detail;
 
 
 }

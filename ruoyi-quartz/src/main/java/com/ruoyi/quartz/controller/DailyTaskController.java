@@ -78,6 +78,12 @@ public class DailyTaskController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/store-redis")
+    public R saveStoreToRedis(SysJob sysJob) throws ParseException {
+        task.saveStoreToRedis();
+        return R.ok();
+    }
+
 
 
 }

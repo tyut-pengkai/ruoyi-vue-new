@@ -28,6 +28,10 @@ public class AdvertRound extends XktBaseEntity {
     @TableId
     private Long id;
     /**
+     * 凭证日期
+     */
+    private Date voucherDate;
+    /**
      * 广告ID
      */
     private Long advertId;
@@ -63,6 +67,10 @@ public class AdvertRound extends XktBaseEntity {
      * 推广档口ID
      */
     private Long storeId;
+    /**
+     * 起拍价格
+     */
+    private BigDecimal startPrice;
     /**
      * 推广档口出价
      */

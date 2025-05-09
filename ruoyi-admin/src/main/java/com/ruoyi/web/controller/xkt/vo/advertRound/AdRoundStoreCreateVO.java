@@ -27,9 +27,9 @@ public class AdRoundStoreCreateVO {
     @NotNull(message = "广告轮次ID不能为空!")
     @ApiModelProperty(value = "广告轮次ID")
     private Long roundId;
-    @NotNull(message = "typeId不能为空!")
-    @ApiModelProperty(value = "typeId")
-    private Integer typeId;
+    @NotNull(message = "推广展示类型不能为空!")
+    @ApiModelProperty(value = "推广展示类型 时间范围  位置枚举")
+    private Integer showType;
     @ApiModelProperty(value = "[不一定传]广告位置 A B C D E")
     private String position;
     @NotNull(message = "推广档口ID不能为空!")
