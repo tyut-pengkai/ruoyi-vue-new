@@ -2,6 +2,8 @@ package com.ruoyi.xkt.service;
 
 import com.github.pagehelper.Page;
 import com.ruoyi.xkt.dto.account.*;
+import com.ruoyi.xkt.dto.finance.RechargeAddDTO;
+import com.ruoyi.xkt.dto.finance.RechargeAddResult;
 import com.ruoyi.xkt.enums.EPayChannel;
 
 import java.math.BigDecimal;
@@ -86,4 +88,36 @@ public interface IAssetService {
      */
     Page<TransDetailUserPageItemDTO> pageUserTransDetail(TransDetailUserQueryDTO queryDTO);
 
+    /**
+     * 档口充值
+     *
+     * @param rechargeAddDTO
+     * @return
+     */
+    RechargeAddResult rechargeByStore(RechargeAddDTO rechargeAddDTO);
+
+    /**
+     * 充值是否成功
+     *
+     * @param finBillNo
+     * @return
+     */
+    boolean isRechargeSuccess(String finBillNo);
+
+    /**
+     * 支付推广费
+     *
+     * @param storeId
+     * @param amount
+     * @param transactionPassword
+     */
+    void payAdvertFee(Long storeId, BigDecimal amount, String transactionPassword);
+
+    /**
+     * 退回推广费
+     *
+     * @param storeId
+     * @param amount
+     */
+    void refundAdvertFee(Long storeId, BigDecimal amount);
 }

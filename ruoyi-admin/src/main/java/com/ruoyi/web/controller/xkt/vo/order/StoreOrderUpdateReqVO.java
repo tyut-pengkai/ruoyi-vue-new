@@ -95,18 +95,6 @@ public class StoreOrderUpdateReqVO {
     @ApiModelProperty(value = "明细列表")
     private List<Detail> detailList;
 
-//    @NotNull(message = "是否发起支付不能为空")
-//    @ApiModelProperty(value = "是否发起支付")
-//    private Boolean beginPay;
-//
-//    @NotNull(message = "支付渠道不能为空")
-//    @ApiModelProperty(value = "支付渠道[1:支付宝]")
-//    private Integer payChannel;
-//
-//    @NotNull(message = "支付来源不能为空")
-//    @ApiModelProperty(value = "支付来源[1:电脑网站 2:手机网站]")
-//    private Integer payFrom;
-
     @ApiModel(value = "明细")
     @Data
     public static class Detail {

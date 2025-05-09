@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.service;
 
+import com.ruoyi.xkt.domain.FinanceBill;
 import com.ruoyi.xkt.dto.finance.FinanceBillExt;
 import com.ruoyi.xkt.dto.order.StoreOrderExt;
 import com.ruoyi.xkt.enums.EPayChannel;
@@ -12,6 +13,14 @@ import java.util.List;
  * @date 2025-04-08 21:14
  */
 public interface IFinanceBillService {
+    /**
+     * 获取单据
+     *
+     * @param billNo
+     * @return
+     */
+    FinanceBill getByBillNo(String billNo);
+
     /**
      * 订单支付完成创建收款单（入账）
      *
@@ -32,7 +41,6 @@ public interface IFinanceBillService {
 
     /**
      * 订单完成创建转移单（入账）
-     *
      *
      * @param orderExt
      * @param afterSaleOrderExts
@@ -71,6 +79,39 @@ public interface IFinanceBillService {
      * @param financeBillId
      */
     void entryWithdrawPaymentBill(Long financeBillId);
+
+    /**
+     * 充值创建收款单（未入账）
+     *
+     * @param storeId
+     * @param amount
+     * @param payChannel
+     * @return
+     */
+    FinanceBillExt createRechargeCollectionBill(Long storeId, BigDecimal amount, EPayChannel payChannel);
+
+    /**
+     * 充值收款单入账
+     *
+     * @param billNo
+     */
+    void entryRechargeCollectionBill(String billNo);
+
+    /**
+     * 内部转移单（已入账）
+     *
+     * @param inputAccountId
+     * @param outputAccountId
+     * @param amount
+     * @param srcType
+     * @param srcId
+     * @param relType
+     * @param relId
+     * @param remark
+     * @return
+     */
+    FinanceBillExt createInternalTransferBill(Long inputAccountId, Long outputAccountId, BigDecimal amount,
+                                              Integer srcType, Long srcId, Integer relType, Long relId, String remark);
 
 
 }

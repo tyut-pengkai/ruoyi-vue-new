@@ -14,6 +14,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.FinanceBill;
 import com.ruoyi.xkt.domain.FinanceBillDetail;
+import com.ruoyi.xkt.domain.InternalAccount;
 import com.ruoyi.xkt.domain.StoreOrderDetail;
 import com.ruoyi.xkt.dto.finance.FinanceBillExt;
 import com.ruoyi.xkt.dto.finance.TransInfo;
@@ -50,6 +51,13 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
     private IInternalAccountService internalAccountService;
     @Autowired
     private IExternalAccountService externalAccountService;
+
+    @Override
+    public FinanceBill getByBillNo(String billNo) {
+        Assert.notEmpty(billNo);
+        return financeBillMapper.selectOne(Wrappers.lambdaQuery(FinanceBill.class)
+                .eq(FinanceBill::getBillNo, billNo));
+    }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -112,6 +120,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public FinanceBillExt createOrderCompletedTransferBill(StoreOrderExt orderExt) {
+        //TODO 需要先批量获取内部账户避免出现死锁？
         Assert.notNull(orderExt);
         FinanceBill bill = new FinanceBill();
         bill.setBillNo(generateBillNo(EFinBillType.TRANSFER));
@@ -169,6 +178,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
     @Override
     public FinanceBillExt createOrderCompletedTransferBill(StoreOrderExt orderExt,
                                                            List<StoreOrderExt> afterSaleOrderExts) {
+        //TODO 需要先批量获取内部账户避免出现死锁？
         Assert.notNull(orderExt);
         FinanceBill bill = new FinanceBill();
         bill.setBillNo(generateBillNo(EFinBillType.TRANSFER));
@@ -347,6 +357,10 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         if (!BeanValidators.exists(financeBill)) {
             throw new ServiceException(CharSequenceUtil.format("售后订单[{}]对应付款单不存在", storeOrderId));
         }
+        if (!EFinBillType.PAYMENT.getValue().equals(financeBill.getBillType())
+                || !EFinBillSrcType.STORE_ORDER_REFUND.getValue().equals(financeBill.getSrcType())) {
+            throw new ServiceException(CharSequenceUtil.format("单据[{}]类型异常", financeBill.getId()));
+        }
         if (!EFinBillStatus.PROCESSING.getValue().equals(financeBill.getBillStatus())) {
             throw new ServiceException(CharSequenceUtil.format("付款单[{}]状态异常", financeBill.getId()));
         }
@@ -416,6 +430,10 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         if (!BeanValidators.exists(financeBill)) {
             throw new ServiceException(CharSequenceUtil.format("提现付款单[{}]不存在", financeBillId));
         }
+        if (!EFinBillType.PAYMENT.getValue().equals(financeBill.getBillType())
+                || !EFinBillSrcType.WITHDRAW.getValue().equals(financeBill.getSrcType())) {
+            throw new ServiceException(CharSequenceUtil.format("单据[{}]类型异常", financeBillId));
+        }
         if (!EFinBillStatus.PROCESSING.getValue().equals(financeBill.getBillStatus())) {
             throw new ServiceException(CharSequenceUtil.format("付款单[{}]状态异常", financeBill.getId()));
         }
@@ -428,6 +446,120 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         internalAccountService.entryTransDetail(financeBill.getId(), EFinBillType.of(financeBill.getBillType()));
         //外部账户入账
         externalAccountService.entryTransDetail(financeBill.getId(), EFinBillType.of(financeBill.getBillType()));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public FinanceBillExt createRechargeCollectionBill(Long storeId, BigDecimal amount, EPayChannel payChannel) {
+        Assert.notNull(storeId);
+        Assert.notNull(amount);
+        Assert.notNull(payChannel);
+        FinanceBill bill = new FinanceBill();
+        String billNo = generateBillNo(EFinBillType.COLLECTION);
+        bill.setBillNo(billNo);
+        bill.setBillType(EFinBillType.COLLECTION.getValue());
+        //直接标记成功
+        bill.setBillStatus(EFinBillStatus.PROCESSING.getValue());
+        bill.setSrcType(EFinBillSrcType.RECHARGE.getValue());
+        bill.setBusinessUniqueKey(billNo);
+        InternalAccount inputInternalAccount = internalAccountService.getAccount(storeId, EAccountOwnerType.STORE);
+        Assert.notNull(inputInternalAccount, "未创建档口账户");
+        bill.setInputInternalAccountId(inputInternalAccount.getId());
+        bill.setInputExternalAccountId(payChannel.getPlatformExternalAccountId());
+        bill.setBusinessAmount(amount);
+        bill.setTransAmount(amount);
+        bill.setRemark(CharSequenceUtil.format("档口充值{}元", amount.toPlainString()));
+        bill.setVersion(0L);
+        bill.setDelFlag(Constants.UNDELETED);
+        financeBillMapper.insert(bill);
+        TransInfo transInfo = TransInfo.builder()
+                .srcBillId(bill.getId())
+                .srcBillType(bill.getBillType())
+                .transAmount(bill.getTransAmount())
+                .transTime(new Date())
+                .handlerId(null)
+                .remark("档口充值")
+                .build();
+        //内部账户
+        internalAccountService.addTransDetail(inputInternalAccount.getId(), transInfo,
+                ELoanDirection.DEBIT, EEntryStatus.WAITING);
+        //外部账户
+        externalAccountService.addTransDetail(payChannel.getPlatformExternalAccountId(), transInfo,
+                ELoanDirection.DEBIT, EEntryStatus.WAITING);
+        return new FinanceBillExt(bill, ListUtil.empty());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void entryRechargeCollectionBill(String billNo) {
+        Assert.notEmpty(billNo);
+        //业务唯一键
+        FinanceBill financeBill = financeBillMapper.selectOne(Wrappers.lambdaQuery(FinanceBill.class)
+                .eq(FinanceBill::getBillNo, billNo));
+        if (!BeanValidators.exists(financeBill)) {
+            throw new ServiceException(CharSequenceUtil.format("充值收款单[{}]不存在", billNo));
+        }
+        if (!EFinBillType.COLLECTION.getValue().equals(financeBill.getBillType())
+                || !EFinBillSrcType.RECHARGE.getValue().equals(financeBill.getSrcType())) {
+            throw new ServiceException(CharSequenceUtil.format("单据[{}]类型异常", financeBill.getId()));
+        }
+        if (!EFinBillStatus.PROCESSING.getValue().equals(financeBill.getBillStatus())) {
+            throw new ServiceException(CharSequenceUtil.format("收款单[{}]状态异常", financeBill.getId()));
+        }
+        financeBill.setBillStatus(EFinBillStatus.SUCCESS.getValue());
+        int r = financeBillMapper.updateById(financeBill);
+        if (r == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
+        //内部账户入账
+        internalAccountService.entryTransDetail(financeBill.getId(), EFinBillType.of(financeBill.getBillType()));
+        //外部账户入账
+        externalAccountService.entryTransDetail(financeBill.getId(), EFinBillType.of(financeBill.getBillType()));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public FinanceBillExt createInternalTransferBill(Long inputAccountId, Long outputAccountId, BigDecimal amount,
+                                                     Integer srcType, Long srcId, Integer relType, Long relId,
+                                                     String remark) {
+        //TODO 需要先批量获取内部账户避免出现死锁？
+        Assert.notNull(inputAccountId);
+        Assert.notNull(outputAccountId);
+        Assert.notNull(amount);
+        FinanceBill bill = new FinanceBill();
+        String billNo = generateBillNo(EFinBillType.TRANSFER);
+        bill.setBillNo(billNo);
+        bill.setBillType(EFinBillType.TRANSFER.getValue());
+        //直接标记成功
+        bill.setBillStatus(EFinBillStatus.SUCCESS.getValue());
+        bill.setSrcType(srcType);
+        bill.setSrcId(srcId);
+        bill.setRelType(relType);
+        bill.setRelId(relId);
+        //业务唯一键
+        bill.setBusinessUniqueKey(billNo);
+        bill.setInputInternalAccountId(inputAccountId);
+        bill.setOutputInternalAccountId(outputAccountId);
+        bill.setBusinessAmount(amount);
+        bill.setTransAmount(amount);
+        bill.setRemark(remark);
+        bill.setVersion(0L);
+        bill.setDelFlag(Constants.UNDELETED);
+        financeBillMapper.insert(bill);
+        TransInfo transInfo = TransInfo.builder()
+                .srcBillId(bill.getId())
+                .srcBillType(bill.getBillType())
+                .transAmount(bill.getTransAmount())
+                .transTime(new Date())
+                .handlerId(null)
+                .remark(remark)
+                .build();
+        //内部账户
+        internalAccountService.addTransDetail(outputAccountId, transInfo,
+                ELoanDirection.CREDIT, EEntryStatus.FINISH);
+        internalAccountService.addTransDetail(inputAccountId, transInfo,
+                ELoanDirection.DEBIT, EEntryStatus.FINISH);
+        return new FinanceBillExt(bill, ListUtil.empty());
     }
 
 

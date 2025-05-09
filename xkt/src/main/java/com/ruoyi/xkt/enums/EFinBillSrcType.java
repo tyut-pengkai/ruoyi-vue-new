@@ -15,6 +15,9 @@ public enum EFinBillSrcType {
     STORE_ORDER_COMPLETED(2, "档口代发订单"),
     WITHDRAW(3, "提现"),
     STORE_ORDER_REFUND(4, "档口代发退货"),
+    RECHARGE(5, "充值"),
+    ADVERT_PAID(6, "推广费"),
+    ADVERT_REFUND(7, "推广费退款"),
     ;
 
     private final Integer value;

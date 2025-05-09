@@ -89,21 +89,20 @@ public class AliPaymentMangerImpl implements PaymentManager {
     }
 
     @Override
-    public String payStoreOrder(StoreOrderExt orderExt, EPayPage payFrom) {
-        Assert.notNull(orderExt);
-        Assert.notNull(payFrom);
-        if (!EPayStatus.PAYING.getValue().equals(orderExt.getOrder().getPayStatus())) {
-            throw new ServiceException("订单[" + orderExt.getOrder().getOrderNo() + "]支付状态异常");
-        }
+    public String pay(String tradeNo, BigDecimal amount, String subject, EPayPage payPage) {
+        Assert.notEmpty(tradeNo);
+        Assert.notNull(amount);
+        Assert.notEmpty(subject);
+        Assert.notNull(payPage);
         AlipayReqDTO reqDTO = new AlipayReqDTO();
-        reqDTO.setOutTradeNo(orderExt.getOrder().getOrderNo());
-        reqDTO.setTotalAmount(orderExt.getOrder().getTotalAmount().toPlainString());
-        reqDTO.setSubject("代发订单" + orderExt.getOrder().getOrderNo());
+        reqDTO.setOutTradeNo(tradeNo);
+        reqDTO.setTotalAmount(amount.toPlainString());
+        reqDTO.setSubject(subject);
         reqDTO.setProductCode(PAY_PRODUCT_CODE); //这个是固定的
         String reqStr = JSON.toJSONString(reqDTO);
         AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
                 alipayPublicKey, signType);
-        switch (payFrom) {
+        switch (payPage) {
             case WEB:
                 AlipayTradePagePayRequest webReq = new AlipayTradePagePayRequest();
                 webReq.setReturnUrl(returnUrl);
@@ -129,6 +128,17 @@ public class AliPaymentMangerImpl implements PaymentManager {
             default:
                 throw new ServiceException("未知的支付来源");
         }
+    }
+
+    @Override
+    public String payStoreOrder(StoreOrderExt orderExt, EPayPage payPage) {
+        Assert.notNull(orderExt);
+        Assert.notNull(payPage);
+        if (!EPayStatus.PAYING.getValue().equals(orderExt.getOrder().getPayStatus())) {
+            throw new ServiceException("订单[" + orderExt.getOrder().getOrderNo() + "]支付状态异常");
+        }
+        return pay(orderExt.getOrder().getOrderNo(), orderExt.getOrder().getTotalAmount(),
+                "代发订单" + orderExt.getOrder().getOrderNo(), payPage);
     }
 
     @Override

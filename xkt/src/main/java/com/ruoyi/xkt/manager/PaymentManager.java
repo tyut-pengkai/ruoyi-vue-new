@@ -20,13 +20,24 @@ public interface PaymentManager {
     EPayChannel channel();
 
     /**
+     * 支付
+     *
+     * @param tradeNo
+     * @param amount
+     * @param subject
+     * @param payPage
+     * @return 跳转页面数据/签名字符串/支付跳转链接/预支付交易会话标识（根据支付渠道&支付来源确定）
+     */
+    String pay(String tradeNo, BigDecimal amount, String subject, EPayPage payPage);
+
+    /**
      * 订单支付
      *
      * @param order
-     * @param payFrom
+     * @param payPage
      * @return 跳转页面数据/签名字符串/支付跳转链接/预支付交易会话标识（根据支付渠道&支付来源确定）
      */
-    String payStoreOrder(StoreOrderExt order, EPayPage payFrom);
+    String payStoreOrder(StoreOrderExt order, EPayPage payPage);
 
     /**
      * 订单退款

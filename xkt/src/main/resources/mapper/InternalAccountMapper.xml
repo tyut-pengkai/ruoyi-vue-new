@@ -22,7 +22,10 @@
             CASE fb.src_type
             WHEN 2 THEN '档口代发订单'
             WHEN 3 THEN '提现'
-            ELSE '推广费' END trans_type,
+            WHEN 5 THEN '充值'
+            WHEN 6 THEN '推广费'
+            WHEN 7 THEN '推广费退款'
+            ELSE '其他' END trans_type,
             fb.remark,
             fb.bill_type,
             CASE fb.bill_type
@@ -38,6 +41,7 @@
             LEFT JOIN store_order so ON fb.rel_id = so.id AND fb.rel_type = 1
         WHERE
             iatd.internal_account_id = #{id}
+            AND fb.bill_status = 3
             AND iatd.del_flag = '0'
     </select>
 

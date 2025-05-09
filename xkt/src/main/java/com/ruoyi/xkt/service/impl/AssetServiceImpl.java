@@ -7,15 +7,18 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.ExternalAccount;
+import com.ruoyi.xkt.domain.FinanceBill;
 import com.ruoyi.xkt.domain.InternalAccount;
 import com.ruoyi.xkt.dto.account.*;
 import com.ruoyi.xkt.dto.finance.FinanceBillExt;
-import com.ruoyi.xkt.enums.EAccountOwnerType;
-import com.ruoyi.xkt.enums.EAccountStatus;
-import com.ruoyi.xkt.enums.EAccountType;
-import com.ruoyi.xkt.enums.EPayChannel;
+import com.ruoyi.xkt.dto.finance.RechargeAddDTO;
+import com.ruoyi.xkt.dto.finance.RechargeAddResult;
+import com.ruoyi.xkt.enums.*;
+import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.service.IAssetService;
 import com.ruoyi.xkt.service.IExternalAccountService;
 import com.ruoyi.xkt.service.IFinanceBillService;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author liangyq
@@ -41,6 +45,8 @@ public class AssetServiceImpl implements IAssetService {
     private IInternalAccountService internalAccountService;
     @Autowired
     private IExternalAccountService externalAccountService;
+    @Autowired
+    private List<PaymentManager> paymentManagers;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -185,6 +191,73 @@ public class AssetServiceImpl implements IAssetService {
         Page<TransDetailUserPageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize());
         internalAccountService.listUserTransDetailPageItem(queryDTO.getUserId());
         return page;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public RechargeAddResult rechargeByStore(RechargeAddDTO rechargeAddDTO) {
+        FinanceBillExt financeBillExt = financeBillService.createRechargeCollectionBill(rechargeAddDTO.getStoreId(),
+                rechargeAddDTO.getAmount(), rechargeAddDTO.getPayChannel());
+        PaymentManager paymentManager = getPaymentManager(rechargeAddDTO.getPayChannel());
+        String payRtnStr = paymentManager.pay(financeBillExt.getFinanceBill().getBillNo(), rechargeAddDTO.getAmount(),
+                "档口充值", rechargeAddDTO.getPayPage());
+        return new RechargeAddResult(financeBillExt, payRtnStr);
+    }
+
+    @Override
+    public boolean isRechargeSuccess(String finBillNo) {
+        FinanceBill financeBill = financeBillService.getByBillNo(finBillNo);
+        return BeanValidators.exists(financeBill)
+                && EFinBillStatus.SUCCESS.getValue().equals(financeBill.getBillStatus());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void payAdvertFee(Long storeId, BigDecimal amount, String transactionPassword) {
+        Assert.notNull(storeId);
+        Assert.notNull(amount);
+        InternalAccount internalAccount = internalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE);
+        if (!EAccountStatus.NORMAL.getValue().equals(internalAccount.getAccountStatus())) {
+            throw new ServiceException("档口账户已冻结");
+        }
+        if (StrUtil.isEmpty(internalAccount.getTransactionPassword())) {
+            throw new ServiceException("请先设置支付密码");
+        }
+        if (!StrUtil.equals(SecureUtil.md5(transactionPassword), internalAccount.getTransactionPassword())) {
+            throw new ServiceException("支付密码错误");
+        }
+        financeBillService.createInternalTransferBill(Constants.PLATFORM_INTERNAL_ACCOUNT_ID, internalAccount.getId(),
+                amount, EFinBillSrcType.ADVERT_PAID.getValue(), null, null, null, "推广费");
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void refundAdvertFee(Long storeId, BigDecimal amount) {
+        Assert.notNull(storeId);
+        Assert.notNull(amount);
+        InternalAccount internalAccount = internalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE);
+        financeBillService.createInternalTransferBill(internalAccount.getId(), Constants.PLATFORM_INTERNAL_ACCOUNT_ID,
+                amount, EFinBillSrcType.ADVERT_REFUND.getValue(), null, null, null,
+                "推广费退款");
+
+    }
+
+    /**
+     * 根据支付渠道匹配支付类
+     *
+     * @param payChannel
+     * @return
+     */
+    private PaymentManager getPaymentManager(EPayChannel payChannel) {
+        if (payChannel == null) {
+            throw new ServiceException("请先选择支付渠道");
+        }
+        for (PaymentManager paymentManager : paymentManagers) {
+            if (paymentManager.channel() == payChannel) {
+                return paymentManager;
+            }
+        }
+        throw new ServiceException("未知支付渠道");
     }
 
 
