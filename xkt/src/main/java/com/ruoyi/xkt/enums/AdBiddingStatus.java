@@ -14,10 +14,10 @@ public enum AdBiddingStatus {
 
     // 已出价
     BIDDING(1, "已出价"),
-    // 竞价失败
-    BIDDING_FAIL(2, "竞价失败"),
     // 竞价成功
-    BIDDING_SUCCESS(3, "竞价成功"),
+    BIDDING_SUCCESS(2, "竞价成功"),
+    // 竞价失败
+    BIDDING_FAIL(3, "竞价失败"),
 
     ;
 

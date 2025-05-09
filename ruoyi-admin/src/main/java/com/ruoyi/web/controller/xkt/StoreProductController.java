@@ -51,7 +51,7 @@ public class StoreProductController extends XktBaseController {
     /**
      * 模糊查询档口商品
      */
-    @PreAuthorize("@ss.hasPermi('system:product:query')")
+//    @PreAuthorize("@ss.hasPermi('system:product:query')")
     @ApiOperation(value = "模糊查询档口商品", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy")
     public R<List<StoreProdFuzzyResVO>> fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
@@ -62,7 +62,7 @@ public class StoreProductController extends XktBaseController {
     /**
      * 模糊查询档口商品
      */
-    @PreAuthorize("@ss.hasPermi('system:product:query')")
+//    @PreAuthorize("@ss.hasPermi('system:product:query')")
     @ApiOperation(value = "模糊查询档口商品", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy/pic")
     public R<List<StoreProdFuzzyResPicVO>> fuzzyQueryResPicList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
@@ -74,7 +74,7 @@ public class StoreProductController extends XktBaseController {
     /**
      * 查询档口商品列表
      */
-    @PreAuthorize("@ss.hasPermi('system:product:list')")
+//    @PreAuthorize("@ss.hasPermi('system:product:list')")
     @ApiOperation(value = "查询档口商品列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreProdPageResDTO>> page(@Validated @RequestBody StoreProdPageVO pageVO) {
@@ -84,7 +84,7 @@ public class StoreProductController extends XktBaseController {
     /**
      * 获取档口商品详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:product:query')")
+//    @PreAuthorize("@ss.hasPermi('system:product:query')")
     @ApiOperation(value = "获取档口商品详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/detail/{storeProdId}")
     public R<StoreProdResVO> getInfo(@PathVariable("storeProdId") Long storeProdId) {

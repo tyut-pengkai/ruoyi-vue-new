@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.AdvertRound;
@@ -149,15 +150,6 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     /**
      * 根据广告ID获取推广轮次列表，并返回当前档口在这些推广轮次的数据
      *
-     * @param storeId 档口ID
-     * @param advertId  推广ID
-     * @param typeId 类型ID
-     * @return AdRoundPlayStoreResDTO
-     */
-
-    /**
-     * 根据广告ID获取推广轮次列表，并返回当前档口在这些推广轮次的数据
-     *
      * @param storeId  档口ID
      * @param advertId 广告ID
      * @param showType 显示类型 时间范围 位置枚举
@@ -184,6 +176,18 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         advertRoundList = voucherDate.before(firstRoundEndTime)
                 ? advertRoundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.FIFTH_ROUND.getValue())).collect(Collectors.toList())
                 : advertRoundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())).collect(Collectors.toList());
+        // 有档口购买的所有轮次
+        Set<Integer> roundIdSet = advertRoundList.stream().filter(x -> ObjectUtils.isNotEmpty(x.getPayPrice())).map(AdvertRound::getRoundId).collect(Collectors.toSet());
+        // 当前档口购买的轮次
+        Set<Integer> boughtIdSet = advertRoundList.stream().filter(x -> Objects.equals(x.getStoreId(), storeId)).map(AdvertRound::getRoundId).collect(Collectors.toSet());
+        // 当前档口未购买的轮次
+        roundIdSet.removeAll(boughtIdSet);
+        List<AdvertRoundRecord> recordList = CollectionUtils.isNotEmpty(roundIdSet)
+                ?  this.advertRoundRecordMapper.selectRecordList(advertId, storeId, voucherDate, roundIdSet) : new ArrayList<>();
+
+        // 获取已抢购推广位列表
+        AdRoundStoreResDTO roundResDTO =  AdRoundStoreResDTO.builder().recordList(this.getStoreBoughtList(storeId, advertRoundList, recordList)).build();
+
         // 如果投放类型是：时间范围，则只需要返回每一轮的开始时间和结束时间；如果投放类型是：位置枚举，则需要返回每一个位置的详细情况
         if (Objects.equals(showType, AdShowType.TIME_RANGE.getValue())) {
             // 构建当前round基础数据
@@ -195,16 +199,17 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             // 当前档口购买的推广轮次
             Map<Integer, AdvertRound> boughtRoundMap = advertRoundList.stream().filter(x -> Objects.equals(x.getStoreId(), storeId))
                     .collect(Collectors.toMap(AdvertRound::getRoundId, Function.identity()));
-            // 所有的轮次
-            Set<Integer> roundIdSet = advertRoundList.stream().map(AdvertRound::getRoundId).collect(Collectors.toSet());
+            /*// 所有的轮次
+            Set<Integer> roundIdSet = advertRoundList.stream().filter(x -> ObjectUtils.isNotEmpty(x.getPayPrice())).map(AdvertRound::getRoundId).collect(Collectors.toSet());*/
             // 未购买的轮次 = 所有的轮次 - 已购买轮次
-            roundIdSet.removeAll(boughtRoundMap.keySet());
-            Map<Integer, AdvertRoundRecord> recordMap = new ConcurrentHashMap<>();
+//            roundIdSet.removeAll(boughtRoundMap.keySet());
+
+            Map<Integer, AdvertRoundRecord> unBoughtRoundMap = recordList.stream().collect(Collectors.toConcurrentMap(AdvertRoundRecord::getRoundId, Function.identity()));
             // 有未购买轮次，则查找未购买轮次是否有竞价
-            if (CollectionUtils.isNotEmpty(roundIdSet)) {
-                List<AdvertRoundRecord> recordList = this.advertRoundRecordMapper.selectRecordList(advertId, storeId, voucherDate, roundIdSet);
-                Optional.ofNullable(recordList).ifPresent(list -> list.forEach(x -> recordMap.put(x.getRoundId(), x)));
-            }
+//            if (CollectionUtils.isNotEmpty(roundIdSet)) {
+//                List<AdvertRoundRecord> recordList = this.advertRoundRecordMapper.selectRecordList(advertId, storeId, voucherDate, roundIdSet);
+//                Optional.ofNullable(recordList).ifPresent(list -> list.forEach(x -> unBoughtRoundMap.put(x.getRoundId(), x)));
+//            }
             final Date date = new Date();
             // 设置当前档口在推广轮次中的数据详情
             rangeDTOList.forEach(x -> {
@@ -223,17 +228,28 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     x.setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(boughtRound.getBiddingStatus())).getLabel());
                 }
                 // 未购买推广位轮次
-                final AdvertRoundRecord record = recordMap.get(x.getRoundId());
-                if (ObjectUtils.isNotEmpty(record)) {
-                    x.setBiddingStatus(record.getBiddingStatus());
-                    x.setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(record.getBiddingStatus())).getLabel());
+                final AdvertRoundRecord unBought = unBoughtRoundMap.get(x.getRoundId());
+                if (ObjectUtils.isNotEmpty(unBought)) {
+                    x.setBiddingStatus(unBought.getBiddingStatus());
+                    x.setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(unBought.getBiddingStatus())).getLabel());
                 }
             });
-            return AdRoundStoreResDTO.builder().timeRangeList(rangeDTOList).build();
+            return  roundResDTO.setTimeRangeList(rangeDTOList);
         } else {
             // 位置枚举
-
+            
         }
+
+
+
+
+
+
+        // 已抢购推广列表 显示单据日期大于等于当天的数据  针对某一轮 如果抢购成功了，则这一轮所以失败的记录都不显示。如果未来的某一轮：已出价或者竞价失败有多次，则只显示最新的那一条数据。
+        // 如果是已出价，要显示最新出价。如果是竞价失败，要显示最新的价格
+
+        // 针对当前播放轮，如果竞价成功，则显示。就算是当前轮最后一天 也要显示 竞价成功
+
 
 
         // 写 sql 从advertRound中获取 advertId 和 roundId 最高的价格
@@ -263,6 +279,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
         return null;
     }
+
 
 
     /**
@@ -339,6 +356,84 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         }
         return 1;
     }
+
+    /**
+     * 获取已抢购推广位列表
+     *
+     * @param storeId         档口ID
+     * @param advertRoundList 播放轮次列表
+     * @param recordList 未购买的播放轮次列表
+     * @return List<AdRoundStoreResDTO.ADRSRoundRecordDTO>
+     */
+    private List<AdRoundStoreResDTO.ADRSRoundRecordDTO> getStoreBoughtList(Long storeId, List<AdvertRound> advertRoundList, List<AdvertRoundRecord> recordList) {
+        /*// 每一轮最高的出价map
+        Map<Integer, BigDecimal> maxBidMap = advertRoundList.stream()
+                .filter(x -> ObjectUtils.isNotEmpty(x.getPayPrice())).collect(Collectors
+                        .groupingBy(AdvertRound::getRoundId, Collectors
+                                .mapping(AdvertRound::getPayPrice, Collectors.reducing(BigDecimal.ZERO, BigDecimal::max))));
+        // 先处理 已抢购广告位列表，此处不用管 播放的轮次  统一展示前4轮的结果
+        List<AdRoundStoreResDTO.ADRSRoundRecordDTO> boughtRoundList = advertRoundList.stream()
+                .filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.FIFTH_ROUND.getValue()))
+                .filter(x -> Objects.equals(x.getStoreId(), storeId))
+                .map(x -> BeanUtil.toBean(x, AdRoundStoreResDTO.ADRSRoundRecordDTO.class)
+                        .setTypeName(Objects.requireNonNull(AdType.of(x.getTypeId())).getLabel())
+                        .setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(x.getBiddingStatus())).getLabel()))
+                .collect(Collectors.toList());
+        // 所有有档口出价的轮次
+        Set<Integer> roundIdSet = advertRoundList.stream().filter(x -> ObjectUtils.isNotEmpty(x.getPayPrice())).map(AdvertRound::getRoundId).collect(Collectors.toSet());
+        Set<Integer> boughtRoundIdSet = boughtRoundList.stream().map(AdRoundStoreResDTO.ADRSRoundRecordDTO::getRoundId).collect(Collectors.toSet());
+        // 抢购记录当前档口未购买的轮次
+        roundIdSet.removeAll(boughtRoundIdSet);
+        // 查询其它轮次是否有购买记录
+        if (CollectionUtils.isEmpty(roundIdSet)) {
+            return boughtRoundList;
+        }
+            List<AdvertRoundRecord> recordList = this.advertRoundRecordMapper.selectRecordList(advertId, storeId, voucherDate, roundIdSet);
+        if (CollectionUtils.isEmpty(recordList)) {
+            return boughtRoundList;
+        }
+        boughtRoundList.addAll(recordList.stream().sorted(Comparator.comparing(AdvertRoundRecord::getBiddingStatus))
+                .map(x -> BeanUtil.toBean(x, AdRoundStoreResDTO.ADRSRoundRecordDTO.class).setTypeName(Objects.requireNonNull(AdType.of(x.getTypeId())).getLabel())
+                        .setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(x.getBiddingStatus())).getLabel() + "，最新出价:" + maxBidMap.get(x.getRoundId())))
+                .collect(Collectors.toList()));*/
+
+
+
+
+        // 每一轮最高的出价map
+        Map<Integer, BigDecimal> maxBidMap = advertRoundList.stream().filter(x -> ObjectUtils.isNotEmpty(x.getPayPrice())).collect(Collectors
+                        .groupingBy(AdvertRound::getRoundId, Collectors
+                                .mapping(AdvertRound::getPayPrice, Collectors.reducing(BigDecimal.ZERO, BigDecimal::max))));
+
+        // 先处理 已抢购广告位列表，此处不用管 播放的轮次  统一展示前4轮的结果
+        List<AdRoundStoreResDTO.ADRSRoundRecordDTO> boughtRoundList = advertRoundList.stream().filter(x -> Objects.equals(x.getStoreId(), storeId))
+                .map(x -> BeanUtil.toBean(x, AdRoundStoreResDTO.ADRSRoundRecordDTO.class).setTypeName(Objects.requireNonNull(AdType.of(x.getTypeId())).getLabel())
+                        .setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(x.getBiddingStatus())).getLabel()))
+                .collect(Collectors.toList());
+
+
+
+        // 所有有档口出价的轮次
+//        Set<Integer> roundIdSet = advertRoundList.stream().filter(x -> ObjectUtils.isNotEmpty(x.getPayPrice())).map(AdvertRound::getRoundId).collect(Collectors.toSet());
+
+//        Set<Integer> boughtRoundIdSet = boughtRoundList.stream().map(AdRoundStoreResDTO.ADRSRoundRecordDTO::getRoundId).collect(Collectors.toSet());
+        // 抢购记录当前档口未购买的轮次
+//        roundIdSet.removeAll(boughtRoundIdSet);
+        // 查询其它轮次是否有购买记录
+        if (CollectionUtils.isEmpty(recordList)) {
+            return boughtRoundList;
+        }
+//        List<AdvertRoundRecord> recordList = this.advertRoundRecordMapper.selectRecordList(advertId, storeId, voucherDate, unBoughtRoundIdSet);
+//        if (CollectionUtils.isEmpty(recordList)) {
+//            return boughtRoundList;
+//        }
+        boughtRoundList.addAll(recordList.stream().sorted(Comparator.comparing(AdvertRoundRecord::getBiddingStatus))
+                .map(x -> BeanUtil.toBean(x, AdRoundStoreResDTO.ADRSRoundRecordDTO.class).setTypeName(Objects.requireNonNull(AdType.of(x.getTypeId())).getLabel())
+                        .setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(x.getBiddingStatus())).getLabel() + "，最新出价:" + maxBidMap.get(x.getRoundId())))
+                .collect(Collectors.toList()));
+        return boughtRoundList;
+    }
+
 
     /**
      * 通过定时任务往redis中放当前推广位 当前播放轮 或 即将播放轮 的截止时间；

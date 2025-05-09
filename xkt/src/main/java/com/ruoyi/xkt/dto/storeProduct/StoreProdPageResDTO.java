@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.dto.storeProduct;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.annotation.Excel;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -30,9 +31,8 @@ public class StoreProdPageResDTO {
     private String prodArtNum;
     @ApiModelProperty(value = "颜色")
     private String colorName;
-
+    @ApiModelProperty(name = "商品分类ID")
     private Long prodCateId;
-
     @ApiModelProperty(value = "分类类目")
     private String prodCateName;
     @ApiModelProperty(value = "标准尺码")

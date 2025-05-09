@@ -61,8 +61,6 @@ public class AdRoundStoreResDTO {
         private Integer biddingStatus;
         @ApiModelProperty(value = "竞价状态名称")
         private String biddingStatusName;
-        @ApiModelProperty(value = "竞价结果描述")
-        private String biddingStatusStr;
     }
 
     @Data
@@ -73,7 +71,7 @@ public class AdRoundStoreResDTO {
         @ApiModelProperty(value = "广告ID")
         private Long advertId;
         @ApiModelProperty(value = "广告轮次ID")
-        private Long roundId;
+        private Integer roundId;
         @ApiModelProperty(value = "typeId")
         private Integer typeId;
         @ApiModelProperty(value = "广告位置 A B C D E")
@@ -92,19 +90,21 @@ public class AdRoundStoreResDTO {
         @ApiModelProperty(value = "广告ID")
         private Long advertId;
         @ApiModelProperty(value = "广告轮次ID")
-        private Long roundId;
+        private Integer roundId;
         @ApiModelProperty(value = "广告类型ID")
         private Integer typeId;
+        @ApiModelProperty(value = "广告类型名称")
+        private String typeName;
         @ApiModelProperty(value = "推广档口ID")
         private Long storeId;
         @ApiModelProperty(value = "对象锁符号")
         private String symbol;
-        @ApiModelProperty(value = "广告类型名称")
-        private String typeName;
         @ApiModelProperty(value = "广告位置 A B C D E")
         private String position;
-        @ApiModelProperty(value = "竞价结果描述")
-        private String biddingStr;
+        @ApiModelProperty(value = "竞价状态")
+        private Integer biddingStatus;
+        @ApiModelProperty(value = "竞价状态名称及描述")
+        private String biddingStatusName;
     }
 
 

@@ -40,6 +40,10 @@ public class AdvertRoundRecord extends XktBaseEntity {
      */
     private Long advertId;
     /**
+     * 推广类型
+     */
+    private Integer typeId;
+    /**
      * 轮次ID
      */
     private Integer roundId;
@@ -67,6 +71,10 @@ public class AdvertRoundRecord extends XktBaseEntity {
      * 推广档口ID
      */
     private Long storeId;
+    /**
+     * 起拍价格
+     */
+    private BigDecimal startPrice;
     /**
      * 推广档口出价
      */
