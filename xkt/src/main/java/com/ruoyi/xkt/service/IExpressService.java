@@ -32,6 +32,24 @@ public interface IExpressService {
     Express getById(Long expressId);
 
     /**
+     * 获取所有物流
+     *
+     * @return
+     */
+    List<ExpressDTO> allExpress();
+
+    /**
+     * 快递费
+     *
+     * @param goodsQuantity
+     * @param provinceCode
+     * @param cityCode
+     * @param countyCode
+     * @return
+     */
+    List<ExpressFeeDTO> listExpressFee(Integer goodsQuantity, String provinceCode, String cityCode, String countyCode);
+
+    /**
      * 获取快递费配置
      *
      * @param expressId

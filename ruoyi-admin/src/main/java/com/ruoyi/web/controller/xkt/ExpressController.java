@@ -3,17 +3,14 @@ package com.ruoyi.web.controller.xkt;
 import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.web.controller.xkt.vo.express.ExpressAddressParseReqVO;
-import com.ruoyi.web.controller.xkt.vo.express.ExpressRegionTreeNodeVO;
-import com.ruoyi.web.controller.xkt.vo.express.ExpressStructAddressVO;
+import com.ruoyi.web.controller.xkt.vo.express.*;
+import com.ruoyi.xkt.dto.express.ExpressFeeDTO;
 import com.ruoyi.xkt.dto.express.ExpressRegionTreeNodeDTO;
 import com.ruoyi.xkt.dto.express.ExpressStructAddressDTO;
-import com.ruoyi.xkt.manager.ExpressManager;
 import com.ruoyi.xkt.service.IExpressService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,10 +27,21 @@ public class ExpressController extends XktBaseController {
 
     @Autowired
     private IExpressService expressService;
-    @Autowired
-    private List<ExpressManager> expressManagers;
 
-    @PreAuthorize("@ss.hasPermi('system:express:query')")
+    @ApiOperation("全部物流")
+    @GetMapping("allExpress")
+    public R<List<ExpressVO>> allExpress() {
+        return success(BeanUtil.copyToList(expressService.allExpress(), ExpressVO.class));
+    }
+
+    @ApiOperation("下单时物流选择列表 - 含快递费")
+    @PostMapping("listExpressFee")
+    public R<List<ExpressFeeVO>> listExpressFee(@Valid @RequestBody ExpressFeeReqVO vo) {
+        List<ExpressFeeDTO> dtoList = expressService.listExpressFee(vo.getGoodsQuantity(), vo.getProvinceCode(),
+                vo.getCityCode(), vo.getCountyCode());
+        return success(BeanUtil.copyToList(dtoList, ExpressFeeVO.class));
+    }
+
     @ApiOperation("获取行政规划树")
     @GetMapping("getRegionTree")
     public R<List<ExpressRegionTreeNodeVO>> getRegionTree() {
@@ -41,7 +49,6 @@ public class ExpressController extends XktBaseController {
         return success(BeanUtil.copyToList(dtoList, ExpressRegionTreeNodeVO.class));
     }
 
-    @PreAuthorize("@ss.hasPermi('system:express:query')")
     @ApiOperation("智能解析 - 对地址、姓名、电话等，进行智能识别")
     @PostMapping("parseNamePhoneAddress")
     public R<ExpressStructAddressVO> parseNamePhoneAddress(@Valid @RequestBody ExpressAddressParseReqVO vo) {

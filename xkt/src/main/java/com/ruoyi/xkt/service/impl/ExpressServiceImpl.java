@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -75,34 +75,68 @@ public class ExpressServiceImpl implements IExpressService {
     }
 
     @Override
+    public List<ExpressDTO> allExpress() {
+        return BeanUtil.copyToList(expressMapper.selectList(Wrappers.lambdaQuery(Express.class)
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED)), ExpressDTO.class);
+    }
+
+    @Override
+    public List<ExpressFeeDTO> listExpressFee(Integer goodsQuantity, String provinceCode, String cityCode, String countyCode) {
+        Assert.notNull(goodsQuantity);
+        Assert.isTrue(goodsQuantity > 0);
+        List<Express> expresses = expressMapper.selectList(Wrappers.lambdaQuery(Express.class)
+                .eq(Express::getSystemDeliverAccess, true)
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        return expresses.stream().map(e -> {
+            ExpressFeeDTO dto = BeanUtil.toBean(e, ExpressFeeDTO.class);
+            ExpressFeeConfig feeConfig = getExpressFeeConfig(e.getId(), provinceCode, cityCode, countyCode);
+            Assert.notNull(feeConfig, "获取快递费用异常");
+            BigDecimal fee;
+            if (goodsQuantity == 1) {
+                fee = feeConfig.getFirstItemAmount();
+            } else {
+                fee = feeConfig.getFirstItemAmount()
+                        .add(feeConfig.getNextItemAmount().multiply(BigDecimal.valueOf(goodsQuantity - 1)));
+            }
+            dto.setExpressFee(fee);
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
     public ExpressFeeConfig getExpressFeeConfig(Long expressId, String provinceCode, String cityCode,
                                                 String countyCode) {
         Assert.notNull(expressId);
         Assert.notEmpty(provinceCode);
         Assert.notEmpty(cityCode);
         Assert.notEmpty(countyCode);
-        Map<String, ExpressFeeConfig> map = expressFeeConfigMapper.selectList(Wrappers.lambdaQuery(ExpressFeeConfig.class)
-                .eq(ExpressFeeConfig::getExpressId, expressId)
-                .in(ExpressFeeConfig::getRegionCode, Arrays.asList(provinceCode, cityCode, countyCode)))
-                .stream()
-                //过滤掉已被删除的配置
-                .filter(BeanValidators::exists)
-                .collect(Collectors.toMap(o -> o.getRegionCode(), o -> o, (n, o) -> n));
-        ExpressFeeConfig expressFeeConfig = null;
-        if (CollUtil.isNotEmpty(map)) {
-            if (map.size() == 1) {
-                expressFeeConfig = CollUtil.getFirst(map.values());
-            } else {
-                expressFeeConfig = map.get(countyCode);
-                //按区市省从小到大去匹配
-                if (expressFeeConfig == null) {
-                    expressFeeConfig = map.get(cityCode);
-                    if (expressFeeConfig == null) {
-                        expressFeeConfig = map.get(provinceCode);
-                    }
-                }
-            }
-        }
+        //TODO mock
+//        Map<String, ExpressFeeConfig> map = expressFeeConfigMapper.selectList(Wrappers.lambdaQuery(ExpressFeeConfig.class)
+//                .eq(ExpressFeeConfig::getExpressId, expressId)
+//                .in(ExpressFeeConfig::getRegionCode, Arrays.asList(provinceCode, cityCode, countyCode)))
+//                .stream()
+//                //过滤掉已被删除的配置
+//                .filter(BeanValidators::exists)
+//                .collect(Collectors.toMap(o -> o.getRegionCode(), o -> o, (n, o) -> n));
+//        ExpressFeeConfig expressFeeConfig = null;
+//        if (CollUtil.isNotEmpty(map)) {
+//            if (map.size() == 1) {
+//                expressFeeConfig = CollUtil.getFirst(map.values());
+//            } else {
+//                expressFeeConfig = map.get(countyCode);
+//                //按区市省从小到大去匹配
+//                if (expressFeeConfig == null) {
+//                    expressFeeConfig = map.get(cityCode);
+//                    if (expressFeeConfig == null) {
+//                        expressFeeConfig = map.get(provinceCode);
+//                    }
+//                }
+//            }
+//        }
+        ExpressFeeConfig expressFeeConfig = new ExpressFeeConfig();
+        expressFeeConfig.setExpressId(expressId);
+        expressFeeConfig.setFirstItemAmount(BigDecimal.valueOf(5));
+        expressFeeConfig.setNextItemAmount(BigDecimal.valueOf(5));
         return expressFeeConfig;
     }
 
@@ -188,12 +222,12 @@ public class ExpressServiceImpl implements IExpressService {
         JSONObject rtn = ztoExpressManager.structureNamePhoneAddress(str);
         JSONObject address = rtn.getJSONObject("address");
         Assert.notNull(address, "获取行政区划失败");
-        String provinceCode = address.getStr("province");
+        String provinceCode = address.getStr("provinceId");
         String cityCode = address.getStr("cityId");
         String countyCode = address.getStr("countyId");
         String name = rtn.getStr("name");
         String phone = rtn.getStr("phone");
-        String detailAddress = rtn.getStr("detail");
+        String detailAddress = address.getStr("detail");
 //        Assert.notEmpty(provinceCode, "获取省失败");
 //        Assert.notEmpty(cityCode, "获取市失败");
 //        Assert.notEmpty(countyCode, "获取区县失败");
