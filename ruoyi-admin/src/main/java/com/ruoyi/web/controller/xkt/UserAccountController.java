@@ -30,7 +30,7 @@ public class UserAccountController extends XktBaseController {
     /**
      * 查询用户账户（支付宝、微信等）列表
      */
-    @PreAuthorize("@ss.hasPermi('system:account:list')")
+    // @PreAuthorize("@ss.hasPermi('system:account:list')")
     @GetMapping("/list")
     public TableDataInfo list(UserAccount userAccount) {
         startPage();
@@ -41,7 +41,7 @@ public class UserAccountController extends XktBaseController {
     /**
      * 导出用户账户（支付宝、微信等）列表
      */
-    @PreAuthorize("@ss.hasPermi('system:account:export')")
+    // @PreAuthorize("@ss.hasPermi('system:account:export')")
     @Log(title = "用户账户（支付宝、微信等）", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, UserAccount userAccount) {
@@ -53,7 +53,7 @@ public class UserAccountController extends XktBaseController {
     /**
      * 获取用户账户（支付宝、微信等）详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:account:query')")
+    // @PreAuthorize("@ss.hasPermi('system:account:query')")
     @GetMapping(value = "/{userAccId}")
     public R getInfo(@PathVariable("userAccId") Long userAccId) {
         return success(userAccountService.selectUserAccountByUserAccId(userAccId));
@@ -62,7 +62,7 @@ public class UserAccountController extends XktBaseController {
     /**
      * 新增用户账户（支付宝、微信等）
      */
-    @PreAuthorize("@ss.hasPermi('system:account:add')")
+    // @PreAuthorize("@ss.hasPermi('system:account:add')")
     @Log(title = "用户账户（支付宝、微信等）", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody UserAccount userAccount) {
@@ -72,7 +72,7 @@ public class UserAccountController extends XktBaseController {
     /**
      * 修改用户账户（支付宝、微信等）
      */
-    @PreAuthorize("@ss.hasPermi('system:account:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:account:edit')")
     @Log(title = "用户账户（支付宝、微信等）", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody UserAccount userAccount) {
@@ -82,7 +82,7 @@ public class UserAccountController extends XktBaseController {
     /**
      * 删除用户账户（支付宝、微信等）
      */
-    @PreAuthorize("@ss.hasPermi('system:account:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:account:remove')")
     @Log(title = "用户账户（支付宝、微信等）", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userAccIds}")
     public R remove(@PathVariable Long[] userAccIds) {

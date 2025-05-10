@@ -37,7 +37,7 @@ public class StoreRoleAccountController extends XktBaseController {
     /**
      * 新增档口子账号
      */
-    @PreAuthorize("@ss.hasPermi('system:account:add')")
+    // @PreAuthorize("@ss.hasPermi('system:account:add')")
     @ApiOperation(value = "新增档口子账号", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口子账号", businessType = BusinessType.INSERT)
     @PostMapping
@@ -48,7 +48,7 @@ public class StoreRoleAccountController extends XktBaseController {
     /**
      * 修改档口子账号
      */
-    @PreAuthorize("@ss.hasPermi('system:account:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:account:edit')")
     @ApiOperation(value = "修改档口子账号", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口子账号", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -59,7 +59,7 @@ public class StoreRoleAccountController extends XktBaseController {
     /**
      * 获取档口子账号列表
      */
-    @PreAuthorize("@ss.hasPermi('system:role:list')")
+    // @PreAuthorize("@ss.hasPermi('system:role:list')")
     @ApiOperation(value = "获取档口子账号列表", httpMethod = "POST", response = R.class)
     @PostMapping("/list")
     public R<List<StoreRoleAccResVO>> list(@Validated @RequestBody StoreRoleAccListVO accListVO) {
@@ -69,7 +69,7 @@ public class StoreRoleAccountController extends XktBaseController {
     /**
      * 获取档口子账号详情
      */
-    @PreAuthorize("@ss.hasPermi('system:account:query')")
+    // @PreAuthorize("@ss.hasPermi('system:account:query')")
     @ApiOperation(value = "获取档口子账号详情", httpMethod = "POST", response = R.class)
     @GetMapping(value = "/{storeRoleAccId}")
     public R<StoreRoleAccDetailResVO> getInfo(@PathVariable("storeRoleAccId") Long storeRoleAccId) {
@@ -79,7 +79,7 @@ public class StoreRoleAccountController extends XktBaseController {
     /**
      * 停用/启用档口子账号
      */
-    @PreAuthorize("@ss.hasPermi('system:role:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:role:edit')")
     @ApiOperation(value = "停用/启用档口子账号", httpMethod = "PUT", response = R.class)
     @Log(title = "停用/启用档口子账号", businessType = BusinessType.UPDATE)
     @PutMapping("/status")

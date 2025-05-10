@@ -36,7 +36,7 @@ public class UserFavoritesController extends XktBaseController {
     /**
      * 新增用户收藏商品
      */
-    @PreAuthorize("@ss.hasPermi('system:favorites:add')")
+    // @PreAuthorize("@ss.hasPermi('system:favorites:add')")
     @ApiOperation(value = "用户收藏商品", httpMethod = "POST", response = R.class)
     @Log(title = "用户收藏商品", businessType = BusinessType.INSERT)
     @PostMapping
@@ -47,7 +47,7 @@ public class UserFavoritesController extends XktBaseController {
     /**
      * 获取用户收藏列表
      */
-    @PreAuthorize("@ss.hasPermi('system:favorites:list')")
+    // @PreAuthorize("@ss.hasPermi('system:favorites:list')")
     @ApiOperation(value = "获取用户收藏列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<UserFavoritePageResDTO>> page(@Validated @RequestBody UserFavoritePageVO pageVO) {
@@ -58,7 +58,7 @@ public class UserFavoritesController extends XktBaseController {
     /**
      * 批量加入进货车
      */
-    @PreAuthorize("@ss.hasPermi('system:favorites:add')")
+    // @PreAuthorize("@ss.hasPermi('system:favorites:add')")
     @ApiOperation(value = "批量加入进货车", httpMethod = "POST", response = R.class)
     @Log(title = "批量加入进货车", businessType = BusinessType.INSERT)
     @PostMapping("/batch/shopping-cart")
@@ -70,7 +70,7 @@ public class UserFavoritesController extends XktBaseController {
     /**
      * 批量取消收藏
      */
-    @PreAuthorize("@ss.hasPermi('system:favorites:add')")
+    // @PreAuthorize("@ss.hasPermi('system:favorites:add')")
     @ApiOperation(value = "批量取消收藏", httpMethod = "DELETE", response = R.class)
     @Log(title = "批量取消收藏", businessType = BusinessType.INSERT)
     @DeleteMapping("/batch")

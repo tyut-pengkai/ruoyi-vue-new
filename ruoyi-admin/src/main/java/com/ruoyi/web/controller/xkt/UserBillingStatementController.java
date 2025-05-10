@@ -30,7 +30,7 @@ public class UserBillingStatementController extends XktBaseController {
     /**
      * 查询用户对账明细列表
      */
-    @PreAuthorize("@ss.hasPermi('system:statement:list')")
+    // @PreAuthorize("@ss.hasPermi('system:statement:list')")
     @GetMapping("/list")
     public TableDataInfo list(UserBillingStatement userBillingStatement) {
         startPage();
@@ -41,7 +41,7 @@ public class UserBillingStatementController extends XktBaseController {
     /**
      * 导出用户对账明细列表
      */
-    @PreAuthorize("@ss.hasPermi('system:statement:export')")
+    // @PreAuthorize("@ss.hasPermi('system:statement:export')")
     @Log(title = "用户对账明细", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, UserBillingStatement userBillingStatement) {
@@ -53,7 +53,7 @@ public class UserBillingStatementController extends XktBaseController {
     /**
      * 获取用户对账明细详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:statement:query')")
+    // @PreAuthorize("@ss.hasPermi('system:statement:query')")
     @GetMapping(value = "/{userBillStatId}")
     public R getInfo(@PathVariable("userBillStatId") Long userBillStatId) {
         return success(userBillingStatementService.selectUserBillingStatementByUserBillStatId(userBillStatId));
@@ -62,7 +62,7 @@ public class UserBillingStatementController extends XktBaseController {
     /**
      * 新增用户对账明细
      */
-    @PreAuthorize("@ss.hasPermi('system:statement:add')")
+    // @PreAuthorize("@ss.hasPermi('system:statement:add')")
     @Log(title = "用户对账明细", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody UserBillingStatement userBillingStatement) {
@@ -72,7 +72,7 @@ public class UserBillingStatementController extends XktBaseController {
     /**
      * 修改用户对账明细
      */
-    @PreAuthorize("@ss.hasPermi('system:statement:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:statement:edit')")
     @Log(title = "用户对账明细", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody UserBillingStatement userBillingStatement) {
@@ -82,7 +82,7 @@ public class UserBillingStatementController extends XktBaseController {
     /**
      * 删除用户对账明细
      */
-    @PreAuthorize("@ss.hasPermi('system:statement:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:statement:remove')")
     @Log(title = "用户对账明细", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userBillStatIds}")
     public R remove(@PathVariable Long[] userBillStatIds) {

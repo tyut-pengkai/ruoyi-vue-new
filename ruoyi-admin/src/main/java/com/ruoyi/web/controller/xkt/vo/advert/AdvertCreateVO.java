@@ -30,9 +30,15 @@ public class AdvertCreateVO {
     @NotNull(message = "推广tab不能为空!")
     @ApiModelProperty(value = "推广tab")
     private Integer tabId;
+    @NotNull(message = "每个档口可以购买当前广告位数量限制不能为空!")
+    @ApiModelProperty(value = "每个档口可以购买当前广告位数量限制")
+    private Integer storeBuyLimit;
     @NotNull(message = "播放轮次展示类型不能为空!")
     @ApiModelProperty(value = "播放轮次展示类型  1 时间范围or 2位置枚举")
     private Integer showType;
+    @NotNull(message = "prodMaxNum不能为空!")
+    @ApiModelProperty(value = "播放商品，或者图及商品 最多可容纳的商品数量")
+    private Integer prodMaxNum;
     @NotNull(message = "展示类型不能为空!")
     @ApiModelProperty(value = "展示类型 1推广图、2商品、3推广图及商品")
     private Integer displayType;

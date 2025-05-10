@@ -30,7 +30,7 @@ public class StoreProductProcessController extends XktBaseController {
     /**
      * 查询档口商品工艺信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:process:list')")
+    // @PreAuthorize("@ss.hasPermi('system:process:list')")
     @GetMapping("/list")
     public TableDataInfo list(StoreProductProcess storeProductProcess) {
         startPage();
@@ -41,7 +41,7 @@ public class StoreProductProcessController extends XktBaseController {
     /**
      * 导出档口商品工艺信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:process:export')")
+    // @PreAuthorize("@ss.hasPermi('system:process:export')")
     @Log(title = "档口商品工艺信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreProductProcess storeProductProcess) {
@@ -53,7 +53,7 @@ public class StoreProductProcessController extends XktBaseController {
     /**
      * 获取档口商品工艺信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:process:query')")
+    // @PreAuthorize("@ss.hasPermi('system:process:query')")
     @GetMapping(value = "/{storeProdProcessId}")
     public R getInfo(@PathVariable("storeProdProcessId") Long storeProdProcessId) {
         return success(storeProductProcessService.selectStoreProductProcessByStoreProdProcessId(storeProdProcessId));
@@ -62,7 +62,7 @@ public class StoreProductProcessController extends XktBaseController {
     /**
      * 新增档口商品工艺信息
      */
-    @PreAuthorize("@ss.hasPermi('system:process:add')")
+    // @PreAuthorize("@ss.hasPermi('system:process:add')")
     @Log(title = "档口商品工艺信息", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody StoreProductProcess storeProductProcess) {
@@ -72,7 +72,7 @@ public class StoreProductProcessController extends XktBaseController {
     /**
      * 修改档口商品工艺信息
      */
-    @PreAuthorize("@ss.hasPermi('system:process:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:process:edit')")
     @Log(title = "档口商品工艺信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody StoreProductProcess storeProductProcess) {
@@ -82,7 +82,7 @@ public class StoreProductProcessController extends XktBaseController {
     /**
      * 删除档口商品工艺信息
      */
-    @PreAuthorize("@ss.hasPermi('system:process:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:process:remove')")
     @Log(title = "档口商品工艺信息", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdProcessIds}")
     public R remove(@PathVariable Long[] storeProdProcessIds) {

@@ -30,7 +30,7 @@ public class StoreProductCategoryAttributeController extends XktBaseController {
     /**
      * 查询档口商品类目信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:attribute:list')")
+    // @PreAuthorize("@ss.hasPermi('system:attribute:list')")
     @GetMapping("/list")
     public TableDataInfo list(StoreProductCategoryAttribute storeProductCategoryAttribute) {
         startPage();
@@ -41,7 +41,7 @@ public class StoreProductCategoryAttributeController extends XktBaseController {
     /**
      * 导出档口商品类目信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:attribute:export')")
+    // @PreAuthorize("@ss.hasPermi('system:attribute:export')")
     @Log(title = "档口商品类目信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreProductCategoryAttribute storeProductCategoryAttribute) {
@@ -53,7 +53,7 @@ public class StoreProductCategoryAttributeController extends XktBaseController {
     /**
      * 获取档口商品类目信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:attribute:query')")
+    // @PreAuthorize("@ss.hasPermi('system:attribute:query')")
     @GetMapping(value = "/{storeProdAttrId}")
     public R getInfo(@PathVariable("storeProdAttrId") Long storeProdAttrId) {
         return success(storeProductCategoryAttributeService.selectStoreProductCategoryAttributeByStoreProdAttrId(storeProdAttrId));
@@ -62,7 +62,7 @@ public class StoreProductCategoryAttributeController extends XktBaseController {
     /**
      * 新增档口商品类目信息
      */
-    @PreAuthorize("@ss.hasPermi('system:attribute:add')")
+    // @PreAuthorize("@ss.hasPermi('system:attribute:add')")
     @Log(title = "档口商品类目信息", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody StoreProductCategoryAttribute storeProductCategoryAttribute) {
@@ -72,7 +72,7 @@ public class StoreProductCategoryAttributeController extends XktBaseController {
     /**
      * 修改档口商品类目信息
      */
-    @PreAuthorize("@ss.hasPermi('system:attribute:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:attribute:edit')")
     @Log(title = "档口商品类目信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody StoreProductCategoryAttribute storeProductCategoryAttribute) {
@@ -82,7 +82,7 @@ public class StoreProductCategoryAttributeController extends XktBaseController {
     /**
      * 删除档口商品类目信息
      */
-    @PreAuthorize("@ss.hasPermi('system:attribute:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:attribute:remove')")
     @Log(title = "档口商品类目信息", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdAttrIds}")
     public R remove(@PathVariable Long[] storeProdAttrIds) {

@@ -30,7 +30,7 @@ public class UserAddressController extends XktBaseController {
     /**
      * 查询用户收货地址列表
      */
-    @PreAuthorize("@ss.hasPermi('system:address:list')")
+    // @PreAuthorize("@ss.hasPermi('system:address:list')")
     @GetMapping("/list")
     public TableDataInfo list(UserAddress userAddress) {
         startPage();
@@ -41,7 +41,7 @@ public class UserAddressController extends XktBaseController {
     /**
      * 导出用户收货地址列表
      */
-    @PreAuthorize("@ss.hasPermi('system:address:export')")
+    // @PreAuthorize("@ss.hasPermi('system:address:export')")
     @Log(title = "用户收货地址", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, UserAddress userAddress) {
@@ -53,7 +53,7 @@ public class UserAddressController extends XktBaseController {
     /**
      * 获取用户收货地址详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:address:query')")
+    // @PreAuthorize("@ss.hasPermi('system:address:query')")
     @GetMapping(value = "/{userAddrId}")
     public R getInfo(@PathVariable("userAddrId") Long userAddrId) {
         return success(userAddressService.selectUserAddressByUserAddrId(userAddrId));
@@ -62,7 +62,7 @@ public class UserAddressController extends XktBaseController {
     /**
      * 新增用户收货地址
      */
-    @PreAuthorize("@ss.hasPermi('system:address:add')")
+    // @PreAuthorize("@ss.hasPermi('system:address:add')")
     @Log(title = "用户收货地址", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody UserAddress userAddress) {
@@ -72,7 +72,7 @@ public class UserAddressController extends XktBaseController {
     /**
      * 修改用户收货地址
      */
-    @PreAuthorize("@ss.hasPermi('system:address:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:address:edit')")
     @Log(title = "用户收货地址", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody UserAddress userAddress) {
@@ -82,7 +82,7 @@ public class UserAddressController extends XktBaseController {
     /**
      * 删除用户收货地址
      */
-    @PreAuthorize("@ss.hasPermi('system:address:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:address:remove')")
     @Log(title = "用户收货地址", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userAddrIds}")
     public R remove(@PathVariable Long[] userAddrIds) {

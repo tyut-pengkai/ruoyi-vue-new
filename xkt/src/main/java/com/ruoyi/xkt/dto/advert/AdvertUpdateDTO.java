@@ -29,6 +29,12 @@ public class AdvertUpdateDTO {
     private Integer typeId;
     @ApiModelProperty(value = "推广tab")
     private Integer tabId;
+    @ApiModelProperty(value = "每个档口可以购买当前广告位数量限制")
+    private Integer storeBuyLimit;
+    @ApiModelProperty(value = "播放轮次展示类型  1 时间范围or 2位置枚举")
+    private Integer showType;
+    @ApiModelProperty(value = "播放商品，或者图及商品 最多可容纳的商品数量")
+    private Integer prodMaxNum;
     @ApiModelProperty(value = "展示类型 1推广图、2商品、3推广图及商品")
     private Integer displayType;
     @ApiModelProperty(value = "起拍价格")

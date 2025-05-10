@@ -22,7 +22,7 @@ import java.util.List;
  * @author ruoyi
  */
 @RestController
-@RequestMapping("/system/config")
+@RequestMapping("/rest/v1/sys/config")
 public class SysConfigController extends BaseController {
     @Autowired
     private ISysConfigService configService;

@@ -36,7 +36,7 @@ public class ShoppingCartController extends XktBaseController {
     /**
      * 电商卖家添加商品到进货车
      */
-//    @PreAuthorize("@ss.hasPermi('system:cart:add')")
+//    // @PreAuthorize("@ss.hasPermi('system:cart:add')")
     @ApiOperation(value = "电商卖家添加商品到进货车", httpMethod = "POST", response = R.class)
     @Log(title = "电商卖家添加商品到进货车", businessType = BusinessType.INSERT)
     @PostMapping
@@ -47,7 +47,7 @@ public class ShoppingCartController extends XktBaseController {
     /**
      * 电商卖家编辑进货车商品
      */
-//    @PreAuthorize("@ss.hasPermi('system:store:edit')")
+//    // @PreAuthorize("@ss.hasPermi('system:store:edit')")
     @ApiOperation(value = "电商卖家编辑进货车商品", httpMethod = "PUT", response = R.class)
     @Log(title = "电商卖家编辑进货车商品", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -58,7 +58,7 @@ public class ShoppingCartController extends XktBaseController {
     /**
      * 获取用户进货车列表
      */
-//    @PreAuthorize("@ss.hasPermi('system:cart:list')")
+//    // @PreAuthorize("@ss.hasPermi('system:cart:list')")
     @ApiOperation(value = "获取用户进货车列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<ShopCartPageResDTO>> page(@Validated @RequestBody ShopCartPageVO pageVO) {
@@ -68,7 +68,7 @@ public class ShoppingCartController extends XktBaseController {
     /**
      * 用户进货车列表点击编辑获取数据
      */
-//    @PreAuthorize("@ss.hasPermi('system:cart:list')")
+//    // @PreAuthorize("@ss.hasPermi('system:cart:list')")
     @ApiOperation(value = "用户进货车列表点击编辑获取数据", httpMethod = "GET", response = R.class)
     @GetMapping("/edit/{shoppingCartId}")
     public R<ShopCartEditDetailResVO> getEditInfo(@PathVariable Long shoppingCartId) {
@@ -88,7 +88,7 @@ public class ShoppingCartController extends XktBaseController {
     /**
      * 用户删除进货车商品
      */
-//    @PreAuthorize("@ss.hasPermi('system:sale:remove')")
+//    // @PreAuthorize("@ss.hasPermi('system:sale:remove')")
     @ApiOperation(value = "用户进货车列表点击编辑", httpMethod = "DELETE", response = R.class)
     @Log(title = "用户删除进货车商品", businessType = BusinessType.DELETE)
     @DeleteMapping("/{shoppingCartId}")

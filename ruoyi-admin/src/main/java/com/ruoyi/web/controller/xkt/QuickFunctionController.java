@@ -39,7 +39,7 @@ public class QuickFunctionController extends XktBaseController {
     /**
      * 查看已绑定的所有快捷菜单
      */
-    @PreAuthorize("@ss.hasPermi('system:function:list')")
+    // @PreAuthorize("@ss.hasPermi('system:function:list')")
     @ApiOperation(value = "查看已绑定的所有快捷菜单", httpMethod = "GET", response = R.class)
     @GetMapping("/menus/{roleId}/{bizId}")
     public R<QuickFuncVO> getMenuList(@PathVariable("roleId") Long roleId, @PathVariable("bizId") Long bizId) {
@@ -56,7 +56,7 @@ public class QuickFunctionController extends XktBaseController {
     /**
      * 修改快捷功能
      */
-    @PreAuthorize("@ss.hasPermi('system:function:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:function:edit')")
     @ApiOperation(value = "修改快捷功能", httpMethod = "PUT", response = R.class)
     @Log(title = "修改快捷功能", businessType = BusinessType.UPDATE)
     @PutMapping("/checked")

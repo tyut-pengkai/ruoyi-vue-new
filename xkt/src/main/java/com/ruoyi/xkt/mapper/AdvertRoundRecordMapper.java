@@ -2,7 +2,6 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.AdvertRoundRecord;
-import com.ruoyi.xkt.dto.advertRoundRecord.AdRoundRecordDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -28,7 +27,19 @@ public interface AdvertRoundRecordMapper extends BaseMapper<AdvertRoundRecord> {
      * @param roundIdSet  未购买的轮次ID
      * @return
      */
-    List<AdvertRoundRecord> selectRecordList(@Param("advertId") Long advertId, @Param("storeId") Long storeId,
-                                            @Param("voucherDate") Date voucherDate, @Param("roundIdSet") Set<Integer> roundIdSet);
+    List<AdvertRoundRecord> selectListByRoundId(@Param("advertId") Long advertId, @Param("storeId") Long storeId,
+                                                @Param("voucherDate") Date voucherDate, @Param("roundIdSet") Set<Integer> roundIdSet);
+
+    /**
+     * 获取档口在某个广告位具体位置的推广记录
+     *
+     * @param advertId     广告ID
+     * @param storeId      档口ID
+     * @param voucherDate  单据日期
+     * @param positionList 位置列表
+     * @return
+     */
+    List<AdvertRoundRecord> selectListByPosition(@Param("advertId") Long advertId, @Param("storeId") Long storeId,
+                                                 @Param("voucherDate") Date voucherDate, @Param("positionList") List<String> positionList);
 
 }

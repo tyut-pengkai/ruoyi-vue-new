@@ -69,6 +69,7 @@ public class AdvertServiceImpl implements IAdvertService {
         advert.setOnlineStatus(AdOnlineStatus.ONLINE.getValue());
         advert.setExamplePicId(file.getId());
         return this.advertMapper.insert(advert);
+        // 更新档口推广营销截止时间
     }
 
 

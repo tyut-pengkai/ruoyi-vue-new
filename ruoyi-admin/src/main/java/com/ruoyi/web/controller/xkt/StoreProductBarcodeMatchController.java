@@ -35,7 +35,7 @@ public class StoreProductBarcodeMatchController extends XktBaseController {
     /**
      * 修改档口条形码和第三方系统条形码匹配结果
      */
-    @PreAuthorize("@ss.hasPermi('system:match:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:match:edit')")
     @Log(title = "档口条形码和第三方系统条形码匹配结果", businessType = BusinessType.UPDATE)
     @PutMapping
     public R updateBarcodeMatch(@Validated @RequestBody BarcodeMatchVO barcodeMatchVO) {
@@ -46,7 +46,7 @@ public class StoreProductBarcodeMatchController extends XktBaseController {
     /**
      * 查询档口条形码和第三方系统条形码匹配结果列表
      */
-    @PreAuthorize("@ss.hasPermi('system:match:list')")
+    // @PreAuthorize("@ss.hasPermi('system:match:list')")
     @GetMapping("/list")
     public TableDataInfo list(StoreProductBarcodeMatch storeProductBarcodeMatch) {
         startPage();
@@ -57,7 +57,7 @@ public class StoreProductBarcodeMatchController extends XktBaseController {
     /**
      * 导出档口条形码和第三方系统条形码匹配结果列表
      */
-    @PreAuthorize("@ss.hasPermi('system:match:export')")
+    // @PreAuthorize("@ss.hasPermi('system:match:export')")
     @Log(title = "档口条形码和第三方系统条形码匹配结果", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreProductBarcodeMatch storeProductBarcodeMatch) {
@@ -69,7 +69,7 @@ public class StoreProductBarcodeMatchController extends XktBaseController {
     /**
      * 获取档口条形码和第三方系统条形码匹配结果详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:match:query')")
+    // @PreAuthorize("@ss.hasPermi('system:match:query')")
     @GetMapping(value = "/{storeProdBarcodeMatchId}")
     public R getInfo(@PathVariable("storeProdBarcodeMatchId") Long storeProdBarcodeMatchId) {
         return success(barcodeMatchService.selectStoreProductBarcodeMatchByStoreProdBarcodeMatchId(storeProdBarcodeMatchId));
@@ -78,7 +78,7 @@ public class StoreProductBarcodeMatchController extends XktBaseController {
     /**
      * 新增档口条形码和第三方系统条形码匹配结果
      */
-    @PreAuthorize("@ss.hasPermi('system:match:add')")
+    // @PreAuthorize("@ss.hasPermi('system:match:add')")
     @Log(title = "档口条形码和第三方系统条形码匹配结果", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody StoreProductBarcodeMatch storeProductBarcodeMatch) {
@@ -88,7 +88,7 @@ public class StoreProductBarcodeMatchController extends XktBaseController {
     /**
      * 删除档口条形码和第三方系统条形码匹配结果
      */
-    @PreAuthorize("@ss.hasPermi('system:match:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:match:remove')")
     @Log(title = "档口条形码和第三方系统条形码匹配结果", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdBarcodeMatchIds}")
     public R remove(@PathVariable Long[] storeProdBarcodeMatchIds) {

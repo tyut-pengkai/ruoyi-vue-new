@@ -30,7 +30,7 @@ public class PictureSearchController extends XktBaseController {
     /**
      * 查询以图搜款列表
      */
-    @PreAuthorize("@ss.hasPermi('system:search:list')")
+    // @PreAuthorize("@ss.hasPermi('system:search:list')")
     @GetMapping("/list")
     public TableDataInfo list(PictureSearch pictureSearch) {
         startPage();
@@ -41,7 +41,7 @@ public class PictureSearchController extends XktBaseController {
     /**
      * 导出以图搜款列表
      */
-    @PreAuthorize("@ss.hasPermi('system:search:export')")
+    // @PreAuthorize("@ss.hasPermi('system:search:export')")
     @Log(title = "以图搜款", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, PictureSearch pictureSearch) {
@@ -53,7 +53,7 @@ public class PictureSearchController extends XktBaseController {
     /**
      * 获取以图搜款详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:search:query')")
+    // @PreAuthorize("@ss.hasPermi('system:search:query')")
     @GetMapping(value = "/{picSearchId}")
     public R getInfo(@PathVariable("picSearchId") Long picSearchId) {
         return success(pictureSearchService.selectPictureSearchByPicSearchId(picSearchId));
@@ -62,7 +62,7 @@ public class PictureSearchController extends XktBaseController {
     /**
      * 新增以图搜款
      */
-    @PreAuthorize("@ss.hasPermi('system:search:add')")
+    // @PreAuthorize("@ss.hasPermi('system:search:add')")
     @Log(title = "以图搜款", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody PictureSearch pictureSearch) {
@@ -72,7 +72,7 @@ public class PictureSearchController extends XktBaseController {
     /**
      * 修改以图搜款
      */
-    @PreAuthorize("@ss.hasPermi('system:search:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:search:edit')")
     @Log(title = "以图搜款", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody PictureSearch pictureSearch) {
@@ -82,7 +82,7 @@ public class PictureSearchController extends XktBaseController {
     /**
      * 删除以图搜款
      */
-    @PreAuthorize("@ss.hasPermi('system:search:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:search:remove')")
     @Log(title = "以图搜款", businessType = BusinessType.DELETE)
     @DeleteMapping("/{picSearchIds}")
     public R remove(@PathVariable Long[] picSearchIds) {

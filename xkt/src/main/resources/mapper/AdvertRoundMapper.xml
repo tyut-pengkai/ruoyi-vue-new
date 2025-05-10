@@ -8,7 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             CASE
                 WHEN
-                        COUNT( id ) >= ( SELECT IFNULL( store_buy_limit, 0 ) FROM advert WHERE id = 1 ) THEN
+                        COUNT( id ) >= ( SELECT IFNULL( store_buy_limit, 0 ) FROM advert WHERE id = #{advertId} ) THEN
                     TRUE ELSE FALSE
                 END AS isOverBuy
         FROM
@@ -18,7 +18,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           AND advert_id = #{advertId}
           AND store_id = #{storeId}
           AND del_flag = 0
-          <if test="position != null  and position != ''"> and position = #{position}</if>
+          AND launch_status IN
+          <foreach item="launchStatus" collection="launchStatusList" open="(" separator="," close=")">
+              #{launchStatus}
+          </foreach>
     </select>
 
 </mapper>

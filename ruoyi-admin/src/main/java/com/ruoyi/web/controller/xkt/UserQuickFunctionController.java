@@ -30,7 +30,7 @@ public class UserQuickFunctionController extends XktBaseController {
     /**
      * 查询用户快捷功能列表
      */
-    @PreAuthorize("@ss.hasPermi('system:function:list')")
+    // @PreAuthorize("@ss.hasPermi('system:function:list')")
     @GetMapping("/list")
     public TableDataInfo list(UserQuickFunction userQuickFunction) {
         startPage();
@@ -41,7 +41,7 @@ public class UserQuickFunctionController extends XktBaseController {
     /**
      * 导出用户快捷功能列表
      */
-    @PreAuthorize("@ss.hasPermi('system:function:export')")
+    // @PreAuthorize("@ss.hasPermi('system:function:export')")
     @Log(title = "用户快捷功能", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, UserQuickFunction userQuickFunction) {
@@ -53,7 +53,7 @@ public class UserQuickFunctionController extends XktBaseController {
     /**
      * 获取用户快捷功能详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:function:query')")
+    // @PreAuthorize("@ss.hasPermi('system:function:query')")
     @GetMapping(value = "/{userQuickFuncId}")
     public R getInfo(@PathVariable("userQuickFuncId") Long userQuickFuncId) {
         return success(userQuickFunctionService.selectUserQuickFunctionByUserQuickFuncId(userQuickFuncId));
@@ -62,7 +62,7 @@ public class UserQuickFunctionController extends XktBaseController {
     /**
      * 新增用户快捷功能
      */
-    @PreAuthorize("@ss.hasPermi('system:function:add')")
+    // @PreAuthorize("@ss.hasPermi('system:function:add')")
     @Log(title = "用户快捷功能", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody UserQuickFunction userQuickFunction) {
@@ -72,7 +72,7 @@ public class UserQuickFunctionController extends XktBaseController {
     /**
      * 修改用户快捷功能
      */
-    @PreAuthorize("@ss.hasPermi('system:function:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:function:edit')")
     @Log(title = "用户快捷功能", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody UserQuickFunction userQuickFunction) {
@@ -82,7 +82,7 @@ public class UserQuickFunctionController extends XktBaseController {
     /**
      * 删除用户快捷功能
      */
-    @PreAuthorize("@ss.hasPermi('system:function:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:function:remove')")
     @Log(title = "用户快捷功能", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userQuickFuncIds}")
     public R remove(@PathVariable Long[] userQuickFuncIds) {

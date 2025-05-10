@@ -33,6 +33,17 @@ public class StoreProductCategoryAttribute extends XktBaseEntity {
     @Excel(name = "档口商品ID")
     private Long storeProdId;
 
+
+
+
+
+
+
+
+
+
+
+
     /**
      * 系统设置类目ID
      */
@@ -46,18 +57,4 @@ public class StoreProductCategoryAttribute extends XktBaseEntity {
     private String dictValue;
 
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", getId())
-                .append("storeProdId", getStoreProdId())
-                .append("dictType", getDictType())
-                .append("version", getVersion())
-                .append("delFlag", getDelFlag())
-                .append("createBy", getCreateBy())
-                .append("createTime", getCreateTime())
-                .append("updateBy", getUpdateBy())
-                .append("updateTime", getUpdateTime())
-                .toString();
-    }
 }

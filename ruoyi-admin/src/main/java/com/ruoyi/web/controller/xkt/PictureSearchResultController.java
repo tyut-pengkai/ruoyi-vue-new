@@ -30,7 +30,7 @@ public class PictureSearchResultController extends XktBaseController {
     /**
      * 查询以图搜款结果列表
      */
-    @PreAuthorize("@ss.hasPermi('system:result:list')")
+    // @PreAuthorize("@ss.hasPermi('system:result:list')")
     @GetMapping("/list")
     public TableDataInfo list(PictureSearchResult pictureSearchResult) {
         startPage();
@@ -41,7 +41,7 @@ public class PictureSearchResultController extends XktBaseController {
     /**
      * 导出以图搜款结果列表
      */
-    @PreAuthorize("@ss.hasPermi('system:result:export')")
+    // @PreAuthorize("@ss.hasPermi('system:result:export')")
     @Log(title = "以图搜款结果", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, PictureSearchResult pictureSearchResult) {
@@ -53,7 +53,7 @@ public class PictureSearchResultController extends XktBaseController {
     /**
      * 获取以图搜款结果详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:result:query')")
+    // @PreAuthorize("@ss.hasPermi('system:result:query')")
     @GetMapping(value = "/{picSearchResId}")
     public R getInfo(@PathVariable("picSearchResId") Long picSearchResId) {
         return success(pictureSearchResultService.selectPictureSearchResultByPicSearchResId(picSearchResId));
@@ -62,7 +62,7 @@ public class PictureSearchResultController extends XktBaseController {
     /**
      * 新增以图搜款结果
      */
-    @PreAuthorize("@ss.hasPermi('system:result:add')")
+    // @PreAuthorize("@ss.hasPermi('system:result:add')")
     @Log(title = "以图搜款结果", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody PictureSearchResult pictureSearchResult) {
@@ -72,7 +72,7 @@ public class PictureSearchResultController extends XktBaseController {
     /**
      * 修改以图搜款结果
      */
-    @PreAuthorize("@ss.hasPermi('system:result:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:result:edit')")
     @Log(title = "以图搜款结果", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody PictureSearchResult pictureSearchResult) {
@@ -82,7 +82,7 @@ public class PictureSearchResultController extends XktBaseController {
     /**
      * 删除以图搜款结果
      */
-    @PreAuthorize("@ss.hasPermi('system:result:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:result:remove')")
     @Log(title = "以图搜款结果", businessType = BusinessType.DELETE)
     @DeleteMapping("/{picSearchResIds}")
     public R remove(@PathVariable Long[] picSearchResIds) {

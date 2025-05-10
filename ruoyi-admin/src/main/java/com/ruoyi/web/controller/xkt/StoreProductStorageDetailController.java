@@ -30,7 +30,7 @@ public class StoreProductStorageDetailController extends XktBaseController {
     /**
      * 查询档口商品入库明细列表
      */
-    @PreAuthorize("@ss.hasPermi('system:detail:list')")
+    // @PreAuthorize("@ss.hasPermi('system:detail:list')")
     @GetMapping("/list")
     public TableDataInfo list(StoreProductStorageDetail storeProductStorageDetail) {
         startPage();
@@ -41,7 +41,7 @@ public class StoreProductStorageDetailController extends XktBaseController {
     /**
      * 导出档口商品入库明细列表
      */
-    @PreAuthorize("@ss.hasPermi('system:detail:export')")
+    // @PreAuthorize("@ss.hasPermi('system:detail:export')")
     @Log(title = "档口商品入库明细", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreProductStorageDetail storeProductStorageDetail) {
@@ -53,7 +53,7 @@ public class StoreProductStorageDetailController extends XktBaseController {
     /**
      * 获取档口商品入库明细详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:detail:query')")
+    // @PreAuthorize("@ss.hasPermi('system:detail:query')")
     @GetMapping(value = "/{storeProdStorDetailId}")
     public R getInfo(@PathVariable("storeProdStorDetailId") Long storeProdStorDetailId) {
         return success(storeProductStorageDetailService.selectStoreProductStorageDetailByStoreProdStorDetailId(storeProdStorDetailId));
@@ -62,7 +62,7 @@ public class StoreProductStorageDetailController extends XktBaseController {
     /**
      * 新增档口商品入库明细
      */
-    @PreAuthorize("@ss.hasPermi('system:detail:add')")
+    // @PreAuthorize("@ss.hasPermi('system:detail:add')")
     @Log(title = "档口商品入库明细", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody StoreProductStorageDetail storeProductStorageDetail) {
@@ -72,7 +72,7 @@ public class StoreProductStorageDetailController extends XktBaseController {
     /**
      * 修改档口商品入库明细
      */
-    @PreAuthorize("@ss.hasPermi('system:detail:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:detail:edit')")
     @Log(title = "档口商品入库明细", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody StoreProductStorageDetail storeProductStorageDetail) {
@@ -82,7 +82,7 @@ public class StoreProductStorageDetailController extends XktBaseController {
     /**
      * 删除档口商品入库明细
      */
-    @PreAuthorize("@ss.hasPermi('system:detail:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:detail:remove')")
     @Log(title = "档口商品入库明细", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdStorDetailIds}")
     public R remove(@PathVariable Long[] storeProdStorDetailIds) {

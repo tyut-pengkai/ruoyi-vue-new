@@ -34,7 +34,7 @@ public class StoreProductBarcodeRecordController extends XktBaseController {
     /**
      * 查询档口打印条形码记录列表
      */
-    @PreAuthorize("@ss.hasPermi('system:record:list')")
+    // @PreAuthorize("@ss.hasPermi('system:record:list')")
     @GetMapping("/list")
     public TableDataInfo list(StoreProductBarcodeRecord storeProductBarcodeRecord) {
         startPage();
@@ -45,7 +45,7 @@ public class StoreProductBarcodeRecordController extends XktBaseController {
     /**
      * 导出档口打印条形码记录列表
      */
-    @PreAuthorize("@ss.hasPermi('system:record:export')")
+    // @PreAuthorize("@ss.hasPermi('system:record:export')")
     @Log(title = "档口打印条形码记录", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreProductBarcodeRecord storeProductBarcodeRecord) {
@@ -57,7 +57,7 @@ public class StoreProductBarcodeRecordController extends XktBaseController {
     /**
      * 获取档口打印条形码记录详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:record:query')")
+    // @PreAuthorize("@ss.hasPermi('system:record:query')")
     @GetMapping(value = "/{storeProdBarcodeRecordId}")
     public R getInfo(@PathVariable("storeProdBarcodeRecordId") Long storeProdBarcodeRecordId) {
         return success(storeProductBarcodeRecordService.selectStoreProductBarcodeRecordByStoreProdBarcodeRecordId(storeProdBarcodeRecordId));
@@ -66,7 +66,7 @@ public class StoreProductBarcodeRecordController extends XktBaseController {
     /**
      * 新增档口打印条形码记录
      */
-    @PreAuthorize("@ss.hasPermi('system:record:add')")
+    // @PreAuthorize("@ss.hasPermi('system:record:add')")
     @Log(title = "档口打印条形码记录", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody StoreProductBarcodeRecord storeProductBarcodeRecord) {
@@ -76,7 +76,7 @@ public class StoreProductBarcodeRecordController extends XktBaseController {
     /**
      * 修改档口打印条形码记录
      */
-    @PreAuthorize("@ss.hasPermi('system:record:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:record:edit')")
     @Log(title = "档口打印条形码记录", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody StoreProductBarcodeRecord storeProductBarcodeRecord) {
@@ -86,7 +86,7 @@ public class StoreProductBarcodeRecordController extends XktBaseController {
     /**
      * 删除档口打印条形码记录
      */
-    @PreAuthorize("@ss.hasPermi('system:record:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:record:remove')")
     @Log(title = "档口打印条形码记录", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdBarcodeRecordIds}")
     public R remove(@PathVariable Long[] storeProdBarcodeRecordIds) {

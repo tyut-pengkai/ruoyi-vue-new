@@ -30,7 +30,7 @@ public class StoreProductServiceController extends XktBaseController {
     /**
      * 查询档口商品服务列表
      */
-    @PreAuthorize("@ss.hasPermi('system:service:list')")
+    // @PreAuthorize("@ss.hasPermi('system:service:list')")
     @GetMapping("/list")
     public TableDataInfo list(StoreProductService storeProductService) {
         startPage();
@@ -41,7 +41,7 @@ public class StoreProductServiceController extends XktBaseController {
     /**
      * 导出档口商品服务列表
      */
-    @PreAuthorize("@ss.hasPermi('system:service:export')")
+    // @PreAuthorize("@ss.hasPermi('system:service:export')")
     @Log(title = "档口商品服务", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreProductService storeProductService) {
@@ -53,7 +53,7 @@ public class StoreProductServiceController extends XktBaseController {
     /**
      * 获取档口商品服务详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:service:query')")
+    // @PreAuthorize("@ss.hasPermi('system:service:query')")
     @GetMapping(value = "/{storeProdSvcId}")
     public R getInfo(@PathVariable("storeProdSvcId") Long storeProdSvcId) {
         return success(storeProductServiceService.selectStoreProductServiceByStoreProdSvcId(storeProdSvcId));
@@ -62,7 +62,7 @@ public class StoreProductServiceController extends XktBaseController {
     /**
      * 新增档口商品服务
      */
-    @PreAuthorize("@ss.hasPermi('system:service:add')")
+    // @PreAuthorize("@ss.hasPermi('system:service:add')")
     @Log(title = "档口商品服务", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody StoreProductService storeProductService) {
@@ -72,7 +72,7 @@ public class StoreProductServiceController extends XktBaseController {
     /**
      * 修改档口商品服务
      */
-    @PreAuthorize("@ss.hasPermi('system:service:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:service:edit')")
     @Log(title = "档口商品服务", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody StoreProductService storeProductService) {
@@ -82,7 +82,7 @@ public class StoreProductServiceController extends XktBaseController {
     /**
      * 删除档口商品服务
      */
-    @PreAuthorize("@ss.hasPermi('system:service:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:service:remove')")
     @Log(title = "档口商品服务", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdSvcIds}")
     public R remove(@PathVariable Long[] storeProdSvcIds) {

@@ -44,7 +44,7 @@ public class StoreRoleController extends XktBaseController {
     /**
      * 新增档口子角色
      */
-    @PreAuthorize("@ss.hasPermi('system:role:add')")
+    // @PreAuthorize("@ss.hasPermi('system:role:add')")
     @ApiOperation(value = "新增档口子角色", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口子角色", businessType = BusinessType.INSERT)
     @PostMapping
@@ -56,7 +56,7 @@ public class StoreRoleController extends XktBaseController {
     /**
      * 编辑档口子角色
      */
-    @PreAuthorize("@ss.hasPermi('system:role:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:role:edit')")
     @ApiOperation(value = "编辑档口子角色", httpMethod = "PUT", response = R.class)
     @Log(title = "编辑档口子角色", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -67,7 +67,7 @@ public class StoreRoleController extends XktBaseController {
     /**
      * 获取档口子角色详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:role:query')")
+    // @PreAuthorize("@ss.hasPermi('system:role:query')")
     @ApiOperation(value = "获取档口子角色详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeRoleId}")
     public R<StoreRoleVO> getInfo(@PathVariable("storeRoleId") Long storeRoleId) {
@@ -83,7 +83,7 @@ public class StoreRoleController extends XktBaseController {
     /**
      * 获取档口子角色列表
      */
-    @PreAuthorize("@ss.hasPermi('system:role:list')")
+    // @PreAuthorize("@ss.hasPermi('system:role:list')")
     @ApiOperation(value = "查询档口销售出库列表", httpMethod = "POST", response = R.class)
     @PostMapping("/list")
     public R<List<StoreRoleResVO>> list(@Validated @RequestBody StoreRoleListVO roleListVO) {
@@ -93,7 +93,7 @@ public class StoreRoleController extends XktBaseController {
     /**
      * 停用/启用档口子角色
      */
-    @PreAuthorize("@ss.hasPermi('system:role:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:role:edit')")
     @ApiOperation(value = "停用/启用档口子角色", httpMethod = "PUT", response = R.class)
     @Log(title = "停用/启用档口子角色", businessType = BusinessType.UPDATE)
     @PutMapping("/status")

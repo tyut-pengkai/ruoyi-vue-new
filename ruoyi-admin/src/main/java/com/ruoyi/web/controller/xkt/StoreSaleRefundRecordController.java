@@ -34,7 +34,7 @@ public class StoreSaleRefundRecordController extends XktBaseController {
     /**
      * 查询档口销售出库返单记录
      */
-    @PreAuthorize("@ss.hasPermi('system:refund:list')")
+    // @PreAuthorize("@ss.hasPermi('system:refund:list')")
     @ApiOperation(value = "查询档口销售出库返单记录", httpMethod = "POST", response = R.class)
     @GetMapping("/list/{storeId}/{storeSaleId}")
     public R<List<StoreSaleRefundRecordVO>> selectPage(@PathVariable("storeId") Long storeId, @PathVariable("storeSaleId") Long storeSaleId) {

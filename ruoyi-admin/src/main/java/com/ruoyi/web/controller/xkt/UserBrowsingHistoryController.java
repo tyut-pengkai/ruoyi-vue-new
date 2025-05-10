@@ -30,7 +30,7 @@ public class UserBrowsingHistoryController extends XktBaseController {
     /**
      * 查询用户浏览历史列表
      */
-    @PreAuthorize("@ss.hasPermi('system:history:list')")
+    // @PreAuthorize("@ss.hasPermi('system:history:list')")
     @GetMapping("/list")
     public TableDataInfo list(UserBrowsingHistory userBrowsingHistory) {
         startPage();
@@ -41,7 +41,7 @@ public class UserBrowsingHistoryController extends XktBaseController {
     /**
      * 导出用户浏览历史列表
      */
-    @PreAuthorize("@ss.hasPermi('system:history:export')")
+    // @PreAuthorize("@ss.hasPermi('system:history:export')")
     @Log(title = "用户浏览历史", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, UserBrowsingHistory userBrowsingHistory) {
@@ -53,7 +53,7 @@ public class UserBrowsingHistoryController extends XktBaseController {
     /**
      * 获取用户浏览历史详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:history:query')")
+    // @PreAuthorize("@ss.hasPermi('system:history:query')")
     @GetMapping(value = "/{userBrowHisId}")
     public R getInfo(@PathVariable("userBrowHisId") Long userBrowHisId) {
         return success(userBrowsingHistoryService.selectUserBrowsingHistoryByUserBrowHisId(userBrowHisId));
@@ -62,7 +62,7 @@ public class UserBrowsingHistoryController extends XktBaseController {
     /**
      * 新增用户浏览历史
      */
-    @PreAuthorize("@ss.hasPermi('system:history:add')")
+    // @PreAuthorize("@ss.hasPermi('system:history:add')")
     @Log(title = "用户浏览历史", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody UserBrowsingHistory userBrowsingHistory) {
@@ -72,7 +72,7 @@ public class UserBrowsingHistoryController extends XktBaseController {
     /**
      * 修改用户浏览历史
      */
-    @PreAuthorize("@ss.hasPermi('system:history:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:history:edit')")
     @Log(title = "用户浏览历史", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody UserBrowsingHistory userBrowsingHistory) {
@@ -82,7 +82,7 @@ public class UserBrowsingHistoryController extends XktBaseController {
     /**
      * 删除用户浏览历史
      */
-    @PreAuthorize("@ss.hasPermi('system:history:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:history:remove')")
     @Log(title = "用户浏览历史", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userBrowHisIds}")
     public R remove(@PathVariable Long[] userBrowHisIds) {

@@ -82,6 +82,10 @@ public class AdRoundStoreResDTO {
         @ApiModelProperty(value = "投放结束时间")
         @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
         private Date endTime;
+        @ApiModelProperty(value = "竞价状态")
+        private Integer biddingStatus;
+        @ApiModelProperty(value = "竞价状态名称")
+        private String biddingStatusName;
 //        @ApiModelProperty(value = "推广档口ID")
 //        private Long storeId;
         @ApiModelProperty(value = "对象锁符号")

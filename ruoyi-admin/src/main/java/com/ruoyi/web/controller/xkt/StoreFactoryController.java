@@ -41,7 +41,7 @@ public class StoreFactoryController extends XktBaseController {
     /**
      * 新增档口合作工厂
      */
-    @PreAuthorize("@ss.hasPermi('system:factory:add')")
+//    // @PreAuthorize("@ss.hasPermi('system:factory:add')")
     @ApiOperation(value = "新增档口合作工厂", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口合作工厂", businessType = BusinessType.INSERT)
     @PostMapping
@@ -53,7 +53,7 @@ public class StoreFactoryController extends XktBaseController {
     /**
      * 修改档口合作工厂
      */
-    @PreAuthorize("@ss.hasPermi('system:factory:edit')")
+//    // @PreAuthorize("@ss.hasPermi('system:factory:edit')")
     @ApiOperation(value = "修改档口合作工厂", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口合作工厂", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -64,7 +64,7 @@ public class StoreFactoryController extends XktBaseController {
     /**
      * 查询档口合作工厂列表
      */
-    @PreAuthorize("@ss.hasPermi('system:customer:list')")
+//    // @PreAuthorize("@ss.hasPermi('system:customer:list')")
     @ApiOperation(value = "查询档口合作工厂列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreFactoryResDTO>> selectPage(@Validated @RequestBody StoreFactoryPageVO pageVO) {
@@ -74,7 +74,7 @@ public class StoreFactoryController extends XktBaseController {
     /**
      * 获取档口合作工厂详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:factory:query')")
+//    // @PreAuthorize("@ss.hasPermi('system:factory:query')")
     @ApiOperation(value = "获取档口合作工厂详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}/{storeFactoryId}")
     public R<StoreFactoryVO> getInfo(@PathVariable("storeId") Long storeId, @PathVariable("storeFactoryId") Long storeFactoryId) {
@@ -85,7 +85,7 @@ public class StoreFactoryController extends XktBaseController {
     /**
      * 导出档口合作工厂列表
      */
-    @PreAuthorize("@ss.hasPermi('system:factory:export')")
+//    // @PreAuthorize("@ss.hasPermi('system:factory:export')")
     @Log(title = "档口合作工厂", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreFactory storeFactory) {

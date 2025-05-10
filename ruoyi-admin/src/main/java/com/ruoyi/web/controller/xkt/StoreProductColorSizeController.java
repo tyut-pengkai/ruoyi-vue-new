@@ -30,7 +30,7 @@ public class StoreProductColorSizeController extends XktBaseController {
     /**
      * 查询档口商品颜色的尺码列表
      */
-    @PreAuthorize("@ss.hasPermi('system:size:list')")
+    // @PreAuthorize("@ss.hasPermi('system:size:list')")
     @GetMapping("/list")
     public TableDataInfo list(StoreProductColorSize storeProductColorSize) {
         startPage();
@@ -41,7 +41,7 @@ public class StoreProductColorSizeController extends XktBaseController {
     /**
      * 导出档口商品颜色的尺码列表
      */
-    @PreAuthorize("@ss.hasPermi('system:size:export')")
+    // @PreAuthorize("@ss.hasPermi('system:size:export')")
     @Log(title = "档口商品颜色的尺码", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreProductColorSize storeProductColorSize) {
@@ -53,7 +53,7 @@ public class StoreProductColorSizeController extends XktBaseController {
     /**
      * 获取档口商品颜色的尺码详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:size:query')")
+    // @PreAuthorize("@ss.hasPermi('system:size:query')")
     @GetMapping(value = "/{storeProdColorSizeId}")
     public R getInfo(@PathVariable("storeProdColorSizeId") Long storeProdColorSizeId) {
         return success(storeProductColorSizeService.selectStoreProductColorSizeByStoreProdColorSizeId(storeProdColorSizeId));
@@ -62,7 +62,7 @@ public class StoreProductColorSizeController extends XktBaseController {
     /**
      * 新增档口商品颜色的尺码
      */
-    @PreAuthorize("@ss.hasPermi('system:size:add')")
+    // @PreAuthorize("@ss.hasPermi('system:size:add')")
     @Log(title = "档口商品颜色的尺码", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody StoreProductColorSize storeProductColorSize) {
@@ -72,7 +72,7 @@ public class StoreProductColorSizeController extends XktBaseController {
     /**
      * 修改档口商品颜色的尺码
      */
-    @PreAuthorize("@ss.hasPermi('system:size:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:size:edit')")
     @Log(title = "档口商品颜色的尺码", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody StoreProductColorSize storeProductColorSize) {
@@ -82,7 +82,7 @@ public class StoreProductColorSizeController extends XktBaseController {
     /**
      * 删除档口商品颜色的尺码
      */
-    @PreAuthorize("@ss.hasPermi('system:size:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:size:remove')")
     @Log(title = "档口商品颜色的尺码", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdColorSizeIds}")
     public R remove(@PathVariable Long[] storeProdColorSizeIds) {

@@ -30,7 +30,7 @@ public class StoreSaleDetailController extends XktBaseController {
     /**
      * 查询档口销售明细列表
      */
-    @PreAuthorize("@ss.hasPermi('system:detail:list')")
+    // @PreAuthorize("@ss.hasPermi('system:detail:list')")
     @GetMapping("/list")
     public TableDataInfo list(StoreSaleDetail storeSaleDetail) {
         startPage();
@@ -41,7 +41,7 @@ public class StoreSaleDetailController extends XktBaseController {
     /**
      * 导出档口销售明细列表
      */
-    @PreAuthorize("@ss.hasPermi('system:detail:export')")
+    // @PreAuthorize("@ss.hasPermi('system:detail:export')")
     @Log(title = "档口销售明细", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreSaleDetail storeSaleDetail) {
@@ -53,7 +53,7 @@ public class StoreSaleDetailController extends XktBaseController {
     /**
      * 获取档口销售明细详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:detail:query')")
+    // @PreAuthorize("@ss.hasPermi('system:detail:query')")
     @GetMapping(value = "/{storeSaleDetailId}")
     public R getInfo(@PathVariable("storeSaleDetailId") Long storeSaleDetailId) {
         return success(storeSaleDetailService.selectStoreSaleDetailByStoreSaleDetailId(storeSaleDetailId));
@@ -62,7 +62,7 @@ public class StoreSaleDetailController extends XktBaseController {
     /**
      * 新增档口销售明细
      */
-    @PreAuthorize("@ss.hasPermi('system:detail:add')")
+    // @PreAuthorize("@ss.hasPermi('system:detail:add')")
     @Log(title = "档口销售明细", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody StoreSaleDetail storeSaleDetail) {
@@ -72,7 +72,7 @@ public class StoreSaleDetailController extends XktBaseController {
     /**
      * 修改档口销售明细
      */
-    @PreAuthorize("@ss.hasPermi('system:detail:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:detail:edit')")
     @Log(title = "档口销售明细", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody StoreSaleDetail storeSaleDetail) {
@@ -82,7 +82,7 @@ public class StoreSaleDetailController extends XktBaseController {
     /**
      * 删除档口销售明细
      */
-    @PreAuthorize("@ss.hasPermi('system:detail:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:detail:remove')")
     @Log(title = "档口销售明细", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeSaleDetailIds}")
     public R remove(@PathVariable Long[] storeSaleDetailIds) {

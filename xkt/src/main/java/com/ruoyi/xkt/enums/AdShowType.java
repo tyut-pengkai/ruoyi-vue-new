@@ -7,6 +7,7 @@ import lombok.Getter;
 
 /**
  * 推广营销展示类型
+ *
  * @author liujiang
  * @date 2025-04-02 23:42
  */

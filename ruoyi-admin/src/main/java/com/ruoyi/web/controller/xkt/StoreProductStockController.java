@@ -49,7 +49,7 @@ public class StoreProductStockController extends XktBaseController {
     /**
      * 查询档口库存列表
      */
-    @PreAuthorize("@ss.hasPermi('system:stock:list')")
+    // @PreAuthorize("@ss.hasPermi('system:stock:list')")
     @ApiOperation(value = "查询档口库存列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreProdStockPageResDTO>> selectPage(@Validated @RequestBody StoreProdStockPageVO pageVO) {
@@ -60,7 +60,7 @@ public class StoreProductStockController extends XktBaseController {
     /**
      * 档口商品库存清零
      */
-    @PreAuthorize("@ss.hasPermi('system:stock:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:stock:edit')")
     @ApiOperation(value = "档口商品库存清零", httpMethod = "PUT", response = R.class)
     @Log(title = "档口商品库存清零", businessType = BusinessType.UPDATE)
     @PutMapping("/clear-zero/{storeId}/{storeProdStockId}")
@@ -71,7 +71,7 @@ public class StoreProductStockController extends XktBaseController {
     /**
      * 直接调整档口商品库存值
      */
-    @PreAuthorize("@ss.hasPermi('system:stock:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:stock:edit')")
     @ApiOperation(value = "直接调整档口商品库存值", httpMethod = "PUT", response = R.class)
     @Log(title = "直接调整档口商品库存值", businessType = BusinessType.UPDATE)
     @PutMapping("/update-stock/{storeId}")
@@ -82,7 +82,7 @@ public class StoreProductStockController extends XktBaseController {
     /**
      * 查询档口商品库存详情
      */
-    @PreAuthorize("@ss.hasPermi('system:stock:query')")
+    // @PreAuthorize("@ss.hasPermi('system:stock:query')")
     @ApiOperation(value = "查询档口商品库存详情", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}/{storeProdStockId}")
     public R<StoreProdStockResVO> getInfo(@PathVariable("storeId") Long storeId, @PathVariable("storeProdStockId") Long storeProdStockId) {
@@ -92,7 +92,7 @@ public class StoreProductStockController extends XktBaseController {
     /**
      * 根据货号查询档口商品库存
      */
-    @PreAuthorize("@ss.hasPermi('system:stock:query')")
+    // @PreAuthorize("@ss.hasPermi('system:stock:query')")
     @ApiOperation(value = "根据货号查询档口商品库存", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}/prod-art-num/{prodArtNum}")
     public R<List<StoreProdStockResVO>> getInfo(@PathVariable("storeId") Long storeId, @PathVariable("prodArtNum") String prodArtNum) {

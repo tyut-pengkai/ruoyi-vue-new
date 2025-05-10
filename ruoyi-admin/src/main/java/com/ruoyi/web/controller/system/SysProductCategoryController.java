@@ -28,7 +28,7 @@ import java.util.List;
 @Api(tags = "系统基础数据 - 商品分类")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/system/prod-cate")
+@RequestMapping("/rest/v1/sys/prod-cate")
 public class SysProductCategoryController extends XktBaseController {
 
     final ISysProductCategoryService prodCateService;

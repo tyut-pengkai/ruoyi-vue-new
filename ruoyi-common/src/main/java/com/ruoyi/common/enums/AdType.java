@@ -20,28 +20,24 @@ public enum AdType {
     PC_HOME_TOP_RIGHT_BANNER(2, "顶部纵向小图", "/url"),
     // 人气榜左侧大图
     PC_HOME_POP_LEFT_BANNER(3, "人气榜左大图", "/url"),
-    // 人气榜中上侧
-    PC_HOME_POP_MID_TOP(4, "人气榜中上侧", "/url"),
-    // 人气榜中下侧
-    PC_HOME_POP_MID_BOTTOM(5, "人气榜中下侧", "/url"),
-    // 人气榜右上侧
-    PC_HOME_POP_RIGHT_TOP(6, "人气榜右上侧", "/url"),
-    // 人气榜右下侧
-    PC_HOME_POP_RIGHT_BOTTOM(7, "人气榜右下侧", "/url"),
+    // 人气榜中间图
+    PC_HOME_POP_MID_TOP(4, "人气榜中间图", "/url"),
+    // 人气榜右侧图
+    PC_HOME_POP_RIGHT_TOP(5, "人气榜右侧图", "/url"),
     // 首页档口横幅
-    PC_HOME_SINGLE_BANNER(8, "首页档口横幅", "/url"),
+    PC_HOME_SINGLE_BANNER(6, "首页档口横幅", "/url"),
     // 首页商品列表
-    PC_HOME_PRODUCT_LIST(9, "首页商品列表", "/url"),
+    PC_HOME_PRODUCT_LIST(7, "首页商品列表", "/url"),
     // 首页两侧固定挂耳
-    PC_HOME_FIXED_EAR(10, "首页两侧固定挂耳", "/url"),
+    PC_HOME_FIXED_EAR(8, "首页两侧固定挂耳", "/url"),
     // 首页搜索框下名称
-    PC_HOME_SEARCH_DOWN_NAME(11, "首页搜索框下名称", "/url"),
+    PC_HOME_SEARCH_DOWN_NAME(9, "首页搜索框下名称", "/url"),
     // 首页搜索框商品
-    PC_HOME_SEARCH_PRODUCT(12, "首页搜索框商品", "/url"),
+    PC_HOME_SEARCH_PRODUCT(10, "首页搜索框商品", "/url"),
     // 首页搜索框档口
-    PC_HOME_SEARCH_STORE(13, "首页搜索框档口", "/url"),
+    PC_HOME_SEARCH_STORE(11, "首页搜索框档口", "/url"),
     // 首页以图搜款商品
-    PC_HOME_PIC_SEARCH_PRODUCT(14, "首页以图搜款商品", "/url"),
+    PC_HOME_PIC_SEARCH_PRODUCT(12, "首页以图搜款商品", "/url"),
 
 
     // 新品馆顶部横向大图

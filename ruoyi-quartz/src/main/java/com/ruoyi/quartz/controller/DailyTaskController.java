@@ -67,7 +67,7 @@ public class DailyTaskController extends BaseController {
     }
 
     @PostMapping("/advert-round")
-    public R dailyRound(SysJob sysJob) {
+    public R dailyRound(SysJob sysJob) throws ParseException {
         task.dailyAdvertRound();
         return R.ok();
     }

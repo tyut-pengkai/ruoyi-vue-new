@@ -45,7 +45,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Api(tags = "系统基础数据 - 字典数据明细")
 @RestController
-@RequestMapping("/system/dict/data")
+@RequestMapping("/rest/v1/sys/dict/data")
 public class SysDictDataController extends BaseController {
 
     final ISysDictDataService dictDataService;

@@ -30,7 +30,7 @@ public class UserNoticeController extends XktBaseController {
     /**
      * 查询用户所有通知列表
      */
-    @PreAuthorize("@ss.hasPermi('system:notice:list')")
+    // @PreAuthorize("@ss.hasPermi('system:notice:list')")
     @GetMapping("/list")
     public TableDataInfo list(UserNotice userNotice) {
         startPage();
@@ -41,7 +41,7 @@ public class UserNoticeController extends XktBaseController {
     /**
      * 导出用户所有通知列表
      */
-    @PreAuthorize("@ss.hasPermi('system:notice:export')")
+    // @PreAuthorize("@ss.hasPermi('system:notice:export')")
     @Log(title = "用户所有通知", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, UserNotice userNotice) {
@@ -53,7 +53,7 @@ public class UserNoticeController extends XktBaseController {
     /**
      * 获取用户所有通知详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:notice:query')")
+    // @PreAuthorize("@ss.hasPermi('system:notice:query')")
     @GetMapping(value = "/{userNoticeId}")
     public R getInfo(@PathVariable("userNoticeId") Long userNoticeId) {
         return success(userNoticeService.selectUserNoticeByUserNoticeId(userNoticeId));
@@ -62,7 +62,7 @@ public class UserNoticeController extends XktBaseController {
     /**
      * 新增用户所有通知
      */
-    @PreAuthorize("@ss.hasPermi('system:notice:add')")
+    // @PreAuthorize("@ss.hasPermi('system:notice:add')")
     @Log(title = "用户所有通知", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody UserNotice userNotice) {
@@ -72,7 +72,7 @@ public class UserNoticeController extends XktBaseController {
     /**
      * 修改用户所有通知
      */
-    @PreAuthorize("@ss.hasPermi('system:notice:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:notice:edit')")
     @Log(title = "用户所有通知", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody UserNotice userNotice) {
@@ -82,7 +82,7 @@ public class UserNoticeController extends XktBaseController {
     /**
      * 删除用户所有通知
      */
-    @PreAuthorize("@ss.hasPermi('system:notice:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:notice:remove')")
     @Log(title = "用户所有通知", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userNoticeIds}")
     public R remove(@PathVariable Long[] userNoticeIds) {

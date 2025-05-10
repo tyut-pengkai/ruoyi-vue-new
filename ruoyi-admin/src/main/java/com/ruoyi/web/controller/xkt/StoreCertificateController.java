@@ -33,7 +33,7 @@ public class StoreCertificateController extends XktBaseController {
     /**
      * 新增档口认证
      */
-    @PreAuthorize("@ss.hasPermi('system:certificate:add')")
+//    // @PreAuthorize("@ss.hasPermi('system:certificate:add')")
     @ApiOperation(value = "新增档口认证", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口认证", businessType = BusinessType.INSERT)
     @PostMapping
@@ -44,7 +44,7 @@ public class StoreCertificateController extends XktBaseController {
     /**
      * 获取档口认证详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:certificate:query')")
+    // @PreAuthorize("@ss.hasPermi('system:certificate:query')")
     @ApiOperation(value = "获取档口认证详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}")
     public R<StoreCertResVO> getInfo(@PathVariable("storeId") Long storeId) {
@@ -54,7 +54,7 @@ public class StoreCertificateController extends XktBaseController {
     /**
      * 修改档口认证
      */
-    @PreAuthorize("@ss.hasPermi('system:certificate:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:certificate:edit')")
     @ApiOperation(value = "修改档口认证", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口认证", businessType = BusinessType.UPDATE)
     @PutMapping

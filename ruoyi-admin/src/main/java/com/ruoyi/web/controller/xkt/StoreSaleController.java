@@ -39,7 +39,7 @@ public class StoreSaleController extends XktBaseController {
     /**
      * 根据当前客户查询最近的销售业绩，以及欠款金额
      */
-    @PreAuthorize("@ss.hasPermi('system:sale:list')")
+    // @PreAuthorize("@ss.hasPermi('system:sale:list')")
     @ApiOperation(value = "根据当前客户查询最近的销售业绩，以及欠款金额", httpMethod = "GET", response = R.class)
     @GetMapping("/cus-overall")
     public R<StoreCusGeneralSaleVO> getCusGeneralSale(@RequestParam("days") Integer days, @RequestParam("storeId") Long storeId,
@@ -50,7 +50,7 @@ public class StoreSaleController extends XktBaseController {
     /**
      * 查询档口销售出库列表
      */
-    @PreAuthorize("@ss.hasPermi('system:sale:list')")
+    // @PreAuthorize("@ss.hasPermi('system:sale:list')")
     @ApiOperation(value = "查询档口销售出库列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreSalePageResDTO>> page(@Validated @RequestBody StoreSalePageVO salePageVO) {
@@ -60,7 +60,7 @@ public class StoreSaleController extends XktBaseController {
     /**
      * 新增档口销售出库
      */
-    @PreAuthorize("@ss.hasPermi('system:sale:add')")
+    // @PreAuthorize("@ss.hasPermi('system:sale:add')")
     @ApiOperation(value = "新增档口销售出库", httpMethod = "POST", response = R.class)
     @Log(title = "档口销售出库", businessType = BusinessType.INSERT)
     @PostMapping
@@ -71,7 +71,7 @@ public class StoreSaleController extends XktBaseController {
     /**
      * 返单后，更新档口销售出库
      */
-    @PreAuthorize("@ss.hasPermi('system:sale:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:sale:edit')")
     @Log(title = "修改档口销售出库", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "返单后，更新档口销售出库", httpMethod = "PUT", response = R.class)
     @PutMapping
@@ -82,7 +82,7 @@ public class StoreSaleController extends XktBaseController {
     /**
      * 查询档口销售出库详情
      */
-    @PreAuthorize("@ss.hasPermi('system:sale:query')")
+    // @PreAuthorize("@ss.hasPermi('system:sale:query')")
     @ApiOperation(value = "查询档口销售出库详情", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeSaleId}")
     public R<StoreSaleVO> getInfo(@PathVariable("storeSaleId") Long storeSaleId) {
@@ -92,7 +92,7 @@ public class StoreSaleController extends XktBaseController {
     /**
      * 客户欠款结算
      */
-    @PreAuthorize("@ss.hasPermi('system:sale:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:sale:edit')")
     @Log(title = "客户欠款结算", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "客户欠款结算", httpMethod = "PUT", response = R.class)
     @PutMapping("/clear-debt")
@@ -103,7 +103,7 @@ public class StoreSaleController extends XktBaseController {
     /**
      * 删除档口销售出库
      */
-    @PreAuthorize("@ss.hasPermi('system:sale:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:sale:remove')")
     @Log(title = "档口销售出库", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeSaleId}")
     public R<Integer> remove(@PathVariable Long storeSaleId) {

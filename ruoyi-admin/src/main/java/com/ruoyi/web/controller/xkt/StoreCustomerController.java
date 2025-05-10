@@ -39,7 +39,7 @@ public class StoreCustomerController extends XktBaseController {
     /**
      * 模糊查询档口客户
      */
-    @PreAuthorize("@ss.hasPermi('system:customer:query')")
+//    // @PreAuthorize("@ss.hasPermi('system:customer:query')")
     @ApiOperation(value = "模糊查询档口客户", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy")
     public R<List<StoreCusFuzzyResVO>> fuzzyQueryColorList(@RequestParam(value = "cusName", required = false) String cusName,
@@ -51,7 +51,7 @@ public class StoreCustomerController extends XktBaseController {
     /**
      * 新增档口客户
      */
-    @PreAuthorize("@ss.hasPermi('system:customer:add')")
+//    // @PreAuthorize("@ss.hasPermi('system:customer:add')")
     @ApiOperation(value = "新增档口客户", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口客户", businessType = BusinessType.INSERT)
     @PostMapping
@@ -62,7 +62,7 @@ public class StoreCustomerController extends XktBaseController {
     /**
      * 修改档口客户
      */
-    @PreAuthorize("@ss.hasPermi('system:customer:edit')")
+//    // @PreAuthorize("@ss.hasPermi('system:customer:edit')")
     @ApiOperation(value = "修改档口客户", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口客户", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -73,7 +73,7 @@ public class StoreCustomerController extends XktBaseController {
     /**
      * 删除档口客户
      */
-    @PreAuthorize("@ss.hasPermi('system:customer:remove')")
+//    // @PreAuthorize("@ss.hasPermi('system:customer:remove')")
     @ApiOperation(value = "删除档口客户", httpMethod = "DELETE", response = R.class)
     @Log(title = "删除档口客户", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeCusId}")
@@ -85,7 +85,7 @@ public class StoreCustomerController extends XktBaseController {
     /**
      * 获取档口客户详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:customer:query')")
+//    // @PreAuthorize("@ss.hasPermi('system:customer:query')")
     @ApiOperation(value = "获取档口客户详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeCusId}")
     public R<StoreCusVO> getInfo(@PathVariable("storeCusId") Long storeCusId) {
@@ -95,7 +95,7 @@ public class StoreCustomerController extends XktBaseController {
     /**
      * 查询档口客户列表
      */
-    @PreAuthorize("@ss.hasPermi('system:customer:list')")
+//    // @PreAuthorize("@ss.hasPermi('system:customer:list')")
     @ApiOperation(value = "查询档口客户列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreCusPageResDTO>> selectPage(@Validated @RequestBody StoreCusPageVO pageVO) {

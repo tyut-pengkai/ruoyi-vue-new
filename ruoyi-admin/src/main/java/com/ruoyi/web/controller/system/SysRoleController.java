@@ -44,7 +44,7 @@ import java.util.List;
 @Api(tags = "角色信息")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/system/role")
+@RequestMapping("/rest/v1/sys/role")
 public class SysRoleController extends XktBaseController {
 
     final ISysRoleService roleService;

@@ -300,7 +300,7 @@ public class XktTask {
      * 每晚定时任务更新推广的播放轮次，这个要次日凌晨更新
      */
     @Transactional
-    public void dailyAdvertRound() {
+    public void dailyAdvertRound() throws ParseException {
         List<Advert> advertList = this.advertMapper.selectList(new LambdaQueryWrapper<Advert>()
                 .eq(Advert::getDelFlag, Constants.UNDELETED).eq(Advert::getOnlineStatus, AdOnlineStatus.ONLINE.getValue()));
         if (CollectionUtils.isEmpty(advertList)) {
@@ -397,6 +397,9 @@ public class XktTask {
         if (CollectionUtils.isNotEmpty(updateList)) {
             this.advertRoundMapper.insertOrUpdate(updateList);
         }
+
+        // 更新推广轮次截止时间到redis
+        this.saveAdvertDeadlineToRedis();
     }
 
     /**

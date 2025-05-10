@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @Api(tags = "系统基础数据 - 字典类型")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/system/dict/type")
+@RequestMapping("/rest/v1/sys/dict/type")
 public class SysDictTypeController extends BaseController {
 
     final ISysDictTypeService dictTypeService;

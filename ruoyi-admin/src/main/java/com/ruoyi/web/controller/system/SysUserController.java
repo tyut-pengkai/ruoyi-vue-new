@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * @author ruoyi
  */
 @RestController
-@RequestMapping("/system/user")
+@RequestMapping("/rest/v1/sys/user")
 public class SysUserController extends BaseController {
 
     @Autowired

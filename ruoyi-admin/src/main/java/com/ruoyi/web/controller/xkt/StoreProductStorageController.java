@@ -37,7 +37,7 @@ public class StoreProductStorageController extends XktBaseController {
     /**
      * 新增档口商品入库
      */
-    @PreAuthorize("@ss.hasPermi('system:storage:add')")
+    // @PreAuthorize("@ss.hasPermi('system:storage:add')")
     @ApiOperation(value = "新增档口商品入库", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口商品入库", businessType = BusinessType.INSERT)
     @PostMapping
@@ -48,7 +48,7 @@ public class StoreProductStorageController extends XktBaseController {
     /**
      * 查询档口商品入库列表
      */
-    @PreAuthorize("@ss.hasPermi('system:product:list')")
+    // @PreAuthorize("@ss.hasPermi('system:product:list')")
     @ApiOperation(value = "查询档口商品入库列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreProdStoragePageResDTO>> page(@Validated @RequestBody StoreProdStoragePageVO pageVO) {
@@ -58,7 +58,7 @@ public class StoreProductStorageController extends XktBaseController {
     /**
      * 获取档口商品入库详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:storage:query')")
+    // @PreAuthorize("@ss.hasPermi('system:storage:query')")
     @ApiOperation(value = "获取档口商品入库详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeProdStorageId}")
     public R<StoreProdStorageResVO> getInfo(@PathVariable("storeProdStorageId") Long storeProdStorageId) {
@@ -68,7 +68,7 @@ public class StoreProductStorageController extends XktBaseController {
     /**
      * 撤销档口商品入库
      */
-    @PreAuthorize("@ss.hasPermi('system:storage:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:storage:remove')")
     @ApiOperation(value = "撤销档口商品入库", httpMethod = "DELETE", response = R.class)
     @Log(title = "撤销档口商品入库", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdStorageId}")

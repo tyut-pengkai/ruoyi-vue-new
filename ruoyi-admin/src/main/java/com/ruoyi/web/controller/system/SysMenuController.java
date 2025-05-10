@@ -26,7 +26,7 @@ import java.util.List;
 @Api(tags = "菜单信息")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/system/menu")
+@RequestMapping("/rest/v1/sys/menu")
 public class SysMenuController extends XktBaseController {
 
     final ISysMenuService menuService;

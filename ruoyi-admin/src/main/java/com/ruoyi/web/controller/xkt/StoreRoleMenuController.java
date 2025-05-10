@@ -30,7 +30,7 @@ public class StoreRoleMenuController extends XktBaseController {
     /**
      * 查询档口子角色菜单列表
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:list')")
+//    // @PreAuthorize("@ss.hasPermi('system:menu:list')")
     @GetMapping("/list")
     public TableDataInfo list(StoreRoleMenu storeRoleMenu) {
         startPage();
@@ -41,7 +41,7 @@ public class StoreRoleMenuController extends XktBaseController {
     /**
      * 导出档口子角色菜单列表
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:export')")
+//    // @PreAuthorize("@ss.hasPermi('system:menu:export')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreRoleMenu storeRoleMenu) {
@@ -53,7 +53,7 @@ public class StoreRoleMenuController extends XktBaseController {
     /**
      * 获取档口子角色菜单详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:query')")
+//    // @PreAuthorize("@ss.hasPermi('system:menu:query')")
     @GetMapping(value = "/{storeRoleMenuId}")
     public R getInfo(@PathVariable("storeRoleMenuId") Long storeRoleMenuId) {
         return success(storeRoleMenuService.selectStoreRoleMenuByStoreRoleMenuId(storeRoleMenuId));
@@ -62,7 +62,7 @@ public class StoreRoleMenuController extends XktBaseController {
     /**
      * 新增档口子角色菜单
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:add')")
+//    // @PreAuthorize("@ss.hasPermi('system:menu:add')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody StoreRoleMenu storeRoleMenu) {
@@ -72,7 +72,7 @@ public class StoreRoleMenuController extends XktBaseController {
     /**
      * 修改档口子角色菜单
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:edit')")
+//    // @PreAuthorize("@ss.hasPermi('system:menu:edit')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody StoreRoleMenu storeRoleMenu) {
@@ -82,7 +82,7 @@ public class StoreRoleMenuController extends XktBaseController {
     /**
      * 删除档口子角色菜单
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:remove')")
+//    // @PreAuthorize("@ss.hasPermi('system:menu:remove')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeRoleMenuIds}")
     public R remove(@PathVariable Long[] storeRoleMenuIds) {

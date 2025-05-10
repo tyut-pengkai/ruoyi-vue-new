@@ -34,7 +34,7 @@ public class StoreHomepageController extends XktBaseController {
     /**
      * 新增档口装修数据
      */
-    @PreAuthorize("@ss.hasPermi('system:homepage:add')")
+//    // @PreAuthorize("@ss.hasPermi('system:homepage:add')")
     @ApiOperation(value = "新增档口装修数据", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口装修数据", businessType = BusinessType.INSERT)
     @PostMapping("/decoration/{storeId}/{templateNum}")
@@ -46,7 +46,7 @@ public class StoreHomepageController extends XktBaseController {
     /**
      * 查询档口装修数据
      */
-    @PreAuthorize("@ss.hasPermi('system:sale:query')")
+//    // @PreAuthorize("@ss.hasPermi('system:sale:query')")
     @ApiOperation(value = "查询档口装修数据", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/decoration/{storeId}")
     public R<StoreHomeDecorationVO> getDecorationInfo(@PathVariable("storeId") Long storeId) {
@@ -56,7 +56,7 @@ public class StoreHomepageController extends XktBaseController {
     /**
      * 修改档口装修数据
      */
-    @PreAuthorize("@ss.hasPermi('system:homepage:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:homepage:edit')")
     @ApiOperation(value = "修改档口装修数据", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口装修数据", businessType = BusinessType.UPDATE)
     @PutMapping("/decoration/{storeId}/{templateNum}")
@@ -68,7 +68,7 @@ public class StoreHomepageController extends XktBaseController {
     /**
      * 查询档口首页
      */
-    @PreAuthorize("@ss.hasPermi('system:sale:query')")
+    // @PreAuthorize("@ss.hasPermi('system:sale:query')")
     @ApiOperation(value = "查询档口首页", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}")
     public R<StoreHomeResVO> getHomepageInfo(@PathVariable("storeId") Long storeId) {
@@ -78,7 +78,7 @@ public class StoreHomepageController extends XktBaseController {
     /**
      * 查询档口商品详情
      */
-    @PreAuthorize("@ss.hasPermi('system:sale:query')")
+    // @PreAuthorize("@ss.hasPermi('system:sale:query')")
     @ApiOperation(value = "查询档口商品详情", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/store-prod/{storeId}/{storeProdId}")
     public R<StoreHomeProdResVO> getStoreProdInfo(@PathVariable("storeId") Long storeId, @PathVariable("storeProdId") Long storeProdId) {

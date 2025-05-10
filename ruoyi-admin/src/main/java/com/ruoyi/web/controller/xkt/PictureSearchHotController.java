@@ -30,7 +30,7 @@ public class PictureSearchHotController extends XktBaseController {
     /**
      * 查询图搜热款列表
      */
-    @PreAuthorize("@ss.hasPermi('system:hot:list')")
+    // @PreAuthorize("@ss.hasPermi('system:hot:list')")
     @GetMapping("/list")
     public TableDataInfo list(PictureSearchHot pictureSearchHot) {
         startPage();
@@ -41,7 +41,7 @@ public class PictureSearchHotController extends XktBaseController {
     /**
      * 导出图搜热款列表
      */
-    @PreAuthorize("@ss.hasPermi('system:hot:export')")
+    // @PreAuthorize("@ss.hasPermi('system:hot:export')")
     @Log(title = "图搜热款", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, PictureSearchHot pictureSearchHot) {
@@ -53,7 +53,7 @@ public class PictureSearchHotController extends XktBaseController {
     /**
      * 获取图搜热款详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:hot:query')")
+    // @PreAuthorize("@ss.hasPermi('system:hot:query')")
     @GetMapping(value = "/{picSearchHotId}")
     public R getInfo(@PathVariable("picSearchHotId") Long picSearchHotId) {
         return success(pictureSearchHotService.selectPictureSearchHotByPicSearchHotId(picSearchHotId));
@@ -62,7 +62,7 @@ public class PictureSearchHotController extends XktBaseController {
     /**
      * 新增图搜热款
      */
-    @PreAuthorize("@ss.hasPermi('system:hot:add')")
+    // @PreAuthorize("@ss.hasPermi('system:hot:add')")
     @Log(title = "图搜热款", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody PictureSearchHot pictureSearchHot) {
@@ -72,7 +72,7 @@ public class PictureSearchHotController extends XktBaseController {
     /**
      * 修改图搜热款
      */
-    @PreAuthorize("@ss.hasPermi('system:hot:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:hot:edit')")
     @Log(title = "图搜热款", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody PictureSearchHot pictureSearchHot) {
@@ -82,7 +82,7 @@ public class PictureSearchHotController extends XktBaseController {
     /**
      * 删除图搜热款
      */
-    @PreAuthorize("@ss.hasPermi('system:hot:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:hot:remove')")
     @Log(title = "图搜热款", businessType = BusinessType.DELETE)
     @DeleteMapping("/{picSearchHotIds}")
     public R remove(@PathVariable Long[] picSearchHotIds) {

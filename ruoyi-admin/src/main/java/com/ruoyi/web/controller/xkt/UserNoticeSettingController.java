@@ -30,7 +30,7 @@ public class UserNoticeSettingController extends XktBaseController {
     /**
      * 查询用户通知接收设置列表
      */
-    @PreAuthorize("@ss.hasPermi('system:setting:list')")
+    // @PreAuthorize("@ss.hasPermi('system:setting:list')")
     @GetMapping("/list")
     public TableDataInfo list(UserNoticeSetting userNoticeSetting) {
         startPage();
@@ -41,7 +41,7 @@ public class UserNoticeSettingController extends XktBaseController {
     /**
      * 导出用户通知接收设置列表
      */
-    @PreAuthorize("@ss.hasPermi('system:setting:export')")
+    // @PreAuthorize("@ss.hasPermi('system:setting:export')")
     @Log(title = "用户通知接收设置", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, UserNoticeSetting userNoticeSetting) {
@@ -53,7 +53,7 @@ public class UserNoticeSettingController extends XktBaseController {
     /**
      * 获取用户通知接收设置详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:setting:query')")
+    // @PreAuthorize("@ss.hasPermi('system:setting:query')")
     @GetMapping(value = "/{userNoticeSetId}")
     public R getInfo(@PathVariable("userNoticeSetId") Long userNoticeSetId) {
         return success(userNoticeSettingService.selectUserNoticeSettingByUserNoticeSetId(userNoticeSetId));
@@ -62,7 +62,7 @@ public class UserNoticeSettingController extends XktBaseController {
     /**
      * 新增用户通知接收设置
      */
-    @PreAuthorize("@ss.hasPermi('system:setting:add')")
+    // @PreAuthorize("@ss.hasPermi('system:setting:add')")
     @Log(title = "用户通知接收设置", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody UserNoticeSetting userNoticeSetting) {
@@ -72,7 +72,7 @@ public class UserNoticeSettingController extends XktBaseController {
     /**
      * 修改用户通知接收设置
      */
-    @PreAuthorize("@ss.hasPermi('system:setting:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:setting:edit')")
     @Log(title = "用户通知接收设置", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody UserNoticeSetting userNoticeSetting) {
@@ -82,7 +82,7 @@ public class UserNoticeSettingController extends XktBaseController {
     /**
      * 删除用户通知接收设置
      */
-    @PreAuthorize("@ss.hasPermi('system:setting:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:setting:remove')")
     @Log(title = "用户通知接收设置", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userNoticeSetIds}")
     public R remove(@PathVariable Long[] userNoticeSetIds) {

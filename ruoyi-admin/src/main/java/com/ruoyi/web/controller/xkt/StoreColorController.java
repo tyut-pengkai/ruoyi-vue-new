@@ -33,7 +33,7 @@ public class StoreColorController extends XktBaseController {
     /**
      * 查询档口颜色列表
      */
-    @PreAuthorize("@ss.hasPermi('system:product:list')")
+//    // @PreAuthorize("@ss.hasPermi('system:product:list')")
     @ApiOperation(value = "查询档口颜色列表", httpMethod = "GET", response = R.class)
     @GetMapping("/list/{storeId}")
     public R<List<StoreColorVO>> list(@PathVariable Long storeId) {

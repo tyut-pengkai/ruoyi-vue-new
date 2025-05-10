@@ -30,7 +30,7 @@ public class UserAuthenticationController extends XktBaseController {
     /**
      * 查询用户代发认证列表
      */
-    @PreAuthorize("@ss.hasPermi('system:authentication:list')")
+    // @PreAuthorize("@ss.hasPermi('system:authentication:list')")
     @GetMapping("/list")
     public TableDataInfo list(UserAuthentication userAuthentication) {
         startPage();
@@ -41,7 +41,7 @@ public class UserAuthenticationController extends XktBaseController {
     /**
      * 导出用户代发认证列表
      */
-    @PreAuthorize("@ss.hasPermi('system:authentication:export')")
+    // @PreAuthorize("@ss.hasPermi('system:authentication:export')")
     @Log(title = "用户代发认证", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, UserAuthentication userAuthentication) {
@@ -53,7 +53,7 @@ public class UserAuthenticationController extends XktBaseController {
     /**
      * 获取用户代发认证详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:authentication:query')")
+    // @PreAuthorize("@ss.hasPermi('system:authentication:query')")
     @GetMapping(value = "/{userAuthId}")
     public R getInfo(@PathVariable("userAuthId") Long userAuthId) {
         return success(userAuthenticationService.selectUserAuthenticationByUserAuthId(userAuthId));
@@ -62,7 +62,7 @@ public class UserAuthenticationController extends XktBaseController {
     /**
      * 新增用户代发认证
      */
-    @PreAuthorize("@ss.hasPermi('system:authentication:add')")
+    // @PreAuthorize("@ss.hasPermi('system:authentication:add')")
     @Log(title = "用户代发认证", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody UserAuthentication userAuthentication) {
@@ -72,7 +72,7 @@ public class UserAuthenticationController extends XktBaseController {
     /**
      * 修改用户代发认证
      */
-    @PreAuthorize("@ss.hasPermi('system:authentication:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:authentication:edit')")
     @Log(title = "用户代发认证", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody UserAuthentication userAuthentication) {
@@ -82,7 +82,7 @@ public class UserAuthenticationController extends XktBaseController {
     /**
      * 删除用户代发认证
      */
-    @PreAuthorize("@ss.hasPermi('system:authentication:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:authentication:remove')")
     @Log(title = "用户代发认证", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userAuthIds}")
     public R remove(@PathVariable Long[] userAuthIds) {
