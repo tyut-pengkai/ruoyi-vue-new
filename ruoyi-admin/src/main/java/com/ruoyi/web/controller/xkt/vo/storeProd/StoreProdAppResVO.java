@@ -41,8 +41,8 @@ public class StoreProdAppResVO {
     private List<String> tagList;
     @ApiModelProperty(value = "档口文件列表")
     private List<StoreProdFileVO> fileList;
-    @ApiModelProperty(value = "档口类目属性列表")
-    private List<StoreProdCateAttrVO> cateAttrList;
+    @ApiModelProperty(value = "档口类目属性")
+    private StoreProdCateAttrVO cateAttr;
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcVO svc;
     @ApiModelProperty(value = "详情内容")
@@ -66,10 +66,48 @@ public class StoreProdAppResVO {
     @Data
     @ApiModel(value = "档口商品类目属性")
     public static class StoreProdCateAttrVO {
-        @ApiModelProperty(value = "系统设置类目")
-        private String dictType;
-        @ApiModelProperty(value = "系统设置类目值")
-        private String dictValue;
+        @ApiModelProperty(value = "帮面材质")
+        private String upperMaterial;
+        @ApiModelProperty(value = "内里材质")
+        private String liningMaterial;
+        @ApiModelProperty(value = "鞋垫材质")
+        private String insoleMaterial;
+        @ApiModelProperty(value = "上市季节年份")
+        private String releaseYearSeason;
+        @ApiModelProperty(value = "后跟高")
+        private String heelHeight;
+        @ApiModelProperty(value = "跟底款式")
+        private String heelType;
+        @ApiModelProperty(value = "鞋头款式")
+        private String toeStyle;
+        @ApiModelProperty(value = "适合季节")
+        private String suitableSeason;
+        @ApiModelProperty(value = "开口深度")
+        private String collarDepth;
+        @ApiModelProperty(value = "鞋底材质")
+        private String outsoleMaterial;
+        @ApiModelProperty(value = "风格")
+        private String style;
+        @ApiModelProperty(value = "款式")
+        private String design;
+        @ApiModelProperty(value = "皮质特征")
+        private String leatherFeatures;
+        @ApiModelProperty(value = "制作工艺")
+        private String manufacturingProcess;
+        @ApiModelProperty(value = "图案")
+        private String pattern;
+        @ApiModelProperty(value = "闭合方式")
+        private String closureType;
+        @ApiModelProperty(value = "适用场景")
+        private String occasion;
+        @ApiModelProperty(value = "适用年龄")
+        private String suitableAge;
+        @ApiModelProperty(value = "厚薄")
+        private String thickness;
+        @ApiModelProperty(value = "流行元素")
+        private String fashionElements;
+        @ApiModelProperty(value = "适用对象")
+        private String suitablePerson;
     }
 
     @Data

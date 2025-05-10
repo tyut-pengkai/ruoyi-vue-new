@@ -71,10 +71,10 @@ public class StoreProdVO {
     @NotNull(message = "档口文件不能为空!")
     @Valid
     private List<StoreProdFileVO> fileList;
-    @NotNull(message = "档口类目属性列表不能为空!")
+    @NotNull(message = "档口类目属性不能为空!")
     @Valid
-    @ApiModelProperty(value = "档口类目属性列表", required = true)
-    private List<StoreProdCateAttrVO> cateAttrList;
+    @ApiModelProperty(value = "档口类目属性", required = true)
+    private StoreProdCateAttrVO cateAttr;
     @NotNull(message = "档口所有颜色列表不能为空!")
     @ApiModelProperty(value = "档口所有颜色列表", required = true)
     private List<StoreColorVO> allColorList;
@@ -122,10 +122,51 @@ public class StoreProdVO {
     @Data
     @ApiModel(value = "档口类目属性列表")
     public static class StoreProdCateAttrVO {
-        @ApiModelProperty(value = "系统设置类目")
-        private String dictType;
-        @ApiModelProperty(value = "系统设置类目值")
-        private String dictValue;
+        @NotBlank(message = "帮面材质不可为空!")
+        @ApiModelProperty(value = "帮面材质", required = true)
+        private String upperMaterial;
+        @NotBlank(message = "内里材质不可为空!")
+        @ApiModelProperty(value = "内里材质", required = true)
+        private String liningMaterial;
+        @NotBlank(message = "鞋垫材质不可为空!")
+        @ApiModelProperty(value = "鞋垫材质", required = true)
+        private String insoleMaterial;
+        @ApiModelProperty(value = "上市季节年份")
+        private String releaseYearSeason;
+        @ApiModelProperty(value = "后跟高")
+        private String heelHeight;
+        @ApiModelProperty(value = "跟底款式")
+        private String heelType;
+        @ApiModelProperty(value = "鞋头款式")
+        private String toeStyle;
+        @ApiModelProperty(value = "适合季节")
+        private String suitableSeason;
+        @ApiModelProperty(value = "开口深度")
+        private String collarDepth;
+        @ApiModelProperty(value = "鞋底材质")
+        private String outsoleMaterial;
+        @ApiModelProperty(value = "风格")
+        private String style;
+        @ApiModelProperty(value = "款式")
+        private String design;
+        @ApiModelProperty(value = "皮质特征")
+        private String leatherFeatures;
+        @ApiModelProperty(value = "制作工艺")
+        private String manufacturingProcess;
+        @ApiModelProperty(value = "图案")
+        private String pattern;
+        @ApiModelProperty(value = "闭合方式")
+        private String closureType;
+        @ApiModelProperty(value = "适用场景")
+        private String occasion;
+        @ApiModelProperty(value = "适用年龄")
+        private String suitableAge;
+        @ApiModelProperty(value = "厚薄")
+        private String thickness;
+        @ApiModelProperty(value = "流行元素")
+        private String fashionElements;
+        @ApiModelProperty(value = "适用对象")
+        private String suitablePerson;
     }
 
     @Data

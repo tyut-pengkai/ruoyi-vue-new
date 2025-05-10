@@ -64,7 +64,7 @@ public class StoreProdDTO {
     @ApiModelProperty(value = "档口文件列表")
     private List<StoreProdFileDTO> fileList;
     @ApiModelProperty(value = "档口类目属性列表")
-    private List<StoreProdCateAttrDTO> cateAttrList;
+    private StoreProdCateAttrDTO cateAttr;
     @NotNull(message = "档口所有颜色列表不能为空!")
     @ApiModelProperty(value = "档口所有颜色列表")
     private List<StoreColorDTO> allColorList;

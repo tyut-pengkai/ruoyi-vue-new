@@ -88,10 +88,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         UPDATE store_product_category_attribute SET del_flag = 2 WHERE store_prod_id = #{storeProdId}
     </update>
 
-    <select id="selectListByStoreProdId" parameterType="Long" resultType="com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO">
+    <select id="selectByStoreProdId" parameterType="Long" resultType="com.ruoyi.xkt.domain.StoreProductCategoryAttribute">
         SELECT
-            dict_type AS dictType,
-            dict_value AS dictValue
+            *
         FROM
             store_product_category_attribute
         WHERE del_flag = 0 AND store_prod_id = #{storeProdId}

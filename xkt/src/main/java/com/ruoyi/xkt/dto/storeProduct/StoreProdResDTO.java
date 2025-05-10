@@ -58,8 +58,8 @@ public class StoreProdResDTO {
     private Date listingWaySchedule;
     @ApiModelProperty(value = "档口文件列表")
     private List<StoreProdFileResDTO> fileList;
-    @ApiModelProperty(value = "档口类目属性列表")
-    private List<StoreProdCateAttrDTO> cateAttrList;
+    @ApiModelProperty(value = "档口类目属性")
+    private StoreProdCateAttrDTO cateAttr;
     @ApiModelProperty(value = "档口所有颜色列表")
     private List<StoreColorDTO> allColorList;
     @ApiModelProperty(value = "档口颜色列表")

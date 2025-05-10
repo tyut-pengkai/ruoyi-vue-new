@@ -23,6 +23,7 @@ import com.ruoyi.xkt.service.IAdvertRoundService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -447,18 +448,14 @@ public class XktTask {
      */
     private void tagStyle(Date yesterday, List<DailyProdTag> tagList) {
         List<StoreProductCategoryAttribute> cateAttrList = this.cateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
-                .eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED).eq(StoreProductCategoryAttribute::getDictType, "style"));
-        // 查询条件加上
+                .eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED));
         if (CollectionUtils.isEmpty(cateAttrList)) {
             return;
         }
-        // 根据storeProdId找到storeId
-        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).in(StoreProduct::getId, cateAttrList.stream()
-                        .map(StoreProductCategoryAttribute::getStoreProdId).collect(Collectors.toList())));
-        Map<Long, Long> prodStoreIdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, StoreProduct::getStoreId));
-        tagList.addAll(cateAttrList.stream().map(x -> DailyProdTag.builder().storeId(prodStoreIdMap.get(x.getStoreProdId())).storeProdId(x.getStoreProdId())
-                .tag(x.getDictValue()).type(ProdTagType.STYLE.getValue()).voucherDate(yesterday).build()).collect(Collectors.toList()));
+        tagList.addAll(cateAttrList.stream().filter(x -> StringUtils.isNotBlank(x.getStyle()))
+                .map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getStoreProdId())
+                        .tag(x.getStyle()).type(ProdTagType.STYLE.getValue()).voucherDate(yesterday).build())
+                .collect(Collectors.toList()));
     }
 
     /**

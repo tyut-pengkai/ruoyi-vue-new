@@ -97,7 +97,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 档口文件（商品主图、主图视频、下载的商品详情）
         List<StoreProdFileResDTO> fileResList = this.storeProdFileMapper.selectListByStoreProdId(storeProdId);
         // 档口类目属性列表
-        List<StoreProdCateAttrDTO> cateAttrList = this.storeProdCateAttrMapper.selectListByStoreProdId(storeProdId);
+        StoreProductCategoryAttribute cateAttr = this.storeProdCateAttrMapper.selectByStoreProdId(storeProdId);
         // 档口所有颜色列表
         List<StoreColorDTO> allColorList = this.storeColorMapper.selectListByStoreProdId(storeProd.getStoreId());
         // 档口当前商品颜色列表
@@ -112,11 +112,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
         StoreProductService storeProductSvc = this.storeProdSvcMapper.selectByStoreProdId(storeProdId);
         // 档口生产工艺信息
         StoreProductProcess prodProcess = this.storeProdProcMapper.selectByStoreProdId(storeProdId);
-        return storeProdResDTO.setFileList(fileResList).setCateAttrList(cateAttrList).setAllColorList(allColorList)
+        return storeProdResDTO.setFileList(fileResList).setAllColorList(allColorList)
                 .setColorList(colorList).setPriceList(priceList).setSizeList(sizeList)
-                .setDetail(ObjectUtils.isEmpty(prodDetail) ? null : BeanUtil.toBean(prodDetail, StoreProdDetailDTO.class))
-                .setSvc(ObjectUtils.isEmpty(storeProductSvc) ? null : BeanUtil.toBean(storeProductSvc, StoreProdSvcDTO.class))
-                .setProcess(ObjectUtils.isEmpty(prodProcess) ? null : BeanUtil.toBean(prodProcess, StoreProdProcessDTO.class));
+                .setCateAttr(BeanUtil.toBean(cateAttr, StoreProdCateAttrDTO.class))
+                .setDetail(BeanUtil.toBean(prodDetail, StoreProdDetailDTO.class))
+                .setSvc(BeanUtil.toBean(storeProductSvc, StoreProdSvcDTO.class))
+                .setProcess(BeanUtil.toBean(prodProcess, StoreProdProcessDTO.class));
     }
 
     @Override
@@ -490,8 +491,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         StoreProdAppResDTO appResDTO = BeanUtil.toBean(storeProd, StoreProdAppResDTO.class).setStoreProdId(storeProd.getId());
         // 档口文件（商品主图、主图视频、下载的商品详情）
         List<StoreProdFileResDTO> fileResList = this.storeProdFileMapper.selectListByStoreProdId(storeProdId);
-        // 档口类目属性列表
-        List<StoreProdCateAttrDTO> cateAttrList = this.storeProdCateAttrMapper.selectListByStoreProdId(storeProdId);
+        // 档口类目属性
+        StoreProductCategoryAttribute cateAttr = this.storeProdCateAttrMapper.selectByStoreProdId(storeProdId);
         // 档口当前商品颜色列表
         List<StoreProdColorDTO> colorList = this.storeProdColorMapper.selectListByStoreProdId(storeProdId);
         // 档口商品颜色尺码列表
@@ -510,14 +511,14 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<DailyProdTag> tagList = this.prodTagMapper.selectList(new LambdaQueryWrapper<DailyProdTag>()
                 .eq(DailyProdTag::getDelFlag, Constants.UNDELETED).eq(DailyProdTag::getStoreProdId, storeProdId)
                 .orderByAsc(DailyProdTag::getType));
-        return appResDTO.setFileList(fileResList).setCateAttrList(cateAttrList)
+        return appResDTO.setFileList(fileResList).setCateAttr(BeanUtil.toBean(cateAttr, StoreProdCateAttrDTO.class))
                 .setTagList(CollectionUtils.isNotEmpty(tagList) ? tagList.stream().map(DailyProdTag::getTag).distinct().collect(Collectors.toList()) : null)
                 .setCollectProd(ObjectUtils.isNotEmpty(favorite) ? Boolean.TRUE : Boolean.FALSE)
                 .setSpecification(colorList.size() + "色" + sizeList.stream().filter(x -> Objects.equals(x.getStandard(), ProductSizeStatus.STANDARD.getValue())).count() + "码")
                 .setMinPrice(priceList.stream().min(Comparator.comparing(StoreProdColorPriceSimpleDTO::getPrice))
                         .orElseThrow(() -> new ServiceException("获取商品价格失败，请联系客服!", HttpStatus.ERROR)).getPrice())
                 .setDetail(ObjectUtils.isEmpty(prodDetail) ? null : prodDetail.getDetail())
-                .setSvc(ObjectUtils.isEmpty(storeProductSvc) ? null : BeanUtil.toBean(storeProductSvc, StoreProdSvcDTO.class));
+                .setSvc(BeanUtil.toBean(storeProductSvc, StoreProdSvcDTO.class));
     }
 
     /**
@@ -600,36 +601,27 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 将文件名称和文件ID映射到Map中
         Map<String, Long> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getFileName, SysFile::getId));
         // 档口文件（商品主图、主图视频、下载的商品详情）
-        List<StoreProductFile> prodFileList = fileDTOList.stream()
-                .map(x -> BeanUtil.toBean(x, StoreProductFile.class).setFileId(fileMap.get(x.getFileName()))
-                        .setStoreProdId(storeProd.getId()).setStoreId(storeProdDTO.getStoreId()))
+        List<StoreProductFile> prodFileList = fileDTOList.stream().map(x -> BeanUtil.toBean(x, StoreProductFile.class)
+                        .setFileId(fileMap.get(x.getFileName())).setStoreProdId(storeProd.getId()).setStoreId(storeProdDTO.getStoreId()))
                 .collect(Collectors.toList());
         this.storeProdFileMapper.insert(prodFileList);
-        // 档口类目属性列表
-        List<StoreProductCategoryAttribute> cateAttrList = storeProdDTO.getCateAttrList().stream()
-                .map(x -> BeanUtil.toBean(x, StoreProductCategoryAttribute.class)
-                        .setStoreProdId(storeProd.getId()))
-                .collect(Collectors.toList());
-        this.storeProdCateAttrMapper.insert(cateAttrList);
+        // 档口类目属性
+        this.storeProdCateAttrMapper.insert(BeanUtil.toBean(storeProdDTO.getCateAttr(), StoreProductCategoryAttribute.class)
+                .setStoreProdId(storeProd.getId()).setStoreId(storeProd.getStoreId()));
         // 档口颜色价格列表
-        List<StoreProductColorPrice> priceList = storeProdDTO.getPriceList().stream()
-                .map(x -> BeanUtil.toBean(x, StoreProductColorPrice.class)
-                        .setStoreProdId(storeProd.getId()))
-                .collect(Collectors.toList());
+        List<StoreProductColorPrice> priceList = storeProdDTO.getPriceList().stream().map(x -> BeanUtil.toBean(x, StoreProductColorPrice.class)
+                .setStoreProdId(storeProd.getId())).collect(Collectors.toList());
         this.storeProdColorPriceMapper.insert(priceList);
         // 档口详情内容
-        StoreProductDetail storeProdDetail = BeanUtil.toBean(storeProdDTO.getDetail(), StoreProductDetail.class)
-                .setStoreProdId(storeProd.getId());
+        StoreProductDetail storeProdDetail = BeanUtil.toBean(storeProdDTO.getDetail(), StoreProductDetail.class).setStoreProdId(storeProd.getId());
         this.storeProdDetailMapper.insert(storeProdDetail);
         // 档口服务承诺
         if (ObjectUtils.isNotEmpty(storeProdDTO.getSvc())) {
-            this.storeProdSvcMapper.insert(BeanUtil.toBean(storeProdDTO.getSvc(), StoreProductService.class)
-                    .setStoreProdId(storeProd.getId()));
+            this.storeProdSvcMapper.insert(BeanUtil.toBean(storeProdDTO.getSvc(), StoreProductService.class).setStoreProdId(storeProd.getId()));
         }
         // 档口生产工艺信息
         if (ObjectUtils.isNotEmpty(storeProdDTO.getProcess())) {
-            this.storeProdProcMapper.insert(BeanUtil.toBean(storeProdDTO.getProcess(), StoreProductProcess.class)
-                    .setStoreProdId(storeProd.getId()));
+            this.storeProdProcMapper.insert(BeanUtil.toBean(storeProdDTO.getProcess(), StoreProductProcess.class).setStoreProdId(storeProd.getId()));
         }
         // 处理档口所有颜色列表
         List<StoreColor> storeColorList = this.storeColorMapper.selectList(new LambdaQueryWrapper<StoreColor>()
@@ -690,11 +682,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         BigDecimal minPrice = storeProdDTO.getPriceList().stream().min(Comparator.comparing(StoreProdColorPriceSimpleDTO::getPrice))
                 .map(StoreProdColorPriceSimpleDTO::getPrice).orElseThrow(() -> new ServiceException("商品价格不存在!", HttpStatus.ERROR));
         // 获取使用季节
-        String season = storeProdDTO.getCateAttrList().stream().filter(x -> Objects.equals(x.getDictType(), "suitable_season"))
-                .map(StoreProdCateAttrDTO::getDictValue).findAny().orElse("");
+        String season = storeProdDTO.getCateAttr().getSuitableSeason();
         // 获取风格
-        String style = storeProdDTO.getCateAttrList().stream().filter(x -> Objects.equals(x.getDictType(), "style"))
-                .map(StoreProdCateAttrDTO::getDictValue).findAny().orElse("");
+        String style = storeProdDTO.getCateAttr().getStyle();
         return BeanUtil.toBean(storeProd, ESProductDTO.class)
                 .setProdCateName(storeProdDTO.getProdCateName()).setSaleWeight("0").setRecommendWeight("0").setPopularityWeight("0")
                 .setCreateTime(DateUtils.getTime()).setStoreName(storeProdDTO.getStoreName()).setMainPic(firstMainPic)

@@ -19,7 +19,7 @@ public interface StoreProductCategoryAttributeMapper extends BaseMapper<StorePro
      * @param id 档口商品类目信息主键
      * @return 档口商品类目信息
      */
-    public StoreProductCategoryAttribute selectStoreProductCategoryAttributeByStoreProdAttrId(Long id);
+    StoreProductCategoryAttribute selectStoreProductCategoryAttributeByStoreProdAttrId(Long id);
 
     /**
      * 查询档口商品类目信息列表
@@ -27,7 +27,7 @@ public interface StoreProductCategoryAttributeMapper extends BaseMapper<StorePro
      * @param storeProductCategoryAttribute 档口商品类目信息
      * @return 档口商品类目信息集合
      */
-    public List<StoreProductCategoryAttribute> selectStoreProductCategoryAttributeList(StoreProductCategoryAttribute storeProductCategoryAttribute);
+    List<StoreProductCategoryAttribute> selectStoreProductCategoryAttributeList(StoreProductCategoryAttribute storeProductCategoryAttribute);
 
     /**
      * 新增档口商品类目信息
@@ -35,7 +35,7 @@ public interface StoreProductCategoryAttributeMapper extends BaseMapper<StorePro
      * @param storeProductCategoryAttribute 档口商品类目信息
      * @return 结果
      */
-    public int insertStoreProductCategoryAttribute(StoreProductCategoryAttribute storeProductCategoryAttribute);
+    int insertStoreProductCategoryAttribute(StoreProductCategoryAttribute storeProductCategoryAttribute);
 
     /**
      * 修改档口商品类目信息
@@ -43,7 +43,7 @@ public interface StoreProductCategoryAttributeMapper extends BaseMapper<StorePro
      * @param storeProductCategoryAttribute 档口商品类目信息
      * @return 结果
      */
-    public int updateStoreProductCategoryAttribute(StoreProductCategoryAttribute storeProductCategoryAttribute);
+    int updateStoreProductCategoryAttribute(StoreProductCategoryAttribute storeProductCategoryAttribute);
 
     /**
      * 删除档口商品类目信息
@@ -51,7 +51,7 @@ public interface StoreProductCategoryAttributeMapper extends BaseMapper<StorePro
      * @param id 档口商品类目信息主键
      * @return 结果
      */
-    public int deleteStoreProductCategoryAttributeByStoreProdAttrId(Long id);
+    int deleteStoreProductCategoryAttributeByStoreProdAttrId(Long id);
 
     /**
      * 批量删除档口商品类目信息
@@ -59,9 +59,9 @@ public interface StoreProductCategoryAttributeMapper extends BaseMapper<StorePro
      * @param storeProdAttrIds 需要删除的数据主键集合
      * @return 结果
      */
-    public int deleteStoreProductCategoryAttributeByStoreProdAttrIds(Long[] storeProdAttrIds);
+    int deleteStoreProductCategoryAttributeByStoreProdAttrIds(Long[] storeProdAttrIds);
 
     void updateDelFlagByStoreProdId(Long storeProdId);
 
-    List<StoreProdCateAttrDTO> selectListByStoreProdId(Long storeProdId);
+    StoreProductCategoryAttribute selectByStoreProdId(Long storeProdId);
 }

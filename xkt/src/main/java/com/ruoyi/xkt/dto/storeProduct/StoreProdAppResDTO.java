@@ -46,8 +46,8 @@ public class StoreProdAppResDTO {
     private List<String> tagList;
     @ApiModelProperty(value = "档口文件列表")
     private List<StoreProdFileResDTO> fileList;
-    @ApiModelProperty(value = "档口类目属性列表")
-    private List<StoreProdCateAttrDTO> cateAttrList;
+    @ApiModelProperty(value = "档口类目属性")
+    private StoreProdCateAttrDTO cateAttr;
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcDTO svc;
     @ApiModelProperty(value = "详情内容")
