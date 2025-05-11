@@ -42,4 +42,5 @@ public interface AdvertRoundRecordMapper extends BaseMapper<AdvertRoundRecord> {
     List<AdvertRoundRecord> selectListByPosition(@Param("advertId") Long advertId, @Param("storeId") Long storeId,
                                                  @Param("voucherDate") Date voucherDate, @Param("positionList") List<String> positionList);
 
+
 }

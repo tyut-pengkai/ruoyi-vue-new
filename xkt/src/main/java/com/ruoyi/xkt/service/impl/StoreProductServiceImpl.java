@@ -112,10 +112,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         StoreProductService storeProductSvc = this.storeProdSvcMapper.selectByStoreProdId(storeProdId);
         // 档口生产工艺信息
         StoreProductProcess prodProcess = this.storeProdProcMapper.selectByStoreProdId(storeProdId);
-        return storeProdResDTO.setFileList(fileResList).setAllColorList(allColorList)
+        return storeProdResDTO.setFileList(fileResList).setAllColorList(allColorList).setDetail(prodDetail.getDetail())
                 .setColorList(colorList).setPriceList(priceList).setSizeList(sizeList)
                 .setCateAttr(BeanUtil.toBean(cateAttr, StoreProdCateAttrDTO.class))
-                .setDetail(BeanUtil.toBean(prodDetail, StoreProdDetailDTO.class))
                 .setSvc(BeanUtil.toBean(storeProductSvc, StoreProdSvcDTO.class))
                 .setProcess(BeanUtil.toBean(prodProcess, StoreProdProcessDTO.class));
     }
@@ -613,7 +612,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 .setStoreProdId(storeProd.getId())).collect(Collectors.toList());
         this.storeProdColorPriceMapper.insert(priceList);
         // 档口详情内容
-        StoreProductDetail storeProdDetail = BeanUtil.toBean(storeProdDTO.getDetail(), StoreProductDetail.class).setStoreProdId(storeProd.getId());
+        StoreProductDetail storeProdDetail = new StoreProductDetail().setDetail(storeProdDTO.getDetail()).setStoreProdId(storeProd.getId());
         this.storeProdDetailMapper.insert(storeProdDetail);
         // 档口服务承诺
         if (ObjectUtils.isNotEmpty(storeProdDTO.getSvc())) {

@@ -72,6 +72,10 @@ public class AdRoundStoreResVO {
         private Integer typeId;
         @ApiModelProperty(value = "广告位置 A B C D E")
         private String position;
+        @ApiModelProperty(value = "起拍价格")
+        private BigDecimal startPrice;
+        @ApiModelProperty(value = "推广档口出价")
+        private BigDecimal payPrice;
         @ApiModelProperty(value = "投放开始时间")
         @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
         private Date startTime;
@@ -101,6 +105,12 @@ public class AdRoundStoreResVO {
         private String typeName;
         @ApiModelProperty(value = "推广档口ID")
         private Long storeId;
+        @ApiModelProperty(value = "投放开始时间")
+        @JsonFormat(pattern = "MM月dd日", timezone = "GMT+8")
+        private Date startTime;
+        @ApiModelProperty(value = "投放结束时间")
+        @JsonFormat(pattern = "MM月dd日", timezone = "GMT+8")
+        private Date endTime;
         @ApiModelProperty(value = "对象锁符号")
         private String symbol;
         @ApiModelProperty(value = "广告位置 A B C D E")

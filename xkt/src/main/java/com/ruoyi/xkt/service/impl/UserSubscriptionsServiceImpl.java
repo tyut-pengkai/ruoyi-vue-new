@@ -74,7 +74,8 @@ public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
         // 获取当前登录用户
         LoginUser loginUser = SecurityUtils.getLoginUser();
         List<UserSubscriptions> list = Optional.ofNullable(this.userSubscMapper.selectList(new LambdaQueryWrapper<UserSubscriptions>()
-                        .eq(UserSubscriptions::getUserId, loginUser.getUserId()).in(UserSubscriptions::getId, deleteDTO.getUserSubscIdList())
+                        .eq(UserSubscriptions::getUserId, loginUser.getUserId())
+                        .in(UserSubscriptions::getStoreId, deleteDTO.getStoreIdList())
                         .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("用户关注档口不存在!", HttpStatus.ERROR));
         list.forEach(x -> x.setDelFlag(Constants.DELETED));

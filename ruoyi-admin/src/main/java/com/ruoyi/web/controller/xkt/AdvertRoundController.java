@@ -47,8 +47,7 @@ public class AdvertRoundController extends XktBaseController {
      */
     @ApiOperation(value = "根据广告ID获取推广轮次列表，并返回当前档口在这些推广轮次的数据", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{advertId}/{storeId}/{showType}")
-    public R<AdRoundStoreResVO> getStoreAdInfo(@PathVariable("advertId") Long advertId, @PathVariable("storeId") Long storeId,
-                                               @PathVariable("showType") Integer showType) {
+    public R<AdRoundStoreResVO> getStoreAdInfo(@PathVariable("advertId") Long advertId, @PathVariable("storeId") Long storeId, @PathVariable("showType") Integer showType) {
         return R.ok(BeanUtil.toBean(advertRoundService.getStoreAdInfo(storeId, advertId, showType), AdRoundStoreResVO.class));
     }
 

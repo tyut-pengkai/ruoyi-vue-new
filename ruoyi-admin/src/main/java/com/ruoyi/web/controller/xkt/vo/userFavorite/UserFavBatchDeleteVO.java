@@ -20,8 +20,9 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserFavBatchDeleteVO {
 
-    @NotNull(message = "批量操作ID列表不能为空!")
-    @ApiModelProperty("用户收藏ID")
-    List<Long> userFavoriteIdList;
+    @NotNull(message = "档口商品ID列表不能为空!")
+    @ApiModelProperty("档口商品ID列表")
+    List<Long> storeProdIdList;
+
 
 }

@@ -123,7 +123,8 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
         if (CollectionUtils.isEmpty(prodCateList)) {
             return new ArrayList<>();
         }
-        List<ProdCateListResDTO> resList = BeanUtil.copyToList(prodCateList, ProdCateListResDTO.class);
+        List<ProdCateListResDTO> resList =  prodCateList.stream()
+                .map(x -> BeanUtil.toBean(x, ProdCateListResDTO.class).setProdCateId(x.getId())).collect(Collectors.toList());
         return this.buildCateTree(resList);
     }
 
@@ -184,7 +185,7 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
      */
     private List<ProdCateListResDTO> buildCateTree(List<ProdCateListResDTO> cateList) {
         List<ProdCateListResDTO> returnList = new ArrayList<>();
-        List<Long> tempList = cateList.stream().map(ProdCateListResDTO::getId).collect(Collectors.toList());
+        List<Long> tempList = cateList.stream().map(ProdCateListResDTO::getProdCateId).collect(Collectors.toList());
         for (Iterator<ProdCateListResDTO> iterator = cateList.iterator(); iterator.hasNext(); ) {
             ProdCateListResDTO category = iterator.next();
             // 如果是顶级节点, 遍历该父节点的所有子节点
@@ -225,7 +226,7 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
         Iterator<ProdCateListResDTO> it = cateList.iterator();
         while (it.hasNext()) {
             ProdCateListResDTO n = it.next();
-            if (n.getParentId().longValue() == cate.getId().longValue()) {
+            if (n.getParentId().longValue() == cate.getProdCateId().longValue()) {
                 tlist.add(n);
             }
         }

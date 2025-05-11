@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.util.Date;
 import java.util.List;
@@ -18,11 +19,11 @@ import java.util.List;
 @ApiModel("系统商品分类列表")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Accessors(chain = true)
 public class ProdCateListResDTO {
 
     @ApiModelProperty(value = "商品分类主键")
-    @JsonProperty(value = "prodCateId")
-    private Long id;
+    private Long prodCateId;
     @ApiModelProperty(value = "分类名称")
     private String name;
     @ApiModelProperty(value = "分类名称")

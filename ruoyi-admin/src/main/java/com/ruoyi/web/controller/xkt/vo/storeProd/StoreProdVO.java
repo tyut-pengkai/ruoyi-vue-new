@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.web.controller.xkt.vo.storeColor.StoreColorVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -92,10 +95,9 @@ public class StoreProdVO {
     private List<StoreProdColorPriceVO> priceList;
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcVO svc;
-    @NotNull(message = "详情内容不能为空!")
-    @Valid
+    @NotBlank(message = "详情内容不能为空!")
     @ApiModelProperty(value = "详情内容", required = true)
-    private StoreProdDetailVO detail;
+    private String detail;
     @ApiModelProperty(value = "档口生产工艺")
     private StoreProdProcessVO process;
 
@@ -172,8 +174,7 @@ public class StoreProdVO {
     @Data
     @ApiModel(value = "商品颜色列表")
     public static class StoreProdColorVO {
-        @NotNull(message = "档口颜色ID不能为空!")
-        @ApiModelProperty(value = "档口颜色ID", required = true)
+        @ApiModelProperty(value = "档口颜色ID")
         private Long storeColorId;
         @NotBlank(message = "颜色名称不能为空!")
         @ApiModelProperty(value = "颜色名称", required = true)
@@ -185,9 +186,10 @@ public class StoreProdVO {
 
     @Data
     @ApiModel(value = "档口尺码列表")
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class StoreProdColorSizeVO {
-        @NotNull(message = "档口颜色ID不能为空!")
-        @ApiModelProperty(value = "档口颜色ID", required = true)
+        @ApiModelProperty(value = "档口颜色ID")
         private Long storeColorId;
         @ApiModelProperty(value = "商品尺码", required = true)
         @NotNull(message = "档口商品定价不能为空!")
@@ -200,9 +202,11 @@ public class StoreProdVO {
     @Data
     @ApiModel(value = "档口颜色价格列表")
     public static class StoreProdColorPriceVO {
-        @NotNull(message = "档口商品颜色ID不能为空!")
-        @ApiModelProperty(value = "档口商品颜色ID", required = true)
+        @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeColorId;
+        @NotBlank(message = "颜色名称不能为空!")
+        @ApiModelProperty(value = "颜色名称", required = true)
+        private String colorName;
         @NotNull(message = "档口商品定价不能为空!")
         @ApiModelProperty(value = "档口商品定价", required = true)
         private BigDecimal price;
@@ -219,14 +223,6 @@ public class StoreProdVO {
         private String oneBatchSale;
         @ApiModelProperty(value = "退款72小时到账")
         private String refundWithinThreeDay;
-    }
-
-    @Data
-    @ApiModel(value = "详情内容")
-    public static class StoreProdDetailVO {
-        @NotBlank(message = "详情内容不能为空!")
-        @ApiModelProperty(value = "详情内容", required = true)
-        private String detail;
     }
 
     @Data

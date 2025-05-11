@@ -71,7 +71,7 @@ public class StoreProdResDTO {
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcDTO svc;
     @ApiModelProperty(value = "详情内容")
-    private StoreProdDetailDTO detail;
+    private String detail;
     @ApiModelProperty(value = "档口生产工艺信息")
     private StoreProdProcessDTO process;
 

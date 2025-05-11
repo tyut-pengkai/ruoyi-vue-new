@@ -13,7 +13,7 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("电商卖家取消店铺关注")
+@ApiModel("电商卖家店铺关注")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserSubscVO {

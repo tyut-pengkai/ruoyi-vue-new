@@ -60,7 +60,7 @@ public class StoreProdResVO {
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcVO svc;
     @ApiModelProperty(value = "详情内容")
-    private StoreProdDetailVO detail;
+    private String detail;
     @ApiModelProperty(value = "档口商品生产工艺")
     private StoreProdProcessVO process;
 
@@ -147,13 +147,6 @@ public class StoreProdResVO {
         private String oneBatchSale;
         @ApiModelProperty(value = "退款72小时到账")
         private String refundWithinThreeDay;
-    }
-
-    @Data
-    @ApiModel(value = "档口商品详情")
-    public static class StoreProdDetailVO {
-        @ApiModelProperty(value = "详情内容")
-        private String detail;
     }
 
     @Data

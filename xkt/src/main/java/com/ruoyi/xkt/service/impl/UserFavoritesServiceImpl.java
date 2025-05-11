@@ -60,16 +60,20 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
     public Integer create(UserFavoriteDTO favoriteDTO) {
         // 获取当前登录用户
         LoginUser loginUser = SecurityUtils.getLoginUser();
-        // 判断当前商品是否已加入进货车
-        UserFavorites exist = this.userFavMapper.selectOne(new LambdaQueryWrapper<UserFavorites>()
-                .eq(UserFavorites::getUserId, loginUser.getUserId()).eq(UserFavorites::getStoreProdId, favoriteDTO.getStoreProdId())
+        // 筛选已经加入收藏的商品
+        List<UserFavorites> existList = this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
+                .eq(UserFavorites::getUserId, loginUser.getUserId())
+                .in(UserFavorites::getStoreProdId, favoriteDTO.getBatchList().stream().map(UserFavoriteDTO.UFBatchVO::getStoreProdId).collect(Collectors.toList()))
                 .eq(UserFavorites::getDelFlag, Constants.UNDELETED));
-        if (ObjectUtils.isNotEmpty(exist)) {
-            throw new ServiceException("当前商品已加入收藏", HttpStatus.ERROR);
-        }
-        UserFavorites userFavorites = BeanUtil.toBean(favoriteDTO, UserFavorites.class);
-        userFavorites.setUserId(loginUser.getUserId());
-        return this.userFavMapper.insert(userFavorites);
+        // 已经加入购物车的商品
+        final List<Long> existStoreProdIdList = CollectionUtils.isNotEmpty(existList)
+                ? existList.stream().map(UserFavorites::getStoreProdId).collect(Collectors.toList()) : new ArrayList<>();
+        // 购物车列表
+        List<UserFavorites> list = favoriteDTO.getBatchList().stream()
+                .filter(x -> CollectionUtils.isNotEmpty(existStoreProdIdList) ? !existStoreProdIdList.contains(x.getStoreProdId()) : Boolean.TRUE)
+                .map(x -> BeanUtil.toBean(x, UserFavorites.class).setUserId(loginUser.getUserId()))
+                .collect(Collectors.toList());
+        return this.userFavMapper.insert(list).size();
     }
 
     /**
@@ -195,7 +199,8 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
         // 获取当前登录用户
         LoginUser loginUser = SecurityUtils.getLoginUser();
         List<UserFavorites> favoriteList = this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
-                .eq(UserFavorites::getUserId, loginUser.getUserId()).in(UserFavorites::getId, batchDTO.getUserFavoriteIdList())
+                .eq(UserFavorites::getUserId, loginUser.getUserId())
+                .in(UserFavorites::getStoreProdId, batchDTO.getStoreProdIdList())
                 .eq(UserFavorites::getDelFlag, Constants.UNDELETED));
         if (CollectionUtils.isEmpty(favoriteList)) {
             return 0;

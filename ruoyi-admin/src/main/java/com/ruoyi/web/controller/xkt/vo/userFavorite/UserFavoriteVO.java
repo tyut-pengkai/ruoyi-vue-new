@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author liujiang
@@ -17,11 +20,20 @@ import javax.validation.constraints.NotNull;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserFavoriteVO {
 
-    @NotNull(message = "档口ID不能为空!")
-    @ApiModelProperty(value = "档口ID")
-    private Long storeId;
-    @NotNull(message = "档口商品ID不能为空!")
-    @ApiModelProperty(value = "档口商品ID")
-    private Long storeProdId;
+    @ApiModelProperty("用户新增收藏列表")
+    private List<UFBatchVO> batchList;
+
+    @Data
+    @ApiModel(value = "用户新增收藏")
+    @Accessors(chain = true)
+    @Valid
+    public static class UFBatchVO {
+        @NotNull(message = "档口ID不能为空!")
+        @ApiModelProperty(value = "档口ID")
+        private Long storeId;
+        @NotNull(message = "档口商品ID不能为空!")
+        @ApiModelProperty(value = "档口商品ID")
+        private Long storeProdId;
+    }
 
 }

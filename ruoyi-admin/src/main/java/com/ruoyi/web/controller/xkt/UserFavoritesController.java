@@ -39,7 +39,7 @@ public class UserFavoritesController extends XktBaseController {
     // @PreAuthorize("@ss.hasPermi('system:favorites:add')")
     @ApiOperation(value = "用户收藏商品", httpMethod = "POST", response = R.class)
     @Log(title = "用户收藏商品", businessType = BusinessType.INSERT)
-    @PostMapping
+    @PostMapping("/batch")
     public R<Integer> create(@Validated @RequestBody UserFavoriteVO favoriteVO) {
         return success(userFavService.create(BeanUtil.toBean(favoriteVO, UserFavoriteDTO.class)));
     }

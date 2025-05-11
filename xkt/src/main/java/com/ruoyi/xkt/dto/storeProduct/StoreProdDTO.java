@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -58,6 +59,8 @@ public class StoreProdDTO {
     private Integer listingWay;
     @ApiModelProperty(value = "商品状态")
     private Integer prodStatus;
+    @ApiModelProperty(value = "详情内容")
+    private String detail;
     @ApiModelProperty(value = "定时发货时间(精确到小时)")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date listingWaySchedule;
@@ -76,8 +79,6 @@ public class StoreProdDTO {
     private List<StoreProdColorPriceSimpleDTO> priceList;
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcDTO svc;
-    @ApiModelProperty(value = "详情内容")
-    private StoreProdDetailDTO detail;
     @ApiModelProperty(value = "档口生产工艺")
     private StoreProdProcessDTO process;
 

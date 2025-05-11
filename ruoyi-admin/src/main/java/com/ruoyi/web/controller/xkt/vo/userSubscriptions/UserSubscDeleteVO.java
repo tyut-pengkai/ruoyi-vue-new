@@ -13,13 +13,13 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("电商卖家新增店铺关注")
+@ApiModel("电商卖家取消店铺关注")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserSubscDeleteVO {
 
-    @NotNull(message = "用户关注ID列表不能为空!")
-    @ApiModelProperty(value = "用户关注ID")
-    private List<Long> userSubscIdList;
+    @NotNull(message = "档口ID列表不能为空!")
+    @ApiModelProperty(value = "档口ID列表")
+    private List<Long> storeIdList;
 
 }
