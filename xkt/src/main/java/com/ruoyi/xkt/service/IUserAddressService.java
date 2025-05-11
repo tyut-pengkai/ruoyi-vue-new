@@ -1,6 +1,6 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.UserAddress;
+import com.ruoyi.xkt.dto.express.UserAddressInfoDTO;
 
 import java.util.List;
 
@@ -12,50 +12,49 @@ import java.util.List;
  */
 public interface IUserAddressService {
     /**
-     * 查询用户收货地址
+     * 新增
      *
-     * @param userAddrId 用户收货地址主键
-     * @return 用户收货地址
+     * @param userAddressInfoDTO
+     * @return
      */
-    public UserAddress selectUserAddressByUserAddrId(Long userAddrId);
+    UserAddressInfoDTO createUserAddress(UserAddressInfoDTO userAddressInfoDTO);
 
     /**
-     * 查询用户收货地址列表
+     * 复制
      *
-     * @param userAddress 用户收货地址
-     * @return 用户收货地址集合
+     * @param id
+     * @return
      */
-    public List<UserAddress> selectUserAddressList(UserAddress userAddress);
+    UserAddressInfoDTO copyUserAddress(Long id);
 
     /**
-     * 新增用户收货地址
+     * 获取详情
      *
-     * @param userAddress 用户收货地址
-     * @return 结果
+     * @param id
+     * @return
      */
-    public int insertUserAddress(UserAddress userAddress);
+    UserAddressInfoDTO getUserAddress(Long id);
 
     /**
-     * 修改用户收货地址
+     * 列表
      *
-     * @param userAddress 用户收货地址
-     * @return 结果
+     * @param userId
+     * @return
      */
-    public int updateUserAddress(UserAddress userAddress);
+    List<UserAddressInfoDTO> listByUser(Long userId);
 
     /**
-     * 批量删除用户收货地址
+     * 修改
      *
-     * @param userAddrIds 需要删除的用户收货地址主键集合
-     * @return 结果
+     * @param userAddressInfoDTO
+     * @return
      */
-    public int deleteUserAddressByUserAddrIds(Long[] userAddrIds);
+    UserAddressInfoDTO modifyUserAddress(UserAddressInfoDTO userAddressInfoDTO);
 
     /**
-     * 删除用户收货地址信息
+     * 删除
      *
-     * @param userAddrId 用户收货地址主键
-     * @return 结果
+     * @param id
      */
-    public int deleteUserAddressByUserAddrId(Long userAddrId);
+    void deleteUserAddress(Long id);
 }

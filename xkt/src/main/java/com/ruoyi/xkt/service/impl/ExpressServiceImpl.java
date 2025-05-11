@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 @Service
 public class ExpressServiceImpl implements IExpressService {
 
-    private ExpressRegionDTO emptyRegion = new ExpressRegionDTO();
     @Value("${express.default.province:510000}")
     private String expressDefaultProvince;
     @Value("${express.default.city:510100}")
@@ -188,6 +187,17 @@ public class ExpressServiceImpl implements IExpressService {
     }
 
     @Override
+    public Map<String, String> getRegionNameMapCache() {
+        Map<String, String> regionNameMap = redisCache.getCacheMap(Constants.EXPRESS_REGION_NAME_MAP_CACHE_KEY);
+        if (regionNameMap == null || regionNameMap.isEmpty()) {
+            regionNameMap = getRegionListCache().stream()
+                    .collect(Collectors.toMap(ExpressRegionDTO::getRegionCode, ExpressRegionDTO::getRegionName));
+            redisCache.setCacheMap(Constants.EXPRESS_REGION_NAME_MAP_CACHE_KEY, regionNameMap);
+        }
+        return regionNameMap;
+    }
+
+    @Override
     public List<ExpressRegionTreeNodeDTO> getRegionTreeCache() {
         List<ExpressRegionTreeNodeDTO> treeNodeList = redisCache.getCacheList(Constants.EXPRESS_REGION_TREE_CACHE_KEY);
         if (CollUtil.isEmpty(treeNodeList)) {
@@ -235,16 +245,16 @@ public class ExpressServiceImpl implements IExpressService {
 //        Assert.notEmpty(detailAddress, "获取详细地址失败");
 //        Assert.notEmpty(name, "获取联系人失败");
 //        Assert.isTrue(PhoneUtil.isPhone(phone), "获取联系电话失败");
-        Map<String, ExpressRegionDTO> regionMap = getRegionMapCache();
+        Map<String, String> regionMap = getRegionNameMapCache();
         return ExpressStructAddressDTO.builder()
                 .contactName(name)
                 .contactPhoneNumber(phone)
                 .provinceCode(provinceCode)
-                .provinceName(regionMap.getOrDefault(provinceCode, emptyRegion).getRegionName())
+                .provinceName(regionMap.get(provinceCode))
                 .cityCode(cityCode)
-                .cityName(regionMap.getOrDefault(cityCode, emptyRegion).getRegionName())
+                .cityName(regionMap.get(cityCode))
                 .countyCode(countyCode)
-                .countyName(regionMap.getOrDefault(countyCode, emptyRegion).getRegionName())
+                .countyName(regionMap.get(countyCode))
                 .detailAddress(detailAddress)
                 .build();
     }

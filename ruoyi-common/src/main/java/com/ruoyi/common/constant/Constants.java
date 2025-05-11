@@ -212,6 +212,7 @@ public class Constants
      * 行政区划缓存
      */
     public static final String EXPRESS_REGION_MAP_CACHE_KEY = "EXPRESS_REGION_MAP";
+    public static final String EXPRESS_REGION_NAME_MAP_CACHE_KEY = "EXPRESS_REGION_NAME_MAP";
     public static final String EXPRESS_REGION_LIST_CACHE_KEY = "EXPRESS_REGION_LIST";
     public static final String EXPRESS_REGION_TREE_CACHE_KEY = "EXPRESS_REGION_TREE";
     /**

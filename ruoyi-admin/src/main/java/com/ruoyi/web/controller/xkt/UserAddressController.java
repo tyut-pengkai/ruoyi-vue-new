@@ -1,18 +1,21 @@
 package com.ruoyi.web.controller.xkt;
 
-import com.ruoyi.common.annotation.Log;
+import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.xkt.domain.UserAddress;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.web.controller.xkt.vo.IdVO;
+import com.ruoyi.web.controller.xkt.vo.express.UserAddressCreateVO;
+import com.ruoyi.web.controller.xkt.vo.express.UserAddressInfoVO;
+import com.ruoyi.web.controller.xkt.vo.express.UserAddressModifyVO;
+import com.ruoyi.xkt.dto.express.UserAddressInfoDTO;
 import com.ruoyi.xkt.service.IUserAddressService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -21,71 +24,58 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Api(tags = "用户收货地址")
 @RestController
-@RequestMapping("/rest/v1/user-addrs")
+@RequestMapping("/rest/v1/user-address")
 public class UserAddressController extends XktBaseController {
     @Autowired
     private IUserAddressService userAddressService;
 
-    /**
-     * 查询用户收货地址列表
-     */
-    // @PreAuthorize("@ss.hasPermi('system:address:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(UserAddress userAddress) {
-        startPage();
-        List<UserAddress> list = userAddressService.selectUserAddressList(userAddress);
-        return getDataTable(list);
+    @ApiOperation("创建用户收货地址")
+    @PostMapping("create")
+    public R<UserAddressInfoVO> create(@Valid @RequestBody UserAddressCreateVO vo) {
+        UserAddressInfoDTO dto = BeanUtil.toBean(vo, UserAddressInfoDTO.class);
+        dto.setUserId(SecurityUtils.getUserId());
+        return success(BeanUtil.toBean(userAddressService.createUserAddress(dto), UserAddressInfoVO.class));
     }
 
-    /**
-     * 导出用户收货地址列表
-     */
-    // @PreAuthorize("@ss.hasPermi('system:address:export')")
-    @Log(title = "用户收货地址", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, UserAddress userAddress) {
-        List<UserAddress> list = userAddressService.selectUserAddressList(userAddress);
-        ExcelUtil<UserAddress> util = new ExcelUtil<UserAddress>(UserAddress.class);
-        util.exportExcel(response, list, "用户收货地址数据");
+    @ApiOperation("修改用户收货地址")
+    @PostMapping("edit")
+    public R<UserAddressInfoVO> edit(@Valid @RequestBody UserAddressModifyVO vo) {
+        UserAddressInfoDTO dto = BeanUtil.toBean(vo, UserAddressInfoDTO.class);
+        dto.setUserId(SecurityUtils.getUserId());
+        //TODO 非本人不允许修改
+        return success(BeanUtil.toBean(userAddressService.modifyUserAddress(dto), UserAddressInfoVO.class));
     }
 
-    /**
-     * 获取用户收货地址详细信息
-     */
-    // @PreAuthorize("@ss.hasPermi('system:address:query')")
-    @GetMapping(value = "/{userAddrId}")
-    public R getInfo(@PathVariable("userAddrId") Long userAddrId) {
-        return success(userAddressService.selectUserAddressByUserAddrId(userAddrId));
+    @ApiOperation("复制用户收货地址")
+    @PostMapping("copy")
+    public R<UserAddressInfoVO> copy(@Valid @RequestBody IdVO vo) {
+        UserAddressInfoDTO dto = userAddressService.copyUserAddress(vo.getId());
+        return success(BeanUtil.toBean(dto, UserAddressInfoVO.class));
     }
 
-    /**
-     * 新增用户收货地址
-     */
-    // @PreAuthorize("@ss.hasPermi('system:address:add')")
-    @Log(title = "用户收货地址", businessType = BusinessType.INSERT)
-    @PostMapping
-    public R add(@RequestBody UserAddress userAddress) {
-        return success(userAddressService.insertUserAddress(userAddress));
+    @ApiOperation("删除用户收货地址")
+    @PostMapping("delete")
+    public R delete(@Valid @RequestBody IdVO vo) {
+        userAddressService.deleteUserAddress(vo.getId());
+        return success();
     }
 
-    /**
-     * 修改用户收货地址
-     */
-    // @PreAuthorize("@ss.hasPermi('system:address:edit')")
-    @Log(title = "用户收货地址", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public R edit(@RequestBody UserAddress userAddress) {
-        return success(userAddressService.updateUserAddress(userAddress));
+    @ApiOperation(value = "用户收货地址详情")
+    @GetMapping("/{id}")
+    public R<UserAddressInfoVO> getInfo(@PathVariable("id") Long id) {
+        UserAddressInfoDTO infoDTO = userAddressService.getUserAddress(id);
+        //TODO 非本人不允许查询
+        return success(BeanUtil.toBean(infoDTO, UserAddressInfoVO.class));
     }
 
-    /**
-     * 删除用户收货地址
-     */
-    // @PreAuthorize("@ss.hasPermi('system:address:remove')")
-    @Log(title = "用户收货地址", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{userAddrIds}")
-    public R remove(@PathVariable Long[] userAddrIds) {
-        return success(userAddressService.deleteUserAddressByUserAddrIds(userAddrIds));
+    @ApiOperation(value = "用户收货地址列表")
+    @PostMapping("/list")
+    public R<List<UserAddressInfoVO>> list() {
+        List<UserAddressInfoDTO> dtoList = userAddressService.listByUser(SecurityUtils.getUserId());
+        return success(BeanUtil.copyToList(dtoList, UserAddressInfoVO.class));
     }
+
+
 }

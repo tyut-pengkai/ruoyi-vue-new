@@ -91,6 +91,13 @@ public interface IExpressService {
     Map<String, ExpressRegionDTO> getRegionMapCache();
 
     /**
+     * 获取缓存的行政区划名称
+     *
+     * @return
+     */
+    Map<String, String> getRegionNameMapCache();
+
+    /**
      * 获取缓存的行政编码
      *
      * @return
