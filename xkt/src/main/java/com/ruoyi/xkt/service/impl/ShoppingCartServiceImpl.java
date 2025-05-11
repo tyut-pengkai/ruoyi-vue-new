@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.alipay.api.domain.Shop;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -267,20 +266,25 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     /**
      * 根据storeProdid获取进货车详情
      *
-     * @param storeProdId 商品ID
+     * @param listDTO 商品ID列表
      * @return ShoppingCartDTO
      */
     @Override
     @Transactional(readOnly = true)
-    public ShoppingCartDTO getByStoreProdId(Long storeProdId) {
-        ShoppingCart shoppingCart = this.shopCartMapper.selectOne(new LambdaQueryWrapper<ShoppingCart>()
-                .eq(ShoppingCart::getStoreProdId, storeProdId).eq(ShoppingCart::getDelFlag, Constants.UNDELETED)
+    public List<ShoppingCartDTO> getList(ShopCartListDTO listDTO) {
+        List<ShoppingCart> shoppingCartList = this.shopCartMapper.selectList(new LambdaQueryWrapper<ShoppingCart>()
+                .in(ShoppingCart::getStoreProdId, listDTO.getStoreProdIdList()).eq(ShoppingCart::getDelFlag, Constants.UNDELETED)
                 .eq(ShoppingCart::getUserId, SecurityUtils.getUserId()));
+        if (CollectionUtils.isEmpty(shoppingCartList)) {
+            return new ArrayList<>();
+        }
         List<ShoppingCartDetail> detailList = this.shopCartDetailMapper.selectList(new LambdaQueryWrapper<ShoppingCartDetail>()
-                .eq(ShoppingCartDetail::getShoppingCartId, shoppingCart.getId())
+                .in(ShoppingCartDetail::getShoppingCartId, shoppingCartList.stream().map(ShoppingCart::getId).collect(Collectors.toList()))
                 .eq(ShoppingCartDetail::getDelFlag, Constants.UNDELETED));
-        return BeanUtil.toBean(shoppingCart, ShoppingCartDTO.class)
-                .setDetailList(BeanUtil.copyToList(detailList, ShoppingCartDTO.SCDetailDTO.class));
+        Map<Long, List<ShoppingCartDetail>> detailMap = detailList.stream().collect(Collectors.groupingBy(ShoppingCartDetail::getShoppingCartId));
+        return shoppingCartList.stream().map(x -> BeanUtil.toBean(x, ShoppingCartDTO.class)
+                        .setDetailList(BeanUtil.copyToList(detailMap.get(x.getId()), ShoppingCartDTO.SCDetailDTO.class)))
+                .collect(Collectors.toList());
     }
 
     /**

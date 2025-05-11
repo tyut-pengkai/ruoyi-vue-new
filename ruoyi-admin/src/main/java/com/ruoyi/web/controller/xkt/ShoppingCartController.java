@@ -7,10 +7,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.web.controller.xkt.vo.userShoppingCart.*;
-import com.ruoyi.xkt.dto.userShoppingCart.ShopCartPageDTO;
-import com.ruoyi.xkt.dto.userShoppingCart.ShopCartPageResDTO;
-import com.ruoyi.xkt.dto.userShoppingCart.ShoppingCartDTO;
-import com.ruoyi.xkt.dto.userShoppingCart.ShoppingCartEditDTO;
+import com.ruoyi.xkt.dto.userShoppingCart.*;
 import com.ruoyi.xkt.service.IShoppingCartService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -18,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 用户进货车Controller
@@ -76,12 +75,12 @@ public class ShoppingCartController extends XktBaseController {
     }
 
     /**
-     * 根据shoppingCartId获取详情
+     * 进货车下单时及商品下单时获取商品列表
      */
-    @ApiOperation(value = "根据shoppingCartId获取详情", httpMethod = "GET", response = R.class)
-    @GetMapping("/storeProdId/{storeProdId}")
-    public R<ShopCartResVO> getByStoreProdId(@PathVariable Long storeProdId) {
-        return R.ok(BeanUtil.toBean(shopCartService.getByStoreProdId(storeProdId), ShopCartResVO.class));
+    @ApiOperation(value = "进货车下单时及商品下单时获取商品列表", httpMethod = "POST", response = R.class)
+    @PostMapping("/list")
+    public R<List<ShopCartResVO>> getList(@Validated @RequestBody ShopCartListVO listVO) {
+        return R.ok(BeanUtil.copyToList(shopCartService.getList(BeanUtil.toBean(listVO, ShopCartListDTO.class)), ShopCartResVO.class));
     }
 
 

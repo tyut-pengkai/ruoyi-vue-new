@@ -3,6 +3,8 @@ package com.ruoyi.xkt.service;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.userShoppingCart.*;
 
+import java.util.List;
+
 /**
  * 用户进货车Service接口
  *
@@ -54,9 +56,9 @@ public interface IShoppingCartService {
     /**
      * 根据storeProdid获取进货车详情
      *
-     * @param storeProdId 商品ID
+     * @param listDTO 档口商品ID列表
      * @return ShoppingCartDTO
      */
-    ShoppingCartDTO getByStoreProdId(Long storeProdId);
+    List<ShoppingCartDTO> getList(ShopCartListDTO listDTO);
 
 }
