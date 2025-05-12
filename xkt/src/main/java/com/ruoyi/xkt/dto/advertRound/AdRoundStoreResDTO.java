@@ -57,10 +57,6 @@ public class AdRoundStoreResDTO {
         private Integer biddingStatus;
         @ApiModelProperty(value = "出价状态名称")
         private String biddingStatusName;
-//        @ApiModelProperty(value = "竞价状态")
-//        private Integer biddingTempStatus;
-//        @ApiModelProperty(value = "竞价状态名称（22点 后 显示这个）")
-//        private String biddingTempStatusName;
     }
 
     @Data
@@ -90,10 +86,6 @@ public class AdRoundStoreResDTO {
         private Integer biddingStatus;
         @ApiModelProperty(value = "出价状态名称")
         private String biddingStatusName;
-//        @ApiModelProperty(value = "竞价状态")
-//        private Integer biddingTempStatus;
-//        @ApiModelProperty(value = "竞价状态名称（22点 后 显示这个）")
-//        private String biddingTempStatusName;
         @ApiModelProperty(value = "对象锁符号")
         private String symbol;
     }

@@ -191,7 +191,6 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         boolean tenClockAfter = now.isAfter(LocalTime.of(22, 0, 1)) && now.isBefore(LocalTime.of(23, 59, 59));
         // 当天
         final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
-
         // 获取当前所有 正在投放 和 待投放的推广轮次
         List<AdvertRound> allRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
                 .eq(AdvertRound::getDelFlag, Constants.UNDELETED)
@@ -203,12 +202,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         List<AdvertRoundRecord> allRecordList = this.advertRoundRecordMapper.selectList(new LambdaQueryWrapper<AdvertRoundRecord>()
                 .eq(AdvertRoundRecord::getDelFlag, Constants.UNDELETED).eq(AdvertRoundRecord::getStoreId, storeId)
                 .in(AdvertRoundRecord::getAdvertRoundId, allRoundList.stream().map(AdvertRound::getId).collect(Collectors.toList())));
-
         AdRoundStoreResDTO roundResDTO = AdRoundStoreResDTO.builder()
                 // 获取档口 已抢购推广位
                 .boughtRoundList(this.getStoreBoughtRecordList(allRoundList, allRecordList, storeId, voucherDate, tenClockAfter))
                 .build();
-
         // 筛选当前 推广位 正在投放 及 待投放的推广轮次
         List<AdvertRound> advertRoundList = allRoundList.stream().filter(x -> Objects.equals(x.getAdvertId(), advertId)).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(advertRoundList)) {
@@ -512,6 +509,48 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     }
 
     /**
+     * 获取当前推广位最高的价格及档口设置的商品
+     *
+     * @param latestDTO 查询入参
+     * @return AdRoundLatestResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public AdRoundLatestResDTO getLatestInfo(AdRoundLatestDTO latestDTO) {
+        AdvertRound advertRound;
+        AdRoundLatestResDTO latestInfo = new AdRoundLatestResDTO();
+        // 时间范围类型
+        if (Objects.equals(latestDTO.getShowType(), AdShowType.TIME_RANGE.getValue())) {
+            advertRound = this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+                    .eq(AdvertRound::getAdvertId, latestDTO.getAdvertId()).eq(AdvertRound::getRoundId, latestDTO.getRoundId())
+                    .eq(AdvertRound::getDelFlag, Constants.UNDELETED).orderByDesc(AdvertRound::getPayPrice, AdvertRound::getCreateTime)
+                    .last("LIMIT 1"));
+            // 有人竞拍情况，才获取该位置的档口负责人名称
+            if (ObjectUtils.isNotEmpty(advertRound)) {
+                latestInfo.setStoreOwnerName(this.advertRoundMapper.getStoreOwnerName(advertRound.getStoreId()));
+            }
+            return latestInfo.setStoreId(advertRound.getStoreId()).setPayPrice(advertRound.getPayPrice());
+        } else {
+            Optional.ofNullable(latestDTO.getPosition()).orElseThrow(() -> new ServiceException("位置枚举类型：position必传", HttpStatus.ERROR));
+            advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+                            .eq(AdvertRound::getAdvertId, latestDTO.getAdvertId()).eq(AdvertRound::getRoundId, latestDTO.getRoundId())
+                            .eq(AdvertRound::getPosition, latestDTO.getPosition()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
+                    .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
+            latestInfo.setPayPrice(advertRound.getPayPrice());
+        }
+        // 如果当前档口购买该推广位，且设置商品不为空，则返回设置的商品信息
+        if (Objects.equals(advertRound.getStoreId(), latestDTO.getStoreId()) && StringUtils.isNotBlank(advertRound.getProdIdStr())) {
+            List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                            .eq(StoreProduct::getId, Arrays.stream(advertRound.getProdIdStr().split(",")))
+                            .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, advertRound.getStoreId())))
+                    .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
+            latestInfo.setProdList(storeProdList.stream().map(x -> new AdRoundLatestResDTO.ARLProdDTO()
+                    .setStoreProdId(x.getId()).setProdArtNum(x.getProdArtNum())).collect(Collectors.toList()));
+        }
+        return latestInfo;
+    }
+
+    /**
      * 获取已抢购推广位列表
      *
      * @param storeId         档口ID
@@ -662,7 +701,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     final Integer biddingStatus = tenClockAfter && roundIdList.contains(x.getRoundId()) ? x.getBiddingTempStatus() : x.getBiddingStatus();
                     return BeanUtil.toBean(x, AdRoundStoreResDTO.ADRSRoundRecordDTO.class).setBiddingStatus(biddingStatus)
                             .setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(biddingStatus)).getLabel())
-                            .setAdvertRoundId(x.getId()).setTypeName(AdType.of(x.getTypeId()).getLabel())
+                            .setTypeName(AdType.of(x.getTypeId()).getLabel())
                             // 如果是时间范围则不返回position
                             .setPosition(Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()) ? null : x.getPosition());
                 })

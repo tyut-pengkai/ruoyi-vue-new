@@ -7,6 +7,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.web.controller.xkt.vo.advertRound.*;
+import com.ruoyi.xkt.dto.advertRound.AdRoundLatestDTO;
 import com.ruoyi.xkt.dto.advertRound.AdRoundStoreCreateDTO;
 import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageDTO;
 import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageResDTO;
@@ -51,6 +52,15 @@ public class AdvertRoundController extends XktBaseController {
     @GetMapping(value = "/{advertId}/{storeId}/{showType}")
     public R<AdRoundStoreResVO> getStoreAdInfo(@PathVariable("advertId") Long advertId, @PathVariable("storeId") Long storeId, @PathVariable("showType") Integer showType) {
         return R.ok(BeanUtil.toBean(advertRoundService.getStoreAdInfo(storeId, advertId, showType), AdRoundStoreResVO.class));
+    }
+
+    /**
+     * 获取当前最新的出价及设置的商品
+     */
+    @ApiOperation(value = "获取当前最新的出价及设置的商品", httpMethod = "POST", response = R.class)
+    @PostMapping(value = "/latest")
+    public R<AdRoundLatestResVO> getLatestInfo(@Validated @RequestBody AdRoundLatestVO latestVO) {
+        return R.ok(BeanUtil.toBean(advertRoundService.getLatestInfo(BeanUtil.toBean(latestVO, AdRoundLatestDTO.class)), AdRoundLatestResVO.class));
     }
 
     /**

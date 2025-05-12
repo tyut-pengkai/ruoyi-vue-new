@@ -6,6 +6,7 @@ import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageDTO;
 import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageResDTO;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -38,6 +39,7 @@ public interface AdvertRoundMapper extends BaseMapper<AdvertRound> {
 
     /**
      * 将参数直接null
+     *
      * @param advertRoundId advertRoundId
      */
     Integer updateAttrNull(Long advertRoundId);
@@ -48,6 +50,22 @@ public interface AdvertRoundMapper extends BaseMapper<AdvertRound> {
      * @return List<Long>
      */
     List<Long> selectMostPopulars();
+
+    /**
+     * 获取时间范围类型推广位 最高出价
+     *
+     * @param advertId 推广位ID
+     * @param roundId  播放轮次ID
+     * @return BigDecimal
+     */
+    BigDecimal selectMaxPayPrice(@Param("advertId") Long advertId, @Param("roundId") Integer roundId);
+
+    /**
+     * 获取档口负责人名称
+     * @param storeId 档口ID
+     * @return
+     */
+    String getStoreOwnerName(Long storeId);
 
 }
 

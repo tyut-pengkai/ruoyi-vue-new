@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 @Api(tags = "通用")
 @Slf4j
 @RestController
-@RequestMapping("/common")
+@RequestMapping("/rest/v1/common")
 public class CommonController {
     @Autowired
     private OSSClientWrapper ossClient;

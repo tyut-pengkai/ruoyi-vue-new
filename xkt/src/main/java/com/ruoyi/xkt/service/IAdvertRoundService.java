@@ -93,5 +93,13 @@ public interface IAdvertRoundService {
      * @return List<AdRoundPopularResDTO>
      */
     List<AdRoundPopularResDTO> getMostPopulars();
-    
+
+    /**
+     * 获取当前推广位最高的价格及档口设置的商品
+     *
+     * @param latestDTO 查询入参
+     * @return
+     */
+    AdRoundLatestResDTO getLatestInfo(AdRoundLatestDTO latestDTO);
+
 }
