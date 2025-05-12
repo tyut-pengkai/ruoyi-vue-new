@@ -2,8 +2,9 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.AdvertRound;
+import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageDTO;
+import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageResDTO;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -13,7 +14,6 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
-@Repository
 public interface AdvertRoundMapper extends BaseMapper<AdvertRound> {
 
     /**
@@ -28,4 +28,26 @@ public interface AdvertRoundMapper extends BaseMapper<AdvertRound> {
     boolean isStallOverBuy(@Param("advertId") Long advertId, @Param("roundId") Long roundId, @Param("storeId") Long storeId,
                            @Param("launchStatusList") List<Integer> launchStatusList);
 
+    /**
+     * 获取档口已订购的推广列表
+     *
+     * @param pageDTO 列表查询入参
+     * @return List<AdvertRoundStorePageResDTO>
+     */
+    List<AdvertRoundStorePageResDTO> selectStoreAdvertPage(AdvertRoundStorePageDTO pageDTO);
+
+    /**
+     * 将参数直接null
+     * @param advertRoundId advertRoundId
+     */
+    Integer updateAttrNull(Long advertRoundId);
+
+    /**
+     * 获取最受欢迎的8个推广位
+     *
+     * @return List<Long>
+     */
+    List<Long> selectMostPopulars();
+
 }
+

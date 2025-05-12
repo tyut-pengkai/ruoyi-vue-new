@@ -230,22 +230,8 @@ public class Constants
     public static final String STORE_REDIS_PREFIX = "store_";
 
     /**
-     * 枚举的广告位类型
+     * 最受欢迎的8个推广位
      */
-/*    public final static List<Integer> posEnumTypeList = new ArrayList<Integer>() {{
-        // 人气榜中上侧
-        add(AdType.PC_HOME_POP_MID_TOP.getValue());
-        // 人气榜中下侧
-        add(AdType.PC_HOME_POP_MID_BOTTOM.getValue());
-        // 人气榜右上侧
-        add(AdType.PC_HOME_POP_RIGHT_TOP.getValue());
-        // 人气榜右下侧
-        add(AdType.PC_HOME_POP_RIGHT_BOTTOM.getValue());
-        // 新品馆热卖榜右推广商品
-        add(AdType.PC_NEW_PROD_HOT_RIGHT_PRODUCT.getValue());
-        // PC下载页
-        add(AdType.PC_DOWNLOAD.getValue());
-    }};*/
-
+    public static final String ADVERT_POPULAR = "popular";
 
 }

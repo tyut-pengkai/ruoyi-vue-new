@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.service.impl;
 
-import java.security.SecureRandom;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
@@ -9,6 +8,7 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.Page;
+import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.Advert;
@@ -17,7 +17,6 @@ import com.ruoyi.xkt.dto.advert.*;
 import com.ruoyi.xkt.enums.AdOnlineStatus;
 import com.ruoyi.xkt.enums.AdPlatformType;
 import com.ruoyi.xkt.enums.AdTab;
-import com.ruoyi.common.enums.AdType;
 import com.ruoyi.xkt.mapper.AdvertMapper;
 import com.ruoyi.xkt.mapper.SysFileMapper;
 import com.ruoyi.xkt.service.IAdvertService;
@@ -27,6 +26,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -208,6 +208,23 @@ public class AdvertServiceImpl implements IAdvertService {
                             .setTabList(tabList));
                 });
         return platformList;
+    }
+
+    /**
+     * 查看当前推广类型 示例图
+     *
+     * @param advertType 推广类型
+     * @return String
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public String getDemoPic(Integer advertType) {
+        Advert advert = Optional.ofNullable(this.advertMapper.selectOne(new LambdaQueryWrapper<Advert>()
+                        .eq(Advert::getTypeId, advertType).eq(Advert::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("推广类型不存在!", HttpStatus.ERROR));
+        SysFile file = Optional.ofNullable(this.fileMapper.selectById(advert.getExamplePicId()))
+                .orElseThrow(() -> new ServiceException("示例图不存在!", HttpStatus.ERROR));
+        return file.getFileUrl();
     }
 
     /**

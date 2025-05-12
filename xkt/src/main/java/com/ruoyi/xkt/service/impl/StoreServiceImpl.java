@@ -19,6 +19,7 @@ import com.ruoyi.xkt.enums.StoreStatus;
 import com.ruoyi.xkt.mapper.DailyStoreTagMapper;
 import com.ruoyi.xkt.mapper.StoreMapper;
 import com.ruoyi.xkt.mapper.UserSubscriptionsMapper;
+import com.ruoyi.xkt.service.IAssetService;
 import com.ruoyi.xkt.service.IStoreCertificateService;
 import com.ruoyi.xkt.service.IStoreService;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,8 @@ public class StoreServiceImpl implements IStoreService {
     final DailyStoreTagMapper storeTagMapper;
     final UserSubscriptionsMapper userSubMapper;
     final RedisCache redisCache;
+    final IAssetService assetService;
+
 
     /**
      * 注册时新增档口数据
@@ -69,6 +72,8 @@ public class StoreServiceImpl implements IStoreService {
         Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         store.setTrialEndTime(oneYearAfter);
         int count = this.storeMapper.insert(store);
+        // 创建档口账户
+        assetService.createInternalAccountIfNotExists(store.getId());
         // 放到redis中
         redisCache.setCacheObject(Constants.STORE_REDIS_PREFIX + store.getId(), store.getId());
         return count;

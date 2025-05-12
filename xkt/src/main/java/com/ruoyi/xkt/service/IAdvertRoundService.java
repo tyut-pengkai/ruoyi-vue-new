@@ -1,9 +1,10 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.dto.advertRound.AdRoundStoreCreateDTO;
-import com.ruoyi.xkt.dto.advertRound.AdRoundStoreResDTO;
+import com.ruoyi.common.core.page.Page;
+import com.ruoyi.xkt.dto.advertRound.*;
 
 import java.text.ParseException;
+import java.util.List;
 
 /**
  * 推广营销Service接口
@@ -16,8 +17,8 @@ public interface IAdvertRoundService {
     /**
      * 根据广告ID获取推广轮次列表，并返回当前档口在这些推广轮次的数据
      *
-     * @param storeId 档口ID
-     * @param advertId  广告ID
+     * @param storeId  档口ID
+     * @param advertId 广告ID
      * @param showType 时间范围 位置枚举
      * @return AdRoundPlayStoreResDTO
      */
@@ -45,5 +46,52 @@ public interface IAdvertRoundService {
 
     void test();
 
+    /**
+     * 每晚11:30更新广告位轮次状态 将biddingTempStatus赋值给biddingStatus
+     *
+     * @throws ParseException
+     */
     void updateBiddingStatus() throws ParseException;
+
+    /**
+     * 根据advertRoundId获取当前位置枚举设置的商品
+     *
+     * @param advertRoundId advertRoundId
+     * @return AdRoundSetProdResDTO
+     */
+    List<AdRoundSetProdResDTO> getSetProdInfo(Long advertRoundId);
+
+    /**
+     * 档口已订购推广列表
+     *
+     * @param pageDTO 分页入参
+     * @return Page<AdvertRoundStorePageResDTO>
+     */
+    Page<AdvertRoundStorePageResDTO> page(AdvertRoundStorePageDTO pageDTO);
+
+    /**
+     * 获取当前推广位的推广图
+     *
+     * @param storeId       档口ID
+     * @param advertRoundId 推广位ID
+     * @return AdRoundSetPicResDTO
+     */
+    AdRoundStoreSetResDTO getAdvertStoreSetInfo(Long storeId, Long advertRoundId);
+
+    /**
+     * 档口退订推广位
+     *
+     * @param storeId       档口ID
+     * @param advertRoundId 推广位ID
+     * @return
+     */
+    Integer unsubscribe(Long storeId, Long advertRoundId);
+
+    /**
+     * 获取最受欢迎8个推广位
+     *
+     * @return List<AdRoundPopularResDTO>
+     */
+    List<AdRoundPopularResDTO> getMostPopulars();
+    
 }

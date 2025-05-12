@@ -56,11 +56,11 @@ public enum AdType {
     PC_NEW_PROD_PRODUCT_LIST(36, "新品馆商品列表", "/url"),
 
     // PC搜索结果
-    PC_SEARCH_RESULT(40, "PC搜索结果", "/url"),
+    PC_SEARCH_RESULT(40, "电脑端搜索结果", "/url"),
     // PC用户中心
-    PC_USER_CENTER(41, "PC用户中心", "/url"),
+    PC_USER_CENTER(41, "电脑端用户中心", "/url"),
     // PC下载页
-    PC_DOWNLOAD(42, "PC下载页", "/url"),
+    PC_DOWNLOAD(42, "电脑端下载页", "/url"),
 
 
     // APP首页顶部轮播图

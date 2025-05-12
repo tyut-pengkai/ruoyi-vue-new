@@ -1,11 +1,13 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.IdUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.framework.oss.OSSClientWrapper;
 import com.ruoyi.web.controller.xkt.vo.store.*;
 import com.ruoyi.xkt.dto.store.*;
 import com.ruoyi.xkt.service.IStoreService;
@@ -15,6 +17,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * 档口Controller
@@ -111,6 +116,37 @@ public class StoreController extends XktBaseController {
     public R<StoreAppResVO> getAppInfo(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeService.getAppInfo(storeId), StoreAppResVO.class));
     }
+
+
+
+
+
+    final OSSClientWrapper ossClient;
+
+
+    @GetMapping("/getKey")
+    public R getKey() {
+        return R.ok(ossClient.createStsCredentials());
+    }
+
+    @PostMapping("/upload")
+    public void test(@RequestParam("file") MultipartFile file) throws Exception {
+        final String uuid = IdUtil.randomUUID();
+        ossClient.upload(uuid + ".png", file.getInputStream());
+    }
+
+    @GetMapping("/getUrl/{key}/{expireTime}")
+    public R getUrl(@PathVariable("key") String key, @PathVariable("expireTime") Long expireTime) throws Exception {
+        return R.ok(ossClient.generateUrl(key, expireTime));
+    }
+
+    @GetMapping("/download/{key}")
+    public void download(@PathVariable("key") String key) throws Exception {
+        String name = "C:\\Users\\56980\\Desktop\\test.png";
+        ossClient.download(key, name);
+    }
+
+
 
 
 }

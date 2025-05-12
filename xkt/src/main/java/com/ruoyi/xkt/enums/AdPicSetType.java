@@ -6,32 +6,32 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 推广营销竞价状态
+ * 推广营销图片设置类型
+ *
  * @author liujiang
  * @date 2025-04-02 23:42
  */
 @Getter
 @AllArgsConstructor
-public enum AdBiddingStatus {
+public enum AdPicSetType {
 
-    // 已出价
-    BIDDING(1, "已出价"),
-    // 竞价成功
-    BIDDING_SUCCESS(2, "竞价成功"),
-    // 竞价失败
-    BIDDING_FAIL(3, "竞价失败"),
+    // 未设置
+    UN_SET(1, "未设置"),
+    // 已设置
+    SET(2, "已设置"),
+
 
     ;
 
     private final Integer value;
     private final String label;
 
-    public static AdBiddingStatus of(Integer value) {
-        for (AdBiddingStatus e : AdBiddingStatus.values()) {
+    public static AdPicSetType of(Integer value) {
+        for (AdPicSetType e : AdPicSetType.values()) {
             if (e.getValue().equals(value)) {
                 return e;
             }
         }
-        throw new ServiceException("营销推广竞价状态不存在!", HttpStatus.ERROR);
+        throw new ServiceException("营销推广图片是否设置不存在!", HttpStatus.ERROR);
     }
 }

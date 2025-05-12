@@ -45,5 +45,8 @@ public class AdRoundStoreCreateVO {
     @NotBlank(message = "对象锁符号不能为空!")
     @ApiModelProperty(value = "对象锁符号")
     private String symbol;
+    @NotBlank(message = "交易密码不能为空!")
+    @ApiModelProperty(value = "交易密码")
+    private  String transactionPassword;
 
 }

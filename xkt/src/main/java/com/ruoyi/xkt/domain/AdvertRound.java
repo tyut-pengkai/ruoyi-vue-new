@@ -28,9 +28,13 @@ public class AdvertRound extends XktBaseEntity {
     @TableId
     private Long id;
     /**
-     * 推广展示类型 时间范围  位置枚举
+     * 推广展示类型
      */
     private Integer showType;
+    /**
+     * 展示类型 推广图、商品、推广图及商品
+     */
+    private Integer displayType;
     /**
      * 凭证日期
      */
@@ -88,13 +92,13 @@ public class AdvertRound extends XktBaseEntity {
      */
     private Integer biddingTempStatus;
     /**
-     * 图片审核状态
+     * 图片审核状态 1 待审核 2 审核通过  3 审核驳回
      */
     private Integer picAuditStatus;
     /**
      * 图片是否设置 0 未设置 1已设置
      */
-    private Integer picSet;
+    private Integer picSetType;
     /**
      * 推广图ID 对应sysFile.id
      */
@@ -108,7 +112,7 @@ public class AdvertRound extends XktBaseEntity {
      */
     private Integer picDesignType;
     /**
-     * 系统拦截
+     * 系统拦截 0 未拦截  1拦截
      */
     private Integer sysIntercept;
 

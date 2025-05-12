@@ -2,24 +2,24 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.AdvertRound;
 import com.ruoyi.xkt.domain.AdvertRoundRecord;
-import com.ruoyi.xkt.dto.advertRound.AdRoundStoreCreateDTO;
-import com.ruoyi.xkt.dto.advertRound.AdRoundStoreResDTO;
-import com.ruoyi.xkt.enums.AdBiddingStatus;
-import com.ruoyi.xkt.enums.AdLaunchStatus;
-import com.ruoyi.xkt.enums.AdRoundType;
-import com.ruoyi.xkt.enums.AdShowType;
-import com.ruoyi.xkt.mapper.AdvertRoundMapper;
-import com.ruoyi.xkt.mapper.AdvertRoundRecordMapper;
-import com.ruoyi.xkt.mapper.StoreMapper;
+import com.ruoyi.xkt.domain.StoreProduct;
+import com.ruoyi.xkt.domain.SysFile;
+import com.ruoyi.xkt.dto.advertRound.*;
+import com.ruoyi.xkt.enums.*;
+import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IAdvertRoundService;
+import com.ruoyi.xkt.service.IAssetService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -43,6 +43,8 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.ruoyi.common.constant.Constants.ADVERT_POPULAR;
+
 /**
  * 推广营销轮次播放Service业务层处理
  *
@@ -57,6 +59,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     final AdvertRoundRecordMapper advertRoundRecordMapper;
     final RedisCache redisCache;
     final StoreMapper storeMapper;
+    final StoreProductMapper storeProdMapper;
+    final SysFileMapper fileMapper;
+    final IAssetService assetService;
 
     // 推广营销位锁 key：symbol + roundId 或者 symbol + roundId + position 。value都是new Object()
     public static Map<String, Object> advertLockMap = new ConcurrentHashMap<>();
@@ -83,7 +88,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         System.err.println(advertLockMap);
     }
 
-    public void  test() {
+    public void test() {
         System.err.println(advertLockMap);
     }
 
@@ -145,6 +150,30 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         this.advertRoundMapper.updateById(updateList);
     }
 
+    /**
+     * 根据advertRoundId获取当前位置枚举设置的商品
+     *
+     * @param advertRoundId advertRoundId
+     * @return AdRoundSetProdResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<AdRoundSetProdResDTO> getSetProdInfo(Long advertRoundId) {
+        AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+                        .eq(AdvertRound::getId, advertRoundId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("推广轮次不存在!"));
+        if (!Objects.equals(advertRound.getShowType(), AdShowType.POSITION_ENUM.getValue())) {
+            throw new ServiceException("当前推广位非位置枚举，不可调用该接口!", HttpStatus.ERROR);
+        }
+        if (StringUtils.isEmpty(advertRound.getProdIdStr())) {
+            return Collections.emptyList();
+        }
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, advertRound.getStoreId())
+                .in(StoreProduct::getId, Arrays.stream(advertRound.getProdIdStr().split(",")).map(Long::parseLong).collect(Collectors.toList())));
+        return storeProdList.stream().map(x -> new AdRoundSetProdResDTO().setStoreProdId(x.getId()).setProdArtNum(x.getProdArtNum())).collect(Collectors.toList());
+    }
+
 
     /**
      * 根据广告ID获取推广轮次列表，并返回当前档口在这些推广轮次的数据
@@ -156,7 +185,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
      */
     @Override
     @Transactional(readOnly = true)
-    public AdRoundStoreResDTO getStoreAdInfo(final Long storeId, final Long advertId,final Integer showType) {
+    public AdRoundStoreResDTO getStoreAdInfo(final Long storeId, final Long advertId, final Integer showType) {
         final LocalTime now = LocalTime.now();
         // 当前时间 是否在  晚上22:00:01  到 晚上23:59:59之间 决定 biddingStatus 和  biddingTempStatus 用那一个字段
         boolean tenClockAfter = now.isAfter(LocalTime.of(22, 0, 1)) && now.isBefore(LocalTime.of(23, 59, 59));
@@ -288,18 +317,16 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     }
 
 
-
-
     /**
      * 档口购买推广营销
-     *     主要是两个场景：1. 某个广告位（advert_id）某个轮次（round_id）按照出价（pay_price）决定能否购买。[eg: A B C D E]
-     *                 2. 某个广告位（advert_id）某个轮次（round_id）某个具体位置（position）按照出价（pay_price）决定能否购买。
-     *     思路：每次筛选出某个类型，价格最低的推广位，然后只操作这行数据
-     *                 （创建索引：CREATE INDEX idx_advert_round_pay_pos ON advert_round (advert_id, round_id, pay_price, position)）。
-     *     若：该行数据已经有其它档口先竞价了。先进行比价。如果出价低于最低价格，则抛出异常：“已经有档口出价更高了噢，请重新出价!”
-     *     若：新出价比原数据价格高，则：a. 给原数据档口创建转移支付单   b.新档口占据该行位置，更新数据。
+     * 主要是两个场景：1. 某个广告位（advert_id）某个轮次（round_id）按照出价（pay_price）决定能否购买。[eg: A B C D E]
+     * 2. 某个广告位（advert_id）某个轮次（round_id）某个具体位置（position）按照出价（pay_price）决定能否购买。
+     * 思路：每次筛选出某个类型，价格最低的推广位，然后只操作这行数据
+     * （创建索引：CREATE INDEX idx_advert_round_pay_pos ON advert_round (advert_id, round_id, pay_price, position)）。
+     * 若：该行数据已经有其它档口先竞价了。先进行比价。如果出价低于最低价格，则抛出异常：“已经有档口出价更高了噢，请重新出价!”
+     * 若：新出价比原数据价格高，则：a. 给原数据档口创建转移支付单   b.新档口占据该行位置，更新数据。
      * <p>
-     *     等到晚上10:00，所有档口购买完成。再通过定时任务（11:30），给每个类型，按照价格从高到低，进行排序。并将首页各个位置的广告数据推送到ES中。为空的广告位如何填充？？
+     * 等到晚上10:00，所有档口购买完成。再通过定时任务（11:30），给每个类型，按照价格从高到低，进行排序。并将首页各个位置的广告数据推送到ES中。为空的广告位如何填充？？
      * <p>
      *
      * @param createDTO 购买入参
@@ -344,30 +371,144 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             if (createDTO.getPayPrice().compareTo(ObjectUtils.defaultIfNull(minPriceAdvert.getPayPrice(), BigDecimal.ZERO)) <= 0) {
                 throw new ServiceException("已经有档口出价更高了噢，请重新出价!", HttpStatus.ERROR);
             }
-
             // storeId不为空，表明之前有其他的档口竞价
             if (ObjectUtils.isNotEmpty(minPriceAdvert.getStoreId())) {
-
-                // TODO 将推广费退至原档口余额
-                // TODO 将推广费退至原档口余额
-
+                // 将推广费退至原档口余额
+                assetService.refundAdvertFee(minPriceAdvert.getStoreId(), minPriceAdvert.getPayPrice());
                 // 记录竞价失败的档口推广营销
                 this.record(minPriceAdvert);
             }
-
-            // 更新出价最低的广告位
+            // 更新广告位数据
             minPriceAdvert.setStoreId(createDTO.getStoreId()).setPayPrice(createDTO.getPayPrice())
+                    // 展示类型非商品才赋值 setType
                     .setVoucherDate(java.sql.Date.valueOf(LocalDate.now()))
                     .setBiddingStatus(AdBiddingStatus.BIDDING.getValue())
                     .setBiddingTempStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue())
-                    .setPicDesignType(createDTO.getPicDesignType()).setProdIdStr(createDTO.getProdIdStr());
+                    .setPicSetType(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? AdPicSetType.UN_SET.getValue() : null)
+                    .setPicDesignType(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? createDTO.getPicDesignType() : null)
+                    .setPicAuditStatus(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? AdPicAuditStatus.UN_AUDIT.getValue() : null)
+                    .setProdIdStr(createDTO.getProdIdStr());
             this.advertRoundMapper.updateById(minPriceAdvert);
-
-            // TODO 新竞价成功的档口扣减余额
-            // TODO 新竞价成功的档口扣减余额
-
+            // 扣除推广费
+            assetService.payAdvertFee(createDTO.getStoreId(), createDTO.getPayPrice(), createDTO.getTransactionPassword());
         }
         return 1;
+    }
+
+    /**
+     * 档口已订购推广列表
+     *
+     * @param pageDTO 分页入参
+     * @return Page<AdvertRoundStorePageResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AdvertRoundStorePageResDTO> page(AdvertRoundStorePageDTO pageDTO) {
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        List<AdvertRoundStorePageResDTO> list = this.advertRoundMapper.selectStoreAdvertPage(pageDTO);
+        list.forEach(item -> item.setPlatformName(AdPlatformType.of(item.getPlatformId()).getLabel())
+                .setLaunchStatusName(AdLaunchStatus.of(item.getLaunchStatus()).getLabel())
+                .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
+                .setPicDesignTypeName(ObjectUtils.isNotEmpty(item.getPicDesignType()) ? AdDesignType.of(item.getPicDesignType()).getLabel() : "")
+                .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
+                .setPicSetTypeName(ObjectUtils.isNotEmpty(item.getPicSetType()) ? AdPicSetType.of(item.getPicSetType()).getLabel() : "")
+                .setTypeName(AdType.of(item.getTypeId()).getLabel())
+                .setBiddingStatusName(AdBiddingStatus.of(item.getBiddingStatus()).getLabel()));
+        return Page.convert(new PageInfo<>(list));
+    }
+
+    /**
+     * 获取当前档口设置的推广位信息
+     *
+     * @param storeId       档口ID
+     * @param advertRoundId 推广位ID
+     * @return AdRoundSetPicResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public AdRoundStoreSetResDTO getAdvertStoreSetInfo(Long storeId, Long advertRoundId) {
+        AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+                        .eq(AdvertRound::getId, advertRoundId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                        .eq(AdvertRound::getStoreId, storeId)))
+                .orElseThrow(() -> new ServiceException("档口购买的推广位不存在!", HttpStatus.ERROR));
+        AdRoundStoreSetResDTO storeSet = new AdRoundStoreSetResDTO().setAdvertRoundId(advertRoundId);
+        // 获取档口设置的推广图
+        if (ObjectUtils.isNotEmpty(advertRound.getPicId())) {
+            SysFile file = Optional.ofNullable(this.fileMapper.selectOne(new LambdaQueryWrapper<SysFile>()
+                            .eq(SysFile::getId, advertRound.getPicId()).eq(SysFile::getDelFlag, Constants.UNDELETED)))
+                    .orElseThrow(() -> new ServiceException("推广图不存在", HttpStatus.ERROR));
+            storeSet.setFileUrl(file.getFileUrl());
+        }
+        // 获取档口设置的推广商品
+        if (StringUtils.isNotBlank(advertRound.getProdIdStr())) {
+            List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                            .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
+                            .in(StoreProduct::getId, Arrays.stream(advertRound.getProdIdStr().split(",")).map(Long::parseLong).collect(Collectors.toList()))))
+                    .orElseThrow(() -> new ServiceException("档口设置的推广商品不存在", HttpStatus.ERROR));
+            storeSet.setProdList(storeProdList.stream().map(x -> new AdRoundStoreSetResDTO.ARSSProdDTO()
+                    .setStoreProdId(x.getId()).setProdArtNum(x.getProdArtNum())).collect(Collectors.toList()));
+        }
+        return storeSet;
+    }
+
+    /**
+     * 档口退订推广位
+     *
+     * @param storeId       档口ID
+     * @param advertRoundId 推广位ID
+     * @return
+     */
+    @Override
+    @Transactional
+    public Integer unsubscribe(Long storeId, Long advertRoundId) {
+        AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+                        .eq(AdvertRound::getId, advertRoundId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                        .eq(AdvertRound::getStoreId, storeId)))
+                .orElseThrow(() -> new ServiceException("档口购买的推广位不存在!", HttpStatus.ERROR));
+        // 判断当前时间距离开播是否小于72h，若是：则不可取消
+        Date threeDaysAfter = DateUtils.toDate(LocalDateTime.now().plusDays(3));
+        if (threeDaysAfter.after(advertRound.getStartTime())) {
+            throw new ServiceException("距推广开播小于72小时，不可退订!");
+        }
+        // 将费用退回到档口余额中
+        assetService.refundAdvertFee(advertRound.getStoreId(), advertRound.getPayPrice());
+        // 将推广位置为空
+        return this.advertRoundMapper.updateAttrNull(advertRound.getId());
+    }
+
+    /**
+     * 获取最受欢迎8个推广位
+     *
+     * @return List<AdRoundPopularResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<AdRoundPopularResDTO> getMostPopulars() {
+        // 从redis中获取最受欢迎的8个推广位
+        List<AdRoundPopularResDTO> redisList = redisCache.getCacheObject(ADVERT_POPULAR);
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            return redisList;
+        }
+        // 找到有人购买的最受欢迎的advertId列表
+        List<Long> advertIdList = this.advertRoundMapper.selectMostPopulars();
+        if (CollectionUtils.isEmpty(advertIdList)) {
+            return new ArrayList<>();
+        }
+        // 获取下一轮待投放的推广位
+        List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
+                .in(AdvertRound::getAdvertId, advertIdList).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.UN_LAUNCH.getValue()));
+        // 找到播放轮次最近的数据
+        Map<Long, Optional<AdvertRound>> minRoundIdMap = advertRoundList.stream().collect(Collectors
+                .groupingBy(AdvertRound::getAdvertId, Collectors.minBy(Comparator.comparing(AdvertRound::getRoundId))));
+        // 将minRoundIdMap中的值转换为List<AdRoundPopularResDTO>
+        List<AdRoundPopularResDTO> list = minRoundIdMap.values().stream().map(Optional::get).map(x -> new AdRoundPopularResDTO().setAdvertId(x.getAdvertId())
+                        .setTypeId(x.getTypeId()).setTypeName(AdType.of(x.getTypeId()).getLabel()).setShowType(x.getShowType()).setStartTime(x.getStartTime())
+                        .setEndTime(x.getEndTime()).setStartPrice(x.getStartPrice()))
+                .collect(Collectors.toList());
+        // 存到redis中
+        redisCache.setCacheObject(ADVERT_POPULAR, list, 1, TimeUnit.DAYS);
+        return list;
     }
 
     /**
@@ -375,7 +516,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
      *
      * @param storeId         档口ID
      * @param advertRoundList 播放轮次列表
-     * @param recordList 未购买的播放轮次列表
+     * @param recordList      未购买的播放轮次列表
      * @return List<AdRoundStoreResDTO.ADRSRoundRecordDTO>
      */
     private List<AdRoundStoreResDTO.ADRSRoundRecordDTO> getStoreBoughtList(Long storeId, List<AdvertRound> advertRoundList, List<AdvertRoundRecord> recordList) {
@@ -403,9 +544,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     /**
      * 通过定时任务往redis中放当前推广位 当前播放轮 或 即将播放轮 的截止时间；
      * 比如：5.1 - 5.3
-     *      a. 现在是4.30 则截止时间是 4.30 22:00
-     *      b. 现在是5.2，则截止时间是 5.2 22:00:00 。
-     *      c. 现在是5.3，则第一轮还有请求，肯定是人为的不用管。请求第三轮 或者 第四轮 不报错。只处理第二轮请求
+     * a. 现在是4.30 则截止时间是 4.30 22:00
+     * b. 现在是5.2，则截止时间是 5.2 22:00:00 。
+     * c. 现在是5.3，则第一轮还有请求，肯定是人为的不用管。请求第三轮 或者 第四轮 不报错。只处理第二轮请求
      *
      * @throws ParseException
      */
@@ -420,7 +561,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         // 服务器当前时间 yyyy-MM-dd
         final Date now = DateUtils.parseDate(DateUtils.getDate(), DateUtils.YYYY_MM_DD);
         // 当天截止的时间 yyyy-MM-dd 22:00:00
-        final String filterTime =  DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS)
+        final String filterTime = DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS)
                 .format(LocalDateTime.now().withHour(22).withMinute(0).withSecond(0));
         advertRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getAdvertId))
                 .forEach((advertId, roundList) -> {
@@ -440,12 +581,6 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                             return;
                         }
                     }
-                    // 作用于某一轮推广的symbol（包含了播放轮次的）
-                    /*String symbol = now.before(firstRoundEndTime)
-                            ? roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.PLAY_ROUND.getValue()))
-                            .map(AdvertRound::getSymbol).findAny().orElseThrow(() -> new ServiceException("获取推广第一轮symbol失败，请联系客服!", HttpStatus.ERROR))
-                            : roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.SECOND_ROUND.getValue()))
-                            .map(AdvertRound::getSymbol).findAny().orElseThrow(() -> new ServiceException("获取推广第二轮symbol失败，请联系客服!", HttpStatus.ERROR));*/
                     // 存放到redis中 有效期1天
                     redisCache.setCacheObject(symbol, filterTime, 1, TimeUnit.DAYS);
                 });
@@ -454,6 +589,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
     /**
      * 获取当前推广轮次的过期时间
+     *
      * @param symbol 符号
      * @return
      */
@@ -464,6 +600,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
     /**
      * 记录竞价失败档口推广营销
+     *
      * @param failAdvert 竞价失败的推广营销
      */
     private void record(AdvertRound failAdvert) {
@@ -478,6 +615,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
     /**
      * 根据Date获取当前星期几
+     *
      * @param date 时间yyyy-MM-dd
      * @return 星期几
      */
@@ -489,8 +627,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
     /**
      * 计算两天之间相差多少天
+     *
      * @param startDate 开始日期
-     * @param endDate 截止日期
+     * @param endDate   截止日期
      * @return diffDay
      */
     public static int calculateDurationDay(Date startDate, Date endDate) {
@@ -501,10 +640,11 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
     /**
      * 获取当前档口 已抢购推广位
-     * @param allRoundList 所有的推广
+     *
+     * @param allRoundList  所有的推广
      * @param allRecordList 所有竞价失败的推广
-     * @param storeId 档口ID
-     * @param voucherDate 单据日期
+     * @param storeId       档口ID
+     * @param voucherDate   单据日期
      * @param tenClockAfter 是否是10点后
      * @return
      */

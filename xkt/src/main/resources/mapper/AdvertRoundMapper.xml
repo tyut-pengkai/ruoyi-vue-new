@@ -24,4 +24,71 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           </foreach>
     </select>
 
+
+    <select id="selectStoreAdvertPage" parameterType="com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageDTO"  resultType="com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageResDTO">
+        SELECT
+            a.platform_id,
+            ar.type_id,
+            ar.position,
+            ar.start_time,
+            ar.end_time,
+            ar.pay_price,
+            ar.launch_status,
+            ar.bidding_status,
+            ar.pic_design_type,
+            ar.pic_set_type,
+            ar.pic_audit_status
+        FROM
+            advert_round ar
+                JOIN advert a ON ar.advert_id = a.id
+        WHERE
+            ar.del_flag = 0
+            AND ar.store_id = #{storeId}
+            <if test="typeId != null "> and ar.type_id = #{typeId}</if>
+            <if test="launchStatus != null "> and ar.launch_status = #{launchStatus}</if>
+            <if test="biddingStatus != null "> and ar.bidding_status = #{biddingStatus}</if>
+            <if test="picSetType != null "> and ar.pic_set_type = #{picSetType}</if>
+            <if test="picDesignType != null "> and ar.pic_design_type = #{picDesignType}</if>
+            <if test="picAuditStatus != null "> and ar.pic_audit_status = #{picAuditStatus}</if>
+            <if test="startTime != null "> and ar.start_time &gt;= #{startTime}</if>
+            <if test="endTime != null "> and ar.end_time &lt;= #{endTime}</if>
+        ORDER BY
+            ar.create_time DESC
+    </select>
+
+    <update id="updateAttrNull">
+        UPDATE advert_round
+        SET voucher_date = NULL,
+            store_id = NULL,
+            pay_price = NULL,
+            bidding_status = NULL,
+            bidding_temp_status = NULL,
+            pic_audit_status = NULL,
+            pic_set_type = NULL,
+            pic_id = NULL,
+            prod_id_str = NULL,
+            pic_design_type = NULL,
+            sys_intercept = NULL
+        WHERE
+            id = #{advertRoundId}
+    </update>
+
+    <select id="selectMostPopulars">
+        SELECT
+            advert_id
+        FROM
+            advert_round
+        WHERE
+            pay_price IS NOT NULL
+          AND store_id IS NOT NULL
+          AND sys_intercept = 0
+        GROUP BY
+            advert_id
+        ORDER BY
+            COUNT( advert_id ) DESC
+            LIMIT 8
+    </select>
+
+
+
 </mapper>

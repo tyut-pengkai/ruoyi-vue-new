@@ -60,4 +60,11 @@ public interface IAdvertService {
      */
     List<AdvertPlatformResDTO> getPlatformList();
 
+    /**
+     * 查看当前推广类型 示例图
+     *
+     * @param advertType 推广类型
+     * @return String
+     */
+    String getDemoPic(Integer advertType);
 }

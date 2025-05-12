@@ -32,6 +32,6 @@ public enum AdShowType {
                 return e;
             }
         }
-        throw new ServiceException("营销推广播放轮次不存在!", HttpStatus.ERROR);
+        throw new ServiceException("营销推广展示类型不存在!", HttpStatus.ERROR);
     }
 }

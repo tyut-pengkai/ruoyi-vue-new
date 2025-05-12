@@ -37,5 +37,7 @@ public class AdRoundStoreCreateDTO {
     private String prodIdStr;
     @ApiModelProperty(value = "对象锁符号")
     private String symbol;
+    @ApiModelProperty(value = "交易密码")
+    private  String transactionPassword;
 
 }

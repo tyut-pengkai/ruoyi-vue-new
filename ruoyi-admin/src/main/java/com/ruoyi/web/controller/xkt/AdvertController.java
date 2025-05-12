@@ -92,5 +92,14 @@ public class AdvertController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(advertService.getPlatformList(), AdvertPlatformResVO.class));
     }
 
+    /**
+     * 获取推广位示例图
+     */
+    @ApiOperation(value = "获取推广位示例图", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/demo/{advertType}")
+    public R<String> getDemoPic(@PathVariable Integer advertType) {
+        return R.ok(advertService.getDemoPic(advertType));
+    }
+
 
 }
