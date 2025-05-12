@@ -51,6 +51,11 @@ public class STSCredentialsVO {
     @ApiModelProperty("bucketName")
     private String bucketName;
     /**
+     * 公共读桶
+     */
+    @ApiModelProperty("publicBucketName")
+    private String publicBucketName;
+    /**
      * https标记
      */
     @ApiModelProperty("https标记")

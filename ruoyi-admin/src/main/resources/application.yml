@@ -17,6 +17,7 @@ oss:
   accessKeyId: LTAI5tFXTfY5Rsiwvrg9gUuk
   accessKeySecret: Ebbj7anXSdbJwfm5zbTfHkJ5QWDbTP
   bucketName: lyq-private
+  publicBucketName: lyq-public
   https: true
   regionId: cn-beijing
   roleArn: acs:ram::1919425406190533:role/sts-role

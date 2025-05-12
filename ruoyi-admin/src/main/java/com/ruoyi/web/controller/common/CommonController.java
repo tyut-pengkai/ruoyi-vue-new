@@ -56,6 +56,7 @@ public class CommonController {
         vo.setAccessKeySecret(credentials.getSecretAccessKey());
         vo.setSecurityToken(credentials.getSecurityToken());
         vo.setBucketName(ossProperties.getBucketName());
+        vo.setPublicBucketName(ossProperties.getPublicBucketName());
         vo.setRegionId(ossProperties.getRegionId());
         vo.setEndPoint(ossProperties.getEndPoint());
         vo.setExpiredDuration(ossProperties.getExpiredDuration() - ossProperties.getStsCacheDuration());

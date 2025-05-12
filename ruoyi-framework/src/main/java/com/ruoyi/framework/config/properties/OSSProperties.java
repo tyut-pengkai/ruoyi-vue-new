@@ -19,6 +19,8 @@ public class OSSProperties {
 
     private String bucketName;
 
+    private String publicBucketName;
+
     private boolean https;
 
     private String regionId;
