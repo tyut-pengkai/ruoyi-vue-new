@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.LabelPrintRecordMapper">
+    
+    <resultMap type="com.easycode.cloud.domain.LabelPrintRecord" id="LabelPrintRecordResult">
+        <result property="id"    column="id"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="labelType"    column="label_type"    />
+        <result property="materialDesc"    column="material_desc"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="containerNo"    column="container_no"    />
+        <result property="productionOrderNo"    column="production_order_no"    />
+        <result property="vendorCode"    column="vendor_code"    />
+        <result property="vendorName"    column="vendor_name"    />
+        <result property="leastUnit"    column="least_unit"    />
+        <result property="printNum"    column="print_num"    />
+        <result property="printTime"    column="print_time"    />
+        <result property="operator"    column="operator"    />
+        <result property="plantCode"    column="plant_code"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="totalNum"    column="total_num"    />
+        <result property="minPackageNum"    column="min_package_num"    />
+        <result property="firstBoxNum"    column="first_box_num"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="purchaseLineNo"    column="purchase_line_no"    />
+        <result property="deliveryOrderNo"    column="delivery_order_no"    />
+        <result property="deliveryLineNo"    column="delivery_line_no"    />
+        <result property="outSourcedProcesses"    column="out_sourced_processes"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectLabelPrintRecordVo">
+        select id, material_no, label_type, material_desc, old_material_no, batch_no, container_no, production_order_no, vendor_code, vendor_name, least_unit, print_num, print_time, operator, plant_code, tenant_id, create_by, create_time, update_by, update_time, total_num, min_package_num, first_box_num, purchase_order_no, purchase_line_no, delivery_order_no, delivery_line_no, out_sourced_processes, remark from wms_label_print_record
+    </sql>
+
+    <!--<select id="selectWmsLabelPrintRecordList" parameterType="WmsLabelPrintRecord" resultMap="WmsLabelPrintRecordResult">
+        <include refid="selectWmsLabelPrintRecordVo"/>
+        <where>  
+            <if test="materialNo != null  and materialNo != ''"> and material_no = #{materialNo}</if>
+            <if test="labelType != null "> and label_type = #{labelType}</if>
+            <if test="materialDesc != null  and materialDesc != ''"> and material_desc = #{materialDesc}</if>
+            <if test="batchNo != null  and batchNo != ''"> and batch_no = #{batchNo}</if>
+            <if test="containerNo != null  and containerNo != ''"> and container_no = #{containerNo}</if>
+            <if test="productionOrderNo != null  and productionOrderNo != ''"> and production_order_no = #{productionOrderNo}</if>
+            <if test="vendorName != null  and vendorName != ''"> and vendor_name like concat('%', #{vendorName}, '%')</if>
+            <if test="printTime != null "> and print_time = #{printTime}</if>
+            <if test="plantCode != null  and plantCode != ''"> and plant_code = #{plantCode}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+        </where>
+    </select>-->
+    <select id="selectLabelPrintRecordList" parameterType="LabelPrintRecordVo" resultMap="LabelPrintRecordResult">
+        <include refid="selectLabelPrintRecordVo"/>
+        <where>
+            <if test="materialNo != null  and materialNo != ''"> and material_no = #{materialNo}</if>
+            <if test="labelType != null "> and label_type = #{labelType}</if>
+            <if test="batchNo != null  and batchNo != ''"> and batch_no = #{batchNo}</if>
+            <if test="containerNo != null  and containerNo != ''"> and container_no = #{containerNo}</if>
+            <if test="productionOrderNo != null  and productionOrderNo != ''"> and production_order_no = #{productionOrderNo}</if>
+            <if test="vendorName != null  and vendorName != ''"> and vendor_name like concat('%', #{vendorName}, '%')</if>
+            <if test="startPrintTime != null "> and print_time &gt;= #{startPrintTime}</if>
+            <if test="endPrintTime != null "> and print_time &lt;= #{endPrintTime}</if>
+            <if test="plantCode != null  and plantCode != ''"> and plant_code = #{plantCode}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+        </where>
+        order by create_time desc
+    </select>
+    
+    <select id="selectLabelPrintRecordById" parameterType="Long" resultMap="LabelPrintRecordResult">
+        <include refid="selectLabelPrintRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="getProductionMax" resultType="java.lang.Integer">
+        select ifnull(max(serial_number),0) from wms_label_print_record where production_order_no = #{value}
+    </select>
+
+    <insert id="insertLabelPrintRecord" parameterType="LabelPrintRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_label_print_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="materialNo != null and materialNo != ''">material_no,</if>
+            <if test="labelType != null">label_type,</if>
+            <if test="materialDesc != null">material_desc,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+            <if test="batchNo != null">batch_no,</if>
+            <if test="containerNo != null">container_no,</if>
+            <if test="productionOrderNo != null">production_order_no,</if>
+            <if test="vendorCode != null">vendor_code,</if>
+            <if test="vendorName != null">vendor_name,</if>
+            <if test="leastUnit != null">least_unit,</if>
+            <if test="printNum != null">print_num,</if>
+            <if test="printTime != null">print_time,</if>
+            <if test="operator != null and operator != ''">operator,</if>
+            <if test="plantCode != null and plantCode != ''">plant_code,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="totalNum != null">total_num,</if>
+            <if test="minPackageNum != null">min_package_num,</if>
+            <if test="firstBoxNum != null">first_box_num,</if>
+            <if test="purchaseOrderNo != null">purchase_order_no,</if>
+            <if test="purchaseLineNo != null">purchase_line_no,</if>
+            <if test="deliveryOrderNo != null">delivery_order_no,</if>
+            <if test="deliveryLineNo != null">delivery_line_no,</if>
+            <if test="outSourcedProcesses != null">out_sourced_processes,</if>
+            <if test="remark != null">remark,</if>
+            <if test="serialNumber != null">serial_number,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="materialNo != null and materialNo != ''">#{materialNo},</if>
+            <if test="labelType != null">#{labelType},</if>
+            <if test="materialDesc != null">#{materialDesc},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+            <if test="batchNo != null">#{batchNo},</if>
+            <if test="containerNo != null">#{containerNo},</if>
+            <if test="productionOrderNo != null">#{productionOrderNo},</if>
+            <if test="vendorCode != null">#{vendorCode},</if>
+            <if test="vendorName != null">#{vendorName},</if>
+            <if test="leastUnit != null">#{leastUnit},</if>
+            <if test="printNum != null">#{printNum},</if>
+            <if test="printTime != null">#{printTime},</if>
+            <if test="operator != null and operator != ''">#{operator},</if>
+            <if test="plantCode != null and plantCode != ''">#{plantCode},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="totalNum != null">#{totalNum},</if>
+            <if test="minPackageNum != null">#{minPackageNum},</if>
+            <if test="firstBoxNum != null">#{firstBoxNum},</if>
+            <if test="purchaseOrderNo != null">#{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">#{purchaseLineNo},</if>
+            <if test="deliveryOrderNo != null">#{deliveryOrderNo},</if>
+            <if test="deliveryLineNo != null">#{deliveryLineNo},</if>
+            <if test="outSourcedProcesses != null">#{outSourcedProcesses},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="serialNumber != null">#{serialNumber},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLabelPrintRecord" parameterType="LabelPrintRecord">
+        update wms_label_print_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="materialNo != null and materialNo != ''">material_no = #{materialNo},</if>
+            <if test="labelType != null">label_type = #{labelType},</if>
+            <if test="materialDesc != null">material_desc = #{materialDesc},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="containerNo != null">container_no = #{containerNo},</if>
+            <if test="productionOrderNo != null">production_order_no = #{productionOrderNo},</if>
+            <if test="vendorCode != null">vendor_code = #{vendorCode},</if>
+            <if test="vendorName != null">vendor_name = #{vendorName},</if>
+            <if test="leastUnit != null">least_unit = #{leastUnit},</if>
+            <if test="printNum != null">print_num = #{printNum},</if>
+            <if test="printTime != null">print_time = #{printTime},</if>
+            <if test="operator != null and operator != ''">operator = #{operator},</if>
+            <if test="plantCode != null and plantCode != ''">plant_code = #{plantCode},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="totalNum != null">total_num = #{totalNum},</if>
+            <if test="minPackageNum != null">min_package_num = #{minPackageNum},</if>
+            <if test="firstBoxNum != null">first_box_num = #{firstBoxNum},</if>
+            <if test="purchaseOrderNo != null">purchase_order_no = #{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">purchase_line_no = #{purchaseLineNo},</if>
+            <if test="deliveryOrderNo != null">delivery_order_no = #{deliveryOrderNo},</if>
+            <if test="deliveryLineNo != null">delivery_line_no = #{deliveryLineNo},</if>
+            <if test="outSourcedProcesses != null">out_sourced_processes = #{outSourcedProcesses},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLabelPrintRecordById" parameterType="Long">
+        delete from wms_label_print_record where id = #{id}
+    </delete>
+
+    <delete id="deleteLabelPrintRecordByIds" parameterType="String">
+        delete from wms_label_print_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

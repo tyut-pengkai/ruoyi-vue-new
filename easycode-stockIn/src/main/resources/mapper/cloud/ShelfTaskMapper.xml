@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.ShelfTaskMapper">
+
+    <resultMap type="ShelfTask" id="ShelfTaskResult">
+        <result property="id" column="id"/>
+        <result property="taskNo" column="task_no"/>
+        <result property="taskType" column="task_type"/>
+        <result property="status" column="status"/>
+        <result property="allocateTime" column="allocate_time"/>
+        <result property="finishTime" column="finish_time"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="oldMaterialNo" column="old_material_no"/>
+        <result property="stockinOrderNo" column="stockin_order_no"/>
+        <result property="stockinLineNo" column="stockin_line_no"/>
+        <result property="inspectOrderNo" column="inspect_order_no"/>
+        <result property="locationCode" column="location_code"/>
+        <result property="sourceLocationCode" column="source_location_code"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="sourceAreaCode" column="source_area_code"/>
+        <result property="positionNo" column="position_no"/>
+        <result property="positionId" column="position_id"/>
+        <result property="sourcePositionNo" column="source_position_no"/>
+        <result property="qty" column="qty"/>
+        <result property="completeQty" column="complete_qty"/>
+        <result property="unit" column="unit"/>
+        <result property="operationUnit" column="operation_unit"/>
+        <result property="operationCompleteQty" column="operation_complete_qty"/>
+        <result property="operationQty" column="operation_qty"/>
+        <result property="lot" column="lot"/>
+        <result property="inventoryId" column="inventory_id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="containerNo" column="container_no"/>
+        <result property="printSum" column="print_sum"/>
+        <result property="isPrint" column="is_print"/>
+        <result property="delivery0rderNo" column="delivery_order_no"/>
+    </resultMap>
+
+    <sql id="selectShelfTaskVo">
+        select id,
+               task_no,
+               task_type,
+               status,
+               allocate_time,
+               finish_time,
+               material_no,
+               material_name,
+               old_material_no,
+               stockin_order_no,
+               stockin_line_no,
+               inspect_order_no,
+               location_code,
+               source_location_code,
+               area_code,
+               source_area_code,
+               position_no,
+               position_id,
+               source_position_no,
+               qty,
+               complete_qty,
+               operation_complete_qty,
+               operation_unit,
+               operation_qty,
+               unit,
+               lot,
+               inventory_id,
+               tenant_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               container_no,
+               delivery_order_no,
+               CASE
+                   WHEN print_sum IS NULL OR print_sum = '' THEN 0
+                   ELSE print_sum
+                   END AS print_sum,
+               CASE
+                   WHEN print_sum IS NULL OR print_sum = '' OR print_sum = 0 THEN '否'
+                   ELSE '是'
+                   END AS is_print
+        from wms_shelf_task
+    </sql>
+
+    <select id="selectShelfTaskList" parameterType="ShelfTask" resultMap="ShelfTaskResult">
+        <include refid="selectShelfTaskVo"/>
+        <where>
+            <if test="taskNo != null  and taskNo != ''">and task_no like concat('%', #{taskNo}, '%')</if>
+            <if test="taskType != null  and taskType != ''">and task_type = #{taskType}</if>
+            <if test="taskStatusArr != null and taskStatusArr != '' ">and status in
+                <foreach item="item" collection="taskStatusArr" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="allocateTime != null ">and allocate_time = #{allocateTime}</if>
+            <if test="finishTime != null ">and finish_time = #{finishTime}</if>
+            <if test="materialNo != null  and materialNo != ''">and material_no like concat('%', #{materialNo}, '%')</if>
+            <if test="materialName != null  and materialName != ''">and material_name = #{materialName}</if>
+            <if test="oldMaterialNo != null  and oldMaterialNo != ''">and old_material_no = #{oldMaterialNo}</if>
+            <if test="stockinOrderNo != null  and stockinOrderNo != ''">and stockin_order_no like concat('%', #{stockinOrderNo}, '%')</if>
+            <if test="stockinLineNo != null  and stockinLineNo != ''">and stockin_line_no = #{stockinLineNo}</if>
+            <if test="inspectOrderNo != null  and inspectOrderNo != ''">and inspect_order_no = #{inspectOrderNo}</if>
+            <if test="locationCode != null  and locationCode != ''">and location_code like concat('%', #{locationCode}, '%')</if>
+            <if test="sourceLocationCode != null  and sourceLocationCode != ''">and source_location_code =
+                #{sourceLocationCode}
+            </if>
+            <if test="areaCode != null  and areaCode != ''">and area_code = #{areaCode}</if>
+            <if test="sourceAreaCode != null  and sourceAreaCode != ''">and source_area_code = #{sourceAreaCode}</if>
+            <if test="positionNo != null  and positionNo != ''">and position_no = #{positionNo}</if>
+            <if test="sourcePositionNo != null  and sourcePositionNo != ''">and source_position_no =
+                #{sourcePositionNo}
+            </if>
+            <if test="qty != null ">and qty = #{qty}</if>
+            <if test="completeQty != null ">and complete_qty = #{completeQty}</if>
+            <if test="lot != null ">and lot = #{lot}</if>
+            <if test="inventoryId != null ">and inventory_id = #{inventoryId}</if>
+            <if test="tenantId != null ">and tenant_id = #{tenantId}</if>
+            <if test="containerNo != null ">and container_no = #{containerNo}</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectShelfTaskById" parameterType="Long" resultMap="ShelfTaskResult">
+        <include refid="selectShelfTaskVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertShelfTask" parameterType="ShelfTask" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_shelf_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskNo != null">task_no,</if>
+            <if test="taskType != null">task_type,</if>
+            <if test="status != null">status,</if>
+            <if test="allocateTime != null">allocate_time,</if>
+            <if test="finishTime != null">finish_time,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+            <if test="stockinOrderNo != null">stockin_order_no,</if>
+            <if test="stockinLineNo != null">stockin_line_no,</if>
+            <if test="inspectOrderNo != null">inspect_order_no,</if>
+            <if test="locationCode != null">location_code,</if>
+            <if test="sourceLocationCode != null">source_location_code,</if>
+            <if test="areaCode != null">area_code,</if>
+            <if test="sourceAreaCode != null">source_area_code,</if>
+            <if test="positionNo != null">position_no,</if>
+            <if test="sourcePositionNo != null">source_position_no,</if>
+            <if test="qty != null">qty,</if>
+            <if test="completeQty != null">complete_qty,</if>
+            <if test="unit != null">unit,</if>
+            <if test="operationUnit != null">operation_unit,</if>
+            <if test="operationQty != null">operation_qty,</if>
+            <if test="operationCompleteQty != null">operation_complete_qty,</if>
+            <if test="lot != null">lot,</if>
+            <if test="inventoryId != null">inventory_id,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="containerNo != null">container_no,</if>
+            <if test="positionId != null">position_id,</if>
+            <if test="isQc != null">is_qc,</if>
+            <if test="delivery0rderNo != null">delivery_order_no,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskNo != null">#{taskNo},</if>
+            <if test="taskType != null">#{taskType},</if>
+            <if test="status != null">#{status},</if>
+            <if test="allocateTime != null">#{allocateTime},</if>
+            <if test="finishTime != null">#{finishTime},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+            <if test="stockinOrderNo != null">#{stockinOrderNo},</if>
+            <if test="stockinLineNo != null">#{stockinLineNo},</if>
+            <if test="inspectOrderNo != null">#{inspectOrderNo},</if>
+            <if test="locationCode != null">#{locationCode},</if>
+            <if test="sourceLocationCode != null">#{sourceLocationCode},</if>
+            <if test="areaCode != null">#{areaCode},</if>
+            <if test="sourceAreaCode != null">#{sourceAreaCode},</if>
+            <if test="positionNo != null">#{positionNo},</if>
+            <if test="sourcePositionNo != null">#{sourcePositionNo},</if>
+            <if test="qty != null">#{qty},</if>
+            <if test="completeQty != null">#{completeQty},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="operationUnit != null">#{operationUnit},</if>
+            <if test="operationQty != null">#{operationQty},</if>
+            <if test="operationCompleteQty != null">#{operationCompleteQty},</if>
+            <if test="lot != null">#{lot},</if>
+            <if test="inventoryId != null">#{inventoryId},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="containerNo != null">#{containerNo},</if>
+            <if test="positionId != null">#{positionId},</if>
+            <if test="isQc != null">#{isQc},</if>
+            <if test="delivery0rderNo != null">#{delivery0rderNo},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertShelfTaskList" parameterType="com.easycode.cloud.domain.ShelfTask" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into wms_shelf_task
+        (task_no, task_type, status, allocate_time, finish_time, material_no, material_name, old_material_no,
+        stockin_order_no, stockin_line_no, inspect_order_no, location_code, source_location_code, area_code, source_area_code,
+        position_no, source_position_no, qty, complete_qty, unit, operation_unit, operation_qty, operation_complete_qty,
+        lot, inventory_id, tenant_id, create_by, create_time, update_by, update_time, container_no,delivery_order_no, position_id) VALUES
+        <foreach item="item" collection="shelfTaskList" separator=",">
+        (
+            #{item.taskNo}, #{item.taskType}, #{item.status}, #{item.allocateTime}, #{item.finishTime}, #{item.materialNo},
+            #{item.materialName}, #{item.oldMaterialNo}, #{item.stockinOrderNo}, #{item.stockinLineNo}, #{item.inspectOrderNo},
+            #{item.locationCode}, #{item.sourceLocationCode}, #{item.areaCode}, #{item.sourceAreaCode}, #{item.positionNo},
+            #{item.sourcePositionNo}, #{item.qty}, #{item.completeQty}, #{item.unit}, #{item.operationUnit},
+            #{item.operationQty}, #{item.operationCompleteQty}, #{item.lot}, #{item.inventoryId}, #{item.tenantId},
+            #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime}, #{item.containerNo}, #{item.delivery0rderNo},
+            #{item.positionId}
+        )
+        </foreach>
+    </insert>
+
+    <update id="updateShelfTask" parameterType="ShelfTask">
+        update wms_shelf_task
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskNo != null">task_no = #{taskNo},</if>
+            <if test="taskType != null">task_type = #{taskType},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="allocateTime != null">allocate_time = #{allocateTime},</if>
+            <if test="finishTime != null">finish_time = #{finishTime},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="stockinOrderNo != null">stockin_order_no = #{stockinOrderNo},</if>
+            <if test="stockinLineNo != null">stockin_line_no = #{stockinLineNo},</if>
+            <if test="inspectOrderNo != null">inspect_order_no = #{inspectOrderNo},</if>
+            <if test="locationCode != null">location_code = #{locationCode},</if>
+            <if test="sourceLocationCode != null">source_location_code = #{sourceLocationCode},</if>
+            <if test="areaCode != null">area_code = #{areaCode},</if>
+            <if test="sourceAreaCode != null">source_area_code = #{sourceAreaCode},</if>
+            <if test="positionNo != null">position_no = #{positionNo},</if>
+            <if test="sourcePositionNo != null">source_position_no = #{sourcePositionNo},</if>
+            <if test="qty != null">qty = #{qty},</if>
+            <if test="completeQty != null">complete_qty = #{completeQty},</if>
+            <if test="operationCompleteQty != null">operation_complete_qty = #{operationCompleteQty},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="operationUnit != null">operation_unit = #{operationUnit},</if>
+            <if test="operationQty != null">operation_qty = #{operationQty},</if>
+            <if test="lot != null">lot = #{lot},</if>
+            <if test="inventoryId != null">inventory_id = #{inventoryId},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="containerNo != null">container_no = #{containerNo},</if>
+            <if test="printSum != null">print_sum = #{printSum},</if>
+            <if test="delivery0rderNo != null">delivery_order_no = #{delivery0rderNo},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteShelfTaskById" parameterType="Long">
+        delete
+        from wms_shelf_task
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteShelfTaskByIds" parameterType="String">
+        delete from wms_shelf_task where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="pdaShelfTaskList" parameterType="ShelfTaskDto" resultMap="ShelfTaskResult">
+        <include refid="selectShelfTaskVo"></include>
+        <where>
+            <if test="id != null  and id != ''">and id = #{id}</if>
+            <if test="taskType != null and taskType != '' ">and task_type = #{taskType}</if>
+            <if test="materialNo != null and materialNo != '' ">and material_no = #{materialNo}</if>
+            <if test="lot != null and lot != '' ">and lot = #{lot}</if>
+            <if test="containerNo != null and containerNo != '' ">and container_no = #{containerNo}</if>
+            <if test="locationCode != null and locationCode != '' ">and location_code like concat('%', #{locationCode}, '%')</if>
+            <if test="status != null and status != '' ">and status = #{status}</if>
+            <if test="taskStatusArr != null and taskStatusArr != '' ">and status in
+                <foreach item="item" collection="taskStatusArr" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by id desc
+    </select>
+</mapper>

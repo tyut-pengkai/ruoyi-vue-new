@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.InspectOrderMapper">
+
+    <resultMap type="InspectOrderVo" id="InspectOrderResult">
+        <result property="id"    column="id"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="billStatus"    column="bill_status"    />
+        <result property="qty"    column="qty"    />
+        <result property="chkResult"    column="chk_result"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="supplierCode"    column="supplier_code"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="purchaseLineNo"    column="purchase_line_no"    />
+        <result property="receiveOrderNo"    column="receive_order_no"    />
+        <result property="receiveLineNo"    column="receive_line_no"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="receiveDate"    column="receive_date"    />
+        <result property="qcDate"    column="qc_date"    />
+        <result property="isConsign"    column="is_consign"    />
+        <result property="qcInspector"    column="qc_inspector"    />
+        <result property="remark"    column="remark"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="qcQty"    column="qc_qty"    />
+        <result property="isShelf"    column="is_shelf"    />
+        <result property="positionNo"    column="position_no"    />
+        <result property="lot"    column="lot"    />
+        <result property="taskId"    column="taskId"    />
+    </resultMap>
+
+    <sql id="selectInspectOrderVo">
+        select id, order_no, bill_status, chk_result, qc_date, material_no, material_name, factory_code, supplier_code, supplier_name, purchase_order_no, purchase_line_no, receive_order_no, receive_line_no, location_code, receive_date, is_consign, qc_inspector,is_shelf,qty,qc_qty, remark, tenant_id, create_by, create_time, update_by, update_time from wms_inspect_order
+    </sql>
+
+    <select id="selectInspectOrderList" parameterType="InspectOrderVo" resultMap="InspectOrderResult">
+        <include refid="selectInspectOrderVo"/>
+        <where>
+            <if test="orderNo != null  and orderNo != ''"> and order_no = #{orderNo}</if>
+            <if test="billStatus != null  and billStatus != ''"> and bill_status = #{billStatus}</if>
+            <if test="chkResult != null  and chkResult != ''"> and chk_result = #{chkResult}</if>
+            <if test="materialNo != null  and materialNo != ''"> and material_no = #{materialNo}</if>
+            <if test="materialName != null  and materialName != ''"> and material_name like concat('%', #{materialName}, '%')</if>
+            <if test="factoryCode != null  and factoryCode != ''"> and factory_code = #{factoryCode}</if>
+            <if test="supplierCode != null  and supplierCode != ''"> and supplier_code like concat('%', #{supplierCode}, '%')</if>
+            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''"> and purchase_order_no = #{purchaseOrderNo}</if>
+            <if test="purchaseLineNo != null  and purchaseLineNo != ''"> and purchase_line_no = #{purchaseLineNo}</if>
+            <if test="receiveOrderNo != null  and receiveOrderNo != ''"> and receive_order_no = #{receiveOrderNo}</if>
+            <if test="receiveLineNo != null  and receiveLineNo != ''"> and receive_line_no = #{receiveLineNo}</if>
+            <if test="locationCode != null  and locationCode != ''"> and location_code = #{locationCode}</if>
+            <if test="receiveDate != null "> and receive_date = #{receiveDate}</if>
+            <if test="qcDate != null "> and qc_date = #{qcDate}</if>
+            <if test="startTime != null "> and qc_date >= #{startTime}</if>
+            <if test="endTime != null "> and #{endTime} >= qc_date</if>
+            <if test="isConsign != null  and isConsign != ''"> and is_consign = #{isConsign}</if>
+            <if test="qcInspector != null  and qcInspector != ''"> and qc_inspector = #{qcInspector}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+            <if test="isShelf != null "> and is_shelf = #{isShelf}</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectInspectOrderById" parameterType="Long" resultMap="InspectOrderResult">
+        <include refid="selectInspectOrderVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectInspectOrderByNo" parameterType="String" resultMap="InspectOrderResult">
+        <include refid="selectInspectOrderVo"/>
+        where order_no = #{orderNo}
+    </select>
+
+    <select id="selectInspectOrderJoinDetailsList" parameterType="InspectOrderVo" resultMap="InspectOrderResult">
+        SELECT
+        wio.id,
+        wio.order_no,
+        wio.bill_status,
+        wio.chk_result,
+        wio.qc_date,
+        wio.material_no,
+        wio.material_name,
+        wio.factory_code,
+        wio.supplier_code,
+        wio.supplier_name,
+        wio.purchase_order_no,
+        wiod.line_no as purchase_line_no,
+        wio.receive_order_no,
+        wio.receive_line_no,
+        wio.location_code,
+        wio.receive_date,
+        wio.is_consign,
+        wio.qc_inspector,
+        wio.remark,
+        wio.tenant_id,
+        wio.create_by,
+        wio.create_time,
+        wio.update_by,
+        wio.update_time,
+        wiod.qc_qty,
+        wio.is_shelf,
+        wiod.lot,
+        wiod.position_no,
+        IFNULL(wdit.qty, mda.carton_qty) as qty ,
+        wdit.id AS taskId
+        FROM
+        wms_inspect_order AS wio
+        LEFT JOIN wms_inspect_order_details AS wiod ON wio.order_no = wiod.order_no
+        LEFT JOIN wms_delivery_inspection_task AS wdit ON wdit.inspect_order_no = wiod.order_no
+        left join wms_material_deliver_attr as mda on mda.material_no = wiod.material_no and mda.status = 0 and mda.tenant_id = wio.tenant_id
+        <where>
+            <if test="orderNo != null  and orderNo != ''"> and wio.order_no like concat('%', #{orderNo}, '%')</if>
+            <if test="billStatus != null  and billStatus != ''"> and wio.bill_status = #{billStatus}</if>
+            <if test="chkResult != null  and chkResult != ''"> and wio.chk_result = #{chkResult}</if>
+            <if test="materialNo != null  and materialNo != ''"> and wio.material_no like concat('%', #{materialNo}, '%')</if>
+            <if test="materialName != null  and materialName != ''"> and wio.material_name like concat('%', #{materialName}, '%')</if>
+            <if test="factoryCode != null  and factoryCode != ''"> and wio.factory_code = #{factoryCode}</if>
+            <if test="supplierCode != null  and supplierCode != ''"> and wio.supplier_code like concat('%', #{supplierCode}, '%')</if>
+            <if test="supplierName != null  and supplierName != ''"> and wio.supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''"> and wio.purchase_order_no = #{purchaseOrderNo}</if>
+            <if test="purchaseLineNo != null  and purchaseLineNo != ''"> and wio.purchase_line_no = #{purchaseLineNo}</if>
+            <if test="receiveOrderNo != null  and receiveOrderNo != ''"> and wio.receive_order_no = #{receiveOrderNo}</if>
+            <if test="receiveLineNo != null  and receiveLineNo != ''"> and wio.receive_line_no = #{receiveLineNo}</if>
+            <if test="locationCode != null  and locationCode != ''"> and wio.location_code = #{locationCode}</if>
+            <if test="receiveDate != null "> and wio.receive_date = #{receiveDate}</if>
+            <if test="qcDate != null "> and wio.qc_date = #{qcDate}</if>
+            <if test="startTime != null and endTime == null">
+                and wio.qc_date &gt;= #{startTime}
+            </if>
+            <if test="startTime == null and endTime != null">
+                and wio.qc_date &lt;= DATE_ADD(#{endTime}, INTERVAL 1 DAY)
+            </if>
+            <if test="startTime != null and endTime != null">
+                and wio.qc_date between #{startTime} and DATE_ADD(#{endTime}, INTERVAL 1 DAY)
+            </if>
+            <if test="isConsign != null  and isConsign != ''"> and wio.is_consign = #{isConsign}</if>
+            <if test="qcInspector != null  and qcInspector != ''"> and wio.qc_inspector = #{qcInspector}</if>
+            <if test="tenantId != null "> and wio.tenant_id = #{tenantId}</if>
+            <if test="isShelf != null "> and wio.is_shelf = #{isShelf}</if>
+        </where>
+        order by wio.id desc
+    </select>
+
+    <select id="selectInspectOrderByTaskNo" resultType="com.easycode.cloud.domain.vo.StockInDetailPrintVo">
+        SELECT
+        wio.order_no stockinOrderNo,
+        wio.material_no materialNo,
+        wio.material_name materialName,
+        wio.factory_code factoryCode,
+        wio.supplier_code supplierCode,
+        wio.location_code locationCode,
+        wiod.lot,
+        wdit.qty,
+        wdit.task_no taskNo,
+        "311" moveType,
+        wiod.position_no positionNo,wiod.old_material_no
+        FROM
+        wms_inspect_order AS wio
+        LEFT JOIN wms_inspect_order_details AS wiod ON wio.order_no = wiod.order_no
+        LEFT JOIN wms_delivery_inspection_task AS wdit ON wdit.inspect_order_no = wiod.order_no
+        <where>
+            <if test="taskNo != null  and taskNo != ''"> and wdit.task_no = #{taskNo}</if>
+        </where>
+    </select>
+
+    <insert id="insertInspectOrder" parameterType="InspectOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_inspect_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">order_no,</if>
+            <if test="billStatus != null">bill_status,</if>
+            <if test="chkResult != null">chk_result,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="supplierCode != null">supplier_code,</if>
+            <if test="supplierName != null">supplier_name,</if>
+            <if test="purchaseOrderNo != null">purchase_order_no,</if>
+            <if test="purchaseLineNo != null">purchase_line_no,</if>
+            <if test="receiveOrderNo != null">receive_order_no,</if>
+            <if test="receiveLineNo != null">receive_line_no,</if>
+            <if test="locationCode != null">location_code,</if>
+            <if test="receiveDate != null">receive_date,</if>
+            <if test="qcDate != null">qc_date,</if>
+            <if test="isConsign != null">is_consign,</if>
+            <if test="qcInspector != null">qc_inspector,</if>
+            <if test="qty != null">qty,</if>
+            <if test="qcQty != null">qc_qty,</if>
+            <if test="isShelf != null">is_shelf,</if>
+            <if test="remark != null">remark,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">#{orderNo},</if>
+            <if test="billStatus != null">#{billStatus},</if>
+            <if test="chkResult != null">#{chkResult},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="supplierCode != null">#{supplierCode},</if>
+            <if test="supplierName != null">#{supplierName},</if>
+            <if test="purchaseOrderNo != null">#{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">#{purchaseLineNo},</if>
+            <if test="receiveOrderNo != null">#{receiveOrderNo},</if>
+            <if test="receiveLineNo != null">#{receiveLineNo},</if>
+            <if test="locationCode != null">#{locationCode},</if>
+            <if test="receiveDate != null">#{receiveDate},</if>
+            <if test="qcDate != null">#{qcDate},</if>
+            <if test="isConsign != null">#{isConsign},</if>
+            <if test="qcInspector != null">#{qcInspector},</if>
+            <if test="qty != null">#{qty},</if>
+            <if test="qcQty != null">#{qcQty},</if>
+            <if test="isShelf != null">#{isShelf},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateInspectOrder" parameterType="InspectOrder">
+        update wms_inspect_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="billStatus != null">bill_status = #{billStatus},</if>
+            <if test="chkResult != null">chk_result = #{chkResult},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="supplierCode != null">supplier_code = #{supplierCode},</if>
+            <if test="supplierName != null">supplier_name = #{supplierName},</if>
+            <if test="purchaseOrderNo != null">purchase_order_no = #{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">purchase_line_no = #{purchaseLineNo},</if>
+            <if test="receiveOrderNo != null">receive_order_no = #{receiveOrderNo},</if>
+            <if test="receiveLineNo != null">receive_line_no = #{receiveLineNo},</if>
+            <if test="locationCode != null">location_code = #{locationCode},</if>
+            <if test="receiveDate != null">receive_date = #{receiveDate},</if>
+            <if test="qcDate != null">qc_date = #{qcDate},</if>
+            <if test="isConsign != null">is_consign = #{isConsign},</if>
+            <if test="qcInspector != null">qc_inspector = #{qcInspector},</if>
+            <if test="qty != null">qty = #{qty},</if>
+            <if test="qcQty != null">qc_qty = #{qcQty},</if>
+            <if test="isShelf != null">is_shelf = #{isShelf},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+
+    </update>
+
+    <update id="updateInspectOrderByNo" parameterType="InspectOrder">
+        update wms_inspect_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="billStatus != null">bill_status = #{billStatus},</if>
+            <if test="chkResult != null">chk_result = #{chkResult},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="supplierCode != null">supplier_code = #{supplierCode},</if>
+            <if test="supplierName != null">supplier_name = #{supplierName},</if>
+            <if test="purchaseOrderNo != null">purchase_order_no = #{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">purchase_line_no = #{purchaseLineNo},</if>
+            <if test="receiveOrderNo != null">receive_order_no = #{receiveOrderNo},</if>
+            <if test="receiveLineNo != null">receive_line_no = #{receiveLineNo},</if>
+            <if test="locationCode != null">location_code = #{locationCode},</if>
+            <if test="receiveDate != null">receive_date = #{receiveDate},</if>
+            <if test="qcDate != null">qc_date = #{qcDate},</if>
+            <if test="isConsign != null">is_consign = #{isConsign},</if>
+            <if test="qcInspector != null">qc_inspector = #{qcInspector},</if>
+            <if test="qty != null">qty = #{qty},</if>
+            <if test="qcQty != null">qc_qty = #{qcQty},</if>
+            <if test="isShelf != null">is_shelf = #{isShelf},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where order_no = #{orderNo}
+    </update>
+
+    <update id="updateInspectOrderBatch" parameterType="InspectOrderDto">
+        update wms_inspect_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="billStatus != null">bill_status = #{billStatus},</if>
+            <if test="chkResult != null">chk_result = #{chkResult},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="supplierCode != null">supplier_code = #{supplierCode},</if>
+            <if test="supplierName != null">supplier_name = #{supplierName},</if>
+            <if test="purchaseOrderNo != null">purchase_order_no = #{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">purchase_line_no = #{purchaseLineNo},</if>
+            <if test="receiveOrderNo != null">receive_order_no = #{receiveOrderNo},</if>
+            <if test="receiveLineNo != null">receive_line_no = #{receiveLineNo},</if>
+            <if test="locationCode != null">location_code = #{locationCode},</if>
+            <if test="receiveDate != null">receive_date = #{receiveDate},</if>
+            <if test="qcDate != null">qc_date = #{qcDate},</if>
+            <if test="isConsign != null">is_consign = #{isConsign},</if>
+            <if test="qcInspector != null">qc_inspector = #{qcInspector},</if>
+            <if test="qty != null">qty = #{qty},</if>
+            <if test="qcQty != null">qc_qty = #{qcQty},</if>
+            <if test="isShelf != null">is_shelf = #{isShelf},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        WHERE order_no IN
+        <foreach item="orderNo" collection="orderNos" open="(" separator="," close=")">
+            #{orderNo}
+        </foreach>
+    </update>
+
+    <delete id="deleteInspectOrderById" parameterType="Long">
+        delete from wms_inspect_order where id = #{id}
+    </delete>
+
+    <delete id="deleteInspectOrderByIds" parameterType="String">
+        delete from wms_inspect_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

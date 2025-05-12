@@ -1,0 +1,918 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.TaskInfoMapper">
+
+    <resultMap type="TaskInfo" id="TaskInfoResult">
+        <result property="id" column="id"/>
+        <result property="taskNo" column="task_no"/>
+        <result property="taskType" column="task_type"/>
+        <result property="taskStatus" column="task_status"/>
+        <result property="handlerUserId" column="handler_user_id"/>
+        <result property="handlerUserName" column="handler_user_name"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="oldMaterialNo" column="old_material_no"/>
+        <result property="materialDesc" column="material_desc"/>
+        <result property="stockInOrderNo" column="stock_in_order_no"/>
+        <result property="detailId" column="detail_id"/>
+        <result property="finishTime" column="finish_time"/>
+        <result property="taskFlag" column="task_flag"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="locationCode" column="location_code"/>
+        <result property="sourceLocationCode" column="source_location_code"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="printStatus" column="print_status"/>
+        <result property="printTime" column="print_time"/>
+        <result property="moveType" column="move_type"/>
+        <result property="positionNo" column="position_no"/>
+        <result property="positionId" column="position_id"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="boardCode" column="board_code"/>
+        <result property="waterTaskNo" column="water_task_no"/>
+        <result property="quantityLssued" column="quantity_lssued"/>
+        <result property="sourcePositionNo" column="source_position_no"/>
+        <result property="boardTaskNo" column="board_task_no"/>
+    </resultMap>
+<!--    可以考虑使用 extends 减少重复的item-->
+    <resultMap type="TaskInfoVo" id="TaskInfoVoResult">
+        <result property="id" column="id"/>
+        <result property="taskNo" column="task_no"/>
+        <result property="asnNo" column="asn_no"/>
+        <result property="taskType" column="task_type"/>
+        <result property="taskStatus" column="task_status"/>
+        <result property="handlerUserId" column="handler_user_id"/>
+        <result property="handlerUserName" column="handler_user_name"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="oldMaterialNo" column="old_material_no"/>
+        <result property="materialDesc" column="material_desc"/>
+        <result property="stockInOrderNo" column="stock_in_order_no"/>
+        <result property="detailId" column="detail_id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="locationCode" column="location_code"/>
+        <result property="taskFlag" column="task_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="purchaseOrderNo" column="purchase_order_no"/>
+        <result property="purchaseLineNo" column="purchase_line_no"/>
+        <result property="lineNo" column="line_no"/>
+        <result property="lotNo" column="lot_no"/>
+        <result property="isQc" column="is_qc"/>
+        <result property="isConsign" column="is_consign"/>
+        <result property="unit" column="unit"/>
+        <result property="operationUnit" column="operation_unit"/>
+        <result property="conversDefault" column="convers_default"/>
+        <result property="operationReceivedQty" column="operation_received_qty"/>
+        <result property="deliverQty" column="deliver_qty"/>
+        <result property="receivedQty" column="received_qty"/>
+        <result property="vendorId" column="vendor_id"/>
+        <result property="vendorCode" column="vendor_code"/>
+        <result property="vendorName" column="vendor_name"/>
+        <result property="stockInOrderId" column="stock_in_order_id"/>
+        <result property="containerNo" column="container_no"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="planRecivevQty" column="plan_recivev_qty"/>
+        <result property="orderType" column="order_type"/>
+        <result property="locationCode" column="location_code"/>
+        <result property="recievedQty" column="recieved_qty"/>
+        <result property="factoryId" column="factory_id"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="factoryName" column="factory_name"/>
+        <result property="prdOrderNo" column="prd_order_no"/>
+        <result property="minPacking" column="min_packing"/>
+        <result property="requirementContent" column="requirement_content"/>
+        <result property="operationPlanRecivevQty" column="operation_plan_recivev_qty"/>
+        <result property="slowFlow" column="slow_flow"/>
+        <result property="printStatus" column="print_status"/>
+        <result property="printSum" column="print_sum"/>
+        <result property="whichTable" column="which_table"/>
+        <result property="meins" column="meins"/>
+        <result property="huNo" column="hu_no"/>
+        <result property="exidv2" column="exidv2"/>
+        <result property="lgort1" column="lgort1"/>
+        <result property="menge" column="menge"/>
+        <result property="unit" column="unit"/>
+        <result property="positionNo" column="position_no"/>
+        <result property="werks" column="werks"/>
+        <result property="hasBom" column="has_bom"/>
+        <result property="readBom" column="read_bom"/>
+        <result property="positionId" column="position_id"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="boardCode" column="board_code"/>
+        <result property="sourceLocationCode" column="source_location_code"/>
+        <result property="quantityLssued" column="quantity_lssued"/>
+        <result property="uname" column="uname"/>
+        <result property="deliverLocation" column="deliver_location"/>
+        <result property="receiveLocation" column="receive_location"/>
+        <result property="sourcePositionNo" column="source_position_no"/>
+        <result property="boardTaskNo" column="board_task_no"/>
+        <result property="waterTaskNo" column="water_task_no"/>
+
+    </resultMap>
+
+    <resultMap id="TaskInfoDto" type="TaskInfoDto">
+        <result property="id" column="id"/>
+        <result property="taskNo" column="task_no"/>
+        <result property="taskType" column="task_type"/>
+        <result property="taskStatus" column="task_status"/>
+        <result property="handlerUserId" column="handler_user_id"/>
+        <result property="handlerUserName" column="handler_user_name"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="oldMaterialNo" column="old_material_no"/>
+        <result property="materialDesc" column="material_desc"/>
+        <result property="stockInOrderNo" column="stock_in_order_no"/>
+        <result property="detailId" column="detail_id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="containerNo" column="container_no"/>
+        <result property="unit" column="unit"/>
+        <result property="printStatus" column="print_status"/>
+        <result property="printTime" column="print_time"/>
+        <result property="positionNo" column="position_no"/>
+        <result property="positionId" column="position_id"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="boardCode" column="board_code"/>
+        <result property="sourcePositionNo" column="source_position_no"/>
+        <result property="boardTaskNo" column="board_task_no"/>
+    </resultMap>
+
+    <sql id="selectTaskInfoVo">
+        select id,
+               task_no,
+               task_type,
+               task_flag,
+               task_status,
+               handler_user_id,
+               handler_user_name,
+               material_id,
+               material_no,
+               material_name,
+               old_material_no,
+               material_desc,
+               stock_in_order_no,
+               detail_id,
+               tenant_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               location_code,
+               source_location_code,
+               batch_no,
+               print_status,print_sum,
+               print_time,
+               move_type,
+               position_no,position_id, board_code,
+               quantity_lssued,total_capacity,source_position_no, board_task_no,
+               water_task_no
+        from wms_task_info
+    </sql>
+    <sql id="selectStdTaskInfoListVo">
+        SELECT wti.id,
+               wti.task_no,
+               wti.task_type,
+               wti.task_flag,
+               wti.task_status,
+               wti.handler_user_id,
+               wti.handler_user_name,
+               wti.material_id,
+               wti.material_no,
+               wti.material_name,
+               wti.old_material_no,
+               wti.material_desc,
+               wti.stock_in_order_no,
+               wti.detail_id,
+               wti.tenant_id,
+               wti.position_no,
+               wti.create_time,
+               wti.update_time,
+               wsso.asn_no,
+               wssod.purchase_order_no,
+               wssod.purchase_line_no,
+               wssod.lot_no,
+               wssod.location_code,
+               wti.print_status,
+               wti.print_time,wti.position_id
+        FROM wms_task_info AS wti
+        LEFT JOIN wms_stockin_std_order_detail AS wssod ON wti.detail_id = wssod.id
+        LEFT JOIN wms_stockin_std_order as wsso on wsso.id = wssod.std_order_id
+    </sql>
+
+    <select id="selectTaskInfoList" parameterType="TaskInfoVo" resultMap="TaskInfoVoResult">
+        SELECT
+        *
+        FROM
+        wms_v_stockin_task
+        <where>
+            <if test="id != null  and id != ''">and id =#{id}</if>
+            <if test="taskNo != null  and taskNo != ''">and task_no like concat('%',#{taskNo},'%')</if>
+
+            <if test="taskNos != null">
+                task_no IN
+                <foreach item="taskNo" collection="taskNos" open="(" separator="," close=")">
+                    #{taskNo}
+                </foreach>
+            </if>
+
+            <if test="taskType != null  and taskType != ''">and task_type = #{taskType}</if>
+            <if test="taskStatus != null  and taskStatus != ''">and task_status = #{taskStatus}</if>
+            <if test="taskStatusArr != null and taskStatusArr != '' ">and task_status in
+                <foreach item="item" collection="taskStatusArr" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="taskTypeList != null  and taskTypeList != ''">
+                AND task_type IN
+                <foreach item="item" collection="taskTypeList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="handlerUserId != null ">and handler_user_id = #{handlerUserId}</if>
+            <if test="handlerUserName != null  and handlerUserName != ''">and handler_user_name like concat('%',
+                #{handlerUserName}, '%')
+            </if>
+            <if test="materialId != null ">and material_id = #{materialId}</if>
+            <if test="materialNo != null  and materialNo != ''">and material_no like concat('%',#{materialNo},'%')</if>
+            <if test="materialName != null  and materialName != ''">and material_name like concat('%', #{materialName},
+                '%')
+            </if>
+            <if test="oldMaterialNo != null  and oldMaterialNo != ''">and old_material_no = #{oldMaterialNo}</if>
+            <if test="materialDesc != null  and materialDesc != ''">and material_desc = #{materialDesc}</if>
+            <if test="stockInOrderNo != null  and stockInOrderNo != ''">and stock_in_order_no like concat('%',#{stockInOrderNo},'%')</if>
+            <if test="prdOrderNo != null  and prdOrderNo != ''">and prd_order_no like concat('%',#{prdOrderNo},'%')</if>
+            <if test="detailId != null  and detailId != ''">and detail_id = #{detailId}</if>
+            <if test="tenantId != null ">and tenant_id = #{tenantId}</if>
+            <if test="locationCode != null and locationCode != '' ">and location_code = #{locationCode}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectTaskInfoById" parameterType="Long" resultMap="TaskInfoResult">
+        <include refid="selectTaskInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectBoardTaskList" parameterType="TaskInfoVo" resultMap="TaskInfoVoResult">
+        <include refid="selectTaskInfoVo"/>
+        <where>
+            <if test="id != null">and id = #{id}</if>
+            <if test="taskNo != null  and taskNo != ''">and task_no = #{taskNo}</if>
+            <if test="materialNo != null  and materialNo != ''">and material_no = #{materialNo}</if>
+            <if test="taskType != null  and taskType != ''">and task_type = #{taskType}</if>
+            <if test="taskStatus != null and taskStatus != ''">and task_status = #{taskStatus}</if>
+            <if test="taskFlag != null  and taskFlag != ''">and task_flag = #{taskFlag}</if>
+            <if test="boardTaskId != null  and boardTaskId != ''">and board_task_id = #{boardTaskId}</if>
+            <if test="boardTaskNo != null  and boardTaskNo != ''">and board_task_no = #{boardTaskNo}</if>
+            <if test="boardCode != null  and boardCode != ''">and board_code = #{boardCode}</if>
+            <if test="waterTaskNo != null  and waterTaskNo != ''">and water_task_no = #{waterTaskNo}</if>
+            <if test="taskStatusArr != null and taskStatusArr != '' ">and task_status in
+                <foreach item="item" collection="taskStatusArr" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and create_time &lt;= #{endTime}
+            </if>
+            ORDER BY create_time desc
+        </where>
+    </select>
+    <select id="selectTaskInfoFinList" parameterType="TaskInfoDto" resultMap="TaskInfoVoResult">
+        SELECT
+        wti.id,
+        wti.task_no,
+        wti.task_type,
+        wti.task_flag,
+        wti.task_status,
+        wti.handler_user_id,
+        wti.handler_user_name,
+        wti.material_id,
+        wti.material_no,
+        wti.material_name,
+        wti.old_material_no,
+        wti.material_desc,
+        wti.stock_in_order_no,
+        wti.detail_id,
+        wti.tenant_id,
+        wti.create_by,
+        wti.create_time,
+        wti.update_by,
+        wti.update_time,
+        wsfod.lot,
+        wsfod.lot lot_no,
+        wsfod.location_code,
+        wti.print_status,
+        wti.print_time,
+        wti.position_no,wti.position_id
+        FROM
+        wms_task_info AS wti
+        LEFT JOIN wms_stockin_fin_order_detail AS wsfod ON wsfod.id = wti.detail_id AND wti.task_type = '0'
+        WHERE
+        wti.task_type = '0'
+        <if test="statusList != null and statusList != ''">
+            and wti.task_status in
+            <foreach item="item" collection="statusList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="materialNo != null and materialNo != ''">and wti.material_no = #{materialNo}</if>
+        <if test="lotNo != null and lotNo != ''">and wsfod.lot = #{lotNo}</if>
+        <if test="location != null and location != ''">and wsfod.location_code like concat('%', #{location}, '%')</if>
+        <if test="detailStatus != null and detailStatus != ''">and wsfod.detail_status = #{detailStatus}</if>
+        order by wti.id desc
+    </select>
+
+    <select id="selectTaskInfoListByStd" parameterType="TaskInfoVo" resultMap="TaskInfoVoResult">
+        <include refid="selectStdTaskInfoListVo"/>
+        <where>
+            <if test="stockInOrderNo != null and stockInOrderNo != ''">and wti.stock_in_order_no = #{stockInOrderNo}</if>
+            <if test="locationCode != null and locationCode != ''">and wssod.location_code like concat('%', #{locationCode}, '%')</if>
+            <if test="asnNo != null and asnNo != ''">and wsso.asn_no like concat('%', #{asnNo}, '%')</if>
+            AND wti.task_status IN ( '1', '2' )
+            AND wti.task_type IN ('1','2','3','4','5')
+            AND wsso.asn_no is not null
+        </where>
+        order by id desc
+    </select>
+
+    <select id="getStdOrderTaskDetail" parameterType="TaskInfoVo" resultMap="TaskInfoVoResult">
+        select wti.id, wsso.order_no, wsso.asn_no, wssod.id detail_id,wssod.material_no,wssod.old_material_no,
+               wsso.factory_code, wsso.factory_name,wssod.material_name,wssod.received_qty,wssod.unit,wssod.lot_no,
+               wti.task_no,wssod.is_qc,wssod.line_no,wsso.vendor_code, wsso.vendor_name, wti.print_status,
+               wti.print_time, wsso.has_bom, wsso.read_bom, wssod.vrkme as unit,wti.position_no ,
+               wssod.location_code
+        from wms_stockin_std_order wsso
+     left join wms_stockin_std_order_detail wssod on wsso.id = wssod.std_order_id
+     left join wms_task_info wti on wti.detail_id = wssod.id  AND wti.stock_in_order_no = wsso.order_no
+        <where>
+            <if test="id != null and id != ''">and wssod.id = #{id}</if>
+            <if test="taskNo != null and taskNo != ''">and wti.task_no = #{taskNo}</if>
+        </where>
+    </select>
+
+    <select id="selectTaskFinInfoById" parameterType="Long" resultMap="TaskInfoVoResult">
+        SELECT wti.id,
+               wti.task_no,
+               wti.task_type,
+               wti.task_status,
+               wti.stock_in_order_no,
+               wti.detail_id,
+               wti.material_no,
+               wti.old_material_no,
+               wti.material_name,
+               wti.handler_user_name,
+               wti.create_time,
+               wsfo.factory_code,
+               wsfo.prd_order_no,
+               wsfod.unit,
+               wsfod.location_code,
+               wsfod.lot     AS lot_no,
+               wsfod.plan_recivev_qty,
+               wsfod.line_no AS purchase_line_no,
+               wsfod.operation_plan_recivev_qty,
+               wma.slow_flow as slow_flow,
+               wti.print_status,
+               wti.print_time,
+               wti.position_no
+        FROM wms_task_info AS wti
+                left join wms_material_attr wma on wma.material_no = wti.material_no
+                 LEFT JOIN wms_stockin_fin_order_detail AS wsfod ON wti.detail_id = wsfod.id
+                 LEFT JOIN wms_stockin_fin_order AS wsfo ON wsfod.fin_order_id = wsfo.id
+        WHERE wti.task_type = '0'
+          AND wti.id = #{id}
+    </select>
+
+    <select id="selectFinDetailById" parameterType="Long" resultMap="TaskInfoVoResult">
+        SELECT wti.material_no,
+               wti.old_material_no,
+               wti.material_desc,
+               wti.handler_user_name,
+               wti.create_time,
+               wsfo.factory_code,
+               wsfo.location_code,
+               wsfo.order_no,
+               wsfod.plan_recivev_qty,
+               wsfod.fin_order_id,
+               wti.print_status,
+               wti.print_time,
+               wti.position_no
+        FROM wms_task_info as wti
+                 JOIN wms_stockin_fin_order_detail as wsfod ON wti.id = wsfod.id
+                 JOIN wms_stockin_fin_order as wsfo ON wsfod.fin_order_id = wsfo.id
+        where wti.id = #{id}
+    </select>
+
+    <select id="selectFinDetailListList" parameterType="TaskInfoVo" resultMap="TaskInfoVoResult">
+        SELECT wsfod.material_no,
+               wsfod.lot,
+               wsfod.recieved_qty,
+               wti.print_status,
+               wti.print_time,
+               wti.position_no
+        FROM wms_task_info wti
+                 JOIN wms_stockin_fin_order_detail wsfod ON wti.id = wsfod.id
+                 JOIN wms_stockin_fin_order wsfo ON wsfod.fin_order_id = wsfo.id
+    </select>
+
+    <insert id="insertTaskInfo" parameterType="TaskInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_task_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskNo != null and taskNo != ''">task_no,</if>
+            <if test="taskType != null">task_type,</if>
+            <if test="taskFlag != null">task_flag,</if>
+            <if test="taskStatus != null">task_status,</if>
+            <if test="handlerUserId != null">handler_user_id,</if>
+            <if test="handlerUserName != null">handler_user_name,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+            <if test="materialDesc != null">material_desc,</if>
+            <if test="stockInOrderNo != null">stock_in_order_no,</if>
+            <if test="detailId != null">detail_id,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="locationCode != null and locationCode != ''">location_code,</if>
+            <if test="stayTimeLength != null and stayTimeLength != ''">stay_time_length,</if>
+            <if test="finishTime != null and finishTime != ''">finish_time,</if>
+            <if test="sourceLocationCode != null and sourceLocationCode != ''">source_location_code,</if>
+            <if test="printStatus != null and printStatus != ''">print_status,</if>
+            <if test="printTime != null and printTime != ''">print_time,</if>
+            <if test="positionNo != null and positionNo != ''">position_no,</if>
+            <if test="boardTaskId != null and boardTaskId != ''">board_task_id,</if>
+            <if test="boardTaskNo != null and boardTaskNo != ''">board_task_no,</if>
+            <if test="positionId != null and positionId != ''">position_id,</if>
+            <if test="boardCode != null and boardCode != ''">board_code,</if>
+            <if test="batchNo != null and batchNo != ''">batch_no,</if>
+            <if test="waterTaskNo != null and waterTaskNo != ''">water_task_no,</if>
+            <if test="quantityLssued != null">quantity_lssued,</if>
+            <if test="totalCapacity != null">total_capacity,</if>
+            <if test="sourcePositionNo != null">source_position_no,</if>
+            <if test="printSum != null and printSum != ''">print_sum,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskNo != null and taskNo != ''">#{taskNo},</if>
+            <if test="taskType != null">#{taskType},</if>
+            <if test="taskFlag != null">#{taskFlag},</if>
+            <if test="taskStatus != null">#{taskStatus},</if>
+            <if test="handlerUserId != null">#{handlerUserId},</if>
+            <if test="handlerUserName != null">#{handlerUserName},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+            <if test="materialDesc != null">#{materialDesc},</if>
+            <if test="stockInOrderNo != null">#{stockInOrderNo},</if>
+            <if test="detailId != null">#{detailId},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="locationCode != null and locationCode != ''">#{locationCode},</if>
+            <if test="stayTimeLength != null and stayTimeLength != ''">#{stayTimeLength},</if>
+            <if test="finishTime != null and finishTime != ''">#{finishTime},</if>
+            <if test="sourceLocationCode != null and sourceLocationCode != ''">#{sourceLocationCode},</if>
+            <if test="printStatus != null and printStatus != ''">#{printStatus},</if>
+            <if test="printTime != null and printTime != ''">#{printTime},</if>
+            <if test="positionNo != null and positionNo != ''">#{positionNo},</if>
+            <if test="boardTaskId != null and boardTaskId != ''">#{boardTaskId},</if>
+            <if test="boardTaskNo != null and boardTaskNo != ''">#{boardTaskNo},</if>
+            <if test="positionId != null and positionId != ''">#{positionId},</if>
+            <if test="boardCode != null and boardCode != ''">#{boardCode},</if>
+            <if test="batchNo != null and batchNo != ''">#{batchNo},</if>
+            <if test="waterTaskNo != null and waterTaskNo != ''">#{waterTaskNo},</if>
+            <if test="quantityLssued != null">#{quantityLssued},</if>
+            <if test="totalCapacity != null">#{totalCapacity},</if>
+            <if test="sourcePositionNo != null">#{sourcePositionNo},</if>
+            <if test="printSum != null and printSum != ''">#{printSum},</if>
+        </trim>
+    </insert>
+    <insert id="insertTaskInfoList" parameterType="List" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_task_info (
+        task_no,
+        task_type,
+        task_flag,
+        task_status,
+        handler_user_id,
+        handler_user_name,
+        material_id,
+        material_no,
+        material_name,
+        old_material_no,
+        material_desc,
+        stock_in_order_no,
+        detail_id,
+        create_by,
+        create_time,
+        update_by,
+        location_code,
+        stay_time_length,
+        finish_time,
+        update_time,
+        print_status,
+        print_time,
+        position_no,
+        position_id,
+        quantity_lssued,
+        total_capacity,
+        batch_no,print_sum)
+        VALUES
+        <foreach item="item" collection="list" separator=",">
+            (#{item.taskNo},
+            #{item.taskType},
+            #{item.taskFlag},
+            #{item.taskStatus},
+            #{item.handlerUserId},
+            #{item.handlerUserName},
+            #{item.materialId},
+            #{item.materialNo},
+            #{item.materialName},
+            #{item.oldMaterialNo},
+            #{item.materialDesc},
+            #{item.stockInOrderNo},
+            #{item.detailId},
+            #{item.createBy},
+            #{item.createTime},
+            #{item.updateBy},
+            #{item.locationCode},
+            #{item.stayTimeLength},
+            #{item.finish_time},
+            #{item.updateTime},
+            #{item.printStatus},
+            #{item.printTime},
+             #{item.positionNo},
+             #{item.positionId},
+            #{item.quantityLssued},
+            #{item.total_capacity},
+            #{item.lot},#{item.printSum})
+        </foreach>
+    </insert>
+
+    <insert id="insertTaskInfoListNoTenantId" parameterType="List" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_task_info (
+        task_no,
+        task_type,
+        task_flag,
+        task_status,
+        handler_user_id,
+        handler_user_name,
+        material_id,
+        material_no,
+        material_name,
+        old_material_no,
+        material_desc,
+        stock_in_order_no,
+        detail_id,
+        create_by,
+        create_time,
+        update_by,
+        tenant_id,
+        location_code,
+        stay_time_length,
+        finish_time,
+        update_time,
+        print_status,
+        print_time,position_no,position_id,quantity_lssued,print_sum)
+        VALUES
+        <foreach item="item" collection="list" separator=",">
+            (#{item.taskNo},
+            #{item.taskType},
+            #{item.taskFlag},
+            #{item.taskStatus},
+            #{item.handlerUserId},
+            #{item.handlerUserName},
+            #{item.materialId},
+            #{item.materialNo},
+            #{item.materialName},
+            #{item.oldMaterialNo},
+            #{item.materialDesc},
+            #{item.stockInOrderNo},
+            #{item.detailId},
+            #{item.createBy},
+            #{item.createTime},
+            #{item.updateBy},
+            #{item.tenantId},
+            #{item.locationCode},
+            #{item.stayTimeLength},
+            #{item.finishTime},
+            #{item.updateTime},
+            #{item.printStatus},
+            #{item.printTime},#{item.positionNo},#{item.positionId},#{item.quantityLssued},#{item.printSum})
+        </foreach>
+    </insert>
+
+    <update id="updateTaskInfo" parameterType="TaskInfo">
+        update wms_task_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskNo != null and taskNo != ''">task_no = #{taskNo},</if>
+            <if test="taskType != null">task_type = #{taskType},</if>
+            <if test="taskFlag != null">task_flag = #{taskFlag},</if>
+            <if test="taskStatus != null">task_status = #{taskStatus},</if>
+            <if test="handlerUserId != null">handler_user_id = #{handlerUserId},</if>
+            <if test="handlerUserName != null">handler_user_name = #{handlerUserName},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="materialDesc != null">material_desc = #{materialDesc},</if>
+            <if test="stockInOrderNo != null">stock_in_order_no = #{stockInOrderNo},</if>
+            <if test="detailId != null">detail_id = #{detailId},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="locationCode != null">location_code = #{locationCode},</if>
+            <if test="stayTimeLength != null">stay_time_length = #{stayTimeLength},</if>
+            <if test="finishTime != null">finish_time = #{finishTime},</if>
+            <if test="sourceLocationCode != null">source_location_code = #{sourceLocationCode},</if>
+            <if test="sourcePositionNo != null">source_position_no = #{sourcePositionNo},</if>
+            <if test="positionNo != null">position_no = #{positionNo},</if>
+            <if test="positionId != null">position_id = #{positionId},</if>
+            <if test="isConfirm != null">is_confirm = #{isConfirm},</if>
+            <if test="printSum != null">print_sum = #{printSum},</if>
+            <if test="printStatus != null">print_status = #{printStatus},</if>
+            <if test="boardTaskNo != null and boardTaskNo != ''">board_task_no=#{boardTaskNo},</if>
+        </trim>
+        <where>
+            <if test="id != null and id != ''">and id = #{id}</if>
+            <if test="detailId != null  and detailId != ''">and detail_id = #{detailId}</if>
+        </where>
+    </update>
+
+    <delete id="deleteTaskInfoById" parameterType="Long">
+        delete
+        from wms_task_info
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteTaskInfoByIds" parameterType="String">
+        delete from wms_task_info where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteTaskInfoByStockInOrderNo">
+        delete from wms_task_info
+        where stock_in_order_no = #{stockInOrderNo}
+        and detail_id in
+        <foreach item="id" collection="detailIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <update id="closeTaskInfoByNo" parameterType="TaskInfo">
+        update wms_task_info
+        set task_status = #{taskStatus},
+            update_time = #{updateTime},
+            update_by   = #{updateBy}
+        where stock_in_order_no = #{stockInOrderNo}
+    </update>
+
+    <select id="openTask" parameterType="TaskInfo" resultMap="TaskInfoResult">
+        <include refid="selectTaskInfoVo"/>
+        WHERE
+        stock_in_order_no = #{stockInOrderNo}
+        AND task_type = #{taskType}
+        AND task_status in ('1','2')
+    </select>
+
+    <select id="getTaskInfoListByOrderNo" parameterType="StockInStdOrderDetail" resultMap="TaskInfoVoResult">
+        select
+        tk.task_no,
+        tk.stock_in_order_no,
+        tk.detail_id,
+        tk.material_no
+        from wms_task_info tk
+        left join wms_stockin_std_order_detail d on d.id = tk.detail_id
+        where d.purchase_order_no = #{purchaseOrderNo}
+        and d.received_qty > 0
+        and tk.task_no like concat('RKTK','%')
+        <if test="isQc != null">and d.is_qc = #{isQc}</if>
+    </select>
+
+    <select id="getTaskInfoListByDetailId" resultMap="TaskInfoVoResult" parameterType="com.weifu.cloud.domain.StockInStdOrderDetail">
+        select
+        tk.task_no,
+        tk.stock_in_order_no,
+        tk.detail_id,
+        tk.material_no
+        from wms_task_info tk
+        left join wms_stockin_std_order_detail d on d.purchase_order_no = tk.stock_in_order_no and d.id = tk.detail_id
+        where d.purchase_order_no = #{purchaseOrderNo}
+          and d.id = #{id}
+          and d.received_qty > 0
+    </select>
+
+
+    <select id="getSemiFinTaskList" parameterType="TaskInfoDto" resultMap="TaskInfoVoResult">
+        SELECT
+        wti.id,
+        wti.task_no,
+        wti.task_type,
+        wti.task_flag,
+        wti.task_status,
+        wti.handler_user_id,
+        wti.handler_user_name,
+        wti.material_id,
+        wti.material_no,
+        wti.material_name,
+        wti.old_material_no,
+        wti.material_desc,
+        wti.stock_in_order_no,
+        wti.detail_id,
+        wti.tenant_id,
+        wti.create_by,
+        wti.create_time,
+        wti.update_by,
+        wti.update_time,
+        wssod.lot,
+        wssod.lot lot_no,
+        wssod.location_code,
+        wti.print_status,
+        wti.print_time
+        FROM
+        wms_task_info AS wti
+        LEFT JOIN wms_stockin_semifin_order_detail AS wssod ON wssod.id = wti.detail_id AND wti.task_type = '1'
+        LEFT JOIN wms_stockin_semifin_order AS wsso ON wssod.semifin_order_id = wsso.id
+        WHERE
+        wti.task_type = '1'
+        <if test="statusList != null and statusList != ''">
+            and wti.task_status in
+            <foreach item="item" collection="statusList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="materialNo != null and materialNo != ''">and wti.material_no = #{materialNo}</if>
+        <if test="orderStatus != null and orderStatus != ''">and wsso.order_status = #{orderStatus}</if>
+        <if test="detailStatus != null and detailStatus != ''">and wssod.status = #{detailStatus}</if>
+        <if test="lotNo != null and lotNo != ''">and wssod.lot = #{lotNo}</if>
+        <if test="location != null and location != ''">and wssod.location_code like concat('%', #{location}, '%')</if>
+        order by wti.id desc
+    </select>
+
+    <select id="getSemiFinTaskById" parameterType="Long" resultMap="TaskInfoVoResult">
+        SELECT
+            wti.id,
+            wti.task_no,
+            wti.task_type,
+            wti.task_flag,
+            wti.task_status,
+            wti.stock_in_order_no,
+            wti.detail_id,
+            wti.material_no,
+            wti.old_material_no,
+            wti.material_name,
+            wti.handler_user_name,
+            wti.create_time,
+            wsso.factory_code,
+            wssod.prd_order_no,
+            wssod.unit,
+            wssod.location_code,
+            wssod.lot AS lot_no,
+            wssod.plan_recivev_qty,
+            wssod.line_no AS purchase_line_no,
+            wti.print_status,
+            wti.print_time
+        FROM
+            wms_task_info AS wti
+                LEFT JOIN wms_stockin_semifin_order_detail AS wssod ON wti.detail_id = wssod.id AND wti.task_type = '1'
+                LEFT JOIN wms_stockin_semifin_order AS wsso ON wssod.semifin_order_id = wsso.id
+        WHERE
+            wti.task_type = '1'
+          AND wti.id = #{id}
+    </select>
+
+    <select id="getDeptStorageLocation" resultType="java.lang.String">
+        SELECT
+            dept_id
+        FROM
+            wms_dept_storage_location
+        WHERE location_code = #{locationCode}
+    </select>
+    <select id="selectTaskInfoByDetailId" resultMap="TaskInfoResult">
+        select
+            *
+        from wms_task_info
+        where
+            detail_id = #{detailId} and task_type = #{taskType}
+    </select>
+
+    <update id="updatePrinterStatus" parameterType="TaskInfoVo">
+        update wms_task_info
+        set print_status = #{printStatus},
+            print_sum = #{printSum},
+            update_time = #{updateTime},
+            update_by   = #{updateBy}
+        where task_no = #{taskNo} and id = #{id}
+    </update>
+
+    <select id="getTaskListByTaskType" parameterType="TaskInfoDto" resultMap="TaskInfoVoResult">
+        select a.*,b.meins,b.hu_no,b.exidv2,b.lgort1,b.menge
+        from wms_task_info a left join wms_stockin_fin_order b on a.detail_id = b.id
+        <where>
+            <if test="taskType != null  and taskType != ''"> and a.task_type = #{taskType}</if>
+            <if test="taskStatus != null  and taskStatus != ''">and a.task_status = #{taskStatus}</if>
+            <if test="id != null  and id != ''">and a.id = #{id}</if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+    <select id="getTaskById" parameterType="TaskInfoDto" resultMap="TaskInfoVoResult">
+        select a.*,b.meins,b.hu_no,b.exidv2,b.lgort1,b.menge,b.werks,b.uname
+        from wms_task_info a left join wms_stockin_fin_order b on a.detail_id = b.id
+        where  a.id = #{id}
+    </select>
+
+
+    <select id="getTaskInfoListByTaskNo" resultMap="TaskInfoResult">
+        select
+        *
+        from wms_task_info
+        where task_no = #{taskNo}
+    </select>
+
+    <select id="selectStdTaskInfoList" parameterType="TaskInfoVo" resultMap="TaskInfoVoResult">
+        <include refid="selectStdTaskInfoListVo"/>
+        <where>
+            <if test="stockInOrderNo != null and stockInOrderNo != ''">and wti.stock_in_order_no = #{stockInOrderNo}</if>
+            <if test="locationCode != null and locationCode != ''">and wssod.location_code like concat('%', #{locationCode}, '%')</if>
+            <if test="asnNo != null and asnNo != ''">and wsso.asn_no like concat('%', #{asnNo}, '%')</if>
+            <if test="taskNo != null and taskNo != ''">and wti.task_no like concat('%', #{taskNo}, '%')</if>
+            <if test="stockInOrderNo != null and stockInOrderNo != ''">and wti.stock_in_order_no like concat('%', #{stockInOrderNo}, '%')</if>
+            <if test="materialNo != null and materialNo != ''">and wti.material_no like concat('%', #{materialNo}, '%')</if>
+            <if test="taskStatusArr != null ">and task_status in
+                <foreach item="item" collection="taskStatusArr" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="taskTypeList != null and taskTypeList.size() > 0 ">and task_type in
+                <foreach item="item" collection="taskTypeList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+    <delete id="deleteByOrderNoAndType" parameterType="TaskInfo" >
+        delete from wms_task_info where stock_in_order_no = #{stockInOrderNo} and  task_type = #{taskType}
+    </delete>
+
+    <select id="selectTaskInfoVById" parameterType="TaskInfoVo" resultMap="TaskInfoVoResult">
+        <include refid="selectTaskInfoV"/>
+        <where>
+            <if test="id != null and id != ''">and wti.id = #{id}</if>
+            <if test="taskNo != null and taskNo != ''">and wti.task_no like concat('%', #{taskNo}, '%')</if>
+        </where>
+        LIMIT 1
+    </select>
+
+    <sql id="selectTaskInfoV">
+        SELECT
+            wti.id,
+            wti.task_no,
+            wti.board_code,
+            wti.material_no,
+            wti.material_name,
+            wti.old_material_no,
+            wti.batch_no,
+            wti.is_confirm,
+            wti.water_task_no,
+            wti.create_time,
+            wti.stay_time_length,
+            wti.location_code,
+            wti.source_location_code,
+            wti.quantity_lssued,
+            wa.receive_location,
+            wa.deliver_location,
+            wti.source_position_no,
+            wti.position_no
+        FROM
+            wms_task_info AS wti
+                LEFT JOIN wms_waterlevel AS wa ON wti.material_id = wa.material_id
+    </sql>
+</mapper>

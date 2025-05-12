@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.StockInStdOrderMapper">
+
+    <resultMap type="StockInStdOrder" id="StockInStdOrderResult">
+        <result property="id"    column="id"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="inBound"    column="inbound"    />
+        <result property="inBoundLine"    column="inbound_line"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="asnNo"    column="asn_no"    />
+        <result property="factoryId"    column="factory_id"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="factoryName"    column="factory_name"    />
+        <result property="vendorId"    column="vendor_id"    />
+        <result property="vendorCode"    column="vendor_code"    />
+        <result property="vendorName"    column="vendor_name"    />
+        <result property="orderType"    column="order_type"    />
+        <result property="bsart"    column="bsart"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="businessType"    column="business_type"    />
+        <result property="deliveryDate"    column="delivery_date"    />
+        <result property="contact"    column="contact"    />
+        <result property="contactPhone"    column="contact_phone"    />
+        <result property="deliveryType"    column="delivery_type"    />
+        <result property="deliveryAddr"    column="delivery_addr"    />
+        <result property="deliveryOrderId"    column="delivery_order_id"    />
+        <result property="remark"    column="remark"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="bstyp"    column="bstyp"    />
+        <result property="batxt"    column="batxt"    />
+        <result property="ekorg"    column="ekorg"    />
+        <result property="ekotx"    column="ekotx"    />
+        <result property="ekgrp"    column="ekgrp"    />
+        <result property="eknam"    column="eknam"    />
+        <result property="aedat"    column="aedat"    />
+        <result property="totalWeight"    column="total_weight"    />
+        <result property="netWeight"    column="net_weight"    />
+        <result property="weightUnit"    column="weight_unit"    />
+        <result property="packageNum"    column="package_num"    />
+        <result property="hasBom"    column="has_bom"    />
+        <result property="readBom"    column="read_bom"    />
+        <result property="availableQty"    column="available_qty"    />
+    </resultMap>
+
+    <resultMap type="StoorDto" id="StoorDtoResult">
+        <result property="id"    column="id"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="areaCode"    column="area_code"    />
+        <result property="positionId"    column="position_id"    />
+        <result property="positionNo"    column="position_no"    />
+    </resultMap>
+
+
+        <resultMap id="StockInStdOrderVoResult" type="StockInOrederVo">
+            <id property="materialNo" column="material_no"/>
+            <result property="materialName" column="material_name"/>
+            <result property="oldMaterialNo" column="old_material_no"/>
+            <result property="lot" column="lot"/>
+            <result property="po" column="po"/>
+            <result property="ldap" column="ldap"/>
+            <result property="expDay" column="exp_day"/>
+        </resultMap>
+
+    <resultMap type="PrintInfoVo" id="PrintInfoResult">
+        <result property="id"    column="id"/>
+        <result property="vendorCode"    column="vendor_code"    />
+        <result property="vendorName"    column="vendor_name"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="purchaseLineNo"    column="purchase_line_no"    />
+        <result property="deliverQty"    column="deliver_qty"    />
+        <result property="unit" column="unit"/>
+        <result property="locationCode"    column="location_code"    />
+        <result property="minPacking"    column="min_packing"    />
+        <result property="lotNo"    column="lot_no"    />
+        <result property="deliveryOrderNo"    column="delivery_order_no"    />
+        <result property="deliveryAddr" column="delivery_addr"/>
+        <result property="deliveryDate" column="delivery_date"/>
+        <result property="thirdDeliveryOrderNo"    column="third_delivery_order_no"    />
+        <result property="thirdDeliveryLineNo" column="third_delivery_line_no"/>
+        <result property="companyCode"    column="company_code"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="deliveryAddr"    column="delivery_addr"    />
+        <result property="requirementContent"    column="requirement_content"    />
+        <result property="slowFlow"    column="slow_flow"    />
+        <result property="availableQty"    column="available_qty"    />
+    </resultMap>
+
+    <resultMap id="StockInStdOrderDetailResult" type="StockInStdOrderDetail">
+        <result property="id"  column="id"/>
+        <result property="stdOrderId"  column="std_order_id"/>
+        <result property="materialId"  column="material_id"/>
+        <result property="materialNo"  column="material_no"/>
+        <result property="materialName"  column="material_name"/>
+        <result property="oldMaterialNo"  column="old_material_no"/>
+        <result property="deliverQty"  column="deliver_qty"/>
+        <result property="receivedQty"  column="received_qty"/>
+        <result property="packagesQty"  column="packages_qty"/>
+        <result property="isQc"  column="is_qc"/>
+        <result property="detailType"  column="detail_type"/>
+        <result property="minPacking"  column="min_packing"/>
+        <result property="unit"  column="unit"/>
+        <result property="operationUnit"  column="operation_unit"/>
+        <result property="conversDefault"  column="convers_default"/>
+        <result property="operationQty"  column="operation_qty"/>
+        <result property="operationReceivedQty"  column="operation_received_qty"/>
+        <result property="operationPackageQty"  column="operation_package_qty"/>
+        <result property="fileId"  column="file_id"/>
+        <result property="purchaseOrderNo"  column="purchase_order_no"/>
+        <result property="purchaseLineNo"  column="purchase_line_no"/>
+        <result property="isQequireFill"  column="is_qequire_fill"/>
+        <result property="isPrinted"  column="is_printed"/>
+        <result property="lotNo"  column="lot_no"/>
+        <result property="locationId"  column="location_id"/>
+        <result property="locationCode"  column="location_code"/>
+        <result property="thirdDeliveryOrderNo"  column="third_delivery_order_no"/>
+        <result property="thirdDeliveryLineNo"  column="third_delivery_line_no"/>
+        <result property="lineNo"  column="line_no"/>
+        <result property="tenantId"  column="tenant_id"/>
+        <result property="isConsign"  column="is_consign"/>
+        <result property="status"  column="status"/>
+        <result property="requirementContent"  column="requirement_content"/>
+        <result property="moveType"  column="move_type"/>
+        <result property="wbsElement"  column="wbs_element"/>
+        <result property="businessType"  column="business_type"/>
+        <result property="factoryCode"  column="factory_code"/>
+        <result property="eindt"  column="eindt"/>
+        <result property="pstyp"  column="pstyp"/>
+        <result property="knttp"  column="knttp"/>
+        <result property="costCenterCode"  column="cost_center_code"/>
+        <result property="anln1"  column="anln1"/>
+        <result property="loekz"  column="loekz"/>
+        <result property="retpo"  column="retpo"/>
+        <result property="banfn"  column="banfn"/>
+        <result property="availableQty"  column="available_qty"/>
+        <result property="finishFlag"  column="finish_flag"/>
+    </resultMap>
+
+    <sql id="selectStockInStdOrderVo">
+        select id, order_no, asn_no, inbound, inbound_line, factory_id, factory_code, factory_name, vendor_id, vendor_code, vendor_name, order_type, bsart,  order_status, delivery_date, contact, contact_phone, delivery_type, delivery_addr, delivery_order_id, business_type, remark, tenant_id, create_by, create_time, update_by, update_time, bstyp, batxt, ekorg, ekotx, ekgrp, eknam, aedat, package_num, net_weight, total_weight, weight_unit,has_bom from wms_stockin_std_order
+    </sql>
+
+    <select id="selectStockInStdOrderList" parameterType="StockInStdOrder" resultMap="StockInStdOrderResult">
+        SELECT
+        std.id,
+        std.order_no,
+        std.asn_no,
+        std.inbound,
+        std.inbound_line,
+        std.factory_id,
+        std.factory_code,
+        std.factory_name,
+        std.vendor_id,
+        std.vendor_code,
+        std.vendor_name,
+        std.order_type,
+        std.bsart,
+        std.order_status,
+        std.delivery_date,
+        std.contact,
+        std.contact_phone,
+        std.delivery_type,
+        std.delivery_addr,
+        std.delivery_order_id,
+        std.business_type,
+        std.remark,
+        std.tenant_id,
+        std.create_by,
+        std.create_time,
+        std.update_by,
+        std.update_time,
+        std.bstyp,
+        std.batxt,
+        std.ekorg,
+        std.ekotx,
+        std.ekgrp,
+        std.eknam,
+        std.aedat,
+        std.package_num,
+        std.net_weight,
+        std.total_weight,
+        std.weight_unit,
+        std.has_bom,
+        std.read_bom
+        FROM
+        wms_stockin_std_order std
+        LEFT JOIN
+        wms_stockin_std_order_detail stdd ON std.order_no = stdd.purchase_order_no
+        <where>
+            <if test="orderNo != null  and orderNo != ''"> and std.order_no like concat('%', #{orderNo}, '%')</if>
+            <if test="vendorCode != null  and vendorCode != ''"> and std.vendor_code like concat('%', #{vendorCode}, '%')</if>
+            <if test="orderStatus != null  and orderStatus != ''"> and std.order_status = #{orderStatus}</if>
+            <if test="deliveryType != null  and deliveryType != ''"> and std.delivery_type = #{deliveryType}</if>
+            <if test="asnNo != null  and asnNo != ''"> and std.asn_no like concat('%', #{asnNo}, '%')</if>
+            <if test="params.startCreateTime != null and params.startCreateTime != ''"><!-- 开始时间检索 -->
+                and date_format(std.create_time,'%y%m%d') &gt;= date_format(#{params.startCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''"><!-- 结束时间检索 -->
+                and date_format(std.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+            <if test="orderType != null  and orderType != ''"> and std.order_type = #{orderType}</if>
+            <if test="businessType != null  and businessType != ''"> and std.business_type = #{businessType}</if>
+            <if test="bsart != null  and bsart != ''"> and std.bsart = #{bsart}</if>
+            <if test="materialNo != null  and materialNo != ''"> and  stdd.material_no = #{materialNo}</if>
+            <if test="readBom != null  and readBom != ''">
+             <if test="readBom != null  and readBom == 1">and  std.read_bom = #{readBom} and std.has_bom = 1</if>
+             <if test="readBom != null  and readBom == 0">and  std.read_bom = #{readBom} and std.has_bom = 1</if>
+            </if>
+        </where>
+        GROUP BY
+        std.id,
+        std.order_no,
+        std.asn_no,
+        std.inbound,
+        std.inbound_line,
+        std.factory_id,
+        std.factory_code,
+        std.factory_name,
+        std.vendor_id,
+        std.vendor_code,
+        std.vendor_name,
+        std.order_type,
+        std.bsart,
+        std.order_status,
+        std.delivery_date,
+        std.contact,
+        std.contact_phone,
+        std.delivery_type,
+        std.delivery_addr,
+        std.delivery_order_id,
+        std.business_type,
+        std.remark,
+        std.tenant_id,
+        std.create_by,
+        std.create_time,
+        std.update_by,
+        std.update_time,
+        std.bstyp,
+        std.batxt,
+        std.ekorg,
+        std.ekotx,
+        std.ekgrp,
+        std.eknam,
+        std.aedat,
+        std.package_num,
+        std.net_weight,
+        std.total_weight,
+        std.weight_unit,
+        std.has_bom
+        order by std.create_time desc
+    </select>
+
+    <select id="selectStockInStdOrder" resultMap="StockInStdOrderResult">
+        <include refid="selectStockInStdOrderVo"/>
+        <where>
+            <if test="id != null  and id != ''"> and id = #{id}</if>
+            <if test="orderNo != null  and orderNo != ''"> and order_no = #{orderNo}</if>
+            <if test="orderStatus != null  and orderStatus != ''"> and order_status = #{orderStatus}</if>
+            <if test="bsart != null  and bsart != ''"> and bsart = #{bsart}</if>
+        </where>
+    </select>
+    <select id="selectInfoByOrderIds" resultMap="PrintInfoResult">
+        SELECT
+        ssod.material_no,
+        ssod.material_name,
+        ssod.old_material_no,
+        sso.vendor_code,
+        sso.vendor_name,
+        ssod.purchase_order_no,
+        ssod.deliver_qty,
+        ssod.unit,
+        ssod.min_packing,
+        ssod.third_delivery_order_no,
+        ssod.third_delivery_line_no,
+        ssod.purchase_line_no,
+        ssod.lot_no,
+        sso.order_no as delivery_order_no,
+        ssod.location_code,
+        ssod.requirement_content,
+        sso.factory_name AS company_name,
+        sso.factory_code AS company_code,
+        sso.factory_code,
+        sso.delivery_addr,
+        sso.delivery_date,
+        wma.slow_flow,
+        sso.has_bom
+        FROM
+        wms_stockin_std_order_detail ssod
+        LEFT JOIN wms_stockin_std_order sso ON sso.id = ssod.std_order_id
+        LEFT JOIN wms_material_attr wma ON wma.material_no = ssod.material_no and wma.status  = 0
+        WHERE sso.delivery_order_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectInfoByOrderDetailIds" resultMap="PrintInfoResult">
+        select
+        ssod.material_no,
+        ssod.material_name,
+        ssod.old_material_no,
+        sso.vendor_code,
+        sso.vendor_name,
+        ssod.purchase_order_no,
+        dod.deliver_qty,
+        ssod.unit,
+        ssod.min_packing,
+        ssod.third_delivery_order_no,
+        ssod.third_delivery_line_no,
+        ssod.purchase_line_no,
+        ssod.lot_no,
+        ssod.requirement_content,
+        do.delivery_order_no,
+        ssod.location_code,
+        do.company_name,
+        do.company_code,
+        do.factory_code,
+        do.delivery_addr,
+        do.delivery_date,
+        dod.id,
+        sso.has_bom
+        FROM wms_stockin_std_order_detail ssod
+        LEFT JOIN wms_stockin_std_order sso ON sso.id = ssod.std_order_id
+        LEFT JOIN wms_delivery_order do ON do.id = sso.delivery_order_id
+        left join wms_delivery_order_detail dod on dod.delivery_order_id = do.id
+        where dod.id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="insertStockInStdOrder" parameterType="StockInStdOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_stockin_std_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id !=''">id,</if>
+            <if test="orderNo != null and orderNo != ''">order_no,</if>
+            <if test="asnNo != null and asnNo != ''">asn_no,</if>
+            <if test="businessType != null and businessType != ''">business_type,</if>
+            <if test="factoryId != null">factory_id,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="factoryName != null">factory_name,</if>
+            <if test="vendorId != null">vendor_id,</if>
+            <if test="vendorCode != null">vendor_code,</if>
+            <if test="vendorName != null">vendor_name,</if>
+            <if test="orderType != null and orderType != ''">order_type,</if>
+            <if test="bsart != null and bsart != ''">bsart,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="deliveryDate != null">delivery_date,</if>
+            <if test="contact != null">contact,</if>
+            <if test="contactPhone != null">contact_phone,</if>
+            <if test="deliveryType != null">delivery_type,</if>
+            <if test="deliveryAddr != null">delivery_addr,</if>
+            <if test="deliveryOrderId != null">delivery_order_id,</if>
+            <if test="totalWeight != null">total_weight,</if>
+            <if test="netWeight != null">net_weight,</if>
+            <if test="weightUnit != null">weight_unit,</if>
+            <if test="packageNum != null">package_num,</if>
+            <if test="remark != null">remark,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="bstyp != null">bstyp,</if>
+            <if test="batxt != null">batxt,</if>
+            <if test="ekorg != null">ekorg,</if>
+            <if test="ekotx != null">ekotx,</if>
+            <if test="ekgrp != null">ekgrp,</if>
+            <if test="eknam != null">eknam,</if>
+            <if test="aedat != null">aedat,</if>
+            <if test="vkorg != null">vkorg,</if>
+            <if test="kunnr != null">kunnr,</if>
+            <if test="vsart != null">vsart,</if>
+            <if test="wadat != null">wadat,</if>
+            <if test="lfdat != null">lfdat,</if>
+            <if test="hasBom != null">has_bom,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id !=''">#{id},</if>
+            <if test="orderNo != null and orderNo != ''">#{orderNo},</if>
+            <if test="asnNo != null and asnNo != ''">#{asnNo},</if>
+            <if test="businessType != null and businessType != ''">#{businessType},</if>
+            <if test="factoryId != null">#{factoryId},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="factoryName != null">#{factoryName},</if>
+            <if test="vendorId != null">#{vendorId},</if>
+            <if test="vendorCode != null">#{vendorCode},</if>
+            <if test="vendorName != null">#{vendorName},</if>
+            <if test="orderType != null and orderType != ''">#{orderType},</if>
+            <if test="bsart != null and bsart != ''">#{bsart},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="deliveryDate != null">#{deliveryDate},</if>
+            <if test="contact != null">#{contact},</if>
+            <if test="contactPhone != null">#{contactPhone},</if>
+            <if test="deliveryType != null">#{deliveryType},</if>
+            <if test="deliveryAddr != null">#{deliveryAddr},</if>
+            <if test="deliveryOrderId != null">#{deliveryOrderId},</if>
+            <if test="totalWeight != null">#{totalWeight},</if>
+            <if test="netWeight != null">#{netWeight},</if>
+            <if test="weightUnit != null">#{weightUnit},</if>
+            <if test="packageNum != null">#{packageNum},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="bstyp != null">#{bstyp},</if>
+            <if test="batxt != null">#{batxt},</if>
+            <if test="ekorg != null">#{ekorg},</if>
+            <if test="ekotx != null">#{ekotx},</if>
+            <if test="ekgrp != null">#{ekgrp},</if>
+            <if test="eknam != null">#{eknam},</if>
+            <if test="aedat != null">#{aedat},</if>
+            <if test="vkorg != null">#{vkorg},</if>
+            <if test="kunnr != null">#{kunnr},</if>
+            <if test="vsart != null">#{vsart},</if>
+            <if test="wadat != null">#{wadat},</if>
+            <if test="lfdat != null">#{lfdat},</if>
+            <if test="hasBom != null">#{hasBom},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStockInStdOrder" parameterType="StockInStdOrder">
+        update wms_stockin_std_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNo != null and orderNo != ''">order_no = #{orderNo},</if>
+            <if test="asnNo != null and asnNo != ''">asn_no = #{asnNo},</if>
+            <if test="businessType != null and businessType != ''">business_type = #{businessType},</if>
+            <if test="factoryId != null">factory_id = #{factoryId},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="factoryName != null">factory_name = #{factoryName},</if>
+            <if test="vendorId != null">vendor_id = #{vendorId},</if>
+            <if test="vendorCode != null">vendor_code = #{vendorCode},</if>
+            <if test="vendorName != null">vendor_name = #{vendorName},</if>
+            <if test="orderType != null and orderType != ''">order_type = #{orderType},</if>
+            <if test="bsart != null and bsart != ''">bsart = #{bsart},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="deliveryDate != null">delivery_date = #{deliveryDate},</if>
+            <if test="contact != null">contact = #{contact},</if>
+            <if test="contactPhone != null">contact_phone = #{contactPhone},</if>
+            <if test="deliveryType != null">delivery_type = #{deliveryType},</if>
+            <if test="deliveryAddr != null">delivery_addr = #{deliveryAddr},</if>
+            <if test="deliveryOrderId != null">delivery_order_id = #{deliveryOrderId},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="bstyp != null">bstyp = #{bstyp},</if>
+            <if test="batxt != null">batxt = #{batxt},</if>
+            <if test="ekorg != null">ekorg = #{ekorg},</if>
+            <if test="ekotx != null">ekotx = #{ekotx},</if>
+            <if test="ekgrp != null">ekgrp = #{ekgrp},</if>
+            <if test="eknam != null">eknam = #{eknam},</if>
+            <if test="aedat != null">aedat = #{aedat},</if>
+            <if test="vkorg != null">vkorg = #{vkorg},</if>
+            <if test="kunnr != null">kunnr = #{kunnr},</if>
+            <if test="vsart != null">vsart = #{vsart},</if>
+            <if test="wadat != null">wadat = #{wadat},</if>
+            <if test="lfdat != null">lfdat = #{lfdat},</if>
+            <if test="hasBom != null">has_bom = #{hasBom},</if>
+            <if test="readBom != null">read_bom = #{readBom},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+
+    <delete id="deleteStockInStdOrderById" parameterType="Long">
+        delete from wms_stockin_std_order where id = #{id}
+    </delete>
+
+    <delete id="deleteStockInStdOrderByIds" parameterType="String">
+        delete from wms_stockin_std_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectStockInStdOrderByNo" parameterType="String" resultMap="StockInStdOrderResult">
+        <include refid="selectStockInStdOrderVo"/>
+        where
+        order_no = #{orderNo}
+    </select>
+    <select id="selectStockInStdOrderListByDeliveryOrderIds" resultMap="StockInStdOrderResult">
+        <include refid="selectStockInStdOrderVo"/>
+        where delivery_order_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getPrintInfoByIds" resultMap="PrintInfoResult">
+        select
+        ssod.material_no,
+        ssod.material_name,
+        ssod.old_material_no,
+        sso.vendor_code,
+        sso.vendor_name,
+        ssod.purchase_order_no,
+        ssod.deliver_qty,
+        ssod.min_packing,
+        ssod.third_delivery_order_no,
+        ssod.purchase_line_no,
+        ssod.lot_no,
+        ssod.location_code,
+        do.delivery_order_no,
+        do.company_name,
+        do.company_code,
+        do.delivery_addr,
+        sso.has_bom
+        FROM wms_stockin_std_order_detail ssod
+        LEFT JOIN wms_stockin_std_order sso ON sso.id = ssod.std_order_id
+        LEFT JOIN wms_delivery_order do ON do.id = sso.delivery_order_id
+        where sso.id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectStockInStdOrderByAsnNo" resultMap="StockInStdOrderResult"
+            parameterType="java.lang.String">
+        <include refid="selectStockInStdOrderVo"/>
+        where asn_no = #{asnNo}  limit 1
+    </select>
+    <select id="queryWmsStockinStdOrderDetailById" resultMap="StockInStdOrderDetailResult">
+        select * from wms_stockin_std_order_detail as wssod where std_order_id = #{id}
+    </select>
+
+    <select id="selectMaterialAttrShelves" resultMap="StoorDtoResult">
+        SELECT materAttr.shelves as 'area_code',area.position_id , storag.position_no as 'position_no'
+        FROM wms_material_attr AS materAttr
+        LEFT JOIN wms_storage_area AS sarea on materAttr.shelves = sarea.area_code and sarea.status = 0
+        LEFT JOIN wms_lk_area_position AS area ON sarea.id = area.area_id
+        LEFT JOIN wms_storage_position AS storag ON area.position_id = storag.id and storag.status = 0
+        WHERE materAttr.material_no = #{materialNo} and area.tenant_id = #{tenantId}
+    </select>
+    <select id="timing" resultMap="StockInStdOrderResult">
+        select
+            ssod.id,
+            ssod.order_no,
+            ssod.asn_no,
+            ssod.business_type,
+            ssod.factory_id,
+            ssod.factory_code,
+            ssod.factory_name,
+            ssod.vendor_id,
+            ssod.vendor_code,
+            ssod.vendor_name,
+            ssod.order_type,
+            ssod.order_status,
+            ssod.delivery_date,
+            ssod.contact,
+            ssod.contact_phone,
+            ssod.delivery_type,
+            ssod.delivery_addr,
+            ssod.delivery_order_id,
+            ssod.wbs_element,
+            ssod.inbound,
+            ssod.inbound_line,
+            ssod.remark,
+            ssod.tenant_id,
+            ssod.create_by,
+            ssod.create_time,
+            ssod.update_by,
+            ssod.update_time,
+            ssod.product_time,
+            ssod.expire_time
+        FROM wms_stockin_std_order ssod
+        where ssod.expire_time is not null
+    </select>
+    <select id="getUserLdap" resultMap="StockInStdOrderVoResult">
+        SELECT DISTINCT stodet.material_no as 'material_no',
+                stodet.material_name as 'material_name',
+                stodet.old_material_no as 'old_material_no',
+                stodet.lot_no as 'lot', u.ldap AS 'ldap',
+                u.phonenumber AS 'po',
+                stoin.expire_time as 'exp_day'
+        FROM wms_stockin_std_order AS stoin
+                 LEFT JOIN wms_stockin_std_order_detail AS stodet ON stoin.id = stodet.std_order_id
+                 LEFT JOIN wms_material_main as mater_main ON stodet.material_no = mater_main.material_no
+                 LEFT JOIN wms_lk_material_group_user as mater_user ON mater_user.material_group_no = mater_main.material_group_no
+                 LEFT JOIN sys_user AS u ON mater_user.user_id = u.user_id AND u.`status` != 1
+        WHERE stoin.id = #{id} and mater_user.user_id is not null and stoin.expire_time is not null
+    </select>
+
+
+</mapper>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.BoardReceiveTaskMapper">
+    <resultMap id="BoardReceiveTaskDtoResult" type="BoardReceiveTaskDto">
+        <id property="id" column="id" />
+        <result property="taskNo" column="task_no" />
+        <result property="boardCode" column="board_code" />
+        <result property="materialNo" column="material_no" />
+        <result property="oldMaterialNo" column="old_material_no" />
+        <result property="materialName" column="material_name" />
+        <result property="batchNo" column="batch_no" />
+        <result property="isConfirm" column="is_confirm" />
+        <result property="createTime" column="create_time" />
+        <result property="stayTimeLength" column="stay_time_length" />
+        <result property="defaultDeliverPosition" column="default_deliver_position" />
+        <result property="defaultReceivePosition" column="default_receive_position" />
+        <result property="defaultDeliverLocation" column="default_deliver_location" />
+        <result property="defaultReceiveLocation" column="default_receive_location" />
+        <result property="turnArea" column="turn_area" />
+        <result property="taskType" column="task_type" />
+        <result property="isTurn" column="is_turn" />
+        <result property="turnArea" column="turn_area" />
+        <result property="taskStatus" column="task_status" />
+        <result property="quantityLssued" column="quantity_lssued" />
+        <result property="waterTaskNo" column="water_task_no" />
+        <result property="availableQty" column="available_qty" />
+        <result property="stockInLot" column="stock_in_lot" />
+        <result property="relTaskNo" column="rel_task_no" />
+        <result property="sourcePositionNo" column="source_position_no" />
+        <result property="positionNo" column="position_no" />
+        <result property="sourceLocationCode" column="source_location_code" />
+        <result property="boardTaskNo" column="board_task_no" />
+        <result property="printSum" column="print_sum" />
+        <result property="printStatus" column="print_status" />
+    </resultMap>
+
+    <select id="selectBoardReceiveTaskList" parameterType="BoardReceiveTaskDto" resultMap="BoardReceiveTaskDtoResult">
+        SELECT
+        wti.id,
+        wti.task_no,
+        wti.task_status,
+        wti.task_type,
+        wti.board_code,
+        wti.material_no,
+        wti.material_name,
+        wti.old_material_no,
+        wti.batch_no,
+        wti.is_confirm,
+        wti.create_time,
+        wti.stay_time_length,
+        wti.source_position_no,
+        wti.position_no,
+        wti.quantity_lssued,
+        wti.source_location_code AS default_deliver_location,
+        wti.location_code AS default_receive_location,
+        CASE
+        WHEN EXISTS ( SELECT 1 FROM wms_task_info wti2 WHERE wti2.board_task_no = wti.task_no AND wti2.task_type = 27 ) THEN
+        wti.source_location_code ELSE ''
+        END AS turn_area,
+        wti.print_status,
+        wti.print_sum,
+        CASE
+        WHEN EXISTS ( SELECT 1 FROM wms_task_info wti2 WHERE wti2.board_task_no = wti.task_no AND wti2.task_type = 27 ) THEN
+        '1' ELSE '0'
+        END AS is_turn
+        FROM
+        wms_task_info wti
+       <where>
+           wti.task_type in ('26','27','31')
+           <if test="taskNo != null and taskNo != ''">
+               and wti.task_no like concat('%',#{taskNo},'%')
+           </if>
+           <if test="boardCode != null and boardCode != ''">
+               and wti.board_code = #{boardCode}
+           </if>
+           <if test="materialNo != null and materialNo != ''">
+               and wti.material_no like concat('%',#{materialNo},'%')
+           </if>
+           <if test="taskStatus != null and taskStatus != ''">
+               and wti.task_status = #{taskStatus}
+           </if>
+           <if test="taskType != null and taskType != ''">
+               and wti.task_type = #{taskType}
+           </if>
+           <if test="isConfirm != null and isConfirm != ''">
+               and wti.is_confirm = #{isConfirm}
+           </if>
+           <if test="defaultReceiveLocation != null and defaultReceiveLocation != ''">
+               and wti.location_code like concat('%',#{defaultReceiveLocation},'%')
+           </if>
+           <if test="batchNo != null and batchNo != ''">
+               and wti.batch_no = #{batchNo}
+           </if>
+           <if test="createTime != null and createTime != ''">
+               and wti.create_time >= CONCAT(#{createTime},' 00:00:00') and wti.create_time <![CDATA[ <= ]]> CONCAT(#{createTime},' 23:59:59')
+           </if>
+           <if test="startTime != null "> and create_time >= CONCAT(#{startTime},' 00:00:00')</if>
+           <if test="endTime != null "> and CONCAT(#{endTime},' 23:59:59') >= create_time</if>
+       </where>
+       order by wti.id desc
+    </select>
+
+    <select id="getBoardReceiveTask" parameterType="BoardReceiveTaskDto" resultMap="BoardReceiveTaskDtoResult">
+        select
+        wti.id,
+        wti.task_no,
+        wti.board_code,
+        wti.material_no,
+        wti.material_name,
+        wti.old_material_no,
+        wti.batch_no,
+        wti.is_confirm,
+        wti.water_task_no,
+        wti.create_time,
+        wti.stay_time_length,
+        wti.quantity_lssued,
+        wbi.default_deliver_position,
+        wbi.default_receive_position,
+        wbi.capacity,
+        bd.task_no as rel_task_no,
+        dl.location_code as default_deliver_location,
+        rl.location_code as default_receive_location,
+        ta.location_code as turn_area,
+        ide.stock_in_lot,
+        ide.available_qty,
+        wti.source_position_no,
+        wti.source_location_code,wti.board_task_no
+        from wms_task_info as wti
+        inner join wms_board_info as wbi on wti.board_code = wbi.board_code
+        LEFT JOIN wms_material_main as wmm on wbi.material_no = wmm.material_no
+        LEFT JOIN wms_storage_location AS dl on dl.id = wbi.default_deliver_location
+        LEFT JOIN wms_storage_location AS rl on rl.id = wbi.default_receive_location
+        LEFT JOIN wms_storage_location AS ta on ta.id = wbi.turn_area
+        LEFT JOIN wms_inventory_details as ide ON ide.material_no = wmm.material_no
+        LEFT JOIN wms_task_info as bd on bd.board_task_no = wti.task_no
+        <where>
+            wti.task_type = '26' and wbi.status = '0'
+            <if test="taskNo != null and taskNo != ''">
+                and wti.task_no = #{taskNo}
+            </if>
+        </where>
+        order by wti.id asc
+        LIMIT 1;
+    </select>
+
+</mapper>

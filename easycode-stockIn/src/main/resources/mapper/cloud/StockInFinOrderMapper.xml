@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.StockInFinOrderMapper">
+
+    <resultMap type="StockInFinOrderDto" id="StockInFinOrderResult">
+        <result property="id" column="id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="orderType" column="order_type"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialName" column="material_name"/>
+        <result property="factoryId" column="factory_id"/>
+        <result property="factoryName" column="factory_name"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="costCenter" column="costCenter"/>
+        <result property="locationId" column="location_id"/>
+        <result property="locationCode" column="location_code"/>
+        <result property="locationName" column="location_name"/>
+        <result property="containerNo" column="container_no"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="entruckingNo" column="entrucking_no"/>
+        <result property="lot" column="lot"/>
+        <result property="huNo" column="hu_no"/>
+        <result property="containerNo" column="container_no"/>
+        <result property="planRecivevQty" column="plan_recivev_qty"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="prdOrderNo" column="prd_order_no"/>
+        <result property="sourceLocationCode" column="source_location_code"/>
+        <result property="planQty" column="plan_qty"/>
+        <result property="oldMaterialNo" column="old_material_no"/>
+        <result property="busno" column="busno"/>
+        <result property="mblnr" column="mblnr"/>
+        <result property="bwart" column="bwart"/>
+        <result property="werks" column="werks"/>
+        <result property="budat" column="budat"/>
+        <result property="bldat" column="bldat"/>
+        <result property="exidv2" column="exidv2"/>
+        <result property="aufnr" column="aufnr"/>
+        <result property="zeile" column="zeile"/>
+        <result property="matnr" column="matnr"/>
+        <result property="maktx" column="maktx"/>
+        <result property="menge" column="menge"/>
+        <result property="meins" column="meins"/>
+        <result property="charg" column="charg"/>
+        <result property="lgort" column="lgort"/>
+        <result property="smbln" column="smbln"/>
+        <result property="smblp" column="smblp"/>
+        <result property="arbpl" column="arbpl"/>
+        <result property="lgort1" column="lgort1"/>
+        <result property="sobkz" column="sobkz"/>
+        <result property="wbsElem" column="wbs_elem"/>
+        <result property="uname" column="uname"/>
+    </resultMap>
+
+    <sql id="selectStockInFinOrderVo">
+        select id,sobkz,wbs_elem,uname,
+               order_no,
+               dept_id,
+               order_type,
+               material_no,
+               material_id,
+               material_name,
+               factory_id,hu_no,
+               factory_name,
+               factory_code,
+               cost_center,
+               location_id,
+               location_code,
+               location_name,
+               container_no,
+               order_status,
+               entrucking_no,
+               tenant_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               prd_order_no,
+               source_location_code,
+               plan_qty,
+               old_material_no,
+               busno,
+               mblnr,
+               bwart,
+               werks,
+               budat,
+               bldat,
+               exidv2,
+               aufnr,
+               zeile,
+               matnr,
+               maktx,
+               menge,
+               meins,
+               charg,
+               lgort,
+               smbln,
+               smblp,
+               arbpl,
+               lgort1
+        from wms_stockin_fin_order
+    </sql>
+
+    <select id="checkStockInFinOrder" parameterType="StockInFinOrder" resultMap="StockInFinOrderResult">
+        select order_no
+        from wms_stockin_fin_order
+        where factory_code = #{factoryCode}
+          and prd_order_no = #{prdOrderNo}
+        and order_status != #{orderStatus}
+    </select>
+
+    <select id="selectStockInFinOrderList" parameterType="StockInFinOrder" resultMap="StockInFinOrderResult">
+        select sfo.id,
+               sfo.order_no,
+               sfo.order_type,
+               sfo.material_no,
+               sfo.material_id,
+               sfo.material_name,
+               sfo.factory_id,
+               sfo.factory_name,
+               sfo.factory_code,
+               sfo.cost_center,
+               sfo.location_id,
+               sfo.location_code,
+               sfo.location_name,
+               sfo.container_no,
+               sfo.order_status,
+               sfo.entrucking_no,
+               sfo.tenant_id,
+               sfo.create_by,
+               sfo.create_time,
+               sfo.dept_id,
+               sfo.update_by,
+               sfo.update_time,
+               sfo.prd_order_no,
+               sfo.source_location_code,
+               sfo.plan_qty,
+               sfo.old_material_no,
+               sfo.line_no,
+               sfo.lot,
+               sfo.hu_no,
+               sfo.busno,
+               sfo.mblnr,
+               sfo.bwart,
+               sfo.werks,
+               sfo.budat,
+               sfo.bldat,
+               sfo.exidv2,
+               sfo.aufnr,
+               sfo.zeile,
+               sfo.matnr,
+               sfo.maktx,
+               sfo.menge,
+               sfo.meins,
+               sfo.charg,
+               sfo.lgort,
+               sfo.smbln,
+               sfo.smblp,
+               sfo.arbpl,
+               sfo.lgort1,
+               sfo.sobkz,sfo.wbs_elem,sfo.uname
+        from wms_stockin_fin_order sfo
+        <where>
+            <if test="mblnr != null  and mblnr != ''">and sfo.mblnr like concat('%', #{mblnr}, '%')</if>
+            <if test="smbln != null  and smbln != ''">and sfo.smbln like concat('%', #{smbln}, '%')</if>
+            <if test="orderNo != null  and orderNo != ''">and sfo.order_no like concat('%', #{orderNo}, '%')</if>
+            <if test="orderStatus != null  and orderStatus != ''">and sfo.order_status = #{orderStatus} </if>
+            <if test="charg != null  and charg != ''">and sfo.charg like concat('%', #{charg}, '%')</if>
+            <if test="busno != null  and busno != ''">and sfo.busno like concat('%', #{busno}, '%')</if>
+            <if test="huNo != null  and huNo != ''">and sfo.hu_no like concat('%', #{huNo}, '%')</if>
+            <if test="materialNo != null  and materialNo != ''">and sfo.material_no like concat('%', #{materialNo}, '%')</if>
+        </where>
+        order by sfo.create_time desc
+    </select>
+
+    <select id="selectStockInFinOrderById" parameterType="Long" resultMap="StockInFinOrderResult">
+        <include refid="selectStockInFinOrderVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectStockInFinOrderByIdOne" parameterType="Long" resultMap="StockInFinOrderResult">
+        <include refid="selectStockInFinOrderVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertStockInFinOrder" parameterType="StockInFinOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_stockin_fin_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">order_no,</if>
+            <if test="orderType != null">order_type,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="factoryId != null">factory_id,</if>
+            <if test="factoryName != null">factory_name,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="costCenter != null">cost_center,</if>
+            <if test="locationId != null">location_id,</if>
+            <if test="locationCode != null">location_code,</if>
+            <if test="locationName != null">location_name,</if>
+            <if test="containerNo != null">container_no,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="entruckingNo != null">entrucking_no,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="sourceLocationCode != null">source_location_code,</if>
+            <if test="prdOrderNo != null">prd_order_no,</if>
+            <if test="planQty != null">plan_qty,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+            <if test="lineNo != null">line_no,</if>
+            <if test="lot != null">lot,</if>
+            <if test="huNo != null">hu_no,</if>
+            <if test="busno != null">busno,</if>
+            <if test="mblnr != null">mblnr,</if>
+            <if test="bwart != null">bwart,</if>
+            <if test="werks != null">werks,</if>
+            <if test="budat != null">budat,</if>
+            <if test="bldat != null">bldat,</if>
+            <if test="exidv2 != null">exidv2,</if>
+            <if test="aufnr != null">aufnr,</if>
+            <if test="zeile != null">zeile,</if>
+            <if test="matnr != null">matnr,</if>
+            <if test="maktx != null">maktx,</if>
+            <if test="menge != null">menge,</if>
+            <if test="meins != null">meins,</if>
+            <if test="charg != null">charg,</if>
+            <if test="lgort != null">lgort,</if>
+            <if test="smbln != null">smbln,</if>
+            <if test="smblp != null">smblp,</if>
+            <if test="arbpl != null">arbpl,</if>
+            <if test="lgort1 != null">lgort1,</if>
+            <if test="sobkz != null">sobkz,</if>
+            <if test="wbsElem != null">wbs_elem,</if>
+            <if test="uname != null">uname,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">#{orderNo},</if>
+            <if test="orderType != null">#{orderType},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="factoryId != null">#{factoryId},</if>
+            <if test="factoryName != null">#{factoryName},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="costCenter != null">#{costCenter},</if>
+            <if test="locationId != null">#{locationId},</if>
+            <if test="locationCode != null">#{locationCode},</if>
+            <if test="locationName != null">#{locationName},</if>
+            <if test="containerNo != null">#{containerNo},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="entruckingNo != null">#{entruckingNo},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="deptId != null">(select  dept_id from sys_dept where endda = 1 and locate(dept_id,(select CONCAT(ancestors,',',dept_id) from sys_dept where dept_id = #{deptId})) > 0),</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="sourceLocationCode != null">#{sourceLocationCode},</if>
+            <if test="prdOrderNo != null">#{prdOrderNo},</if>
+            <if test="planQty != null">#{planQty},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+            <if test="lineNo != null">#{lineNo},</if>
+            <if test="lot != null">#{lot},</if>
+            <if test="huNo != null">#{huNo},</if>
+            <if test="busno != null">#{busno},</if>
+            <if test="mblnr != null">#{mblnr},</if>
+            <if test="bwart != null">#{bwart},</if>
+            <if test="werks != null">#{werks},</if>
+            <if test="budat != null">#{budat},</if>
+            <if test="bldat != null">#{bldat},</if>
+            <if test="exidv2 != null">#{exidv2},</if>
+            <if test="aufnr != null">#{aufnr},</if>
+            <if test="zeile != null">#{zeile},</if>
+            <if test="matnr != null">#{matnr},</if>
+            <if test="maktx != null">#{maktx},</if>
+            <if test="menge != null">#{menge},</if>
+            <if test="meins != null">#{meins},</if>
+            <if test="charg != null">#{charg},</if>
+            <if test="lgort != null">#{lgort},</if>
+            <if test="smbln != null">#{smbln},</if>
+            <if test="smblp != null">#{smblp},</if>
+            <if test="arbpl != null">#{arbpl},</if>
+            <if test="lgort1 != null">#{lgort1},</if>
+            <if test="sobkz != null">#{sobkz},</if>
+            <if test="wbsElem != null">#{wbsElem},</if>
+            <if test="uname != null">#{uname},</if>
+        </trim>
+    </insert>
+    <update id="updateStockInFinOrder" parameterType="StockInFinOrder">
+        update wms_stockin_fin_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderType != null">order_type = #{orderType},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="factoryId != null">factory_id = #{factoryId},</if>
+            <if test="factoryName != null">factory_name = #{factoryName},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="costCenter != null">cost_center = #{costCenter},</if>
+            <if test="locationId != null">location_id = #{locationId},</if>
+            <if test="locationCode != null">location_code = #{locationCode},</if>
+            <if test="locationName != null">location_name = #{locationName},</if>
+            <if test="containerNo != null">container_no = #{containerNo},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="entruckingNo != null">entrucking_no = #{entruckingNo},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="prdOrderNo != null">prd_order_no = #{prdOrderNo},</if>
+            <if test="sourceLocationCode != null">source_location_code = #{sourceLocationCode},</if>
+            <if test="planQty != null">plan_qty = #{planQty},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="lineNo != null">line_no = #{lineNo},</if>
+            <if test="lot != null">lot = #{lot},</if>
+            <if test="huNo != null">hu_no = #{huNo},</if>
+            <if test="busno != null">busno = #{busno},</if>
+            <if test="mblnr != null">mblnr = #{mblnr},</if>
+            <if test="bwart != null">bwart = #{bwart},</if>
+            <if test="werks != null">werks = #{werks},</if>
+            <if test="budat != null">budat = #{budat},</if>
+            <if test="bldat != null">bldat = #{bldat},</if>
+            <if test="exidv2 != null">exidv2 = #{exidv2},</if>
+            <if test="aufnr != null">aufnr = #{aufnr},</if>
+            <if test="zeile != null">zeile = #{zeile},</if>
+            <if test="matnr != null">matnr = #{matnr},</if>
+            <if test="maktx != null">maktx = #{maktx},</if>
+            <if test="menge != null">menge = #{menge},</if>
+            <if test="meins != null">meins = #{meins},</if>
+            <if test="charg != null">charg = #{charg},</if>
+            <if test="lgort != null">lgort = #{lgort},</if>
+            <if test="smbln != null">smbln = #{smbln},</if>
+            <if test="smblp != null">smblp = #{smblp},</if>
+            <if test="arbpl != null">arbpl = #{arbpl},</if>
+            <if test="lgort1 != null">lgort1 = #{lgort1},</if>
+            <if test="sobkz != null">sobkz = #{sobkz},</if>
+            <if test="wbsElem != null">wbs_elem = #{wbsElem},</if>
+            <if test="uname != null">uname = #{uname},</if>
+        </trim>
+        <where>
+            <if test="id != null  and id != ''">and id = #{id}</if>
+            <if test="orderNo != null  and orderNo != ''">and order_no = #{orderNo}</if>
+        </where>
+    </update>
+
+    <delete id="deleteStockInFinOrderById" parameterType="Long">
+        delete
+        from wms_stockin_fin_order
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteStockInFinOrderByIds" parameterType="String">
+        delete from wms_stockin_fin_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="closeStockInFinOrder" parameterType="StockInFinOrder">
+        update wms_stockin_fin_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNo != null">order_no = #{orderNo},</if>
+            <if test="orderType != null">order_type = #{orderType},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="factoryId != null">factory_id = #{factoryId},</if>
+            <if test="factoryName != null">factory_name = #{factoryName},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="costCenter != null">cost_center = #{costCenter},</if>
+            <if test="locationId != null">location_id = #{locationId},</if>
+            <if test="locationCode != null">location_code = #{locationCode},</if>
+            <if test="locationName != null">location_name = #{locationName},</if>
+            <if test="containerNo != null">container_no = #{containerNo},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="entruckingNo != null">entrucking_no = #{entruckingNo},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="prdOrderNo != null">prd_order_no = #{prdOrderNo},</if>
+            <if test="sourceLocationCode != null">source_location_code = #{sourceLocationCode},</if>
+            <if test="planQty != null">plan_qty = #{planQty},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="lineNo != null">line_no = #{lineNo},</if>
+            <if test="lot != null">lot = #{lot},</if>
+            <if test="huNo != null">hu_no = #{huNo},</if>
+            <if test="busno != null">busno = #{busno},</if>
+            <if test="mblnr != null">mblnr = #{mblnr},</if>
+            <if test="bwart != null">bwart = #{bwart},</if>
+            <if test="werks != null">werks = #{werks},</if>
+            <if test="budat != null">budat = #{budat},</if>
+            <if test="bldat != null">bldat = #{bldat},</if>
+            <if test="exidv2 != null">exidv2 = #{exidv2},</if>
+            <if test="aufnr != null">aufnr = #{aufnr},</if>
+            <if test="zeile != null">zeile = #{zeile},</if>
+            <if test="matnr != null">matnr = #{matnr},</if>
+            <if test="maktx != null">maktx = #{maktx},</if>
+            <if test="menge != null">menge = #{menge},</if>
+            <if test="meins != null">meins = #{meins},</if>
+            <if test="charg != null">charg = #{charg},</if>
+            <if test="lgort != null">lgort = #{lgort},</if>
+            <if test="smbln != null">smbln = #{smbln},</if>
+            <if test="smblp != null">smblp = #{smblp},</if>
+            <if test="arbpl != null">arbpl = #{arbpl},</if>
+            <if test="lgort1 != null">lgort1 = #{lgort1},</if>
+            <if test="sobkz != null">sobkz = #{sobkz},</if>
+            <if test="wbsElem != null">wbs_elem = #{wbsElem},</if>
+            <if test="uname != null">uname = #{uname},</if>
+        </trim>
+        <where>
+            <if test="id != null  and id != ''">and id = #{id}</if>
+            <if test="orderNo != null  and orderNo != ''">and order_no = #{orderNo}</if>
+        </where>
+    </update>
+
+    <update id="updateStockInFinOrderByAllComplete" parameterType="StockInFinOrder">
+        update wms_stockin_fin_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where order_no = #{orderNo}
+        and (select count(1) from wms_task_info where stock_in_order_no = #{orderNo} and task_status in ('1','2')) = 0
+    </update>
+
+    <update id="updateStockInSemiFinOrderByAllComplete" parameterType="StockInSemiFinOrder">
+        update wms_stockin_semifin_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where order_no = #{orderNo}
+        and (select count(1) from wms_task_info where stock_in_order_no = #{orderNo} and task_status in ('1','2')) = 0
+    </update>
+
+    <select id="selectStockInFinOrderByOrderNo" parameterType="String" resultMap="StockInFinOrderResult">
+        <include refid="selectStockInFinOrderVo"/>
+        where order_no = #{orderNo}
+    </select>
+</mapper>

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.CostCenterReturnOrderDetailMapper">
+
+    <resultMap type="CostCenterReturnOrderDetail" id="CostCenterReturnOrderDetailResult">
+        <result property="id"    column="id"    />
+        <result property="returnOrderNo"    column="return_order_no"    />
+        <result property="lineNo"    column="line_no"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="returnQty"    column="return_qty"    />
+        <result property="remark"    column="remark"    />
+        <result property="unit"    column="unit"    />
+        <result property="operationUnit"    column="operation_unit"    />
+        <result property="operationQty"    column="operation_qty"    />
+        <result property="lot"    column="lot"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="containerNo"    column="container_no"    />
+        <result property="containerType"    column="container_type"    />
+        <result property="taskBookNo"    column="task_book_no"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="locationId"    column="location_id"    />
+        <result property="positionNo"    column="position_no"    />
+        <result property="positionId"    column="position_id"    />
+        <result property="stockInTaskNo" column="stock_in_task_no"/>
+    </resultMap>
+
+    <resultMap type="CostCenterReturnOrderDetailVo" id="CostCenterReturnOrderDetailVoResult">
+        <result property="id"    column="id"    />
+        <result property="returnOrderNo"    column="return_order_no"    />
+        <result property="lineNo"    column="line_no"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="returnQty"    column="return_qty"    />
+        <result property="remark"    column="remark"    />
+        <result property="unit"    column="unit"    />
+        <result property="operationUnit"    column="operation_unit"    />
+        <result property="operationQty"    column="operation_qty"    />
+        <result property="lot"    column="lot"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="containerNo"    column="container_no"    />
+        <result property="containerType"    column="container_type"    />
+        <result property="taskBookNo"    column="task_book_no"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="locationId"    column="location_id"    />
+        <result property="positionNo"    column="position_no"    />
+        <result property="positionId"    column="position_id"    />
+        <result property="stockInTaskNo" column="stock_in_task_no"/>
+    </resultMap>
+
+    <sql id="selectCostCenterReturnOrderDetailVo">
+        select id, operation_unit, operation_qty,position_id,task_book_no,position_no,stock_in_task_no,location_id,location_code, return_order_no, line_no, lot, material_no, material_name, old_material_no, factory_code, return_qty, remark, unit, operation_unit, operation_qty, tenant_id, create_by, create_time, update_by, update_time ,container_no,container_type from wms_cost_center_return_order_detail
+    </sql>
+
+    <select id="selectCostCenterReturnOrderDetailList" parameterType="CostCenterReturnOrderDetail" resultMap="CostCenterReturnOrderDetailResult">
+        <include refid="selectCostCenterReturnOrderDetailVo"/>
+        <where>
+            <if test="returnOrderNo != null  and returnOrderNo != ''"> and return_order_no = #{returnOrderNo}</if>
+            <if test="lineNo != null  and lineNo != ''"> and line_no = #{lineNo}</if>
+            <if test="materialNo != null  and materialNo != ''"> and material_no = #{materialNo}</if>
+            <if test="materialName != null  and materialName != ''"> and material_name like concat('%', #{materialName}, '%')</if>
+            <if test="oldMaterialNo != null  and oldMaterialNo != ''"> and old_material_no = #{oldMaterialNo}</if>
+            <if test="factoryCode != null  and factoryCode != ''"> and factory_code = #{factoryCode}</if>
+            <if test="lot != null  and lot != ''"> and lot = #{lot}</if>
+            <if test="returnQty != null "> and return_qty = #{returnQty}</if>
+            <if test="unit != null  and unit != ''"> and unit = #{unit}</if>
+            <if test="taskBookNo != null  and taskBookNo != ''"> and task_book_no = #{taskBookNo}</if>
+            <if test="operationUnit != null  and operationUnit != ''"> and operation_unit = #{operationUnit}</if>
+            <if test="operationQty != null  and operationQty != ''"> and operation_qty = #{operationQty}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+            <if test="containerNo != null "> and container_no = #{containerNo}</if>
+            <if test="containerType != null "> and container_type = #{containerType}</if>
+        </where>
+    </select>
+
+    <select id="selectCostCenterReturnOrderDetailById" parameterType="Long" resultMap="CostCenterReturnOrderDetailResult">
+        <include refid="selectCostCenterReturnOrderDetailVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCostCenterReturnOrderDetail" parameterType="CostCenterReturnOrderDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_cost_center_return_order_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="returnOrderNo != null">return_order_no,</if>
+            <if test="lineNo != null">line_no,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="returnQty != null">return_qty,</if>
+            <if test="remark != null">remark,</if>
+            <if test="unit != null">unit,</if>
+            <if test="operationUnit != null">operation_unit,</if>
+            <if test="operationQty != null">operation_qty,</if>
+            <if test="lot != null">lot,</if>
+            <if test="taskBookNo != null">task_book_no,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="containerNo != null">container_no,</if>
+            <if test="containerType != null">container_type,</if>
+            <if test="locationCode != null">location_code,</if>
+            <if test="locationId != null">location_id,</if>
+            <if test="positionNo != null">position_no,</if>
+            <if test="stockInTaskNo != null">stock_in_task_no,</if>
+            <if test="positionId != null">position_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="returnOrderNo != null">#{returnOrderNo},</if>
+            <if test="lineNo != null">#{lineNo},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="returnQty != null">#{returnQty},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="operationUnit != null">#{operationUnit},</if>
+            <if test="operationQty != null">#{operationQty},</if>
+            <if test="lot != null">#{lot},</if>
+            <if test="taskBookNo != null">#{taskBookNo},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="containerNo != null">#{containerNo},</if>
+            <if test="containerType != null">#{containerType},</if>
+            <if test="locationCode != null">#{locationCode},</if>
+            <if test="locationId != null">#{locationId},</if>
+            <if test="positionNo != null">#{positionNo},</if>
+            <if test="stockInTaskNo != null">#{stockInTaskNo},</if>
+            <if test="positionId != null">#{positionId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCostCenterReturnOrderDetail" parameterType="CostCenterReturnOrderDetail">
+        update wms_cost_center_return_order_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="returnOrderNo != null">return_order_no = #{returnOrderNo},</if>
+            <if test="lineNo != null">line_no = #{lineNo},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="returnQty != null">return_qty = #{returnQty},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="operationUnit != null">operation_unit = #{operationUnit},</if>
+            <if test="operationQty != null">operation_qty = #{operationQty},</if>
+            <if test="lot != null">lot = #{lot},</if>
+            <if test="taskBookNo != null">task_book_no = #{taskBookNo},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="containerNo != null">container_no = #{containerNo},</if>
+            <if test="containerType != null">container_type = #{containerType},</if>
+            <if test="locationCode != null">location_code = #{locationCode},</if>
+            <if test="locationId != null">location_id = #{locationId},</if>
+            <if test="positionNo != null">position_no = #{positionNo},</if>
+            <if test="stockInTaskNo != null">stock_in_task_no = #{stockInTaskNo},</if>
+            <if test="positionId != null">position_id = #{positionId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCostCenterReturnOrderDetailById" parameterType="Long">
+        delete from wms_cost_center_return_order_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteCostCenterReturnOrderDetailByIds" parameterType="String">
+        delete from wms_cost_center_return_order_detail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getBeContinuedNumber" resultType="Integer">
+        SELECT
+            COUNT(1)
+        FROM
+            wms_cost_center_return_order_detail AS wccrod
+                LEFT JOIN wms_ret_task AS wrt ON wccrod.id = wrt.detail_id
+                LEFT JOIN wms_cost_center_return_order AS wccro ON wccro.order_no = wccrod.return_order_no
+        WHERE
+            wrt.task_type = #{taskType}
+          AND wrt.task_status IN ('1','2') AND wccro.order_no = #{orderNo}
+    </select>
+
+    <select id="getPrintInfoList"  parameterType="Long" resultMap="CostCenterReturnOrderDetailVoResult">
+        select wccrod.id, wccrod.operation_unit, wccrod.operation_qty, wccrod.task_book_no,
+               wccrod.return_order_no, wccrod.line_no, wccrod.lot, wccrod.material_no, wccrod.material_name,
+               wccrod.old_material_no, wccrod.factory_code, wccrod.return_qty, wccrod.remark, wccrod.unit,
+               wccrod.operation_unit, wccrod.operation_qty, wccrod.tenant_id, wccrod.create_by,
+               wrt.storage_location_code location_code, wrt.position_no,
+               wccrod.create_time, wccrod.update_by, wccrod.update_time ,wccrod.container_no,wccrod.container_type
+        FROM
+            wms_cost_center_return_order_detail AS wccrod
+                LEFT JOIN wms_ret_task AS wrt ON wccrod.id = wrt.detail_id
+        WHERE
+            wrt.id = #{id}
+    </select>
+</mapper>

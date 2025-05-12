@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.WmsPurchaseOrderPlanqtyRecordMapper">
+
+    <resultMap type="com.easycode.cloud.domain.WmsPurchaseOrderPlanqtyRecord" id="WmsPurchaseOrderPlanqtyRecordResult">
+        <result property="id"    column="id"    />
+        <result property="purchaseOrderId"    column="purchase_order_id"    />
+        <result property="purchaseOrderDetailId"    column="purchase_order_detail_id"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="purchaseLineNo"    column="purchase_line_no"    />
+        <result property="sapOrderId"    column="sap_order_id"    />
+        <result property="deliveryId"    column="delivery_id"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="changeType"    column="change_type"    />
+        <result property="planQty"    column="plan_qty"    />
+        <result property="beforePlanQty"    column="before_plan_qty"    />
+        <result property="changePlanQty"    column="change_plan_qty"    />
+        <result property="deliveryQty"    column="delivery_qty"    />
+        <result property="supplierDeliveryQty"    column="supplier_delivery_qty"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createdBy"    column="created_by"    />
+        <result property="createdTime"    column="created_time"    />
+        <result property="updatedBy"    column="updated_by"    />
+        <result property="updatedTime"    column="updated_time"    />
+        <result property="totalPlanQty"    column="total_plan_qty"    />
+    </resultMap>
+
+    <sql id="selectWmsPurchaseOrderPlanqtyRecordVo">
+        select id, purchase_order_id, purchase_order_detail_id, purchase_order_no, purchase_line_no, sap_order_id, delivery_id, material_no, material_id, change_type,
+        total_plan_qty,plan_qty, before_plan_qty, change_plan_qty, delivery_qty, supplier_delivery_qty, tenant_id, created_by, created_time, updated_by, updated_time from wms_purchase_order_planqty_record
+    </sql>
+
+    <select id="selectWmsPurchaseOrderPlanqtyRecordList" parameterType="com.easycode.cloud.domain.WmsPurchaseOrderPlanqtyRecord" resultMap="WmsPurchaseOrderPlanqtyRecordResult">
+        <include refid="selectWmsPurchaseOrderPlanqtyRecordVo"/>
+        <where>
+            <if test="purchaseOrderId != null "> and purchase_order_id = #{purchaseOrderId}</if>
+            <if test="purchaseOrderDetailId != null "> and purchase_order_detail_id = #{purchaseOrderDetailId}</if>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''"> and purchase_order_no = #{purchaseOrderNo}</if>
+            <if test="purchaseLineNo != null "> and purchase_line_no = #{purchaseLineNo}</if>
+            <if test="sapOrderId != null "> and sap_order_id = #{sapOrderId}</if>
+            <if test="deliveryId != null "> and delivery_id = #{deliveryId}</if>
+            <if test="materialNo != null  and materialNo != ''"> and material_no = #{materialNo}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="changeType != null  and changeType != ''"> and change_type = #{changeType}</if>
+            <if test="planQty != null "> and plan_qty = #{planQty}</if>
+            <if test="beforePlanQty != null "> and before_plan_qty = #{beforePlanQty}</if>
+            <if test="changePlanQty != null "> and change_plan_qty = #{changePlanQty}</if>
+            <if test="deliveryQty != null "> and delivery_qty = #{deliveryQty}</if>
+            <if test="supplierDeliveryQty != null "> and supplier_delivery_qty = #{supplierDeliveryQty}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+            <if test="createdBy != null  and createdBy != ''"> and created_by = #{createdBy}</if>
+            <if test="createdTime != null "> and created_time = #{createdTime}</if>
+            <if test="updatedBy != null  and updatedBy != ''"> and updated_by = #{updatedBy}</if>
+            <if test="updatedTime != null "> and updated_time = #{updatedTime}</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectWmsPurchaseOrderPlanqtyRecordById" parameterType="Long" resultMap="WmsPurchaseOrderPlanqtyRecordResult">
+        <include refid="selectWmsPurchaseOrderPlanqtyRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWmsPurchaseOrderPlanqtyRecord" parameterType="com.easycode.cloud.domain.WmsPurchaseOrderPlanqtyRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_purchase_order_planqty_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="purchaseOrderId != null">purchase_order_id,</if>
+            <if test="purchaseOrderDetailId != null">purchase_order_detail_id,</if>
+            <if test="purchaseOrderNo != null">purchase_order_no,</if>
+            <if test="purchaseLineNo != null">purchase_line_no,</if>
+            <if test="sapOrderId != null">sap_order_id,</if>
+            <if test="deliveryId != null">delivery_id,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="changeType != null">change_type,</if>
+            <if test="planQty != null">plan_qty,</if>
+            <if test="beforePlanQty != null">before_plan_qty,</if>
+            <if test="changePlanQty != null">change_plan_qty,</if>
+            <if test="deliveryQty != null">delivery_qty,</if>
+            <if test="supplierDeliveryQty != null">supplier_delivery_qty,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createdBy != null">created_by,</if>
+            <if test="createdTime != null">created_time,</if>
+            <if test="updatedBy != null">updated_by,</if>
+            <if test="updatedTime != null">updated_time,</if>
+            <if test="totalPlanQty != null">total_plan_qty,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="purchaseOrderId != null">#{purchaseOrderId},</if>
+            <if test="purchaseOrderDetailId != null">#{purchaseOrderDetailId},</if>
+            <if test="purchaseOrderNo != null">#{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">#{purchaseLineNo},</if>
+            <if test="sapOrderId != null">#{sapOrderId},</if>
+            <if test="deliveryId != null">#{deliveryId},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="changeType != null">#{changeType},</if>
+            <if test="planQty != null">#{planQty},</if>
+            <if test="beforePlanQty != null">#{beforePlanQty},</if>
+            <if test="changePlanQty != null">#{changePlanQty},</if>
+            <if test="deliveryQty != null">#{deliveryQty},</if>
+            <if test="supplierDeliveryQty != null">#{supplierDeliveryQty},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createdBy != null">#{createdBy},</if>
+            <if test="createdTime != null">#{createdTime},</if>
+            <if test="updatedBy != null">#{updatedBy},</if>
+            <if test="updatedTime != null">#{updatedTime},</if>
+            <if test="totalPlanQty != null">#{totalPlanQty},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsPurchaseOrderPlanqtyRecord" parameterType="com.easycode.cloud.domain.WmsPurchaseOrderPlanqtyRecord">
+        update wms_purchase_order_planqty_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="purchaseOrderId != null">purchase_order_id = #{purchaseOrderId},</if>
+            <if test="purchaseOrderDetailId != null">purchase_order_detail_id = #{purchaseOrderDetailId},</if>
+            <if test="purchaseOrderNo != null">purchase_order_no = #{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">purchase_line_no = #{purchaseLineNo},</if>
+            <if test="sapOrderId != null">sap_order_id = #{sapOrderId},</if>
+            <if test="deliveryId != null">delivery_id = #{deliveryId},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="changeType != null">change_type = #{changeType},</if>
+            <if test="planQty != null">plan_qty = #{planQty},</if>
+            <if test="beforePlanQty != null">before_plan_qty = #{beforePlanQty},</if>
+            <if test="changePlanQty != null">change_plan_qty = #{changePlanQty},</if>
+            <if test="deliveryQty != null">delivery_qty = #{deliveryQty},</if>
+            <if test="supplierDeliveryQty != null">supplier_delivery_qty = #{supplierDeliveryQty},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createdBy != null">created_by = #{createdBy},</if>
+            <if test="createdTime != null">created_time = #{createdTime},</if>
+            <if test="updatedBy != null">updated_by = #{updatedBy},</if>
+            <if test="updatedTime != null">updated_time = #{updatedTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWmsPurchaseOrderPlanqtyRecordById" parameterType="Long">
+        delete from wms_purchase_order_planqty_record where id = #{id}
+    </delete>
+
+    <delete id="deleteWmsPurchaseOrderPlanqtyRecordByIds" parameterType="String">
+        delete from wms_purchase_order_planqty_record where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="queryDemandQtyList" parameterType="GoodsSourceDef" resultMap="WmsPurchaseOrderPlanqtyRecordResult">
+        SELECT pr.id, pr.plan_qty, pr.delivery_qty, pr.purchase_order_no, pr.purchase_line_no, pr.material_no,pr.total_plan_qty
+        FROM
+        wms_purchase_order_planqty_record pr
+        INNER JOIN (select MAX(id) id, purchase_order_no, purchase_line_no, material_no
+        FROM wms_purchase_order_planqty_record
+        GROUP BY  purchase_order_no, purchase_line_no, material_no) prr ON prr.id = pr.id
+        <where>
+            pr.purchase_order_no in
+            <foreach item="item" collection="list" open="(" separator="," close=")">
+                (#{item})
+            </foreach>
+        </where>
+    </select>
+</mapper>

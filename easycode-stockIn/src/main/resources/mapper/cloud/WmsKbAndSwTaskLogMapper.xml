@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.WmsKbAndSwTaskLogMapper">
+
+    <resultMap type="WmsKbAndSwTaskLog" id="WmsKbAndSwTaskLogResult">
+        <result property="id"    column="id"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="taskId"    column="task_id"    />
+        <result property="taskStatus"    column="task_status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="sapMaterialDocument"    column="sap_material_document"    />
+    </resultMap>
+
+    <sql id="selectWmsKbAndSwTaskLogVo">
+        select id, task_id, task_status, create_time, create_by, sap_material_document,tenant_id from wms_kb_and_sw_task_log
+    </sql>
+
+    <select id="selectWmsKbAndSwTaskLogList" parameterType="WmsKbAndSwTaskLog" resultMap="WmsKbAndSwTaskLogResult">
+        <include refid="selectWmsKbAndSwTaskLogVo"/>
+        <where>  
+            <if test="taskId != null "> and task_id = #{taskId}</if>
+            <if test="taskStatus != null  and taskStatus != ''"> and task_status = #{taskStatus}</if>
+            <if test="sapMaterialDocument != null  and sapMaterialDocument != ''"> and sap_material_document = #{sapMaterialDocument}</if>
+        </where>
+    </select>
+    
+    <select id="selectWmsKbAndSwTaskLogById" parameterType="Long" resultMap="WmsKbAndSwTaskLogResult">
+        <include refid="selectWmsKbAndSwTaskLogVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWmsKbAndSwTaskLog" parameterType="WmsKbAndSwTaskLog">
+        insert into wms_kb_and_sw_task_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="taskId != null">task_id,</if>
+            <if test="taskStatus != null">task_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="sapMaterialDocument != null">sap_material_document,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="taskId != null">#{taskId},</if>
+            <if test="taskStatus != null">#{taskStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="sapMaterialDocument != null">#{sapMaterialDocument},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsKbAndSwTaskLog" parameterType="WmsKbAndSwTaskLog">
+        update wms_kb_and_sw_task_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskId != null">task_id = #{taskId},</if>
+            <if test="taskStatus != null">task_status = #{taskStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="sapMaterialDocument != null">sap_material_document = #{sapMaterialDocument},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWmsKbAndSwTaskLogById" parameterType="Long">
+        delete from wms_kb_and_sw_task_log where id = #{id}
+    </delete>
+
+    <delete id="deleteWmsKbAndSwTaskLogByIds" parameterType="String">
+        delete from wms_kb_and_sw_task_log where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <insert id="batchInsertWmsKbAndSwTaskLog" parameterType="List" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_kb_and_sw_task_log (
+        sap_material_document,task_id,task_status,
+        tenant_id,
+        create_by,
+        create_time)
+        VALUES
+        <foreach item="item" collection="list" separator=",">
+            (#{item.sapMaterialDocument},
+            #{item.taskId},
+            #{item.taskStatus},
+            #{item.tenantId},
+            #{item.createBy},
+            #{item.createTime})
+        </foreach>
+    </insert>
+</mapper>

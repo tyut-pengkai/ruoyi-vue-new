@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.SaleReturnOrderDetailMapper">
+
+    <resultMap type="SaleReturnOrderDetail" id="SaleReturnOrderDetailResult">
+        <result property="id"    column="id"    />
+        <result property="returnOrderNo"    column="return_order_no"    />
+        <result property="lineNo"    column="line_no"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="returnQty"    column="return_qty"    />
+        <result property="remark"    column="remark"    />
+        <result property="unit"    column="unit"    />
+        <result property="operationUnit"    column="operation_unit"    />
+        <result property="operationQty"    column="operation_qty"    />
+        <result property="lot"    column="lot"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="containerNo"    column="container_no"    />
+        <result property="containerType"    column="container_type"    />
+        <result property="taskBookNo"    column="task_book_no"    />
+        <result property="pstyv"    column="pstyv"    />
+        <result property="kostk"    column="kostk"    />
+        <result property="vgbel"    column="vgbel"    />
+        <result property="vgpos"    column="vgpos"    />
+        <result property="insmk"    column="insmk"    />
+        <result property="moveType"    column="move_type"    />
+    </resultMap>
+
+    <resultMap type="SaleReturnOrderDetailVo" id="SaleReturnOrderDetailVoResult">
+        <result property="id"    column="id"    />
+        <result property="returnOrderNo"    column="return_order_no"    />
+        <result property="lineNo"    column="line_no"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="returnQty"    column="return_qty"    />
+        <result property="remark"    column="remark"    />
+        <result property="unit"    column="unit"    />
+        <result property="operationUnit"    column="operation_unit"    />
+        <result property="operationQty"    column="operation_qty"    />
+        <result property="lot"    column="lot"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="containerNo"    column="container_no"    />
+        <result property="containerType"    column="container_type"    />
+        <result property="taskBookNo"    column="task_book_no"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="positionNo"    column="position_no"    />
+        <result property="pstyv"    column="pstyv"    />
+        <result property="kostk"    column="kostk"    />
+        <result property="vgbel"    column="vgbel"    />
+        <result property="vgpos"    column="vgpos"    />
+        <result property="insmk"    column="insmk"    />
+        <result property="moveType"    column="move_type"    />
+    </resultMap>
+
+    <sql id="selectSaleReturnOrderDetailVo">
+        select id, operation_unit,pstyv,kostk,vgbel,move_type,vgpos,insmk, operation_qty, task_book_no, return_order_no, line_no, lot, material_no, material_name, old_material_no, factory_code, return_qty, remark, unit, operation_unit, operation_qty, tenant_id, create_by, create_time, update_by, update_time ,container_no,container_type from wms_sale_return_order_detail
+    </sql>
+
+    <select id="selectSaleReturnOrderDetailList" parameterType="SaleReturnOrderDetail" resultMap="SaleReturnOrderDetailResult">
+        <include refid="selectSaleReturnOrderDetailVo"/>
+        <where>
+            <if test="returnOrderNo != null  and returnOrderNo != ''"> and return_order_no = #{returnOrderNo}</if>
+            <if test="lineNo != null  and lineNo != ''"> and line_no = #{lineNo}</if>
+            <if test="materialNo != null  and materialNo != ''"> and material_no = #{materialNo}</if>
+            <if test="materialName != null  and materialName != ''"> and material_name like concat('%', #{materialName}, '%')</if>
+            <if test="oldMaterialNo != null  and oldMaterialNo != ''"> and old_material_no = #{oldMaterialNo}</if>
+            <if test="factoryCode != null  and factoryCode != ''"> and factory_code = #{factoryCode}</if>
+            <if test="lot != null  and lot != ''"> and lot = #{lot}</if>
+            <if test="returnQty != null "> and return_qty = #{returnQty}</if>
+            <if test="unit != null  and unit != ''"> and unit = #{unit}</if>
+            <if test="taskBookNo != null  and taskBookNo != ''"> and task_book_no = #{taskBookNo}</if>
+            <if test="operationUnit != null  and operationUnit != ''"> and operation_unit = #{operationUnit}</if>
+            <if test="operationQty != null  and operationQty != ''"> and operation_qty = #{operationQty}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+            <if test="containerNo != null "> and container_no = #{containerNo}</if>
+            <if test="containerType != null "> and container_type = #{containerType}</if>
+        </where>
+    </select>
+
+    <select id="selectSaleReturnOrderDetailById" parameterType="Long" resultMap="SaleReturnOrderDetailResult">
+        <include refid="selectSaleReturnOrderDetailVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSaleReturnOrderDetail" parameterType="SaleReturnOrderDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_sale_return_order_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="returnOrderNo != null">return_order_no,</if>
+            <if test="lineNo != null">line_no,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="returnQty != null">return_qty,</if>
+            <if test="remark != null">remark,</if>
+            <if test="unit != null">unit,</if>
+            <if test="operationUnit != null">operation_unit,</if>
+            <if test="operationQty != null">operation_qty,</if>
+            <if test="lot != null">lot,</if>
+            <if test="taskBookNo != null">task_book_no,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="containerNo != null">container_no,</if>
+            <if test="containerType != null">container_type,</if>
+            <if test="pstyv != null">pstyv,</if>
+            <if test="kostk != null">kostk,</if>
+            <if test="vgbel != null">vgbel,</if>
+            <if test="vgpos != null">vgpos,</if>
+            <if test="insmk != null">insmk,</if>
+            <if test="moveType != null">move_type,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="returnOrderNo != null">#{returnOrderNo},</if>
+            <if test="lineNo != null">#{lineNo},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="returnQty != null">#{returnQty},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="operationUnit != null">#{operationUnit},</if>
+            <if test="operationQty != null">#{operationQty},</if>
+            <if test="lot != null">#{lot},</if>
+            <if test="taskBookNo != null">#{taskBookNo},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="containerNo != null">#{containerNo},</if>
+            <if test="containerType != null">#{containerType},</if>
+            <if test="pstyv != null">#{pstyv},</if>
+            <if test="kostk != null">#{kostk},</if>
+            <if test="vgbel != null">#{vgbel},</if>
+            <if test="vgpos != null">#{vgpos},</if>
+            <if test="insmk != null">#{insmk},</if>
+            <if test="moveType != null">#{moveType},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertSaleReturnOrderDetailList" parameterType="List" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_sale_return_order_detail(
+        return_order_no,
+        line_no,
+        material_no,
+        material_name,
+        old_material_no,
+        factory_code,
+        return_qty,
+        remark,
+        unit,
+        operation_unit,
+        operation_qty,
+        lot,
+        task_book_no,
+        tenant_id,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        container_no,
+        container_type,
+        move_type,pstyv,kostk,vgbel,vgpos,insmk
+        )
+        values
+        <foreach item="item" collection="list" separator=",">
+            (
+            #{item.returnOrderNo},
+            #{item.lineNo},
+            #{item.materialNo},
+            #{item.materialName},
+            #{item.oldMaterialNo},
+            #{item.factoryCode},
+            #{item.returnQty},
+            #{item.remark},
+            #{item.unit},
+            #{item.operationUnit},
+            #{item.operationQty},
+            #{item.lot},
+            #{item.taskBookNo},
+            #{item.tenantId},
+            #{item.createBy},
+            #{item.createTime},
+            #{item.updateBy},
+            #{item.updateTime},
+            #{item.containerNo},
+            #{item.containerType},#{item.moveType},
+            #{item.pstyv},#{item.kostk},#{item.vgbel}
+            ,#{item.vgpos},#{item.insmk}
+            )
+        </foreach>
+
+    </insert>
+
+    <update id="updateSaleReturnOrderDetail" parameterType="SaleReturnOrderDetail">
+        update wms_sale_return_order_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="returnOrderNo != null">return_order_no = #{returnOrderNo},</if>
+            <if test="lineNo != null">line_no = #{lineNo},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="returnQty != null">return_qty = #{returnQty},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="operationUnit != null">operation_unit = #{operationUnit},</if>
+            <if test="operationQty != null">operation_qty = #{operationQty},</if>
+            <if test="lot != null">lot = #{lot},</if>
+            <if test="taskBookNo != null">task_book_no = #{taskBookNo},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="containerNo != null">container_no = #{containerNo},</if>
+            <if test="containerType != null">container_type = #{containerType},</if>
+            <if test="pstyv != null">pstyv = #{pstyv},</if>
+            <if test="kostk != null">kostk = #{kostk},</if>
+            <if test="vgbel != null">vgbel = #{vgbel},</if>
+            <if test="vgpos != null">vgpos = #{vgpos},</if>
+            <if test="insmk != null">insmk = #{insmk},</if>
+            <if test="moveType != null">move_type = #{moveType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSaleReturnOrderDetailById" parameterType="Long">
+        delete from wms_sale_return_order_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteSaleReturnOrderDetailByIds" parameterType="String">
+        delete from wms_sale_return_order_detail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByReturnOrderNo" parameterType="String">
+        delete from wms_sale_return_order_detail where return_order_no = #{returnOrderNo}
+    </delete>
+
+    <select id="getBeContinuedNumber" resultType="java.lang.Integer">
+        SELECT
+            COUNT(1)
+        FROM
+            wms_sale_return_order_detail AS wccrod
+                LEFT JOIN wms_ret_task AS wrt ON wccrod.id = wrt.detail_id
+                LEFT JOIN wms_sale_return_order AS wccro ON wccro.order_no = wccrod.return_order_no
+        WHERE
+            wrt.task_type = #{taskType}
+          AND wrt.task_status IN ('1','2') AND wccro.order_no = #{orderNo}
+    </select>
+
+    <select id="getPrintInfoList"  parameterType="Long" resultMap="SaleReturnOrderDetailVoResult">
+        select wccrod.id, wccrod.operation_unit, wccrod.operation_qty, wccrod.task_book_no,
+               wccrod.return_order_no, wccrod.line_no, wccrod.lot, wccrod.material_no, wccrod.material_name,
+               wccrod.old_material_no, wccrod.factory_code, wccrod.return_qty, wccrod.remark, wccrod.unit,
+               wccrod.operation_unit, wccrod.operation_qty, wccrod.tenant_id, wccrod.create_by,
+               wrt.storage_location_code location_code, wrt.position_no,
+               wccrod.create_time, wccrod.update_by, wccrod.update_time ,wccrod.container_no,wccrod.container_type
+        FROM
+            wms_sale_return_order_detail AS wccrod
+                LEFT JOIN wms_ret_task AS wrt ON wccrod.id = wrt.detail_id
+        WHERE
+            wrt.id = #{id}
+    </select>
+</mapper>

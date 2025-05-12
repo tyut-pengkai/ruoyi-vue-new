@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.StockInSemiFinOrderMapper">
+
+    <resultMap type="StockInSemiFinOrder" id="StockInSemiFinOrderResult">
+        <result property="id" column="id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="oldMaterialNo" column="old_material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deptId" column="dept_id"/>
+    </resultMap>
+
+    <sql id="selectStockInSemiFinOrderVo">
+        select id,
+               order_no,
+               material_no,
+               old_material_no,
+               material_name,
+               factory_code,
+               order_status,
+               tenant_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               dept_id
+        from wms_stockin_semifin_order
+    </sql>
+
+    <select id="selectStockInSemiFinOrderList" parameterType="StockInSemiFinOrder"
+            resultMap="StockInSemiFinOrderResult">
+        select
+        sso.id,
+        sso.order_no,
+        sso.material_no,
+        sso.old_material_no,
+        sso.material_name,
+        sso.factory_code,
+        sso.order_status,
+        sso.tenant_id,
+        sso.create_by,
+        sso.create_time,
+        sso.update_by,
+        sso.update_time,
+        sso.dept_id
+        from wms_stockin_semifin_order sso
+        left join sys_dept d on sso.dept_id = d.dept_id
+        <where>
+            <if test="orderNo != null  and orderNo != ''">and sso.order_no = #{orderNo}</if>
+            <if test="materialNo != null  and materialNo != ''">and sso.material_no = #{materialNo}</if>
+            <if test="oldMaterialNo != null  and oldMaterialNo != ''">and sso.old_material_no = #{oldMaterialNo}</if>
+            <if test="materialName != null  and materialName != ''">and sso.material_name like concat('%', #{materialName},
+                '%')
+            </if>
+            <if test="factoryCode != null  and factoryCode != ''">and sso.factory_code = #{factoryCode}</if>
+            <if test="orderStatus != null  and orderStatus != ''">and sso.order_status = #{orderStatus}</if>
+            <if test="tenantId != null ">and sso.tenant_id = #{tenantId}</if>
+            <if test="deptId != null ">and sso.dept_id = #{deptId}</if>
+            ${params.dataScope}
+        </where>
+        ORDER BY sso.id DESC
+    </select>
+
+    <select id="selectStockInSemiFinOrderById" parameterType="Long" resultMap="StockInSemiFinOrderResult">
+        <include refid="selectStockInSemiFinOrderVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertStockInSemiFinOrder" parameterType="StockInSemiFinOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_stockin_semifin_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">order_no,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deptId != null">dept_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">#{orderNo},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deptId != null">(select  dept_id from sys_dept where endda = 1 and locate(dept_id,(select CONCAT(ancestors,',',dept_id) from sys_dept where dept_id = #{deptId})) > 0),</if>
+        </trim>
+    </insert>
+
+    <update id="updateStockInSemiFinOrder" parameterType="StockInSemiFinOrder">
+        update wms_stockin_semifin_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        <where>
+            <if test="orderNo != null  and orderNo != ''">and order_no = #{orderNo}</if>
+            <if test="id != null  and id != ''">and id = #{id}</if>
+        </where>
+    </update>
+
+    <delete id="deleteStockInSemiFinOrderById" parameterType="Long">
+        delete
+        from wms_stockin_semifin_order
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteStockInSemiFinOrderByIds" parameterType="String">
+        delete from wms_stockin_semifin_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectStockInSemiList" parameterType="StockInSemiFinOrderDto"
+            resultType="StockInSemiFinOrderDto">
+        select
+        sso.id,
+        sso.order_no as orderNo,
+        sso.material_no as materialNo,
+        sso.old_material_no as oldMaterialNo,
+        sso.material_name as materialName,
+        sso.factory_code as factoryCode,
+        sso.order_status as orderStatus,
+        sso.tenant_id as tenantId,
+        sso.create_by as createBy,
+        sso.create_time as createTime,
+        sso.update_by as updateBy,
+        sso.update_time as updateTime,
+        sso.dept_id as deptId
+        from wms_stockin_semifin_order sso
+        left join sys_dept d on sso.dept_id = d.dept_id
+        <where>
+            <if test="orderNo != null  and orderNo != ''">and sso.order_no = #{orderNo}</if>
+            <if test="materialNo != null  and materialNo != ''">and sso.material_no = #{materialNo}</if>
+            <if test="oldMaterialNo != null  and oldMaterialNo != ''">and sso.old_material_no = #{oldMaterialNo}</if>
+            <if test="materialName != null  and materialName != ''">and sso.material_name like concat('%', #{materialName},
+                '%')
+            </if>
+            <if test="factoryCode != null  and factoryCode != ''">and sso.factory_code = #{factoryCode}</if>
+            <if test="orderStatus != null  and orderStatus != ''">and sso.order_status = #{orderStatus}</if>
+            <if test="tenantId != null ">and sso.tenant_id = #{tenantId}</if>
+            <if test="deptId != null ">and sso.dept_id = #{deptId}</if>
+            <if test="prdOrderNo != null and prdOrderNo != ''">and sso.id in (select semifin_order_id from wms_stockin_semifin_order_detail where prd_order_no = #{prdOrderNo} group by prd_order_no)</if>
+            ${params.dataScope}
+        </where>
+        ORDER BY sso.id DESC
+    </select>
+</mapper>

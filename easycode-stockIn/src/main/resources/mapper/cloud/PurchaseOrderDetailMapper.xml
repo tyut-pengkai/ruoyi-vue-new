@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.PurchaseOrderDetailMapper">
+
+    <resultMap type="PurchaseOrderDetailVo" id="PurchaseOrderDetailResult">
+        <result property="id"    column="id"    />
+        <result property="factoryId"    column="factory_id"    />
+        <result property="factoryName"    column="factory_name"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="deliveryDate"    column="delivery_date"    />
+        <result property="purchaseOrderId"    column="purchase_order_id"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="purchaseLineNo"    column="purchase_line_no"    />
+        <result property="purchaseRefundOrderNo"    column="purchase_refund_order_no"    />
+        <result property="unit"    column="unit"    />
+        <result property="totalPlanQty"    column="total_plan_qty"    />
+        <result property="totalQty"    column="total_qty"    />
+        <result property="planQty"    column="plan_qty"    />
+        <result property="madeQty"    column="made_qty"    />
+        <result property="stoLocation"    column="sto_location"    />
+        <result property="isExempted"    column="is_exempted"    />
+        <result property="isConsigned"    column="is_consigned"    />
+        <result property="noDeliveryFlag"    column="no_delivery_flag"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="deliveryLineNo"    column="delivery_line_no"    />
+        <result property="sapReceivedQty"    column="sap_received_qty"    />
+        <result property="wmsReceivedQty"    column="wms_received_qty"    />
+        <result property="materialGroup"    column="material_group"    />
+        <result property="materialGroupDesc"    column="material_group_desc"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="orderType"    column="order_type"    />
+        <result property="deliveryInfos"    column="delivery_infos"    />
+        <result property="supplierCode"    column="supplier_code"    />
+        <result property="companyCode"    column="company_code"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="qty"    column="qty"    />
+        <result property="priorQty"    column="prior_qty"    />
+        <result property="billType"    column="bill_type"    />
+    </resultMap>
+
+    <select id="queryDeliveryPlan" parameterType="PurchaseOrderDetailVo" resultMap="PurchaseOrderDetailResult">
+        select
+        pod.material_no,
+        po.order_type,
+        group_concat(IF(DATE_FORMAT(pod.delivery_date,'%Y-%m-%d')>=CURDATE(),
+        concat_ws('|',DATE_FORMAT(pod.delivery_date,'%Y%m%d'), pod.total_plan_qty - pod.made_qty), NULL)) as delivery_infos,
+        SUM(IF( CURDATE() >= DATE_FORMAT(pod.delivery_date,'%Y-%m-%d'),
+        pod.total_plan_qty - pod.made_qty, 0)) as prior_qty,
+        purchase_order_no,
+        pod.material_name,
+        po.supplier_code,
+        po.company_code,
+        po.company_name,
+        po.supplier_name,
+        sum(pod.total_plan_qty - pod.made_qty) qty
+        from
+        (select material_no,delivery_date,total_plan_qty,made_qty,material_name,purchase_order_no,purchase_order_id from wms_purchase_order_detail
+        where (total_plan_qty - made_qty) > 0 and tenant_id = #{tenantId}) pod
+        LEFT JOIN wms_purchase_order po ON pod.purchase_order_id = po.id
+        <where>
+            <if test="materialNo != null  and materialNo != ''"> and material_no = #{materialNo}</if>
+            <if test="orderNo != null  and orderNo != ''"> and order_no = #{orderNo}</if>
+            <if test="orderType != null  and orderType != ''"> and order_type = #{orderType}</if>
+            <if test="companyCode != null  and companyCode != ''"> and po.company_code = #{companyCode}</if>
+            <if test="supplierCode != null  and supplierCode != ''"> and po.supplier_code = #{supplierCode}</if>
+        </where>
+        GROUP BY pod.purchase_order_no
+        ,po.supplier_code, po.company_code, po.company_name, po.supplier_name,pod.material_no,pod.material_name,po.supplier_code,po.supplier_name,po.order_type
+    </select>
+
+    <select id="queryPurchaseDetailFinishList" parameterType="String" resultMap="PurchaseOrderDetailResult">
+        SELECT
+            pod.purchase_order_no, pod.purchase_line_no
+        FROM
+            wms_purchase_order_detail pod
+                LEFT JOIN wms_purchase_order po ON pod.purchase_order_id = po.id
+                LEFT JOIN wms_delivery_order_detail dod ON dod.purchase_order_detail_id = pod.id
+
+        WHERE dod.delivery_order_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+          and pod.exc_fin_flag = 'X'
+    </select>
+</mapper>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.PrdReturnOrderMapper">
+
+    <resultMap type="PrdReturnOrder" id="PrdReturnOrderResult">
+        <result property="id"    column="id"    />
+        <result property="returnOrderNo"    column="return_order_no"    />
+        <result property="prdOrderNo"    column="prd_order_no"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productDes"    column="product_des"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="factoryName"    column="factory_name"    />
+        <result property="prdOrderStatus"    column="prd_order_status"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="remark"    column="remark"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectPrdReturnOrderVo">
+        select id, return_order_no, dept_id, prd_order_no, product_code, product_des, factory_code, factory_name, prd_order_status, order_status, remark, tenant_id, create_by, create_time, update_by, update_time from wms_prd_return_order
+    </sql>
+
+    <select id="selectPrdReturnOrderList" parameterType="PrdReturnOrderDto" resultMap="PrdReturnOrderResult">
+        select pro.id, pro.return_order_no, pro.dept_id, pro.prd_order_no,
+        pro.product_code, pro.product_des, pro.factory_code,
+        pro.factory_name, pro.prd_order_status, pro.order_status,
+        pro.remark, pro.tenant_id, pro.create_by, pro.create_time,
+        pro.update_by, pro.update_time
+        from wms_prd_return_order pro
+        left join sys_dept d on pro.dept_id = d.dept_id
+        <where>
+            <if test="returnOrderNo != null  and returnOrderNo != ''"> and pro.return_order_no like concat('%',#{returnOrderNo}, '%') </if>
+            <if test="prdOrderNo != null  and prdOrderNo != ''"> and pro.prd_order_no like concat('%',#{prdOrderNo}, '%')</if>
+            <if test="productCode != null  and productCode != ''"> and pro.product_code = #{productCode}</if>
+            <if test="productDes != null  and productDes != ''"> and pro.product_des = #{productDes}</if>
+            <if test="factoryCode != null  and factoryCode != ''"> and pro.factory_code = #{factoryCode}</if>
+            <if test="factoryName != null  and factoryName != ''"> and pro.factory_name like concat('%', #{factoryName}, '%')</if>
+            <if test="prdOrderStatus != null  and prdOrderStatus != ''"> and pro.prd_order_status = #{prdOrderStatus}</if>
+            <if test="orderStatus != null  and orderStatus != ''"> and pro.order_status = #{orderStatus}</if>
+            <if test="materialNo != null "> and pro.return_order_no in (select return_order_no from wms_prd_return_order_detail where material_no like concat('%', #{materialNo}, '%'))</if>
+            <if test="tenantId != null "> and pro.tenant_id = #{tenantId}</if>
+            <if test="startTime != null and endTime == null">
+                and pro.create_time &gt;= #{startTime}
+            </if>
+            <if test="startTime == null and endTime != null">
+                and pro.create_time &lt;= DATE_ADD(#{endTime}, INTERVAL 1 DAY)
+            </if>
+            <if test="startTime != null and endTime != null">
+                and pro.create_time between #{startTime} and DATE_ADD(#{endTime}, INTERVAL 1 DAY)
+            </if>
+            ${params.dataScope}
+        </where>
+        order by pro.id desc
+    </select>
+
+    <select id="selectPrdReturnOrderById" parameterType="Long" resultMap="PrdReturnOrderResult">
+        <include refid="selectPrdReturnOrderVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPrdReturnOrder" parameterType="PrdReturnOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_prd_return_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="returnOrderNo != null">return_order_no,</if>
+            <if test="prdOrderNo != null">prd_order_no,</if>
+            <if test="productCode != null">product_code,</if>
+            <if test="productDes != null">product_des,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="factoryName != null">factory_name,</if>
+            <if test="prdOrderStatus != null">prd_order_status,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="returnOrderNo != null">#{returnOrderNo},</if>
+            <if test="prdOrderNo != null">#{prdOrderNo},</if>
+            <if test="productCode != null">#{productCode},</if>
+            <if test="productDes != null">#{productDes},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="factoryName != null">#{factoryName},</if>
+            <if test="prdOrderStatus != null">#{prdOrderStatus},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="deptId != null">(select  dept_id from sys_dept where endda = 1 and locate(dept_id,(select CONCAT(ancestors,',',dept_id) from sys_dept where dept_id = #{deptId})) > 0),</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updatePrdReturnOrder" parameterType="PrdReturnOrder">
+        update wms_prd_return_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="returnOrderNo != null">return_order_no = #{returnOrderNo},</if>
+            <if test="prdOrderNo != null">prd_order_no = #{prdOrderNo},</if>
+            <if test="productCode != null">product_code = #{productCode},</if>
+            <if test="productDes != null">product_des = #{productDes},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="factoryName != null">factory_name = #{factoryName},</if>
+            <if test="prdOrderStatus != null">prd_order_status = #{prdOrderStatus},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePrdReturnOrderById" parameterType="Long">
+        delete from wms_prd_return_order where id = #{id}
+    </delete>
+
+    <delete id="deletePrdReturnOrderByIds" parameterType="String">
+        delete from wms_prd_return_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

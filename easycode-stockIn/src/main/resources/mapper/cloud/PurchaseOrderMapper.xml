@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.PurchaseOrderMapper">
+
+    <resultMap type="PurchaseOrder" id="PurchaseOrderResult">
+        <result property="id"    column="id"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="orderType"    column="order_type"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="companyCode"    column="company_code"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="supplierCode"    column="supplier_code"    />
+        <result property="buyer"    column="buyer"    />
+        <result property="deliverDate"    column="deliver_date"    />
+        <result property="processDate"    column="process_date"    />
+        <result property="closeDate"    column="close_date"    />
+        <result property="purchaseRefundOrderNo"    column="purchase_refund_order_no"    />
+        <result property="billType"    column="bill_type"    />
+        <result property="remark"    column="remark"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="groupName"    column="group_name"    />
+    </resultMap>
+
+    <resultMap type="PurchaseOrderVo" id="PurchaseOrderVoResult">
+        <result property="orderNum"    column="orderNum"    />
+        <result property="maxId"    column="maxId"    />
+    </resultMap>
+
+    <sql id="selectPurchaseOrderVo">
+        select id, order_no, order_type, order_status, company_id, company_name, company_code, supplier_id, supplier_name, supplier_code, buyer, deliver_date, process_date, close_date, purchase_refund_order_no, bill_type, remark, tenant_id, create_by, create_time, update_by, update_time,group_name from wms_purchase_order
+    </sql>
+
+    <select id="selectPurchaseOrderList" parameterType="PurchaseOrder" resultMap="PurchaseOrderResult">
+        <include refid="selectPurchaseOrderVo"/>
+        <where>
+            <if test="orderNo != null  and orderNo != ''"> and order_no = #{orderNo}</if>
+            <if test="orderType != null  and orderType != ''"> and order_type = #{orderType}</if>
+            <if test="orderStatus != null  and orderStatus != ''"> and order_status = #{orderStatus}</if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+            <if test="companyName != null  and companyName != ''"> and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="companyCode != null  and companyCode != ''"> and company_code = #{companyCode}</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="supplierCode != null  and supplierCode != ''"> and supplier_code = #{supplierCode}</if>
+            <if test="buyer != null  and buyer != ''"> and buyer = #{buyer}</if>
+            <if test="deliverDate != null "> and deliver_date = #{deliverDate}</if>
+            <if test="processDate != null "> and process_date = #{processDate}</if>
+            <if test="closeDate != null "> and close_date = #{closeDate}</if>
+            <if test="purchaseRefundOrderNo != null  and purchaseRefundOrderNo != ''"> and purchase_refund_order_no = #{purchaseRefundOrderNo}</if>
+            <if test="billType != null  and billType != ''"> and bill_type = #{billType}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+        </where>
+    </select>
+
+    <select id="selectPurchaseOrderById" parameterType="Long" resultMap="PurchaseOrderResult">
+        <include refid="selectPurchaseOrderVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPurchaseOrder" parameterType="PurchaseOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_purchase_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">order_no,</if>
+            <if test="orderType != null">order_type,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="companyName != null">company_name,</if>
+            <if test="companyCode != null">company_code,</if>
+            <if test="supplierId != null">supplier_id,</if>
+            <if test="supplierName != null">supplier_name,</if>
+            <if test="supplierCode != null">supplier_code,</if>
+            <if test="buyer != null">buyer,</if>
+            <if test="deliverDate != null">deliver_date,</if>
+            <if test="processDate != null">process_date,</if>
+            <if test="closeDate != null">close_date,</if>
+            <if test="purchaseRefundOrderNo != null">purchase_refund_order_no,</if>
+            <if test="billType != null">bill_type,</if>
+            <if test="remark != null">remark,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="groupName != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">#{orderNo},</if>
+            <if test="orderType != null">#{orderType},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="companyName != null">#{companyName},</if>
+            <if test="companyCode != null">#{companyCode},</if>
+            <if test="supplierId != null">#{supplierId},</if>
+            <if test="supplierName != null">#{supplierName},</if>
+            <if test="supplierCode != null">#{supplierCode},</if>
+            <if test="buyer != null">#{buyer},</if>
+            <if test="deliverDate != null">#{deliverDate},</if>
+            <if test="processDate != null">#{processDate},</if>
+            <if test="closeDate != null">#{closeDate},</if>
+            <if test="purchaseRefundOrderNo != null">#{purchaseRefundOrderNo},</if>
+            <if test="billType != null">#{billType},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="groupName != null">#{groupName},</if>
+        </trim>
+    </insert>
+
+    <update id="updatePurchaseOrder" parameterType="PurchaseOrder">
+        update wms_purchase_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNo != null">order_no = #{orderNo},</if>
+            <if test="orderType != null">order_type = #{orderType},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="companyName != null">company_name = #{companyName},</if>
+            <if test="companyCode != null">company_code = #{companyCode},</if>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="supplierName != null">supplier_name = #{supplierName},</if>
+            <if test="supplierCode != null">supplier_code = #{supplierCode},</if>
+            <if test="buyer != null">buyer = #{buyer},</if>
+            <if test="deliverDate != null">deliver_date = #{deliverDate},</if>
+            <if test="processDate != null">process_date = #{processDate},</if>
+            <if test="closeDate != null">close_date = #{closeDate},</if>
+            <if test="purchaseRefundOrderNo != null">purchase_refund_order_no = #{purchaseRefundOrderNo},</if>
+            <if test="billType != null">bill_type = #{billType},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="groupName != null">group_name = #{groupName},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePurchaseOrderById" parameterType="Long">
+        delete from wms_purchase_order where id = #{id}
+    </delete>
+
+    <delete id="deletePurchaseOrderByIds" parameterType="String">
+        delete from wms_purchase_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectPurOrderAgNum" parameterType="PurchaseOrder" resultMap="PurchaseOrderVoResult">
+        select COUNT(id) AS orderNum, MAX(id) AS maxId from wms_purchase_order where order_type = #{orderType}
+    </select>
+
+    <select id="selectPurOrderByOrderType" parameterType="PurchaseOrder" resultMap="PurchaseOrderResult">
+        SELECT
+            id,
+            order_no,
+            order_type,
+            order_status,
+            bill_type
+        FROM wms_purchase_order
+        <where>
+            order_type != '5'
+            <if test="companyCode != null">and company_code = #{companyCode}</if>
+            <if test="orderStatus != null">and order_status != #{orderStatus}</if>
+            <if test="orderType != null">and order_type = #{orderType}</if>
+            <if test="orderNo != null">and order_no = #{orderNo}</if>
+        </where>
+    </select>
+    <select id="selectOrderByOrderNo" parameterType="List" resultMap="PurchaseOrderResult">
+        SELECT
+        order_no,
+        order_type
+        FROM wms_purchase_order
+        WHERE order_no IN
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            (#{item})
+        </foreach>
+        GROUP BY order_no, order_type
+    </select>
+</mapper>

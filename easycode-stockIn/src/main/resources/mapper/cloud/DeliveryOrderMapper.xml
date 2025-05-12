@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.DeliveryOrderMapper">
+
+    <!-- 送货单 -->
+    <resultMap type="DeliveryOrder" id="DeliveryOrderResult">
+        <result property="id"    column="id"    />
+        <result property="factoryId"    column="factory_id"    />
+        <result property="factoryName"    column="factory_name"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="deliveryOrderNo"    column="delivery_order_no"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="supplierCode"    column="supplier_code"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="companyCode"    column="company_code"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="deliveryDate"    column="delivery_date"    />
+        <result property="contact"    column="contact"    />
+        <result property="contactPhone"    column="contact_phone"    />
+        <result property="deliveryType"    column="delivery_type"    />
+        <result property="deliveryAddr"    column="delivery_addr"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="purchaseOrderType"    column="purchase_order_type"    />
+        <result property="remark"    column="remark"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectDeliveryOrderVo">
+        select id, factory_id, factory_name, factory_code, delivery_order_no, supplier_id, supplier_code, supplier_name, order_status, company_id, company_code, company_name, delivery_date, contact, contact_phone, delivery_type, delivery_addr, purchase_order_no,purchase_order_type, remark, tenant_id, status, create_by, create_time, update_by, update_time from wms_delivery_order
+    </sql>
+
+    <select id="selectDeliveryOrderList" parameterType="DeliveryOrder" resultMap="DeliveryOrderResult">
+        <include refid="selectDeliveryOrderVo"/>
+        <where>
+            <if test="factoryId != null "> and factory_id = #{factoryId}</if>
+            <if test="factoryName != null "> and factory_name = #{factoryName}</if>
+            <if test="factoryCode != null "> and factory_code = #{factoryCode}</if>
+            <if test="deliveryOrderNo != null  and deliveryOrderNo != ''"> and delivery_order_no like concat('%', #{deliveryOrderNo}, '%')</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="supplierCode != null  and supplierCode != ''"> and supplier_code = #{supplierCode}</if>
+            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="orderStatus != null  and orderStatus != ''"> and order_status = #{orderStatus}</if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+            <if test="companyCode != null  and companyCode != ''"> and company_code like concat('%', #{companyCode}, '%')</if>
+            <if test="companyName != null  and companyName != ''"> and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="deliveryDate != null "> and delivery_date = #{deliveryDate}</if>
+            <if test="contact != null  and contact != ''"> and contact = #{contact}</if>
+            <if test="contactPhone != null  and contactPhone != ''"> and contact_phone = #{contactPhone}</if>
+            <if test="deliveryType != null  and deliveryType != ''"> and delivery_type = #{deliveryType}</if>
+            <if test="deliveryAddr != null  and deliveryAddr != ''"> and delivery_addr = #{deliveryAddr}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''"> and purchase_order_no = #{purchaseOrderNo}</if>
+            <if test="purchaseOrderType != null  and purchaseOrderType != ''"> and purchase_order_type = #{purchaseOrderType}</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectDeliveryOrderById" parameterType="Long" resultMap="DeliveryOrderResult">
+        <include refid="selectDeliveryOrderVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectDeliveryOrderByIds" parameterType="Long" resultMap="DeliveryOrderResult">
+        <include refid="selectDeliveryOrderVo"/>
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectDeliveryOrderIsNew" parameterType="Long" resultType="Integer">
+        select COUNT(1) from wms_delivery_order
+        where order_status in ('2','3','4','5') and id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="openQuery" resultType="com.weifu.cloud.domain.DeliveryOrder" resultMap="DeliveryOrderResult">
+        <include refid="selectDeliveryOrderVo"/>
+        <where>
+            <if test="supplierCode != null  and supplierCode != ''"> and supplier_code = #{supplierCode}</if>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''"> and purchase_order_no = #{purchaseOrderNo}</if>
+        </where>
+        order by id desc
+    </select>
+
+    <insert id="insertDeliveryOrder" parameterType="DeliveryOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_delivery_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="factoryId != null ">factory_id,</if>
+            <if test="factoryName != null ">factory_name,</if>
+            <if test="factoryCode != null ">factory_code,</if>
+            <if test="deliveryOrderNo != null">delivery_order_no,</if>
+            <if test="supplierId != null">supplier_id,</if>
+            <if test="supplierCode != null">supplier_code,</if>
+            <if test="supplierName != null">supplier_name,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="companyCode != null">company_code,</if>
+            <if test="companyName != null">company_name,</if>
+            <if test="deliveryDate != null">delivery_date,</if>
+            <if test="contact != null">contact,</if>
+            <if test="contactPhone != null">contact_phone,</if>
+            <if test="deliveryType != null">delivery_type,</if>
+            <if test="deliveryAddr != null">delivery_addr,</if>
+            <if test="purchaseOrderNo != null">purchase_order_no,</if>
+            <if test="purchaseOrderType != null">purchase_order_type,</if>
+            <if test="remark != null">remark,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="factoryId != null">#{factoryId},</if>
+            <if test="factoryName != null">#{factoryName},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="deliveryOrderNo != null">#{deliveryOrderNo},</if>
+            <if test="supplierId != null">#{supplierId},</if>
+            <if test="supplierCode != null">#{supplierCode},</if>
+            <if test="supplierName != null">#{supplierName},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="companyCode != null">#{companyCode},</if>
+            <if test="companyName != null">#{companyName},</if>
+            <if test="deliveryDate != null">#{deliveryDate},</if>
+            <if test="contact != null">#{contact},</if>
+            <if test="contactPhone != null">#{contactPhone},</if>
+            <if test="deliveryType != null">#{deliveryType},</if>
+            <if test="deliveryAddr != null">#{deliveryAddr},</if>
+            <if test="purchaseOrderNo != null">#{purchaseOrderNo},</if>
+            <if test="purchaseOrderType != null">#{purchaseOrderType},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDeliveryOrder" parameterType="DeliveryOrder">
+        update wms_delivery_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="factoryId != null">factory_id = #{factoryId},</if>
+            <if test="factoryName != null">factory_name = #{factoryName},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="deliveryOrderNo != null">delivery_order_no = #{deliveryOrderNo},</if>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="supplierCode != null">supplier_code = #{supplierCode},</if>
+            <if test="supplierName != null">supplier_name = #{supplierName},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="companyCode != null">company_code = #{companyCode},</if>
+            <if test="companyName != null">company_name = #{companyName},</if>
+            <if test="deliveryDate != null">delivery_date = #{deliveryDate},</if>
+            <if test="contact != null">contact = #{contact},</if>
+            <if test="contactPhone != null">contact_phone = #{contactPhone},</if>
+            <if test="deliveryType != null">delivery_type = #{deliveryType},</if>
+            <if test="deliveryAddr != null">delivery_addr = #{deliveryAddr},</if>
+            <if test="purchaseOrderNo != null">purchase_order_no = #{purchaseOrderNo},</if>
+            <if test="purchaseOrderType != null">purchase_order_type = #{purchaseOrderType},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateDeliveryOrderStatus" parameterType="DeliveryOrderVo">
+        update wms_delivery_order set order_status = #{statusType} where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <delete id="deleteDeliveryOrderById" parameterType="Long">
+        delete from wms_delivery_order where id = #{id}
+    </delete>
+
+    <delete id="deleteDeliveryOrderByIds" parameterType="String">
+        delete from wms_delivery_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <sql id="selectDeliveryOrderDetailVo">
+        select id, factory_id, factory_name, factory_code, purchase_order_detail_id, material_id, material_no, material_name, old_material_no, deliver_qty, min_packing, unit, file_id, delivery_order_id, delivery_order_no, delivery_line_no, purchase_order_no, purchase_line_no, is_qequire_fill, is_printed, batch_no, third_delivery_order_no, third_delivery_line_no, remark, tenant_id, create_by, create_time, update_by, update_time from wms_delivery_order_detail
+    </sql>
+
+</mapper>

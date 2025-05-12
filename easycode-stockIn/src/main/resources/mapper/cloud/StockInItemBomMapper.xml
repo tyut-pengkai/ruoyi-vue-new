@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.StockInItemBomMapper">
+
+    <resultMap type="StockInItemBom" id="StockInItemBomResult">
+        <result property="id"    column="id"    />
+        <result property="stdOrderId"    column="std_order_id"    />
+        <result property="bwart"    column="bwart"    />
+        <result property="vbeln"    column="vbeln"    />
+        <result property="posnr"    column="POSNR"    />
+        <result property="linct"    column="LINCT"    />
+        <result property="matnr"    column="MATNR"    />
+        <result property="maktx"    column="MAKTX"    />
+        <result property="bdmng"    column="BDMNG"    />
+        <result property="lagme"    column="LAGME"    />
+        <result property="erfmg"    column="ERFMG"    />
+        <result property="erfme"    column="ERFME"    />
+        <result property="plant"    column="plant"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="supplierCode"    column="supplier_code"    />
+    </resultMap>
+
+
+
+
+    <sql id="selectStockInStdOrderVo">
+        select id,std_order_id,bwart,vbeln,POSNR,LINCT,MATNR,MAKTX,BDMNG,LAGME,ERFMG,ERFME, plant, remark,
+               create_by, create_time, update_by, update_time, location_code, supplier_code
+        from wms_stockin_item_bom
+    </sql>
+
+    <delete id="deleteStockInItemBomDetails" parameterType="long">
+        delete from wms_stockin_item_bom where std_order_id = #{stdOrderId}
+    </delete>
+
+    <select id="selectStockInItemBomList" parameterType="StockInItemBomVo" resultMap="StockInItemBomResult">
+        <include refid="selectStockInStdOrderVo"/>
+        <where>
+            <if test="id != null  and id != ''">and id = #{id}</if>
+            <if test="stdOrderId != null  and stdOrderId != ''">and std_order_id = #{stdOrderId}</if>
+        </where>
+        order by posnr asc
+    </select>
+
+    <insert id="insertStockInItemBomDetails" parameterType="InventoryUnopenOpenDetails" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_stockin_item_bom
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stdOrderId != null">std_order_id,</if>
+            <if test="bwart != null">bwart,</if>
+            <if test="vbeln != null">vbeln,</if>
+            <if test="posnr != null">posnr,</if>
+            <if test="linct != null">linct,</if>
+            <if test="matnr != null">matnr,</if>
+            <if test="maktx != null">maktx,</if>
+            <if test="bdmng != null">bdmng,</if>
+            <if test="lagme != null">lagme,</if>
+            <if test="erfmg != null">erfmg,</if>
+            <if test="erfme != null">erfme,</if>
+            <if test="plant != null">plant,</if>
+            <if test="remark != null">remark,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="locationCode != null">location_code,</if>
+            <if test="supplierCode != null">supplier_code,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stdOrderId != null">#{stdOrderId},</if>
+            <if test="bwart != null">#{bwart},</if>
+            <if test="vbeln != null">#{vbeln},</if>
+            <if test="posnr != null">#{posnr},</if>
+            <if test="linct != null">#{linct},</if>
+            <if test="matnr != null">#{matnr},</if>
+            <if test="maktx != null">#{maktx},</if>
+            <if test="bdmng != null">#{bdmng},</if>
+            <if test="lagme != null">#{lagme},</if>
+            <if test="erfmg != null">#{erfmg},</if>
+            <if test="erfme != null">#{erfme},</if>
+            <if test="plant != null">#{plant},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="locationCode != null">#{locationCode},</if>
+            <if test="supplierCode != null">#{supplierCode},</if>
+        </trim>
+    </insert>
+
+</mapper>

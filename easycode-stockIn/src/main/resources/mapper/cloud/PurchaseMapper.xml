@@ -1,0 +1,696 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.PurchaseMapper">
+
+    <resultMap type="PurchaseOrder" id="PurchaseOrderResult">
+        <result property="id" column="id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="orderType" column="order_type"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="companyCode" column="company_code"/>
+        <result property="supplierId" column="supplier_id"/>
+        <result property="supplierName" column="supplier_name"/>
+        <result property="supplierCode" column="supplier_code"/>
+        <result property="buyer" column="buyer"/>
+        <result property="deliverDate" column="deliver_date"/>
+        <result property="processDate" column="process_date"/>
+        <result property="closeDate" column="close_date"/>
+        <result property="purchaseRefundOrderNo" column="purchase_refund_order_no"/>
+        <result property="billType" column="bill_type"/>
+        <result property="remark" column="remark"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap type="PurchaseOrderDetail" id="WmsPurchaseOrderDetailResult">
+        <result property="id" column="id"/>
+        <result property="factoryId" column="factory_id"/>
+        <result property="factoryName" column="factory_name"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="oldMaterialNo" column="old_Material_no"/>
+        <result property="deliveryDate" column="delivery_date"/>
+        <result property="purchaseOrderId" column="purchase_order_id"/>
+        <result property="purchaseOrderNo" column="purchase_order_no"/>
+        <result property="purchaseLineNo" column="purchase_line_no"/>
+        <result property="purchaseRefundOrderNo" column="purchase_refund_order_no"/>
+        <result property="unit" column="unit"/>
+        <result property="totalPlanQty" column="total_plan_qty"/>
+        <result property="totalQty" column="total_qty"/>
+        <result property="planQty" column="plan_qty"/>
+        <result property="madeQty" column="made_qty"/>
+        <result property="stoLocation" column="sto_location"/>
+        <result property="isExempted" column="is_exempted"/>
+        <result property="isConsigned" column="is_consigned"/>
+        <result property="noDeliveryFlag" column="no_delivery_flag"/>
+        <result property="excFinFlag" column="exc_fin_flag"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="deliveryLineNo" column="delivery_line_no"/>
+        <result property="wmsReceivedQty" column="wms_received_qty"/>
+        <result property="sapReceivedQty" column="sap_received_qty"/>
+        <result property="materialGroup" column="material_group"/>
+        <result property="materialGroupDesc" column="material_group_desc"/>
+    </resultMap>
+
+    <resultMap type="PurchaseVo" id="PurchaseOrderDetailVoResult">
+        <result property="agId" column="agId"/>
+        <result property="id" column="id"/>
+        <result property="deliveryLineNo" column="delivery_line_no"/>
+        <result property="madeQty" column="mate_qty"/>
+    </resultMap>
+
+    <resultMap type="PurchaseDto" id="PurchaseDto">
+        <result property="id" column="id"/>
+        <result property="factoryId" column="factory_id"/>
+        <result property="factoryName" column="factory_name"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="oldMaterialNo" column="old_Material_no"/>
+        <result property="deliveryDate" column="delivery_date"/>
+        <result property="purchaseOrderId" column="purchase_order_id"/>
+        <result property="purchaseOrderNo" column="purchase_order_no"/>
+        <result property="purchaseLineNo" column="purchase_line_no"/>
+        <result property="purchaseRefundOrderNo" column="purchase_refund_order_no"/>
+        <result property="unit" column="unit"/>
+        <result property="totalPlanQty" column="total_plan_qty"/>
+        <result property="planQty" column="plan_qty"/>
+        <result property="madeQty" column="made_qty"/>
+        <result property="totalQty" column="total_qty"/>
+        <result property="sapReceivedQty" column="sap_received_qty"/>
+        <result property="wmsReceivedQty" column="wms_received_qty"/>
+        <result property="stoLocation" column="sto_location"/>
+        <result property="isExempted" column="is_exempted"/>
+        <result property="isConsigned" column="is_consigned"/>
+        <result property="noDeliveryFlag" column="no_delivery_flag"/>
+        <result property="excFinFlag" column="exc_fin_flag"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="billType" column="bill_type"/>
+        <result property="orderType" column="order_type"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="companyName" column="company_name"/>
+        <result property="companyCode" column="company_code"/>
+        <result property="supplierName" column="supplier_name"/>
+        <result property="supplierCode" column="supplier_code"/>
+        <result property="buyer" column="buyer"/>
+        <result property="deliverDate" column="deliver_date"/>
+        <result property="deliveryOrderNo" column="delivery_order_no"/>
+        <result property="deliveryLineNo" column="delivery_line_no"/>
+        <result property="companyId" column="company_id"/>
+        <result property="supplierId" column="supplier_id"/>
+        <result property="isQc" column="isQc"/>
+        <result property="isConsign" column="isConsign"/>
+        <result property="groupName" column="group_name"/>
+    </resultMap>
+
+    <sql id="selectPurchaseOrderVo">
+        select id,
+               order_no,
+               order_type,
+               order_status,
+               company_id,
+               company_name,
+               company_code,
+               supplier_id,
+               supplier_name,
+               supplier_code,
+               buyer,
+               deliver_date,
+               process_date,
+               close_date,
+               purchase_refund_order_no,
+               bill_type,
+               remark,
+               tenant_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        from wms_purchase_order
+    </sql>
+    <sql id="selectWmsPurchaseOrderVo">
+        SELECT wpod.id,
+               wpod.factory_id,
+               wpod.factory_name,
+               wpod.factory_code,
+               wpod.material_id,
+               wpod.material_no,
+               wpod.material_name,
+               wpod.old_material_no,
+               wpod.delivery_date,
+               wpod.purchase_order_id,
+               wpod.purchase_order_no,
+               wpod.purchase_line_no,
+               wpod.purchase_refund_order_no,
+               wpod.unit,
+               wpod.total_plan_qty,
+               wpod.total_qty,
+               wpod.plan_qty,
+               wpod.made_qty,
+               wpod.sto_location,
+               wpod.is_exempted,
+               wpod.is_consigned,
+               wpod.no_delivery_flag,
+               wpod.exc_fin_flag,
+               wpod.batch_no,
+               wpod.tenant_id,
+               wpod.create_by,
+               wpod.create_time,
+               wpod.update_by,
+               wpod.update_time,
+               wpod.del_flag,
+               wpod.delivery_line_no,
+               wpod.wms_received_qty,
+               wpod.sap_received_qty,
+               wpo.bill_type,
+               wpo.order_status,
+               wpo.order_type,
+               wpo.company_id,
+               wpo.company_name,
+               wpo.company_code,
+               wpo.supplier_id,
+               wpo.supplier_name,
+               wpo.supplier_code,
+               wpo.buyer,
+               wpod.delivery_date,
+               wpod.material_group,
+               wpod.material_group_desc,
+               wpod.is_exempted as  isQC,
+               wpod.is_consigned as isConsign,
+               wpo.group_name as    groupName
+        FROM (select * from wms_purchase_order_detail where del_flag = '0' and exc_fin_flag != 'X') AS wpod
+                 LEFT JOIN wms_purchase_order AS wpo ON wpo.id = wpod.purchase_order_id
+    </sql>
+
+    <sql id="selectPurchaseOrderDetailVo">
+        select id,
+               factory_id,
+               factory_name,
+               factory_code,
+               material_id,
+               material_no,
+               material_name,
+               old_material_no,
+               delivery_date,
+               purchase_order_id,
+               purchase_order_no,
+               purchase_line_no,
+               purchase_refund_order_no,
+               unit,
+               total_plan_qty,
+               total_qty,
+               plan_qty,
+               made_qty,
+               sto_location,
+               is_exempted,
+               is_consigned,
+               no_delivery_flag,
+               exc_fin_flag,
+               batch_no,
+               tenant_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               del_flag,
+               delivery_line_no,
+               wms_received_qty,
+               sap_received_qty,
+               material_group,
+               material_group_desc
+        from wms_purchase_order_detail
+    </sql>
+
+    <select id="selectWmsPurchaseOrderList" resultMap="PurchaseDto">
+        <include refid="selectWmsPurchaseOrderVo"/>
+        <where>
+            <if test="purchaseOrderId != null  and purchaseOrderId != ''">and wpod.purchase_order_id =
+                #{purchaseOrderId}
+            </if>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''">and wpo.order_no like concat('%',
+                #{purchaseOrderNo},'%')
+            </if>
+            <if test="orderType != null  and orderType != ''">and wpo.order_type = #{orderType}</if>
+            <if test="orderStatus != null  and orderStatus != ''">and wpo.order_status = #{orderStatus}</if>
+            <if test="supplierCode != null  and supplierCode != ''">and wpo.supplier_code = #{supplierCode}</if>
+        </where>
+        ORDER BY delivery_date DESC
+    </select>
+
+    <select id="selectPurchaseOrderList" resultType="PurchaseVo" resultMap="PurchaseDto">
+        <include refid="selectWmsPurchaseOrderVo"/>
+        <where>
+            <if test="purchaseOrderId != null  and purchaseOrderId != ''">and wpod.purchase_order_id =
+                #{purchaseOrderId}
+            </if>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''">and wpod.purchase_order_no like concat('%',
+                #{purchaseOrderNo},'%')
+            </if>
+            <if test="oldMaterialNo != null  and oldMaterialNo != ''">and wpod.old_material_no like concat('%',
+                #{oldMaterialNo},'%')
+            </if>
+            <if test="tenantId != null">and wpod.tenant_id = #{tenantId}</if>
+            <if test="orderType != null  and orderType != ''">and wpo.order_type = #{orderType}</if>
+            <if test="orderStatus != null  and orderStatus != ''">and wpo.order_status = #{orderStatus}</if>
+            <if test="buyer != null  and buyer != ''">and wpo.buyer = #{buyer}</if>
+            <if test="companyCode != null  and companyCode != ''">and (wpo.supplier_code = #{companyCode})
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">and wpo.supplier_code like concat('%',
+                #{supplierCode}, '%')
+            </if>
+            <if test="delFlag != null  and delFlag != ''">and wpod.del_flag = #{delFlag}</if>
+            <if test="params != null and params.startTime != null  and params.endTime != null">and
+                date_format(wpod.delivery_date, '%y%m%d') between date_format(#{params.startTime}, '%y%m%d') and
+                date_format(#{params.endTime}, '%y%m%d')
+            </if>
+            <if test="materialNos != null and materialNos.length > 0">
+                and wpod.material_no in
+                <foreach item="materialNo" collection="materialNos" open="(" separator="," close=")">
+                    #{materialNo}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectWmsPurchaseOrderDetailById" parameterType="Long" resultMap="WmsPurchaseOrderDetailResult">
+        <include refid="selectPurchaseOrderDetailVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectPurchaseOrderDetail" parameterType="PurchaseOrderDetail" resultMap="WmsPurchaseOrderDetailResult">
+        <include refid="selectPurchaseOrderDetailVo"/>
+        <where>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''">and purchase_order_no = #{purchaseOrderNo}</if>
+            <if test="purchaseOrderId != null  and purchaseOrderId != ''">and purchase_order_id = #{purchaseOrderId}</if>
+            <if test="purchaseLineNo != null  and purchaseLineNo != ''">and purchase_line_no = #{purchaseLineNo}</if>
+            <if test="deliveryLineNo != null  and deliveryLineNo != ''">and delivery_line_no = #{deliveryLineNo}</if>
+            <if test="delFlag != null  and delFlag != ''">and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+    <select id="selectOrderDetail" parameterType="PurchaseOrderDetail" resultMap="WmsPurchaseOrderDetailResult">
+        <include refid="selectPurchaseOrderDetailVo"/>
+        <where>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''">and purchase_order_no = #{purchaseOrderNo}
+            </if>
+            <if test="purchaseOrderId != null  and purchaseOrderId != ''">and purchase_order_id = #{purchaseOrderId}
+            </if>
+            <if test="purchaseLineNo != null  and purchaseLineNo != ''">and purchase_line_no = #{purchaseLineNo}</if>
+            <if test="delFlag != null  and delFlag != ''">and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+    <select id="selectOrderDetailFirstDay" parameterType="PurchaseOrderDetail" resultMap="WmsPurchaseOrderDetailResult">
+        <include refid="selectPurchaseOrderDetailVo"/>
+        <where>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''">and purchase_order_no = #{purchaseOrderNo}
+            </if>
+            <if test="purchaseOrderId != null  and purchaseOrderId != ''">and purchase_order_id = #{purchaseOrderId}
+            </if>
+            <if test="purchaseLineNo != null  and purchaseLineNo != ''">and purchase_line_no = #{purchaseLineNo}</if>
+            <if test="delFlag != null  and delFlag != ''">and del_flag = #{delFlag}</if>
+        </where>
+        AND delivery_date >= DATE_FORMAT(DATE_SUB( NOW(), INTERVAL 1 MONTH ),'%Y-%m-01')
+    </select>
+
+    <select id="selectPurchaseOrderDetailByNoAndLine" parameterType="List" resultMap="WmsPurchaseOrderDetailResult">
+        <include refid="selectPurchaseOrderDetailVo"/>
+        WHERE ( purchase_order_no, purchase_line_no ) IN
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            (#{item.purchaseOrderNo},#{item.purchaseLineNo})
+        </foreach>
+    </select>
+    <select id="checkDetailUnique" resultType="Integer" parameterType="PurchaseOrderDetail">
+        SELECT COUNT(1)
+        FROM wms_purchase_order_detail
+        WHERE purchase_order_no = #{purchaseOrderNo}
+          AND purchase_line_no = #{purchaseLineNo}
+    </select>
+
+    <insert id="insertWmsPurchaseOrderDetail" parameterType="PurchaseOrderDetail" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into wms_purchase_order_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="factoryId != null">factory_id,</if>
+            <if test="factoryName != null">factory_name,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+            <if test="deliveryDate != null">delivery_date,</if>
+            <if test="purchaseOrderId != null">purchase_order_id,</if>
+            <if test="purchaseOrderNo != null">purchase_order_no,</if>
+            <if test="purchaseLineNo != null">purchase_line_no,</if>
+            <if test="purchaseRefundOrderNo != null">purchase_refund_order_no,</if>
+            <if test="unit != null">unit,</if>
+            <if test="totalPlanQty != null">total_plan_qty,</if>
+            <if test="planQty != null">plan_qty,</if>
+            <if test="madeQty != null">made_qty,</if>
+            <if test="stoLocation != null">sto_location,</if>
+            <if test="isExempted != null">is_exempted,</if>
+            <if test="isConsigned != null">is_consigned,</if>
+            <if test="noDeliveryFlag != null">no_delivery_flag,</if>
+            <if test="excFinFlag != null">exc_fin_flag,</if>
+            <if test="batchNo != null">batch_no,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="totalQty != null">total_qty,</if>
+            <if test="wmsReceivedQty != null">wms_received_qty,</if>
+            <if test="sapReceivedQty != null">sap_received_qty,</if>
+            <if test="deliveryLineNo != null">delivery_line_no,</if>
+            <if test="materialGroup != null">material_group,</if>
+            <if test="materialGroupDesc != null">material_group_desc,</if>
+            <if test="pickStatus != null">pick_status,</if>
+            <if test="moveType != null">move_type,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="factoryId != null">#{factoryId},</if>
+            <if test="factoryName != null">#{factoryName},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+            <if test="deliveryDate != null">#{deliveryDate},</if>
+            <if test="purchaseOrderId != null">#{purchaseOrderId},</if>
+            <if test="purchaseOrderNo != null">#{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">#{purchaseLineNo},</if>
+            <if test="purchaseRefundOrderNo != null">#{purchaseRefundOrderNo},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="totalPlanQty != null">#{totalPlanQty},</if>
+            <if test="planQty != null">#{planQty},</if>
+            <if test="madeQty != null">#{madeQty},</if>
+            <if test="stoLocation != null">#{stoLocation},</if>
+            <if test="isExempted != null">#{isExempted},</if>
+            <if test="isConsigned != null">#{isConsigned},</if>
+            <if test="noDeliveryFlag != null">#{noDeliveryFlag},</if>
+            <if test="excFinFlag != null">#{excFinFlag},</if>
+            <if test="batchNo != null">#{batchNo},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="totalQty != null">#{totalQty},</if>
+            <if test="wmsReceivedQty != null">#{wmsReceivedQty},</if>
+            <if test="sapReceivedQty != null">#{sapReceivedQty},</if>
+            <if test="deliveryLineNo != null">#{deliveryLineNo},</if>
+            <if test="materialGroup != null">#{materialGroup},</if>
+            <if test="materialGroupDesc != null">#{materialGroupDesc},</if>
+            <if test="pickStatus != null">#{pickStatus},</if>
+            <if test="moveType != null">#{moveType},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertPurchaseOrder" parameterType="PurchaseOrder"  useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO wms_purchase_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id !=''">id,</if>
+            <if test="orderNo != null">order_no,</if>
+            <if test="orderType != null">order_type,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="companyName != null">company_name,</if>
+            <if test="companyCode != null">company_code,</if>
+            <if test="supplierId != null">supplier_id,</if>
+            <if test="supplierName != null">supplier_name,</if>
+            <if test="supplierCode != null">supplier_code,</if>
+            <if test="buyer != null">buyer,</if>
+            <if test="deliverDate != null">deliver_date,</if>
+            <if test="processDate != null">process_date,</if>
+            <if test="closeDate != null">close_date,</if>
+            <if test="purchaseRefundOrderNo != null">purchase_refund_order_no,</if>
+            <if test="billType != null">bill_type,</if>
+            <if test="remark != null">remark,</if>
+            <if test="groupName != null">group_name,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id !=''">#{id},</if>
+            <if test="orderNo != null">#{orderNo},</if>
+            <if test="orderType != null">#{orderType},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="companyName != null">#{companyName},</if>
+            <if test="companyCode != null">#{companyCode},</if>
+            <if test="supplierId != null">#{supplierId},</if>
+            <if test="supplierName != null">#{supplierName},</if>
+            <if test="supplierCode != null">#{supplierCode},</if>
+            <if test="buyer != null">#{buyer},</if>
+            <if test="deliverDate != null">#{deliverDate},</if>
+            <if test="processDate != null">#{processDate},</if>
+            <if test="closeDate != null">#{closeDate},</if>
+            <if test="purchaseRefundOrderNo != null">#{purchaseRefundOrderNo},</if>
+            <if test="billType != null">#{billType},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="groupName != null">#{groupName},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateWmsPurchaseOrderDetail" parameterType="PurchaseOrderDetail">
+        update wms_purchase_order_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="factoryId != null">factory_id = #{factoryId},</if>
+            <if test="factoryName != null">factory_name = #{factoryName},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="deliveryDate != null">delivery_date = #{deliveryDate},</if>
+            <if test="purchaseOrderId != null">purchase_order_id = #{purchaseOrderId},</if>
+            <if test="purchaseOrderNo != null">purchase_order_no = #{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">purchase_line_no = #{purchaseLineNo},</if>
+            <if test="purchaseRefundOrderNo != null">purchase_refund_order_no = #{purchaseRefundOrderNo},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="totalPlanQty != null">total_plan_qty = #{totalPlanQty},</if>
+            <if test="planQty != null">plan_qty = #{planQty},</if>
+            <if test="madeQty != null">made_qty = #{madeQty},</if>
+            <if test="stoLocation != null">sto_location = #{stoLocation},</if>
+            <if test="isExempted != null">is_exempted = #{isExempted},</if>
+            <if test="isConsigned != null">is_consigned = #{isConsigned},</if>
+            <if test="noDeliveryFlag != null">no_delivery_flag = #{noDeliveryFlag},</if>
+            <if test="excFinFlag != null">exc_fin_flag = #{excFinFlag},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="totalQty != null">total_qty = #{totalQty},</if>
+            <if test="wmsReceivedQty != null">wms_received_qty = #{wmsReceivedQty},</if>
+            <if test="sapReceivedQty != null">sap_received_qty = #{sapReceivedQty},</if>
+            <if test="materialGroup != null">material_group = #{materialGroup},</if>
+            <if test="materialGroupDesc != null">material_group_desc = #{materialGroupDesc},</if>
+            <if test="pickStatus != null">pick_status = #{pickStatus},</if>
+            <if test="moveType != null">move_type = #{moveType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWmsPurchaseOrderDetailByOrderNo" parameterType="String">
+        delete from wms_purchase_order_detail where purchase_order_no = #{orderNo}
+    </delete>
+    <delete id="deleteWmsPurchaseOrderDetailById" parameterType="Long">
+        delete
+        from wms_purchase_order_detail
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteWmsPurchaseOrderDetailByIds" parameterType="String">
+        delete from wms_purchase_order_detail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectDetailByDeliveryDate" parameterType="PurchaseOrderDetail"
+            resultMap="WmsPurchaseOrderDetailResult">
+        <include refid="selectPurchaseOrderDetailVo"/>
+        where
+        purchase_order_id = #{purchaseOrderId}
+        and delivery_date >= date_format(#{deliveryDate},'%Y-%m-%d %H:%i:%s')
+    </select>
+
+    <select id="selectDetailByLineNum" parameterType="WmsPurchaseOrderDetailRaw"
+            resultMap="WmsPurchaseOrderDetailResult">
+        <include refid="selectPurchaseOrderDetailVo"/>
+        WHERE purchase_order_id = #{purchaseOrderId} AND delivery_line_no IN (
+        SELECT delivery_line_no FROM wms_purchase_order_detail_raw WHERE purchase_order_no = #{purchaseOrderNo} AND
+        batch_no = #{batchNo} AND process_flag = #{processFlag}
+        )
+        ORDER BY delivery_date ASC
+    </select>
+
+    <select id="selectPurOrderDtAgByLineNum" parameterType="PurchaseOrderDetail"
+            resultMap="PurchaseOrderDetailVoResult">
+        SELECT MAX(id) AS agId,
+               delivery_line_no
+        FROM wms_purchase_order_detail
+        WHERE purchase_order_id = #{purchaseOrderId}
+        GROUP BY delivery_line_no
+    </select>
+
+    <update id="deleteOrderDetailById" parameterType="PurchaseVo">
+        update wms_purchase_order_detail set del_flag = '1' WHERE id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="selectSumByPurchaseLineNo" parameterType="PurchaseOrderDetail" resultMap="PurchaseOrderDetailVoResult">
+        SELECT IFNULL(SUM(made_qty), 0) as made_qty
+        FROM wms_purchase_order_detail
+        WHERE purchase_line_no = #{purchaseLineNo}
+    </select>
+
+
+    <update id="updateMadeQty" parameterType="PurchaseOrderDetail">
+        UPDATE wms_purchase_order_detail
+        SET made_qty = #{madeQty} and update_time = #{updateTime}
+        WHERE purchase_order_id = #{purchaseOrderId}
+        <if test="purchaseLineNo != null">AND purchase_line_no = #{purchaseLineNo}</if>
+        <if test="deliveryLineNo != null">AND delivery_line_no = #{deliveryLineNo}</if>
+    </update>
+
+    <select id="openQueryPurchaseOrder" parameterType="Map" resultMap="PurchaseOrderResult">
+        <include refid="selectPurchaseOrderVo"/>
+        <where>
+            <if test="orderNo != null  and orderNo != ''">and order_no like concat('%', #{orderNo}, '%')</if>
+            <if test="orderStatus != null  and orderStatus != ''">and order_status = #{orderStatus}</if>
+            <if test="companyCode != null  and companyCode != ''">and company_code = #{companyCode}</if>
+        </where>
+    </select>
+
+    <select id="getPurchaseOrderDetailBySync" resultMap="WmsPurchaseOrderDetailResult">
+        select id,
+               factory_id,
+               factory_name,
+               factory_code,
+               material_id,
+               material_no,
+               material_name,
+               old_material_no,
+               delivery_date,
+               purchase_order_id,
+               purchase_order_no,
+               purchase_line_no,
+               purchase_refund_order_no,
+               unit,
+               total_plan_qty,
+               total_qty,
+               plan_qty,
+               made_qty,
+               sto_location,
+               is_exempted,
+               is_consigned,
+               no_delivery_flag,
+               exc_fin_flag,
+               batch_no,
+               tenant_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               del_flag,
+               delivery_line_no,
+               wms_received_qty,
+               sap_received_qty,
+               material_group,
+               material_group_desc
+        from wms_purchase_order_detail
+        WHERE purchase_order_no like CONCAT('55','%') AND del_flag = '0'
+    </select>
+
+    <select id="getPurchaseOrderDetailBySyncFirstDay" resultMap="WmsPurchaseOrderDetailResult">
+        select id,
+               factory_id,
+               factory_name,
+               factory_code,
+               material_id,
+               material_no,
+               material_name,
+               old_material_no,
+               delivery_date,
+               purchase_order_id,
+               purchase_order_no,
+               purchase_line_no,
+               purchase_refund_order_no,
+               unit,
+               total_plan_qty,
+               total_qty,
+               plan_qty,
+               made_qty,
+               sto_location,
+               is_exempted,
+               is_consigned,
+               no_delivery_flag,
+               exc_fin_flag,
+               batch_no,
+               tenant_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               del_flag,
+               delivery_line_no,
+               wms_received_qty,
+               sap_received_qty,
+               material_group,
+               material_group_desc
+        from wms_purchase_order_detail
+        WHERE purchase_order_no like CONCAT('55','%') AND del_flag = '0'
+        AND delivery_date >= DATE_FORMAT(DATE_SUB( NOW(), INTERVAL 1 MONTH ),'%Y-%m-01')
+    </select>
+    <select id="getPurchaseWmsMmadeUnActiveQty" resultType="java.math.BigDecimal">
+
+        SELECT IFNULL(SUM(wdod.deliver_qty), 0) as made_qty from wms_delivery_order_detail wdod LEFT JOIN wms_delivery_order wdo on wdo.id = wdod.delivery_order_id where wdod.purchase_order_no = #{purchaseOrderNo} and wdod.purchase_line_no = #{purchaseOrderLineNo} and wdo.order_status = '1'
+
+    </select>
+    <select id="getPurchaseActiveUnReceivedQty" resultType="java.math.BigDecimal">
+
+        SELECT IFNULL(sum(wsod.deliver_qty),0)- ifnull( sum(wsod.received_qty) ,0) unRecievedQty from wms_stockin_std_order_detail wsod right join wms_task_info  wti on wti.detail_id = wsod.id   WHERE  wsod.purchase_order_no  = #{purchaseOrderNo}   and wsod.purchase_line_no = #{purchaseOrderLineNo}  and  wti.task_status in ('1','2')
+    </select>
+
+    <update id="clearUntreatedPurchaseData">
+        UPDATE wms_purchase_order_detail_raw SET process_flag = 'Y' WHERE id IN (SELECT a.id FROM ( SELECT id FROM wms_purchase_order_detail_raw WHERE process_flag = 'N' ) a);
+    </update>
+
+</mapper>

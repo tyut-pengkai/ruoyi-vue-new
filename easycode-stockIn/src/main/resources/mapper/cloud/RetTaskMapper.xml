@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.RetTaskMapper">
+
+    <resultMap type="RetTask" id="RetTaskResult">
+        <result property="id" column="id"/>
+        <result property="taskNo" column="task_no"/>
+        <result property="detailId" column="detail_id"/>
+        <result property="taskStatus" column="task_status"/>
+        <result property="status" column="status"/>
+        <result property="taskType" column="task_type"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="oldMatrialName" column="old_matrial_name"/>
+        <result property="stockinOrderNo" column="stockin_order_no"/>
+        <result property="lot" column="lot"/>
+        <result property="qty" column="qty"/>
+        <result property="completeQty" column="complete_qty"/>
+        <result property="unit" column="unit"/>
+        <result property="operationUnit" column="operation_unit"/>
+        <result property="operationQty" column="operation_qty"/>
+        <result property="operationCompleteQty" column="operation_complete_qty"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="storageLocationCode" column="storage_location_code"/>
+        <result property="positionNo" column="position_no"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="containerNo" column="container_no"/>
+        <result property="containerType" column="container_type"/>
+        <result property="printStatus" column="print_status"/>
+        <result property="printSum" column="print_sum"/>
+        <result property="moveType" column="move_type"/>
+        <result property="stockInTaskNo" column="stock_in_task_no"/>
+        <result property="positionId" column="position_id"/>
+    </resultMap>
+
+    <resultMap type="RetTaskVo" id="RetTaskResultVo">
+        <result property="id" column="id"/>
+        <result property="taskNo" column="task_no"/>
+        <result property="detailId" column="detail_id"/>
+        <result property="taskStatus" column="task_status"/>
+        <result property="status" column="status"/>
+        <result property="taskType" column="task_type"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="oldMatrialName" column="old_matrial_name"/>
+        <result property="stockinOrderNo" column="stockin_order_no"/>
+        <result property="lot" column="lot"/>
+        <result property="qty" column="qty"/>
+        <result property="completeQty" column="complete_qty"/>
+        <result property="unit" column="unit"/>
+        <result property="operationUnit" column="operation_unit"/>
+        <result property="operationQty" column="operation_qty"/>
+        <result property="operationCompleteQty" column="operation_complete_qty"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="storageLocationCode" column="storage_location_code"/>
+        <result property="positionNo" column="position_no"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="containerNo" column="container_no"/>
+        <result property="containerType" column="container_type"/>
+        <result property="printStatus" column="print_status"/>
+        <result property="printSum" column="print_sum"/>
+        <result property="moveType" column="move_type"/>
+        <result property="stockInTaskNo" column="stock_in_task_no"/>
+        <result property="costCenterDesc" column="cost_center_desc"/>
+        <result property="positionId" column="position_id"/>
+        <result property="saleCode" column="sale_code"/>
+    </resultMap>
+
+    <sql id="selectRetTaskVo">
+        select id,
+               task_no,
+               detail_id,
+               task_status,
+               status,
+               task_type,
+               material_no,
+               material_name,
+               old_matrial_name,
+               stockin_order_no,
+               qty,
+               complete_qty,
+               lot,
+               area_code,
+               unit,
+               operation_unit,
+               operation_qty,
+               operation_complete_qty,
+               storage_location_code,
+               position_no,
+               tenant_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               container_no,
+               container_type,
+               print_status,
+               print_sum,move_type,stock_in_task_no,position_id
+        from wms_ret_task
+    </sql>
+
+    <select id="selectRetTaskList" parameterType="RetTask" resultMap="RetTaskResult">
+        <include refid="selectRetTaskVo"/>
+        <where>
+            <if test="id != null  and id != ''">and id = #{id}</if>
+            <if test="taskNo != null  and taskNo != ''">and task_no = #{taskNo}</if>
+            <if test="materialNo != null  and materialNo != ''">and material_no = #{materialNo}</if>
+            <if test="lot != null  and lot != ''">and lot = #{lot}</if>
+            <if test="qty != null  and qty != ''">and qty = #{qty}</if>
+            <if test="detailId != null  and detailId != ''">and detail_id = #{detailId}</if>
+            <if test="taskStatus != null  and taskStatus != ''">and task_status = #{taskStatus}</if>
+            <if test="status != null  and status != ''">and status = #{status}</if>
+            <if test="taskType != null  and taskType != ''">and task_type = #{taskType}</if>
+            <if test="tenantId != null ">and tenant_id = #{tenantId}</if>
+            <if test="containerNo != null ">and container_no = #{containerNo}</if>
+            <if test="containerType != null ">and container_type = #{containerType}</if>
+            <if test="stockinOrderNo != null ">and stockin_order_no = #{stockinOrderNo}</if>
+        </where>
+    </select>
+
+    <select id="selectRetTaskById" parameterType="Long" resultMap="RetTaskResultVo">
+        select a.*,b.sale_code
+        from wms_ret_task a left join wms_sale_return_order b on a.stockin_order_no = b.order_no
+        where a.id = #{id}
+    </select>
+
+    <insert id="insertRetTask" parameterType="RetTask" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_ret_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskNo != null">task_no,</if>
+            <if test="detailId != null">detail_id,</if>
+            <if test="taskStatus != null">task_status,</if>
+            <if test="status != null">status,</if>
+            <if test="taskType != null">task_type,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="oldMatrialName != null">old_matrial_name,</if>
+            <if test="stockinOrderNo != null">stockin_order_no,</if>
+            <if test="qty != null">qty,</if>
+            <if test="completeQty != null">complete_qty,</if>
+            <if test="lot != null">lot,</if>
+            <if test="unit != null">unit,</if>
+            <if test="operationUnit != null">operation_unit,</if>
+            <if test="operationQty != null">operation_qty,</if>
+            <if test="operationCompleteQty != null">operation_complete_qty,</if>
+            <if test="areaCode != null">area_code,</if>
+            <if test="storageLocationCode != null">storage_location_code,</if>
+            <if test="positionNo != null">position_no,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="containerNo != null">container_no,</if>
+            <if test="containerType != null">container_type,</if>
+            <if test="moveType != null">move_type,</if>
+            <if test="printStatus != null">print_status,</if>
+            <if test="printSum != null">print_sum,</if>
+            <if test="stockInTaskNo != null">stock_in_task_no,</if>
+            <if test="positionId != null">position_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskNo != null">#{taskNo},</if>
+            <if test="detailId != null">#{detailId},</if>
+            <if test="taskStatus != null">#{taskStatus},</if>
+            <if test="status != null">#{status},</if>
+            <if test="taskType != null">#{taskType},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="oldMatrialName != null">#{oldMatrialName},</if>
+            <if test="stockinOrderNo != null">#{stockinOrderNo},</if>
+            <if test="qty != null">#{qty},</if>
+            <if test="completeQty != null">#{completeQty},</if>
+            <if test="lot != null">#{lot},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="operationUnit != null">#{operationUnit},</if>
+            <if test="operationQty != null">#{operationQty},</if>
+            <if test="operationCompleteQty != null">#{operationCompleteQty},</if>
+            <if test="areaCode != null">#{areaCode},</if>
+            <if test="storageLocationCode != null">#{storageLocationCode},</if>
+            <if test="positionNo != null">#{positionNo},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="containerNo != null">#{containerNo},</if>
+            <if test="containerType != null">#{containerType},</if>
+            <if test="moveType != null">#{moveType},</if>
+            <if test="printStatus != null">#{printStatus},</if>
+            <if test="printSum != null">#{printSum},</if>
+            <if test="stockInTaskNo != null">#{stockInTaskNo},</if>
+            <if test="positionId != null">#{positionId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateRetTask" parameterType="RetTask">
+        update wms_ret_task
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskNo != null">task_no = #{taskNo},</if>
+            <if test="detailId != null">detail_id = #{detailId},</if>
+            <if test="taskStatus != null">task_status = #{taskStatus},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="taskType != null">task_type = #{taskType},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="oldMatrialName != null">old_matrial_name = #{oldMatrialName},</if>
+            <if test="stockinOrderNo != null">stockin_order_no = #{stockinOrderNo},</if>
+            <if test="qty != null">qty = #{qty},</if>
+            <if test="completeQty != null">complete_qty = #{completeQty},</if>
+            <if test="lot != null">lot = #{lot},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="operationUnit != null">operation_unit = #{operationUnit},</if>
+            <if test="operationQty != null">operation_qty = #{operationQty},</if>
+            <if test="operationCompleteQty != null">operation_complete_qty = #{operationCompleteQty},</if>
+            <if test="areaCode != null">area_code = #{areaCode},</if>
+            <if test="storageLocationCode != null">storage_location_code = #{storageLocationCode},</if>
+            <if test="positionNo != null">position_no = #{positionNo},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="containerNo != null">container_no = #{containerNo},</if>
+            <if test="containerType != null">container_type = #{containerType},</if>
+            <if test="moveType != null">move_type = #{moveType},</if>
+            <if test="printStatus != null">print_status = #{printStatus},</if>
+            <if test="printSum != null">print_sum = #{printSum},</if>
+            <if test="stockInTaskNo != null">stock_in_task_no = #{stockInTaskNo},</if>
+            <if test="positionId != null">position_id = #{positionId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateRetTaskByDetailId" parameterType="RetTask">
+        update wms_ret_task
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskNo != null">task_no = #{taskNo},</if>
+            <if test="detailId != null">detail_id = #{detailId},</if>
+            <if test="taskStatus != null">task_status = #{taskStatus},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="taskType != null">task_type = #{taskType},</if>
+            <if test="qty != null">qty = #{qty},</if>
+            <if test="completeQty != null">completeQty = #{complete_qty},</if>
+            <if test="lot != null">lot = #{lot},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="areaCode != null">area_code = #{areaCode},</if>
+            <if test="storageLocationCode != null">storage_location_code = #{storageLocationCode},</if>
+            <if test="positionNo != null">position_no = #{positionNo},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="oldMatrialName != null">old_matrial_name = #{oldMatrialName},</if>
+            <if test="stockinOrderNo != null">stockin_order_no = #{stockinOrderNo},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="containerNo != null">container_no = #{containerNo},</if>
+            <if test="containerType != null">container_type = #{containerType},</if>
+            <if test="moveType != null">move_type = #{moveType},</if>
+            <if test="printStatus != null">print_status = #{printStatus},</if>
+            <if test="printSum != null">print_sum = #{printSum},</if>
+            <if test="stockInTaskNo != null">stock_in_task_no = #{stockInTaskNo},</if>
+            <if test="positionId != null">position_id = #{positionId},</if>
+        </trim>
+        where detail_id = #{detailId}
+    </update>
+
+    <update id="updateStatusByDetailList" parameterType="java.util.List">
+        update wms_ret_task set task_status = 4
+        where task_status != 4 and task_type = '8' and detail_id in
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <delete id="deleteRetTaskById" parameterType="Long">
+        delete
+        from wms_ret_task
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByStockinOrderNo" parameterType="String">
+        delete
+        from wms_ret_task
+        where stockin_order_no = #{stockinOrderNo}
+    </delete>
+
+
+    <delete id="deleteRetTaskByIds" parameterType="String">
+        delete from wms_ret_task where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <update id="updateRetTaskStatus" parameterType="RetTaskDto">
+        update wms_ret_task
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="closeTask != null">task_status = #{closeTask},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where detail_id = #{detailId}
+        and task_type = #{taskType}
+        and task_status != #{taskStatus}
+    </update>
+
+    <select id="pdaRetTaskList" parameterType="RetTaskDto" resultMap="RetTaskResult">
+        <include refid="selectRetTaskVo"></include>
+        <where>
+            <if test="id != null  and id != ''">and id = #{id}</if>
+            <if test="taskType != null and taskType != '' ">and task_type = #{taskType}</if>
+            <if test="materialNo != null and materialNo != '' ">and material_no = #{materialNo}</if>
+            <if test="lot != null and materialNo != '' ">and lot = #{lot}</if>
+            <if test="storageLocationCode != null and storageLocationCode != ''">and storage_location_code like concat('%', #{locationCode}, '%')</if>
+            <if test="taskStatusArr != null and taskStatusArr != '' ">and task_status in
+                <foreach item="item" collection="taskStatusArr" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and create_time &lt;= #{endTime}
+            </if>
+            <if test="taskStatus != null and taskStatus != '' ">and task_status = #{taskStatus}</if>
+        </where>
+        order by id desc
+    </select>
+    <select id="getRetTaskByMaterialNoType" resultType="com.easycode.cloud.domain.vo.RetTaskVo">
+
+    </select>
+
+    <update id="updatePrinterStatus" parameterType="TaskInfoVo">
+        update wms_ret_task
+        set print_status = #{printStatus},
+            print_sum = #{printSum},
+            update_time = #{updateTime},
+            update_by   = #{updateBy}
+        where task_no = #{taskNo} and id = #{id}
+    </update>
+
+    <select id="costCenterTaskList" parameterType="RetTaskDto" resultMap="RetTaskResult">
+        <include refid="selectRetTaskVo"/>
+        where  task_type = '8' and task_status in ('1','2')
+    </select>
+
+    <select id="selectCostCenterTaskDetail" parameterType="RetTaskDto" resultMap="RetTaskResultVo">
+        select a.*,b.cost_center_desc
+        from wms_ret_task a left join wms_cost_center_return_order b on a.stockin_order_no = b.order_no  where  a.id = #{id}
+    </select>
+
+    <select id="haveCenterReturnTask" parameterType="List" resultMap="RetTaskResultVo">
+        select * from wms_ret_task where task_status in ('1','2','3') and task_type = '8'
+        and stock_in_task_no in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

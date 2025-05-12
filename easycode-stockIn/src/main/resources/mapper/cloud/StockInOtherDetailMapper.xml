@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.StockInOtherDetailMapper">
+
+    <resultMap type="StockInOtherDetail" id="StockInOtherDetailResult">
+        <result property="id"    column="id"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="lineNo"    column="line_no"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="qty"    column="qty"    />
+        <result property="unit"    column="unit"    />
+        <result property="operationUnit"    column="operation_unit"    />
+        <result property="operationQty"    column="operation_qty"    />
+        <result property="lot"    column="lot"    />
+        <result property="isConsigned"    column="is_consigned"    />
+        <result property="isQc"    column="is_qc"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="remark"    column="remark"    />
+        <result property="supplierCode"    column="supplier_code"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="containerNo"    column="container_no"    />
+        <result property="containerType"    column="container_type"    />
+        <result property="wbsElement"    column="wbs_element"    />
+        <result property="moveType"    column="move_type"    />
+        <result property="uname"    column="uname"    />
+        <result property="stgeLoc"    column="stge_loc"    />
+        <result property="costCenterCode"    column="cost_center_code"    />
+        <result property="isProject"    column="is_project"    />
+    </resultMap>
+
+    <resultMap type="PrintInfoVo" id="PrintInfoResult">
+        <result property="vendorCode"    column="vendor_code"    />
+        <result property="vendorName"    column="vendor_name"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="purchaseLineNo"    column="purchase_line_no"    />
+        <result property="deliverQty"    column="deliver_qty"    />
+        <result property="minPacking"    column="min_packing"    />
+        <result property="lotNo"    column="lot_no"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="deliveryOrderNo"    column="delivery_order_no"    />
+        <result property="thirdDeliveryOrderNo"    column="third_delivery_order_no"    />
+        <result property="companyCode"    column="company_code"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="deliveryAddr"    column="delivery_addr"    />
+        <result property="wbsElement"    column="wbs_element"    />
+    </resultMap>
+
+    <sql id="selectStockInOtherDetailVo">
+        select id, order_no, line_no, material_no, material_name, old_material_no, qty, operation_unit, operation_qty, unit, lot, is_consigned, is_qc, factory_code, remark, supplier_code, supplier_id, tenant_id, create_by, create_time, update_by, update_time, container_no, container_type, wbs_element,move_type,uname,stge_loc,cost_center_code,is_project from wms_stockin_other_detail
+    </sql>
+    <resultMap id="StockinOtherDetailDto" type="StockinOtherDetailDto">
+        <id property="id" column="id" />
+        <result property="taskNo" column="task_no" />
+        <result property="lineNo" column="line_no" />
+        <result property="stockInOrderNo" column="stockin_order_no" />
+        <result property="createTime" column="create_time" />
+        <result property="finishTime" column="finish_time" />
+        <result property="unit" column="unit" />
+        <result property="materialNo" column="material_no" />
+        <result property="moveType" column="move_type" />
+        <result property="materialNo" column="material_no" />
+        <result property="stgeLoc" column="stge_loc" />
+        <result property="positionNo" column="position_no" />
+    </resultMap>
+    <select id="stockInOtherOrderDetailList" resultMap="StockinOtherDetailDto">
+        SELECT
+        wsod.id,
+        wsod.material_no,
+        wsod.stge_loc,
+        wti.task_no,
+        wsod.line_no,
+        wti.stockin_order_no,
+        wsod.material_no,
+        wti.position_no,
+        wsod.unit,
+        wsod.move_type,
+        wsod.lot,
+        wsod.qty
+        FROM wms_stockin_other_detail as wsod
+        left join wms_ret_task wti on wsod.id=wti.detail_id
+        <where>
+            <if test="id !=null and id!= ''">
+                AND wti.id = #{id}
+            </if>
+        </where>
+    </select>
+
+    <select id="stockInOtherOrderDetailListByTaskNo" resultMap="StockinOtherDetailDto">
+        SELECT
+        wti.id,
+        wsod.material_no,
+        wsod.stge_loc,
+        wti.task_no,
+        wsod.line_no,
+        wti.stockin_order_no,
+        wsod.material_no,
+        wti.position_no,
+        wsod.unit,
+        wsod.move_type,
+        wsod.lot,
+        wsod.qty
+        FROM wms_stockin_other_detail as wsod
+        left join wms_ret_task wti on wsod.id=wti.detail_id
+        <where>
+            <if test="taskNo !=null and taskNo!= ''">
+                AND wti.task_no = #{taskNo}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectStockInOtherDetailList" parameterType="StockInOtherDetail" resultMap="StockInOtherDetailResult">
+        <include refid="selectStockInOtherDetailVo"/>
+        <where>
+            <if test="orderNo != null  and orderNo != ''"> and order_no = #{orderNo}</if>
+            <if test="lineNo != null  and lineNo != ''"> and line_no = #{lineNo}</if>
+            <if test="materialNo != null  and materialNo != ''"> and material_no = #{materialNo}</if>
+            <if test="materialName != null  and materialName != ''"> and material_name like concat('%', #{materialName}, '%')</if>
+            <if test="oldMaterialNo != null  and oldMaterialNo != ''"> and old_material_no = #{oldMaterialNo}</if>
+            <if test="qty != null "> and qty = #{qty}</if>
+            <if test="unit != null  and unit != ''"> and unit = #{unit}</if>
+            <if test="lot != null  and lot != ''"> and lot = #{lot}</if>
+            <if test="isConsigned != null  and isConsigned != ''"> and is_consigned = #{isConsigned}</if>
+            <if test="isQc != null  and isQc != ''"> and is_qc = #{isQc}</if>
+            <if test="factoryCode != null  and factoryCode != ''"> and factory_code = #{factoryCode}</if>
+            <if test="supplierCode != null  and supplierCode != ''"> and supplier_code = #{supplierCode}</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+            <if test="containerNo != null "> and container_no = #{containerNo}</if>
+            <if test="containerType != null "> and container_type = #{containerType}</if>
+            <if test="wbsElement != null">and wbs_element = #{wbsElement}</if>
+            <if test="isProject != null">and is_project = #{isProject}</if>
+        </where>
+    </select>
+
+    <select id="getPrintInfoByIds" resultMap="PrintInfoResult">
+        SELECT
+        cso.order_no purchase_order_no,
+        csod.material_no,
+        csod.material_name,
+        csod.old_material_no,
+        csod.qty deliver_qty,
+        csod.lot lot_no
+        FROM
+        wms_stockin_other_detail csod
+        LEFT JOIN wms_stockin_other cso ON cso.order_no = csod.order_no
+        where cso.id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectStockInOtherDetailById" parameterType="Long" resultMap="StockInOtherDetailResult">
+        <include refid="selectStockInOtherDetailVo"/>
+        where id = #{id}
+    </select>
+    <select id="getBeContinuedNumber" resultType="java.lang.Integer">
+        SELECT
+            COUNT( 1 )
+        FROM
+            wms_stockin_other_detail AS wsod
+                LEFT JOIN wms_ret_task AS wrt ON wsod.id = wrt.detail_id
+                LEFT JOIN wms_stockin_other AS wso ON wso.order_no = wsod.order_no
+        WHERE
+            wrt.task_type = #{taskType}
+          AND wrt.task_status IN ('1','2') AND wso.order_no = #{orderNo}
+    </select>
+    <select id="queryStockInOtherDetailByTaskNo"
+            resultType="com.easycode.cloud.domain.vo.StockInDetailPrintVo">
+        SELECT
+        wsod.material_no as materialNo,
+        wsod.factory_code as factoryCode,
+        wsod.stge_loc as locationCode,
+        wti.task_no as taskNo,
+        wti.stockin_order_no as stockinOrderNo,
+        wsod.material_name as materialName,
+        wti.position_no as positionNo,
+        wsod.move_type as moveType,
+        wsod.lot as lot,
+        wsod.qty as qyt,
+        wti.old_matrial_name as old_material_no
+        FROM wms_stockin_other_detail as wsod
+        left join wms_ret_task wti on wsod.id=wti.detail_id
+        <where>
+            <if test="taskNo !=null and taskNo!= ''">
+                AND wti.task_no = #{taskNo}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertStockInOtherDetail" parameterType="StockInOtherDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_stockin_other_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">order_no,</if>
+            <if test="lineNo != null">line_no,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+            <if test="qty != null">qty,</if>
+            <if test="unit != null">unit,</if>
+            <if test="operationUnit != null">operation_unit,</if>
+            <if test="operationQty != null">operation_qty,</if>
+            <if test="lot != null">lot,</if>
+            <if test="isConsigned != null and isConsigned != ''">is_consigned,</if>
+            <if test="isQc != null">is_qc,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="remark != null">remark,</if>
+            <if test="supplierCode != null">supplier_code,</if>
+            <if test="supplierId != null">supplier_id,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="containerNo != null">container_no,</if>
+            <if test="containerType != null">container_type,</if>
+            <if test="wbsElement != null">wbs_element,</if>
+            <if test="moveType != null">move_type,</if>
+            <if test="uname != null">uname,</if>
+            <if test="stgeLoc != null">stge_loc,</if>
+            <if test="costCenterCode != null">cost_center_code,</if>
+            <if test="isProject != null">is_project,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">#{orderNo},</if>
+            <if test="lineNo != null">#{lineNo},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+            <if test="qty != null">#{qty},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="operationUnit != null">#{operationUnit},</if>
+            <if test="operationQty != null">#{operationQty},</if>
+            <if test="lot != null">#{lot},</if>
+            <if test="isConsigned != null and isConsigned != ''">#{isConsigned},</if>
+            <if test="isQc != null">#{isQc},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="supplierCode != null">#{supplierCode},</if>
+            <if test="supplierId != null">#{supplierId},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="containerNo != null">#{containerNo},</if>
+            <if test="containerType != null">#{containerType},</if>
+            <if test="wbsElement != null">#{wbsElement},</if>
+            <if test="moveType != null">#{moveType},</if>
+            <if test="uname != null">#{uname},</if>
+            <if test="stgeLoc != null">#{stgeLoc},</if>
+            <if test="costCenterCode != null">#{costCenterCode},</if>
+            <if test="isProject != null">#{isProject},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStockInOtherDetail" parameterType="StockInOtherDetail">
+        update wms_stockin_other_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNo != null">order_no = #{orderNo},</if>
+            <if test="lineNo != null">line_no = #{lineNo},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="qty != null">qty = #{qty},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="operationUnit != null">operation_unit = #{operationUnit},</if>
+            <if test="operationQty != null">operation_qty = #{operationQty},</if>
+            <if test="lot != null">lot = #{lot},</if>
+            <if test="isConsigned != null and isConsigned != ''">is_consigned = #{isConsigned},</if>
+            <if test="isQc != null">is_qc = #{isQc},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="supplierCode != null">supplier_code = #{supplierCode},</if>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="containerNo != null">container_no = #{containerNo},</if>
+            <if test="containerType != null">container_type = #{containerType},</if>
+            <if test="wbsElement != null">wbs_element = #{wbsElement}</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStockInOtherDetailById" parameterType="Long">
+        delete from wms_stockin_other_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteStockInOtherDetailByIds" parameterType="String">
+        delete from wms_stockin_other_detail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

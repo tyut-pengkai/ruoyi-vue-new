@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.DeliveryInspectionTaskMapper">
+
+    <resultMap type="DeliveryInspectionTask" id="DeliveryInspectionTaskResult">
+        <result property="id"    column="id"    />
+        <result property="taskNo"    column="task_no"    />
+        <result property="taskType"    column="task_type"    />
+        <result property="marketOrderNo"    column="market_order_no"    />
+        <result property="marketDeliveryNo"    column="market_delivery_no"    />
+        <result property="status"    column="status"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="qty"    column="qty"    />
+        <result property="lot"    column="lot"    />
+        <result property="deliveryTime"    column="delivery_time"    />
+        <result property="inspectOrderId"    column="inspect_order_id"    />
+        <result property="remark"    column="remark"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="positionNo"    column="position_no"    />
+    </resultMap>
+
+    <resultMap type="DeliveryInspectionTaskVo" id="DeliveryInspectionTaskResultDto">
+        <result property="id"    column="id"    />
+        <result property="taskNo"    column="task_no"    />
+        <result property="taskType"    column="task_type"    />
+        <result property="marketOrderNo"    column="market_order_no"    />
+        <result property="marketDeliveryNo"    column="market_delivery_no"    />
+        <result property="status"    column="status"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="qty"    column="qty"    />
+        <result property="lot"    column="lot"    />
+        <result property="deliveryTime"    column="delivery_time"    />
+        <result property="inspectOrderId"    column="inspect_order_id"    />
+        <result property="remark"    column="remark"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="inspectOrderNo"    column="inspect_order_no"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="positionNo"    column="position_no"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="positionNoPrint"    column="position_no_print"    />
+    </resultMap>
+
+    <sql id="selectDeliveryInspectionTaskVo">
+        select   id,task_no,task_type,market_order_no,
+                 market_delivery_no,status,
+                 material_no,material_name,qty,
+                 lot,delivery_time,remark,tenant_id,inspect_order_id,
+                 create_by, create_time, update_by, update_time,  location_code, position_no
+        from wms_delivery_inspection_task
+    </sql>
+
+    <insert id="insertDeliveryInspectionTask" parameterType="DeliveryOrderDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_delivery_inspection_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskNo != null ">task_no,</if>
+            <if test="taskType != null ">task_type,</if>
+            <if test="marketOrderNo != null">market_order_no,</if>
+            <if test="marketDeliveryNo != null">market_delivery_no,</if>
+            <if test="status != null">status,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="qty != null">qty,</if>
+            <if test="lot != null">lot,</if>
+            <if test="deliveryTime != null">delivery_time,</if>
+            <if test="inspectOrderId != null">inspect_order_id,</if>
+            <if test="inspectOrderNo != null">inspect_order_no,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="locationCode != null">location_code,</if>
+            <if test="positionNo != null">position_no,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskNo != null ">#{taskNo},</if>
+            <if test="taskType != null ">#{taskType},</if>
+            <if test="marketOrderNo != null">#{marketOrderNo},</if>
+            <if test="marketDeliveryNo != null">#{marketDeliveryNo},</if>
+            <if test="status != null">#{status},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="qty != null">#{qty},</if>
+            <if test="lot != null">#{lot},</if>
+            <if test="deliveryTime != null">#{deliveryTime},</if>
+            <if test="inspectOrderId != null">#{inspectOrderId},</if>
+            <if test="inspectOrderNo != null">#{inspectOrderNo},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="locationCode != null">#{locationCode},</if>
+            <if test="positionNo != null">#{positionNo},</if>
+        </trim>
+    </insert>
+
+    <select id="selectInspectTaskList" parameterType="DeliveryInspectionTaskDto" resultMap="DeliveryInspectionTaskResultDto">
+        select   a.id,a.task_no,a.task_type,a.market_order_no,
+        a.market_delivery_no,a.status,
+        a.material_no,a.material_name,a.qty,
+        a.lot,a.delivery_time,a.remark,a.tenant_id,a.inspect_order_id,a.inspect_order_no, b.factory_code,
+        a.create_by, a.create_time, a.update_by, a.update_time,b.order_no,b.location_code,c.position_no,
+        a.position_no AS position_no_print
+        from wms_delivery_inspection_task a
+        left join wms_inspect_order b on a.inspect_order_id = b.id
+        left join wms_inspect_order_details c on b.order_no = c.order_no
+        <where>
+            <if test="id != null  and id != ''"> and a.id = #{id} </if>
+            <if test="taskNo != null  and taskNo != ''"> and a.task_no like concat('%',#{taskNo},'%')</if>
+            <if test="locationCode != null  and locationCode != ''"> and b.location_code like concat('%',#{locationCode},'%')</if>
+            <if test="materialNo != null  and materialNo != ''"> and a.material_no like concat('%',#{materialNo},'%')</if>
+            <if test="orderNo != null  and orderNo != ''"> and b.order_no like concat('%',#{orderNo},'%')</if>
+        </where>
+        order by a.id desc
+    </select>
+
+    <select id="getAllInspectionTask" parameterType="DeliveryInspectionTaskDto" resultMap="DeliveryInspectionTaskResultDto">
+        <include refid="selectDeliveryInspectionTaskVo"/>
+        <where>
+            <if test="status != null and status != '' ">and status = #{status}</if>
+            <if test="startTime != null and startTime != ''">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and create_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+</mapper>

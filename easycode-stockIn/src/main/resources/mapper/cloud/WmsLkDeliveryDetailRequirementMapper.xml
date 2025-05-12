@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.WmsLkDeliveryDetailRequirementMapper">
+
+    <resultMap type="WmsLkDeliveryDetailRequirement" id="WmsLkDeliveryDetailRequirementResult">
+        <result property="id"    column="id"    />
+        <result property="deliveryDetailId"    column="delivery_detail_id"    />
+        <result property="deliveryRequirementId"    column="delivery_requirement_id"    />
+        <result property="deliveryRequirement"    column="delivery_requirement"    />
+        <result property="requirementContent"    column="requirement_content"    />
+        <result property="required"    column="required"    />
+        <result property="remark"    column="remark"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectWmsLkDeliveryDetailRequirementVo">
+        select id, delivery_detail_id, delivery_requirement_id, delivery_requirement, requirement_content, required, remark, tenant_id, create_by, create_time, update_by, update_time from wms_lk_delivery_detail_requirement
+    </sql>
+
+    <select id="selectWmsLkDeliveryDetailRequirementList" parameterType="WmsLkDeliveryDetailRequirement" resultMap="WmsLkDeliveryDetailRequirementResult">
+        <include refid="selectWmsLkDeliveryDetailRequirementVo"/>
+        <where>
+            <if test="deliveryDetailId != null "> and delivery_detail_id = #{deliveryDetailId}</if>
+            <if test="deliveryRequirementId != null "> and delivery_requirement_id = #{deliveryRequirementId}</if>
+            <if test="deliveryRequirement != null  and deliveryRequirement != ''"> and delivery_requirement = #{deliveryRequirement}</if>
+            <if test="requirementContent != null  and requirementContent != ''"> and requirement_content = #{requirementContent}</if>
+            <if test="required != null  and required != ''"> and required = #{required}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+        </where>
+    </select>
+
+    <select id="selectWmsLkDeliveryDetailRequirementById" parameterType="Long" resultMap="WmsLkDeliveryDetailRequirementResult">
+        <include refid="selectWmsLkDeliveryDetailRequirementVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWmsLkDeliveryDetailRequirement" parameterType="WmsLkDeliveryDetailRequirement" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_lk_delivery_detail_requirement
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deliveryDetailId != null">delivery_detail_id,</if>
+            <if test="deliveryRequirementId != null">delivery_requirement_id,</if>
+            <if test="deliveryRequirement != null">delivery_requirement,</if>
+            <if test="requirementContent != null">requirement_content,</if>
+            <if test="required != null">required,</if>
+            <if test="remark != null">remark,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deliveryDetailId != null">#{deliveryDetailId},</if>
+            <if test="deliveryRequirementId != null">#{deliveryRequirementId},</if>
+            <if test="deliveryRequirement != null">#{deliveryRequirement},</if>
+            <if test="requirementContent != null">#{requirementContent},</if>
+            <if test="required != null">#{required},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <insert id="batchInsertRequirement" parameterType="WmsLkDeliveryDetailRequirement" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_lk_delivery_detail_requirement (delivery_detail_id, delivery_requirement_id, delivery_requirement,
+        requirement_content,required,remark, tenant_id, create_by, create_time,update_by,update_time) values
+        <foreach item="item" collection="list" separator=",">
+            (
+            #{item.deliveryDetailId},
+            #{item.deliveryRequirementId},
+            #{item.deliveryRequirement},
+            #{item.requirementContent},
+            #{item.required},
+            #{item.remark},
+            #{item.tenantId},
+            #{item.createBy},
+            #{item.createTime},
+            #{item.updateBy},
+            #{item.updateTime}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateWmsLkDeliveryDetailRequirement" parameterType="WmsLkDeliveryDetailRequirement">
+        update wms_lk_delivery_detail_requirement
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deliveryDetailId != null">delivery_detail_id = #{deliveryDetailId},</if>
+            <if test="deliveryRequirementId != null">delivery_requirement_id = #{deliveryRequirementId},</if>
+            <if test="deliveryRequirement != null">delivery_requirement = #{deliveryRequirement},</if>
+            <if test="requirementContent != null">requirement_content = #{requirementContent},</if>
+            <if test="required != null">required = #{required},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWmsLkDeliveryDetailRequirementById" parameterType="Long">
+        delete from wms_lk_delivery_detail_requirement where id = #{id}
+    </delete>
+
+    <delete id="deleteWmsLkDeliveryDetailRequirementByIds" parameterType="String">
+        delete from wms_lk_delivery_detail_requirement where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteRequirementByDetailId" parameterType="Long">
+        delete from wms_lk_delivery_detail_requirement where delivery_detail_id = #{id}
+    </delete>
+</mapper>

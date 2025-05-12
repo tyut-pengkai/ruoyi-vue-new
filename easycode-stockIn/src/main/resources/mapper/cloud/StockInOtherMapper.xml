@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.StockInOtherMapper">
+
+    <resultMap type="StockInOther" id="StockInOtherResult">
+        <result property="id"    column="id"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="billStatus"    column="bill_status"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="supplierCode"    column="supplier_code"    />
+        <result property="billType"    column="bill_type"    />
+        <result property="remark"    column="remark"    />
+        <result property="prdOrderNo"    column="prd_order_no"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="containerNo"    column="container_no"    />
+        <result property="containerType"    column="container_type"    />
+        <result property="wbsElement"    column="wbs_element"    />
+        <result property="moveType" column="move_type" />
+        <result property="huNo" column="hu_no" />
+        <result property="mesContainerNo" column="mes_container_no" />
+    </resultMap>
+    <resultMap id="stockInOrderList" type="StockInOtherParamsDto">
+        <result property="id" column="id" />
+        <result property="taskNo" column="task_no" />
+        <result property="orderNo" column="order_no" />
+        <result property="detailId" column="detail_id" />
+    </resultMap>
+    <sql id="selectStockInOtherVo">
+        select id, order_no, factory_code,move_type, dept_id, location_code, bill_status, supplier_name, supplier_code, bill_type, remark, tenant_id, prd_order_no, create_by, create_time, update_by, update_time,container_no, container_type  ,wbs_element, mes_container_no,hu_no,move_type from wms_stockin_other
+    </sql>
+    <select id="stockInOrderList" resultMap="stockInOrderList">
+        select wti.id,
+            wti.task_no,
+            wso.order_no,
+            wti.detail_id
+        from wms_ret_task as wti
+                 left join wms_stockin_other as wso
+                           on wti.stockin_order_no=wso.order_no
+        where wti.task_type=#{taskType} and wti.task_status in ('1','2')
+    </select>
+
+    <select id="stockInOrderListByTaskTypeAndOderNo" resultMap="stockInOrderList">
+        select wti.id,
+               wti.task_no,
+               wso.order_no,
+               wti.detail_id
+        from wms_ret_task as wti
+                 left join wms_stockin_other as wso
+                           on wti.stockin_order_no=wso.order_no
+        where wti.task_type=#{taskType} and wti.task_status in ('1','2') and wti.stockin_order_no = #{orderNo}
+    </select>
+
+    <select id="selectStockInOtherList" parameterType="StockInOtherDto" resultMap="StockInOtherResult">
+        select wso.id, wso.order_no, wso.factory_code,wso.dept_id,
+            wso.location_code, wso.bill_status, wso.supplier_name,
+            wso.supplier_code, wso.bill_type, wso.remark, wso.tenant_id,
+            wso.prd_order_no, wso.create_by, wso.create_time, wso.update_by,
+            wso.update_time, wso.container_no, wso.container_type,
+            wso.wbs_element, wso.mes_container_no, wso.hu_no, wso.move_type
+        from wms_stockin_other wso
+        <where>
+            <if test="orderNo != null  and orderNo != ''"> and wso.order_no like concat('%', #{orderNo}, '%')</if>
+            <if test="factoryCode != null  and factoryCode != ''"> and wso.factory_code = #{factoryCode}</if>
+            <if test="locationCode != null  and locationCode != ''"> and wso.location_code = #{locationCode}</if>
+            <if test="billStatus != null  and billStatus != ''"> and wso.bill_status = #{billStatus}</if>
+            <if test="billType != null  and billType != ''"> and wso.bill_type = #{billType}</if>
+            <if test="supplierName != null  and supplierName != ''"> and wso.supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="supplierCode != null  and supplierCode != ''"> and wso.supplier_code = #{supplierCode}</if>
+            <if test="materialNo != null "> and wso.order_no in (select order_no from wms_stockin_other_detail where material_no like concat('%', #{materialNo}, '%'))</if>
+            <if test="tenantId != null "> and wso.tenant_id = #{tenantId}</if>
+            <if test="containerNo != null "> and wso.container_no = #{containerNo}</if>
+            <if test="containerType != null "> and wso.container_type = #{containerType}</if>
+            <if test="wbsElement != null "> and wso.wbs_element = #{wbsElement}</if>
+            <if test="startTime != null and endTime == null">
+                and wso.create_time &gt;= #{startTime}
+            </if>
+            <if test="startTime == null and endTime != null">
+                and wso.create_time &lt;= DATE_ADD(#{endTime}, INTERVAL 1 DAY)
+            </if>
+            <if test="startTime != null and endTime != null">
+                and wso.create_time between #{startTime} and DATE_ADD(#{endTime}, INTERVAL 1 DAY)
+            </if>
+        </where>
+        order by wso.id desc
+    </select>
+
+    <select id="selectStockInOtherById" parameterType="Long" resultMap="StockInOtherResult">
+        <include refid="selectStockInOtherVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertStockInOther" parameterType="StockInOther" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_stockin_other
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">order_no,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="locationCode != null">location_code,</if>
+            <if test="billStatus != null">bill_status,</if>
+            <if test="supplierName != null">supplier_name,</if>
+            <if test="supplierCode != null">supplier_code,</if>
+            <if test="billType != null">bill_type,</if>
+            <if test="remark != null">remark,</if>
+            <if test="prdOrderNo != null">prd_order_no,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+<!--            <if test="deptId != null">dept_id,</if>-->
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="containerNo != null">container_no,</if>
+            <if test="containerType != null">container_type,</if>
+            <if test="wbsElement != null">wbs_element,</if>
+            <if test="moveType != null">move_type,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">#{orderNo},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="locationCode != null">#{locationCode},</if>
+            <if test="billStatus != null">#{billStatus},</if>
+            <if test="supplierName != null">#{supplierName},</if>
+            <if test="supplierCode != null">#{supplierCode},</if>
+            <if test="billType != null">#{billType},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="prdOrderNo != null">#{prdOrderNo},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+<!--            <if test="deptId != null">(select  dept_id from sys_dept where endda = 1 and locate(dept_id,(select CONCAT(ancestors,',',dept_id) from sys_dept where dept_id = #{deptId})) > 0),</if>-->
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="containerNo != null">#{containerNo},</if>
+            <if test="containerType != null">#{containerType},</if>
+            <if test="wbsElement != null">#{wbsElement},</if>
+            <if test="moveType != null">#{moveType},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStockInOther" parameterType="StockInOther">
+        update wms_stockin_other
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNo != null">order_no = #{orderNo},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="locationCode != null">location_code = #{locationCode},</if>
+            <if test="billStatus != null">bill_status = #{billStatus},</if>
+            <if test="supplierName != null">supplier_name = #{supplierName},</if>
+            <if test="supplierCode != null">supplier_code = #{supplierCode},</if>
+            <if test="billType != null">bill_type = #{billType},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="prdOrderNo != null">prd_order_no = #{prdOrderNo},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="containerNo != null">container_no = #{containerNo},</if>
+            <if test="containerType != null">container_type = #{containerType},</if>
+            <if test="wbsElement != null">wbs_element = #{wbsElement},</if>
+            <if test="moveType != null">move_type = #{moveType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStockInOtherById" parameterType="Long">
+        delete from wms_stockin_other where id = #{id}
+    </delete>
+
+    <delete id="deleteStockInOtherByIds" parameterType="String">
+        delete from wms_stockin_other where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectStockInOtherByOrderNo" parameterType="String" resultMap="StockInOtherResult">
+        <include refid="selectStockInOtherVo"/>
+        where order_no = #{orderNo}
+    </select>
+</mapper>

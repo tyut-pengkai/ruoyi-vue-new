@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.StockInSemiFinOrderDetailMapper">
+
+    <resultMap type="StockInSemiFinOrderDetail" id="StockInSemiFinOrderDetailResult">
+        <result property="id" column="id"/>
+        <result property="semifinOrderId" column="semifin_order_id"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="oldMaterialNo" column="old_material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="lot" column="lot"/>
+        <result property="planRecivevQty" column="plan_recivev_qty"/>
+        <result property="operationPlanRecivevQty" column="operation_plan_recivev_qty"/>
+        <result property="activeQty" column="active_qty"/>
+        <result property="minPacking" column="min_packing"/>
+        <result property="unit" column="unit"/>
+        <result property="operationUnit" column="operation_unit"/>
+        <result property="isQc" column="is_qc"/>
+        <result property="prdOrderNo" column="prd_order_no"/>
+        <result property="sourceLocationCode" column="source_location_code"/>
+        <result property="locationCode" column="location_code"/>
+        <result property="recievedQty" column="recieved_qty"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="lineNo" column="line_no"/>
+        <result property="isPrinted" column="is_printed"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <resultMap type="StockInSemiFinOrderDetailVo" id="StockInSemiFinOrderDetailVoResult">
+        <result property="id" column="id"/>
+        <result property="semifinOrderId" column="semifin_order_id"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="oldMaterialNo" column="old_material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="lot" column="lot"/>
+        <result property="planRecivevQty" column="plan_recivev_qty"/>
+        <result property="operationPlanRecivevQty" column="operation_plan_recivev_qty"/>
+        <result property="activeQty" column="active_qty"/>
+        <result property="minPacking" column="min_packing"/>
+        <result property="unit" column="unit"/>
+        <result property="operationUnit" column="operation_unit"/>
+        <result property="isQc" column="is_qc"/>
+        <result property="prdOrderNo" column="prd_order_no"/>
+        <result property="sourceLocationCode" column="source_location_code"/>
+        <result property="locationCode" column="location_code"/>
+        <result property="recievedQty" column="recieved_qty"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="lineNo" column="line_no"/>
+        <result property="isPrinted" column="is_printed"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <sql id="selectStockInSemiFinOrderDetailVo">
+        select id,
+               semifin_order_id,
+               material_no,
+               old_material_no,
+               material_name,
+               lot,
+               plan_recivev_qty,
+               operation_plan_recivev_qty,
+               active_qty,
+               min_packing,
+               unit,
+               operation_unit,
+               is_qc,
+               prd_order_no,
+               source_location_code,
+               location_code,
+               recieved_qty,
+               tenant_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               line_no,
+               is_printed,
+               status
+        from wms_stockin_semifin_order_detail
+    </sql>
+
+    <select id="selectStockInSemiFinOrderDetailList" parameterType="StockInSemiFinOrderDetailVo"
+            resultMap="StockInSemiFinOrderDetailVoResult">
+        <include refid="selectStockInSemiFinOrderDetailVo"/>
+        <where>
+            <if test="semifinOrderId != null ">and semifin_order_id = #{semifinOrderId}</if>
+            <if test="materialNo != null  and materialNo != ''">and material_no = #{materialNo}</if>
+            <if test="oldMaterialNo != null  and oldMaterialNo != ''">and old_material_no = #{oldMaterialNo}</if>
+            <if test="materialName != null  and materialName != ''">and material_name like concat('%', #{materialName},
+                '%')
+            </if>
+            <if test="detailStatusArr != null ">and status in
+                <foreach item="item" collection="detailStatusArr" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="lot != null  and lot != ''">and lot = #{lot}</if>
+            <if test="planRecivevQty != null ">and plan_recivev_qty = #{planRecivevQty}</if>
+            <if test="operationPlanRecivevQty != null ">and operation_plan_recivev_qty = #{operationPlanRecivevQty}</if>
+            <if test="activeQty != null ">and active_qty = #{activeQty}</if>
+            <if test="minPacking != null ">and min_packing = #{minPacking}</if>
+            <if test="unit != null  and unit != ''">and unit = #{unit}</if>
+            <if test="operationUnit != null  and operationUnit != ''">and operation_unit = #{operationUnit}</if>
+            <if test="isQc != null  and isQc != ''">and is_qc = #{isQc}</if>
+            <if test="prdOrderNo != null  and prdOrderNo != ''">and prd_order_no = #{prdOrderNo}</if>
+            <if test="sourceLocationCode != null  and sourceLocationCode != ''">and source_location_code =
+                #{sourceLocationCode}
+            </if>
+            <if test="locationCode != null  and locationCode != ''">and location_code = #{locationCode}</if>
+            <if test="recievedQty != null ">and recieved_qty = #{recievedQty}</if>
+            <if test="tenantId != null ">and tenant_id = #{tenantId}</if>
+            <if test="lineNo != null ">and line_no = #{lineNo}</if>
+            <if test="isPrinted != null ">and is_printed = #{isPrinted}</if>
+            <if test="status != null ">and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectStockInSemiFinOrderDetailById" parameterType="String" resultMap="StockInSemiFinOrderDetailResult">
+        <include refid="selectStockInSemiFinOrderDetailVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="checkStockInSemiFinOrderDetail" parameterType="StockInSemiFinOrderDetail" resultMap="StockInSemiFinOrderDetailVoResult">
+        SELECT
+            wsso.order_no,
+            wssod.prd_order_no
+        FROM
+            wms_stockin_semifin_order_detail AS wssod
+                LEFT JOIN wms_stockin_semifin_order AS wsso ON wssod.semifin_order_id = wsso.id
+        WHERE wssod.prd_order_no = #{prdOrderNo} AND wsso.order_status in ('1','2','3')
+    </select>
+
+    <select id="getMaxLot" resultType="java.lang.String" parameterType="String">
+        SELECT
+            lot
+        FROM
+            wms_stockin_semifin_order_detail
+        WHERE
+            prd_order_no = #{prdOrderNo}
+        ORDER BY lot DESC
+            LIMIT 1
+    </select>
+
+    <insert id="insertStockInSemiFinOrderDetail" parameterType="StockInSemiFinOrderDetail" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into wms_stockin_semifin_order_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="semifinOrderId != null">semifin_order_id,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="lot != null">lot,</if>
+            <if test="planRecivevQty != null">plan_recivev_qty,</if>
+            <if test="operationPlanRecivevQty != null">operation_plan_recivev_qty,</if>
+            <if test="activeQty != null">active_qty,</if>
+            <if test="minPacking != null">min_packing,</if>
+            <if test="unit != null">unit,</if>
+            <if test="operationUnit != null">operation_unit,</if>
+            <if test="isQc != null">is_qc,</if>
+            <if test="prdOrderNo != null">prd_order_no,</if>
+            <if test="sourceLocationCode != null">source_location_code,</if>
+            <if test="locationCode != null">location_code,</if>
+            <if test="recievedQty != null">recieved_qty,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="lineNo != null">line_no,</if>
+            <if test="isPrinted != null">is_printed,</if>
+            <if test="status != null">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="semifinOrderId != null">#{semifinOrderId},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="lot != null">#{lot},</if>
+            <if test="planRecivevQty != null">#{planRecivevQty},</if>
+            <if test="operationPlanRecivevQty != null">#{operationPlanRecivevQty},</if>
+            <if test="activeQty != null">#{activeQty},</if>
+            <if test="minPacking != null">#{minPacking},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="operationUnit != null">#{operationUnit},</if>
+            <if test="isQc != null">#{isQc},</if>
+            <if test="prdOrderNo != null">#{prdOrderNo},</if>
+            <if test="sourceLocationCode != null">#{sourceLocationCode},</if>
+            <if test="locationCode != null">#{locationCode},</if>
+            <if test="recievedQty != null">#{recievedQty},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="lineNo != null">#{lineNo},</if>
+            <if test="isPrinted != null">#{isPrinted},</if>
+            <if test="status != null">#{status},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStockInSemiFinOrderDetail" parameterType="StockInSemiFinOrderDetail">
+        update wms_stockin_semifin_order_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="semifinOrderId != null">semifin_order_id = #{semifinOrderId},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="lot != null">lot = #{lot},</if>
+            <if test="planRecivevQty != null">plan_recivev_qty = #{planRecivevQty},</if>
+            <if test="operationPlanRecivevQty != null">operation_plan_recivev_qty = #{operationPlanRecivevQty},</if>
+            <if test="activeQty != null">active_qty = #{activeQty},</if>
+            <if test="minPacking != null">min_packing = #{minPacking},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="operationUnit != null">operation_unit = #{operationUnit},</if>
+            <if test="isQc != null">is_qc = #{isQc},</if>
+            <if test="prdOrderNo != null">prd_order_no = #{prdOrderNo},</if>
+            <if test="sourceLocationCode != null">source_location_code = #{sourceLocationCode},</if>
+            <if test="locationCode != null">location_code = #{locationCode},</if>
+            <if test="recievedQty != null">recieved_qty = #{recievedQty},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="lineNo != null ">line_no = #{lineNo}</if>
+            <if test="isPrinted != null ">is_printed = #{isPrinted}</if>
+            <if test="status != null ">status = #{status}</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStockInSemiFinOrderDetailById" parameterType="String">
+        delete
+        from wms_stockin_semifin_order_detail
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteStockInSemiFinOrderDetailByIds" parameterType="String">
+        delete from wms_stockin_semifin_order_detail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,38 @@
+# Tomcat
+server:
+  port: 9206
+
+# Spring
+spring:
+  application:
+    # 应用名称
+    name: wms-stockin
+  profiles:
+    # 环境配置
+    active: ${ACTIVE:dev}
+  cloud:
+    nacos:
+      discovery:
+        # 服务注册地址
+        #        server-addr: 127.0.0.1:8848
+        namespace: ${NAMESPACE:wms-vh}
+        server-addr: ${NACOS_IP:127.0.0.1}:${NACOS_PORT:8848}
+      config:
+        namespace: ${NAMESPACE:wms-vh}
+        # 配置中心地址
+        #        server-addr: 127.0.0.1:8848
+        server-addr: ${NACOS_IP:127.0.0.1}:${NACOS_PORT:8848}
+        # 配置文件格式
+        file-extension: yml
+        # 共享配置
+        shared-configs:
+          - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+
+MA:
+  #退货入库
+  retTaskService: retTaskServiceImplMA
+  #入库
+  taskInfoService: taskInfoServiceImplMA
+
+VH:
+  taskInfoService: VHTaskInfoServiceImpl

@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.StockInStdOrderDetailMapper">
+
+    <resultMap type="StoorDto" id="StoorDtoResult">
+        <result property="id"    column="id"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="areaCode"    column="area_code"    />
+        <result property="positionId"    column="position_id"    />
+        <result property="positionNo"    column="position_no"    />
+
+
+    </resultMap>
+
+
+    <resultMap type="StockInStdOrderDetailDto" id="StockInStdOrderDetailDtoResult">
+        <result property="id"    column="id"    />
+        <result property="stdOrderId"    column="std_order_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="deliverQty"    column="deliver_qty"    />
+        <result property="receivedQty"    column="received_qty"    />
+        <result property="packagesQty"    column="packages_qty"    />
+        <result property="isQc"    column="is_qc"    />
+        <result property="isConsign"    column="is_consign"    />
+        <result property="detailType"    column="detail_type"    />
+        <result property="minPacking"    column="min_packing"    />
+        <result property="unit"    column="unit"    />
+        <result property="operationUnit"    column="operation_unit"    />
+        <result property="conversDefault"    column="convers_default"    />
+        <result property="operationQty"    column="operation_qty"    />
+        <result property="operationReceivedQty"    column="operation_received_qty"    />
+        <result property="operationPackageQty"    column="operation_package_qty"    />
+        <result property="fileId"    column="file_id"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="purchaseLineNo"    column="purchase_line_no"    />
+        <result property="isQequireFill"    column="is_qequire_fill"    />
+        <result property="isPrinted"    column="is_printed"    />
+        <result property="lotNo"    column="lot_no"    />
+        <result property="locationId"    column="location_id"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="remark"    column="remark"    />
+        <result property="thirdDeliveryOrderNo"    column="third_delivery_order_no"    />
+        <result property="thirdDeliveryLineNo"    column="third_delivery_line_no"    />
+        <result property="lineNo"    column="line_no"    />
+        <result property="requirementContent"    column="requirement_content"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="lfimg"               column="lfimg" />
+        <result property="vrkme"               column="vrkme" />
+        <result property="meins"               column="meins" />
+        <result property="umvkn"               column="umvkn" />
+        <result property="umvkz"               column="umvkz" />
+        <result property="lgmng"               column="lgmng" />
+        <result property="ntgew"               column="ntgew" />
+        <result property="brgew"               column="brgew" />
+        <result property="gewei"               column="gewei" />
+        <result property="lichn"               column="lichn" />
+        <result property="charg"                column="charg" />
+        <result property="vgbel"               column="vgbel" />
+        <result property="vgpos"               column="vgpos" />
+        <result property="insmk"               column="insmk" />
+        <result property="bwart"               column="bwart" />
+        <result property="banfn"               column="banfn" />
+        <result property="businessType"    column="business_type" />
+        <result property="moveType"    column="move_type" />
+        <result property="wbsElement"    column="wbs_element" />
+        <result property="voucherNo"    column="voucher_no" />
+        <result property="availableQty"    column="available_qty" />
+        <result property="finishFlag"    column="finish_flag"    />
+
+    </resultMap>
+
+    <resultMap type="StockInStdOrderDetail" id="StockInStdOrderDetailResult">
+        <result property="id"    column="id"    />
+        <result property="stdOrderId"    column="std_order_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="deliverQty"    column="deliver_qty"    />
+        <result property="receivedQty"    column="received_qty"    />
+        <result property="packagesQty"    column="packages_qty"    />
+        <result property="isQc"    column="is_qc"    />
+        <result property="isConsign"    column="is_consign"    />
+        <result property="detailType"    column="detail_type"    />
+        <result property="minPacking"    column="min_packing"    />
+        <result property="unit"    column="unit"    />
+        <result property="operationUnit"    column="operation_unit"    />
+        <result property="conversDefault"    column="convers_default"    />
+        <result property="operationQty"    column="operation_qty"    />
+        <result property="operationReceivedQty"    column="operation_received_qty"    />
+        <result property="operationPackageQty"    column="operation_package_qty"    />
+        <result property="fileId"    column="file_id"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="purchaseLineNo"    column="purchase_line_no"    />
+        <result property="isQequireFill"    column="is_qequire_fill"    />
+        <result property="isPrinted"    column="is_printed"    />
+        <result property="lotNo"    column="lot_no"    />
+        <result property="locationId"    column="location_id"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="remark"    column="remark"    />
+        <result property="thirdDeliveryOrderNo"    column="third_delivery_order_no"    />
+        <result property="thirdDeliveryLineNo"    column="third_delivery_line_no"    />
+        <result property="lineNo"    column="line_no"    />
+        <result property="requirementContent"    column="requirement_content"    />
+        <result property="bwart"               column="bwart" />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="voucherNo"    column="voucherNo"    />
+        <result property="wbsElement"    column="wbs_element"    />
+        <result property="availableQty"    column="available_qty"    />
+        <result property="finishFlag"    column="finish_flag"    />
+    </resultMap>
+
+    <resultMap type="StockInStdOrderDetailVo" id="StockInStdOrderDetailVoResult">
+        <result property="id"    column="id"    />
+        <result property="stdOrderId"    column="std_order_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="deliverQty"    column="deliver_qty"    />
+        <result property="receivedQty"    column="received_qty"    />
+        <result property="packagesQty"    column="packages_qty"    />
+        <result property="isQc"    column="is_qc"    />
+        <result property="isConsign"    column="is_consign"    />
+        <result property="detailType"    column="detail_type"    />
+        <result property="minPacking"    column="min_packing"    />
+        <result property="unit"    column="unit"    />
+        <result property="operationUnit"    column="operation_unit"    />
+        <result property="conversDefault"    column="convers_default"    />
+        <result property="operationQty"    column="operation_qty"    />
+        <result property="operationReceivedQty"    column="operation_received_qty"    />
+        <result property="operationPackageQty"    column="operation_package_qty"    />
+        <result property="fileId"    column="file_id"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="purchaseLineNo"    column="purchase_line_no"    />
+        <result property="isQequireFill"    column="is_qequire_fill"    />
+        <result property="isPrinted"    column="is_printed"    />
+        <result property="lotNo"    column="lot_no"    />
+        <result property="locationId"    column="location_id"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="remark"    column="remark"    />
+        <result property="thirdDeliveryOrderNo"    column="third_delivery_order_no"    />
+        <result property="thirdDeliveryLineNo"    column="third_delivery_line_no"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="lineNo"    column="line_no"    />
+        <result property="requirementContent"    column="requirement_content"    />
+        <result property="bwart"               column="bwart" />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="factoryId"    column="factory_id"    />
+        <result property="status"    column="status"    />
+        <result property="voucherNo"    column="voucherNo"    />
+        <result property="wbsElement"    column="wbs_element"    />
+        <result property="availableQty"    column="available_qty"    />
+        <result property="finishFlag"    column="finish_flag"    />
+    </resultMap>
+
+    <resultMap id="StockInOrderCommonResult" type="StockInOrderCommonDto">
+        <result property="materialNo"    column="material_no"    />
+        <result property="qty"    column="qty"    />
+    </resultMap>
+
+    <sql id="selectStockInStdOrderDetailVo">
+        select id, std_order_id,bwart, material_id, material_no, convers_default, material_name,
+               is_consign, old_material_no, deliver_qty, received_qty, packages_qty, is_qc, is_consign,
+               detail_type, min_packing, unit, operation_unit, operation_qty, operation_received_qty,
+               file_id, purchase_order_no, purchase_line_no, is_qequire_fill, is_printed,
+               lot_no, location_id, location_code, remark, third_delivery_order_no, third_delivery_line_no,
+               tenant_id, line_no,requirement_content, create_by, create_time, update_by,
+               update_time ,status, move_type, wbs_element, business_type, factory_code, eindt, pstyp, knttp,
+               cost_center_code, anln1, loekz, retpo, banfn, lfimg, vrkme, meins, umvkn, umvkz,
+               lgmng, ntgew, brgew, gewei, lichn, charg, vgbel, vgpos, insmk,wbs_element, available_qty ,finish_flag
+        from wms_stockin_std_order_detail
+    </sql>
+
+    <select id="selectStockInStdOrderDetailList" parameterType="StockInStdOrderDetail" resultMap="StockInStdOrderDetailResult">
+        <include refid="selectStockInStdOrderDetailVo"/>
+        <where>
+            <if test="id != null  and id != ''"> and id = #{id}</if>
+            <if test="purchaseOrderNo != null and purchaseOrderNo != ''"> and purchase_order_no = #{purchaseOrderNo}</if>
+            <if test="materialNo != null and materialNo != ''"> and material_no = #{materialNo}</if>
+            <if test="purchaseLineNo != null and purchaseLineNo != ''"> and purchase_line_no = #{purchaseLineNo}</if>
+            <if test="stdOrderId != null  and stdOrderId != ''"> and std_order_id = #{stdOrderId}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="ids != null and ids != '' "> and id in
+                <foreach item="id" collection="ids" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="stdOrderToDeliveryList" resultMap="StockInStdOrderDetailDtoResult"
+            parameterType="java.lang.Long">
+        select wsso.id as std_order_id, wssod.id,wssod.factory_code, wssod.purchase_order_no, wssod.purchase_line_no, wssod.third_delivery_order_no, wssod.line_no, wssod.detail_type, wssod.status,
+        wsso.factory_name, wsso.factory_code, wssod.material_name, wssod.material_no, wssod.deliver_qty,wssod.unit,wssod.factory_code,wssod.is_qc,
+        wssod.lfimg, wssod.vrkme, wssod.bwart, wssod.meins, wssod.umvkn, wssod.umvkz, wssod.lgmng, wssod.ntgew, wssod.brgew, wssod.gewei, wssod.lichn, wssod.charg,
+        wssod.vgbel, wssod.vgpos, wssod.insmk, wssod.wbs_element, wssod.move_type, wssod.location_code, wssod.wbs_element,wssod.is_qc, wssod.available_qty
+        from wms_stockin_std_order as wsso
+        left join wms_stockin_std_order_detail as wssod on wsso.id = wssod.std_order_id
+        <where>
+            and wssod.status = '1' and wsso.order_no in
+            <foreach collection="orderNos" item="orderNo" separator="," open="(" close=")">
+                select distinct order_no from wms_stockin_std_order where order_no like concat('%',#{orderNo},'%')
+            </foreach>
+            and wssod.available_qty > 0
+            <if test="materialNo != null  and materialNo != ''"> and wssod.material_no like concat('%',#{materialNo},'%') </if>
+        </where>
+    </select>
+    <select id="queryOnWayNumGroupByMaterialNo" parameterType="StockInOrderCommonDto" resultMap="StockInOrderCommonResult">
+        SELECT
+            SUM(ssod.deliver_qty - ssod.received_qty) qty,
+            material_no
+        FROM
+            wms_stockin_std_order_detail ssod
+                LEFT JOIN wms_stockin_std_order sso ON ssod.std_order_id = sso.id
+        <where>
+            <if test="materialList != null and materialList.size() > 0">
+                and ssod.material_no in
+                <foreach item="item" collection="materialList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="orderStatusList != null and orderStatusList.size() > 0">
+                and sso.order_status in
+                <foreach item="item" collection="orderStatusList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY ssod.material_no
+    </select>
+
+    <select id="queryStdOrderAndDetailList" parameterType="StockInStdOrderDetail" resultMap="StockInStdOrderDetailVoResult">
+        SELECT
+        wssod.id,
+        wssod.std_order_id,
+        wssod.material_id,
+        wssod.material_no,
+        wssod.material_name,
+        wssod.bwart,
+        wssod.is_consign,
+        wssod.old_material_no,
+        wssod.deliver_qty,
+        wssod.received_qty,
+        wssod.packages_qty,
+        wssod.is_qc,
+        wssod.is_consign,
+        wssod.detail_type,
+        wssod.min_packing,
+        wssod.unit,
+        wssod.operation_unit,
+        wssod.operation_qty,
+        wssod.file_id,
+        wssod.purchase_order_no,
+        wssod.purchase_line_no,
+        wssod.is_qequire_fill,
+        wssod.is_printed,
+        wssod.lot_no,
+        wssod.location_id,
+        wssod.location_code,
+        wssod.remark,
+        wssod.third_delivery_order_no,
+        wssod.third_delivery_line_no,
+        wssod.line_no,
+        wssod.tenant_id,
+        wssod.create_by,
+        wssod.create_time,
+        wssod.update_by,
+        wssod.update_time,
+        wssod.update_time,
+        wssod.convers_default,
+        wssod.requirement_content,
+        wssod.status,
+        wsso.order_no,
+        wsso.factory_id,
+        wsso.factory_code,
+        wsso.voucher_no,
+        wsso.wbs_element,
+        wsso.finish_flag
+        FROM
+        wms_stockin_std_order_detail AS wssod
+        LEFT JOIN wms_stockin_std_order AS wsso ON wssod.std_order_id = wsso.id
+        <where>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''"> and purchase_order_no = #{purchaseOrderNo}</if>
+            <if test="materialNo != null  and materialNo != ''"> and material_no = #{materialNo}</if>
+            and received_qty > 0
+        </where>
+    </select>
+
+    <select id="selectStockInStdOrderDetailByMerge" resultType="StockInStdOrderDetail" parameterType="StockInStdOrderDetail">
+        <include refid="selectStockInStdOrderDetailVo"/>
+        WHERE detail_type = '2' AND purchase_order_no = #{purchaseOrderNo} AND material_no = #{materialNo} AND lot_no = #{lotNo}
+    </select>
+
+    <select id="selectStockInStdOrderDetailByOrderId" resultMap="StoorDtoResult">
+        SELECT DISTINCT stockDetail.default_receive_location as 'location_code', stockDetail.material_name,stockDetail.old_material_no
+        FROM wms_material_storage_info AS stockDetail
+        WHERE stockDetail.material_no =#{materialNo}
+          AND tenant_id = #{tenantId}
+          AND STATUS = '0'
+          AND enabled = '0'
+    </select>
+
+
+    <insert id="insertStockInStdOrderDetail" parameterType="StockInStdOrderDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_stockin_std_order_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stdOrderId != null">std_order_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="materialNo != null and materialNo != ''">material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+            <if test="deliverQty != null">deliver_qty,</if>
+            <if test="receivedQty != null">received_qty,</if>
+            <if test="packagesQty != null">packages_qty,</if>
+            <if test="isQc != null">is_qc,</if>
+            <if test="isConsign != null">is_consign,</if>
+            <if test="detailType != null">detail_type,</if>
+            <if test="minPacking != null">min_packing,</if>
+            <if test="unit != null">unit,</if>
+            <if test="operationUnit != null">operation_unit,</if>
+            <if test="conversDefault != null">convers_default,</if>
+            <if test="operationQty != null">operation_qty,</if>
+            <if test="operationPackageQty != null">operation_package_qty,</if>
+            <if test="operationReceivedQty != null">operation_received_qty,</if>
+            <if test="fileId != null">file_id,</if>
+            <if test="purchaseOrderNo != null">purchase_order_no,</if>
+            <if test="purchaseLineNo != null">purchase_line_no,</if>
+            <if test="isQequireFill != null">is_qequire_fill,</if>
+            <if test="isPrinted != null">is_printed,</if>
+            <if test="lotNo != null">lot_no,</if>
+            <if test="locationId != null">location_id,</if>
+            <if test="locationCode != null">location_code,</if>
+            <if test="remark != null">remark,</if>
+            <if test="thirdDeliveryOrderNo != null">third_delivery_order_no,</if>
+            <if test="thirdDeliveryLineNo != null">third_delivery_line_no,</if>
+            <if test="lineNo != null">line_no,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="requirementContent != null">requirement_content,</if>
+            <if test="status != null">status,</if>
+            <if test="moveType != null">move_type,</if>
+            <if test="wbsElement != null">wbs_element,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="eindt != null">eindt,</if>
+            <if test="pstyp != null">pstyp,</if>
+            <if test="knttp != null">knttp,</if>
+            <if test="costCenterCode != null">cost_center_code,</if>
+            <if test="anln1 != null">anln1,</if>
+            <if test="loekz != null">loekz,</if>
+            <if test="retpo != null">retpo,</if>
+            <if test="banfn != null">banfn,</if>
+            <if test="lfimg != null">lfimg,</if>
+            <if test="vrkme != null">vrkme,</if>
+            <if test="meins != null">meins,</if>
+            <if test="umvkn != null">umvkn,</if>
+            <if test="umvkz != null">umvkz,</if>
+            <if test="lgmng != null">lgmng,</if>
+            <if test="ntgew != null">ntgew,</if>
+            <if test="brgew != null">brgew,</if>
+            <if test="gewei != null">gewei,</if>
+            <if test="lichn != null">lichn,</if>
+            <if test="charg != null">charg,</if>
+            <if test="vgbel != null">vgbel,</if>
+            <if test="vgpos != null">vgpos,</if>
+            <if test="insmk != null">insmk,</if>
+            <if test="bwart != null">bwart,</if>
+            <if test="voucherNo != null">voucher_no,</if>
+            <if test="posnr != null">posnr,</if>
+            <if test="kostk != null">kostk,</if>
+            <if test="availableQty != null">available_qty,</if>
+            <if test="finishFlag != null">finish_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stdOrderId != null">#{stdOrderId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="materialNo != null and materialNo != ''">#{materialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+            <if test="deliverQty != null">#{deliverQty},</if>
+            <if test="receivedQty != null">#{receivedQty},</if>
+            <if test="packagesQty != null">#{packagesQty},</if>
+            <if test="isQc != null">#{isQc},</if>
+            <if test="isConsign != null">#{isConsign},</if>
+            <if test="detailType != null">#{detailType},</if>
+            <if test="minPacking != null">#{minPacking},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="operationUnit != null">#{operationUnit},</if>
+            <if test="conversDefault != null">#{conversDefault},</if>
+            <if test="operationQty != null">#{operationQty},</if>
+            <if test="operationPackageQty != null">#{operationPackageQty},</if>
+            <if test="operationReceivedQty != null">#{operationReceivedQty},</if>
+            <if test="fileId != null">#{fileId},</if>
+            <if test="purchaseOrderNo != null">#{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">#{purchaseLineNo},</if>
+            <if test="isQequireFill != null">#{isQequireFill},</if>
+            <if test="isPrinted != null">#{isPrinted},</if>
+            <if test="lotNo != null">#{lotNo},</if>
+            <if test="locationId != null">#{locationId},</if>
+            <if test="locationCode != null">#{locationCode},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="thirdDeliveryOrderNo != null">#{thirdDeliveryOrderNo},</if>
+            <if test="thirdDeliveryLineNo != null">#{thirdDeliveryLineNo},</if>
+            <if test="lineNo != null">#{lineNo},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="requirementContent != null">#{requirementContent},</if>
+            <if test="status != null">#{status},</if>
+            <if test="moveType != null">#{moveType},</if>
+            <if test="wbsElement != null">#{wbsElement},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="eindt != null">#{eindt},</if>
+            <if test="pstyp != null">#{pstyp},</if>
+            <if test="knttp != null">#{knttp},</if>
+            <if test="costCenterCode != null">#{costCenterCode},</if>
+            <if test="anln1 != null">#{anln1},</if>
+            <if test="loekz != null">#{loekz},</if>
+            <if test="retpo != null">#{retpo},</if>
+            <if test="banfn != null">#{banfn},</if>
+            <if test="lfimg != null">#{lfimg},</if>
+            <if test="vrkme != null">#{vrkme},</if>
+            <if test="meins != null">#{meins},</if>
+            <if test="umvkn != null">#{umvkn},</if>
+            <if test="umvkz != null">#{umvkz},</if>
+            <if test="lgmng != null">#{lgmng},</if>
+            <if test="ntgew != null">#{ntgew},</if>
+            <if test="brgew != null">#{brgew},</if>
+            <if test="gewei != null">#{gewei},</if>
+            <if test="lichn != null">#{lichn},</if>
+            <if test="charg != null">#{charg},</if>
+            <if test="vgbel != null">#{vgbel},</if>
+            <if test="vgpos != null">#{vgpos},</if>
+            <if test="insmk != null">#{insmk},</if>
+            <if test="bwart != null">#{bwart},</if>
+            <if test="voucherNo != null">#{voucherNo},</if>
+            <if test="posnr != null">#{posnr},</if>
+            <if test="kostk != null">#{kostk},</if>
+            <if test="availableQty != null">#{availableQty},</if>
+            <if test="finishFlag != null">#{finishFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStockInStdOrderDetail" parameterType="StockInStdOrderDetail">
+        update wms_stockin_std_order_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stdOrderId != null">std_order_id = #{stdOrderId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="materialNo != null and materialNo != ''">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="deliverQty != null">deliver_qty = #{deliverQty},</if>
+            <if test="receivedQty != null">received_qty = #{receivedQty},</if>
+            <if test="packagesQty != null">packages_qty = #{packagesQty},</if>
+            <if test="isQc != null">is_qc = #{isQc},</if>
+            <if test="isConsign != null">is_consign = #{isConsign},</if>
+            <if test="detailType != null">detail_type = #{detailType},</if>
+            <if test="minPacking != null">min_packing = #{minPacking},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="operationUnit != null">operation_unit = #{operationUnit},</if>
+            <if test="conversDefault != null">convers_default = #{conversDefault},</if>
+            <if test="operationQty != null">operation_qty = #{operationQty},</if>
+            <if test="operationReceivedQty != null">operation_received_qty = #{operationReceivedQty},</if>
+            <if test="operationPackageQty != null">operation_package_qty = #{operationPackageQty},</if>
+            <if test="fileId != null">file_id = #{fileId},</if>
+            <if test="purchaseOrderNo != null">purchase_order_no = #{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">purchase_line_no = #{purchaseLineNo},</if>
+            <if test="isQequireFill != null">is_qequire_fill = #{isQequireFill},</if>
+            <if test="isPrinted != null">is_printed = #{isPrinted},</if>
+            <if test="lotNo != null">lot_no = #{lotNo},</if>
+            <if test="locationId != null">location_id = #{locationId},</if>
+            <if test="locationCode != null">location_code = #{locationCode},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="thirdDeliveryOrderNo != null">third_delivery_order_no = #{thirdDeliveryOrderNo},</if>
+            <if test="thirdDeliveryLineNo != null">third_delivery_line_no = #{thirdDeliveryLineNo},</if>
+            <if test="lineNo != null">line_no = #{lineNo},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="requirementContent != null">requirement_content = #{requirementContent},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="moveType != null">move_type = #{moveType},</if>
+            <if test="wbsElement != null">wbs_element = #{wbsElement},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="eindt != null">eindt = #{eindt},</if>
+            <if test="pstyp != null">pstyp = #{pstyp},</if>
+            <if test="knttp != null">knttp = #{knttp},</if>
+            <if test="costCenterCode != null">cost_center_code = #{costCenterCode},</if>
+            <if test="anln1 != null">anln1 = #{anln1},</if>
+            <if test="loekz != null">loekz = #{loekz},</if>
+            <if test="retpo != null">retpo = #{retpo},</if>
+            <if test="banfn != null">banfn = #{banfn},</if>
+            <if test="bwart != null">bwart = #{bwart},</if>
+            <if test="voucherNo != null">voucher_no = #{voucherNo},</if>
+            <if test="posnr != null">posnr = #{posnr},</if>
+            <if test="kostk != null">kostk = #{kostk},</if>
+            <if test="availableQty != null">available_qty = #{availableQty},</if>
+            <if test="finishFlag != null">finish_flag = #{finishFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStockInStdOrderDetailById" parameterType="Long">
+        delete from wms_stockin_std_order_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteStockInStdOrderDetailByIds" parameterType="String">
+        delete from wms_stockin_std_order_detail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteStockInStdOrderDetailByOrderId" parameterType="java.lang.Long">
+        delete from wms_stockin_std_order_detail where id = #{orderNo}
+    </delete>
+</mapper>

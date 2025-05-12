@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.InspectOrderDetailsMapper">
+
+    <resultMap type="InspectOrderDetailsVo" id="InspectOrderDetailsResult">
+        <result property="id"    column="id"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="lineNo"    column="line_no"    />
+        <result property="lot"    column="lot"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="returnQty"    column="return_qty"    />
+        <result property="concessionQty"    column="concession_qty"    />
+        <result property="qcQty"    column="qc_qty"    />
+        <result property="destructQty"    column="destruct_qty"    />
+        <result property="unit"    column="unit"    />
+        <result property="operationUnit"    column="operation_unit"    />
+        <result property="releaseQty"    column="release_qty"    />
+        <result property="completedQty"    column="completed_qty"    />
+        <result property="pickQty"    column="pick_qty"    />
+        <result property="currentConcessionQty"    column="current_concession_qty"    />
+        <result property="currentReleaseQty"    column="current_release_qty"    />
+        <result property="currentReturnQty"    column="current_return_qty"    />
+        <result property="currentDestructQty"    column="current_destruct_qty"    />
+        <result property="furnaceNo"    column="furnace_no"    />
+        <result property="prdLot"    column="prd_lot"    />
+        <result property="remark"    column="remark"    />
+        <result property="positionNo"    column="position_no"    />
+        <result property="inventoryId"    column="inventory_id"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <resultMap type="InspectInfoVo" id="PrintInfoResult">
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="orderNo" column="order_no"/>
+        <result property="vendorCode"    column="supplier_code"    />
+        <result property="vendorName"    column="supplier_name"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="deliverQty"    column="qc_qty"    />
+        <result property="returnQty"    column="return_qty"    />
+        <result property="lotNo"    column="lot"    />
+        <result property="companyCode"    column="company_code"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="qcDate"    column="qc_date"    />
+        <result property="factoryName" column="factory_name"/>
+    </resultMap>
+
+    <resultMap type="StockInOrderCommonDto" id="MaterialNumWaitInspect">
+        <result property="materialNo"    column="material_no"    />
+        <result property="qty"    column="qty"    />
+    </resultMap>
+
+    <sql id="selectInspectOrderDetailsVo">
+        select id, order_no, line_no, unit,old_material_no, operation_unit, material_no,material_name, concession_qty, return_qty, lot, qc_qty, destruct_qty,
+               release_qty, furnace_no, prd_lot, remark, position_no, inventory_id, tenant_id, create_by, create_time, update_by,pick_qty
+        from wms_inspect_order_details
+    </sql>
+
+    <select id="selectInspectOrderDetailsList" parameterType="InspectOrderDetails" resultMap="InspectOrderDetailsResult">
+        <include refid="selectInspectOrderDetailsVo"/>
+        <where>
+            <if test="orderNo != null  and orderNo != ''"> and order_no = #{orderNo}</if>
+            <if test="lineNo != null  and lineNo != ''"> and line_no = #{lineNo}</if>
+            <if test="lot != null  and lot != ''"> and lot = #{lot}</if>
+            <if test="qcQty != null "> and qc_qty = #{qcQty}</if>
+            <if test="destructQty != null "> and destruct_qty = #{destructQty}</if>
+            <if test="releaseQty != null "> and release_qty = #{releaseQty}</if>
+            <if test="furnaceNo != null  and furnaceNo != ''"> and furnace_no = #{furnaceNo}</if>
+            <if test="prdLot != null  and prdLot != ''"> and prd_lot = #{prdLot}</if>
+            <if test="positionNo != null  and positionNo != ''"> and position_no = #{positionNo}</if>
+            <if test="tenantId != null "> and tenant_id = #{tenantId}</if>
+        </where>
+    </select>
+
+    <select id="selectInspectOrderDetailsListByOrderNos" parameterType="InspectOrderDto" resultMap="InspectOrderDetailsResult">
+        <include refid="selectInspectOrderDetailsVo"/>
+        WHERE order_no in
+        <foreach item="orderNo" collection="orderNos" open="(" separator="," close=")">
+            #{orderNo}
+        </foreach>
+    </select>
+
+    <select id="selectInspectOrderDetailsListByOrderNo" parameterType="String" resultMap="InspectOrderDetailsResult">
+        <include refid="selectInspectOrderDetailsVo"/>
+        WHERE order_no = #{orderNo}
+    </select>
+
+    <select id="getPrintInfoByIds" resultMap="PrintInfoResult">
+        SELECT
+        io.supplier_code,
+        io.supplier_name,
+        io.order_no,
+        iod.material_no,
+        iod.material_name,
+        io.purchase_order_no,
+        iod.qc_qty,
+        iod.lot,
+        io.qc_date,
+        iod.return_qty,iod.old_material_no,
+        iod.pick_qty,
+        factory.factory_name
+        FROM
+        wms_inspect_order_details iod
+        LEFT JOIN wms_inspect_order io ON iod.order_no = io.order_no
+        LEFT JOIN wms_factory factory ON io.factory_code = factory.factory_code
+        where io.id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="queryWaitInspectNumGroupByMaterialNo" parameterType="StockInOrderCommonDto" resultMap="MaterialNumWaitInspect">
+        SELECT
+        IFNULL(SUM((IFNULL(iod.qc_qty,0) - IFNULL(iod.return_qty,0) - IFNULL(iod.pick_qty,0) -IFNULL(iod.destruct_qty,0) - IFNULL(iod.release_qty,0) - IFNULL(iod.concession_qty,0))), 0) qty,
+            iod.material_no,iod.old_material_no
+        FROM
+            wms_inspect_order_details iod
+        LEFT JOIN wms_inspect_order io ON iod.order_no = io.order_no
+        <where>
+            <if test="materialList != null and materialList.size() > 0">
+                and iod.material_no in
+                <foreach item="item" collection="materialList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="billStatusList != null and billStatusList.size() > 0">
+                and io.bill_status in
+                <foreach item="item" collection="billStatusList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="checkResult != null and checkResult != ''">
+                and (io.chk_result = #{checkResult} or io.chk_result is null)
+            </if>
+        </where>
+        GROUP BY iod.material_no
+    </select>
+
+    <select id="selectInspectOrderDetailsById" parameterType="Long" resultMap="InspectOrderDetailsResult">
+        <include refid="selectInspectOrderDetailsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertInspectOrderDetails" parameterType="InspectOrderDetails" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_inspect_order_details
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">order_no,</if>
+            <if test="lineNo != null">line_no,</if>
+            <if test="lot != null">lot,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="concessionQty != null">concession_qty,</if>
+            <if test="returnQty != null">return_qty,</if>
+            <if test="qcQty != null">qc_qty,</if>
+            <if test="destructQty != null">destruct_qty,</if>
+            <if test="releaseQty != null">release_qty,</if>
+            <if test="unit != null">unit,</if>
+            <if test="operationUnit != null">operation_unit,</if>
+            <if test="furnaceNo != null">furnace_no,</if>
+            <if test="prdLot != null">prd_lot,</if>
+            <if test="remark != null">remark,</if>
+            <if test="positionNo != null">position_no,</if>
+            <if test="pickQty != null">pick_qty,</if>
+            <if test="inventoryId != null">inventory_id,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">#{orderNo},</if>
+            <if test="lineNo != null">#{lineNo},</if>
+            <if test="lot != null">#{lot},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="concessionQty != null">#{concessionQty},</if>
+            <if test="returnQty != null">#{returnQty},</if>
+            <if test="qcQty != null">#{qcQty},</if>
+            <if test="destructQty != null">#{destructQty},</if>
+            <if test="releaseQty != null">#{releaseQty},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="operationUnit != null">#{operationUnit},</if>
+            <if test="furnaceNo != null">#{furnaceNo},</if>
+            <if test="prdLot != null">#{prdLot},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="positionNo != null">#{positionNo},</if>
+            <if test="pickQty != null">#{pickQty},</if>
+            <if test="inventoryId != null">#{inventoryId},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+        </trim>
+    </insert>
+
+    <update id="updateInspectOrderDetails" parameterType="InspectOrderDetails">
+        update wms_inspect_order_details
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="lineNo != null">line_no = #{lineNo},</if>
+            <if test="lot != null">lot = #{lot},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="concessionQty != null">concession_qty = #{concessionQty},</if>
+            <if test="returnQty != null">return_qty = #{returnQty},</if>
+            <if test="qcQty != null">qc_qty = #{qcQty},</if>
+            <if test="destructQty != null">destruct_qty = #{destructQty},</if>
+            <if test="releaseQty != null">release_qty = #{releaseQty},</if>
+            <if test="furnaceNo != null">furnace_no = #{furnaceNo},</if>
+            <if test="prdLot != null">prd_lot = #{prdLot},</if>
+            <if test="positionNo != null">position_no = #{positionNo},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="inventoryId != null">inventory_id = #{inventoryId},</if>
+            <if test="pickQty != null">pick_qty = #{pickQty},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+        </trim>
+        <where>
+            <if test="orderNo != null  and orderNo != ''"> and order_no = #{orderNo}</if>
+            <if test="id != null  and id != ''"> and id = #{id}</if>
+        </where>
+    </update>
+
+    <update id="updateInspectOrderDetailsBatch" parameterType="InspectOrderDto">
+        update wms_inspect_order_details
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where order_no in
+        <foreach item="orderNo" collection="orderNos" open="(" separator="," close=")">
+            #{orderNo}
+        </foreach>
+    </update>
+
+    <delete id="deleteInspectOrderDetailsById" parameterType="Long">
+        delete from wms_inspect_order_details where id = #{id}
+    </delete>
+
+    <delete id="deleteInspectOrderDetailsByIds" parameterType="String">
+        delete from wms_inspect_order_details where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.CostCenterReturnOrderMapper">
+
+    <resultMap type="CostCenterReturnOrder" id="CostCenterReturnOrderResult">
+        <result property="id"    column="id"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="factoryName"    column="factory_name"    />
+        <result property="costCenterCode"    column="cost_center_code"    />
+        <result property="costCenterDesc"    column="cost_center_desc"    />
+        <result property="moveType"    column="move_type"    />
+        <result property="customerCode"    column="customer_code"    />
+        <result property="innerOrderNo"    column="inner_order_no"    />
+        <result property="costMgType"    column="cost_mg_type"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="remark"    column="remark"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="containerNo"    column="container_no"    />
+        <result property="containerType"    column="container_type"    />
+    </resultMap>
+
+    <resultMap type="PrintInfoVo" id="PrintInfoResult">
+        <result property="orderNo" column="order_no"/>
+        <result property="vendorCode"    column="vendor_code"    />
+        <result property="vendorName"    column="vendor_name"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="purchaseLineNo"    column="purchase_line_no"    />
+        <result property="deliverQty"    column="deliver_qty"    />
+        <result property="minPacking"    column="min_packing"    />
+        <result property="lotNo"    column="lot_no"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="deliveryOrderNo"    column="delivery_order_no"    />
+        <result property="innerOrderNo"    column="inner_order_no"    />
+        <result property="thirdDeliveryOrderNo"    column="third_delivery_order_no"    />
+        <result property="companyCode"    column="company_code"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="deliveryAddr"    column="delivery_addr"    />
+    </resultMap>
+
+    <sql id="selectCostCenterReturnOrderVo">
+        select id, order_no, factory_code, dept_id, cost_mg_type, factory_name, cost_center_code, cost_center_desc, move_type, customer_code, inner_order_no, order_status, remark, tenant_id, create_by, create_time, update_by, update_time,container_no ,container_type from wms_cost_center_return_order
+    </sql>
+
+    <select id="selectCostCenterReturnOrderList" parameterType="CostCenterReturnOrderVo" resultMap="CostCenterReturnOrderResult">
+
+        select ccro.id, ccro.order_no, ccro.factory_code, ccro.dept_id,
+            ccro.cost_mg_type, ccro.factory_name, ccro.cost_center_code,
+            ccro.cost_center_desc, ccro.move_type, ccro.customer_code,
+            ccro.inner_order_no, ccro.order_status, ccro.remark,
+            ccro.tenant_id, ccro.create_by, ccro.create_time,
+            ccro.update_by, ccro.update_time,ccro.container_no ,
+            ccro.container_type
+        from wms_cost_center_return_order ccro
+        left join sys_dept d on ccro.dept_id = d.dept_id
+        <where>
+            <if test="orderNo != null  and orderNo != ''"> and ccro.order_no like concat('%', #{orderNo}, '%')</if>
+            <if test="factoryCode != null  and factoryCode != ''"> and ccro.factory_code = #{factoryCode}</if>
+            <if test="factoryName != null  and factoryName != ''"> and ccro.factory_name like concat('%', #{factoryName}, '%')</if>
+            <if test="costCenterCode != null  and costCenterCode != ''"> and ccro.cost_center_code = #{costCenterCode}</if>
+            <if test="costCenterDesc != null  and costCenterDesc != ''"> and ccro.cost_center_desc = #{costCenterDesc}</if>
+            <if test="moveType != null  and moveType != ''"> and ccro.move_type = #{moveType}</if>
+            <if test="costMgType != null  and costMgType != ''"> and ccro.cost_mg_type = #{costMgType}</if>
+            <if test="customerCode != null  and customerCode != ''"> and ccro.customer_code = #{customerCode}</if>
+            <if test="innerOrderNo != null  and innerOrderNo != ''"> and ccro.inner_order_no = #{innerOrderNo}</if>
+            <if test="orderStatus != null  and orderStatus != ''"> and ccro.order_status = #{orderStatus}</if>
+            <if test="materialNo != null "> and ccro.order_no in (select return_order_no from wms_cost_center_return_order_detail where material_no like concat('%', #{materialNo}, '%'))</if>
+            <if test="tenantId != null "> and ccro.tenant_id = #{tenantId}</if>
+            <if test="startTime != null  and startTime != '' "> and ccro.create_time >= #{startTime}</if>
+            <if test="endTime != null  and endTime != '' "> and #{endTime} >=ccro.create_time </if>
+            <if test="containerNo != null "> and ccro.container_no = #{containerNo}</if>
+            <if test="containerType != null "> and ccro.container_type = #{containerType}</if>
+            ${params.dataScope}
+        </where>
+        order by ccro.id desc
+    </select>
+
+    <select id="selectCostCenterReturnOrderById" parameterType="Long" resultMap="CostCenterReturnOrderResult">
+        <include refid="selectCostCenterReturnOrderVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="getPrintInfoByIds" resultMap="PrintInfoResult">
+        SELECT
+        cso.order_no,
+            csod.lot lot_no,
+            csod.material_no,
+            csod.material_name,
+            csod.old_material_no,
+            cso.inner_order_no,
+            csod.return_qty deliver_qty
+        FROM
+            wms_cost_center_return_order_detail csod
+        LEFT JOIN wms_cost_center_return_order cso ON cso.order_no = csod.return_order_no
+        where cso.id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getPrintInfoByDetailIds" resultMap="PrintInfoResult">
+        SELECT
+        cso.order_no,
+        csod.lot lot_no,
+        csod.material_no,
+        csod.material_name,
+        csod.old_material_no,
+        csod.return_qty deliver_qty
+        FROM
+        wms_cost_center_return_order_detail csod
+        LEFT JOIN wms_cost_center_return_order cso ON cso.order_no = csod.return_order_no
+        where csod.id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="insertCostCenterReturnOrder" parameterType="CostCenterReturnOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_cost_center_return_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">order_no,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="factoryName != null">factory_name,</if>
+            <if test="costCenterCode != null">cost_center_code,</if>
+            <if test="costCenterDesc != null">cost_center_desc,</if>
+            <if test="moveType != null">move_type,</if>
+            <if test="costMgType != null">cost_mg_type,</if>
+            <if test="customerCode != null">customer_code,</if>
+            <if test="innerOrderNo != null">inner_order_no,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="containerNo != null">container_no,</if>
+            <if test="containerType != null">container_type,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">#{orderNo},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="factoryName != null">#{factoryName},</if>
+            <if test="costCenterCode != null">#{costCenterCode},</if>
+            <if test="costCenterDesc != null">#{costCenterDesc},</if>
+            <if test="moveType != null">#{moveType},</if>
+            <if test="costMgType != null">#{costMgType},</if>
+            <if test="customerCode != null">#{customerCode},</if>
+            <if test="innerOrderNo != null">#{innerOrderNo},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="containerNo != null">#{containerNo},</if>
+            <if test="containerType != null">#{containerType},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCostCenterReturnOrder" parameterType="CostCenterReturnOrder">
+        update wms_cost_center_return_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNo != null">order_no = #{orderNo},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="factoryName != null">factory_name = #{factoryName},</if>
+            <if test="costCenterCode != null">cost_center_code = #{costCenterCode},</if>
+            <if test="costCenterDesc != null">cost_center_desc = #{costCenterDesc},</if>
+            <if test="moveType != null">move_type = #{moveType},</if>
+            <if test="costMgType != null">cost_mg_type = #{costMgType},</if>
+            <if test="customerCode != null">customer_code = #{customerCode},</if>
+            <if test="innerOrderNo != null">inner_order_no = #{innerOrderNo},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="containerNo != null">container_no = #{containerNo},</if>
+            <if test="containerType != null">container_type = #{containerType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCostCenterReturnOrderById" parameterType="Long">
+        delete from wms_cost_center_return_order where id = #{id}
+    </delete>
+
+    <delete id="deleteCostCenterReturnOrderByIds" parameterType="String">
+        delete from wms_cost_center_return_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectCostCenterReturnOrderByOrderNo" parameterType="String" resultMap="CostCenterReturnOrderResult">
+        <include refid="selectCostCenterReturnOrderVo"/>
+        where order_no = #{orderNo}
+    </select>
+</mapper>

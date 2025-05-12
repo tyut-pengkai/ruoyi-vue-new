@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.RwmOutSourceReturnOrderMapper">
+
+    <resultMap type="RwmOutSourceReturnOrder" id="RwmOutSourceReturnOrderResult">
+        <result property="id"    column="id"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="factoryName"    column="factory_name"    />
+        <result property="rwmOutSourceCode"    column="rwm_outsource_code"    />
+        <result property="rwmOutSourceDesc"    column="rwm_outsource_desc"    />
+        <result property="moveType"    column="move_type"    />
+        <result property="customerCode"    column="customer_code"    />
+        <result property="innerOrderNo"    column="inner_order_no"    />
+        <result property="rwmMgType"    column="rwm_mg_type"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="remark"    column="remark"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="containerNo"    column="container_no"    />
+        <result property="containerType"    column="container_type"    />
+        <result property="purchaseVoucherNo"    column="purchase_voucher_no"    />
+        <result property="supplierCode"    column="supplier_code"    />
+        <result property="locationCode"    column="location_code"    />
+
+    </resultMap>
+
+    <resultMap type="PrintInfoVo" id="PrintInfoResult">
+        <result property="orderNo" column="order_no"/>
+        <result property="vendorCode"    column="vendor_code"    />
+        <result property="vendorName"    column="vendor_name"    />
+        <result property="materialNo"    column="material_no"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="oldMaterialNo"    column="old_material_no"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="purchaseLineNo"    column="purchase_line_no"    />
+        <result property="deliverQty"    column="deliver_qty"    />
+        <result property="minPacking"    column="min_packing"    />
+        <result property="lotNo"    column="lot_no"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="deliveryOrderNo"    column="delivery_order_no"    />
+        <result property="innerOrderNo"    column="inner_order_no"    />
+        <result property="thirdDeliveryOrderNo"    column="third_delivery_order_no"    />
+        <result property="companyCode"    column="company_code"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="deliveryAddr"    column="delivery_addr"    />
+    </resultMap>
+
+    <sql id="selectRwmOutSourceReturnOrderVo">
+        select id, order_no, factory_code, dept_id, rwm_mg_type, factory_name, rwm_outsource_code, rwm_outsource_desc, move_type, customer_code, inner_order_no, order_status, remark, tenant_id, create_by, create_time, update_by, update_time,container_no ,container_type from wms_rwm_outsource_return_order
+    </sql>
+
+    <select id="selectRwmOutSourceReturnOrderList" parameterType="RwmOutSourceReturnOrderVo" resultMap="RwmOutSourceReturnOrderResult">
+
+        select roro.id, roro.order_no, a.factory_code, roro.dept_id,
+            roro.rwm_mg_type, roro.factory_name, roro.rwm_outsource_code,
+            roro.rwm_outsource_desc, roro.move_type,
+            roro.inner_order_no, roro.order_status, roro.remark,
+            roro.tenant_id, roro.create_by, roro.create_time,
+            roro.update_by, roro.update_time,roro.container_no ,
+            roro.container_type,
+            a.purchase_voucher_no,
+            a.supplier_code,
+            a.supplier_code AS customer_code
+        from wms_rwm_outsource_return_order roro
+        LEFT JOIN wms_rwm_outsource_return_order_details a  ON  a.return_order_no = roro.order_no
+        left join sys_dept d on roro.dept_id = d.dept_id
+        <where>
+            <if test="orderNo != null  and orderNo != ''"> and roro.order_no like concat('%', #{orderNo}, '%')</if>
+            <if test="factoryCode != null  and factoryCode != ''"> and roro.factory_code = #{factoryCode}</if>
+            <if test="factoryName != null  and factoryName != ''"> and roro.factory_name like concat('%', #{factoryName}, '%')</if>
+            <if test="rwmOutSourceCode != null  and rwmOutSourceCode != ''"> and roro.rwm_outsource_code = #{rwmOutSourceCode}</if>
+            <if test="rwmOutSourceDesc != null  and rwmOutSourceDesc != ''"> and roro.rwm_outsource_desc = #{rwmOutSourceDesc}</if>
+            <if test="moveType != null  and moveType != ''"> and roro.move_type = #{moveType}</if>
+            <if test="rwmMgType != null  and rwmMgType != ''"> and roro.rwm_mg_type = #{rwmMgType}</if>
+            <if test="customerCode != null  and customerCode != ''"> and roro.customer_code = #{customerCode}</if>
+            <if test="innerOrderNo != null  and innerOrderNo != ''"> and roro.inner_order_no = #{innerOrderNo}</if>
+            <if test="orderStatus != null  and orderStatus != ''"> and roro.order_status = #{orderStatus}</if>
+            <if test="materialNo != null "> and roro.order_no in (select return_order_no from wms_rwm_outsource_return_order_details where material_no like concat('%', #{materialNo}, '%'))</if>
+            <if test="tenantId != null "> and roro.tenant_id = #{tenantId}</if>
+            <if test="startTime != null  and startTime != '' "> and  DATE_FORMAT( roro.create_time, '%Y-%m-%d' ) >= #{startTime}</if>
+            <if test="endTime != null  and endTime != '' "> and #{endTime} >= DATE_FORMAT( roro.create_time, '%Y-%m-%d' ) </if>
+            <if test="containerNo != null "> and roro.container_no = #{containerNo}</if>
+            <if test="containerType != null "> and roro.container_type = #{containerType}</if>
+            <if test="purchaseVoucherNo != null and purchaseVoucherNo !='' ">
+                and a.purchase_voucher_no = #{purchaseVoucherNo}
+            </if>
+            <if test="supplierCode != null and supplierCode !='' ">
+                and a.supplier_code = #{supplierCode}
+            </if>
+            <if test="purchaseOrderNo != null and purchaseOrderNo !='' ">
+                and a.purchase_voucher_no = #{purchaseOrderNo}
+            </if>
+            ${params.dataScope}
+        </where>
+        group by roro.id, roro.order_no, a.factory_code, roro.dept_id,
+        roro.rwm_mg_type, roro.factory_name, roro.rwm_outsource_code,
+        roro.rwm_outsource_desc, roro.move_type, roro.customer_code,
+        roro.inner_order_no, roro.order_status, roro.remark,
+        roro.tenant_id, roro.create_by, roro.create_time,
+        roro.update_by, roro.update_time, roro.container_no,
+        roro.container_type ,
+        a.purchase_voucher_no,
+        a.supplier_code
+        order by roro.id desc
+    </select>
+
+    <select id="selectRwmOutSourceReturnOrderById" parameterType="Long" resultMap="RwmOutSourceReturnOrderResult">
+        <include refid="selectRwmOutSourceReturnOrderVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="getPrintInfoByIds" resultMap="PrintInfoResult">
+        SELECT
+        cso.order_no,
+            csod.lot lot_no,
+            csod.material_no,
+            csod.material_name,
+            csod.old_material_no,
+            cso.inner_order_no,
+            csod.return_qty deliver_qty
+        FROM
+            wms_rwm_outsource_return_order_detailscsod
+        LEFT JOIN wms_rwm_outsource_return_order cso ON cso.order_no = csod.return_order_no
+        where cso.id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getPrintInfoByDetailIds" resultMap="PrintInfoResult">
+        SELECT
+        cso.order_no,
+        csod.lot lot_no,
+        csod.material_no,
+        csod.material_name,
+        csod.old_material_no,
+        csod.return_qty deliver_qty
+        FROM
+        wms_rwm_outsource_return_order_detailscsod
+        LEFT JOIN wms_rwm_outsource_return_order cso ON cso.order_no = csod.return_order_no
+        where csod.id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="insertRwmOutSourceReturnOrder" parameterType="RwmOutSourceReturnOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_rwm_outsource_return_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">order_no,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="factoryName != null">factory_name,</if>
+            <if test="rwmOutSourceCode != null">rwm_outsource_code,</if>
+            <if test="rwmOutSourceDesc != null">rwm_outsource_desc,</if>
+            <if test="moveType != null">move_type,</if>
+            <if test="rwmMgType != null">rwm_mg_type,</if>
+            <if test="customerCode != null">customer_code,</if>
+            <if test="innerOrderNo != null">inner_order_no,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="containerNo != null">container_no,</if>
+            <if test="containerType != null">container_type,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null">#{orderNo},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="factoryName != null">#{factoryName},</if>
+            <if test="rwmOutSourceCode != null">#{rwmOutSourceCode},</if>
+            <if test="rwmOutSourceDesc != null">#{rwmOutSourceDesc},</if>
+            <if test="moveType != null">#{moveType},</if>
+            <if test="rwmMgType != null">#{rwmMgType},</if>
+            <if test="customerCode != null">#{customerCode},</if>
+            <if test="innerOrderNo != null">#{innerOrderNo},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="deptId != null">(select  dept_id from sys_dept where endda = 1 and locate(dept_id,(select CONCAT(ancestors,',',dept_id) from sys_dept where dept_id = #{deptId})) > 0),</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="containerNo != null">#{containerNo},</if>
+            <if test="containerType != null">#{containerType},</if>
+        </trim>
+    </insert>
+
+    <update id="updateRwmOutSourceReturnOrder" parameterType="RwmOutSourceReturnOrder">
+        update wms_rwm_outsource_return_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNo != null">order_no = #{orderNo},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="factoryName != null">factory_name = #{factoryName},</if>
+            <if test="rwmOutSourceCode != null">rwm_outsource_code = #{rwmOutSourceCode},</if>
+            <if test="rwmOutSourceDesc != null">rwm_outsource_desc = #{rwmOutSourceDesc},</if>
+            <if test="moveType != null">move_type = #{moveType},</if>
+            <if test="rwmMgType != null">rwm_mg_type = #{rwmMgType},</if>
+            <if test="customerCode != null">customer_code = #{customerCode},</if>
+            <if test="innerOrderNo != null">inner_order_no = #{innerOrderNo},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="containerNo != null">container_no = #{containerNo},</if>
+            <if test="containerType != null">container_type = #{containerType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRwmOutSourceReturnOrderById" parameterType="Long">
+        delete from wms_rwm_outsource_return_order where id = #{id}
+    </delete>
+
+    <delete id="deleteRwmOutSourceReturnOrderByIds" parameterType="String">
+        delete from wms_rwm_outsource_return_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

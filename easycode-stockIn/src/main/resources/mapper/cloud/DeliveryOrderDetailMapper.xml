@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.DeliveryOrderDetailMapper">
+
+    <resultMap type="DeliveryOrderDetail" id="DeliveryOrderDetailResult">
+        <result property="id" column="id"/>
+        <result property="factoryId" column="factory_id"/>
+        <result property="factoryName" column="factory_name"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="purchaseOrderDetailId" column="purchase_order_detail_id"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="oldMaterialNo" column="old_material_no"/>
+        <result property="deliverQty" column="deliver_qty"/>
+        <result property="minPacking" column="min_packing"/>
+        <result property="unit" column="unit"/>
+        <result property="fileId" column="file_id"/>
+        <result property="deliveryOrderId" column="delivery_order_id"/>
+        <result property="deliveryOrderNo" column="delivery_order_no"/>
+        <result property="deliveryLineNo" column="delivery_line_no"/>
+        <result property="purchaseOrderNo" column="purchase_order_no"/>
+        <result property="purchaseLineNo" column="purchase_line_no"/>
+        <result property="isQequireFill" column="is_qequire_fill"/>
+        <result property="isPrinted" column="is_printed"/>
+        <result property="isQc" column="is_qc"/>
+        <result property="isPost" column="is_post"/>
+        <result property="isConsign" column="is_consign"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="locationCode" column="location_code"/>
+        <result property="thirdDeliveryOrderNo" column="third_delivery_order_no"/>
+        <result property="thirdDeliveryLineNo" column="third_delivery_line_no"/>
+        <result property="remark" column="remark"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="planLineNo" column="plan_line_no"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deliveryOrderStatus" column="delivery_order_status"/>
+        <result property="inspectOrderNo" column="inspect_order_no"/>
+        <result property="voucherNo" column="voucher_no"/>
+        <result property="receivedQty" column="received_qty"/>
+    </resultMap>
+
+    <resultMap type="DeliveryOrderDetailVo" id="DeliveryOrderDetailVoResult">
+        <result property="id" column="id"/>
+        <result property="factoryId" column="factory_id"/>
+        <result property="factoryName" column="factory_name"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="companyCode" column="company_code"/>
+        <result property="supplierId" column="supplier_id"/>
+        <result property="supplierCode" column="supplier_code"/>
+        <result property="supplierName" column="supplier_name"/>
+        <result property="purchaseOrderDetailId" column="purchase_order_detail_id"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="oldMaterialNo" column="old_material_no"/>
+        <result property="deliverQty" column="deliver_qty"/>
+        <result property="beforeDeliverQty" column=""/>
+        <result property="minPacking" column="min_packing"/>
+        <result property="unit" column="unit"/>
+        <result property="fileId" column="file_id"/>
+        <result property="deliveryOrderId" column="delivery_order_id"/>
+        <result property="deliveryOrderNo" column="delivery_order_no"/>
+        <result property="deliveryLineNo" column="delivery_line_no"/>
+        <result property="purchaseOrderNo" column="purchase_order_no"/>
+        <result property="purchaseLineNo" column="purchase_line_no"/>
+        <result property="isQequireFill" column="is_qequire_fill"/>
+        <result property="isPrinted" column="is_printed"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="thirdDeliveryOrderNo" column="third_delivery_order_no"/>
+        <result property="thirdDeliveryLineNo" column="third_delivery_line_no"/>
+        <result property="remark" column="remark"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="planLineNo" column="plan_line_no"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="orderType" column="order_type"/>
+        <result property="isQc" column="is_qc"/>
+        <result property="isConsign" column="is_consign"/>
+        <result property="locationCode" column="location_code"/>
+        <result property="deliveryOrderStatus" column="delivery_order_status"/>
+        <result property="inspectOrderNo" column="inspect_order_no"/>
+        <result property="voucherNo" column="voucher_no"/>
+    </resultMap>
+
+    <sql id="selectDeliveryOrderDetailVo">
+        select id,
+               factory_id,
+               factory_name,
+               factory_code,
+               purchase_order_detail_id,
+               material_id,
+               material_no,
+               material_name,
+               old_material_no,
+               deliver_qty,
+               min_packing,
+               unit,
+               file_id,
+               delivery_order_id,
+               delivery_order_no,
+               delivery_line_no,
+               purchase_order_no,
+               purchase_line_no,
+               is_qequire_fill,
+               is_printed,
+               batch_no,
+               third_delivery_order_no,
+               third_delivery_line_no,
+               remark,
+               tenant_id,
+               plan_line_no,
+               status,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               is_qc,
+               is_post,
+               is_consign,delivery_order_status,inspect_order_no,voucher_no,expire_time
+        from wms_delivery_order_detail
+    </sql>
+
+    <sql id="selectDeliveryOrderDetailListVo">
+        SELECT
+            wdod.id,
+            wdod.factory_id,
+            wdod.factory_name,
+            wdod.factory_code,
+            wdo.company_id,
+            wdo.company_name,
+            wdo.company_code,
+            wdo.supplier_id,
+            wdo.supplier_name,
+            wdo.supplier_code,
+            wdod.purchase_order_detail_id,
+            wdod.material_id,
+            wdod.material_no,
+            wdod.material_name,
+            wdod.old_material_no,
+            wdod.deliver_qty,
+            wdod.min_packing,
+            wdod.unit,
+            wdod.file_id,
+            wdod.delivery_order_id,
+            wdod.delivery_order_no,
+            wdod.delivery_line_no,
+            wdod.purchase_order_no,
+            wdod.purchase_line_no,
+            wdod.is_qequire_fill,
+            wdod.is_printed,
+            wdod.batch_no,
+            wdod.third_delivery_order_no,
+            wdod.third_delivery_line_no,
+            wdod.remark,
+            wdod.tenant_id,
+            wdod.plan_line_no,
+            wdod.STATUS,
+            wdod.create_by,
+            wdod.create_time,
+            wdod.update_by,
+            wdod.update_time,
+            wdod.is_qc,
+            wdod.is_post,
+            wdod.is_consign,
+            wdod.delivery_order_status,wdod.inspect_order_no,wdod.voucher_no
+        FROM
+            wms_delivery_order_detail AS wdod
+                LEFT JOIN wms_delivery_order AS wdo ON wdo.id = wdod.delivery_order_id
+    </sql>
+    <select id="selectDeliveryOrderDetailList" parameterType="DeliveryOrderDetail" resultMap="DeliveryOrderDetailVoResult">
+        <include refid="selectDeliveryOrderDetailListVo"></include>
+        <where>
+            and is_post = 0
+            <if test="factoryId != null ">and wdod.factory_id = #{factoryId}</if>
+            <if test="factoryName != null ">and wdod.factory_name = #{factoryName}</if>
+            <if test="factoryCode != null ">and wdod.factory_code = #{factoryCode}</if>
+            <if test="purchaseOrderDetailId != null ">and wdod.purchase_order_detail_id = #{purchaseOrderDetailId}</if>
+            <if test="materialId != null ">and wdod.material_id = #{materialId}</if>
+            <if test="materialNo != null  and materialNo != ''">and wdod.material_no = #{materialNo}</if>
+            <if test="materialName != null  and materialName != ''">and wdod.material_name like concat('%',
+                #{materialName}, '%')
+            </if>
+            <if test="oldMaterialNo != null  and oldMaterialNo != ''">and wdod.old_material_no = #{oldMaterialNo}</if>
+            <if test="deliverQty != null ">and wdod.deliver_qty = #{deliverQty}</if>
+            <if test="minPacking != null  and minPacking != ''">and wdod.min_packing = #{minPacking}</if>
+            <if test="unit != null  and unit != ''">and wdod.unit = #{unit}</if>
+            <if test="fileId != null  and fileId != ''">and wdod.file_id = #{fileId}</if>
+            <if test="deliveryOrderId != null ">and wdod.delivery_order_id = #{deliveryOrderId}</if>
+            <if test="deliveryOrderNo != null  and deliveryOrderNo != ''">and wdod.delivery_order_no =
+                #{deliveryOrderNo}
+            </if>
+            <if test="deliveryLineNo != null ">and wdod.delivery_line_no = #{deliveryLineNo}</if>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''">and wdod.purchase_order_no =
+                #{purchaseOrderNo}
+            </if>
+            <if test="purchaseLineNo != null ">and wdod.purchase_line_no = #{purchaseLineNo}</if>
+            <if test="isQequireFill != null  and isQequireFill != ''">and wdod.is_qequire_fill = #{isQequireFill}</if>
+            <if test="isPrinted != null  and isPrinted != ''">and wdod.is_printed = #{isPrinted}</if>
+            <if test="batchNo != null  and batchNo != ''">and wdod.batch_no = #{batchNo}</if>
+            <if test="thirdDeliveryOrderNo != null  and thirdDeliveryOrderNo != ''">and wdod.third_delivery_order_no =
+                #{thirdDeliveryOrderNo}
+            </if>
+            <if test="thirdDeliveryLineNo != null  and thirdDeliveryLineNo != ''">and wdod.third_delivery_line_no =
+                #{thirdDeliveryLineNo}
+            </if>
+            <if test="tenantId != null ">and wdod.tenant_id = #{tenantId}</if>
+            <if test="status != null  and status != ''">and wdod.status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectDeliveryOrderDetailById" parameterType="Long" resultMap="DeliveryOrderDetailResult">
+        <include refid="selectDeliveryOrderDetailVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDeliveryOrderDetail" parameterType="DeliveryOrderDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_delivery_order_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="factoryId != null ">factory_id,</if>
+            <if test="factoryName != null ">factory_name,</if>
+            <if test="factoryCode != null ">factory_code,</if>
+            <if test="purchaseOrderDetailId != null">purchase_order_detail_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+            <if test="deliverQty != null">deliver_qty,</if>
+            <if test="minPacking != null">min_packing,</if>
+            <if test="unit != null">unit,</if>
+            <if test="fileId != null">file_id,</if>
+            <if test="deliveryOrderId != null">delivery_order_id,</if>
+            <if test="deliveryOrderNo != null">delivery_order_no,</if>
+            <if test="deliveryLineNo != null">delivery_line_no,</if>
+            <if test="purchaseOrderNo != null">purchase_order_no,</if>
+            <if test="purchaseLineNo != null">purchase_line_no,</if>
+            <if test="isQequireFill != null">is_qequire_fill,</if>
+            <if test="isPrinted != null">is_printed,</if>
+            <if test="batchNo != null">batch_no,</if>
+            <if test="thirdDeliveryOrderNo != null">third_delivery_order_no,</if>
+            <if test="thirdDeliveryLineNo != null">third_delivery_line_no,</if>
+            <if test="isConsign != null">is_consign,</if>
+            <if test="isQc != null">is_qc,</if>
+            <if test="voucherTime != null">voucher_time,</if>
+            <if test="postTime != null">post_time,</if>
+            <if test="productTime != null">product_time,</if>
+            <if test="expireTime != null">expire_time,</if>
+            <if test="address != null">address,</if>
+            <if test="isPost != null">is_post,</if>
+            <if test="remark != null">remark,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="planLineNo != null">plan_line_no,</if>
+            <if test="status != null">status,</if>
+            <if test="locationCode != null">location_code,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deliveryOrderStatus != null">delivery_order_status,</if>
+            <if test="inspectOrderNo != null">inspect_order_no,</if>
+            <if test="voucherNo != null">voucher_no,</if>
+            <if test="receivedQty != null">received_qty,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="factoryId != null">#{factoryId},</if>
+            <if test="factoryName != null">#{factoryName},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="purchaseOrderDetailId != null">#{purchaseOrderDetailId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+            <if test="deliverQty != null">#{deliverQty},</if>
+            <if test="minPacking != null">#{minPacking},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="fileId != null">#{fileId},</if>
+            <if test="deliveryOrderId != null">#{deliveryOrderId},</if>
+            <if test="deliveryOrderNo != null">#{deliveryOrderNo},</if>
+            <if test="deliveryLineNo != null">#{deliveryLineNo},</if>
+            <if test="purchaseOrderNo != null">#{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">#{purchaseLineNo},</if>
+            <if test="isQequireFill != null">#{isQequireFill},</if>
+            <if test="isPrinted != null">#{isPrinted},</if>
+            <if test="batchNo != null">#{batchNo},</if>
+            <if test="thirdDeliveryOrderNo != null">#{thirdDeliveryOrderNo},</if>
+            <if test="thirdDeliveryLineNo != null">#{thirdDeliveryLineNo},</if>
+            <if test="isConsign != null">#{isConsign},</if>
+            <if test="isQc != null">#{isQc},</if>
+            <if test="voucherTime != null">#{voucherTime},</if>
+            <if test="postTime != null">#{postTime},</if>
+            <if test="productTime != null">#{productTime},</if>
+            <if test="expireTime != null">#{expireTime},</if>
+            <if test="address != null">#{address},</if>
+            <if test="isPost != null">#{isPost},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="planLineNo != null">#{planLineNo},</if>
+            <if test="status != null">#{status},</if>
+            <if test="locationCode != null">#{locationCode},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deliveryOrderStatus != null">#{deliveryOrderStatus},</if>
+            <if test="inspectOrderNo != null">#{inspectOrderNo},</if>
+            <if test="voucherNo != null">#{voucherNo},</if>
+            <if test="receivedQty != null">#{receivedQty},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDeliveryOrderDetail" parameterType="DeliveryOrderDetail">
+        update wms_delivery_order_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="factoryId != null">factory_id = #{factoryId},</if>
+            <if test="factoryName != null">factory_name = #{factoryName},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="purchaseOrderDetailId != null">purchase_order_detail_id = #{purchaseOrderDetailId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="deliverQty != null">deliver_qty = #{deliverQty},</if>
+            <if test="minPacking != null">min_packing = #{minPacking},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="fileId != null">file_id = #{fileId},</if>
+            <if test="deliveryOrderId != null">delivery_order_id = #{deliveryOrderId},</if>
+            <if test="deliveryOrderNo != null">delivery_order_no = #{deliveryOrderNo},</if>
+            <if test="deliveryLineNo != null">delivery_line_no = #{deliveryLineNo},</if>
+            <if test="purchaseOrderNo != null">purchase_order_no = #{purchaseOrderNo},</if>
+            <if test="purchaseLineNo != null">purchase_line_no = #{purchaseLineNo},</if>
+            <if test="isQequireFill != null">is_qequire_fill = #{isQequireFill},</if>
+            <if test="isPrinted != null">is_printed = #{isPrinted},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="thirdDeliveryOrderNo != null">third_delivery_order_no = #{thirdDeliveryOrderNo},</if>
+            <if test="thirdDeliveryLineNo != null">third_delivery_line_no = #{thirdDeliveryLineNo},</if>
+            <if test="isConsign != null">is_consign = #{isConsign},</if>
+            <if test="isQc != null">is_qc = #{isQc},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="planLineNo != null">plan_line_no = #{planLineNo},</if>
+            <if test="isPost != null">is_post = #{isPost},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="locationCode != null">location_code = #{locationCode},</if>
+            <if test="deliveryOrderStatus != null">delivery_order_status = #{deliveryOrderStatus},</if>
+            <if test="inspectOrderNo != null">inspect_order_no = #{inspectOrderNo},</if>
+            <if test="voucherNo != null">voucher_no = #{voucherNo},</if>
+            <if test="receivedQty != null">received_qty = #{receivedQty},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDeliveryOrderDetailById" parameterType="Long">
+        delete
+        from wms_delivery_order_detail
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteDeliveryOrderDetailByIds" parameterType="String">
+        delete from wms_delivery_order_detail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="updateDeliveryDetailStatus" parameterType="String">
+        update wms_delivery_order_detail set status = '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="selectDeliveryOrderDetailByIds" parameterType="Long" resultMap="DeliveryOrderDetailVoResult">
+        <include refid="selectDeliveryOrderDetailVo"/>
+        where id = in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <sql id="selectDeliveryOrderDetailLkPurchaseOrderVo">
+        SELECT wdod.id,
+               wdod.factory_id,
+               wdod.factory_name,
+               wdod.factory_code,
+               wdod.purchase_order_detail_id,
+               wdod.material_id,
+               wdod.material_no,
+               wdod.material_name,
+               wdod.old_material_no,
+               wdod.deliver_qty,
+               wdod.min_packing,
+               wdod.unit,
+               wdod.file_id,
+               wdod.delivery_order_id,
+               wdod.delivery_order_no,
+               wdod.delivery_line_no,
+               wdod.purchase_order_no,
+               wdod.purchase_line_no,
+               wdod.is_qequire_fill,
+               wdod.is_printed,
+               wdod.batch_no,
+               wdod.third_delivery_order_no,
+               wdod.third_delivery_line_no,
+               wdod.remark,
+               wdod.tenant_id,
+               wdod.STATUS,
+               wdod.plan_line_no,
+               wdod.create_by,
+               wdod.create_time,
+               wdod.update_by,
+               wdod.update_time,
+               wpo.order_type,
+               wdod.is_qc,
+               wdod.is_consign,
+               wdod.delivery_order_status,wdod.inspect_order_no,wdod.voucher_no
+        FROM wms_delivery_order_detail AS wdod
+                 LEFT JOIN wms_purchase_order_detail AS wpod ON wdod.purchase_order_detail_id = wpod.id
+                 LEFT JOIN wms_purchase_order AS wpo ON wpod.purchase_order_id = wpo.id
+    </sql>
+    <select id="selectDeliveryOrderDetailByDeliveryOrderId" parameterType="Long" resultMap="DeliveryOrderDetailVoResult">
+        <include refid="selectDeliveryOrderDetailLkPurchaseOrderVo"></include>
+        WHERE wdod.delivery_order_id = #{deliveryOrderId}
+    </select>
+
+    <select id="selectDeliveryOrderDetailLkPurchaseOrder" parameterType="DeliveryOrderDetailVo" resultMap="DeliveryOrderDetailVoResult">
+        <include refid="selectDeliveryOrderDetailLkPurchaseOrderVo"></include>
+        <where>
+            <if test="factoryId != null ">and wdod.factory_id = #{factoryId}</if>
+            <if test="factoryName != null ">and wdod.factory_name = #{factoryName}</if>
+            <if test="factoryCode != null ">and wdod.factory_code = #{factoryCode}</if>
+            <if test="purchaseOrderDetailId != null ">and wdod.purchase_order_detail_id = #{purchaseOrderDetailId}</if>
+            <if test="materialId != null ">and wdod.material_id = #{materialId}</if>
+            <if test="materialNo != null  and materialNo != ''">and wdod.material_no = #{materialNo}</if>
+            <if test="materialName != null  and materialName != ''">and wdod.material_name like concat('%',
+                #{materialName}, '%')
+            </if>
+            <if test="oldMaterialNo != null  and oldMaterialNo != ''">and wdod.old_material_no = #{oldMaterialNo}</if>
+            <if test="deliverQty != null ">and wdod.deliver_qty = #{deliverQty}</if>
+            <if test="minPacking != null  and minPacking != ''">and wdod.min_packing = #{minPacking}</if>
+            <if test="unit != null  and unit != ''">and wdod.unit = #{unit}</if>
+            <if test="fileId != null  and fileId != ''">and wdod.file_id = #{fileId}</if>
+            <if test="deliveryOrderId != null ">and wdod.delivery_order_id = #{deliveryOrderId}</if>
+            <if test="deliveryOrderNo != null  and deliveryOrderNo != ''">and wdod.delivery_order_no =
+                #{deliveryOrderNo}
+            </if>
+            <if test="deliveryLineNo != null ">and wdod.delivery_line_no = #{deliveryLineNo}</if>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''">and wdod.purchase_order_no =
+                #{purchaseOrderNo}
+            </if>
+            <if test="purchaseLineNo != null ">and wdod.purchase_line_no = #{purchaseLineNo}</if>
+            <if test="isQequireFill != null  and isQequireFill != ''">and wdod.is_qequire_fill = #{isQequireFill}</if>
+            <if test="isPrinted != null  and isPrinted != ''">and wdod.is_printed = #{isPrinted}</if>
+            <if test="batchNo != null  and batchNo != ''">and wdod.batch_no = #{batchNo}</if>
+            <if test="thirdDeliveryOrderNo != null  and thirdDeliveryOrderNo != ''">and wdod.third_delivery_order_no =
+                #{thirdDeliveryOrderNo}
+            </if>
+            <if test="thirdDeliveryLineNo != null  and thirdDeliveryLineNo != ''">and wdod.third_delivery_line_no =
+                #{thirdDeliveryLineNo}
+            </if>
+            <if test="tenantId != null ">and wdod.tenant_id = #{tenantId}</if>
+            <if test="status != null  and status != ''">and wdod.status = #{status}</if>
+            <if test="orderType != null  and orderType != ''">and wpo.order_type = #{orderType}</if>
+        </where>
+    </select>
+    <select id="checkDeliveryOrderDetail" parameterType="String" resultMap="DeliveryOrderDetailVoResult">
+        <include refid="selectDeliveryOrderDetailListVo"></include>
+        WHERE wdod.purchase_order_detail_id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND wdo.order_status = '2'
+    </select>
+
+    <select id="getDeliveryOrderDetailByPurchaseOrderNo" parameterType="DeliveryOrderDetailVo" resultMap="DeliveryOrderDetailVoResult">
+        SELECT
+            wdod.delivery_order_no
+        FROM
+            wms_delivery_order AS wdo
+                LEFT JOIN ( SELECT delivery_order_no FROM wms_delivery_order_detail WHERE purchase_order_no = #{purchaseOrderNo} ) AS wdod ON wdod.delivery_order_no = wdo.delivery_order_no
+        WHERE
+            wdo.order_status IN ( '1', '2', '3', '4')
+        GROUP BY
+            delivery_order_no
+        HAVING delivery_order_no IS NOT NULL
+    </select>
+    <select id="queryDeliveryDetailById" resultMap="DeliveryOrderDetailResult">
+        select * from wms_delivery_order_detail where delivery_order_id = #{id}
+    </select>
+    <select id="queryDeliveryDetailByIdAlt" resultMap="DeliveryOrderDetailResult">
+        select * from wms_delivery_order_detail where id = #{id}
+    </select>
+    <select id="queryDeliveryDetailByDeliveryOrderId" resultMap="DeliveryOrderDetailVoResult">
+        select * from wms_delivery_order wmsdo join wms_delivery_order_detail wmsdod on wmsdo.id = wmsdod.delivery_order_id where wmsdod.delivery_order_id = #{deliveryOrderId}
+    </select>
+    <update id="updateDeliveryOrderDetailByOrderId" parameterType="DeliveryOrderDetail">
+        update wms_delivery_order_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        <where>
+            <if test="deliveryOrderId != null  and deliveryOrderId != ''"> and delivery_order_id = #{deliveryOrderId}</if>
+            <if test="deliveryOrderNo != null and deliveryOrderNo != ''">and delivery_order_no = #{deliveryOrderNo}</if>
+        </where>
+    </update>
+</mapper>

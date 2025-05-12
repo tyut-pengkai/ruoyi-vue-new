@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycode.cloud.mapper.PrdReturnOrderDetailMapper">
+
+    <resultMap type="PrdReturnOrderDetail" id="PrdReturnOrderDetailResult">
+        <result property="id" column="id"/>
+        <result property="returnOrderNo" column="return_order_no"/>
+        <result property="lineNo" column="line_no"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="oldMaterialNo" column="old_material_no"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="storageLocation" column="storage_location"/>
+        <result property="returnQty" column="return_qty"/>
+        <result property="remark" column="remark"/>
+        <result property="unit" column="unit"/>
+        <result property="completeQty" column="complete_qty"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="lot" column="lot"/>
+        <result property="prdOrderNo" column="prd_order_no"/>
+        <result property="prdOrderLineNo" column="prd_order_line_no"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="operationUnit" column="operation_unit"/>
+        <result property="operationReturnQty" column="operation_return_qty"/>
+        <result property="operationCompleteQty" column="operation_complete_qty"/>
+        <result property="conversDefault" column="convers_default"/>
+    </resultMap>
+
+    <resultMap type="PrintInfoVo" id="PrintInfoResult">
+        <result property="vendorCode" column="vendor_code"/>
+        <result property="vendorName" column="vendor_name"/>
+        <result property="materialNo" column="material_no"/>
+        <result property="materialName" column="material_name"/>
+        <result property="oldMaterialNo" column="old_material_no"/>
+        <result property="purchaseOrderNo" column="purchase_order_no"/>
+        <result property="purchaseLineNo" column="purchase_line_no"/>
+        <result property="deliverQty" column="deliver_qty"/>
+        <result property="minPacking" column="min_packing"/>
+        <result property="lotNo" column="lot_no"/>
+        <result property="locationCode" column="location_code"/>
+        <result property="deliveryOrderNo" column="delivery_order_no"/>
+        <result property="thirdDeliveryOrderNo" column="third_delivery_order_no"/>
+        <result property="companyCode" column="company_code"/>
+        <result property="companyName" column="company_name"/>
+        <result property="deliveryAddr" column="delivery_addr"/>
+    </resultMap>
+
+    <sql id="selectPrdReturnOrderDetailVo">
+        select id,
+               return_order_no,
+               line_no,
+               material_no,
+               material_name,
+               old_material_no,
+               factory_code,
+               storage_location,
+               return_qty,
+               remark,
+               unit,
+               complete_qty,
+               tenant_id,
+               lot,
+               prd_order_no,
+               prd_order_line_no,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               operation_unit,
+               operation_return_qty,
+               operation_complete_qty,
+               convers_default
+        from wms_prd_return_order_detail
+    </sql>
+
+    <select id="selectPrdReturnOrderDetailList" parameterType="PrdReturnOrderDetail"
+            resultMap="PrdReturnOrderDetailResult">
+        <include refid="selectPrdReturnOrderDetailVo"/>
+        <where>
+            <if test="returnOrderNo != null  and returnOrderNo != ''">and return_order_no = #{returnOrderNo}</if>
+            <if test="lineNo != null  and lineNo != ''">and line_no = #{lineNo}</if>
+            <if test="materialNo != null  and materialNo != ''">and material_no = #{materialNo}</if>
+            <if test="materialName != null  and materialName != ''">and material_name like concat('%', #{materialName},
+                '%')
+            </if>
+            <if test="oldMaterialNo != null  and oldMaterialNo != ''">and old_material_no = #{oldMaterialNo}</if>
+            <if test="factoryCode != null  and factoryCode != ''">and factory_code = #{factoryCode}</if>
+            <if test="returnQty != null ">and return_qty = #{returnQty}</if>
+            <if test="unit != null  and unit != ''">and unit = #{unit}</if>
+            <if test="completeQty != null ">and complete_qty = #{completeQty}</if>
+            <if test="tenantId != null ">and tenant_id = #{tenantId}</if>
+            <if test="lot != null  and lot != ''">and lot = #{lot}</if>
+            <if test="prdOrderNo != null  and prdOrderNo != ''">and prd_order_no = #{prdOrderNo}</if>
+            <if test="prdOrderLineNo != null  and prdOrderLineNo != ''">and prd_order_line_no = #{prdOrderLineNo}</if>
+        </where>
+    </select>
+
+    <select id="selectPrdReturnOrderDetailById" parameterType="Long" resultMap="PrdReturnOrderDetailResult">
+        <include refid="selectPrdReturnOrderDetailVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="getPrintInfoByIds" resultMap="PrintInfoResult">
+        select
+        prod.material_no,
+        prod.material_name,
+        prod.old_material_no,
+        ROUND(prod.operation_return_qty,3) deliver_qty,
+        prod.lot lot_no
+        FROM wms_prd_return_order_detail prod
+        LEFT JOIN wms_prd_return_order pro ON prod.return_order_no = pro.return_order_no
+        where pro.id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="getBeContinuedNumber" resultType="int">
+        SELECT COUNT(1)
+        FROM wms_prd_return_order_detail AS wprod
+                 LEFT JOIN wms_ret_task AS wrt ON wprod.id = wrt.detail_id
+                 LEFT JOIN wms_prd_return_order AS wpro ON wpro.return_order_no = wprod.return_order_no
+        WHERE wrt.task_type = #{taskType}
+          AND wrt.task_status IN ('1', '2')
+          AND wpro.return_order_no = #{orderNo}
+    </select>
+
+    <insert id="insertPrdReturnOrderDetail" parameterType="PrdReturnOrderDetail" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into wms_prd_return_order_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="returnOrderNo != null">return_order_no,</if>
+            <if test="lineNo != null">line_no,</if>
+            <if test="materialNo != null">material_no,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="oldMaterialNo != null">old_material_no,</if>
+            <if test="factoryCode != null">factory_code,</if>
+            <if test="storageLocation != null">storage_location,</if>
+            <if test="returnQty != null">return_qty,</if>
+            <if test="remark != null">remark,</if>
+            <if test="unit != null">unit,</if>
+            <if test="completeQty != null">complete_qty,</if>
+            <if test="tenantId != null">tenant_id,</if>
+            <if test="lot != null">lot,</if>
+            <if test="prdOrderNo != null">prd_order_no,</if>
+            <if test="prdOrderLineNo != null">prd_order_line_no,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="operationUnit != null">operation_unit,</if>
+            <if test="operationReturnQty != null">operation_return_qty,</if>
+            <if test="operationCompleteQty != null">operation_complete_qty,</if>
+            <if test="conversDefault != null">convers_default,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="returnOrderNo != null">#{returnOrderNo},</if>
+            <if test="lineNo != null">#{lineNo},</if>
+            <if test="materialNo != null">#{materialNo},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="oldMaterialNo != null">#{oldMaterialNo},</if>
+            <if test="factoryCode != null">#{factoryCode},</if>
+            <if test="storageLocation != null">#{storageLocation},</if>
+            <if test="returnQty != null">#{returnQty},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="completeQty != null">#{completeQty},</if>
+            <if test="tenantId != null">#{tenantId},</if>
+            <if test="lot != null">#{lot},</if>
+            <if test="prdOrderNo != null">#{prdOrderNo},</if>
+            <if test="prdOrderLineNo != null">#{prdOrderLineNo},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="operationUnit != null">#{operationUnit},</if>
+            <if test="operationReturnQty != null">#{operationReturnQty},</if>
+            <if test="operationCompleteQty != null">#{operationCompleteQty},</if>
+            <if test="conversDefault != null">#{conversDefault},</if>
+        </trim>
+    </insert>
+
+    <update id="updatePrdReturnOrderDetail" parameterType="PrdReturnOrderDetail">
+        update wms_prd_return_order_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="returnOrderNo != null">return_order_no = #{returnOrderNo},</if>
+            <if test="lineNo != null">line_no = #{lineNo},</if>
+            <if test="materialNo != null">material_no = #{materialNo},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="oldMaterialNo != null">old_material_no = #{oldMaterialNo},</if>
+            <if test="factoryCode != null">factory_code = #{factoryCode},</if>
+            <if test="storageLocation != null">storage_location = #{storageLocation},</if>
+            <if test="returnQty != null">return_qty = #{returnQty},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="completeQty != null">complete_qty = #{completeQty},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="lot != null">lot = #{lot},</if>
+            <if test="prdOrderNo != null">prd_order_no = #{prdOrderNo},</if>
+            <if test="prdOrderLineNo != null">prd_order_line_no = #{prdOrderLineNo},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="operationUnit != null">operation_unit = #{operationUnit},</if>
+            <if test="operationReturnQty != null">operation_return_qty = #{operationReturnQty},</if>
+            <if test="operationCompleteQty != null">operation_complete_qty = #{operationCompleteQty},</if>
+            <if test="conversDefault != null">convers_default = #{conversDefault},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePrdReturnOrderDetailById" parameterType="Long">
+        delete
+        from wms_prd_return_order_detail
+        where id = #{id}
+    </delete>
+
+    <delete id="deletePrdReturnOrderDetailByIds" parameterType="String">
+        delete from wms_prd_return_order_detail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
