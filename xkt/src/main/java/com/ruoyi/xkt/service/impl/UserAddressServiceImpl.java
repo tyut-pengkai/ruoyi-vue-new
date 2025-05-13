@@ -137,8 +137,13 @@ public class UserAddressServiceImpl implements IUserAddressService {
     @Override
     public void deleteUserAddress(Long id) {
         Assert.notNull(id);
+        UserAddress origin = userAddressMapper.selectById(id);
+        if (origin == null) {
+            return;
+        }
         UserAddress userAddress = new UserAddress();
         userAddress.setId(id);
+        userAddress.setVersion(origin.getVersion());
         userAddress.setDelFlag(Constants.DELETED);
         userAddressMapper.updateById(userAddress);
     }

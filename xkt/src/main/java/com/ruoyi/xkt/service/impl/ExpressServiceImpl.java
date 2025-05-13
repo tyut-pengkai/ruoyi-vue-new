@@ -88,6 +88,11 @@ public class ExpressServiceImpl implements IExpressService {
                 .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
         return expresses.stream().map(e -> {
             ExpressFeeDTO dto = BeanUtil.toBean(e, ExpressFeeDTO.class);
+            if (StrUtil.isEmpty(provinceCode)
+                    || StrUtil.isEmpty(cityCode)
+                    || StrUtil.isEmpty(countyCode)) {
+                return dto;
+            }
             ExpressFeeConfig feeConfig = getExpressFeeConfig(e.getId(), provinceCode, cityCode, countyCode);
             Assert.notNull(feeConfig, "获取快递费用异常");
             BigDecimal fee;

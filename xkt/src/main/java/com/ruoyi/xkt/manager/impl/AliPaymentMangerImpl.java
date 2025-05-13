@@ -12,9 +12,7 @@ import com.alipay.api.domain.AlipayTradeQueryModel;
 import com.alipay.api.domain.AlipayTradeRefundModel;
 import com.alipay.api.domain.Participant;
 import com.alipay.api.request.*;
-import com.alipay.api.response.AlipayFundTransUniTransferResponse;
-import com.alipay.api.response.AlipayTradeQueryResponse;
-import com.alipay.api.response.AlipayTradeRefundResponse;
+import com.alipay.api.response.*;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.domain.StoreOrderDetail;
 import com.ruoyi.xkt.dto.finance.AlipayReqDTO;
@@ -41,7 +39,9 @@ import java.math.BigDecimal;
 public class AliPaymentMangerImpl implements PaymentManager {
 
     private static final String DEFAULT_FORMAT = "json";
-    private static final String PAY_PRODUCT_CODE = "FAST_INSTANT_TRADE_PAY";
+    private static final String PAY_PRODUCT_CODE_WEB = "FAST_INSTANT_TRADE_PAY";
+    private static final String PAY_PRODUCT_CODE_WAP = "QUICK_WAP_WAY";
+    private static final String PAY_PRODUCT_CODE_APP = "QUICK_MSECURITY_PAY";
     /**
      * 应用ID,您的APPID，收款账号既是您的APPID对应支付宝账号
      */
@@ -98,36 +98,68 @@ public class AliPaymentMangerImpl implements PaymentManager {
         reqDTO.setOutTradeNo(tradeNo);
         reqDTO.setTotalAmount(amount.toPlainString());
         reqDTO.setSubject(subject);
-        reqDTO.setProductCode(PAY_PRODUCT_CODE); //这个是固定的
-        String reqStr = JSON.toJSONString(reqDTO);
+
         AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
                 alipayPublicKey, signType);
         switch (payPage) {
             case WEB:
+                reqDTO.setProductCode(PAY_PRODUCT_CODE_WEB);
                 AlipayTradePagePayRequest webReq = new AlipayTradePagePayRequest();
                 webReq.setReturnUrl(returnUrl);
                 webReq.setNotifyUrl(notifyUrl);
-                webReq.setBizContent(reqStr);
+                webReq.setBizContent(JSON.toJSONString(reqDTO));
                 try {
-                    return alipayClient.pageExecute(webReq).getBody();
+                    AlipayTradePagePayResponse webResp = alipayClient.pageExecute(webReq);
+                    if (webResp.isSuccess()) {
+                        return webResp.getBody();
+                    }else {
+                        String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(webResp);
+                        log.error("支付发起失败: {}", diagnosisUrl);
+                    }
                 } catch (AlipayApiException e) {
-                    log.error("支付发起异常", e);
-                    throw new ServiceException("支付发起失败");
+                    log.error("WEB支付发起异常", e);
                 }
+                break;
             case WAP:
+                reqDTO.setProductCode(PAY_PRODUCT_CODE_WAP);
                 AlipayTradeWapPayRequest wapReq = new AlipayTradeWapPayRequest();
                 wapReq.setReturnUrl(returnUrl);
                 wapReq.setNotifyUrl(notifyUrl);
-                wapReq.setBizContent(reqStr);
+                wapReq.setBizContent(JSON.toJSONString(reqDTO));
                 try {
-                    return alipayClient.pageExecute(wapReq).getBody();
+                    AlipayTradeWapPayResponse wapResp = alipayClient.pageExecute(wapReq);
+                    if (wapResp.isSuccess()) {
+                        return wapResp.getBody();
+                    }else {
+                        String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(wapResp);
+                        log.error("支付发起失败: {}", diagnosisUrl);
+                    }
                 } catch (AlipayApiException e) {
-                    log.error("支付发起异常", e);
-                    throw new ServiceException("支付发起失败");
+                    log.error("WAP支付发起异常", e);
                 }
+                break;
+            case APP:
+                reqDTO.setProductCode(PAY_PRODUCT_CODE_APP);
+                AlipayTradeAppPayRequest appReq = new AlipayTradeAppPayRequest();
+                appReq.setReturnUrl(returnUrl);
+                appReq.setNotifyUrl(notifyUrl);
+                appReq.setBizContent(JSON.toJSONString(reqDTO));
+                try {
+                    AlipayTradeAppPayResponse appResp = alipayClient.sdkExecute(appReq);
+                    if (appResp.isSuccess()) {
+                        return appResp.getBody();
+                    } else {
+                        String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(appResp);
+                        log.error("支付发起失败: {}", diagnosisUrl);
+                    }
+                } catch (AlipayApiException e) {
+                    log.error("APP支付发起异常", e);
+                }
+                break;
             default:
                 throw new ServiceException("未知的支付来源");
         }
+        throw new ServiceException("支付发起失败");
     }
 
     @Override

@@ -13,6 +13,7 @@ public enum EPayPage {
 
     WEB(1, "电脑网站"),
     WAP(2, "手机网站"),
+    APP(3, "APP"),
     ;
 
     private final Integer value;

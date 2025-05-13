@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author liangyq
@@ -37,8 +38,11 @@ public class ExpressController extends XktBaseController {
     @ApiOperation("下单时物流选择列表 - 含快递费")
     @PostMapping("listExpressFee")
     public R<List<ExpressFeeVO>> listExpressFee(@Valid @RequestBody ExpressFeeReqVO vo) {
-        List<ExpressFeeDTO> dtoList = expressService.listExpressFee(vo.getGoodsQuantity(), vo.getProvinceCode(),
-                vo.getCityCode(), vo.getCountyCode());
+        List<ExpressFeeDTO> dtoList = expressService.listExpressFee(
+                Optional.ofNullable(vo.getGoodsQuantity()).orElse(1),
+                vo.getProvinceCode(),
+                vo.getCityCode(), vo.getCountyCode()
+        );
         return success(BeanUtil.copyToList(dtoList, ExpressFeeVO.class));
     }
 

@@ -98,7 +98,7 @@ public class StoreOrderAddReqVO {
     private Integer payChannel;
 
     @NotNull(message = "支付来源不能为空")
-    @ApiModelProperty(value = "支付来源[1:电脑网站 2:手机网站]")
+    @ApiModelProperty(value = "支付来源[1:电脑网站 2:手机网站 3:APP]")
     private Integer payPage;
 
     @ApiModel(value = "明细")
