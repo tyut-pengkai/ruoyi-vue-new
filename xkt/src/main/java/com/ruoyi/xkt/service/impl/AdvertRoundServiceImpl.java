@@ -615,23 +615,21 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
      * 比如：5.1 - 5.3
      * a. 现在是4.30 则截止时间是 4.30 22:00
      * b. 现在是5.2，则截止时间是 5.2 22:00:00 。
-     * c. 现在是5.3，则第一轮还有请求，肯定是人为的不用管。请求第三轮 或者 第四轮 不报错。只处理第二轮请求
+     * c. 现在是5.3，则第一轮还有请求，肯定是人为的不用管。每一轮过期时间都要添加到redis中
      *
      * @throws ParseException
      */
     public void saveAdvertDeadlineToRedis() throws ParseException {
         List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
                 .eq(AdvertRound::getDelFlag, Constants.UNDELETED)
-                .in(AdvertRound::getLaunchStatus, Arrays.asList(AdLaunchStatus.LAUNCHING.getValue(), AdLaunchStatus.UN_LAUNCH.getValue()))
-                .in(AdvertRound::getRoundId, Arrays.asList(AdRoundType.PLAY_ROUND.getValue(), AdRoundType.SECOND_ROUND.getValue())));
+                .in(AdvertRound::getLaunchStatus, Arrays.asList(AdLaunchStatus.LAUNCHING.getValue(), AdLaunchStatus.UN_LAUNCH.getValue())));
         if (CollectionUtils.isEmpty(advertRoundList)) {
             return;
         }
         // 服务器当前时间 yyyy-MM-dd
         final Date now = DateUtils.parseDate(DateUtils.getDate(), DateUtils.YYYY_MM_DD);
         // 当天截止的时间 yyyy-MM-dd 22:00:00
-        final String filterTime = DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS)
-                .format(LocalDateTime.now().withHour(22).withMinute(0).withSecond(0));
+        final String filterTime = DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS).format(LocalDateTime.now().withHour(22).withMinute(0).withSecond(0));
         advertRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getAdvertId))
                 .forEach((advertId, roundList) -> {
                     // 判断当前推广类型是否为 时间范围
@@ -642,71 +640,45 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                             .orElseThrow(() -> new ServiceException("获取推广结束时间失败，请联系客服!", HttpStatus.ERROR)).getEndTime();
                     // 时间范围处理逻辑
                     if (isTimeRange) {
-                        // 将每一轮的symbol过期时间都放到redis中
-
-                        // 当前时间小于第一轮结束时间，则过期时间都设置为 每一轮开始时间 前一天
-
-                        // 当前时间等于第一轮结束时间，则第二轮的过期时间为当天
-
-
-
                         if (now.compareTo(firstRoundEndTime) < 0) {
                             // 第一轮过期时间为当天
-
-
-                            // 每一轮 的 开始时间
-                            Map<String, Date> roundSymbolMap = roundList.stream().collect(Collectors.toMap(AdvertRound::getSymbol, AdvertRound::getStartTime, (s1, s2) -> s2));
-
-                            roundSymbolMap.forEach((symbol, startTime) -> {
-
-                            });
-
-                            // 推广开始时间的前一天的 22:00:00
-//                            LocalDateTime futureTimeFilter = startTime  .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().minusDays(1).withHour(22).withMinute(0).withSecond(0);
-
-
-                        }
-                        if (now.compareTo(firstRoundEndTime) == 0) {
-                            // 第一轮不用管，设置第二轮  或者 第一轮 第二轮过期时间都可以为 当天
-
-                        }
-
-
-
-
-
-
-
-
-
-                        // 第一轮最后一天，则直接处理第二轮的symbol
-                        if (now.equals(firstRoundEndTime)) {
-                            // 每一轮 的 开始时间
+                            AdvertRound firstRound = roundList.stream().filter(x -> Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
+                                    .max(Comparator.comparing(AdvertRound::getEndTime))
+                                    .orElseThrow(() -> new ServiceException("获取推广结束时间失败，请联系客服!", HttpStatus.ERROR));
+                            redisCache.setCacheObject(firstRound.getSymbol(), filterTime, 1, TimeUnit.DAYS);
+                            // 第二轮之后的轮次过期时间都为开始时间前一天
                             Map<String, Date> roundSymbolMap = roundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
                                     .collect(Collectors.toMap(AdvertRound::getSymbol, AdvertRound::getStartTime, (s1, s2) -> s2));
                             if (MapUtils.isNotEmpty(roundSymbolMap)) {
                                 roundSymbolMap.forEach((symbol, startTime) -> {
                                     // 推广开始时间的前一天的 22:00:00
-                                    LocalDateTime futureTimeFilter = startTime  .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().minusDays(1).withHour(22).withMinute(0).withSecond(0);
-                                    // 存放到redis中 有效期1天
+                                    LocalDateTime futureTimeFilter = startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().minusDays(1).withHour(22).withMinute(0).withSecond(0);
                                     redisCache.setCacheObject(symbol, futureTimeFilter, 1, TimeUnit.DAYS);
                                 });
                             }
-                            /*String secondRoundSymbol = roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.SECOND_ROUND.getValue()))
-                                    .map(AdvertRound::getSymbol).findAny().orElse(null);
-                            // 有可能第二轮不存在，因为该推广已下线，则定时任务没有生成后续轮次
-                            if (StringUtils.isNotBlank(secondRoundSymbol)) {
-                                // 存放到redis中 有效期1天
-                                redisCache.setCacheObject(secondRoundSymbol, filterTime, 1, TimeUnit.DAYS);
-                            }*/
-
-
-                        } else {
-                            // 默认第一轮的symbol
-                            String symbol = roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.PLAY_ROUND.getValue()))
-                                    .map(AdvertRound::getSymbol).findAny().orElseThrow(() -> new ServiceException("获取推广第一轮symbol失败，请联系客服!", HttpStatus.ERROR));
-                            // 存放到redis中 有效期1天
-                            redisCache.setCacheObject(symbol, filterTime, 1, TimeUnit.DAYS);
+                        }
+                        if (now.compareTo(firstRoundEndTime) == 0) {
+                            // 第一轮不用管，设置第二轮  或者 第一轮 第二轮过期时间都可以为 当天
+                            List<AdvertRound> firstOrSecondRoundList = roundList.stream().filter(x -> Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())
+                                    || Objects.equals(x.getRoundId(), AdRoundType.SECOND_ROUND.getValue())).collect(Collectors.toList());
+                            Map<String, Date> roundSymbolMap = firstOrSecondRoundList.stream().collect(Collectors.toMap(AdvertRound::getSymbol, AdvertRound::getStartTime, (s1, s2) -> s2));
+                            if (MapUtils.isNotEmpty(roundSymbolMap)) {
+                                roundSymbolMap.forEach((symbol, startTime) -> {
+                                    // 推广开始时间的前一天的 22:00:00
+                                    LocalDateTime futureTimeFilter = startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().minusDays(1).withHour(22).withMinute(0).withSecond(0);
+                                    redisCache.setCacheObject(symbol, futureTimeFilter, 1, TimeUnit.DAYS);
+                                });
+                            }
+                            List<AdvertRound> otherRoundList = roundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())
+                                    && !Objects.equals(x.getRoundId(), AdRoundType.SECOND_ROUND.getValue())).collect(Collectors.toList());
+                            Map<String, Date> otherRoundSymbolMap = otherRoundList.stream().collect(Collectors.toMap(AdvertRound::getSymbol, AdvertRound::getStartTime, (s1, s2) -> s2));
+                            if (MapUtils.isNotEmpty(otherRoundSymbolMap)) {
+                                otherRoundSymbolMap.forEach((symbol, startTime) -> {
+                                    // 推广开始时间的前一天的 22:00:00
+                                    LocalDateTime futureTimeFilter = startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().minusDays(1).withHour(22).withMinute(0).withSecond(0);
+                                    redisCache.setCacheObject(symbol, futureTimeFilter, 1, TimeUnit.DAYS);
+                                });
+                            }
                         }
                     } else {
                         // 第一轮最后一天，则直接处理第二轮的symbol
