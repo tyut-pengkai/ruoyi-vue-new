@@ -74,4 +74,13 @@ public interface IStoreService {
      * @return StoreAppResDTO
      */
     StoreAppResDTO getAppInfo(Long storeId);
+
+    /**
+     * 管理员审核推广获取档口基本信息
+     *
+     * @param storeId 档口ID
+     * @return StoreAdvertResDTO
+     */
+    StoreAdvertResDTO getAdvertStoreInfo(Long storeId);
+
 }

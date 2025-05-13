@@ -48,10 +48,10 @@ public interface IShoppingCartService {
     /**
      * 用户删除进货车商品
      *
-     * @param shoppingCartId 进货车ID
+     * @param deleteDTO 进货车ID删除列表
      * @return
      */
-    Integer delete(Long shoppingCartId);
+    Integer delete(ShopCartDeleteDTO deleteDTO);
 
     /**
      * 根据storeProdid获取进货车详情

@@ -20,8 +20,8 @@ public class AdRoundLatestResDTO {
 
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(value = "档口负责人名称")
-    private String storeOwnerName;
+    @ApiModelProperty(value = "档口负责人联系电话")
+    private String contactPhone;
     @ApiModelProperty(value = "最高价格")
     private BigDecimal payPrice;
     @ApiModelProperty(value = "档口设置的商品")

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liujiang
@@ -20,12 +21,14 @@ public class AdvertRoundStorePageDTO extends BasePageDTO {
 
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "平台ID")
+    private Long platformId;
     @ApiModelProperty(value = "推广类型")
     private Integer typeId;
     @ApiModelProperty(value = "投放状态")
     private Integer launchStatus;
     @ApiModelProperty(value = "竞价状态 只查看 已出价 或 竞价成功的状态")
-    private Integer biddingStatus;
+    private List<Integer> biddingStatusList;
     @ApiModelProperty(value = "图片是否设置 1 未设置 2已设置")
     private Integer picSetType;
     @ApiModelProperty(value = "图片设计 1自主设计、2平台设计")

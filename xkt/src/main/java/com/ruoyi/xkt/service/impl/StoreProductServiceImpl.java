@@ -179,6 +179,26 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional
     public int insertStoreProduct(StoreProdDTO storeProdDTO) throws IOException {
+
+
+        // TODO 富文本标签过滤
+        // TODO 富文本标签过滤
+        // TODO 富文本标签过滤
+        // TODO 富文本标签过滤
+        // TODO 富文本标签过滤
+        // TODO 富文本标签过滤
+        // TODO 富文本标签过滤
+
+
+
+
+
+
+
+
+
+
+
         // 组装StoreProduct数据
         StoreProduct storeProd = BeanUtil.toBean(storeProdDTO, StoreProduct.class).setVoucherDate(DateUtils.getNowDate())
                 .setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
@@ -204,6 +224,22 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional
     public int updateStoreProduct(final Long storeProdId, StoreProdDTO storeProdDTO) throws IOException {
+
+
+
+        // TODO 富文本标签过滤
+        // TODO 富文本标签过滤
+        // TODO 富文本标签过滤
+        // TODO 富文本标签过滤
+        // TODO 富文本标签过滤
+        // TODO 富文本标签过滤
+        // TODO 富文本标签过滤
+
+
+
+
+
+
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
                         .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));

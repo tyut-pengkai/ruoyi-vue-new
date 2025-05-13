@@ -115,5 +115,9 @@ public class AdvertRound extends XktBaseEntity {
      * 系统拦截 0 未拦截  1拦截
      */
     private Integer sysIntercept;
+    /**
+     * 拒绝理由
+     */
+    private String rejectReason;
 
 }

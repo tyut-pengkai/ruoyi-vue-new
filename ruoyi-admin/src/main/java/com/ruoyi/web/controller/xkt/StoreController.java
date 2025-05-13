@@ -118,35 +118,14 @@ public class StoreController extends XktBaseController {
     }
 
 
-
-
-
-    final OSSClientWrapper ossClient;
-
-
-    @GetMapping("/getKey")
-    public R getKey() {
-        return R.ok(ossClient.createStsCredentials());
+    /**
+     * 管理员审核推广图获取档口联系信息
+     */
+    @ApiOperation(value = "管理员审核推广图获取档口联系信息", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/advert/{storeId}")
+    public R<StoreAdvertResVO> getAdvertStoreInfo(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeService.getAdvertStoreInfo(storeId), StoreAdvertResVO.class));
     }
-
-    @PostMapping("/upload")
-    public void test(@RequestParam("file") MultipartFile file) throws Exception {
-        final String uuid = IdUtil.randomUUID();
-        ossClient.upload(uuid + ".png", file.getInputStream());
-    }
-
-    @GetMapping("/getUrl/{key}/{expireTime}")
-    public R getUrl(@PathVariable("key") String key, @PathVariable("expireTime") Long expireTime) throws Exception {
-        return R.ok(ossClient.generateUrl(key, expireTime));
-    }
-
-    @GetMapping("/download/{key}")
-    public void download(@PathVariable("key") String key) throws Exception {
-        String name = "C:\\Users\\56980\\Desktop\\test.png";
-        ossClient.download(key, name);
-    }
-
-
 
 
 }

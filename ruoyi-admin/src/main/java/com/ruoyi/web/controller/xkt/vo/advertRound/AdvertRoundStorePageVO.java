@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liujiang
@@ -19,15 +20,18 @@ import java.util.Date;
 @Data
 public class AdvertRoundStorePageVO extends BasePageVO {
 
-    @NotNull(message = "storeId不能为空")
+    @NotNull(message = "档口ID不能为空!")
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "平台ID")
+    private Long platformId;
     @ApiModelProperty(value = "推广类型")
     private Integer typeId;
     @ApiModelProperty(value = "投放状态")
     private Integer launchStatus;
+    @NotNull(message = "竞价状态不能为空!")
     @ApiModelProperty(value = "竞价状态 只查看 已出价 或 竞价成功的状态")
-    private Integer biddingStatus;
+    private List<Integer> biddingStatusList;
     @ApiModelProperty(value = "图片是否设置 1 未设置 2已设置")
     private Integer picSetType;
     @ApiModelProperty(value = "图片设计 1自主设计、2平台设计")

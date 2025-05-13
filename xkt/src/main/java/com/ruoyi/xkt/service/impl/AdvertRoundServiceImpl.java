@@ -11,10 +11,7 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.xkt.domain.AdvertRound;
-import com.ruoyi.xkt.domain.AdvertRoundRecord;
-import com.ruoyi.xkt.domain.StoreProduct;
-import com.ruoyi.xkt.domain.SysFile;
+import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.advertRound.*;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
@@ -62,6 +59,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     final StoreProductMapper storeProdMapper;
     final SysFileMapper fileMapper;
     final IAssetService assetService;
+    final AdvertStoreFileMapper advertStoreFileMapper;
 
     // 推广营销位锁 key：symbol + roundId 或者 symbol + roundId + position 。value都是new Object()
     public static Map<String, Object> advertLockMap = new ConcurrentHashMap<>();
@@ -525,18 +523,21 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     .eq(AdvertRound::getAdvertId, latestDTO.getAdvertId()).eq(AdvertRound::getRoundId, latestDTO.getRoundId())
                     .eq(AdvertRound::getDelFlag, Constants.UNDELETED).orderByDesc(AdvertRound::getPayPrice, AdvertRound::getCreateTime)
                     .last("LIMIT 1"));
-            // 有人竞拍情况，才获取该位置的档口负责人名称
-            if (ObjectUtils.isNotEmpty(advertRound)) {
-                latestInfo.setStoreOwnerName(this.advertRoundMapper.getStoreOwnerName(advertRound.getStoreId()));
-            }
-            return latestInfo.setStoreId(advertRound.getStoreId()).setPayPrice(advertRound.getPayPrice());
         } else {
             Optional.ofNullable(latestDTO.getPosition()).orElseThrow(() -> new ServiceException("位置枚举类型：position必传", HttpStatus.ERROR));
             advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                             .eq(AdvertRound::getAdvertId, latestDTO.getAdvertId()).eq(AdvertRound::getRoundId, latestDTO.getRoundId())
                             .eq(AdvertRound::getPosition, latestDTO.getPosition()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
                     .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
-            latestInfo.setPayPrice(advertRound.getPayPrice());
+        }
+        // 有人竞拍情况，才获取该位置的档口负责人名称
+        if (ObjectUtils.isNotEmpty(advertRound.getStoreId())) {
+            Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
+                            .eq(Store::getId, advertRound.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
+                    .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+            latestInfo.setStoreId(advertRound.getStoreId()).setPayPrice(advertRound.getPayPrice())
+                    // 对手机号中间位数进行*号替换处理
+                    .setContactPhone(this.maskPhoneNum(store.getContactPhone()));
         }
         // 如果当前档口购买该推广位，且设置商品不为空，则返回设置的商品信息
         if (Objects.equals(advertRound.getStoreId(), latestDTO.getStoreId()) && StringUtils.isNotBlank(advertRound.getProdIdStr())) {
@@ -548,6 +549,30 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     .setStoreProdId(x.getId()).setProdArtNum(x.getProdArtNum())).collect(Collectors.toList()));
         }
         return latestInfo;
+    }
+
+
+
+    /**
+     * @param picDTO 档口上传推广图入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer uploadAdvertPic(AdRoundUploadPicDTO picDTO) {
+        AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+                        .eq(AdvertRound::getId, picDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
+        SysFile file = BeanUtil.toBean(picDTO, SysFile.class);
+        int count = this.fileMapper.insert(file);
+        // 更新推广位的图片ID
+        advertRound.setPicId(file.getId());
+        this.advertRoundMapper.updateById(advertRound);
+        // 将档口上传图片保存到AdvertStoreFile
+        AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId())
+                .setStoreId(advertRound.getStoreId()).setFileId(file.getId()).setTypeId(advertRound.getTypeId());
+        this.advertStoreFileMapper.insert(advertStoreFile);
+        return count;
     }
 
     /**
@@ -756,6 +781,26 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             });
         }
         return boughtRoundList;
+    }
+
+    /**
+     * 购买人手机号中国部分用*号代替
+     *
+     * @param phoneNumber 电话号码
+     * @return String
+     */
+    private String maskPhoneNum(String phoneNumber) {
+        if (StringUtils.isEmpty(phoneNumber) || phoneNumber.length() < 4) {
+            return "";
+        }
+        int length = phoneNumber.length();
+        String prefix = phoneNumber.substring(0, 2); // 前两位
+        String suffix = phoneNumber.substring(length - 2); // 后两位
+        StringBuilder middle = new StringBuilder();
+        for (int i = 0; i < length - 4; i++) {
+            middle.append('*'); // 中间替换为*
+        }
+        return prefix + middle + suffix;
     }
 
 }

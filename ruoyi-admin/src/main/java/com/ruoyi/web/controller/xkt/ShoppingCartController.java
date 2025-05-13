@@ -12,7 +12,6 @@ import com.ruoyi.xkt.service.IShoppingCartService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -88,11 +87,11 @@ public class ShoppingCartController extends XktBaseController {
      * 用户删除进货车商品
      */
 //    // @PreAuthorize("@ss.hasPermi('system:sale:remove')")
-    @ApiOperation(value = "用户进货车列表点击编辑", httpMethod = "DELETE", response = R.class)
+    @ApiOperation(value = "用户删除进货车商品", httpMethod = "DELETE", response = R.class)
     @Log(title = "用户删除进货车商品", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{shoppingCartId}")
-    public R<Integer> remove(@PathVariable Long shoppingCartId) {
-        return R.ok(shopCartService.delete(shoppingCartId));
+    @DeleteMapping
+    public R<Integer> remove(@Validated @RequestBody ShopCartDeleteVO deleteVO) {
+        return R.ok(shopCartService.delete(BeanUtil.toBean(deleteVO, ShopCartDeleteDTO.class)));
     }
 
 

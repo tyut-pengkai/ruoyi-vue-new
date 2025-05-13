@@ -2,6 +2,8 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.AdvertRound;
+import com.ruoyi.xkt.dto.adminAdvertRound.AdminAdRoundPageDTO;
+import com.ruoyi.xkt.dto.adminAdvertRound.AdminAdRoundPageResDTO;
 import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageDTO;
 import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageResDTO;
 import org.apache.ibatis.annotations.Param;
@@ -38,6 +40,14 @@ public interface AdvertRoundMapper extends BaseMapper<AdvertRound> {
     List<AdvertRoundStorePageResDTO> selectStoreAdvertPage(AdvertRoundStorePageDTO pageDTO);
 
     /**
+     * 获取档口已订购的推广列表
+     *
+     * @param pageDTO 列表查询入参
+     * @return List<AdvertRoundStorePageResDTO>
+     */
+    List<AdminAdRoundPageResDTO> selectAdminAdvertPage(AdminAdRoundPageDTO pageDTO);
+
+    /**
      * 将参数直接null
      *
      * @param advertRoundId advertRoundId
@@ -59,13 +69,6 @@ public interface AdvertRoundMapper extends BaseMapper<AdvertRound> {
      * @return BigDecimal
      */
     BigDecimal selectMaxPayPrice(@Param("advertId") Long advertId, @Param("roundId") Integer roundId);
-
-    /**
-     * 获取档口负责人名称
-     * @param storeId 档口ID
-     * @return
-     */
-    String getStoreOwnerName(Long storeId);
 
 }
 

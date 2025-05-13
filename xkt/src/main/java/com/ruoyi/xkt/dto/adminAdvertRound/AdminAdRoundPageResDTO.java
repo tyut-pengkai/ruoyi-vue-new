@@ -1,4 +1,4 @@
-package com.ruoyi.xkt.dto.advertRound;
+package com.ruoyi.xkt.dto.adminAdvertRound;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @ApiModel("档口已订购推广返回列表")
 @Data
 @Accessors(chain = true)
-public class AdvertRoundStorePageResDTO {
+public class AdminAdRoundPageResDTO {
 
     @ApiModelProperty(value = "推广轮次ID")
     private Long advertRoundId;
@@ -55,5 +55,7 @@ public class AdvertRoundStorePageResDTO {
     private Integer picAuditStatus;
     @ApiModelProperty(value = "图片审核状态")
     private String picAuditStatusName;
+    @ApiModelProperty(value = "系统拦截 0 未拦截  1拦截")
+    private Integer sysIntercept;
 
 }

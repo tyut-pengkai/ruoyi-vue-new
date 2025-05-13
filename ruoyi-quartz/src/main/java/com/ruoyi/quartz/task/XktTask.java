@@ -333,8 +333,9 @@ public class XktTask {
                         final String position = String.valueOf((char) ('A' + j));
                         // 当前播放轮次id
                         final int roundId = i + 1;
-                        updateList.add(new AdvertRound().setAdvertId(advert.getId()).setTypeId(advert.getTypeId()).setRoundId(roundId).setLaunchStatus(launchStatus).setShowType(advert.getShowType())
-                                .setStartTime(java.sql.Date.valueOf(now)).setEndTime(java.sql.Date.valueOf(endDate)).setPosition(position).setStartPrice(advert.getStartPrice()).setSysIntercept(0)
+                        updateList.add(new AdvertRound().setAdvertId(advert.getId()).setTypeId(advert.getTypeId()).setRoundId(roundId).setLaunchStatus(launchStatus)
+                                .setStartTime(java.sql.Date.valueOf(now)).setEndTime(java.sql.Date.valueOf(endDate)).setPosition(position).setStartPrice(advert.getStartPrice())
+                                .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType())
                                 .setSymbol(Objects.equals(advert.getShowType(), AdShowType.POSITION_ENUM.getValue())
                                         // 如果是位置枚举的推广位，则需要精确到某一个position的推广位，反之，若是时间范围，则直接精确到播放轮次即可
                                         ? advert.getBasicSymbol() + roundId + position : advert.getBasicSymbol() + roundId));
@@ -380,8 +381,9 @@ public class XktTask {
                                 // 依次按照26个字母顺序 如果i == 0 则A i == 1 则B i==2则C
                                 final String position = String.valueOf((char) ('A' + j));
                                 // 生成最新的下一轮推广位
-                                updateList.add(new AdvertRound().setAdvertId(advert.getId()).setTypeId(advert.getTypeId()).setRoundId(maxRoundId).setShowType(advert.getShowType())
-                                        .setLaunchStatus(AdLaunchStatus.UN_LAUNCH.getValue()).setPosition(position).setStartPrice(advert.getStartPrice()).setSysIntercept(0)
+                                updateList.add(new AdvertRound().setAdvertId(advert.getId()).setTypeId(advert.getTypeId()).setRoundId(maxRoundId)
+                                        .setLaunchStatus(AdLaunchStatus.UN_LAUNCH.getValue()).setPosition(position).setStartPrice(advert.getStartPrice())
+                                        .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType())
                                         // java.sql.Date 直接转化成yyyy-MM-dd格式
                                         .setStartTime(java.sql.Date.valueOf(startDate)).setEndTime(java.sql.Date.valueOf(endDate))
                                         .setSymbol(Objects.equals(advert.getShowType(), AdShowType.POSITION_ENUM.getValue())

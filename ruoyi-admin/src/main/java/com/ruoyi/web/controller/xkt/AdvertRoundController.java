@@ -7,10 +7,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.web.controller.xkt.vo.advertRound.*;
-import com.ruoyi.xkt.dto.advertRound.AdRoundLatestDTO;
-import com.ruoyi.xkt.dto.advertRound.AdRoundStoreCreateDTO;
-import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageDTO;
-import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageResDTO;
+import com.ruoyi.xkt.dto.advertRound.*;
 import com.ruoyi.xkt.service.IAdvertRoundService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -67,7 +64,7 @@ public class AdvertRoundController extends XktBaseController {
      * 位置枚举类型的推广位，获取推广商品
      */
     @ApiOperation(value = "位置枚举类型的推广位，获取推广商品", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/{advertRoundId}")
+    @GetMapping(value = "/position/{advertRoundId}")
     public R<List<AdRoundSetProdResVO>> getSetProdInfo(@PathVariable("advertRoundId") Long advertRoundId) {
         return R.ok(BeanUtil.copyToList(advertRoundService.getSetProdInfo(advertRoundId), AdRoundSetProdResVO.class));
     }
@@ -77,7 +74,7 @@ public class AdvertRoundController extends XktBaseController {
      */
     @ApiOperation(value = "获取档口已购推广列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
-    public R<Page<AdvertRoundStorePageResDTO>> page(@Valid @RequestBody AdvertRoundStorePageVO pageVO) {
+    public R<Page<AdvertRoundStorePageResDTO>> page(@Validated @RequestBody AdvertRoundStorePageVO pageVO) {
         return R.ok(advertRoundService.page(BeanUtil.toBean(pageVO, AdvertRoundStorePageDTO.class)));
     }
 
@@ -108,5 +105,15 @@ public class AdvertRoundController extends XktBaseController {
     public R<List<AdRoundPopularResVO>> getMostPopulars() {
         return R.ok(BeanUtil.copyToList(advertRoundService.getMostPopulars(), AdRoundPopularResVO.class));
     }
+
+    /**
+     * 档口上传推广图
+     */
+    @ApiOperation(value = "档口上传推广图", httpMethod = "PUT", response = R.class)
+    @PutMapping("/upload/pic")
+    public R<Integer> uploadAdvertPic(@Valid @RequestBody AdRoundUploadPicVO uploadPicVO) {
+        return R.ok(advertRoundService.uploadAdvertPic(BeanUtil.toBean(uploadPicVO, AdRoundUploadPicDTO.class)));
+    }
+
 
 }

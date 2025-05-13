@@ -1,0 +1,270 @@
+package com.ruoyi.xkt.service.impl;
+
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.page.Page;
+import com.ruoyi.common.enums.AdType;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.xkt.domain.AdvertRound;
+import com.ruoyi.xkt.domain.AdvertStoreFile;
+import com.ruoyi.xkt.domain.SysFile;
+import com.ruoyi.xkt.dto.adminAdvertRound.*;
+import com.ruoyi.xkt.dto.advertRound.AdRoundUploadPicDTO;
+import com.ruoyi.xkt.enums.*;
+import com.ruoyi.xkt.mapper.AdvertRoundMapper;
+import com.ruoyi.xkt.mapper.AdvertStoreFileMapper;
+import com.ruoyi.xkt.mapper.SysFileMapper;
+import com.ruoyi.xkt.service.IAdminAdvertRoundService;
+import com.ruoyi.xkt.service.IAssetService;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+/**
+ * 推广营销轮次播放Service业务层处理
+ *
+ * @author ruoyi
+ * @date 2025-03-26
+ */
+@Service
+@RequiredArgsConstructor
+public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
+
+    final IAssetService assetService;
+    final AdvertRoundMapper advertRoundMapper;
+    final SysFileMapper fileMapper;
+    final AdvertStoreFileMapper advertStoreFileMapper;
+
+    /**
+     * 管理员查询推广营销分页
+     *
+     * @param pageDTO 分页入参
+     * @return Page<AdminAdRoundPageResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AdminAdRoundPageResDTO> page(AdminAdRoundPageDTO pageDTO) {
+
+        // TODO 判断当前是否是管理员
+        this.isSuperAdmin();
+
+        Optional.ofNullable(pageDTO.getLaunchStatus()).orElseThrow(() -> new ServiceException("投放状态launchStatus必传", HttpStatus.ERROR));
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        List<AdminAdRoundPageResDTO> list = this.advertRoundMapper.selectAdminAdvertPage(pageDTO);
+        list.forEach(item -> item.setPlatformName(AdPlatformType.of(item.getPlatformId()).getLabel())
+                .setLaunchStatusName(ObjectUtils.isNotEmpty(item.getLaunchStatus()) ? AdLaunchStatus.of(item.getLaunchStatus()).getLabel() : "")
+                .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
+                .setPicDesignTypeName(ObjectUtils.isNotEmpty(item.getPicDesignType()) ? AdDesignType.of(item.getPicDesignType()).getLabel() : "")
+                .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
+                .setPicSetTypeName(ObjectUtils.isNotEmpty(item.getPicSetType()) ? AdPicSetType.of(item.getPicSetType()).getLabel() : "")
+                .setTypeName(AdType.of(item.getTypeId()).getLabel())
+                .setBiddingStatusName(ObjectUtils.isNotEmpty(item.getBiddingStatus()) ? AdBiddingStatus.of(item.getBiddingStatus()).getLabel() : ""));
+        return Page.convert(new PageInfo<>(BeanUtil.copyToList(list, AdminAdRoundPageResDTO.class)));
+    }
+
+    /**
+     * 管理员审核推广图
+     *
+     * @param auditDTO 审核推广图入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer auditPic(AdminAdRoundAuditDTO auditDTO) {
+
+        // TODO 是否为超级管理管理员
+        this.isSuperAdmin();
+
+        AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+                        .eq(AdvertRound::getId, auditDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
+        // 校验图片审核类型是否存在
+        AdPicAuditStatus.of(auditDTO.getPicAuditStatus());
+        advertRound.setPicAuditStatus(auditDTO.getPicAuditStatus()).setRejectReason(auditDTO.getRejectReason());
+        return this.advertRoundMapper.updateById(advertRound);
+    }
+
+    /**
+     * 档口退订推广位
+     *
+     * @param unsubscribeDTO 退订入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer unsubscribe(AdminAdRoundUnsubscribeDTO unsubscribeDTO) {
+
+        // TODO 判断当前是否是管理员
+        this.isSuperAdmin();
+
+        AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+                        .eq(AdvertRound::getId, unsubscribeDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                        .eq(AdvertRound::getStoreId, unsubscribeDTO.getStoreId())))
+                .orElseThrow(() -> new ServiceException("档口购买的推广位不存在!", HttpStatus.ERROR));
+        // 判断当前时间距离开播是否小于12h，若是：则不可取消
+        Date twelveHoursAfter = DateUtils.toDate(LocalDateTime.now().plusHours(12));
+        if (twelveHoursAfter.after(advertRound.getStartTime())) {
+            throw new ServiceException("距推广开播小于12小时，不可退订!");
+        }
+        // 如果扣除了费用，则减去退回金额
+        BigDecimal remainPayPrice = advertRound.getPayPrice().subtract(ObjectUtils.defaultIfNull(unsubscribeDTO.getDeductionFee(), BigDecimal.ZERO));
+        // 将费用退回到档口余额中
+        assetService.refundAdvertFee(advertRound.getStoreId(), remainPayPrice);
+        // 将推广位置为空
+        return this.advertRoundMapper.updateAttrNull(advertRound.getId());
+    }
+
+    /**
+     * @param picDTO 档口上传推广图入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer uploadAdvertPic(AdRoundUploadPicDTO picDTO) {
+
+        // TODO 判断当前是否是管理员
+        this.isSuperAdmin();
+
+        AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+                        .eq(AdvertRound::getId, picDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
+        SysFile file = BeanUtil.toBean(picDTO, SysFile.class);
+        int count = this.fileMapper.insert(file);
+        // 更新推广位的图片ID
+        advertRound.setPicId(file.getId());
+        this.advertRoundMapper.updateById(advertRound);
+        // 将档口上传图片保存到AdvertStoreFile
+        AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId())
+                .setStoreId(advertRound.getStoreId()).setFileId(file.getId()).setTypeId(advertRound.getTypeId());
+        this.advertStoreFileMapper.insert(advertStoreFile);
+        return count;
+    }
+
+    /**
+     * 管理员拦截推广营销
+     *
+     * @param interceptDTO 拦截推广营销入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer sysIntercept(AdminAdRoundSysInterceptDTO interceptDTO) {
+
+        // TODO 判断当前是否是管理员
+        this.isSuperAdmin();
+
+        final LocalDateTime nineThirty = LocalDateTime.of(LocalDate.now(), LocalTime.of(21, 30));
+        final LocalDateTime tenFive = LocalDateTime.of(LocalDate.now(), LocalTime.of(22, 5));
+        // 判断当前时间是否为晚上9:30 - 10:05区间，若是，则管理员不可操作推广拦截
+        if (LocalDateTime.now().isAfter(nineThirty) && LocalDateTime.now().isBefore(tenFive)) {
+            throw new ServiceException("21:30 - 22:05之间，为档口购买推广时间，管理员不可操作推广拦截!", HttpStatus.ERROR);
+        }
+        AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+                        .eq(AdvertRound::getId, interceptDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
+        // 如果该广告位已被拦截，则不可再次拦截
+        if (Objects.equals(advertRound.getSysIntercept(), AdSysInterceptType.INTERCEPT.getValue())) {
+            throw new ServiceException("该推广位已被拦截，不可再次拦截!", HttpStatus.ERROR);
+        }
+        // 若该推广位已投放
+        if (Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())) {
+            // 若该广告位 为时间范围 且 为档口正常购买（也有可能为系统拦截），则均不可不可拦截该推广位
+            if (Objects.equals(advertRound.getShowType(), AdShowType.TIME_RANGE.getValue()) && ObjectUtils.isNotEmpty(advertRound.getStoreId())) {
+                throw new ServiceException("该推广位为档口正常购买，已投放，不可拦截!", HttpStatus.ERROR);
+            }
+            // 若该广告位为位置枚举，则不可购买，因为位置枚举一般都是第二天播放
+            if (Objects.equals(advertRound.getShowType(), AdShowType.POSITION_ENUM.getValue())) {
+                throw new ServiceException("该推广位为位置枚举，不可购买，因为位置枚举一般都是第二天播放!", HttpStatus.ERROR);
+            }
+            // 若为待投放推广
+        } else {
+            // 判断拦截的推广位，是否档口已经购买。
+            if (ObjectUtils.isNotEmpty(advertRound.getStoreId()) && Objects.equals(advertRound.getSysIntercept(), AdSysInterceptType.UN_INTERCEPT.getValue())) {
+                // 判断当前时间是否为投放前一天22:00之后 若是，则不可拦截，因该推广位已售出
+                LocalDateTime twoHourBeforeStartTime = advertRound.getStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().withHour(22).withMinute(0).withSecond(0);
+                if (LocalDateTime.now().isAfter(twoHourBeforeStartTime)) {
+                    throw new ServiceException("当前推广位已被档口购买，不可拦截!", HttpStatus.ERROR);
+                }
+            }
+        }
+        // 如果该推广位是被档口正常购买，则直接退费
+        if (ObjectUtils.isNotEmpty(advertRound.getStoreId()) && Objects.equals(advertRound.getSysIntercept(), AdSysInterceptType.UN_INTERCEPT.getValue())) {
+            assetService.refundAdvertFee(advertRound.getStoreId(), ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO));
+        }
+        // 设置系统拦截的数据 并将系统拦截设置为1
+        advertRound.setStoreId(interceptDTO.getStoreId()).setSysIntercept(AdSysInterceptType.INTERCEPT.getValue())
+                .setVoucherDate(java.sql.Date.valueOf(LocalDate.now())).setBiddingStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue())
+                .setBiddingTempStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue());
+        if (ObjectUtils.isNotEmpty(interceptDTO.getFile())) {
+            SysFile file = BeanUtil.toBean(interceptDTO.getFile(), SysFile.class);
+            this.fileMapper.insert(file);
+            advertRound.setPicId(file.getId()).setPicAuditStatus(AdPicAuditStatus.AUDIT_PASS.getValue()).setPicDesignType(AdDesignType.SYS_DESIGN.getValue());
+        }
+        if (ObjectUtils.isNotEmpty(interceptDTO.getStoreProdIdList())) {
+            advertRound.setProdIdStr(StringUtils.join(interceptDTO.getStoreProdIdList(), ","));
+        }
+        // 如果是位置枚举，则设置一个很高的价格（400 - 600）范围，有其它档口愿意出更高价格拿下就随他去
+        if (Objects.equals(advertRound.getShowType(), AdShowType.POSITION_ENUM.getValue())) {
+            advertRound.setPayPrice(BigDecimal.valueOf(RandomUtils.nextLong(40, 60 + 1) * 10));
+        }
+       return this.advertRoundMapper.updateById(advertRound);
+    }
+
+    /**
+     * 取消拦截广告位
+     *
+     * @param advertRoundId 推广轮次ID
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer cancelIntercept(Long advertRoundId) {
+
+        // TODO 判断当前是否是管理员
+        this.isSuperAdmin();
+
+        // 该推广位是否被拦截
+        AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+                        .eq(AdvertRound::getId, advertRoundId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                        .eq(AdvertRound::getSysIntercept, AdSysInterceptType.INTERCEPT.getValue())))
+                .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
+        // 被系统拦截的推广位不用退费，直接清空数据即可
+        return this.advertRoundMapper.updateAttrNull(advertRound.getId());
+    }
+
+
+    /**
+     * 校验当前是否是超级管理员操作
+     */
+    private void isSuperAdmin() {
+        // 获取当前登录用户
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        if (ObjectUtils.isEmpty(loginUser)) {
+            throw new ServiceException("当前用户不存在!", HttpStatus.ERROR);
+        }
+        if (!SecurityUtils.isAdmin(loginUser.getUserId())) {
+            throw new ServiceException("当前用户不是超级管理员，不可操作!", HttpStatus.ERROR);
+        }
+    }
+
+}

@@ -242,22 +242,22 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     /**
      * 用户删除进货车商品
      *
-     * @param shoppingCartId 进货车ID
+     * @param deleteDTO 进货车ID删除列表
      * @return
      */
     @Override
     @Transactional
-    public Integer delete(Long shoppingCartId) {
+    public Integer delete(ShopCartDeleteDTO deleteDTO) {
         LoginUser loginUser = SecurityUtils.getLoginUser();
-        ShoppingCart shopCart = Optional.ofNullable(this.shopCartMapper.selectOne(new LambdaQueryWrapper<ShoppingCart>()
-                        .eq(ShoppingCart::getId, shoppingCartId).eq(ShoppingCart::getDelFlag, Constants.UNDELETED)
+        List<ShoppingCart> shopCartList = Optional.ofNullable(this.shopCartMapper.selectList(new LambdaQueryWrapper<ShoppingCart>()
+                        .in(ShoppingCart::getId, deleteDTO.getShoppingCartIdList()).eq(ShoppingCart::getDelFlag, Constants.UNDELETED)
                         .eq(ShoppingCart::getUserId, loginUser.getUserId())))
                 .orElseThrow(() -> new ServiceException("用户购物车不存在!", HttpStatus.ERROR));
-        shopCart.setDelFlag(Constants.DELETED);
-        int count = this.shopCartMapper.updateById(shopCart);
+        shopCartList.forEach(x -> x.setDelFlag(DELETED));
+        int count = this.shopCartMapper.updateById(shopCartList).size();
         // 找到进货车明细
         List<ShoppingCartDetail> detailList = this.shopCartDetailMapper.selectList(new LambdaQueryWrapper<ShoppingCartDetail>()
-                .eq(ShoppingCartDetail::getShoppingCartId, shoppingCartId).eq(ShoppingCartDetail::getDelFlag, Constants.UNDELETED));
+                .in(ShoppingCartDetail::getShoppingCartId, deleteDTO.getShoppingCartIdList()).eq(ShoppingCartDetail::getDelFlag, Constants.UNDELETED));
         detailList.forEach(x -> x.setDelFlag(Constants.DELETED));
         this.shopCartDetailMapper.updateById(detailList);
         return count;

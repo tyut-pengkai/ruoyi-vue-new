@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import java.math.BigDecimal;
-
 /**
  * 档口上传的推广营销文件对象 advert_store_file
  *
@@ -18,6 +16,7 @@ import java.math.BigDecimal;
 @Data
 @Accessors(chain = true)
 public class AdvertStoreFile extends XktBaseEntity {
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -25,6 +24,10 @@ public class AdvertStoreFile extends XktBaseEntity {
      */
     @TableId
     private Long id;
+    /**
+     * 上传的推广营销ID  做记录用
+     */
+    private Long advertRoundId;
     /**
      * 档口ID
      */

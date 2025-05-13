@@ -201,6 +201,21 @@ public class StoreServiceImpl implements IStoreService {
     }
 
     /**
+     * 管理员审核推广获取档口基本信息
+     *
+     * @param storeId 档口ID
+     * @return StoreAdvertResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreAdvertResDTO getAdvertStoreInfo(Long storeId) {
+        Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
+                .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        return BeanUtil.toBean(store, StoreAdvertResDTO.class);
+    }
+
+    /**
      * 修改档口基本信息
      *
      * @param storeUpdateDTO 档口
