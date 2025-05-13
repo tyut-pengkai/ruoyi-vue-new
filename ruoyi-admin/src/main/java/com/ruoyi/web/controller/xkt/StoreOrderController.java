@@ -131,7 +131,7 @@ public class StoreOrderController extends XktBaseController {
 
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("发货-平台物流")
-    @PostMapping("ship-platform")
+    @PostMapping("ship/platform")
     public R<List<StoreOrderShipRespVO>> shipByPlatform(@Valid @RequestBody StoreOrderShipByPlatformReqVO vo) {
         //TODO 权限
         StoreOrderExt orderExt = storeOrderService.shipOrderByPlatform(vo.getStoreOrderId(),
@@ -147,7 +147,7 @@ public class StoreOrderController extends XktBaseController {
 
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("发货-档口物流")
-    @PostMapping("ship-store")
+    @PostMapping("ship/store")
     public R<List<StoreOrderShipRespVO>> shipByStore(@Valid @RequestBody StoreOrderShipByStoreReqVO vo) {
         //TODO 权限
         StoreOrderExt orderExt = storeOrderService.shipOrderByStore(vo.getStoreOrderId(),
@@ -163,7 +163,7 @@ public class StoreOrderController extends XktBaseController {
 
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("打印面单")
-    @PostMapping("print")
+    @PostMapping("ship/print")
     public R<List<StoreOrderPrintRespVO>> print(@Valid @RequestBody StoreOrderPrintReqVO vo) {
         //TODO 权限
         List<ExpressPrintDTO> dtoList = storeOrderService.printOrder(vo.getStoreOrderDetailIds());

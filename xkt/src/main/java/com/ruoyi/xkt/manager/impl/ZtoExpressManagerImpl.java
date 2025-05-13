@@ -66,7 +66,7 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
 
     @Override
     public EExpressChannel channel() {
-        return EExpressChannel.YTO;
+        return EExpressChannel.ZTO;
     }
 
     @Override

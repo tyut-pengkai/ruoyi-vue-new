@@ -805,10 +805,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                         .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
         List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
         for (StoreOrderDetail orderDetail : orderDetails) {
-            if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(order.getOrderStatus())
-                    && !EOrderStatus.SHIPPED.getValue().equals(order.getOrderStatus())) {
+            if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(orderDetail.getDetailStatus())
+                    && !EOrderStatus.SHIPPED.getValue().equals(orderDetail.getDetailStatus())) {
                 throw new ServiceException(CharSequenceUtil.format("订单明细[{}]当前状态无法确认收货",
-                        order.getOrderNo()));
+                        orderDetail.getId()));
             }
             //订单明细->已完成
             orderDetail.setDetailStatus(EOrderStatus.COMPLETED.getValue());
@@ -888,10 +888,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                         .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
         List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
         for (StoreOrderDetail orderDetail : orderDetails) {
-            if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(order.getOrderStatus())
-                    && !EOrderStatus.SHIPPED.getValue().equals(order.getOrderStatus())) {
+            if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(orderDetail.getDetailStatus())
+                    && !EOrderStatus.SHIPPED.getValue().equals(orderDetail.getDetailStatus())) {
                 throw new ServiceException(CharSequenceUtil.format("订单明细[{}]当前状态无法确认收货",
-                        order.getOrderNo()));
+                        orderDetail.getId()));
             }
             //订单明细->已完成
             orderDetail.setDetailStatus(EOrderStatus.COMPLETED.getValue());
