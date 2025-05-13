@@ -335,7 +335,7 @@ public class XktTask {
                         final int roundId = i + 1;
                         updateList.add(new AdvertRound().setAdvertId(advert.getId()).setTypeId(advert.getTypeId()).setRoundId(roundId).setLaunchStatus(launchStatus)
                                 .setStartTime(java.sql.Date.valueOf(now)).setEndTime(java.sql.Date.valueOf(endDate)).setPosition(position).setStartPrice(advert.getStartPrice())
-                                .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType())
+                                .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType()).setDisplayType(advert.getDisplayType())
                                 .setSymbol(Objects.equals(advert.getShowType(), AdShowType.POSITION_ENUM.getValue())
                                         // 如果是位置枚举的推广位，则需要精确到某一个position的推广位，反之，若是时间范围，则直接精确到播放轮次即可
                                         ? advert.getBasicSymbol() + roundId + position : advert.getBasicSymbol() + roundId));
@@ -383,7 +383,7 @@ public class XktTask {
                                 // 生成最新的下一轮推广位
                                 updateList.add(new AdvertRound().setAdvertId(advert.getId()).setTypeId(advert.getTypeId()).setRoundId(maxRoundId)
                                         .setLaunchStatus(AdLaunchStatus.UN_LAUNCH.getValue()).setPosition(position).setStartPrice(advert.getStartPrice())
-                                        .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType())
+                                        .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType()).setDisplayType(advert.getDisplayType())
                                         // java.sql.Date 直接转化成yyyy-MM-dd格式
                                         .setStartTime(java.sql.Date.valueOf(startDate)).setEndTime(java.sql.Date.valueOf(endDate))
                                         .setSymbol(Objects.equals(advert.getShowType(), AdShowType.POSITION_ENUM.getValue())
@@ -406,7 +406,27 @@ public class XktTask {
     }
 
     /**
-     * 每晚11:30更新广告位轮次状态 将biddingTempStatus赋值给biddingStatus
+     * 每晚23:00更新 即将播放的 位置枚举 得系统拦截广告位 购买价格
+     */
+    @Transactional
+    public void clearPositionEnumPayPrice() {
+        // 播放时间为明天的数据
+       final Date tomorrow = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
+        // 筛选待投放的 位置枚举 的推广轮次 不能加roundId限制，因为有可能是新加的广告，还没播放过
+        List<AdvertRound> unLaunchList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
+                .eq(AdvertRound::getDelFlag, Constants.UNDELETED).eq(AdvertRound::getLaunchStatus, AdLaunchStatus.UN_LAUNCH.getValue())
+                .eq(AdvertRound::getShowType, AdShowType.POSITION_ENUM.getValue()).eq(AdvertRound::getStartTime, tomorrow));
+        if (CollectionUtils.isEmpty(unLaunchList)) {
+            return;
+        }
+        // 将 位置枚举 类型的 待播放的轮次 支付价格置为空
+        unLaunchList.forEach(x -> x.setPayPrice(null));
+        this.advertRoundMapper.updateById(unLaunchList);
+    }
+
+
+    /**
+     * 每晚22:00:10更新广告位轮次状态 将biddingTempStatus赋值给biddingStatus
      */
     @Transactional
     public void updateAdvertRoundBiddingStatus() throws ParseException {

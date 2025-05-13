@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -21,6 +22,8 @@ public class ShoppingCartDTO {
 
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "档口名称")
+    private String storeName;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
     @ApiModelProperty(value = "商品货号")
@@ -41,6 +44,10 @@ public class ShoppingCartDTO {
         private String colorName;
         @ApiModelProperty(value = "商品数量")
         private Integer quantity;
+        @ApiModelProperty(value = "颜色价格")
+        private BigDecimal price;
+        @ApiModelProperty(value = "总金额")
+        private BigDecimal amount;
     }
 
 }

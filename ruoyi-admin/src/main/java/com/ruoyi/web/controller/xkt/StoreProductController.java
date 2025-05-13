@@ -9,10 +9,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storeProd.*;
 import com.ruoyi.xkt.domain.StoreProduct;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdDTO;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusDTO;
+import com.ruoyi.xkt.dto.storeProduct.*;
 import com.ruoyi.xkt.service.IStoreProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -147,10 +144,10 @@ public class StoreProductController extends XktBaseController {
      * 获取档口图片空间
      */
 //    // @PreAuthorize("@ss.hasPermi('system:product:query')")
-    @ApiOperation(value = "获取档口图片空间", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/pic-space/{storeId}")
-    public R<StoreProdPicSpaceResVO> getStoreProductPicSpace(@PathVariable("storeId") Long storeId) {
-        return R.ok(BeanUtil.toBean(storeProdService.getStoreProductPicSpace(storeId), StoreProdPicSpaceResVO.class));
+    @ApiOperation(value = "获取档口图片空间", httpMethod = "POST", response = R.class)
+    @PostMapping(value = "/pic-space")
+    public R<StoreProdPicSpaceResVO> getStoreProductPicSpace(@Validated @RequestBody StoreProdPicSpaceVO picSpaceVO) {
+        return R.ok(BeanUtil.toBean(storeProdService.getStoreProductPicSpace(BeanUtil.toBean(picSpaceVO, StoreProdPicSpaceDTO.class)), StoreProdPicSpaceResVO.class));
     }
 
 

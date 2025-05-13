@@ -123,7 +123,7 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
         if (CollectionUtils.isEmpty(prodCateList)) {
             return new ArrayList<>();
         }
-        List<ProdCateListResDTO> resList =  prodCateList.stream()
+        List<ProdCateListResDTO> resList = prodCateList.stream()
                 .map(x -> BeanUtil.toBean(x, ProdCateListResDTO.class).setProdCateId(x.getId())).collect(Collectors.toList());
         return this.buildCateTree(resList);
     }
@@ -170,10 +170,29 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
      */
     @Override
     @Transactional(readOnly = true)
-    public List<ProdCateDTO> getSubList(Long parCateId) {
+    public List<ProdCateDTO> getSubListByParCateId(Long parCateId) {
         List<SysProductCategory> subCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
                 .eq(SysProductCategory::getParentId, parCateId).eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
         return BeanUtil.copyToList(subCateList, ProdCateDTO.class);
+    }
+
+    /**
+     * 获取所有的二级分类
+     *
+     * @return List<ProdCateDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProdCateDTO> getAllSubList() {
+        List<SysProductCategory> topCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getParentId, TOPMOST_PRODUCT_CATEGORY_ID).eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(topCateList)) {
+            return new ArrayList<>();
+        }
+        List<SysProductCategory> subCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .in(SysProductCategory::getParentId, topCateList.stream().map(SysProductCategory::getId).collect(Collectors.toList()))
+                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
+        return subCateList.stream().map(x -> BeanUtil.toBean(x, ProdCateDTO.class).setProdCateId(x.getId())).collect(Collectors.toList());
     }
 
 

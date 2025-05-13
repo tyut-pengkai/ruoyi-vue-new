@@ -47,6 +47,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     final StoreProductColorPriceMapper prodColorPriceMapper;
     final StoreProductFileMapper prodFileMapper;
     final StoreProductCategoryAttributeMapper prodCateAttrMapper;
+    final StoreMapper storeMapper;
 
 
     /**
@@ -278,11 +279,15 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         if (CollectionUtils.isEmpty(shoppingCartList)) {
             return new ArrayList<>();
         }
+        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED)
+                .in(Store::getId, shoppingCartList.stream().map(ShoppingCart::getStoreId).collect(Collectors.toList())));
+        Map<Long, Store> storeMap = storeList.stream().collect(Collectors.toMap(Store::getId, Function.identity()));
         List<ShoppingCartDetail> detailList = this.shopCartDetailMapper.selectList(new LambdaQueryWrapper<ShoppingCartDetail>()
                 .in(ShoppingCartDetail::getShoppingCartId, shoppingCartList.stream().map(ShoppingCart::getId).collect(Collectors.toList()))
                 .eq(ShoppingCartDetail::getDelFlag, Constants.UNDELETED));
         Map<Long, List<ShoppingCartDetail>> detailMap = detailList.stream().collect(Collectors.groupingBy(ShoppingCartDetail::getShoppingCartId));
         return shoppingCartList.stream().map(x -> BeanUtil.toBean(x, ShoppingCartDTO.class)
+                        .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(x.getStoreId())) ? storeMap.get(x.getStoreId()).getStoreName() : "")
                         .setDetailList(BeanUtil.copyToList(detailMap.get(x.getId()), ShoppingCartDTO.SCDetailDTO.class)))
                 .collect(Collectors.toList());
     }

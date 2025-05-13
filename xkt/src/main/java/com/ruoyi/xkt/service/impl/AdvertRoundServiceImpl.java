@@ -332,7 +332,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     public Integer create(AdRoundStoreCreateDTO createDTO) {
         // 截止时间都是当天 22:00:00，并且只会处理马上播放的这一轮。比如 5.1-5.3，当前为4.30，处理这一轮；当前为5.2，处理这一轮；当前为5.3（最后一天），处理下一轮。
         if (DateUtils.getTime().compareTo(this.getDeadline(createDTO.getSymbol())) > 0) {
-            throw new ServiceException("竞价结束，已经有档口出价更高了噢!", HttpStatus.ERROR);
+            throw new ServiceException("竞价失败，已经有档口出价更高了噢!", HttpStatus.ERROR);
         }
         if (ObjectUtils.isEmpty(redisCache.getCacheObject(Constants.STORE_REDIS_PREFIX + createDTO.getStoreId()))) {
             throw new ServiceException("档口不存在!", HttpStatus.ERROR);
@@ -357,6 +357,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             LambdaQueryWrapper<AdvertRound> queryWrapper = new LambdaQueryWrapper<AdvertRound>()
                     .eq(AdvertRound::getAdvertId, createDTO.getAdvertId()).eq(AdvertRound::getRoundId, createDTO.getRoundId())
                     .eq(AdvertRound::getDelFlag, Constants.UNDELETED).orderByAsc(AdvertRound::getPayPrice).last("LIMIT 1");
+            // 如果是 时间范围 的广告位，则不查 系统拦截的数据；其实位置枚举的广告位也可不用查系统拦截的数据，主要是为了真实，给档口留个缝
+            if (Objects.equals(createDTO.getShowType(), AdShowType.TIME_RANGE.getValue())) {
+                queryWrapper.eq(AdvertRound::getSysIntercept, AdSysInterceptType.UN_INTERCEPT.getValue());
+            }
             // 位置枚举类型的广告位，则 需要 查询具体的位置
             if (StringUtils.isNotBlank(createDTO.getPosition())) {
                 queryWrapper.eq(AdvertRound::getPosition, createDTO.getPosition());
@@ -374,11 +378,12 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 this.record(minPriceAdvert);
             }
             // 更新广告位数据
-            minPriceAdvert.setStoreId(createDTO.getStoreId()).setPayPrice(createDTO.getPayPrice())
+            minPriceAdvert
+                    // 档口购买的推广位一律设置为 非拦截
+                    .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue())
+                    .setStoreId(createDTO.getStoreId()).setPayPrice(createDTO.getPayPrice()).setVoucherDate(java.sql.Date.valueOf(LocalDate.now()))
+                    .setBiddingStatus(AdBiddingStatus.BIDDING.getValue()).setBiddingTempStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue())
                     // 展示类型非商品才赋值 setType
-                    .setVoucherDate(java.sql.Date.valueOf(LocalDate.now()))
-                    .setBiddingStatus(AdBiddingStatus.BIDDING.getValue())
-                    .setBiddingTempStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue())
                     .setPicSetType(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? AdPicSetType.UN_SET.getValue() : null)
                     .setPicDesignType(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? createDTO.getPicDesignType() : null)
                     .setPicAuditStatus(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? AdPicAuditStatus.UN_AUDIT.getValue() : null)
@@ -629,24 +634,92 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 .format(LocalDateTime.now().withHour(22).withMinute(0).withSecond(0));
         advertRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getAdvertId))
                 .forEach((advertId, roundList) -> {
+                    // 判断当前推广类型是否为 时间范围
+                    final boolean isTimeRange = roundList.stream().anyMatch(x -> Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()));
                     // 判断当前时间所处的阶段 小于第一轮播放时间（有可能新广告还未开播）、处于第一轮中间、处于第一轮最后一天
                     final Date firstRoundEndTime = roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.PLAY_ROUND.getValue()))
                             .max(Comparator.comparing(AdvertRound::getEndTime))
                             .orElseThrow(() -> new ServiceException("获取推广结束时间失败，请联系客服!", HttpStatus.ERROR)).getEndTime();
-                    // 默认第一轮的symbol
-                    String symbol = roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.PLAY_ROUND.getValue()))
-                            .map(AdvertRound::getSymbol).findAny().orElseThrow(() -> new ServiceException("获取推广第一轮symbol失败，请联系客服!", HttpStatus.ERROR));
-                    // 第一轮最后一天，则直接处理第二轮的symbol
-                    if (now.equals(firstRoundEndTime)) {
-                        String secondRoundSymbol = roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.SECOND_ROUND.getValue()))
-                                .map(AdvertRound::getSymbol).findAny().orElse(null);
-                        // 有可能第二轮不存在，因为该推广已下线，则定时任务没有生成后续轮次
-                        if (StringUtils.isEmpty(secondRoundSymbol)) {
-                            return;
+                    // 时间范围处理逻辑
+                    if (isTimeRange) {
+                        // 将每一轮的symbol过期时间都放到redis中
+
+                        // 当前时间小于第一轮结束时间，则过期时间都设置为 每一轮开始时间 前一天
+
+                        // 当前时间等于第一轮结束时间，则第二轮的过期时间为当天
+
+
+
+                        if (now.compareTo(firstRoundEndTime) < 0) {
+                            // 第一轮过期时间为当天
+
+
+                            // 每一轮 的 开始时间
+                            Map<String, Date> roundSymbolMap = roundList.stream().collect(Collectors.toMap(AdvertRound::getSymbol, AdvertRound::getStartTime, (s1, s2) -> s2));
+
+                            roundSymbolMap.forEach((symbol, startTime) -> {
+
+                            });
+
+                            // 推广开始时间的前一天的 22:00:00
+//                            LocalDateTime futureTimeFilter = startTime  .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().minusDays(1).withHour(22).withMinute(0).withSecond(0);
+
+
+                        }
+                        if (now.compareTo(firstRoundEndTime) == 0) {
+                            // 第一轮不用管，设置第二轮  或者 第一轮 第二轮过期时间都可以为 当天
+
+                        }
+
+
+
+
+
+
+
+
+
+                        // 第一轮最后一天，则直接处理第二轮的symbol
+                        if (now.equals(firstRoundEndTime)) {
+                            // 每一轮 的 开始时间
+                            Map<String, Date> roundSymbolMap = roundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
+                                    .collect(Collectors.toMap(AdvertRound::getSymbol, AdvertRound::getStartTime, (s1, s2) -> s2));
+                            if (MapUtils.isNotEmpty(roundSymbolMap)) {
+                                roundSymbolMap.forEach((symbol, startTime) -> {
+                                    // 推广开始时间的前一天的 22:00:00
+                                    LocalDateTime futureTimeFilter = startTime  .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().minusDays(1).withHour(22).withMinute(0).withSecond(0);
+                                    // 存放到redis中 有效期1天
+                                    redisCache.setCacheObject(symbol, futureTimeFilter, 1, TimeUnit.DAYS);
+                                });
+                            }
+                            /*String secondRoundSymbol = roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.SECOND_ROUND.getValue()))
+                                    .map(AdvertRound::getSymbol).findAny().orElse(null);
+                            // 有可能第二轮不存在，因为该推广已下线，则定时任务没有生成后续轮次
+                            if (StringUtils.isNotBlank(secondRoundSymbol)) {
+                                // 存放到redis中 有效期1天
+                                redisCache.setCacheObject(secondRoundSymbol, filterTime, 1, TimeUnit.DAYS);
+                            }*/
+
+
+                        } else {
+                            // 默认第一轮的symbol
+                            String symbol = roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.PLAY_ROUND.getValue()))
+                                    .map(AdvertRound::getSymbol).findAny().orElseThrow(() -> new ServiceException("获取推广第一轮symbol失败，请联系客服!", HttpStatus.ERROR));
+                            // 存放到redis中 有效期1天
+                            redisCache.setCacheObject(symbol, filterTime, 1, TimeUnit.DAYS);
+                        }
+                    } else {
+                        // 第一轮最后一天，则直接处理第二轮的symbol
+                        if (now.equals(firstRoundEndTime)) {
+                            // 将位置枚举的每一个symbol都存放到redis中
+                            roundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
+                                    .forEach(x -> redisCache.setCacheObject(x.getSymbol(), filterTime, 1, TimeUnit.DAYS));
+                        } else {
+                            // 将位置枚举的每一个symbol都存放到redis中
+                            roundList.stream().filter(x -> Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
+                                    .forEach(x -> redisCache.setCacheObject(x.getSymbol(), filterTime, 1, TimeUnit.DAYS));
                         }
                     }
-                    // 存放到redis中 有效期1天
-                    redisCache.setCacheObject(symbol, filterTime, 1, TimeUnit.DAYS);
                 });
     }
 

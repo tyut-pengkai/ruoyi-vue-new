@@ -24,7 +24,6 @@ import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceSimpleDTO;
 import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdColorSizeDTO;
-import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
 import com.ruoyi.xkt.dto.storeProdProcess.StoreProdProcessDTO;
 import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;
 import com.ruoyi.xkt.dto.storeProduct.*;
@@ -121,12 +120,19 @@ public class StoreProductServiceImpl implements IStoreProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public StoreProdPicSpaceResDTO getStoreProductPicSpace(Long storeId) {
+    public StoreProdPicSpaceResDTO getStoreProductPicSpace(StoreProdPicSpaceDTO spaceDTO) {
+        LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>().eq(StoreProduct::getId, spaceDTO.getStoreId())
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED);
+        if (StringUtils.isNotBlank(spaceDTO.getProdArtNum())) {
+            queryWrapper.like(StoreProduct::getProdArtNum, spaceDTO.getProdArtNum());
+        }
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(queryWrapper);
+        List<Long> storeProdIdList = storeProdList.stream().map(StoreProduct::getId).collect(Collectors.toList());
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
-                        .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
+                        .eq(Store::getId, spaceDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-        return StoreProdPicSpaceResDTO.builder().storeId(storeId).storeName(store.getStoreName())
-                .fileList(this.storeProdFileMapper.selectPicSpaceList(storeId, FileType.DOWNLOAD.getValue())).build();
+        return StoreProdPicSpaceResDTO.builder().storeId(store.getId()).storeName(store.getStoreName())
+                .fileList(this.storeProdFileMapper.selectPicSpaceList(store.getId(), FileType.DOWNLOAD.getValue(), storeProdIdList)).build();
     }
 
     /**

@@ -152,6 +152,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spf.del_flag = 0
             AND spf.file_type = #{fileType}
             AND spf.store_id = #{storeId}
+            <if test="storeProdIdList != null and storeProdIdList.size() > 0">
+                AND spf.store_prod_id in
+                <foreach item="storeProdId" collection="storeProdIdList" open="(" separator="," close=")">
+                    #{storeProdId}
+                </foreach>
+            </if>
     </select>
 
 

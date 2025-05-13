@@ -25,10 +25,10 @@ public interface IStoreProductService {
     /**
      * 获取档口图片空间
      *
-     * @param storeId 档口ID
+     * @param spaceDTO 图片空间入参
      * @return StoreProdPicSpaceResDTO
      */
-    StoreProdPicSpaceResDTO getStoreProductPicSpace(Long storeId);
+    StoreProdPicSpaceResDTO getStoreProductPicSpace(StoreProdPicSpaceDTO spaceDTO);
 
     /**
      * 查询档口商品列表

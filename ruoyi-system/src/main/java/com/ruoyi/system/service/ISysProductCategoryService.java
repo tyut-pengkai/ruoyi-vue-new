@@ -74,6 +74,13 @@ public interface ISysProductCategoryService {
      * @param parCateId 一级分类ID
      * @return
      */
-    List<ProdCateDTO> getSubList(Long parCateId);
+    List<ProdCateDTO> getSubListByParCateId(Long parCateId);
+
+    /**
+     * 获取所有的二级分类
+     *
+     * @return List<ProdCateDTO>
+     */
+    List<ProdCateDTO> getAllSubList();
 
 }

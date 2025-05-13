@@ -111,7 +111,6 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         List<StoreCustomerProductDiscount> updateList = new ArrayList<>();
         // 入参优惠列表
         batchDiscDTO.getDiscountList().forEach(itemDTO -> {
-            // 如果已存在优惠则叠加
             if (prodCusDiscMap.containsKey(itemDTO.getStoreCusId().toString() + itemDTO.getStoreProdColorId().toString())) {
                 StoreCustomerProductDiscount prodColorDisc = prodCusDiscMap.get(itemDTO.getStoreCusId().toString() + itemDTO.getStoreProdColorId().toString());
                 // 如果是批量优惠、批量减价则进行叠加 反之为新增客户优惠，直接覆盖

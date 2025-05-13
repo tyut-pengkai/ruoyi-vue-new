@@ -93,8 +93,18 @@ public class SysProductCategoryController extends XktBaseController {
 //    @PreAuthorize("@ss.hasPermi('system:category:list')")
     @ApiOperation(value = "根据1级分类获取二级分类列表", httpMethod = "GET", response = R.class)
     @GetMapping("/sub/{parCateId}")
-    public R<List<ProdCateVO>> getSubList(@PathVariable Long parCateId) {
-        return R.ok(BeanUtil.copyToList(prodCateService.getSubList(parCateId), ProdCateVO.class));
+    public R<List<ProdCateVO>> getSubListByParCateId(@PathVariable Long parCateId) {
+        return R.ok(BeanUtil.copyToList(prodCateService.getSubListByParCateId(parCateId), ProdCateVO.class));
+    }
+
+    /**
+     * 获取所有的二级分类
+     */
+//    @PreAuthorize("@ss.hasPermi('system:category:list')")
+    @ApiOperation(value = "获取所有的二级分类", httpMethod = "GET", response = R.class)
+    @GetMapping("/subs")
+    public R<List<ProdCateVO>> getAllSubList() {
+        return R.ok(BeanUtil.copyToList(prodCateService.getAllSubList(), ProdCateVO.class));
     }
 
 

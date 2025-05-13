@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -43,6 +44,10 @@ public class ShopCartResVO {
         private String colorName;
         @ApiModelProperty(value = "商品数量")
         private Integer quantity;
+        @ApiModelProperty(value = "颜色价格")
+        private BigDecimal price;
+        @ApiModelProperty(value = "总金额")
+        private BigDecimal amount;
     }
 
 
