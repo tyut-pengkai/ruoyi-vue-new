@@ -18,6 +18,10 @@ import java.math.BigDecimal;
 @ToString(callSuper = true)
 public class AlipayCallback extends SimpleEntity {
     /**
+     * 业务类型[1:订单支付 2:充值]
+     */
+    private Integer bizType;
+    /**
      * 通知的类型
      */
     private String notifyType;

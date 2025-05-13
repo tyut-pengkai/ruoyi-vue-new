@@ -30,4 +30,11 @@ public interface IAlipayCallbackService {
      * @param info
      */
     void processOrderPaid(AlipayCallback info);
+
+    /**
+     * 处理充值结果
+     *
+     * @param info
+     */
+    void processRecharge(AlipayCallback info);
 }

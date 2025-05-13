@@ -383,19 +383,13 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             expressTracks.add(expressTrackDTO);
         }
         orderInfo.setExpressTracks(expressTracks);
-        Map<String, ExpressRegionDTO> regionMap = expressService.getRegionMapCache();
-        orderInfo.setDestinationProvinceName(Optional.ofNullable(regionMap.get(orderInfo.getDestinationProvinceCode()))
-                .map(ExpressRegionDTO::getRegionName).orElse(null));
-        orderInfo.setDestinationCityName(Optional.ofNullable(regionMap.get(orderInfo.getDestinationCityCode()))
-                .map(ExpressRegionDTO::getRegionName).orElse(null));
-        orderInfo.setDestinationCountyName(Optional.ofNullable(regionMap.get(orderInfo.getDestinationCountyCode()))
-                .map(ExpressRegionDTO::getRegionName).orElse(null));
-        orderInfo.setOriginProvinceName(Optional.ofNullable(regionMap.get(orderInfo.getOriginProvinceCode()))
-                .map(ExpressRegionDTO::getRegionName).orElse(null));
-        orderInfo.setOriginCityName(Optional.ofNullable(regionMap.get(orderInfo.getOriginCityCode()))
-                .map(ExpressRegionDTO::getRegionName).orElse(null));
-        orderInfo.setOriginCountyName(Optional.ofNullable(regionMap.get(orderInfo.getOriginCountyCode()))
-                .map(ExpressRegionDTO::getRegionName).orElse(null));
+        Map<String, String> regionMap = expressService.getRegionNameMapCache();
+        orderInfo.setDestinationProvinceName(regionMap.get(orderInfo.getDestinationProvinceCode()));
+        orderInfo.setDestinationCityName(regionMap.get(orderInfo.getDestinationCityCode()));
+        orderInfo.setDestinationCountyName(regionMap.get(orderInfo.getDestinationCountyCode()));
+        orderInfo.setOriginProvinceName(regionMap.get(orderInfo.getOriginProvinceCode()));
+        orderInfo.setOriginCityName(regionMap.get(orderInfo.getOriginCityCode()));
+        orderInfo.setOriginCountyName(regionMap.get(orderInfo.getOriginCountyCode()));
         //商品信息
         List<Long> spIds = detailInfos.stream().map(StoreOrderDetailInfoDTO::getStoreProdId).distinct()
                 .collect(Collectors.toList());
@@ -426,21 +420,15 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             Map<Long, List<StoreOrderDetailInfoDTO>> orderDetailGroup = orderDetailList
                     .stream()
                     .collect(Collectors.groupingBy(StoreOrderDetailDTO::getStoreOrderId));
-            Map<String, ExpressRegionDTO> regionMap = expressService.getRegionMapCache();
+            Map<String, String> regionMap = expressService.getRegionNameMapCache();
             for (StoreOrderPageItemDTO order : list) {
                 //物流信息
-                order.setDestinationProvinceName(Optional.ofNullable(regionMap.get(order.getDestinationProvinceCode()))
-                        .map(ExpressRegionDTO::getRegionName).orElse(null));
-                order.setDestinationCityName(Optional.ofNullable(regionMap.get(order.getDestinationCityCode()))
-                        .map(ExpressRegionDTO::getRegionName).orElse(null));
-                order.setDestinationCountyName(Optional.ofNullable(regionMap.get(order.getDestinationCountyCode()))
-                        .map(ExpressRegionDTO::getRegionName).orElse(null));
-                order.setOriginProvinceName(Optional.ofNullable(regionMap.get(order.getOriginProvinceCode()))
-                        .map(ExpressRegionDTO::getRegionName).orElse(null));
-                order.setOriginCityName(Optional.ofNullable(regionMap.get(order.getOriginCityCode()))
-                        .map(ExpressRegionDTO::getRegionName).orElse(null));
-                order.setOriginCountyName(Optional.ofNullable(regionMap.get(order.getOriginCountyCode()))
-                        .map(ExpressRegionDTO::getRegionName).orElse(null));
+                order.setDestinationProvinceName(regionMap.get(order.getDestinationProvinceCode()));
+                order.setDestinationCityName(regionMap.get(order.getDestinationCityCode()));
+                order.setDestinationCountyName(regionMap.get(order.getDestinationCountyCode()));
+                order.setOriginProvinceName(regionMap.get(order.getOriginProvinceCode()));
+                order.setOriginCityName(regionMap.get(order.getOriginCityCode()));
+                order.setOriginCountyName(regionMap.get(order.getOriginCountyCode()));
                 order.setOrderDetails(orderDetailGroup.get(order.getId()));
                 for (StoreOrderDetailInfoDTO detail : order.getOrderDetails()) {
                     //首图
@@ -1434,19 +1422,13 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //生成请求号
         reqDTO.setExpressReqNo(IdUtil.simpleUUID());
         //行政区划信息
-        Map<String, ExpressRegionDTO> regionMap = expressService.getRegionMapCache();
-        reqDTO.setDestinationProvinceName(Optional.ofNullable(regionMap.get(order.getDestinationProvinceCode()))
-                .map(ExpressRegionDTO::getRegionName).orElse(null));
-        reqDTO.setDestinationCityName(Optional.ofNullable(regionMap.get(order.getDestinationCityCode()))
-                .map(ExpressRegionDTO::getRegionName).orElse(null));
-        reqDTO.setDestinationCountyName(Optional.ofNullable(regionMap.get(order.getDestinationCountyCode()))
-                .map(ExpressRegionDTO::getRegionName).orElse(null));
-        reqDTO.setOriginProvinceName(Optional.ofNullable(regionMap.get(order.getOriginProvinceCode()))
-                .map(ExpressRegionDTO::getRegionName).orElse(null));
-        reqDTO.setOriginCityName(Optional.ofNullable(regionMap.get(order.getOriginCityCode()))
-                .map(ExpressRegionDTO::getRegionName).orElse(null));
-        reqDTO.setOriginCountyName(Optional.ofNullable(regionMap.get(order.getOriginCountyCode()))
-                .map(ExpressRegionDTO::getRegionName).orElse(null));
+        Map<String, String> regionMap = expressService.getRegionNameMapCache();
+        reqDTO.setDestinationProvinceName(regionMap.get(order.getDestinationProvinceCode()));
+        reqDTO.setDestinationCityName(regionMap.get(order.getDestinationCityCode()));
+        reqDTO.setDestinationCountyName(regionMap.get(order.getDestinationCountyCode()));
+        reqDTO.setOriginProvinceName(regionMap.get(order.getOriginProvinceCode()));
+        reqDTO.setOriginCityName(regionMap.get(order.getOriginCityCode()));
+        reqDTO.setOriginCountyName(regionMap.get(order.getOriginCountyCode()));
         //货物信息
         List<ExpressShipReqDTO.OrderItem> orderItems = CollUtil.emptyIfNull(orderDetails).stream()
                 .map(o -> ExpressShipReqDTO.OrderItem

@@ -58,4 +58,14 @@ public class AlipayCallbackServiceImpl implements IAlipayCallbackService {
         //创建收款单
         financeBillService.createOrderPaidCollectionBill(orderExt, info.getId(), EPayChannel.ALI_PAY);
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void processRecharge(AlipayCallback info) {
+        //更新回调状态
+        info.setProcessStatus(EProcessStatus.SUCCESS.getValue());
+        alipayCallbackMapper.updateById(info);
+        //收款单到账
+        financeBillService.entryRechargeCollectionBill(info.getOutTradeNo());
+    }
 }

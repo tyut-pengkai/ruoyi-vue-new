@@ -9,6 +9,7 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.xkt.domain.AlipayCallback;
 import com.ruoyi.xkt.domain.FinanceBill;
 import com.ruoyi.xkt.domain.StoreOrder;
+import com.ruoyi.xkt.enums.EAlipayCallbackBizType;
 import com.ruoyi.xkt.enums.EProcessStatus;
 import com.ruoyi.xkt.manager.impl.AliPaymentMangerImpl;
 import com.ruoyi.xkt.service.IAlipayCallbackService;
@@ -85,6 +86,8 @@ public class AlipayCallbackController extends XktBaseController {
             //1. 商家需要验证该通知数据中的 out_trade_no 是否为商家系统中创建的订单号。
             StoreOrder order = storeOrderService.getByOrderNo(alipayCallback.getOutTradeNo());
             if (order != null) {
+                //订单支付
+                alipayCallback.setBizType(EAlipayCallbackBizType.ORDER_PAY.getValue());
                 //2. 判断 total_amount 是否确实为该订单的实际金额（即商家订单创建时的金额）。
                 if (!NumberUtil.equals(order.getTotalAmount(), alipayCallback.getTotalAmount())) {
                     logger.warn("支付宝回调订单金额匹配失败:{}", params);
@@ -114,6 +117,7 @@ public class AlipayCallbackController extends XktBaseController {
                 return SUCCESS;
             } else {
                 //充值业务
+                alipayCallback.setBizType(EAlipayCallbackBizType.RECHARGE.getValue());
                 //1. 商家需要验证该通知数据中的 out_trade_no 是否为商家系统中创建的订单号。
                 FinanceBill bill = financeBillService.getByBillNo(alipayCallback.getOutTradeNo());
                 if (bill != null) {
@@ -138,8 +142,8 @@ public class AlipayCallbackController extends XktBaseController {
                         return SUCCESS;
                     }
                     if (EProcessStatus.INIT.getValue().equals(info.getProcessStatus())) {
-                        //充值到账
-                        financeBillService.entryRechargeCollectionBill(bill.getBillNo());
+                        //更新回调状态，收款单到账
+                        alipayCallbackService.processRecharge(info);
                     } else {
                         logger.warn("支付回调重复请求处理: {}", info.getId());
                     }
