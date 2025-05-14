@@ -67,6 +67,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectAdminAdvertPage" parameterType="com.ruoyi.xkt.dto.adminAdvertRound.AdminAdRoundPageDTO"  resultType="com.ruoyi.xkt.dto.adminAdvertRound.AdminAdRoundPageResDTO">
         SELECT
             ar.id AS advertRoundId,
+            s.id AS storeId,
             s.store_name,
             a.platform_id,
             ar.type_id,
@@ -95,7 +96,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="roundId != null "> and ar.round_id = #{roundId}</if>
             <if test="sysIntercept != null "> and ar.sys_intercept = #{sysIntercept}</if>
         ORDER BY
-            ar.start_time
+            ar.advert_id
     </select>
 
 

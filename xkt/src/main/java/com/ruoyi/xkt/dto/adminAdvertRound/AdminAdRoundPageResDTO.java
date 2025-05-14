@@ -17,6 +17,8 @@ public class AdminAdRoundPageResDTO {
 
     @ApiModelProperty(value = "推广轮次ID")
     private Long advertRoundId;
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
     @ApiModelProperty(value = "投放平台")

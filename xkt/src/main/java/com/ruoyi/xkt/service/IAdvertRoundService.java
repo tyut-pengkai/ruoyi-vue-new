@@ -107,4 +107,13 @@ public interface IAdvertRoundService {
      * @return Integer
      */
     Integer uploadAdvertPic(AdRoundUploadPicDTO picDTO);
+
+    /**
+     * 获取审核失败的拒绝理由
+     *
+     * @param advertRoundId 档口轮次ID
+     * @return String
+     */
+    String getRejectReason(Long advertRoundId);
+
 }

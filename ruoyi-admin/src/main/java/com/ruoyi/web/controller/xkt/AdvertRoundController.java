@@ -116,5 +116,14 @@ public class AdvertRoundController extends XktBaseController {
         return R.ok(advertRoundService.uploadAdvertPic(BeanUtil.toBean(uploadPicVO, AdRoundUploadPicDTO.class)));
     }
 
+    /**
+     * 查看图片审核拒绝理由
+     */
+    @ApiOperation(value = "查看图片审核拒绝理由", httpMethod = "PUT", response = R.class)
+    @PutMapping("/reject-reason/{advertRoundId}")
+    public R<String> getRejectReason(@PathVariable Long advertRoundId) {
+        return R.ok(advertRoundService.getRejectReason(advertRoundId));
+    }
+
 
 }

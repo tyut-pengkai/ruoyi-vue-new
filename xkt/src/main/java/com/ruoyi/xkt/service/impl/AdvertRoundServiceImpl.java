@@ -385,8 +385,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue())
                     .setStoreId(createDTO.getStoreId()).setPayPrice(createDTO.getPayPrice()).setVoucherDate(java.sql.Date.valueOf(LocalDate.now()))
                     .setBiddingStatus(AdBiddingStatus.BIDDING.getValue()).setBiddingTempStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue())
-                    // 展示类型非商品才赋值 setType
                     .setPicSetType(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? AdPicSetType.UN_SET.getValue() : null)
+                    .setPicAuditStatus(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? AdPicAuditStatus.UN_AUDIT.getValue() : null)
                     .setPicDesignType(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? createDTO.getPicDesignType() : null)
                     .setPicAuditStatus(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? AdPicAuditStatus.UN_AUDIT.getValue() : null)
                     .setProdIdStr(createDTO.getProdIdStr());
@@ -575,11 +575,39 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         // 更新推广位的图片ID
         advertRound.setPicId(file.getId());
         this.advertRoundMapper.updateById(advertRound);
-        // 将档口上传图片保存到AdvertStoreFile
+
+        // TODO 是否要保存到AdvertStoreFile 因为还没审核通过
+        // TODO 是否要保存到AdvertStoreFile 因为还没审核通过
+        // TODO 是否要保存到AdvertStoreFile 因为还没审核通过
+        // TODO 是否要保存到AdvertStoreFile 因为还没审核通过
+
+
+
+
+
+        /*// 将档口上传图片保存到AdvertStoreFile
         AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId())
                 .setStoreId(advertRound.getStoreId()).setFileId(file.getId()).setTypeId(advertRound.getTypeId());
-        this.advertStoreFileMapper.insert(advertStoreFile);
+        this.advertStoreFileMapper.insert(advertStoreFile);*/
+
+
         return count;
+    }
+
+    /**
+     * 获取审核失败的拒绝理由
+     *
+     * @param advertRoundId 档口轮次ID
+     * @return String
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public String getRejectReason(Long advertRoundId) {
+        AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+                        .eq(AdvertRound::getId, advertRoundId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                        .eq(AdvertRound::getPicAuditStatus, AdPicAuditStatus.AUDIT_REJECTED.getValue())))
+                .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
+        return advertRound.getRejectReason();
     }
 
     /**

@@ -24,6 +24,9 @@ public class AdRoundUploadPicVO {
     @NotNull(message = "推广轮次ID不能为空!")
     @ApiModelProperty(value = "推广轮次ID")
     private Long advertRoundId;
+    @NotNull(message = "档口ID不能为空!")
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
     @NotBlank(message = "文件名称不能为空!")
     @ApiModelProperty(value = "文件名称")
     private String fileName;

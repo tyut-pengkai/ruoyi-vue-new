@@ -24,6 +24,8 @@ public class AdminAdRoundSysInterceptDTO {
     private Long advertRoundId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "档口名称")
+    private String storeName;
     @ApiModelProperty(value = "管理员上传推广图")
     private AARSIFileVO file;
     @ApiModelProperty(value = "档口商品ID集合")

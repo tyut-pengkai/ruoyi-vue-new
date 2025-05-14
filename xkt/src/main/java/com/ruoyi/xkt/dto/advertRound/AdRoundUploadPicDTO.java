@@ -6,8 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -23,6 +21,8 @@ public class AdRoundUploadPicDTO {
 
     @ApiModelProperty(value = "推广轮次ID")
     private Long advertRoundId;
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
     @ApiModelProperty(value = "文件名称")
     private String fileName;
     @ApiModelProperty(value = "文件路径")

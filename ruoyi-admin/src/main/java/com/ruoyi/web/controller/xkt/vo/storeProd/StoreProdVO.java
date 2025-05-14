@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.xkt.vo.storeProd;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.ruoyi.common.xss.Xss;
 import com.ruoyi.web.controller.xkt.vo.storeColor.StoreColorVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -97,6 +98,7 @@ public class StoreProdVO {
     private StoreProdSvcVO svc;
     @NotBlank(message = "详情内容不能为空!")
     @ApiModelProperty(value = "详情内容", required = true)
+    @Xss
     private String detail;
     @ApiModelProperty(value = "档口生产工艺")
     private StoreProdProcessVO process;

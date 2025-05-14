@@ -96,7 +96,7 @@ public class AdvertRound extends XktBaseEntity {
      */
     private Integer picAuditStatus;
     /**
-     * 图片是否设置 0 未设置 1已设置
+     * 图片是否设置 1 未设置 2已设置
      */
     private Integer picSetType;
     /**

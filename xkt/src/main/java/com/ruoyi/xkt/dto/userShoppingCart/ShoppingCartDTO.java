@@ -33,6 +33,7 @@ public class ShoppingCartDTO {
 
     @Data
     @ApiModel(value = "档口优惠列表")
+    @Accessors(chain = true)
     public static class SCDetailDTO {
         @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeProdColorId;

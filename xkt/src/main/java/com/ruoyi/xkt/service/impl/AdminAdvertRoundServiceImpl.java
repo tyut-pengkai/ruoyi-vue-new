@@ -24,6 +24,7 @@ import com.ruoyi.xkt.mapper.SysFileMapper;
 import com.ruoyi.xkt.service.IAdminAdvertRoundService;
 import com.ruoyi.xkt.service.IAssetService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -79,7 +80,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
                 .setPicSetTypeName(ObjectUtils.isNotEmpty(item.getPicSetType()) ? AdPicSetType.of(item.getPicSetType()).getLabel() : "")
                 .setTypeName(AdType.of(item.getTypeId()).getLabel())
                 .setBiddingStatusName(ObjectUtils.isNotEmpty(item.getBiddingStatus()) ? AdBiddingStatus.of(item.getBiddingStatus()).getLabel() : ""));
-        return Page.convert(new PageInfo<>(BeanUtil.copyToList(list, AdminAdRoundPageResDTO.class)));
+        return Page.convert(new PageInfo<>(list));
     }
 
     /**
@@ -121,10 +122,14 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
                         .eq(AdvertRound::getId, unsubscribeDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                         .eq(AdvertRound::getStoreId, unsubscribeDTO.getStoreId())))
                 .orElseThrow(() -> new ServiceException("档口购买的推广位不存在!", HttpStatus.ERROR));
+        // 若是推广位已投放，则不可退订
+        if (Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())) {
+            throw new ServiceException("推广位已投放，购买后不可退订!", HttpStatus.ERROR);
+        }
         // 判断当前时间距离开播是否小于12h，若是：则不可取消
         Date twelveHoursAfter = DateUtils.toDate(LocalDateTime.now().plusHours(12));
         if (twelveHoursAfter.after(advertRound.getStartTime())) {
-            throw new ServiceException("距推广开播小于12小时，不可退订!");
+            throw new ServiceException("距推广开播小于12小时，不可退订!", HttpStatus.ERROR);
         }
         // 如果扣除了费用，则减去退回金额
         BigDecimal remainPayPrice = advertRound.getPayPrice().subtract(ObjectUtils.defaultIfNull(unsubscribeDTO.getDeductionFee(), BigDecimal.ZERO));
@@ -146,7 +151,8 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         this.isSuperAdmin();
 
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
-                        .eq(AdvertRound::getId, picDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
+                        .eq(AdvertRound::getId, picDTO.getAdvertRoundId()).eq(AdvertRound::getStoreId, picDTO.getStoreId())
+                        .eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
         SysFile file = BeanUtil.toBean(picDTO, SysFile.class);
         int count = this.fileMapper.insert(file);
@@ -186,15 +192,32 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         if (Objects.equals(advertRound.getSysIntercept(), AdSysInterceptType.INTERCEPT.getValue())) {
             throw new ServiceException("该推广位已被拦截，不可再次拦截!", HttpStatus.ERROR);
         }
+        // 若是 时间范围，则判断该推广位、该轮次是否有相同档口已出价或竞价成功，若是，则不可购买。若是位置枚举，则判断该位置 是否是相同档口已出价，若是，则不可购买。
+        if (Objects.equals(advertRound.getShowType(), AdShowType.TIME_RANGE.getValue())) {
+            List<AdvertRound> timeRangeExistList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
+                    .eq(AdvertRound::getAdvertId, advertRound.getAdvertId()).eq(AdvertRound::getRoundId, advertRound.getRoundId())
+                    .eq(AdvertRound::getStoreId, interceptDTO.getStoreId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED));
+            if (CollectionUtils.isNotEmpty(timeRangeExistList)) {
+                throw new ServiceException("档口" + interceptDTO.getStoreName() + "已出价该推广位，不可重复购买!", HttpStatus.ERROR);
+            }
+        } else {
+            List<AdvertRound> positionEnumExistList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
+                    .eq(AdvertRound::getAdvertId, advertRound.getAdvertId()).eq(AdvertRound::getRoundId, advertRound.getRoundId())
+                    .eq(AdvertRound::getPosition, advertRound.getPosition()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .eq(AdvertRound::getStoreId, interceptDTO.getStoreId()));
+        }
+
+
+
         // 若该推广位已投放
         if (Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())) {
-            // 若该广告位 为时间范围 且 为档口正常购买（也有可能为系统拦截），则均不可不可拦截该推广位
+            // 若该广告位 为时间范围 且 为档口正常购买（也有可能为系统拦截），则均不可拦截该推广位
             if (Objects.equals(advertRound.getShowType(), AdShowType.TIME_RANGE.getValue()) && ObjectUtils.isNotEmpty(advertRound.getStoreId())) {
                 throw new ServiceException("该推广位为档口正常购买，已投放，不可拦截!", HttpStatus.ERROR);
             }
             // 若该广告位为位置枚举，则不可购买，因为位置枚举一般都是第二天播放
             if (Objects.equals(advertRound.getShowType(), AdShowType.POSITION_ENUM.getValue())) {
-                throw new ServiceException("该推广位为位置枚举，不可购买，因为位置枚举一般都是第二天播放!", HttpStatus.ERROR);
+                throw new ServiceException("该推广位不可购买，因为正在播放!", HttpStatus.ERROR);
             }
             // 若为待投放推广
         } else {
@@ -218,7 +241,8 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         if (ObjectUtils.isNotEmpty(interceptDTO.getFile())) {
             SysFile file = BeanUtil.toBean(interceptDTO.getFile(), SysFile.class);
             this.fileMapper.insert(file);
-            advertRound.setPicId(file.getId()).setPicAuditStatus(AdPicAuditStatus.AUDIT_PASS.getValue()).setPicDesignType(AdDesignType.SYS_DESIGN.getValue());
+            advertRound.setPicId(file.getId()).setPicAuditStatus(AdPicAuditStatus.AUDIT_PASS.getValue())
+                    .setPicDesignType(AdDesignType.SYS_DESIGN.getValue()).setPicSetType(AdPicSetType.SET.getValue());
         }
         if (ObjectUtils.isNotEmpty(interceptDTO.getStoreProdIdList())) {
             advertRound.setProdIdStr(StringUtils.join(interceptDTO.getStoreProdIdList(), ","));

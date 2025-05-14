@@ -462,6 +462,13 @@ public class XktTask {
         });
     }
 
+    /**
+     * 每天晚上11点将单据日期为当天的图片拷贝到store_advert_file中
+     */
+    public void copyPicToStoreAdvertFile() {
+
+    }
+
 
     /**
      * 给商品打风格标签

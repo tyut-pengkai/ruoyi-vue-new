@@ -23,6 +23,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -286,10 +287,23 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 .in(ShoppingCartDetail::getShoppingCartId, shoppingCartList.stream().map(ShoppingCart::getId).collect(Collectors.toList()))
                 .eq(ShoppingCartDetail::getDelFlag, Constants.UNDELETED));
         Map<Long, List<ShoppingCartDetail>> detailMap = detailList.stream().collect(Collectors.groupingBy(ShoppingCartDetail::getShoppingCartId));
-        return shoppingCartList.stream().map(x -> BeanUtil.toBean(x, ShoppingCartDTO.class)
-                        .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(x.getStoreId())) ? storeMap.get(x.getStoreId()).getStoreName() : "")
-                        .setDetailList(BeanUtil.copyToList(detailMap.get(x.getId()), ShoppingCartDTO.SCDetailDTO.class)))
-                .collect(Collectors.toList());
+        // 获取明细商品的价格
+        List<StoreProductColorPrice> priceList = this.prodColorPriceMapper.selectList(new LambdaQueryWrapper<StoreProductColorPrice>()
+                .in(StoreProductColorPrice::getStoreProdId, shoppingCartList.stream().map(ShoppingCart::getStoreProdId).collect(Collectors.toList()))
+                .in(StoreProductColorPrice::getStoreColorId, detailList.stream().map(ShoppingCartDetail::getStoreColorId).collect(Collectors.toList()))
+                .eq(StoreProductColorPrice::getDelFlag, Constants.UNDELETED));
+        // 商品价格map
+        Map<String, BigDecimal> priceMap = priceList.stream().collect(Collectors
+                .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString(), x -> ObjectUtils.defaultIfNull(x.getPrice(), BigDecimal.ZERO)));
+        return shoppingCartList.stream().map(x -> {
+            ShoppingCartDTO shopCartDTO = BeanUtil.toBean(x, ShoppingCartDTO.class)
+                    .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(x.getStoreId())) ? storeMap.get(x.getStoreId()).getStoreName() : "");
+            List<ShoppingCartDTO.SCDetailDTO> shopCartDetailList = detailMap.get(x.getId()).stream().map(detail -> {
+                final BigDecimal price = ObjectUtils.defaultIfNull(priceMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString()), BigDecimal.ZERO);
+                return BeanUtil.toBean(detail, ShoppingCartDTO.SCDetailDTO.class).setPrice(price).setAmount(price.multiply(BigDecimal.valueOf(detail.getQuantity())));
+            }).collect(Collectors.toList());
+            return shopCartDTO.setDetailList(shopCartDetailList);
+        }).collect(Collectors.toList());
     }
 
     /**
