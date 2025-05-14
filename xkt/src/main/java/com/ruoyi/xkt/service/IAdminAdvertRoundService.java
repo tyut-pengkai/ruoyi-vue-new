@@ -55,9 +55,9 @@ public interface IAdminAdvertRoundService {
     /**
      * 取消拦截广告位
      *
-     * @param advertRoundId 推广轮次ID
+     * @param cancelInterceptDTO 取消拦截推广位入参
      * @return Integer
      */
-    Integer cancelIntercept(Long advertRoundId);
+    Integer cancelIntercept(AdminAdRoundCancelInterceptDTO cancelInterceptDTO);
 
 }

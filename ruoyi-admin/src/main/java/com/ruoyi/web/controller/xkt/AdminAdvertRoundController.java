@@ -6,10 +6,7 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.web.controller.xkt.vo.adminAdvertRound.AdminAdRoundAuditVO;
-import com.ruoyi.web.controller.xkt.vo.adminAdvertRound.AdminAdRoundPageVO;
-import com.ruoyi.web.controller.xkt.vo.adminAdvertRound.AdminAdRoundSysInterceptVO;
-import com.ruoyi.web.controller.xkt.vo.adminAdvertRound.AdminAdRoundUnsubscribeVO;
+import com.ruoyi.web.controller.xkt.vo.adminAdvertRound.*;
 import com.ruoyi.web.controller.xkt.vo.advertRound.AdRoundUploadPicVO;
 import com.ruoyi.xkt.dto.adminAdvertRound.*;
 import com.ruoyi.xkt.dto.advertRound.AdRoundUploadPicDTO;
@@ -90,9 +87,9 @@ public class AdminAdvertRoundController extends XktBaseController {
      */
     @ApiOperation(value = "取消拦截广告位", httpMethod = "PUT", response = R.class)
     @Log(title = "取消拦截广告位", businessType = BusinessType.UPDATE)
-    @PutMapping("/cancel-intercept/{advertRoundId}")
-    public R<Integer> cancelIntercept(@PathVariable Long advertRoundId) {
-        return R.ok(adminAdvertRoundService.cancelIntercept(advertRoundId));
+    @PutMapping("/cancel-intercept")
+    public R<Integer> cancelIntercept(@Valid @RequestBody AdminAdRoundCancelInterceptVO cancelInterceptVO) {
+        return R.ok(adminAdvertRoundService.cancelIntercept(BeanUtil.toBean(cancelInterceptVO, AdminAdRoundCancelInterceptDTO.class)));
     }
 
 

@@ -13,12 +13,14 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.AdvertRound;
+import com.ruoyi.xkt.domain.AdvertRoundRecord;
 import com.ruoyi.xkt.domain.AdvertStoreFile;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.adminAdvertRound.*;
 import com.ruoyi.xkt.dto.advertRound.AdRoundUploadPicDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.AdvertRoundMapper;
+import com.ruoyi.xkt.mapper.AdvertRoundRecordMapper;
 import com.ruoyi.xkt.mapper.AdvertStoreFileMapper;
 import com.ruoyi.xkt.mapper.SysFileMapper;
 import com.ruoyi.xkt.service.IAdminAdvertRoundService;
@@ -55,6 +57,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     final AdvertRoundMapper advertRoundMapper;
     final SysFileMapper fileMapper;
     final AdvertStoreFileMapper advertStoreFileMapper;
+    final AdvertRoundRecordMapper advertRoundRecordMapper;
 
     /**
      * 管理员查询推广营销分页
@@ -196,12 +199,14 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         LambdaQueryWrapper<AdvertRound> queryWrapper = new LambdaQueryWrapper<AdvertRound>()
                 .eq(AdvertRound::getAdvertId, advertRound.getAdvertId()).eq(AdvertRound::getRoundId, advertRound.getRoundId())
                 .eq(AdvertRound::getStoreId, interceptDTO.getStoreId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED);
+        // 如果是位置枚举类型，则要加上具体的位置
         if (Objects.equals(advertRound.getShowType(), AdShowType.POSITION_ENUM.getValue())) {
             queryWrapper.eq(AdvertRound::getPosition, advertRound.getPosition());
         }
+        // 该档口自己是否已购买该推广位
         List<AdvertRound> existList = this.advertRoundMapper.selectList(queryWrapper);
         if (CollectionUtils.isNotEmpty(existList)) {
-            throw new ServiceException("档口" + interceptDTO.getStoreName() + "已出价该推广位，不可重复购买!", HttpStatus.ERROR);
+            throw new ServiceException("档口：" + interceptDTO.getStoreName() + "，已出价该推广位，不可拦截!", HttpStatus.ERROR);
         }
         // 若该推广位已投放
         if (Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())) {
@@ -226,7 +231,10 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         }
         // 如果该推广位是被档口正常购买，则直接退费
         if (ObjectUtils.isNotEmpty(advertRound.getStoreId()) && Objects.equals(advertRound.getSysIntercept(), AdSysInterceptType.UN_INTERCEPT.getValue())) {
+            // 给档口退费
             assetService.refundAdvertFee(advertRound.getStoreId(), ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO));
+            // 档口竞价失败加入AdvertRoundRecord表
+            this.record(advertRound);
         }
         // 设置系统拦截的数据 并将系统拦截设置为1
         advertRound.setStoreId(interceptDTO.getStoreId()).setSysIntercept(AdSysInterceptType.INTERCEPT.getValue())
@@ -245,29 +253,43 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         if (Objects.equals(advertRound.getShowType(), AdShowType.POSITION_ENUM.getValue())) {
             advertRound.setPayPrice(BigDecimal.valueOf(RandomUtils.nextLong(40, 60 + 1) * 10));
         }
-       return this.advertRoundMapper.updateById(advertRound);
+        return this.advertRoundMapper.updateById(advertRound);
     }
 
     /**
      * 取消拦截广告位
      *
-     * @param advertRoundId 推广轮次ID
+     * @param cancelInterceptDTO 取消拦截入参
      * @return Integer
      */
     @Override
     @Transactional
-    public Integer cancelIntercept(Long advertRoundId) {
+    public Integer cancelIntercept(AdminAdRoundCancelInterceptDTO cancelInterceptDTO) {
 
         // TODO 判断当前是否是管理员
         this.isSuperAdmin();
 
         // 该推广位是否被拦截
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
-                        .eq(AdvertRound::getId, advertRoundId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
-                        .eq(AdvertRound::getSysIntercept, AdSysInterceptType.INTERCEPT.getValue())))
-                .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
+                        .eq(AdvertRound::getId, cancelInterceptDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                        .eq(AdvertRound::getStoreId, cancelInterceptDTO.getStoreId()).eq(AdvertRound::getSysIntercept, AdSysInterceptType.INTERCEPT.getValue())))
+                .orElseThrow(() -> new ServiceException("该推广位未被拦截，不可取消!", HttpStatus.ERROR));
         // 被系统拦截的推广位不用退费，直接清空数据即可
         return this.advertRoundMapper.updateAttrNull(advertRound.getId());
+    }
+
+    /**
+     * 记录竞价失败档口推广营销
+     *
+     * @param failAdvert 竞价失败的推广营销
+     */
+    private void record(AdvertRound failAdvert) {
+        // 新增推广营销历史记录 将旧档口推广营销 置为竞价失败
+        AdvertRoundRecord record = BeanUtil.toBean(failAdvert, AdvertRoundRecord.class);
+        record.setId(null).setAdvertRoundId(failAdvert.getId()).setDisplayType(failAdvert.getDisplayType())
+                // 置为竞价失败
+                .setBiddingStatus(AdBiddingStatus.BIDDING_FAIL.getValue());
+        this.advertRoundRecordMapper.insert(record);
     }
 
 
