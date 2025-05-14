@@ -15,9 +15,21 @@ public class StoreOrderDetailInfoDTO extends StoreOrderDetailDTO {
 
     private String firstMainPicUrl;
 
+    private Long refundOrderId;
+
+    private String refundOrderNo;
+
     private Long refundOrderDetailId;
 
     private Integer refundOrderDetailStatus;
 
     private Integer refundGoodsQuantity;
+
+    private Long originOrderId;
+
+    private String originOrderNo;
+
+    private Integer originOrderDetailStatus;
+
+    private Integer originGoodsQuantity;
 }

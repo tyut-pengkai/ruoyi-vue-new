@@ -372,21 +372,31 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //物流信息
         Map<Long, String> expressNameMap = expressService.getAllExpressNameMap();
         orderInfo.setExpressName(expressNameMap.get(order.getExpressId()));
-        Set<String> expressWaybillNos = detailInfos.stream()
+        Map<String, List<StoreOrderDetailInfoDTO>> expressWaybillGroupMap = detailInfos.stream()
                 .filter(o -> StrUtil.isNotEmpty(o.getExpressWaybillNo()))
-                .map(StoreOrderDetailDTO::getExpressWaybillNo)
-                .collect(Collectors.toSet());
-        Map<String, List<ExpressTrackRecordDTO>> trackRecordGroupMap = expressService.listTrackRecord(expressWaybillNos)
+                .collect(Collectors.groupingBy(StoreOrderDetailInfoDTO::getExpressWaybillNo));
+        Map<String, List<ExpressTrackRecordDTO>> trackRecordGroupMap = expressService.listTrackRecord(
+                expressWaybillGroupMap.keySet())
                 .stream()
                 .collect(Collectors.groupingBy(ExpressTrackRecordDTO::getExpressWaybillNo));
-        List<ExpressTrackDTO> expressTracks = new ArrayList<>(trackRecordGroupMap.size());
-        for (Map.Entry<String, List<ExpressTrackRecordDTO>> entry : trackRecordGroupMap.entrySet()) {
+        List<ExpressTrackDTO> expressTracks = new ArrayList<>(expressWaybillGroupMap.size());
+        for (Map.Entry<String, List<StoreOrderDetailInfoDTO>> entry : expressWaybillGroupMap.entrySet()) {
             ExpressTrackDTO expressTrackDTO = new ExpressTrackDTO();
+            List<String> goodsSummaries = entry.getValue().stream()
+                    .map(o -> StrUtil.concat(true, o.getProdArtNum(), ", ", o.getColorName(), ", ",
+                            String.valueOf(o.getSize()))).collect(Collectors.toList());
+            //发货时间
+            Long detailId = CollUtil.getFirst(entry.getValue()).getId();
+            StoreOrderOperationRecordDTO shipRecord = operationRecordService.getOneRecord(detailId,
+                    EOrderTargetTypeAction.ORDER_DETAIL, EOrderAction.SHIP);
+            expressTrackDTO.setCreateTime(Optional.ofNullable(shipRecord)
+                    .map(StoreOrderOperationRecordDTO::getOperationTime).orElse(null));
             Long expressId = CollUtil.getFirst(entry.getValue()).getExpressId();
             expressTrackDTO.setExpressId(expressId);
             expressTrackDTO.setExpressName(expressNameMap.get(expressId));
             expressTrackDTO.setExpressWaybillNo(entry.getKey());
-            expressTrackDTO.setRecords(entry.getValue());
+            expressTrackDTO.setGoodsSummary(StrUtil.join("; ", goodsSummaries));
+            expressTrackDTO.setRecords(trackRecordGroupMap.get(entry.getKey()));
             expressTracks.add(expressTrackDTO);
         }
         orderInfo.setExpressTracks(expressTracks);

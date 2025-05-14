@@ -7,6 +7,7 @@ import com.ruoyi.web.controller.xkt.vo.express.*;
 import com.ruoyi.xkt.dto.express.ExpressFeeDTO;
 import com.ruoyi.xkt.dto.express.ExpressRegionTreeNodeDTO;
 import com.ruoyi.xkt.dto.express.ExpressStructAddressDTO;
+import com.ruoyi.xkt.dto.express.ExpressTrackRecordDTO;
 import com.ruoyi.xkt.service.IExpressService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author liangyq
@@ -58,6 +61,15 @@ public class ExpressController extends XktBaseController {
     public R<ExpressStructAddressVO> parseNamePhoneAddress(@Valid @RequestBody ExpressAddressParseReqVO vo) {
         ExpressStructAddressDTO dto = expressService.parseNamePhoneAddress(vo.getAddress());
         return success(BeanUtil.toBean(dto, ExpressStructAddressVO.class));
+    }
+
+    @ApiOperation("查询物流轨迹")
+    @PostMapping("queryTrackRecord")
+    public R<Map<String, List<TrackRecordVO>>> queryTrackRecord(@Valid @RequestBody TrackRecordQueryVO vo) {
+        List<ExpressTrackRecordDTO> list = expressService.listTrackRecord(vo.getExpressWaybillNos());
+        Map<String, List<TrackRecordVO>> voMap = list.stream().map(o -> BeanUtil.toBean(o, TrackRecordVO.class))
+                .collect(Collectors.groupingBy(TrackRecordVO::getExpressWaybillNo));
+        return success(voMap);
     }
 
 }
