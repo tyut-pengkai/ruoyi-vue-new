@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysProductCategory;
@@ -298,7 +299,7 @@ public class XktTask {
     }
 
     /**
-     * 每晚定时任务更新推广的播放轮次，这个要次日凌晨更新
+     * 定时任务更新推广的播放轮次，这个要次日凌晨更新 凌晨12:01:00分更新
      */
     @Transactional
     public void dailyAdvertRound() throws ParseException {
@@ -438,7 +439,7 @@ public class XktTask {
      * 比如：5.1 - 5.3
      * a. 现在是4.30 则截止时间是 4.30 22:00
      * b. 现在是5.2，则截止时间是 5.2 22:00:00 。
-     * c. 现在是5.3，则第一轮还有请求，肯定是人为的不用管。请求第三轮 或者 第四轮 不报错。只处理第二轮请求
+     * c. 现在是5.3，则第一轮还有请求，肯定是人为的不用管。每一轮都要放到redis中
      *
      * @throws ParseException
      */
@@ -457,7 +458,7 @@ public class XktTask {
             return;
         }
         storeList.forEach(store -> {
-            redisCache.setCacheObject(Constants.STORE_REDIS_PREFIX + store.getId(), store.getId(), 1, TimeUnit.DAYS);
+            redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store.getId(), 1, TimeUnit.DAYS);
         });
     }
 

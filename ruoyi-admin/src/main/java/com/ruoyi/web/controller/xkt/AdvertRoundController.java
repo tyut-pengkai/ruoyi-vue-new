@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -38,7 +39,7 @@ public class AdvertRoundController extends XktBaseController {
     @ApiOperation(value = "档口购买推广营销", httpMethod = "POST", response = R.class)
     @Log(title = "档口购买推广营销", businessType = BusinessType.INSERT)
     @PostMapping
-    public R<Integer> create(@Validated @RequestBody AdRoundStoreCreateVO createVO) {
+    public R<Integer> create(@Validated @RequestBody AdRoundStoreCreateVO createVO) throws ParseException {
         return R.ok(advertRoundService.create(BeanUtil.toBean(createVO, AdRoundStoreCreateDTO.class)));
     }
 

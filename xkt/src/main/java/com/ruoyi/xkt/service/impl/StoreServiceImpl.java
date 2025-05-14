@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
@@ -75,7 +76,7 @@ public class StoreServiceImpl implements IStoreService {
         // 创建档口账户
         assetService.createInternalAccountIfNotExists(store.getId());
         // 放到redis中
-        redisCache.setCacheObject(Constants.STORE_REDIS_PREFIX + store.getId(), store.getId());
+        redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store.getId());
         return count;
     }
 

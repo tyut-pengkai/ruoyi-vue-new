@@ -46,4 +46,15 @@ public class CacheConstants
      * 用户STS
      */
     public static final String USER_STS_KEY = "user_sts:";
+
+    /**
+     * 档口
+     */
+    public static final String STORE_KEY = "store:";
+
+    /**
+     * 推广购买截止时间
+     */
+    public static final String ADVERT_DEADLINE_KEY = "advert_deadline:";
+
 }

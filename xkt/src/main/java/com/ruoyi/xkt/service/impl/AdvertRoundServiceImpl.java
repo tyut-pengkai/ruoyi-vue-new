@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
@@ -40,6 +41,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.ruoyi.common.constant.CacheConstants.ADVERT_DEADLINE_KEY;
 import static com.ruoyi.common.constant.Constants.ADVERT_POPULAR;
 
 /**
@@ -329,12 +331,12 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
      */
     @Override
     @Transactional
-    public Integer create(AdRoundStoreCreateDTO createDTO) {
+    public Integer create(AdRoundStoreCreateDTO createDTO) throws ParseException {
         // 截止时间都是当天 22:00:00，并且只会处理马上播放的这一轮。比如 5.1-5.3，当前为4.30，处理这一轮；当前为5.2，处理这一轮；当前为5.3（最后一天），处理下一轮。
         if (DateUtils.getTime().compareTo(this.getDeadline(createDTO.getSymbol())) > 0) {
             throw new ServiceException("竞价失败，已经有档口出价更高了噢!", HttpStatus.ERROR);
         }
-        if (ObjectUtils.isEmpty(redisCache.getCacheObject(Constants.STORE_REDIS_PREFIX + createDTO.getStoreId()))) {
+        if (ObjectUtils.isEmpty(redisCache.getCacheObject(CacheConstants.STORE_KEY + createDTO.getStoreId()))) {
             throw new ServiceException("档口不存在!", HttpStatus.ERROR);
         }
         // 如果是位置枚举的推广位，则需要传position
@@ -468,7 +470,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         // 判断当前时间距离开播是否小于72h，若是：则不可取消
         Date threeDaysAfter = DateUtils.toDate(LocalDateTime.now().plusDays(3));
         if (threeDaysAfter.after(advertRound.getStartTime())) {
-            throw new ServiceException("距推广开播小于72小时，不可退订!");
+            throw new ServiceException("距推广开播小于72小时，不可退订噢!");
         }
         // 将费用退回到档口余额中
         assetService.refundAdvertFee(advertRound.getStoreId(), advertRound.getPayPrice());
@@ -503,8 +505,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 .groupingBy(AdvertRound::getAdvertId, Collectors.minBy(Comparator.comparing(AdvertRound::getRoundId))));
         // 将minRoundIdMap中的值转换为List<AdRoundPopularResDTO>
         List<AdRoundPopularResDTO> list = minRoundIdMap.values().stream().map(Optional::get).map(x -> new AdRoundPopularResDTO().setAdvertId(x.getAdvertId())
-                        .setTypeId(x.getTypeId()).setTypeName(AdType.of(x.getTypeId()).getLabel()).setShowType(x.getShowType()).setStartTime(x.getStartTime())
-                        .setEndTime(x.getEndTime()).setStartPrice(x.getStartPrice()))
+                        .setTypeId(x.getTypeId()).setTypeName(AdType.of(x.getTypeId()).getLabel()).setShowType(x.getShowType())
+                        .setStartTime(DateUtils.timeMMDD(x.getStartTime())).setEndTime(DateUtils.timeMMDD(x.getEndTime())).setStartPrice(x.getStartPrice()))
                 .collect(Collectors.toList());
         // 存到redis中
         redisCache.setCacheObject(ADVERT_POPULAR, list, 1, TimeUnit.DAYS);
@@ -581,37 +583,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     }
 
     /**
-     * 获取已抢购推广位列表
-     *
-     * @param storeId         档口ID
-     * @param advertRoundList 播放轮次列表
-     * @param recordList      未购买的播放轮次列表
-     * @return List<AdRoundStoreResDTO.ADRSRoundRecordDTO>
-     */
-    private List<AdRoundStoreResDTO.ADRSRoundRecordDTO> getStoreBoughtList(Long storeId, List<AdvertRound> advertRoundList, List<AdvertRoundRecord> recordList) {
-        // 每一轮最高的出价map
-        Map<Integer, BigDecimal> maxBidMap = advertRoundList.stream().filter(x -> ObjectUtils.isNotEmpty(x.getPayPrice())).collect(Collectors
-                .groupingBy(AdvertRound::getRoundId, Collectors
-                        .mapping(AdvertRound::getPayPrice, Collectors.reducing(BigDecimal.ZERO, BigDecimal::max))));
-        // 先处理 已抢购广告位列表，此处不用管 播放的轮次  统一展示前4轮的结果
-        List<AdRoundStoreResDTO.ADRSRoundRecordDTO> boughtRoundList = advertRoundList.stream().filter(x -> Objects.equals(x.getStoreId(), storeId))
-                .map(x -> BeanUtil.toBean(x, AdRoundStoreResDTO.ADRSRoundRecordDTO.class).setTypeName(Objects.requireNonNull(AdType.of(x.getTypeId())).getLabel())
-                        .setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(x.getBiddingStatus())).getLabel()))
-                .collect(Collectors.toList());
-        // 查询其它轮次是否有购买记录
-        if (CollectionUtils.isEmpty(recordList)) {
-            return boughtRoundList;
-        }
-        boughtRoundList.addAll(recordList.stream().sorted(Comparator.comparing(AdvertRoundRecord::getBiddingStatus))
-                .map(x -> BeanUtil.toBean(x, AdRoundStoreResDTO.ADRSRoundRecordDTO.class).setTypeName(Objects.requireNonNull(AdType.of(x.getTypeId())).getLabel())
-                        .setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(x.getBiddingStatus())).getLabel() + "，最新出价:" + maxBidMap.get(x.getRoundId())))
-                .collect(Collectors.toList()));
-        return boughtRoundList;
-    }
-
-
-    /**
-     * 通过定时任务往redis中放当前推广位 当前播放轮 或 即将播放轮 的截止时间；
+     * 通过定时任务往redis中放当前推广位 当前播放轮 或 即将播放轮 的截止时间；每晚12:05:00执行
      * 比如：5.1 - 5.3
      * a. 现在是4.30 则截止时间是 4.30 22:00
      * b. 现在是5.2，则截止时间是 5.2 22:00:00 。
@@ -645,7 +617,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                             AdvertRound firstRound = roundList.stream().filter(x -> Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
                                     .max(Comparator.comparing(AdvertRound::getEndTime))
                                     .orElseThrow(() -> new ServiceException("获取推广结束时间失败，请联系客服!", HttpStatus.ERROR));
-                            redisCache.setCacheObject(firstRound.getSymbol(), filterTime, 1, TimeUnit.DAYS);
+                            redisCache.setCacheObject(ADVERT_DEADLINE_KEY + firstRound.getSymbol(), filterTime, 1, TimeUnit.DAYS);
                             // 第二轮之后的轮次过期时间都为开始时间前一天
                             Map<String, Date> roundSymbolMap = roundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
                                     .collect(Collectors.toMap(AdvertRound::getSymbol, AdvertRound::getStartTime, (s1, s2) -> s2));
@@ -653,7 +625,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                                 roundSymbolMap.forEach((symbol, startTime) -> {
                                     // 推广开始时间的前一天的 22:00:00
                                     LocalDateTime futureTimeFilter = startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().minusDays(1).withHour(22).withMinute(0).withSecond(0);
-                                    redisCache.setCacheObject(symbol, futureTimeFilter, 1, TimeUnit.DAYS);
+                                    redisCache.setCacheObject(ADVERT_DEADLINE_KEY + symbol, futureTimeFilter, 1, TimeUnit.DAYS);
                                 });
                             }
                         }
@@ -666,7 +638,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                                 roundSymbolMap.forEach((symbol, startTime) -> {
                                     // 推广开始时间的前一天的 22:00:00
                                     LocalDateTime futureTimeFilter = startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().minusDays(1).withHour(22).withMinute(0).withSecond(0);
-                                    redisCache.setCacheObject(symbol, futureTimeFilter, 1, TimeUnit.DAYS);
+                                    redisCache.setCacheObject(ADVERT_DEADLINE_KEY + symbol, futureTimeFilter, 1, TimeUnit.DAYS);
                                 });
                             }
                             List<AdvertRound> otherRoundList = roundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())
@@ -676,7 +648,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                                 otherRoundSymbolMap.forEach((symbol, startTime) -> {
                                     // 推广开始时间的前一天的 22:00:00
                                     LocalDateTime futureTimeFilter = startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().minusDays(1).withHour(22).withMinute(0).withSecond(0);
-                                    redisCache.setCacheObject(symbol, futureTimeFilter, 1, TimeUnit.DAYS);
+                                    redisCache.setCacheObject(ADVERT_DEADLINE_KEY + symbol, futureTimeFilter, 1, TimeUnit.DAYS);
                                 });
                             }
                         }
@@ -685,11 +657,11 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                         if (now.equals(firstRoundEndTime)) {
                             // 将位置枚举的每一个symbol都存放到redis中
                             roundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
-                                    .forEach(x -> redisCache.setCacheObject(x.getSymbol(), filterTime, 1, TimeUnit.DAYS));
+                                    .forEach(x -> redisCache.setCacheObject(ADVERT_DEADLINE_KEY + x.getSymbol(), filterTime, 1, TimeUnit.DAYS));
                         } else {
                             // 将位置枚举的每一个symbol都存放到redis中
                             roundList.stream().filter(x -> Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
-                                    .forEach(x -> redisCache.setCacheObject(x.getSymbol(), filterTime, 1, TimeUnit.DAYS));
+                                    .forEach(x -> redisCache.setCacheObject(ADVERT_DEADLINE_KEY + x.getSymbol(), filterTime, 1, TimeUnit.DAYS));
                         }
                     }
                 });
@@ -697,14 +669,23 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
 
     /**
-     * 获取当前推广轮次的过期时间
+     * 获取当前推广轮次的过期时间 每一个轮次都有过期时间，
      *
      * @param symbol 符号
      * @return
      */
-    private String getDeadline(String symbol) {
-        final String deadline = redisCache.getCacheObject(symbol);
-        return StringUtils.isNotBlank(deadline) ? deadline : "";
+    private String getDeadline(String symbol) throws ParseException {
+        String deadline = redisCache.getCacheObject(ADVERT_DEADLINE_KEY + symbol);
+        if (StringUtils.isNotBlank(deadline)) {
+            return deadline;
+        }
+        // 重新存到redis中
+        this.saveAdvertDeadlineToRedis();
+        deadline = redisCache.getCacheObject(ADVERT_DEADLINE_KEY + symbol);
+        if (StringUtils.isEmpty(deadline)) {
+            throw new ServiceException("获取推广轮次过期时间失败!请联系客服", HttpStatus.ERROR);
+        }
+        return deadline;
     }
 
     /**

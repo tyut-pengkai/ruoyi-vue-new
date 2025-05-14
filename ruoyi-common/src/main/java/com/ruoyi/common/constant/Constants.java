@@ -225,13 +225,8 @@ public class Constants
     public static final Long TOPMOST_PRODUCT_CATEGORY_ID = 1L;
 
     /**
-     * redis store前缀
-     */
-    public static final String STORE_REDIS_PREFIX = "store_";
-
-    /**
      * 最受欢迎的8个推广位
      */
-    public static final String ADVERT_POPULAR = "popular";
+    public static final String ADVERT_POPULAR = "ADVERT_POPULAR";
 
 }

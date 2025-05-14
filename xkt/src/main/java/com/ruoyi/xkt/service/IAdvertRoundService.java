@@ -30,7 +30,7 @@ public interface IAdvertRoundService {
      * @param createDTO 购买入参
      * @return Integer
      */
-    Integer create(AdRoundStoreCreateDTO createDTO);
+    Integer create(AdRoundStoreCreateDTO createDTO) throws ParseException;
 
     /**
      * 初始化每天购买广告的截止时间

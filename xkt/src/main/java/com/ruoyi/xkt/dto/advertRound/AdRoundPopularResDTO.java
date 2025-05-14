@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.dto.advertRound;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -27,9 +28,9 @@ public class AdRoundPopularResDTO {
     @ApiModelProperty(value = "推广展示类型")
     private Integer showType;
     @ApiModelProperty(value = "投放开始时间")
-    private Date startTime;
+    private String startTime;
     @ApiModelProperty(value = "投放结束时间")
-    private Date endTime;
+    private String endTime;
     @ApiModelProperty(value = "起拍价格")
     private BigDecimal startPrice;
 

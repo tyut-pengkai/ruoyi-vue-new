@@ -1,13 +1,11 @@
 package com.ruoyi.web.controller.xkt.vo.advertRound;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * @author liujiang
@@ -28,11 +26,9 @@ public class AdRoundPopularResVO {
     @ApiModelProperty(value = "推广展示类型")
     private Integer showType;
     @ApiModelProperty(value = "投放开始时间")
-    @JsonFormat(pattern = "MM月dd日", timezone = "GMT+8")
-    private Date startTime;
+    private String startTime;
     @ApiModelProperty(value = "投放结束时间")
-    @JsonFormat(pattern = "MM月dd日", timezone = "GMT+8")
-    private Date endTime;
+    private String endTime;
     @ApiModelProperty(value = "起拍价格")
     private BigDecimal startPrice;
 
