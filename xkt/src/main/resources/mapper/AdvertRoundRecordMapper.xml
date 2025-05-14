@@ -4,55 +4,32 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.AdvertRoundRecordMapper">
 
-    <select id="selectListByRoundId" resultType="com.ruoyi.xkt.domain.AdvertRoundRecord">
+    <select id="selectRecordPage" parameterType="com.ruoyi.xkt.dto.advertRoundRecord.AdvertRoundRecordPageDTO"  resultType="com.ruoyi.xkt.dto.advertRoundRecord.AdvertRoundRecordPageResDTO">
         SELECT
-            *
+            a.platform_id,
+            arr.type_id,
+            CONCAT('位置', arr.position) AS position,
+            arr.start_time,
+            arr.end_time,
+            arr.pay_price,
+            arr.launch_status,
+            arr.bidding_status,
+            arr.pic_design_type,
+            arr.pic_set_type,
+            arr.pic_audit_status
         FROM
-            advert_round_record
+            advert_round_record arr
+            JOIN advert a ON arr.advert_id = a.id
         WHERE
-            id IN (
-                SELECT
-                    MAX( id )
-                FROM
-                    advert_round_record
-                WHERE
-                    advert_id = #{advertId}
-                    AND store_id = #{storeId}
-                    AND voucher_date = #{voucherDate}
-                    AND del_flag = 0
-                    AND round_id IN
-                    <foreach item="roundId" collection="roundIdSet" open="(" separator="," close=")">
-                        #{roundId}
-                    </foreach>
-                GROUP BY
-                    round_id
-                )
+            arr.del_flag = 0
+            AND arr.store_id = #{storeId}
+            <if test="platformId != null "> and a.platform_id = #{platformId}</if>
+            <if test="typeId != null "> and arr.type_id = #{typeId}</if>
+            <if test="startTime != null "> and arr.start_time &gt;= #{startTime}</if>
+            <if test="endTime != null "> and arr.end_time &lt;= #{endTime}</if>
+        ORDER BY
+            arr.start_time
     </select>
 
-
-    <select id="selectListByPosition" resultType="com.ruoyi.xkt.domain.AdvertRoundRecord">
-        SELECT
-            *
-        FROM
-            advert_round_record
-        WHERE
-            id IN (
-                SELECT
-                    MAX( id )
-                FROM
-                    advert_round_record
-                WHERE
-                    advert_id = #{advertId}
-                    AND store_id = #{storeId}
-                    AND voucher_date = #{voucherDate}
-                    AND del_flag = 0
-                    AND position IN
-                    <foreach item="position" collection="positionList" open="(" separator="," close=")">
-                        #{position}
-                    </foreach>
-                GROUP BY
-                    round_id
-                )
-    </select>
 
 </mapper>
