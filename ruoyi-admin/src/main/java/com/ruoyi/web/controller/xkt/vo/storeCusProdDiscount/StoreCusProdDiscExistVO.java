@@ -15,7 +15,7 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口客户批量减价、批量抹零")
+@ApiModel("档口是否已存在该商品的优惠")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreCusProdDiscExistVO {

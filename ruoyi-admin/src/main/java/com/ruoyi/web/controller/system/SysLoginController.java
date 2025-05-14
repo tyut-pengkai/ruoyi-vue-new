@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.system;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysMenu;
@@ -11,6 +12,9 @@ import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.framework.web.service.SysPermissionService;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysMenuService;
+import com.ruoyi.xkt.domain.Store;
+import com.ruoyi.xkt.mapper.StoreMapper;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,17 +31,17 @@ import java.util.Set;
  */
 @RestController
 public class SysLoginController {
+
     @Autowired
     private SysLoginService loginService;
-
     @Autowired
     private ISysMenuService menuService;
-
     @Autowired
     private SysPermissionService permissionService;
-
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private StoreMapper storeMapper;
 
     /**
      * 登录方法
@@ -64,6 +68,10 @@ public class SysLoginController {
     public AjaxResult getInfo() {
         LoginUser loginUser = SecurityUtils.getLoginUser();
         SysUser user = loginUser.getUser();
+        // 如果当前用户有绑定的档口，则返回storeId
+        Store store = this.storeMapper.selectOne(new LambdaQueryWrapper<Store>().eq(Store::getUserId, loginUser.getUserId())
+                .eq(Store::getDelFlag, Constants.UNDELETED));
+        user.setStoreId(ObjectUtils.isNotEmpty(store) ? store.getId() : null);
         // 角色集合
         Set<String> roles = permissionService.getRolePermission(user);
         // 权限集合

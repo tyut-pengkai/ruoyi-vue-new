@@ -105,7 +105,14 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         // 校验图片审核类型是否存在
         AdPicAuditStatus.of(auditDTO.getPicAuditStatus());
         advertRound.setPicAuditStatus(auditDTO.getPicAuditStatus()).setRejectReason(auditDTO.getRejectReason());
-        return this.advertRoundMapper.updateById(advertRound);
+        int count = this.advertRoundMapper.updateById(advertRound);
+        // 如果审核通过的话，则将图片保存到系统图片库中
+        if (Objects.equals(auditDTO.getPicAuditStatus(), AdPicAuditStatus.AUDIT_PASS.getValue())) {
+            AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId())
+                    .setStoreId(advertRound.getStoreId()).setFileId(advertRound.getPicId()).setTypeId(advertRound.getTypeId());
+            this.advertStoreFileMapper.insert(advertStoreFile);
+        }
+        return count;
     }
 
     /**

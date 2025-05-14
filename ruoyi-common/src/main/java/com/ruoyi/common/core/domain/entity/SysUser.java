@@ -119,6 +119,19 @@ public class SysUser extends BaseEntity {
      */
     private Long roleId;
 
+    /**
+     * 如果是档口拥有者，所属的storeId
+     */
+    private Long storeId;
+
+    public Long getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Long storeId) {
+        this.storeId = storeId;
+    }
+
     public SysUser() {
 
     }

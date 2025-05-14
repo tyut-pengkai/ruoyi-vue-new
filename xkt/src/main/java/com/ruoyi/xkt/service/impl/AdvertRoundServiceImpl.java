@@ -574,24 +574,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         int count = this.fileMapper.insert(file);
         // 更新推广位的图片ID
         advertRound.setPicId(file.getId());
-        this.advertRoundMapper.updateById(advertRound);
-
-        // TODO 是否要保存到AdvertStoreFile 因为还没审核通过
-        // TODO 是否要保存到AdvertStoreFile 因为还没审核通过
-        // TODO 是否要保存到AdvertStoreFile 因为还没审核通过
-        // TODO 是否要保存到AdvertStoreFile 因为还没审核通过
-
-
-
-
-
-        /*// 将档口上传图片保存到AdvertStoreFile
-        AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId())
-                .setStoreId(advertRound.getStoreId()).setFileId(file.getId()).setTypeId(advertRound.getTypeId());
-        this.advertStoreFileMapper.insert(advertStoreFile);*/
-
-
-        return count;
+        return this.advertRoundMapper.updateById(advertRound);
     }
 
     /**
