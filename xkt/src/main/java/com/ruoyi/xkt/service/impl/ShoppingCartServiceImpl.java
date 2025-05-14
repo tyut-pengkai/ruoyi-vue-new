@@ -295,12 +295,22 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         // 商品价格map
         Map<String, BigDecimal> priceMap = priceList.stream().collect(Collectors
                 .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString(), x -> ObjectUtils.defaultIfNull(x.getPrice(), BigDecimal.ZERO)));
+        // 获取商品价格尺码
+        List<StoreProductColorSize> priceSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
+                .in(StoreProductColorSize::getStoreProdId, shoppingCartList.stream().map(ShoppingCart::getStoreProdId).collect(Collectors.toList()))
+                .in(StoreProductColorSize::getStoreColorId, detailList.stream().map(ShoppingCartDetail::getStoreColorId).collect(Collectors.toList()))
+                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED));
+        // 商品价格尺码map
+        Map<String, Long> priceSizeMap = priceSizeList.stream().collect(Collectors
+                .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString() + x.getSize(), StoreProductColorSize::getId));
         return shoppingCartList.stream().map(x -> {
             ShoppingCartDTO shopCartDTO = BeanUtil.toBean(x, ShoppingCartDTO.class)
                     .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(x.getStoreId())) ? storeMap.get(x.getStoreId()).getStoreName() : "");
             List<ShoppingCartDTO.SCDetailDTO> shopCartDetailList = detailMap.get(x.getId()).stream().map(detail -> {
                 final BigDecimal price = ObjectUtils.defaultIfNull(priceMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString()), BigDecimal.ZERO);
-                return BeanUtil.toBean(detail, ShoppingCartDTO.SCDetailDTO.class).setPrice(price).setAmount(price.multiply(BigDecimal.valueOf(detail.getQuantity())));
+                return BeanUtil.toBean(detail, ShoppingCartDTO.SCDetailDTO.class).setPrice(price)
+                        .setStoreProdColorSizeId(priceSizeMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString() + detail.getSize()))
+                        .setAmount(price.multiply(BigDecimal.valueOf(detail.getQuantity())));
             }).collect(Collectors.toList());
             return shopCartDTO.setDetailList(shopCartDetailList);
         }).collect(Collectors.toList());

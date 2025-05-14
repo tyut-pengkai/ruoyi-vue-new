@@ -724,10 +724,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     private void record(AdvertRound failAdvert) {
         // 新增推广营销历史记录 将旧档口推广营销 置为竞价失败
         AdvertRoundRecord record = BeanUtil.toBean(failAdvert, AdvertRoundRecord.class);
-        record.setId(null);
-        record.setAdvertRoundId(failAdvert.getId());
-        // 置为竞价失败
-        record.setBiddingStatus(AdBiddingStatus.BIDDING_FAIL.getValue());
+        record.setId(null).setAdvertRoundId(failAdvert.getId()).setDisplayType(failAdvert.getDisplayType())
+                // 置为竞价失败
+                .setBiddingStatus(AdBiddingStatus.BIDDING_FAIL.getValue());
         this.advertRoundRecordMapper.insert(record);
     }
 

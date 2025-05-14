@@ -32,6 +32,10 @@ public class AdvertRoundRecord extends XktBaseEntity {
      */
     private Integer showType;
     /**
+     * 展示类型 推广图、商品、推广图及商品
+     */
+    private Integer displayType;
+    /**
      * 凭证日期
      */
     private Date voucherDate;
@@ -88,13 +92,17 @@ public class AdvertRoundRecord extends XktBaseEntity {
      */
     private Integer biddingStatus;
     /**
+     * 竞价状态 竞价成功  竞价失败的进入到 advert_round_record表中
+     */
+    private Integer biddingTempStatus;
+    /**
      * 图片审核状态
      */
     private Integer picAuditStatus;
     /**
      * 图片是否设置 0 未设置 1已设置
      */
-    private Integer picSet;
+    private Integer picSetType;
     /**
      * 推广图ID 对应sysFile.id
      */

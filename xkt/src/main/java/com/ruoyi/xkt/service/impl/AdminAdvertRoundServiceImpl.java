@@ -192,23 +192,17 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         if (Objects.equals(advertRound.getSysIntercept(), AdSysInterceptType.INTERCEPT.getValue())) {
             throw new ServiceException("该推广位已被拦截，不可再次拦截!", HttpStatus.ERROR);
         }
-        // 若是 时间范围，则判断该推广位、该轮次是否有相同档口已出价或竞价成功，若是，则不可购买。若是位置枚举，则判断该位置 是否是相同档口已出价，若是，则不可购买。
-        if (Objects.equals(advertRound.getShowType(), AdShowType.TIME_RANGE.getValue())) {
-            List<AdvertRound> timeRangeExistList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                    .eq(AdvertRound::getAdvertId, advertRound.getAdvertId()).eq(AdvertRound::getRoundId, advertRound.getRoundId())
-                    .eq(AdvertRound::getStoreId, interceptDTO.getStoreId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED));
-            if (CollectionUtils.isNotEmpty(timeRangeExistList)) {
-                throw new ServiceException("档口" + interceptDTO.getStoreName() + "已出价该推广位，不可重复购买!", HttpStatus.ERROR);
-            }
-        } else {
-            List<AdvertRound> positionEnumExistList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                    .eq(AdvertRound::getAdvertId, advertRound.getAdvertId()).eq(AdvertRound::getRoundId, advertRound.getRoundId())
-                    .eq(AdvertRound::getPosition, advertRound.getPosition()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
-                    .eq(AdvertRound::getStoreId, interceptDTO.getStoreId()));
+        // 判断要给档口购买的推广位，该档口是否自己已购买
+        LambdaQueryWrapper<AdvertRound> queryWrapper = new LambdaQueryWrapper<AdvertRound>()
+                .eq(AdvertRound::getAdvertId, advertRound.getAdvertId()).eq(AdvertRound::getRoundId, advertRound.getRoundId())
+                .eq(AdvertRound::getStoreId, interceptDTO.getStoreId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED);
+        if (Objects.equals(advertRound.getShowType(), AdShowType.POSITION_ENUM.getValue())) {
+            queryWrapper.eq(AdvertRound::getPosition, advertRound.getPosition());
         }
-
-
-
+        List<AdvertRound> existList = this.advertRoundMapper.selectList(queryWrapper);
+        if (CollectionUtils.isNotEmpty(existList)) {
+            throw new ServiceException("档口" + interceptDTO.getStoreName() + "已出价该推广位，不可重复购买!", HttpStatus.ERROR);
+        }
         // 若该推广位已投放
         if (Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())) {
             // 若该广告位 为时间范围 且 为档口正常购买（也有可能为系统拦截），则均不可拦截该推广位
