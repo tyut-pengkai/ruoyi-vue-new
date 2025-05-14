@@ -1,10 +1,7 @@
 package com.ruoyi.common.constant;
 
-import com.ruoyi.common.enums.AdType;
 import io.jsonwebtoken.Claims;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -228,5 +225,9 @@ public class Constants
      * 最受欢迎的8个推广位
      */
     public static final String ADVERT_POPULAR = "ADVERT_POPULAR";
+    /**
+     * 支付超时最大时间
+     */
+    public static final Integer PAY_EXPIRE_MAX_HOURS = 24 * 7;
 
 }

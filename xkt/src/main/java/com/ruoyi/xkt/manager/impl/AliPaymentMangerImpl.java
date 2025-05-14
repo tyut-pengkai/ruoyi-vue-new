@@ -1,5 +1,7 @@
 package com.ruoyi.xkt.manager.impl;
 
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.NumberUtil;
 import com.alibaba.fastjson2.JSON;
@@ -13,6 +15,7 @@ import com.alipay.api.domain.AlipayTradeRefundModel;
 import com.alipay.api.domain.Participant;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.domain.StoreOrderDetail;
 import com.ruoyi.xkt.dto.finance.AlipayReqDTO;
@@ -28,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author liangyq
@@ -89,7 +93,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
     }
 
     @Override
-    public String pay(String tradeNo, BigDecimal amount, String subject, EPayPage payPage) {
+    public String pay(String tradeNo, BigDecimal amount, String subject, EPayPage payPage, Date expireTime) {
         Assert.notEmpty(tradeNo);
         Assert.notNull(amount);
         Assert.notEmpty(subject);
@@ -98,6 +102,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
         reqDTO.setOutTradeNo(tradeNo);
         reqDTO.setTotalAmount(amount.toPlainString());
         reqDTO.setSubject(subject);
+        reqDTO.setTimeExpire(DateUtil.formatDateTime(expireTime));
 
         AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
                 alipayPublicKey, signType);
@@ -112,7 +117,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
                     AlipayTradePagePayResponse webResp = alipayClient.pageExecute(webReq);
                     if (webResp.isSuccess()) {
                         return webResp.getBody();
-                    }else {
+                    } else {
                         String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(webResp);
                         log.error("支付发起失败: {}", diagnosisUrl);
                     }
@@ -130,7 +135,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
                     AlipayTradeWapPayResponse wapResp = alipayClient.pageExecute(wapReq);
                     if (wapResp.isSuccess()) {
                         return wapResp.getBody();
-                    }else {
+                    } else {
                         String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(wapResp);
                         log.error("支付发起失败: {}", diagnosisUrl);
                     }
@@ -170,7 +175,8 @@ public class AliPaymentMangerImpl implements PaymentManager {
             throw new ServiceException("订单[" + orderExt.getOrder().getOrderNo() + "]支付状态异常");
         }
         return pay(orderExt.getOrder().getOrderNo(), orderExt.getOrder().getTotalAmount(),
-                "代发订单" + orderExt.getOrder().getOrderNo(), payPage);
+                "代发订单" + orderExt.getOrder().getOrderNo(), payPage,
+                DateUtil.offset(orderExt.getOrder().getCreateTime(), DateField.HOUR, Constants.PAY_EXPIRE_MAX_HOURS));
     }
 
     @Override

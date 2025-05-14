@@ -1,6 +1,8 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
@@ -200,7 +202,9 @@ public class AssetServiceImpl implements IAssetService {
                 rechargeAddDTO.getAmount(), rechargeAddDTO.getPayChannel());
         PaymentManager paymentManager = getPaymentManager(rechargeAddDTO.getPayChannel());
         String payRtnStr = paymentManager.pay(financeBillExt.getFinanceBill().getBillNo(), rechargeAddDTO.getAmount(),
-                "档口充值", rechargeAddDTO.getPayPage());
+                "档口充值", rechargeAddDTO.getPayPage(),
+                DateUtil.offset(financeBillExt.getFinanceBill().getCreateTime(), DateField.HOUR,
+                        Constants.PAY_EXPIRE_MAX_HOURS));
         return new RechargeAddResult(financeBillExt, payRtnStr);
     }
 

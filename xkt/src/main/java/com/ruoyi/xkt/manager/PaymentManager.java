@@ -6,6 +6,7 @@ import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author liangyq
@@ -26,9 +27,10 @@ public interface PaymentManager {
      * @param amount
      * @param subject
      * @param payPage
+     * @param expireTime
      * @return 跳转页面数据/签名字符串/支付跳转链接/预支付交易会话标识（根据支付渠道&支付来源确定）
      */
-    String pay(String tradeNo, BigDecimal amount, String subject, EPayPage payPage);
+    String pay(String tradeNo, BigDecimal amount, String subject, EPayPage payPage, Date expireTime);
 
     /**
      * 订单支付

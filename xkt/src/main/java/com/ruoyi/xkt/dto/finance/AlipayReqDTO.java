@@ -38,4 +38,9 @@ public class AlipayReqDTO {
      */
     @JsonProperty("product_code")
     private String productCode;
+    /**
+     * 绝对超时时间，格式为yyyy-MM-dd HH:mm:ss
+     */
+    @JsonProperty("time_expire")
+    private String timeExpire;
 }
