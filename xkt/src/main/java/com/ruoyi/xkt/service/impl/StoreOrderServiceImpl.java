@@ -214,12 +214,15 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     public StoreOrderExt modifyOrder(StoreOrderUpdateDTO storeOrderUpdateDTO) {
         //原订单
         StoreOrder order = getAndBaseCheck(storeOrderUpdateDTO.getId());
+        List<StoreOrderDetail> originDetails = storeOrderDetailMapper.selectList(
+                Wrappers.lambdaQuery(StoreOrderDetail.class).eq(StoreOrderDetail::getStoreOrderId, order.getId())
+                        .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
         Long orderUserId = storeOrderUpdateDTO.getOrderUserId();
         Long storeId = storeOrderUpdateDTO.getStoreId();
         Long expressId = storeOrderUpdateDTO.getExpressId();
         //校验
         if (!EOrderStatus.PENDING_PAYMENT.getValue().equals(order.getOrderStatus())
-                && !EPayStatus.PAID.getValue().equals(order.getPayStatus())) {
+                || EPayStatus.PAID.getValue().equals(order.getPayStatus())) {
             throw new ServiceException(CharSequenceUtil.format("订单[{}]已完成支付，无法修改",
                     storeOrderUpdateDTO.getId()));
         }
@@ -320,13 +323,17 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         if (r == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
-        //删除原明细
-        StoreOrderDetail delete = new StoreOrderDetail();
-        delete.setDelFlag(Constants.DELETED);
-        storeOrderDetailMapper.update(delete, Wrappers.lambdaUpdate(StoreOrderDetail.class)
-                .eq(StoreOrderDetail::getStoreOrderId, order.getId()));
-        //重新生成明细
         Long orderId = order.getId();
+        //删除原明细
+        for (StoreOrderDetail originDetail : originDetails) {
+            originDetail.setDelFlag(Constants.DELETED);
+            storeOrderDetailMapper.updateById(originDetail);
+        }
+        //操作记录
+        addOperationRecords(orderId, EOrderAction.UPDATE,
+                originDetails.stream().map(SimpleEntity::getId).collect(Collectors.toList()),
+                EOrderAction.DELETE, orderUserId, new Date());
+        //重新生成明细
         List<Long> orderDetailIdList = new ArrayList<>(orderDetailList.size());
         orderDetailList.forEach(storeOrderDetail -> {
             storeOrderDetail.setStoreOrderId(orderId);

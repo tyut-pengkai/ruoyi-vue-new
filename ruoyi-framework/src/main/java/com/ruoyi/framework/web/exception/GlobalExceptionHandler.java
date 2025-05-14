@@ -138,10 +138,11 @@ public class GlobalExceptionHandler
      * 自定义验证异常
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Object handleMethodArgumentNotValidException(MethodArgumentNotValidException e)
+    public Object handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request)
     {
-        log.error(e.getMessage(), e);
+        String requestURI = request.getRequestURI();
         String message = e.getBindingResult().getFieldError().getDefaultMessage();
+        log.error("请求地址'{}',发生校验异常", requestURI, message);
         return AjaxResult.error(message);
     }
 
