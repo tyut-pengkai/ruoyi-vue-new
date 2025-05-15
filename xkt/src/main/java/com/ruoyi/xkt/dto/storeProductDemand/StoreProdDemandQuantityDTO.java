@@ -34,32 +34,32 @@ public class StoreProdDemandQuantityDTO {
     @ApiModelProperty(value = "数量对比列")
     private List<String> compareStrList;
     @ApiModelProperty(value = "尺码为30的数量")
-    private List<String> size30List;
+    private List<Integer> size30List;
     @ApiModelProperty(value = "尺码为31的数量")
-    private List<String> size31List;
+    private List<Integer> size31List;
     @ApiModelProperty(value = "尺码为32的数量")
-    private List<String> size32List;
+    private List<Integer> size32List;
     @ApiModelProperty(value = "尺码为33的数量")
-    private List<String> size33List;
+    private List<Integer> size33List;
     @ApiModelProperty(value = "尺码为34的数量")
-    private List<String> size34List;
+    private List<Integer> size34List;
     @ApiModelProperty(value = "尺码为35的数量")
-    private List<String> size35List;
+    private List<Integer> size35List;
     @ApiModelProperty(value = "尺码为36的数量")
-    private List<String> size36List;
+    private List<Integer> size36List;
     @ApiModelProperty(value = "尺码为37的数量")
-    private List<String> size37List;
+    private List<Integer> size37List;
     @ApiModelProperty(value = "尺码为38的数量")
-    private List<String> size38List;
+    private List<Integer> size38List;
     @ApiModelProperty(value = "尺码为39的数量")
-    private List<String> size39List;
+    private List<Integer> size39List;
     @ApiModelProperty(value = "尺码为40的数量")
-    private List<String> size40List;
+    private List<Integer> size40List;
     @ApiModelProperty(value = "尺码为41的数量")
-    private List<String> size41List;
+    private List<Integer> size41List;
     @ApiModelProperty(value = "尺码为42的数量")
-    private List<String> size42List;
+    private List<Integer> size42List;
     @ApiModelProperty(value = "尺码为43的数量")
-    private List<String> size43List;
+    private List<Integer> size43List;
 
 }

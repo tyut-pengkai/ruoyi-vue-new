@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 public class StoreProdDemandQuantityVO {
 
-    @ApiModelProperty(value = "货号")
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;

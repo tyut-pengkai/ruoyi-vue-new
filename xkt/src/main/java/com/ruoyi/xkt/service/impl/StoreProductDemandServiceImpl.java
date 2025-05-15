@@ -99,20 +99,20 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
             Integer size41Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize41).reduce(0, Integer::sum)).orElse(0);
             Integer size42Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize42).reduce(0, Integer::sum)).orElse(0);
             Integer size43Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize43).reduce(0, Integer::sum)).orElse(0);
-            List<String> size30List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize30()) ? stock.getSize30().toString() : Constants.UNDELETED, size30Demand.toString());
-            List<String> size31List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize31()) ? stock.getSize31().toString() : Constants.UNDELETED, size31Demand.toString());
-            List<String> size32List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize32()) ? stock.getSize32().toString() : Constants.UNDELETED, size32Demand.toString());
-            List<String> size33List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize33()) ? stock.getSize33().toString() : Constants.UNDELETED, size33Demand.toString());
-            List<String> size34List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize34()) ? stock.getSize34().toString() : Constants.UNDELETED, size34Demand.toString());
-            List<String> size35List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize35()) ? stock.getSize35().toString() : Constants.UNDELETED, size35Demand.toString());
-            List<String> size36List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize36()) ? stock.getSize36().toString() : Constants.UNDELETED, size36Demand.toString());
-            List<String> size37List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize37()) ? stock.getSize37().toString() : Constants.UNDELETED, size37Demand.toString());
-            List<String> size38List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize38()) ? stock.getSize38().toString() : Constants.UNDELETED, size38Demand.toString());
-            List<String> size39List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize39()) ? stock.getSize39().toString() : Constants.UNDELETED, size39Demand.toString());
-            List<String> size40List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize40()) ? stock.getSize40().toString() : Constants.UNDELETED, size40Demand.toString());
-            List<String> size41List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize41()) ? stock.getSize41().toString() : Constants.UNDELETED, size41Demand.toString());
-            List<String> size42List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize42()) ? stock.getSize42().toString() : Constants.UNDELETED, size42Demand.toString());
-            List<String> size43List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize43()) ? stock.getSize43().toString() : Constants.UNDELETED, size43Demand.toString());
+            List<Integer> size30List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize30()) ? stock.getSize30() : 0, size30Demand);
+            List<Integer> size31List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize31()) ? stock.getSize31() : 0, size31Demand);
+            List<Integer> size32List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize32()) ? stock.getSize32() : 0, size32Demand);
+            List<Integer> size33List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize33()) ? stock.getSize33() : 0, size33Demand);
+            List<Integer> size34List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize34()) ? stock.getSize34() : 0, size34Demand);
+            List<Integer> size35List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize35()) ? stock.getSize35() : 0, size35Demand);
+            List<Integer> size36List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize36()) ? stock.getSize36() : 0, size36Demand);
+            List<Integer> size37List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize37()) ? stock.getSize37() : 0, size37Demand);
+            List<Integer> size38List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize38()) ? stock.getSize38() : 0, size38Demand);
+            List<Integer> size39List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize39()) ? stock.getSize39() : 0, size39Demand);
+            List<Integer> size40List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize40()) ? stock.getSize40() : 0, size40Demand);
+            List<Integer> size41List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize41()) ? stock.getSize41() : 0, size41Demand);
+            List<Integer> size42List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize42()) ? stock.getSize42() : 0, size42Demand);
+            List<Integer> size43List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize43()) ? stock.getSize43() : 0, size43Demand);
             return StoreProdDemandQuantityDTO.builder().storeId(storeId).storeProdId(storeProd.getId()).storeProdColorId(prodColor.getId())
                     .prodArtNum(storeProd.getProdArtNum()).colorName(prodColor.getColorName()).compareStrList(compareStrList)
                     // 判断 demandDetailList 中是否有 createTime 为当天的对象
