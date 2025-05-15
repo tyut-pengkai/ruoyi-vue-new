@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zzyl.common.utils.DateUtils;
 import com.zzyl.nursing.domain.NursingProject;
 import com.zzyl.nursing.mapper.NursingProjectMapper;
 import com.zzyl.nursing.service.INursingProjectService;
@@ -55,7 +54,6 @@ public class NursingProjectServiceImpl extends ServiceImpl<NursingProjectMapper,
      */
     @Override
     public int insertNursingProject(NursingProject nursingProject) {
-        nursingProject.setCreateTime(DateUtils.getNowDate());
         return this.save(nursingProject) ? 1 : 0;
     }
 
@@ -67,7 +65,6 @@ public class NursingProjectServiceImpl extends ServiceImpl<NursingProjectMapper,
      */
     @Override
     public int updateNursingProject(NursingProject nursingProject) {
-        nursingProject.setUpdateTime(DateUtils.getNowDate());
         return this.updateById(nursingProject) ? 1 : 0;
     }
 

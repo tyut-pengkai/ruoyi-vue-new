@@ -1,13 +1,20 @@
 package com.zzyl.framework.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.zzyl.common.core.domain.model.LoginUser;
+import com.zzyl.common.utils.DateUtils;
+import com.zzyl.common.utils.SecurityUtils;
+import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import java.util.Date;
 
 /**
  * Mybatis Plus 配置
@@ -56,4 +63,36 @@ public class MybatisPlusConfig {
         return new BlockAttackInnerInterceptor();
     }
 
+    @Bean
+    public MetaObjectHandler metaObjectHandler() {
+        return new MetaObjectHandler() {
+
+            @Override
+            public void insertFill(MetaObject metaObject) {
+                this.strictInsertFill(metaObject, "createTime", Date.class, DateUtils.getNowDate());
+                this.strictInsertFill(metaObject, "updateTime", Date.class, DateUtils.getNowDate());
+                this.strictInsertFill(metaObject, "createBy", String.class, loadUserId().toString());
+                this.strictInsertFill(metaObject, "updateBy", String.class, loadUserId().toString());
+            }
+
+            @Override
+            public void updateFill(MetaObject metaObject) {
+                this.setFieldValByName("updateTime", DateUtils.getNowDate(), metaObject);
+                this.setFieldValByName("updateBy", String.valueOf(loadUserId()), metaObject);
+            }
+        };
+    }
+
+    /**
+     * 获取当前登录人的ID
+     *
+     * @return 登录人ID
+     */
+    public Long loadUserId() {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        if (loginUser != null) {
+            return loginUser.getUserId();
+        }
+        return 1L;
+    }
 }
