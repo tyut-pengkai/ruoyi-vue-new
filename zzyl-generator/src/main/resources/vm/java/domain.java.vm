@@ -1,38 +1,36 @@
 package ${packageName}.domain;
 
-#foreach ($import in $importList)
-import ${import};
-#end
+    #foreach ($import in $importList)
+    import ${import};
+    #end
 import com.zzyl.common.annotation.Excel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-#if($table.crud || $table.sub)
-import com.zzyl.common.core.domain.BaseEntity;
-#elseif($table.tree)
-import com.zzyl.common.core.domain.TreeEntity;
-#end
-
-/**
- * ${functionName}对象 ${tableName}
- *
- * @author ${author}
- * @date ${datetime}
- */
     #if($table.crud || $table.sub)
-        #set($Entity="BaseEntity")
+    import com.zzyl.common.core.domain.BaseEntity;
     #elseif($table.tree)
-        #set($Entity="TreeEntity")
+    import com.zzyl.common.core.domain.TreeEntity;
     #end
-        @Date
-        @AllArgsConstructor
-        @NoArgsConstructor
-        public class ${ClassName} extends ${Entity}{
-        private static final long serialVersionUID = 1L;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+
+#if($table.crud || $table.sub)
+    #set($Entity="BaseEntity")
+#elseif($table.tree)
+    #set($Entity="TreeEntity")
+#end
+@Date
+@AllArgsConstructor
+@NoArgsConstructor
+@ApiModel("${functionName}对象 ")
+public class ${ClassName} extends ${Entity}{
+private static final long serialVersionUID = 1L;
 
     #foreach ($column in $columns)
         #if(!$table.isSuperColumn($column.javaField))
-                /** $column.columnComment */
+        /** $column.columnComment */
             #if($column.list)
                 #set($parentheseIndex=$column.columnComment.indexOf("（"))
                 #if($parentheseIndex != -1)
@@ -49,14 +47,15 @@ import com.zzyl.common.core.domain.TreeEntity;
                 @Excel(name = "${comment}")
                 #end
             #end
+        @ApiModelProperty("$column.columnComment")
         private $column.javaType $column.javaField;
 
         #end
     #end
     #if($table.sub)
-            /** $table.subTable.functionName信息 */
-            private List<${subClassName}> ${subclassName}List;
+    /** $table.subTable.functionName信息 */
+    private List<${subClassName}> ${subclassName}List;
 
     #end
 
-        }
+}
