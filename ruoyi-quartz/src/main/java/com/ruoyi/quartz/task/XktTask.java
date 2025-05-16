@@ -401,7 +401,6 @@ public class XktTask {
         if (CollectionUtils.isNotEmpty(updateList)) {
             this.advertRoundMapper.insertOrUpdate(updateList);
         }
-
         // 更新推广轮次截止时间到redis
         this.saveAdvertDeadlineToRedis();
     }

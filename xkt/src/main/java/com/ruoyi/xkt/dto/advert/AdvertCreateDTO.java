@@ -73,9 +73,6 @@ public class AdvertCreateDTO {
         @NotNull(message = "文件大小不能为空!")
         @ApiModelProperty(value = "文件大小", required = true)
         private BigDecimal fileSize;
-        @NotNull(message = "文件类型不能为空!")
-        @ApiModelProperty(value = "文件类型", required = true)
-        private Integer typeId;
     }
 
 }

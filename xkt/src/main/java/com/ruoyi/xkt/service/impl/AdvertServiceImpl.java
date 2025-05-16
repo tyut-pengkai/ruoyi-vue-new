@@ -14,6 +14,7 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.Advert;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.advert.*;
+import com.ruoyi.xkt.enums.AdDisplayType;
 import com.ruoyi.xkt.enums.AdOnlineStatus;
 import com.ruoyi.xkt.enums.AdPlatformType;
 import com.ruoyi.xkt.enums.AdTab;
@@ -61,15 +62,18 @@ public class AdvertServiceImpl implements IAdvertService {
         // TODO 判断当前是否超级管理员在操作
         this.isSuperAdmin();
 
-        // 将文件插入到SysFile表中
-        SysFile file = BeanUtil.toBean(createDTO.getExample(), SysFile.class);
-        this.fileMapper.insert(file);
         Advert advert = BeanUtil.toBean(createDTO, Advert.class);
         advert.setBasicSymbol(random10Str());
         advert.setOnlineStatus(AdOnlineStatus.ONLINE.getValue());
-        advert.setExamplePicId(file.getId());
+
+        // 推广类型为 推广图 或者 图及商品 则新增系统文件
+        if (!Objects.equals(createDTO.getDisplayType(), AdDisplayType.PRODUCT.getValue()) && ObjectUtils.isNotEmpty(createDTO.getExample())) {
+            // 将文件插入到SysFile表中
+            SysFile file = BeanUtil.toBean(createDTO.getExample(), SysFile.class);
+            this.fileMapper.insert(file);
+            advert.setExamplePicId(file.getId());
+        }
         return this.advertMapper.insert(advert);
-        // 更新档口推广营销截止时间
     }
 
 
