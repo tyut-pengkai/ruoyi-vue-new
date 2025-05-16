@@ -222,4 +222,26 @@ public class DictUtils
     {
         return CacheConstants.SYS_DICT_KEY + configKey;
     }
+
+    /**
+     * 获取字典value与label映射的map集合
+     *
+     * @param type 字典类型
+     * @return Map<String, String>
+     */
+    public static Map<String, String> getValueLabelMap(String type) {
+        if (type == null || type.trim().isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<SysDictData> dicts = DictUtils.getDictCache(type);
+        if (dicts == null || dicts.isEmpty()) {
+            dicts = new ArrayList<>();
+        }
+        Map<String, String> valueLabelMap = new HashMap<>();
+        for (SysDictData dict : dicts) {
+            valueLabelMap.put(dict.getDictValue(), dict.getDictLabel());
+        }
+        return valueLabelMap;
+    }
+
 }
