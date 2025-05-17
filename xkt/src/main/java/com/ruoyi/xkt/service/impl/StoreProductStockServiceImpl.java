@@ -8,15 +8,11 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.xkt.domain.StoreProductFile;
 import com.ruoyi.xkt.domain.StoreProductStock;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockResDTO;
+import com.ruoyi.xkt.dto.storeProductStock.*;
 import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.mapper.StoreProductFileMapper;
 import com.ruoyi.xkt.mapper.StoreProductStockMapper;
@@ -138,19 +134,19 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     /**
      * 清空库存
      *
-     * @param storeId          档口ID
-     * @param storeProdStockId 清空库存
+     * @param clearZeroDTO 清空库存入参
      * @return int
      */
     @Override
     @Transactional
-    public int clearStockToZero(Long storeId, Long storeProdStockId) {
-        StoreProductStock stock = Optional.ofNullable(this.storeProdStockMapper.selectOne(new LambdaQueryWrapper<StoreProductStock>()
-                        .eq(StoreProductStock::getId, storeProdStockId).eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getDelFlag, Constants.UNDELETED)))
+    public int clearStockToZero(StoreProdStockClearZeroDTO clearZeroDTO) {
+        List<StoreProductStock> stockList = Optional.ofNullable(this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
+                        .eq(StoreProductStock::getStoreId, clearZeroDTO.getStoreId()).eq(StoreProductStock::getDelFlag, Constants.UNDELETED)
+                        .in(StoreProductStock::getId, clearZeroDTO.getStoreProdStockIdList())))
                 .orElseThrow(() -> new ServiceException("档口商品库存不存在!", HttpStatus.ERROR));
-        stock.setSize30(0).setSize31(0).setSize32(0).setSize33(0).setSize34(0).setSize35(0).setSize36(0).setSize37(0)
-                .setSize38(0).setSize39(0).setSize40(0).setSize41(0).setSize42(0).setSize43(0);
-        return this.storeProdStockMapper.updateById(stock);
+        stockList.forEach(stock -> stock.setSize30(0).setSize31(0).setSize32(0).setSize33(0).setSize34(0).setSize35(0).setSize36(0).setSize37(0)
+                .setSize38(0).setSize39(0).setSize40(0).setSize41(0).setSize42(0).setSize43(0));
+        return this.storeProdStockMapper.updateById(stockList).size();
     }
 
 
@@ -255,69 +251,6 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
         return BeanUtil.toBean(stock, StoreProdStockResDTO.class)
                 .setStoreProdStockId(stock.getId()).setMainPicUrl(file.getFileUrl());
     }
-
-    /**
-     * 查询档口商品库存列表
-     *
-     * @param storeProductStock 档口商品库存
-     * @return 档口商品库存
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<StoreProductStock> selectStoreProductStockList(StoreProductStock storeProductStock) {
-        return storeProdStockMapper.selectStoreProductStockList(storeProductStock);
-    }
-
-    /**
-     * 新增档口商品库存
-     *
-     * @param storeProductStock 档口商品库存
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int insertStoreProductStock(StoreProductStock storeProductStock) {
-        storeProductStock.setCreateTime(DateUtils.getNowDate());
-        return storeProdStockMapper.insertStoreProductStock(storeProductStock);
-    }
-
-    /**
-     * 修改档口商品库存
-     *
-     * @param storeProductStock 档口商品库存
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int updateStoreProductStock(StoreProductStock storeProductStock) {
-        storeProductStock.setUpdateTime(DateUtils.getNowDate());
-        return storeProdStockMapper.updateStoreProductStock(storeProductStock);
-    }
-
-    /**
-     * 批量删除档口商品库存
-     *
-     * @param storeProdStockIds 需要删除的档口商品库存主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreProductStockByStoreProdStockIds(Long[] storeProdStockIds) {
-        return storeProdStockMapper.deleteStoreProductStockByStoreProdStockIds(storeProdStockIds);
-    }
-
-    /**
-     * 删除档口商品库存信息
-     *
-     * @param storeProdStockId 档口商品库存主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreProductStockByStoreProdStockId(Long storeProdStockId) {
-        return storeProdStockMapper.deleteStoreProductStockByStoreProdStockId(storeProdStockId);
-    }
-
 
     /**
      * 通过数量diff增减或扣减库存

@@ -380,10 +380,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue())
                     .setStoreId(createDTO.getStoreId()).setPayPrice(createDTO.getPayPrice()).setVoucherDate(java.sql.Date.valueOf(LocalDate.now()))
                     .setBiddingStatus(AdBiddingStatus.BIDDING.getValue()).setBiddingTempStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue())
-                    .setPicSetType(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? AdPicSetType.UN_SET.getValue() : null)
-                    .setPicAuditStatus(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? AdPicAuditStatus.UN_AUDIT.getValue() : null)
-                    .setPicDesignType(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? createDTO.getPicDesignType() : null)
-                    .setPicAuditStatus(!Objects.equals(minPriceAdvert.getDisplayType(), AdDisplayType.PRODUCT.getValue()) ? AdPicAuditStatus.UN_AUDIT.getValue() : null)
+                    .setPicSetType(this.hasPic(minPriceAdvert.getDisplayType()) ? AdPicSetType.UN_SET.getValue() : null)
+                    .setPicAuditStatus(this.hasPic(minPriceAdvert.getDisplayType()) ? AdPicAuditStatus.UN_AUDIT.getValue() : null)
+                    .setPicDesignType(this.hasPic(minPriceAdvert.getDisplayType()) ? createDTO.getPicDesignType() : null)
+                    .setPicAuditStatus(this.hasPic(minPriceAdvert.getDisplayType()) ? AdPicAuditStatus.UN_AUDIT.getValue() : null)
                     .setProdIdStr(createDTO.getProdIdStr());
             this.advertRoundMapper.updateById(minPriceAdvert);
             // 扣除推广费
@@ -391,6 +391,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         }
         return 1;
     }
+
+
 
     /**
      * 档口已订购推广列表
@@ -827,6 +829,15 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             middle.append('*'); // 中间替换为*
         }
         return prefix + middle + suffix;
+    }
+
+    /**
+     * 判断当前推广类型是否为 推广图 或者 图及商品类型
+     * @param displayType 推广类型
+     * @return true 是  false 不是
+     */
+    private boolean hasPic(Integer displayType) {
+        return Objects.equals(displayType, AdDisplayType.PICTURE.getValue()) || Objects.equals(displayType, AdDisplayType.PIC_AND_PROD.getValue());
     }
 
 }

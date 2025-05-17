@@ -21,6 +21,8 @@ public enum AdDisplayType {
     PRODUCT(2, "商品"),
     // 图和商品
     PIC_AND_PROD(3, "图和商品"),
+    // 档口名称
+    STORE_NAME(4, "档口名称"),
 
 
     ;

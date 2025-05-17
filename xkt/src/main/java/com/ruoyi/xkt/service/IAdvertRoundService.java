@@ -44,8 +44,6 @@ public interface IAdvertRoundService {
      */
     void initAdvertLockMap();
 
-    void test();
-
     /**
      * 每晚11:30更新广告位轮次状态 将biddingTempStatus赋值给biddingStatus
      *

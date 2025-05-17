@@ -2,10 +2,7 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.domain.StoreProductStock;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockResDTO;
+import com.ruoyi.xkt.dto.storeProductStock.*;
 
 import java.util.List;
 
@@ -23,47 +20,7 @@ public interface IStoreProductStockService {
      * @param storeProdStockId 档口商品库存主键
      * @return 档口商品库存
      */
-    public StoreProdStockResDTO selectByStoreProdStockId(Long storeId, Long storeProdStockId);
-
-    /**
-     * 查询档口商品库存列表
-     *
-     * @param storeProductStock 档口商品库存
-     * @return 档口商品库存集合
-     */
-    public List<StoreProductStock> selectStoreProductStockList(StoreProductStock storeProductStock);
-
-    /**
-     * 新增档口商品库存
-     *
-     * @param storeProductStock 档口商品库存
-     * @return 结果
-     */
-    public int insertStoreProductStock(StoreProductStock storeProductStock);
-
-    /**
-     * 修改档口商品库存
-     *
-     * @param storeProductStock 档口商品库存
-     * @return 结果
-     */
-    public int updateStoreProductStock(StoreProductStock storeProductStock);
-
-    /**
-     * 批量删除档口商品库存
-     *
-     * @param storeProdStockIds 需要删除的档口商品库存主键集合
-     * @return 结果
-     */
-    public int deleteStoreProductStockByStoreProdStockIds(Long[] storeProdStockIds);
-
-    /**
-     * 删除档口商品库存信息
-     *
-     * @param storeProdStockId 档口商品库存主键
-     * @return 结果
-     */
-    public int deleteStoreProductStockByStoreProdStockId(Long storeProdStockId);
+    StoreProdStockResDTO selectByStoreProdStockId(Long storeId, Long storeProdStockId);
 
     /**
      * 增加库存
@@ -86,11 +43,10 @@ public interface IStoreProductStockService {
     /**
      * 清空库存
      *
-     * @param storeId          档口ID
-     * @param storeProdStockId 清空库存
+     * @param clearZeroDTO 清空库存dto
      * @return int
      */
-    int clearStockToZero(Long storeId, Long storeProdStockId);
+    int clearStockToZero(StoreProdStockClearZeroDTO clearZeroDTO);
 
     /**
      * 直接调整库存

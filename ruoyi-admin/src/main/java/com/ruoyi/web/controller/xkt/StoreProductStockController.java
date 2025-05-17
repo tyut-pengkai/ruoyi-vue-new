@@ -6,9 +6,11 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.web.controller.xkt.vo.storeProdStock.StoreProdStockClearZeroVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdStock.StoreProdStockPageVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdStock.StoreProdStockResVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdStock.StoreProdStockVO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockClearZeroDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
@@ -63,9 +65,9 @@ public class StoreProductStockController extends XktBaseController {
     // @PreAuthorize("@ss.hasPermi('system:stock:edit')")
     @ApiOperation(value = "档口商品库存清零", httpMethod = "PUT", response = R.class)
     @Log(title = "档口商品库存清零", businessType = BusinessType.UPDATE)
-    @PutMapping("/clear-zero/{storeId}/{storeProdStockId}")
-    public R<Integer> clearStockToZero(@PathVariable("storeId") Long storeId, @PathVariable("storeProdStockId") Long storeProdStockId) {
-        return R.ok(storeProdStockService.clearStockToZero(storeId, storeProdStockId));
+    @PutMapping("/clear-zero")
+    public R<Integer> clearStockToZero(@Validated @RequestBody StoreProdStockClearZeroVO clearZeroVO) {
+        return R.ok(storeProdStockService.clearStockToZero(BeanUtil.toBean(clearZeroVO, StoreProdStockClearZeroDTO.class)));
     }
 
     /**
@@ -75,7 +77,7 @@ public class StoreProductStockController extends XktBaseController {
     @ApiOperation(value = "直接调整档口商品库存值", httpMethod = "PUT", response = R.class)
     @Log(title = "直接调整档口商品库存值", businessType = BusinessType.UPDATE)
     @PutMapping("/update-stock/{storeId}")
-    public R<Integer> updateStock(@PathVariable("storeId") Long storeId, @RequestBody StoreProdStockVO prodStockVO) {
+    public R<Integer> updateStock(@PathVariable("storeId") Long storeId,@Validated @RequestBody StoreProdStockVO prodStockVO) {
         return R.ok(storeProdStockService.updateStock(storeId, Collections.singletonList(BeanUtil.toBean(prodStockVO, StoreProdStockDTO.class)), 0));
     }
 

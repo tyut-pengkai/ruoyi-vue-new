@@ -39,14 +39,11 @@ public enum AdType {
     // 首页两侧固定挂耳
     PC_HOME_FIXED_EAR(12, "首页两侧固定挂耳", "/url"),
     // 首页搜索框下名称
-    PC_HOME_SEARCH_DOWN_NAME(13, "首页搜索框下名称", "/url"),
-    // 首页搜索框商品
-    PC_HOME_SEARCH_PRODUCT(14, "首页搜索框商品", "/url"),
-    // 首页搜索框档口
-    PC_HOME_SEARCH_STORE(15, "首页搜索框档口", "/url"),
-    // 首页以图搜款商品
-    PC_HOME_PIC_SEARCH_PRODUCT(16, "首页以图搜款商品", "/url"),
-
+    PC_HOME_SEARCH_DOWN_NAME(13, "首页搜索框下档口名称", "/url"),
+    // 首页搜索框中推荐商品
+    PC_HOME_SEARCH_PRODUCT(14, "首页搜索框中推荐商品", "/url"),
+    // 首页以图搜款框商品、以图搜款结果商品、点击以图搜款界面
+    PC_HOME_PIC_SEARCH_PRODUCT(15, "首页以图搜款商品", "/url"),
 
 
     // 新品馆顶部横向大图

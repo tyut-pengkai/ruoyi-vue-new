@@ -23,6 +23,10 @@ public class StoreProdStockPageResDTO {
     private String mainPicUrl;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
+    @ApiModelProperty(value = "档口商品颜色ID")
+    private Long storeProdColorId;
+    @ApiModelProperty(value = "档口颜色ID")
+    private Long storeColorId;
     @ApiModelProperty(value = "颜色名称")
     private String colorName;
     @ApiModelProperty(value = "分类类目")

@@ -67,7 +67,8 @@ public class AdvertServiceImpl implements IAdvertService {
         advert.setOnlineStatus(AdOnlineStatus.ONLINE.getValue());
 
         // 推广类型为 推广图 或者 图及商品 则新增系统文件
-        if (!Objects.equals(createDTO.getDisplayType(), AdDisplayType.PRODUCT.getValue()) && ObjectUtils.isNotEmpty(createDTO.getExample())) {
+        if ((Objects.equals(createDTO.getDisplayType(), AdDisplayType.PICTURE.getValue()) || Objects.equals(createDTO.getDisplayType(), AdDisplayType.PIC_AND_PROD.getValue()))
+                && ObjectUtils.isNotEmpty(createDTO.getExample())) {
             // 将文件插入到SysFile表中
             SysFile file = BeanUtil.toBean(createDTO.getExample(), SysFile.class);
             this.fileMapper.insert(file);
