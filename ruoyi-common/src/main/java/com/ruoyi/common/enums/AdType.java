@@ -42,55 +42,65 @@ public enum AdType {
     PC_HOME_SEARCH_DOWN_NAME(13, "首页搜索框下档口名称", "/url"),
     // 首页搜索框中推荐商品
     PC_HOME_SEARCH_PRODUCT(14, "首页搜索框中推荐商品", "/url"),
-    // 首页以图搜款框商品、以图搜款结果商品、点击以图搜款界面
-    PC_HOME_PIC_SEARCH_PRODUCT(15, "首页以图搜款商品", "/url"),
 
 
     // 新品馆顶部横向大图
-    PC_NEW_PROD_TOP_LEFT_BANNER(30, "新品馆顶部横向大图", "/url"),
-    // 新品馆顶部纵向大图
-    PC_NEW_PROD_TOP_RIGHT(31, "新品馆顶部纵向大图", "/url"),
+    PC_NEW_PROD_TOP_LEFT_BANNER(101, "新品馆顶部横向大图", "/url"),
+    // 新品馆顶部纵向小图
+    PC_NEW_PROD_TOP_RIGHT(102, "新品馆顶部纵向小图", "/url"),
     // 新品馆品牌榜
-    PC_NEW_PROD_BRAND_BANNER(32, "新品馆品牌榜", "/url"),
+    PC_NEW_PROD_BRAND_BANNER(103, "新品馆品牌榜", "/url"),
     // 新品馆热卖榜左大图
-    PC_NEW_PROD_HOT_LEFT_BANNER(33, "新品馆热卖榜左大图", "/url"),
+    PC_NEW_PROD_HOT_LEFT_BANNER(104, "新品馆热卖榜左大图", "/url"),
     // 新品馆热卖榜右推广商品
-    PC_NEW_PROD_HOT_RIGHT_PRODUCT(34, "新品馆热卖榜右推广商品", "/url"),
+    PC_NEW_PROD_HOT_RIGHT_PRODUCT(105, "新品馆热卖榜右推广商品", "/url"),
     // 新品馆横幅
-    PC_NEW_PROD_SINGLE_BANNER(35, "新品馆横幅", "/url"),
+    PC_NEW_PROD_SINGLE_BANNER(106, "新品馆横幅", "/url"),
     // 新品馆商品列表
-    PC_NEW_PROD_PRODUCT_LIST(36, "新品馆商品列表", "/url"),
+    PC_NEW_PROD_PRODUCT_LIST(107, "新品馆商品列表", "/url"),
+
+    // 档口馆 顶部轮播图
+    PC_STORE_TOP_BANNER(201, "档口馆顶部轮播图", "/url"),
+
+
+
+    // 首页以图搜款框商品、以图搜款结果商品、点击以图搜款界面
+    PC_HOME_PIC_SEARCH_PRODUCT(300, "首页以图搜款商品", "/url"),
+
 
     // PC搜索结果
-    PC_SEARCH_RESULT(40, "电脑端搜索结果", "/url"),
+    PC_SEARCH_RESULT(401, "电脑端搜索结果", "/url"),
     // PC用户中心
-    PC_USER_CENTER(41, "电脑端用户中心", "/url"),
+    PC_USER_CENTER(402, "电脑端用户中心", "/url"),
     // PC下载页
-    PC_DOWNLOAD(42, "电脑端下载页", "/url"),
+    PC_DOWNLOAD(403, "电脑端下载页", "/url"),
+
 
 
     // APP首页顶部轮播图
-    APP_HOME_TOP_BANNER(50, "APP首页顶部轮播图", "/url"),
-    // APP首页推荐商品区
-    APP_HOME_RECOMMEND_PRODUCT(51, "APP首页推荐商品区", "/url"),
-    // APP首页热卖推荐
-    APP_HOME_HOT_RECOMMEND(52, "APP首页热卖推荐", "/url"),
-    // APP首页人气榜
-    APP_HOME_POP_RECOMMEND(53, "APP首页人气榜", "/url"),
-    // APP首页新品榜
-    APP_HOME_NEW_PROD_RECOMMEND(54, "APP首页新品榜", "/url"),
+    APP_HOME_TOP_BANNER(501, "APP首页顶部轮播图", "/url"),
+    // APP首页品牌好货
+    APP_HOME_RECOMMEND_PRODUCT(502, "APP首页品牌好货", "/url"),
+    // APP首页热卖推荐 轮播商品
+    APP_HOME_HOT_RECOMMEND_FIXED_PROD(503, "APP首页热卖推荐固定轮播商品", "/url"),
+    // APP首页热卖推荐 商品列表
+    APP_HOME_HOT_RECOMMEND_PROD(504, "APP首页热卖推荐", "/url"),
+    // APP首页人气榜 商品列表
+    APP_HOME_POP_RECOMMEND_PROD(505, "APP首页人气榜", "/url"),
+    // APP首页新品榜 商品列表
+    APP_HOME_NEW_PROD_RECOMMEND_PROD(506, "APP首页新品榜", "/url"),
     // APP搜索结果
-    APP_SEARCH_RESULT(55, "APP搜索结果", "/url"),
+    APP_SEARCH_RESULT(507, "APP搜索结果", "/url"),
 
 
     // APP分类页轮播图
-    APP_CATEGORY_TOP_BANNER(70, "APP分类页轮播图", "/url"),
+    APP_CATEGORY_TOP_BANNER(601, "APP分类页轮播图", "/url"),
     // APP个人中心猜你喜欢
-    APP_USER_CENTER_GUESS_YOU_LIKE(71, "APP个人中心猜你喜欢", "/url"),
+    APP_USER_CENTER_GUESS_YOU_LIKE(602, "APP我的猜你喜欢", "/url"),
 
 
     // 以图搜款结果推广商品
-    PIC_SEARCH_RESULT_PRODUCT(80, "以图搜款结果推广商品", "/url"),
+//    PIC_SEARCH_RESULT_PRODUCT(701, "以图搜款结果推广商品", "/url"),
 
 
 
