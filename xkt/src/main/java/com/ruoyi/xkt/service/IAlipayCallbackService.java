@@ -37,4 +37,18 @@ public interface IAlipayCallbackService {
      * @param info
      */
     void processRecharge(AlipayCallback info);
+
+    /**
+     * 标记为不处理
+     *
+     * @param info
+     */
+    void noNeedProcess(AlipayCallback info);
+
+    /**
+     * 继续处理回调
+     *
+     * @param count
+     */
+    void continueProcess(int count);
 }

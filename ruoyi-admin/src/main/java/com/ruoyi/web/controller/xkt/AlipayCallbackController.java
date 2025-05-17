@@ -100,20 +100,22 @@ public class AlipayCallbackController extends XktBaseController {
                     info = alipayCallback;
                     alipayCallbackService.insertAlipayCallback(info);
                 }
+                if (EProcessStatus.isSkip(info.getProcessStatus())){
+                    logger.warn("支付回调重复请求处理: {}", info);
+                    return SUCCESS;
+                }
                 if (!"TRADE_SUCCESS".equals(info.getTradeStatus())) {
                     //非交易支付成功的回调不处理
+                    alipayCallbackService.noNeedProcess(info);
                     return SUCCESS;
                 }
                 if (info.getRefundFee() != null && !NumberUtil.equals(info.getRefundFee(), BigDecimal.ZERO)) {
                     //如果有退款金额，可能是部分退款的回调，这里不做处理
+                    alipayCallbackService.noNeedProcess(info);
                     return SUCCESS;
                 }
-                if (EProcessStatus.INIT.getValue().equals(info.getProcessStatus())) {
-                    //更新回调状态和订单状态，创建收款单
-                    alipayCallbackService.processOrderPaid(info);
-                } else {
-                    logger.warn("支付回调重复请求处理: {}", info.getId());
-                }
+                //更新回调状态和订单状态，创建收款单
+                alipayCallbackService.processOrderPaid(info);
                 return SUCCESS;
             } else {
                 //充值业务
@@ -133,20 +135,22 @@ public class AlipayCallbackController extends XktBaseController {
                         info = alipayCallback;
                         alipayCallbackService.insertAlipayCallback(info);
                     }
+                    if (EProcessStatus.isSkip(info.getProcessStatus())){
+                        logger.warn("支付回调重复请求处理: {}", info);
+                        return SUCCESS;
+                    }
                     if (!"TRADE_SUCCESS".equals(info.getTradeStatus())) {
                         //非交易支付成功的回调不处理
+                        alipayCallbackService.noNeedProcess(info);
                         return SUCCESS;
                     }
                     if (info.getRefundFee() != null && !NumberUtil.equals(info.getRefundFee(), BigDecimal.ZERO)) {
                         //如果有退款金额，可能是部分退款的回调，这里不做处理
+                        alipayCallbackService.noNeedProcess(info);
                         return SUCCESS;
                     }
-                    if (EProcessStatus.INIT.getValue().equals(info.getProcessStatus())) {
-                        //更新回调状态，收款单到账
-                        alipayCallbackService.processRecharge(info);
-                    } else {
-                        logger.warn("支付回调重复请求处理: {}", info.getId());
-                    }
+                    //更新回调状态，收款单到账
+                    alipayCallbackService.processRecharge(info);
                     return SUCCESS;
                 }
             }

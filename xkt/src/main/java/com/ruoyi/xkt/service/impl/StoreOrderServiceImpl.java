@@ -1259,6 +1259,48 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         expressService.addTrackRecord(expressTrackRecordAddDTO);
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void autoCancel(Date beforeDate, int count) {
+        PageHelper.startPage(1, count, false);
+        List<StoreOrder> orders = storeOrderMapper.selectList(Wrappers.lambdaQuery(StoreOrder.class)
+                .eq(StoreOrder::getOrderStatus, EOrderStatus.PENDING_PAYMENT.getValue())
+                .ne(StoreOrder::getPayStatus, EPayStatus.PAID.getValue())
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED)
+                .le(SimpleEntity::getCreateTime, beforeDate));
+        for (StoreOrder order : orders) {
+            PaymentManager paymentManager = getPaymentManager(EPayChannel.of(order.getPayChannel()));
+            boolean isPaid = paymentManager.isStoreOrderPaid(order.getOrderNo());
+            if (isPaid) {
+                log.warn("订单[{}]已支付，无法取消", order.getId());
+                continue;
+            }
+            //订单已取消
+            order.setOrderStatus(EOrderStatus.CANCELLED.getValue());
+            int orderSuccess = storeOrderMapper.updateById(order);
+            if (orderSuccess == 0) {
+                throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+            }
+            List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectList(
+                    Wrappers.lambdaQuery(StoreOrderDetail.class)
+                            .eq(StoreOrderDetail::getStoreOrderId, order.getId())
+                            .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+            List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
+            for (StoreOrderDetail orderDetail : orderDetails) {
+                //明细已取消
+                orderDetail.setDetailStatus(EOrderStatus.CANCELLED.getValue());
+                int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+                if (orderDetailSuccess == 0) {
+                    throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+                }
+                orderDetailIdList.add(orderDetail.getId());
+            }
+            //操作记录
+            addOperationRecords(order.getId(), EOrderAction.CANCEL, orderDetailIdList, EOrderAction.CANCEL,
+                    "超时取消", null, new Date());
+        }
+    }
+
     /**
      * 添加操作记录
      *

@@ -82,6 +82,7 @@ public class AssetController extends XktBaseController {
         //创建付款单
         WithdrawPrepareResult prepareResult = assetService.prepareWithdraw(SecurityUtils.getStoreId(), vo.getAmount(),
                 vo.getTransactionPassword(), EPayChannel.ALI_PAY);
+        //TODO 失败补偿
         //支付宝转账
         aliPaymentManger.transfer(prepareResult.getBillNo(), prepareResult.getAccountOwnerNumber(),
                 prepareResult.getAccountOwnerName(), prepareResult.getAmount());

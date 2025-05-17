@@ -229,6 +229,7 @@ public class StoreOrderController extends XktBaseController {
         dto.setOperatorId(SecurityUtils.getUserId());
         //售后状态->售后完成，支付状态->支付中，创建收款单
         StoreOrderRefund storeOrderRefund = storeOrderService.prepareRefundOrder(dto);
+        //TODO 失败补偿
         //三方退款
         PaymentManager paymentManager = getPaymentManager(EPayChannel.of(storeOrderRefund.getRefundOrder().getPayChannel()));
         paymentManager.refundStoreOrder(storeOrderRefund);

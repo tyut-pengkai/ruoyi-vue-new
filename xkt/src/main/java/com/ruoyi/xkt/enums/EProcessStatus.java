@@ -14,7 +14,8 @@ public enum EProcessStatus {
     INIT(1, "初始"),
     PROCESSING(2, "处理中"),
     SUCCESS(3, "处理成功"),
-    FAILURE(4, "处理失败");
+    FAILURE(4, "处理失败"),
+    NO_PROCESSING(5,"不处理");
 
     private final Integer value;
     private final String label;
@@ -26,5 +27,11 @@ public enum EProcessStatus {
             }
         }
         return null;
+    }
+
+    public static boolean isSkip(Integer value) {
+        return SUCCESS.getValue().equals(value)
+                || FAILURE.getValue().equals(value)
+                || NO_PROCESSING.getValue().equals(value);
     }
 }

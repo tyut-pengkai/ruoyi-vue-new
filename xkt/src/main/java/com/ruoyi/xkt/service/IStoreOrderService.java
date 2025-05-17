@@ -8,6 +8,7 @@ import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -175,4 +176,12 @@ public interface IStoreOrderService {
      * @param trackAddDTO
      */
     void addTrack(StoreOrderExpressTrackAddDTO trackAddDTO);
+
+    /**
+     * 自动取消
+     *
+     * @param beforeDate
+     * @param count
+     */
+    void autoCancel(Date beforeDate, int count);
 }
