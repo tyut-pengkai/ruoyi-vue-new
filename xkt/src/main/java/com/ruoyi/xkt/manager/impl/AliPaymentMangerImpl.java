@@ -9,10 +9,7 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.diagnosis.DiagnosisUtils;
-import com.alipay.api.domain.AlipayFundTransUniTransferModel;
-import com.alipay.api.domain.AlipayTradeQueryModel;
-import com.alipay.api.domain.AlipayTradeRefundModel;
-import com.alipay.api.domain.Participant;
+import com.alipay.api.domain.*;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import com.ruoyi.common.constant.Constants;
@@ -21,6 +18,7 @@ import com.ruoyi.xkt.domain.StoreOrderDetail;
 import com.ruoyi.xkt.dto.finance.AlipayReqDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderExt;
 import com.ruoyi.xkt.dto.order.StoreOrderRefund;
+import com.ruoyi.xkt.enums.ENetResult;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 import com.ruoyi.xkt.enums.EPayStatus;
@@ -115,11 +113,12 @@ public class AliPaymentMangerImpl implements PaymentManager {
                 webReq.setBizContent(JSON.toJSONString(reqDTO));
                 try {
                     AlipayTradePagePayResponse webResp = alipayClient.pageExecute(webReq);
+                    log.error("WEB支付: {}", webResp.getBody());
                     if (webResp.isSuccess()) {
                         return webResp.getBody();
                     } else {
                         String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(webResp);
-                        log.error("支付发起失败: {}", diagnosisUrl);
+                        log.error("WEB支付发起失败: {}", diagnosisUrl);
                     }
                 } catch (AlipayApiException e) {
                     log.error("WEB支付发起异常", e);
@@ -133,11 +132,12 @@ public class AliPaymentMangerImpl implements PaymentManager {
                 wapReq.setBizContent(JSON.toJSONString(reqDTO));
                 try {
                     AlipayTradeWapPayResponse wapResp = alipayClient.pageExecute(wapReq);
+                    log.error("WAP支付: {}", wapResp.getBody());
                     if (wapResp.isSuccess()) {
                         return wapResp.getBody();
                     } else {
                         String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(wapResp);
-                        log.error("支付发起失败: {}", diagnosisUrl);
+                        log.error("WAP支付发起失败: {}", diagnosisUrl);
                     }
                 } catch (AlipayApiException e) {
                     log.error("WAP支付发起异常", e);
@@ -151,11 +151,12 @@ public class AliPaymentMangerImpl implements PaymentManager {
                 appReq.setBizContent(JSON.toJSONString(reqDTO));
                 try {
                     AlipayTradeAppPayResponse appResp = alipayClient.sdkExecute(appReq);
+                    log.error("APP支付: {}", appResp.getBody());
                     if (appResp.isSuccess()) {
                         return appResp.getBody();
                     } else {
                         String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(appResp);
-                        log.error("支付发起失败: {}", diagnosisUrl);
+                        log.error("APP支付发起失败: {}", diagnosisUrl);
                     }
                 } catch (AlipayApiException e) {
                     log.error("APP支付发起异常", e);
@@ -175,8 +176,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
             throw new ServiceException("订单[" + orderExt.getOrder().getOrderNo() + "]支付状态异常");
         }
         return pay(orderExt.getOrder().getOrderNo(), orderExt.getOrder().getTotalAmount(),
-                "代发订单" + orderExt.getOrder().getOrderNo(), payPage,
-                DateUtil.offset(orderExt.getOrder().getCreateTime(), DateField.HOUR, Constants.PAY_EXPIRE_MAX_HOURS));
+                "代发订单" + orderExt.getOrder().getOrderNo(), payPage,null);
     }
 
     @Override
@@ -220,7 +220,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
     }
 
     @Override
-    public boolean isStoreOrderPaid(String orderNo) {
+    public ENetResult queryStoreOrderPayResult(String orderNo) {
         Assert.notEmpty(orderNo);
         AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
                 alipayPublicKey, signType);
@@ -229,9 +229,9 @@ public class AliPaymentMangerImpl implements PaymentManager {
         AlipayTradeQueryModel model = new AlipayTradeQueryModel();
         model.setOutTradeNo(orderNo);
         request.setBizModel(model);
-        AlipayTradeQueryResponse response = null;
         try {
-            response = alipayClient.execute(request);
+            AlipayTradeQueryResponse response = alipayClient.execute(request);
+            log.warn("查询订单支付结果: {}", response.getBody());
             if (response.isSuccess()) {
                 String tradeStatus = JSON.parseObject(response.getBody())
                         .getJSONObject("alipay_trade_query_response")
@@ -240,20 +240,23 @@ public class AliPaymentMangerImpl implements PaymentManager {
                 if ("TRADE_SUCCESS".equals(tradeStatus)
                         //交易结束，不可退款
                         || "TRADE_FINISHED".equals(tradeStatus)) {
-                    return true;
+                    return ENetResult.SUCCESS;
+                } else if ("WAIT_BUYER_PAY".equals(tradeStatus)) {
+                    return ENetResult.WAIT;
                 }
-                return false;
+                return ENetResult.FAILURE;
             } else {
-                //获取诊断链接
-                String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(response);
-                log.warn("查询订单支付结果异常: {}", diagnosisUrl);
                 //获取错误码
                 String subCode = JSON.parseObject(response.getBody())
                         .getJSONObject("alipay_trade_query_response")
                         .getString("sub_code");
                 if ("ACQ.TRADE_NOT_EXIST".equals(subCode)) {
                     //交易不存在
-                    return false;
+                    return ENetResult.FAILURE;
+                } else {
+                    //获取诊断链接
+                    String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(response);
+                    log.error("查询订单支付结果异常: {}", diagnosisUrl);
                 }
             }
         } catch (Exception e) {
@@ -263,7 +266,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
     }
 
     @Override
-    public void transfer(String bizNo, String identity, String realName, BigDecimal amount) {
+    public boolean transfer(String bizNo, String identity, String realName, BigDecimal amount) {
         Assert.notEmpty(bizNo);
         Assert.notEmpty(identity);
         Assert.notEmpty(realName);
@@ -292,21 +295,74 @@ public class AliPaymentMangerImpl implements PaymentManager {
         // 设置转账业务请求的扩展参数
         model.setBusinessParams("{\"payer_show_name_use_alias\":\"true\"}");
         request.setBizModel(model);
-        AlipayFundTransUniTransferResponse response;
         try {
-            response = alipayClient.certificateExecute(request);
+            //TODO 测试
+//          AlipayFundTransUniTransferResponse  response = alipayClient.certificateExecute(request);
+            AlipayFundTransUniTransferResponse response = alipayClient.execute(request);
+            log.info("支付宝转账: {}", response.getBody());
             if (response.isSuccess()) {
-                //TODO 接口未调通
-                return;
+                String status = JSON.parseObject(response.getBody())
+                        .getJSONObject("alipay_fund_trans_uni_transfer_response")
+                        .getString("status");
+                return "SUCCESS".equals(status);
             } else {
                 //获取诊断链接
                 String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(response);
                 log.warn("支付宝转账异常: {}", diagnosisUrl);
+                return false;
             }
         } catch (Exception e) {
             log.error("支付宝转账异常", e);
         }
         throw new ServiceException("支付宝转账失败");
+    }
+
+    @Override
+    public ENetResult queryTransferResult(String bizNo) {
+        Assert.notEmpty(bizNo);
+        AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
+                alipayPublicKey, signType);
+        // 构造请求参数以调用接口
+        AlipayFundTransCommonQueryRequest request = new AlipayFundTransCommonQueryRequest();
+        AlipayFundTransCommonQueryModel model = new AlipayFundTransCommonQueryModel();
+        // 设置商家侧唯一订单号
+        model.setOutBizNo(bizNo);
+        // 设置描述特定的业务场景
+        model.setBizScene("DIRECT_TRANSFER");
+        // 设置业务产品码
+        model.setProductCode("TRANS_ACCOUNT_NO_PWD");
+        request.setBizModel(model);
+        try {
+            AlipayFundTransCommonQueryResponse response = alipayClient.execute(request);
+            log.info("查询支付宝转账结果: {}", response.getBody());
+            if (response.isSuccess()) {
+                String status = JSON.parseObject(response.getBody())
+                        .getJSONObject("alipay_fund_trans_common_query_response")
+                        .getString("status");
+                if ("SUCCESS".equals(status)) {
+                    return ENetResult.SUCCESS;
+                } else if ("WAIT_PAY".equals(status) || "DEALING".equals(status)) {
+                    return ENetResult.WAIT;
+                }
+                return ENetResult.FAILURE;
+            } else {
+                //获取错误码
+                String subCode = JSON.parseObject(response.getBody())
+                        .getJSONObject("alipay_fund_trans_common_query_response")
+                        .getString("sub_code");
+                if ("ORDER_NOT_EXIST".equals(subCode)) {
+                    //交易不存在
+                    return ENetResult.FAILURE;
+                } else {
+                    //获取诊断链接
+                    String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(response);
+                    log.error("查询支付宝转账结果异常: {}", diagnosisUrl);
+                }
+            }
+        } catch (Exception e) {
+            log.error("查询支付宝转账结果异常", e);
+        }
+        throw new ServiceException("查询支付宝转账结果失败");
     }
 
 }

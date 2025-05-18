@@ -84,10 +84,14 @@ public class AssetController extends XktBaseController {
                 vo.getTransactionPassword(), EPayChannel.ALI_PAY);
         //TODO 失败补偿
         //支付宝转账
-        aliPaymentManger.transfer(prepareResult.getBillNo(), prepareResult.getAccountOwnerNumber(),
+        boolean success = aliPaymentManger.transfer(prepareResult.getBillNo(), prepareResult.getAccountOwnerNumber(),
                 prepareResult.getAccountOwnerName(), prepareResult.getAmount());
         //付款单到账
-        assetService.withdrawSuccess(prepareResult.getFinanceBillId());
+        if (success) {
+            assetService.withdrawSuccess(prepareResult.getFinanceBillId());
+        }else {
+            //TODO 告警-人工介入
+        }
         return success();
     }
 

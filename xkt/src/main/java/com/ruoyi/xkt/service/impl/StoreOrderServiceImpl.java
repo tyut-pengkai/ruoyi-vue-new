@@ -565,8 +565,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                     order.getOrderNo()));
         }
         PaymentManager paymentManager = getPaymentManager(EPayChannel.of(order.getPayChannel()));
-        boolean isPaid = paymentManager.isStoreOrderPaid(order.getOrderNo());
-        if (isPaid) {
+        ENetResult result = paymentManager.queryStoreOrderPayResult(order.getOrderNo());
+        if (ENetResult.SUCCESS == result) {
             throw new ServiceException(CharSequenceUtil.format("订单[{}]已支付，无法取消",
                     order.getOrderNo()));
         }
@@ -1270,8 +1270,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 .le(SimpleEntity::getCreateTime, beforeDate));
         for (StoreOrder order : orders) {
             PaymentManager paymentManager = getPaymentManager(EPayChannel.of(order.getPayChannel()));
-            boolean isPaid = paymentManager.isStoreOrderPaid(order.getOrderNo());
-            if (isPaid) {
+            ENetResult result = paymentManager.queryStoreOrderPayResult(order.getOrderNo());
+            if (ENetResult.SUCCESS == result) {
                 log.warn("订单[{}]已支付，无法取消", order.getId());
                 continue;
             }

@@ -15,7 +15,7 @@ public enum EProcessStatus {
     PROCESSING(2, "处理中"),
     SUCCESS(3, "处理成功"),
     FAILURE(4, "处理失败"),
-    NO_PROCESSING(5,"不处理");
+    NO_PROCESSING(5, "不处理");
 
     private final Integer value;
     private final String label;

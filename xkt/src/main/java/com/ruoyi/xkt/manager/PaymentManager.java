@@ -2,6 +2,7 @@ package com.ruoyi.xkt.manager;
 
 import com.ruoyi.xkt.dto.order.StoreOrderExt;
 import com.ruoyi.xkt.dto.order.StoreOrderRefund;
+import com.ruoyi.xkt.enums.ENetResult;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 
@@ -55,7 +56,7 @@ public interface PaymentManager {
      * @param orderNo 订单号
      * @return
      */
-    boolean isStoreOrderPaid(String orderNo);
+    ENetResult queryStoreOrderPayResult(String orderNo);
 
     /**
      * 转账
@@ -64,7 +65,16 @@ public interface PaymentManager {
      * @param identity
      * @param realName
      * @param amount
+     * @return
      */
-    void transfer(String bizNo, String identity, String realName, BigDecimal amount);
+    boolean transfer(String bizNo, String identity, String realName, BigDecimal amount);
+
+    /**
+     * 转账结果
+     *
+     * @param bizNo
+     * @return
+     */
+    ENetResult queryTransferResult(String bizNo);
 
 }
