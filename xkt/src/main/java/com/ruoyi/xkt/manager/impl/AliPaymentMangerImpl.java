@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.manager.impl;
 
-import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.NumberUtil;
@@ -12,8 +11,8 @@ import com.alipay.api.diagnosis.DiagnosisUtils;
 import com.alipay.api.domain.*;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
-import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.xkt.domain.StoreOrderDetail;
 import com.ruoyi.xkt.dto.finance.AlipayReqDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderExt;
@@ -25,6 +24,7 @@ import com.ruoyi.xkt.enums.EPayStatus;
 import com.ruoyi.xkt.manager.PaymentManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -84,6 +84,9 @@ public class AliPaymentMangerImpl implements PaymentManager {
      */
     @Value("${alipay.gatewayUrl:https://openapi-sandbox.dl.alipaydev.com/gateway.do}")
     private String gatewayUrl;
+
+    @Autowired
+    private FsNotice fsNotice;
 
     @Override
     public EPayChannel channel() {
@@ -165,6 +168,8 @@ public class AliPaymentMangerImpl implements PaymentManager {
             default:
                 throw new ServiceException("未知的支付来源");
         }
+        //告警
+        fsNotice.sendMsg2DefaultChat("支付发起异常", JSON.toJSONString(reqDTO));
         throw new ServiceException("支付发起失败");
     }
 
@@ -216,6 +221,8 @@ public class AliPaymentMangerImpl implements PaymentManager {
         } catch (Exception e) {
             log.error("退款异常", e);
         }
+        //告警
+        fsNotice.sendMsg2DefaultChat("退款发起异常", JSON.toJSONString(orderRefund));
         throw new ServiceException("退款失败");
     }
 
@@ -262,6 +269,8 @@ public class AliPaymentMangerImpl implements PaymentManager {
         } catch (Exception e) {
             log.error("查询订单支付结果异常", e);
         }
+        //告警
+        fsNotice.sendMsg2DefaultChat("查询订单支付结果异常", JSON.toJSONString(model));
         throw new ServiceException("查询订单支付结果失败");
     }
 
@@ -314,6 +323,8 @@ public class AliPaymentMangerImpl implements PaymentManager {
         } catch (Exception e) {
             log.error("支付宝转账异常", e);
         }
+        //告警
+        fsNotice.sendMsg2DefaultChat("支付宝转账异常", JSON.toJSONString(model));
         throw new ServiceException("支付宝转账失败");
     }
 
@@ -362,6 +373,8 @@ public class AliPaymentMangerImpl implements PaymentManager {
         } catch (Exception e) {
             log.error("查询支付宝转账结果异常", e);
         }
+        //告警
+        fsNotice.sendMsg2DefaultChat("查询支付宝转账结果异常", JSON.toJSONString(model));
         throw new ServiceException("查询支付宝转账结果失败");
     }
 

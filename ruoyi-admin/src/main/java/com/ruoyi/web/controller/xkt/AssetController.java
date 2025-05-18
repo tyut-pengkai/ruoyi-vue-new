@@ -6,6 +6,7 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.PageVO;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
 import com.ruoyi.web.controller.xkt.vo.account.*;
 import com.ruoyi.xkt.dto.account.*;
@@ -35,6 +36,8 @@ public class AssetController extends XktBaseController {
     private IAssetService assetService;
     @Autowired
     private AliPaymentMangerImpl aliPaymentManger;
+    @Autowired
+    private FsNotice fsNotice;
 
     @ApiOperation(value = "档口资产")
     @GetMapping(value = "store/current")
@@ -89,8 +92,8 @@ public class AssetController extends XktBaseController {
         //付款单到账
         if (success) {
             assetService.withdrawSuccess(prepareResult.getFinanceBillId());
-        }else {
-            //TODO 告警-人工介入
+        } else {
+            fsNotice.sendMsg2DefaultChat("档口提现异常", "付款单: " + prepareResult.getFinanceBillId());
         }
         return success();
     }
