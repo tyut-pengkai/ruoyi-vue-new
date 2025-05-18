@@ -10,6 +10,7 @@ import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusGeneralSaleVO;
 import com.ruoyi.web.controller.xkt.vo.storeSale.StoreSalePageVO;
 import com.ruoyi.web.controller.xkt.vo.storeSale.StoreSalePayStatusVO;
 import com.ruoyi.web.controller.xkt.vo.storeSale.StoreSaleVO;
+import com.ruoyi.web.controller.xkt.vo.storeSale.StoreTodaySaleVO;
 import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageResDTO;
@@ -87,6 +88,15 @@ public class StoreSaleController extends XktBaseController {
     @GetMapping(value = "/{storeSaleId}")
     public R<StoreSaleVO> getInfo(@PathVariable("storeSaleId") Long storeSaleId) {
         return R.ok(BeanUtil.toBean(storeSaleService.selectStoreSaleByStoreSaleId(storeSaleId), StoreSaleVO.class));
+    }
+
+    /**
+     * 查询档口今日销售额
+     */
+    @ApiOperation(value = "查询档口今日销售额", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/today-sale/{storeId}")
+    public R<StoreTodaySaleVO> getTodaySale(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeSaleService.getTodaySale(storeId), StoreTodaySaleVO.class));
     }
 
     /**

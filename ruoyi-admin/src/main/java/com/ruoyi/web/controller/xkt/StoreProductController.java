@@ -14,7 +14,6 @@ import com.ruoyi.xkt.service.IStoreProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,9 +47,8 @@ public class StoreProductController extends XktBaseController {
     /**
      * 模糊查询档口商品
      */
-//    // @PreAuthorize("@ss.hasPermi('system:product:query')")
     @ApiOperation(value = "模糊查询档口商品", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/fuzzy")
+    @GetMapping(value = "/fuzzy/color")
     public R<List<StoreProdFuzzyResVO>> fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
                                                             @RequestParam("storeId") Long storeId) {
         return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryList(storeId, prodArtNum), StoreProdFuzzyResVO.class));
@@ -59,7 +57,6 @@ public class StoreProductController extends XktBaseController {
     /**
      * 模糊查询档口商品
      */
-//    // @PreAuthorize("@ss.hasPermi('system:product:query')")
     @ApiOperation(value = "模糊查询档口商品", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy/pic")
     public R<List<StoreProdFuzzyResPicVO>> fuzzyQueryResPicList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
@@ -71,7 +68,6 @@ public class StoreProductController extends XktBaseController {
     /**
      * 查询档口商品列表
      */
-//    // @PreAuthorize("@ss.hasPermi('system:product:list')")
     @ApiOperation(value = "查询档口商品列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreProdPageResDTO>> page(@Validated @RequestBody StoreProdPageVO pageVO) {
@@ -81,7 +77,6 @@ public class StoreProductController extends XktBaseController {
     /**
      * 获取档口商品详细信息
      */
-//    // @PreAuthorize("@ss.hasPermi('system:product:query')")
     @ApiOperation(value = "获取档口商品详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/detail/{storeProdId}")
     public R<StoreProdResVO> getInfo(@PathVariable("storeProdId") Long storeProdId) {
@@ -120,7 +115,6 @@ public class StoreProductController extends XktBaseController {
     /**
      * 修改档口商品
      */
-//    // @PreAuthorize("@ss.hasPermi('system:product:edit')")
     @ApiOperation(value = "修改档口商品", httpMethod = "PUT", response = R.class)
     @Log(title = "档口商品", businessType = BusinessType.UPDATE)
     @PutMapping("/{storeProdId}")
@@ -131,7 +125,6 @@ public class StoreProductController extends XktBaseController {
     /**
      * 修改档口商品状态
      */
-//    // @PreAuthorize("@ss.hasPermi('system:product:edit')")
     @Log(title = "修改档口商品状态", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "修改档口商品状态", httpMethod = "PUT", response = R.class)
     @PutMapping("/prod-status")
@@ -143,7 +136,6 @@ public class StoreProductController extends XktBaseController {
     /**
      * 获取档口图片空间
      */
-//    // @PreAuthorize("@ss.hasPermi('system:product:query')")
     @ApiOperation(value = "获取档口图片空间", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/pic-space")
     public R<StoreProdPicSpaceResVO> getStoreProductPicSpace(@Validated @RequestBody StoreProdPicSpaceVO picSpaceVO) {
@@ -154,7 +146,6 @@ public class StoreProductController extends XktBaseController {
     /**
      * 导出档口商品列表
      */
-//    // @PreAuthorize("@ss.hasPermi('system:product:export')")
     @Log(title = "档口商品", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreProduct storeProduct) {

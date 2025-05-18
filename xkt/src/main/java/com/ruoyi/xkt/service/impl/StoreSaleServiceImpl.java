@@ -12,6 +12,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.dto.dailySale.StoreTodaySaleDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusGeneralSaleDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
@@ -135,6 +136,34 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     }
 
     /**
+     * 获取当前档口今日销售数据
+     *
+     * @param storeId 档口ID
+     * @return StoreTodaySaleDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreTodaySaleDTO getTodaySale(Long storeId) {
+        // 今天 yyyy-MM-dd
+        Date date = java.sql.Date.valueOf(LocalDate.now());
+        List<StoreSaleDetail> saleDetailList = this.storeSaleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
+                .eq(StoreSaleDetail::getStoreId, storeId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED)
+                .eq(StoreSaleDetail::getVoucherDate, date));
+        if (CollectionUtils.isEmpty(saleDetailList)) {
+            return new StoreTodaySaleDTO();
+        }
+        Integer saleQuantity = saleDetailList.stream().filter(x -> x.getQuantity() > 0).mapToInt(StoreSaleDetail::getQuantity).sum();
+        BigDecimal saleAmount = saleDetailList.stream().filter(x -> x.getQuantity() > 0)
+                .map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
+        Integer refundQuantity = saleDetailList.stream().filter(x -> x.getQuantity() < 0).mapToInt(StoreSaleDetail::getQuantity).sum();
+        BigDecimal refundAmount = saleDetailList.stream().filter(x -> x.getQuantity() < 0)
+                .map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal amount = saleDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return new StoreTodaySaleDTO().setStoreId(storeId).setSaleQuantity(saleQuantity).setSaleAmount(saleAmount)
+                .setRefundQuantity(refundQuantity).setRefundAmount(refundAmount).setAmount(amount);
+    }
+
+    /**
      * 新增档口销售出库
      *
      * @param storeSaleDTO 档口销售出库
@@ -148,13 +177,17 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         String code = this.sequenceService.generateCode(storeSaleDTO.getStoreId(), EVoucherSequenceType.STORE_SALE.getValue(), DateUtils.parseDateToStr(DateUtils.YYYYMMDD, new Date()));
         // 总的数量
         Integer quantity = storeSaleDTO.getDetailList().stream().map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+        // 销售数量
+        Integer saleQuantity = storeSaleDTO.getDetailList().stream().filter(x -> x.getQuantity() > 0).mapToInt(StoreSaleDTO.SaleDetailVO::getQuantity).sum();
+        // 退货数量
+        Integer refundQuantity = storeSaleDTO.getDetailList().stream().filter(x -> x.getQuantity() < 0).mapToInt(StoreSaleDTO.SaleDetailVO::getQuantity).sum();
         // 总的金额
         BigDecimal amount = storeSaleDTO.getDetailList().stream().map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
         // 当前登录用户
         LoginUser loginUser = SecurityUtils.getLoginUser();
         // 属性赋值
         storeSale.setCode(code).setVoucherDate(DateUtils.getNowDate()).setQuantity(quantity).setAmount(amount)
-                .setOperatorId(loginUser.getUserId()).setOperatorName(loginUser.getUsername());
+                .setSaleQuantity(saleQuantity).setRefundQuantity(refundQuantity).setOperatorId(loginUser.getUserId()).setOperatorName(loginUser.getUsername());
         int count = storeSaleMapper.insert(storeSale);
         // 处理订单明细
         List<StoreSaleDetail> saleDetailList = storeSaleDTO.getDetailList().stream().map(x -> BeanUtil.toBean(x, StoreSaleDetail.class)
@@ -204,9 +237,13 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         BeanUtil.copyProperties(storeSaleDTO, storeSale);
         // 总的数量
         Integer quantity = storeSaleDTO.getDetailList().stream().map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+        // 销售数量
+        Integer saleQuantity = storeSaleDTO.getDetailList().stream().filter(x -> x.getQuantity() > 0).mapToInt(StoreSaleDTO.SaleDetailVO::getQuantity).sum();
+        // 退货数量
+        Integer refundQuantity = storeSaleDTO.getDetailList().stream().filter(x -> x.getQuantity() < 0).mapToInt(StoreSaleDTO.SaleDetailVO::getQuantity).sum();
         // 总的金额
         BigDecimal amount = storeSaleDTO.getDetailList().stream().map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
-        int count = this.storeSaleMapper.updateById(storeSale.setQuantity(quantity).setAmount(amount)
+        int count = this.storeSaleMapper.updateById(storeSale.setQuantity(quantity).setAmount(amount).setSaleQuantity(saleQuantity).setRefundQuantity(refundQuantity)
                 .setOperatorId(loginUser.getUserId()).setOperatorName(loginUser.getUsername()));
         // 先将所有明细置为无效，再新增
         this.storeSaleDetailMapper.updateById(saleDetailList.stream().peek(x -> x.setDelFlag(Constants.DELETED)).collect(Collectors.toList()));

@@ -108,8 +108,9 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         int count = this.advertRoundMapper.updateById(advertRound);
         // 如果审核通过的话，则将图片保存到系统图片库中
         if (Objects.equals(auditDTO.getPicAuditStatus(), AdPicAuditStatus.AUDIT_PASS.getValue())) {
-            AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId())
-                    .setStoreId(advertRound.getStoreId()).setFileId(advertRound.getPicId()).setTypeId(advertRound.getTypeId());
+            AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId()).setVoucherDate(java.sql.Date.valueOf(LocalDate.now()))
+                    .setStoreId(advertRound.getStoreId()).setPicId(advertRound.getPicId()).setTypeId(advertRound.getTypeId())
+                    .setDisplayType(advertRound.getDisplayType()).setPosition(advertRound.getPosition()).setPosition(advertRound.getPosition());
             this.advertStoreFileMapper.insert(advertStoreFile);
         }
         return count;
@@ -170,8 +171,8 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         advertRound.setPicId(file.getId());
         this.advertRoundMapper.updateById(advertRound);
         // 将档口上传图片保存到AdvertStoreFile
-        AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId())
-                .setStoreId(advertRound.getStoreId()).setFileId(file.getId()).setTypeId(advertRound.getTypeId());
+        AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId()).setVoucherDate(java.sql.Date.valueOf(LocalDate.now()))
+                .setStoreId(advertRound.getStoreId()).setPicId(file.getId()).setTypeId(advertRound.getTypeId()).setDisplayType(advertRound.getDisplayType());
         this.advertStoreFileMapper.insert(advertStoreFile);
         return count;
     }

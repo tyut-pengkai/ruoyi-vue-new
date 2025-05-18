@@ -56,9 +56,12 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
                 .eq(StoreCustomer::getStoreId, cusProdDisDTO.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)
                 .eq(StoreCustomer::getCusName, cusProdDisDTO.getStoreCusName()));
         if (ObjectUtils.isNotEmpty(storeCusList) && storeCusList.size() > 1) {
-            throw new ServiceException("客户名称重复，请修改客户名称!", HttpStatus.CONFLICT);
+            throw new ServiceException("客户名称重复，请修改客户名称!", HttpStatus.ERROR);
         }
         StoreCustomer storeCus = CollectionUtils.isNotEmpty(storeCusList) ? storeCusList.get(0) : this.createStoreCustomer(cusProdDisDTO);
+        // 设置当前客户在档口的所有商品优惠金额
+        storeCus.setAllProdDiscount(cusProdDisDTO.getAllProductDiscount());
+        this.storeCusMapper.updateById(storeCus);
         // 获取当前档口客户已有的优惠
         List<StoreCustomerProductDiscount> cusProdDisList = Optional.ofNullable(cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
                 .eq(StoreCustomerProductDiscount::getStoreCusName, cusProdDisDTO.getStoreCusName()).eq(StoreCustomerProductDiscount::getDelFlag, Constants.UNDELETED)
@@ -66,9 +69,9 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         // 已存在优惠但优惠额度低于当前优惠，则更新该部分优惠
         List<StoreCustomerProductDiscount> updateList = cusProdDisList.stream()
                 // 找到所有优惠低于当前优惠额度的列表
-                .filter(x -> cusProdDisDTO.getDiscount().compareTo(ObjectUtils.defaultIfNull(x.getDiscount(), 0)) > 0)
+                .filter(x -> cusProdDisDTO.getAllProductDiscount().compareTo(ObjectUtils.defaultIfNull(x.getDiscount(), 0)) > 0)
                 // 更新最新的优惠
-                .peek(x -> x.setDiscount(cusProdDisDTO.getDiscount())).collect(Collectors.toList());
+                .peek(x -> x.setDiscount(cusProdDisDTO.getAllProductDiscount())).collect(Collectors.toList());
         // 已有优惠的id
         List<Long> existDiscountProdColorIdList = cusProdDisList.stream().map(StoreCustomerProductDiscount::getStoreProdColorId).collect(Collectors.toList());
         // 档口所有的商品
@@ -76,7 +79,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
                 .eq(StoreProductColor::getStoreId, cusProdDisDTO.getStoreId()).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
         // 绑定其它商品的优惠
         List<StoreCustomerProductDiscount> addDiscountList = storeProdColorList.stream().filter(x -> !existDiscountProdColorIdList.contains(x.getId()))
-                .map(x -> BeanUtil.toBean(x, StoreCustomerProductDiscount.class).setDiscount(cusProdDisDTO.getDiscount()).setStoreProdColorId(x.getId())
+                .map(x -> BeanUtil.toBean(x, StoreCustomerProductDiscount.class).setDiscount(cusProdDisDTO.getAllProductDiscount()).setStoreProdColorId(x.getId())
                         .setStoreId(cusProdDisDTO.getStoreId()).setStoreCusId(storeCus.getId()).setStoreCusName(cusProdDisDTO.getStoreCusName()))
                 .collect(Collectors.toList());
         // 档口所有商品优惠

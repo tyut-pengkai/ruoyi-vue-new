@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
+import com.ruoyi.xkt.dto.dailySale.StoreTodaySaleDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusGeneralSaleDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO;
@@ -75,4 +76,11 @@ public interface IStoreSaleService {
      */
     Integer clearStoreCusDebt(StoreSalePayStatusDTO payStatusDTO);
 
+    /**
+     * 获取当前档口今日销售数据
+     *
+     * @param storeId 档口ID
+     * @return StoreTodaySaleDTO
+     */
+    StoreTodaySaleDTO getTodaySale(Long storeId);
 }

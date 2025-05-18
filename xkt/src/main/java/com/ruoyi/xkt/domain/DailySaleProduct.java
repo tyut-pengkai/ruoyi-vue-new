@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 档口客户每天销售数据统计 daily_sale_customer
+ * 档口商品每天销售数据统计 daily_sale_customer
  *
  * @author ruoyi
  * @date 2025-03-26

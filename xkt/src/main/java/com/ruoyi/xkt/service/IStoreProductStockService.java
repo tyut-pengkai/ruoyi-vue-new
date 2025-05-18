@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.xkt.domain.StoreProductStock;
 import com.ruoyi.xkt.dto.storeProductStock.*;
 
 import java.util.List;
@@ -74,4 +73,22 @@ public interface IStoreProductStockService {
      * @return String
      */
     List<StoreProdStockResDTO> selectByStoreIdAndProdArtNum(Long storeId, String prodArtNum);
+
+    /**
+     * 销售出库，输入货号，查询客户优惠信息及当前货号颜色的库存
+     *
+     * @param stockAndDiscountDTO 入参
+     * @return StoreProdStockResDTO
+     */
+    StoreProdStockAndDiscountResDTO getStockAndCusDiscount(StoreProdStockAndDiscountDTO stockAndDiscountDTO);
+
+    /**
+     * 库存盘点
+     *
+     * @param storeId       档口ID
+     * @param checkStockDTO 盘点入参
+     * @return Integer
+     */
+    Integer checkAndUpdateStock(Long storeId, StoreProdCheckStockDTO checkStockDTO);
+
 }

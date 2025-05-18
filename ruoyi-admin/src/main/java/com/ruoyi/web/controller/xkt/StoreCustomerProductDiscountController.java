@@ -10,12 +10,12 @@ import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.StoreCusProdBatchDis
 import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.StoreCusProdDiscExistVO;
 import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.StoreCusProdDiscPageVO;
 import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.StoreCusProdDiscountVO;
+import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdSkuResVO;
 import com.ruoyi.xkt.dto.storeCusProdDiscount.*;
 import com.ruoyi.xkt.service.IStoreCustomerProductDiscountService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,20 +36,18 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     final IStoreCustomerProductDiscountService storeCusProdDiscService;
 
     /**
-     * 销售出库时，新增或修改档口客户优惠
+     * 销售出库时，新增或修改档口客户优惠（全店商品优惠）
      */
-//    // @PreAuthorize("@ss.hasPermi('system:discount:edit')")
-    @ApiOperation(value = "销售出库时，新增或修改档口客户优惠", httpMethod = "PUT", response = R.class)
-    @Log(title = "销售出库时，新增或修改档口客户优惠", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public R<Integer> edit(@Validated @RequestBody StoreCusProdDiscountVO cusProdDisVO) {
+    @ApiOperation(value = "销售出库时，新增或修改档口客户优惠（全店商品优惠）", httpMethod = "PUT", response = R.class)
+    @Log(title = "销售出库时，新增或修改档口客户优惠（全店商品优惠）", businessType = BusinessType.UPDATE)
+    @PutMapping("/all-prod-discount")
+    public R<Integer> allProdDiscount(@Validated @RequestBody StoreCusProdDiscountVO cusProdDisVO) {
         return R.ok(storeCusProdDiscService.updateStoreCusProdDiscount(BeanUtil.toBean(cusProdDisVO, StoreCusProdDiscountDTO.class)));
     }
 
     /**
      * 客户销售管理 批量减价、批量抹零减价、新增客户定价优惠
      */
-//    // @PreAuthorize("@ss.hasPermi('system:discount:edit')")
     @ApiOperation(value = "客户销售管理 批量减价、批量抹零减价、新增客户定价优惠", httpMethod = "PUT", response = R.class)
     @Log(title = "客户销售管理 批量减价、批量抹零减价、新增客户定价优惠", businessType = BusinessType.UPDATE)
     @PutMapping("/batch")
@@ -60,7 +58,6 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     /**
      * 查询客户销售管理列表
      */
-//    // @PreAuthorize("@ss.hasPermi('system:customer:list')")
     @ApiOperation(value = "查询客户销售管理列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreCusProdDiscPageResDTO>> selectPage(@Validated @RequestBody StoreCusProdDiscPageVO pageVO) {
@@ -70,7 +67,6 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     /**
      * 新增客户销售定价时，根据入参查询是否已存在优惠
      */
-//    // @PreAuthorize("@ss.hasPermi('system:customer:list')")
     @ApiOperation(value = "新增客户销售定价时，根据入参查询是否已存在优惠", httpMethod = "POST", response = R.class)
     @PostMapping("/exists")
     public R<List<StoreCusProdDiscExistResDTO>> discountExist(@Validated @RequestBody StoreCusProdDiscExistVO existVO) {

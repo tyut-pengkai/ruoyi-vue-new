@@ -8,18 +8,16 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.xkt.domain.StoreProductFile;
-import com.ruoyi.xkt.domain.StoreProductStock;
-import com.ruoyi.xkt.domain.SysFile;
+import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.storeProductStock.*;
 import com.ruoyi.xkt.enums.FileType;
-import com.ruoyi.xkt.mapper.StoreProductFileMapper;
-import com.ruoyi.xkt.mapper.StoreProductStockMapper;
-import com.ruoyi.xkt.mapper.SysFileMapper;
+import com.ruoyi.xkt.enums.ProductSizeStatus;
+import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IStoreProductStockService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.ibatis.executor.BatchResult;
 import org.springframework.stereotype.Service;
@@ -29,7 +27,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.ruoyi.common.constant.Constants.ORDER_NUM_1;
+import static com.ruoyi.common.constant.Constants.*;
 
 /**
  * 档口商品库存Service业务层处理
@@ -44,6 +42,10 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     final StoreProductStockMapper storeProdStockMapper;
     final StoreProductFileMapper storeProdFileMapper;
     final SysFileMapper fileMapper;
+    final StoreProductColorPriceMapper prodColorPriceMapper;
+    final StoreCustomerProductDiscountMapper storeCusProdDiscMapper;
+    final StoreProductMapper storeProdMapper;
+    final StoreProductColorSizeMapper prodColorSizeMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -79,6 +81,116 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
                 .eq(StoreProductStock::getDelFlag, Constants.UNDELETED));
         return CollectionUtils.isEmpty(stockList) ? new ArrayList<>()
                 : stockList.stream().map(x -> BeanUtil.toBean(x, StoreProdStockResDTO.class).setStoreProdStockId(x.getId())).collect(Collectors.toList());
+    }
+
+    /**
+     * 根据档口ID 和 档口商品颜色ID 查询商品库存
+     *
+     * @param dto          入参
+     * @return StoreProdStockResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreProdStockAndDiscountResDTO getStockAndCusDiscount(StoreProdStockAndDiscountDTO dto) {
+        StoreProductStock stock = this.storeProdStockMapper.selectOne(new LambdaQueryWrapper<StoreProductStock>()
+                .eq(StoreProductStock::getStoreId, dto.getStoreId()).eq(StoreProductStock::getStoreProdColorId, dto.getStoreProdColorId())
+                .eq(StoreProductStock::getDelFlag, Constants.UNDELETED));
+        if (ObjectUtils.isEmpty(stock)) {
+            return new StoreProdStockAndDiscountResDTO();
+        }
+        // 商品
+        StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
+                        .eq(StoreProduct::getId, stock.getStoreProdId()).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("商品不存在或无效!", HttpStatus.ERROR));
+        // 查询当前商品的售价
+        StoreProductColorPrice prodColorPrice = this.prodColorPriceMapper.selectOne(new LambdaQueryWrapper<StoreProductColorPrice>()
+                .eq(StoreProductColorPrice::getStoreProdId, stock.getStoreProdId()).eq(StoreProductColorPrice::getStoreColorId, stock.getStoreColorId())
+                .eq(StoreProductColorPrice::getDelFlag, Constants.UNDELETED));
+        // 查询当前客户在该商品的优惠信息
+        StoreCustomerProductDiscount storeCusProdDiscount = this.storeCusProdDiscMapper.selectOne(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
+                .eq(StoreCustomerProductDiscount::getStoreCusId, dto.getStoreCusId()).eq(StoreCustomerProductDiscount::getStoreProdColorId, dto.getStoreProdColorId())
+                .eq(StoreCustomerProductDiscount::getStoreId, dto.getStoreId()).eq(StoreCustomerProductDiscount::getDelFlag, Constants.UNDELETED));
+        // 标准尺码
+        List<StoreProductColorSize> prodColorSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
+                .eq(StoreProductColorSize::getStoreProdId, stock.getStoreProdId()).eq(StoreProductColorSize::getStoreColorId, stock.getStoreColorId())
+                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED).eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
+
+        // TODO 还要返回sns条码数据
+        // TODO 还要返回sns条码数据
+
+        return BeanUtil.toBean(stock, StoreProdStockAndDiscountResDTO.class).setStoreProdStockId(stock.getId()).setStoreCusId(dto.getStoreCusId())
+                .setStoreCusName(storeCusProdDiscount.getStoreCusName()).setPrice(prodColorPrice.getPrice()).setOverPrice(storeProd.getOverPrice())
+                .setDiscount(ObjectUtils.defaultIfNull(storeCusProdDiscount.getDiscount(), 0))
+                .setStandardSizeList(prodColorSizeList.stream().map(StoreProductColorSize::getSize).sorted(Comparator.comparing(Function.identity())).collect(Collectors.toList()));
+    }
+
+    /**
+     * 库存盘点
+     *
+     * @param storeId       档口ID
+     * @param checkStockDTO 盘点入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer checkAndUpdateStock(Long storeId, StoreProdCheckStockDTO checkStockDTO) {
+        List<StoreProductStock> stockList = Optional.ofNullable(this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
+                        .in(StoreProductStock::getStoreProdColorId, checkStockDTO.getCheckStockList().stream().map(StoreProdCheckStockDTO.SPCSStockDTO::getStoreProdColorId).collect(Collectors.toList()))
+                        .eq(StoreProductStock::getDelFlag, Constants.UNDELETED).eq(StoreProductStock::getStoreId, storeId)))
+                .orElseThrow(() -> new ServiceException("当前商品库存不存在，请联系客服!", HttpStatus.ERROR));
+        // 每一个颜色
+        Map<Long, Map<Integer, Integer>> prodColorSizeMap = checkStockDTO.getCheckStockList().stream().collect(Collectors
+                .groupingBy(StoreProdCheckStockDTO.SPCSStockDTO::getStoreProdColorId, Collectors
+                        .toMap(StoreProdCheckStockDTO.SPCSStockDTO::getSize, StoreProdCheckStockDTO.SPCSStockDTO::getStock)));
+        stockList.forEach(dbStock -> {
+            Map<Integer, Integer> sizeStockMap = prodColorSizeMap.get(dbStock.getStoreProdColorId());
+            if (MapUtils.isEmpty(sizeStockMap)) {
+                return;
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_30))) {
+                dbStock.setSize30(sizeStockMap.get(SIZE_30));
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_31))) {
+                dbStock.setSize31(sizeStockMap.get(SIZE_31));
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_32))) {
+                dbStock.setSize32(sizeStockMap.get(SIZE_32));
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_33))) {
+                dbStock.setSize33(sizeStockMap.get(SIZE_33));
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_34))) {
+                dbStock.setSize34(sizeStockMap.get(SIZE_34));
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_35))) {
+                dbStock.setSize35(sizeStockMap.get(SIZE_35));
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_36))) {
+                dbStock.setSize36(sizeStockMap.get(SIZE_36));
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_37))) {
+                dbStock.setSize37(sizeStockMap.get(SIZE_37));
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_38))) {
+                dbStock.setSize38(sizeStockMap.get(SIZE_38));
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_39))) {
+                dbStock.setSize39(sizeStockMap.get(SIZE_39));
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_40))) {
+                dbStock.setSize40(sizeStockMap.get(SIZE_40));
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_41))) {
+                dbStock.setSize41(sizeStockMap.get(SIZE_41));
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_42))) {
+                dbStock.setSize42(sizeStockMap.get(SIZE_42));
+            }
+            if (ObjectUtils.isNotEmpty(sizeStockMap.get(SIZE_43))) {
+                dbStock.setSize43(sizeStockMap.get(SIZE_43));
+            }
+        });
+        return this.storeProdStockMapper.updateById(stockList).size();
     }
 
 

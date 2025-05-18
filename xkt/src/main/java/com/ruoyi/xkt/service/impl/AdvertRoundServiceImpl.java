@@ -61,7 +61,6 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     final StoreProductMapper storeProdMapper;
     final SysFileMapper fileMapper;
     final IAssetService assetService;
-    final AdvertStoreFileMapper advertStoreFileMapper;
 
     // 推广营销位锁 key：symbol + roundId 或者 symbol + roundId + position 。value都是new Object()
     public static Map<String, Object> advertLockMap = new ConcurrentHashMap<>();

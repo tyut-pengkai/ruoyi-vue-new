@@ -30,8 +30,12 @@ public class StoreSalePageResDTO {
     private Date createTime;
     @ApiModelProperty(value = "销售类型（1销售、2退货、3销售/退货）")
     private Integer saleType;
-    @ApiModelProperty(value = "销售数量")
+    @ApiModelProperty(value = "总数量")
     private Integer quantity;
+    @ApiModelProperty(value = "销售数量")
+    private Integer saleQuantity;
+    @ApiModelProperty(value = "退货数量")
+    private Integer refundQuantity;
     @ApiModelProperty(value = "总金额")
     private BigDecimal amount;
     @ApiModelProperty(value = "结款状态")

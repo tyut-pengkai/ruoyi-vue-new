@@ -57,4 +57,37 @@ public class CacheConstants
      */
     public static final String ADVERT_DEADLINE_KEY = "advert_deadline:";
 
+    /**
+     * PC 广告
+     */
+    public static final String PC_ADVERT = "pc_advert:";
+
+    /**
+     * PC 首页 顶部左侧轮播图
+     */
+    public static final String PC_ADVERT_INDEX_TOP_LEFT = "pc_index_top_left";
+    /**
+     * PC 首页 顶部右侧轮播图
+     */
+    public static final String PC_ADVERT_INDEX_TOP_RIGHT = "pc_index_top_right";
+    /**
+     * PC 首页 中部 销售榜
+     */
+    public static final String PC_ADVERT_INDEX_MID_SALE = "pc_index_mid_sale";
+    /**
+     * PC 首页 中部 风格榜
+     */
+    public static final String PC_ADVERT_INDEX_MID_STYLE = "pc_index_mid_style";
+    /**
+     * PC 首页 底部 人气榜
+     */
+    public static final String PC_ADVERT_INDEX_BOTTOM_POPULAR = "pc_index_bottom_popular";
+
+
+
+    /**
+     * APP 广告
+     */
+    public static final String APP_ADVERT = "app_advert:";
+
 }

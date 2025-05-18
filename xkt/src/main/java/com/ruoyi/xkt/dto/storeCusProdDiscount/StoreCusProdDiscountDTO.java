@@ -27,7 +27,7 @@ public class StoreCusProdDiscountDTO {
     private String storeCusName;
     @ApiModelProperty(value = "客户联系电话")
     private String phone;
-    @ApiModelProperty(value = "优惠金额")
-    private Integer discount;
+    @ApiModelProperty(value = "所有商品优惠金额")
+    private Integer allProductDiscount;
 
 }

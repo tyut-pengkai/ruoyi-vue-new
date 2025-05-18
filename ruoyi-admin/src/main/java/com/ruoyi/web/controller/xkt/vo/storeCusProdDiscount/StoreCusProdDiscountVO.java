@@ -30,8 +30,8 @@ public class StoreCusProdDiscountVO {
     @ApiModelProperty(value = "客户联系电话")
     @Pattern(regexp = "^1[3-9]\\d{9}$", message = "联系电话格式不正确，请输入有效的中国大陆手机号")
     private String phone;
-    @NotNull(message = "优惠金额不能为空!")
-    @ApiModelProperty(value = "优惠金额", required = true)
-    private Integer discount;
+    @NotNull(message = "所有商品优惠金额不能为空!")
+    @ApiModelProperty(value = "所有商品优惠金额", required = true)
+    private Integer allProductDiscount;
 
 }

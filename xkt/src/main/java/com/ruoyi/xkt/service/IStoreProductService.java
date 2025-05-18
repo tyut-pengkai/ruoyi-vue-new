@@ -55,30 +55,14 @@ public interface IStoreProductService {
      * @param storeProdDTO 档口商品
      * @return 结果
      */
-    public int updateStoreProduct(Long storeProdId, StoreProdDTO storeProdDTO) throws IOException;
+    int updateStoreProduct(Long storeProdId, StoreProdDTO storeProdDTO) throws IOException;
 
     /**
      * 更新档口商品状态
      *
      * @param prodStatusDTO 更新状态入参
      */
-    public void updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO) throws IOException;
-
-    /**
-     * 批量删除档口商品
-     *
-     * @param storeProdIds 需要删除的档口商品主键集合
-     * @return 结果
-     */
-    public int deleteStoreProductByStoreProdIds(Long[] storeProdIds);
-
-    /**
-     * 删除档口商品信息
-     *
-     * @param storeProdId 档口商品主键
-     * @return 结果
-     */
-    public int deleteStoreProductByStoreProdId(Long storeProdId);
+    void updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO) throws IOException;
 
     /**
      * 根据档口ID和商品货号模糊查询货号列表

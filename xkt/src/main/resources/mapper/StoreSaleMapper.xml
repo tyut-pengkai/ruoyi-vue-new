@@ -121,7 +121,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectPage" parameterType="com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO" resultType="com.ruoyi.xkt.dto.storeSale.StoreSalePageResDTO">
         SELECT
             ss.id AS storeSaleId,  ss.store_id,  ss.`code`, ss.store_cus_name AS cusName, ss.create_time, ss.sale_type, ss.quantity, ss.amount, ss.payment_status,
-            ss.pay_way,  ss.operator_name, ss.remark
+            ss.pay_way,  ss.operator_name, ss.remark, ss.sale_quantity, ss.refund_quantity
         FROM
             store_sale ss
             <if test="prodArtNum != null  and prodArtNum != ''"> join store_sale_detail ssd on ss.id = ssd.store_sale_id</if>

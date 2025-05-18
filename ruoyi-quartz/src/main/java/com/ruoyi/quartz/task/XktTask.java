@@ -461,12 +461,36 @@ public class XktTask {
         });
     }
 
-    /**
-     * 每天晚上11点将单据日期为当天的图片拷贝到store_advert_file中
-     */
-    public void copyPicToStoreAdvertFile() {
 
-    }
+
+
+
+
+
+
+
+
+    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
+    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
+    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
+    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
+    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
+    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
+    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**

@@ -13,8 +13,12 @@ import lombok.Data;
 @Data
 public class StoreProdColorResDTO {
 
+    @ApiModelProperty(value = "档口商品当前颜色ID")
+    private Long storeProductColorId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "档口商品ID")
+    private Long storeProdId;
     @ApiModelProperty(value = "档口颜色ID")
     private Long storeColorId;
     @ApiModelProperty(value = "商品货号")

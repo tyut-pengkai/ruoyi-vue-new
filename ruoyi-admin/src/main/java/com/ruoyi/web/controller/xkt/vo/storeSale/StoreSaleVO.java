@@ -36,9 +36,9 @@ public class StoreSaleVO {
     @NotBlank(message = "档口客户名称不能为空!")
     private String storeCusName;
     @ApiModelProperty(value = "销售类型（销售 1、退货 2、销售/退货 3）", required = true)
-    @NotBlank(message = "销售类型不能为空!")
+    @NotNull(message = "销售类型不能为空!")
     private Integer saleType;
-    @NotBlank(message = "支付方式不能为空!")
+    @NotNull(message = "支付方式不能为空!")
     @ApiModelProperty(value = "支付方式（1支付宝、2微信、3现金、4欠款）", required = true)
     private Integer payWay;
     @ApiModelProperty(value = "结款状态（已结清、欠款） SETTLED、DEBT")
