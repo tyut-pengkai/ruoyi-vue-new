@@ -181,11 +181,11 @@ public class AliPaymentMangerImpl implements PaymentManager {
             throw new ServiceException("订单[" + orderExt.getOrder().getOrderNo() + "]支付状态异常");
         }
         return pay(orderExt.getOrder().getOrderNo(), orderExt.getOrder().getTotalAmount(),
-                "代发订单" + orderExt.getOrder().getOrderNo(), payPage,null);
+                "代发订单" + orderExt.getOrder().getOrderNo(), payPage, null);
     }
 
     @Override
-    public void refundStoreOrder(StoreOrderRefund orderRefund) {
+    public boolean refundStoreOrder(StoreOrderRefund orderRefund) {
         Assert.notNull(orderRefund);
         Assert.notNull(orderRefund.getOriginOrder());
         Assert.notNull(orderRefund.getRefundOrder());
@@ -199,7 +199,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
         // 设置商户订单号
         model.setOutTradeNo(orderRefund.getOriginOrder().getOrderNo());
         // 设置支付宝交易号
-        model.setTradeNo(orderRefund.getOriginOrder().getPayTradeNo());
+//        model.setTradeNo(orderRefund.getOriginOrder().getPayTradeNo());
         // 设置退款金额
         BigDecimal amount = BigDecimal.ZERO;
         for (StoreOrderDetail orderDetail : orderRefund.getRefundOrderDetails()) {
@@ -212,11 +212,22 @@ public class AliPaymentMangerImpl implements PaymentManager {
         // 设置退款请求号
         model.setOutRequestNo(orderRefund.getRefundOrder().getOrderNo());
         try {
+            //TODO 沙箱环境接口无法完全退款？
+//                    AlipayTradeRefundResponse response = alipayClient.certificateExecute(request);
             AlipayTradeRefundResponse response = alipayClient.execute(request);
             log.info("支付宝退款：{}", response.getBody());
+            String fundChange = JSON.parseObject(response.getBody())
+                    .getJSONObject("alipay_trade_refund_response")
+                    .getString("fund_change");
             if (response.isSuccess()) {
-                //TODO 沙箱环境接口不通
-                return;
+                //退款成功判断说明：接口返回fund_change=Y为退款成功，
+                // fund_change=N或无此字段值返回时需通过退款查询接口进一步确认退款状态。
+                return "Y".equals(fundChange);
+            } else {
+                //获取诊断链接
+                String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(response);
+                log.warn("支付宝退款异常: {}", diagnosisUrl);
+                return false;
             }
         } catch (Exception e) {
             log.error("退款异常", e);
@@ -224,6 +235,43 @@ public class AliPaymentMangerImpl implements PaymentManager {
         //告警
         fsNotice.sendMsg2DefaultChat("退款发起异常", JSON.toJSONString(orderRefund));
         throw new ServiceException("退款失败");
+    }
+
+    @Override
+    public ENetResult queryStoreOrderRefundResult(String refundOrderNo, String originOrderNo) {
+        Assert.notEmpty(refundOrderNo);
+        Assert.notEmpty(originOrderNo);
+        AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
+                alipayPublicKey, signType);
+        // 构造请求参数以调用接口
+        AlipayTradeFastpayRefundQueryRequest request = new AlipayTradeFastpayRefundQueryRequest();
+        AlipayTradeFastpayRefundQueryModel model = new AlipayTradeFastpayRefundQueryModel();
+        model.setOutRequestNo(refundOrderNo);
+        model.setOutTradeNo(originOrderNo);
+        request.setBizModel(model);
+        try {
+            AlipayTradeFastpayRefundQueryResponse response = alipayClient.execute(request);
+            log.warn("查询支付宝订单退款结果: {}", response.getBody());
+            if (response.isSuccess()) {
+                String refundStatus = JSON.parseObject(response.getBody())
+                        .getJSONObject("alipay_trade_fastpay_refund_query_response")
+                        .getString("refund_status");
+                if ("REFUND_SUCCESS".equals(refundStatus)) {
+                    return ENetResult.SUCCESS;
+                }
+                return ENetResult.FAILURE;
+            } else {
+                //获取诊断链接
+                String diagnosisUrl = DiagnosisUtils.getDiagnosisUrl(response);
+                log.error("查询支付宝订单退款果异常: {}", diagnosisUrl);
+                return ENetResult.FAILURE;
+            }
+        } catch (Exception e) {
+            log.error("查询支付宝订单退款结果异常", e);
+        }
+        //告警
+        fsNotice.sendMsg2DefaultChat("查询支付宝订单退款结果异常", JSON.toJSONString(model));
+        throw new ServiceException("查询支付宝订单退款结果失败");
     }
 
     @Override

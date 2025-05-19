@@ -48,6 +48,11 @@ public class CacheConstants
     public static final String USER_STS_KEY = "user_sts:";
 
     /**
+     * 退款处理中标识
+     */
+    public static final String STORE_ORDER_REFUND_PROCESSING_MARK = "store_order_refund_processing_mark_";
+
+    /**
      * 档口
      */
     public static final String STORE_KEY = "store:";

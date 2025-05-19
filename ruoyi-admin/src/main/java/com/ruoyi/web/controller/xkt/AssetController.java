@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.json.JSONUtil;
 import com.github.pagehelper.Page;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
@@ -85,7 +86,6 @@ public class AssetController extends XktBaseController {
         //创建付款单
         WithdrawPrepareResult prepareResult = assetService.prepareWithdraw(SecurityUtils.getStoreId(), vo.getAmount(),
                 vo.getTransactionPassword(), EPayChannel.ALI_PAY);
-        //TODO 失败补偿
         //支付宝转账
         boolean success = aliPaymentManger.transfer(prepareResult.getBillNo(), prepareResult.getAccountOwnerNumber(),
                 prepareResult.getAccountOwnerName(), prepareResult.getAmount());
@@ -93,7 +93,7 @@ public class AssetController extends XktBaseController {
         if (success) {
             assetService.withdrawSuccess(prepareResult.getFinanceBillId());
         } else {
-            fsNotice.sendMsg2DefaultChat("档口提现异常", "付款单: " + prepareResult.getFinanceBillId());
+            fsNotice.sendMsg2DefaultChat("档口提现失败", "参数: " + JSONUtil.toJsonStr(prepareResult));
         }
         return success();
     }

@@ -1,27 +1,42 @@
 package com.ruoyi.quartz.task;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateUtil;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.core.domain.entity.SysProductCategory;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
+import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.system.mapper.SysProductCategoryMapper;
 import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.dto.account.WithdrawPrepareResult;
 import com.ruoyi.xkt.dto.dailySale.DailySaleCusDTO;
 import com.ruoyi.xkt.dto.dailySale.DailySaleDTO;
 import com.ruoyi.xkt.dto.dailySale.DailySaleProdDTO;
 import com.ruoyi.xkt.dto.dailySale.WeekCateSaleDTO;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
+import com.ruoyi.xkt.dto.order.StoreOrderCancelDTO;
+import com.ruoyi.xkt.dto.order.StoreOrderRefund;
 import com.ruoyi.xkt.enums.*;
+import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IAdvertRoundService;
+import com.ruoyi.xkt.service.IAlipayCallbackService;
+import com.ruoyi.xkt.service.IAssetService;
+import com.ruoyi.xkt.service.IStoreOrderService;
+import io.jsonwebtoken.lang.Assert;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +57,7 @@ import java.util.stream.Collectors;
  *
  * @author ruoyi
  */
+@Slf4j
 @Component("xktTask")
 @RequiredArgsConstructor
 public class XktTask {
@@ -68,6 +84,11 @@ public class XktTask {
     final AdvertRoundMapper advertRoundMapper;
     final RedisCache redisCache;
     final IAdvertRoundService advertRoundService;
+    final IStoreOrderService storeOrderService;
+    final IAssetService assetService;
+    final IAlipayCallbackService alipayCallbackService;
+    final FsNotice fsNotice;
+    final List<PaymentManager> paymentManagers;
 
     /**
      * 每晚1点同步档口销售数据
@@ -461,6 +482,140 @@ public class XktTask {
         });
     }
 
+    /**
+     * 自动关闭超时订单
+     */
+    public void autoCloseTimeoutStoreOrder() {
+        log.info("-------------自动关闭超时订单开始-------------");
+        Integer batchCount = 20;
+        Date beforeDate = DateUtil.offset(new Date(), DateField.MINUTE, 60);
+        List<Long> storeOrderIds = storeOrderService.listNeedAutoCloseOrder(beforeDate, batchCount);
+        for (Long storeOrderId : storeOrderIds) {
+            log.info("开始处理: {}", storeOrderId);
+            try {
+                StoreOrderCancelDTO cancelDTO = new StoreOrderCancelDTO();
+                cancelDTO.setStoreOrderId(storeOrderId);
+                cancelDTO.setRemark("超时订单自动关闭");
+                storeOrderService.cancelOrder(cancelDTO);
+            } catch (Exception e) {
+                log.error("自动关闭超时订单异常", e);
+                fsNotice.sendMsg2DefaultChat("自动关闭超时订单异常", "订单ID:" + storeOrderId);
+            }
+        }
+        log.info("-------------自动关闭超时订单结束-------------");
+    }
+
+    /**
+     * 继续处理退款（异常中断补偿，非正常流程）
+     */
+    public void continueProcessRefund() {
+        log.info("-------------继续处理退款开始-------------");
+        Integer batchCount = 20;
+        List<StoreOrderRefund> storeOrderRefunds = storeOrderService.listNeedContinueRefundOrder(batchCount);
+        for (StoreOrderRefund storeOrderRefund : storeOrderRefunds) {
+            log.info("开始处理: {}", storeOrderRefund);
+            try {
+                //支付宝接口要求：同一笔交易的退款至少间隔3s后发起
+                String markKey = CacheConstants.STORE_ORDER_REFUND_PROCESSING_MARK +
+                        storeOrderRefund.getRefundOrder().getId();
+                boolean less3s = redisCache.hasKey(markKey);
+                if (less3s) {
+                    log.warn("订单[{}]退款间隔小于3s跳过执行", storeOrderRefund.getRefundOrder().getId());
+                    continue;
+                }
+                PaymentManager paymentManager = getPaymentManager(EPayChannel.of(storeOrderRefund.getRefundOrder().getPayChannel()));
+                //查询退款结果
+                ENetResult queryResult = paymentManager.queryStoreOrderRefundResult(
+                        storeOrderRefund.getRefundOrder().getOrderNo(),
+                        storeOrderRefund.getOriginOrder().getOrderNo());
+                if (ENetResult.SUCCESS == queryResult) {
+                    //退款成功
+                    //支付状态->已支付，收款单到账
+                    storeOrderService.refundSuccess(storeOrderRefund.getRefundOrder().getId(),
+                            storeOrderRefund.getRefundOrderDetails().stream().map(SimpleEntity::getId).collect(Collectors.toList()),
+                            SecurityUtils.getUserId());
+                } else {
+                    //可能是退款失败，也可能是退款处理中，重复调用支付宝接口时只要参数正确也不会重复退款
+                    boolean success = paymentManager.refundStoreOrder(storeOrderRefund);
+                    //标记
+                    redisCache.setCacheObject(markKey, 1, 3, TimeUnit.SECONDS);
+                    if (success) {
+                        //支付状态->已支付，收款单到账
+                        storeOrderService.refundSuccess(storeOrderRefund.getRefundOrder().getId(),
+                                storeOrderRefund.getRefundOrderDetails().stream().map(SimpleEntity::getId).collect(Collectors.toList()),
+                                SecurityUtils.getUserId());
+                    } else {
+                        fsNotice.sendMsg2DefaultChat("退款失败", "参数: " + JSON.toJSONString(storeOrderRefund));
+                    }
+                }
+            } catch (Exception e) {
+                log.error("继续处理退款异常", e);
+                fsNotice.sendMsg2DefaultChat("退款异常", "参数: " + JSON.toJSONString(storeOrderRefund));
+            }
+        }
+        log.info("-------------继续处理退款结束-------------");
+    }
+
+    /**
+     * 继续处理档口提现（异常中断补偿，非正常流程）
+     */
+    public void continueProcessWithdraw() {
+        log.info("-------------继续处理档口提现开始-------------");
+        Integer batchCount = 20;
+        Map<EPayChannel, List<WithdrawPrepareResult>> map = assetService.getNeedContinueWithdrawGroupMap(batchCount);
+        for (Map.Entry<EPayChannel, List<WithdrawPrepareResult>> entry : map.entrySet()) {
+            PaymentManager paymentManager = getPaymentManager(entry.getKey());
+            for (WithdrawPrepareResult prepareResult : entry.getValue()) {
+                log.info("开始处理: {}", prepareResult);
+                try {
+                    //查询转账结果
+                    ENetResult queryResult = paymentManager.queryTransferResult(prepareResult.getBillNo());
+                    if (ENetResult.SUCCESS == queryResult) {
+                        //转账成功，直接到账
+                        assetService.withdrawSuccess(prepareResult.getFinanceBillId());
+                    } else if (ENetResult.FAILURE == queryResult) {
+                        //转账失败，尝试重新支付
+                        boolean success = paymentManager.transfer(prepareResult.getBillNo(),
+                                prepareResult.getAccountOwnerNumber(),
+                                prepareResult.getAccountOwnerName(),
+                                prepareResult.getAmount());
+                        //付款单到账
+                        if (success) {
+                            assetService.withdrawSuccess(prepareResult.getFinanceBillId());
+                        } else {
+                            fsNotice.sendMsg2DefaultChat("档口提现失败", "参数: " + JSON.toJSONString(prepareResult));
+                        }
+                    } else {
+                        log.warn("档口提现支付宝处理中: {}", prepareResult);
+                    }
+                } catch (Exception e) {
+                    log.error("继续继续处理档口提现异常", e);
+                    fsNotice.sendMsg2DefaultChat("档口提现异常", "参数: " + JSON.toJSONString(prepareResult));
+                }
+            }
+        }
+        log.info("-------------继续处理档口提现结束-------------");
+    }
+
+    /**
+     * 继续处理支付宝支付回调信息（异常中断补偿，非正常流程）
+     */
+    public void continueProcessAliCallback() {
+        log.info("-------------继续处理支付宝支付回调信息开始-------------");
+        Integer batchCount = 20;
+        List<AlipayCallback> callbacks = alipayCallbackService.listNeedContinueProcessCallback(batchCount);
+        for (AlipayCallback callback : callbacks) {
+            log.info("开始处理: {}", callback);
+            try {
+                alipayCallbackService.continueProcess(Collections.singletonList(callback));
+            } catch (Exception e) {
+                log.error("继续处理支付宝支付回调异常", e);
+                fsNotice.sendMsg2DefaultChat("支付回调处理异常", "回调信息: " + JSON.toJSONString(callback));
+            }
+        }
+        log.info("-------------继续处理支付宝支付回调信息结束-------------");
+    }
+
 
 
 
@@ -773,6 +928,22 @@ public class XktTask {
         // 调用bulk方法执行批量更新操作
         BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
         System.out.println("bulkResponse.items() = " + bulkResponse.items());
+    }
+
+    /**
+     * 根据支付渠道匹配支付类
+     *
+     * @param payChannel
+     * @return
+     */
+    private PaymentManager getPaymentManager(EPayChannel payChannel) {
+        Assert.notNull(payChannel);
+        for (PaymentManager paymentManager : paymentManagers) {
+            if (paymentManager.channel() == payChannel) {
+                return paymentManager;
+            }
+        }
+        throw new ServiceException("未知支付渠道");
     }
 
 }

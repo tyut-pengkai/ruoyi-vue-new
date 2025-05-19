@@ -50,4 +50,21 @@
             </if>
         </where>
     </select>
+    <select id="listNeedContinueRefundOrder" resultType="com.ruoyi.xkt.domain.StoreOrder">
+        SELECT
+            so.*
+        FROM
+            store_order so
+        WHERE
+            so.del_flag = '0'
+            AND EXISTS (
+            SELECT 1 FROM
+                store_order_detail sod
+            WHERE
+                sod.store_order_id = so.id
+                AND sod.del_flag = '0'
+                AND sod.detail_status = 24
+                AND sod.pay_status = 2
+            )
+    </select>
 </mapper>

@@ -14,6 +14,7 @@ import com.ruoyi.xkt.domain.ExternalAccount;
 import com.ruoyi.xkt.domain.FinanceBill;
 import com.ruoyi.xkt.domain.InternalAccount;
 import com.ruoyi.xkt.dto.account.*;
+import com.ruoyi.xkt.dto.finance.FinanceBillDTO;
 import com.ruoyi.xkt.dto.finance.FinanceBillExt;
 import com.ruoyi.xkt.dto.finance.RechargeAddDTO;
 import com.ruoyi.xkt.dto.finance.RechargeAddResult;
@@ -29,7 +30,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author liangyq
@@ -240,6 +244,28 @@ public class AssetServiceImpl implements IAssetService {
                 amount, EFinBillSrcType.ADVERT_REFUND.getValue(), null, null, null,
                 "推广费退款");
 
+    }
+
+    @Override
+    public Map<EPayChannel, List<WithdrawPrepareResult>> getNeedContinueWithdrawGroupMap(Integer count) {
+        //TODO 付款单据没有支付渠道和账户快照
+        List<FinanceBillDTO> bills = financeBillService.listByStatus(EFinBillStatus.PROCESSING,
+                EFinBillType.PAYMENT, EFinBillSrcType.WITHDRAW, count);
+        List<WithdrawPrepareResult> results = new ArrayList<>(bills.size());
+        for (FinanceBillDTO bill : bills) {
+            Long storeId = bill.getSrcId();
+            ExternalAccount externalAccount = externalAccountService.getAccountAndCheck(storeId,
+                    EAccountOwnerType.STORE, EAccountType.ALI_PAY);
+            results.add(new WithdrawPrepareResult(bill.getId(),
+                    bill.getBillNo(),
+                    bill.getTransAmount(),
+                    externalAccount.getAccountOwnerNumber(),
+                    externalAccount.getAccountOwnerName(),
+                    externalAccount.getAccountOwnerPhoneNumber()));
+        }
+        Map<EPayChannel, List<WithdrawPrepareResult>> rtn = new HashMap<>(1);
+        rtn.put(EPayChannel.ALI_PAY, results);
+        return rtn;
     }
 
     /**

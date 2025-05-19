@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
@@ -8,6 +9,7 @@ import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.exception.ServiceException;
@@ -16,6 +18,7 @@ import com.ruoyi.xkt.domain.FinanceBill;
 import com.ruoyi.xkt.domain.FinanceBillDetail;
 import com.ruoyi.xkt.domain.InternalAccount;
 import com.ruoyi.xkt.domain.StoreOrderDetail;
+import com.ruoyi.xkt.dto.finance.FinanceBillDTO;
 import com.ruoyi.xkt.dto.finance.FinanceBillExt;
 import com.ruoyi.xkt.dto.finance.TransInfo;
 import com.ruoyi.xkt.dto.order.StoreOrderExt;
@@ -560,6 +563,20 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         internalAccountService.addTransDetail(inputAccountId, transInfo,
                 ELoanDirection.DEBIT, EEntryStatus.FINISH);
         return new FinanceBillExt(bill, ListUtil.empty());
+    }
+
+    @Override
+    public List<FinanceBillDTO> listByStatus(EFinBillStatus billStatus, EFinBillType billType,
+                                             EFinBillSrcType billSrcType, Integer count) {
+        if (count != null) {
+            PageHelper.startPage(1, count, false);
+        }
+        List<FinanceBill> doList = financeBillMapper.selectList(Wrappers.lambdaQuery(FinanceBill.class)
+                .eq(FinanceBill::getBillStatus, Optional.ofNullable(billStatus).map(EFinBillStatus::getValue).orElse(null))
+                .eq(FinanceBill::getBillType, Optional.ofNullable(billType).map(EFinBillType::getValue).orElse(null))
+                .eq(FinanceBill::getSrcType, Optional.ofNullable(billSrcType).map(EFinBillSrcType::getValue).orElse(null))
+                .eq(FinanceBill::getDelFlag, Constants.UNDELETED));
+        return BeanUtil.copyToList(doList, FinanceBillDTO.class);
     }
 
 

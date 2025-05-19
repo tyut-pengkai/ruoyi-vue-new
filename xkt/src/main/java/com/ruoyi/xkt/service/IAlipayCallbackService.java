@@ -2,6 +2,8 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.AlipayCallback;
 
+import java.util.List;
+
 /**
  * @author liangyq
  * @date 2025-04-08 17:39
@@ -46,9 +48,17 @@ public interface IAlipayCallbackService {
     void noNeedProcess(AlipayCallback info);
 
     /**
-     * 继续处理回调
+     * 获取需要继续处理的回调
      *
      * @param count
+     * @return
      */
-    void continueProcess(int count);
+    List<AlipayCallback> listNeedContinueProcessCallback(Integer count);
+
+    /**
+     * 继续处理回调
+     *
+     * @param infoList
+     */
+    void continueProcess(List<AlipayCallback> infoList);
 }

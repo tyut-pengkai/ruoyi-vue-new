@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.CharSequenceUtil;
@@ -1259,46 +1260,45 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         expressService.addTrackRecord(expressTrackRecordAddDTO);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void autoCancel(Date beforeDate, int count) {
-        PageHelper.startPage(1, count, false);
+    public List<Long> listNeedAutoCloseOrder(Date beforeDate, Integer count) {
+        if (count != null) {
+            PageHelper.startPage(1, count, false);
+        }
         List<StoreOrder> orders = storeOrderMapper.selectList(Wrappers.lambdaQuery(StoreOrder.class)
                 .eq(StoreOrder::getOrderStatus, EOrderStatus.PENDING_PAYMENT.getValue())
                 .ne(StoreOrder::getPayStatus, EPayStatus.PAID.getValue())
                 .eq(SimpleEntity::getDelFlag, Constants.UNDELETED)
                 .le(SimpleEntity::getCreateTime, beforeDate));
-        for (StoreOrder order : orders) {
-            PaymentManager paymentManager = getPaymentManager(EPayChannel.of(order.getPayChannel()));
-            ENetResult result = paymentManager.queryStoreOrderPayResult(order.getOrderNo());
-            if (ENetResult.SUCCESS == result) {
-                log.warn("订单[{}]已支付，无法取消", order.getId());
-                continue;
-            }
-            //订单已取消
-            order.setOrderStatus(EOrderStatus.CANCELLED.getValue());
-            int orderSuccess = storeOrderMapper.updateById(order);
-            if (orderSuccess == 0) {
-                throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
-            }
-            List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectList(
-                    Wrappers.lambdaQuery(StoreOrderDetail.class)
-                            .eq(StoreOrderDetail::getStoreOrderId, order.getId())
-                            .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
-            List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
-            for (StoreOrderDetail orderDetail : orderDetails) {
-                //明细已取消
-                orderDetail.setDetailStatus(EOrderStatus.CANCELLED.getValue());
-                int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
-                if (orderDetailSuccess == 0) {
-                    throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
-                }
-                orderDetailIdList.add(orderDetail.getId());
-            }
-            //操作记录
-            addOperationRecords(order.getId(), EOrderAction.CANCEL, orderDetailIdList, EOrderAction.CANCEL,
-                    "超时取消", null, new Date());
+        return orders.stream().map(SimpleEntity::getId).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<StoreOrderRefund> listNeedContinueRefundOrder(Integer count) {
+        if (count != null) {
+            PageHelper.startPage(1, count, false);
         }
+        List<StoreOrder> orders = storeOrderMapper.listNeedContinueRefundOrder();
+        List<StoreOrderRefund> storeOrderRefunds = new ArrayList<>(orders.size());
+        if (CollUtil.isEmpty(orders)) {
+            return ListUtil.empty();
+        }
+        List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectList(Wrappers
+                .lambdaQuery(StoreOrderDetail.class)
+                .in(StoreOrderDetail::getStoreOrderId, orders.stream().map(SimpleEntity::getId)
+                        .collect(Collectors.toSet()))
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        Map<Long, List<StoreOrderDetail>> orderDetailMap = orderDetails.stream()
+                .filter(o -> EOrderStatus.AFTER_SALE_COMPLETED.getValue().equals(o.getDetailStatus())
+                        && EPayStatus.PAYING.getValue().equals(o.getPayStatus()))
+                .collect(Collectors.groupingBy(StoreOrderDetail::getStoreOrderId));
+        for (StoreOrder order : orders) {
+            List<StoreOrderDetail> orderDetailList = orderDetailMap.get(order.getId());
+            Assert.notEmpty(orderDetailList);
+            storeOrderRefunds.add(new StoreOrderRefund(order, orderDetailList,
+                    getAndBaseCheck(order.getOriginOrderId())));
+        }
+        return storeOrderRefunds;
     }
 
     /**

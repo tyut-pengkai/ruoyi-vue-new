@@ -16,4 +16,6 @@ import java.util.List;
 public interface StoreOrderMapper extends BaseMapper<StoreOrder> {
 
     List<StoreOrderPageItemDTO> listStoreOrderPageItem(StoreOrderQueryDTO queryDTO);
+
+    List<StoreOrder> listNeedContinueRefundOrder();
 }

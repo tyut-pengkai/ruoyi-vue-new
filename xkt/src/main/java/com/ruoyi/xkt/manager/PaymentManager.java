@@ -47,7 +47,16 @@ public interface PaymentManager {
      *
      * @param orderRefund
      */
-    void refundStoreOrder(StoreOrderRefund orderRefund);
+    boolean refundStoreOrder(StoreOrderRefund orderRefund);
+
+    /**
+     * 退款结果
+     *
+     * @param refundOrderNo
+     * @param originOrderNo
+     * @return
+     */
+    ENetResult queryStoreOrderRefundResult(String refundOrderNo, String originOrderNo);
 
     /**
      * 是否已支付

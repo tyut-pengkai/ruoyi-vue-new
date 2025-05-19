@@ -1,15 +1,19 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson2.JSON;
 import com.github.pagehelper.Page;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.core.page.PageVO;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.web.controller.xkt.vo.order.*;
 import com.ruoyi.xkt.domain.StoreOrderDetail;
 import com.ruoyi.xkt.dto.express.ExpressCancelReqDTO;
@@ -35,6 +39,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -52,6 +57,10 @@ public class StoreOrderController extends XktBaseController {
     private IExpressService expressService;
     @Autowired
     private List<PaymentManager> paymentManagers;
+    @Autowired
+    private FsNotice fsNotice;
+    @Autowired
+    private RedisCache redisCache;
 
     @Log(title = "订单", businessType = BusinessType.INSERT)
     @ApiOperation("创建订单")
@@ -227,16 +236,27 @@ public class StoreOrderController extends XktBaseController {
         //TODO 权限
         StoreOrderRefundConfirmDTO dto = BeanUtil.toBean(vo, StoreOrderRefundConfirmDTO.class);
         dto.setOperatorId(SecurityUtils.getUserId());
+        //支付宝接口要求：同一笔交易的退款至少间隔3s后发起
+        String markKey = CacheConstants.STORE_ORDER_REFUND_PROCESSING_MARK + vo.getStoreOrderId();
+        boolean less3s = redisCache.hasKey(markKey);
+        if (less3s) {
+            throw new ServiceException("同一订单确认退款操作至少间隔3s后发起");
+        }
         //售后状态->售后完成，支付状态->支付中，创建收款单
         StoreOrderRefund storeOrderRefund = storeOrderService.prepareRefundOrder(dto);
-        //TODO 失败补偿
         //三方退款
         PaymentManager paymentManager = getPaymentManager(EPayChannel.of(storeOrderRefund.getRefundOrder().getPayChannel()));
-        paymentManager.refundStoreOrder(storeOrderRefund);
-        //支付状态->已支付，收款单到账
-        storeOrderService.refundSuccess(storeOrderRefund.getRefundOrder().getId(),
-                storeOrderRefund.getRefundOrderDetails().stream().map(SimpleEntity::getId).collect(Collectors.toList()),
-                SecurityUtils.getUserId());
+        boolean success = paymentManager.refundStoreOrder(storeOrderRefund);
+        //标记
+        redisCache.setCacheObject(markKey, 1, 3, TimeUnit.SECONDS);
+        if (success) {
+            //支付状态->已支付，收款单到账
+            storeOrderService.refundSuccess(storeOrderRefund.getRefundOrder().getId(),
+                    storeOrderRefund.getRefundOrderDetails().stream().map(SimpleEntity::getId).collect(Collectors.toList()),
+                    SecurityUtils.getUserId());
+        } else {
+            fsNotice.sendMsg2DefaultChat("确认退款失败", "参数: " + JSON.toJSONString(storeOrderRefund));
+        }
         return success();
     }
 

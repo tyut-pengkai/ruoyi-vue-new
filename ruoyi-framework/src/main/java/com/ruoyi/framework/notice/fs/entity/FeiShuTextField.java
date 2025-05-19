@@ -2,12 +2,16 @@ package com.ruoyi.framework.notice.fs.entity;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * @author liangyuqi
  * @date 2021/7/14 15:20
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class FeiShuTextField extends FeiShuMsg.BaseField {
     @JSONField(name = "un_escape")
     private boolean unEscape = true;

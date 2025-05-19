@@ -84,13 +84,20 @@ public class AlipayCallbackServiceImpl implements IAlipayCallbackService {
         alipayCallbackMapper.updateById(info);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void continueProcess(int count) {
-        PageHelper.startPage(1, count, false);
+    public List<AlipayCallback> listNeedContinueProcessCallback(Integer count) {
+        if (count != null) {
+            PageHelper.startPage(1, count, false);
+        }
         List<AlipayCallback> infoList = alipayCallbackMapper.selectList(Wrappers.lambdaQuery(AlipayCallback.class)
                 .eq(AlipayCallback::getProcessStatus, EProcessStatus.INIT.getValue())
                 .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        return infoList;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void continueProcess(List<AlipayCallback> infoList) {
         for (AlipayCallback info : infoList) {
             if (!"TRADE_SUCCESS".equals(info.getTradeStatus())) {
                 //非交易支付成功的回调不处理

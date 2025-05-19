@@ -178,10 +178,19 @@ public interface IStoreOrderService {
     void addTrack(StoreOrderExpressTrackAddDTO trackAddDTO);
 
     /**
-     * 自动取消
+     * 获取需要自动关闭的订单
      *
      * @param beforeDate
      * @param count
+     * @return
      */
-    void autoCancel(Date beforeDate, int count);
+    List<Long> listNeedAutoCloseOrder(Date beforeDate, Integer count);
+
+    /**
+     * 获取需要继续退款的订单信息
+     *
+     * @param count
+     * @return
+     */
+    List<StoreOrderRefund> listNeedContinueRefundOrder(Integer count);
 }

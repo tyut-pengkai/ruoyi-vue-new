@@ -1,8 +1,12 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.FinanceBill;
+import com.ruoyi.xkt.dto.finance.FinanceBillDTO;
 import com.ruoyi.xkt.dto.finance.FinanceBillExt;
 import com.ruoyi.xkt.dto.order.StoreOrderExt;
+import com.ruoyi.xkt.enums.EFinBillSrcType;
+import com.ruoyi.xkt.enums.EFinBillStatus;
+import com.ruoyi.xkt.enums.EFinBillType;
 import com.ruoyi.xkt.enums.EPayChannel;
 
 import java.math.BigDecimal;
@@ -112,6 +116,18 @@ public interface IFinanceBillService {
      */
     FinanceBillExt createInternalTransferBill(Long inputAccountId, Long outputAccountId, BigDecimal amount,
                                               Integer srcType, Long srcId, Integer relType, Long relId, String remark);
+
+    /**
+     * 单据列表
+     *
+     * @param billStatus
+     * @param billType
+     * @param billSrcType
+     * @param count
+     * @return
+     */
+    List<FinanceBillDTO> listByStatus(EFinBillStatus billStatus, EFinBillType billType, EFinBillSrcType billSrcType,
+                                      Integer count);
 
 
 }

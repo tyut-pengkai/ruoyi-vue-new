@@ -7,6 +7,8 @@ import com.ruoyi.xkt.dto.finance.RechargeAddResult;
 import com.ruoyi.xkt.enums.EPayChannel;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author liangyq
@@ -120,4 +122,12 @@ public interface IAssetService {
      * @param amount
      */
     void refundAdvertFee(Long storeId, BigDecimal amount);
+
+    /**
+     * 获取需要继续处理的提现信息
+     *
+     * @param count
+     * @return
+     */
+    Map<EPayChannel, List<WithdrawPrepareResult>> getNeedContinueWithdrawGroupMap(Integer count);
 }
