@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.util.Date;
+
 /**
  * 档口商品统计数据 store_product_statistics
  *
@@ -42,5 +44,13 @@ public class StoreProductStatistics extends XktBaseEntity {
      * 商品下载量
      */
     private Long downloadCount;
+    /**
+     * 图搜次数
+     */
+    private Long imgSearchCount;
+    /**
+     * 统计日期
+     */
+    private Date voucherDate;
 
 }
