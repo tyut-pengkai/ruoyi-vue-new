@@ -1,0 +1,48 @@
+package com.ruoyi.web.controller.xkt.vo.advertRound.pc.store;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+/**
+ * @author liujiang
+ * @version v1.0
+ * @date 2025/3/27 15:12
+ */
+@ApiModel("PC 档口馆 顶部横幅")
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class PCStoreTopBannerVO {
+
+    @ApiModelProperty(value = "1 推广图")
+    private Integer displayType;
+    @ApiModelProperty(value = "排序")
+    private Integer orderNum;
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
+    @ApiModelProperty(value = "推广图路径")
+    private String fileUrl;
+    @ApiModelProperty(value = "商品列表")
+    List<PCSTBProdVO> prodList;
+
+    @Data
+    public static class PCSTBProdVO {
+        @ApiModelProperty(value = "2 商品")
+        private Integer displayType;
+        @ApiModelProperty(value = "档口商品ID")
+        private Long storeProdId;
+        @ApiModelProperty(value = "商品货号")
+        private String prodArtNum;
+        @ApiModelProperty(value = "售价")
+        private BigDecimal price;
+        @ApiModelProperty(value = "排序")
+        private Integer orderNum;
+        @ApiModelProperty(value = "商品第一张主图路径")
+        private String mainPicUrl;
+    }
+
+}

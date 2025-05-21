@@ -35,7 +35,6 @@ public class StoreHomeProdResVO {
     private List<DecorationVO> recommendedList;
 
     @Data
-    @ApiModel(value = "档口首页大轮播图")
     public static class DecorationVO {
         @ApiModelProperty(value = "业务类型ID，如果选择：不跳转 不传，选择：跳转店铺，传storeId，选择：跳转商品，传storeProdId")
         private Long bizId;
@@ -56,7 +55,6 @@ public class StoreHomeProdResVO {
     }
 
     @Data
-    @ApiModel(value = "档口商品基本信息")
     public static class StoreProdStatusCountVO {
         @ApiModelProperty(value = "在售数量")
         private Integer onSaleNum;
@@ -67,7 +65,6 @@ public class StoreHomeProdResVO {
     }
 
     @Data
-    @ApiModel(value = "档口基本信息")
     public static class StoreBasicVO {
         @ApiModelProperty(value = "档口模板ID")
         private Integer templateNum;
@@ -92,7 +89,6 @@ public class StoreHomeProdResVO {
     }
 
     @Data
-    @ApiModel(value = "档口商品基本信息")
     @Accessors(chain = true)
     public static class StoreProdInfoVO {
         @ApiModelProperty("档口商品ID")
@@ -119,7 +115,6 @@ public class StoreHomeProdResVO {
     }
 
     @Data
-    @ApiModel(value = "档口商品类目属性")
     public static class StoreProdCateAttrVO {
         @ApiModelProperty(value = "系统设置类目")
         private String dictType;
@@ -129,7 +124,6 @@ public class StoreHomeProdResVO {
 
 
     @Data
-    @ApiModel(value = "档口商品文件")
     public static class StoreProdFileVO {
         @ApiModelProperty("档口商品名称")
         private Long storeProdId;
@@ -148,14 +142,12 @@ public class StoreHomeProdResVO {
     }
 
     @Data
-    @ApiModel(value = "档口商品详情")
     public static class StoreProdDetailVO {
         @ApiModelProperty(value = "详情内容")
         private String detail;
     }
 
     @Data
-    @ApiModel(value = "档口商品基本信息")
     @Accessors(chain = true)
     public static class StoreProdColorVO {
         @ApiModelProperty(value = "档口商品颜色ID")
@@ -173,7 +165,6 @@ public class StoreHomeProdResVO {
     }
 
     @Data
-    @ApiModel(value = "档口商品尺码及库存")
     @Accessors(chain = true)
     public static class StoreProdSizeStockVO {
         @ApiModelProperty(value = "商品尺码")

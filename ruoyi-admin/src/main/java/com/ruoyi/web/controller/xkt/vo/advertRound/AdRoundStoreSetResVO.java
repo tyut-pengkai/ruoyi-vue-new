@@ -25,7 +25,6 @@ public class AdRoundStoreSetResVO {
     private List<ARSSProdVO> prodList;
 
     @Data
-    @ApiModel(value = "档口设置的商品")
     @Accessors(chain = true)
     public static class ARSSProdVO {
         @ApiModelProperty("档口商品ID")

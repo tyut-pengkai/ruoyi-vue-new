@@ -26,7 +26,6 @@ public class UserFavBatchAddToShopCartVO {
     List<BatchVO> batchList;
 
     @Data
-    @ApiModel(value = "批量操作列表")
     public static class BatchVO {
         @NotBlank(message = "商品货号不能为空!")
         @ApiModelProperty(value = "商品货号")

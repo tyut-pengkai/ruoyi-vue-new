@@ -35,6 +35,10 @@ public class StoreSaleDTO {
     private Integer payWay;
     @ApiModelProperty(value = "结款状态（已结清、欠款） 1、2")
     private Integer paymentStatus;
+    @ApiModelProperty(value = "抹零金额")
+    private BigDecimal roundOff;
+    @ApiModelProperty(value = "备注")
+    private String remark;
     @ApiModelProperty(value = "销售详情列表")
     private List<SaleDetailVO> detailList;
 

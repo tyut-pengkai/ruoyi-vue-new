@@ -27,7 +27,6 @@ public class StoreRoleAccDetailResVO {
     private List<StoreRoleVO> roleList;
 
     @Data
-    @ApiModel(value = "档口所有角色")
     public static class StoreRoleVO {
         @ApiModelProperty(value = "档口子角色ID")
         private Long storeRoleId;

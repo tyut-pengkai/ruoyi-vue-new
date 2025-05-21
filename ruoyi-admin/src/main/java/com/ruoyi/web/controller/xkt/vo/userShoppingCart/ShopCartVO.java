@@ -35,7 +35,6 @@ public class ShopCartVO {
     List<SCDetailVO> detailList;
 
     @Data
-    @ApiModel(value = "档口优惠列表")
     public static class SCDetailVO {
         @NotNull(message = "档口商品颜色ID不能为空!")
         @ApiModelProperty(value = "档口商品颜色ID")

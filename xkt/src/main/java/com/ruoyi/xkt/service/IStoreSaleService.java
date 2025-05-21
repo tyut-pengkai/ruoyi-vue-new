@@ -3,10 +3,7 @@ package com.ruoyi.xkt.service;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.dailySale.StoreTodaySaleDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusGeneralSaleDTO;
-import com.ruoyi.xkt.dto.storeSale.StoreSaleDTO;
-import com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO;
-import com.ruoyi.xkt.dto.storeSale.StoreSalePageResDTO;
-import com.ruoyi.xkt.dto.storeSale.StoreSalePayStatusDTO;
+import com.ruoyi.xkt.dto.storeSale.*;
 
 /**
  * 档口销售出库Service接口
@@ -83,4 +80,12 @@ public interface IStoreSaleService {
      * @return StoreTodaySaleDTO
      */
     StoreTodaySaleDTO getTodaySale(Long storeId);
+
+    /**
+     * 修改备注
+     *
+     * @param updateMemoDTO 入参
+     * @return Integer
+     */
+    Integer updateMemo(StoreSaleUpdateMemoDTO updateMemoDTO);
 }

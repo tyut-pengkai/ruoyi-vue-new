@@ -24,7 +24,6 @@ public class UserFavoriteVO {
     private List<UFBatchVO> batchList;
 
     @Data
-    @ApiModel(value = "用户新增收藏")
     @Accessors(chain = true)
     @Valid
     public static class UFBatchVO {

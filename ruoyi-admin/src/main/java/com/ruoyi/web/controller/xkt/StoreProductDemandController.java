@@ -32,10 +32,6 @@ public class StoreProductDemandController extends XktBaseController {
 
     final IStoreProductDemandService storeProdDemandService;
 
-    /**
-     * 商品入库校验是否存在需求单
-     */
-    // @PreAuthorize("@ss.hasPermi('system:demand:query')")
     @ApiOperation(value = "商品入库校验是否存在需求单", httpMethod = "POST", response = R.class)
     @Log(title = "商品入库校验是否存在需求单", businessType = BusinessType.INSERT)
     @PostMapping("/verify")
@@ -44,20 +40,12 @@ public class StoreProductDemandController extends XktBaseController {
                 .verifyDemandExist(BeanUtil.toBean(demandVerifyVO, StoreProdDemandVerifyDTO.class)), StoreProdDemandVerifyResVO.class));
     }
 
-    /**
-     * 根据货号获取所有颜色的库存数量、在产数量
-     */
     @ApiOperation(value = "根据货号获取所有颜色的库存数量、在产数量", httpMethod = "GET", response = R.class)
-    // @PreAuthorize("@ss.hasPermi('system:demand:query')")
     @GetMapping(value = "/exists-quantity/{storeId}/{storeProdId}")
     public R<List<StoreProdDemandQuantityVO>> getStockAndProduceQuantity(@PathVariable("storeId") Long storeId, @PathVariable("storeProdId") Long storeProdId) {
         return R.ok(BeanUtil.copyToList(storeProdDemandService.getStockAndProduceQuantity(storeId, storeProdId), StoreProdDemandQuantityVO.class));
     }
 
-    /**
-     * 新增档口商品需求单
-     */
-    // @PreAuthorize("@ss.hasPermi('system:demand:add')")
     @ApiOperation(value = "新增档口商品需求单", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口商品需求单", businessType = BusinessType.INSERT)
     @PostMapping("")
@@ -65,20 +53,12 @@ public class StoreProductDemandController extends XktBaseController {
         return R.ok(storeProdDemandService.createDemand(BeanUtil.toBean(prodDemandVO, StoreProdDemandDTO.class)));
     }
 
-    /**
-     * 查询档口商品需求单列表
-     */
-    // @PreAuthorize("@ss.hasPermi('system:customer:list')")
     @ApiOperation(value = "查询档口商品需求单列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreProdDemandPageResDTO>> selectPage(@Validated @RequestBody StoreProdDemandPageVO pageVO) {
         return R.ok(storeProdDemandService.selectPage(BeanUtil.toBean(pageVO, StoreProdDemandPageDTO.class)));
     }
 
-    /**
-     * 点击安排生产
-     */
-    // @PreAuthorize("@ss.hasPermi('system:demand:edit')")
     @ApiOperation(value = "点击安排生产", httpMethod = "PUT", response = R.class)
     @Log(title = "点击安排生产", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -91,10 +71,6 @@ public class StoreProductDemandController extends XktBaseController {
 
     }
 
-    /**
-     * 删除档口商品需求单
-     */
-    // @PreAuthorize("@ss.hasPermi('system:demand:remove')")
     @ApiOperation(value = "删除档口商品需求单", httpMethod = "DELETE", response = R.class)
     @Log(title = "删除档口商品需求单", businessType = BusinessType.DELETE)
     @DeleteMapping("")

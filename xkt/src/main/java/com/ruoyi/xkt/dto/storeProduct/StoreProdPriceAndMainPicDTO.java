@@ -23,5 +23,7 @@ public class StoreProdPriceAndMainPicDTO {
     private BigDecimal minPrice;
     @ApiModelProperty(value = "档口商品主图")
     private String mainPicUrl;
+    @ApiModelProperty(value = "商品标题")
+    private String prodTitle;
 
 }

@@ -66,7 +66,6 @@ public class StoreCertResVO {
     private Date approvalDate;
 
     @Data
-    @ApiModel(value = "档口文件")
     public static class StoreCertFileVO {
         @ApiModelProperty(value = "文件名称")
         private String fileName;

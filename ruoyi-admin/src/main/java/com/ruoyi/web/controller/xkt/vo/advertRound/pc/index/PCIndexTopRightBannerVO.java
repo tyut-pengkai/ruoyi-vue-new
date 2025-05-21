@@ -1,10 +1,9 @@
-package com.ruoyi.xkt.dto.advertRound.pc;
+package com.ruoyi.web.controller.xkt.vo.advertRound.pc.index;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
 /**
  * @author liujiang
@@ -14,8 +13,7 @@ import lombok.experimental.Accessors;
 @ApiModel("PC 首页 顶部纵向轮播图")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Accessors(chain = true)
-public class PCIndexTopRightBannerDTO {
+public class PCIndexTopRightBannerVO {
 
     @ApiModelProperty(value = "展示类型 1推广图、2商品、3推广图及商品、4店铺名称")
     private Integer displayType;

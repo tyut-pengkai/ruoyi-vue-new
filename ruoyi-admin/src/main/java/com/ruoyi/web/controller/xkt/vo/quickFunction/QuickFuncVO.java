@@ -34,7 +34,6 @@ public class QuickFuncVO {
     private List<QuickFuncDetailVO> menuList;
 
     @Data
-    @ApiModel(value = "快捷功能菜单")
     @RequiredArgsConstructor
     public static class QuickFuncDetailVO {
         @ApiModelProperty(value = "菜单名称")

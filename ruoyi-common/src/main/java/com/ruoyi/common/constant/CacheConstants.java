@@ -87,6 +87,54 @@ public class CacheConstants
      * PC 首页 底部 人气榜
      */
     public static final String PC_ADVERT_INDEX_BOTTOM_POPULAR = "pc_index_bottom_popular";
+    /**
+     * PC 首页 两侧固定挂耳
+     */
+    public static final String PC_ADVERT_INDEX_FIXED_EAR = "pc_index_fixed_ear";
+    /**
+     * PC 首页 搜索框下档口名称
+     */
+    public static final String PC_ADVERT_INDEX_SEARCH_UNDERLINE_STORE_NAME = "pc_index_search_underline_store_name";
+    /**
+     * PC 首页 搜索框中推荐商品
+     */
+    public static final String PC_ADVERT_INDEX_SEARCH_RECOMMEND_PROD = "pc_index_search_recommend_prod";
+    /**
+     * PC 新品馆 顶部左侧轮播图
+     */
+    public static final String PC_ADVERT_NEW_TOP_LEFT = "pc_new_top_left";
+    /**
+     * PC 新品馆 顶部右侧图
+     */
+    public static final String PC_ADVERT_NEW_TOP_RIGHT = "pc_new_top_right";
+    /**
+     * PC 新品馆 中部品牌榜
+     */
+    public static final String PC_ADVERT_NEW_MID_BRAND = "pc_new_mid_brand";
+    /**
+     * PC 新品馆 中部热卖榜左侧
+     */
+    public static final String PC_ADVERT_NEW_MID_HOT_LEFT = "pc_new_mid_hot_left";
+    /**
+     * PC 新品馆 中部热卖榜右侧
+     */
+    public static final String PC_ADVERT_NEW_MID_HOT_RIGHT = "pc_new_mid_hot_right";
+    /**
+     * PC 新品馆 底部横幅
+     */
+    public static final String PC_ADVERT_NEW_BOTTOM_BANNER = "pc_new_bottom_banner";
+    /**
+     * PC 档口馆 顶部banner
+     */
+    public static final String PC_ADVERT_STORE_TOP_BANNER = "pc_store_top_banner";
+    /**
+     * PC 档口馆 中间横幅
+     */
+    public static final String PC_ADVERT_STORE_MID_BANNER = "pc_store_mid_banner";
+    /**
+     *  以图搜款
+     */
+    public static final String PIC_SEARCH = "pic_search";
 
 
 

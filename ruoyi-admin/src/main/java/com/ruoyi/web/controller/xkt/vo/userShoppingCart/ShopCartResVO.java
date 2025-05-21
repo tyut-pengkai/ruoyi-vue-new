@@ -32,7 +32,6 @@ public class ShopCartResVO {
     List<SCDetailVO> detailList;
 
     @Data
-    @ApiModel(value = "档口优惠列表")
     public static class SCDetailVO {
         @ApiModelProperty(value = "档口商品颜色尺寸ID")
         private Long storeProdColorSizeId;

@@ -92,6 +92,19 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
     }
 
     /**
+     * 获取所有的工厂列表
+     *
+     * @return 生产需求管理 工厂下拉列表
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<StoreFactoryResDTO> getList() {
+        List<StoreFactory> storeFactoryList = this.storeFactoryMapper.selectList(new LambdaQueryWrapper<StoreFactory>()
+                .eq(StoreFactory::getDelFlag, Constants.UNDELETED));
+        return BeanUtil.copyToList(storeFactoryList, StoreFactoryResDTO.class);
+    }
+
+    /**
      * 查询档口合作工厂
      *
      * @param storeFacId 档口合作工厂主键

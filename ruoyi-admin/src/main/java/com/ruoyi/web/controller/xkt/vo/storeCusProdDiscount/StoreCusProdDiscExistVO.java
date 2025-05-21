@@ -29,7 +29,6 @@ public class StoreCusProdDiscExistVO {
     List<DiscountItemVO> discountList;
 
     @Data
-    @ApiModel(value = "档口优惠列表")
     public static class DiscountItemVO {
         @NotNull(message = "档口商品ID不能为空!")
         @ApiModelProperty(value = "档口商品ID")

@@ -104,7 +104,6 @@ public class StoreCertVO {
 
 
     @Data
-    @ApiModel(value = "档口文件")
     public static class StoreFileVO {
         @NotBlank(message = "文件名称不能为空!")
         @ApiModelProperty(value = "文件名称", required = true)

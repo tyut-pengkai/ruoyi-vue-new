@@ -59,8 +59,6 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
             throw new ServiceException("客户名称重复，请修改客户名称!", HttpStatus.ERROR);
         }
         StoreCustomer storeCus = CollectionUtils.isNotEmpty(storeCusList) ? storeCusList.get(0) : this.createStoreCustomer(cusProdDisDTO);
-        // 设置当前客户在档口的所有商品优惠金额
-        storeCus.setAllProdDiscount(cusProdDisDTO.getAllProductDiscount());
         this.storeCusMapper.updateById(storeCus);
         // 获取当前档口客户已有的优惠
         List<StoreCustomerProductDiscount> cusProdDisList = Optional.ofNullable(cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
@@ -205,6 +203,8 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         storeCus.setCusName(cusProdDisDTO.getStoreCusName());
         storeCus.setPhone(cusProdDisDTO.getPhone());
         storeCus.setStoreId(cusProdDisDTO.getStoreId());
+        storeCus.setAllProdDiscount(cusProdDisDTO.getAllProductDiscount());
+        storeCus.setAddOverPrice(cusProdDisDTO.getAddOverPrice());
         this.storeCusMapper.insert(storeCus);
         return storeCus;
     }

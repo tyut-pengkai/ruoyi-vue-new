@@ -1,11 +1,13 @@
-package com.ruoyi.web.controller.xkt.vo.advertRound.pc;
+package com.ruoyi.xkt.dto.advertRound.pc.index;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author liujiang
@@ -15,44 +17,48 @@ import java.math.BigDecimal;
 @ApiModel("PC 首页 人气榜")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PCIndexBottomPopularVO {
+@Accessors(chain = true)
+public class PCIndexBottomPopularDTO {
 
     @ApiModelProperty(value = "左侧列表")
-    PCIBPPopularLeftVO leftList;
+    List<PCIBPPopularLeftDTO> leftList;
     @ApiModelProperty(value = "中间列表")
-    PCIBPPopularMidVO midList;
+    List<PCIBPPopularMidDTO> midList;
     @ApiModelProperty(value = "右侧商品")
-    PCIBPPopularRightVO rightList;
+    List<PCIBPPopularRightDTO> rightList;
 
     @Data
     @ApiModel(value = "左侧列表")
-    public static class PCIBPPopularLeftVO {
+    @Accessors(chain = true)
+    public static class PCIBPPopularLeftDTO {
         @ApiModelProperty(value = "1推广图")
         private Integer displayType;
         @ApiModelProperty(value = "排序")
         private Integer orderNum;
         @ApiModelProperty(value = "档口ID")
-        private Integer storeId;
+        private Long storeId;
         @ApiModelProperty(value = "推广图路径")
         private String fileUrl;
     }
 
     @Data
     @ApiModel(value = "中间列表")
-    public static class PCIBPPopularMidVO {
+    @Accessors(chain = true)
+    public static class PCIBPPopularMidDTO {
         @ApiModelProperty(value = "1推广图")
         private Integer displayType;
         @ApiModelProperty(value = "排序")
         private Integer orderNum;
         @ApiModelProperty(value = "档口ID")
-        private Integer storeId;
+        private Long storeId;
         @ApiModelProperty(value = "推广图路径")
         private String fileUrl;
     }
 
     @Data
     @ApiModel(value = "右侧商品")
-    public static class PCIBPPopularRightVO {
+    @Accessors(chain = true)
+    public static class PCIBPPopularRightDTO {
         @ApiModelProperty(value = "2商品")
         private Integer displayType;
         @ApiModelProperty(value = "档口商品ID")
@@ -64,7 +70,7 @@ public class PCIndexBottomPopularVO {
         @ApiModelProperty(value = "售价")
         private BigDecimal price;
         @ApiModelProperty(value = "商品第一张主图路径")
-        private String manPicUrl;
+        private String mainPicUrl;
     }
 
 }

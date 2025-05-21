@@ -1,13 +1,11 @@
-package com.ruoyi.xkt.dto.advertRound.pc;
+package com.ruoyi.web.controller.xkt.vo.advertRound.pc.index;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * @author liujiang
@@ -17,20 +15,17 @@ import java.util.List;
 @ApiModel("PC 首页 人气榜")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Accessors(chain = true)
-public class PCIndexBottomPopularDTO {
+public class PCIndexBottomPopularVO {
 
     @ApiModelProperty(value = "左侧列表")
-    List<PCIBPPopularLeftDTO> leftList;
+    PCIBPPopularLeftVO leftList;
     @ApiModelProperty(value = "中间列表")
-    List<PCIBPPopularMidDTO> midList;
+    PCIBPPopularMidVO midList;
     @ApiModelProperty(value = "右侧商品")
-    List<PCIBPPopularRightDTO> rightList;
+    PCIBPPopularRightVO rightList;
 
     @Data
-    @ApiModel(value = "左侧列表")
-    @Accessors(chain = true)
-    public static class PCIBPPopularLeftDTO {
+    public static class PCIBPPopularLeftVO {
         @ApiModelProperty(value = "1推广图")
         private Integer displayType;
         @ApiModelProperty(value = "排序")
@@ -42,9 +37,7 @@ public class PCIndexBottomPopularDTO {
     }
 
     @Data
-    @ApiModel(value = "中间列表")
-    @Accessors(chain = true)
-    public static class PCIBPPopularMidDTO {
+    public static class PCIBPPopularMidVO {
         @ApiModelProperty(value = "1推广图")
         private Integer displayType;
         @ApiModelProperty(value = "排序")
@@ -56,9 +49,7 @@ public class PCIndexBottomPopularDTO {
     }
 
     @Data
-    @ApiModel(value = "右侧商品")
-    @Accessors(chain = true)
-    public static class PCIBPPopularRightDTO {
+    public static class PCIBPPopularRightVO {
         @ApiModelProperty(value = "2商品")
         private Integer displayType;
         @ApiModelProperty(value = "档口商品ID")
@@ -70,7 +61,7 @@ public class PCIndexBottomPopularDTO {
         @ApiModelProperty(value = "售价")
         private BigDecimal price;
         @ApiModelProperty(value = "商品第一张主图路径")
-        private String manPicUrl;
+        private String mainPicUrl;
     }
 
 }

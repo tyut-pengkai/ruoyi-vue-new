@@ -24,11 +24,10 @@ public class StoreProdDemandVO {
     @ApiModelProperty(value = "档口工厂ID", required = true)
     private Long storeFactoryId;
     @NotNull(message = "需求列表不能为空")
-    @ApiModelProperty(value = "需求列表", required = true)
+    @ApiModelProperty(value = "新增需求列表", required = true)
     private List<DetailVO> detailList;
 
     @Data
-    @ApiModel(value = "需求列表")
     public static class DetailVO {
         @NotNull(message = "档口商品ID不能为空")
         @ApiModelProperty(value = "档口商品ID", required = true)

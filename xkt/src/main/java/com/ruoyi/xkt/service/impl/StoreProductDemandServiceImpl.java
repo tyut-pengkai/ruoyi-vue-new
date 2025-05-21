@@ -77,28 +77,28 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         // 查询待产及生产中的库存
         List<StoreProductDemandDetail> prodDemandList = this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
                 .in(StoreProductDemandDetail::getStoreProdColorId, storeProdColorIdList).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
-                .in(StoreProductDemandDetail::getDetailStatus, Arrays.asList("待生产", "生产中")));
+                .in(StoreProductDemandDetail::getDetailStatus, Arrays.asList(DemandStatus.PENDING_PRODUCTION.getValue(), DemandStatus.IN_PRODUCTION.getValue())));
         // 将生产需求信息封转在map中
         Map<Long, List<StoreProductDemandDetail>> demandMap = prodDemandList.stream().collect(Collectors.groupingBy(StoreProductDemandDetail::getStoreProdColorId));
         // 组装返回的对比数量
         List<String> compareStrList = Arrays.asList("库存数量", "在产数量");
         return prodColorList.stream().map(prodColor -> {
             StoreProdStockDTO stock = stockMap.get(prodColor.getId());
-            List<StoreProductDemandDetail> demandDetailList = demandMap.get(prodColor.getId());
-            Integer size30Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize30).reduce(0, Integer::sum)).orElse(0);
-            Integer size31Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize31).reduce(0, Integer::sum)).orElse(0);
-            Integer size32Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize32).reduce(0, Integer::sum)).orElse(0);
-            Integer size33Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize33).reduce(0, Integer::sum)).orElse(0);
-            Integer size34Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize34).reduce(0, Integer::sum)).orElse(0);
-            Integer size35Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize35).reduce(0, Integer::sum)).orElse(0);
-            Integer size36Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize36).reduce(0, Integer::sum)).orElse(0);
-            Integer size37Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize37).reduce(0, Integer::sum)).orElse(0);
-            Integer size38Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize38).reduce(0, Integer::sum)).orElse(0);
-            Integer size39Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize39).reduce(0, Integer::sum)).orElse(0);
-            Integer size40Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize40).reduce(0, Integer::sum)).orElse(0);
-            Integer size41Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize41).reduce(0, Integer::sum)).orElse(0);
-            Integer size42Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize42).reduce(0, Integer::sum)).orElse(0);
-            Integer size43Demand = Optional.ofNullable(demandDetailList).map(x -> x.stream().map(StoreProductDemandDetail::getSize43).reduce(0, Integer::sum)).orElse(0);
+            List<StoreProductDemandDetail> demandDetailList = ObjectUtils.defaultIfNull(demandMap.get(prodColor.getId()), Collections.emptyList());
+            Integer size30Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize30(), 0)).reduce(0, Integer::sum);
+            Integer size31Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize31(), 0)).reduce(0, Integer::sum);
+            Integer size32Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize32(), 0)).reduce(0, Integer::sum);
+            Integer size33Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize33(), 0)).reduce(0, Integer::sum);
+            Integer size34Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize34(), 0)).reduce(0, Integer::sum);
+            Integer size35Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize35(), 0)).reduce(0, Integer::sum);
+            Integer size36Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize36(), 0)).reduce(0, Integer::sum);
+            Integer size37Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize37(), 0)).reduce(0, Integer::sum);
+            Integer size38Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize38(), 0)).reduce(0, Integer::sum);
+            Integer size39Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize39(), 0)).reduce(0, Integer::sum);
+            Integer size40Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize40(), 0)).reduce(0, Integer::sum);
+            Integer size41Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize41(), 0)).reduce(0, Integer::sum);
+            Integer size42Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize42(), 0)).reduce(0, Integer::sum);
+            Integer size43Demand = demandDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize43(), 0)).reduce(0, Integer::sum);
             List<Integer> size30List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize30()) ? stock.getSize30() : 0, size30Demand);
             List<Integer> size31List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize31()) ? stock.getSize31() : 0, size31Demand);
             List<Integer> size32List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize32()) ? stock.getSize32() : 0, size32Demand);
@@ -116,7 +116,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
             return StoreProdDemandQuantityDTO.builder().storeId(storeId).storeProdId(storeProd.getId()).storeProdColorId(prodColor.getId())
                     .prodArtNum(storeProd.getProdArtNum()).colorName(prodColor.getColorName()).compareStrList(compareStrList)
                     // 判断 demandDetailList 中是否有 createTime 为当天的对象
-                    .todaySubmitted(Optional.ofNullable(demandDetailList).orElse(Collections.emptyList()).stream().anyMatch(detail -> DateUtils.isSameDay(detail.getCreateTime(), new Date())))
+                    .todaySubmitted(demandDetailList.stream().anyMatch(detail -> DateUtils.isSameDay(detail.getCreateTime(), new Date())))
                     .size30List(size30List).size31List(size31List).size32List(size32List).size33List(size33List).size34List(size34List).size35List(size35List)
                     .size36List(size36List).size37List(size37List).size38List(size38List).size39List(size39List).size40List(size40List).size41List(size41List)
                     .size42List(size42List).size43List(size43List).build();

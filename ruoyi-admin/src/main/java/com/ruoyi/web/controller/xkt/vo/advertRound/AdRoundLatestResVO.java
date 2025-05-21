@@ -28,7 +28,6 @@ public class AdRoundLatestResVO {
     private List<ARLProdVO> prodList;
 
     @Data
-    @ApiModel(value = "档口设置的商品")
     @Accessors(chain = true)
     public static class ARLProdVO {
         @ApiModelProperty("档口商品ID")

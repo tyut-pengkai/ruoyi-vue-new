@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -45,10 +46,10 @@ public class StoreSale extends XktBaseEntity {
      */
     private String storeCusName;
     /**
-     * 销售类型（普通销售、销售退货、普通销售/销售退货）GENERAL_SALE SALE_REFUND SALE_AND_REFUND
+     * 销售类型（1普通销售、2销售退货、3普通销售/销售退货）
      */
     @Excel(name = "销售类型")
-    private String saleType;
+    private Integer saleType;
     /**
      * 单据编号
      */
@@ -78,6 +79,10 @@ public class StoreSale extends XktBaseEntity {
      */
     @Excel(name = "总金额")
     private BigDecimal amount;
+    /**
+     * 抹零金额
+     */
+    private BigDecimal roundOff;
     /**
      * 支付方式（支付宝、微信、现金、欠款）
      */

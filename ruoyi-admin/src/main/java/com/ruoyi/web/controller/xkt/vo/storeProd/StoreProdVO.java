@@ -104,7 +104,6 @@ public class StoreProdVO {
     private StoreProdProcessVO process;
 
     @Data
-    @ApiModel(value = "档口文件列表")
     public static class StoreProdFileVO {
         @NotBlank(message = "文件名称不能为空!")
         @ApiModelProperty(value = "文件名称", required = true)
@@ -124,7 +123,6 @@ public class StoreProdVO {
     }
 
     @Data
-    @ApiModel(value = "档口类目属性列表")
     public static class StoreProdCateAttrVO {
         @NotBlank(message = "帮面材质不可为空!")
         @ApiModelProperty(value = "帮面材质", required = true)
@@ -174,7 +172,6 @@ public class StoreProdVO {
     }
 
     @Data
-    @ApiModel(value = "商品颜色列表")
     public static class StoreProdColorVO {
         @ApiModelProperty(value = "档口颜色ID")
         private Long storeColorId;
@@ -187,7 +184,6 @@ public class StoreProdVO {
     }
 
     @Data
-    @ApiModel(value = "档口尺码列表")
     @AllArgsConstructor
     @NoArgsConstructor
     public static class StoreProdColorSizeVO {
@@ -202,7 +198,6 @@ public class StoreProdVO {
     }
 
     @Data
-    @ApiModel(value = "档口颜色价格列表")
     public static class StoreProdColorPriceVO {
         @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeColorId;
@@ -215,7 +210,6 @@ public class StoreProdVO {
     }
 
     @Data
-    @ApiModel(value = "档口服务承诺")
     public static class StoreProdSvcVO {
         @ApiModelProperty(value = "大小码及定制款可退")
         private String customRefund;
@@ -228,7 +222,6 @@ public class StoreProdVO {
     }
 
     @Data
-    @ApiModel(value = "档口生产工艺")
     public static class StoreProdProcessVO {
         @ApiModelProperty(value = "鞋型")
         private String shoeType;

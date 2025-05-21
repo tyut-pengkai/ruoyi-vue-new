@@ -1,7 +1,11 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.xkt.dto.advertRound.pc.*;
+import com.ruoyi.xkt.dto.advertRound.pc.index.*;
+import com.ruoyi.xkt.dto.advertRound.pc.newArrival.*;
+import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreMidBannerDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreTopBannerDTO;
+import com.ruoyi.xkt.dto.advertRound.picSearch.PicSearchAdvertDTO;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 
@@ -57,5 +61,89 @@ public interface IWebsiteService {
      * @return PCIndexBottomPopularDTO
      */
     PCIndexBottomPopularDTO getPcIndexBottomPopularList();
+
+    /**
+     * PC 首页 固定挂耳
+     *
+     * @return PCIndexFixedEarDTO
+     */
+    PCIndexFixedEarDTO getPcIndexFixedEar();
+
+    /**
+     * 获取搜索框下档口名称
+     *
+     * @return List<PCIndexSearchUnderlineStoreNameDTO>
+     */
+    List<PCIndexSearchUnderlineStoreNameDTO> getPcIndexSearchUnderlineStoreName();
+
+    /**
+     * 搜索框中推荐商品
+     *
+     * @return List<PCIndexSearchRecommendProdDTO>
+     */
+    List<PCIndexSearchRecommendProdDTO> getPcIndexSearchRecommendProd();
+
+    /**
+     * PC 新品馆 顶部左侧 轮播图
+     *
+     * @return List<PCNewTopLeftBannerDTO>
+     */
+    List<PCNewTopLeftBannerDTO> getPcNewTopLeftBanner();
+
+    /**
+     * PC 新品馆 顶部右侧 轮播图
+     *
+     * @return PCNewTopRightDTO
+     */
+    PCNewTopRightDTO getPcNewTopRight();
+
+    /**
+     * PC 新品馆 品牌馆
+     *
+     * @return List<PCNewMidBrandDTO>
+     */
+    List<PCNewMidBrandDTO> getPcNewMidBrandList();
+
+    /**
+     * PC 新品馆 热卖榜左侧
+     *
+     * @return List<PCNewMidHotLeftDTO>
+     */
+    List<PCNewMidHotLeftDTO> getPcNewMidHotLeftList();
+
+    /**
+     * PC 新品馆 热卖榜右侧商品
+     *
+     * @return List<PCNewMidHotRightDTO>
+     */
+    List<PCNewMidHotRightDTO> getPcNewMidHotRightList();
+
+    /**
+     * PC 新品馆 底部横幅
+     *
+     * @return List<PCNewBottomBannerDTO>
+     */
+    List<PCNewBottomBannerDTO> getPcNewBottomBannerList();
+
+    /**
+     * PC 档口馆 顶部横幅及商品
+     *
+     * @return List<PCStoreTopBannerDTO>
+     */
+    List<PCStoreTopBannerDTO> getPcStoreTopBannerList();
+
+    /**
+     * PC 档口馆 中间横幅
+     *
+     * @return List<PCStoreMidBannerDTO>
+     */
+    List<PCStoreMidBannerDTO> getPcStoreMidBannerList();
+
+    /**
+     * 以图搜款 广告
+     *
+     * @return List<PicSearchAdvertDTO>
+     */
+    List<PicSearchAdvertDTO> getPicSearchList();
 
 }

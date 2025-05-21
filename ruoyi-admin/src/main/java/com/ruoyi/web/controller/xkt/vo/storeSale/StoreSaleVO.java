@@ -43,13 +43,16 @@ public class StoreSaleVO {
     private Integer payWay;
     @ApiModelProperty(value = "结款状态（已结清、欠款） SETTLED、DEBT")
     private Integer paymentStatus;
+    @ApiModelProperty(value = "抹零金额")
+    private BigDecimal roundOff;
+    @ApiModelProperty(value = "备注")
+    private String remark;
     @NotNull(message = "销售详情列表不能为空!")
     @Valid
     @ApiModelProperty(value = "销售详情列表", required = true)
     private List<SaleDetailVO> detailList;
 
     @Data
-    @ApiModel(value = "销售详情列表")
     public static class SaleDetailVO {
         @NotNull(message = "档口商品ID不能为空!")
         @ApiModelProperty(value = "档口商品ID", required = true)

@@ -25,7 +25,6 @@ public class StoreProdDemandVerifyVO {
     private List<DetailVO> detailList;
 
     @Data
-    @ApiModel(value = "需求列表")
     public static class DetailVO {
         @NotNull(message = "档口商品ID不能为空")
         @ApiModelProperty(value = "档口商品ID", required = true)

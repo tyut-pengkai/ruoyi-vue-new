@@ -66,7 +66,6 @@ public class StoreProdResVO {
 
 
     @Data
-    @ApiModel(value = "档口商品文件")
     public static class StoreProdFileVO {
         @ApiModelProperty(value = "文件名称")
         private String fileName;
@@ -81,7 +80,6 @@ public class StoreProdResVO {
     }
 
     @Data
-    @ApiModel(value = "档口商品类目属性")
     public static class StoreProdCateAttrVO {
         @ApiModelProperty(value = "帮面材质", required = true)
         private String upperMaterial;
@@ -128,7 +126,6 @@ public class StoreProdResVO {
     }
 
     @Data
-    @ApiModel(value = "档口商品颜色价格")
     public static class StoreProdColorPriceVO {
         @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeColorId;
@@ -137,7 +134,6 @@ public class StoreProdResVO {
     }
 
     @Data
-    @ApiModel(value = "档口商品服务")
     public static class StoreProdSvcVO {
         @ApiModelProperty(value = "大小码及定制款可退")
         private String customRefund;
@@ -150,7 +146,6 @@ public class StoreProdResVO {
     }
 
     @Data
-    @ApiModel(value = "档口商品工艺")
     public static class StoreProdProcessVO {
         @ApiModelProperty(value = "鞋型")
         private String shoeType;

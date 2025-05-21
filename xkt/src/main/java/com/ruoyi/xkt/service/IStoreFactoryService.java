@@ -72,4 +72,11 @@ public interface IStoreFactoryService {
      */
     Page<StoreFactoryResDTO> selectFactoryPage(StoreFactoryPageDTO pageDTO);
 
+    /**
+     * 获取所有的工厂列表
+     *
+     * @return 生产需求管理 工厂下拉列表
+     */
+    List<StoreFactoryResDTO> getList();
+
 }

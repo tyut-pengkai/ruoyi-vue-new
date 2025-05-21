@@ -37,7 +37,6 @@ public class AdminAdRoundSysInterceptVO {
     private List<Long> storeProdIdList;
 
     @Data
-    @ApiModel(value = "推广图对象")
     public static class AARSIFileVO {
         @ApiModelProperty(value = "文件名称")
         private String fileName;

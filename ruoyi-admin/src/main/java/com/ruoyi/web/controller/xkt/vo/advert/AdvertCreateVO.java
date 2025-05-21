@@ -72,7 +72,6 @@ public class AdvertCreateVO {
     private Date discountEndTime;
 
     @Data
-    @ApiModel(value = "广告范例图")
     public static class AdvertFileVO {
         @NotBlank(message = "文件名称不能为空!")
         @ApiModelProperty(value = "文件名称", required = true)

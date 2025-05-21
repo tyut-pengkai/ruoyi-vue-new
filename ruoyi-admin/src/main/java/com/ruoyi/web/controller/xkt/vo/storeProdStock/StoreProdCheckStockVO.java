@@ -24,7 +24,6 @@ public class StoreProdCheckStockVO {
     List<SPCSStockVO> checkStockList;
 
     @Data
-    @ApiModel(value = "盘点数量")
     @Valid
     public static class SPCSStockVO {
         @NotNull(message = "档口商品颜色ID不能为空")

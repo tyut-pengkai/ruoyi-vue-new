@@ -25,7 +25,6 @@ public class AdvertPlatformResVO {
     private List<APTabVO> tabList;
 
     @Data
-    @ApiModel(value = "平台下tab")
     @Accessors(chain = true)
     public static class APTabVO {
         @ApiModelProperty(value = "tabId")
@@ -37,7 +36,6 @@ public class AdvertPlatformResVO {
     }
 
     @Data
-    @ApiModel(value = "tab下type")
     @Accessors(chain = true)
     public static class APTypeVO {
         @ApiModelProperty("广告ID")

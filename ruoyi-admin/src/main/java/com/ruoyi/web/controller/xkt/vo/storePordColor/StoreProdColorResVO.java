@@ -14,7 +14,7 @@ import lombok.Data;
 public class StoreProdColorResVO {
 
     @ApiModelProperty(value = "档口商品当前颜色ID")
-    private Long storeProductColorId;
+    private Long storeProdColorId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "档口商品ID")

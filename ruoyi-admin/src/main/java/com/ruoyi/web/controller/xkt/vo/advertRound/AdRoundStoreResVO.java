@@ -30,7 +30,6 @@ public class AdRoundStoreResVO {
 
     @Data
     @Accessors(chain = true)
-    @ApiModel(value = "类型为时间范围的广告轮次")
     public static class ADRSRoundTimeRangeVO {
         @ApiModelProperty(value = "广告ID")
         private Long advertId;
@@ -61,7 +60,6 @@ public class AdRoundStoreResVO {
     @Data
     @Builder
     @Accessors(chain = true)
-    @ApiModel(value = "类型为位置枚举的广告轮次")
     public static class ADRSRoundPositionVO {
         @ApiModelProperty(value = "广告ID")
         private Long advertId;
@@ -92,7 +90,6 @@ public class AdRoundStoreResVO {
     @Data
     @Builder
     @Accessors(chain = true)
-    @ApiModel(value = "已抢购的推广记录")
     public static class ADRSRoundRecordVO {
         @ApiModelProperty(value = "广告ID")
         private Long advertId;

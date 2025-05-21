@@ -63,7 +63,6 @@ public class AdvertResVO {
     private Date discountEndTime;
 
     @Data
-    @ApiModel(value = "广告范例图")
     public static class AdvertFileVO {
         @ApiModelProperty(value = "文件名称", required = true)
         private String fileName;

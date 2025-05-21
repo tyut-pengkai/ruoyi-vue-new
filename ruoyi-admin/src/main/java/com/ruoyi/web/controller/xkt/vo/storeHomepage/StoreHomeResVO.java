@@ -21,7 +21,6 @@ public class StoreHomeResVO {
     private StoreProdStatusCountVO storeProdStatusCount;
 
     @Data
-    @ApiModel(value = "档口基本信息")
     public static class StoreBasicVO {
         @ApiModelProperty(value = "档口模板ID")
         private Integer templateNum;
@@ -44,7 +43,6 @@ public class StoreHomeResVO {
     }
 
     @Data
-    @ApiModel(value = "档口商品基本信息")
     public static class StoreProdStatusCountVO {
         @ApiModelProperty(value = "在售数量")
         private Integer onSaleNum;

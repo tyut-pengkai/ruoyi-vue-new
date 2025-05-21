@@ -34,10 +34,14 @@ public enum AdType {
     PC_HOME_POP_MID(9, "人气榜中间图", "/url"),
     // 人气榜右侧图
     PC_HOME_POP_RIGHT(10, "人气榜右侧图", "/url"),
+
+
     // 首页档口横幅
     PC_HOME_SINGLE_BANNER(11, "首页档口横幅", "/url"),
     // 首页商品列表
     PC_HOME_PRODUCT_LIST(12, "首页商品列表", "/url"),
+
+
     // 首页两侧固定挂耳
     PC_HOME_FIXED_EAR(13, "首页两侧固定挂耳", "/url"),
     // 首页搜索框下名称
@@ -63,11 +67,13 @@ public enum AdType {
 
     // 档口馆 顶部轮播图
     PC_STORE_TOP_BANNER(201, "档口馆顶部轮播图", "/url"),
+    // 档口馆 横幅
+    PC_STORE_MID_BANNER(202, "档口馆横幅", "/url"),
 
 
 
     // 首页以图搜款框商品、以图搜款结果商品、点击以图搜款界面
-    PC_HOME_PIC_SEARCH_PRODUCT(300, "首页以图搜款商品", "/url"),
+    PIC_SEARCH_PRODUCT(300, "以图搜款商品", "/url"),
 
 
     // PC搜索结果

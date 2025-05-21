@@ -47,7 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="fuzzyQueryColorList"  resultType="com.ruoyi.xkt.dto.storeProdColor.StoreProdColorResDTO">
         SELECT DISTINCT
-            spc.id AS storeProductColorId,
+            spc.id AS storeProdColorId,
             sp.store_id AS storeId,
             spc.store_prod_id AS storeProdId,
             spc.store_color_id AS storeColorId,

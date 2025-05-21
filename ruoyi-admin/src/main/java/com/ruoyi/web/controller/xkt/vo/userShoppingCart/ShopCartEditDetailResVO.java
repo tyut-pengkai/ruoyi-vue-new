@@ -33,7 +33,6 @@ public class ShopCartEditDetailResVO {
     List<SCDDetailVO> detailList;
 
     @Data
-    @ApiModel(value = "档口商品基本信息")
     @Accessors(chain = true)
     public static class SCDDetailVO {
         @ApiModelProperty(value = "档口商品颜色ID")
@@ -45,7 +44,6 @@ public class ShopCartEditDetailResVO {
     }
 
     @Data
-    @ApiModel(value = "档口商品基本信息")
     @Accessors(chain = true)
     public static class StoreProdColorVO {
         @ApiModelProperty(value = "档口商品颜色ID")
@@ -63,7 +61,6 @@ public class ShopCartEditDetailResVO {
     }
 
     @Data
-    @ApiModel(value = "档口商品尺码及库存")
     @Accessors(chain = true)
     public static class StoreProdSizeStockVO {
         @ApiModelProperty(value = "商品尺码")

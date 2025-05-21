@@ -24,7 +24,6 @@ public class StoreHomeDecorationVO {
     private List<DecorationVO> decorationList;
 
     @Data
-    @ApiModel(value = "档口首页大轮播图")
     public static class BigBannerVO {
 
         @ApiModelProperty(value = "业务类型ID，如果选择：不跳转 不传，选择：跳转店铺，传storeId，选择：跳转商品，传storeProdId")
@@ -47,7 +46,6 @@ public class StoreHomeDecorationVO {
     }
 
     @Data
-    @ApiModel(value = "档口首页其它模块")
     public static class DecorationVO {
 
         @ApiModelProperty(value = "文件大小")

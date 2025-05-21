@@ -36,7 +36,6 @@ public class StoreProdStorageDemandDeductVO {
     List<SPSDDDemandDetailVO> detailList;
 
     @Data
-    @ApiModel(value = "抵扣明细列表")
     @Accessors(chain = true)
     public static class SPSDDDemandDetailVO {
         @ApiModelProperty("档口入库需求抵扣ID")

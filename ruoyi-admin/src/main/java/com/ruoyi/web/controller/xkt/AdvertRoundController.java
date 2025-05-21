@@ -33,6 +33,16 @@ public class AdvertRoundController extends XktBaseController {
 
     final IAdvertRoundService advertRoundService;
 
+
+    // TODO 定时任务将档口的广告位 更新到redis中
+    // TODO 定时任务将档口的广告位 更新到redis中
+    // TODO 定时任务将档口的广告位 更新到redis中
+    // TODO 定时任务将档口的广告位 更新到redis中
+
+
+
+
+
     /**
      * 档口购买推广营销
      */

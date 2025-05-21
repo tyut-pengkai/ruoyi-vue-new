@@ -29,7 +29,6 @@ public class StoreProdFuzzyResVO {
     private List<StoreProdFuzzyColorResVO> colorList;
 
     @Data
-    @ApiModel(value = "商品颜色列表")
     public static class StoreProdFuzzyColorResVO {
         @ApiModelProperty(value = "档口颜色ID")
         private Long storeColorId;

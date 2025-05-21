@@ -35,7 +35,6 @@ public class StoreProdStorageVO {
     private List<StorageDetailVO> detailList;
 
     @Data
-    @ApiModel(value = "商品入库明细列表")
     public static class StorageDetailVO {
 
         @NotBlank(message = "商品货号不能为空!")
