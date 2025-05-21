@@ -1,6 +1,10 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.json.JSONUtil;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.CreateResponse;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
@@ -19,6 +23,8 @@ import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
 import com.ruoyi.system.mapper.SysProductCategoryMapper;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
+import com.ruoyi.xkt.dto.picture.ProductPicSyncDTO;
+import com.ruoyi.xkt.dto.picture.ProductPicSyncResultDTO;
 import com.ruoyi.xkt.dto.storeColor.StoreColorDTO;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
@@ -34,8 +40,10 @@ import com.ruoyi.xkt.enums.EProductStatus;
 import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.enums.ProductSizeStatus;
 import com.ruoyi.xkt.mapper.*;
+import com.ruoyi.xkt.service.IPictureService;
 import com.ruoyi.xkt.service.IStoreProductService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,6 +65,7 @@ import static com.ruoyi.common.constant.Constants.*;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StoreProductServiceImpl implements IStoreProductService {
@@ -80,6 +89,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final StoreProductStockMapper prodStockMapper;
     final StoreCustomerMapper storeCusMapper;
     final StoreCustomerProductDiscountMapper storeCusProdDiscMapper;
+    final IPictureService pictureService;
 
 
     /**
@@ -210,6 +220,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.handleStoreProdProperties(storeProd, storeProdDTO);
         // 向ES索引: product_info 创建文档
         this.createESDoc(storeProd, storeProdDTO);
+        // 搜图服务同步
+        sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
         return count;
     }
 
@@ -260,6 +272,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.handleStoreProdColorSizeList(storeProdDTO.getSizeList(), storeProdId, Boolean.FALSE);
         // 更新索引: product_info 的文档
         this.updateESDoc(storeProd, storeProdDTO);
+        // 搜图服务同步
+        sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
         return count;
     }
 
@@ -421,10 +435,20 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 筛选商品状态为已下架，则删除ES文档
         if (Objects.equals(prodStatusDTO.getProdStatus(), EProductStatus.OFF_SALE.getValue())) {
             this.deleteESDoc(prodStatusDTO.getStoreProdIdList());
+            // 搜图服务同步
+            prodStatusDTO.getStoreProdIdList().forEach(spId -> sync2ImgSearchServer(spId, ListUtil.empty()));
         }
         // 已下架的商品重新上架
         if (CollectionUtils.isNotEmpty(reSaleList)) {
             this.reSaleCreateESDoc(reSaleList);
+            // 搜图服务同步
+            Map<Long, List<String>> picKeyGroupMap = storeProdFileMapper.selectMainPicByStoreProdIdList(
+                    reSaleList.stream().map(StoreProduct::getId).collect(Collectors.toList()),
+                    FileType.MAIN_PIC.getValue(), null
+            ).stream().collect(Collectors.groupingBy(StoreProdMainPicDTO::getStoreProdId,
+                    Collectors.mapping(StoreProdMainPicDTO::getFileUrl, Collectors.toList())));
+            prodStatusDTO.getStoreProdIdList()
+                    .forEach(spId -> sync2ImgSearchServer(spId, picKeyGroupMap.get(spId), true));
         }
     }
 
@@ -775,6 +799,36 @@ public class StoreProductServiceImpl implements IStoreProductService {
                     .setDiscount(storeCus.getAllProdDiscount()).setStoreId(storeCus.getStoreId()).setStoreProdId(storeProd.getId())
                     .setStoreCusId(storeCus.getId()).setStoreCusName(storeCus.getCusName()).setStoreProdColorId(color.getId()))));
             this.storeCusProdDiscMapper.insert(cusDiscList);
+        }
+    }
+
+    /**
+     * 搜图服务同步商品
+     *
+     * @param storeProductId
+     * @param storeProdFiles
+     */
+    private void sync2ImgSearchServer(Long storeProductId, List<StoreProdFileDTO> storeProdFiles) {
+        List<String> picKeys = CollUtil.emptyIfNull(storeProdFiles)
+                .stream()
+                .filter(o -> FileType.MAIN_PIC.getValue().equals(o.getFileType()))
+                .map(StoreProdFileDTO::getFileUrl)
+                .collect(Collectors.toList());
+        sync2ImgSearchServer(storeProductId, picKeys, true);
+    }
+
+    private void sync2ImgSearchServer(Long storeProductId, List<String> picKeys, boolean async) {
+        if (async) {
+            ThreadUtil.execAsync(() -> {
+                        ProductPicSyncResultDTO r =
+                                pictureService.sync2ImgSearchServer(new ProductPicSyncDTO(storeProductId, picKeys));
+                        log.info("商品图片同步至搜图服务器: id: {}, result: {}", storeProductId, JSONUtil.toJsonStr(r));
+                    }
+            );
+        } else {
+            ProductPicSyncResultDTO r =
+                    pictureService.sync2ImgSearchServer(new ProductPicSyncDTO(storeProductId, picKeys));
+            log.info("商品图片同步至搜图服务器: id: {}, result: {}", storeProductId, JSONUtil.toJsonStr(r));
         }
     }
 

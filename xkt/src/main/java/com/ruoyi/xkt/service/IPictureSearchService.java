@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.PictureSearch;
+import com.ruoyi.xkt.dto.picture.ProductMatchDTO;
+import com.ruoyi.xkt.dto.picture.SearchRequestDTO;
 
 import java.util.List;
 
@@ -12,50 +13,11 @@ import java.util.List;
  */
 public interface IPictureSearchService {
     /**
-     * 查询以图搜款
+     * 图片搜索商品
      *
-     * @param picSearchId 以图搜款主键
-     * @return 以图搜款
+     * @param requestDTO
+     * @return
      */
-    public PictureSearch selectPictureSearchByPicSearchId(Long picSearchId);
+    List<ProductMatchDTO> searchProductByPic(SearchRequestDTO requestDTO);
 
-    /**
-     * 查询以图搜款列表
-     *
-     * @param pictureSearch 以图搜款
-     * @return 以图搜款集合
-     */
-    public List<PictureSearch> selectPictureSearchList(PictureSearch pictureSearch);
-
-    /**
-     * 新增以图搜款
-     *
-     * @param pictureSearch 以图搜款
-     * @return 结果
-     */
-    public int insertPictureSearch(PictureSearch pictureSearch);
-
-    /**
-     * 修改以图搜款
-     *
-     * @param pictureSearch 以图搜款
-     * @return 结果
-     */
-    public int updatePictureSearch(PictureSearch pictureSearch);
-
-    /**
-     * 批量删除以图搜款
-     *
-     * @param picSearchIds 需要删除的以图搜款主键集合
-     * @return 结果
-     */
-    public int deletePictureSearchByPicSearchIds(Long[] picSearchIds);
-
-    /**
-     * 删除以图搜款信息
-     *
-     * @param picSearchId 以图搜款主键
-     * @return 结果
-     */
-    public int deletePictureSearchByPicSearchId(Long picSearchId);
 }

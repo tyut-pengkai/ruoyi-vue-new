@@ -229,5 +229,13 @@ public class Constants
      * 支付超时最大时间
      */
     public static final Integer PAY_EXPIRE_MAX_HOURS = 24 * 7;
+    /**
+     * 以图搜图图片类目
+     */
+    public static final int IMG_SEARCH_CATEGORY_ID = 4;
+    /**
+     * 以图搜图匹配分数阈值
+     */
+    public static final float IMG_SEARCH_MATCH_SCORE_THRESHOLD = (float) 0.5;
 
 }

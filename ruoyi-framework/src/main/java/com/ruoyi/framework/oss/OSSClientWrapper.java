@@ -242,7 +242,7 @@ public class OSSClientWrapper {
         return "image/jpeg";
     }
 
-    public InputStream getObject(String key) throws Exception {
+    public InputStream getObject(String key) {
         OSSObject ossObject = client.getObject(configuration.getBucketName(), key);
         return ossObject.getObjectContent();
     }

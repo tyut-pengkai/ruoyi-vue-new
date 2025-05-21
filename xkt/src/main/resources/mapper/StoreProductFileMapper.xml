@@ -135,8 +135,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                     #{storeProdId}
                 </foreach>
             </if>
-          AND spf.file_type = #{fileType}
-          AND spf.order_num = #{orderNum}
+            <if test="fileType != null">
+                AND spf.file_type = #{fileType}
+            </if>
+            <if test="orderNum != null">
+                AND spf.order_num = #{orderNum}
+            </if>
     </select>
 
     <select id="selectPicSpaceList" >

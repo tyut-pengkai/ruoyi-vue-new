@@ -1,5 +1,7 @@
 package com.ruoyi.xkt.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.lang.Assert;
@@ -7,13 +9,16 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.ZipUtil;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.text.CharsetKit;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.ImgExtUtil;
 import com.ruoyi.framework.config.properties.OSSProperties;
+import com.ruoyi.framework.img.ImgSearchClientWrapper;
+import com.ruoyi.framework.img.entity.ImgAdd;
+import com.ruoyi.framework.img.entity.ImgSearchReq;
 import com.ruoyi.framework.oss.OSSClientWrapper;
-import com.ruoyi.xkt.dto.picture.DownloadResultDTO;
-import com.ruoyi.xkt.dto.picture.PicZipDTO;
+import com.ruoyi.xkt.dto.picture.*;
 import com.ruoyi.xkt.service.IPictureService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +30,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author liangyq
@@ -39,6 +46,8 @@ public class PictureServiceImpl implements IPictureService {
     private OSSClientWrapper ossClient;
     @Autowired
     private OSSProperties ossProperties;
+    @Autowired
+    private ImgSearchClientWrapper imgSearchClient;
 
     @Override
     public PicZipDTO processPicZip(String key) {
@@ -111,6 +120,59 @@ public class PictureServiceImpl implements IPictureService {
             //删除临时文件夹
             FileUtil.del(tempDirPath);
         }
+    }
+
+    @Override
+    public ProductPicSyncResultDTO sync2ImgSearchServer(ProductPicSyncDTO productPicSyncDTO) {
+        Assert.notNull(productPicSyncDTO);
+        String productId = productPicSyncDTO.getStoreProductId().toString();
+        //删除商品图片
+        boolean allSuccess = imgSearchClient.deleteImg(productId);
+        List<String> picKeys = CollUtil.emptyIfNull(productPicSyncDTO.getProductPicKeys());
+        List<PicSyncResultDTO> picSyncResultList = new ArrayList<>(picKeys.size());
+        for (String picKey : picKeys) {
+            ImgAdd imgAdd = new ImgAdd();
+            imgAdd.setProductId(productId);
+            imgAdd.setPicName(FileUtil.getName(picKey));
+            imgAdd.setCategoryId(Constants.IMG_SEARCH_CATEGORY_ID);
+            try {
+                imgAdd.setPicInputStream(ossClient.getObject(picKey));
+            } catch (Exception e) {
+                log.error("获取图片流异常: " + picKey, e);
+                allSuccess = false;
+                picSyncResultList.add(new PicSyncResultDTO(picKey, false));
+                continue;
+            }
+            //添加商品图片
+            boolean success = imgSearchClient.addImg(imgAdd);
+            if (!success) {
+                allSuccess = false;
+            }
+            picSyncResultList.add(new PicSyncResultDTO(picKey, success));
+        }
+        return new ProductPicSyncResultDTO(allSuccess, picSyncResultList);
+    }
+
+    @Override
+    public List<ProductMatchDTO> searchProductByPicKey(String picKey, Integer num) {
+        Assert.notEmpty(picKey);
+        ImgSearchReq imgSearchReq = new ImgSearchReq();
+        imgSearchReq.setCategoryId(Constants.IMG_SEARCH_CATEGORY_ID);
+        imgSearchReq.setNum(num);
+        imgSearchReq.setStart(0);
+        imgSearchReq.setDistinctProductId(true);
+        try {
+            imgSearchReq.setPicInputStream(ossClient.getObject(picKey));
+        } catch (Exception e) {
+            log.error("获取图片流异常: " + picKey, e);
+            return ListUtil.empty();
+        }
+        return imgSearchClient.searchByPic(imgSearchReq)
+                .stream()
+                //过滤搜索评分0.5以下的商品
+                .filter(o -> o.getScore() >= Constants.IMG_SEARCH_MATCH_SCORE_THRESHOLD)
+                .map(o -> new ProductMatchDTO(Long.parseLong(o.getProductId()), o.getScore()))
+                .collect(Collectors.toList());
     }
 
     /**
