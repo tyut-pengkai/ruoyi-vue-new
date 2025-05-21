@@ -2,6 +2,8 @@ package com.ruoyi.framework.img.entity;
 
 import lombok.Data;
 
+import java.io.InputStream;
+
 /**
  * @author liangyq
  * @date 2025-04-25 20:08
@@ -32,15 +34,8 @@ public class ImgAdd {
      */
     private String customContent;
     /**
-     * 图片路径
-     * <p>
-     * 本地图片：E:/test/123.jpg
-     * URL：https://www.example.com/123.jpg
+     * 图片输入流
      */
-    private String picPath;
-    /**
-     * 是否本地图片
-     */
-    private Boolean picLocalFlag;
+    private InputStream picInputStream;
 
 }

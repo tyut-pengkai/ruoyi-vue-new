@@ -2,6 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.SysFile;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Repository
 public interface SysFileMapper extends BaseMapper<SysFile> {
     /**
      * 查询file

@@ -143,4 +143,9 @@ public class CacheConstants
      */
     public static final String APP_ADVERT = "app_advert:";
 
+    /**
+     * 图片搜索统计
+     */
+    public static final String IMG_SEARCH_STATISTICS = "img_search_statistics:";
+
 }

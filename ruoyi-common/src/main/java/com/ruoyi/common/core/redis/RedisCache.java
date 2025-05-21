@@ -271,4 +271,8 @@ public class RedisCache
     public boolean exists(final String key) {
         return redisTemplate.hasKey(key);
     }
+
+    public Long valueIncr(final String key) {
+        return redisTemplate.opsForValue().increment(key);
+    }
 }
