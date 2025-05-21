@@ -4,6 +4,12 @@ import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
+import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexHotSaleRightFixVO;
+import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexMidBrandVO;
+import com.ruoyi.web.controller.xkt.vo.advertRound.app.category.APPCateVO;
+import com.ruoyi.web.controller.xkt.vo.advertRound.app.own.APPOwnGuessLikeVO;
+import com.ruoyi.web.controller.xkt.vo.advertRound.pc.PCDownloadVO;
+import com.ruoyi.web.controller.xkt.vo.advertRound.pc.PCUserCenterVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.index.*;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.newArrival.*;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.store.PCStoreMidBannerVO;
@@ -45,6 +51,11 @@ public class WebsiteController extends XktBaseController {
     public R<Page<ESProductDTO>> page(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
         return R.ok(websiteService.search(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
     }
+
+    // TODO APP 首页 热卖精选、人气爆品、新品榜  PC 首页 新品馆 列表
+    // TODO APP 首页 热卖精选、人气爆品、新品榜  PC 首页 新品馆 列表
+    // TODO APP 首页 热卖精选、人气爆品、新品榜  PC 首页 新品馆 列表
+
 
     @ApiOperation(value = "PC 首页 顶部横向轮播图", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/top/left")
@@ -148,6 +159,52 @@ public class WebsiteController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(websiteService.getPicSearchList(), PicSearchAdvertVO.class));
     }
 
+    /*@ApiOperation(value = "PC 搜索结果", httpMethod = "GET", response = R.class)
+    @GetMapping("pc/search-result")
+    public R<List<PicSearchAdvertVO>> getSearchResultList() {
+        return R.ok(BeanUtil.copyToList(websiteService.getSearchResultList(), PicSearchAdvertVO.class));
+    }*/
 
+    @ApiOperation(value = "PC 用户中心", httpMethod = "GET", response = R.class)
+    @GetMapping("/pc/user-center")
+    public R<List<PCUserCenterVO>> getPcUserCenterList() {
+        return R.ok(BeanUtil.copyToList(websiteService.getPcUserCenterList(), PCUserCenterVO.class));
+    }
+
+    @ApiOperation(value = "PC 用户中心", httpMethod = "GET", response = R.class)
+    @GetMapping("/pc/download")
+    public R<List<PCDownloadVO>> getPcDownloadList() {
+        return R.ok(BeanUtil.copyToList(websiteService.getPcDownloadList(), PCDownloadVO.class));
+    }
+
+    @ApiOperation(value = "APP 首页顶部轮播图", httpMethod = "GET", response = R.class)
+    @GetMapping("/app/top/banner")
+    public R<List<PCDownloadVO>> getAppIndexTopBanner() {
+        return R.ok(BeanUtil.copyToList(websiteService.getAppIndexTopBanner(), PCDownloadVO.class));
+    }
+
+    @ApiOperation(value = "APP 首页品牌好货", httpMethod = "GET", response = R.class)
+    @GetMapping("/app/mid/brand")
+    public R<List<APPIndexMidBrandVO>> getAppIndexMidBrand() {
+        return R.ok(BeanUtil.copyToList(websiteService.getAppIndexMidBrand(), APPIndexMidBrandVO.class));
+    }
+
+    @ApiOperation(value = "APP 首页热卖精选右侧固定位置", httpMethod = "GET", response = R.class)
+    @GetMapping("/app/hot-sale/right-fix")
+    public R<List<APPIndexHotSaleRightFixVO>> getAppIndexHotSaleRightFix() {
+        return R.ok(BeanUtil.copyToList(websiteService.getAppIndexHotSaleRightFix(), APPIndexHotSaleRightFixVO.class));
+    }
+
+    @ApiOperation(value = "APP 分类页", httpMethod = "GET", response = R.class)
+    @GetMapping("/app/cate")
+    public R<List<APPCateVO>> getAppCateList() {
+        return R.ok(BeanUtil.copyToList(websiteService.getAppCateList(), APPCateVO.class));
+    }
+
+    @ApiOperation(value = "APP 个人中心猜你喜欢", httpMethod = "GET", response = R.class)
+    @GetMapping("/app/own/guess-like")
+    public R<List<APPOwnGuessLikeVO>> getAppOwnGuessLikeList() {
+        return R.ok(BeanUtil.copyToList(websiteService.getAppOwnGuessLikeList(), APPOwnGuessLikeVO.class));
+    }
 
 }

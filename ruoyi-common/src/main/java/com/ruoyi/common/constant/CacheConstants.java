@@ -135,13 +135,40 @@ public class CacheConstants
      *  以图搜款
      */
     public static final String PIC_SEARCH = "pic_search";
-
+    /**
+     * PC 用户中心
+     */
+    public static final String PC_USER_CENTER = "pc_user_center";
+    /**
+     * PC 下载页
+     */
+    public static final String PC_DOWNLOAD = "pc_download";
 
 
     /**
      * APP 广告
      */
     public static final String APP_ADVERT = "app_advert:";
+    /**
+     * APP 首页顶部轮播图
+     */
+    public static final String APP_INDEX_TOP_BANNER = "app_index_top_banner";
+    /**
+     * APP 首页中部品牌好货
+     */
+    public static final String APP_INDEX_MID_BRAND = "app_index_mid_brand";
+    /**
+     * APP 首页热卖精选 右侧固定位置
+     */
+    public static final String APP_INDEX_HOT_SALE_RIGHT_FIX = "app_index_hot_sale_right_fix";
+    /**
+     * APP 分类页
+     */
+    public static final String APP_CATE = "app_cate";
+    /**
+     * APP 我的猜你喜欢
+     */
+    public static final String APP_OWN_GUESS_LIKE = "app_own_guess_like";
 
     /**
      * 图片搜索统计

@@ -78,7 +78,7 @@ public enum AdType {
 
     // PC搜索结果
     PC_SEARCH_RESULT(401, "电脑端搜索结果", "/url"),
-    // PC用户中心
+    // PC用户中心 18个位置
     PC_USER_CENTER(402, "电脑端用户中心", "/url"),
     // PC下载页
     PC_DOWNLOAD(403, "电脑端下载页", "/url"),

@@ -28,6 +28,8 @@ public class StoreFactoryResDTO {
     private String facName;
     @ApiModelProperty(value = "工厂地址")
     private String facAddress;
+    @ApiModelProperty(value = "联系人")
+    private String facContact;
     @ApiModelProperty(value = "工厂联系电话")
     private String facPhone;
     @ApiModelProperty("备注")

@@ -1,6 +1,13 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
+import com.ruoyi.xkt.dto.advertRound.app.category.APPCateDTO;
+import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexHotSaleRightFixDTO;
+import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexMidBrandDTO;
+import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexTopBannerDTO;
+import com.ruoyi.xkt.dto.advertRound.app.own.APPOwnGuessLikeDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.PCDownloadDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.PCUserCenterDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.*;
 import com.ruoyi.xkt.dto.advertRound.pc.newArrival.*;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreMidBannerDTO;
@@ -146,4 +153,52 @@ public interface IWebsiteService {
      */
     List<PicSearchAdvertDTO> getPicSearchList();
 
+    /**
+     * PC 用户中心
+     *
+     * @return List<PCUserCenterDTO>
+     */
+    List<PCUserCenterDTO> getPcUserCenterList();
+
+    /**
+     * PC 下载页
+     *
+     * @return List<PCDownloadDTO>
+     */
+    List<PCDownloadDTO> getPcDownloadList();
+
+    /**
+     * APP 首页顶部轮播图
+     *
+     * @return List<APPIndexTopBannerDTO>
+     */
+    List<APPIndexTopBannerDTO> getAppIndexTopBanner();
+
+    /**
+     * APP 首页中部品牌好货
+     *
+     * @return List<APPIndexMidBrandDTO>
+     */
+    List<APPIndexMidBrandDTO> getAppIndexMidBrand();
+
+    /**
+     * APP 首页热卖精选右侧固定位置
+     *
+     * @return List<APPIndexHotSaleRightFixDTO>
+     */
+    List<APPIndexHotSaleRightFixDTO> getAppIndexHotSaleRightFix();
+
+    /**
+     * APP 分类页
+     *
+     * @return List<APPCateDTO>
+     */
+    List<APPCateDTO> getAppCateList();
+
+    /**
+     * APP 我的猜你喜欢列表
+     *
+     * @return List<APPOwnGuessLikeDTO>
+     */
+    List<APPOwnGuessLikeDTO> getAppOwnGuessLikeList();
 }

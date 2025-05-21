@@ -14,6 +14,13 @@ import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.dto.advertRound.app.category.APPCateDTO;
+import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexHotSaleRightFixDTO;
+import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexMidBrandDTO;
+import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexTopBannerDTO;
+import com.ruoyi.xkt.dto.advertRound.app.own.APPOwnGuessLikeDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.PCDownloadDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.PCUserCenterDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.*;
 import com.ruoyi.xkt.dto.advertRound.pc.newArrival.*;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreMidBannerDTO;
@@ -302,8 +309,8 @@ public class WebsiteServiceImpl implements IWebsiteService {
         if (CollectionUtils.isEmpty(cateSaleList)) {
             return new ArrayList<>();
         }
-        List<StoreProdPriceAndMainPicDTO> prodPriceAndMainPicList = this.storeProdMapper
-                .selectPriceAndMainPicList(cateSaleList.stream().map(CateSaleRankDTO::getStoreProdId).collect(Collectors.toList()));
+        List<StoreProdPriceAndMainPicDTO> prodPriceAndMainPicList = this.storeProdMapper.selectPriceAndMainPicList(cateSaleList.stream()
+                .map(CateSaleRankDTO::getStoreProdId).collect(Collectors.toList()));
         // 档口商品的价格及商品主图map
         Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = prodPriceAndMainPicList.stream().collect(Collectors
                 .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
@@ -1049,7 +1056,6 @@ public class WebsiteServiceImpl implements IWebsiteService {
      * 以图搜款 广告
      *
      * @return List<PicSearchAdvertDTO>
-     * @param count 返回的数量
      */
     @Override
     @Transactional(readOnly = true)
@@ -1082,11 +1088,15 @@ public class WebsiteServiceImpl implements IWebsiteService {
         // 商品标签
         List<DailyProdTag> prodTagList = this.dailyProdTagMapper.selectList(new LambdaQueryWrapper<DailyProdTag>()
                 .eq(DailyProdTag::getDelFlag, Constants.UNDELETED).in(DailyProdTag::getStoreProdId, storeProdIdList));
-        Map<Long, List<String>> prodTagMap = prodTagList.stream().collect(Collectors.groupingBy(DailyProdTag::getStoreProdId, Collectors.mapping(DailyProdTag::getTag, Collectors.toList())));
+        Map<Long, List<String>> prodTagMap = prodTagList.stream().collect(Collectors.groupingBy(DailyProdTag::getStoreProdId, Collectors
+                .collectingAndThen(Collectors.toList(), list -> list.stream()
+                        .sorted(Comparator.comparing(DailyProdTag::getType)).map(DailyProdTag::getTag).collect(Collectors.toList()))));
         // 档口标签
         List<DailyStoreTag> storeTagList = this.dailyStoreTagMapper.selectList(new LambdaQueryWrapper<DailyStoreTag>()
                 .eq(DailyStoreTag::getDelFlag, Constants.UNDELETED).in(DailyStoreTag::getStoreId, storeList.stream().map(Store::getId).collect(Collectors.toList())));
-        Map<Long, List<String>> storeTagMap = storeTagList.stream().collect(Collectors.groupingBy(DailyStoreTag::getStoreId, Collectors.mapping(DailyStoreTag::getTag, Collectors.toList())));
+        Map<Long, List<String>> storeTagMap = storeTagList.stream().collect(Collectors
+                .groupingBy(DailyStoreTag::getStoreId, Collectors.collectingAndThen(Collectors.toList(), list -> list.stream()
+                        .sorted(Comparator.comparing(DailyStoreTag::getType)).map(DailyStoreTag::getTag).collect(Collectors.toList()))));
         List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         // 从正在播放的图搜热款广告或者历史广告中筛选10条
@@ -1095,6 +1105,374 @@ public class WebsiteServiceImpl implements IWebsiteService {
         // 放到redis 中 过期时间1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PIC_SEARCH, picSearchList, 1, TimeUnit.DAYS);
         return picSearchList;
+    }
+
+    /**
+     * PC 用户中心
+     *
+     * @return List<PCUserCenterDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<PCUserCenterDTO> getPcUserCenterList() {
+        // 从redis中获取 用户中心数据
+        List<PCUserCenterDTO> pcUserCenterList;
+        List<PCUserCenterDTO> redisList = redisCache.getCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_USER_CENTER);
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            return redisList;
+        }
+        List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.PC_USER_CENTER.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return new ArrayList<>();
+        }
+        List<StoreProdPriceAndMainPicDTO> prodPriceAndMainPicList = this.storeProdMapper.selectPriceAndMainPicList(oneMonthList.stream()
+                .map(AdvertRound::getProdIdStr).map(Long::parseLong).collect(Collectors.toList()));
+        // 档口商品的价格及商品主图map
+        Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = prodPriceAndMainPicList.stream().collect(Collectors
+                .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(launchingList)) {
+            pcUserCenterList = expiredList.stream().map(x -> this.getPcUserCenterDTO(x, prodPriceAndMainPicMap)).limit(18).collect(Collectors.toList());
+            for (int i = 0; i < pcUserCenterList.size(); i++) {
+                pcUserCenterList.get(i).setOrderNum(i + 1);
+            }
+        } else {
+            pcUserCenterList = launchingList.stream().map(x -> this.getPcUserCenterDTO(x, prodPriceAndMainPicMap)
+                    .setOrderNum(this.positionToNumber(x.getPosition()))).limit(18).collect(Collectors.toList());
+        }
+        // 放到redis 中 过期时间1天
+        redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_USER_CENTER, pcUserCenterList, 1, TimeUnit.DAYS);
+        return pcUserCenterList;
+    }
+
+    /**
+     * PC 下载页
+     *
+     * @return List<PCDownloadDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<PCDownloadDTO> getPcDownloadList() {
+        // 从redis中获取 下载页数据
+        List<PCDownloadDTO> pcDownloadList;
+        List<PCDownloadDTO> redisList = redisCache.getCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_DOWNLOAD);
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            return redisList;
+        }
+        List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.PC_DOWNLOAD.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return new ArrayList<>();
+        }
+        List<StoreProdPriceAndMainPicDTO> prodPriceAndMainPicList = this.storeProdMapper.selectPriceAndMainPicList(oneMonthList.stream()
+                .map(AdvertRound::getProdIdStr).map(Long::parseLong).collect(Collectors.toList()));
+        Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = prodPriceAndMainPicList.stream().collect(Collectors
+                .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(launchingList)) {
+            pcDownloadList = expiredList.stream().map(advertRound -> this.getPcDownload(advertRound, prodPriceAndMainPicMap)).limit(10).collect(Collectors.toList());
+            for (int i = 0; i < pcDownloadList.size(); i++) {
+                pcDownloadList.get(i).setOrderNum(i + 1);
+            }
+        } else {
+            pcDownloadList = launchingList.stream().map(advertRound -> this.getPcDownload(advertRound, prodPriceAndMainPicMap)
+                    .setOrderNum(this.positionToNumber(advertRound.getPosition()))).limit(10).collect(Collectors.toList());
+        }
+        // 放到redis 中 过期时间1天
+        redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_DOWNLOAD, pcDownloadList, 1, TimeUnit.DAYS);
+        return pcDownloadList;
+    }
+
+    /**
+     * APP 首页顶部轮播图
+     *
+     * @return List<APPIndexTopBannerDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<APPIndexTopBannerDTO> getAppIndexTopBanner() {
+        List<APPIndexTopBannerDTO> appIndexTopBannerList;
+        // 从redis中获取数据
+        List<APPIndexTopBannerDTO> redisList = redisCache.getCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_TOP_BANNER);
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            return redisList;
+        }
+        List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.APP_HOME_TOP_BANNER.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return new ArrayList<>();
+        }
+        Map<Long, SysFile> fileMap = fileMapper.selectList(new LambdaQueryWrapper<SysFile>().eq(SysFile::getDelFlag, Constants.UNDELETED)
+                        .in(SysFile::getId, oneMonthList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
+                .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(launchingList)) {
+            List<APPIndexTopBannerDTO> tempList = new ArrayList<>();
+            expiredList.stream().collect(Collectors.groupingBy(AdvertRound::getStoreId))
+                    .forEach((storeId, list) -> {
+                        AdvertRound advertRound = list.get(0);
+                        tempList.add(new APPIndexTopBannerDTO().setDisplayType(AdDisplayType.PICTURE.getValue()).setStoreId(storeId)
+                                .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""));
+                    });
+            appIndexTopBannerList = tempList.stream().limit(5).collect(Collectors.toList());
+            for (int i = 0; i < appIndexTopBannerList.size(); i++) {
+                appIndexTopBannerList.get(i).setOrderNum(i + 1);
+            }
+        } else {
+            appIndexTopBannerList = launchingList.stream().map(x -> new APPIndexTopBannerDTO().setDisplayType(AdDisplayType.PICTURE.getValue())
+                            .setStoreId(x.getStoreId()).setOrderNum(this.positionToNumber(x.getPosition()))
+                            .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(x.getPicId())) ? fileMap.get(x.getPicId()).getFileUrl() : ""))
+                    .collect(Collectors.toList());
+        }
+        // 放到redis 中 过期时间1天
+        redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_TOP_BANNER, appIndexTopBannerList, 1, TimeUnit.DAYS);
+        return appIndexTopBannerList;
+    }
+
+    /**
+     * APP 首页中部品牌好货
+     *
+     * @return List<APPIndexMidBrandDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<APPIndexMidBrandDTO> getAppIndexMidBrand() {
+        List<APPIndexMidBrandDTO> appIndexMidBrandList;
+        // 从redis 中获取数据
+        List<APPIndexMidBrandDTO> redisList = redisCache.getCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_MID_BRAND);
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            return redisList;
+        }
+        List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.APP_HOME_RECOMMEND_PRODUCT.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return new ArrayList<>();
+        }
+        List<StoreProdPriceAndMainPicDTO> prodPriceAndMainPicList = this.storeProdMapper.selectPriceAndMainPicList(oneMonthList.stream()
+                .map(AdvertRound::getProdIdStr).map(Long::parseLong).collect(Collectors.toList()));
+        Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = prodPriceAndMainPicList.stream().collect(Collectors
+                .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(launchingList)) {
+            appIndexMidBrandList = this.getAppIndexMidBrandList(expiredList, 5, prodPriceAndMainPicMap);
+        } else {
+            appIndexMidBrandList = launchingList.stream().map(x -> {
+                final Long storeProdId = Long.parseLong(x.getProdIdStr());
+                return new APPIndexMidBrandDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId).setOrderNum(this.positionToNumber(x.getPosition()))
+                        .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
+                        .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
+            }).limit(5).collect(Collectors.toList());
+            if (appIndexMidBrandList.size() < 5) {
+                appIndexMidBrandList.addAll(this.getAppIndexMidBrandList(expiredList, 5 - appIndexMidBrandList.size(), prodPriceAndMainPicMap));
+            }
+        }
+        for (int i = 0; i < appIndexMidBrandList.size(); i++) {
+            appIndexMidBrandList.get(i).setOrderNum(i + 1);
+        }
+        // 放到redis中，过期时间为1天
+        redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_MID_BRAND, appIndexMidBrandList, 1, TimeUnit.DAYS);
+        return appIndexMidBrandList;
+    }
+
+    /**
+     * APP 首页中部 品牌好货
+     *
+     * @param advertRoundList        品牌好货列表
+     * @param limitCount             筛选的数量
+     * @param prodPriceAndMainPicMap 商品价格和主图map
+     * @return List<APPIndexMidBrandDTO>
+     */
+    private List<APPIndexMidBrandDTO> getAppIndexMidBrandList(List<AdvertRound> advertRoundList, int limitCount, Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap) {
+        return advertRoundList.stream().map(x -> {
+            final Long storeProdId = Long.parseLong(x.getProdIdStr());
+            return new APPIndexMidBrandDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
+                    .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
+                    .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
+        }).limit(limitCount).collect(Collectors.toList());
+    }
+
+    /**
+     * APP 首页热卖精选右侧固定位置
+     *
+     * @return List<APPIndexHotSaleRightFixDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<APPIndexHotSaleRightFixDTO> getAppIndexHotSaleRightFix() {
+        // 从redis中获取数据
+        List<APPIndexHotSaleRightFixDTO> appIndexHotSaleRightFixList;
+        // 从redis 中获取数据
+        List<APPIndexHotSaleRightFixDTO> redisList = redisCache.getCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_HOT_SALE_RIGHT_FIX);
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            return redisList;
+        }
+        List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.APP_HOME_HOT_RECOMMEND_FIXED_PROD.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return new ArrayList<>();
+        }
+        List<StoreProdPriceAndMainPicDTO> prodPriceAndMainPicList = this.storeProdMapper.selectPriceAndMainPicList(oneMonthList.stream()
+                .map(AdvertRound::getProdIdStr).map(Long::parseLong).collect(Collectors.toList()));
+        Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = prodPriceAndMainPicList.stream().collect(Collectors
+                .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(launchingList)) {
+            appIndexHotSaleRightFixList = expiredList.stream().map(x -> {
+                Long storeProdId = Long.parseLong(x.getProdIdStr());
+                return new APPIndexHotSaleRightFixDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
+                        .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
+            }).limit(5).collect(Collectors.toList());
+            for (int i = 0; i < appIndexHotSaleRightFixList.size(); i++) {
+                appIndexHotSaleRightFixList.get(i).setOrderNum(i + 1);
+            }
+        } else {
+            appIndexHotSaleRightFixList = launchingList.stream().map(x -> {
+                Long storeProdId = Long.parseLong(x.getProdIdStr());
+                return new APPIndexHotSaleRightFixDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId).setOrderNum(this.positionToNumber(x.getPosition()))
+                        .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
+            }).limit(5).collect(Collectors.toList());
+        }
+        // 放到redis中，有效期1天
+        redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_HOT_SALE_RIGHT_FIX, appIndexHotSaleRightFixList, 1, TimeUnit.DAYS);
+        return appIndexHotSaleRightFixList;
+    }
+
+    /**
+     * APP 分类页
+     *
+     * @return List<APPCateDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<APPCateDTO> getAppCateList() {
+        List<APPCateDTO> appCateList;
+        // 从redis中获取数据
+        List<APPCateDTO> redisList = redisCache.getCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_CATE);
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            return redisList;
+        }
+        List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.APP_CATEGORY_TOP_BANNER.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return new ArrayList<>();
+        }
+        Map<Long, SysFile> fileMap = fileMapper.selectList(new LambdaQueryWrapper<SysFile>().eq(SysFile::getDelFlag, Constants.UNDELETED)
+                        .in(SysFile::getId, oneMonthList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
+                .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(launchingList)) {
+            List<APPCateDTO> tempList = new ArrayList<>();
+            expiredList.stream().collect(Collectors.groupingBy(AdvertRound::getStoreId))
+                    .forEach((storeId, list) -> {
+                        AdvertRound advertRound = list.get(0);
+                        tempList.add(new APPCateDTO().setDisplayType(AdDisplayType.PICTURE.getValue()).setStoreId(advertRound.getStoreId())
+                                .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""));
+                    });
+            appCateList = tempList.stream().limit(5).collect(Collectors.toList());
+            for (int i = 0; i < appCateList.size(); i++) {
+                appCateList.get(i).setOrderNum(i + 1);
+            }
+        } else {
+            appCateList = launchingList.stream().map(x -> new APPCateDTO().setDisplayType(AdDisplayType.PICTURE.getValue())
+                            .setStoreId(x.getStoreId()).setOrderNum(this.positionToNumber(x.getPosition()))
+                            .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(x.getPicId())) ? fileMap.get(x.getPicId()).getFileUrl() : ""))
+                    .collect(Collectors.toList());
+        }
+        // 放到redis中，有效期1天
+        redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_CATE, appCateList, 1, TimeUnit.DAYS);
+        return appCateList;
+    }
+
+    /**
+     * APP 我的猜你喜欢列表
+     *
+     * @return List<APPOwnGuessLikeDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<APPOwnGuessLikeDTO> getAppOwnGuessLikeList() {
+        List<APPOwnGuessLikeDTO> appOwnGuessLikeList;
+        // 从redis中获取缓存数据
+        List<APPOwnGuessLikeDTO> redisList = redisCache.getCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_OWN_GUESS_LIKE);
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            return redisList;
+        }
+        List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.APP_USER_CENTER_GUESS_YOU_LIKE.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return new ArrayList<>();
+        }
+        List<Long> storeProdIdList = oneMonthList.stream().map(AdvertRound::getProdIdStr).map(Long::parseLong).collect(Collectors.toList());
+        // 商品标签
+        List<DailyProdTag> prodTagList = this.dailyProdTagMapper.selectList(new LambdaQueryWrapper<DailyProdTag>()
+                .eq(DailyProdTag::getDelFlag, Constants.UNDELETED).in(DailyProdTag::getStoreProdId, storeProdIdList));
+        Map<Long, List<String>> prodTagMap = prodTagList.stream().collect(Collectors.groupingBy(DailyProdTag::getStoreProdId, Collectors
+                .collectingAndThen(Collectors.toList(), list -> list.stream()
+                        .sorted(Comparator.comparing(DailyProdTag::getType)).map(DailyProdTag::getTag).collect(Collectors.toList()))));
+
+        List<StoreProdPriceAndMainPicDTO> prodPriceAndMainPicList = this.storeProdMapper.selectPriceAndMainPicList(oneMonthList.stream()
+                .map(AdvertRound::getProdIdStr).map(Long::parseLong).collect(Collectors.toList()));
+        Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = prodPriceAndMainPicList.stream().collect(Collectors
+                .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(launchingList)) {
+            appOwnGuessLikeList = expiredList.stream().map(x -> {
+                final Long storeProdId = Long.parseLong(x.getProdIdStr());
+                return new APPOwnGuessLikeDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
+                        .setTagList(ObjectUtils.isNotEmpty(prodTagMap.get(storeProdId)) ? prodTagMap.get(storeProdId) : null)
+                        .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
+                        .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
+                        .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
+            }).limit(20).collect(Collectors.toList());
+            for (int i = 0; i < appOwnGuessLikeList.size(); i++) {
+                appOwnGuessLikeList.get(i).setOrderNum(i + 1);
+            }
+        } else {
+            appOwnGuessLikeList = launchingList.stream().map(x -> {
+                final Long storeProdId = Long.parseLong(x.getProdIdStr());
+                return new APPOwnGuessLikeDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId).setOrderNum(this.positionToNumber(x.getPosition()))
+                        .setTagList(ObjectUtils.isNotEmpty(prodTagMap.get(storeProdId)) ? prodTagMap.get(storeProdId) : null)
+                        .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
+                        .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
+                        .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
+            }).limit(20).collect(Collectors.toList());
+        }
+        // 放到redis中，有效期1天
+        redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_OWN_GUESS_LIKE, appOwnGuessLikeList, 1, TimeUnit.DAYS);
+        return appOwnGuessLikeList;
+    }
+
+
+    /**
+     * 获取PC 下载页数据
+     *
+     * @param advertRound            下载页广告
+     * @param prodPriceAndMainPicMap 商品价格和图片
+     * @return PCDownloadDTO
+     */
+    private PCDownloadDTO getPcDownload(AdvertRound advertRound, Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap) {
+        final Long storeProdId = Long.parseLong(advertRound.getProdIdStr());
+        return new PCDownloadDTO().setDisplayType(AdDisplayType.PRODUCT.getValue())
+                .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
+                .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
+                .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
+    }
+
+    /**
+     * 获取PC 用户中心 广告列表
+     *
+     * @param advertRound            用户中心
+     * @param prodPriceAndMainPicMap 商品价格及主图等map
+     * @return PCUserCenterDTO
+     */
+    private PCUserCenterDTO getPcUserCenterDTO(AdvertRound advertRound, Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap) {
+        final Long storeProdId = Long.parseLong(advertRound.getProdIdStr());
+        return new PCUserCenterDTO().setDisplayType(AdDisplayType.PRODUCT.getValue())
+                .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
+                .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
+                .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "")
+                .setProdTitle(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdTitle() : "");
     }
 
     /**

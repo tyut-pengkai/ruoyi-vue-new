@@ -24,42 +24,39 @@ public class StoreFactory extends XktBaseEntity {
      */
     @TableId
     private Long id;
-
     /**
      * store.id
      */
     @Excel(name = "store.id")
     private Long storeId;
-
     /**
      * 工厂名称
      */
     @Excel(name = "工厂名称")
     private String facName;
-
     /**
      * 工厂地址
      */
     @Excel(name = "工厂地址")
     private String facAddress;
-
+    /**
+     * 联系人
+     */
+    private String facContact;
     /**
      * 工厂联系电话
      */
     @Excel(name = "工厂联系电话")
     private String facPhone;
-
     /**
      * 备注
      */
     private String remark;
-
     /**
      * 工厂状态
      */
     @Excel(name = "工厂状态")
     private String facStatus;
-
 
     @Override
     public String toString() {
