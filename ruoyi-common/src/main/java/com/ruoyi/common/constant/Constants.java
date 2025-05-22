@@ -237,5 +237,13 @@ public class Constants
      * 以图搜图匹配分数阈值
      */
     public static final float IMG_SEARCH_MATCH_SCORE_THRESHOLD = (float) 0.5;
+    /**
+     * 以图搜图默认返回数
+     */
+    public static final int IMG_SEARCH_DEFAULT_REQUEST_NUM = 30;
+    /**
+     * 以图搜图接口最大返回数
+     */
+    public static final int IMG_SEARCH_MAX_PAGE_NUM = 100;
 
 }

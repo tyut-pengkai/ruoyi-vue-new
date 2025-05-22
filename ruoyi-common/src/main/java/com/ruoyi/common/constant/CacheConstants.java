@@ -171,8 +171,20 @@ public class CacheConstants
     public static final String APP_OWN_GUESS_LIKE = "app_own_guess_like";
 
     /**
-     * 图片搜索统计
+     * 商品图搜次数统计
      */
-    public static final String IMG_SEARCH_STATISTICS = "img_search_statistics:";
+    public static final String PRODUCT_STATISTICS_IMG_SEARCH_COUNT = "product_statistics_img_search_count";
+    /**
+     * 商品浏览量统计
+     */
+    public static final String PRODUCT_STATISTICS_VIEW_COUNT = "product_statistics_view_count";
+    /**
+     * 商品下载量统计
+     */
+    public static final String PRODUCT_STATISTICS_DOWNLOAD_COUNT = "product_statistics_download_count";
+    /**
+     * 图搜热款
+     */
+    public static final String TOP_IMG_SEARCH_PRODUCT = "top_img_search_product";
 
 }

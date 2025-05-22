@@ -2,8 +2,11 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.PictureSearch;
+import com.ruoyi.xkt.dto.picture.ProductImgSearchCountDTO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,4 +17,7 @@ import java.util.List;
  */
 @Repository
 public interface PictureSearchMapper extends BaseMapper<PictureSearch> {
+
+    List<ProductImgSearchCountDTO> listProductImgSearchCount(@Param("beginDate") Date beginDate,
+                                                             @Param("endDate") Date endDate);
 }

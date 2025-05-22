@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.lang.Assert;
@@ -156,23 +155,39 @@ public class PictureServiceImpl implements IPictureService {
     @Override
     public List<ProductMatchDTO> searchProductByPicKey(String picKey, Integer num) {
         Assert.notEmpty(picKey);
-        ImgSearchReq imgSearchReq = new ImgSearchReq();
-        imgSearchReq.setCategoryId(Constants.IMG_SEARCH_CATEGORY_ID);
-        imgSearchReq.setNum(num);
-        imgSearchReq.setStart(0);
-        imgSearchReq.setDistinctProductId(true);
-        try {
-            imgSearchReq.setPicInputStream(ossClient.getObject(picKey));
-        } catch (Exception e) {
-            log.error("获取图片流异常: " + picKey, e);
-            return ListUtil.empty();
+        if (num == null || num < 0) {
+            //默认返回30条数据
+            num = Constants.IMG_SEARCH_DEFAULT_REQUEST_NUM;
         }
-        return imgSearchClient.searchByPic(imgSearchReq)
-                .stream()
-                //过滤搜索评分0.5以下的商品
-                .filter(o -> o.getScore() >= Constants.IMG_SEARCH_MATCH_SCORE_THRESHOLD)
-                .map(o -> new ProductMatchDTO(Long.parseLong(o.getProductId()), o.getScore()))
-                .collect(Collectors.toList());
+        int[] nums = split(num, Constants.IMG_SEARCH_MAX_PAGE_NUM);
+        List<ProductMatchDTO> rtnList = new ArrayList<>(num);
+        for (int i = 0; i < nums.length; i++) {
+            ImgSearchReq imgSearchReq = new ImgSearchReq();
+            imgSearchReq.setCategoryId(Constants.IMG_SEARCH_CATEGORY_ID);
+            imgSearchReq.setNum(nums[i]);
+            imgSearchReq.setStart(i);
+            imgSearchReq.setDistinctProductId(true);
+            try {
+                imgSearchReq.setPicInputStream(ossClient.getObject(picKey));
+            } catch (Exception e) {
+                log.error("获取图片流异常: " + picKey, e);
+                return rtnList;
+            }
+            List<ProductMatchDTO> results = imgSearchClient.searchByPic(imgSearchReq)
+                    .stream()
+                    //过滤搜索评分0.5以下的商品
+                    .filter(o -> o.getScore() >= Constants.IMG_SEARCH_MATCH_SCORE_THRESHOLD)
+                    .map(o -> new ProductMatchDTO(Long.parseLong(o.getProductId()), o.getScore()))
+                    .collect(Collectors.toList());
+            if (CollUtil.isEmpty(results)) {
+                return rtnList;
+            }
+            rtnList.addAll(results);
+            if (results.size() < nums[i]) {
+                return rtnList;
+            }
+        }
+        return rtnList;
     }
 
     /**
@@ -234,4 +249,27 @@ public class PictureServiceImpl implements IPictureService {
         }
     }
 
+    private int[] split(int num, int len) {
+        int last = num % len;
+        int size = num / len;
+        if (size == 0) {
+            if (last == 0) {
+                return new int[]{};
+            } else {
+                return new int[]{last};
+            }
+        } else {
+            int[] nums;
+            if (last == 0) {
+                nums = new int[size];
+            } else {
+                nums = new int[size + 1];
+                nums[size] = last;
+            }
+            for (int i = 0; i < size; i++) {
+                nums[i] = len;
+            }
+            return nums;
+        }
+    }
 }

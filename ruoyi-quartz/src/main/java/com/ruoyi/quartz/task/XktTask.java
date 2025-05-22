@@ -3,6 +3,7 @@ package com.ruoyi.quartz.task;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import com.alibaba.fastjson2.JSON;
@@ -30,10 +31,7 @@ import com.ruoyi.xkt.dto.order.StoreOrderRefund;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.mapper.*;
-import com.ruoyi.xkt.service.IAdvertRoundService;
-import com.ruoyi.xkt.service.IAlipayCallbackService;
-import com.ruoyi.xkt.service.IAssetService;
-import com.ruoyi.xkt.service.IStoreOrderService;
+import com.ruoyi.xkt.service.*;
 import io.jsonwebtoken.lang.Assert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,6 +87,8 @@ public class XktTask {
     final IAlipayCallbackService alipayCallbackService;
     final FsNotice fsNotice;
     final List<PaymentManager> paymentManagers;
+    final IStoreProductService storeProductService;
+    final IPictureSearchService pictureSearchService;
 
     /**
      * 每晚1点同步档口销售数据
@@ -614,6 +614,47 @@ public class XktTask {
             }
         }
         log.info("-------------继续处理支付宝支付回调信息结束-------------");
+    }
+
+    /**
+     * 商品当日浏览量、下载量、图搜次数统计
+     */
+    public void dailyProductStatistics() {
+        log.info("-------------商品信息每日统计开始-------------");
+        Map<String, Integer> iscMap = redisCache.getCacheMap(CacheConstants.PRODUCT_STATISTICS_IMG_SEARCH_COUNT);
+        Map<String, Integer> vcMap = redisCache.getCacheMap(CacheConstants.PRODUCT_STATISTICS_VIEW_COUNT);
+        Map<String, Integer> dcMap = redisCache.getCacheMap(CacheConstants.PRODUCT_STATISTICS_DOWNLOAD_COUNT);
+        Set<String> storeProdIds = MapUtil.emptyIfNull(iscMap).keySet();
+        storeProdIds.addAll(MapUtil.emptyIfNull(vcMap).keySet());
+        storeProdIds.addAll(MapUtil.emptyIfNull(dcMap).keySet());
+        Date now = new Date();
+        for (String storeProdId : storeProdIds) {
+            try {
+                // 保存到数据库
+                storeProductService.insertOrUpdateProductStatistics(Long.parseLong(storeProdId),
+                        vcMap.get(storeProdId), dcMap.get(storeProdId), iscMap.get(storeProdId), now);
+                // 清除当日缓存
+                redisCache.deleteCacheMapValue(CacheConstants.PRODUCT_STATISTICS_IMG_SEARCH_COUNT, storeProdId);
+                redisCache.deleteCacheMapValue(CacheConstants.PRODUCT_STATISTICS_VIEW_COUNT, storeProdId);
+                redisCache.deleteCacheMapValue(CacheConstants.PRODUCT_STATISTICS_DOWNLOAD_COUNT, storeProdId);
+            } catch (Exception e) {
+                log.error("商品信息每日统计异常:" + storeProdId, e);
+            }
+        }
+        // 清除当日缓存
+//        redisCache.deleteObject(CacheConstants.PRODUCT_STATISTICS_IMG_SEARCH_COUNT);
+//        redisCache.deleteObject(CacheConstants.PRODUCT_STATISTICS_VIEW_COUNT);
+//        redisCache.deleteObject(CacheConstants.PRODUCT_STATISTICS_DOWNLOAD_COUNT);
+        log.info("-------------商品信息每日统计结束-------------");
+    }
+
+    /**
+     * 统计图搜热款
+     */
+    public void imgSearchTopProductStatistics() {
+        log.info("-------------统计图搜热款开始-------------");
+        pictureSearchService.cacheImgSearchTopProduct();
+        log.info("-------------统计图搜热款结束-------------");
     }
 
 

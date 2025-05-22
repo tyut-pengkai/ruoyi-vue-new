@@ -275,4 +275,8 @@ public class RedisCache
     public Long valueIncr(final String key) {
         return redisTemplate.opsForValue().increment(key);
     }
+
+    public Long valueIncr(final String key, final Object hKey) {
+        return redisTemplate.opsForHash().increment(key, hKey.toString(), 1);
+    }
 }

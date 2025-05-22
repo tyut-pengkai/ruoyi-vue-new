@@ -3,6 +3,8 @@ package com.ruoyi.xkt.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.json.JSONUtil;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
@@ -10,6 +12,7 @@ import co.elastic.clients.elasticsearch.core.CreateResponse;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.Constants;
@@ -90,6 +93,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final StoreCustomerMapper storeCusMapper;
     final StoreCustomerProductDiscountMapper storeCusProdDiscMapper;
     final IPictureService pictureService;
+    final StoreProductStatisticsMapper storeProductStatisticsMapper;
 
 
     /**
@@ -598,6 +602,39 @@ public class StoreProductServiceImpl implements IStoreProductService {
                     .collect(Collectors.toList()));
         });
         return BeanUtil.toBean(storeProd, StoreProdSkuResDTO.class).setStoreProdId(storeProdId).setColorList(colorList);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void insertOrUpdateProductStatistics(Long storeProdId, Integer incrViewCount, Integer incrDownloadCount,
+                                                Integer incrImgSearchCount, Date date) {
+        StoreProduct product = storeProdMapper.selectById(storeProdId);
+        Assert.notNull(product);
+        Assert.notNull(date);
+        StoreProductStatistics statistics = storeProductStatisticsMapper.selectOne(Wrappers
+                .lambdaQuery(StoreProductStatistics.class)
+                .eq(StoreProductStatistics::getStoreProdId, storeProdId)
+                .eq(StoreProductStatistics::getVoucherDate, DateUtil.formatDate(date)));
+        Long vc = Optional.ofNullable(incrViewCount).map(Integer::longValue).orElse(0L);
+        Long dc = Optional.ofNullable(incrDownloadCount).map(Integer::longValue).orElse(0L);
+        Long isc = Optional.ofNullable(incrImgSearchCount).map(Integer::longValue).orElse(0L);
+        if (statistics == null) {
+            statistics = new StoreProductStatistics();
+            statistics.setStoreId(product.getStoreId());
+            statistics.setStoreProdId(storeProdId);
+            statistics.setViewCount(vc);
+            statistics.setDownloadCount(dc);
+            statistics.setImgSearchCount(isc);
+            statistics.setVoucherDate(date);
+            statistics.setVersion(0);
+            statistics.setDelFlag(UNDELETED);
+            storeProductStatisticsMapper.insert(statistics);
+        } else {
+            statistics.setViewCount(statistics.getViewCount() + vc);
+            statistics.setDownloadCount(statistics.getDownloadCount() + dc);
+            statistics.setImgSearchCount(statistics.getImgSearchCount() + isc);
+            storeProductStatisticsMapper.updateById(statistics);
+        }
     }
 
     /**

@@ -5,6 +5,7 @@ import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeProduct.*;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -104,5 +105,17 @@ public interface IStoreProductService {
      * @return StoreProdSkuResDTO
      */
     StoreProdSkuResDTO getSkuList(Long storeProdId);
+
+    /**
+     * 添加商品统计信息
+     *
+     * @param storeProdId
+     * @param incrViewCount
+     * @param incrDownloadCount
+     * @param incrImgSearchCount
+     * @param date
+     */
+    void insertOrUpdateProductStatistics(Long storeProdId, Integer incrViewCount, Integer incrDownloadCount,
+                                         Integer incrImgSearchCount, Date date);
 
 }

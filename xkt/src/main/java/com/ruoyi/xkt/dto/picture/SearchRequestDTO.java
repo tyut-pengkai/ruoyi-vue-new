@@ -10,12 +10,20 @@ import java.math.BigDecimal;
  */
 @Data
 public class SearchRequestDTO {
-
+    /**
+     * 用于搜索的图片对应ossKey
+     */
     private String picKey;
-
+    /**
+     * 用于搜索的图片大小，不超过4M
+     */
     private BigDecimal picSize;
-
+    /**
+     * 用户ID
+     */
     private Long userId;
-
+    /**
+     * 期望返回条数
+     */
     private Integer num;
 }

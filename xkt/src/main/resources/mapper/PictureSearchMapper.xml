@@ -3,5 +3,17 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.PictureSearchMapper">
-    
+
+    <select id="listProductImgSearchCount" resultType="com.ruoyi.xkt.dto.picture.ProductImgSearchCountDTO">
+        SELECT
+            sps.store_prod_id AS store_product_id,
+            SUM( img_search_count ) AS img_search_count
+        FROM
+            store_product_statistics sps
+        WHERE
+            sps.voucher_date BETWEEN #{beginDate} AND #{endDate}
+        GROUP BY
+            sps.store_prod_id
+        ORDER BY img_search_count DESC
+    </select>
 </mapper>
