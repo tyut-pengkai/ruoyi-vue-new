@@ -16,6 +16,8 @@ import com.ruoyi.web.controller.xkt.vo.advertRound.pc.store.PCStoreMidBannerVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.store.PCStoreTopBannerVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.picSearch.PicSearchAdvertVO;
 import com.ruoyi.web.controller.xkt.website.IndexSearchVO;
+import com.ruoyi.xkt.dto.advertRound.app.index.*;
+import com.ruoyi.xkt.dto.advertRound.pc.index.PCIndexRecommendDTO;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 import com.ruoyi.xkt.service.IWebsiteService;
@@ -52,9 +54,44 @@ public class WebsiteController extends XktBaseController {
         return R.ok(websiteService.search(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
     }
 
+
+    //  PC 首页 新品馆 列表
     // TODO APP 首页 热卖精选、人气爆品、新品榜  PC 首页 新品馆 列表
     // TODO APP 首页 热卖精选、人气爆品、新品榜  PC 首页 新品馆 列表
-    // TODO APP 首页 热卖精选、人气爆品、新品榜  PC 首页 新品馆 列表
+
+    @ApiOperation(value = "PC 首页 为你推荐", httpMethod = "POST", response = R.class)
+    @PostMapping("/pc/index/recommend")
+    public R<Page<PCIndexRecommendDTO>> pcIndexRecommendPage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
+        return R.ok(websiteService.pcIndexRecommendPage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
+    }
+
+
+
+    @ApiOperation(value = "APP 首页 精选热卖列表", httpMethod = "POST", response = R.class)
+    @PostMapping("/app/index/hot-sale")
+    public R<Page<APPIndexHotSaleDTO>> appIndexHotSalePage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
+        return R.ok(websiteService.appIndexHotSalePage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
+    }
+
+    @ApiOperation(value = "APP 首页 人气爆品", httpMethod = "POST", response = R.class)
+    @PostMapping("/app/index/popular-sale")
+    public R<Page<APPIndexPopularSaleDTO>> appIndexPopularSalePage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
+        return R.ok(websiteService.appIndexPopularSalePage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
+    }
+
+    @ApiOperation(value = "APP 首页 新品榜", httpMethod = "POST", response = R.class)
+    @PostMapping("/app/index/new-prod")
+    public R<Page<APPIndexNewProdDTO>> appIndexNewProdPage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
+        return R.ok(websiteService.appIndexNewProdPage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
+    }
+
+    @ApiOperation(value = "APP 搜索", httpMethod = "POST", response = R.class)
+    @PostMapping("/app/index/search")
+    public R<Page<APPSearchDTO>> appSearchPage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
+        return R.ok(websiteService.appSearchPage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
+    }
+
+
 
 
     @ApiOperation(value = "PC 首页 顶部横向轮播图", httpMethod = "GET", response = R.class)

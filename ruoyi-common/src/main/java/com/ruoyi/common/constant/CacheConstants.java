@@ -2,11 +2,10 @@ package com.ruoyi.common.constant;
 
 /**
  * 缓存的key 常量
- * 
+ *
  * @author ruoyi
  */
-public class CacheConstants
-{
+public class CacheConstants {
     /**
      * 登录用户 redis key
      */
@@ -132,7 +131,7 @@ public class CacheConstants
      */
     public static final String PC_ADVERT_STORE_MID_BANNER = "pc_store_mid_banner";
     /**
-     *  以图搜款
+     * 以图搜款
      */
     public static final String PIC_SEARCH = "pic_search";
     /**
@@ -162,6 +161,22 @@ public class CacheConstants
      */
     public static final String APP_INDEX_HOT_SALE_RIGHT_FIX = "app_index_hot_sale_right_fix";
     /**
+     * APP 首页精选热卖推广
+     */
+    public static final String APP_INDEX_HOT_SALE_ADVERT = "app_index_hot_sale_advert";
+    /**
+     * APP 首页人气爆品推广
+     */
+    public static final String APP_INDEX_POPULAR_SALE_ADVERT = "app_index_popular_sale_advert";
+    /**
+     * APP 首页 新品榜
+     */
+    public static final String APP_INDEX_NEW_PROD = "app_index_new_prod";
+    /**
+     * APP 搜索
+     */
+    public static final String APP_SEARCH = "app_search";
+    /**
      * APP 分类页
      */
     public static final String APP_CATE = "app_cate";
@@ -169,7 +184,6 @@ public class CacheConstants
      * APP 我的猜你喜欢
      */
     public static final String APP_OWN_GUESS_LIKE = "app_own_guess_like";
-
     /**
      * 商品图搜次数统计
      */

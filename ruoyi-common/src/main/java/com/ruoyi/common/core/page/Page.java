@@ -17,8 +17,8 @@ import java.util.List;
  *
  * @author ruoyi
  */
-@NoArgsConstructor
-@AllArgsConstructor
+//@NoArgsConstructor
+//@AllArgsConstructor
 @Data
 @Accessors(chain = true)
 public class Page<T> implements Serializable {
@@ -46,6 +46,17 @@ public class Page<T> implements Serializable {
      * 列表数据
      */
     private List<T> list;
+
+    public Page() {
+    }
+
+    public Page(long pageNum, long pageSize, long pages, long total, List<T> list) {
+        this.pageNum = pageNum;
+        this.pageSize = pageSize;
+        this.pages = pages;
+        this.total = total;
+        this.list = list;
+    }
 
     public static <T> Page<T> convert(PageInfo<?> pageInfo) {
         return BeanUtil.toBean(pageInfo, Page.class);

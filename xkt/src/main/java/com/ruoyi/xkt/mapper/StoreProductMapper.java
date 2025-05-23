@@ -72,5 +72,12 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      */
     List<StoreProdPriceAndMainPicDTO> selectPriceAndMainPicList(@Param("storeProdIdList") List<Long> storeProdIdList);
 
+    /**
+     * 获取商品的价格主图及标签列表等
+     * @param storeProdIdList 档口商品ID列表
+     * @return List<StoreProdPriceAndMainPicAndTagDTO>
+     */
+    List<StoreProdPriceAndMainPicAndTagDTO> selectPriceAndMainPicAndTagList(@Param("storeProdIdList") List<Long> storeProdIdList);
+
 }
 

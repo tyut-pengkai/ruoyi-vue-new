@@ -2,7 +2,10 @@ package com.ruoyi.common.constant;
 
 import io.jsonwebtoken.Claims;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * 通用常量信息
@@ -245,5 +248,9 @@ public class Constants
      * 以图搜图接口最大返回数
      */
     public static final int IMG_SEARCH_MAX_PAGE_NUM = 100;
+    /**
+     * APP 首页广告位置 插入广告的索引位置集合 获取精选热卖推广，将广告嵌入到列表中 每一页20条，5条广告嵌入到 3  7  11  15  19
+     */
+    public static final Set<Integer> insertPositions = new HashSet<>(Arrays.asList(2, 6, 10, 14, 18));
 
 }

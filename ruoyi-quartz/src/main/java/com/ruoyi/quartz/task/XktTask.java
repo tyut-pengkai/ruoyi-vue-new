@@ -960,7 +960,7 @@ public class XktTask {
                     // 构建部分文档更新请求
                     list.add(new BulkOperation.Builder().update(u -> u
                                     .action(a -> a.doc(new HashMap<String, Object>() {{
-                                        put("tags", tags.stream().map(DailyProdTag::getTag).collect(Collectors.toList()));
+                                        put("tags", tags.stream().sorted(Comparator.comparing(x -> x.getType())).map(DailyProdTag::getTag).collect(Collectors.toList()));
                                     }}))
                                     .id(String.valueOf(storeProdId))
                                     .index(Constants.ES_IDX_PRODUCT_INFO))

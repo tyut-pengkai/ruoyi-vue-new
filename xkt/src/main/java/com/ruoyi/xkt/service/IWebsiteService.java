@@ -2,9 +2,7 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.advertRound.app.category.APPCateDTO;
-import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexHotSaleRightFixDTO;
-import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexMidBrandDTO;
-import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexTopBannerDTO;
+import com.ruoyi.xkt.dto.advertRound.app.index.*;
 import com.ruoyi.xkt.dto.advertRound.app.own.APPOwnGuessLikeDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCDownloadDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCUserCenterDTO;
@@ -20,7 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * 档口销售出库Service接口
+ * 系统广告位置及搜索页
  *
  * @author ruoyi
  * @date 2025-03-26
@@ -201,4 +199,45 @@ public interface IWebsiteService {
      * @return List<APPOwnGuessLikeDTO>
      */
     List<APPOwnGuessLikeDTO> getAppOwnGuessLikeList();
+
+    /**
+     * APP 首页热卖精选列表
+     *
+     * @param searchDTO 搜索入参
+     * @return List<APPIndexHotSalePageDTO>
+     */
+    Page<APPIndexHotSaleDTO> appIndexHotSalePage(IndexSearchDTO searchDTO) throws IOException;
+
+    /**
+     * APP 首页 人气爆品列表
+     *
+     * @param searchDTO 搜索入参
+     * @return Page<APPIndexPopularSaleDTO>
+     */
+    Page<APPIndexPopularSaleDTO> appIndexPopularSalePage(IndexSearchDTO searchDTO) throws IOException;
+
+    /**
+     * APP 首页 新品榜
+     *
+     * @param searchDTO 搜索入参
+     * @return Page<APPIndexNewProdDTO>
+     */
+    Page<APPIndexNewProdDTO> appIndexNewProdPage(IndexSearchDTO searchDTO) throws IOException;
+
+    /**
+     * APP 搜索列表
+     *
+     * @param searchDTO 搜索入参
+     * @return Page<APPSearchDTO>
+     */
+    Page<APPSearchDTO> appSearchPage(IndexSearchDTO searchDTO) throws IOException;
+
+    /**
+     * PC 首页 为你推荐
+     *
+     * @param searchDTO 搜索入参
+     * @return List<PCIndexRecommendProdDTO>
+     */
+    Page<PCIndexRecommendDTO> pcIndexRecommendPage(IndexSearchDTO searchDTO);
+
 }
