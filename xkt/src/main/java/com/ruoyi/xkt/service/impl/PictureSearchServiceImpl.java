@@ -2,10 +2,12 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.constant.CacheConstants;
@@ -90,6 +92,9 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
     @Override
     public List<TopProductMatchDTO> listImgSearchTopProduct() {
         String cacheStr = redisCache.getCacheObject(CacheConstants.TOP_IMG_SEARCH_PRODUCT);
+        if (StrUtil.isEmpty(cacheStr)) {
+            return ListUtil.empty();
+        }
         return JSONUtil.toList(cacheStr, TopProductMatchDTO.class);
     }
 
