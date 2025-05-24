@@ -1,23 +1,21 @@
-package com.ruoyi.xkt.dto.advertRound.pc.newArrival;
+package com.ruoyi.web.controller.xkt.vo.advertRound.pc.newProd;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
 /**
  * @author liujiang
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("PC 首页 顶部横向轮播图")
+@ApiModel("PC 新品馆 顶部横向轮播图")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Accessors(chain = true)
-public class PCNewTopLeftBannerDTO {
+public class PCNewTopLeftBannerVO {
 
-    @ApiModelProperty(value = "1 推广图")
+    @ApiModelProperty(value = "1推广图")
     private Integer displayType;
     @ApiModelProperty(value = "排序")
     private Integer orderNum;

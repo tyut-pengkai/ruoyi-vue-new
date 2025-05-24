@@ -18,9 +18,10 @@ import com.ruoyi.xkt.dto.advertRound.app.category.APPCateDTO;
 import com.ruoyi.xkt.dto.advertRound.app.index.*;
 import com.ruoyi.xkt.dto.advertRound.app.own.APPOwnGuessLikeDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCDownloadDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.PCSearchDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCUserCenterDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.*;
-import com.ruoyi.xkt.dto.advertRound.pc.newArrival.*;
+import com.ruoyi.xkt.dto.advertRound.pc.newProd.*;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreMidBannerDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreTopBannerDTO;
 import com.ruoyi.xkt.dto.advertRound.picSearch.PicSearchAdvertDTO;
@@ -285,32 +286,134 @@ public class WebsiteServiceImpl implements IWebsiteService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<PCIndexRecommendDTO> pcIndexRecommendPage(IndexSearchDTO searchDTO) {
-
-        return null;
+    public Page<PCIndexRecommendDTO> pcIndexRecommendPage(IndexSearchDTO searchDTO) throws IOException {
+        Page<ESProductDTO> page = this.search(searchDTO);
+        // 筛选出真实的数据
+        List<PCIndexRecommendDTO> realDataList = page.getList().stream()
+                .map(esProduct -> BeanUtil.toBean(esProduct, PCIndexRecommendDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
+        // APP 只有第一页 有数据 其它页暂时没有广告
+        if (searchDTO.getPageNum() > 1) {
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
+        }
+        // 从redis中获取数据
+        List<PCIndexRecommendDTO> redisList = this.redisCache.getCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_INDEX_RECOMMEND);
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            // 推广数据排在最前面，其次才是真实的数据
+            CollectionUtils.addAll(redisList, realDataList);
+            // 添加广告的数据（PC的规则是将所有的广告数据全部放到最前面展示，不用给广告打标）
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), redisList);
+        } else {
+            // 从数据库查首页 推荐商品 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
+            List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
+                    .isNotNull(AdvertRound::getStoreId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .eq(AdvertRound::getTypeId, AdType.PC_HOME_PRODUCT_LIST.getValue())
+                    .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue()));
+            if (CollectionUtils.isNotEmpty(advertRoundList)) {
+                List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(advertRoundList.stream()
+                        .map(x -> x.getProdIdStr().split(",")).flatMap(Arrays::stream).map(Long::valueOf).collect(Collectors.toList()));
+                attrList = attrList.stream().peek(x -> x.setTags(StringUtils.isNotBlank(x.getTagStr()) ? Arrays.asList(x.getTagStr().split(",")) : null)).collect(Collectors.toList());
+                Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
+                List<PCIndexRecommendDTO> indexRecommendList = new ArrayList<>();
+                advertRoundList.stream().forEach(x -> {
+                    // 这里是一个档口上传多个档口商品，所以需要对prodIdStr的逗号进行分割
+                    List<Long> prodIdList = Arrays.asList(x.getProdIdStr().split(",")).stream().map(Long::parseLong).collect(Collectors.toList());
+                    prodIdList.forEach(storeProdId -> {
+                        StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(storeProdId);
+                        indexRecommendList.add(new PCIndexRecommendDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString())
+                                .setStoreProdId(storeProdId.toString()).setTags(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getTags() : null)
+                                .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
+                                .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
+                                .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
+                                .setMainPic(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : ""));
+                    });
+                });
+                // 将indexRecommendList 顺序打乱，不然一个档口的数据在同一地方展示
+                Collections.shuffle(indexRecommendList);
+                // 放到redis中 有效期1天
+                this.redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_INDEX_RECOMMEND, indexRecommendList, 1, TimeUnit.DAYS);
+                CollectionUtils.addAll(indexRecommendList, realDataList);
+                // 添加了广告的数据
+                return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), indexRecommendList);
+            }
+        }
+        return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
     }
 
     /**
-     * 在指定位置插入广告数据到列表中
+     * PC 新品馆 为你推荐
      *
-     * @param dataList      原始数据列表
-     * @param adverts       广告数据列表
-     * @param positions     插入广告的位置集合
-     * @param <T>           数据类型
-     * @return 合并后的列表
+     * @param searchDTO 搜索入参
+     * @return Page<PCNewRecommendDTO>
      */
-    public static <T> List<T> insertAdvertsIntoList(List<T> dataList, List<T> adverts, Set<Integer> positions) {
-        List<T> mergedList = new ArrayList<>();
-        int dataIndex = 0;
-        int advertIndex = 0;
-        for (int i = 0; i < dataList.size() + positions.size(); i++) {
-            if (positions.contains(i) && advertIndex < adverts.size()) {
-                mergedList.add(adverts.get(advertIndex++));
-            } else if (dataIndex < dataList.size()) {
-                mergedList.add(dataList.get(dataIndex++));
+    @Override
+    public Page<PCNewRecommendDTO> pcNewProdRecommendPage(IndexSearchDTO searchDTO) throws IOException {
+        Page<ESProductDTO> page = this.search(searchDTO);
+        // 筛选出真实的数据
+        List<PCNewRecommendDTO> realDataList = page.getList().stream()
+                .map(esProduct -> BeanUtil.toBean(esProduct, PCNewRecommendDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
+        // APP 只有第一页 有数据 其它页暂时没有广告
+        if (searchDTO.getPageNum() > 1) {
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
+        }
+        // 从redis中获取数据
+        List<PCNewRecommendDTO> redisList = this.redisCache.getCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_NEW_RECOMMEND);
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            // 推广数据排在最前面，其次才是真实的数据
+            CollectionUtils.addAll(redisList, realDataList);
+            // 添加广告的数据（PC的规则是将所有的广告数据全部放到最前面展示，不用给广告打标）
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), redisList);
+        } else {
+            // 从数据库查新品馆 推荐商品 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
+            List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
+                    .isNotNull(AdvertRound::getStoreId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .eq(AdvertRound::getTypeId, AdType.PC_NEW_PROD_PRODUCT_LIST.getValue())
+                    .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue()));
+            if (CollectionUtils.isNotEmpty(advertRoundList)) {
+                List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(advertRoundList.stream()
+                        .map(x -> x.getProdIdStr().split(",")).flatMap(Arrays::stream).map(Long::valueOf).collect(Collectors.toList()));
+                attrList = attrList.stream().peek(x -> x.setTags(StringUtils.isNotBlank(x.getTagStr()) ? Arrays.asList(x.getTagStr().split(",")) : null)).collect(Collectors.toList());
+                Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
+                List<PCNewRecommendDTO> newRecommendList = new ArrayList<>();
+                advertRoundList.stream().forEach(x -> {
+                    // 这里是一个档口上传多个档口商品，所以需要对prodIdStr的逗号进行分割
+                    List<Long> prodIdList = Arrays.asList(x.getProdIdStr().split(",")).stream().map(Long::parseLong).collect(Collectors.toList());
+                    prodIdList.forEach(storeProdId -> {
+                        StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(storeProdId);
+                        newRecommendList.add(new PCNewRecommendDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString())
+                                .setStoreProdId(storeProdId.toString()).setTags(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getTags() : null)
+                                .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
+                                .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
+                                .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
+                                .setMainPic(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : ""));
+                    });
+                });
+                // newRecommendList 顺序打乱，不然一个档口的数据在同一地方展示
+                Collections.shuffle(newRecommendList);
+                // 放到redis中 有效期1天
+                this.redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_NEW_RECOMMEND, newRecommendList, 1, TimeUnit.DAYS);
+                CollectionUtils.addAll(newRecommendList, realDataList);
+                // 添加了广告的数据
+                return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), newRecommendList);
             }
         }
-        return mergedList;
+        return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
+    }
+
+    /**
+     * PC 搜索结果
+     *
+     * @param searchDTO 搜索入参
+     * @return Page<PCSearchDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PCSearchDTO> psSearchPage(IndexSearchDTO searchDTO) throws IOException {
+        Page<ESProductDTO> page = this.search(searchDTO);
+        // 筛选出真实的数据
+        List<PCSearchDTO> realDataList = page.getList().stream()
+                .map(esProduct -> BeanUtil.toBean(esProduct, PCSearchDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
+        // 暂时没有广告
+        return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
     }
 
 
@@ -1881,6 +1984,29 @@ public class WebsiteServiceImpl implements IWebsiteService {
             throw new IllegalArgumentException("Position must start with a letter A-Z.");
         }
         return firstChar - 'A' + 1;
+    }
+
+    /**
+     * 在指定位置插入广告数据到列表中
+     *
+     * @param dataList      原始数据列表
+     * @param adverts       广告数据列表
+     * @param positions     插入广告的位置集合
+     * @param <T>           数据类型
+     * @return 合并后的列表
+     */
+    public static <T> List<T> insertAdvertsIntoList(List<T> dataList, List<T> adverts, Set<Integer> positions) {
+        List<T> mergedList = new ArrayList<>();
+        int dataIndex = 0;
+        int advertIndex = 0;
+        for (int i = 0; i < dataList.size() + positions.size(); i++) {
+            if (positions.contains(i) && advertIndex < adverts.size()) {
+                mergedList.add(adverts.get(advertIndex++));
+            } else if (dataIndex < dataList.size()) {
+                mergedList.add(dataList.get(dataIndex++));
+            }
+        }
+        return mergedList;
     }
 
     private static FieldValue newFieldValue(String value) {

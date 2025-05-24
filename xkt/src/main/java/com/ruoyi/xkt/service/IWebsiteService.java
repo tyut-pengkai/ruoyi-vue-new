@@ -5,9 +5,10 @@ import com.ruoyi.xkt.dto.advertRound.app.category.APPCateDTO;
 import com.ruoyi.xkt.dto.advertRound.app.index.*;
 import com.ruoyi.xkt.dto.advertRound.app.own.APPOwnGuessLikeDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCDownloadDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.PCSearchDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCUserCenterDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.*;
-import com.ruoyi.xkt.dto.advertRound.pc.newArrival.*;
+import com.ruoyi.xkt.dto.advertRound.pc.newProd.*;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreMidBannerDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreTopBannerDTO;
 import com.ruoyi.xkt.dto.advertRound.picSearch.PicSearchAdvertDTO;
@@ -238,6 +239,22 @@ public interface IWebsiteService {
      * @param searchDTO 搜索入参
      * @return List<PCIndexRecommendProdDTO>
      */
-    Page<PCIndexRecommendDTO> pcIndexRecommendPage(IndexSearchDTO searchDTO);
+    Page<PCIndexRecommendDTO> pcIndexRecommendPage(IndexSearchDTO searchDTO) throws IOException;
+
+    /**
+     * PC 新品馆 为你推荐
+     *
+     * @param searchDTO 搜索入参
+     * @return Page<PCNewRecommendDTO>
+     */
+    Page<PCNewRecommendDTO> pcNewProdRecommendPage(IndexSearchDTO searchDTO) throws IOException;
+
+    /**
+     * PC 搜索结果
+     *
+     * @param searchDTO 搜索入参
+     * @return Page<PCSearchDTO>
+     */
+    Page<PCSearchDTO> psSearchPage(IndexSearchDTO searchDTO) throws IOException;
 
 }

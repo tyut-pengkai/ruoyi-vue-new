@@ -1,21 +1,19 @@
-package com.ruoyi.xkt.dto.advertRound.pc.newArrival;
+package com.ruoyi.web.controller.xkt.vo.advertRound.pc.newProd;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
 /**
  * @author liujiang
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("PC 新品馆 品牌馆")
+@ApiModel("PC 新品馆 顶部纵向图")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Accessors(chain = true)
-public class PCNewMidBrandDTO {
+public class PCNewTopRightVO {
 
     @ApiModelProperty(value = "1推广图")
     private Integer displayType;
@@ -23,8 +21,6 @@ public class PCNewMidBrandDTO {
     private Integer orderNum;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(value = "档口名称")
-    private String storeName;
     @ApiModelProperty(value = "推广图路径")
     private String fileUrl;
 

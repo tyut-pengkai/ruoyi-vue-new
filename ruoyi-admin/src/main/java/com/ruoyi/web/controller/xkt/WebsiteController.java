@@ -4,20 +4,25 @@ import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
+import com.ruoyi.web.controller.xkt.vo.advertRound.app.category.APPCateVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexHotSaleRightFixVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexMidBrandVO;
-import com.ruoyi.web.controller.xkt.vo.advertRound.app.category.APPCateVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.own.APPOwnGuessLikeVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.PCDownloadVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.PCUserCenterVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.index.*;
-import com.ruoyi.web.controller.xkt.vo.advertRound.pc.newArrival.*;
+import com.ruoyi.web.controller.xkt.vo.advertRound.pc.newProd.*;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.store.PCStoreMidBannerVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.store.PCStoreTopBannerVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.picSearch.PicSearchAdvertVO;
 import com.ruoyi.web.controller.xkt.website.IndexSearchVO;
-import com.ruoyi.xkt.dto.advertRound.app.index.*;
+import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexHotSaleDTO;
+import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexNewProdDTO;
+import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexPopularSaleDTO;
+import com.ruoyi.xkt.dto.advertRound.app.index.APPSearchDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.PCSearchDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.PCIndexRecommendDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.newProd.PCNewRecommendDTO;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 import com.ruoyi.xkt.service.IWebsiteService;
@@ -54,18 +59,23 @@ public class WebsiteController extends XktBaseController {
         return R.ok(websiteService.search(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
     }
 
-
-    //  PC 首页 新品馆 列表
-    // TODO APP 首页 热卖精选、人气爆品、新品榜  PC 首页 新品馆 列表
-    // TODO APP 首页 热卖精选、人气爆品、新品榜  PC 首页 新品馆 列表
-
     @ApiOperation(value = "PC 首页 为你推荐", httpMethod = "POST", response = R.class)
     @PostMapping("/pc/index/recommend")
     public R<Page<PCIndexRecommendDTO>> pcIndexRecommendPage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
         return R.ok(websiteService.pcIndexRecommendPage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
     }
 
+    @ApiOperation(value = "PC 新品馆 为你推荐", httpMethod = "POST", response = R.class)
+    @PostMapping("/pc/new-prod/recommend")
+    public R<Page<PCNewRecommendDTO>> pcNewProdRecommendPage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
+        return R.ok(websiteService.pcNewProdRecommendPage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
+    }
 
+    @ApiOperation(value = "PC 搜索结果", httpMethod = "POST", response = R.class)
+    @PostMapping("/pc/search")
+    public R<Page<PCSearchDTO>> psSearchPage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
+        return R.ok(websiteService.psSearchPage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
+    }
 
     @ApiOperation(value = "APP 首页 精选热卖列表", httpMethod = "POST", response = R.class)
     @PostMapping("/app/index/hot-sale")
@@ -90,8 +100,6 @@ public class WebsiteController extends XktBaseController {
     public R<Page<APPSearchDTO>> appSearchPage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
         return R.ok(websiteService.appSearchPage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
     }
-
-
 
 
     @ApiOperation(value = "PC 首页 顶部横向轮播图", httpMethod = "GET", response = R.class)

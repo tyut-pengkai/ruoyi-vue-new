@@ -1,4 +1,4 @@
-package com.ruoyi.xkt.dto.advertRound.pc.newArrival;
+package com.ruoyi.xkt.dto.advertRound.pc.newProd;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;

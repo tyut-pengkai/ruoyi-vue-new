@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.vo.advertRound.pc.newArrival;
+package com.ruoyi.web.controller.xkt.vo.advertRound.pc.newProd;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
@@ -10,10 +10,10 @@ import lombok.Data;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("PC 新品馆 底部横幅")
+@ApiModel("PC 新品馆 热卖榜左侧大图")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PCNewBottomBannerVO {
+public class PCNewMidHotLeftVO {
 
     @ApiModelProperty(value = "1推广图")
     private Integer displayType;

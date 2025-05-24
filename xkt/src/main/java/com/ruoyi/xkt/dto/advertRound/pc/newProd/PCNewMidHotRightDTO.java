@@ -1,9 +1,10 @@
-package com.ruoyi.web.controller.xkt.vo.advertRound.pc.newArrival;
+package com.ruoyi.xkt.dto.advertRound.pc.newProd;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 
@@ -15,7 +16,8 @@ import java.math.BigDecimal;
 @ApiModel("PC 新品馆 热卖榜右侧商品")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PCNewMidHotRightVO {
+@Accessors(chain = true)
+public class PCNewMidHotRightDTO {
 
     @ApiModelProperty(value = "2商品")
     private Integer displayType;

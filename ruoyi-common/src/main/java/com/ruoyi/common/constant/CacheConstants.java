@@ -142,6 +142,14 @@ public class CacheConstants {
      * PC 下载页
      */
     public static final String PC_DOWNLOAD = "pc_download";
+    /**
+     * PC 首页 为你推荐
+     */
+    public static final String PC_INDEX_RECOMMEND = "pc_index_recommend";
+    /**
+     * PC 新品馆 为你推荐
+     */
+    public static final String PC_NEW_RECOMMEND = "pc_new_recommend";
 
 
     /**
