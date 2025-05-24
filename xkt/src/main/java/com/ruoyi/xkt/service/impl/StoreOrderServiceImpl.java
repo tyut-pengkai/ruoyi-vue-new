@@ -15,8 +15,10 @@ import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.core.domain.XktBaseEntity;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
+import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.express.*;
 import com.ruoyi.xkt.dto.order.*;
@@ -64,6 +66,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     private StoreColorMapper storeColorMapper;
     @Autowired
     private StoreProductFileMapper storeProductFileMapper;
+    @Autowired
+    private SysUserMapper sysUserMapper;
     @Autowired
     private IExpressService expressService;
     @Autowired
@@ -417,6 +421,12 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                         (o, n) -> n));
         for (StoreOrderDetailInfoDTO detailInfo : detailInfos) {
             detailInfo.setFirstMainPicUrl(mainPicMap.get(detailInfo.getStoreProdId()));
+        }
+        //下单用户信息
+        SysUser orderUser = sysUserMapper.selectById(orderInfo.getOrderUserId());
+        if (orderUser != null) {
+            orderInfo.setOrderUserNickName(orderUser.getNickName());
+            orderInfo.setOrderUserPhoneNumber(orderUser.getPhonenumber());
         }
         return orderInfo;
     }

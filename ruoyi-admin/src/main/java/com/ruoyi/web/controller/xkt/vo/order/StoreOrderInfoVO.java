@@ -428,6 +428,12 @@ public class StoreOrderInfoVO {
         @ApiModelProperty(value = "退货原商品数量")
         private Integer originGoodsQuantity;
 
+        @ApiModelProperty(value = "下单用户昵称")
+        private String orderUserNickName;
+
+        @ApiModelProperty(value = "下单用户手机号")
+        private String orderUserPhoneNumber;
+
     }
 
     @ApiModel

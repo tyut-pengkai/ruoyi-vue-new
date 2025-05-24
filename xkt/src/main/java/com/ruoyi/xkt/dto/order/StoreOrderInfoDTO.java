@@ -34,6 +34,11 @@ public class StoreOrderInfoDTO extends StoreOrderDTO {
 
     private String destinationCountyName;
 
+    private String orderUserNickName;
+
+    private String orderUserPhoneNumber;
+
+
     private List<StoreOrderDetailInfoDTO> orderDetails;
 
     private List<ExpressTrackDTO> expressTracks;
