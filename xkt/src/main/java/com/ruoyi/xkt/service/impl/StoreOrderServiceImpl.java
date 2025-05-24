@@ -430,7 +430,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         //付款记录
         StoreOrderOperationRecordDTO payRecord = operationRecordService.getOneRecord(storeOrderId,
-                EOrderTargetTypeAction.ORDER, EOrderAction.SHIP);
+                EOrderTargetTypeAction.ORDER, EOrderAction.PAY);
         if (payRecord != null) {
             orderInfo.setPayTime(payRecord.getOperationTime());
         }
