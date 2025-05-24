@@ -605,18 +605,12 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         if (CollectionUtils.isEmpty(advertRoundList)) {
             return;
         }
-        // 服务器当前时间 yyyy-MM-dd
-        final Date now = DateUtils.parseDate(DateUtils.getDate(), DateUtils.YYYY_MM_DD);
         // 当天截止的时间 yyyy-MM-dd 22:00:00
         final String todayFilterTime = DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS).format(LocalDateTime.now().withHour(22).withMinute(0).withSecond(0));
         advertRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getAdvertId))
                 .forEach((advertId, roundList) -> {
                     // 判断当前推广类型是否为 时间范围
                     final boolean isTimeRange = roundList.stream().anyMatch(x -> Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()));
-                    // 判断当前时间所处的阶段 小于第一轮播放时间（有可能新广告还未开播）、处于第一轮中间、处于第一轮最后一天
-                    final Date firstRoundEndTime = roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.PLAY_ROUND.getValue()))
-                            .max(Comparator.comparing(AdvertRound::getEndTime))
-                            .orElseThrow(() -> new ServiceException("获取推广结束时间失败，请联系客服!", HttpStatus.ERROR)).getEndTime();
                     // 时间范围处理逻辑
                     if (isTimeRange) {
                         this.setTimeRangePatternDeadline(todayFilterTime, roundList);
@@ -652,11 +646,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
      * @param roundList       播放轮次
      */
     private void setTimeRangePatternDeadline(String todayFilterTime, List<AdvertRound> roundList) {
-        // 第一轮过期时间为当天
-        AdvertRound firstRound = roundList.stream().filter(x -> Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
-                .max(Comparator.comparing(AdvertRound::getEndTime))
-                .orElseThrow(() -> new ServiceException("获取推广结束时间失败，请联系客服!", HttpStatus.ERROR));
-        redisCache.setCacheObject(ADVERT_DEADLINE_KEY + firstRound.getSymbol(), todayFilterTime, 1, TimeUnit.DAYS);
+        // 第一轮（有可能为 位置枚举[多个] 或 时间范围[单个]）
+        roundList.stream().filter(x -> Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())).distinct().forEach(x ->
+                redisCache.setCacheObject(ADVERT_DEADLINE_KEY + x.getSymbol(), todayFilterTime, 1, TimeUnit.DAYS));
         // 第二轮之后的轮次过期时间都为开始时间前一天
         Map<String, Date> roundSymbolMap = roundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
                 .collect(Collectors.toMap(AdvertRound::getSymbol, AdvertRound::getStartTime, (s1, s2) -> s2));

@@ -3,6 +3,8 @@ package com.ruoyi.xkt.service;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.store.*;
 
+import java.util.List;
+
 /**
  * 档口Service接口
  *
@@ -82,5 +84,45 @@ public interface IStoreService {
      * @return StoreAdvertResDTO
      */
     StoreAdvertResDTO getAdvertStoreInfo(Long storeId);
+
+    /**
+     * 档口首页数据概览
+     *
+     * @param overviewDTO 查询入参
+     * @return StoreIndexOverviewResDTO
+     */
+    StoreIndexOverviewResDTO indexOverview(StoreOverviewDTO overviewDTO);
+
+    /**
+     * 档口首页销售额
+     *
+     * @param revenueDTO 查询入参
+     * @return StoreIndexSaleRevenueResDTO
+     */
+    List<StoreIndexSaleRevenueResDTO> indexSaleRevenue(StoreSaleRevenueDTO revenueDTO);
+
+    /**
+     * 档口首页今日销售额
+     *
+     * @param storeId 档口ID
+     * @return StoreIndexTodaySaleResDTO
+     */
+    StoreIndexTodaySaleResDTO indexTodaySaleRevenue(Long storeId);
+
+    /**
+     * 档口商品销售额前10
+     *
+     * @param saleTop10DTO 销售额前10入参
+     * @return List<StoreIndexSaleTop10ResDTO>
+     */
+    List<StoreIndexSaleTop10ResDTO> indexTop10Sale(StoreSaleTop10DTO saleTop10DTO);
+
+    /**
+     * 档口客户销售额前10
+     *
+     * @param saleCusTop10DTO 销售额前10入参
+     * @return List<StoreIndexCustomerSaleTop10ResDTO>
+     */
+    List<StoreIndexCusSaleTop10ResDTO> indexTop10SaleCus(StoreSaleCustomerTop10DTO saleCusTop10DTO);
 
 }

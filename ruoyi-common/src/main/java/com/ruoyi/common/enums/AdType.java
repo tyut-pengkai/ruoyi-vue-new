@@ -71,7 +71,6 @@ public enum AdType {
     PC_STORE_MID_BANNER(202, "档口馆横幅", "/url"),
 
 
-
     // 首页以图搜款框商品、以图搜款结果商品、点击以图搜款界面
     PIC_SEARCH_PRODUCT(300, "以图搜款商品", "/url"),
 
@@ -82,7 +81,6 @@ public enum AdType {
     PC_USER_CENTER(402, "电脑端用户中心", "/url"),
     // PC下载页
     PC_DOWNLOAD(403, "电脑端下载页", "/url"),
-
 
 
     // APP首页顶部轮播图
@@ -105,10 +103,6 @@ public enum AdType {
     APP_CATEGORY_TOP_BANNER(601, "APP分类页轮播图", "/url"),
     // APP个人中心猜你喜欢
     APP_USER_CENTER_GUESS_YOU_LIKE(602, "APP我的猜你喜欢", "/url"),
-
-
-    // 以图搜款结果推广商品
-//    PIC_SEARCH_RESULT_PRODUCT(701, "以图搜款结果推广商品", "/url"),
 
 
 

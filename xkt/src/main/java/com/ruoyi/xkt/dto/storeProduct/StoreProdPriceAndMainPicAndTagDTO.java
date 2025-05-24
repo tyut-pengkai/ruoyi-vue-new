@@ -16,6 +16,10 @@ import java.util.List;
 @Data
 public class StoreProdPriceAndMainPicAndTagDTO {
 
+    @ApiModelProperty(value = "父级分类ID")
+    private Long parCateId;
+    @ApiModelProperty(value = "商品分类ID")
+    private Long prodCateId;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
     @ApiModelProperty(value = "档口ID")

@@ -91,6 +91,10 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         // 从redis中获取数据
         List<PCIndexRecommendDTO> redisList = this.redisCache.getCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_INDEX_RECOMMEND);
         if (CollectionUtils.isNotEmpty(redisList)) {
+            redisList = redisList.stream()
+                    .filter(x -> CollectionUtils.isEmpty(searchDTO.getParCateIdList()) || searchDTO.getParCateIdList().contains(x.getParCateId().toString()))
+                    .filter(x -> CollectionUtils.isEmpty(searchDTO.getProdCateIdList()) || searchDTO.getProdCateIdList().contains(x.getProdCateId().toString()))
+                    .collect(Collectors.toList());
             // 推广数据排在最前面，其次才是真实的数据
             CollectionUtils.addAll(redisList, realDataList);
             // 添加广告的数据（PC的规则是将所有的广告数据全部放到最前面展示，不用给广告打标）
@@ -107,12 +111,13 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 attrList = attrList.stream().peek(x -> x.setTags(StringUtils.isNotBlank(x.getTagStr()) ? Arrays.asList(x.getTagStr().split(",")) : null)).collect(Collectors.toList());
                 Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
                 List<PCIndexRecommendDTO> indexRecommendList = new ArrayList<>();
-                advertRoundList.stream().forEach(x -> {
+                advertRoundList.forEach(x -> {
                     // 这里是一个档口上传多个档口商品，所以需要对prodIdStr的逗号进行分割
-                    List<Long> prodIdList = Arrays.asList(x.getProdIdStr().split(",")).stream().map(Long::parseLong).collect(Collectors.toList());
+                    List<Long> prodIdList = Arrays.stream(x.getProdIdStr().split(",")).map(Long::parseLong).collect(Collectors.toList());
                     prodIdList.forEach(storeProdId -> {
                         StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(storeProdId);
                         indexRecommendList.add(new PCIndexRecommendDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString())
+                                .setParCateId(attrDto.getParCateId()).setProdCateId(attrDto.getProdCateId())
                                 .setStoreProdId(storeProdId.toString()).setTags(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getTags() : null)
                                 .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                                 .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
@@ -124,7 +129,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 Collections.shuffle(indexRecommendList);
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_INDEX_RECOMMEND, indexRecommendList, 1, TimeUnit.DAYS);
-                CollectionUtils.addAll(indexRecommendList, realDataList);
+                List<PCIndexRecommendDTO> tempList = indexRecommendList.stream()
+                        .filter(x -> CollectionUtils.isEmpty(searchDTO.getParCateIdList()) || searchDTO.getParCateIdList().contains(x.getParCateId().toString()))
+                        .filter(x -> CollectionUtils.isEmpty(searchDTO.getProdCateIdList()) || searchDTO.getProdCateIdList().contains(x.getProdCateId().toString()))
+                        .collect(Collectors.toList());
+                CollectionUtils.addAll(tempList, realDataList);
                 // 添加了广告的数据
                 return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), indexRecommendList);
             }
@@ -151,6 +160,10 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         // 从redis中获取数据
         List<PCNewRecommendDTO> redisList = this.redisCache.getCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_NEW_RECOMMEND);
         if (CollectionUtils.isNotEmpty(redisList)) {
+            redisList = redisList.stream()
+                    .filter(x -> CollectionUtils.isEmpty(searchDTO.getParCateIdList()) || searchDTO.getParCateIdList().contains(x.getParCateId().toString()))
+                    .filter(x -> CollectionUtils.isEmpty(searchDTO.getProdCateIdList()) || searchDTO.getProdCateIdList().contains(x.getProdCateId().toString()))
+                    .collect(Collectors.toList());
             // 推广数据排在最前面，其次才是真实的数据
             CollectionUtils.addAll(redisList, realDataList);
             // 添加广告的数据（PC的规则是将所有的广告数据全部放到最前面展示，不用给广告打标）
@@ -167,12 +180,13 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 attrList = attrList.stream().peek(x -> x.setTags(StringUtils.isNotBlank(x.getTagStr()) ? Arrays.asList(x.getTagStr().split(",")) : null)).collect(Collectors.toList());
                 Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
                 List<PCNewRecommendDTO> newRecommendList = new ArrayList<>();
-                advertRoundList.stream().forEach(x -> {
+                advertRoundList.forEach(x -> {
                     // 这里是一个档口上传多个档口商品，所以需要对prodIdStr的逗号进行分割
-                    List<Long> prodIdList = Arrays.asList(x.getProdIdStr().split(",")).stream().map(Long::parseLong).collect(Collectors.toList());
+                    List<Long> prodIdList = Arrays.stream(x.getProdIdStr().split(",")).map(Long::parseLong).collect(Collectors.toList());
                     prodIdList.forEach(storeProdId -> {
                         StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(storeProdId);
                         newRecommendList.add(new PCNewRecommendDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString())
+                                .setParCateId(attrDto.getParCateId()).setProdCateId(attrDto.getProdCateId())
                                 .setStoreProdId(storeProdId.toString()).setTags(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getTags() : null)
                                 .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                                 .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
@@ -184,7 +198,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 Collections.shuffle(newRecommendList);
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_NEW_RECOMMEND, newRecommendList, 1, TimeUnit.DAYS);
-                CollectionUtils.addAll(newRecommendList, realDataList);
+                List<PCNewRecommendDTO> tempList = newRecommendList.stream()
+                        .filter(x -> CollectionUtils.isEmpty(searchDTO.getParCateIdList()) || searchDTO.getParCateIdList().contains(x.getParCateId().toString()))
+                        .filter(x -> CollectionUtils.isEmpty(searchDTO.getProdCateIdList()) || searchDTO.getProdCateIdList().contains(x.getProdCateId().toString()))
+                        .collect(Collectors.toList());
+                CollectionUtils.addAll(tempList, realDataList);
                 // 添加了广告的数据
                 return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), newRecommendList);
             }

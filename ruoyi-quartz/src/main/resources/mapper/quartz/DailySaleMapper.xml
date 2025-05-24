@@ -8,9 +8,9 @@
         SELECT
             ss.store_id,
             COALESCE(SUM(CASE WHEN ssd.sale_type = 1 THEN ssd.amount ELSE 0 END), 0) AS saleAmount,
-            COALESCE(SUM(CASE WHEN ssd.sale_type = 2 THEN ssd.amount ELSE 0 END), 0) AS returnAmount,
+            COALESCE(SUM(CASE WHEN ssd.sale_type = 2 THEN ssd.amount ELSE 0 END), 0) AS refundAmount,
             COALESCE(SUM(CASE WHEN ssd.sale_type = 1 THEN ssd.quantity ELSE 0 END), 0) AS saleNum,
-            COALESCE(SUM(CASE WHEN ssd.sale_type = 2 THEN ssd.quantity ELSE 0 END), 0) AS returnNum,
+            COALESCE(SUM(CASE WHEN ssd.sale_type = 2 THEN ssd.quantity ELSE 0 END), 0) AS refundNum,
             COALESCE(COUNT(ss.store_cus_id), 0) AS customerNum,
             COALESCE(SUM(sps.quantity), 0) AS storageNum
         FROM

@@ -23,4 +23,27 @@
             ss.store_cus_id
     </select>
 
+    <select id="selectTop10SaleCustomerList" resultType="com.ruoyi.xkt.dto.store.StoreIndexCusSaleTop10ResDTO">
+        SELECT
+            dsc.store_cus_id,
+            sc.cus_name AS storeCusName,
+            SUM(IFNULL( dsc.sale_amount, 0 )) AS saleAmount,
+            SUM(IFNULL( dsc.refund_amount, 0 )) AS refundAmount,
+            SUM(IFNULL( dsc.sale_num, 0 )) AS saleNum,
+            SUM(IFNULL( dsc.refund_num, 0 )) AS refundNum
+        FROM
+            daily_sale_customer dsc
+            JOIN store_customer sc ON dsc.store_cus_id = sc.id
+        WHERE
+            dsc.store_id = #{storeId}
+            AND dsc.del_flag = 0
+            AND dsc.voucher_date BETWEEN #{voucherDateStart} AND #{voucherDateEnd}
+        GROUP BY
+            dsc.store_cus_id,
+            sc.cus_name
+        ORDER BY
+            saleAmount DESC
+            LIMIT 10
+    </select>
+
 </mapper> 

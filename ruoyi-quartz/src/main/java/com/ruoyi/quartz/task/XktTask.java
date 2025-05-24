@@ -478,8 +478,15 @@ public class XktTask {
             return;
         }
         storeList.forEach(store -> {
-            redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store.getId(), 1, TimeUnit.DAYS);
+            redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store, 1, TimeUnit.DAYS);
         });
+    }
+
+    /**
+     * 通过定时任务将symbol存放到redis中
+     */
+    public void saveSymbolToRedis() {
+       advertRoundService.initAdvertLockMap();
     }
 
     /**

@@ -41,7 +41,7 @@ public class DailySale extends XktBaseEntity {
     /**
      * 退货金额
      */
-    private BigDecimal returnAmount;
+    private BigDecimal refundAmount;
     /**
      * 销售数量
      */
@@ -49,7 +49,7 @@ public class DailySale extends XktBaseEntity {
     /**
      * 退货数量
      */
-    private Integer returnNum;
+    private Integer refundNum;
     /**
      * 拿货客户数量（人次）
      */

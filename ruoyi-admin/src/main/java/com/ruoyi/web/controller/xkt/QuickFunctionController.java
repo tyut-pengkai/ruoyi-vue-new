@@ -8,12 +8,12 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.vo.menu.SysMenuDTO;
 import com.ruoyi.system.service.ISysMenuService;
 import com.ruoyi.web.controller.xkt.vo.quickFunction.QuickFuncVO;
+import com.ruoyi.web.controller.xkt.vo.quickFunction.StoreQuickFuncVO;
 import com.ruoyi.xkt.dto.quickFunction.QuickFuncDTO;
 import com.ruoyi.xkt.service.IQuickFunctionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,11 +36,15 @@ public class QuickFunctionController extends XktBaseController {
 
     private static final String MENU_TYPE_C = "C";
 
-    /**
-     * 查看已绑定的所有快捷菜单
-     */
-    // @PreAuthorize("@ss.hasPermi('system:function:list')")
-    @ApiOperation(value = "查看已绑定的所有快捷菜单", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "档口首页 档口选择的快捷功能", httpMethod = "GET", response = R.class)
+    @GetMapping("/selected/{roleId}/{bizId}")
+    public R<List<StoreQuickFuncVO>> getSelectedList(@PathVariable("roleId") Long roleId, @PathVariable("bizId") Long bizId) {
+        // 找到当前所有的快捷菜单
+        List<QuickFuncDTO.DetailDTO> checkedList = quickFuncService.getCheckedMenuList(roleId, bizId);
+        return R.ok(BeanUtil.copyToList(checkedList, StoreQuickFuncVO.class));
+    }
+
+    @ApiOperation(value = "档口常用功能 点击 设置", httpMethod = "GET", response = R.class)
     @GetMapping("/menus/{roleId}/{bizId}")
     public R<QuickFuncVO> getMenuList(@PathVariable("roleId") Long roleId, @PathVariable("bizId") Long bizId) {
         // 找到当前所有的快捷菜单
@@ -53,10 +57,6 @@ public class QuickFunctionController extends XktBaseController {
                 .build());
     }
 
-    /**
-     * 修改快捷功能
-     */
-    // @PreAuthorize("@ss.hasPermi('system:function:edit')")
     @ApiOperation(value = "修改快捷功能", httpMethod = "PUT", response = R.class)
     @Log(title = "修改快捷功能", businessType = BusinessType.UPDATE)
     @PutMapping("/checked")
@@ -64,6 +64,5 @@ public class QuickFunctionController extends XktBaseController {
         quickFuncService.updateCheckedList(BeanUtil.toBean(quickFuncVO, QuickFuncDTO.class));
         return success();
     }
-
 
 }

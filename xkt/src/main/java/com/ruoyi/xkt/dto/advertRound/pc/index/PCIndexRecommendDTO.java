@@ -19,6 +19,10 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PCIndexRecommendDTO {
 
+    @ApiModelProperty(value = "父级分类ID")
+    private Long parCateId;
+    @ApiModelProperty(value = "商品分类ID")
+    private Long prodCateId;
     @ApiModelProperty(value = "档口ID")
     private String storeId;
     @ApiModelProperty(value = "档口名称")
