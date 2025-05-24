@@ -254,6 +254,9 @@ public class StoreOrderInfoVO {
     @ApiModelProperty(value = "下单用户手机号")
     private String orderUserPhoneNumber;
 
+    @ApiModelProperty(value = "付款时间")
+    private Date payTime;
+
 
     @ApiModel
     @Data
@@ -433,6 +436,15 @@ public class StoreOrderInfoVO {
 
         @ApiModelProperty(value = "退货原商品数量")
         private Integer originGoodsQuantity;
+
+        @ApiModelProperty(value = "档口ID")
+        private Long storeId;
+
+        @ApiModelProperty(value = "档口名称")
+        private String storeName;
+
+        @ApiModelProperty(value = "档口地址")
+        private String storeAddress;
 
     }
 

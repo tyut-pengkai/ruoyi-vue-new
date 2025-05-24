@@ -24,6 +24,9 @@
             <if test="orderNo != null and orderNo !=''">
                 AND so.order_no LIKE CONCAT('%', #{orderNo}, '%')
             </if>
+            <if test="orderType != null">
+                AND so.order_type = #{orderType}
+            </if>
             <if test="orderStatus != null">
                 AND so.order_status = #{orderStatus}
             </if>

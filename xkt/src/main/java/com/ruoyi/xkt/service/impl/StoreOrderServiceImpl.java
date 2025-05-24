@@ -421,6 +421,18 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                         (o, n) -> n));
         for (StoreOrderDetailInfoDTO detailInfo : detailInfos) {
             detailInfo.setFirstMainPicUrl(mainPicMap.get(detailInfo.getStoreProdId()));
+            //档口信息
+            if (store != null) {
+                detailInfo.setStoreId(store.getId());
+                detailInfo.setStoreName(store.getStoreName());
+                detailInfo.setStoreAddress(store.getStoreAddress());
+            }
+        }
+        //付款记录
+        StoreOrderOperationRecordDTO payRecord = operationRecordService.getOneRecord(storeOrderId,
+                EOrderTargetTypeAction.ORDER, EOrderAction.SHIP);
+        if (payRecord != null) {
+            orderInfo.setPayTime(payRecord.getOperationTime());
         }
         //下单用户信息
         SysUser orderUser = sysUserMapper.selectUserById(orderInfo.getOrderUserId());

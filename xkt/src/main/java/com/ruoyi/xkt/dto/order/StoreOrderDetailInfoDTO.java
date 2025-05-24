@@ -32,4 +32,10 @@ public class StoreOrderDetailInfoDTO extends StoreOrderDetailDTO {
     private Integer originOrderDetailStatus;
 
     private Integer originGoodsQuantity;
+
+    private Long storeId;
+
+    private String storeName;
+
+    private String storeAddress;
 }
