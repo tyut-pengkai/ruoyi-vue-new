@@ -423,7 +423,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             detailInfo.setFirstMainPicUrl(mainPicMap.get(detailInfo.getStoreProdId()));
         }
         //下单用户信息
-        SysUser orderUser = sysUserMapper.selectById(orderInfo.getOrderUserId());
+        SysUser orderUser = sysUserMapper.selectUserById(orderInfo.getOrderUserId());
         if (orderUser != null) {
             orderInfo.setOrderUserNickName(orderUser.getNickName());
             orderInfo.setOrderUserPhoneNumber(orderUser.getPhonenumber());

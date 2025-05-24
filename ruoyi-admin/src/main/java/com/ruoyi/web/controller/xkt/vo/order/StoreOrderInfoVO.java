@@ -248,6 +248,12 @@ public class StoreOrderInfoVO {
     @ApiModelProperty(value = "轨迹信息")
     private List<Track> expressTracks;
 
+    @ApiModelProperty(value = "下单用户昵称")
+    private String orderUserNickName;
+
+    @ApiModelProperty(value = "下单用户手机号")
+    private String orderUserPhoneNumber;
+
 
     @ApiModel
     @Data
@@ -427,12 +433,6 @@ public class StoreOrderInfoVO {
 
         @ApiModelProperty(value = "退货原商品数量")
         private Integer originGoodsQuantity;
-
-        @ApiModelProperty(value = "下单用户昵称")
-        private String orderUserNickName;
-
-        @ApiModelProperty(value = "下单用户手机号")
-        private String orderUserPhoneNumber;
 
     }
 
