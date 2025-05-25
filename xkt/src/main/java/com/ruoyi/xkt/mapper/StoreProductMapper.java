@@ -2,10 +2,12 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProduct;
+import com.ruoyi.xkt.dto.advertRound.picSearch.PicSearchAdvertDTO;
 import com.ruoyi.xkt.dto.storeProduct.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -74,10 +76,29 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
 
     /**
      * 获取商品的价格主图及标签列表等
+     *
      * @param storeProdIdList 档口商品ID列表
      * @return List<StoreProdPriceAndMainPicAndTagDTO>
      */
     List<StoreProdPriceAndMainPicAndTagDTO> selectPriceAndMainPicAndTagList(@Param("storeProdIdList") List<Long> storeProdIdList);
+
+    /**
+     * 获取商品展示的各种基本属性
+     *
+     * @param storeProdIdList 档口商品ID列表
+     * @return List<PicSearchAdvertDTO>
+     */
+    List<StoreProdViewDTO> getStoreProdViewAttr(@Param("storeProdIdList") List<Long> storeProdIdList,
+                                                  @Param("voucherDateStart") Date voucherDateStart,
+                                                  @Param("voucherDateEnd") Date voucherDateEnd);
+
+    /**
+     * 获取图搜热款时，商品的各种基本属性
+     *
+     * @param storeProdIdList 档口商品ID列表
+     * @return List<PicSearchAdvertDTO>
+     */
+    List<StoreProdViewDTO> getSearchHotViewAttr(@Param("storeProdIdList") List<Long> storeProdIdList);
 
 }
 

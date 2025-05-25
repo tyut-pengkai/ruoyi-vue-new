@@ -15,12 +15,10 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.xkt.domain.AdvertRound;
 import com.ruoyi.xkt.domain.DailyProdTag;
-import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.advertRound.app.category.APPCateDTO;
 import com.ruoyi.xkt.dto.advertRound.app.index.*;
 import com.ruoyi.xkt.dto.advertRound.app.own.APPOwnGuessLikeDTO;
-import com.ruoyi.xkt.dto.advertRound.picSearch.PicSearchAdvertDTO;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicDTO;
@@ -632,40 +630,6 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     }
 
     /**
-     * 获取以图搜款的广告
-     *
-     * @param picSearchList          图搜热款数据库数据
-     * @param prodSearchCountMap     商品搜索次数
-     * @param storeMap               档口map
-     * @param prodPriceAndMainPicMap 档口商品价格及主图map
-     * @param prodTagMap             商品标签map
-     * @param storeTagMap            档口标签map
-     * @return List<PicSearchAdvertDTO>
-     */
-    private List<PicSearchAdvertDTO> getPicSearchAdvertList(List<AdvertRound> picSearchList, Map<Long, Long> prodSearchCountMap, Map<Long, Store> storeMap,
-                                                            Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap, Map<Long, List<String>> prodTagMap,
-                                                            Map<Long, List<String>> storeTagMap) {
-        return picSearchList.stream().map(advertRound -> {
-
-            // TODO 查询同款商品数量
-            // TODO 查询同款商品数量
-            // TODO 查询同款商品数量
-
-            final Long storeProdId = Long.valueOf(advertRound.getProdIdStr());
-            return new PicSearchAdvertDTO().setImgSearchCount(ObjectUtils.defaultIfNull(prodSearchCountMap.get(storeProdId), (long) (new Random().nextInt(191) + 10)))
-                    .setSameProdCount(null).setStoreProdId(storeProdId).setStoreId(advertRound.getStoreId())
-                    .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(advertRound.getStoreId())) ? storeMap.get(advertRound.getStoreId()).getStoreName() : "")
-                    .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
-                    .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
-                    .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "")
-                    .setProdTitle(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdTitle() : "")
-                    .setProdTagList(CollectionUtils.isNotEmpty(prodTagMap.get(storeProdId)) ? prodTagMap.get(storeProdId) : null)
-                    .setStoreTagList(CollectionUtils.isNotEmpty(storeTagMap.get(advertRound.getStoreId())) ? storeTagMap.get(advertRound.getStoreId()) : null);
-        }).limit(10).collect(Collectors.toList());
-    }
-
-
-    /**
      * 获取近一月档口推广数据
      *
      * @return 近一月档口推广数据
@@ -710,6 +674,9 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
      * @return 合并后的列表
      */
     public static <T> List<T> insertAdvertsIntoList(List<T> dataList, List<T> adverts, Set<Integer> positions) {
+        if (CollectionUtils.isEmpty(adverts)) {
+            return dataList;
+        }
         List<T> mergedList = new ArrayList<>();
         int dataIndex = 0;
         int advertIndex = 0;

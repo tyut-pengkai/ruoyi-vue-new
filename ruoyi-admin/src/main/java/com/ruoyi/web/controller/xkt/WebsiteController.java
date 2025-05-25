@@ -49,15 +49,15 @@ import java.util.List;
 @RequestMapping("/rest/v1/website")
 public class WebsiteController extends XktBaseController {
 
-    final IWebsiteService websiteService;
+//    final IWebsiteService websiteService;
     final IWebsitePCService websitePCService;
     final IWebsiteAPPService websiteAPPService;
 
-    @ApiOperation(value = "网站首页搜索", httpMethod = "POST", response = R.class)
+    /*@ApiOperation(value = "网站首页搜索", httpMethod = "POST", response = R.class)
     @PostMapping("/index/search")
     public R<Page<ESProductDTO>> page(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
         return R.ok(websiteService.search(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
-    }
+    }*/
 
     @ApiOperation(value = "PC 首页 为你推荐", httpMethod = "POST", response = R.class)
     @PostMapping("/pc/index/recommend")

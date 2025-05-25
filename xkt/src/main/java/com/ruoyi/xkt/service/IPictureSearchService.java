@@ -1,8 +1,8 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.dto.picture.ProductMatchDTO;
 import com.ruoyi.xkt.dto.picture.SearchRequestDTO;
 import com.ruoyi.xkt.dto.picture.TopProductMatchDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdViewDTO;
 
 import java.util.List;
 
@@ -17,14 +17,14 @@ public interface IPictureSearchService {
      * 图片搜索商品
      *
      * @param requestDTO
-     * @return
+     * @return List<StoreProdViewDTO>
      */
-    List<ProductMatchDTO> searchProductByPic(SearchRequestDTO requestDTO);
+    List<StoreProdViewDTO> searchProductByPic(SearchRequestDTO requestDTO);
 
     /**
      * 图搜热款列表
      *
-     * @return
+     * @return List<TopProductMatchDTO>
      */
     List<TopProductMatchDTO> listImgSearchTopProduct();
 

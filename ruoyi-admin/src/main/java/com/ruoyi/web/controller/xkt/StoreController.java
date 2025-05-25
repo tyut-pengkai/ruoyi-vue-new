@@ -1,11 +1,13 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.IdUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.framework.oss.OSSClientWrapper;
 import com.ruoyi.web.controller.xkt.vo.store.*;
 import com.ruoyi.xkt.dto.store.*;
 import com.ruoyi.xkt.service.IStoreService;
@@ -14,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -113,9 +116,27 @@ public class StoreController extends XktBaseController {
     }
 
     @ApiOperation(value = "获取档口首页 客户销售榜前10 ", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/index/sale-customer/top10")
-    public R<List<StoreIndexCusSaleTop10ResVO>> indexTop10SaleCustomer(@Validated @RequestBody StoreSaleCustomerTop10VO saleCusTop10VO) {
-        return R.ok(BeanUtil.copyToList(storeService.indexTop10SaleCustomer(BeanUtil.toBean(saleCusTop10VO, StoreSaleCustomerTop10DTO.class)), StoreIndexCusSaleTop10ResVO.class));
+    @GetMapping(value = "/index/sale-cus/top10")
+    public R<List<StoreIndexCusSaleTop10ResVO>> indexTop10SaleCus(@Validated @RequestBody StoreSaleCustomerTop10VO saleCusTop10VO) {
+        return R.ok(BeanUtil.copyToList(storeService.indexTop10SaleCus(BeanUtil.toBean(saleCusTop10VO, StoreSaleCustomerTop10DTO.class)), StoreIndexCusSaleTop10ResVO.class));
+    }
+
+    final OSSClientWrapper ossClient;
+
+    @GetMapping("/getKey")
+    public R getKey() {
+        return R.ok(ossClient.createStsCredentials());
+    }
+
+    @PostMapping("/upload")
+    public void test(@RequestParam("file") MultipartFile file) throws Exception {
+        final String uuid = IdUtil.randomUUID();
+        ossClient.upload("advert/" + uuid + ".png", file.getInputStream());
+    }
+
+    @GetMapping("/getUrl/{key}/{expireTime}")
+    public R getUrl(@PathVariable("key") String key, @PathVariable("expireTime") Long expireTime) throws Exception {
+        return R.ok(ossClient.generateUrl(key, expireTime));
     }
 
 }

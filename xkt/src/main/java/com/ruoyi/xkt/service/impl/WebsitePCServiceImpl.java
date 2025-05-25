@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
@@ -13,7 +14,10 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
-import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.domain.AdvertRound;
+import com.ruoyi.xkt.domain.DailyStoreTag;
+import com.ruoyi.xkt.domain.Store;
+import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.advertRound.pc.PCDownloadDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCSearchDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCUserCenterDTO;
@@ -24,13 +28,17 @@ import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreTopBannerDTO;
 import com.ruoyi.xkt.dto.advertRound.picSearch.PicSearchAdvertDTO;
 import com.ruoyi.xkt.dto.dailySale.CateSaleRankDTO;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
+import com.ruoyi.xkt.dto.picture.ProductMatchDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdViewDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
+import com.ruoyi.xkt.enums.AdBiddingStatus;
 import com.ruoyi.xkt.enums.AdDisplayType;
 import com.ruoyi.xkt.enums.AdLaunchStatus;
 import com.ruoyi.xkt.mapper.*;
+import com.ruoyi.xkt.service.IPictureService;
 import com.ruoyi.xkt.service.IWebsitePCService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,6 +55,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.ruoyi.common.constant.Constants.IMG_SEARCH_MAX_PAGE_NUM;
 
 /**
  * 首页搜索
@@ -70,6 +80,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     final DailyStoreTagMapper dailyStoreTagMapper;
     final StoreMapper storeMapper;
     final StoreProductStatisticsMapper prodStatsMapper;
+    final IPictureService pictureService;
 
     /**
      * PC 首页 为你推荐
@@ -100,11 +111,12 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             // 添加广告的数据（PC的规则是将所有的广告数据全部放到最前面展示，不用给广告打标）
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), redisList);
         } else {
-            // 从数据库查首页 推荐商品 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
+            // 从数据库查首页 推荐商品 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）而且必须是 竞价成功的推广（有可能当天有新的竞价推广还未正式审核通过）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
                     .isNotNull(AdvertRound::getStoreId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                     .eq(AdvertRound::getTypeId, AdType.PC_HOME_PRODUCT_LIST.getValue())
-                    .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue()));
+                    .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
+                    .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {
                 List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(advertRoundList.stream()
                         .map(x -> x.getProdIdStr().split(",")).flatMap(Arrays::stream).map(Long::valueOf).collect(Collectors.toList()));
@@ -113,7 +125,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 List<PCIndexRecommendDTO> indexRecommendList = new ArrayList<>();
                 advertRoundList.forEach(x -> {
                     // 这里是一个档口上传多个档口商品，所以需要对prodIdStr的逗号进行分割
-                    List<Long> prodIdList = Arrays.stream(x.getProdIdStr().split(",")).map(Long::parseLong).collect(Collectors.toList());
+                    List<Long> prodIdList = StrUtil.split(x.getProdIdStr(), ",").stream().map(Long::parseLong).collect(Collectors.toList());
                     prodIdList.forEach(storeProdId -> {
                         StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(storeProdId);
                         indexRecommendList.add(new PCIndexRecommendDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString())
@@ -173,7 +185,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
                     .isNotNull(AdvertRound::getStoreId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                     .eq(AdvertRound::getTypeId, AdType.PC_NEW_PROD_PRODUCT_LIST.getValue())
-                    .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue()));
+                    .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
+                    .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {
                 List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(advertRoundList.stream()
                         .map(x -> x.getProdIdStr().split(",")).flatMap(Arrays::stream).map(Long::valueOf).collect(Collectors.toList()));
@@ -349,7 +362,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                         .in(SysFile::getId, oneMonthList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
         // 正在播放
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         // 已过期
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         List<PCIndexTopLeftBannerDTO> topLeftList;
@@ -399,7 +413,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         List<StoreProdFileResDTO> mainPicList = this.prodFileMapper.selectMainPic(oneMonthList.stream().map(AdvertRound::getProdIdStr).collect(Collectors.toList()));
         Map<Long, String> mainPicMap = mainPicList.stream().collect(Collectors.toMap(StoreProdFileResDTO::getStoreProdId, StoreProdFileResDTO::getFileUrl));
         // 正在播放
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         // 已过期
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         List<PCIndexTopRightBannerDTO> topRightList;
@@ -514,7 +529,9 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = prodPriceAndMainPicList.stream().collect(Collectors
                 .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
         // 正在播放
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                // 必须是竞价成功的推广
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         // 已过期
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         List<PCIndexMidStyleDTO> midStyleList;
@@ -567,20 +584,22 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         // 档口商品的价格及商品主图map
         Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = prodPriceAndMainPicList.stream().collect(Collectors
                 .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
-
         // 左侧广告
         List<AdvertRound> leftLaunchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getTypeId(), AdType.PC_HOME_POP_LEFT_BANNER.getValue()))
-                .filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+                .filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> leftExpiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getTypeId(), AdType.PC_HOME_POP_LEFT_BANNER.getValue()))
                 .filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         // 中部广告
         List<AdvertRound> midLaunchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getTypeId(), AdType.PC_HOME_POP_MID.getValue()))
-                .filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+                .filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> midExpiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getTypeId(), AdType.PC_HOME_POP_MID.getValue()))
                 .filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         // 右侧广告
         List<AdvertRound> rightLaunchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getTypeId(), AdType.PC_HOME_POP_RIGHT.getValue()))
-                .filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+                .filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> rightExpiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getTypeId(), AdType.PC_HOME_POP_RIGHT.getValue()))
                 .filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
 
@@ -681,7 +700,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                         .in(SysFile::getId, oneMonthList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
         // 正在播放
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         // 已过期
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(launchingList)) {
@@ -723,7 +743,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                         .eq(Store::getId, oneMonthList.stream().map(AdvertRound::getStoreId).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(Store::getId, Function.identity()));
         // 正在播放
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         // 已过期
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(launchingList)) {
@@ -768,7 +789,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = prodPriceAndMainPicList.stream().collect(Collectors
                 .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
         // 正在播放
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         // 已过期
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(launchingList)) {
@@ -822,7 +844,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                         .in(SysFile::getId, oneMonthList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
         // 正在播放
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         // 已过期
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(launchingList)) {
@@ -871,7 +894,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                         .in(SysFile::getId, oneMonthList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
         // 正在播放
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         // 已过期
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(launchingList)) {
@@ -914,7 +938,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                         .in(SysFile::getId, oneMonthList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
         // 正在播放
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         // 已过期
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(launchingList)) {
@@ -962,7 +987,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                         .in(SysFile::getId, oneMonthList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
         // 正在播放
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         // 已过期
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(launchingList)) {
@@ -1007,7 +1033,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             return new ArrayList<>();
         }
         // 正在播放
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         // 已过期
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         List<StoreProdPriceAndMainPicDTO> prodPriceAndMainPicList = this.storeProdMapper.selectPriceAndMainPicList(oneMonthList.stream()
@@ -1064,7 +1091,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             return new ArrayList<>();
         }
         // 正在播放
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         // 已过期
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         // 文件map
@@ -1112,7 +1140,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         if (CollectionUtils.isEmpty(oneMonthList)) {
             return new ArrayList<>();
         }
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         Map<Long, SysFile> fileMap = fileMapper.selectList(new LambdaQueryWrapper<SysFile>().eq(SysFile::getDelFlag, Constants.UNDELETED)
                         .in(SysFile::getId, oneMonthList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
@@ -1160,7 +1189,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         if (CollectionUtils.isEmpty(oneMonthList)) {
             return new ArrayList<>();
         }
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         Map<Long, SysFile> fileMap = fileMapper.selectList(new LambdaQueryWrapper<SysFile>().eq(SysFile::getDelFlag, Constants.UNDELETED)
                         .in(SysFile::getId, oneMonthList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
@@ -1206,38 +1236,23 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         if (CollectionUtils.isEmpty(oneMonthList)) {
             return new ArrayList<>();
         }
-        // 获取近2个月 该商品的搜索次数
-        List<StoreProductStatistics> prodStatsList = this.prodStatsMapper.selectList(new LambdaQueryWrapper<StoreProductStatistics>()
-                .eq(StoreProductStatistics::getDelFlag, Constants.UNDELETED)
-                .in(StoreProductStatistics::getStoreProdId, oneMonthList.stream().map(AdvertRound::getProdIdStr).map(Long::parseLong).collect(Collectors.toList()))
-                .between(StoreProductStatistics::getVoucherDate, java.sql.Date.valueOf(LocalDate.now().minusMonths(2)), java.sql.Date.valueOf(LocalDate.now())));
-        // 商品搜索次数map
-        Map<Long, Long> prodSearchCountMap = prodStatsList.stream().collect(Collectors.groupingBy(StoreProductStatistics::getStoreProdId, Collectors
-                .summingLong(StoreProductStatistics::getImgSearchCount)));
-        List<Store> storeList = this.storeMapper.selectByIds(oneMonthList.stream().map(AdvertRound::getStoreId).collect(Collectors.toList()));
-        Map<Long, Store> storeMap = storeList.stream().collect(Collectors.toMap(Store::getId, Function.identity()));
         List<Long> storeProdIdList = oneMonthList.stream().map(AdvertRound::getProdIdStr).map(Long::parseLong).collect(Collectors.toList());
-        // 获取所有商品的价格及第一张主图
-        List<StoreProdPriceAndMainPicDTO> prodPriceAndMainPicList = this.storeProdMapper.selectPriceAndMainPicList(storeProdIdList);
-        Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = prodPriceAndMainPicList.stream().collect(Collectors
-                .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
-        // 商品标签
-        List<DailyProdTag> prodTagList = this.dailyProdTagMapper.selectList(new LambdaQueryWrapper<DailyProdTag>()
-                .eq(DailyProdTag::getDelFlag, Constants.UNDELETED).in(DailyProdTag::getStoreProdId, storeProdIdList));
-        Map<Long, List<String>> prodTagMap = prodTagList.stream().collect(Collectors.groupingBy(DailyProdTag::getStoreProdId, Collectors
-                .collectingAndThen(Collectors.toList(), list -> list.stream()
-                        .sorted(Comparator.comparing(DailyProdTag::getType)).map(DailyProdTag::getTag).collect(Collectors.toList()))));
+        List<Store> storeList = this.storeMapper.selectByIds(oneMonthList.stream().map(AdvertRound::getStoreId).collect(Collectors.toList()));
+        // 获取商品显示的基本属性
+        List<StoreProdViewDTO> storeProdViewList = this.storeProdMapper.getStoreProdViewAttr(storeProdIdList,
+                java.sql.Date.valueOf(LocalDate.now()), java.sql.Date.valueOf(LocalDate.now().minusMonths(2)));
+        Map<Long, StoreProdViewDTO> viewMap = storeProdViewList.stream().collect(Collectors.toMap(StoreProdViewDTO::getStoreProdId, Function.identity()));
         // 档口标签
         List<DailyStoreTag> storeTagList = this.dailyStoreTagMapper.selectList(new LambdaQueryWrapper<DailyStoreTag>()
                 .eq(DailyStoreTag::getDelFlag, Constants.UNDELETED).in(DailyStoreTag::getStoreId, storeList.stream().map(Store::getId).collect(Collectors.toList())));
         Map<Long, List<String>> storeTagMap = storeTagList.stream().collect(Collectors
                 .groupingBy(DailyStoreTag::getStoreId, Collectors.collectingAndThen(Collectors.toList(), list -> list.stream()
                         .sorted(Comparator.comparing(DailyStoreTag::getType)).map(DailyStoreTag::getTag).collect(Collectors.toList()))));
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         // 从正在播放的图搜热款广告或者历史广告中筛选10条
-        picSearchList = getPicSearchAdvertList(CollectionUtils.isEmpty(launchingList) ? expiredList : launchingList,
-                prodSearchCountMap, storeMap, prodPriceAndMainPicMap, prodTagMap, storeTagMap);
+        picSearchList = getPicSearchAdvertList(CollectionUtils.isEmpty(launchingList) ? expiredList : launchingList, viewMap, storeTagMap);
         // 放到redis 中 过期时间1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PIC_SEARCH, picSearchList, 1, TimeUnit.DAYS);
         return picSearchList;
@@ -1266,7 +1281,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         // 档口商品的价格及商品主图map
         Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = prodPriceAndMainPicList.stream().collect(Collectors
                 .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(launchingList)) {
             pcUserCenterList = expiredList.stream().map(x -> this.getPcUserCenterDTO(x, prodPriceAndMainPicMap)).limit(18).collect(Collectors.toList());
@@ -1304,7 +1320,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 .map(AdvertRound::getProdIdStr).map(Long::parseLong).collect(Collectors.toList()));
         Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = prodPriceAndMainPicList.stream().collect(Collectors
                 .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
-        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())).collect(Collectors.toList());
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(launchingList)) {
             pcDownloadList = expiredList.stream().map(advertRound -> this.getPcDownload(advertRound, prodPriceAndMainPicMap)).limit(10).collect(Collectors.toList());
@@ -1354,34 +1371,31 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     /**
      * 获取以图搜款的广告
      *
-     * @param picSearchList          图搜热款数据库数据
-     * @param prodSearchCountMap     商品搜索次数
-     * @param storeMap               档口map
-     * @param prodPriceAndMainPicMap 档口商品价格及主图map
-     * @param prodTagMap             商品标签map
-     * @param storeTagMap            档口标签map
+     * @param picSearchList 图搜热款数据库数据
+     * @param storeTagMap   档口标签map
      * @return List<PicSearchAdvertDTO>
      */
-    private List<PicSearchAdvertDTO> getPicSearchAdvertList(List<AdvertRound> picSearchList, Map<Long, Long> prodSearchCountMap, Map<Long, Store> storeMap,
-                                                            Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap, Map<Long, List<String>> prodTagMap,
-                                                            Map<Long, List<String>> storeTagMap) {
-        return picSearchList.stream().map(advertRound -> {
-
-            // TODO 查询同款商品数量
-            // TODO 查询同款商品数量
-            // TODO 查询同款商品数量
-
+    private List<PicSearchAdvertDTO> getPicSearchAdvertList(List<AdvertRound> picSearchList, Map<Long, StoreProdViewDTO> viewMap, Map<Long, List<String>> storeTagMap) {
+        return picSearchList.stream().limit(10).map(advertRound -> {
             final Long storeProdId = Long.valueOf(advertRound.getProdIdStr());
-            return new PicSearchAdvertDTO().setImgSearchCount(ObjectUtils.defaultIfNull(prodSearchCountMap.get(storeProdId), (long) (new Random().nextInt(191) + 10)))
-                    .setSameProdCount(null).setStoreProdId(storeProdId).setStoreId(advertRound.getStoreId())
-                    .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(advertRound.getStoreId())) ? storeMap.get(advertRound.getStoreId()).getStoreName() : "")
-                    .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
-                    .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
-                    .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "")
-                    .setProdTitle(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdTitle() : "")
-                    .setProdTagList(CollectionUtils.isNotEmpty(prodTagMap.get(storeProdId)) ? prodTagMap.get(storeProdId) : null)
-                    .setStoreTagList(CollectionUtils.isNotEmpty(storeTagMap.get(advertRound.getStoreId())) ? storeTagMap.get(advertRound.getStoreId()) : null);
-        }).limit(10).collect(Collectors.toList());
+            StoreProdViewDTO viewDTO = viewMap.get(storeProdId);
+            String mainPic = ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getMainPicUrl() : "";
+            List<ProductMatchDTO> results = StringUtils.isNotBlank(mainPic) ? pictureService.searchProductByPicKey(mainPic, 1000) : new ArrayList<>();
+            List<String> prodTagList = new ArrayList<String>() {{
+                add("同类热卖");
+            }};
+            CollectionUtils.addAll(prodTagList, ObjectUtils.isNotEmpty(viewDTO) && StringUtils.isNotEmpty(viewDTO.getTagStr())
+                    ? StrUtil.split(viewDTO.getTagStr(), ",") : new ArrayList<>());
+            return new PicSearchAdvertDTO().setImgSearchCount(ObjectUtils.isNotEmpty(viewDTO) && ObjectUtils.isNotEmpty(viewDTO.getImgSearchCount())
+                            ? viewDTO.getImgSearchCount() : (long) (new Random().nextInt(191) + 10))
+                    .setSameProdCount(results.size()).setStoreProdId(storeProdId).setStoreId(advertRound.getStoreId()).setProdTagList(prodTagList)
+                    .setStoreName(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getStoreName() : "")
+                    .setPrice(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getPrice() : null)
+                    .setProdArtNum(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getProdArtNum() : "")
+                    .setMainPicUrl(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getMainPicUrl() : "")
+                    .setProdTitle(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getProdTitle() : "");
+//                    .setStoreTagList(CollectionUtils.isNotEmpty(storeTagMap.get(advertRound.getStoreId())) ? storeTagMap.get(advertRound.getStoreId()) : null);
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -1466,7 +1480,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         dbStyleList.stream().collect(Collectors.groupingBy(AdvertRound::getStoreId))
                 .forEach((storeId, list) -> {
                     AdvertRound advertRound = list.get(0);
-                    List<String> prodIdStrList = Arrays.asList(advertRound.getProdIdStr().split(","));
+                    List<String> prodIdStrList = StrUtil.split(advertRound.getProdIdStr(), ",");
                     List<PCIndexMidStyleDTO.PCIMSStyleDTO> styleList = new ArrayList<>();
                     for (int i = 0; i < prodIdStrList.size(); i++) {
                         Long storeProdId = Long.valueOf(prodIdStrList.get(i));
@@ -1538,6 +1552,35 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
 
     private static FieldValue newFieldValue(String value) {
         return FieldValue.of(value);
+    }
+
+    /**
+     * 在指定位置插入广告数据到列表中，若位置超出数据长度，则追加到列表末尾
+     *
+     * @param dataList  原始数据列表
+     * @param adverts   广告数据列表
+     * @param positions 插入广告的位置集合
+     * @param <T>       数据类型
+     * @return 合并后的列表
+     */
+    public static <T> List<T> insertAdvertsIntoList(List<T> dataList, List<T> adverts, Set<Integer> positions) {
+        List<T> mergedList = new ArrayList<>();
+        int dataIndex = 0;
+        int advertIndex = 0;
+        int size = dataList.size();
+        for (int i = 0; i < size + positions.size(); i++) {
+            if (positions.contains(i) && advertIndex < adverts.size()) {
+                // 如果当前位置需要插入广告，并且还有广告可插入
+                mergedList.add(adverts.get(advertIndex++));
+            } else if (dataIndex < size) {
+                // 插入原始数据
+                mergedList.add(dataList.get(dataIndex++));
+            } else {
+                // 源数据已经插完，但仍有广告未插入，直接追加到末尾
+                mergedList.add(adverts.get(advertIndex++));
+            }
+        }
+        return mergedList;
     }
 
 

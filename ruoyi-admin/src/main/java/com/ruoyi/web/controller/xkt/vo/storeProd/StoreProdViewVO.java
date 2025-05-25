@@ -1,11 +1,8 @@
-package com.ruoyi.xkt.dto.advertRound.picSearch;
+package com.ruoyi.web.controller.xkt.vo.storeProd;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,11 +12,9 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("以图搜款")
+@ApiModel("档口商品基本显示DTO")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@Accessors(chain = true)
-public class PicSearchAdvertDTO {
+public class StoreProdViewVO {
 
     @ApiModelProperty(value = "搜索次数")
     private Long imgSearchCount;
@@ -35,9 +30,6 @@ public class PicSearchAdvertDTO {
     private String prodTitle;
     @ApiModelProperty(value = "售价")
     private BigDecimal price;
-    @ApiModelProperty(value = "标签字符串")
-    @JsonIgnore
-    private String tagStr;
     @ApiModelProperty(name = "商品标签列表")
     private List<String> prodTagList;
     @ApiModelProperty(value = "档口ID")

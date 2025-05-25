@@ -17,5 +17,5 @@ public class ProductImgSearchCountDTO implements Serializable {
     /**
      * 图搜次数
      */
-    private Long imgSearchCount;
+    private Integer imgSearchCount;
 }

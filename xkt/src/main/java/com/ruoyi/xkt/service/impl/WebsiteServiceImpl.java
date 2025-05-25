@@ -1829,8 +1829,8 @@ public class WebsiteServiceImpl implements IWebsiteService {
                     .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
                     .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "")
                     .setProdTitle(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdTitle() : "")
-                    .setProdTagList(CollectionUtils.isNotEmpty(prodTagMap.get(storeProdId)) ? prodTagMap.get(storeProdId) : null)
-                    .setStoreTagList(CollectionUtils.isNotEmpty(storeTagMap.get(advertRound.getStoreId())) ? storeTagMap.get(advertRound.getStoreId()) : null);
+                    .setProdTagList(CollectionUtils.isNotEmpty(prodTagMap.get(storeProdId)) ? prodTagMap.get(storeProdId) : null);
+//                    .setStoreTagList(CollectionUtils.isNotEmpty(storeTagMap.get(advertRound.getStoreId())) ? storeTagMap.get(advertRound.getStoreId()) : null);
         }).limit(10).collect(Collectors.toList());
     }
 

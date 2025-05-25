@@ -1,18 +1,21 @@
 package com.ruoyi.web.controller.xkt;
 
-import com.ruoyi.common.annotation.Log;
+import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.xkt.domain.PictureSearch;
+import com.ruoyi.web.controller.xkt.vo.pictureSearch.PicSearchVO;
+import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdViewVO;
+import com.ruoyi.xkt.dto.picture.SearchRequestDTO;
 import com.ruoyi.xkt.service.IPictureSearchService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -21,10 +24,26 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Api(tags = "以图搜款")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/rest/v1/pic-search")
 public class PictureSearchController extends XktBaseController {
-    @Autowired
-    private IPictureSearchService pictureSearchService;
+
+    final IPictureSearchService picSearchService;
+
+    @ApiOperation(value = "电商卖家 以图搜款", httpMethod = "POST", response = R.class)
+    @PostMapping("")
+    public R<List<StoreProdViewVO>> searchProductByPic(@Validated @RequestBody PicSearchVO searchVO) {
+        return R.ok(BeanUtil.copyToList(picSearchService
+                .searchProductByPic(BeanUtil.toBean(searchVO, SearchRequestDTO.class).setNum(20)), StoreProdViewVO.class));
+    }
+
+    @ApiOperation(value = "图搜热款列表", httpMethod = "POST", response = R.class)
+    @PostMapping("/hot")
+    public R<List<StoreProdViewVO>> searchHotList() {
+        return R.ok(BeanUtil.copyToList(picSearchService.listImgSearchTopProduct(), StoreProdViewVO.class));
+    }
+
 
 }
