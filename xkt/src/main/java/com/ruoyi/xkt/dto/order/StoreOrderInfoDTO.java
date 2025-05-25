@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +34,12 @@ public class StoreOrderInfoDTO extends StoreOrderDTO {
     private String destinationCityName;
 
     private String destinationCountyName;
+
+    private String orderUserNickName;
+
+    private String orderUserPhoneNumber;
+
+    private Date payTime;
 
     private List<StoreOrderDetailInfoDTO> orderDetails;
 
