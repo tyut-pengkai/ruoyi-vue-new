@@ -15,7 +15,7 @@
             COALESCE ( SUM( CASE WHEN ssd.sale_type = 2 THEN ssd.quantity ELSE 0 END ), 0 ) AS returnNum
         FROM
             store_sale_detail ssd
-                JOIN store_product sp ON ssd.store_prod_id = sp.id
+                LEFT JOIN store_product sp ON ssd.store_prod_id = sp.id
         WHERE
             ssd.del_flag = 0
           AND ssd.voucher_date = #{voucherDate}
@@ -32,21 +32,20 @@
             s.store_name,
             sp.prod_cate_id,
             spc.`name` AS prodCateName,
-            SUM(sale_num) AS saleNum
+            SUM(dsp.sale_num) AS saleNum
         FROM
             daily_sale_product dsp
-                JOIN store_product sp ON dsp.store_prod_id = sp.id
-                JOIN store s ON dsp.store_id = s.id
+                LEFT JOIN store_product sp ON dsp.store_prod_id = sp.id
+                LEFT JOIN store s ON dsp.store_id = s.id
                 LEFT JOIN sys_product_category spc ON sp.prod_cate_id = spc.id
         WHERE
             dsp.del_flag = 0
-            AND voucher_date BETWEEN #{oneMonthAgo} AND #{now}
+            AND dsp.voucher_date BETWEEN #{oneMonthAgo} AND #{now}
         GROUP BY
             dsp.store_prod_id,
             dsp.prod_art_num,
             dsp.store_id,
             sp.prod_cate_id,
-            s.store_name,
             spc.`name`
     </select>
 
@@ -67,9 +66,7 @@
                 END AS refundRate
         FROM
             daily_sale_product dsp
-                LEFT JOIN store_product_file spf ON dsp.store_prod_id = spf.store_prod_id
-                AND spf.file_type = 1
-                AND spf.order_num = 1
+                LEFT JOIN store_product_file spf ON dsp.store_prod_id = spf.store_prod_id AND spf.file_type = 1 AND spf.order_num = 1
                 LEFT JOIN sys_file sf ON spf.file_id = sf.id
         WHERE
             dsp.store_id = #{storeId}

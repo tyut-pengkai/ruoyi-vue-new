@@ -33,6 +33,6 @@ public class APPOwnGuessLikeDTO {
     @ApiModelProperty(value = "商品第一张主图路径")
     private String mainPicUrl;
     @ApiModelProperty(value = "标签列表")
-    private List<String> tagList;
+    private List<String> tags;
 
 }

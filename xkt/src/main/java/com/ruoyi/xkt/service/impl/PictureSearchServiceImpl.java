@@ -152,22 +152,19 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
      * @return 合并后的列表
      */
     public static <T> List<T> insertAdvertsIntoList(List<T> dataList, List<T> adverts, Set<Integer> positions) {
-        if (CollectionUtils.isEmpty(adverts)) {
-            return dataList;
-        }
-        List<T> mergedList = new ArrayList<>();
-        int dataIndex = 0;
+        List<T> mergedList = new ArrayList<>(dataList); // 先拷贝原始数据
         int advertIndex = 0;
-        int size = dataList.size();
-        for (int i = 0; i < size + positions.size(); i++) {
-            if (positions.contains(i) && advertIndex < adverts.size()) {
-                // 如果当前位置需要插入广告，并且还有广告可插入
-                mergedList.add(adverts.get(advertIndex++));
-            } else if (dataIndex < size) {
-                // 插入原始数据
-                mergedList.add(dataList.get(dataIndex++));
+        // 遍历所有广告插入位置
+        for (Integer position : positions) {
+            if (advertIndex >= adverts.size()) {
+                // 广告已经插完，结束循环
+                break;
+            }
+            if (position >= 0 && position < mergedList.size()) {
+                // 插入位置合法，插入广告
+                mergedList.add(position, adverts.get(advertIndex++));
             } else {
-                // 源数据已经插完，但仍有广告未插入，直接追加到末尾
+                // 插入位置非法（大于等于当前列表长度），追加到末尾
                 mergedList.add(adverts.get(advertIndex++));
             }
         }

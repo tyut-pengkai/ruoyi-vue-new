@@ -25,7 +25,7 @@ public class ProdCateListResVO {
     private Long prodCateId;
     @ApiModelProperty(value = "分类名称")
     private String name;
-    @ApiModelProperty(value = "分类名称")
+    @ApiModelProperty(value = "父级分类ID")
     private Long parentId;
     @ApiModelProperty(value = "显示顺序")
     private Integer orderNum;

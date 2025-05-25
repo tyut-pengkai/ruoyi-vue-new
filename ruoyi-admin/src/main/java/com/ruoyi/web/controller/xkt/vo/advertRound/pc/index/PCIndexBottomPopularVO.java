@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author liujiang
@@ -18,11 +19,11 @@ import java.math.BigDecimal;
 public class PCIndexBottomPopularVO {
 
     @ApiModelProperty(value = "左侧列表")
-    PCIBPPopularLeftVO leftList;
+    List<PCIBPPopularLeftVO> leftList;
     @ApiModelProperty(value = "中间列表")
-    PCIBPPopularMidVO midList;
+    List<PCIBPPopularMidVO> midList;
     @ApiModelProperty(value = "右侧商品")
-    PCIBPPopularRightVO rightList;
+    List<PCIBPPopularRightVO> rightList;
 
     @Data
     public static class PCIBPPopularLeftVO {

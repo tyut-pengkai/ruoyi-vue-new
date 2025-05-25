@@ -7,6 +7,7 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.category.APPCateVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexHotSaleRightFixVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexMidBrandVO;
+import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexTopBannerVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.own.APPOwnGuessLikeVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.PCDownloadVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.PCUserCenterVO;
@@ -23,11 +24,9 @@ import com.ruoyi.xkt.dto.advertRound.app.index.APPSearchDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCSearchDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.PCIndexRecommendDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.newProd.PCNewRecommendDTO;
-import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 import com.ruoyi.xkt.service.IWebsiteAPPService;
 import com.ruoyi.xkt.service.IWebsitePCService;
-import com.ruoyi.xkt.service.IWebsiteService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -49,15 +48,8 @@ import java.util.List;
 @RequestMapping("/rest/v1/website")
 public class WebsiteController extends XktBaseController {
 
-//    final IWebsiteService websiteService;
     final IWebsitePCService websitePCService;
     final IWebsiteAPPService websiteAPPService;
-
-    /*@ApiOperation(value = "网站首页搜索", httpMethod = "POST", response = R.class)
-    @PostMapping("/index/search")
-    public R<Page<ESProductDTO>> page(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
-        return R.ok(websiteService.search(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
-    }*/
 
     @ApiOperation(value = "PC 首页 为你推荐", httpMethod = "POST", response = R.class)
     @PostMapping("/pc/index/recommend")
@@ -114,7 +106,6 @@ public class WebsiteController extends XktBaseController {
         return R.ok(BeanUtil.toBean(websitePCService.getPcIndexFixedEar(), PCIndexFixedEarVO.class));
     }
 
-    @ApiOperation(value = "PC 首页 搜索框下档口名称", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/search-underline-store-name")
     public R<List<PCIndexSearchUnderlineStoreNameVO>> getPcIndexSearchUnderlineStoreName() {
         return R.ok(BeanUtil.copyToList(websitePCService.getPcIndexSearchUnderlineStoreName(), PCIndexSearchUnderlineStoreNameVO.class));
@@ -219,8 +210,8 @@ public class WebsiteController extends XktBaseController {
 
     @ApiOperation(value = "APP 首页顶部轮播图", httpMethod = "GET", response = R.class)
     @GetMapping("/app/top/banner")
-    public R<List<PCDownloadVO>> getAppIndexTopBanner() {
-        return R.ok(BeanUtil.copyToList(websiteAPPService.getAppIndexTopBanner(), PCDownloadVO.class));
+    public R<List<APPIndexTopBannerVO>> getAppIndexTopBanner() {
+        return R.ok(BeanUtil.copyToList(websiteAPPService.getAppIndexTopBanner(), APPIndexTopBannerVO.class));
     }
 
     @ApiOperation(value = "APP 首页品牌好货", httpMethod = "GET", response = R.class)

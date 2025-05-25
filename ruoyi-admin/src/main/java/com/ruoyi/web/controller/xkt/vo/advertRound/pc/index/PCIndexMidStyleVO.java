@@ -29,7 +29,7 @@ public class PCIndexMidStyleVO {
     @ApiModelProperty(value = "排序")
     private Integer orderNum;
     @ApiModelProperty(value = "风格榜列表")
-    private List<PCIMSStyleVO> saleList;
+    private List<PCIMSStyleVO> styleList;
 
     @Data
     public static class PCIMSStyleVO {

@@ -39,7 +39,7 @@ public class PicSearchAdvertDTO {
     @JsonIgnore
     private String tagStr;
     @ApiModelProperty(name = "商品标签列表")
-    private List<String> prodTagList;
+    private List<String> tags;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "档口名称")

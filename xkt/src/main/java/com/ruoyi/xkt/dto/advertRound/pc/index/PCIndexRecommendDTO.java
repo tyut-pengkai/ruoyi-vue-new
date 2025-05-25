@@ -16,7 +16,6 @@ import java.util.List;
 @ApiModel("PC首页为你推荐")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PCIndexRecommendDTO {
 
     @ApiModelProperty(value = "父级分类ID")

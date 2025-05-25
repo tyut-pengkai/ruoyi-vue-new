@@ -17,7 +17,6 @@ import java.util.List;
 @ApiModel("APP首页热卖精选")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class APPIndexHotSaleDTO {
 
     @ApiModelProperty(value = "档口ID")

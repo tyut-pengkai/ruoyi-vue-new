@@ -18,53 +18,6 @@ import java.util.List;
  */
 @Repository
 public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
-    /**
-     * 查询档口商品文件
-     *
-     * @param id 档口商品文件主键
-     * @return 档口商品文件
-     */
-    public StoreProductFile selectStoreProductFileByStoreProdFileId(Long id);
-
-    /**
-     * 查询档口商品文件列表
-     *
-     * @param storeProductFile 档口商品文件
-     * @return 档口商品文件集合
-     */
-    public List<StoreProductFile> selectStoreProductFileList(StoreProductFile storeProductFile);
-
-    /**
-     * 新增档口商品文件
-     *
-     * @param storeProductFile 档口商品文件
-     * @return 结果
-     */
-    public int insertStoreProductFile(StoreProductFile storeProductFile);
-
-    /**
-     * 修改档口商品文件
-     *
-     * @param storeProductFile 档口商品文件
-     * @return 结果
-     */
-    public int updateStoreProductFile(StoreProductFile storeProductFile);
-
-    /**
-     * 删除档口商品文件
-     *
-     * @param id 档口商品文件主键
-     * @return 结果
-     */
-    public int deleteStoreProductFileByStoreProdFileId(Long id);
-
-    /**
-     * 批量删除档口商品文件
-     *
-     * @param storeProdFileIds 需要删除的数据主键集合
-     * @return 结果
-     */
-    public int deleteStoreProductFileByStoreProdFileIds(Long[] storeProdFileIds);
 
     void updateDelFlagByStoreProdId(Long storeProdId);
 

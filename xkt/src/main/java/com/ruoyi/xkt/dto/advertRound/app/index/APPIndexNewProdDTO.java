@@ -16,7 +16,6 @@ import java.util.List;
 @ApiModel("APP首页新品榜列表")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class APPIndexNewProdDTO {
 
     @ApiModelProperty(value = "档口ID")
