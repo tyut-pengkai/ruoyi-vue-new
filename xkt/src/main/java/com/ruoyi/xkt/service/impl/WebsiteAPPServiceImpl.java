@@ -391,15 +391,12 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         if (CollectionUtils.isEmpty(oneMonthList)) {
             return new ArrayList<>();
         }
-        /*final List<Long> storeProdIdList = oneMonthList.stream()
+        final List<Long> storeProdIdList = oneMonthList.stream()
                 .filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> Long.parseLong(x.getProdIdStr())).distinct().collect(Collectors.toList());
         // 档口商品的价格及商品主图map
         Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = CollectionUtils.isEmpty(storeProdIdList) ? new ConcurrentHashMap<>()
                 : this.storeProdMapper.selectPriceAndMainPicList(storeProdIdList).stream().collect(Collectors
-                .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));*/
-
-
-
+                .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
         List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
                 .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
