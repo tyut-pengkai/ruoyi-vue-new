@@ -35,6 +35,8 @@ public class PCNewRecommendDTO {
     private String prodPrice;
     @ApiModelProperty(value = "是否广告")
     private Boolean advert;
+    @ApiModelProperty(value = "标题")
+    private String prodTitle;
     @ApiModelProperty(value = "是否有视频")
     private Boolean hasVideo;
     @ApiModelProperty(value = "标签")

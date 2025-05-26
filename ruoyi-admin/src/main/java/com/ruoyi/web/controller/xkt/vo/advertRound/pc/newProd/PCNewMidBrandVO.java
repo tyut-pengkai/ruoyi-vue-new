@@ -21,6 +21,8 @@ public class PCNewMidBrandVO {
     private Integer orderNum;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "档口名称")
+    private String storeName;
     @ApiModelProperty(value = "推广图路径")
     private String fileUrl;
 

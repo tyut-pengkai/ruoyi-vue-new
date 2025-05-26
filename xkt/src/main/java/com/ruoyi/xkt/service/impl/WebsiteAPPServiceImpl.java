@@ -105,6 +105,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 List<APPIndexHotSaleDTO> hotSaleList = advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                     StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(Long.parseLong(x.getProdIdStr()));
                     return new APPIndexHotSaleDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString()).setStoreProdId(x.getProdIdStr())
+                            .setProdTitle(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdTitle() : "")
                             .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
                             .setTags(StringUtils.isNotBlank(attrDto.getTagStr()) ? StrUtil.split(attrDto.getTagStr(), ",") : null)
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
@@ -158,6 +159,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 List<APPIndexPopularSaleDTO> popularSaleList = advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                     StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(Long.parseLong(x.getProdIdStr()));
                     return new APPIndexPopularSaleDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString()).setStoreProdId(x.getProdIdStr())
+                            .setProdTitle(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdTitle() : "")
                             .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
                             .setTags(StringUtils.isNotBlank(attrDto.getTagStr()) ? StrUtil.split(attrDto.getTagStr(), ",") : null)
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
@@ -211,6 +213,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 List<APPIndexNewProdDTO> newProdList = advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                     StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(Long.parseLong(x.getProdIdStr()));
                     return new APPIndexNewProdDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString()).setStoreProdId(x.getProdIdStr())
+                            .setProdTitle(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdTitle() : "")
                             .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
                             .setTags(StringUtils.isNotBlank(attrDto.getTagStr()) ? StrUtil.split(attrDto.getTagStr(), ",") : null)
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
@@ -264,6 +267,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 List<APPSearchDTO> newProdList = advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                     StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(Long.parseLong(x.getProdIdStr()));
                     return new APPSearchDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString()).setStoreProdId(x.getProdIdStr())
+                            .setProdTitle(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdTitle() : "")
                             .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
                             .setTags(StringUtils.isNotBlank(attrDto.getTagStr()) ? StrUtil.split(attrDto.getTagStr(), ",") : null)
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
@@ -503,6 +507,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 final Long storeProdId = Long.parseLong(x.getProdIdStr());
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(storeProdId);
                 return new APPOwnGuessLikeDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
+                        .setProdTitle(ObjectUtils.isNotEmpty(dto) ? dto.getProdTitle() : "")
                         .setHasVideo(ObjectUtils.isNotEmpty(dto) ? dto.getHasVideo() : Boolean.FALSE)
                         .setTags(ObjectUtils.isNotEmpty(dto) ? dto.getTags() : null)
                         .setPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
@@ -518,6 +523,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(storeProdId);
                 return new APPOwnGuessLikeDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
                         .setOrderNum(this.positionToNumber(x.getPosition()))
+                        .setProdTitle(ObjectUtils.isNotEmpty(dto) ? dto.getProdTitle() : "")
                         .setHasVideo(ObjectUtils.isNotEmpty(dto) ? dto.getHasVideo() : Boolean.FALSE)
                         .setTags(ObjectUtils.isNotEmpty(dto) ? dto.getTags() : null)
                         .setPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)

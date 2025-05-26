@@ -34,6 +34,8 @@ public class APPOwnGuessLikeDTO {
     private String mainPicUrl;
     @ApiModelProperty(value = "是否有视频")
     private Boolean hasVideo;
+    @ApiModelProperty(value = "商品标题")
+    private String prodTitle;
     @ApiModelProperty(value = "标签列表")
     private List<String> tags;
 

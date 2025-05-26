@@ -31,6 +31,8 @@ public class APPIndexHotSaleDTO {
     private String mainPic;
     @ApiModelProperty(value = "单价")
     private String prodPrice;
+    @ApiModelProperty(value = "标题")
+    private String prodTitle;
     @ApiModelProperty(value = "是否广告")
     private Boolean advert;
     @ApiModelProperty(value = "是否有视频")

@@ -128,6 +128,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     prodIdList.forEach(storeProdId -> {
                         StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(storeProdId);
                         indexRecommendList.add(new PCIndexRecommendDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString())
+                                .setProdTitle(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdTitle() : "")
                                 .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
                                 .setParCateId(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getParCateId() : null)
                                 .setProdCateId(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdCateId() : null)
@@ -201,6 +202,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     prodIdList.forEach(storeProdId -> {
                         StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(storeProdId);
                         newRecommendList.add(new PCNewRecommendDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString())
+                                .setProdTitle(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdTitle() : "")
                                 .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
                                 .setParCateId(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getParCateId() : null)
                                 .setProdCateId(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdCateId() : null)

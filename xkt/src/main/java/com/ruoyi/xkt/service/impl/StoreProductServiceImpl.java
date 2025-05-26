@@ -278,10 +278,14 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.handleStoreProdColorList(storeProd, storeProdDTO.getColorList(), storeProdId, storeProd.getStoreId(), Boolean.FALSE);
         // 处理编辑档口商品颜色尺码
         this.handleStoreProdColorSizeList(storeProdDTO.getSizeList(), storeProdId, Boolean.FALSE);
-        // 更新索引: product_info 的文档
-        this.updateESDoc(storeProd, storeProdDTO);
-        // 搜图服务同步
-        sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
+        // 只有在售和尾货状态，更新ES 信息 及 图搜
+        if (Objects.equals(storeProd.getProdStatus(), EProductStatus.ON_SALE.getValue())
+                || Objects.equals(storeProd.getProdStatus(), EProductStatus.TAIL_GOODS.getValue())) {
+            // 更新索引: product_info 的文档
+            this.updateESDoc(storeProd, storeProdDTO);
+            // 搜图服务同步
+            sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
+        }
         return count;
     }
 
