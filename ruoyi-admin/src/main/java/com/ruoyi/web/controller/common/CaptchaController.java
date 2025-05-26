@@ -34,6 +34,9 @@ public class CaptchaController {
     @Resource(name = "captchaProducerMath")
     private Producer captchaProducerMath;
 
+    @Resource(name = "captchaProducerNum")
+    private Producer captchaProducerNum;
+
     @Autowired
     private RedisCache redisCache;
 
@@ -69,6 +72,9 @@ public class CaptchaController {
         } else if ("char".equals(captchaType)) {
             capStr = code = captchaProducer.createText();
             image = captchaProducer.createImage(capStr);
+        } else if ("num".equals(captchaType)) {
+            capStr = code = captchaProducerNum.createText();
+            image = captchaProducerNum.createImage(capStr);
         }
 
         redisCache.setCacheObject(verifyKey, code, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
