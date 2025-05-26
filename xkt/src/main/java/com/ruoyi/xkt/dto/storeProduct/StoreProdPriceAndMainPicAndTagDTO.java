@@ -38,5 +38,7 @@ public class StoreProdPriceAndMainPicAndTagDTO {
     private String mainPicUrl;
     @ApiModelProperty(value = "商品标题")
     private String prodTitle;
+    @ApiModelProperty(value = "是否有主图视频")
+    private Boolean hasVideo;
 
 }

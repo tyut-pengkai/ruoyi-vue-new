@@ -86,7 +86,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
         }
         // 从redis中获取广告
-        List<APPIndexHotSaleDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_HOT_SALE_ADVERT);
+        List<APPIndexHotSaleDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_INDEX_HOT_SALE_ADVERT);
         if (CollectionUtils.isNotEmpty(redisList)) {
             // 添加广告的数据
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.insertPositions));
@@ -105,6 +105,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 List<APPIndexHotSaleDTO> hotSaleList = advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                     StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(Long.parseLong(x.getProdIdStr()));
                     return new APPIndexHotSaleDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString()).setStoreProdId(x.getProdIdStr())
+                            .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
                             .setTags(StringUtils.isNotBlank(attrDto.getTagStr()) ? StrUtil.split(attrDto.getTagStr(), ",") : null)
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                             .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
@@ -112,7 +113,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                             .setMainPic(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
                 }).collect(Collectors.toList());
                 // 放到redis中 有效期1天
-                this.redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_HOT_SALE_ADVERT, hotSaleList, 1, TimeUnit.DAYS);
+                this.redisCache.setCacheObject(CacheConstants.APP_INDEX_HOT_SALE_ADVERT, hotSaleList, 1, TimeUnit.DAYS);
                 // 添加了广告的数据
                 return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, hotSaleList, Constants.insertPositions));
             }
@@ -138,7 +139,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
         }
         // 从redis中获取数据
-        List<APPIndexPopularSaleDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_POPULAR_SALE_ADVERT);
+        List<APPIndexPopularSaleDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_INDEX_POPULAR_SALE_ADVERT);
         if (CollectionUtils.isNotEmpty(redisList)) {
             // 添加广告的数据
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.insertPositions));
@@ -157,6 +158,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 List<APPIndexPopularSaleDTO> popularSaleList = advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                     StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(Long.parseLong(x.getProdIdStr()));
                     return new APPIndexPopularSaleDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString()).setStoreProdId(x.getProdIdStr())
+                            .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
                             .setTags(StringUtils.isNotBlank(attrDto.getTagStr()) ? StrUtil.split(attrDto.getTagStr(), ",") : null)
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                             .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
@@ -164,7 +166,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                             .setMainPic(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
                 }).collect(Collectors.toList());
                 // 放到redis中 有效期1天
-                this.redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_POPULAR_SALE_ADVERT, popularSaleList, 1, TimeUnit.DAYS);
+                this.redisCache.setCacheObject( CacheConstants.APP_INDEX_POPULAR_SALE_ADVERT, popularSaleList, 1, TimeUnit.DAYS);
                 // 添加了广告的数据
                 return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, popularSaleList, Constants.insertPositions));
             }
@@ -190,7 +192,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
         }
         // 从redis中获取数据
-        List<APPIndexNewProdDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_NEW_PROD);
+        List<APPIndexNewProdDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_INDEX_NEW_PROD);
         if (CollectionUtils.isNotEmpty(redisList)) {
             // 添加广告的数据
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.insertPositions));
@@ -209,6 +211,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 List<APPIndexNewProdDTO> newProdList = advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                     StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(Long.parseLong(x.getProdIdStr()));
                     return new APPIndexNewProdDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString()).setStoreProdId(x.getProdIdStr())
+                            .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
                             .setTags(StringUtils.isNotBlank(attrDto.getTagStr()) ? StrUtil.split(attrDto.getTagStr(), ",") : null)
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                             .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
@@ -216,7 +219,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                             .setMainPic(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
                 }).collect(Collectors.toList());
                 // 放到redis中 有效期1天
-                this.redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_NEW_PROD, newProdList, 1, TimeUnit.DAYS);
+                this.redisCache.setCacheObject(CacheConstants.APP_INDEX_NEW_PROD, newProdList, 1, TimeUnit.DAYS);
                 // 添加了广告的数据
                 return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, newProdList, Constants.insertPositions));
             }
@@ -242,7 +245,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
         }
         // 从redis中获取数据
-        List<APPSearchDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_SEARCH);
+        List<APPSearchDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_SEARCH);
         if (CollectionUtils.isNotEmpty(redisList)) {
             // 添加广告的数据
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.insertPositions));
@@ -261,6 +264,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 List<APPSearchDTO> newProdList = advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                     StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(Long.parseLong(x.getProdIdStr()));
                     return new APPSearchDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString()).setStoreProdId(x.getProdIdStr())
+                            .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
                             .setTags(StringUtils.isNotBlank(attrDto.getTagStr()) ? StrUtil.split(attrDto.getTagStr(), ",") : null)
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                             .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
@@ -268,7 +272,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                             .setMainPic(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
                 }).collect(Collectors.toList());
                 // 放到redis中 有效期1天
-                this.redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_SEARCH, newProdList, 1, TimeUnit.DAYS);
+                this.redisCache.setCacheObject(CacheConstants.APP_SEARCH, newProdList, 1, TimeUnit.DAYS);
                 // 添加了广告的数据
                 return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, newProdList, Constants.insertPositions));
             }
@@ -380,7 +384,8 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Override
     @Transactional(readOnly = true)
     public List<APPIndexHotSaleRightFixDTO> getAppIndexHotSaleRightFix() {
-        // 从redis中获取数据
+        return null;
+        /*// 从redis中获取数据
         List<APPIndexHotSaleRightFixDTO> appIndexHotSaleRightFixList;
         // 从redis 中获取数据
         List<APPIndexHotSaleRightFixDTO> redisList = redisCache.getCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_HOT_SALE_RIGHT_FIX);
@@ -418,7 +423,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         }
         // 放到redis中，有效期1天
         redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_HOT_SALE_RIGHT_FIX, appIndexHotSaleRightFixList, 1, TimeUnit.DAYS);
-        return appIndexHotSaleRightFixList;
+        return appIndexHotSaleRightFixList;*/
     }
 
     /**
@@ -498,6 +503,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 final Long storeProdId = Long.parseLong(x.getProdIdStr());
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(storeProdId);
                 return new APPOwnGuessLikeDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
+                        .setHasVideo(ObjectUtils.isNotEmpty(dto) ? dto.getHasVideo() : Boolean.FALSE)
                         .setTags(ObjectUtils.isNotEmpty(dto) ? dto.getTags() : null)
                         .setPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setProdArtNum(ObjectUtils.isNotEmpty(dto) ? dto.getProdArtNum() : "")
@@ -510,7 +516,9 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             appOwnGuessLikeList = launchingList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                 final Long storeProdId = Long.parseLong(x.getProdIdStr());
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(storeProdId);
-                return new APPOwnGuessLikeDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId).setOrderNum(this.positionToNumber(x.getPosition()))
+                return new APPOwnGuessLikeDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
+                        .setOrderNum(this.positionToNumber(x.getPosition()))
+                        .setHasVideo(ObjectUtils.isNotEmpty(dto) ? dto.getHasVideo() : Boolean.FALSE)
                         .setTags(ObjectUtils.isNotEmpty(dto) ? dto.getTags() : null)
                         .setPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setProdArtNum(ObjectUtils.isNotEmpty(dto) ? dto.getProdArtNum() : "")

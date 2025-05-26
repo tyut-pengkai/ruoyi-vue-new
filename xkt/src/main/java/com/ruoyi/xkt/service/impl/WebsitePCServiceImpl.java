@@ -99,7 +99,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
         }
         // 从redis中获取数据
-        List<PCIndexRecommendDTO> redisList = this.redisCache.getCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_INDEX_RECOMMEND);
+        List<PCIndexRecommendDTO> redisList = this.redisCache.getCacheObject(CacheConstants.PC_INDEX_RECOMMEND);
         if (CollectionUtils.isNotEmpty(redisList)) {
             redisList = redisList.stream()
                     .filter(x -> CollectionUtils.isEmpty(searchDTO.getParCateIdList()) || searchDTO.getParCateIdList().contains(x.getParCateId().toString()))
@@ -128,6 +128,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     prodIdList.forEach(storeProdId -> {
                         StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(storeProdId);
                         indexRecommendList.add(new PCIndexRecommendDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString())
+                                .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
                                 .setParCateId(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getParCateId() : null)
                                 .setProdCateId(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdCateId() : null)
                                 .setStoreProdId(storeProdId.toString()).setTags(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getTags() : null)
@@ -141,7 +142,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 // 将indexRecommendList 顺序打乱，不然一个档口的数据在同一地方展示
                 Collections.shuffle(indexRecommendList);
                 // 放到redis中 有效期1天
-                this.redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_INDEX_RECOMMEND, indexRecommendList, 1, TimeUnit.DAYS);
+                this.redisCache.setCacheObject(CacheConstants.PC_INDEX_RECOMMEND, indexRecommendList, 1, TimeUnit.DAYS);
                 List<PCIndexRecommendDTO> tempList = indexRecommendList.stream()
                         .filter(x -> CollectionUtils.isEmpty(searchDTO.getParCateIdList()) || searchDTO.getParCateIdList().contains(x.getParCateId().toString()))
                         .filter(x -> CollectionUtils.isEmpty(searchDTO.getProdCateIdList()) || searchDTO.getProdCateIdList().contains(x.getProdCateId().toString()))
@@ -171,7 +172,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
         }
         // 从redis中获取数据
-        List<PCNewRecommendDTO> redisList = this.redisCache.getCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_NEW_RECOMMEND);
+        List<PCNewRecommendDTO> redisList = this.redisCache.getCacheObject(CacheConstants.PC_NEW_RECOMMEND);
         if (CollectionUtils.isNotEmpty(redisList)) {
             redisList = redisList.stream()
                     .filter(x -> CollectionUtils.isEmpty(searchDTO.getParCateIdList()) || searchDTO.getParCateIdList().contains(x.getParCateId().toString()))
@@ -200,6 +201,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     prodIdList.forEach(storeProdId -> {
                         StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(storeProdId);
                         newRecommendList.add(new PCNewRecommendDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString())
+                                .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
                                 .setParCateId(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getParCateId() : null)
                                 .setProdCateId(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdCateId() : null)
                                 .setStoreProdId(storeProdId.toString()).setTags(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getTags() : null)
@@ -213,7 +215,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 // newRecommendList 顺序打乱，不然一个档口的数据在同一地方展示
                 Collections.shuffle(newRecommendList);
                 // 放到redis中 有效期1天
-                this.redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_NEW_RECOMMEND, newRecommendList, 1, TimeUnit.DAYS);
+                this.redisCache.setCacheObject(CacheConstants.PC_NEW_RECOMMEND, newRecommendList, 1, TimeUnit.DAYS);
                 List<PCNewRecommendDTO> tempList = newRecommendList.stream()
                         .filter(x -> CollectionUtils.isEmpty(searchDTO.getParCateIdList()) || searchDTO.getParCateIdList().contains(x.getParCateId().toString()))
                         .filter(x -> CollectionUtils.isEmpty(searchDTO.getProdCateIdList()) || searchDTO.getProdCateIdList().contains(x.getProdCateId().toString()))

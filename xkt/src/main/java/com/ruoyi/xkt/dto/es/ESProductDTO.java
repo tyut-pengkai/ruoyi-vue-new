@@ -51,6 +51,8 @@ public class ESProductDTO {
     private String storeName;
     @ApiModelProperty(value = "风格")
     private String style;
+    @ApiModelProperty(value = "是否有视频")
+    private Boolean hasVideo;
     @ApiModelProperty(value = "标签")
     private List<String> tags;
     @ApiModelProperty(value = "标题")

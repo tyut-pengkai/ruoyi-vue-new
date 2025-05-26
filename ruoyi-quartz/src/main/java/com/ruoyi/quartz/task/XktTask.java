@@ -490,6 +490,25 @@ public class XktTask {
     }
 
     /**
+     * 每个小时执行一次，发布商品
+     */
+    @Transactional
+    public void hourPublicStoreProduct(){
+
+        // TODO 定时任务发布商品，同步到ES中
+        // TODO 定时任务发布商品，同步到ES中
+        // TODO 定时任务发布商品，同步到ES中
+
+        // 向ES索引: product_info 创建文档
+//        this.createESDoc(storeProd, storeProdDTO);
+        // 搜图服务同步
+//        sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
+
+    }
+
+
+
+    /**
      * 自动关闭超时订单
      */
     public void autoCloseTimeoutStoreOrder() {

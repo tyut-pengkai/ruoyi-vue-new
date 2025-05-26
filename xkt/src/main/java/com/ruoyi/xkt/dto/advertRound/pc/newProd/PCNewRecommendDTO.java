@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRound.pc.newProd;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -36,6 +35,8 @@ public class PCNewRecommendDTO {
     private String prodPrice;
     @ApiModelProperty(value = "是否广告")
     private Boolean advert;
+    @ApiModelProperty(value = "是否有视频")
+    private Boolean hasVideo;
     @ApiModelProperty(value = "标签")
     private List<String> tags;
 

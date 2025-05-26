@@ -36,6 +36,8 @@ public class PCIndexRecommendDTO {
     private String prodPrice;
     @ApiModelProperty(value = "是否广告")
     private Boolean advert;
+    @ApiModelProperty(value = "是否有视频")
+    private Boolean hasVideo;
     @ApiModelProperty(value = "标签")
     private List<String> tags;
 

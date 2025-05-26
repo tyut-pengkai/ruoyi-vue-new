@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -18,6 +20,7 @@ public class ProdCateVO {
     @ApiModelProperty(value = "商品分类主键, 新增不传 编辑必传")
     private Long prodCateId;
     @ApiModelProperty(value = "分类名称")
+    @NotBlank(message = "分类名称不能为空")
     private String name;
     @ApiModelProperty(value = "分类名称")
     private Long parentId;

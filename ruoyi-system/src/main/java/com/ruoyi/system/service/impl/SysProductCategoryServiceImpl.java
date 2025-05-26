@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysProductCategory;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.dto.productCategory.AppHomeProdCateListResDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateListDTO;
@@ -77,6 +79,12 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
     @Override
     @Transactional
     public Integer delete(Long prodCateId) {
+
+        // TODO 是否为超级管理员
+        // TODO 是否为超级管理员
+        // TODO 是否为超级管理员
+        this.isSuperAdmin();
+
         SysProductCategory prodCate = Optional.ofNullable(this.prodCateMapper.selectOne(new LambdaQueryWrapper<SysProductCategory>()
                         .eq(SysProductCategory::getId, prodCateId).eq(SysProductCategory::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("商品分类不存在!", HttpStatus.ERROR));
@@ -258,5 +266,21 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
     private boolean hasChild(List<ProdCateListResDTO> list, ProdCateListResDTO cate) {
         return getChildList(list, cate).size() > 0;
     }
+
+
+    /**
+     * 校验当前是否是超级管理员操作
+     */
+    private void isSuperAdmin() {
+        // 获取当前登录用户
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        if (ObjectUtils.isEmpty(loginUser)) {
+            throw new ServiceException("当前用户不存在!", HttpStatus.ERROR);
+        }
+        if (!SecurityUtils.isAdmin(loginUser.getUserId())) {
+            throw new ServiceException("当前用户不是超级管理员，不可操作!", HttpStatus.ERROR);
+        }
+    }
+
 
 }

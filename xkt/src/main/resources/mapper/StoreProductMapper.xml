@@ -130,19 +130,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             MIN( spcp.price ) AS minPrice,
             sp.store_id,
             s.store_name,
-            GROUP_CONCAT( DISTINCT dpt.tag ORDER BY dpt.type ASC ) AS tagStr
+            GROUP_CONCAT( DISTINCT dpt.tag ORDER BY dpt.type ASC ) AS tagStr,
+            EXISTS( SELECT 1 FROM store_product_file spf2 WHERE spf2.store_prod_id = sp.id AND spf2.del_flag = 0 AND spf2.file_type = 2 LIMIT 1 ) AS hasVideo
         FROM
             store_product sp
             LEFT JOIN store_product_color_price spcp ON sp.id = spcp.store_prod_id
-            LEFT JOIN store_product_file spf ON sp.id = spf.store_prod_id AND spf.del_flag = 0
+            LEFT JOIN store_product_file spf ON sp.id = spf.store_prod_id AND spf.del_flag = 0 AND spf.file_type = 1 AND spf.order_num = 1
             LEFT JOIN sys_file sf ON spf.file_id = sf.id
             LEFT JOIN store s ON sp.store_id = s.id
             LEFT JOIN daily_prod_tag dpt ON sp.id = dpt.store_prod_id AND dpt.del_flag = 0
             LEFT JOIN sys_product_category spc ON sp.prod_cate_id = spc.id
         WHERE
             sp.del_flag = 0
-            AND spf.file_type = 1
-            AND spf.order_num = 1
             AND sp.id IN
             <foreach item="id" collection="storeProdIdList" open="(" separator="," close=")">
                 #{id}

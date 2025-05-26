@@ -119,8 +119,10 @@ public class SecurityConfig
                         .antMatchers("/rest/v1/alipay-callback/**").permitAll()
                         //物流回调
                         .antMatchers("/rest/v1/express-callback/**").permitAll()
-                        //  系统广告及首页
+                        // 系统广告及首页
                         .antMatchers("/rest/v1/website/**").permitAll()
+                        // 系统分类
+                        .antMatchers("/rest/v1/sys/prod-cate/**").permitAll()
                         // 除上面外的所有请求全部需要鉴权认证
                         .anyRequest().authenticated();
             })

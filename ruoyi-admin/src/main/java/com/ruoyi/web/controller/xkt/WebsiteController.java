@@ -3,7 +3,11 @@ package com.ruoyi.web.controller.xkt;
 import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.vo.productCategory.ProdCateListResVO;
+import com.ruoyi.common.core.domain.vo.productCategory.ProdCateListVO;
 import com.ruoyi.common.core.page.Page;
+import com.ruoyi.system.domain.dto.productCategory.ProdCateListDTO;
+import com.ruoyi.system.service.ISysProductCategoryService;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.category.APPCateVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexHotSaleRightFixVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexMidBrandVO;
@@ -50,7 +54,6 @@ public class WebsiteController extends XktBaseController {
 
     final IWebsitePCService websitePCService;
     final IWebsiteAPPService websiteAPPService;
-
     @ApiOperation(value = "PC 首页 为你推荐", httpMethod = "POST", response = R.class)
     @PostMapping("/pc/index/recommend")
     public R<Page<PCIndexRecommendDTO>> pcIndexRecommendPage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {

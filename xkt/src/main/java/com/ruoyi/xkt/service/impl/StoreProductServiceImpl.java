@@ -41,6 +41,7 @@ import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.enums.EProductStatus;
 import com.ruoyi.xkt.enums.FileType;
+import com.ruoyi.xkt.enums.ListingType;
 import com.ruoyi.xkt.enums.ProductSizeStatus;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IPictureService;
@@ -222,10 +223,13 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.handleStoreProdColorSizeList(storeProdDTO.getSizeList(), storeProd.getId(), Boolean.TRUE);
         // 处理StoreProduct其它属性
         this.handleStoreProdProperties(storeProd, storeProdDTO);
-        // 向ES索引: product_info 创建文档
-        this.createESDoc(storeProd, storeProdDTO);
-        // 搜图服务同步
-        sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
+        // 立即发布 将商品同步到 ES 商品文档，并将商品主图同步到 以图搜款服务中
+        if (Objects.equals(storeProd.getListingWay(), ListingType.RIGHT_NOW.getValue())) {
+            // 向ES索引: product_info 创建文档
+            this.createESDoc(storeProd, storeProdDTO);
+            // 搜图服务同步
+            sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
+        }
         return count;
     }
 
@@ -758,6 +762,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         String firstMainPic = storeProdDTO.getFileList().stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
                 .min(Comparator.comparing(StoreProdFileDTO::getOrderNum)).map(StoreProdFileDTO::getFileUrl)
                 .orElseThrow(() -> new ServiceException("商品主图不存在!", HttpStatus.ERROR));
+        // 是否有主图视频
+        boolean hasVideo = storeProdDTO.getFileList().stream().anyMatch(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC_VIDEO.getValue()));
         // 获取上一级分类的分类ID 及 分类名称
         ProdCateDTO parCate = this.prodCateMapper.getParentCate(storeProdDTO.getProdCateId());
         // 获取当前商品的最低价格
@@ -767,7 +773,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         String season = storeProdDTO.getCateAttr().getSuitableSeason();
         // 获取风格
         String style = storeProdDTO.getCateAttr().getStyle();
-        return BeanUtil.toBean(storeProd, ESProductDTO.class)
+        return BeanUtil.toBean(storeProd, ESProductDTO.class).setHasVideo(hasVideo)
                 .setProdCateName(storeProdDTO.getProdCateName()).setSaleWeight("0").setRecommendWeight("0").setPopularityWeight("0")
                 .setCreateTime(DateUtils.getTime()).setStoreName(storeProdDTO.getStoreName()).setMainPic(firstMainPic)
                 .setParCateId(parCate.getProdCateId().toString()).setParCateName(parCate.getName()).setProdPrice(minPrice.toString())
@@ -868,5 +874,6 @@ public class StoreProductServiceImpl implements IStoreProductService {
             log.info("商品图片同步至搜图服务器: id: {}, result: {}", storeProductId, JSONUtil.toJsonStr(r));
         }
     }
+
 
 }
