@@ -5,6 +5,16 @@ public class Car {
     private String name;
     private String imageUrl;
     private String videoUrl;
+
+    public String getCoverUrl() {
+        return coverUrl;
+    }
+
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
+    }
+
+    private String coverUrl;
     // 货箱长度
     private float containerLength;
     // 货箱宽度
@@ -26,6 +36,11 @@ public class Car {
     private float grossWeight;
     // 能源类型
     private String energyType;
+
+    // 油箱容量
+    private float tankCapacity;
+    // 电池容量
+    private float batteryCapacity;
 
     public int getId() {
         return id;
@@ -139,6 +154,22 @@ public class Car {
         this.energyType = energyType;
     }
 
+    public float getTankCapacity() {
+        return tankCapacity;
+    }
+
+    public void setTankCapacity(float tankCapacity) {
+        this.tankCapacity = tankCapacity;
+    }
+
+    public float getBatteryCapacity() {
+        return batteryCapacity;
+    }
+
+    public void setBatteryCapacity(float batteryCapacity) {
+        this.batteryCapacity = batteryCapacity;
+    }
+
     @Override
     public String toString() {
         return "Car{" +
@@ -146,6 +177,7 @@ public class Car {
                 ", name='" + name + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", videoUrl='" + videoUrl + '\'' +
+                ", coverUrl='" + coverUrl + '\'' +
                 ", containerLength=" + containerLength +
                 ", containerWidth=" + containerWidth +
                 ", containerHeight=" + containerHeight +
@@ -156,6 +188,8 @@ public class Car {
                 ", ratedLoadCapacity=" + ratedLoadCapacity +
                 ", grossWeight=" + grossWeight +
                 ", energyType='" + energyType + '\'' +
+                ", tankCapacity=" + tankCapacity +
+                ", batteryCapacity=" + batteryCapacity +
                 '}';
     }
 }

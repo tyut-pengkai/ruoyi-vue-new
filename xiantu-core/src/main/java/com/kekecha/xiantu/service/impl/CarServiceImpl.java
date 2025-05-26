@@ -42,6 +42,12 @@ public class CarServiceImpl implements ICarService
                 videoUrl = videoUrl.subSequence(1, videoUrl.length() - 1).toString().replace(" ","");
                 jsonMap.put("videoUrl", videoUrl);
             }
+            if (key.equals("coverUrl")) {
+                /* 将image数组转变为字符串 */
+                String coverUrl = value.toString();
+                coverUrl = coverUrl.subSequence(1, coverUrl.length() - 1).toString().replace(" ","");
+                jsonMap.put("coverUrl", coverUrl);
+            }
         }
         return objectMapper.convertValue(jsonMap, Car.class);
     }
@@ -75,6 +81,18 @@ public class CarServiceImpl implements ICarService
             }
         } else {
             jsonMap.put("videoUrl", new ArrayList<String>());
+        }
+
+        if (jsonMap.get("coverUrl") != null) {
+            String coverUrl = jsonMap.get("coverUrl").toString();
+            if (coverUrl == null || coverUrl.isEmpty()) {
+                jsonMap.put("coverUrl", new ArrayList<String>());
+            } else {
+                List<String> cover_url_list = Arrays.asList(coverUrl.split(","));
+                jsonMap.put("coverUrl", cover_url_list);
+            }
+        } else {
+            jsonMap.put("coverUrl", new ArrayList<String>());
         }
 
         return jsonMap;

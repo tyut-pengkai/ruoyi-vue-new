@@ -8,14 +8,14 @@ spring:
             master:
                 username: root
 #                 生产环境:
-#                url: jdbc:mysql://localhost:3306/xiantu?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-#                password: 7mZ$9K#pL!vR3@Qd
+                url: jdbc:mysql://localhost:3306/xiantu?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                password: 7mZ$9K#pL!vR3@Qd
 #                 测试环境:
 #                url: jdbc:mysql://localhost:3306/xiantu?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
 #                password:
 #                 WSL环境:
-                url: jdbc:mysql://localhost:33308/xiantu?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-                password: 7mZ$9K#pL!vR3@Qd
+#                url: jdbc:mysql://localhost:33308/xiantu?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+#                password: 7mZ$9K#pL!vR3@Qd
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
