@@ -50,6 +50,11 @@
             <artifactId>imagesearch20201214</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>alibabacloud-dysmsapi20170525</artifactId>
+        </dependency>
+
         <!-- mybatis-plus -->
         <dependency>
             <groupId>com.baomidou</groupId>
