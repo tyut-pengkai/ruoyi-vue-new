@@ -32,6 +32,11 @@ img-search:
   instanceName: liuboboer
   # 如果是内网访问图像搜索服务，则endpointType为必填项，值统一为"internal"
   endpointType:
+sms:
+  accessKeyId:
+  accessKeySecret:
+  regionId:
+  send: false
 es:
   #多个用","分割
   hosts: 49.234.41.39:9222
