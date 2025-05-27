@@ -1,4 +1,4 @@
-package com.ruoyi.system.service;
+package com.ruoyi.xkt.service;
 
 import com.ruoyi.system.domain.dto.productCategory.AppHomeProdCateListResDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;

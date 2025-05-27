@@ -11,7 +11,7 @@ import com.ruoyi.common.core.domain.vo.productCategory.ProdCateVO;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateListDTO;
-import com.ruoyi.system.service.ISysProductCategoryService;
+import com.ruoyi.xkt.service.ISysProductCategoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;

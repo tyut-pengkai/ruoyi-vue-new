@@ -1,10 +1,9 @@
-package com.ruoyi.system.service.impl;
+package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
-import com.ruoyi.common.core.domain.entity.SysProductCategory;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -12,8 +11,11 @@ import com.ruoyi.system.domain.dto.productCategory.AppHomeProdCateListResDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateListDTO;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateListResDTO;
-import com.ruoyi.system.mapper.SysProductCategoryMapper;
-import com.ruoyi.system.service.ISysProductCategoryService;
+import com.ruoyi.xkt.domain.StoreProduct;
+import com.ruoyi.xkt.domain.SysProductCategory;
+import com.ruoyi.xkt.mapper.StoreProductMapper;
+import com.ruoyi.xkt.mapper.SysProductCategoryMapper;
+import com.ruoyi.xkt.service.ISysProductCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -37,6 +39,7 @@ import static com.ruoyi.common.utils.SecurityUtils.getUsername;
 public class SysProductCategoryServiceImpl implements ISysProductCategoryService {
 
     final SysProductCategoryMapper prodCateMapper;
+    final StoreProductMapper storeProdMapper;
 
     /**
      * 新增商品分类
@@ -85,6 +88,20 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
         // TODO 是否为超级管理员
         this.isSuperAdmin();
 
+        // 是否有子分类
+        List<SysProductCategory> subCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getParentId, prodCateId)
+                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
+        List<Long> cateIdList = new ArrayList<Long>(){{
+            add(prodCateId);
+        }};
+        CollectionUtils.addAll(cateIdList, subCateList.stream().map(SysProductCategory::getId).collect(Collectors.toList()));
+        // 这些分类是否已绑定商品
+        List<StoreProduct> storeProductList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .in(StoreProduct::getProdCateId, cateIdList).eq(StoreProduct::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isNotEmpty(storeProductList)) {
+            throw new ServiceException("该分类下已绑定商品，不可删除!", HttpStatus.ERROR);
+        }
         SysProductCategory prodCate = Optional.ofNullable(this.prodCateMapper.selectOne(new LambdaQueryWrapper<SysProductCategory>()
                         .eq(SysProductCategory::getId, prodCateId).eq(SysProductCategory::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("商品分类不存在!", HttpStatus.ERROR));

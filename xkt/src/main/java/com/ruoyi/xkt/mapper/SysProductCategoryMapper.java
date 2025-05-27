@@ -1,8 +1,8 @@
-package com.ruoyi.system.mapper;
+package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ruoyi.common.core.domain.entity.SysProductCategory;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
+import com.ruoyi.xkt.domain.SysProductCategory;
 
 /**
  * 商品分类 数据层

@@ -23,7 +23,7 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
-import com.ruoyi.system.mapper.SysProductCategoryMapper;
+import com.ruoyi.xkt.mapper.SysProductCategoryMapper;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.picture.ProductPicSyncDTO;
