@@ -31,6 +31,10 @@ public class AdvertStoreFile extends XktBaseEntity {
      */
     private Long advertRoundId;
     /**
+     * 广告位图片归属 0 档口 1 系统
+     */
+    private Integer picOwnType;
+    /**
      * 展示类型 1推广图、2商品、3推广图及商品、4店铺名称
      */
     private Integer displayType;

@@ -17,6 +17,8 @@ public class AdminAdRoundAuditDTO {
 
     @ApiModelProperty(value = "推广轮次ID")
     private Long advertRoundId;
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
     @ApiModelProperty(value = "图片审核状态 1 待审核 2 审核通过  3 审核驳回")
     private Integer picAuditStatus;
     @ApiModelProperty(value = "驳回原因")

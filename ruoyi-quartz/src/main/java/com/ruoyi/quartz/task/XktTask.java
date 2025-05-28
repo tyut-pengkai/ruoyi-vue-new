@@ -297,7 +297,7 @@ public class XktTask {
         this.tagImgSearchTop10(now, yesterday, oneMonthAgo, tagList);
         // 6. 收藏榜
         this.tagCollectionTop10(now, yesterday, oneMonthAgo, tagList);
-        // 7. 下载榜
+        // 7. 下载榜 铺货榜
         this.tagDownloadTop10(now, yesterday, oneMonthAgo, tagList);
         // 8. 三日上新
         this.tagThreeDayNew(now, yesterday, fourDaysAgo, tagList);
@@ -460,26 +460,6 @@ public class XktTask {
         // 更新推广轮次截止时间到redis
         this.saveAdvertDeadlineToRedis();
     }
-
-    /**
-     * 每晚23:00更新 即将播放的 位置枚举 得系统拦截广告位 购买价格
-     */
-    @Transactional
-    public void clearPositionEnumPayPrice() {
-        // 播放时间为明天的数据
-        final Date tomorrow = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
-        // 筛选待投放的 位置枚举 的推广轮次 不能加roundId限制，因为有可能是新加的广告，还没播放过
-        List<AdvertRound> unLaunchList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                .eq(AdvertRound::getDelFlag, Constants.UNDELETED).eq(AdvertRound::getLaunchStatus, AdLaunchStatus.UN_LAUNCH.getValue())
-                .eq(AdvertRound::getShowType, AdShowType.POSITION_ENUM.getValue()).eq(AdvertRound::getStartTime, tomorrow));
-        if (CollectionUtils.isEmpty(unLaunchList)) {
-            return;
-        }
-        // 将 位置枚举 类型的 待播放的轮次 支付价格置为空
-        unLaunchList.forEach(x -> x.setPayPrice(null));
-        this.advertRoundMapper.updateById(unLaunchList);
-    }
-
 
     /**
      * 每晚22:00:10更新广告位轮次状态 将biddingTempStatus赋值给biddingStatus

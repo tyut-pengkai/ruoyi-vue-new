@@ -63,10 +63,10 @@ public class AdminAdvertRoundController extends XktBaseController {
     }
 
     /**
-     * 档口上传推广图
+     * 管理员上传档口推广图
      */
-    @ApiOperation(value = "档口上传推广图", httpMethod = "PUT", response = R.class)
-    @Log(title = "管理员退订", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "管理员上传档口推广图", httpMethod = "PUT", response = R.class)
+    @Log(title = "管理员上传档口推广图", businessType = BusinessType.UPDATE)
     @PutMapping("/upload/pic")
     public R<Integer> uploadAdvertPic(@Valid @RequestBody AdRoundUploadPicVO uploadPicVO) {
         return R.ok(adminAdvertRoundService.uploadAdvertPic(BeanUtil.toBean(uploadPicVO, AdRoundUploadPicDTO.class)));

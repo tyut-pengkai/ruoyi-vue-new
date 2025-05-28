@@ -1,11 +1,13 @@
 package com.ruoyi.web.controller.xkt.website;
 
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -38,5 +40,9 @@ public class IndexSearchVO extends BasePageVO {
     private List<String> seasonList;
     @ApiModelProperty(value = "排序")
     private String sort;
+    @NotNull(message = "排序方式不能为空")
+    @ApiModelProperty(value = "排序方式")
+    private SortOrder order;
+
 
 }

@@ -1574,7 +1574,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         // 执行搜索
         SearchResponse<ESProductDTO> resList = esClientWrapper.getEsClient().search(s -> s.index(Constants.ES_IDX_PRODUCT_INFO)
                         .query(query).from((searchDTO.getPageNum() - 1) * searchDTO.getPageSize()).size(searchDTO.getPageSize())
-                        .sort(sort -> sort.field(f -> f.field(searchDTO.getSort()).order(SortOrder.Desc))),
+                        .sort(sort -> sort.field(f -> f.field(searchDTO.getSort()).order(searchDTO.getOrder()))),
                 ESProductDTO.class);
         final long total = resList.hits().total().value();
         final List<ESProductDTO> esProdList = resList.hits().hits().stream().map(x -> x.source().setStoreProdId(x.id())).collect(Collectors.toList());

@@ -181,8 +181,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Transactional(readOnly = true)
     public AdRoundStoreResDTO getStoreAdInfo(final Long storeId, final Long advertId, final Integer showType) {
         final LocalTime now = LocalTime.now();
-        // 当前时间 是否在  晚上22:00:01  到 晚上23:59:59之间 决定 biddingStatus 和  biddingTempStatus 用那一个字段
-        boolean tenClockAfter = now.isAfter(LocalTime.of(22, 0, 1)) && now.isBefore(LocalTime.of(23, 59, 59));
+        // 当前时间 是否在  晚上22:00:00  到 晚上23:59:59之间 决定 biddingStatus 和  biddingTempStatus 用那一个字段
+        boolean tenClockAfter = now.isAfter(LocalTime.of(22, 0, 0)) && now.isBefore(LocalTime.of(23, 59, 59));
         // 当天
         final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
         // 获取当前所有 正在投放 和 待投放的推广轮次
@@ -256,13 +256,13 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 if (ObjectUtils.isNotEmpty(boughtRound) && ObjectUtils.isNotEmpty(boughtRound.getBiddingStatus())) {
                     // 如果是最近的播放轮次，且当前时间在 晚上10:00:01 之后到 当天23:59:59 都显示 biddingTempStatus 字段
                     x.setBiddingStatus(tenClockAfter && Objects.equals(x.getRoundId(), minRoundId) ? boughtRound.getBiddingTempStatus() : boughtRound.getBiddingStatus());
-                    x.setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(boughtRound.getBiddingStatus())).getLabel());
+                    x.setBiddingStatusName(AdBiddingStatus.of(boughtRound.getBiddingStatus()).getLabel());
                 }
                 // 未购买推广位轮次
                 final AdvertRoundRecord unBought = unBoughtRoundMap.get(x.getRoundId());
                 if (ObjectUtils.isNotEmpty(unBought)) {
                     x.setBiddingStatus(unBought.getBiddingStatus());
-                    x.setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(unBought.getBiddingStatus())).getLabel());
+                    x.setBiddingStatusName(AdBiddingStatus.of(unBought.getBiddingStatus()).getLabel());
                 }
             });
             return roundResDTO.setTimeRangeList(rangeDTOList);
@@ -291,12 +291,12 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     // 晚上10:00:01 之后到 当天23:59:59 都显示 biddingTempStatus 字段
                     final Integer biddingStatus = tenClockAfter ? x.getBiddingTempStatus() : x.getBiddingStatus();
                     return BeanUtil.toBean(x, AdRoundStoreResDTO.ADRSRoundPositionDTO.class).setBiddingStatus(biddingStatus)
-                            .setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(biddingStatus)).getLabel());
+                            .setBiddingStatusName(AdBiddingStatus.of(biddingStatus).getLabel());
                 }
                 // 其它轮次有购买记录
                 if (ObjectUtils.isNotEmpty(unBoughtRecordMap.get(x.getPosition()))) {
                     return BeanUtil.toBean(unBoughtRecordMap.get(x.getPosition()), AdRoundStoreResDTO.ADRSRoundPositionDTO.class)
-                            .setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(unBoughtRecordMap.get(x.getPosition()).getBiddingStatus())).getLabel())
+                            .setBiddingStatusName(AdBiddingStatus.of(unBoughtRecordMap.get(x.getPosition()).getBiddingStatus()).getLabel())
                             // 需要展示当前推广位置 最高的价格
                             .setPayPrice(x.getPayPrice());
                 }
@@ -744,7 +744,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     // 如果是最近的播放轮次，且当前时间在 晚上10:00:01 之后到 当天23:59:59 都显示 biddingTempStatus 字段
                     final Integer biddingStatus = tenClockAfter && roundIdList.contains(x.getRoundId()) ? x.getBiddingTempStatus() : x.getBiddingStatus();
                     return BeanUtil.toBean(x, AdRoundStoreResDTO.ADRSRoundRecordDTO.class).setBiddingStatus(biddingStatus)
-                            .setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(biddingStatus)).getLabel())
+                            .setBiddingStatusName(AdBiddingStatus.of(biddingStatus).getLabel())
                             .setTypeName(AdType.of(x.getTypeId()).getLabel())
                             // 如果是时间范围则不返回position
                             .setPosition(Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()) ? null : x.getPosition());
@@ -786,7 +786,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             unBoughtTimeRangeMap.forEach((roundId, record) -> {
                 boughtRoundList.add(BeanUtil.toBean(record, AdRoundStoreResDTO.ADRSRoundRecordDTO.class).setPosition(null)
                         .setTypeName(AdType.of(record.getTypeId()).getLabel())
-                        .setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(record.getBiddingStatus())).getLabel()
+                        .setBiddingStatusName(AdBiddingStatus.of(record.getBiddingStatus()).getLabel()
                                 + "，最新出价:" + timeRangeRoundMaxPriceMap.get(record.getRoundId())));
             });
         }
@@ -794,7 +794,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             unBoughtPositionMap.forEach((advertRoundId, record) -> {
                 boughtRoundList.add(BeanUtil.toBean(record, AdRoundStoreResDTO.ADRSRoundRecordDTO.class)
                         .setTypeName(AdType.of(record.getTypeId()).getLabel())
-                        .setBiddingStatusName(Objects.requireNonNull(AdBiddingStatus.of(record.getBiddingStatus())).getLabel()
+                        .setBiddingStatusName(AdBiddingStatus.of(record.getBiddingStatus()).getLabel()
                                 + "，最新出价:" + positionEnumMaxPriceMap.get(record.getAdvertRoundId()))
                 );
             });

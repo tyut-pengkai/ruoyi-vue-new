@@ -149,6 +149,11 @@ public class Store extends XktBaseEntity {
     @Excel(name = "档口模板ID")
     private Integer templateNum;
 
+    /**
+     * 档口权重值 基础值大家都为100，最低为-100。
+     */
+    private Integer weight;
+
 
     @Override
     public String toString() {

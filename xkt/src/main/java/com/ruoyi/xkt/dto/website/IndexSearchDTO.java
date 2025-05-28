@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.dto.website;
 
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import com.ruoyi.xkt.dto.BasePageDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -39,5 +40,7 @@ public class IndexSearchDTO extends BasePageDTO {
     private List<String> seasonList;
     @ApiModelProperty(value = "排序")
     private String sort;
+    @ApiModelProperty(value = "排序方式")
+    private SortOrder order;
 
 }

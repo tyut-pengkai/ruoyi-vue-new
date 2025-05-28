@@ -102,6 +102,10 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                         .eq(AdvertRound::getId, auditDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
+        // 有可能管理员一直没刷新页面，该广告位已被其它档口抢走
+        if (!Objects.equals(advertRound.getStoreId(), auditDTO.getStoreId())) {
+            throw new ServiceException("推广位已被其它档口抢走，审核失败!请刷新页面!");
+        }
         // 校验图片审核类型是否存在
         AdPicAuditStatus.of(auditDTO.getPicAuditStatus());
         advertRound.setPicAuditStatus(auditDTO.getPicAuditStatus()).setRejectReason(auditDTO.getRejectReason());
@@ -109,8 +113,8 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         // 如果审核通过的话，则将图片保存到系统图片库中
         if (Objects.equals(auditDTO.getPicAuditStatus(), AdPicAuditStatus.AUDIT_PASS.getValue())) {
             AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId()).setVoucherDate(java.sql.Date.valueOf(LocalDate.now()))
-                    .setStoreId(advertRound.getStoreId()).setPicId(advertRound.getPicId()).setTypeId(advertRound.getTypeId())
-                    .setDisplayType(advertRound.getDisplayType()).setPosition(advertRound.getPosition()).setPosition(advertRound.getPosition());
+                    .setStoreId(advertRound.getStoreId()).setPicId(advertRound.getPicId()).setTypeId(advertRound.getTypeId()).setPicOwnType(AdPicOwnType.STORE.getValue())
+                    .setDisplayType(advertRound.getDisplayType()).setPosition(advertRound.getPosition());
             this.advertStoreFileMapper.insert(advertStoreFile);
         }
         return count;
@@ -171,7 +175,8 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         advertRound.setPicId(file.getId());
         this.advertRoundMapper.updateById(advertRound);
         // 将档口上传图片保存到AdvertStoreFile
-        AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId()).setVoucherDate(java.sql.Date.valueOf(LocalDate.now()))
+        AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId())
+                .setVoucherDate(java.sql.Date.valueOf(LocalDate.now())).setPicOwnType(AdPicOwnType.STORE.getValue()).setPosition(advertRound.getPosition())
                 .setStoreId(advertRound.getStoreId()).setPicId(file.getId()).setTypeId(advertRound.getTypeId()).setDisplayType(advertRound.getDisplayType());
         this.advertStoreFileMapper.insert(advertStoreFile);
         return count;
@@ -185,7 +190,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
      */
     @Override
     @Transactional
-    public Integer sysIntercept(AdminAdRoundSysInterceptDTO interceptDTO) {
+    public synchronized Integer sysIntercept(AdminAdRoundSysInterceptDTO interceptDTO) {
 
         // TODO 判断当前是否是管理员
         this.isSuperAdmin();
@@ -253,13 +258,18 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
             this.fileMapper.insert(file);
             advertRound.setPicId(file.getId()).setPicAuditStatus(AdPicAuditStatus.AUDIT_PASS.getValue())
                     .setPicDesignType(AdDesignType.SYS_DESIGN.getValue()).setPicSetType(AdPicSetType.SET.getValue());
+            // 添加系统归属推广图
+            AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId()).setVoucherDate(java.sql.Date.valueOf(LocalDate.now()))
+                    .setStoreId(advertRound.getStoreId()).setPicId(file.getId()).setTypeId(advertRound.getTypeId()).setPicOwnType(AdPicOwnType.SYSTEM.getValue())
+                    .setDisplayType(advertRound.getDisplayType()).setPosition(advertRound.getPosition());
+            this.advertStoreFileMapper.insert(advertStoreFile);
         }
         if (ObjectUtils.isNotEmpty(interceptDTO.getStoreProdIdList())) {
             advertRound.setProdIdStr(StringUtils.join(interceptDTO.getStoreProdIdList(), ","));
         }
-        // 如果是位置枚举，则设置一个很高的价格（400 - 600）范围，有其它档口愿意出更高价格拿下就随他去
+        // 如果是位置枚举，则设置一个很高的价格（200 - 400）范围，有其它档口愿意出更高价格拿下就随他去
         if (Objects.equals(advertRound.getShowType(), AdShowType.POSITION_ENUM.getValue())) {
-            advertRound.setPayPrice(BigDecimal.valueOf(RandomUtils.nextLong(40, 60 + 1) * 10));
+            advertRound.setPayPrice(BigDecimal.valueOf(RandomUtils.nextLong(20, 40 + 1) * 10));
         }
         return this.advertRoundMapper.updateById(advertRound);
     }
