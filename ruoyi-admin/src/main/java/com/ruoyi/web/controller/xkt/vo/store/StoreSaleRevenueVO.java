@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.store;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,9 +23,11 @@ public class StoreSaleRevenueVO {
     @NotNull(message = "档口ID不能为空")
     private Long storeId;
     @ApiModelProperty(value = "查询开始时间")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @NotNull(message = "查询开始时间不能为空")
     private Date voucherDateStart;
     @ApiModelProperty(value = "查询结束时间")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @NotNull(message = "查询结束时间不能为空")
     private Date voucherDateEnd;
 

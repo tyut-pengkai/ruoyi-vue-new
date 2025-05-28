@@ -14,16 +14,26 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ProdTagType {
 
+    // 月销千件
+    MONTH_SALES_THOUSAND(10, "月销千件"),
+    // 销量榜
+    SALES_RANK(20, "销量榜"),
     // 当月爆款
-    MONTH_HOT(1, "当月爆款"),
-    // 档口爆款
-    STORE_HOT(2, "档口热卖"),
+    MONTH_HOT(30, "当月爆款"),
+    // 档口热卖
+    STORE_HOT(40, "档口热卖"),
+    // 图搜榜
+    IMG_SEARCH_RANK(50, "图搜榜"),
+    // 收藏榜
+    COLLECTION_RANK(60, "收藏榜"),
+    // 下载量
+    DOWNLOAD_RANK(70, "下载量"),
     // 三日上新
-    THREE_DAY_NEW(3, "三日上新"),
+    THREE_DAY_NEW(80, "三日上新"),
     // 七日上新
-    SEVEN_DAY_NEW(4, "七日上新"),
+    SEVEN_DAY_NEW(90, "七日上新"),
     // 风格
-    STYLE(5, "风格"),
+    STYLE(100, "风格"),
 
 
     ;

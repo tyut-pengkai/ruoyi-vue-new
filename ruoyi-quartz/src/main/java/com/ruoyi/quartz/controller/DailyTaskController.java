@@ -44,7 +44,7 @@ public class DailyTaskController extends BaseController {
 
     @PostMapping("/cate-sort")
     public R dailyCateSort(SysJob sysJob) {
-        task.categorySort();
+        task.dailyCategorySort();
         return R.ok();
     }
 

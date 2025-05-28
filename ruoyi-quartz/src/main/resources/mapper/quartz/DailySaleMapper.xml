@@ -23,4 +23,31 @@
             ss.store_id
     </select>
 
+    <select id="selectSaleThousand" resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">
+        SELECT DISTINCT
+            store_id
+        FROM
+            daily_sale
+        WHERE
+            voucher_date BETWEEN #{yesterday} AND #{oneMonthAgo}
+        GROUP BY
+            store_id
+        HAVING
+            SUM( sale_num ) >= 1000
+    </select>
+
+    <select id="selectTop10List" resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">
+        SELECT DISTINCT
+            store_id
+        FROM
+            daily_sale
+        WHERE
+            voucher_date BETWEEN #{yesterday} AND #{oneMonthAgo}
+        GROUP BY
+            store_id
+        ORDER BY
+            SUM(IFNULL( sale_num, 0 )) DESC
+            LIMIT 10
+    </select>
+
 </mapper> 

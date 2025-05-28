@@ -119,57 +119,5 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </delete>
 
-    <select id="selectTop10List"  resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">
-        SELECT
-            ssd.store_id,
-            SUM(IFNULL( ssd.quantity, 0 )) AS count
-        FROM
-            store_sale_detail ssd
-        WHERE
-            ssd.del_flag = 0
-          AND ssd.sale_type = 1
-          AND ssd.voucher_date between #{oneMonthAgo} AND #{yesterday}
-        GROUP BY
-            ssd.store_id
-        ORDER BY
-            SUM(IFNULL( ssd.quantity, 0 )) DESC
-            LIMIT 10
-    </select>
-
-    <select id="selectTop50List"  resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">
-        SELECT
-            ssd.store_prod_id,
-            ssd.store_id,
-            SUM(IFNULL( ssd.quantity, 0 )) AS count
-        FROM
-            store_sale_detail ssd
-        WHERE
-            ssd.del_flag = 0
-          AND ssd.sale_type = 1
-          AND ssd.voucher_date between #{oneMonthAgo} AND #{yesterday}
-        GROUP BY
-            ssd.store_id,
-            ssd.store_prod_id
-        ORDER BY
-            count DESC
-            LIMIT 50
-    </select>
-
-    <select id="selectTop20List"  resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">
-        SELECT
-            sp.store_id,
-            SUM( id ) AS count
-        FROM
-            store_product sp
-        WHERE
-            sp.del_flag = 0
-            AND sp.create_time between #{oneWeekAgo} AND #{yesterday}
-        GROUP BY
-            sp.store_id
-        ORDER BY
-            count DESC
-            LIMIT 20
-    </select>
-
 
 </mapper>

@@ -211,6 +211,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
 
+    <select id="selectTop20List"  resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">
+        SELECT
+            sp.store_id,
+            SUM( id ) AS count
+        FROM
+            store_product sp
+        WHERE
+            sp.del_flag = 0
+          AND sp.create_time between #{oneWeekAgo} AND #{yesterday}
+        GROUP BY
+            sp.store_id
+        ORDER BY
+            count DESC
+            LIMIT 20
+    </select>
+
 
 
 

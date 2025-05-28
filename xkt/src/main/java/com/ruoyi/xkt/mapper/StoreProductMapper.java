@@ -3,6 +3,7 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.advertRound.picSearch.PicSearchAdvertDTO;
+import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
 import com.ruoyi.xkt.dto.storeProduct.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -99,6 +100,15 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      * @return List<PicSearchAdvertDTO>
      */
     List<StoreProdViewDTO> getSearchHotViewAttr(@Param("storeProdIdList") List<Long> storeProdIdList);
+
+    /**
+     * 获取新款频出的前20名档口
+     * @param yesterday 昨天
+     * @param oneWeekAgo 一周前
+     * @return List<DailyStoreTagDTO>
+     */
+    List<DailyStoreTagDTO> selectTop20List(@Param("yesterday") Date yesterday, @Param("oneWeekAgo") Date oneWeekAgo);
+
 
 }
 

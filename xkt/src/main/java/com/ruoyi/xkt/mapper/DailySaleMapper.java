@@ -3,6 +3,8 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.DailySale;
 import com.ruoyi.xkt.dto.dailySale.DailySaleDTO;
+import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -15,5 +17,22 @@ import java.util.List;
 public interface DailySaleMapper extends BaseMapper<DailySale> {
 
     List<DailySaleDTO> selectDailySale(Date voucherDate);
+
+    /**
+     * 筛选近一月销量过千的档口
+     *
+     * @param yesterday   昨天
+     * @param oneMonthAgo 一月前
+     * @return 销量过千的档口
+     */
+    List<DailyStoreTagDTO> selectSaleThousand(@Param("yesterday") Date yesterday, @Param("oneMonthAgo") Date oneMonthAgo);
+
+    /**
+     * 获取销量前十的档口
+     * @param yesterday 昨天
+     * @param oneMonthAgo 昨天往前推1个月
+     * @return List<DailyStoreTagDTO>
+     */
+    List<DailyStoreTagDTO> selectTop10List(@Param("yesterday") Date yesterday, @Param("oneMonthAgo") Date oneMonthAgo);
 
 }

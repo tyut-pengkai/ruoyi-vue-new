@@ -19,10 +19,7 @@ import com.ruoyi.xkt.dto.picture.ProductMatchDTO;
 import com.ruoyi.xkt.dto.picture.SearchRequestDTO;
 import com.ruoyi.xkt.dto.picture.TopProductMatchDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdViewDTO;
-import com.ruoyi.xkt.mapper.PictureSearchMapper;
-import com.ruoyi.xkt.mapper.StoreProductFileMapper;
-import com.ruoyi.xkt.mapper.StoreProductMapper;
-import com.ruoyi.xkt.mapper.SysFileMapper;
+import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IPictureSearchService;
 import com.ruoyi.xkt.service.IPictureService;
 import com.ruoyi.xkt.service.IWebsitePCService;
@@ -51,8 +48,6 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
     @Autowired
     private SysFileMapper sysFileMapper;
     @Autowired
-    private StoreProductFileMapper storeProductFileMapper;
-    @Autowired
     private IPictureService pictureService;
     @Autowired
     private RedisCache redisCache;
@@ -60,6 +55,8 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
     private IWebsitePCService websitePCService;
     @Autowired
     private StoreProductMapper storeProdMapper;
+    @Autowired
+    private StoreProductStatisticsMapper storeProdStatisticsMapper;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -121,8 +118,8 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
     @Override
     public void cacheImgSearchTopProduct() {
         //热搜规则（暂定）：1个月内搜图次数排序，最多返回前100，查询同款商品时最多检索1000条数据
-        List<ProductImgSearchCountDTO> prodImgSearchCounts = pictureSearchMapper
-                .listProductImgSearchCount(DateUtil.beginOfDay(java.sql.Date.valueOf(LocalDate.now())), java.sql.Date.valueOf(LocalDate.now().minusMonths(1)));
+        List<ProductImgSearchCountDTO> prodImgSearchCounts = storeProdStatisticsMapper
+                .listProdImgSearchCount(java.sql.Date.valueOf(LocalDate.now()), java.sql.Date.valueOf(LocalDate.now().minusMonths(1)));
         if (CollUtil.isEmpty(prodImgSearchCounts)) {
             return;
         }

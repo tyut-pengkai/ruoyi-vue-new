@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.xkt.mapper.StoreProductStatisticsMapper">
+
+    <select id="listProdImgSearchCount" resultType="com.ruoyi.xkt.dto.picture.ProductImgSearchCountDTO">
+        SELECT
+            sps.store_prod_id AS store_product_id,
+            SUM( img_search_count ) AS img_search_count
+        FROM
+            store_product_statistics sps
+        WHERE
+            sps.del_flag = 0
+            AND sps.voucher_date BETWEEN #{beginDate} AND #{endDate}
+        GROUP BY
+            sps.store_prod_id
+        ORDER BY
+            img_search_count DESC
+        Limit 100
+    </select>
+
+    <select id="searchTop10Prod" resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">
+        SELECT
+            store_prod_id,
+            store_id,
+            SUM(IFNULL( img_search_count, 0 )) AS count
+        FROM
+            store_product_statistics
+        WHERE
+            del_flag = 0
+            AND voucher_date BETWEEN #{oneMonthAgo} AND #{yesterday}
+        GROUP BY
+            store_prod_id,
+            store_id
+        ORDER BY
+            count DESC
+            LIMIT 10
+    </select>
+
+
+    <select id="downloadTop10Prod" resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">
+        SELECT
+            store_prod_id,
+            store_id,
+            SUM(IFNULL( download_count, 0 )) AS count
+        FROM
+            store_product_statistics
+        WHERE
+            del_flag = 0
+            AND voucher_date BETWEEN #{oneMonthAgo} AND #{yesterday}
+        GROUP BY
+            store_prod_id,
+            store_id
+        ORDER BY
+            count DESC
+            LIMIT 10
+    </select>
+
+
+
+
+
+</mapper>

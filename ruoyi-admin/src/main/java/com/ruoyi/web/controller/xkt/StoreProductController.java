@@ -36,9 +36,9 @@ public class StoreProductController extends XktBaseController {
     final IStoreProductService storeProdService;
 
     /**
-     * 查询档口商品所有的风格（APP用）
+     * 查询档口商品所有的风格
      */
-    @ApiOperation(value = "查询档口商品所有的风格（APP用）", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "查询档口商品所有的风格", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/styles")
     public R<List<String>> getStyleList() {
         return R.ok(storeProdService.getStyleList());

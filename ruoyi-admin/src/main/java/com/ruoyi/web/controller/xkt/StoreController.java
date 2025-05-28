@@ -34,6 +34,10 @@ public class StoreController extends XktBaseController {
 
     final IStoreService storeService;
 
+    // TODO 有一个权重，每个档口原始值都相同
+
+
+
     @Log(title = "新增档口", businessType = BusinessType.UPDATE)
     @PostMapping
     public R<Integer> create(@Validated @RequestBody StoreCreateVO createVO) {

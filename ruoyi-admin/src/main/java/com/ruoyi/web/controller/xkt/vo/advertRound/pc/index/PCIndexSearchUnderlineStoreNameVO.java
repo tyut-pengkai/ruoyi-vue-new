@@ -23,7 +23,5 @@ public class PCIndexSearchUnderlineStoreNameVO {
     private Long storeId;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
-    @ApiModelProperty(value = "推广图路径")
-    private String fileUrl;
 
 }

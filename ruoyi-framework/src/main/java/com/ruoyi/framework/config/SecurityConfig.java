@@ -123,6 +123,8 @@ public class SecurityConfig
                         .antMatchers("/rest/v1/website/**").permitAll()
                         // 系统分类
                         .antMatchers("/rest/v1/sys/prod-cate/**").permitAll()
+                        // 商品所有风格
+                        .antMatchers("/rest/v1/prods/styles").permitAll()
                         // 除上面外的所有请求全部需要鉴权认证
                         .anyRequest().authenticated();
             })

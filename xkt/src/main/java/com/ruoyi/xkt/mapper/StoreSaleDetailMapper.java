@@ -64,29 +64,4 @@ public interface StoreSaleDetailMapper extends BaseMapper<StoreSaleDetail> {
      */
     int deleteStoreSaleDetailByStoreSaleDetailIds(Long[] storeSaleDetailIds);
 
-    /**
-     * 获取销量前十的档口
-     * @param yesterday 昨天
-     * @param oneMonthAgo 昨天往前推1个月
-     * @return List<DailyStoreTagDTO>
-     */
-    List<DailyStoreTagDTO> selectTop10List(@Param("yesterday") Date yesterday, @Param("oneMonthAgo") Date oneMonthAgo);
-
-    /**
-     * 获取爆款频出的前50商品及档口
-     * @param yesterday 昨天
-     * @param oneMonthAgo 昨天往前推1个月
-     * @return List<DailyStoreTagDTO>
-     */
-    List<DailyStoreTagDTO> selectTop50List(@Param("yesterday") Date yesterday, @Param("oneMonthAgo") Date oneMonthAgo);
-
-    /**
-     * 获取新款频出的前20名档口
-     * @param yesterday 昨天
-     * @param oneWeekAgo 一周前
-     * @return List<DailyStoreTagDTO>
-     */
-    List<DailyStoreTagDTO> selectTop20List(@Param("yesterday") Date yesterday, @Param("oneWeekAgo") Date oneWeekAgo);
-
-
 }
