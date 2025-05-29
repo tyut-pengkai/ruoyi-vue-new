@@ -562,15 +562,28 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
      */
     @Override
     @Transactional
-    public Integer uploadAdvertPic(AdRoundUploadPicDTO picDTO) {
-        AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+    public Integer updateAdvert(AdRoundUpdateDTO picDTO) {
+
+        // TODO 若为 已过期、已退订，则不可修改
+
+        // TODO 若为 待投放，判断上传时间是否为 推广开始前一晚 22:20 分
+
+        // TODO 若为 投放中，则判断 voucherDate 是否等于当天，若是，则再判断 是否晚于22:20分，若是，则不可编辑
+
+
+
+
+       /* AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                         .eq(AdvertRound::getId, picDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
         SysFile file = BeanUtil.toBean(picDTO, SysFile.class);
         int count = this.fileMapper.insert(file);
         // 更新推广位的图片ID
         advertRound.setPicId(file.getId());
-        return this.advertRoundMapper.updateById(advertRound);
+        return this.advertRoundMapper.updateById(advertRound);*/
+
+        return null;
+
     }
 
     /**

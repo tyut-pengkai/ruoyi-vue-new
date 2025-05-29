@@ -17,7 +17,7 @@ import com.ruoyi.xkt.domain.AdvertRoundRecord;
 import com.ruoyi.xkt.domain.AdvertStoreFile;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.adminAdvertRound.*;
-import com.ruoyi.xkt.dto.advertRound.AdRoundUploadPicDTO;
+import com.ruoyi.xkt.dto.advertRound.AdRoundUpdateDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.AdvertRoundMapper;
 import com.ruoyi.xkt.mapper.AdvertRoundRecordMapper;
@@ -160,7 +160,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
      */
     @Override
     @Transactional
-    public Integer uploadAdvertPic(AdRoundUploadPicDTO picDTO) {
+    public Integer uploadAdvertPic(AdRoundUpdateDTO picDTO) {
 
         // TODO 判断当前是否是管理员
         this.isSuperAdmin();

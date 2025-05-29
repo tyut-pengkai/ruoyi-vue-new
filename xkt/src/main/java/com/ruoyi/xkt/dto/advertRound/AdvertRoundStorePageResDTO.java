@@ -1,9 +1,12 @@
 package com.ruoyi.xkt.dto.advertRound;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.util.Date;
 
 /**
  * @author liujiang
@@ -35,6 +38,9 @@ public class AdvertRoundStorePageResDTO {
     private String endTime;
     @ApiModelProperty(value = "出价")
     private String payPrice;
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @ApiModelProperty(value = "凭证日期")
+    private Date voucherDate;
     @ApiModelProperty(value = "投放状态")
     private Integer launchStatus;
     @ApiModelProperty(value = "投放状态")

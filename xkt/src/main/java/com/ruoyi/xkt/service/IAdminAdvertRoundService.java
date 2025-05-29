@@ -2,7 +2,7 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.adminAdvertRound.*;
-import com.ruoyi.xkt.dto.advertRound.AdRoundUploadPicDTO;
+import com.ruoyi.xkt.dto.advertRound.AdRoundUpdateDTO;
 
 /**
  * 推广营销Service接口
@@ -42,7 +42,7 @@ public interface IAdminAdvertRoundService {
      * @param picDTO 上传推广图入参
      * @return Integer
      */
-    Integer uploadAdvertPic(AdRoundUploadPicDTO picDTO);
+    Integer uploadAdvertPic(AdRoundUpdateDTO picDTO);
 
     /**
      * 管理员拦截推广营销

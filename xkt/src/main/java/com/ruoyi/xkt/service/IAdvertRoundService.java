@@ -104,7 +104,7 @@ public interface IAdvertRoundService {
      * @param picDTO 档口上传推广图入参
      * @return Integer
      */
-    Integer uploadAdvertPic(AdRoundUploadPicDTO picDTO);
+    Integer updateAdvert(AdRoundUpdateDTO picDTO);
 
     /**
      * 获取审核失败的拒绝理由

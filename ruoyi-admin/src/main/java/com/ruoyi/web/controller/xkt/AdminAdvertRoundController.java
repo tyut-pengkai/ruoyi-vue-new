@@ -7,9 +7,9 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.web.controller.xkt.vo.adminAdvertRound.*;
-import com.ruoyi.web.controller.xkt.vo.advertRound.AdRoundUploadPicVO;
+import com.ruoyi.web.controller.xkt.vo.advertRound.AdRoundUpdateVO;
 import com.ruoyi.xkt.dto.adminAdvertRound.*;
-import com.ruoyi.xkt.dto.advertRound.AdRoundUploadPicDTO;
+import com.ruoyi.xkt.dto.advertRound.AdRoundUpdateDTO;
 import com.ruoyi.xkt.service.IAdminAdvertRoundService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -68,8 +68,8 @@ public class AdminAdvertRoundController extends XktBaseController {
     @ApiOperation(value = "管理员上传档口推广图", httpMethod = "PUT", response = R.class)
     @Log(title = "管理员上传档口推广图", businessType = BusinessType.UPDATE)
     @PutMapping("/upload/pic")
-    public R<Integer> uploadAdvertPic(@Valid @RequestBody AdRoundUploadPicVO uploadPicVO) {
-        return R.ok(adminAdvertRoundService.uploadAdvertPic(BeanUtil.toBean(uploadPicVO, AdRoundUploadPicDTO.class)));
+    public R<Integer> uploadAdvertPic(@Valid @RequestBody AdRoundUpdateVO uploadPicVO) {
+        return R.ok(adminAdvertRoundService.uploadAdvertPic(BeanUtil.toBean(uploadPicVO, AdRoundUpdateDTO.class)));
     }
 
     /**
