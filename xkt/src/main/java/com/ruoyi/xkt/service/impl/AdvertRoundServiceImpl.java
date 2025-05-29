@@ -557,33 +557,46 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
 
     /**
-     * @param picDTO 档口上传推广图入参
+     * @param picDTO 档口上传推广图 或 修改商品
      * @return Integer
      */
     @Override
     @Transactional
     public Integer updateAdvert(AdRoundUpdateDTO picDTO) {
-
-        // TODO 若为 已过期、已退订，则不可修改
-
-        // TODO 若为 待投放，判断上传时间是否为 推广开始前一晚 22:20 分
-
-        // TODO 若为 投放中，则判断 voucherDate 是否等于当天，若是，则再判断 是否晚于22:20分，若是，则不可编辑
-
-
-
-
-       /* AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+        AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                         .eq(AdvertRound::getId, picDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
-        SysFile file = BeanUtil.toBean(picDTO, SysFile.class);
-        int count = this.fileMapper.insert(file);
-        // 更新推广位的图片ID
-        advertRound.setPicId(file.getId());
-        return this.advertRoundMapper.updateById(advertRound);*/
-
-        return null;
-
+        // 已过期、已退订，则不可修改
+        if (Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())
+                || Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.CANCEL.getValue())) {
+            throw new ServiceException(AdLaunchStatus.of(advertRound.getLaunchStatus()).getLabel() + "推广不可调整!", HttpStatus.ERROR);
+        }
+        // 若为 待投放，判断上传时间是否为 推广开始前一晚 22:20 分
+        if (Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.UN_LAUNCH.getValue())) {
+            // 将advertRound.getStartTime()转为LocalDateTime
+            LocalDateTime filterTime = advertRound.getStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().minusDays(1).withHour(22).withMinute(20);
+            if (LocalDateTime.now().isAfter(filterTime)) {
+                throw new ServiceException("已超过推广修改截止时间，修改失败!", HttpStatus.ERROR);
+            }
+        }
+        // 投放中，则判断 voucherDate 是否等于当天，若是，则再判断 是否晚于22:20分，若是，则不可编辑
+        if (Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())) {
+            if (!Objects.equals(DateUtils.dateTime(advertRound.getVoucherDate()), DateUtils.dateTime(new Date()))) {
+                throw new ServiceException("已超过推广修改截止时间，修改失败!", HttpStatus.ERROR);
+            }
+            if (LocalDateTime.now().isAfter(LocalDateTime.now().withHour(22).withMinute(20))) {
+                throw new ServiceException("已超过推广修改截止时间，修改失败!", HttpStatus.ERROR);
+            }
+        }
+        // 设置推广商品
+        advertRound.setProdIdStr(picDTO.getProdIdStr());
+        // 修改推广图
+        if (ObjectUtils.isNotEmpty(picDTO.getFile())) {
+            SysFile file = BeanUtil.toBean(picDTO, SysFile.class);
+            this.fileMapper.insert(file);
+            advertRound.setPicId(file.getId());
+        }
+        return this.advertRoundMapper.updateById(advertRound);
     }
 
     /**

@@ -125,6 +125,13 @@ public class SecurityConfig
                         .antMatchers("/rest/v1/sys/prod-cate/**").permitAll()
                         // 商品所有风格
                         .antMatchers("/rest/v1/prods/styles").permitAll()
+
+
+                        // TODO 临时放开 临时放开
+                        .antMatchers("/rest/v1/pic-search/hot").permitAll()
+                        .antMatchers("/rest/v1/pic-search").permitAll()
+
+
                         // 除上面外的所有请求全部需要鉴权认证
                         .anyRequest().authenticated();
             })

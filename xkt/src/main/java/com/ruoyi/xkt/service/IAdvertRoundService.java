@@ -101,7 +101,7 @@ public interface IAdvertRoundService {
     AdRoundLatestResDTO getLatestInfo(AdRoundLatestDTO latestDTO);
 
     /**
-     * @param picDTO 档口上传推广图入参
+     * @param picDTO 档口上传推广图 或 修改商品
      * @return Integer
      */
     Integer updateAdvert(AdRoundUpdateDTO picDTO);
