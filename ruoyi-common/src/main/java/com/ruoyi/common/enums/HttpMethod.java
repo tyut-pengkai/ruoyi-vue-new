@@ -2,7 +2,7 @@ package com.ruoyi.common.enums;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * 请求方式
