@@ -66,6 +66,12 @@ public class DailyTaskController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/store-weight")
+    public R dailyStoreWeight(SysJob sysJob) {
+        task.dailyStoreWeight();
+        return R.ok();
+    }
+
     @PostMapping("/advert-round")
     public R dailyRound(SysJob sysJob) throws ParseException {
         task.dailyAdvertRound();
@@ -79,7 +85,7 @@ public class DailyTaskController extends BaseController {
     }
 
     @PostMapping("/store-redis")
-    public R saveStoreToRedis(SysJob sysJob) throws ParseException {
+    public R saveStoreToRedis(SysJob sysJob) {
         task.saveStoreToRedis();
         return R.ok();
     }

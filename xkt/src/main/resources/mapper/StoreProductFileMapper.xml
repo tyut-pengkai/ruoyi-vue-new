@@ -104,5 +104,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </foreach>
     </select>
 
+    <select id="selectLatestFourProdList" resultType="com.ruoyi.xkt.dto.storeProductFile.StoreProdFileLatestFourProdDTO">
+        WITH RankedProducts AS (
+            SELECT
+                spf.store_prod_id,
+                spf.store_id,
+                sf.file_url AS mainPicUrl,
+                ROW_NUMBER() OVER ( PARTITION BY spf.store_id ORDER BY spf.create_time DESC ) AS rank_num
+            FROM
+                store_product_file spf
+                LEFT JOIN store_product sp ON spf.store_prod_id = sp.id
+                LEFT JOIN sys_file sf ON spf.file_id = sf.id
+                LEFT JOIN store s ON spf.store_id = s.id
+            WHERE
+                spf.del_flag = 0
+                AND spf.file_type = 1
+                AND spf.order_num = 1
+        ) SELECT
+                store_prod_id,
+                store_id,
+                mainPicUrl
+            FROM
+                RankedProducts
+            WHERE
+                rank_num &lt;= 4
+            ORDER BY
+                store_id,
+                rank_num
+    </select>
+
 
 </mapper>

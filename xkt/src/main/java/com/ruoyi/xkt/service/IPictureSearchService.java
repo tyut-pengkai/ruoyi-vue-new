@@ -26,10 +26,10 @@ public interface IPictureSearchService {
      *
      * @return List<TopProductMatchDTO>
      */
-    List<TopProductMatchDTO> listImgSearchTopProduct();
+    List<StoreProdViewDTO> listImgSearchTopProduct();
 
     /**
      * 缓存图搜热款
      */
-    void cacheImgSearchTopProduct();
+    List<StoreProdViewDTO> cacheImgSearchTopProduct();
 }

@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.website;
+package com.ruoyi.web.controller.xkt.vo.website;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;

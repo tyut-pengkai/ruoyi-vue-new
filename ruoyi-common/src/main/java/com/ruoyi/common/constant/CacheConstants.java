@@ -207,6 +207,14 @@ public class CacheConstants {
     /**
      * 图搜热款
      */
-    public static final String TOP_IMG_SEARCH_PRODUCT = "top_img_search_product";
+    public static final String IMG_SEARCH_PRODUCT_HOT = "img_search_product_hot";
+    /**
+     * 档口馆 档口推荐列表
+     */
+    public static final String PC_STORE_RECOMMEND_LIST = "pc_store_recommend_list";
+    /**
+     * 档口馆 档口推荐广告
+     */
+    public static final String PC_STORE_RECOMMEND_ADVERT = "pc_store_recommend_advert";
 
 }

@@ -251,12 +251,16 @@ public class Constants
     /**
      * APP 首页广告位置 插入广告的索引位置集合 获取精选热卖推广，将广告嵌入到列表中 每一页20条，5条广告嵌入到 3  7  11  15  19
      */
-    public static final Set<Integer> insertPositions = new HashSet<>(Arrays.asList(2, 6, 10, 14, 18));
+    public static final Set<Integer> APP_INSERT_POSITIONS = new HashSet<>(Arrays.asList(2, 6, 10, 14, 18));
     /**
      * 以图搜款搜索结果，广告插入位置 5 9 13 17 20
      */
-    public static final Set<Integer> pic_res_insert_positions = new HashSet<>(Arrays.asList(4, 8, 12, 16, 19));
+    public static final Set<Integer> PIC_SEARCH_INSERT_POSITIONS = new HashSet<>(Arrays.asList(4, 8, 12, 16, 19));
 
+    /**
+     * 档口搜索结果，广告插入位置 2 9 18 27 36
+     */
+    public static final Set<Integer> STORE_RECOMMEND_INSERT_POSITIONS = new HashSet<>(Arrays.asList(2, 9, 18, 27, 36));
 
 
 }

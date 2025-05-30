@@ -34,7 +34,6 @@ public class PCIndexMidStyleDTO {
     private List<PCIMSStyleDTO> styleList;
 
     @Data
-    @ApiModel(value = "风格榜列表")
     public static class PCIMSStyleDTO {
         @ApiModelProperty(value = "2商品")
         private Integer displayType;

@@ -7,6 +7,7 @@ import lombok.Getter;
 
 /**
  * 推广营销类型
+ *
  * @author liujiang
  * @date 2025-04-02 23:42
  */
@@ -69,6 +70,8 @@ public enum AdType {
     PC_STORE_TOP_BANNER(201, "档口馆顶部轮播图", "/url"),
     // 档口馆 横幅
     PC_STORE_MID_BANNER(202, "档口馆横幅", "/url"),
+    // 档口馆 推荐档口
+    PC_STORE_RECOMMEND(203, "档口馆推荐档口", "/url"),
 
 
     // 首页以图搜款框商品、以图搜款结果商品、点击以图搜款界面
@@ -103,7 +106,6 @@ public enum AdType {
     APP_CATEGORY_TOP_BANNER(601, "APP分类页轮播图", "/url"),
     // APP个人中心猜你喜欢
     APP_USER_CENTER_GUESS_YOU_LIKE(602, "APP我的猜你喜欢", "/url"),
-
 
 
     ;

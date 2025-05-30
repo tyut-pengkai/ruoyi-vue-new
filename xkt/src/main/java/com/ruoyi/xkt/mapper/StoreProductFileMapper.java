@@ -2,6 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductFile;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileLatestFourProdDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFilePicSpaceResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
@@ -70,5 +71,11 @@ public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
      * @return List<StoreProdFileResDTO>
      */
     List<StoreProdFileResDTO> selectMainPic(@Param("storeProdIdList") List<String> storeProdIdList);
+
+    /**
+     * 筛选档口最新的4个商品及主图
+     * @return List<StoreProdFileLatestFourProdDTO>
+     */
+    List<StoreProdFileLatestFourProdDTO> selectLatestFourProdList();
 
 }

@@ -17,9 +17,9 @@ public class BasePageVO {
 
     @NotNull(message = "pageNum不能为空")
     @ApiModelProperty(value = "pageNum", required = true)
-    private int pageNum;
+    private int pageNum = 1;
     @NotNull(message = "pageSize不能为空")
     @ApiModelProperty(value = "pageSize", required = true)
-    private int pageSize;
+    private int pageSize = 20;
 
 }

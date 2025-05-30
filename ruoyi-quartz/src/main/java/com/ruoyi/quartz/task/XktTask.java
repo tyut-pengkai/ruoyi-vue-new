@@ -19,6 +19,8 @@ import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.account.WithdrawPrepareResult;
+import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreRecommendDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreRecommendTempDTO;
 import com.ruoyi.xkt.dto.dailySale.DailySaleCusDTO;
 import com.ruoyi.xkt.dto.dailySale.DailySaleDTO;
 import com.ruoyi.xkt.dto.dailySale.DailySaleProdDTO;
@@ -26,6 +28,7 @@ import com.ruoyi.xkt.dto.dailySale.WeekCateSaleDTO;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderCancelDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderRefund;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileLatestFourProdDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.mapper.*;
@@ -89,6 +92,7 @@ public class XktTask {
     final IPictureSearchService pictureSearchService;
     final PictureSearchMapper pictureSearchMapper;
     final StoreProductStatisticsMapper storeProdStatMapper;
+    final StoreProductFileMapper storeProdFileMapper;
 
     /**
      * 定时任务上市季节年份
@@ -315,7 +319,7 @@ public class XktTask {
 
 
     /**
-     * 每日更新档口商品的各项权重数据
+     * 每天凌晨1:00更新档口商品的各项权重数据
      */
     @Transactional
     public void dailyProdWeight() {
@@ -352,6 +356,55 @@ public class XktTask {
             x.setRecommendWeight(recommendWeight).setSaleWeight(saleWeight).setPopularityWeight(popularityWeight);
         });
         this.storeProdMapper.updateById(storeProdList);
+    }
+
+    /**
+     * 每天凌晨1:10更新档口权重数据
+     */
+    @Transactional
+    public void dailyStoreWeight() {
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>().eq(StoreProduct::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(storeProdList)) {
+            return;
+        }
+        // 按照storeId 的维度，对档口权重 按照 recommendWeight 进行汇总，按照降序排列
+        Map<Long, Long> storeWeightMap = storeProdList.stream().collect(Collectors.groupingBy(StoreProduct::getStoreId,
+                Collectors.summingLong(x -> ObjectUtils.defaultIfNull(x.getRecommendWeight(), 0L))));
+        // 筛选每个档口最新的4个商品及主图
+        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED));
+        Map<Long, Store> storeMap = storeList.stream().collect(Collectors.toMap(Store::getId, Function.identity()));
+        List<DailyStoreTag> storeTagList = this.dailyStoreTagMapper.selectList(new LambdaQueryWrapper<DailyStoreTag>()
+                .eq(DailyStoreTag::getDelFlag, Constants.UNDELETED));
+        // 档口标签map
+        Map<Long, List<String>> storeTagMap = storeTagList.stream().collect(Collectors
+                .groupingBy(DailyStoreTag::getStoreId, Collectors.collectingAndThen(Collectors.toList(), list -> list.stream()
+                        .sorted(Comparator.comparing(DailyStoreTag::getType)).map(DailyStoreTag::getTag).collect(Collectors.toList()))));
+        List<StoreProdFileLatestFourProdDTO> latest4ProdList = this.storeProdFileMapper.selectLatestFourProdList();
+        Map<Long, List<StoreProdFileLatestFourProdDTO>> latestProdMap = latest4ProdList.stream().collect(Collectors
+                .groupingBy(StoreProdFileLatestFourProdDTO::getStoreId));
+        List<PCStoreRecommendTempDTO> storeRecommendList = new ArrayList<>();
+        storeWeightMap.forEach((storeId, recommendWeight) -> {
+            final Store store = storeMap.get(storeId);
+            storeRecommendList.add(new PCStoreRecommendTempDTO().setStoreId(storeId).setTags(storeTagMap.get(storeId))
+                    .setAdvert(Boolean.FALSE).setRecommendWeight(recommendWeight)
+                    .setStoreWeight(ObjectUtils.isNotEmpty(store) ? store.getStoreWeight() : null)
+                    .setStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "")
+                    .setStoreAddress(ObjectUtils.isNotEmpty(store) ? store.getStoreAddress() : "")
+                    .setContactPhone(ObjectUtils.isNotEmpty(store) ? store.getContactPhone() : "")
+                    .setQqAccount(ObjectUtils.isNotEmpty(store) ? store.getQqAccount() : "")
+                    .setWechatAccount(ObjectUtils.isNotEmpty(store) ? store.getWechatAccount() : "")
+                    .setProdList(BeanUtil.copyToList(latestProdMap.get(storeId), PCStoreRecommendTempDTO.PCSRNewProdDTO.class)));
+        });
+        if (CollectionUtils.isEmpty(storeRecommendList)) {
+            return;
+        }
+        // 先按照 档口权重 倒序排，再按照 推荐权重 倒序排
+        storeRecommendList.sort(Comparator.comparing(PCStoreRecommendTempDTO::getStoreWeight, Comparator.nullsLast(Comparator.reverseOrder()))
+                .thenComparing(PCStoreRecommendTempDTO::getRecommendWeight, Comparator.nullsLast(Comparator.reverseOrder())));
+        // 返回给前端的数据 不包含 storeWeight  和 storeRecommnedWeight
+        List<PCStoreRecommendDTO> recommendList = BeanUtil.copyToList(storeRecommendList, PCStoreRecommendDTO.class);
+        // 放到redis中
+        redisCache.setCacheObject(CacheConstants.PC_STORE_RECOMMEND_LIST, recommendList);
     }
 
     /**

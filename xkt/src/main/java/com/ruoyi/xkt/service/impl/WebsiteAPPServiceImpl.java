@@ -89,7 +89,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         List<APPIndexHotSaleDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_INDEX_HOT_SALE_ADVERT);
         if (CollectionUtils.isNotEmpty(redisList)) {
             // 添加广告的数据
-            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.insertPositions));
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.APP_INSERT_POSITIONS));
         } else {
             // 从数据库查首页精选热卖推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
@@ -116,7 +116,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.APP_INDEX_HOT_SALE_ADVERT, hotSaleList, 1, TimeUnit.DAYS);
                 // 添加了广告的数据
-                return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, hotSaleList, Constants.insertPositions));
+                return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, hotSaleList, Constants.APP_INSERT_POSITIONS));
             }
         }
         return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
@@ -143,7 +143,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         List<APPIndexPopularSaleDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_INDEX_POPULAR_SALE_ADVERT);
         if (CollectionUtils.isNotEmpty(redisList)) {
             // 添加广告的数据
-            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.insertPositions));
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.APP_INSERT_POSITIONS));
         } else {
             // 从数据库查首页 人气爆品 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
@@ -170,7 +170,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject( CacheConstants.APP_INDEX_POPULAR_SALE_ADVERT, popularSaleList, 1, TimeUnit.DAYS);
                 // 添加了广告的数据
-                return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, popularSaleList, Constants.insertPositions));
+                return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, popularSaleList, Constants.APP_INSERT_POSITIONS));
             }
         }
         return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
@@ -197,7 +197,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         List<APPIndexNewProdDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_INDEX_NEW_PROD);
         if (CollectionUtils.isNotEmpty(redisList)) {
             // 添加广告的数据
-            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.insertPositions));
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.APP_INSERT_POSITIONS));
         } else {
             // 从数据库查首页 新品榜 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
@@ -224,7 +224,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.APP_INDEX_NEW_PROD, newProdList, 1, TimeUnit.DAYS);
                 // 添加了广告的数据
-                return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, newProdList, Constants.insertPositions));
+                return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, newProdList, Constants.APP_INSERT_POSITIONS));
             }
         }
         return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
@@ -251,7 +251,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         List<APPSearchDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_SEARCH);
         if (CollectionUtils.isNotEmpty(redisList)) {
             // 添加广告的数据
-            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.insertPositions));
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.APP_INSERT_POSITIONS));
         } else {
             // 从数据库查首页 新品榜 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
@@ -278,7 +278,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.APP_SEARCH, newProdList, 1, TimeUnit.DAYS);
                 // 添加了广告的数据
-                return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, newProdList, Constants.insertPositions));
+                return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, newProdList, Constants.APP_INSERT_POSITIONS));
             }
         }
         return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);

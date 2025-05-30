@@ -152,7 +152,7 @@ public class Store extends XktBaseEntity {
     /**
      * 档口权重值 基础值大家都为100，最低为-100。
      */
-    private Integer weight;
+    private Long storeWeight;
 
 
     @Override

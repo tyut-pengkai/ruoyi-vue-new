@@ -91,11 +91,11 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
                         .map(ProductMatchDTO::getStoreProductId).distinct().collect(Collectors.toList()),
                 java.sql.Date.valueOf(LocalDate.now()), java.sql.Date.valueOf(LocalDate.now().minusMonths(2)));
         // 设置商品标签
-        storeProdViewAttrList.stream().filter(x -> StringUtils.isNotBlank(x.getTagStr())).forEach(x -> x.setProdTagList(StrUtil.split(x.getTagStr(), ",")));
+        storeProdViewAttrList.stream().filter(x -> StringUtils.isNotBlank(x.getTagStr())).forEach(x -> x.setTags(StrUtil.split(x.getTagStr(), ",")));
         // 以图搜款广告
         List<PicSearchAdvertDTO> picSearchAdverts = websitePCService.getPicSearchList();
         // 将广告插入到预定位置
-        return insertAdvertsIntoList(storeProdViewAttrList, BeanUtil.copyToList(picSearchAdverts, StoreProdViewDTO.class), Constants.pic_res_insert_positions);
+        return insertAdvertsIntoList(storeProdViewAttrList, BeanUtil.copyToList(picSearchAdverts, StoreProdViewDTO.class), Constants.PIC_SEARCH_INSERT_POSITIONS);
     }
 
     /**
@@ -104,24 +104,23 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<TopProductMatchDTO> listImgSearchTopProduct() {
-        List<TopProductMatchDTO> topProductMatchList = redisCache.getCacheObject(CacheConstants.TOP_IMG_SEARCH_PRODUCT);
-        if (CollectionUtils.isNotEmpty(topProductMatchList)) {
-            return topProductMatchList;
+    public List<StoreProdViewDTO> listImgSearchTopProduct() {
+        List<StoreProdViewDTO> picSearchHotList = redisCache.getCacheObject(CacheConstants.IMG_SEARCH_PRODUCT_HOT);
+        if (CollectionUtils.isNotEmpty(picSearchHotList)) {
+            return picSearchHotList;
         }
         // 重新缓存数据到redis
-        this.cacheImgSearchTopProduct();
-        return redisCache.getCacheObject(CacheConstants.TOP_IMG_SEARCH_PRODUCT);
+        return this.cacheImgSearchTopProduct();
     }
 
 
     @Override
-    public void cacheImgSearchTopProduct() {
+    public List<StoreProdViewDTO> cacheImgSearchTopProduct() {
         //热搜规则（暂定）：1个月内搜图次数排序，最多返回前100，查询同款商品时最多检索1000条数据
         List<ProductImgSearchCountDTO> prodImgSearchCounts = storeProdStatisticsMapper
-                .listProdImgSearchCount(java.sql.Date.valueOf(LocalDate.now()), java.sql.Date.valueOf(LocalDate.now().minusMonths(1)));
+                .listProdImgSearchCount(java.sql.Date.valueOf(LocalDate.now().minusMonths(1)), java.sql.Date.valueOf(LocalDate.now()));
         if (CollUtil.isEmpty(prodImgSearchCounts)) {
-            return;
+            return new ArrayList<>();
         }
         Map<Long, Integer> searchCountMap = prodImgSearchCounts.stream().collect(Collectors
                 .toMap(ProductImgSearchCountDTO::getStoreProductId, ProductImgSearchCountDTO::getImgSearchCount));
@@ -136,7 +135,8 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
                 .sorted(Comparator.comparing(StoreProdViewDTO::getImgSearchCount).reversed())
                 .limit(100)
                 .collect(Collectors.toList());
-        redisCache.setCacheObject(CacheConstants.TOP_IMG_SEARCH_PRODUCT, storeProdViewAttrList);
+        redisCache.setCacheObject(CacheConstants.IMG_SEARCH_PRODUCT_HOT, storeProdViewAttrList);
+        return storeProdViewAttrList;
     }
 
     /**

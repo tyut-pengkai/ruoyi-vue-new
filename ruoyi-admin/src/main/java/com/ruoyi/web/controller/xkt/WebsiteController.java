@@ -16,7 +16,8 @@ import com.ruoyi.web.controller.xkt.vo.advertRound.pc.newProd.*;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.store.PCStoreMidBannerVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.store.PCStoreTopBannerVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.picSearch.PicSearchAdvertVO;
-import com.ruoyi.web.controller.xkt.website.IndexSearchVO;
+import com.ruoyi.web.controller.xkt.vo.website.IndexSearchVO;
+import com.ruoyi.web.controller.xkt.vo.website.StoreSearchVO;
 import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexHotSaleDTO;
 import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexNewProdDTO;
 import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexPopularSaleDTO;
@@ -24,7 +25,9 @@ import com.ruoyi.xkt.dto.advertRound.app.index.APPSearchDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCSearchDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.PCIndexRecommendDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.newProd.PCNewRecommendDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreRecommendDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
+import com.ruoyi.xkt.dto.website.StoreSearchDTO;
 import com.ruoyi.xkt.service.IWebsiteAPPService;
 import com.ruoyi.xkt.service.IWebsitePCService;
 import io.swagger.annotations.Api;
@@ -47,6 +50,16 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/rest/v1/website")
 public class WebsiteController extends XktBaseController {
+
+
+    // TODO 查询先按照storeWeight倒排，之后再按照各种 权重 进行排序
+    // TODO 查询先按照storeWeight倒排，之后再按照各种 权重 进行排序
+    // TODO 查询先按照storeWeight倒排，之后再按照各种 权重 进行排序
+    // TODO 查询先按照storeWeight倒排，之后再按照各种 权重 进行排序
+    // TODO 查询先按照storeWeight倒排，之后再按照各种 权重 进行排序
+
+
+
 
     final IWebsitePCService websitePCService;
     final IWebsiteAPPService websiteAPPService;
@@ -162,6 +175,12 @@ public class WebsiteController extends XktBaseController {
     @GetMapping("/pc/store/mid/banner")
     public R<List<PCStoreMidBannerVO>> getPcStoreMidBannerList() {
         return R.ok(BeanUtil.copyToList(websitePCService.getPcStoreMidBannerList(), PCStoreMidBannerVO.class));
+    }
+
+    @ApiOperation(value = "PC 档口馆 档口列表", httpMethod = "POST", response = R.class)
+    @PostMapping("/pc/store/recommend")
+    public R<Page<PCStoreRecommendDTO>> pcStoreRecommendPage(@Validated @RequestBody StoreSearchVO searchVO) {
+        return R.ok(websitePCService.pcStoreRecommendPage(BeanUtil.toBean(searchVO, StoreSearchDTO.class)));
     }
 
     @ApiOperation(value = "以图搜款推广", httpMethod = "GET", response = R.class)
