@@ -17,7 +17,6 @@ import com.ruoyi.xkt.service.IUserSubscriptionsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,39 +32,27 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/rest/v1/user-subs")
 public class UserSubscriptionsController extends XktBaseController {
 
-    final IUserSubscriptionsService userSubscService;
+    final IUserSubscriptionsService userSubService;
 
-    /**
-     * 新增用户关注档口
-     */
-    // @PreAuthorize("@ss.hasPermi('system:subscriptions:add')")
     @ApiOperation(value = "新增用户关注档口", httpMethod = "POST", response = R.class)
     @Log(title = "新增用户关注档口", businessType = BusinessType.INSERT)
     @PostMapping
     public R<Integer> create(@Validated @RequestBody UserSubscVO subscVO) {
-        return R.ok(userSubscService.create(BeanUtil.toBean(subscVO, UserSubscDTO.class)));
+        return R.ok(userSubService.create(BeanUtil.toBean(subscVO, UserSubscDTO.class)));
     }
 
-    /**
-     * 用户关注档口列表
-     */
-    // @PreAuthorize("@ss.hasPermi('system:favorites:list')")
     @ApiOperation(value = "用户关注档口列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<UserSubscPageResDTO>> page(@Validated @RequestBody UserSubscPageVO pageVO) {
-        return R.ok(userSubscService.page(BeanUtil.toBean(pageVO, UserSubscPageDTO.class)));
+        return R.ok(userSubService.page(BeanUtil.toBean(pageVO, UserSubscPageDTO.class)));
     }
 
 
-    /**
-     * 用户取消关注档口
-     */
-    // @PreAuthorize("@ss.hasPermi('system:subscriptions:remove')")
     @ApiOperation(value = "用户取消关注档口", httpMethod = "DELETE", response = R.class)
     @Log(title = "用户取消关注档口", businessType = BusinessType.DELETE)
     @DeleteMapping("/batch")
     public R<Integer> remove(@Validated @RequestBody UserSubscDeleteVO deleteVO) {
-        return R.ok(userSubscService.delete(BeanUtil.toBean(deleteVO, UserSubscDeleteDTO.class)));
+        return R.ok(userSubService.delete(BeanUtil.toBean(deleteVO, UserSubscDeleteDTO.class)));
     }
 
 }

@@ -1,91 +1,24 @@
 package com.ruoyi.web.controller.xkt;
 
-import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
-import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.xkt.domain.UserBrowsingHistory;
 import com.ruoyi.xkt.service.IUserBrowsingHistoryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 用户浏览历史Controller
+ * 用户浏览足迹Controller
  *
  * @author ruoyi
  * @date 2025-03-26
  */
+@Api(tags = "用户浏览足迹")
 @RestController
-@RequestMapping("/rest/v1/user-brow-hises")
+@RequiredArgsConstructor
+@RequestMapping("/rest/v1/user-brow-his")
 public class UserBrowsingHistoryController extends XktBaseController {
-    @Autowired
-    private IUserBrowsingHistoryService userBrowsingHistoryService;
 
-    /**
-     * 查询用户浏览历史列表
-     */
-    // @PreAuthorize("@ss.hasPermi('system:history:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(UserBrowsingHistory userBrowsingHistory) {
-        startPage();
-        List<UserBrowsingHistory> list = userBrowsingHistoryService.selectUserBrowsingHistoryList(userBrowsingHistory);
-        return getDataTable(list);
-    }
+    final IUserBrowsingHistoryService userBrowHisService;
 
-    /**
-     * 导出用户浏览历史列表
-     */
-    // @PreAuthorize("@ss.hasPermi('system:history:export')")
-    @Log(title = "用户浏览历史", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, UserBrowsingHistory userBrowsingHistory) {
-        List<UserBrowsingHistory> list = userBrowsingHistoryService.selectUserBrowsingHistoryList(userBrowsingHistory);
-        ExcelUtil<UserBrowsingHistory> util = new ExcelUtil<UserBrowsingHistory>(UserBrowsingHistory.class);
-        util.exportExcel(response, list, "用户浏览历史数据");
-    }
-
-    /**
-     * 获取用户浏览历史详细信息
-     */
-    // @PreAuthorize("@ss.hasPermi('system:history:query')")
-    @GetMapping(value = "/{userBrowHisId}")
-    public R getInfo(@PathVariable("userBrowHisId") Long userBrowHisId) {
-        return success(userBrowsingHistoryService.selectUserBrowsingHistoryByUserBrowHisId(userBrowHisId));
-    }
-
-    /**
-     * 新增用户浏览历史
-     */
-    // @PreAuthorize("@ss.hasPermi('system:history:add')")
-    @Log(title = "用户浏览历史", businessType = BusinessType.INSERT)
-    @PostMapping
-    public R add(@RequestBody UserBrowsingHistory userBrowsingHistory) {
-        return success(userBrowsingHistoryService.insertUserBrowsingHistory(userBrowsingHistory));
-    }
-
-    /**
-     * 修改用户浏览历史
-     */
-    // @PreAuthorize("@ss.hasPermi('system:history:edit')")
-    @Log(title = "用户浏览历史", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public R edit(@RequestBody UserBrowsingHistory userBrowsingHistory) {
-        return success(userBrowsingHistoryService.updateUserBrowsingHistory(userBrowsingHistory));
-    }
-
-    /**
-     * 删除用户浏览历史
-     */
-    // @PreAuthorize("@ss.hasPermi('system:history:remove')")
-    @Log(title = "用户浏览历史", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{userBrowHisIds}")
-    public R remove(@PathVariable Long[] userBrowHisIds) {
-        return success(userBrowsingHistoryService.deleteUserBrowsingHistoryByUserBrowHisIds(userBrowHisIds));
-    }
 }

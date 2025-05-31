@@ -23,7 +23,6 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
-import com.ruoyi.xkt.mapper.SysProductCategoryMapper;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.picture.ProductPicSyncDTO;
@@ -95,6 +94,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final StoreCustomerProductDiscountMapper storeCusProdDiscMapper;
     final IPictureService pictureService;
     final StoreProductStatisticsMapper storeProductStatisticsMapper;
+    final StoreHomepageMapper storeHomepageMapper;
 
 
     /**
@@ -542,6 +542,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional(readOnly = true)
     public StoreProdAppResDTO getAppInfo(Long storeProdId) {
+
+        // TODO APP 商品详情也要加上 主图视频及主图
+        // TODO APP 商品详情也要加上 主图视频及主图
+        // TODO APP 商品详情也要加上 主图视频及主图
+
+
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
                         .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
@@ -598,13 +604,13 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 获取当前档口商品的sku列表
         Map<String, Integer> colorSizeStockMap = this.getProdStockList(storeProdId);
         // 组装所有的档口商品sku
-        List<StoreProdSkuResDTO.SPColorDTO> colorList = prodSkuList.stream().map(x -> BeanUtil.toBean(x, StoreProdSkuResDTO.SPColorDTO.class)).distinct().collect(Collectors.toList());
+        List<StoreProdSkuItemDTO> colorList = prodSkuList.stream().map(x -> BeanUtil.toBean(x, StoreProdSkuItemDTO.class)).distinct().collect(Collectors.toList());
         // storeColorId的sku列表
         Map<Long, List<StoreProdSkuDTO>> colorSizeMap = prodSkuList.stream().collect(Collectors.groupingBy(StoreProdSkuDTO::getStoreColorId));
         colorList.forEach(color -> {
             List<StoreProdSkuDTO> sizeList = Optional.ofNullable(colorSizeMap.get(color.getStoreColorId()))
                     .orElseThrow(() -> new ServiceException("获取商品sku失败，请联系客服!", HttpStatus.ERROR));
-            color.setSizeStockList(sizeList.stream().map(size -> new StoreProdSkuResDTO.SPSizeStockDTO()
+            color.setSizeStockList(sizeList.stream().map(size -> new StoreProdSkuItemDTO.SPSISizeStockDTO()
                             .setStoreProdColorSizeId(size.getStoreProdColorSizeId()).setSize(size.getSize()).setStandard(size.getStandard())
                             .setStock(colorSizeStockMap.get(color.getStoreColorId() + ":" + size.getSize())))
                     .collect(Collectors.toList()));
@@ -643,6 +649,58 @@ public class StoreProductServiceImpl implements IStoreProductService {
             statistics.setImgSearchCount(statistics.getImgSearchCount() + isc);
             storeProductStatisticsMapper.updateById(statistics);
         }
+    }
+
+    /**
+     * PC获取档口商品详情
+     *
+     * @param storeProdId 档口商品ID
+     * @return StoreProdPCResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreProdPCResDTO getPCInfo(Long storeProdId) {
+        // 商品基础信息
+        StoreProdPCResDTO prodInfoDTO = ObjectUtils.defaultIfNull(this.storeProdMapper.selectPCProdInfo(storeProdId, SecurityUtils.getUserId()), new StoreProdPCResDTO());
+        // 获取商品的属性
+        StoreProductCategoryAttribute cateAttr = this.storeProdCateAttrMapper.selectOne(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
+                .eq(StoreProductCategoryAttribute::getStoreProdId, storeProdId).eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED));
+        prodInfoDTO.setCateAttr(BeanUtil.toBean(cateAttr, StoreProdPCResDTO.StoreProdCateAttrDTO.class))
+                // 获取商品的主图视频及主图
+                .setFileList(this.storeProdFileMapper.selectVideoAndMainPicList(storeProdId));
+        // 档口商品的sku列表
+        List<StoreProdSkuDTO> prodSkuList = this.storeProdMapper.selectSkuList(storeProdId);
+        if (CollectionUtils.isEmpty(prodSkuList)) {
+            return prodInfoDTO.setColorList(null);
+        }
+        // 获取当前档口商品的sku列表
+        Map<String, Integer> colorSizeStockMap = this.getProdStockList(storeProdId);
+        // 组装所有的档口商品sku
+        List<StoreProdSkuItemDTO> colorList = prodSkuList.stream().map(x -> BeanUtil.toBean(x, StoreProdSkuItemDTO.class)).distinct().collect(Collectors.toList());
+        // storeColorId的sku列表
+        Map<Long, List<StoreProdSkuDTO>> colorSizeMap = prodSkuList.stream().collect(Collectors.groupingBy(StoreProdSkuDTO::getStoreColorId));
+        colorList.forEach(color -> {
+            List<StoreProdSkuDTO> sizeList = Optional.ofNullable(colorSizeMap.get(color.getStoreColorId()))
+                    .orElseThrow(() -> new ServiceException("获取商品sku失败，请联系客服!", HttpStatus.ERROR));
+            color.setSizeStockList(sizeList.stream().map(size -> new StoreProdSkuItemDTO.SPSISizeStockDTO()
+                            .setStoreProdColorSizeId(size.getStoreProdColorSizeId()).setSize(size.getSize()).setStandard(size.getStandard())
+                            .setStock(colorSizeStockMap.get(color.getStoreColorId() + ":" + size.getSize())))
+                    .collect(Collectors.toList()));
+        });
+        return prodInfoDTO.setColorList(colorList);
+    }
+
+    /**
+     * 获取档口商品各个状态数量
+     *
+     * @param storeId 档口ID
+     * @return StoreProdStatusCountResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreProdStatusCountResDTO getStatusNum(Long storeId) {
+        return this.storeProdMapper.getStatusNum(storeId, Arrays
+                .asList(EProductStatus.ON_SALE.getValue(), EProductStatus.TAIL_GOODS.getValue(), EProductStatus.OFF_SALE.getValue()));
     }
 
     /**

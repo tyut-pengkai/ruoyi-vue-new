@@ -22,7 +22,7 @@ public class StoreHomeDecorationResDTO {
     @ApiModelProperty(value = "档口首页装修模板Num")
     private Integer templateNum;
     @ApiModelProperty(value = "档口首页装修大轮播图")
-    private List<DecorationDTO> bigBannerList;
+    private List<DecorationDTO> bannerList;
     @ApiModelProperty(value = "档口首页装修其它图部分")
     private List<DecorationDTO> decorationList;
 

@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
@@ -9,10 +10,12 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.xkt.domain.AdvertRound;
 import com.ruoyi.xkt.domain.SysFile;
@@ -22,10 +25,12 @@ import com.ruoyi.xkt.dto.advertRound.app.own.APPOwnGuessLikeDTO;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicDTO;
+import com.ruoyi.xkt.dto.useSearchHistory.UserSearchHistoryDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 import com.ruoyi.xkt.enums.AdBiddingStatus;
 import com.ruoyi.xkt.enums.AdDisplayType;
 import com.ruoyi.xkt.enums.AdLaunchStatus;
+import com.ruoyi.xkt.enums.SearchPlatformType;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IWebsiteAPPService;
 import lombok.RequiredArgsConstructor;
@@ -111,7 +116,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                             .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
                             .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
-                            .setMainPic(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
+                            .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
                 }).collect(Collectors.toList());
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.APP_INDEX_HOT_SALE_ADVERT, hotSaleList, 1, TimeUnit.DAYS);
@@ -165,10 +170,10 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                             .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
                             .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
-                            .setMainPic(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
+                            .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
                 }).collect(Collectors.toList());
                 // 放到redis中 有效期1天
-                this.redisCache.setCacheObject( CacheConstants.APP_INDEX_POPULAR_SALE_ADVERT, popularSaleList, 1, TimeUnit.DAYS);
+                this.redisCache.setCacheObject(CacheConstants.APP_INDEX_POPULAR_SALE_ADVERT, popularSaleList, 1, TimeUnit.DAYS);
                 // 添加了广告的数据
                 return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, popularSaleList, Constants.APP_INSERT_POSITIONS));
             }
@@ -219,7 +224,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                             .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
                             .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
-                            .setMainPic(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
+                            .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
                 }).collect(Collectors.toList());
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.APP_INDEX_NEW_PROD, newProdList, 1, TimeUnit.DAYS);
@@ -239,6 +244,9 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Override
     @Transactional(readOnly = true)
     public Page<APPSearchDTO> appSearchPage(IndexSearchDTO searchDTO) throws IOException {
+        // 更新用户搜索历史
+        updateRedisUserSearchHistory(searchDTO.getSearch());
+        // 用户搜索结果
         Page<ESProductDTO> page = this.search(searchDTO);
         // 筛选出真实的数据
         List<APPSearchDTO> realDataList = page.getList().stream()
@@ -273,7 +281,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                             .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
                             .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
-                            .setMainPic(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
+                            .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
                 }).collect(Collectors.toList());
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.APP_SEARCH, newProdList, 1, TimeUnit.DAYS);
@@ -733,6 +741,25 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         final long total = resList.hits().total().value();
         final List<ESProductDTO> esProdList = resList.hits().hits().stream().map(x -> x.source().setStoreProdId(x.id())).collect(Collectors.toList());
         return new Page<>(searchDTO.getPageNum(), searchDTO.getPageSize(), total / searchDTO.getPageSize() + 1, total, esProdList);
+    }
+
+    /**
+     * 更新用户搜索结果到redis
+     *
+     * @param search 用户搜索内容
+     */
+    private void updateRedisUserSearchHistory(String search) {
+        if (StringUtils.isEmpty(search)) {
+            return;
+        }
+        // 将用户搜索的数据存放到redis中，每晚统一存到数据库中
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        // 获取用户在redis中的搜索数据
+        List<UserSearchHistoryDTO> userSearchList = CollUtil.defaultIfEmpty(redisCache.getCacheObject(CacheConstants.USER_SEARCH_HISTORY + loginUser.getUserId()), new ArrayList<>());
+        userSearchList.add(new UserSearchHistoryDTO().setUserId(loginUser.getUserId()).setUserName(loginUser.getUser().getNickName()).setSearchContent(search)
+                .setPlatformId(SearchPlatformType.APP.getValue()).setSearchTime(DateUtils.getNowDate()));
+        // 设置用户搜索历史，不过期
+        redisCache.setCacheObject(CacheConstants.USER_SEARCH_HISTORY + loginUser.getUserId(), userSearchList);
     }
 
 

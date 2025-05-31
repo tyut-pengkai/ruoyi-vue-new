@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.advertRound.pc.index;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,7 +11,7 @@ import lombok.Data;
  */
 @ApiModel("PC 首页 搜索框中推荐档口")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class PCIndexSearchRecommendProdVO {
 
     @ApiModelProperty(value = "2 商品")

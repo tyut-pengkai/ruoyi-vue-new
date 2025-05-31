@@ -1,12 +1,9 @@
 package com.ruoyi.web.controller.xkt.vo.advertRound.app.category;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
-
-import java.math.BigDecimal;
 
 /**
  * @author liujiang
@@ -16,7 +13,6 @@ import java.math.BigDecimal;
 @ApiModel("APP分类页")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class APPCateVO {
 
     @ApiModelProperty(value = "1推广图")

@@ -54,12 +54,12 @@ public interface IStoreService {
     Integer approve(StoreAuditDTO auditDTO);
 
     /**
-     * 获取档口基本信息
+     * 获取档口详细信息
      *
      * @param storeId 档口ID
      * @return StoreBasicResDTO
      */
-    StoreBasicResDTO getInfo(Long storeId);
+    StoreResDTO getInfo(Long storeId);
 
     /**
      * 审核时获取档口信息
@@ -125,4 +125,11 @@ public interface IStoreService {
      */
     List<StoreIndexCusSaleTop10ResDTO> indexTop10SaleCus(StoreSaleCustomerTop10DTO saleCusTop10DTO);
 
+    /**
+     * PC 商城 获取档口首页简易数据
+     *
+     * @param storeId 档口ID
+     * @return StoreBasicResDTO
+     */
+    StoreSimpleResDTO getSimpleInfo(Long storeId);
 }

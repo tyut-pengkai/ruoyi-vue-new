@@ -48,5 +48,13 @@
             count DESC
     </select>
 
+    <select id="getOverall" resultType="com.ruoyi.xkt.dto.userIndex.UserOverallResDTO">
+        SELECT
+            ( SELECT COUNT( sc.id ) FROM shopping_cart sc WHERE sc.user_id = #{userId} AND sc.del_flag = 0 ) AS shoppingCartCount,
+            ( SELECT COUNT( us.id ) FROM user_subscriptions us WHERE us.user_id = #{userId} AND us.del_flag = 0 ) AS focusStoreCount,
+            ( SELECT COUNT( uf.id ) FROM user_favorites uf WHERE uf.user_id = #{userId} AND uf.del_flag = 0 ) AS collectProdCount,
+            ( SELECT COUNT( so.id ) FROM store_order so WHERE so.order_user_id = #{userId} AND so.del_flag = 0 ) AS sendOrderCount
+    </select>
+
 
 </mapper>

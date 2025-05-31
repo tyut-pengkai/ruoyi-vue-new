@@ -3,94 +3,9 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.StoreHomepageMapper">
-    
-    <resultMap type="StoreHomepage" id="StoreHomepageResult">
-        <result property="id"    column="id"    />
-        <result property="storeId"    column="store_id"    />
-        <result property="type"    column="type"    />
-        <result property="fileId"    column="file_id"    />
-        <result property="orderNum"    column="order_num"    />
-        <result property="version"    column="version"    />
-        <result property="delFlag"    column="del_flag"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-    </resultMap>
 
-    <sql id="selectStoreHomepageVo">
-        select id, store_id, type, file_id, order_num, version, del_flag, create_by, create_time, update_by, update_time from store_homepage
-    </sql>
+    <select id="selectRecommendList" resultType="com.ruoyi.xkt.dto.storeHomepage.StoreRecommendResDTO">
 
-    <select id="selectStoreHomepageList" parameterType="StoreHomepage" resultMap="StoreHomepageResult">
-        <include refid="selectStoreHomepageVo"/>
-        <where>  
-            <if test="storeId != null "> and store_id = #{storeId}</if>
-            <if test="type != null "> and type = #{type}</if>
-            <if test="fileId != null "> and file_id = #{fileId}</if>
-            <if test="orderNum != null "> and order_num = #{orderNum}</if>
-            <if test="version != null "> and version = #{version}</if>
-        </where>
-    </select>
-    
-    <select id="selectStoreHomepageByStoreHomeId" parameterType="Long" resultMap="StoreHomepageResult">
-        <include refid="selectStoreHomepageVo"/>
-        where id = #{id}
     </select>
 
-    <insert id="insertStoreHomepage" parameterType="StoreHomepage" useGeneratedKeys="true" keyProperty="storeHomeId">
-        insert into store_homepage
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="storeId != null">store_id,</if>
-            <if test="type != null">type,</if>
-            <if test="fileId != null">file_id,</if>
-            <if test="orderNum != null">order_num,</if>
-            <if test="version != null">version,</if>
-            <if test="delFlag != null">del_flag,</if>
-            <if test="createBy != null">create_by,</if>
-            <if test="createTime != null">create_time,</if>
-            <if test="updateBy != null">update_by,</if>
-            <if test="updateTime != null">update_time,</if>
-         </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="storeId != null">#{storeId},</if>
-            <if test="type != null">#{type},</if>
-            <if test="fileId != null">#{fileId},</if>
-            <if test="orderNum != null">#{orderNum},</if>
-            <if test="version != null">#{version},</if>
-            <if test="delFlag != null">#{delFlag},</if>
-            <if test="createBy != null">#{createBy},</if>
-            <if test="createTime != null">#{createTime},</if>
-            <if test="updateBy != null">#{updateBy},</if>
-            <if test="updateTime != null">#{updateTime},</if>
-         </trim>
-    </insert>
-
-    <update id="updateStoreHomepage" parameterType="StoreHomepage">
-        update store_homepage
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="storeId != null">store_id = #{storeId},</if>
-            <if test="type != null">type = #{type},</if>
-            <if test="fileId != null">file_id = #{fileId},</if>
-            <if test="orderNum != null">order_num = #{orderNum},</if>
-            <if test="version != null">version = #{version},</if>
-            <if test="delFlag != null">del_flag = #{delFlag},</if>
-            <if test="createBy != null">create_by = #{createBy},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
-            <if test="updateBy != null">update_by = #{updateBy},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
-        </trim>
-        where id = #{id}
-    </update>
-
-    <delete id="deleteStoreHomepageByStoreHomeId" parameterType="Long">
-        delete from store_homepage where id = #{id}
-    </delete>
-
-    <delete id="deleteStoreHomepageByStoreHomeIds" parameterType="String">
-        delete from store_homepage where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </delete>
 </mapper>

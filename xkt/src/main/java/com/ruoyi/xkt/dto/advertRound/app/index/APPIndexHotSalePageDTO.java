@@ -26,7 +26,7 @@ public class APPIndexHotSalePageDTO {
     @ApiModelProperty(value = "货号")
     private String prodArtNum;
     @ApiModelProperty(value = "主图")
-    private String mainPic;
+    private String mainPicUrl;
     @ApiModelProperty(value = "单价")
     private String prodPrice;
     @ApiModelProperty(value = "是否广告")

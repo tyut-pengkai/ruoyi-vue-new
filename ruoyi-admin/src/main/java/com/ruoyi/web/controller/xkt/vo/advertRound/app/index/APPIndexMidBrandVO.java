@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.advertRound.app.index;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,7 +15,6 @@ import java.math.BigDecimal;
 @ApiModel("APP首页品牌好货")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class APPIndexMidBrandVO {
 
     @ApiModelProperty(value = "2商品")

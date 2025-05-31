@@ -73,6 +73,8 @@ public class StoreServiceImpl implements IStoreService {
         // 当前时间往后推1年为试用期时间
         Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         store.setTrialEndTime(oneYearAfter);
+        // 设置档口默认权重100
+        store.setStoreWeight(Constants.STORE_WEIGHT_DEFAULT);
         int count = this.storeMapper.insert(store);
         // 创建档口账户
         assetService.createInternalAccountIfNotExists(store.getId());
@@ -138,17 +140,17 @@ public class StoreServiceImpl implements IStoreService {
     }
 
     /**
-     * 获取档口基本信息
+     * 获取档口详细信息
      *
      * @param storeId 档口ID
      * @return StoreBasicResDTO
      */
     @Override
     @Transactional(readOnly = true)
-    public StoreBasicResDTO getInfo(Long storeId) {
+    public StoreResDTO getInfo(Long storeId) {
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                 .eq(Store::getId, storeId))).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-        StoreBasicResDTO resDTO = BeanUtil.toBean(store, StoreBasicResDTO.class);
+        StoreResDTO resDTO = BeanUtil.toBean(store, StoreResDTO.class);
         resDTO.setStoreId(storeId);
 
         // TODO 用户名称
@@ -343,6 +345,18 @@ public class StoreServiceImpl implements IStoreService {
     @Transactional(readOnly = true)
     public List<StoreIndexCusSaleTop10ResDTO> indexTop10SaleCus(StoreSaleCustomerTop10DTO saleCusTop10DTO) {
         return this.dailySaleCusMapper.selectTop10SaleCustomerList(saleCusTop10DTO);
+    }
+
+    /**
+     * PC 商城 获取档口首页简易数据
+     *
+     * @param storeId 档口ID
+     * @return StoreBasicResDTO
+     */
+    @Override
+    @Transactional (readOnly = true)
+    public StoreSimpleResDTO getSimpleInfo(Long storeId) {
+        return this.storeMapper.getSimpleInfo(storeId, SecurityUtils.getUserId());
     }
 
 }

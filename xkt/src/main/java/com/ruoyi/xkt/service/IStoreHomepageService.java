@@ -1,9 +1,8 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDecorationDTO;
-import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDecorationResDTO;
-import com.ruoyi.xkt.dto.storeHomepage.StoreHomeProdResDTO;
-import com.ruoyi.xkt.dto.storeHomepage.StoreHomeResDTO;
+import com.ruoyi.xkt.dto.storeHomepage.*;
+
+import java.util.List;
 
 /**
  * 档口首页Service接口
@@ -57,5 +56,13 @@ public interface IStoreHomepageService {
      * @return StoreHomeProdResDTO
      */
     StoreHomeProdResDTO getStoreProdInfo(Long storeId, Long storeProdId);
+
+    /**
+     * 获取档口推荐商品列表
+     *
+     * @param storeId 档口ID
+     * @return  List<StoreRecommendResDTO>
+     */
+    List<StoreRecommendResDTO> getStoreRecommendList(Long storeId);
 
 }

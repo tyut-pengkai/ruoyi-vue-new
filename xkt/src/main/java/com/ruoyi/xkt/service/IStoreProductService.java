@@ -118,4 +118,20 @@ public interface IStoreProductService {
     void insertOrUpdateProductStatistics(Long storeProdId, Integer incrViewCount, Integer incrDownloadCount,
                                          Integer incrImgSearchCount, Date date);
 
+    /**
+     * PC获取档口商品详情
+     *
+     * @param storeProdId 档口商品ID
+     * @return StoreProdPCResDTO
+     */
+    StoreProdPCResDTO getPCInfo(Long storeProdId);
+
+    /**
+     * 获取档口商品各个状态数量
+     *
+     * @param storeId 档口ID
+     * @return StoreProdStatusCountResDTO
+     */
+    StoreProdStatusCountResDTO getStatusNum(Long storeId);
+
 }

@@ -3,176 +3,6 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.StoreMapper">
-    
-    <resultMap type="Store" id="StoreResult">
-        <result property="id"    column="id"    />
-        <result property="userId"    column="user_id"    />
-        <result property="storeName"    column="store_name"    />
-        <result property="brandName"    column="brand_name"    />
-        <result property="loginAccount"    column="login_account"    />
-        <result property="contactName"    column="contact_name"    />
-        <result property="contactPhone"    column="contact_phone"    />
-        <result property="contactBackPhone"    column="contact_back_phone"    />
-        <result property="wechatAccount"    column="wechat_account"    />
-        <result property="qqAccount"    column="qq_account"    />
-        <result property="alipayAccount"    column="alipay_account"    />
-        <result property="operateYears"    column="operate_years"    />
-        <result property="storeAddress"    column="store_address"    />
-        <result property="facAddress"    column="fac_address"    />
-        <result property="prodScale"    column="prod_scale"    />
-        <result property="integrityGold"    column="integrity_gold"    />
-        <result property="remark"    column="remark"    />
-        <result property="trialEndTime"    column="trial_end_time"    />
-        <result property="storageUsage"    column="storage_usage"    />
-        <result property="storeStatus"    column="store_status"    />
-        <result property="templateNum"    column="template_num"    />
-        <result property="version"    column="version"    />
-        <result property="delFlag"    column="del_flag"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-    </resultMap>
-
-    <sql id="selectStoreVo">
-        select id, user_id, store_name, brand_name, login_account, contact_name, contact_phone, contact_back_phone, wechat_account, qq_account, alipay_account, operate_years, store_address, fac_address, prod_scale, integrity_gold, remark, trial_end_time, storage_usage, store_status, template_num, version, del_flag, create_by, create_time, update_by, update_time from store
-    </sql>
-
-    <select id="selectStoreList" parameterType="Store" resultMap="StoreResult">
-        <include refid="selectStoreVo"/>
-        <where>  
-            <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="storeName != null  and storeName != ''"> and store_name like concat('%', #{storeName}, '%')</if>
-            <if test="brandName != null  and brandName != ''"> and brand_name like concat('%', #{brandName}, '%')</if>
-            <if test="loginAccount != null  and loginAccount != ''"> and login_account = #{loginAccount}</if>
-            <if test="contactName != null  and contactName != ''"> and contact_name like concat('%', #{contactName}, '%')</if>
-            <if test="contactPhone != null  and contactPhone != ''"> and contact_phone = #{contactPhone}</if>
-            <if test="contactBackPhone != null  and contactBackPhone != ''"> and contact_back_phone = #{contactBackPhone}</if>
-            <if test="wechatAccount != null  and wechatAccount != ''"> and wechat_account = #{wechatAccount}</if>
-            <if test="qqAccount != null  and qqAccount != ''"> and qq_account = #{qqAccount}</if>
-            <if test="alipayAccount != null  and alipayAccount != ''"> and alipay_account = #{alipayAccount}</if>
-            <if test="operateYears != null "> and operate_years = #{operateYears}</if>
-            <if test="storeAddress != null  and storeAddress != ''"> and store_address = #{storeAddress}</if>
-            <if test="facAddress != null  and facAddress != ''"> and fac_address = #{facAddress}</if>
-            <if test="prodScale != null "> and prod_scale = #{prodScale}</if>
-            <if test="integrityGold != null "> and integrity_gold = #{integrityGold}</if>
-            <if test="trialEndTime != null "> and trial_end_time = #{trialEndTime}</if>
-            <if test="storageUsage != null "> and storage_usage = #{storageUsage}</if>
-            <if test="storeStatus != null "> and store_status = #{storeStatus}</if>
-            <if test="templateNum != null "> and template_num = #{templateNum}</if>
-            <if test="version != null "> and version = #{version}</if>
-        </where>
-    </select>
-    
-    <select id="selectStoreByStoreId" parameterType="Long" resultMap="StoreResult">
-        <include refid="selectStoreVo"/>
-        where id = #{id}
-    </select>
-
-    <insert id="insertStore" parameterType="Store" useGeneratedKeys="true" keyProperty="storeId">
-        insert into store
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="userId != null">user_id,</if>
-            <if test="storeName != null">store_name,</if>
-            <if test="brandName != null">brand_name,</if>
-            <if test="loginAccount != null">login_account,</if>
-            <if test="contactName != null">contact_name,</if>
-            <if test="contactPhone != null">contact_phone,</if>
-            <if test="contactBackPhone != null">contact_back_phone,</if>
-            <if test="wechatAccount != null">wechat_account,</if>
-            <if test="qqAccount != null">qq_account,</if>
-            <if test="alipayAccount != null">alipay_account,</if>
-            <if test="operateYears != null">operate_years,</if>
-            <if test="storeAddress != null">store_address,</if>
-            <if test="facAddress != null">fac_address,</if>
-            <if test="prodScale != null">prod_scale,</if>
-            <if test="integrityGold != null">integrity_gold,</if>
-            <if test="remark != null">remark,</if>
-            <if test="trialEndTime != null">trial_end_time,</if>
-            <if test="storageUsage != null">storage_usage,</if>
-            <if test="storeStatus != null">store_status,</if>
-            <if test="templateNum != null">template_num,</if>
-            <if test="version != null">version,</if>
-            <if test="delFlag != null">del_flag,</if>
-            <if test="createBy != null">create_by,</if>
-            <if test="createTime != null">create_time,</if>
-            <if test="updateBy != null">update_by,</if>
-            <if test="updateTime != null">update_time,</if>
-         </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="userId != null">#{userId},</if>
-            <if test="storeName != null">#{storeName},</if>
-            <if test="brandName != null">#{brandName},</if>
-            <if test="loginAccount != null">#{loginAccount},</if>
-            <if test="contactName != null">#{contactName},</if>
-            <if test="contactPhone != null">#{contactPhone},</if>
-            <if test="contactBackPhone != null">#{contactBackPhone},</if>
-            <if test="wechatAccount != null">#{wechatAccount},</if>
-            <if test="qqAccount != null">#{qqAccount},</if>
-            <if test="alipayAccount != null">#{alipayAccount},</if>
-            <if test="operateYears != null">#{operateYears},</if>
-            <if test="storeAddress != null">#{storeAddress},</if>
-            <if test="facAddress != null">#{facAddress},</if>
-            <if test="prodScale != null">#{prodScale},</if>
-            <if test="integrityGold != null">#{integrityGold},</if>
-            <if test="remark != null">#{remark},</if>
-            <if test="trialEndTime != null">#{trialEndTime},</if>
-            <if test="storageUsage != null">#{storageUsage},</if>
-            <if test="storeStatus != null">#{storeStatus},</if>
-            <if test="templateNum != null">#{templateNum},</if>
-            <if test="version != null">#{version},</if>
-            <if test="delFlag != null">#{delFlag},</if>
-            <if test="createBy != null">#{createBy},</if>
-            <if test="createTime != null">#{createTime},</if>
-            <if test="updateBy != null">#{updateBy},</if>
-            <if test="updateTime != null">#{updateTime},</if>
-         </trim>
-    </insert>
-
-    <update id="updateStore" parameterType="Store">
-        update store
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="userId != null">user_id = #{userId},</if>
-            <if test="storeName != null">store_name = #{storeName},</if>
-            <if test="brandName != null">brand_name = #{brandName},</if>
-            <if test="loginAccount != null">login_account = #{loginAccount},</if>
-            <if test="contactName != null">contact_name = #{contactName},</if>
-            <if test="contactPhone != null">contact_phone = #{contactPhone},</if>
-            <if test="contactBackPhone != null">contact_back_phone = #{contactBackPhone},</if>
-            <if test="wechatAccount != null">wechat_account = #{wechatAccount},</if>
-            <if test="qqAccount != null">qq_account = #{qqAccount},</if>
-            <if test="alipayAccount != null">alipay_account = #{alipayAccount},</if>
-            <if test="operateYears != null">operate_years = #{operateYears},</if>
-            <if test="storeAddress != null">store_address = #{storeAddress},</if>
-            <if test="facAddress != null">fac_address = #{facAddress},</if>
-            <if test="prodScale != null">prod_scale = #{prodScale},</if>
-            <if test="integrityGold != null">integrity_gold = #{integrityGold},</if>
-            <if test="remark != null">remark = #{remark},</if>
-            <if test="trialEndTime != null">trial_end_time = #{trialEndTime},</if>
-            <if test="storageUsage != null">storage_usage = #{storageUsage},</if>
-            <if test="storeStatus != null">store_status = #{storeStatus},</if>
-            <if test="templateNum != null">template_num = #{templateNum},</if>
-            <if test="version != null">version = #{version},</if>
-            <if test="delFlag != null">del_flag = #{delFlag},</if>
-            <if test="createBy != null">create_by = #{createBy},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
-            <if test="updateBy != null">update_by = #{updateBy},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
-        </trim>
-        where id = #{id}
-    </update>
-
-    <delete id="deleteStoreByStoreId" parameterType="Long">
-        delete from store where id = #{id}
-    </delete>
-
-    <delete id="deleteStoreByStoreIds" parameterType="String">
-        delete from store where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </delete>
-
 
     <select id="selectStorePage" resultType="com.ruoyi.xkt.dto.store.StorePageResDTO">
         SELECT
@@ -190,6 +20,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="storeStatus != null  and storeStatus != ''"> and s.store_status = #{storeStatus}</if>
     </select>
 
+    <select id="getSimpleInfo" resultType="com.ruoyi.xkt.dto.store.StoreSimpleResDTO">
+        SELECT
+            s.id AS store_id,
+            s.store_name,
+            s.template_num,
+            s.contact_phone,
+            s.contact_back_phone,
+            s.wechat_account,
+            s.qq_account,
+            s.store_address,
+            sc.legal_name,
+            sc.license_name,
+            EXISTS ( SELECT 1 FROM user_subscriptions us LEFT JOIN store ON s.id = us.store_id AND us.del_flag = 0 AND us.user_id = #{userId}) AS focus
+        FROM
+            store s
+                LEFT JOIN store_homepage sh ON s.id = sh.store_id
+                LEFT JOIN store_certificate sc ON s.id = sc.store_id
+         WHERE
+            s.id = #{storeId}
+    </select>
 
 
 

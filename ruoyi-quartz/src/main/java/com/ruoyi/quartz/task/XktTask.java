@@ -574,6 +574,32 @@ public class XktTask {
 
     }
 
+    /**
+     * 每天凌晨2点更新用户搜索历史入库
+     */
+    @Transactional
+    public void dailyUpdateUserSearchHistory(){
+
+        // TODO
+        // TODO
+        // TODO
+        // TODO
+
+    }
+
+    /**
+     * 每晚凌晨3点更新系统热搜到redis中
+     */
+    @Transactional
+    public void dailyUpdateSearchHotToRedis(){
+
+        // TODO
+        // TODO
+        // TODO
+        // TODO
+
+    }
+
 
     /**
      * 自动关闭超时订单

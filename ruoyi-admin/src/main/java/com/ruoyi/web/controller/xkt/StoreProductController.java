@@ -64,7 +64,6 @@ public class StoreProductController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryResPicList(storeId, prodArtNum), StoreProdFuzzyResPicVO.class));
     }
 
-
     /**
      * 查询档口商品列表
      */
@@ -84,6 +83,15 @@ public class StoreProductController extends XktBaseController {
     }
 
     /**
+     * PC获取档口商品详细信息
+     */
+    @ApiOperation(value = "PC获取档口商品详细信息", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/pc/detail/{storeProdId}")
+    public R<StoreProdPCResVO> getPCInfo(@PathVariable("storeProdId") Long storeProdId) {
+        return R.ok(BeanUtil.toBean(storeProdService.getPCInfo(storeProdId), StoreProdPCResVO.class));
+    }
+
+    /**
      * APP获取档口商品详细信息
      */
     @ApiOperation(value = "APP获取档口商品详细信息", httpMethod = "GET", response = R.class)
@@ -91,7 +99,6 @@ public class StoreProductController extends XktBaseController {
     public R<StoreProdAppResVO> getAppInfo(@PathVariable("storeProdId") Long storeProdId) {
         return R.ok(BeanUtil.toBean(storeProdService.getAppInfo(storeProdId), StoreProdAppResVO.class));
     }
-
 
     /**
      * 获取档口商品颜色及sku等
@@ -140,6 +147,15 @@ public class StoreProductController extends XktBaseController {
     @PostMapping(value = "/pic-space")
     public R<StoreProdPicSpaceResVO> getStoreProductPicSpace(@Validated @RequestBody StoreProdPicSpaceVO picSpaceVO) {
         return R.ok(BeanUtil.toBean(storeProdService.getStoreProductPicSpace(BeanUtil.toBean(picSpaceVO, StoreProdPicSpaceDTO.class)), StoreProdPicSpaceResVO.class));
+    }
+
+    /**
+     * 获取商品各个状态数量
+     */
+    @ApiOperation(value = "获取商品各个状态数量", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/status/num/{storeId}")
+    public R<StoreProdStatusCountResVO> getStatusNum(@PathVariable Long storeId) {
+        return R.ok(BeanUtil.toBean(storeProdService.getStatusNum(storeId), StoreProdStatusCountResVO.class));
     }
 
 

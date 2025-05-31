@@ -21,17 +21,21 @@ public class UserSubscPageResDTO {
     private Long userSubscId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(name = "档口名称")
+    @ApiModelProperty(value = "档口名称")
     private String storeName;
-    @ApiModelProperty(name = "联系电话")
+    @ApiModelProperty(value = "联系电话")
     private String contactPhone;
-    @ApiModelProperty(name = "备选联系电话")
+    @ApiModelProperty(value = "备选联系电话")
     private String contactBackPhone;
-    @ApiModelProperty(name = "微信账号")
+    @ApiModelProperty(value = "微信账号")
     private String wechatAccount;
-    @ApiModelProperty(name = "QQ账号")
+    @ApiModelProperty(value = "QQ账号")
     private String qqAccount;
-    @ApiModelProperty(name = "档口地址")
+    @ApiModelProperty(value = "档口地址")
     private String storeAddress;
+    @ApiModelProperty(value = "最近30天销售量")
+    private Long last30DaysSaleQuantity;
+    @ApiModelProperty(value = "最近7天新增商品数")
+    private Long last7DaysNewProdQuantity;
 
 }

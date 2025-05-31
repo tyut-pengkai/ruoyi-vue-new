@@ -200,11 +200,14 @@ public class Constants
      * 平台外部账户ID-支付宝账户
      */
     public static final Long PLATFORM_ALIPAY_EXTERNAL_ACCOUNT_ID = 1L;
-
     /**
      * 排序值1
      */
     public static final Integer ORDER_NUM_1 = 1;
+    /**
+     * 档口默认权重 100
+     */
+    public static final Long STORE_WEIGHT_DEFAULT = 100L;
 
     public static final String VERSION_LOCK_ERROR_COMMON_MSG = "系统繁忙，请稍后再试";
 
@@ -256,11 +259,11 @@ public class Constants
      * 以图搜款搜索结果，广告插入位置 5 9 13 17 20
      */
     public static final Set<Integer> PIC_SEARCH_INSERT_POSITIONS = new HashSet<>(Arrays.asList(4, 8, 12, 16, 19));
-
     /**
      * 档口搜索结果，广告插入位置 2 9 18 27 36
      */
     public static final Set<Integer> STORE_RECOMMEND_INSERT_POSITIONS = new HashSet<>(Arrays.asList(2, 9, 18, 27, 36));
+
 
 
 }

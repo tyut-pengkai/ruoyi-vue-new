@@ -1,12 +1,12 @@
 package com.ruoyi.xkt.dto.advertRound.pc;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author liujiang
@@ -15,23 +15,32 @@ import java.math.BigDecimal;
  */
 @ApiModel("PC 用户中心")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Accessors(chain = true)
 public class PCUserCenterDTO {
 
-    @ApiModelProperty(value = "2商品")
+    @ApiModelProperty(value = "2 商品")
     private Integer displayType;
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
+    @ApiModelProperty(value = "档口名称")
+    private String storeName;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
-    @ApiModelProperty(value = "商品货号")
+    @ApiModelProperty(value = "货号")
     private String prodArtNum;
+    @ApiModelProperty(value = "主图")
+    private String mainPicUrl;
+    @ApiModelProperty(value = "单价")
+    private BigDecimal prodPrice;
+    @ApiModelProperty(value = "标题")
+    private String prodTitle;
+    @ApiModelProperty(value = "是否广告")
+    private Boolean advert;
+    @ApiModelProperty(value = "是否有视频")
+    private Boolean hasVideo;
     @ApiModelProperty(value = "排序")
     private Integer orderNum;
-    @ApiModelProperty(value = "售价")
-    private BigDecimal price;
-    @ApiModelProperty(value = "商品第一张主图路径")
-    private String mainPicUrl;
-    @ApiModelProperty(value = "商品标题")
-    private String prodTitle;
+    @ApiModelProperty(value = "标签")
+    private List<String> tags;
 
 }

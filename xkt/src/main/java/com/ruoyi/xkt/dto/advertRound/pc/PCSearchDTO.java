@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRound.pc;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,7 +15,6 @@ import java.util.List;
 @ApiModel("PC 搜索 ")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PCSearchDTO {
 
     @ApiModelProperty(value = "档口ID")
@@ -28,7 +26,7 @@ public class PCSearchDTO {
     @ApiModelProperty(value = "货号")
     private String prodArtNum;
     @ApiModelProperty(value = "主图")
-    private String mainPic;
+    private String mainPicUrl;
     @ApiModelProperty(value = "单价")
     private String prodPrice;
     @ApiModelProperty(value = "是否广告")

@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRound.pc.store;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.util.List;
  */
 @ApiModel("PC 档口馆 顶部横幅")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 @Accessors(chain = true)
 public class PCStoreTopBannerDTO {
 

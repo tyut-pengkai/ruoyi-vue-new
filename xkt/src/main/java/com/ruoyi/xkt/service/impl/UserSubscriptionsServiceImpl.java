@@ -9,11 +9,15 @@ import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.xkt.domain.StoreProduct;
+import com.ruoyi.xkt.domain.StoreSale;
 import com.ruoyi.xkt.domain.UserSubscriptions;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscDeleteDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageResDTO;
+import com.ruoyi.xkt.mapper.StoreProductMapper;
+import com.ruoyi.xkt.mapper.StoreSaleMapper;
 import com.ruoyi.xkt.mapper.UserSubscriptionsMapper;
 import com.ruoyi.xkt.service.IUserSubscriptionsService;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +26,12 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 用户关注档口Service业务层处理
@@ -36,6 +44,8 @@ import java.util.Optional;
 public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
 
     final UserSubscriptionsMapper userSubscMapper;
+    final StoreSaleMapper saleMapper;
+    final StoreProductMapper storeProdMapper;
 
 
     /**
@@ -98,10 +108,25 @@ public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
         if (CollectionUtils.isEmpty(list)) {
             return Page.empty(pageDTO.getPageNum(), pageDTO.getPageSize());
         }
-
-        // TODO 获取档口最近30天销量和近7日上新数量
-        // TODO 获取档口最近30天销量和近7日上新数量
-
+        // 今天
+        final Date now = java.sql.Date.valueOf(LocalDate.now());
+        // 30天前
+        final Date before30Days = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+        // 7天前
+        final Date before7Days = java.sql.Date.valueOf(LocalDate.now().minusDays(7));
+        final List<Long> storeIdList = list.stream().map(UserSubscPageResDTO::getStoreId).collect(Collectors.toList());
+        List<StoreSale> saleList = this.saleMapper.selectList(new LambdaQueryWrapper<StoreSale>()
+                .in(StoreSale::getStoreId, storeIdList).eq(StoreSale::getDelFlag, Constants.UNDELETED)
+                .between(StoreSale::getVoucherDate, before30Days, now));
+        // 最近30天销售数据
+        Map<Long, Long> saleQuantityMap = saleList.stream().collect(Collectors.groupingBy(StoreSale::getStoreId, Collectors.summingLong(StoreSale::getSaleQuantity)));
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).in(StoreProduct::getStoreId, storeIdList)
+                .between(StoreProduct::getCreateTime, before7Days, now));
+        // 最近7天上新数据
+        Map<Long, Long> newProdQuantityMap = storeProdList.stream().collect(Collectors.groupingBy(StoreProduct::getStoreId, Collectors.summingLong(StoreProduct::getId)));
+        list.forEach(x -> x.setLast30DaysSaleQuantity(saleQuantityMap.getOrDefault(x.getStoreId(), 0L))
+                .setLast7DaysNewProdQuantity(newProdQuantityMap.getOrDefault(x.getStoreId(), 0L)));
         return Page.convert(new PageInfo<>(list));
     }
 

@@ -2,7 +2,6 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProduct;
-import com.ruoyi.xkt.dto.advertRound.picSearch.PicSearchAdvertDTO;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
 import com.ruoyi.xkt.dto.storeProduct.*;
 import org.apache.ibatis.annotations.Param;
@@ -90,8 +89,8 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      * @return List<PicSearchAdvertDTO>
      */
     List<StoreProdViewDTO> getStoreProdViewAttr(@Param("storeProdIdList") List<Long> storeProdIdList,
-                                                  @Param("voucherDateStart") Date voucherDateStart,
-                                                  @Param("voucherDateEnd") Date voucherDateEnd);
+                                                @Param("voucherDateStart") Date voucherDateStart,
+                                                @Param("voucherDateEnd") Date voucherDateEnd);
 
     /**
      * 获取图搜热款时，商品的各种基本属性
@@ -103,12 +102,29 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
 
     /**
      * 获取新款频出的前20名档口
-     * @param yesterday 昨天
+     *
+     * @param yesterday  昨天
      * @param oneWeekAgo 一周前
      * @return List<DailyStoreTagDTO>
      */
     List<DailyStoreTagDTO> selectTop20List(@Param("yesterday") Date yesterday, @Param("oneWeekAgo") Date oneWeekAgo);
 
+    /**
+     * 获取PC商品详情页信息
+     *
+     * @param storeProdId 当前商品ID
+     * @param userId      当前登录用户ID
+     * @return StoreProdPCResDTO
+     */
+    StoreProdPCResDTO selectPCProdInfo(@Param("storeProdId") Long storeProdId, @Param("userId") Long userId);
+
+    /**
+     * 获取档口各个状态的数量
+     * @param storeId 档口ID
+     * @param statusList 状态列表
+     * @return StoreProdStatusCountResDTO
+     */
+    StoreProdStatusCountResDTO getStatusNum(@Param("storeId") Long storeId, @Param("statusList") List<Integer> statusList);
 
 }
 

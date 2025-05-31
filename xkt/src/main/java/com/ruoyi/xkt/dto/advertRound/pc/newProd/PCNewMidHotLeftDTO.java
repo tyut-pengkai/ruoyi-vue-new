@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRound.pc.newProd;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,7 +13,7 @@ import lombok.experimental.Accessors;
 @ApiModel("PC 新品馆 热卖榜左侧大图")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class PCNewMidHotLeftDTO {
 
     @ApiModelProperty(value = "1推广图")

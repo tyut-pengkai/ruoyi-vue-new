@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRound.pc.index;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,7 +12,7 @@ import lombok.experimental.Accessors;
  */
 @ApiModel("PC 首页 搜索框下档口名称")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 @Accessors(chain = true)
 public class PCIndexSearchUnderlineStoreNameDTO {
 

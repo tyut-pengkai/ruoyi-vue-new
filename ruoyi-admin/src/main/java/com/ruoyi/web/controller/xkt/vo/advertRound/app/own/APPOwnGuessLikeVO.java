@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.advertRound.app.own;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,7 +16,6 @@ import java.util.List;
 @ApiModel("APP我的猜你喜欢")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class APPOwnGuessLikeVO {
 
     @ApiModelProperty(value = "2商品")

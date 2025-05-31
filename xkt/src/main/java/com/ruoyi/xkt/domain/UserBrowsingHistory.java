@@ -1,13 +1,9 @@
 package com.ruoyi.xkt.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -21,89 +17,48 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class UserBrowsingHistory extends XktBaseEntity {
-    private static final long serialVersionUID = 1L;
 
+    private static final long serialVersionUID = 1L;
     /**
      * 用户浏览足迹ID
      */
     @TableId
     private Long id;
-
     /**
-     * sys_user.id
+     * 用户ID
      */
-    @Excel(name = "sys_user.id")
     private Long userId;
-
     /**
-     * sys_file.id
+     * 档口ID
      */
-    @Excel(name = "sys_file.id")
-    private Long fileId;
-
-    /**
-     * store_prod_file.id
-     */
-    @Excel(name = "store_prod_file.id")
-    private Long storeProdFileId;
-
-    /**
-     * store.id
-     */
-    @Excel(name = "store.id")
     private Long storeId;
-
     /**
      * 档口名称
      */
-    @Excel(name = "档口名称")
     private String storeName;
-
+    /**
+     * 商品ID
+     */
+    private Long storeProdId;
     /**
      * 商品货号
      */
-    @Excel(name = "商品货号")
     private String prodArtNum;
-
-    /**
-     * 商品价格
-     */
-    @Excel(name = "商品价格")
-    private BigDecimal price;
-
     /**
      * 商品标题
      */
-    @Excel(name = "商品标题")
     private String prodTitle;
-
+    /**
+     * 第一张主图路径
+     */
+    private String mainPicUrl;
+    /**
+     * 商品价格
+     */
+    private BigDecimal price;
     /**
      * 凭证日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "凭证日期", width = 30, dateFormat = "yyyy-MM-dd")
     private Date voucherDate;
 
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", getId())
-                .append("userId", getUserId())
-                .append("fileId", getFileId())
-                .append("storeProdFileId", getStoreProdFileId())
-                .append("storeId", getStoreId())
-                .append("storeName", getStoreName())
-                .append("prodArtNum", getProdArtNum())
-                .append("price", getPrice())
-                .append("prodTitle", getProdTitle())
-                .append("voucherDate", getVoucherDate())
-                .append("version", getVersion())
-                .append("delFlag", getDelFlag())
-                .append("createBy", getCreateBy())
-                .append("createTime", getCreateTime())
-                .append("updateBy", getUpdateBy())
-                .append("updateTime", getUpdateTime())
-                .toString();
-    }
 }

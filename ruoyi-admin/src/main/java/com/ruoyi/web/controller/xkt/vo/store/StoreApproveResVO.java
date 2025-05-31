@@ -15,7 +15,7 @@ import lombok.Data;
 public class StoreApproveResVO {
 
     @ApiModelProperty(value = "档口基本信息")
-    private StoreBasicResVO basic;
+    private StoreResVO basic;
     @ApiModelProperty(value = "档口认证信息")
     private StoreCertResVO certificate;
 

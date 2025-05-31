@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.dto.store.StorePageDTO;
 import com.ruoyi.xkt.dto.store.StorePageResDTO;
+import com.ruoyi.xkt.dto.store.StoreSimpleResDTO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,13 +18,6 @@ import java.util.List;
  */
 @Repository
 public interface StoreMapper extends BaseMapper<Store> {
-    /**
-     * 查询档口
-     *
-     * @param id 档口主键
-     * @return 档口
-     */
-    public Store selectStoreByStoreId(Long id);
 
     /**
      * 查询档口列表
@@ -30,15 +25,7 @@ public interface StoreMapper extends BaseMapper<Store> {
      * @param store 档口
      * @return 档口集合
      */
-    public List<Store> selectStoreList(Store store);
-
-    /**
-     * 新增档口
-     *
-     * @param store 档口
-     * @return 结果
-     */
-    public int insertStore(Store store);
+    List<Store> selectStoreList(Store store);
 
     /**
      * 修改档口
@@ -46,24 +33,17 @@ public interface StoreMapper extends BaseMapper<Store> {
      * @param store 档口
      * @return 结果
      */
-    public int updateStore(Store store);
-
-    /**
-     * 删除档口
-     *
-     * @param id 档口主键
-     * @return 结果
-     */
-    public int deleteStoreByStoreId(Long id);
-
-    /**
-     * 批量删除档口
-     *
-     * @param storeIds 需要删除的数据主键集合
-     * @return 结果
-     */
-    public int deleteStoreByStoreIds(Long[] storeIds);
+    int updateStore(Store store);
 
     List<StorePageResDTO> selectStorePage(StorePageDTO pageDTO);
+
+    /**
+     * PC 商城首页 获取档口基本信息
+     *
+     * @param storeId 档口ID
+     * @param userId  用户ID
+     * @return StoreBasicResDTO
+     */
+    StoreSimpleResDTO getSimpleInfo(@Param("storeId") Long storeId, @Param("userId") Long userId);
 
 }

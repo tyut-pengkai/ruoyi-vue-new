@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
@@ -8,10 +9,12 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.xkt.domain.AdvertRound;
 import com.ruoyi.xkt.domain.DailyStoreTag;
@@ -33,11 +36,13 @@ import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdViewDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
+import com.ruoyi.xkt.dto.useSearchHistory.UserSearchHistoryDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 import com.ruoyi.xkt.dto.website.StoreSearchDTO;
 import com.ruoyi.xkt.enums.AdBiddingStatus;
 import com.ruoyi.xkt.enums.AdDisplayType;
 import com.ruoyi.xkt.enums.AdLaunchStatus;
+import com.ruoyi.xkt.enums.SearchPlatformType;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IPictureService;
 import com.ruoyi.xkt.service.IWebsitePCService;
@@ -137,7 +142,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                                 .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                                 .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
                                 .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
-                                .setMainPic(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "")
+                                .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "")
                                 .setTags(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getTags() : null));
                     });
                 });
@@ -211,7 +216,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                                 .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                                 .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
                                 .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
-                                .setMainPic(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "")
+                                .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "")
                                 .setTags(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getTags() : null));
                     });
                 });
@@ -240,6 +245,9 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     @Override
     @Transactional(readOnly = true)
     public Page<PCSearchDTO> psSearchPage(IndexSearchDTO searchDTO) throws IOException {
+        // 更新用户搜索历史
+        updateRedisUserSearchHistory(searchDTO.getSearch());
+        // 获取用户搜索结果列表
         Page<ESProductDTO> page = this.search(searchDTO);
         // 筛选出真实的数据
         List<PCSearchDTO> realDataList = page.getList().stream()
@@ -1227,22 +1235,20 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         if (CollectionUtils.isEmpty(oneMonthList)) {
             return new ArrayList<>();
         }
-        final List<Long> storeProdIdList = oneMonthList.stream()
-                .map(AdvertRound::getProdIdStr).map(Long::parseLong).distinct().collect(Collectors.toList());
-        // 档口商品的价格及商品主图map
-        Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = CollectionUtils.isEmpty(storeProdIdList) ? new ConcurrentHashMap<>()
-                : this.storeProdMapper.selectPriceAndMainPicList(storeProdIdList).stream().collect(Collectors
-                .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
+        final List<Long> storeProdIdList = oneMonthList.stream().map(AdvertRound::getProdIdStr).map(Long::parseLong).distinct().collect(Collectors.toList());
+        List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(storeProdIdList);
+        attrList = attrList.stream().peek(x -> x.setTags(StringUtils.isNotBlank(x.getTagStr()) ? Arrays.asList(x.getTagStr().split(",")) : null)).collect(Collectors.toList());
+        Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
         List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
                 .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(launchingList)) {
-            pcUserCenterList = expiredList.stream().map(x -> this.getPcUserCenterDTO(x, prodPriceAndMainPicMap)).limit(18).collect(Collectors.toList());
+            pcUserCenterList = expiredList.stream().map(x -> this.getPcUserCenterDTO(x, attrMap)).limit(18).collect(Collectors.toList());
             for (int i = 0; i < pcUserCenterList.size(); i++) {
                 pcUserCenterList.get(i).setOrderNum(i + 1);
             }
         } else {
-            pcUserCenterList = launchingList.stream().map(x -> this.getPcUserCenterDTO(x, prodPriceAndMainPicMap)
+            pcUserCenterList = launchingList.stream().map(x -> this.getPcUserCenterDTO(x, attrMap)
                     .setOrderNum(this.positionToNumber(x.getPosition()))).limit(18).collect(Collectors.toList());
         }
         // 放到redis 中 过期时间1天
@@ -1268,22 +1274,20 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         if (CollectionUtils.isEmpty(oneMonthList)) {
             return new ArrayList<>();
         }
-        final List<Long> storeProdIdList = oneMonthList.stream()
-                .map(AdvertRound::getProdIdStr).map(Long::parseLong).distinct().collect(Collectors.toList());
-        // 档口商品的价格及商品主图map
-        Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = CollectionUtils.isEmpty(storeProdIdList) ? new ConcurrentHashMap<>()
-                : this.storeProdMapper.selectPriceAndMainPicList(storeProdIdList).stream().collect(Collectors
-                .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
+        final List<Long> storeProdIdList = oneMonthList.stream().map(AdvertRound::getProdIdStr).map(Long::parseLong).distinct().collect(Collectors.toList());
+        List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(storeProdIdList);
+        attrList = attrList.stream().peek(x -> x.setTags(StringUtils.isNotBlank(x.getTagStr()) ? Arrays.asList(x.getTagStr().split(",")) : null)).collect(Collectors.toList());
+        Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
         List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
                 .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(launchingList)) {
-            pcDownloadList = expiredList.stream().map(advertRound -> this.getPcDownload(advertRound, prodPriceAndMainPicMap)).limit(10).collect(Collectors.toList());
+            pcDownloadList = expiredList.stream().map(advertRound -> this.getPcDownload(advertRound, attrMap)).limit(10).collect(Collectors.toList());
             for (int i = 0; i < pcDownloadList.size(); i++) {
                 pcDownloadList.get(i).setOrderNum(i + 1);
             }
         } else {
-            pcDownloadList = launchingList.stream().map(advertRound -> this.getPcDownload(advertRound, prodPriceAndMainPicMap)
+            pcDownloadList = launchingList.stream().map(advertRound -> this.getPcDownload(advertRound, attrMap)
                     .setOrderNum(this.positionToNumber(advertRound.getPosition()))).limit(10).collect(Collectors.toList());
         }
         // 放到redis 中 过期时间1天
@@ -1294,32 +1298,44 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     /**
      * 获取PC 下载页数据
      *
-     * @param advertRound            下载页广告
-     * @param prodPriceAndMainPicMap 商品价格和图片
+     * @param advertRound 下载页广告
+     * @param attrMap     商品价格和图片等
      * @return PCDownloadDTO
      */
-    private PCDownloadDTO getPcDownload(AdvertRound advertRound, Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap) {
+    private PCDownloadDTO getPcDownload(AdvertRound advertRound, Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap) {
         final Long storeProdId = Long.parseLong(advertRound.getProdIdStr());
+        final StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(storeProdId);
         return new PCDownloadDTO().setDisplayType(AdDisplayType.PRODUCT.getValue())
-                .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
-                .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
-                .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
+                .setStoreProdId(storeProdId).setAdvert(Boolean.TRUE)
+                .setStoreId(ObjectUtils.isNotEmpty(dto) ? dto.getStoreId() : null)
+                .setStoreName(ObjectUtils.isNotEmpty(dto) ? dto.getStoreName() : "")
+                .setProdArtNum(ObjectUtils.isNotEmpty(dto) ? dto.getProdArtNum() : "")
+                .setProdArtNum(ObjectUtils.isNotEmpty(dto) ? dto.getProdArtNum() : "")
+                .setMainPicUrl(ObjectUtils.isNotEmpty(dto) ? dto.getMainPicUrl() : "")
+                .setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                .setProdTitle(ObjectUtils.isNotEmpty(dto) ? dto.getProdTitle() : "")
+                .setHasVideo(ObjectUtils.isNotEmpty(dto) ? dto.getHasVideo() : Boolean.FALSE)
+                .setTags(ObjectUtils.isNotEmpty(dto) ? dto.getTags() : null);
     }
 
     /**
      * 获取PC 用户中心 广告列表
      *
-     * @param advertRound            用户中心
-     * @param prodPriceAndMainPicMap 商品价格及主图等map
+     * @param advertRound 用户中心
+     * @param attrMap     商品价格及主图等map
      * @return PCUserCenterDTO
      */
-    private PCUserCenterDTO getPcUserCenterDTO(AdvertRound advertRound, Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap) {
+    private PCUserCenterDTO getPcUserCenterDTO(AdvertRound advertRound, Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap) {
         final Long storeProdId = Long.parseLong(advertRound.getProdIdStr());
-        return new PCUserCenterDTO().setDisplayType(AdDisplayType.PRODUCT.getValue())
-                .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
-                .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
-                .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "")
-                .setProdTitle(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdTitle() : "");
+        final StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(storeProdId);
+        return new PCUserCenterDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreId(advertRound.getStoreId())
+                .setStoreName(dto.getStoreName()).setStoreProdId(storeProdId).setAdvert(Boolean.TRUE)
+                .setProdArtNum(ObjectUtils.isNotEmpty(dto) ? dto.getProdArtNum() : "")
+                .setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                .setMainPicUrl(ObjectUtils.isNotEmpty(dto) ? dto.getMainPicUrl() : "")
+                .setProdTitle(ObjectUtils.isNotEmpty(dto) ? dto.getProdTitle() : "")
+                .setHasVideo(ObjectUtils.isNotEmpty(dto) ? dto.getHasVideo() : Boolean.FALSE)
+                .setTags(ObjectUtils.isNotEmpty(dto) ? dto.getTags() : null);
     }
 
     /**
@@ -1689,6 +1705,25 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             }
         }
         return mergedList;
+    }
+
+    /**
+     * 更新用户搜索结果到redis
+     *
+     * @param search 用户搜索内容
+     */
+    private void updateRedisUserSearchHistory(String search) {
+        if (StringUtils.isEmpty(search)) {
+            return;
+        }
+        // 将用户搜索的数据存放到redis中，每晚统一存到数据库中
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        // 获取用户在redis中的搜索数据
+        List<UserSearchHistoryDTO> userSearchList = CollUtil.defaultIfEmpty(redisCache.getCacheObject(CacheConstants.USER_SEARCH_HISTORY + loginUser.getUserId()), new ArrayList<>());
+        userSearchList.add(new UserSearchHistoryDTO().setUserId(loginUser.getUserId()).setUserName(loginUser.getUser().getNickName()).setSearchContent(search)
+                .setPlatformId(SearchPlatformType.PC.getValue()).setSearchTime(DateUtils.getNowDate()));
+        // 设置用户搜索历史，不过期
+        redisCache.setCacheObject(CacheConstants.USER_SEARCH_HISTORY + loginUser.getUserId(), userSearchList);
     }
 
 }

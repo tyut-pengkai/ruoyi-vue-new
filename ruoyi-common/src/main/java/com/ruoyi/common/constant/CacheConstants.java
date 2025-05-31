@@ -151,7 +151,6 @@ public class CacheConstants {
      */
     public static final String PC_NEW_RECOMMEND = "pc_new_recommend";
 
-
     /**
      * APP 广告
      */
@@ -216,5 +215,10 @@ public class CacheConstants {
      * 档口馆 档口推荐广告
      */
     public static final String PC_STORE_RECOMMEND_ADVERT = "pc_store_recommend_advert";
+    /**
+     * 用户搜索历史
+     */
+    public static final String USER_SEARCH_HISTORY = "user_search_history:";
+
 
 }

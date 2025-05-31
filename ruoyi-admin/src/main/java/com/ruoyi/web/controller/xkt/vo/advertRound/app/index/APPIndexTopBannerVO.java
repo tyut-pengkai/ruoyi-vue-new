@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.advertRound.app.index;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,7 +12,6 @@ import lombok.experimental.Accessors;
  */
 @ApiModel("APP 首页顶部轮播图")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Accessors(chain = true)
 public class APPIndexTopBannerVO {
 

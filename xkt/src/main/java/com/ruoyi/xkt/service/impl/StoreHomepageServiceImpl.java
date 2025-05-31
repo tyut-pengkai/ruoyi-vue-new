@@ -6,12 +6,10 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.domain.*;
-import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDecorationDTO;
-import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDecorationResDTO;
-import com.ruoyi.xkt.dto.storeHomepage.StoreHomeProdResDTO;
-import com.ruoyi.xkt.dto.storeHomepage.StoreHomeResDTO;
+import com.ruoyi.xkt.dto.storeHomepage.*;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.enums.FileType;
@@ -70,7 +68,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     public Integer insert(Long storeId, Integer templateNum, StoreHomeDecorationDTO homepageDTO) {
         List<StoreHomepage> homepageList = this.insertToHomepage(storeId, homepageDTO);
         // 当前档口首页各部分总的文件大小
-        BigDecimal totalSize = homepageDTO.getBigBannerList().stream().map(x -> ObjectUtils.defaultIfNull(x.getFileSize(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalSize = homepageDTO.getBannerList().stream().map(x -> ObjectUtils.defaultIfNull(x.getFileSize(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>().eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         store.setTemplateNum(templateNum);
@@ -134,7 +132,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                 .collect(Collectors.toList());
         return new StoreHomeDecorationResDTO() {{
             setTemplateNum(store.getTemplateNum());
-            setBigBannerList(bigBannerList);
+            setBannerList(bigBannerList);
             setDecorationList(decorList);
         }};
     }
@@ -299,6 +297,33 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     }
 
     /**
+     * 获取档口推荐商品列表
+     *
+     * @param storeId 档口ID
+     * @return List<StoreRecommendResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<StoreRecommendResDTO> getStoreRecommendList(Long storeId) {
+        List<StoreHomepage> recommendList = this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
+                .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED)
+                .eq(StoreHomepage::getFileType, HomepageType.STORE_RECOMMENDED.getValue()));
+        if (CollectionUtils.isEmpty(recommendList)) {
+            return Collections.emptyList();
+        }
+        // 商品价格、主图、标签等
+        List<StoreProdPriceAndMainPicAndTagDTO> attrList = this.storeProdMapper.selectPriceAndMainPicAndTagList(recommendList.stream()
+                .map(StoreHomepage::getBizId).collect(Collectors.toList()));
+        Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream()
+                .collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, Function.identity()));
+        return recommendList.stream().map(x -> {
+            StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
+            final List<String> tags = ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? Arrays.asList(dto.getTagStr().split(",")) : null;
+            return BeanUtil.toBean(dto, StoreRecommendResDTO.class).setTags(tags);
+        }).collect(Collectors.toList());
+    }
+
+    /**
      * 获取档口商品颜色尺码的库存
      *
      * @param stockList        库存数量
@@ -428,14 +453,14 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
      */
     private List<StoreHomepage> insertToHomepage(Long storeId, StoreHomeDecorationDTO homepageDTO) {
         // 新增的首页轮播大图部分
-        List<SysFile> bigBannerFileList = homepageDTO.getBigBannerList().stream().filter(x -> StringUtils.isNotBlank(x.getFileUrl())
+        List<SysFile> bigBannerFileList = homepageDTO.getBannerList().stream().filter(x -> StringUtils.isNotBlank(x.getFileUrl())
                         && StringUtils.isNotBlank(x.getFileName()) && ObjectUtils.isNotEmpty(x.getFileSize()) && ObjectUtils.isNotEmpty(x.getOrderNum()))
                 .map(x -> BeanUtil.toBean(x, SysFile.class)).collect(Collectors.toList());
         List<StoreHomepage> homePageList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(bigBannerFileList)) {
             this.fileMapper.insert(bigBannerFileList);
             Map<String, SysFile> bigBannerMap = bigBannerFileList.stream().collect(Collectors.toMap(SysFile::getFileName, Function.identity()));
-            homePageList.addAll(homepageDTO.getBigBannerList().stream().map(x -> BeanUtil.toBean(x, StoreHomepage.class).setStoreId(storeId)
+            homePageList.addAll(homepageDTO.getBannerList().stream().map(x -> BeanUtil.toBean(x, StoreHomepage.class).setStoreId(storeId)
                             .setFileId(bigBannerMap.containsKey(x.getFileName()) ? bigBannerMap.get(x.getFileName()).getId() : null))
                     .collect(Collectors.toList()));
         }

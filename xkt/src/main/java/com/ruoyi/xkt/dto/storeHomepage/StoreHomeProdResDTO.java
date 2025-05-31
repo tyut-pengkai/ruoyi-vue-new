@@ -39,7 +39,6 @@ public class StoreHomeProdResDTO {
     private List<DecorationVO> recommendedList;
 
     @Data
-    @ApiModel(value = "档口首页大轮播图")
     @Accessors(chain = true)
     public static class DecorationVO {
         @ApiModelProperty(value = "业务类型ID，如果选择：不跳转 不传，选择：跳转店铺，传storeId，选择：跳转商品，传storeProdId")

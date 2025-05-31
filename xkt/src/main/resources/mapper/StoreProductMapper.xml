@@ -87,7 +87,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM
             store_product_color spc
             LEFT JOIN store_product_color_price spcp ON spc.store_color_id = spcp.store_color_id AND spc.store_prod_id = spcp.store_prod_id AND spcp.del_flag = 0
-            LEFT JOIN store_product_color_size spcs ON spc.store_color_id = spcs.store_color_id AND spc.store_prod_id = spcs.store_prod_id
+            LEFT JOIN store_product_color_size spcs ON spc.store_color_id = spcs.store_color_id AND spc.store_prod_id = spcs.store_prod_id AND spcs.del_flag = 0
         WHERE
             spc.del_flag = 0
           AND spcs.standard = 1
@@ -223,6 +223,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ORDER BY
             count DESC
             LIMIT 20
+    </select>
+
+    <select id="selectPCProdInfo" resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdPCResDTO">
+        SELECT
+            sp.id AS storeProdId,
+            sp.prod_art_num,
+            sp.prod_title,
+            sp.create_time,
+            sp.over_price,
+            spd.detail,
+            EXISTS ( SELECT 1 FROM user_favorites uf WHERE sp.id = uf.store_prod_id AND uf.del_flag = 0 AND uf.user_id = #{userId} ) AS collectProd
+        FROM
+            store_product sp
+                LEFT JOIN store_product_detail spd ON sp.id = spd.store_prod_id AND spd.del_flag = 0
+        WHERE
+            sp.del_flag = 0
+            AND sp.id = #{storeProdId}
+    </select>
+
+    <select id="getStatusNum" resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountResDTO">
+        SELECT
+            SUM(CASE WHEN sp.prod_status = 2 THEN 1 ELSE 0 END) AS onSaleNum,
+            SUM(CASE WHEN sp.prod_status = 3 THEN 1 ELSE 0 END) AS tailGoodsNum,
+            SUM(CASE WHEN sp.prod_status = 4 THEN 1 ELSE 0 END) AS offSaleNum
+        FROM
+            store_product sp
+        WHERE
+            sp.del_flag = 0
+          AND sp.store_id = #{storeId}
+          AND sp.prod_status IN
+          <foreach item="status" collection="statusList" open="(" separator="," close=")">
+            #{status}
+        </foreach>
     </select>
 
 

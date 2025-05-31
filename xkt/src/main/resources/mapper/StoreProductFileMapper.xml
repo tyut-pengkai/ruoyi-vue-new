@@ -133,5 +133,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 rank_num
     </select>
 
+    <select id="selectVideoAndMainPicList" resultType="com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO">
+        SELECT
+            spf.store_prod_id,
+            spf.file_id,
+            sf.file_url,
+            spf.file_type,
+            spf.order_num
+        FROM
+            store_product_file spf
+                LEFT JOIN sys_file sf ON spf.file_id = sf.id
+        WHERE
+            spf.del_flag = 0
+          AND spf.store_prod_id = #{storeProdId}
+          AND spf.file_type IN (1,2)
+    </select>
+
 
 </mapper>

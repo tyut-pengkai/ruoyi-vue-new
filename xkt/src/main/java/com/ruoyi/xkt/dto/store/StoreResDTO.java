@@ -15,7 +15,7 @@ import java.util.Date;
  */
 @ApiModel("档口基本信息")
 @Data
-public class StoreBasicResDTO {
+public class StoreResDTO {
 
     @ApiModelProperty(value = "档口ID")
     private Long storeId;

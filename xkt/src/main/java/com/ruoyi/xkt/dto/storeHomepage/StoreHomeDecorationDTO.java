@@ -19,7 +19,7 @@ import java.util.List;
 public class StoreHomeDecorationDTO {
 
     @ApiModelProperty(value = "档口首页装修大轮播图")
-    private List<BigBannerDTO> bigBannerList;
+    private List<BigBannerDTO> bannerList;
     @ApiModelProperty(value = "档口首页装修其它图部分")
     private List<DecorationDTO> decorList;
 

@@ -34,10 +34,6 @@ public class StoreController extends XktBaseController {
 
     final IStoreService storeService;
 
-    // TODO 有一个权重，每个档口原始值都相同
-
-
-
     @Log(title = "新增档口", businessType = BusinessType.UPDATE)
     @PostMapping
     public R<Integer> create(@Validated @RequestBody StoreCreateVO createVO) {
@@ -73,8 +69,14 @@ public class StoreController extends XktBaseController {
 
     @ApiOperation(value = "获取档口详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}")
-    public R<StoreBasicResVO> getInfo(@PathVariable("storeId") Long storeId) {
-        return R.ok(BeanUtil.toBean(storeService.getInfo(storeId), StoreBasicResVO.class));
+    public R<StoreResVO> getInfo(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeService.getInfo(storeId), StoreResVO.class));
+    }
+
+    @ApiOperation(value = "PC 商城首页 获取档口基础信息", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/simple/{storeId}")
+    public R<StoreSimpleResVO> getSimpleInfo(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeService.getSimpleInfo(storeId), StoreSimpleResVO.class));
     }
 
     @ApiOperation(value = "档口审核是获取档口基本信息", httpMethod = "GET", response = R.class)

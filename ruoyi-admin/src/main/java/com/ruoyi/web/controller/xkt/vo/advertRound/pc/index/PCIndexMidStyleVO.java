@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.advertRound.pc.index;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +14,7 @@ import java.util.List;
  */
 @ApiModel("PC 首页 风格榜")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class PCIndexMidStyleVO {
 
     @ApiModelProperty(value = "档口ID")

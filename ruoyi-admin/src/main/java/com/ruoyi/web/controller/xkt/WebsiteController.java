@@ -59,8 +59,6 @@ public class WebsiteController extends XktBaseController {
     // TODO 查询先按照storeWeight倒排，之后再按照各种 权重 进行排序
 
 
-
-
     final IWebsitePCService websitePCService;
     final IWebsiteAPPService websiteAPPService;
     @ApiOperation(value = "PC 首页 为你推荐", httpMethod = "POST", response = R.class)
@@ -80,7 +78,6 @@ public class WebsiteController extends XktBaseController {
     public R<Page<PCSearchDTO>> psSearchPage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
         return R.ok(websitePCService.psSearchPage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
     }
-
 
     @ApiOperation(value = "PC 首页 顶部横向轮播图", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/top/left")
@@ -200,7 +197,6 @@ public class WebsiteController extends XktBaseController {
     public R<List<PCDownloadVO>> getPcDownloadList() {
         return R.ok(BeanUtil.copyToList(websitePCService.getPcDownloadList(), PCDownloadVO.class));
     }
-
 
     @ApiOperation(value = "APP 首页 精选热卖列表", httpMethod = "POST", response = R.class)
     @PostMapping("/app/index/hot-sale")

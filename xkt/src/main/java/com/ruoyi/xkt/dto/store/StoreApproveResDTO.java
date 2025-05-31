@@ -15,7 +15,7 @@ import lombok.Data;
 public class StoreApproveResDTO {
 
     @ApiModelProperty(value = "档口基本信息")
-    private StoreBasicResDTO basic;
+    private StoreResDTO basic;
     @ApiModelProperty(value = "档口认证信息")
     private StoreCertResDTO certificate;
 

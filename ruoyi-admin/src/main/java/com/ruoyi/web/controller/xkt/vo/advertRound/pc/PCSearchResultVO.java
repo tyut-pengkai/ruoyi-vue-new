@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.advertRound.pc;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,7 +13,6 @@ import java.math.BigDecimal;
  */
 @ApiModel("PC 搜索结果")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PCSearchResultVO {
 
     @ApiModelProperty(value = "2商品")
