@@ -43,8 +43,8 @@ public class UserSearchHistory extends XktBaseEntity {
      */
     private Integer platformId;
     /**
-     * 统计时间
+     * 搜索时间
      */
-    private Date voucherDate;
+    private Date searchTime;
 
 }

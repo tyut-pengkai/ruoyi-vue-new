@@ -29,6 +29,7 @@ import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderCancelDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderRefund;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileLatestFourProdDTO;
+import com.ruoyi.xkt.dto.useSearchHistory.UserSearchHistoryDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.mapper.*;
@@ -93,6 +94,7 @@ public class XktTask {
     final PictureSearchMapper pictureSearchMapper;
     final StoreProductStatisticsMapper storeProdStatMapper;
     final StoreProductFileMapper storeProdFileMapper;
+    final UserSearchHistoryMapper userSearchHisMapper;
 
     /**
      * 定时任务上市季节年份
@@ -578,26 +580,54 @@ public class XktTask {
      * 每天凌晨2点更新用户搜索历史入库
      */
     @Transactional
-    public void dailyUpdateUserSearchHistory(){
-
-        // TODO
-        // TODO
-        // TODO
-        // TODO
-
+    public void dailyUpdateUserSearchHistory() {
+        Collection<String> keyList = this.redisCache.scanKeys(CacheConstants.USER_SEARCH_HISTORY + "*");
+        if (CollectionUtils.isEmpty(keyList)) {
+            return;
+        }
+        List<UserSearchHistoryDTO> redisSearchList = new ArrayList<>();
+        keyList.forEach(key -> {
+            List<UserSearchHistoryDTO> tempList = this.redisCache.getCacheObject(key);
+            CollectionUtils.addAll(redisSearchList, tempList);
+        });
+        // 用户最新搜索列表
+        List<UserSearchHistoryDTO> insertSearchList = redisSearchList.stream().filter(x -> ObjectUtils.isEmpty(x.getId())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(insertSearchList)) {
+            return;
+        }
+        this.userSearchHisMapper.insert(BeanUtil.copyToList(insertSearchList, UserSearchHistory.class));
+        // 将最新的数据更新到redis中
+        List<UserSearchHistory> latestSearchList = this.userSearchHisMapper.selectList(new LambdaQueryWrapper<UserSearchHistory>()
+                .eq(UserSearchHistory::getDelFlag, Constants.UNDELETED));
+        latestSearchList.stream().collect(Collectors.groupingBy(UserSearchHistory::getUserId))
+                .forEach((userId, list) -> {
+                    // 获取用户最新搜索的20条数据
+                    list = list.stream().sorted(Comparator.comparing(UserSearchHistory::getSearchTime).reversed()).limit(20).collect(Collectors.toList());
+                    redisCache.setCacheObject(CacheConstants.USER_SEARCH_HISTORY + userId, BeanUtil.copyToList(list, UserSearchHistoryDTO.class));
+                });
     }
 
     /**
      * 每晚凌晨3点更新系统热搜到redis中
      */
     @Transactional
-    public void dailyUpdateSearchHotToRedis(){
-
-        // TODO
-        // TODO
-        // TODO
-        // TODO
-
+    public void dailyUpdateSearchHotToRedis() {
+        Collection<String> keyList = this.redisCache.scanKeys(CacheConstants.USER_SEARCH_HISTORY + "*");
+        if (CollectionUtils.isEmpty(keyList)) {
+            return;
+        }
+        List<UserSearchHistoryDTO> redisSearchList = new ArrayList<>();
+        keyList.forEach(key -> {
+            List<UserSearchHistoryDTO> tempList = this.redisCache.getCacheObject(key);
+            CollectionUtils.addAll(redisSearchList, tempList);
+        });
+        Map<String, Long> searchCountMap = redisSearchList.stream().collect(Collectors.groupingBy(UserSearchHistoryDTO::getSearchContent,
+                Collectors.summingLong(UserSearchHistoryDTO::getId)));
+        // searchCountMap 按照 value 大小倒序排，取前20条热搜
+        List<Map.Entry<String, Long>> top20List = searchCountMap.entrySet().stream().sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(20).collect(Collectors.toList());
+        List<String> top20Keys = top20List.stream().map(Map.Entry::getKey).collect(Collectors.toList());
+        redisCache.setCacheObject(CacheConstants.SEARCH_HOT_KEY, top20Keys);
     }
 
 

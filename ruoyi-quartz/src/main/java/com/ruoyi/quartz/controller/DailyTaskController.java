@@ -91,8 +91,14 @@ public class DailyTaskController extends BaseController {
     }
 
     @PostMapping("/symbol-redis")
-    public R saveSymbolToRedis(SysJob sysJob) throws ParseException {
+    public R saveSymbolToRedis(SysJob sysJob) {
         task.saveSymbolToRedis();
+        return R.ok();
+    }
+
+    @PostMapping("/user-search-history")
+    public R dailyUserSearchHistory(SysJob sysJob) {
+        task.dailyUpdateUserSearchHistory();
         return R.ok();
     }
 

@@ -8,6 +8,7 @@ import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 /**

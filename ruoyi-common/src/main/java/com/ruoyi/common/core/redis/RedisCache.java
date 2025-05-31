@@ -1,10 +1,7 @@
 package com.ruoyi.common.core.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.BoundSetOperations;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -267,6 +264,23 @@ public class RedisCache
     {
         return redisTemplate.keys(pattern);
     }
+
+    /**
+     * 数据量大时，模糊匹配keys
+     *
+     * @param pattern 字符串前缀
+     * @return 对象列表
+     */
+    public Collection<String> scanKeys(final String pattern) {
+        Set<String> keys = new HashSet<>();
+        ScanOptions options = ScanOptions.scanOptions().match(pattern).build();
+        Cursor<byte[]> cursor = redisTemplate.getConnectionFactory().getConnection().scan(options);
+        while (cursor.hasNext()) {
+            keys.add(new String(cursor.next()));
+        }
+        return keys;
+    }
+
 
     public boolean exists(final String key) {
         return redisTemplate.hasKey(key);

@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -757,7 +758,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         // 获取用户在redis中的搜索数据
         List<UserSearchHistoryDTO> userSearchList = CollUtil.defaultIfEmpty(redisCache.getCacheObject(CacheConstants.USER_SEARCH_HISTORY + loginUser.getUserId()), new ArrayList<>());
         userSearchList.add(new UserSearchHistoryDTO().setUserId(loginUser.getUserId()).setUserName(loginUser.getUser().getNickName()).setSearchContent(search)
-                .setPlatformId(SearchPlatformType.APP.getValue()).setSearchTime(DateUtils.getNowDate()));
+                .setPlatformId(SearchPlatformType.APP.getValue()).setSearchTime(new Date()));
         // 设置用户搜索历史，不过期
         redisCache.setCacheObject(CacheConstants.USER_SEARCH_HISTORY + loginUser.getUserId(), userSearchList);
     }
