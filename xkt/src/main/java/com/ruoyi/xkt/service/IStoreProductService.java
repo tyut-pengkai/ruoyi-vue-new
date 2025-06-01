@@ -134,4 +134,11 @@ public interface IStoreProductService {
      */
     StoreProdStatusCountResDTO getStatusNum(Long storeId);
 
+    /**
+     * 获取商品状态下分类数量
+     *
+     * @param dto 查询入参
+     * @return StoreProdStatusCateCountResDTO
+     */
+    List<StoreProdStatusCateCountResDTO> getStatusCateNum(StoreProdStatusCateNumDTO dto);
 }

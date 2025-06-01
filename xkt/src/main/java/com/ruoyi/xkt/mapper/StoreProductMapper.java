@@ -36,14 +36,6 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
     List<StoreProdFuzzyResPicDTO> fuzzyQueryResPicList(@Param("storeId") Long storeId, @Param("prodArtNum") String prodArtNum);
 
     /**
-     * 查询档口的在售、尾货、下架数量
-     *
-     * @param storeId 档口ID
-     * @return StoreProdCountDTO
-     */
-    StoreProdStatusCountDTO selectStatusCount(Long storeId);
-
-    /**
      * 档口商品ID列表
      *
      * @param idList id列表
@@ -120,11 +112,19 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
 
     /**
      * 获取档口各个状态的数量
-     * @param storeId 档口ID
+     *
+     * @param storeId    档口ID
      * @param statusList 状态列表
      * @return StoreProdStatusCountResDTO
      */
     StoreProdStatusCountResDTO getStatusNum(@Param("storeId") Long storeId, @Param("statusList") List<Integer> statusList);
 
+    /**
+     * 获取档口各个状态的分类数量
+     *
+     * @param cateNumDTO 查询入参
+     * @return StoreProdStatusCateCountResDTO
+     */
+    List<StoreProdStatusCateCountDTO> getStatusCateNum(StoreProdStatusCateNumDTO cateNumDTO);
 }
 

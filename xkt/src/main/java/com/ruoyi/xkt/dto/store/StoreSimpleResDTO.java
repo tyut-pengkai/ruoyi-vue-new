@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
  */
 @ApiModel("档口返回基本数据")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@Accessors(chain = true)
 public class StoreSimpleResDTO {
 
     @ApiModelProperty(value = "档口模板ID")

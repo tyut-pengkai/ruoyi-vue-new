@@ -1,7 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeProd;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

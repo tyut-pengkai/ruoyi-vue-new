@@ -356,7 +356,12 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional (readOnly = true)
     public StoreSimpleResDTO getSimpleInfo(Long storeId) {
-        return this.storeMapper.getSimpleInfo(storeId, SecurityUtils.getUserId());
+        StoreSimpleResDTO simpleDTO = this.storeMapper.getSimpleInfo(storeId);
+        final Long userId = SecurityUtils.getUserId();
+        UserSubscriptions userSub = ObjectUtils.isEmpty(userId) ? null
+                : this.userSubMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>().eq(UserSubscriptions::getUserId, userId)
+                .eq(UserSubscriptions::getStoreId, storeId).eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
+        return simpleDTO.setFocus(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE);
     }
 
 }

@@ -710,6 +710,23 @@ public class StoreProductServiceImpl implements IStoreProductService {
     }
 
     /**
+     * 获取商品状态下分类数量
+     *
+     * @param cateNumDTO 查询入参
+     * @return StoreProdStatusCateCountResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<StoreProdStatusCateCountResDTO> getStatusCateNum(StoreProdStatusCateNumDTO cateNumDTO) {
+        List<StoreProdStatusCateCountDTO> statusCateNumList = this.storeProdMapper.getStatusCateNum(cateNumDTO);
+        List<StoreProdStatusCateCountResDTO> countList = new ArrayList<>();
+        statusCateNumList.stream().collect(Collectors.groupingBy(StoreProdStatusCateCountDTO::getProdStatus))
+                .forEach((prodStatus, cateList) -> countList.add(new StoreProdStatusCateCountResDTO().setProdStatus(prodStatus)
+                        .setCateCountList(BeanUtil.copyToList(cateList, StoreProdStatusCateCountResDTO.SPSCCCateCountDTO.class))));
+        return countList;
+    }
+
+    /**
      * 获取当前商品的sku列表
      *
      * @param storeProdId 档口商品ID

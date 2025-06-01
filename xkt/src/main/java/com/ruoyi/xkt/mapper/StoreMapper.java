@@ -20,14 +20,6 @@ import java.util.List;
 public interface StoreMapper extends BaseMapper<Store> {
 
     /**
-     * 查询档口列表
-     *
-     * @param store 档口
-     * @return 档口集合
-     */
-    List<Store> selectStoreList(Store store);
-
-    /**
      * 修改档口
      *
      * @param store 档口
@@ -41,9 +33,8 @@ public interface StoreMapper extends BaseMapper<Store> {
      * PC 商城首页 获取档口基本信息
      *
      * @param storeId 档口ID
-     * @param userId  用户ID
      * @return StoreBasicResDTO
      */
-    StoreSimpleResDTO getSimpleInfo(@Param("storeId") Long storeId, @Param("userId") Long userId);
+    StoreSimpleResDTO getSimpleInfo(@Param("storeId") Long storeId);
 
 }

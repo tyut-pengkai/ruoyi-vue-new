@@ -14,7 +14,7 @@ public class StoreOrderPrintRespVO {
 
     @ApiModelProperty(value = "物流单号")
     private String expressWaybillNo;
-    
+
     @ApiModelProperty(value = "文件流Base64编码")
     private String result;
 
