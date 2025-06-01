@@ -220,6 +220,10 @@ public class CacheConstants {
      */
     public static final String USER_SEARCH_HISTORY = "user_search_history:";
     /**
+     * 用户浏览足迹
+     */
+    public static final String USER_BROWSING_HISTORY = "user_browsing_history:";
+    /**
      * 系统前20条热搜
      */
     public static final String SEARCH_HOT_KEY = "search_hot_key";

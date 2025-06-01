@@ -16,9 +16,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -39,6 +41,7 @@ import com.ruoyi.xkt.dto.storeProduct.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
+import com.ruoyi.xkt.dto.userBrowsingHistory.UserBrowsingHisDTO;
 import com.ruoyi.xkt.enums.EProductStatus;
 import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.enums.ListingType;
@@ -96,6 +99,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final IPictureService pictureService;
     final StoreProductStatisticsMapper storeProductStatisticsMapper;
     final StoreHomepageMapper storeHomepageMapper;
+    final RedisCache redisCache;
 
 
     /**
@@ -552,6 +556,17 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<StoreProductColorSize> colorSizeList = this.storeProdColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
                 .eq(StoreProductColorSize::getStoreProdId, storeProdId).eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED)
                 .eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
+        List<StoreProdFileResDTO> fileList = this.storeProdFileMapper.selectVideoAndMainPicList(storeProdId);
+        // 第一张商品主图
+        final String mainPicUrl = fileList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
+                .filter(x -> Objects.equals(x.getOrderNum(), ORDER_NUM_1)).map(StoreProdFileResDTO::getFileUrl).findAny().orElse("");
+        // 将用户浏览足迹添加到redis中
+        try {
+            this.updateUserBrowsingToRedis(storeProdId, appResDTO.getStoreId(), appResDTO.getStoreName(), appResDTO.getProdArtNum(),
+                    appResDTO.getProdTitle(), appResDTO.getMinPrice(), mainPicUrl);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return appResDTO.setTags(StringUtils.isNotBlank(appResDTO.getTagStr()) ? StrUtil.split(appResDTO.getTagStr(), ",") : null)
                 // 拼接几色几码
                 .setSpecification((CollectionUtils.isNotEmpty(colorList) ? colorList.size() + "色" : "") +
@@ -559,7 +574,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 // 获取商品的属性
                 .setCateAttr(BeanUtil.toBean(cateAttr, StoreProdCateAttrDTO.class))
                 // 获取商品的主图视频及主图
-                .setFileList(this.storeProdFileMapper.selectVideoAndMainPicList(storeProdId))
+                .setFileList(fileList)
                 // 获取商品的服务承诺
                 .setSvc(this.storeProdSvcMapper.selectSvc(storeProdId));
     }
@@ -640,14 +655,25 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional(readOnly = true)
     public StoreProdPCResDTO getPCInfo(Long storeProdId) {
+
+        // TODO 去掉
+        // TODO 去掉
+        // TODO 去掉
+        // TODO 去掉
+
+        final Long userId = 1L;
+
+
         // 商品基础信息
-        StoreProdPCResDTO prodInfoDTO = ObjectUtils.defaultIfNull(this.storeProdMapper.selectPCProdInfo(storeProdId, SecurityUtils.getUserId()), new StoreProdPCResDTO());
+        StoreProdPCResDTO prodInfoDTO = ObjectUtils.defaultIfNull(this.storeProdMapper.selectPCProdInfo(storeProdId, 1L), new StoreProdPCResDTO());
+//        StoreProdPCResDTO prodInfoDTO = ObjectUtils.defaultIfNull(this.storeProdMapper.selectPCProdInfo(storeProdId, SecurityUtils.getUserId()), new StoreProdPCResDTO());
         // 获取商品的属性
         StoreProductCategoryAttribute cateAttr = this.storeProdCateAttrMapper.selectOne(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
                 .eq(StoreProductCategoryAttribute::getStoreProdId, storeProdId).eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED));
+        List<StoreProdFileResDTO> fileList = this.storeProdFileMapper.selectVideoAndMainPicList(storeProdId);
         prodInfoDTO.setCateAttr(BeanUtil.toBean(cateAttr, StoreProdPCResDTO.StoreProdCateAttrDTO.class))
                 // 获取商品的主图视频及主图
-                .setFileList(this.storeProdFileMapper.selectVideoAndMainPicList(storeProdId));
+                .setFileList(fileList);
         // 档口商品的sku列表
         List<StoreProdSkuDTO> prodSkuList = this.storeProdMapper.selectSkuList(storeProdId);
         if (CollectionUtils.isEmpty(prodSkuList)) {
@@ -667,6 +693,15 @@ public class StoreProductServiceImpl implements IStoreProductService {
                             .setStock(colorSizeStockMap.get(color.getStoreColorId() + ":" + size.getSize())))
                     .collect(Collectors.toList()));
         });
+        final BigDecimal minPrice = Objects.requireNonNull(colorList.stream().min(Comparator.comparing(StoreProdSkuItemDTO::getPrice)).orElse(null)).getPrice();
+        final String mainPicUrl = fileList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
+                .filter(x -> Objects.equals(x.getOrderNum(), ORDER_NUM_1)).map(StoreProdFileResDTO::getFileUrl).findAny().orElse("");
+        // 将用户浏览足迹添加到redis中
+        try {
+            this.updateUserBrowsingToRedis(storeProdId, prodInfoDTO.getStoreId(), prodInfoDTO.getStoreName(), prodInfoDTO.getProdArtNum(), prodInfoDTO.getProdTitle(), minPrice, mainPicUrl);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return prodInfoDTO.setColorList(colorList);
     }
 
@@ -932,6 +967,32 @@ public class StoreProductServiceImpl implements IStoreProductService {
                     pictureService.sync2ImgSearchServer(new ProductPicSyncDTO(storeProductId, picKeys));
             log.info("商品图片同步至搜图服务器: id: {}, result: {}", storeProductId, JSONUtil.toJsonStr(r));
         }
+    }
+
+
+    /**
+     * 更新用户浏览记录到Redis
+     * 此方法用于将用户的商品浏览信息更新到Redis缓存中，以便后续推荐或展示相关商品
+     *
+     * @param storeProdId 商店商品ID
+     * @param storeId     商店ID
+     * @param storeName   商店名称
+     * @param prodArtNum  商品货号
+     * @param prodTitle   商品标题
+     * @param minPrice    商品的最低价格
+     * @param mainPicUrl  商品主图URL
+     */
+    private void updateUserBrowsingToRedis(Long storeProdId, Long storeId, String storeName, String prodArtNum, String prodTitle, BigDecimal minPrice, String mainPicUrl) {
+        final Long userId = SecurityUtils.getUserId();
+        if (ObjectUtils.isEmpty(userId)) {
+            return;
+        }
+        List<UserBrowsingHisDTO> browsingList = CollUtil.defaultIfEmpty(this.redisCache
+                .getCacheList(CacheConstants.USER_BROWSING_HISTORY + SecurityUtils.getUserId()), new ArrayList<>());
+        browsingList.add(new UserBrowsingHisDTO().setUserId(userId).setProdArtNum(prodArtNum).setProdTitle(prodTitle)
+                .setStoreId(storeId).setStoreName(storeName).setProdPrice(minPrice).setMainPicUrl(mainPicUrl)
+                .setBrowsingTime(new Date()).setStoreProdId(storeProdId));
+        this.redisCache.setCacheObject(CacheConstants.USER_BROWSING_HISTORY + SecurityUtils.getUserId(), browsingList);
     }
 
 

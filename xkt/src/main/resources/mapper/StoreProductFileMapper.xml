@@ -138,6 +138,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spf.store_prod_id,
             spf.file_id,
             sf.file_url,
+            sf.file_name,
+            sf.file_size,
             spf.file_type,
             spf.order_num
         FROM

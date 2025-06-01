@@ -115,14 +115,14 @@ public class StoreController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeService.indexTodaySaleRevenue(storeId), StoreIndexTodaySaleResVO.class));
     }
 
-    @ApiOperation(value = "获取档口首页 商品销售额前10 ", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/index/sale/top10")
+    @ApiOperation(value = "获取档口首页 商品销售额前10 ", httpMethod = "POST", response = R.class)
+    @PostMapping(value = "/index/sale/top10")
     public R<List<StoreIndexSaleTop10ResVO>> indexTop10Sale(@Validated @RequestBody StoreSaleTop10VO saleTop10VO) {
         return R.ok(BeanUtil.copyToList(storeService.indexTop10Sale(BeanUtil.toBean(saleTop10VO, StoreSaleTop10DTO.class)), StoreIndexSaleTop10ResVO.class));
     }
 
-    @ApiOperation(value = "获取档口首页 客户销售榜前10 ", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/index/sale-cus/top10")
+    @ApiOperation(value = "获取档口首页 客户销售榜前10 ", httpMethod = "POST", response = R.class)
+    @PostMapping(value = "/index/sale-cus/top10")
     public R<List<StoreIndexCusSaleTop10ResVO>> indexTop10SaleCus(@Validated @RequestBody StoreSaleCustomerTop10VO saleCusTop10VO) {
         return R.ok(BeanUtil.copyToList(storeService.indexTop10SaleCus(BeanUtil.toBean(saleCusTop10VO, StoreSaleCustomerTop10DTO.class)), StoreIndexCusSaleTop10ResVO.class));
     }

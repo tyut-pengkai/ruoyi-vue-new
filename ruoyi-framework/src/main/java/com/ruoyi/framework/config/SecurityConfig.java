@@ -125,6 +125,10 @@ public class SecurityConfig
                         .antMatchers("/rest/v1/sys/prod-cate/**").permitAll()
                         // 商品所有风格
                         .antMatchers("/rest/v1/prods/styles").permitAll()
+                        // 档口首页模板
+                        .antMatchers("/rest/v1/store-home/template/**").permitAll()
+                        // 档口推荐
+                        .antMatchers("/rest/v1/store-home/recommend/**").permitAll()
 
 
                         // TODO 临时放开 临时放开
@@ -132,6 +136,8 @@ public class SecurityConfig
                         .antMatchers("/rest/v1/pic-search").permitAll()
                         .antMatchers("/rest/v1/stores/simple/**").permitAll()
                         .antMatchers("/rest/v1/prods/status/num/**").permitAll()
+                        .antMatchers("/rest/v1/prods/status/num/**").permitAll()
+                        .antMatchers("/rest/v1/prods/pc/detail/**").permitAll()
 
 
                         // 除上面外的所有请求全部需要鉴权认证

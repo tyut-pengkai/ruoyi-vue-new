@@ -144,6 +144,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                                 .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
                                 .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
                                 .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "")
+                                .setMainPicName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicName() : "")
+                                .setMainPicSize(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicSize() : null)
                                 .setTags(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getTags() : null));
                     });
                 });
@@ -218,6 +220,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                                 .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
                                 .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
                                 .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "")
+                                .setMainPicName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicName() : "")
+                                .setMainPicSize(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicSize() : null)
                                 .setTags(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getTags() : null));
                     });
                 });
@@ -247,7 +251,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     @Transactional(readOnly = true)
     public Page<PCSearchDTO> psSearchPage(IndexSearchDTO searchDTO) throws IOException {
         // 更新用户搜索历史
-        updateRedisUserSearchHistory(searchDTO.getSearch());
+        try {
+            updateRedisUserSearchHistory(searchDTO.getSearch());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // 获取用户搜索结果列表
         Page<ESProductDTO> page = this.search(searchDTO);
         // 筛选出真实的数据

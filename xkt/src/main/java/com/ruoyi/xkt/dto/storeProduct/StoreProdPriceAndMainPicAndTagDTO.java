@@ -38,6 +38,10 @@ public class StoreProdPriceAndMainPicAndTagDTO {
     private BigDecimal minPrice;
     @ApiModelProperty(value = "档口商品主图")
     private String mainPicUrl;
+    @ApiModelProperty(value = "主图名称")
+    private String mainPicName;
+    @ApiModelProperty(value = "主图大小")
+    private BigDecimal mainPicSize;
     @ApiModelProperty(value = "商品标题")
     private String prodTitle;
     @ApiModelProperty(value = "是否有主图视频")

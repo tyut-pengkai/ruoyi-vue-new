@@ -59,31 +59,31 @@ public class StoreHomepageController extends XktBaseController {
     }
 
     @ApiOperation(value = "获取档口首页 模板一 数据", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/template-one/{storeId}")
+    @GetMapping(value = "/template/one/{storeId}")
     public R<StoreHomeTemplateOneResVO> getTemplateOne(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeHomeService.getTemplateOne(storeId), StoreHomeTemplateOneResVO.class));
     }
 
     @ApiOperation(value = "获取档口首页 模板二 数据", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/template-two/{storeId}")
+    @GetMapping(value = "/template/two/{storeId}")
     public R<StoreHomeTemplateTwoResVO> getTemplateTwo(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeHomeService.getTemplateTwo(storeId), StoreHomeTemplateTwoResVO.class));
     }
 
     @ApiOperation(value = "获取档口首页 模板三 数据", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/template-third/{storeId}")
+    @GetMapping(value = "/template/three/{storeId}")
     public R<StoreHomeTemplateThirdResVO> getTemplateThird(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeHomeService.getTemplateThird(storeId), StoreHomeTemplateThirdResVO.class));
     }
 
     @ApiOperation(value = "获取档口首页 模板四 数据", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/template-four/{storeId}")
+    @GetMapping(value = "/template/four/{storeId}")
     public R<StoreHomeTemplateFourResVO> getTemplateFour(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeHomeService.getTemplateFour(storeId), StoreHomeTemplateFourResVO.class));
     }
 
     @ApiOperation(value = "获取档口首页 模板五 数据", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/template-five/{storeId}")
+    @GetMapping(value = "/template/five/{storeId}")
     public R<StoreHomeTemplateFiveResVO> getTemplateFive(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeHomeService.getTemplateFive(storeId), StoreHomeTemplateFiveResVO.class));
     }

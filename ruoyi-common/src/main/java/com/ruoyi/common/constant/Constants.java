@@ -264,6 +264,4 @@ public class Constants
      */
     public static final Set<Integer> STORE_RECOMMEND_INSERT_POSITIONS = new HashSet<>(Arrays.asList(2, 9, 18, 27, 36));
 
-
-
 }

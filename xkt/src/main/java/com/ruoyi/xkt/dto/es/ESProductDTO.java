@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -37,6 +38,10 @@ public class ESProductDTO {
     private String createTime;
     @ApiModelProperty(value = "主图")
     private String mainPicUrl;
+    @ApiModelProperty(value = "主图名称")
+    private String mainPicName;
+    @ApiModelProperty(value = "主图大小")
+    private BigDecimal mainPicSize;
     @ApiModelProperty(value = "上级分类名称")
     private String parCateName;
     @ApiModelProperty(value = "上级分类ID")

@@ -30,6 +30,7 @@ import com.ruoyi.xkt.dto.order.StoreOrderCancelDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderRefund;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileLatestFourProdDTO;
 import com.ruoyi.xkt.dto.useSearchHistory.UserSearchHistoryDTO;
+import com.ruoyi.xkt.dto.userBrowsingHistory.UserBrowsingHisDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.mapper.*;
@@ -95,6 +96,7 @@ public class XktTask {
     final StoreProductStatisticsMapper storeProdStatMapper;
     final StoreProductFileMapper storeProdFileMapper;
     final UserSearchHistoryMapper userSearchHisMapper;
+    final UserBrowsingHistoryMapper userBrowHisMapper;
 
     /**
      * 定时任务上市季节年份
@@ -592,18 +594,59 @@ public class XktTask {
         });
         // 用户最新搜索列表
         List<UserSearchHistoryDTO> insertSearchList = redisSearchList.stream().filter(x -> ObjectUtils.isEmpty(x.getId())).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(insertSearchList)) {
-            return;
+        if (CollectionUtils.isNotEmpty(insertSearchList)) {
+            this.userSearchHisMapper.insert(BeanUtil.copyToList(insertSearchList, UserSearchHistory.class));
         }
-        this.userSearchHisMapper.insert(BeanUtil.copyToList(insertSearchList, UserSearchHistory.class));
+        final Date sixMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(6));
+        final Date now = java.sql.Date.valueOf(LocalDate.now());
         // 将最新的数据更新到redis中
         List<UserSearchHistory> latestSearchList = this.userSearchHisMapper.selectList(new LambdaQueryWrapper<UserSearchHistory>()
-                .eq(UserSearchHistory::getDelFlag, Constants.UNDELETED));
+                .eq(UserSearchHistory::getDelFlag, Constants.UNDELETED).between(UserSearchHistory::getSearchTime, sixMonthAgo, now));
+        if (CollectionUtils.isEmpty(latestSearchList)) {
+            return;
+        }
         latestSearchList.stream().collect(Collectors.groupingBy(UserSearchHistory::getUserId))
                 .forEach((userId, list) -> {
                     // 获取用户最新搜索的20条数据
                     list = list.stream().sorted(Comparator.comparing(UserSearchHistory::getSearchTime).reversed()).limit(20).collect(Collectors.toList());
+                    // 反转列表
+                    Collections.reverse(list);
                     redisCache.setCacheObject(CacheConstants.USER_SEARCH_HISTORY + userId, BeanUtil.copyToList(list, UserSearchHistoryDTO.class));
+                });
+    }
+
+    /**
+     * 每天凌晨2:05更新用户浏览记录入库
+     */
+    @Transactional
+    public void dailyUpdateUserBrowsingHistory() {
+        Collection<String> keyList = this.redisCache.scanKeys(CacheConstants.USER_BROWSING_HISTORY + "*");
+        if (CollectionUtils.isEmpty(keyList)) {
+            return;
+        }
+        List<UserBrowsingHisDTO> redisBrowsingList = new ArrayList<>();
+        keyList.forEach(key -> {
+            List<UserBrowsingHisDTO> tempList = this.redisCache.getCacheObject(key);
+            CollectionUtils.addAll(redisBrowsingList, tempList);
+        });
+        // 用户最新浏览列表
+        List<UserBrowsingHisDTO> insertBrowsingList = redisBrowsingList.stream().filter(x -> ObjectUtils.isEmpty(x.getId())).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(insertBrowsingList)) {
+            this.userBrowHisMapper.insert(BeanUtil.copyToList(insertBrowsingList, UserBrowsingHistory.class));
+        }
+        final Date sixMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(6));
+        final Date now = java.sql.Date.valueOf(LocalDate.now());
+        // 将最新的数据更新到redis中
+        List<UserBrowsingHistory> latestBrowsingList = this.userBrowHisMapper.selectList(new LambdaQueryWrapper<UserBrowsingHistory>()
+                .eq(UserBrowsingHistory::getDelFlag, Constants.UNDELETED).between(UserBrowsingHistory::getBrowsingTime, sixMonthAgo, now));
+        if (CollectionUtils.isEmpty(latestBrowsingList)) {
+            return;
+        }
+        latestBrowsingList.stream().collect(Collectors.groupingBy(x -> x.getUserId()))
+                .forEach((userId, list) -> {
+                    // 按照浏览时间升序排
+                    list.sort(Comparator.comparing(UserBrowsingHistory::getBrowsingTime));
+                    redisCache.setCacheObject(CacheConstants.USER_BROWSING_HISTORY + userId, BeanUtil.copyToList(list, UserBrowsingHisDTO.class));
                 });
     }
 

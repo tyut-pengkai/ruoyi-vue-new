@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -17,6 +18,8 @@ public class StoreIndexTodaySaleResVO {
 
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "其它销售额")
+    private BigDecimal otherAmount;
     @ApiModelProperty(value = "档口商品销售额列表")
     List<SITSProdSaleVO> saleList;
 

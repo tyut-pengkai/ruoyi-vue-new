@@ -116,7 +116,9 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                             .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
                             .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
-                            .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
+                            .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "")
+                            .setMainPicName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicName() : "")
+                            .setMainPicSize(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicSize() : null);
                 }).collect(Collectors.toList());
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.APP_INDEX_HOT_SALE_ADVERT, hotSaleList, 1, TimeUnit.DAYS);
@@ -170,7 +172,9 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                             .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
                             .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
-                            .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
+                            .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "")
+                            .setMainPicName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicName() : "")
+                            .setMainPicSize(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicSize() : null);
                 }).collect(Collectors.toList());
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.APP_INDEX_POPULAR_SALE_ADVERT, popularSaleList, 1, TimeUnit.DAYS);
@@ -224,7 +228,9 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                             .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
                             .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
-                            .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
+                            .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "")
+                            .setMainPicName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicName() : "")
+                            .setMainPicSize(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicSize() : null);
                 }).collect(Collectors.toList());
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.APP_INDEX_NEW_PROD, newProdList, 1, TimeUnit.DAYS);
@@ -245,7 +251,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Transactional(readOnly = true)
     public Page<APPSearchDTO> appSearchPage(IndexSearchDTO searchDTO) throws IOException {
         // 更新用户搜索历史
-        updateRedisUserSearchHistory(searchDTO.getSearch());
+        try {
+            updateRedisUserSearchHistory(searchDTO.getSearch());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // 用户搜索结果
         Page<ESProductDTO> page = this.search(searchDTO);
         // 筛选出真实的数据
@@ -281,7 +291,9 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                             .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
                             .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
                             .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
-                            .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "");
+                            .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "")
+                            .setMainPicName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicName() : "")
+                            .setMainPicSize(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicSize() : null);
                 }).collect(Collectors.toList());
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.APP_SEARCH, newProdList, 1, TimeUnit.DAYS);

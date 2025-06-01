@@ -114,6 +114,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spc.parent_id AS parCateId,
             sp.prod_art_num AS prodArtNum,
             sf.file_url AS mainPicUrl,
+            sf.file_name AS mainPicName,
+            sf.file_size AS mainPicSize,
             sp.prod_title,
             MIN( spcp.price ) AS minPrice,
             sp.store_id,
@@ -217,6 +219,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectPCProdInfo" resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdPCResDTO">
         SELECT
+            s.id AS store_id,
+            s.store_name,
             sp.id AS storeProdId,
             sp.prod_art_num,
             sp.prod_title,
@@ -227,6 +231,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM
             store_product sp
                 LEFT JOIN store_product_detail spd ON sp.id = spd.store_prod_id AND spd.del_flag = 0
+                LEFT JOIN store s ON sp.store_id = s.id
         WHERE
             sp.del_flag = 0
             AND sp.id = #{storeProdId}
@@ -271,6 +276,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT DISTINCT
             sp.id AS storeProdId,
             sp.store_id,
+            s.store_name,
             sp.prod_name,
             sp.prod_art_num,
             sp.prod_title,

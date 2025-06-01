@@ -27,6 +27,8 @@ public class StoreProdAppResDTO {
     private Long storeProdId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "档口名称")
+    private String storeName;
     @ApiModelProperty(value = "档口商品名称")
     private String prodName;
     @ApiModelProperty(value = "商品货号")

@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -29,6 +30,10 @@ public class APPSearchDTO {
     private String prodArtNum;
     @ApiModelProperty(value = "主图")
     private String mainPicUrl;
+    @ApiModelProperty(value = "主图名称")
+    private String mainPicName;
+    @ApiModelProperty(value = "主图大小")
+    private BigDecimal mainPicSize;
     @ApiModelProperty(value = "单价")
     private String prodPrice;
     @ApiModelProperty(value = "是否广告")
