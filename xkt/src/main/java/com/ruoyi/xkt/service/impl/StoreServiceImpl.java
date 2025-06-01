@@ -357,11 +357,18 @@ public class StoreServiceImpl implements IStoreService {
     @Transactional (readOnly = true)
     public StoreSimpleResDTO getSimpleInfo(Long storeId) {
         StoreSimpleResDTO simpleDTO = this.storeMapper.getSimpleInfo(storeId);
-        final Long userId = SecurityUtils.getUserId();
+
+        return simpleDTO;
+
+        // TODO 获取用户是否关注档口
+        // TODO 获取用户是否关注档口
+        // TODO 获取用户是否关注档口
+
+        /*final Long userId = SecurityUtils.getUserId();
         UserSubscriptions userSub = ObjectUtils.isEmpty(userId) ? null
                 : this.userSubMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>().eq(UserSubscriptions::getUserId, userId)
                 .eq(UserSubscriptions::getStoreId, storeId).eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
-        return simpleDTO.setFocus(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE);
+        return simpleDTO.setFocus(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE);*/
     }
 
 }

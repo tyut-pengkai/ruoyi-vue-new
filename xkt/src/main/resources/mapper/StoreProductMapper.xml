@@ -24,17 +24,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           </if>
     </select>
 
-    <select id="selectStatusCount" resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountDTO">
-        SELECT
-            SUM( CASE WHEN prod_status = 2 THEN 1 ELSE 0 END ) AS onSaleNum,
-            SUM( CASE WHEN prod_status = 3 THEN 1 ELSE 0 END ) AS tailGoodsNum,
-            SUM( CASE WHEN prod_status = 4 THEN 1 ELSE 0 END ) AS offSaleNum
-        FROM
-            store_product
-        WHERE
-            del_flag = 0 AND store_id = #{storeId}
-    </select>
-
     <select id="selectESDTOList" resultType="com.ruoyi.xkt.dto.storeProduct.ProductESDTO">
         SELECT DISTINCT
             sp.id,
@@ -259,6 +248,51 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </select>
 
+    <select id="getStatusCateNum" resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCateCountDTO">
+        SELECT
+            sp.prod_status,
+            sp.prod_cate_id,
+            spc.`name` AS prodCateName,
+            COUNT( sp.id ) AS cateCount
+        FROM
+            store_product sp
+                LEFT JOIN sys_product_category spc ON sp.prod_cate_id = spc.id
+        WHERE
+            sp.del_flag = 0
+            AND sp.store_id = #{storeId}
+        GROUP BY
+            sp.prod_status,
+            sp.prod_cate_id
+        ORDER BY
+            cateCount DESC
+    </select>
+
+    <select id="getAppInfo" resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdAppResDTO">
+        SELECT DISTINCT
+            sp.id AS storeProdId,
+            sp.store_id,
+            sp.prod_name,
+            sp.prod_art_num,
+            sp.prod_title,
+            sp.create_time,
+            MIN( DISTINCT spcp.price ) AS minPrice,
+            GROUP_CONCAT( DISTINCT dpt.tag ORDER BY dpt.type ASC ) AS tagStr,
+            spd.detail,
+            <if test="userId != null">
+                EXISTS ( SELECT 1 FROM user_favorites uf WHERE sp.id = uf.store_prod_id AND uf.del_flag = 0 AND uf.user_id = #{userId} ) AS collectProd
+            </if>
+        FROM
+            store_product sp
+                LEFT JOIN store s ON sp.store_id = s.id
+                LEFT JOIN store_product_color_price spcp ON sp.id = spcp.store_prod_id AND spcp.del_flag = 0
+                LEFT JOIN daily_prod_tag dpt ON sp.id = dpt.store_prod_id AND dpt.del_flag = 0
+                LEFT JOIN store_product_detail spd ON sp.id = spd.store_prod_id AND spd.del_flag = 0
+        WHERE
+            sp.del_flag = 0 AND sp.id = #{storeProdId}
+        GROUP BY
+            sp.id,
+            spd.detail
+    </select>
 
 
 

@@ -41,7 +41,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -735,10 +734,14 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         // 构建最终的查询
         Query query = new Query.Builder().bool(boolQuery.build()).build();
         // 执行搜索
-        SearchResponse<ESProductDTO> resList = esClientWrapper.getEsClient().search(s -> s.index(Constants.ES_IDX_PRODUCT_INFO)
-                        .query(query).from((searchDTO.getPageNum() - 1) * searchDTO.getPageSize()).size(searchDTO.getPageSize())
-                        .sort(sort -> sort.field(f -> f.field(searchDTO.getSort()).order(SortOrder.Desc))),
-                ESProductDTO.class);
+        SearchResponse<ESProductDTO> resList = esClientWrapper.getEsClient()
+                .search(s -> s.index(Constants.ES_IDX_PRODUCT_INFO)
+                                .query(query)
+                                .from((searchDTO.getPageNum() - 1) * searchDTO.getPageSize())
+                                .size(searchDTO.getPageSize())
+                                .sort(sort -> sort.field(f -> f.field("storeWeight").order(SortOrder.Desc)))
+                                .sort(sort -> sort.field(f -> f.field(searchDTO.getSort()).order(SortOrder.Desc))),
+                        ESProductDTO.class);
         final long total = resList.hits().total().value();
         final List<ESProductDTO> esProdList = resList.hits().hits().stream().map(x -> x.source().setStoreProdId(x.id())).collect(Collectors.toList());
         return new Page<>(searchDTO.getPageNum(), searchDTO.getPageSize(), total / searchDTO.getPageSize() + 1, total, esProdList);

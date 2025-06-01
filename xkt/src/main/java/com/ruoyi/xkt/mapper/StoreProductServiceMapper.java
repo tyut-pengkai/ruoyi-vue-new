@@ -2,8 +2,8 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductService;
-
-import java.util.List;
+import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 档口商品服务Mapper接口
@@ -12,55 +12,17 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface StoreProductServiceMapper extends BaseMapper<StoreProductService> {
-    /**
-     * 查询档口商品服务
-     *
-     * @param id 档口商品服务主键
-     * @return 档口商品服务
-     */
-    public StoreProductService selectStoreProductServiceByStoreProdSvcId(Long id);
-
-    /**
-     * 查询档口商品服务列表
-     *
-     * @param storeProductService 档口商品服务
-     * @return 档口商品服务集合
-     */
-    public List<StoreProductService> selectStoreProductServiceList(StoreProductService storeProductService);
-
-    /**
-     * 新增档口商品服务
-     *
-     * @param storeProductService 档口商品服务
-     * @return 结果
-     */
-    public int insertStoreProductService(StoreProductService storeProductService);
-
-    /**
-     * 修改档口商品服务
-     *
-     * @param storeProductService 档口商品服务
-     * @return 结果
-     */
-    public int updateStoreProductService(StoreProductService storeProductService);
-
-    /**
-     * 删除档口商品服务
-     *
-     * @param id 档口商品服务主键
-     * @return 结果
-     */
-    public int deleteStoreProductServiceByStoreProdSvcId(Long id);
-
-    /**
-     * 批量删除档口商品服务
-     *
-     * @param storeProdSvcIds 需要删除的数据主键集合
-     * @return 结果
-     */
-    public int deleteStoreProductServiceByStoreProdSvcIds(Long[] storeProdSvcIds);
 
     void updateDelFlagByStoreProdId(Long storeProdId);
 
     StoreProductService selectByStoreProdId(Long storeProdId);
+
+    /**
+     * 根据商品ID查询档口商品服务
+     *
+     * @param storeProdId 商品ID
+     * @return 档口商品服务
+     */
+    StoreProdSvcDTO selectSvc(@Param("storeProdId") Long storeProdId);
+
 }

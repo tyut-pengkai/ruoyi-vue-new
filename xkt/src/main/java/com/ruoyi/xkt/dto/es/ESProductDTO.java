@@ -27,6 +27,8 @@ public class ESProductDTO {
     private String prodCateName;
     @ApiModelProperty(value = "销量权重")
     private String saleWeight;
+    @ApiModelProperty(value = "档口权重")
+    private String storeWeight;
     @ApiModelProperty(value = "推荐权重")
     private String recommendWeight;
     @ApiModelProperty(value = "人气权重")

@@ -126,5 +126,14 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      * @return StoreProdStatusCateCountResDTO
      */
     List<StoreProdStatusCateCountDTO> getStatusCateNum(StoreProdStatusCateNumDTO cateNumDTO);
+
+    /**
+     * 获取APP 档口商品详情
+     *
+     * @param storeProdId 商品ID
+     * @param userId
+     * @return StoreProdAppResDTO
+     */
+    StoreProdAppResDTO getAppInfo(@Param("storeProdId") Long storeProdId, @Param("userId") Long userId);
 }
 

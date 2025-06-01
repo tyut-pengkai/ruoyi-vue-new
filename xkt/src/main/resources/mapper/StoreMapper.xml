@@ -21,7 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <select id="getSimpleInfo" resultType="com.ruoyi.xkt.dto.store.StoreSimpleResDTO">
-        SELECT
+        SELECT DISTINCT
             s.id AS store_id,
             s.store_name,
             s.template_num,
@@ -31,11 +31,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             s.qq_account,
             s.store_address,
             sc.legal_name,
-            sc.license_name,
-            EXISTS ( SELECT 1 FROM user_subscriptions us LEFT JOIN store ON s.id = us.store_id AND us.del_flag = 0 AND us.user_id = #{userId}) AS focus
+            sc.license_name
         FROM
             store s
-                LEFT JOIN store_homepage sh ON s.id = sh.store_id
                 LEFT JOIN store_certificate sc ON s.id = sc.store_id
          WHERE
             s.id = #{storeId}

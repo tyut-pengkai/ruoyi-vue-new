@@ -6,6 +6,7 @@ import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.CreateResponse;
@@ -542,52 +543,25 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional(readOnly = true)
     public StoreProdAppResDTO getAppInfo(Long storeProdId) {
-
-
-
-
-
-        // TODO APP 商品详情也要加上 主图视频及主图
-        // TODO APP 商品详情也要加上 主图视频及主图
-        // TODO APP 商品详情也要加上 主图视频及主图
-
-
-
-
-        StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
-                        .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
-                .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
-        StoreProdAppResDTO appResDTO = BeanUtil.toBean(storeProd, StoreProdAppResDTO.class).setStoreProdId(storeProd.getId());
-        // 档口文件（商品主图、主图视频、下载的商品详情）
-        List<StoreProdFileResDTO> fileResList = this.storeProdFileMapper.selectListByStoreProdId(storeProdId);
-        // 档口类目属性
-        StoreProductCategoryAttribute cateAttr = this.storeProdCateAttrMapper.selectByStoreProdId(storeProdId);
-        // 档口当前商品颜色列表
-        List<StoreProdColorDTO> colorList = this.storeProdColorMapper.selectListByStoreProdId(storeProdId);
-        // 档口商品颜色尺码列表
-        List<StoreProdColorSizeDTO> sizeList = this.storeProdColorSizeMapper.selectListByStoreProdId(storeProdId);
-        // 档口颜色价格列表
-        List<StoreProdColorPriceSimpleDTO> priceList = this.storeProdColorPriceMapper.selectListByStoreProdId(storeProdId);
-        // 档口商品详情
-        StoreProductDetail prodDetail = this.storeProdDetailMapper.selectByStoreProdId(storeProdId);
-        // 档口服务承诺
-        StoreProductService storeProductSvc = this.storeProdSvcMapper.selectByStoreProdId(storeProdId);
-        // 是否已收藏
-        UserFavorites favorite = this.userFavMapper.selectOne(new LambdaQueryWrapper<UserFavorites>()
-                .eq(UserFavorites::getDelFlag, Constants.UNDELETED).eq(UserFavorites::getStoreProdId, storeProdId)
-                .eq(UserFavorites::getUserId, SecurityUtils.getUserId()));
-        // 获取商品标签
-        List<DailyProdTag> tagList = this.prodTagMapper.selectList(new LambdaQueryWrapper<DailyProdTag>()
-                .eq(DailyProdTag::getDelFlag, Constants.UNDELETED).eq(DailyProdTag::getStoreProdId, storeProdId)
-                .orderByAsc(DailyProdTag::getType));
-        return appResDTO.setFileList(fileResList).setCateAttr(BeanUtil.toBean(cateAttr, StoreProdCateAttrDTO.class))
-                .setTagList(CollectionUtils.isNotEmpty(tagList) ? tagList.stream().map(DailyProdTag::getTag).distinct().collect(Collectors.toList()) : null)
-                .setCollectProd(ObjectUtils.isNotEmpty(favorite) ? Boolean.TRUE : Boolean.FALSE)
-                .setSpecification(colorList.size() + "色" + sizeList.stream().filter(x -> Objects.equals(x.getStandard(), ProductSizeStatus.STANDARD.getValue())).count() + "码")
-                .setMinPrice(priceList.stream().min(Comparator.comparing(StoreProdColorPriceSimpleDTO::getPrice))
-                        .orElseThrow(() -> new ServiceException("获取商品价格失败，请联系客服!", HttpStatus.ERROR)).getPrice())
-                .setDetail(ObjectUtils.isEmpty(prodDetail) ? null : prodDetail.getDetail())
-                .setSvc(BeanUtil.toBean(storeProductSvc, StoreProdSvcDTO.class));
+        // 档口商品的基础信息
+        StoreProdAppResDTO appResDTO = this.storeProdMapper.getAppInfo(storeProdId, SecurityUtils.getUserId());
+        StoreProductCategoryAttribute cateAttr = this.storeProdCateAttrMapper.selectOne(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
+                .eq(StoreProductCategoryAttribute::getStoreProdId, storeProdId).eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED));
+        List<StoreProductColor> colorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
+                .eq(StoreProductColor::getStoreProdId, storeProdId).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
+        List<StoreProductColorSize> colorSizeList = this.storeProdColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
+                .eq(StoreProductColorSize::getStoreProdId, storeProdId).eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
+        return appResDTO.setTags(StringUtils.isNotBlank(appResDTO.getTagStr()) ? StrUtil.split(appResDTO.getTagStr(), ",") : null)
+                // 拼接几色几码
+                .setSpecification((CollectionUtils.isNotEmpty(colorList) ? colorList.size() + "色" : "") +
+                        (CollectionUtils.isNotEmpty(colorSizeList) ? colorSizeList.size() + "码" : ""))
+                // 获取商品的属性
+                .setCateAttr(BeanUtil.toBean(cateAttr, StoreProdCateAttrDTO.class))
+                // 获取商品的主图视频及主图
+                .setFileList(this.storeProdFileMapper.selectVideoAndMainPicList(storeProdId))
+                // 获取商品的服务承诺
+                .setSvc(this.storeProdSvcMapper.selectSvc(storeProdId));
     }
 
     /**

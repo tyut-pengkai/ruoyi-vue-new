@@ -37,7 +37,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -52,16 +51,9 @@ import java.util.List;
 @RequestMapping("/rest/v1/website")
 public class WebsiteController extends XktBaseController {
 
-
-    // TODO 查询先按照storeWeight倒排，之后再按照各种 权重 进行排序
-    // TODO 查询先按照storeWeight倒排，之后再按照各种 权重 进行排序
-    // TODO 查询先按照storeWeight倒排，之后再按照各种 权重 进行排序
-    // TODO 查询先按照storeWeight倒排，之后再按照各种 权重 进行排序
-    // TODO 查询先按照storeWeight倒排，之后再按照各种 权重 进行排序
-
-
     final IWebsitePCService websitePCService;
     final IWebsiteAPPService websiteAPPService;
+
     @ApiOperation(value = "PC 首页 为你推荐", httpMethod = "POST", response = R.class)
     @PostMapping("/pc/index/recommend")
     public R<Page<PCIndexRecommendDTO>> pcIndexRecommendPage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {

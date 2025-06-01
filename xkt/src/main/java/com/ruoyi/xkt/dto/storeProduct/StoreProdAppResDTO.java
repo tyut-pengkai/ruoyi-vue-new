@@ -42,8 +42,10 @@ public class StoreProdAppResDTO {
     private BigDecimal minPrice;
     @ApiModelProperty(value = "规格")
     private String specification;
+    @ApiModelProperty(value = "标签字符串")
+    private String tagStr;
     @ApiModelProperty(value = "标签列表")
-    private List<String> tagList;
+    private List<String> tags;
     @ApiModelProperty(value = "档口文件列表")
     private List<StoreProdFileResDTO> fileList;
     @ApiModelProperty(value = "档口类目属性")
