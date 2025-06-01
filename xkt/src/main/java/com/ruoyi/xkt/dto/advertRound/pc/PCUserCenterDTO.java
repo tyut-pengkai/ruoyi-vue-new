@@ -18,6 +18,10 @@ import java.util.List;
 @Accessors(chain = true)
 public class PCUserCenterDTO {
 
+    @ApiModelProperty(value = "分类ID")
+    private Long prodCateId;
+    @ApiModelProperty(value = "分类名称")
+    private String prodCateName;
     @ApiModelProperty(value = "2 商品")
     private Integer displayType;
     @ApiModelProperty(value = "档口ID")

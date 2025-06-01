@@ -543,9 +543,15 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional(readOnly = true)
     public StoreProdAppResDTO getAppInfo(Long storeProdId) {
 
+
+
+
+
         // TODO APP 商品详情也要加上 主图视频及主图
         // TODO APP 商品详情也要加上 主图视频及主图
         // TODO APP 商品详情也要加上 主图视频及主图
+
+
 
 
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
@@ -837,7 +843,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         String style = storeProdDTO.getCateAttr().getStyle();
         return BeanUtil.toBean(storeProd, ESProductDTO.class).setHasVideo(hasVideo)
                 .setProdCateName(storeProdDTO.getProdCateName()).setSaleWeight("0").setRecommendWeight("0").setPopularityWeight("0")
-                .setCreateTime(DateUtils.getTime()).setStoreName(storeProdDTO.getStoreName()).setMainPic(firstMainPic)
+                .setCreateTime(DateUtils.getTime()).setStoreName(storeProdDTO.getStoreName()).setMainPicUrl(firstMainPic)
                 .setParCateId(parCate.getProdCateId().toString()).setParCateName(parCate.getName()).setProdPrice(minPrice.toString())
                 .setSeason(season).setStyle(style).setTags(Collections.singletonList(style));
     }
@@ -873,7 +879,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<BulkOperation> list = reSaleList.stream().map(x -> {
             final String createTime = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, x.getCreateTime());
             final ProductESDTO esDTO = Optional.ofNullable(esDTOMap.get(x.getId())).orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
-            ESProductDTO esProductDTO = BeanUtil.toBean(x, ESProductDTO.class).setProdCateName(esDTO.getProdCateName()).setMainPic(esDTO.getMainPic())
+            ESProductDTO esProductDTO = BeanUtil.toBean(x, ESProductDTO.class).setProdCateName(esDTO.getProdCateName()).setMainPicUrl(esDTO.getMainPic())
                     .setParCateId(esDTO.getParCateId()).setParCateName(esDTO.getParCateName()).setProdPrice(esDTO.getProdPrice()).setStoreName(esDTO.getStoreName())
                     .setSeason(esDTO.getSeason()).setStyle(esDTO.getStyle()).setCreateTime(createTime);
             return new BulkOperation.Builder().create(d -> d.document(esProductDTO).id(String.valueOf(x.getId()))

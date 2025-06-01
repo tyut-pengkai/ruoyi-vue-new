@@ -20,6 +20,8 @@ public class StoreProdPriceAndMainPicAndTagDTO {
     private Long parCateId;
     @ApiModelProperty(value = "商品分类ID")
     private Long prodCateId;
+    @ApiModelProperty(value = "商品分类名称")
+    private String prodCateName;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
     @ApiModelProperty(value = "档口ID")

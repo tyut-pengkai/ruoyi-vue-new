@@ -41,28 +41,50 @@ public interface IStoreHomepageService {
     Integer updateStoreHomepage(Long storeId, Integer templateNum, StoreHomeDecorationDTO homeDTO);
 
     /**
-     * 获取档口首页数据
-     *
-     * @param storeId 档口ID
-     * @return StoreHomeResDTO
-     */
-    StoreHomeResDTO getHomepageInfo(Long storeId);
-
-    /**
-     * 首页查询档口商品详情
-     *
-     * @param storeId     档口ID
-     * @param storeProdId 档口商品详情ID
-     * @return StoreHomeProdResDTO
-     */
-    StoreHomeProdResDTO getStoreProdInfo(Long storeId, Long storeProdId);
-
-    /**
      * 获取档口推荐商品列表
      *
      * @param storeId 档口ID
-     * @return  List<StoreRecommendResDTO>
+     * @return List<StoreRecommendResDTO>
      */
     List<StoreRecommendResDTO> getStoreRecommendList(Long storeId);
 
+    /**
+     * 档口首页模板一返回数据
+     *
+     * @param storeId 档口ID
+     * @return StoreHomeTemplateOneResDTO
+     */
+    StoreHomeTemplateOneResDTO getTemplateOne(Long storeId);
+
+    /**
+     * 档口首页模板二返回数据
+     *
+     * @param storeId 档口ID
+     * @return StoreHomeTemplateTwoResDTO
+     */
+    StoreHomeTemplateTwoResDTO getTemplateTwo(Long storeId);
+
+    /**
+     * 档口首页模板三返回数据
+     *
+     * @param storeId 档口ID
+     * @return StoreHomeTemplateThirdResDTO
+     */
+    StoreHomeTemplateThirdResDTO getTemplateThird(Long storeId);
+
+    /**
+     * 档口首页模板四返回数据
+     *
+     * @param storeId 档口ID
+     * @return StoreHomeTemplateFourResDTO
+     */
+    StoreHomeTemplateFourResDTO getTemplateFour(Long storeId);
+
+    /**
+     * 档口首页模板五返回数据
+     *
+     * @param storeId 档口ID
+     * @return StoreHomeTemplateFiveResDTO
+     */
+    StoreHomeTemplateFiveResDTO getTemplateFive(Long storeId);
 }

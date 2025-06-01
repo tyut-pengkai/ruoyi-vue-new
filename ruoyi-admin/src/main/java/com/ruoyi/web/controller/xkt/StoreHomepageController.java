@@ -5,17 +5,12 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.web.controller.xkt.vo.storeHomepage.StoreHomeDecorationVO;
-import com.ruoyi.web.controller.xkt.vo.storeHomepage.StoreHomeProdResVO;
-import com.ruoyi.web.controller.xkt.vo.storeHomepage.StoreHomeResVO;
-import com.ruoyi.web.controller.xkt.vo.storeHomepage.StoreRecommendResVO;
+import com.ruoyi.web.controller.xkt.vo.storeHomepage.*;
 import com.ruoyi.xkt.dto.storeHomepage.StoreHomeDecorationDTO;
-import com.ruoyi.xkt.dto.storeHomepage.StoreRecommendResDTO;
 import com.ruoyi.xkt.service.IStoreHomepageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,27 +55,37 @@ public class StoreHomepageController extends XktBaseController {
     @ApiOperation(value = "获取档口推荐商品列表", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/recommend/{storeId}")
     public R<List<StoreRecommendResVO>> getStoreRecommendList(@PathVariable("storeId") Long storeId) {
-        return R.ok(BeanUtil.copyToList(storeHomeService.getStoreRecommendList(storeId),  StoreRecommendResVO.class));
+        return R.ok(BeanUtil.copyToList(storeHomeService.getStoreRecommendList(storeId), StoreRecommendResVO.class));
     }
 
-    /**
-     * 查询档口首页
-     */
-    // @PreAuthorize("@ss.hasPermi('system:sale:query')")
-   /* @ApiOperation(value = "查询档口首页", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/{storeId}")
-    public R<StoreHomeResVO> getHomepageInfo(@PathVariable("storeId") Long storeId) {
-        return R.ok(BeanUtil.toBean(storeHomeService.getHomepageInfo(storeId), StoreHomeResVO.class));
-    }*/
+    @ApiOperation(value = "获取档口首页 模板一 数据", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/template-one/{storeId}")
+    public R<StoreHomeTemplateOneResVO> getTemplateOne(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeHomeService.getTemplateOne(storeId), StoreHomeTemplateOneResVO.class));
+    }
 
-    /**
-     * 查询档口商品详情
-     */
-    // @PreAuthorize("@ss.hasPermi('system:sale:query')")
-    /*@ApiOperation(value = "查询档口商品详情", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/store-prod/{storeId}/{storeProdId}")
-    public R<StoreHomeProdResVO> getStoreProdInfo(@PathVariable("storeId") Long storeId, @PathVariable("storeProdId") Long storeProdId) {
-        return R.ok(BeanUtil.toBean(storeHomeService.getStoreProdInfo(storeId, storeProdId), StoreHomeProdResVO.class));
-    }*/
+    @ApiOperation(value = "获取档口首页 模板二 数据", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/template-two/{storeId}")
+    public R<StoreHomeTemplateTwoResVO> getTemplateTwo(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeHomeService.getTemplateTwo(storeId), StoreHomeTemplateTwoResVO.class));
+    }
+
+    @ApiOperation(value = "获取档口首页 模板三 数据", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/template-third/{storeId}")
+    public R<StoreHomeTemplateThirdResVO> getTemplateThird(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeHomeService.getTemplateThird(storeId), StoreHomeTemplateThirdResVO.class));
+    }
+
+    @ApiOperation(value = "获取档口首页 模板四 数据", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/template-four/{storeId}")
+    public R<StoreHomeTemplateFourResVO> getTemplateFour(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeHomeService.getTemplateFour(storeId), StoreHomeTemplateFourResVO.class));
+    }
+
+    @ApiOperation(value = "获取档口首页 模板五 数据", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/template-five/{storeId}")
+    public R<StoreHomeTemplateFiveResVO> getTemplateFive(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeHomeService.getTemplateFive(storeId), StoreHomeTemplateFiveResVO.class));
+    }
 
 }

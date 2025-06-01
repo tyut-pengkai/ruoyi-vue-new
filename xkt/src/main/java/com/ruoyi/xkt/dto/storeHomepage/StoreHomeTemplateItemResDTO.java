@@ -1,9 +1,11 @@
-package com.ruoyi.web.controller.xkt.vo.advertRound.pc;
+package com.ruoyi.xkt.dto.storeHomepage;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -11,37 +13,31 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("PC 用户中心")
+@ApiModel("档口首页模板一返回数据")
 @Data
-public class PCUserCenterVO {
+@Accessors(chain = true)
+public class StoreHomeTemplateItemResDTO {
 
-    @ApiModelProperty(value = "分类ID")
-    private Long prodCateId;
-    @ApiModelProperty(value = "分类名称")
-    private String prodCateName;
     @ApiModelProperty(value = "2 商品")
     private Integer displayType;
     @ApiModelProperty(value = "档口ID")
-    private String storeId;
+    private Long storeId;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
     @ApiModelProperty(value = "档口商品ID")
-    private String storeProdId;
+    private Long storeProdId;
     @ApiModelProperty(value = "货号")
     private String prodArtNum;
     @ApiModelProperty(value = "主图")
     private String mainPicUrl;
     @ApiModelProperty(value = "单价")
-    private String prodPrice;
+    private BigDecimal prodPrice;
     @ApiModelProperty(value = "标题")
     private String prodTitle;
-    @ApiModelProperty(value = "是否广告")
-    private Boolean advert;
     @ApiModelProperty(value = "是否有视频")
     private Boolean hasVideo;
     @ApiModelProperty(value = "排序")
     private Integer orderNum;
     @ApiModelProperty(value = "标签")
     private List<String> tags;
-
 }

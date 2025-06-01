@@ -2,7 +2,6 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
@@ -55,7 +54,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -274,7 +272,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         }
         // 正确的分页数据
         List<PCStoreRecommendDTO> realDataList = redisList.stream()
-                .filter(x -> StringUtils.isEmpty(x.getStoreName()) || x.getStoreName().contains(searchDTO.getStoreName()))
+                .filter(x -> StringUtils.isEmpty(searchDTO.getStoreName()) || x.getStoreName().contains(searchDTO.getStoreName()))
                 .skip((long) (searchDTO.getPageNum() - 1) * searchDTO.getPageSize())
                 .limit(searchDTO.getPageSize()).collect(Collectors.toList());
         final long pages = (long) Math.ceil((double) redisList.size() / searchDTO.getPageSize());
@@ -1330,8 +1328,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     private PCUserCenterDTO getPcUserCenterDTO(AdvertRound advertRound, Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap) {
         final Long storeProdId = Long.parseLong(advertRound.getProdIdStr());
         final StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(storeProdId);
-        return new PCUserCenterDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreId(advertRound.getStoreId())
-                .setStoreName(dto.getStoreName()).setStoreProdId(storeProdId).setAdvert(Boolean.TRUE)
+        return new PCUserCenterDTO().setDisplayType(AdDisplayType.PRODUCT.getValue())
+                .setStoreProdId(storeProdId).setAdvert(Boolean.TRUE).setStoreId(advertRound.getStoreId())
+                .setProdCateId(ObjectUtils.isNotEmpty(dto) ? dto.getProdCateId() : null)
+                .setProdCateName(ObjectUtils.isNotEmpty(dto) ? dto.getProdCateName() : "")
+                .setStoreName(ObjectUtils.isNotEmpty(dto) ? dto.getStoreName() : "")
                 .setProdArtNum(ObjectUtils.isNotEmpty(dto) ? dto.getProdArtNum() : "")
                 .setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                 .setMainPicUrl(ObjectUtils.isNotEmpty(dto) ? dto.getMainPicUrl() : "")

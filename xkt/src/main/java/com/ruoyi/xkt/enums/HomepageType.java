@@ -18,7 +18,7 @@ public enum HomepageType {
     // 店家推荐
     STORE_RECOMMENDED(3, "店家推荐"),
     // 人气爆款
-    POPULAR_STYLES(4, "人气爆款"),
+    POPULAR_SALES(4, "人气爆款"),
     // 当季新品
     SEASON_NEW_PRODUCTS(5, "当季新品"),
     // 销量排行

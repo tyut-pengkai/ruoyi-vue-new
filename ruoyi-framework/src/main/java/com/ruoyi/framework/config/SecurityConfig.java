@@ -130,6 +130,8 @@ public class SecurityConfig
                         // TODO 临时放开 临时放开
                         .antMatchers("/rest/v1/pic-search/hot").permitAll()
                         .antMatchers("/rest/v1/pic-search").permitAll()
+                        .antMatchers("/rest/v1/stores/simple/**").permitAll()
+                        .antMatchers("/rest/v1/prods/status/num/**").permitAll()
 
 
                         // 除上面外的所有请求全部需要鉴权认证

@@ -121,6 +121,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             sp.id AS storeProdId,
             sp.prod_cate_id,
+            spc.`name` AS prodCateName,
             spc.parent_id AS parCateId,
             sp.prod_art_num AS prodArtNum,
             sf.file_url AS mainPicUrl,

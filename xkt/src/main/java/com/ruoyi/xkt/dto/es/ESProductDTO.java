@@ -34,7 +34,7 @@ public class ESProductDTO {
     @ApiModelProperty(value = "创建时间")
     private String createTime;
     @ApiModelProperty(value = "主图")
-    private String mainPic;
+    private String mainPicUrl;
     @ApiModelProperty(value = "上级分类名称")
     private String parCateName;
     @ApiModelProperty(value = "上级分类ID")

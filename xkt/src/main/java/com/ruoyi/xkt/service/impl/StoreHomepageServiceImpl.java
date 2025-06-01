@@ -12,10 +12,7 @@ import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
-import com.ruoyi.xkt.enums.FileType;
-import com.ruoyi.xkt.enums.HomepageJumpType;
-import com.ruoyi.xkt.enums.HomepageType;
-import com.ruoyi.xkt.enums.ProductSizeStatus;
+import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IStoreHomepageService;
 import lombok.RequiredArgsConstructor;
@@ -166,137 +163,6 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     }
 
     /**
-     * 获取档口首页数据
-     *
-     * @param storeId 档口ID
-     * @return StoreHomeResDTO
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public StoreHomeResDTO getHomepageInfo(Long storeId) {
-        // 档口基本信息
-        Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
-                        .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
-                .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-        // 档口各个状态的数量
-        StoreProdStatusCountDTO statusCountDTO = this.storeProdMapper.selectStatusCount(storeId);
-
-        // TODO 根据模板Num返回具体的模板数据
-        // TODO 根据模板Num返回具体的模板数据
-        // TODO 根据模板Num返回具体的模板数据
-
-
-        return new StoreHomeResDTO() {{
-            setStore(BeanUtil.toBean(store, StoreBasicDTO.class).setStoreId(storeId));
-            setStoreProdStatusCount(statusCountDTO);
-        }};
-    }
-
-    /**
-     * 首页查询档口商品详情
-     *
-     * @param storeId     档口ID
-     * @param storeProdId 档口商品详情ID
-     * @return StoreHomeProdResDTO
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public StoreHomeProdResDTO getStoreProdInfo(Long storeId, Long storeProdId) {
-
-        // TODO 获取当前登录者，判断是否关注当前档口是否收藏当前商品
-        // TODO 获取当前登录者，判断是否关注当前档口是否收藏当前商品
-        // TODO 获取当前登录者，判断是否关注当前档口是否收藏当前商品
-
-        // 档口基本信息
-        Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
-                        .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
-                .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-        // 档口认证
-        StoreCertificate storeCert = this.storeCertMapper.selectOne(new LambdaQueryWrapper<StoreCertificate>()
-                .eq(StoreCertificate::getStoreId, storeId).eq(StoreCertificate::getDelFlag, Constants.UNDELETED));
-        // 获取商品基本信息
-        StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
-                        .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
-                        .eq(StoreProduct::getStoreId, storeId)))
-                .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
-        // 档口各个状态的数量
-        StoreProdStatusCountDTO statusCountDTO = this.storeProdMapper.selectStatusCount(storeId);
-        // 获取商品详情内容
-        StoreProductDetail detail = this.prodDetailMapper.selectOne(new LambdaQueryWrapper<StoreProductDetail>()
-                .eq(StoreProductDetail::getStoreProdId, storeProdId).eq(StoreProductDetail::getDelFlag, Constants.UNDELETED));
-        // 获取商品颜色列表
-        List<StoreProductColor> colorList = this.prodColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
-                .eq(StoreProductColor::getStoreProdId, storeProdId).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
-        // 档口商品主图列表
-        List<StoreProdFileResDTO> mainPicDTOList = this.prodFileMapper.selectTotalMainPicList(storeProdId, storeId, FileType.MAIN_PIC.getValue());
-        // 档口商品颜色价格列表
-        List<StoreProductColorPrice> colorPriceList = this.prodColorPriceMapper.selectList(new LambdaQueryWrapper<StoreProductColorPrice>()
-                .eq(StoreProductColorPrice::getStoreProdId, storeProdId).eq(StoreProductColorPrice::getDelFlag, Constants.UNDELETED));
-        Map<String, StoreProductColorPrice> colorPriceMap = colorPriceList.stream().collect(Collectors
-                .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString(), Function.identity()));
-        // 档口商品属性
-        List<StoreProductCategoryAttribute> prodAttrList = this.prodCateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
-                .eq(StoreProductCategoryAttribute::getStoreProdId, storeProdId).eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED));
-        // 档口商品标准尺码
-        List<StoreProductColorSize> standardSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
-                .eq(StoreProductColorSize::getStoreProdId, storeProdId).eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED)
-                .eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
-        Map<String, List<StoreProductColorSize>> colorSizeMap = standardSizeList.stream().collect(Collectors
-                .groupingBy(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString()));
-        // 根据标准尺码去找对应尺码的库存数量
-        List<StoreProductStock> prodStockList = this.prodStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
-                .eq(StoreProductStock::getStoreProdId, storeProdId)
-                .in(StoreProductStock::getStoreProdColorId, colorList.stream().map(StoreProductColor::getId).distinct().collect(Collectors.toList()))
-                .eq(StoreProductStock::getDelFlag, Constants.UNDELETED));
-        // 获取档口颜色尺码的库存数量
-        Map<String, List<StoreHomeProdResDTO.StoreProdSizeStockDTO>> colorSizeStockMap = this.convertSizeStock(prodStockList, standardSizeList);
-        List<StoreHomeProdResDTO.StoreProdColorDTO> colorSizeStockList = colorList.stream()
-                .map(color -> BeanUtil.toBean(color, StoreHomeProdResDTO.StoreProdColorDTO.class)
-                        .setStoreProdColorId(color.getId())
-                        // 获取颜色设定的价格
-                        .setPrice(colorPriceMap.containsKey(color.getStoreProdId().toString() + color.getStoreColorId().toString())
-                                ? colorPriceMap.get(color.getStoreProdId().toString() + color.getStoreColorId().toString()).getPrice() : null)
-                        // 设定库存
-                        .setSizeStockList(colorSizeMap.containsKey(color.getStoreProdId().toString() + color.getStoreColorId().toString())
-                                ? colorSizeStockMap.get(color.getStoreProdId().toString() + color.getStoreColorId().toString()) : null))
-                .collect(Collectors.toList());
-        // 商品基础信息
-        StoreHomeProdResDTO.StoreProdInfoDTO storeProdDTO = BeanUtil.toBean(storeProd, StoreHomeProdResDTO.StoreProdInfoDTO.class)
-                .setStoreProdId(storeProdId).setMainPicList(mainPicDTOList)
-                .setDetail(BeanUtil.toBean(detail, StoreProdDetailDTO.class))
-                .setCateAttrList(BeanUtil.copyToList(prodAttrList, StoreProdCateAttrDTO.class))
-                .setColorList(colorSizeStockList);
-        // 档口推荐图片
-        List<StoreHomepage> storeRecommendedList = this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
-                .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED)
-                // 查询店铺推荐图片
-                .eq(StoreHomepage::getFileType, HomepageType.STORE_RECOMMENDED.getValue()));
-        List<Long> fileIdList = storeRecommendedList.stream().map(StoreHomepage::getFileId).filter(Objects::nonNull).collect(Collectors.toList());
-        Map<Long, SysFile> fileMap = CollectionUtils.isEmpty(fileIdList) ? new HashMap<>()
-                : this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>().in(SysFile::getId, fileIdList).eq(SysFile::getDelFlag, Constants.UNDELETED))
-                .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
-        // 其它图部分
-        List<StoreHomeProdResDTO.DecorationVO> recommendedList = storeRecommendedList.stream().map(x -> {
-            StoreHomeProdResDTO.DecorationVO decorationDTO = BeanUtil.toBean(x, StoreHomeProdResDTO.DecorationVO.class).setBizName(storeProd.getProdName());
-            return fileMap.containsKey(x.getFileId()) ? decorationDTO.setFileType(x.getFileType()).setFileName(fileMap.get(x.getFileId()).getFileName())
-                    .setFileUrl(fileMap.get(x.getFileId()).getFileUrl()).setFileSize(fileMap.get(x.getFileId()).getFileSize()) : decorationDTO;
-        }).collect(Collectors.toList());
-        return new StoreHomeProdResDTO() {{
-            setStore(BeanUtil.toBean(store, StoreBasicDTO.class).setStoreId(storeId)
-                    .setLicenseName(ObjectUtils.isNotEmpty(storeCert) ? storeCert.getLicenseName() : null));
-            setStoreProd(storeProdDTO);
-            setStoreProdStatusCount(statusCountDTO);
-            setRecommendedList(recommendedList);
-
-            // TODO 还有关注的档口及收藏的商品
-            // TODO 还有关注的档口及收藏的商品
-            // TODO 还有关注的档口及收藏的商品
-            // TODO 还有关注的档口及收藏的商品
-
-        }};
-    }
-
-    /**
      * 获取档口推荐商品列表
      *
      * @param storeId 档口ID
@@ -321,6 +187,194 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
             final List<String> tags = ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? Arrays.asList(dto.getTagStr().split(",")) : null;
             return BeanUtil.toBean(dto, StoreRecommendResDTO.class).setTags(tags);
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * 档口首页模板一返回数据
+     *
+     * @param storeId 档口ID
+     * @return StoreHomeTemplateOneResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreHomeTemplateOneResDTO getTemplateOne(Long storeId) {
+        // 顶部轮播大图
+        StoreHomeTemplateOneResDTO templateTwo = new StoreHomeTemplateOneResDTO().setTopLeftList(this.storeHomeMapper.selectTopLeftList(storeId));
+        // 其他区域
+        List<StoreHomepage> otherList = this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
+                .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED)
+                .in(StoreHomepage::getFileType, Arrays.asList(HomepageType.POPULAR_SALES.getValue(),
+                        HomepageType.SLIDING_PICTURE_SMALL.getValue(), HomepageType.SEASON_NEW_PRODUCTS.getValue(),
+                        HomepageType.STORE_RECOMMENDED.getValue(), HomepageType.SALES_RANKING.getValue())));
+        if (CollectionUtils.isEmpty(otherList)) {
+            return templateTwo;
+        }
+        final List<Long> storeProdIdList = otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
+        List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(storeProdIdList);
+        Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
+        return templateTwo
+                .setTopRightList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SLIDING_PICTURE_SMALL.getValue(), 2))
+                .setRecommendList(this.getTemplateTypeList(otherList, attrMap, HomepageType.STORE_RECOMMENDED.getValue(), 5))
+                .setPopularSaleList(this.getTemplateTypeList(otherList, attrMap, HomepageType.POPULAR_SALES.getValue(), 5))
+                .setNewProdList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SEASON_NEW_PRODUCTS.getValue(), 5))
+                .setSaleRankList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SALES_RANKING.getValue(), 10));
+    }
+
+    /**
+     * 档口首页模板二返回数据
+     *
+     * @param storeId 档口ID
+     * @return StoreHomeTemplateTwoResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreHomeTemplateTwoResDTO getTemplateTwo(Long storeId) {
+        // 顶部轮播大图
+        StoreHomeTemplateTwoResDTO templateTwo = new StoreHomeTemplateTwoResDTO().setTopLeftList(this.storeHomeMapper.selectTopLeftList(storeId));
+
+        // TODO 获取档口公告
+        // TODO 获取档口公告
+        // TODO 获取档口公告
+
+        List<StoreHomepage> otherList = this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
+                .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED)
+                .in(StoreHomepage::getFileType, Arrays.asList(HomepageType.POPULAR_SALES.getValue(),
+                        HomepageType.SEASON_NEW_PRODUCTS.getValue(), HomepageType.STORE_RECOMMENDED.getValue(),
+                        HomepageType.SALES_RANKING.getValue())));
+        if (CollectionUtils.isEmpty(otherList)) {
+            return templateTwo;
+        }
+        final List<Long> storeProdIdList = otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
+        List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(storeProdIdList);
+        Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
+        return templateTwo
+                .setRecommendList(this.getTemplateTypeList(otherList, attrMap, HomepageType.STORE_RECOMMENDED.getValue(), 5))
+                .setPopularSaleList(this.getTemplateTypeList(otherList, attrMap, HomepageType.POPULAR_SALES.getValue(), 5))
+                .setNewProdList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SEASON_NEW_PRODUCTS.getValue(), 5))
+                .setSaleRankList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SALES_RANKING.getValue(), 10));
+    }
+
+    /**
+     * 档口首页模板三返回数据
+     *
+     * @param storeId 档口ID
+     * @return StoreHomeTemplateThirdResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreHomeTemplateThirdResDTO getTemplateThird(Long storeId) {
+        // 顶部轮播大图
+        StoreHomeTemplateThirdResDTO templateOne = new StoreHomeTemplateThirdResDTO().setTopLeftList(this.storeHomeMapper.selectTopLeftList(storeId));
+        // 顶部右侧商品 及 店家推荐 和 销量排行
+        List<StoreHomepage> otherList = this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
+                .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED)
+                .in(StoreHomepage::getFileType, Arrays.asList(HomepageType.SLIDING_PICTURE_SMALL.getValue(),
+                        HomepageType.STORE_RECOMMENDED.getValue(), HomepageType.SALES_RANKING.getValue())));
+        if (CollectionUtils.isEmpty(otherList)) {
+            return templateOne;
+        }
+        final List<Long> storeProdIdList = otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
+        List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(storeProdIdList);
+        Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
+        return templateOne.setTopRightList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SLIDING_PICTURE_SMALL.getValue(), 2))
+                .setRecommendList(this.getTemplateTypeList(otherList, attrMap, HomepageType.STORE_RECOMMENDED.getValue(), 10))
+                .setSaleRankList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SALES_RANKING.getValue(), 10));
+    }
+
+    /**
+     * 档口首页模板四返回数据
+     *
+     * @param storeId 档口ID
+     * @return StoreHomeTemplateFourResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreHomeTemplateFourResDTO getTemplateFour(Long storeId) {
+        // 顶部轮播大图
+        StoreHomeTemplateFourResDTO templateFour = new StoreHomeTemplateFourResDTO().setTopLeftList(this.storeHomeMapper.selectTopLeftList(storeId));
+        // 其他区域
+        List<StoreHomepage> otherList = this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
+                .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED)
+                .in(StoreHomepage::getFileType, Arrays.asList(HomepageType.POPULAR_SALES.getValue(),
+                        HomepageType.SLIDING_PICTURE_SMALL.getValue(), HomepageType.SEASON_NEW_PRODUCTS.getValue(),
+                        HomepageType.STORE_RECOMMENDED.getValue())));
+        if (CollectionUtils.isEmpty(otherList)) {
+            return templateFour;
+        }
+        final List<Long> storeProdIdList = otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
+        List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(storeProdIdList);
+        Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
+        return templateFour
+                .setTopRightList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SLIDING_PICTURE_SMALL.getValue(), 2))
+                .setRecommendList(this.getTemplateTypeList(otherList, attrMap, HomepageType.STORE_RECOMMENDED.getValue(), 5))
+                .setPopularSaleList(this.getTemplateTypeList(otherList, attrMap, HomepageType.POPULAR_SALES.getValue(), 5))
+                .setNewProdList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SEASON_NEW_PRODUCTS.getValue(), 5));
+    }
+
+    /**
+     * 档口首页模板五返回数据
+     *
+     * @param storeId 档口ID
+     * @return StoreHomeTemplateFiveResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreHomeTemplateFiveResDTO getTemplateFive(Long storeId) {
+        // 顶部轮播大图
+        StoreHomeTemplateFiveResDTO templateFive = new StoreHomeTemplateFiveResDTO().setTopLeftList(this.storeHomeMapper.selectTopLeftList(storeId));
+
+        // TODO 获取档口公告
+        // TODO 获取档口公告
+        // TODO 获取档口公告
+
+        // 其他区域
+        List<StoreHomepage> otherList = this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
+                .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED)
+                .in(StoreHomepage::getFileType, Arrays.asList(HomepageType.POPULAR_SALES.getValue(),
+                        HomepageType.SLIDING_PICTURE_SMALL.getValue(), HomepageType.SEASON_NEW_PRODUCTS.getValue(),
+                        HomepageType.STORE_RECOMMENDED.getValue(), HomepageType.SALES_RANKING.getValue())));
+        if (CollectionUtils.isEmpty(otherList)) {
+            return templateFive;
+        }
+        final List<Long> storeProdIdList = otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
+        List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(storeProdIdList);
+        Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
+        return templateFive
+                .setTopRightList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SLIDING_PICTURE_SMALL.getValue(), 2))
+                .setRecommendList(this.getTemplateTypeList(otherList, attrMap, HomepageType.STORE_RECOMMENDED.getValue(), 10))
+                .setSaleRankList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SALES_RANKING.getValue(), 10));
+    }
+
+    /**
+     * 获取档口首页各个类型的数据
+     *
+     * @param list         各个的数据列表
+     * @param attrMap      各个属性map
+     * @param templateType 当前模板type
+     * @param limitCount   返回商品数量
+     * @return List<StoreHomeTemplateItemResDTO>
+     */
+    private List<StoreHomeTemplateItemResDTO> getTemplateTypeList(List<StoreHomepage> list, Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap,
+                                                                  Integer templateType, Integer limitCount) {
+        // 顶部右侧商品
+        return list.stream().filter(x -> Objects.equals(x.getFileType(), templateType))
+                .map(x -> {
+                    StoreProdPriceAndMainPicAndTagDTO attr = attrMap.get(x.getBizId());
+                    final List<String> tags = ObjectUtils.isNotEmpty(attr) && StringUtils.isNotBlank(attr.getTagStr())
+                            ? Arrays.asList(attr.getTagStr().split(",")) : null;
+                    return new StoreHomeTemplateItemResDTO().setOrderNum(x.getOrderNum())
+                            .setDisplayType(AdDisplayType.PRODUCT.getValue()).setTags(tags)
+                            .setStoreId(ObjectUtils.isNotEmpty(attr) ? attr.getStoreId() : null)
+                            .setStoreName(ObjectUtils.isNotEmpty(attr) ? attr.getStoreName() : null)
+                            .setStoreProdId(ObjectUtils.isNotEmpty(attr) ? attr.getStoreProdId() : null)
+                            .setProdArtNum(ObjectUtils.isNotEmpty(attr) ? attr.getProdArtNum() : null)
+                            .setMainPicUrl(ObjectUtils.isNotEmpty(attr) ? attr.getMainPicUrl() : null)
+                            .setProdPrice(ObjectUtils.isNotEmpty(attr) ? attr.getMinPrice() : null)
+                            .setProdTitle(ObjectUtils.isNotEmpty(attr) ? attr.getProdTitle() : null)
+                            .setHasVideo(ObjectUtils.isNotEmpty(attr) ? attr.getHasVideo() : Boolean.FALSE);
+                })
+                .limit(limitCount)
+                .collect(Collectors.toList());
     }
 
     /**
