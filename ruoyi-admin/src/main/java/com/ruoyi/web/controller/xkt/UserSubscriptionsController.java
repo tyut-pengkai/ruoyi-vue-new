@@ -47,7 +47,6 @@ public class UserSubscriptionsController extends XktBaseController {
         return R.ok(userSubService.page(BeanUtil.toBean(pageVO, UserSubscPageDTO.class)));
     }
 
-
     @ApiOperation(value = "用户取消关注档口", httpMethod = "DELETE", response = R.class)
     @Log(title = "用户取消关注档口", businessType = BusinessType.DELETE)
     @DeleteMapping("/batch")

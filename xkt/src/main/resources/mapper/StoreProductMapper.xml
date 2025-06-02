@@ -146,7 +146,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sp.id AS storeProdId,
             sp.prod_art_num,
             sp.prod_title,
-            SUM( sps.img_search_count ) AS img_search_count,
+            SUM( IFNULL( sps.img_search_count, 0 ) ) AS img_search_count,
             sf.file_url AS mainPicUrl,
             GROUP_CONCAT( DISTINCT dpt.tag ORDER BY dpt.type ) AS tagStr,
             sp.store_id,

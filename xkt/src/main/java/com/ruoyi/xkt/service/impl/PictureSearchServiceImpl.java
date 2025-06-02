@@ -58,11 +58,11 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
     @Autowired
     private StoreProductStatisticsMapper storeProdStatisticsMapper;
 
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public List<StoreProdViewDTO> searchProductByPic(SearchRequestDTO requestDTO) {
 
+        // TODO 校验当前登录者角色，若非电商卖家 或 管理员 或 超级管理员，则不可操作
         // TODO 校验当前登录者角色，若非电商卖家 或 管理员 或 超级管理员，则不可操作
         // TODO 校验当前登录者角色，若非电商卖家 或 管理员 或 超级管理员，则不可操作
         // TODO 校验当前登录者角色，若非电商卖家 或 管理员 或 超级管理员，则不可操作
@@ -78,22 +78,25 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
         pictureSearch.setDelFlag(Constants.UNDELETED);
         pictureSearchMapper.insert(pictureSearch);
         //搜索
-        List<ProductMatchDTO> results = pictureService.searchProductByPicKey(requestDTO.getPicKey(),
-                requestDTO.getNum());
+        List<ProductMatchDTO> results = pictureService.searchProductByPicKey(requestDTO.getPicKey(), requestDTO.getNum());
         ThreadUtil.execAsync(() -> {
             for (ProductMatchDTO result : results) {
                 //图搜次数+1
                 redisCache.valueIncr(CacheConstants.PRODUCT_STATISTICS_IMG_SEARCH_COUNT, result.getStoreProductId());
             }
         });
+        // 以图搜款广告
+        List<PicSearchAdvertDTO> picSearchAdverts = websitePCService.getPicSearchList();
+        // 没有搜出结果，则直接返回广告
+        if (CollectionUtils.isEmpty(results)) {
+            return BeanUtil.copyToList(picSearchAdverts, StoreProdViewDTO.class);
+        }
         // 档口商品显示的基本属性
         List<StoreProdViewDTO> storeProdViewAttrList = this.storeProdMapper.getStoreProdViewAttr(results.stream()
                         .map(ProductMatchDTO::getStoreProductId).distinct().collect(Collectors.toList()),
-                java.sql.Date.valueOf(LocalDate.now()), java.sql.Date.valueOf(LocalDate.now().minusMonths(2)));
+                java.sql.Date.valueOf(LocalDate.now().minusMonths(2)), java.sql.Date.valueOf(LocalDate.now()));
         // 设置商品标签
         storeProdViewAttrList.stream().filter(x -> StringUtils.isNotBlank(x.getTagStr())).forEach(x -> x.setTags(StrUtil.split(x.getTagStr(), ",")));
-        // 以图搜款广告
-        List<PicSearchAdvertDTO> picSearchAdverts = websitePCService.getPicSearchList();
         // 将广告插入到预定位置
         return insertAdvertsIntoList(storeProdViewAttrList, BeanUtil.copyToList(picSearchAdverts, StoreProdViewDTO.class), Constants.PIC_SEARCH_INSERT_POSITIONS);
     }
@@ -149,6 +152,9 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
      * @return 合并后的列表
      */
     public static <T> List<T> insertAdvertsIntoList(List<T> dataList, List<T> adverts, Set<Integer> positions) {
+        if (CollectionUtils.isEmpty(adverts)) {
+            return dataList;
+        }
         List<T> mergedList = new ArrayList<>(dataList); // 先拷贝原始数据
         int advertIndex = 0;
         // 遍历所有广告插入位置

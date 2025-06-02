@@ -1208,7 +1208,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         List<Store> storeList = this.storeMapper.selectByIds(oneMonthList.stream().map(AdvertRound::getStoreId).collect(Collectors.toList()));
         // 获取商品显示的基本属性
         List<StoreProdViewDTO> storeProdViewList = this.storeProdMapper.getStoreProdViewAttr(storeProdIdList,
-                java.sql.Date.valueOf(LocalDate.now()), java.sql.Date.valueOf(LocalDate.now().minusMonths(2)));
+                java.sql.Date.valueOf(LocalDate.now().minusMonths(2)), java.sql.Date.valueOf(LocalDate.now()));
         Map<Long, StoreProdViewDTO> viewMap = storeProdViewList.stream().collect(Collectors.toMap(StoreProdViewDTO::getStoreProdId, Function.identity()));
         // 档口标签
         List<DailyStoreTag> storeTagList = this.dailyStoreTagMapper.selectList(new LambdaQueryWrapper<DailyStoreTag>()
@@ -1704,6 +1704,9 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
      * @return 合并后的列表
      */
     public static <T> List<T> insertAdvertsIntoList(List<T> dataList, List<T> adverts, Set<Integer> positions) {
+        if (CollectionUtils.isEmpty(adverts)) {
+            return dataList;
+        }
         List<T> mergedList = new ArrayList<>(dataList); // 先拷贝原始数据
         int advertIndex = 0;
         // 遍历所有广告插入位置

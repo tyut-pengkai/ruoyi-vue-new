@@ -184,7 +184,7 @@ public class XktTask {
     }
 
     /**
-     * 每晚12点25同步档口商品销售数据
+     * 每晚12点25同步商品最新分类排序
      */
     @Transactional
     public void dailyCategorySort() {
@@ -273,7 +273,7 @@ public class XktTask {
     }
 
     /**
-     * 每晚12点40给商品打标
+     * 每晚12点40更新商品标签
      */
     @Transactional
     public void dailyProdTag() throws IOException {
@@ -519,7 +519,7 @@ public class XktTask {
     }
 
     /**
-     * 每晚22:00:10更新广告位轮次状态 将biddingTempStatus赋值给biddingStatus
+     * 每晚22:00:10更新广告位竞价状态 将biddingTempStatus赋值给biddingStatus
      */
     @Transactional
     public void updateAdvertRoundBiddingStatus() throws ParseException {
@@ -555,7 +555,7 @@ public class XktTask {
     }
 
     /**
-     * 通过定时任务将symbol存放到redis中
+     * 凌晨00:00:30通过定时任务将symbol存放到redis中
      */
     public void saveSymbolToRedis() {
         advertRoundService.initAdvertLockMap();
@@ -651,7 +651,7 @@ public class XktTask {
     }
 
     /**
-     * 每晚凌晨3点更新系统热搜到redis中
+     * 每晚凌晨2:10更新系统热搜到redis中
      */
     @Transactional
     public void dailyUpdateSearchHotToRedis() {
@@ -841,7 +841,7 @@ public class XktTask {
     }
 
     /**
-     * 统计图搜热款
+     * 凌晨2:30更新统计图搜热款
      */
     public void imgSearchTopProductStatistics() {
         log.info("-------------统计图搜热款开始-------------");
