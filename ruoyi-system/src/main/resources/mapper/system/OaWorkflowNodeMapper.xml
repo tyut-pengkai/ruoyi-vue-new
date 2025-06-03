@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OaWorkflowNodeMapper">
+    
+    <resultMap type="OaWorkflowNode" id="OaWorkflowNodeResult">
+        <result property="id"    column="id"    />
+        <result property="workflowId"    column="workflow_id"    />
+        <result property="approverId"    column="approver_id"    />
+        <result property="approvalStatus"    column="approval_status"    />
+        <result property="approvalComment"    column="approval_comment"    />
+        <result property="approvalTime"    column="approval_time"    />
+        <result property="nodeOrder"    column="node_order"    />
+        <result property="updatedBy"    column="updated_by"    />
+        <result property="updatedTime"    column="updated_time"    />
+    </resultMap>
+
+    <sql id="selectOaWorkflowNodeVo">
+        select id, workflow_id, approver_id, approval_status, approval_comment, approval_time, node_order, updated_by, updated_time from oa_workflow_node
+    </sql>
+
+    <select id="selectOaWorkflowNodeList" parameterType="OaWorkflowNode" resultMap="OaWorkflowNodeResult">
+        <include refid="selectOaWorkflowNodeVo"/>
+        <where>  
+            <if test="workflowId != null "> and workflow_id = #{workflowId}</if>
+            <if test="approverId != null "> and approver_id = #{approverId}</if>
+            <if test="approvalStatus != null "> and approval_status = #{approvalStatus}</if>
+            <if test="approvalComment != null  and approvalComment != ''"> and approval_comment = #{approvalComment}</if>
+            <if test="approvalTime != null "> and approval_time = #{approvalTime}</if>
+            <if test="nodeOrder != null "> and node_order = #{nodeOrder}</if>
+            <if test="updatedBy != null "> and updated_by = #{updatedBy}</if>
+            <if test="updatedTime != null "> and updated_time = #{updatedTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectOaWorkflowNodeById" parameterType="Long" resultMap="OaWorkflowNodeResult">
+        <include refid="selectOaWorkflowNodeVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOaWorkflowNode" parameterType="OaWorkflowNode" useGeneratedKeys="true" keyProperty="id">
+        insert into oa_workflow_node
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="workflowId != null">workflow_id,</if>
+            <if test="approverId != null">approver_id,</if>
+            <if test="approvalStatus != null">approval_status,</if>
+            <if test="approvalComment != null">approval_comment,</if>
+            <if test="approvalTime != null">approval_time,</if>
+            <if test="nodeOrder != null">node_order,</if>
+            <if test="updatedBy != null">updated_by,</if>
+            <if test="updatedTime != null">updated_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="workflowId != null">#{workflowId},</if>
+            <if test="approverId != null">#{approverId},</if>
+            <if test="approvalStatus != null">#{approvalStatus},</if>
+            <if test="approvalComment != null">#{approvalComment},</if>
+            <if test="approvalTime != null">#{approvalTime},</if>
+            <if test="nodeOrder != null">#{nodeOrder},</if>
+            <if test="updatedBy != null">#{updatedBy},</if>
+            <if test="updatedTime != null">#{updatedTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOaWorkflowNode" parameterType="OaWorkflowNode">
+        update oa_workflow_node
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="workflowId != null">workflow_id = #{workflowId},</if>
+            <if test="approverId != null">approver_id = #{approverId},</if>
+            <if test="approvalStatus != null">approval_status = #{approvalStatus},</if>
+            <if test="approvalComment != null">approval_comment = #{approvalComment},</if>
+            <if test="approvalTime != null">approval_time = #{approvalTime},</if>
+            <if test="nodeOrder != null">node_order = #{nodeOrder},</if>
+            <if test="updatedBy != null">updated_by = #{updatedBy},</if>
+            <if test="updatedTime != null">updated_time = #{updatedTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOaWorkflowNodeById" parameterType="Long">
+        delete from oa_workflow_node where id = #{id}
+    </delete>
+
+    <delete id="deleteOaWorkflowNodeByIds" parameterType="String">
+        delete from oa_workflow_node where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OaProjectAttachmentMapper">
+    
+    <resultMap type="OaProjectAttachment" id="OaProjectAttachmentResult">
+        <result property="id"    column="id"    />
+        <result property="projectId"    column="project_id"    />
+        <result property="fileType"    column="file_type"    />
+        <result property="fileName"    column="file_name"    />
+        <result property="filePath"    column="file_path"    />
+        <result property="uploadUserId"    column="upload_user_id"    />
+        <result property="uploadTime"    column="upload_time"    />
+        <result property="updatedBy"    column="updated_by"    />
+        <result property="updatedTime"    column="updated_time"    />
+    </resultMap>
+
+    <sql id="selectOaProjectAttachmentVo">
+        select id, project_id, file_type, file_name, file_path, upload_user_id, upload_time, updated_by, updated_time from oa_project_attachment
+    </sql>
+
+    <select id="selectOaProjectAttachmentList" parameterType="OaProjectAttachment" resultMap="OaProjectAttachmentResult">
+        <include refid="selectOaProjectAttachmentVo"/>
+        <where>  
+            <if test="projectId != null "> and project_id = #{projectId}</if>
+            <if test="fileType != null "> and file_type = #{fileType}</if>
+            <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
+            <if test="filePath != null  and filePath != ''"> and file_path = #{filePath}</if>
+            <if test="uploadUserId != null "> and upload_user_id = #{uploadUserId}</if>
+            <if test="uploadTime != null "> and upload_time = #{uploadTime}</if>
+            <if test="updatedBy != null "> and updated_by = #{updatedBy}</if>
+            <if test="updatedTime != null "> and updated_time = #{updatedTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectOaProjectAttachmentById" parameterType="Long" resultMap="OaProjectAttachmentResult">
+        <include refid="selectOaProjectAttachmentVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOaProjectAttachment" parameterType="OaProjectAttachment" useGeneratedKeys="true" keyProperty="id">
+        insert into oa_project_attachment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">project_id,</if>
+            <if test="fileType != null">file_type,</if>
+            <if test="fileName != null and fileName != ''">file_name,</if>
+            <if test="filePath != null and filePath != ''">file_path,</if>
+            <if test="uploadUserId != null">upload_user_id,</if>
+            <if test="uploadTime != null">upload_time,</if>
+            <if test="updatedBy != null">updated_by,</if>
+            <if test="updatedTime != null">updated_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">#{projectId},</if>
+            <if test="fileType != null">#{fileType},</if>
+            <if test="fileName != null and fileName != ''">#{fileName},</if>
+            <if test="filePath != null and filePath != ''">#{filePath},</if>
+            <if test="uploadUserId != null">#{uploadUserId},</if>
+            <if test="uploadTime != null">#{uploadTime},</if>
+            <if test="updatedBy != null">#{updatedBy},</if>
+            <if test="updatedTime != null">#{updatedTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOaProjectAttachment" parameterType="OaProjectAttachment">
+        update oa_project_attachment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="fileType != null">file_type = #{fileType},</if>
+            <if test="fileName != null and fileName != ''">file_name = #{fileName},</if>
+            <if test="filePath != null and filePath != ''">file_path = #{filePath},</if>
+            <if test="uploadUserId != null">upload_user_id = #{uploadUserId},</if>
+            <if test="uploadTime != null">upload_time = #{uploadTime},</if>
+            <if test="updatedBy != null">updated_by = #{updatedBy},</if>
+            <if test="updatedTime != null">updated_time = #{updatedTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOaProjectAttachmentById" parameterType="Long">
+        delete from oa_project_attachment where id = #{id}
+    </delete>
+
+    <delete id="deleteOaProjectAttachmentByIds" parameterType="String">
+        delete from oa_project_attachment where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

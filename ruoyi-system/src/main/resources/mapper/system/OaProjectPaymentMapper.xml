@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OaProjectPaymentMapper">
+    
+    <resultMap type="OaProjectPayment" id="OaProjectPaymentResult">
+        <result property="id"    column="id"    />
+        <result property="projectId"    column="project_id"    />
+        <result property="paymentType"    column="payment_type"    />
+        <result property="amount"    column="amount"    />
+        <result property="paymentDate"    column="payment_date"    />
+        <result property="taxPoint"    column="tax_point"    />
+        <result property="bankName"    column="bank_name"    />
+        <result property="bankAccount"    column="bank_account"    />
+        <result property="invoiceType"    column="invoice_type"    />
+        <result property="invoiceDate"    column="invoice_date"    />
+        <result property="createdBy"    column="created_by"    />
+        <result property="createdTime"    column="created_time"    />
+        <result property="updatedBy"    column="updated_by"    />
+        <result property="updatedTime"    column="updated_time"    />
+    </resultMap>
+
+    <sql id="selectOaProjectPaymentVo">
+        select id, project_id, payment_type, amount, payment_date, tax_point, bank_name, bank_account, invoice_type, invoice_date, created_by, created_time, updated_by, updated_time from oa_project_payment
+    </sql>
+
+    <select id="selectOaProjectPaymentList" parameterType="OaProjectPayment" resultMap="OaProjectPaymentResult">
+        <include refid="selectOaProjectPaymentVo"/>
+        <where>  
+            <if test="projectId != null "> and project_id = #{projectId}</if>
+            <if test="paymentType != null "> and payment_type = #{paymentType}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="paymentDate != null "> and payment_date = #{paymentDate}</if>
+            <if test="taxPoint != null "> and tax_point = #{taxPoint}</if>
+            <if test="bankName != null  and bankName != ''"> and bank_name like concat('%', #{bankName}, '%')</if>
+            <if test="bankAccount != null  and bankAccount != ''"> and bank_account = #{bankAccount}</if>
+            <if test="invoiceType != null  and invoiceType != ''"> and invoice_type = #{invoiceType}</if>
+            <if test="invoiceDate != null "> and invoice_date = #{invoiceDate}</if>
+            <if test="createdBy != null "> and created_by = #{createdBy}</if>
+            <if test="createdTime != null "> and created_time = #{createdTime}</if>
+            <if test="updatedBy != null "> and updated_by = #{updatedBy}</if>
+            <if test="updatedTime != null "> and updated_time = #{updatedTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectOaProjectPaymentById" parameterType="Long" resultMap="OaProjectPaymentResult">
+        <include refid="selectOaProjectPaymentVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOaProjectPayment" parameterType="OaProjectPayment" useGeneratedKeys="true" keyProperty="id">
+        insert into oa_project_payment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">project_id,</if>
+            <if test="paymentType != null">payment_type,</if>
+            <if test="amount != null">amount,</if>
+            <if test="paymentDate != null">payment_date,</if>
+            <if test="taxPoint != null">tax_point,</if>
+            <if test="bankName != null">bank_name,</if>
+            <if test="bankAccount != null">bank_account,</if>
+            <if test="invoiceType != null">invoice_type,</if>
+            <if test="invoiceDate != null">invoice_date,</if>
+            <if test="createdBy != null">created_by,</if>
+            <if test="createdTime != null">created_time,</if>
+            <if test="updatedBy != null">updated_by,</if>
+            <if test="updatedTime != null">updated_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">#{projectId},</if>
+            <if test="paymentType != null">#{paymentType},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="paymentDate != null">#{paymentDate},</if>
+            <if test="taxPoint != null">#{taxPoint},</if>
+            <if test="bankName != null">#{bankName},</if>
+            <if test="bankAccount != null">#{bankAccount},</if>
+            <if test="invoiceType != null">#{invoiceType},</if>
+            <if test="invoiceDate != null">#{invoiceDate},</if>
+            <if test="createdBy != null">#{createdBy},</if>
+            <if test="createdTime != null">#{createdTime},</if>
+            <if test="updatedBy != null">#{updatedBy},</if>
+            <if test="updatedTime != null">#{updatedTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOaProjectPayment" parameterType="OaProjectPayment">
+        update oa_project_payment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="paymentType != null">payment_type = #{paymentType},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="paymentDate != null">payment_date = #{paymentDate},</if>
+            <if test="taxPoint != null">tax_point = #{taxPoint},</if>
+            <if test="bankName != null">bank_name = #{bankName},</if>
+            <if test="bankAccount != null">bank_account = #{bankAccount},</if>
+            <if test="invoiceType != null">invoice_type = #{invoiceType},</if>
+            <if test="invoiceDate != null">invoice_date = #{invoiceDate},</if>
+            <if test="createdBy != null">created_by = #{createdBy},</if>
+            <if test="createdTime != null">created_time = #{createdTime},</if>
+            <if test="updatedBy != null">updated_by = #{updatedBy},</if>
+            <if test="updatedTime != null">updated_time = #{updatedTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOaProjectPaymentById" parameterType="Long">
+        delete from oa_project_payment where id = #{id}
+    </delete>
+
+    <delete id="deleteOaProjectPaymentByIds" parameterType="String">
+        delete from oa_project_payment where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OaProjectMapper">
+    
+    <resultMap type="OaProject" id="OaProjectResult">
+        <result property="id"    column="id"    />
+        <result property="projectName"    column="project_name"    />
+        <result property="companyInfoSource"    column="company_info_source"    />
+        <result property="partnerId"    column="partner_id"    />
+        <result property="customCompany"    column="custom_company"    />
+        <result property="projectDate"    column="project_date"    />
+        <result property="address"    column="address"    />
+        <result property="contactPerson"    column="contact_person"    />
+        <result property="recordUserId"    column="record_user_id"    />
+        <result property="recordCompany"    column="record_company"    />
+        <result property="status"    column="status"    />
+        <result property="ownerDeptId"    column="owner_dept_id"    />
+        <result property="createdTime"    column="created_time"    />
+        <result property="createdBy"    column="created_by"    />
+        <result property="updatedBy"    column="updated_by"    />
+        <result property="updatedTime"    column="updated_time"    />
+    </resultMap>
+
+    <sql id="selectOaProjectVo">
+        select id, project_name, company_info_source, partner_id, custom_company, project_date, address, contact_person, record_user_id, record_company, status, owner_dept_id, created_time, created_by, updated_by, updated_time from oa_project
+    </sql>
+
+    <select id="selectOaProjectList" parameterType="OaProject" resultMap="OaProjectResult">
+        <include refid="selectOaProjectVo"/>
+        <where>  
+            <if test="projectName != null  and projectName != ''"> and project_name like concat('%', #{projectName}, '%')</if>
+            <if test="companyInfoSource != null "> and company_info_source = #{companyInfoSource}</if>
+            <if test="partnerId != null "> and partner_id = #{partnerId}</if>
+            <if test="customCompany != null  and customCompany != ''"> and custom_company = #{customCompany}</if>
+            <if test="projectDate != null "> and project_date = #{projectDate}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="contactPerson != null  and contactPerson != ''"> and contact_person = #{contactPerson}</if>
+            <if test="recordUserId != null "> and record_user_id = #{recordUserId}</if>
+            <if test="recordCompany != null  and recordCompany != ''"> and record_company = #{recordCompany}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="ownerDeptId != null "> and owner_dept_id = #{ownerDeptId}</if>
+            <if test="createdTime != null "> and created_time = #{createdTime}</if>
+            <if test="createdBy != null "> and created_by = #{createdBy}</if>
+            <if test="updatedBy != null "> and updated_by = #{updatedBy}</if>
+            <if test="updatedTime != null "> and updated_time = #{updatedTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectOaProjectById" parameterType="Long" resultMap="OaProjectResult">
+        <include refid="selectOaProjectVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOaProject" parameterType="OaProject" useGeneratedKeys="true" keyProperty="id">
+        insert into oa_project
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectName != null and projectName != ''">project_name,</if>
+            <if test="companyInfoSource != null">company_info_source,</if>
+            <if test="partnerId != null">partner_id,</if>
+            <if test="customCompany != null">custom_company,</if>
+            <if test="projectDate != null">project_date,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="contactPerson != null and contactPerson != ''">contact_person,</if>
+            <if test="recordUserId != null">record_user_id,</if>
+            <if test="recordCompany != null and recordCompany != ''">record_company,</if>
+            <if test="status != null">status,</if>
+            <if test="ownerDeptId != null">owner_dept_id,</if>
+            <if test="createdTime != null">created_time,</if>
+            <if test="createdBy != null">created_by,</if>
+            <if test="updatedBy != null">updated_by,</if>
+            <if test="updatedTime != null">updated_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectName != null and projectName != ''">#{projectName},</if>
+            <if test="companyInfoSource != null">#{companyInfoSource},</if>
+            <if test="partnerId != null">#{partnerId},</if>
+            <if test="customCompany != null">#{customCompany},</if>
+            <if test="projectDate != null">#{projectDate},</if>
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="contactPerson != null and contactPerson != ''">#{contactPerson},</if>
+            <if test="recordUserId != null">#{recordUserId},</if>
+            <if test="recordCompany != null and recordCompany != ''">#{recordCompany},</if>
+            <if test="status != null">#{status},</if>
+            <if test="ownerDeptId != null">#{ownerDeptId},</if>
+            <if test="createdTime != null">#{createdTime},</if>
+            <if test="createdBy != null">#{createdBy},</if>
+            <if test="updatedBy != null">#{updatedBy},</if>
+            <if test="updatedTime != null">#{updatedTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOaProject" parameterType="OaProject">
+        update oa_project
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectName != null and projectName != ''">project_name = #{projectName},</if>
+            <if test="companyInfoSource != null">company_info_source = #{companyInfoSource},</if>
+            <if test="partnerId != null">partner_id = #{partnerId},</if>
+            <if test="customCompany != null">custom_company = #{customCompany},</if>
+            <if test="projectDate != null">project_date = #{projectDate},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="contactPerson != null and contactPerson != ''">contact_person = #{contactPerson},</if>
+            <if test="recordUserId != null">record_user_id = #{recordUserId},</if>
+            <if test="recordCompany != null and recordCompany != ''">record_company = #{recordCompany},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="ownerDeptId != null">owner_dept_id = #{ownerDeptId},</if>
+            <if test="createdTime != null">created_time = #{createdTime},</if>
+            <if test="createdBy != null">created_by = #{createdBy},</if>
+            <if test="updatedBy != null">updated_by = #{updatedBy},</if>
+            <if test="updatedTime != null">updated_time = #{updatedTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOaProjectById" parameterType="Long">
+        delete from oa_project where id = #{id}
+    </delete>
+
+    <delete id="deleteOaProjectByIds" parameterType="String">
+        delete from oa_project where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

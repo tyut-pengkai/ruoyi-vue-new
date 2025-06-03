@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OaWorkflowMapper">
+    
+    <resultMap type="OaWorkflow" id="OaWorkflowResult">
+        <result property="id"    column="id"    />
+        <result property="processType"    column="process_type"    />
+        <result property="applicantId"    column="applicant_id"    />
+        <result property="currentStatus"    column="current_status"    />
+        <result property="content"    column="content"    />
+        <result property="createdTime"    column="created_time"    />
+        <result property="createdBy"    column="created_by"    />
+        <result property="updatedBy"    column="updated_by"    />
+        <result property="updatedTime"    column="updated_time"    />
+    </resultMap>
+
+    <sql id="selectOaWorkflowVo">
+        select id, process_type, applicant_id, current_status, content, created_time, created_by, updated_by, updated_time from oa_workflow
+    </sql>
+
+    <select id="selectOaWorkflowList" parameterType="OaWorkflow" resultMap="OaWorkflowResult">
+        <include refid="selectOaWorkflowVo"/>
+        <where>  
+            <if test="processType != null "> and process_type = #{processType}</if>
+            <if test="applicantId != null "> and applicant_id = #{applicantId}</if>
+            <if test="currentStatus != null "> and current_status = #{currentStatus}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="createdTime != null "> and created_time = #{createdTime}</if>
+            <if test="createdBy != null "> and created_by = #{createdBy}</if>
+            <if test="updatedBy != null "> and updated_by = #{updatedBy}</if>
+            <if test="updatedTime != null "> and updated_time = #{updatedTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectOaWorkflowById" parameterType="Long" resultMap="OaWorkflowResult">
+        <include refid="selectOaWorkflowVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOaWorkflow" parameterType="OaWorkflow" useGeneratedKeys="true" keyProperty="id">
+        insert into oa_workflow
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="processType != null">process_type,</if>
+            <if test="applicantId != null">applicant_id,</if>
+            <if test="currentStatus != null">current_status,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="createdTime != null">created_time,</if>
+            <if test="createdBy != null">created_by,</if>
+            <if test="updatedBy != null">updated_by,</if>
+            <if test="updatedTime != null">updated_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="processType != null">#{processType},</if>
+            <if test="applicantId != null">#{applicantId},</if>
+            <if test="currentStatus != null">#{currentStatus},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="createdTime != null">#{createdTime},</if>
+            <if test="createdBy != null">#{createdBy},</if>
+            <if test="updatedBy != null">#{updatedBy},</if>
+            <if test="updatedTime != null">#{updatedTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOaWorkflow" parameterType="OaWorkflow">
+        update oa_workflow
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="processType != null">process_type = #{processType},</if>
+            <if test="applicantId != null">applicant_id = #{applicantId},</if>
+            <if test="currentStatus != null">current_status = #{currentStatus},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="createdTime != null">created_time = #{createdTime},</if>
+            <if test="createdBy != null">created_by = #{createdBy},</if>
+            <if test="updatedBy != null">updated_by = #{updatedBy},</if>
+            <if test="updatedTime != null">updated_time = #{updatedTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOaWorkflowById" parameterType="Long">
+        delete from oa_workflow where id = #{id}
+    </delete>
+
+    <delete id="deleteOaWorkflowByIds" parameterType="String">
+        delete from oa_workflow where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
