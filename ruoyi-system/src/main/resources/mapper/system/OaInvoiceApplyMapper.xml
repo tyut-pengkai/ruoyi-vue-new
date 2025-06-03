@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OaInvoiceApplyMapper">
+    
+    <resultMap type="OaInvoiceApply" id="OaInvoiceApplyResult">
+        <result property="id"    column="id"    />
+        <result property="projectId"    column="project_id"    />
+        <result property="applyUserId"    column="apply_user_id"    />
+        <result property="applyDate"    column="apply_date"    />
+        <result property="constructionUnit"    column="construction_unit"    />
+        <result property="taxIdentNum"    column="tax_ident_num"    />
+        <result property="addressPhone"    column="address_phone"    />
+        <result property="bankAccount"    column="bank_account"    />
+        <result property="projectName"    column="project_name"    />
+        <result property="contractAmount"    column="contract_amount"    />
+        <result property="settlementAmount"    column="settlement_amount"    />
+        <result property="invoicedAmount"    column="invoiced_amount"    />
+        <result property="unpaidInvoiceAmount"    column="unpaid_invoice_amount"    />
+        <result property="applyAmount"    column="apply_amount"    />
+        <result property="invoiceType"    column="invoice_type"    />
+        <result property="taxRate"    column="tax_rate"    />
+        <result property="remark"    column="remark"    />
+        <result property="status"    column="status"    />
+        <result property="createdBy"    column="created_by"    />
+        <result property="createdTime"    column="created_time"    />
+        <result property="updatedBy"    column="updated_by"    />
+        <result property="updatedTime"    column="updated_time"    />
+    </resultMap>
+
+    <sql id="selectOaInvoiceApplyVo">
+        select id, project_id, apply_user_id, apply_date, construction_unit, tax_ident_num, address_phone, bank_account, project_name, contract_amount, settlement_amount, invoiced_amount, unpaid_invoice_amount, apply_amount, invoice_type, tax_rate, remark, status, created_by, created_time, updated_by, updated_time from oa_invoice_apply
+    </sql>
+
+    <select id="selectOaInvoiceApplyList" parameterType="OaInvoiceApply" resultMap="OaInvoiceApplyResult">
+        <include refid="selectOaInvoiceApplyVo"/>
+        <where>  
+            <if test="projectId != null "> and project_id = #{projectId}</if>
+            <if test="applyUserId != null "> and apply_user_id = #{applyUserId}</if>
+            <if test="applyDate != null "> and apply_date = #{applyDate}</if>
+            <if test="constructionUnit != null  and constructionUnit != ''"> and construction_unit = #{constructionUnit}</if>
+            <if test="taxIdentNum != null  and taxIdentNum != ''"> and tax_ident_num = #{taxIdentNum}</if>
+            <if test="addressPhone != null  and addressPhone != ''"> and address_phone = #{addressPhone}</if>
+            <if test="bankAccount != null  and bankAccount != ''"> and bank_account = #{bankAccount}</if>
+            <if test="projectName != null  and projectName != ''"> and project_name like concat('%', #{projectName}, '%')</if>
+            <if test="contractAmount != null "> and contract_amount = #{contractAmount}</if>
+            <if test="settlementAmount != null "> and settlement_amount = #{settlementAmount}</if>
+            <if test="invoicedAmount != null "> and invoiced_amount = #{invoicedAmount}</if>
+            <if test="unpaidInvoiceAmount != null "> and unpaid_invoice_amount = #{unpaidInvoiceAmount}</if>
+            <if test="applyAmount != null "> and apply_amount = #{applyAmount}</if>
+            <if test="invoiceType != null  and invoiceType != ''"> and invoice_type = #{invoiceType}</if>
+            <if test="taxRate != null "> and tax_rate = #{taxRate}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="createdBy != null "> and created_by = #{createdBy}</if>
+            <if test="createdTime != null "> and created_time = #{createdTime}</if>
+            <if test="updatedBy != null "> and updated_by = #{updatedBy}</if>
+            <if test="updatedTime != null "> and updated_time = #{updatedTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectOaInvoiceApplyById" parameterType="Long" resultMap="OaInvoiceApplyResult">
+        <include refid="selectOaInvoiceApplyVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOaInvoiceApply" parameterType="OaInvoiceApply" useGeneratedKeys="true" keyProperty="id">
+        insert into oa_invoice_apply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">project_id,</if>
+            <if test="applyUserId != null">apply_user_id,</if>
+            <if test="applyDate != null">apply_date,</if>
+            <if test="constructionUnit != null and constructionUnit != ''">construction_unit,</if>
+            <if test="taxIdentNum != null and taxIdentNum != ''">tax_ident_num,</if>
+            <if test="addressPhone != null and addressPhone != ''">address_phone,</if>
+            <if test="bankAccount != null and bankAccount != ''">bank_account,</if>
+            <if test="projectName != null and projectName != ''">project_name,</if>
+            <if test="contractAmount != null">contract_amount,</if>
+            <if test="settlementAmount != null">settlement_amount,</if>
+            <if test="invoicedAmount != null">invoiced_amount,</if>
+            <if test="unpaidInvoiceAmount != null">unpaid_invoice_amount,</if>
+            <if test="applyAmount != null">apply_amount,</if>
+            <if test="invoiceType != null and invoiceType != ''">invoice_type,</if>
+            <if test="taxRate != null">tax_rate,</if>
+            <if test="remark != null">remark,</if>
+            <if test="status != null">status,</if>
+            <if test="createdBy != null">created_by,</if>
+            <if test="createdTime != null">created_time,</if>
+            <if test="updatedBy != null">updated_by,</if>
+            <if test="updatedTime != null">updated_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">#{projectId},</if>
+            <if test="applyUserId != null">#{applyUserId},</if>
+            <if test="applyDate != null">#{applyDate},</if>
+            <if test="constructionUnit != null and constructionUnit != ''">#{constructionUnit},</if>
+            <if test="taxIdentNum != null and taxIdentNum != ''">#{taxIdentNum},</if>
+            <if test="addressPhone != null and addressPhone != ''">#{addressPhone},</if>
+            <if test="bankAccount != null and bankAccount != ''">#{bankAccount},</if>
+            <if test="projectName != null and projectName != ''">#{projectName},</if>
+            <if test="contractAmount != null">#{contractAmount},</if>
+            <if test="settlementAmount != null">#{settlementAmount},</if>
+            <if test="invoicedAmount != null">#{invoicedAmount},</if>
+            <if test="unpaidInvoiceAmount != null">#{unpaidInvoiceAmount},</if>
+            <if test="applyAmount != null">#{applyAmount},</if>
+            <if test="invoiceType != null and invoiceType != ''">#{invoiceType},</if>
+            <if test="taxRate != null">#{taxRate},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createdBy != null">#{createdBy},</if>
+            <if test="createdTime != null">#{createdTime},</if>
+            <if test="updatedBy != null">#{updatedBy},</if>
+            <if test="updatedTime != null">#{updatedTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOaInvoiceApply" parameterType="OaInvoiceApply">
+        update oa_invoice_apply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="applyUserId != null">apply_user_id = #{applyUserId},</if>
+            <if test="applyDate != null">apply_date = #{applyDate},</if>
+            <if test="constructionUnit != null and constructionUnit != ''">construction_unit = #{constructionUnit},</if>
+            <if test="taxIdentNum != null and taxIdentNum != ''">tax_ident_num = #{taxIdentNum},</if>
+            <if test="addressPhone != null and addressPhone != ''">address_phone = #{addressPhone},</if>
+            <if test="bankAccount != null and bankAccount != ''">bank_account = #{bankAccount},</if>
+            <if test="projectName != null and projectName != ''">project_name = #{projectName},</if>
+            <if test="contractAmount != null">contract_amount = #{contractAmount},</if>
+            <if test="settlementAmount != null">settlement_amount = #{settlementAmount},</if>
+            <if test="invoicedAmount != null">invoiced_amount = #{invoicedAmount},</if>
+            <if test="unpaidInvoiceAmount != null">unpaid_invoice_amount = #{unpaidInvoiceAmount},</if>
+            <if test="applyAmount != null">apply_amount = #{applyAmount},</if>
+            <if test="invoiceType != null and invoiceType != ''">invoice_type = #{invoiceType},</if>
+            <if test="taxRate != null">tax_rate = #{taxRate},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createdBy != null">created_by = #{createdBy},</if>
+            <if test="createdTime != null">created_time = #{createdTime},</if>
+            <if test="updatedBy != null">updated_by = #{updatedBy},</if>
+            <if test="updatedTime != null">updated_time = #{updatedTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOaInvoiceApplyById" parameterType="Long">
+        delete from oa_invoice_apply where id = #{id}
+    </delete>
+
+    <delete id="deleteOaInvoiceApplyByIds" parameterType="String">
+        delete from oa_invoice_apply where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
