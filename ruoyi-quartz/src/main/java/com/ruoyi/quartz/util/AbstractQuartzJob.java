@@ -59,6 +59,14 @@ public abstract class AbstractQuartzJob implements Job
     protected void before(JobExecutionContext context, SysJob sysJob)
     {
         threadLocal.set(new Date());
+
+        // 写入数据库当中
+        final SysJobLog sysJobLog = new SysJobLog();
+        sysJobLog.setJobName(sysJob.getJobName());
+        sysJobLog.setJobGroup(sysJob.getJobGroup());
+        sysJobLog.setInvokeTarget(sysJob.getInvokeTarget());
+        sysJobLog.setStatus(Constants.PROGRESS);
+        SpringUtils.getBean(ISysJobLogService.class).addJobLog(sysJobLog);
     }
 
     /**
@@ -72,10 +80,9 @@ public abstract class AbstractQuartzJob implements Job
         Date startTime = threadLocal.get();
         threadLocal.remove();
 
-        final SysJobLog sysJobLog = new SysJobLog();
-        sysJobLog.setJobName(sysJob.getJobName());
-        sysJobLog.setJobGroup(sysJob.getJobGroup());
-        sysJobLog.setInvokeTarget(sysJob.getInvokeTarget());
+        // 更新数据库
+        SysJobLog sysJobLog =  SpringUtils.getBean(ISysJobLogService.class).selectLastJobLogByJobName(sysJob.getJobName());
+
         sysJobLog.setStartTime(startTime);
         sysJobLog.setStopTime(new Date());
         long runMs = sysJobLog.getStopTime().getTime() - sysJobLog.getStartTime().getTime();
@@ -90,9 +97,9 @@ public abstract class AbstractQuartzJob implements Job
         {
             sysJobLog.setStatus(Constants.SUCCESS);
         }
-
-        // 写入数据库当中
-        SpringUtils.getBean(ISysJobLogService.class).addJobLog(sysJobLog);
+        log.info("执行的上下文:{}",context);
+        // 更新到数据库当中
+        SpringUtils.getBean(ISysJobLogService.class).updateJobLog(sysJobLog);
     }
 
     /**

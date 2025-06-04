@@ -42,6 +42,11 @@ public class SysJobLogServiceImpl implements ISysJobLogService
         return jobLogMapper.selectJobLogById(jobLogId);
     }
 
+    @Override
+    public SysJobLog selectLastJobLogByJobName(String jobName) {
+        return jobLogMapper.selectLastJobLogByJobName(jobName);
+    }
+
     /**
      * 新增任务日志
      * 
@@ -51,6 +56,11 @@ public class SysJobLogServiceImpl implements ISysJobLogService
     public void addJobLog(SysJobLog jobLog)
     {
         jobLogMapper.insertJobLog(jobLog);
+    }
+
+    @Override
+    public void updateJobLog(SysJobLog jobLog) {
+        jobLogMapper.updateJobLog(jobLog);
     }
 
     /**

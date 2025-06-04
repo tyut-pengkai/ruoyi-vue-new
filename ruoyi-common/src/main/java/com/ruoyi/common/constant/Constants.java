@@ -51,6 +51,11 @@ public class Constants
     public static final String FAIL = "1";
 
     /**
+     * 执行中
+     */
+    public static final String PROGRESS = "2";
+
+    /**
      * 登录成功
      */
     public static final String LOGIN_SUCCESS = "Success";

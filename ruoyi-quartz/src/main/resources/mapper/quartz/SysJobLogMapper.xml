@@ -53,8 +53,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<include refid="selectJobLogVo"/>
 		where job_log_id = #{jobLogId}
 	</select>
-	
-	<delete id="deleteJobLogById" parameterType="Long">
+
+	<select id="selectLastJobLogByJobName" resultMap="SysJobLogResult">
+		<include refid="selectJobLogVo"/>
+		where job_name = #{jobName} order by create_time desc limit 1
+	</select>
+
+    <delete id="deleteJobLogById" parameterType="Long">
  		delete from sys_job_log where job_log_id = #{jobLogId}
  	</delete>
  	
@@ -90,5 +95,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			sysdate()
  		)
 	</insert>
+
+	<update id="updateJobLog">
+		update sys_job_log
+		<set>
+			<if test="jobName != null">job_name = #{jobName},</if>
+			<if test="jobGroup != null">job_group = #{jobGroup},</if>
+			<if test="invokeTarget != null">invoke_target = #{invokeTarget},</if>
+			<if test="jobMessage != null">job_message = #{jobMessage},</if>
+			<if test="status != null">status = #{status},</if>
+			<if test="exceptionInfo != null and exceptionInfo != ''">exception_info = #{exceptionInfo},</if>
+		</set>
+		where job_log_id = #{jobLogId}
+	</update>
 
 </mapper> 
