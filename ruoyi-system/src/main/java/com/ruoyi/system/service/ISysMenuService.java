@@ -1,15 +1,11 @@
 package com.ruoyi.system.service;
 
-import com.ruoyi.common.core.domain.TreeSelect;
 import com.ruoyi.common.core.domain.entity.SysMenu;
-import com.ruoyi.common.core.domain.vo.menu.MenuResVo;
-import com.ruoyi.common.core.domain.vo.menu.UserRoleTreeSelectVO;
-import com.ruoyi.system.domain.dto.menu.*;
-import com.ruoyi.system.domain.vo.RouterVo;
+import com.ruoyi.common.core.domain.model.*;
 import com.ruoyi.system.domain.vo.menu.SysMenuDTO;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 菜单 业务层
@@ -17,13 +13,72 @@ import java.util.Set;
  * @author ruoyi
  */
 public interface ISysMenuService {
+
     /**
-     * 根据用户查询系统菜单列表
+     * 获取菜单信息
      *
-     * @param userId 用户ID
-     * @return 菜单列表
+     * @param menuId
+     * @return
      */
-    public List<SysMenu> selectMenuList(Long userId);
+    MenuInfo getMenuById(Long menuId);
+
+    /**
+     * 菜单列表
+     *
+     * @param query
+     * @return
+     */
+    List<MenuListItem> listMenu(MenuQuery query);
+
+    /**
+     * 菜单树
+     *
+     * @param query
+     * @return
+     */
+    List<MenuTreeNode> getMenuTree(MenuQuery query);
+
+    /**
+     * 菜单树
+     *
+     * @param menus
+     * @param <T>
+     * @return
+     */
+    <T extends SysMenu> List<MenuTreeNode> getMenuTree(Collection<T> menus);
+
+    /**
+     * 创建菜单
+     *
+     * @param menuEdit
+     * @return
+     */
+    Long createMenu(MenuInfoEdit menuEdit);
+
+    /**
+     * 修改菜单
+     *
+     * @param menuEdit
+     * @return
+     */
+    InfluenceScope updateMenu(MenuInfoEdit menuEdit);
+
+    /**
+     * 批量修改菜单状态
+     *
+     * @param menuIds
+     * @param status
+     * @return
+     */
+    InfluenceScope batchUpdateStatus(List<Long> menuIds, String status);
+
+    /**
+     * 批量删除菜单
+     *
+     * @param menuIds
+     * @return
+     */
+    InfluenceScope batchDelete(List<Long> menuIds);
 
     /**
      * 根据角色获取菜单列表
@@ -33,79 +88,6 @@ public interface ISysMenuService {
      * @return List<SysMenuDTO>
      */
     public List<SysMenuDTO> selectMenuListByRoleIdAndMenuType(Long roleId, String menuType);
-
-    /**
-     * 根据用户查询系统菜单列表
-     *
-     * @param menu   菜单信息
-     * @param userId 用户ID
-     * @return 菜单列表
-     */
-    public List<SysMenu> selectMenuList(SysMenu menu, Long userId);
-
-    /**
-     * 根据用户ID查询权限
-     *
-     * @param userId 用户ID
-     * @return 权限列表
-     */
-    public Set<String> selectMenuPermsByUserId(Long userId);
-
-    /**
-     * 根据角色ID查询权限
-     *
-     * @param roleId 角色ID
-     * @return 权限列表
-     */
-    public Set<String> selectMenuPermsByRoleId(Long roleId);
-
-    /**
-     * 根据用户ID查询菜单树信息
-     *
-     * @param userId 用户ID
-     * @return 菜单列表
-     */
-    public List<SysMenu> selectMenuTreeByUserId(Long userId);
-
-    /**
-     * 根据角色ID查询菜单树信息
-     *
-     * @param roleId 角色ID
-     * @return 选中菜单列表
-     */
-    public List<Long> selectMenuListByRoleId(Long roleId);
-
-    /**
-     * 构建前端路由所需要的菜单
-     *
-     * @param menus 菜单列表
-     * @return 路由列表
-     */
-    public List<RouterVo> buildMenus(List<SysMenu> menus);
-
-    /**
-     * 构建前端所需要树结构
-     *
-     * @param menus 菜单列表
-     * @return 树结构列表
-     */
-    public List<SysMenu> buildMenuTree(List<SysMenu> menus);
-
-    /**
-     * 构建前端所需要下拉树结构
-     *
-     * @param menus 菜单列表
-     * @return 下拉树结构列表
-     */
-    public List<TreeSelect> buildMenuTreeSelect(List<SysMenu> menus);
-
-    /**
-     * 根据菜单ID查询信息
-     *
-     * @param menuId 菜单ID
-     * @return 菜单信息
-     */
-    public SysMenu selectMenuById(Long menuId);
 
     /**
      * 是否存在菜单子节点
@@ -122,81 +104,4 @@ public interface ISysMenuService {
      * @return 结果 true 存在 false 不存在
      */
     public boolean checkMenuExistRole(Long menuId);
-
-    /**
-     * 新增保存菜单信息
-     *
-     * @param menu 菜单信息
-     * @return 结果
-     */
-    public int insertMenu(SysMenu menu);
-
-    /**
-     * 修改保存菜单信息
-     *
-     * @param menu 菜单信息
-     * @return 结果
-     */
-    public int updateMenu(SysMenu menu);
-
-    /**
-     * 删除菜单管理信息
-     *
-     * @param menuId 菜单ID
-     * @return 结果
-     */
-    public int deleteMenuById(Long menuId);
-
-    /**
-     * 校验菜单名称是否唯一
-     *
-     * @param menu 菜单信息
-     * @return 结果
-     */
-    public boolean checkMenuNameUnique(SysMenu menu);
-
-    /**
-     * 新增菜单
-     * @param menuDTO 菜单入参
-     * @return Integer
-     */
-    Integer create(MenuDTO menuDTO);
-
-    /**
-     * 编辑菜单
-     * @param menuDTO 编辑菜单
-     * @return Integer
-     */
-    Integer update(MenuDTO menuDTO);
-
-    /**
-     * 菜单详情
-     * @param menuId 菜单ID
-     * @return MenuResDTO
-     */
-    MenuResDTO getById(Long menuId);
-
-    /**
-     * 删除菜单
-     * @param menuId 菜单ID
-     * @return Integer
-     */
-    Integer delete(Long menuId);
-
-    List<MenuResDTO> list(MenuListDTO listDTO);
-
-    /**
-     * 获取菜单列表树
-     * @param listDTO 菜单查询入参
-     * @return   List<MenuResDTO>
-     */
-    List<TreeSelectDTO> treeSelect(MenuListDTO listDTO);
-
-    /**
-     * 获取用户选中的菜单数据
-     * @param roleId 角色ID
-     * @return UserRoleTreeSelectDTO
-     */
-    UserRoleTreeSelectDTO roleMenuTreeSelect(Long roleId);
-
 }

@@ -1,6 +1,8 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -369,6 +371,14 @@ public class StoreServiceImpl implements IStoreService {
                 : this.userSubMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>().eq(UserSubscriptions::getUserId, userId)
                 .eq(UserSubscriptions::getStoreId, storeId).eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
         return simpleDTO.setFocus(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE);*/
+    }
+
+    @Override
+    public Map<Long, String> getStoreNameByIds(Collection<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return MapUtil.empty();
+        }
+        return storeMapper.selectByIds(ids).stream().collect(Collectors.toMap(Store::getId, Store::getStoreName));
     }
 
 }

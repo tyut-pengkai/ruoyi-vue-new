@@ -6,9 +6,11 @@ import com.ruoyi.common.core.domain.model.RegisterBody;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.web.service.SysRegisterService;
 import com.ruoyi.system.service.ISysConfigService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -16,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author ruoyi
  */
+@Api(tags = "注册")
 @RestController
+@RequestMapping("/rest/v1/reg")
 public class SysRegisterController extends BaseController {
     @Autowired
     private SysRegisterService registerService;

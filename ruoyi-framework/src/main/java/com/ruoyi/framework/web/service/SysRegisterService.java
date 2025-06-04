@@ -1,5 +1,7 @@
 package com.ruoyi.framework.web.service;
 
+import com.ruoyi.common.core.domain.model.UserInfoEdit;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.CacheConstants;
@@ -23,6 +25,7 @@ import com.ruoyi.system.service.ISysUserService;
  * 
  * @author ruoyi
  */
+@Slf4j
 @Component
 public class SysRegisterService
 {
@@ -41,7 +44,7 @@ public class SysRegisterService
     public String register(RegisterBody registerBody)
     {
         String msg = "", username = registerBody.getUsername(), password = registerBody.getPassword();
-        SysUser sysUser = new SysUser();
+        UserInfoEdit sysUser = new UserInfoEdit();
         sysUser.setUserName(username);
 
         // 验证码开关
@@ -77,7 +80,13 @@ public class SysRegisterService
         {
             sysUser.setNickName(username);
             sysUser.setPassword(SecurityUtils.encryptPassword(password));
-            boolean regFlag = userService.registerUser(sysUser);
+            boolean regFlag = false;
+            try {
+                //TODO USER
+                userService.createUser(sysUser);
+            }catch (Exception e){
+                log.error("用户注册失败",e);
+            }
             if (!regFlag)
             {
                 msg = "注册失败,请联系系统管理人员";

@@ -3,7 +3,9 @@ package com.ruoyi.xkt.service;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.store.*;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 档口Service接口
@@ -132,4 +134,12 @@ public interface IStoreService {
      * @return StoreBasicResDTO
      */
     StoreSimpleResDTO getSimpleInfo(Long storeId);
+
+    /**
+     * 获取档口名称
+     *
+     * @param ids
+     * @return
+     */
+    Map<Long, String> getStoreNameByIds(Collection<Long> ids);
 }

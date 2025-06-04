@@ -2,8 +2,12 @@ package com.ruoyi.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.common.core.domain.entity.SysMenu;
+import com.ruoyi.common.core.domain.model.MenuInfo;
+import com.ruoyi.common.core.domain.model.MenuListItem;
+import com.ruoyi.common.core.domain.model.MenuQuery;
 import com.ruoyi.system.domain.vo.menu.SysMenuDTO;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -12,7 +16,24 @@ import java.util.List;
  *
  * @author ruoyi
  */
+@Repository
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
+    /**
+     * 查询菜单信息
+     *
+     * @param menuId
+     * @return
+     */
+    MenuInfo getMenuInfoById(@Param("menuId") Long menuId);
+
+    /**
+     * 查询菜单列表
+     *
+     * @param query
+     * @return
+     */
+    List<MenuListItem> listMenu(MenuQuery query);
+
     /**
      * 查询系统菜单列表
      *

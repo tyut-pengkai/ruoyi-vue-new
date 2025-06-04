@@ -177,6 +177,7 @@ public class Constants
 
     public static final String UNDELETED = "0";
     public static final String DELETED = "2";
+    public static final String SYS_NORMAL_STATUS = "0";
 
     public static final Integer SIZE_30 = 30;
     public static final Integer SIZE_31 = 31;

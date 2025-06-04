@@ -1,11 +1,15 @@
 package com.ruoyi.common.core.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.Version;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excel.ColumnType;
 import com.ruoyi.common.annotation.Excel.Type;
 import com.ruoyi.common.annotation.Excels;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.xss.Xss;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -13,6 +17,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +26,8 @@ import java.util.List;
  *
  * @author ruoyi
  */
-public class SysUser extends BaseEntity {
+public class SysUser implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -95,42 +101,28 @@ public class SysUser extends BaseEntity {
     private Date loginDate;
 
     /**
-     * 部门对象
+     * 创建者
      */
-    @Excels({
-            @Excel(name = "部门负责人", targetAttr = "leader", type = Type.EXPORT)
-    })
-
-    /** 角色对象 */
-    private List<SysRole> roles;
-
+    private String createBy;
     /**
-     * 角色组
+     * 创建时间
      */
-    private Long[] roleIds;
-
+    @TableField(fill = FieldFill.INSERT)
+    private Date createTime;
     /**
-     * 岗位组
+     * 更新者
      */
-    private Long[] postIds;
-
+    private String updateBy;
     /**
-     * 角色ID
+     * 更新时间
      */
-    private Long roleId;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Date updateTime;
 
-    /**
-     * 如果是档口拥有者，所属的storeId
-     */
-    private Long storeId;
+    private String remark;
 
-    public Long getStoreId() {
-        return storeId;
-    }
-
-    public void setStoreId(Long storeId) {
-        this.storeId = storeId;
-    }
+    @Version
+    private Long version;
 
     public SysUser() {
 
@@ -252,36 +244,52 @@ public class SysUser extends BaseEntity {
         this.loginDate = loginDate;
     }
 
-    public List<SysRole> getRoles() {
-        return roles;
+    public String getCreateBy() {
+        return createBy;
     }
 
-    public void setRoles(List<SysRole> roles) {
-        this.roles = roles;
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
     }
 
-    public Long[] getRoleIds() {
-        return roleIds;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setRoleIds(Long[] roleIds) {
-        this.roleIds = roleIds;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
-    public Long[] getPostIds() {
-        return postIds;
+    public String getUpdateBy() {
+        return updateBy;
     }
 
-    public void setPostIds(Long[] postIds) {
-        this.postIds = postIds;
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
     }
 
-    public Long getRoleId() {
-        return roleId;
+    public Date getUpdateTime() {
+        return updateTime;
     }
 
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     @Override

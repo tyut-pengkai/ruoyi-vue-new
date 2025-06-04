@@ -1,20 +1,18 @@
 package com.ruoyi.common.utils;
 
-import com.ruoyi.common.constant.Constants;
+import cn.hutool.core.collection.CollUtil;
 import com.ruoyi.common.constant.HttpStatus;
-import com.ruoyi.common.core.domain.entity.SysRole;
+import com.ruoyi.common.core.domain.model.ESystemRole;
 import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.domain.model.UserExt;
 import com.ruoyi.common.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.util.PatternMatchUtils;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * 安全服务工具类
@@ -36,13 +34,64 @@ public class SecurityUtils {
     }
 
     /**
-     * 档口ID
+     * 当前档口ID
      *
      * @return
      */
     public static Long getStoreId() {
-        //TODO
-        return 1L;
+        try {
+            return getLoginUser().getCurrentStoreId();
+        } catch (Exception e) {
+            throw new ServiceException("获取档口ID异常", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    /**
+     * 是否有指定档口的管理权限
+     *
+     * @param storeId
+     * @return
+     */
+    public static boolean isStoreManager(Long storeId) {
+        if (storeId == null) {
+            return false;
+        }
+        try {
+            Authentication auth = getAuthentication();
+            if (auth != null) {
+                LoginUser user = (LoginUser) auth.getPrincipal();
+                return user.getUser().getManagedStoreIds().contains(storeId);
+            }
+        } catch (Exception e) {
+            log.error("判断档口管理权限异常", e);
+        }
+        return false;
+    }
+
+    /**
+     * 判断是否有指定角色中的任意一个
+     *
+     * @param roles
+     * @return
+     */
+    public static boolean hasAnyRole(ESystemRole... roles) {
+        if (roles == null || roles.length == 0) {
+            return true;
+        }
+        try {
+            Authentication auth = getAuthentication();
+            if (auth != null) {
+                LoginUser user = (LoginUser) auth.getPrincipal();
+                for (ESystemRole role : roles) {
+                    if (user.getUser().getRoleIds().contains(role.getId())) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("判断档口角色权限异常", e);
+        }
+        return false;
     }
 
     /**
@@ -117,13 +166,22 @@ public class SecurityUtils {
     }
 
     /**
-     * 是否为管理员
+     * 是否为超级管理员
      *
-     * @param userId 用户ID
      * @return 结果
      */
-    public static boolean isAdmin(Long userId) {
-        return userId != null && 1L == userId;
+    public static boolean isSuperAdmin() {
+        return getLoginUser().getUser().hasSuperAdminRole();
+    }
+
+    /**
+     * 是否为管理员
+     *
+     * @return
+     */
+    public static boolean isAdmin() {
+        UserExt user = getLoginUser().getUser();
+        return user.hasSuperAdminRole() || user.hasGeneralAdminRole();
     }
 
     /**
@@ -144,8 +202,9 @@ public class SecurityUtils {
      * @return 用户是否具备某权限
      */
     public static boolean hasPermi(Collection<String> authorities, String permission) {
-        return authorities.stream().filter(StringUtils::hasText)
-                .anyMatch(x -> Constants.ALL_PERMISSION.equals(x) || PatternMatchUtils.simpleMatch(x, permission));
+//        return authorities.stream().filter(StringUtils::hasText)
+//                .anyMatch(x -> Constants.ALL_PERMISSION.equals(x) || PatternMatchUtils.simpleMatch(x, permission));
+        return CollUtil.contains(authorities, permission);
     }
 
     /**
@@ -155,9 +214,7 @@ public class SecurityUtils {
      * @return 用户是否具备某角色
      */
     public static boolean hasRole(String role) {
-        List<SysRole> roleList = getLoginUser().getUser().getRoles();
-        Collection<String> roles = roleList.stream().map(SysRole::getRoleKey).collect(Collectors.toSet());
-        return hasRole(roles, role);
+        return hasRole(getLoginUser().getRoleKeys(), role);
     }
 
     /**
@@ -168,8 +225,9 @@ public class SecurityUtils {
      * @return 用户是否具备某角色权限
      */
     public static boolean hasRole(Collection<String> roles, String role) {
-        return roles.stream().filter(StringUtils::hasText)
-                .anyMatch(x -> Constants.SUPER_ADMIN.equals(x) || PatternMatchUtils.simpleMatch(x, role));
+//        return roles.stream().filter(StringUtils::hasText)
+//                .anyMatch(x -> Constants.SUPER_ADMIN.equals(x) || PatternMatchUtils.simpleMatch(x, role));
+        return CollUtil.contains(roles, role);
     }
 
 }

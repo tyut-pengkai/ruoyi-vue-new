@@ -94,6 +94,11 @@ public class SysMenu extends XktBaseEntity {
      */
     private String icon;
 
+    /**
+     * 备注
+     */
+    private String remark;
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)

@@ -38,10 +38,9 @@ public class SysProfileController extends BaseController {
      */
     @GetMapping
     public AjaxResult profile() {
-        LoginUser loginUser = getLoginUser();
-        SysUser user = loginUser.getUser();
+        SysUser user = getCurrentUser();
         AjaxResult ajax = AjaxResult.success(user);
-        ajax.put("roleGroup", userService.selectUserRoleGroup(loginUser.getUsername()));
+//        ajax.put("roleGroup", userService.selectUserRoleGroup(loginUser.getUsername()));
         return ajax;
     }
 
@@ -52,19 +51,20 @@ public class SysProfileController extends BaseController {
     @PutMapping
     public AjaxResult updateProfile(@RequestBody SysUser user) {
         LoginUser loginUser = getLoginUser();
-        SysUser currentUser = loginUser.getUser();
+        SysUser currentUser = userService.getBaseUser(loginUser.getUserId());
         currentUser.setNickName(user.getNickName());
         currentUser.setEmail(user.getEmail());
         currentUser.setPhonenumber(user.getPhonenumber());
         currentUser.setSex(user.getSex());
         if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(currentUser)) {
-            return error("修改用户'" + loginUser.getUsername() + "'失败，手机号码已存在");
+            return error("修改用户'" + currentUser.getUserName() + "'失败，手机号码已存在");
         }
         if (StringUtils.isNotEmpty(user.getEmail()) && !userService.checkEmailUnique(currentUser)) {
-            return error("修改用户'" + loginUser.getUsername() + "'失败，邮箱账号已存在");
+            return error("修改用户'" + currentUser.getUserName() + "'失败，邮箱账号已存在");
         }
         if (userService.updateUserProfile(currentUser) > 0) {
             // 更新缓存用户信息
+//            loginUser.getUser().updateBaseInfo(currentUser);
             tokenService.setLoginUser(loginUser);
             return success();
         }
@@ -89,12 +89,12 @@ public class SysProfileController extends BaseController {
             return error("新密码不能与旧密码相同");
         }
         newPassword = SecurityUtils.encryptPassword(newPassword);
-        if (userService.resetUserPwd(userName, newPassword) > 0) {
-            // 更新缓存用户密码
-            loginUser.getUser().setPassword(newPassword);
-            tokenService.setLoginUser(loginUser);
-            return success();
-        }
+//        if (userService.resetUserPwd(userName, newPassword) > 0) {
+//            // 更新缓存用户密码
+//            loginUser.getUser().setPassword(newPassword);
+//            tokenService.setLoginUser(loginUser);
+//            return success();
+//        }
         return error("修改密码异常，请联系管理员");
     }
 
@@ -117,5 +117,10 @@ public class SysProfileController extends BaseController {
             }
         }
         return error("上传图片异常，请联系管理员");
+    }
+
+    private SysUser getCurrentUser() {
+        Long userId = SecurityUtils.getUserId();
+        return userService.getBaseUser(userId);
     }
 }

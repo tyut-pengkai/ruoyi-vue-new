@@ -435,7 +435,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderInfo.setPayTime(payRecord.getOperationTime());
         }
         //下单用户信息
-        SysUser orderUser = sysUserMapper.selectUserById(orderInfo.getOrderUserId());
+        SysUser orderUser = sysUserMapper.selectById(orderInfo.getOrderUserId());
         if (orderUser != null) {
             orderInfo.setOrderUserNickName(orderUser.getNickName());
             orderInfo.setOrderUserPhoneNumber(orderUser.getPhonenumber());

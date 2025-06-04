@@ -294,7 +294,7 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
         if (ObjectUtils.isEmpty(loginUser)) {
             throw new ServiceException("当前用户不存在!", HttpStatus.ERROR);
         }
-        if (!SecurityUtils.isAdmin(loginUser.getUserId())) {
+        if (!SecurityUtils.isSuperAdmin()) {
             throw new ServiceException("当前用户不是超级管理员，不可操作!", HttpStatus.ERROR);
         }
     }

@@ -3,6 +3,7 @@ package com.ruoyi.framework.sms.ali.entity;
 import com.alibaba.fastjson2.JSON;
 import com.aliyuncs.CommonResponse;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class AliSmsResponse extends Response {
 
     private CommonResponse response;

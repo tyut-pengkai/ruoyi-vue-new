@@ -2,6 +2,7 @@ package com.ruoyi.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.system.domain.SysRoleMenu;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -42,5 +43,13 @@ public interface SysRoleMenuMapper extends BaseMapper<SysRoleMenu> {
      * @return 结果
      */
     public int batchRoleMenu(List<SysRoleMenu> roleMenuList);
+
+    /**
+     * 获取菜单关联用户ID
+     *
+     * @param menuId
+     * @return
+     */
+    List<Long> listRelUserId(@Param("menuId") Long menuId);
 
 }

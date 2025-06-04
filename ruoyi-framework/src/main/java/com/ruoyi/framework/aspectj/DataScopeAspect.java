@@ -2,6 +2,8 @@ package com.ruoyi.framework.aspectj;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.ruoyi.common.core.domain.model.UserExt;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -22,8 +24,8 @@ import com.ruoyi.framework.security.context.PermissionContextHolder;
  *
  * @author ruoyi
  */
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class DataScopeAspect
 {
     /**
@@ -59,9 +61,9 @@ public class DataScopeAspect
         LoginUser loginUser = SecurityUtils.getLoginUser();
         if (StringUtils.isNotNull(loginUser))
         {
-            SysUser currentUser = loginUser.getUser();
+            UserExt currentUser = loginUser.getUser();
             // 如果是超级管理员，则不过滤数据
-            if (StringUtils.isNotNull(currentUser) && !currentUser.isAdmin())
+            if (StringUtils.isNotNull(currentUser) && !currentUser.hasSuperAdminRole())
             {
                 String permission = StringUtils.defaultIfEmpty(controllerDataScope.permission(), PermissionContextHolder.getContext());
 //                dataScopeFilter(joinPoint, currentUser, controllerDataScope.deptAlias(), controllerDataScope.userAlias(), permission);

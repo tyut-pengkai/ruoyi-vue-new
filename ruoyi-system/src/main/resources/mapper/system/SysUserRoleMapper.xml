@@ -16,7 +16,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="countUserRoleByRoleId" resultType="Integer">
 	    select count(1) from sys_user_role where role_id=#{roleId}  
 	</select>
-	
+
+	<select id="listRelUserId" resultType="java.lang.Long">
+		SELECT DISTINCT
+			sur.user_id
+		FROM
+			sys_user_role sur
+		WHERE
+			sur.role_id = #{roleId}
+	</select>
+	<select id="listRoleSelectItem" resultType="com.ruoyi.common.core.domain.model.RoleSelectItem">
+		SELECT
+			sur.role_id,
+			sur.store_id AS rel_store_id,
+			sr.role_name
+		FROM
+			sys_user_role sur
+			LEFT JOIN sys_role sr ON sur.role_id = sr.role_id
+		WHERE
+			sur.user_id = #{userId}
+	</select>
+
 	<delete id="deleteUserRole" parameterType="Long">
  		delete from sys_user_role where user_id in
  		<foreach collection="array" item="userId" open="(" separator="," close=")">
@@ -25,9 +45,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  	</delete>
 	
 	<insert id="batchUserRole">
-		insert into sys_user_role(user_id, role_id) values
+		insert into sys_user_role(user_id, role_id, store_id) values
 		<foreach item="item" index="index" collection="list" separator=",">
-			(#{item.userId},#{item.roleId})
+			(#{item.userId},#{item.roleId},#{item.storeId})
 		</foreach>
 	</insert>
 	

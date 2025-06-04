@@ -1,17 +1,11 @@
 package com.ruoyi.framework.web.service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import cn.hutool.core.collection.CollUtil;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.domain.model.UserExt;
+import com.ruoyi.common.core.domain.model.UserInfo;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -22,6 +16,17 @@ import eu.bitwalker.useragentutils.UserAgent;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * token验证处理
@@ -70,8 +75,18 @@ public class TokenService
                 Claims claims = parseToken(token);
                 // 解析对应的权限以及用户信息
                 String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
+                String userIdStr = (String) claims.get(Constants.JWT_USERID);
+                if (userIdStr == null) {
+                    return null;
+                }
                 String userKey = getTokenKey(uuid);
                 LoginUser user = redisCache.getCacheObject(userKey);
+                String userInfoKey = getUserKey(userIdStr);
+                UserExt userInfo = redisCache.getCacheObject(userInfoKey);
+                if (user == null || userInfo == null) {
+                    return null;
+                }
+                user.setUser(userInfo);
                 return user;
             }
             catch (Exception e)
@@ -87,7 +102,7 @@ public class TokenService
      */
     public void setLoginUser(LoginUser loginUser)
     {
-        if (StringUtils.isNotNull(loginUser) && StringUtils.isNotEmpty(loginUser.getToken()))
+        if (StringUtils.isNotNull(loginUser) && StringUtils.isNotEmpty(loginUser.getToken()) && loginUser.getUser() != null)
         {
             refreshToken(loginUser);
         }
@@ -106,6 +121,33 @@ public class TokenService
     }
 
     /**
+     * 删除用户身份信息
+     *
+     * @param userIds
+     */
+    public void deleteCacheUser(Collection<Long> userIds) {
+        if (CollUtil.isEmpty(userIds)) {
+            return;
+        }
+        for (Long userId : userIds) {
+            deleteCacheUser(userId);
+        }
+    }
+
+    /**
+     * 删除用户身份信息
+     *
+     * @param userId
+     */
+    public void deleteCacheUser(Long userId) {
+        if (userId == null) {
+            return;
+        }
+        redisCache.deleteObject(getUserKey(userId));
+        log.info("清除缓存用户信息:{}", userId);
+    }
+
+    /**
      * 创建令牌
      * 
      * @param loginUser 用户信息
@@ -121,6 +163,7 @@ public class TokenService
         Map<String, Object> claims = new HashMap<>();
         claims.put(Constants.LOGIN_USER_KEY, token);
         claims.put(Constants.JWT_USERNAME, loginUser.getUsername());
+        claims.put(Constants.JWT_USERID, loginUser.getUserId().toString());
         return createToken(claims);
     }
 
@@ -152,6 +195,9 @@ public class TokenService
         // 根据uuid将loginUser缓存
         String userKey = getTokenKey(loginUser.getToken());
         redisCache.setCacheObject(userKey, loginUser, expireTime, TimeUnit.MINUTES);
+        // 缓存用户信息
+        String userInfoKey = getUserKey(loginUser.getUserId());
+        redisCache.setCacheObject(userInfoKey, loginUser.getUser(), expireTime, TimeUnit.MINUTES);
     }
 
     /**
@@ -225,8 +271,12 @@ public class TokenService
         return token;
     }
 
-    private String getTokenKey(String uuid)
+    public String getTokenKey(String uuid)
     {
         return CacheConstants.LOGIN_TOKEN_KEY + uuid;
+    }
+
+    public String getUserKey(Object userId) {
+        return CacheConstants.LOGIN_USER_KEY + userId;
     }
 }

@@ -1,9 +1,10 @@
 package com.ruoyi.common.core.domain.model;
 
+import cn.hutool.core.collection.CollUtil;
 import com.alibaba.fastjson2.annotation.JSONField;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 import java.util.Set;
 
@@ -57,30 +58,49 @@ public class LoginUser implements UserDetails
     private String os;
 
     /**
+     * 当前角色ID
+     */
+    private Long currentRoleId;
+
+    /**
+     * 当前档口ID
+     */
+    private Long currentStoreId;
+
+    /**
      * 权限列表
      */
     private Set<String> permissions;
 
     /**
+     * 角色
+     */
+    private Set<String> roleKeys;
+
+    /**
      * 用户信息
      */
-    private SysUser user;
+    private UserExt user;
 
     public LoginUser()
     {
     }
 
-    public LoginUser(SysUser user, Set<String> permissions)
-    {
-        this.user = user;
-        this.permissions = permissions;
+    public LoginUser(UserInfo userInfo) {
+        this(UserExt.create(userInfo));
+        RoleInfo roleInfo = CollUtil.getFirst(userInfo.getRoles());
+        if (roleInfo != null) {
+            this.currentRoleId = roleInfo.getRoleId();
+            this.currentStoreId = roleInfo.getRelStoreId();
+        }
     }
 
-    public LoginUser(Long userId, SysUser user, Set<String> permissions)
+    public LoginUser(UserExt user)
     {
-        this.userId = userId;
+        this.userId = user.getUserId();
         this.user = user;
-        this.permissions = permissions;
+        this.permissions = user.getMenuPerms();
+        this.roleKeys = user.getRoleKeys();
     }
 
     public Long getUserId()
@@ -222,6 +242,22 @@ public class LoginUser implements UserDetails
         this.expireTime = expireTime;
     }
 
+    public Long getCurrentRoleId() {
+        return currentRoleId;
+    }
+
+    public void setCurrentRoleId(Long currentRoleId) {
+        this.currentRoleId = currentRoleId;
+    }
+
+    public Long getCurrentStoreId() {
+        return currentStoreId;
+    }
+
+    public void setCurrentStoreId(Long currentStoreId) {
+        this.currentStoreId = currentStoreId;
+    }
+
     public Set<String> getPermissions()
     {
         return permissions;
@@ -232,12 +268,20 @@ public class LoginUser implements UserDetails
         this.permissions = permissions;
     }
 
-    public SysUser getUser()
+    public Set<String> getRoleKeys() {
+        return roleKeys;
+    }
+
+    public void setRoleKeys(Set<String> roleKeys) {
+        this.roleKeys = roleKeys;
+    }
+
+    public UserExt getUser()
     {
         return user;
     }
 
-    public void setUser(SysUser user)
+    public void setUser(UserExt user)
     {
         this.user = user;
     }

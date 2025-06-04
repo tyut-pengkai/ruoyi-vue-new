@@ -33,10 +33,10 @@ img-search:
   # 如果是内网访问图像搜索服务，则endpointType为必填项，值统一为"internal"
   endpointType:
 sms:
-  accessKeyId:
-  accessKeySecret:
+  accessKeyId: LTAI5tGWiFU2zweJwarUJgzF
+  accessKeySecret: gVpsVKSds5keQeN0mDDVKmY8YTGOkk
   regionId:
-  send: false
+  send: true
 es:
   #多个用","分割
   hosts: 49.234.41.39:9222

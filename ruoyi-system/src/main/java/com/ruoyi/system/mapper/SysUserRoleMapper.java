@@ -1,5 +1,6 @@
 package com.ruoyi.system.mapper;
 
+import com.ruoyi.common.core.domain.model.RoleSelectItem;
 import com.ruoyi.system.domain.SysUserRole;
 import org.apache.ibatis.annotations.Param;
 
@@ -59,4 +60,20 @@ public interface SysUserRoleMapper {
      * @return 结果
      */
     public int deleteUserRoleInfos(@Param("roleId") Long roleId, @Param("userIds") Long[] userIds);
+
+    /**
+     * 获取角色关联用户ID
+     *
+     * @param roleId
+     * @return
+     */
+    List<Long> listRelUserId(@Param("roleId") Long roleId);
+
+    /**
+     * 获取角色选择列表
+     *
+     * @param userId
+     * @return
+     */
+    List<RoleSelectItem> listRoleSelectItem(@Param("userId")Long userId);
 }
