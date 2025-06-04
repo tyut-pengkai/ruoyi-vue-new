@@ -34,12 +34,27 @@ public interface SysJobLogMapper
     public SysJobLog selectJobLogById(Long jobLogId);
 
     /**
+     * 通过调度任务名称,查询最后一次执行的调度信息
+     * @param jobName
+     * @return
+     */
+    public SysJobLog selectLastJobLogByJobName(String jobName);
+
+    /**
      * 新增任务日志
      * 
      * @param jobLog 调度日志信息
      * @return 结果
      */
     public int insertJobLog(SysJobLog jobLog);
+
+    /**
+     * 更新任务日志信息
+     *
+     * @param jobLog 调度日志信息
+     * @return 更新记录数
+     */
+    public int updateJobLog(SysJobLog jobLog);
 
     /**
      * 批量删除调度日志信息
