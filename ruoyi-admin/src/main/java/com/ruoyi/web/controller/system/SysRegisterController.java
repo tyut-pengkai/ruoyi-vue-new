@@ -45,12 +45,22 @@ public class SysRegisterController extends BaseController {
         return ajax;
     }
 
-    @ApiOperation(value = "卖家注册")
+    @ApiOperation(value = "电商卖家注册")
     @PostMapping("/registerSeller")
     public AjaxResult registerSeller(@Validated @RequestBody RegisterBySmsCodeVO vo) {
         AjaxResult ajax = AjaxResult.success();
         String token = registerService.registerByPhoneNumber(vo.getPhoneNumber(), vo.getPassword(), vo.getCode(),
                 ESystemRole.SELLER);
+        ajax.put(Constants.TOKEN, token);
+        return ajax;
+    }
+
+    @ApiOperation(value = "代发专员注册")
+    @PostMapping("/registerAgent")
+    public AjaxResult registerAgent(@Validated @RequestBody RegisterBySmsCodeVO vo) {
+        AjaxResult ajax = AjaxResult.success();
+        String token = registerService.registerByPhoneNumber(vo.getPhoneNumber(), vo.getPassword(), vo.getCode(),
+                ESystemRole.AGENT);
         ajax.put(Constants.TOKEN, token);
         return ajax;
     }

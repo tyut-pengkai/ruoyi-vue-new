@@ -15,7 +15,8 @@ public enum ESystemRole {
     SUPER_ADMIN(1, "超级管理员", 1L),
     GENERAL_ADMIN(2, "普通管理员", 2L),
     SUPPLIER(3, "档口供应商", 3L),
-    SELLER(4, "电商卖家", 4L);
+    SELLER(4, "电商卖家", 4L),
+    AGENT(5, "代发专员", 5L);
 
     private final Integer value;
     private final String label;
