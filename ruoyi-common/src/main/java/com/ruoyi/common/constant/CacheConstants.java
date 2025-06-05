@@ -28,6 +28,11 @@ public class CacheConstants {
     public static final String SMS_LOGIN_CAPTCHA_CODE_KEY = "sms_login_captcha_codes:";
 
     /**
+     * 扫码登录浏览器ID
+     */
+    public static final String SCAN_CODE_LOGIN_BROWSER_ID_KEY = "scan_code_login_browser_ids:";
+
+    /**
      * 参数管理 cache key
      */
     public static final String SYS_CONFIG_KEY = "sys_config:";

@@ -91,9 +91,10 @@ public class SysLoginService {
      * @return
      */
     public String createToken(LoginUser loginUser) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        // 登录操作在返回token时即完成，无后续操作，所以不必设置认证上下文，如有必要需排除APP扫码登录的情况
+//        UsernamePasswordAuthenticationToken authenticationToken =
+//                new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
+//        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         AsyncManager.me().execute(AsyncFactory.recordLogininfor(loginUser.getUsername(), Constants.LOGIN_SUCCESS,
                 MessageUtils.message("user.login.success")));
