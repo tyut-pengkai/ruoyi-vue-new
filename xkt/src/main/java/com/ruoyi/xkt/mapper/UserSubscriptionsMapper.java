@@ -40,4 +40,11 @@ public interface UserSubscriptionsMapper extends BaseMapper<UserSubscriptions> {
      * @return UserOverallResDTO
      */
     UserOverallResDTO getOverall(Long userId);
+
+    /**
+     * 获取关注的档口
+     * @param storeId 列表
+     * @return List<Long>
+     */
+    List<Long> selectUserFocusList(Long storeId);
 }

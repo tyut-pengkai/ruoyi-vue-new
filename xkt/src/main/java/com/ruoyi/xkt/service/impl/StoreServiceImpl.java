@@ -75,8 +75,8 @@ public class StoreServiceImpl implements IStoreService {
         // 当前时间往后推1年为试用期时间
         Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         store.setTrialEndTime(oneYearAfter);
-        // 设置档口默认权重100
-        store.setStoreWeight(Constants.STORE_WEIGHT_DEFAULT);
+        // 设置档口默认权重 0
+        store.setStoreWeight(Constants.STORE_WEIGHT_DEFAULT_ZERO);
         int count = this.storeMapper.insert(store);
         // 创建档口账户
         assetService.createInternalAccountIfNotExists(store.getId());

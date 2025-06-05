@@ -17,14 +17,11 @@ import java.math.BigDecimal;
 @Data
 public class PicSearchVO {
 
-    @NotBlank(message = "图片路径不能为空")
     @ApiModelProperty(value = "以图搜款图片路径")
     private String picKey;
     @ApiModelProperty(value = "图片名称")
-    @NotBlank(message = "图片名称不能为空")
     private String picName;
     @ApiModelProperty(value = "图片大小 搜索的图片大小，不超过4M")
-    @NotNull(message = "图片大小不能为空")
     private BigDecimal picSize;
 
 }

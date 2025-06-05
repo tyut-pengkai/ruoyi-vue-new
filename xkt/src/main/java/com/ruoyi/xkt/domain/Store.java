@@ -150,7 +150,7 @@ public class Store extends XktBaseEntity {
     private Integer templateNum;
 
     /**
-     * 档口权重值 基础值大家都为100，最低为-100。
+     * 档口权重值 基础值大家都为1000，最低为-1000。
      */
     private Long storeWeight;
 

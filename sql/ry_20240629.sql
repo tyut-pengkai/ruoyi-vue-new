@@ -885,14 +885,13 @@ create table sys_job_log (
 -- ----------------------------
 -- 17、通知公告表
 -- ----------------------------
-drop table if exists sys_notice;
-create table sys_notice (
-  notice_id         int(4)          not null auto_increment    comment '公告ID',
+drop table if exists notice;
+create table notice (
+  id                int(4)          not null  auto_increment   comment '公告ID',
   notice_title      varchar(50)     not null                   comment '公告标题',
-  notice_type       tinyint(1)      not null                comment '公告类型（1通知 2公告）',
+  notice_type       int(1)      not null                comment '公告类型（1通知 2公告）',
   owner_type        char(1)         not null                   comment '公告拥有者（1系统 2档口）',
   notice_content    longblob        default null               comment '公告内容',
-  status            char(1)         default '0'                comment '公告状态（0正常 1关闭）',
   effect_start      datetime                                   comment '公告生效时间(yyyy-MM-dd HH:mm)',
   effect_end        datetime                                   comment '公告失效时间(yyyy-MM-dd HH:mm)',
   perpetuity        tinyint(1)                                 comment '是否永久生效',
@@ -900,8 +899,7 @@ create table sys_notice (
   create_time       datetime                                   comment '创建时间',
   update_by         varchar(64)     default ''                 comment '更新者',
   update_time       datetime                                   comment '更新时间',
-  remark            varchar(255)    default null               comment '备注',
-  primary key (notice_id)
+  primary key (id)
 ) engine=innodb auto_increment=10 comment = '通知公告表';
 
 -- ----------------------------

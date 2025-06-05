@@ -2,7 +2,6 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
@@ -17,9 +16,11 @@ import com.ruoyi.xkt.dto.advertRound.picSearch.PicSearchAdvertDTO;
 import com.ruoyi.xkt.dto.picture.ProductImgSearchCountDTO;
 import com.ruoyi.xkt.dto.picture.ProductMatchDTO;
 import com.ruoyi.xkt.dto.picture.SearchRequestDTO;
-import com.ruoyi.xkt.dto.picture.TopProductMatchDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdViewDTO;
-import com.ruoyi.xkt.mapper.*;
+import com.ruoyi.xkt.mapper.PictureSearchMapper;
+import com.ruoyi.xkt.mapper.StoreProductMapper;
+import com.ruoyi.xkt.mapper.StoreProductStatisticsMapper;
+import com.ruoyi.xkt.mapper.SysFileMapper;
 import com.ruoyi.xkt.service.IPictureSearchService;
 import com.ruoyi.xkt.service.IPictureService;
 import com.ruoyi.xkt.service.IWebsitePCService;
@@ -61,11 +62,21 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public List<StoreProdViewDTO> searchProductByPic(SearchRequestDTO requestDTO) {
+        // 以图搜款广告
+        List<PicSearchAdvertDTO> picSearchAdverts = websitePCService.getPicSearchList();
+        if (StringUtils.isBlank(requestDTO.getPicKey()) || StringUtils.isBlank(requestDTO.getPicName()) ||
+                ObjectUtils.isEmpty(requestDTO.getPicSize()) || requestDTO.getNum() <= 0) {
+            return BeanUtil.copyToList(picSearchAdverts, StoreProdViewDTO.class);
+        }
+
+
 
         // TODO 校验当前登录者角色，若非电商卖家 或 管理员 或 超级管理员，则不可操作
         // TODO 校验当前登录者角色，若非电商卖家 或 管理员 或 超级管理员，则不可操作
         // TODO 校验当前登录者角色，若非电商卖家 或 管理员 或 超级管理员，则不可操作
         // TODO 校验当前登录者角色，若非电商卖家 或 管理员 或 超级管理员，则不可操作
+
+
 
         Assert.notEmpty(requestDTO.getPicKey());
         SysFile sysFile = new SysFile().setFileUrl(requestDTO.getPicKey()).setFileName(requestDTO.getPicName()).setFileSize(requestDTO.getPicSize());
@@ -85,8 +96,6 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
                 redisCache.valueIncr(CacheConstants.PRODUCT_STATISTICS_IMG_SEARCH_COUNT, result.getStoreProductId());
             }
         });
-        // 以图搜款广告
-        List<PicSearchAdvertDTO> picSearchAdverts = websitePCService.getPicSearchList();
         // 没有搜出结果，则直接返回广告
         if (CollectionUtils.isEmpty(results)) {
             return BeanUtil.copyToList(picSearchAdverts, StoreProdViewDTO.class);

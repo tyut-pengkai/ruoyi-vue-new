@@ -206,9 +206,9 @@ public class Constants
      */
     public static final Integer ORDER_NUM_1 = 1;
     /**
-     * 档口默认权重 100
+     * 档口默认权重 0
      */
-    public static final Long STORE_WEIGHT_DEFAULT = 100L;
+    public static final Long STORE_WEIGHT_DEFAULT_ZERO = 0L;
 
     public static final String VERSION_LOCK_ERROR_COMMON_MSG = "系统繁忙，请稍后再试";
 

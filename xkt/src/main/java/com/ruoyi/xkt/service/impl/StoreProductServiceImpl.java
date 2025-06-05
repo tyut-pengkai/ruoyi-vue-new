@@ -988,7 +988,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
             return;
         }
         List<UserBrowsingHisDTO> browsingList = CollUtil.defaultIfEmpty(this.redisCache
-                .getCacheList(CacheConstants.USER_BROWSING_HISTORY + SecurityUtils.getUserId()), new ArrayList<>());
+                .getCacheObject(CacheConstants.USER_BROWSING_HISTORY + SecurityUtils.getUserId()), new ArrayList<>());
         browsingList.add(new UserBrowsingHisDTO().setUserId(userId).setProdArtNum(prodArtNum).setProdTitle(prodTitle)
                 .setStoreId(storeId).setStoreName(storeName).setProdPrice(minPrice).setMainPicUrl(mainPicUrl)
                 .setBrowsingTime(new Date()).setStoreProdId(storeProdId));

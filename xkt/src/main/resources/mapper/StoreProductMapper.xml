@@ -138,7 +138,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </foreach>
         GROUP BY
             sp.id,
-            sf.file_url
+            sf.file_url,
+            sf.file_name,
+            sf.file_size
     </select>
 
     <select id="getStoreProdViewAttr" resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdViewDTO">
