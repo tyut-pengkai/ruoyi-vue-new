@@ -32,6 +32,14 @@ public interface ISysUserService {
     UserInfo getUserByUsername(String userName);
 
     /**
+     * 获取用户信息
+     *
+     * @param phoneNumber
+     * @return
+     */
+    UserInfo getUserByPhoneNumber(String phoneNumber);
+
+    /**
      * 获取用户基本信息
      *
      * @param userId

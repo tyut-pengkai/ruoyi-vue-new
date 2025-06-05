@@ -23,6 +23,11 @@ public class CacheConstants {
     public static final String CAPTCHA_CODE_KEY = "captcha_codes:";
 
     /**
+     * 短信登录/注册验证码 redis key
+     */
+    public static final String SMS_LOGIN_CAPTCHA_CODE_KEY = "sms_login_captcha_codes:";
+
+    /**
      * 参数管理 cache key
      */
     public static final String SYS_CONFIG_KEY = "sys_config:";

@@ -37,6 +37,9 @@ sms:
   accessKeySecret: gVpsVKSds5keQeN0mDDVKmY8YTGOkk
   regionId:
   send: true
+  verificationCode:
+    signName: 成都一方鹏商贸
+    templateCode: SMS_318925388
 es:
   #多个用","分割
   hosts: 49.234.41.39:9222

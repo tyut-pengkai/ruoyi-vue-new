@@ -172,6 +172,47 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			su.del_flag = '0'
 			AND su.user_name = #{userName}
 	</select>
+
+	<select id="getUserInfoByPhoneNumber" resultMap="UserInfo">
+		SELECT
+			su.*,
+			sur.user_id AS rel_user_id,
+			sur.store_id AS rel_store_id,
+			sr.role_id,
+			sr.role_name,
+			sr.role_key,
+			sr.role_sort,
+			sr.store_id,
+			sr.status AS role_status,
+			sr.remark AS role_remark,
+			srm.role_id AS rel_role_id,
+			sm.menu_id,
+			sm.menu_name,
+			sm.parent_id,
+			sm.order_num,
+			sm.path,
+			sm.component,
+			sm.query,
+			sm.route_name,
+			sm.is_frame,
+			sm.is_cache,
+			sm.menu_type,
+			sm.visible,
+			sm.status AS menu_status,
+			sm.perms,
+			sm.icon,
+			sm.remark AS menu_remark
+		FROM
+			sys_user su
+			LEFT JOIN sys_user_role sur ON su.user_id = sur.user_id
+			LEFT JOIN sys_role sr ON sur.role_id = sr.role_id
+			LEFT JOIN sys_role_menu srm ON sr.role_id = srm.role_id
+			LEFT JOIN sys_menu sm ON srm.menu_id = sm.menu_id
+		WHERE
+			su.del_flag = '0'
+			AND su.phonenumber = #{phoneNumber}
+	</select>
+
 	<select id="listUser" parameterType="com.ruoyi.common.core.domain.model.UserQuery" resultMap="UserListItem">
 		SELECT
 			su.*,
@@ -235,5 +276,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			AND s.user_id = #{userId}
 		LIMIT 1
 	</select>
+
 
 </mapper>

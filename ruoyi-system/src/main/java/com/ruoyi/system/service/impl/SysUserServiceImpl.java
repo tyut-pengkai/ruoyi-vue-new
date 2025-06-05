@@ -70,6 +70,13 @@ public class SysUserServiceImpl implements ISysUserService {
     }
 
     @Override
+    public UserInfo getUserByPhoneNumber(String phoneNumber) {
+        UserInfo userInfo = userMapper.getUserInfoByPhoneNumber(phoneNumber);
+        fillMenus(userInfo);
+        return userInfo;
+    }
+
+    @Override
     public SysUser getBaseUser(Long userId) {
         return userMapper.selectById(userId);
     }
@@ -451,12 +458,15 @@ public class SysUserServiceImpl implements ISysUserService {
         Assert.notNull(user);
         Assert.notEmpty(user.getUserName(), "用户名称不能为空");
         Assert.notEmpty(user.getNickName(), "用户昵称不能为空");
-        Assert.isFalse(checkUserNameUnique(user), "用户名称已被注册");
+        if (StrUtil.isNotEmpty(user.getPhonenumber())) {
+            Assert.isTrue(checkPhoneUnique(user), "手机号已被注册");
+        }
+        Assert.isTrue(checkUserNameUnique(user), "用户名称已被注册");
         if (StrUtil.isNotEmpty(user.getEmail())) {
-            Assert.isFalse(checkEmailUnique(user), "邮箱已被注册");
+            Assert.isTrue(checkEmailUnique(user), "邮箱已被注册");
         }
         if (StrUtil.isNotEmpty(user.getPhonenumber())) {
-            Assert.isFalse(checkPhoneUnique(user), "手机号已被注册");
+            Assert.isTrue(checkPhoneUnique(user), "手机号已被注册");
         }
     }
 

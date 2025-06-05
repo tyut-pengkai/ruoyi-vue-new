@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @Api(tags = "登录")
 @RestController
-@RequestMapping("/rest/v1/logon")
+@RequestMapping("/rest/v1/login")
 public class SysLoginController {
 
     @Autowired
@@ -55,13 +55,41 @@ public class SysLoginController {
      */
     @ApiOperation(value = "用户名密码登录")
     @PostMapping("/loginByUname")
-    public AjaxResult login(@RequestBody LoginBody loginBody) {
+    public AjaxResult login(@Validated @RequestBody LoginByUsernameVO loginBody) {
         AjaxResult ajax = AjaxResult.success();
         // 生成令牌
-        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
-                loginBody.getUuid());
+        LoginCredential credential = LoginCredential.builder()
+                .loginType(ELoginType.USERNAME)
+                .username(loginBody.getUsername())
+                .password(loginBody.getPassword())
+                .imgUuid(loginBody.getUuid())
+                .imgVerificationCode(loginBody.getCode())
+                .build();
+        String token = loginService.login(credential);
         ajax.put(Constants.TOKEN, token);
         return ajax;
+    }
+
+    @ApiOperation(value = "短信验证码登录")
+    @PostMapping("/loginBySms")
+    public AjaxResult loginBySms(@Validated @RequestBody LoginBySmsCodeVO loginBody) {
+        AjaxResult ajax = AjaxResult.success();
+        // 生成令牌
+        LoginCredential credential = LoginCredential.builder()
+                .loginType(ELoginType.SMS_VERIFICATION_CODE)
+                .phoneNumber(loginBody.getPhoneNumber())
+                .smsVerificationCode(loginBody.getCode())
+                .build();
+        String token = loginService.login(credential);
+        ajax.put(Constants.TOKEN, token);
+        return ajax;
+    }
+
+    @ApiOperation(value = "发送登录短信验证码")
+    @PostMapping("/sendSmsVerificationCode")
+    public R sendSmsVerificationCode(@Validated @RequestBody LoginSmsReqVO vo) {
+        loginService.sendSmsVerificationCode(vo.getPhoneNumber(), vo.getCode(), vo.getUuid());
+        return R.ok();
     }
 
     /**

@@ -17,6 +17,12 @@ public class SmsClientWrapper {
     @Value("${sms.send:true}")
     private Boolean doSend;
 
+    @Value("${sms.verificationCode.signName:}")
+    private String verificationCodeSignName;
+
+    @Value("${sms.verificationCode.templateCode:}")
+    private String verificationCodeTemplateCode;
+
     public boolean sendSms(String signName, String phoneNumber, String templateCode, String templateParams) {
         boolean sendResult;
         if (doSend) {
@@ -29,6 +35,11 @@ public class SmsClientWrapper {
         }
         log.info("发送短信{},{},{},{}:{},doSend:{}", signName, phoneNumber, templateCode, templateParams, sendResult, doSend);
         return sendResult;
+    }
+
+    public boolean sendVerificationCode(String phoneNumber, String code) {
+        return sendSms(verificationCodeSignName, phoneNumber, verificationCodeTemplateCode,
+                "{\"code\":\"" + code + "\"}");
     }
 
 }
