@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.UserSubscriptions;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
 import com.ruoyi.xkt.dto.userIndex.UserOverallResDTO;
+import com.ruoyi.xkt.dto.userNotice.UserFocusAndFavUserIdDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageResDTO;
 import org.apache.ibatis.annotations.Param;
 
@@ -47,4 +48,12 @@ public interface UserSubscriptionsMapper extends BaseMapper<UserSubscriptions> {
      * @return List<Long>
      */
     List<Long> selectUserFocusList(Long storeId);
+
+    /**
+     * 筛选关注档口及收藏商品的用户ID
+     * @param storeId 档口ID
+     * @param storeProdId 商品ID
+     * @return List<Long>
+     */
+    List<UserFocusAndFavUserIdDTO> selectFocusAndFavUserIdList(@Param("storeId") Long storeId, @Param("storeProdId") Long storeProdId);
 }

@@ -6,17 +6,16 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.xkt.domain.Notice;
 import com.ruoyi.xkt.domain.UserNotice;
-import com.ruoyi.xkt.domain.UserNoticeSetting;
 import com.ruoyi.xkt.dto.notice.*;
 import com.ruoyi.xkt.enums.NoticeOwnerType;
 import com.ruoyi.xkt.enums.NoticeReadType;
-import com.ruoyi.xkt.enums.NoticeReceiveType;
 import com.ruoyi.xkt.enums.UserNoticeType;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.INoticeService;
@@ -68,11 +67,8 @@ public class NoticeServiceImpl implements INoticeService {
                 // 档口发的公告，则发送给关注档口用户
                 ? this.userSubMapper.selectUserFocusList(notice.getStoreId())
                 // 系统发的公告，则发送给所有用户
-                : this.userNoticeSetMapper.selectList(new LambdaQueryWrapper<UserNoticeSetting>()
-                        .eq(UserNoticeSetting::getSysMsgNotice, NoticeReceiveType.RECEIVE.getValue())
-                        .eq(UserNoticeSetting::getDelFlag, Constants.UNDELETED)).stream()
-                .map(UserNoticeSetting::getUserId)
-                .collect(Collectors.toList());
+                : this.userMapper.selectList(new LambdaQueryWrapper<SysUser>().eq(SysUser::getDelFlag, Constants.UNDELETED))
+                .stream().map(SysUser::getUserId).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(userIdList)) {
             return 0;
         }
@@ -158,7 +154,7 @@ public class NoticeServiceImpl implements INoticeService {
     @Transactional(readOnly = true)
     public Page<NoticeResDTO> page(NoticePageDTO pageDTO) {
         LambdaQueryWrapper<Notice> queryWrapper = new LambdaQueryWrapper<Notice>().eq(Notice::getDelFlag, Constants.UNDELETED)
-                .orderByDesc(Notice::getCreateTime);
+                .eq(Notice::getOwnerType, pageDTO.getOwnerType()).orderByDesc(Notice::getCreateTime);
         if (StringUtils.isNotBlank(pageDTO.getNoticeTitle())) {
             queryWrapper.like(Notice::getNoticeTitle, pageDTO.getNoticeTitle());
         }

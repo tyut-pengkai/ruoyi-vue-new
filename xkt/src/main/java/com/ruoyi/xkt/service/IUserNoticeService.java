@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.UserNotice;
+import com.ruoyi.common.core.page.Page;
+import com.ruoyi.xkt.dto.userNotice.*;
 
 import java.util.List;
 
@@ -12,4 +13,26 @@ import java.util.List;
  */
 public interface IUserNoticeService {
 
+    /**
+     * 查询用户所有通知列表
+     *
+     * @param pageDTO 查询入参
+     * @return Page<UserNoticeResDTO>
+     */
+    Page<UserNoticeResDTO> pcPage(UserNoticePageDTO pageDTO);
+
+    /**
+     * 获取APP用户消息列表
+     *
+     * @return List<UserNoticeAppResDTO>
+     */
+    List<UserNoticeAppListResDTO> appList();
+
+    /**
+     * 获取APP某一个类型消息列表
+     *
+     * @param pageDTO 分页入参
+     * @return List<UserNoticeAppResDTO>
+     */
+    Page<UserNoticeAppResDTO> appTypePage(UserNoticeAppTypePageDTO pageDTO);
 }

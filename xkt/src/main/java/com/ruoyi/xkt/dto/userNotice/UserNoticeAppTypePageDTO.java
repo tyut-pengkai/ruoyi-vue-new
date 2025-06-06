@@ -1,4 +1,4 @@
-package com.ruoyi.xkt.dto.notice;
+package com.ruoyi.xkt.dto.userNotice;
 
 import com.ruoyi.xkt.dto.BasePageDTO;
 import io.swagger.annotations.ApiModel;
@@ -14,13 +14,11 @@ import javax.validation.constraints.NotNull;
  * @date 2025/3/27 15:12
  */
 @EqualsAndHashCode(callSuper = true)
-@ApiModel("公告分页查询入参")
+@ApiModel("用户消息分页查询入参")
 @Data
-public class NoticePageDTO extends BasePageDTO {
+public class UserNoticeAppTypePageDTO extends BasePageDTO {
 
-    @ApiModelProperty(value = "公告标题")
-    private String noticeTitle;
-    @ApiModelProperty(value = "谁发的公告 1 档口  2 系统")
-    private Integer ownerType;
+    @ApiModelProperty(value = "消息接收类型")
+    private Integer targetNoticeType;
 
 }

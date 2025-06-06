@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 通知公告类型
+ * 用户接收通知公告类型
  *
  * @author liujiang
  * @date 2025-04-02 23:42
@@ -39,6 +39,6 @@ public enum UserNoticeType {
                 return e;
             }
         }
-        throw new ServiceException("通知公告类型不存在!", HttpStatus.ERROR);
+        throw new ServiceException("用户接收通知公告类型不存在!", HttpStatus.ERROR);
     }
 }

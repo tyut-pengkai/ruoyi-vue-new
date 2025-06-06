@@ -42,6 +42,7 @@ import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.userBrowsingHistory.UserBrowsingHisDTO;
+import com.ruoyi.xkt.dto.userNotice.UserFocusAndFavUserIdDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IPictureService;
@@ -101,6 +102,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final NoticeMapper noticeMapper;
     final UserNoticeSettingMapper userNoticeSetMapper;
     final UserNoticeMapper userNoticeMapper;
+    final UserSubscriptionsMapper userSubMapper;
 
     /**
      * 查询档口商品
@@ -1027,10 +1029,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
         userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
                 .setUserId(userId).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
                 .setTargetNoticeType(UserNoticeType.PRODUCT_DYNAMIC.getValue()));
-        List<UserNoticeSetting> focusList = this.userNoticeSetMapper.selectList(new LambdaQueryWrapper<UserNoticeSetting>()
-                .isNotNull(UserNoticeSetting::getFocusNotice));
-        if (CollectionUtils.isNotEmpty(focusList)) {
-            focusList.forEach(x -> userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
+        List<UserSubscriptions> userSubList = this.userSubMapper.selectList(new LambdaQueryWrapper<UserSubscriptions>()
+                .eq(UserSubscriptions::getStoreId, storeProd.getStoreId()));
+        if (CollectionUtils.isNotEmpty(userSubList)) {
+            userSubList.forEach(x -> userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
                     .setUserId(x.getUserId()).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
                     .setTargetNoticeType(UserNoticeType.FOCUS_STORE.getValue())));
         }
@@ -1061,14 +1063,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
         userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
                 .setUserId(userId).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
                 .setTargetNoticeType(UserNoticeType.PRODUCT_DYNAMIC.getValue()));
-        // 关注档口或者收藏商品的用户
-        List<UserNoticeSetting> targetList = this.userNoticeSetMapper.selectList(new LambdaQueryWrapper<UserNoticeSetting>()
-                .isNotNull(UserNoticeSetting::getFocusNotice).or().isNotNull(UserNoticeSetting::getFavoriteNotice));
+        // 关注档口 或 收藏商品用户
+        List<UserFocusAndFavUserIdDTO> targetList = this.userSubMapper.selectFocusAndFavUserIdList(storeProd.getStoreId(), storeProd.getId());
         if (CollectionUtils.isNotEmpty(targetList)) {
-            targetList.forEach(x -> userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
-                    .setUserId(x.getUserId()).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
-                    .setTargetNoticeType(Objects.equals(x.getFocusNotice(), NoticeReceiveType.RECEIVE.getValue())
-                            ? UserNoticeType.FOCUS_STORE.getValue() : UserNoticeType.FAVORITE_PRODUCT.getValue())));
+            targetList.forEach(target -> userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
+                    .setUserId(target.getUserId()).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
+                    .setTargetNoticeType(target.getTargetNoticeType())));
         }
         if (CollectionUtils.isEmpty(userNoticeList)) {
             return;
@@ -1098,14 +1098,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
                     .setNoticeContent(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "" + (offSale ? "下架" : "重新上架")
                             + "了货号为: " + storeProd.getProdArtNum() + " 的商品!请及时关注!");
             this.noticeMapper.insert(notice);
-            // 关注档口或者收藏商品的用户
-            List<UserNoticeSetting> targetList = this.userNoticeSetMapper.selectList(new LambdaQueryWrapper<UserNoticeSetting>()
-                    .isNotNull(UserNoticeSetting::getFocusNotice).or().isNotNull(UserNoticeSetting::getFavoriteNotice));
+            // 关注档口 或 收藏商品用户
+            List<UserFocusAndFavUserIdDTO> targetList = this.userSubMapper.selectFocusAndFavUserIdList(storeProd.getStoreId(), storeProd.getId());
             if (CollectionUtils.isNotEmpty(targetList)) {
                 targetList.forEach(x -> userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
                         .setUserId(x.getUserId()).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
-                        .setTargetNoticeType(Objects.equals(x.getFocusNotice(), NoticeReceiveType.RECEIVE.getValue())
-                                ? UserNoticeType.FOCUS_STORE.getValue() : UserNoticeType.FAVORITE_PRODUCT.getValue())));
+                        .setTargetNoticeType(x.getTargetNoticeType())));
             }
         });
         if (CollectionUtils.isEmpty(userNoticeList)) {

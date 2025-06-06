@@ -43,7 +43,6 @@ public class NoticeController extends BaseController {
     }
 
     @ApiOperation(value = "公告详情（档口公告、系统公告）", httpMethod = "PUT", response = R.class)
-    @Log(title = "公告详情", businessType = BusinessType.UPDATE)
     @GetMapping("/{noticeId}")
     public R<NoticeResVO> getInfo(@PathVariable Long noticeId) {
         return R.ok(BeanUtil.toBean(noticeService.getInfo(noticeId), NoticeResVO.class));
@@ -56,7 +55,7 @@ public class NoticeController extends BaseController {
         return R.ok(noticeService.delete(BeanUtil.toBean(deleteVO, NoticeDeleteDTO.class)));
     }
 
-    @ApiOperation(value = "查询公告列表 ", httpMethod = "POST", response = R.class)
+    @ApiOperation(value = "档口公告列表、系统公告列表 ", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<NoticeResDTO>> page(@Validated @RequestBody NoticePageVO pageVO) {
         return R.ok(noticeService.page(BeanUtil.toBean(pageVO, NoticePageDTO.class)));

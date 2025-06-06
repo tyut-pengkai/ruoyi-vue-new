@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.vo.notice;
+package com.ruoyi.web.controller.xkt.vo.userNotice;
 
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
 import io.swagger.annotations.ApiModel;
@@ -6,22 +6,17 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * @author liujiang
  * @version v1.0
  * @date 2025/3/27 15:12
  */
 @EqualsAndHashCode(callSuper = true)
-@ApiModel("档口消息、系统消息分页查询入参")
+@ApiModel("用户消息分页查询入参")
 @Data
-public class NoticePageVO extends BasePageVO {
+public class UserNoticePageVO extends BasePageVO {
 
     @ApiModelProperty(value = "公告标题")
     private String noticeTitle;
-    @NotNull(message = "ownerType不能为空")
-    @ApiModelProperty(value = "谁发的公告 1 档口  2 系统")
-    private Integer ownerType;
 
 }
