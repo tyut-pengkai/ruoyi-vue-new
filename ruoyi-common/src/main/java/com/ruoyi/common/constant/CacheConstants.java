@@ -253,5 +253,9 @@ public class CacheConstants {
      * 系统前20条热搜
      */
     public static final String SEARCH_HOT_KEY = "search_hot_key";
+    /**
+     * 所有的推广
+     */
+    public static final String ADVERT_KEY = "advert:";
 
 }

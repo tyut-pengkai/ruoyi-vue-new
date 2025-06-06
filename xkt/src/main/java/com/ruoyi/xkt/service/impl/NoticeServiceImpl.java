@@ -6,20 +6,19 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.xkt.domain.Notice;
 import com.ruoyi.xkt.domain.UserNotice;
+import com.ruoyi.xkt.domain.UserNoticeSetting;
 import com.ruoyi.xkt.dto.notice.*;
 import com.ruoyi.xkt.enums.NoticeOwnerType;
 import com.ruoyi.xkt.enums.NoticeReadType;
-import com.ruoyi.xkt.mapper.NoticeMapper;
-import com.ruoyi.xkt.mapper.UserFavoritesMapper;
-import com.ruoyi.xkt.mapper.UserNoticeMapper;
-import com.ruoyi.xkt.mapper.UserSubscriptionsMapper;
+import com.ruoyi.xkt.enums.NoticeReceiveType;
+import com.ruoyi.xkt.enums.UserNoticeType;
+import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.INoticeService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -49,6 +48,7 @@ public class NoticeServiceImpl implements INoticeService {
     final UserFavoritesMapper userFavMapper;
     final UserNoticeMapper userNoticeMapper;
     final SysUserMapper userMapper;
+    final UserNoticeSettingMapper userNoticeSetMapper;
 
     /**
      * 新增公告
@@ -68,20 +68,19 @@ public class NoticeServiceImpl implements INoticeService {
                 // 档口发的公告，则发送给关注档口用户
                 ? this.userSubMapper.selectUserFocusList(notice.getStoreId())
                 // 系统发的公告，则发送给所有用户
-                : this.userMapper.selectList(new LambdaQueryWrapper<SysUser>().eq(SysUser::getDelFlag, Constants.UNDELETED))
-                .stream().map(SysUser::getUserId).distinct().collect(Collectors.toList());
+                : this.userNoticeSetMapper.selectList(new LambdaQueryWrapper<UserNoticeSetting>()
+                        .eq(UserNoticeSetting::getSysMsgNotice, NoticeReceiveType.RECEIVE.getValue())
+                        .eq(UserNoticeSetting::getDelFlag, Constants.UNDELETED)).stream()
+                .map(UserNoticeSetting::getUserId)
+                .collect(Collectors.toList());
         if (CollectionUtils.isEmpty(userIdList)) {
             return 0;
         }
         // 往user_notice表插入数据
-        List<UserNotice> userNoticeList = userIdList.stream().map(userId -> {
-                    UserNotice userNotice = new UserNotice();
-                    userNotice.setNoticeId(notice.getId());
-                    userNotice.setUserId(userId);
-                    userNotice.setReadStatus(NoticeReadType.UN_READ.getValue());
-                    userNotice.setVoucherDate(voucherDate);
-                    return userNotice;
-                })
+        List<UserNotice> userNoticeList = userIdList.stream().map(userId -> new UserNotice().setNoticeId(notice.getId())
+                        .setUserId(userId).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
+                        .setTargetNoticeType(Objects.equals(createDTO.getOwnerType(), NoticeOwnerType.STORE.getValue())
+                                ? UserNoticeType.FOCUS_STORE.getValue() : UserNoticeType.SYSTEM_MSG.getValue()))
                 .collect(Collectors.toList());
         this.userNoticeMapper.insert(userNoticeList);
         return count;
@@ -185,6 +184,26 @@ public class NoticeServiceImpl implements INoticeService {
         if (ObjectUtils.isEmpty(perpetuity) && ObjectUtils.isEmpty(effectStart) && ObjectUtils.isEmpty(effectEnd)) {
             throw new ServiceException("生效时间不能同时为空!", HttpStatus.ERROR);
         }
+    }
+
+    /**
+     * 创建单个通知
+     *
+     * @param userId           被通知的userId
+     * @param title            标题
+     * @param noticeType       NoticeType
+     * @param ownerType        NoticeOwnerType
+     * @param storeId          档口ID
+     * @param targetNoticeType 目标通知类型
+     * @param content          通知内容
+     * @return 新增成功条数
+     */
+    public Integer createSingleNotice(Long userId, String title, Integer noticeType, Integer ownerType, Long storeId, Integer targetNoticeType, String content) {
+        Notice notice = new Notice().setNoticeTitle(title).setNoticeType(noticeType).setOwnerType(ownerType)
+                .setStoreId(storeId).setUserId(userId).setPerpetuity(1).setNoticeContent(content);
+        this.noticeMapper.insert(notice);
+        return this.userNoticeMapper.insert(new UserNotice().setNoticeId(notice.getId()).setUserId(userId).setReadStatus(NoticeReadType.UN_READ.getValue())
+                .setVoucherDate(java.sql.Date.valueOf(LocalDate.now())).setTargetNoticeType(targetNoticeType));
     }
 
 

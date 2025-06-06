@@ -13,9 +13,9 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.userFavorite.*;
-import com.ruoyi.xkt.enums.FileType;
-import com.ruoyi.xkt.enums.ProductSizeStatus;
+import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
+import com.ruoyi.xkt.service.INoticeService;
 import com.ruoyi.xkt.service.IUserFavoritesService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -48,6 +48,10 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
     final StoreProductColorPriceMapper prodColorPriceMapper;
     final StoreProductColorMapper prodColorMapper;
     final ShoppingCartDetailMapper shopCartDetailMapper;
+    final StoreMapper storeMapper;
+    final INoticeService noticeService;
+    final StoreProductMapper storeProdMapper;
+
 
     /**
      * 新增用户收藏商品
@@ -73,7 +77,26 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
                 .filter(x -> CollectionUtils.isNotEmpty(existStoreProdIdList) ? !existStoreProdIdList.contains(x.getStoreProdId()) : Boolean.TRUE)
                 .map(x -> BeanUtil.toBean(x, UserFavorites.class).setUserId(loginUser.getUserId()))
                 .collect(Collectors.toList());
-        return this.userFavMapper.insert(list).size();
+        int count = this.userFavMapper.insert(list).size();
+        Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
+                        .in(Store::getId, list.stream().map(UserFavorites::getStoreId).collect(Collectors.toList()))
+                        .eq(Store::getDelFlag, Constants.UNDELETED)).stream()
+                .collect(Collectors.toMap(Store::getId, Function.identity()));
+        Map<Long, StoreProduct> storeProdMap = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                        .in(StoreProduct::getId, list.stream().map(UserFavorites::getStoreProdId).collect(Collectors.toList()))
+                        .eq(StoreProduct::getDelFlag, Constants.UNDELETED)).stream()
+                .collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
+        // 新增用户收藏商品通知
+        list.forEach(userFav -> {
+            StoreProduct storeProd = storeProdMap.get(userFav.getStoreProdId());
+            Store store = storeMap.get(userFav.getStoreId());
+            // 新增用户收藏商品消息通知
+            this.noticeService.createSingleNotice(SecurityUtils.getUserId(), "收藏商品成功!", NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
+                    userFav.getStoreId(), UserNoticeType.FAVORITE_PRODUCT.getValue(),
+                    "恭喜您，收藏" + (ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "") + " 家商品: " +
+                            (ObjectUtils.isNotEmpty(storeProd) ? storeProd.getProdArtNum() : "") + "成功!");
+        });
+        return count;
     }
 
     /**
@@ -206,7 +229,26 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
             return 0;
         }
         favoriteList.forEach(x -> x.setDelFlag(Constants.DELETED));
-        return this.userFavMapper.updateById(favoriteList).size();
+        int count = this.userFavMapper.updateById(favoriteList).size();
+        Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
+                        .in(Store::getId, favoriteList.stream().map(UserFavorites::getStoreId).collect(Collectors.toList()))
+                        .eq(Store::getDelFlag, Constants.UNDELETED)).stream()
+                .collect(Collectors.toMap(Store::getId, Function.identity()));
+        Map<Long, StoreProduct> storeProdMap = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                        .in(StoreProduct::getId, favoriteList.stream().map(UserFavorites::getStoreProdId).collect(Collectors.toList()))
+                        .eq(StoreProduct::getDelFlag, Constants.UNDELETED)).stream()
+                .collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
+        // 新增用户取消收藏商品通知
+        favoriteList.forEach(userFav -> {
+            StoreProduct storeProd = storeProdMap.get(userFav.getStoreProdId());
+            Store store = storeMap.get(userFav.getStoreId());
+            // 新增用户取消收藏商品消息通知
+            this.noticeService.createSingleNotice(SecurityUtils.getUserId(), "取消收藏商品!", NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
+                    userFav.getStoreId(), UserNoticeType.FAVORITE_PRODUCT.getValue(),
+                    "您已取消收藏" + (ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "") + " 家商品: " +
+                            (ObjectUtils.isNotEmpty(storeProd) ? storeProd.getProdArtNum() : "") + "!");
+        });
+        return count;
     }
 
 

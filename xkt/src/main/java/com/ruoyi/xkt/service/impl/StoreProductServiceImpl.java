@@ -42,10 +42,7 @@ import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.userBrowsingHistory.UserBrowsingHisDTO;
-import com.ruoyi.xkt.enums.EProductStatus;
-import com.ruoyi.xkt.enums.FileType;
-import com.ruoyi.xkt.enums.ListingType;
-import com.ruoyi.xkt.enums.ProductSizeStatus;
+import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IPictureService;
 import com.ruoyi.xkt.service.IStoreProductService;
@@ -59,6 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -100,7 +98,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final StoreProductStatisticsMapper storeProductStatisticsMapper;
     final StoreHomepageMapper storeHomepageMapper;
     final RedisCache redisCache;
-
+    final NoticeMapper noticeMapper;
+    final UserNoticeSettingMapper userNoticeSetMapper;
+    final UserNoticeMapper userNoticeMapper;
 
     /**
      * 查询档口商品
@@ -234,6 +234,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
             this.createESDoc(storeProd, storeProdDTO);
             // 搜图服务同步
             sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
+            // 新增档口商品动态、关注档口通知公告
+            this.createNotice(storeProd, storeProdDTO.getStoreName());
         }
         return count;
     }
@@ -290,6 +292,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
             this.updateESDoc(storeProd, storeProdDTO);
             // 搜图服务同步
             sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
+            // 更新档口商品动态、关注档口、收藏商品通知公告
+            this.updateNotice(storeProd, storeProdDTO.getStoreName());
         }
         return count;
     }
@@ -451,9 +455,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.storeProdMapper.updateById(storeProdList);
         // 筛选商品状态为已下架，则删除ES文档
         if (Objects.equals(prodStatusDTO.getProdStatus(), EProductStatus.OFF_SALE.getValue())) {
+            // 删除ES中商品
             this.deleteESDoc(prodStatusDTO.getStoreProdIdList());
             // 搜图服务同步
             prodStatusDTO.getStoreProdIdList().forEach(spId -> sync2ImgSearchServer(spId, ListUtil.empty()));
+            // 新增消息通知
+            this.offSaleOrReSaleProd(storeProdList, Boolean.TRUE, prodStatusDTO.getStoreId());
         }
         // 已下架的商品重新上架
         if (CollectionUtils.isNotEmpty(reSaleList)) {
@@ -466,8 +473,11 @@ public class StoreProductServiceImpl implements IStoreProductService {
                     Collectors.mapping(StoreProdMainPicDTO::getFileUrl, Collectors.toList())));
             prodStatusDTO.getStoreProdIdList()
                     .forEach(spId -> sync2ImgSearchServer(spId, picKeyGroupMap.get(spId), true));
+            // 新增消息通知
+            this.offSaleOrReSaleProd(storeProdList, Boolean.FALSE, prodStatusDTO.getStoreId());
         }
     }
+
 
     /**
      * 根据档口ID和商品货号模糊查询货号列表
@@ -993,6 +1003,115 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 .setStoreId(storeId).setStoreName(storeName).setProdPrice(minPrice).setMainPicUrl(mainPicUrl)
                 .setBrowsingTime(new Date()).setStoreProdId(storeProdId));
         this.redisCache.setCacheObject(CacheConstants.USER_BROWSING_HISTORY + SecurityUtils.getUserId(), browsingList);
+    }
+
+    /**
+     * 新增商品时，新增系统通知
+     *
+     * @param storeProd 档口商品
+     * @param storeName 档口名称
+     */
+    private void createNotice(StoreProduct storeProd, String storeName) {
+        // 新增档口 商品动态 通知公告
+        Long userId = SecurityUtils.getUserId();
+        // 新增一条档口消息通知
+        Notice notice = new Notice().setNoticeTitle(storeName + "商品上新啦!").setNoticeType(NoticeType.NOTICE.getValue())
+                .setNoticeContent(storeName + "上新了货号为: " + storeProd.getProdArtNum() + " 的商品!请及时关注!")
+                .setOwnerType(NoticeOwnerType.STORE.getValue()).setStoreId(storeProd.getStoreId())
+                .setUserId(userId).setPerpetuity(1);
+        this.noticeMapper.insert(notice);
+        final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
+        // 新增消息通知列表
+        List<UserNotice> userNoticeList = new ArrayList<>();
+        // 新增档口商品动态
+        userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
+                .setUserId(userId).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
+                .setTargetNoticeType(UserNoticeType.PRODUCT_DYNAMIC.getValue()));
+        List<UserNoticeSetting> focusList = this.userNoticeSetMapper.selectList(new LambdaQueryWrapper<UserNoticeSetting>()
+                .isNotNull(UserNoticeSetting::getFocusNotice));
+        if (CollectionUtils.isNotEmpty(focusList)) {
+            focusList.forEach(x -> userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
+                    .setUserId(x.getUserId()).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
+                    .setTargetNoticeType(UserNoticeType.FOCUS_STORE.getValue())));
+        }
+        if (CollectionUtils.isEmpty(userNoticeList)) {
+            return;
+        }
+        this.userNoticeMapper.insert(userNoticeList);
+    }
+
+    /**
+     * 更新商品 新增消息通知
+     *
+     * @param storeProd 档口商品
+     * @param storeName 档口名称
+     */
+    private void updateNotice(StoreProduct storeProd, String storeName) {
+        // 新增档口 商品动态 通知公告
+        Long userId = SecurityUtils.getUserId();
+        // 新增一条档口消息通知
+        Notice notice = new Notice().setNoticeTitle(storeName + "商品更新啦!").setNoticeType(NoticeType.NOTICE.getValue())
+                .setNoticeContent(storeName + "更新了货号为: " + storeProd.getProdArtNum() + " 的商品!请及时关注!")
+                .setOwnerType(NoticeOwnerType.STORE.getValue()).setStoreId(storeProd.getStoreId())
+                .setUserId(userId).setPerpetuity(1);
+        this.noticeMapper.insert(notice);
+        final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
+        // 新增消息通知列表
+        List<UserNotice> userNoticeList = new ArrayList<>();
+        userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
+                .setUserId(userId).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
+                .setTargetNoticeType(UserNoticeType.PRODUCT_DYNAMIC.getValue()));
+        // 关注档口或者收藏商品的用户
+        List<UserNoticeSetting> targetList = this.userNoticeSetMapper.selectList(new LambdaQueryWrapper<UserNoticeSetting>()
+                .isNotNull(UserNoticeSetting::getFocusNotice).or().isNotNull(UserNoticeSetting::getFavoriteNotice));
+        if (CollectionUtils.isNotEmpty(targetList)) {
+            targetList.forEach(x -> userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
+                    .setUserId(x.getUserId()).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
+                    .setTargetNoticeType(Objects.equals(x.getFocusNotice(), NoticeReceiveType.RECEIVE.getValue())
+                            ? UserNoticeType.FOCUS_STORE.getValue() : UserNoticeType.FAVORITE_PRODUCT.getValue())));
+        }
+        if (CollectionUtils.isEmpty(userNoticeList)) {
+            return;
+        }
+        this.userNoticeMapper.insert(userNoticeList);
+    }
+
+    /**
+     * 下架或重新上架商品时，新增消息列表
+     *
+     * @param storeProdList 档口商品列表
+     * @param offSale       true 下架商品 false 重新上架商品
+     * @param storeId       档口ID
+     */
+    private void offSaleOrReSaleProd(List<StoreProduct> storeProdList, Boolean offSale, Long storeId) {
+        // 新增档口 商品动态 通知公告
+        Long userId = SecurityUtils.getUserId();
+        Store store = redisCache.getCacheObject(CacheConstants.STORE_KEY + storeId);
+        // 新增消息通知列表
+        List<UserNotice> userNoticeList = new ArrayList<>();
+        final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
+        storeProdList.forEach(storeProd -> {
+            // 新增一条档口消息通知
+            Notice notice = new Notice().setNoticeType(NoticeType.NOTICE.getValue()).setUserId(userId).setPerpetuity(1)
+                    .setOwnerType(NoticeOwnerType.STORE.getValue()).setStoreId(storeProd.getStoreId())
+                    .setNoticeTitle(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "" + "商品" + (offSale ? "下架" : "重新上架") + "啦!")
+                    .setNoticeContent(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "" + (offSale ? "下架" : "重新上架")
+                            + "了货号为: " + storeProd.getProdArtNum() + " 的商品!请及时关注!");
+            this.noticeMapper.insert(notice);
+            // 关注档口或者收藏商品的用户
+            List<UserNoticeSetting> targetList = this.userNoticeSetMapper.selectList(new LambdaQueryWrapper<UserNoticeSetting>()
+                    .isNotNull(UserNoticeSetting::getFocusNotice).or().isNotNull(UserNoticeSetting::getFavoriteNotice));
+            if (CollectionUtils.isNotEmpty(targetList)) {
+                targetList.forEach(x -> userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
+                        .setUserId(x.getUserId()).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
+                        .setTargetNoticeType(Objects.equals(x.getFocusNotice(), NoticeReceiveType.RECEIVE.getValue())
+                                ? UserNoticeType.FOCUS_STORE.getValue() : UserNoticeType.FAVORITE_PRODUCT.getValue())));
+            }
+        });
+        if (CollectionUtils.isEmpty(userNoticeList)) {
+            return;
+        }
+        this.userNoticeMapper.insert(userNoticeList);
     }
 
 

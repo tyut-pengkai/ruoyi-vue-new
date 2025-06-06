@@ -49,4 +49,19 @@ public interface INoticeService {
      * @return Page<NoticeResDTO>
      */
     Page<NoticeResDTO> page(NoticePageDTO pageDTO);
+
+    /**
+     * 创建单个通知
+     *
+     * @param userId           被通知的userId
+     * @param title            标题
+     * @param noticeType       NoticeType
+     * @param ownerType        NoticeOwnerType
+     * @param storeId          档口ID
+     * @param targetNoticeType 目标通知类型
+     * @param content          通知内容
+     * @return 新增成功条数
+     */
+    Integer createSingleNotice(Long userId, String title, Integer noticeType, Integer ownerType,
+                               Long storeId, Integer targetNoticeType, String content);
 }

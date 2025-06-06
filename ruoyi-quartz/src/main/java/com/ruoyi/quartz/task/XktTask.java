@@ -541,7 +541,7 @@ public class XktTask {
     }
 
     /**
-     * 通过定时任务（每天凌晨12:00:01秒）将store数据暂存到reidis中
+     * 通过定时任务（每天凌晨12:00:01秒）将store数据暂存到redis中
      */
     public void saveStoreToRedis() {
         List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
@@ -552,6 +552,19 @@ public class XktTask {
         storeList.forEach(store -> {
             redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store, 1, TimeUnit.DAYS);
         });
+    }
+
+    /**
+     * 每天凌晨12:45:00秒 将advert的数据暂存到redis中
+     */
+    public void saveAdvertToRedis() {
+        List<Advert> advertList = this.advertMapper.selectList(new LambdaQueryWrapper<Advert>()
+                .eq(Advert::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(advertList)) {
+            return;
+        }
+        advertList.forEach(advert ->
+                redisCache.setCacheObject(CacheConstants.ADVERT_KEY + advert.getId(), advert, 1, TimeUnit.DAYS));
     }
 
     /**
@@ -575,6 +588,8 @@ public class XktTask {
 //        this.createESDoc(storeProd, storeProdDTO);
         // 搜图服务同步
 //        sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
+
+        // 新增档口商品动态、关注档口用户 通知公告
 
     }
 

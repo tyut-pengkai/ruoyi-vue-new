@@ -12,12 +12,14 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.advertRound.*;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IAdvertRoundService;
 import com.ruoyi.xkt.service.IAssetService;
+import com.ruoyi.xkt.service.INoticeService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -61,6 +63,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     final StoreProductMapper storeProdMapper;
     final SysFileMapper fileMapper;
     final IAssetService assetService;
+    final INoticeService noticeService;
+
 
     // 推广营销位锁 key：symbol + roundId 或者 symbol + roundId + position 。value都是new Object()
     public static Map<String, Object> advertLockMap = new ConcurrentHashMap<>();
@@ -330,7 +334,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         if (DateUtils.getTime().compareTo(this.getDeadline(createDTO.getSymbol())) > 0) {
             throw new ServiceException("竞价失败，已经有档口出价更高了噢!", HttpStatus.ERROR);
         }
-        if (ObjectUtils.isEmpty(redisCache.getCacheObject(CacheConstants.STORE_KEY + createDTO.getStoreId()))) {
+        Store store = redisCache.getCacheObject(CacheConstants.STORE_KEY + createDTO.getStoreId());
+        if (ObjectUtils.isEmpty(store)) {
             throw new ServiceException("档口不存在!", HttpStatus.ERROR);
         }
         // 如果是位置枚举的推广位，则需要传position
@@ -366,12 +371,20 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             if (createDTO.getPayPrice().compareTo(ObjectUtils.defaultIfNull(minPriceAdvert.getPayPrice(), BigDecimal.ZERO)) <= 0) {
                 throw new ServiceException("已经有档口出价更高了噢，请重新出价!", HttpStatus.ERROR);
             }
+            Advert advert = redisCache.getCacheObject(CacheConstants.ADVERT_KEY + createDTO.getAdvertId());
+            final String position = Objects.equals(minPriceAdvert.getShowType(), AdShowType.TIME_RANGE.getValue()) ? "" : minPriceAdvert.getPosition();
             // storeId不为空，表明之前有其他的档口竞价
             if (ObjectUtils.isNotEmpty(minPriceAdvert.getStoreId())) {
                 // 将推广费退至原档口余额
                 assetService.refundAdvertFee(minPriceAdvert.getStoreId(), minPriceAdvert.getPayPrice());
                 // 记录竞价失败的档口推广营销
                 this.record(minPriceAdvert);
+                final String failTitle = ObjectUtils.isNotEmpty(advert) ? AdType.of(advert.getTypeId()).getLabel() : "" + position + "被抢占!";
+                final String failContent = "您抢购的 " + (ObjectUtils.isNotEmpty(advert) ? AdType.of(advert.getTypeId()).getLabel() : "") + position +
+                        " 被其它档口抢拍，订购金额已退回余额!您可在抢购结束前加价抢回噢!";
+                // 新增竞价失败档口消息通知
+                this.noticeService.createSingleNotice(SecurityUtils.getUserId(), failTitle, NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
+                        minPriceAdvert.getStoreId(), UserNoticeType.ADVERT.getValue(), failContent);
             }
             // 更新广告位数据
             minPriceAdvert
@@ -385,12 +398,18 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     .setPicAuditStatus(this.hasPic(minPriceAdvert.getDisplayType()) ? AdPicAuditStatus.UN_AUDIT.getValue() : null)
                     .setProdIdStr(createDTO.getProdIdStr());
             this.advertRoundMapper.updateById(minPriceAdvert);
+            final String successTitle = ObjectUtils.isNotEmpty(advert) ? AdType.of(advert.getTypeId()).getLabel() : "" + position + "订购成功!";
+            final String successContent = ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "" + " ，恭喜您!您成功订购 "
+                    + (ObjectUtils.isNotEmpty(advert) ? AdType.of(advert.getTypeId()).getLabel() : "") + position +
+                    "播放时间段为" + minPriceAdvert.getStartTime() + "至" + minPriceAdvert.getEndTime() + "，请确保推广设置正确噢!";
+            // 新增订购成功的消息通知
+            this.noticeService.createSingleNotice(SecurityUtils.getUserId(), successTitle, NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
+                    minPriceAdvert.getStoreId(), UserNoticeType.ADVERT.getValue(), successContent);
             // 扣除推广费
             assetService.payAdvertFee(createDTO.getStoreId(), createDTO.getPayPrice(), createDTO.getTransactionPassword());
         }
         return 1;
     }
-
 
 
     /**
@@ -553,7 +572,6 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         }
         return latestInfo;
     }
-
 
 
     /**
@@ -850,6 +868,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
     /**
      * 判断当前推广类型是否为 推广图 或者 图及商品类型
+     *
      * @param displayType 推广类型
      * @return true 是  false 不是
      */

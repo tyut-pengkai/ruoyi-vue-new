@@ -6,19 +6,19 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 通知公告阅读状态枚举
+ * 通知公告接收类型
  *
  * @author liujiang
  * @date 2025-04-02 23:42
  */
 @Getter
 @AllArgsConstructor
-public enum NoticeReadType {
+public enum NoticeReceiveType {
 
-    // 未读
-    UN_READ(0, "未读"),
-    // 已读
-    READ(1, "已读"),
+    // 不接收
+    UN_RECEIVE(0, "不接收"),
+    // 接收
+    RECEIVE(1, "接收"),
 
 
     ;
@@ -26,12 +26,12 @@ public enum NoticeReadType {
     private final Integer value;
     private final String label;
 
-    public static NoticeReadType of(Integer value) {
-        for (NoticeReadType e : NoticeReadType.values()) {
+    public static NoticeReceiveType of(Integer value) {
+        for (NoticeReceiveType e : NoticeReceiveType.values()) {
             if (e.getValue().equals(value)) {
                 return e;
             }
         }
-        throw new ServiceException("通知公告阅读类型不存在!", HttpStatus.ERROR);
+        throw new ServiceException("通知公告接收类型不存在!", HttpStatus.ERROR);
     }
 }

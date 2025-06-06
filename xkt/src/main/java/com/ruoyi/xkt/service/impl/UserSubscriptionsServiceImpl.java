@@ -9,6 +9,7 @@ import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.domain.StoreSale;
 import com.ruoyi.xkt.domain.UserSubscriptions;
@@ -16,9 +17,14 @@ import com.ruoyi.xkt.dto.userSubscriptions.UserSubscDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscDeleteDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageResDTO;
+import com.ruoyi.xkt.enums.NoticeOwnerType;
+import com.ruoyi.xkt.enums.NoticeType;
+import com.ruoyi.xkt.enums.UserNoticeType;
+import com.ruoyi.xkt.mapper.StoreMapper;
 import com.ruoyi.xkt.mapper.StoreProductMapper;
 import com.ruoyi.xkt.mapper.StoreSaleMapper;
 import com.ruoyi.xkt.mapper.UserSubscriptionsMapper;
+import com.ruoyi.xkt.service.INoticeService;
 import com.ruoyi.xkt.service.IUserSubscriptionsService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,6 +37,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -43,9 +50,11 @@ import java.util.stream.Collectors;
 @Service
 public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
 
-    final UserSubscriptionsMapper userSubscMapper;
+    final UserSubscriptionsMapper userSubMapper;
     final StoreSaleMapper saleMapper;
     final StoreProductMapper storeProdMapper;
+    final INoticeService noticeService;
+    final StoreMapper storeMapper;
 
 
     /**
@@ -60,7 +69,7 @@ public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
         // 获取当前登录用户
         LoginUser loginUser = SecurityUtils.getLoginUser();
         // 判断是否已关注过
-        UserSubscriptions exist = this.userSubscMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>()
+        UserSubscriptions exist = this.userSubMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>()
                 .eq(UserSubscriptions::getUserId, loginUser.getUserId()).eq(UserSubscriptions::getStoreId, subscDTO.getStoreId())
                 .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
         if (ObjectUtils.isNotEmpty(exist)) {
@@ -69,7 +78,14 @@ public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
         UserSubscriptions userSubscriptions = new UserSubscriptions();
         userSubscriptions.setUserId(loginUser.getUserId());
         userSubscriptions.setStoreId(subscDTO.getStoreId());
-        return this.userSubscMapper.insert(userSubscriptions);
+        int count = this.userSubMapper.insert(userSubscriptions);
+        Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
+                        .eq(Store::getId, subscDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        // 新增用户关注档口消息通知
+        this.noticeService.createSingleNotice(SecurityUtils.getUserId(), "关注档口成功!", NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
+                subscDTO.getStoreId(), UserNoticeType.FOCUS_STORE.getValue(), "恭喜您，关注档口: " + store.getStoreName() + "成功!");
+        return count;
     }
 
     /**
@@ -83,13 +99,23 @@ public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
     public Integer delete(UserSubscDeleteDTO deleteDTO) {
         // 获取当前登录用户
         LoginUser loginUser = SecurityUtils.getLoginUser();
-        List<UserSubscriptions> list = Optional.ofNullable(this.userSubscMapper.selectList(new LambdaQueryWrapper<UserSubscriptions>()
+        List<UserSubscriptions> list = Optional.ofNullable(this.userSubMapper.selectList(new LambdaQueryWrapper<UserSubscriptions>()
                         .eq(UserSubscriptions::getUserId, loginUser.getUserId())
                         .in(UserSubscriptions::getStoreId, deleteDTO.getStoreIdList())
                         .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("用户关注档口不存在!", HttpStatus.ERROR));
         list.forEach(x -> x.setDelFlag(Constants.DELETED));
-        return this.userSubscMapper.updateById(list).size();
+        int count = this.userSubMapper.updateById(list).size();
+        Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
+                        .in(Store::getId, deleteDTO.getStoreIdList()).eq(Store::getDelFlag, Constants.UNDELETED)).stream()
+                .collect(Collectors.toMap(Store::getId, Function.identity()));
+        list.forEach(x -> {
+            Store store = storeMap.get(x.getStoreId());
+            // 用户取消关注档口消息通知
+            this.noticeService.createSingleNotice(SecurityUtils.getUserId(), "取消关注档口!", NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
+                    store.getId(), UserNoticeType.FOCUS_STORE.getValue(), "您已取消关注档口: " + store.getStoreName() + " !");
+        });
+        return count;
     }
 
     /**
@@ -104,7 +130,7 @@ public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
         // 获取当前登录用户
         LoginUser loginUser = SecurityUtils.getLoginUser();
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
-        List<UserSubscPageResDTO> list = this.userSubscMapper.selectUserSubscPage(loginUser.getUserId(), pageDTO.getStoreName());
+        List<UserSubscPageResDTO> list = this.userSubMapper.selectUserSubscPage(loginUser.getUserId(), pageDTO.getStoreName());
         if (CollectionUtils.isEmpty(list)) {
             return Page.empty(pageDTO.getPageNum(), pageDTO.getPageSize());
         }

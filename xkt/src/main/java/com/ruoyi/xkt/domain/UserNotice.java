@@ -3,8 +3,10 @@ package com.ruoyi.xkt.domain;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.domain.XktBaseEntity;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.util.Date;
 
@@ -16,6 +18,7 @@ import java.util.Date;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class UserNotice extends XktBaseEntity {
 
     private static final long serialVersionUID = 1L;
@@ -35,6 +38,11 @@ public class UserNotice extends XktBaseEntity {
      * sys_user.id
      */
     private Long userId;
+
+    /**
+     * 目标公告类型
+     */
+    private Integer targetNoticeType;
 
     /**
      * （0未读 1已读）

@@ -16,6 +16,9 @@ import java.util.List;
 @Data
 public class StoreProdStatusVO {
 
+    @NotNull(message = "档口ID不能为空!")
+    @ApiModelProperty(value = "档口ID", required = true)
+    private Long storeId;
     @NotNull(message = "档口商品ID不能为空!")
     @ApiModelProperty(value = "档口商品ID", required = true)
     private List<Long> storeProdIdList;

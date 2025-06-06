@@ -15,6 +15,8 @@ import java.util.List;
 @Data
 public class StoreProdStatusDTO {
 
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
     @ApiModelProperty("档口商品名称")
     private List<Long> storeProdIdList;
     @ApiModelProperty("档口商品状态")

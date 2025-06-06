@@ -5,8 +5,6 @@ import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.Date;
-
 /**
  * 用户通知接收设置对象 user_notice_setting
  *
@@ -43,25 +41,5 @@ public class UserNoticeSetting extends XktBaseEntity {
      * [电商卖家]是否允许接收收藏商品消息通知 0不接收 1接收
      */
     private Integer favoriteNotice;
-    /**
-     * [档口]是否允许接收广告消息通知 0不接收 1接收
-     */
-    private Integer advertNotice;
-    /**
-     * [档口]是否允许接收商品消息通知 0不接收 1接收
-     */
-    private Integer prodNotice;
-    /**
-     * [档口]是否允许接收短信通知 0不接收 1接收
-     */
-    private Integer smsNotice;
-    /**
-     * [档口]接收短信通知开始时间 yyyy-MM-dd HH:mm
-     */
-    private Date smsNoticeStart;
-    /**
-     * [档口]接收短信通知结束时间 yyyy-MM-dd HH:mm
-     */
-    private Date smsNoticeEnd;
 
 }
