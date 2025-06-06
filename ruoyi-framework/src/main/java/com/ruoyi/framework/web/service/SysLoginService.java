@@ -24,8 +24,6 @@ import com.ruoyi.system.service.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -189,7 +187,7 @@ public class SysLoginService {
                 throw new CaptchaExpireException();
             }
             redisCache.deleteObject(verifyKey);
-            if (!code.equalsIgnoreCase(captcha)) {
+            if (!StrUtil.emptyIfNull(code).equalsIgnoreCase(captcha)) {
                 if (username != null) {
                     AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
                 }
@@ -247,8 +245,14 @@ public class SysLoginService {
      * @param uuid        图形验证码uuid
      */
     public void sendSmsVerificationCode(String phoneNumber, String code, String uuid) {
+        String k = CacheConstants.SMS_CAPTCHA_CODE_CD_PHONE_NUM_KEY + phoneNumber;
+        String v = redisCache.getCacheObject(k);
+        if (StrUtil.isNotEmpty(v)) {
+            throw new ServiceException("验证码发送间隔需大于60S");
+        }
         validateCaptcha(null, code, uuid);
         sendSmsVerificationCode(phoneNumber);
+        redisCache.setCacheObject(k, "1", 60, TimeUnit.SECONDS);
     }
 
     /**

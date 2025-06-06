@@ -137,6 +137,16 @@ public class SysLoginController {
         return R.ok();
     }
 
+    @ApiOperation(value = "修改密码（忘记密码）")
+    @PostMapping("/changePassword")
+    public R changePassword(@Validated @RequestBody PasswordChangeVO vo) {
+        loginService.validateSmsVerificationCode(vo.getPhoneNumber(), vo.getCode());
+        UserInfo user = userService.getUserByPhoneNumber(vo.getPhoneNumber());
+        userService.resetPassword(user.getUserId(), vo.getNewPassword());
+        tokenService.deleteCacheUser(user.getUserId());
+        return R.ok();
+    }
+
     /**
      * 获取用户信息
      *

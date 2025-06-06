@@ -28,6 +28,11 @@ public class CacheConstants {
     public static final String SMS_LOGIN_CAPTCHA_CODE_KEY = "sms_login_captcha_codes:";
 
     /**
+     * 短信验证码CD中号码
+     */
+    public static final String SMS_CAPTCHA_CODE_CD_PHONE_NUM_KEY = "sms_captcha_code_cd_phone_nums:";
+
+    /**
      * 扫码登录浏览器ID
      */
     public static final String SCAN_CODE_LOGIN_BROWSER_ID_KEY = "scan_code_login_browser_ids:";

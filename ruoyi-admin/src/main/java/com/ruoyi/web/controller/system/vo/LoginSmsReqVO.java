@@ -20,9 +20,9 @@ public class LoginSmsReqVO {
     @ApiModelProperty("手机号")
     private String phoneNumber;
 
-    @ApiModelProperty("验证码")
+    @ApiModelProperty("图形验证码")
     private String code;
 
-    @ApiModelProperty("唯一标识")
+    @ApiModelProperty("图形验证码唯一标识")
     private String uuid;
 }

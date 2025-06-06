@@ -57,9 +57,9 @@ public class CaptchaController {
         AjaxResult ajax = AjaxResult.success();
         boolean captchaEnabled = configService.selectCaptchaEnabled();
         ajax.put("captchaEnabled", captchaEnabled);
-        if (!captchaEnabled) {
-            return ajax;
-        }
+//        if (!captchaEnabled) {
+//            return ajax;
+//        }
 
         // 保存验证码信息
         String uuid = IdUtils.simpleUUID();

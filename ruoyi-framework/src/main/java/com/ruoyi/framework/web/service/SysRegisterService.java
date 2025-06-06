@@ -1,6 +1,5 @@
 package com.ruoyi.framework.web.service;
 
-import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
@@ -14,7 +13,6 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
-import com.ruoyi.framework.sms.SmsClientWrapper;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -51,9 +48,6 @@ public class SysRegisterService {
     private RedisCache redisCache;
 
     @Autowired
-    private SmsClientWrapper smsClient;
-
-    @Autowired
     private SysLoginService loginService;
 
     /**
@@ -68,7 +62,7 @@ public class SysRegisterService {
     public String registerByPhoneNumber(String phoneNumber, String password, String smsVerificationCode,
                                         ESystemRole... roles) {
         // 短信验证
-        validateSmsVerificationCode(phoneNumber, smsVerificationCode);
+        loginService.validateSmsVerificationCode(phoneNumber, smsVerificationCode);
         UserInfoEdit userEdit = new UserInfoEdit();
         userEdit.setUserName(phoneNumber);
         userEdit.setNickName(phoneNumber);
@@ -97,7 +91,7 @@ public class SysRegisterService {
         // 验证码开关
         boolean captchaEnabled = configService.selectCaptchaEnabled();
         if (captchaEnabled) {
-            validateCaptcha(username, registerBody.getCode(), registerBody.getUuid());
+            validateCaptcha(registerBody.getCode(), registerBody.getUuid());
         }
 
         if (StringUtils.isEmpty(username)) {
@@ -134,65 +128,20 @@ public class SysRegisterService {
     /**
      * 校验验证码
      *
-     * @param username 用户名
-     * @param code     验证码
-     * @param uuid     唯一标识
+     * @param code 验证码
+     * @param uuid 唯一标识
      * @return 结果
      */
-    public void validateCaptcha(String username, String code, String uuid) {
+    public void validateCaptcha(String code, String uuid) {
         String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");
         String captcha = redisCache.getCacheObject(verifyKey);
         redisCache.deleteObject(verifyKey);
         if (captcha == null) {
             throw new CaptchaExpireException();
         }
-        if (!code.equalsIgnoreCase(captcha)) {
+        if (!StrUtil.emptyIfNull(code).equalsIgnoreCase(captcha)) {
             throw new CaptchaException();
         }
     }
 
-    /**
-     * 发送登录/注册短信验证码
-     *
-     * @param phoneNumber 电话号码
-     * @param code        图形验证码code
-     * @param uuid        图形验证码uuid
-     */
-    public void sendSmsVerificationCode(String phoneNumber, String code, String uuid) {
-        validateCaptcha(null, code, uuid);
-        sendSmsVerificationCode(phoneNumber);
-    }
-
-    /**
-     * 发送登录/注册短信验证码
-     *
-     * @param phoneNumber 电话号码
-     */
-    public void sendSmsVerificationCode(String phoneNumber) {
-        String code = RandomUtil.randomNumbers(6);
-        boolean success = smsClient.sendVerificationCode(phoneNumber, code);
-        if (success) {
-            String rk = CacheConstants.SMS_LOGIN_CAPTCHA_CODE_KEY + phoneNumber;
-            redisCache.setCacheObject(rk, code, 5, TimeUnit.MINUTES);
-        }
-    }
-
-    /**
-     * 验证登录/注册短信验证码
-     *
-     * @param phoneNumber 电话号码
-     * @param code        验证码
-     * @return
-     */
-    public void validateSmsVerificationCode(String phoneNumber, String code) {
-        String rk = CacheConstants.SMS_LOGIN_CAPTCHA_CODE_KEY + phoneNumber;
-        String cacheCode = redisCache.getCacheObject(rk);
-        if (cacheCode == null) {
-            throw new CaptchaExpireException();
-        }
-        redisCache.deleteObject(rk);
-        if (!StrUtil.equals(cacheCode, code)) {
-            throw new CaptchaException();
-        }
-    }
 }
