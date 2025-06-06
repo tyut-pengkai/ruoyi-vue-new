@@ -22,6 +22,7 @@ import com.ruoyi.web.controller.xkt.vo.IdsVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +47,7 @@ public class SysRoleController extends XktBaseController {
     final TokenService tokenService;
     final ISysUserService userService;
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "角色分页查询 - 管理员")
     @PostMapping("/page")
     public R<PageVO<RoleListItemVO>> page(@Validated @RequestBody RoleQueryVO vo) {
@@ -55,6 +57,7 @@ public class SysRoleController extends XktBaseController {
         return R.ok(PageVO.of(page, RoleListItemVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "所有角色 - 管理员")
     @PostMapping("/all")
     public R<List<RoleListItemVO>> all() {
@@ -62,6 +65,7 @@ public class SysRoleController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(all, RoleListItemVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @ApiOperation(value = "角色分页查询 - 档口")
     @PostMapping("/store/page")
     public R<PageVO<RoleListItemVO>> pageByStore(@Validated @RequestBody RoleQueryVO vo) {
@@ -73,6 +77,7 @@ public class SysRoleController extends XktBaseController {
         return R.ok(PageVO.of(page, RoleListItemVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @ApiOperation(value = "所有角色 - 档口")
     @PostMapping("/store/all")
     public R<List<RoleListItemVO>> allByStore() {
@@ -83,6 +88,7 @@ public class SysRoleController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(all, RoleListItemVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @ApiOperation(value = "角色详情")
     @GetMapping(value = "/{id}")
     public R<RoleInfoVO> getInfo(@PathVariable("id") Long id) {
@@ -93,6 +99,7 @@ public class SysRoleController extends XktBaseController {
         return R.ok(vo);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @Log(title = "角色管理", businessType = BusinessType.INSERT)
     @ApiOperation("创建角色")
     @PostMapping("create")
@@ -104,6 +111,7 @@ public class SysRoleController extends XktBaseController {
         return R.ok(roleId);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @Log(title = "角色管理", businessType = BusinessType.UPDATE)
     @ApiOperation("修改角色")
     @PostMapping("edit")
@@ -116,6 +124,7 @@ public class SysRoleController extends XktBaseController {
         return R.ok(vo.getRoleId());
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "角色管理", businessType = BusinessType.EXPORT)
     @ApiOperation("导出")
     @PostMapping("/export")
@@ -126,6 +135,7 @@ public class SysRoleController extends XktBaseController {
         util.exportExcel(response, list, "角色数据");
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @Log(title = "角色管理", businessType = BusinessType.DELETE)
     @ApiOperation("删除角色")
     @PostMapping("/remove")
@@ -136,6 +146,7 @@ public class SysRoleController extends XktBaseController {
         return R.ok(scope.getCount());
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @Log(title = "角色管理", businessType = BusinessType.UPDATE)
     @ApiOperation("修改角色状态")
     @PostMapping("/changeStatus")

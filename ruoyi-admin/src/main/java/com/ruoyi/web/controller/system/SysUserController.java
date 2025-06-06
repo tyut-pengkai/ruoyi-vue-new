@@ -26,6 +26,7 @@ import com.ruoyi.web.controller.xkt.vo.IdsVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,6 +52,7 @@ public class SysUserController extends BaseController {
     @Autowired
     private TokenService tokenService;
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "用户分页查询 - 管理员")
     @PostMapping("/page")
     public R<PageVO<UserListItemVO>> page(@Validated @RequestBody UserQueryVO vo) {
@@ -60,6 +62,7 @@ public class SysUserController extends BaseController {
         return R.ok(PageVO.of(page, UserListItemVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')")
     @ApiOperation(value = "用户分页查询 - 档口")
     @PostMapping("/store/page")
     public R<PageVO<UserListItemVO>> pageByStore(@Validated @RequestBody UserQueryVO vo) {
@@ -71,6 +74,7 @@ public class SysUserController extends BaseController {
         return R.ok(PageVO.of(page, UserListItemVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @ApiOperation(value = "用户详情")
     @GetMapping(value = "/{id}")
     public R<UserInfoVO> getInfo(@PathVariable("id") Long id) {
@@ -81,6 +85,7 @@ public class SysUserController extends BaseController {
         return R.ok(vo);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.INSERT)
     @ApiOperation("创建用户")
     @PostMapping("create")
@@ -91,6 +96,7 @@ public class SysUserController extends BaseController {
         return R.ok(userId);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @ApiOperation("修改用户")
     @PostMapping("edit")
@@ -103,6 +109,7 @@ public class SysUserController extends BaseController {
         return R.ok(userId);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.EXPORT)
     @ApiOperation("导出")
     @PostMapping("/export")
@@ -113,6 +120,7 @@ public class SysUserController extends BaseController {
         util.exportExcel(response, list, "用户数据");
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.IMPORT)
     @ApiOperation("导入")
     @PostMapping("/importData")
@@ -124,6 +132,7 @@ public class SysUserController extends BaseController {
         return success(message);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation("导入模板")
     @PostMapping("/importTemplate")
     public void importTemplate(HttpServletResponse response) {
@@ -132,6 +141,7 @@ public class SysUserController extends BaseController {
     }
 
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
     @ApiOperation("删除用户")
     @PostMapping("/remove")
@@ -142,6 +152,7 @@ public class SysUserController extends BaseController {
         return R.ok(count);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @ApiOperation("修改用户状态")
     @PostMapping("/changeStatus")
@@ -157,6 +168,7 @@ public class SysUserController extends BaseController {
     /**
      * 重置密码
      */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation("重置密码")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PostMapping("/resetPwd")

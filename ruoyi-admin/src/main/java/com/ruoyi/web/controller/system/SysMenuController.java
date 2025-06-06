@@ -15,6 +15,7 @@ import com.ruoyi.web.controller.xkt.vo.IdsVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,6 +60,7 @@ public class SysMenuController extends XktBaseController {
         return R.ok(BeanUtil.toBean(infoDTO, MenuInfoVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "菜单管理", businessType = BusinessType.INSERT)
     @ApiOperation("创建菜单")
     @PostMapping("create")
@@ -69,6 +71,7 @@ public class SysMenuController extends XktBaseController {
         return R.ok(menuId);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "菜单管理", businessType = BusinessType.UPDATE)
     @ApiOperation("修改菜单")
     @PostMapping("edit")
@@ -81,6 +84,7 @@ public class SysMenuController extends XktBaseController {
         return R.ok(vo.getMenuId());
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "菜单管理", businessType = BusinessType.DELETE)
     @ApiOperation("删除菜单")
     @PostMapping("/remove")
@@ -91,6 +95,7 @@ public class SysMenuController extends XktBaseController {
         return R.ok(scope.getCount());
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "菜单管理", businessType = BusinessType.UPDATE)
     @ApiOperation("修改菜单状态")
     @PostMapping("/changeStatus")

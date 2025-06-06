@@ -32,6 +32,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ResponseHeader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +63,7 @@ public class StoreOrderController extends XktBaseController {
     @Autowired
     private RedisCache redisCache;
 
+    @PreAuthorize("@ss.hasRole('seller')")
     @Log(title = "订单", businessType = BusinessType.INSERT)
     @ApiOperation("创建订单")
     @PostMapping("create")
@@ -77,6 +79,7 @@ public class StoreOrderController extends XktBaseController {
         return success(respVO);
     }
 
+    @PreAuthorize("@ss.hasRole('seller')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @ApiOperation("修改订单")
     @PostMapping("edit")
@@ -88,6 +91,7 @@ public class StoreOrderController extends XktBaseController {
         return success(result.getOrder().getId());
     }
 
+    @PreAuthorize("@ss.hasRole('seller')")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("支付订单")
     @PostMapping("pay")
@@ -102,6 +106,7 @@ public class StoreOrderController extends XktBaseController {
         return success(respVO);
     }
 
+    @PreAuthorize("@ss.hasRole('seller')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @ApiOperation("取消订单")
     @PostMapping("cancel")
@@ -124,6 +129,7 @@ public class StoreOrderController extends XktBaseController {
     }
 
 
+    @PreAuthorize("@ss.hasAnyRoles('store,seller')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "订单分页查询")
     @PostMapping("/page")
     @ResponseHeader
@@ -138,6 +144,7 @@ public class StoreOrderController extends XktBaseController {
         return success(PageVO.of(pageDTO, StoreOrderPageItemVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("发货-平台物流")
     @PostMapping("ship/platform")
@@ -154,6 +161,7 @@ public class StoreOrderController extends XktBaseController {
         return success(respList);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("发货-档口物流")
     @PostMapping("ship/store")
@@ -170,6 +178,7 @@ public class StoreOrderController extends XktBaseController {
         return success(respList);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("打印面单")
     @PostMapping("ship/print")
@@ -185,6 +194,7 @@ public class StoreOrderController extends XktBaseController {
         return success(rtnList);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("确认收货")
     @PostMapping("receipt")
@@ -194,6 +204,7 @@ public class StoreOrderController extends XktBaseController {
         return success();
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("申请售后（创建售后订单）")
     @PostMapping("refund/apply")
@@ -229,6 +240,7 @@ public class StoreOrderController extends XktBaseController {
         return success(afterSaleApplyResult.getStoreOrderId());
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("确认退款")
     @PostMapping("refund/confirm")
@@ -260,6 +272,7 @@ public class StoreOrderController extends XktBaseController {
         return success();
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("拒绝退款")
     @PostMapping("refund/reject")
