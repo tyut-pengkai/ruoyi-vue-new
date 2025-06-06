@@ -5,13 +5,16 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.ESystemRole;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.framework.web.service.SysRegisterService;
 import com.ruoyi.system.service.ISysConfigService;
+import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.web.controller.system.vo.LoginSmsReqVO;
 import com.ruoyi.web.controller.system.vo.RegisterBySmsCodeVO;
+import com.ruoyi.web.controller.xkt.vo.PhoneNumberVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,9 @@ public class SysRegisterController extends BaseController {
 
     @Autowired
     private SysLoginService loginService;
+
+    @Autowired
+    private ISysUserService userService;
 
     @ApiOperation(value = "档口供应商注册")
     @PostMapping("/registerStore")
@@ -70,6 +76,15 @@ public class SysRegisterController extends BaseController {
                 ESystemRole.AGENT);
         ajax.put(Constants.TOKEN, token);
         return ajax;
+    }
+
+    @ApiOperation(value = "手机号是否已注册")
+    @PostMapping("/isPhoneNumberRegistered")
+    public R<Boolean> isPhoneNumberRegistered(@Validated @RequestBody PhoneNumberVO phoneNumberVO) {
+        SysUser u = new SysUser();
+        u.setPhonenumber(phoneNumberVO.getPhoneNumber());
+        boolean unique = userService.checkPhoneUnique(u);
+        return R.ok(!unique);
     }
 
     @ApiOperation(value = "发送登录短信验证码")

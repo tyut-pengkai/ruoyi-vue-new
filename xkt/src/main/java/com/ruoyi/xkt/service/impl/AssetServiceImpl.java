@@ -3,13 +3,17 @@ package com.ruoyi.xkt.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.NumberUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
+import com.ruoyi.framework.sms.SmsClientWrapper;
 import com.ruoyi.xkt.domain.ExternalAccount;
 import com.ruoyi.xkt.domain.FinanceBill;
 import com.ruoyi.xkt.domain.InternalAccount;
@@ -34,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author liangyq
@@ -51,6 +56,10 @@ public class AssetServiceImpl implements IAssetService {
     private IExternalAccountService externalAccountService;
     @Autowired
     private List<PaymentManager> paymentManagers;
+    @Autowired
+    private SmsClientWrapper smsClient;
+    @Autowired
+    private RedisCache redisCache;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -128,7 +137,7 @@ public class AssetServiceImpl implements IAssetService {
         Assert.notEmpty(transactionPasswordSet.getPhoneNumber());
         Assert.notEmpty(transactionPasswordSet.getVerifyCode());
         Assert.notEmpty(transactionPasswordSet.getTransactionPassword());
-        //TODO 验证码
+        validateSmsVerificationCode(transactionPasswordSet.getPhoneNumber(), transactionPasswordSet.getVerifyCode());
         InternalAccount internalAccount = internalAccountService.getAccountAndCheck(transactionPasswordSet.getStoreId(),
                 EAccountOwnerType.STORE);
         internalAccountService.setTransactionPassword(internalAccount.getId(), transactionPasswordSet.getPhoneNumber(),
@@ -148,7 +157,7 @@ public class AssetServiceImpl implements IAssetService {
         Assert.notEmpty(alipayBind.getAccountOwnerName());
         Assert.notEmpty(alipayBind.getAccountOwnerNumber());
         Assert.notEmpty(alipayBind.getAccountOwnerPhoneNumber());
-        //TODO 验证码
+        validateSmsVerificationCode(alipayBind.getAccountOwnerPhoneNumber(), alipayBind.getVerifyCode());
         ExternalAccount alipayExternalAccount = externalAccountService.getAccount(alipayBind.getOwnerId(),
                 ownerType, EAccountType.ALI_PAY);
         if (alipayExternalAccount != null) {
@@ -266,6 +275,41 @@ public class AssetServiceImpl implements IAssetService {
         Map<EPayChannel, List<WithdrawPrepareResult>> rtn = new HashMap<>(1);
         rtn.put(EPayChannel.ALI_PAY, results);
         return rtn;
+    }
+
+    @Override
+    public void sendSmsVerificationCode(String phoneNumber) {
+        String k = CacheConstants.SMS_CAPTCHA_CODE_CD_PHONE_NUM_KEY + phoneNumber;
+        String v = redisCache.getCacheObject(k);
+        if (StrUtil.isNotEmpty(v)) {
+            throw new ServiceException("验证码发送间隔需大于60S");
+        }
+        String code = RandomUtil.randomNumbers(6);
+        boolean success = smsClient.sendVerificationCode(phoneNumber, code);
+        if (success) {
+            String rk = CacheConstants.SMS_ASSET_CAPTCHA_CODE_KEY + phoneNumber;
+            redisCache.setCacheObject(rk, code, 5, TimeUnit.MINUTES);
+        }
+        redisCache.setCacheObject(k, "1", 60, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 短信验证码验证
+     *
+     * @param phoneNumber 电话号码
+     * @param code        验证码
+     * @return
+     */
+    private void validateSmsVerificationCode(String phoneNumber, String code) {
+        String rk = CacheConstants.SMS_ASSET_CAPTCHA_CODE_KEY + phoneNumber;
+        String cacheCode = redisCache.getCacheObject(rk);
+        if (cacheCode == null) {
+            throw new ServiceException("验证码已失效");
+        }
+        redisCache.deleteObject(rk);
+        if (!StrUtil.equals(cacheCode, code)) {
+            throw new ServiceException("验证码错误");
+        }
     }
 
     /**

@@ -130,4 +130,11 @@ public interface IAssetService {
      * @return
      */
     Map<EPayChannel, List<WithdrawPrepareResult>> getNeedContinueWithdrawGroupMap(Integer count);
+
+    /**
+     * 短信验证码
+     *
+     * @param phoneNumber
+     */
+    void sendSmsVerificationCode(String phoneNumber);
 }

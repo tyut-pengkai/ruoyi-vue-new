@@ -9,6 +9,7 @@ import com.ruoyi.common.core.page.PageVO;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
+import com.ruoyi.web.controller.xkt.vo.PhoneNumberVO;
 import com.ruoyi.web.controller.xkt.vo.account.*;
 import com.ruoyi.xkt.dto.account.*;
 import com.ruoyi.xkt.dto.finance.RechargeAddDTO;
@@ -52,6 +53,13 @@ public class AssetController extends XktBaseController {
     public R<AssetInfoVO> getCurrentUserAsset() {
         AssetInfoDTO dto = assetService.getUserAssetInfo(SecurityUtils.getUserId());
         return success(BeanUtil.toBean(dto, AssetInfoVO.class));
+    }
+
+    @ApiOperation(value = "发送短信验证码（资产相关功能）")
+    @PostMapping("/sendSmsVerificationCode")
+    public R sendSmsVerificationCode(@Validated @RequestBody PhoneNumberVO vo) {
+        assetService.sendSmsVerificationCode(vo.getPhoneNumber());
+        return R.ok();
     }
 
     @ApiOperation(value = "档口绑定支付宝")

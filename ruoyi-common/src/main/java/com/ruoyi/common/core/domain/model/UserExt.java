@@ -82,6 +82,15 @@ public class UserExt extends SysUser {
     }
 
     /**
+     * 是否有代发角色
+     *
+     * @return
+     */
+    public boolean hasAgentRole() {
+        return CollUtil.contains(roleIds, ESystemRole.AGENT.getId());
+    }
+
+    /**
      * 是否有供应商子角色
      *
      * @return

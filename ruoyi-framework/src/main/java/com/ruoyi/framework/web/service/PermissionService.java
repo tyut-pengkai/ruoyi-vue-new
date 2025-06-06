@@ -80,6 +80,27 @@ public class PermissionService
         return false;
     }
 
+    public boolean hasRole() {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        if (loginUser == null) {
+            return false;
+        }
+        return CollUtil.isNotEmpty(loginUser.getUser().getRoleIds());
+    }
+
+    /**
+     * 判断用户是否拥有档口供应商子角色
+     *
+     * @return
+     */
+    public boolean hasSupplierSubRole() {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        if (loginUser == null) {
+            return false;
+        }
+        return loginUser.getUser().hasSupplierSubRole();
+    }
+
     /**
      * 判断用户是否拥有某个角色
      * 

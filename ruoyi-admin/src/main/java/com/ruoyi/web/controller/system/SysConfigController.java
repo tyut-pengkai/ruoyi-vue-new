@@ -81,7 +81,7 @@ public class SysConfigController extends BaseController {
     /**
      * 修改参数配置
      */
-    @PreAuthorize("@ss.hasPermi('system:config:edit')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "参数管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody SysConfig config) {
