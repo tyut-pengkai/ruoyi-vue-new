@@ -74,6 +74,10 @@ public class Advert extends XktBaseEntity {
      */
     private Integer playNum;
     /**
+     * 营销推广购买截止时间 HH:mm:ss 比如：22:30:00
+     */
+    private String deadline;
+    /**
      * 推广范例图片ID
      */
     private Long examplePicId;

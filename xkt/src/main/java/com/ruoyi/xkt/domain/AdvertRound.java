@@ -68,6 +68,10 @@ public class AdvertRound extends XktBaseEntity {
      */
     private Date endTime;
     /**
+     * 营销推广购买截止时间 HH:mm:ss 比如：22:30:00
+     */
+    private String deadline;
+    /**
      * 广告位置 A B C D E...  对应advert中的playNum
      */
     private String position;

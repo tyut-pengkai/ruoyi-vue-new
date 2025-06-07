@@ -33,23 +33,13 @@ public class AdvertRoundController extends XktBaseController {
 
     final IAdvertRoundService advertRoundService;
 
-
-    // TODO 定时任务将档口的广告位 更新到redis中
-    // TODO 定时任务将档口的广告位 更新到redis中
-    // TODO 定时任务将档口的广告位 更新到redis中
-    // TODO 定时任务将档口的广告位 更新到redis中
-
-
-
-
-
     /**
      * 档口购买推广营销
      */
     @ApiOperation(value = "档口购买推广营销", httpMethod = "POST", response = R.class)
     @Log(title = "档口购买推广营销", businessType = BusinessType.INSERT)
     @PostMapping
-    public R<Integer> create(@Validated @RequestBody AdRoundStoreCreateVO createVO) throws ParseException {
+    public R<Integer> create(@Validated @RequestBody AdRoundStoreCreateVO createVO) {
         return R.ok(advertRoundService.create(BeanUtil.toBean(createVO, AdRoundStoreCreateDTO.class)));
     }
 

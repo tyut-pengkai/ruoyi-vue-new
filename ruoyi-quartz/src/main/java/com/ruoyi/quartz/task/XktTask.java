@@ -99,323 +99,52 @@ public class XktTask {
     final UserBrowsingHistoryMapper userBrowHisMapper;
 
     /**
-     * 定时任务上市季节年份
+     * 每年3月1日、6月1日、9月1日、12月1日执行
      */
     @Transactional
-    public void test() {
+    public void seasonTag() {
+        LocalDate today = LocalDate.now();
+        int month = today.getMonthValue();
+        String seasonLabel = "";
+        if (month == 3) {
+            seasonLabel = today.getYear() + "年春季";
+        } else if (month == 6) {
+            seasonLabel = today.getYear() + "年夏季";
+        } else if (month == 9) {
+            seasonLabel = today.getYear() + "年秋季";
+        } else if (month == 12) {
+            seasonLabel = today.getYear() + "年冬季";
+        }
+        if (StringUtils.isEmpty(seasonLabel)) {
+            return;
+        }
+        log.info("生成季节标签：{}", seasonLabel);
 
-        // TODO 每年2月1日生成夏季标签
-
-        // TODO 每年5月1日生成秋季标签
-
-        // TODO 每年8月1日生成冬季标签
-
-        // TODO 每年11月1日生成春季标签
-
-        // 上市季节年份 sys_dict_type  sys_dict_data 两张表
+        // TODO 插入到sys_dict_type sys_dict_data两张表
+        // TODO 插入到sys_dict_type sys_dict_data两张表
+        // TODO 插入到sys_dict_type sys_dict_data两张表
 
     }
 
-
     /**
-     * 每晚12:10点同步档口销售数据
+     * 每天凌晨12:00:01秒 更新store到redis中
      */
-    @Transactional
-    public void dailySale() {
-        // 使用LocalDate获取当前日期前一天，并转为 Date 格式
-        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
-        // 先检查是否有该天的销售数据，若有则先删除，保证数据唯一性
-        List<DailySale> existList = this.dailySaleMapper.selectList(new LambdaQueryWrapper<DailySale>()
-                .eq(DailySale::getVoucherDate, yesterday).eq(DailySale::getDelFlag, Constants.UNDELETED));
-        if (CollectionUtils.isNotEmpty(existList)) {
-            this.dailySaleMapper.deleteByIds(existList.stream().map(DailySale::getId).collect(Collectors.toList()));
-        }
-        // 查询当前的销售数据
-        List<DailySaleDTO> saleList = this.dailySaleMapper.selectDailySale(yesterday);
-        if (CollectionUtils.isEmpty(saleList)) {
+    public void saveStoreToRedis() {
+        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
+                .eq(Store::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(storeList)) {
             return;
         }
-        this.dailySaleMapper.insert(saleList.stream().map(x -> BeanUtil.toBean(x, DailySale.class)
-                .setVoucherDate(yesterday)).collect(Collectors.toList()));
-    }
-
-    /**
-     * 每晚12点15分同步档口客户销售数据
-     */
-    @Transactional
-    public void dailySaleCustomer() {
-        // 使用LocalDate获取当前日期前一天，并转为 Date 格式
-        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
-        // 先检查是否有该天的销售数据，若有则先删除，保证数据唯一性
-        List<DailySaleCustomer> existList = this.dailySaleCusMapper.selectList(new LambdaQueryWrapper<DailySaleCustomer>()
-                .eq(DailySaleCustomer::getVoucherDate, yesterday).eq(DailySaleCustomer::getDelFlag, Constants.UNDELETED));
-        if (CollectionUtils.isNotEmpty(existList)) {
-            this.dailySaleCusMapper.deleteByIds(existList.stream().map(DailySaleCustomer::getId).collect(Collectors.toList()));
-        }
-        // 查询当前的客户销售数据
-        List<DailySaleCusDTO> cusSaleList = this.dailySaleCusMapper.selectDailySale(yesterday);
-        if (CollectionUtils.isEmpty(cusSaleList)) {
-            return;
-        }
-        this.dailySaleCusMapper.insert(cusSaleList.stream().map(x -> BeanUtil.toBean(x, DailySaleCustomer.class)
-                .setVoucherDate(yesterday)).collect(Collectors.toList()));
-    }
-
-    /**
-     * 每晚12点20同步档口商品销售数据
-     */
-    @Transactional
-    public void dailySaleProduct() {
-        // 使用LocalDate获取当前日期前一天，并转为 Date 格式
-        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
-        // 先检查是否有该天的销售数据，若有则先删除，保证数据唯一性
-        List<DailySaleProduct> existList = this.dailySaleProdMapper.selectList(new LambdaQueryWrapper<DailySaleProduct>()
-                .eq(DailySaleProduct::getVoucherDate, yesterday).eq(DailySaleProduct::getDelFlag, Constants.UNDELETED));
-        if (CollectionUtils.isNotEmpty(existList)) {
-            this.dailySaleProdMapper.deleteByIds(existList.stream().map(DailySaleProduct::getId).collect(Collectors.toList()));
-        }
-        // 查询档口商品的销售数据
-        List<DailySaleProdDTO> saleList = this.dailySaleProdMapper.selectDailySale(yesterday);
-        if (CollectionUtils.isEmpty(saleList)) {
-            return;
-        }
-        this.dailySaleProdMapper.insert(saleList.stream().map(x -> BeanUtil.toBean(x, DailySaleProduct.class)
-                .setVoucherDate(yesterday)).collect(Collectors.toList()));
-    }
-
-    /**
-     * 每晚12点25同步商品最新分类排序
-     */
-    @Transactional
-    public void dailyCategorySort() {
-        // 系统所有的商品分类
-        List<SysProductCategory> cateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
-                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED).eq(SysProductCategory::getStatus, Constants.UNDELETED));
-        if (CollectionUtils.isEmpty(cateList)) {
-            throw new ServiceException("商品分类不存在!", HttpStatus.ERROR);
-        }
-        // 根据LocalDate 获取当前日期前一天
-        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
-        // 及当前日期前一天的前一周，并转为 Date 格式
-        final Date pastDate = java.sql.Date.valueOf(LocalDate.now().minusDays(8));
-        // 获取各项子分类最近一周的销售数量
-        List<WeekCateSaleDTO> weekCateSaleList = this.weekCateSaleMapper.selectWeekCateSale(yesterday, pastDate);
-        if (CollectionUtils.isEmpty(weekCateSaleList)) {
-            return;
-        }
-        // 将各个小项销售数量转化为map
-        Map<Long, Integer> itemCateCountMap = weekCateSaleList.stream().collect(Collectors.toMap(WeekCateSaleDTO::getProdCateId, WeekCateSaleDTO::getCount));
-        // 按照大类对应的各小类以此进行数量统计及排序
-        List<WeekCateSaleDTO> sortList = new ArrayList<>();
-        cateList.stream()
-                // 过滤掉父级为0的分类，以及父级为1的分类（父级为1的为子分类）
-                .filter(x -> !Objects.equals(x.getParentId(), 0L) && !Objects.equals(x.getParentId(), 1L))
-                .collect(Collectors.groupingBy(SysProductCategory::getParentId))
-                .forEach((parentId, itemList) -> sortList.add(new WeekCateSaleDTO() {{
-                    setCount(itemList.stream().mapToInt(x -> itemCateCountMap.getOrDefault(x.getId(), 0)).sum());
-                    setProdCateId(parentId);
-                }}));
-        // 按照大类的数量倒序排列
-        sortList.sort(Comparator.comparing(WeekCateSaleDTO::getCount).reversed());
-        Map<Long, Integer> topCateSortMap = new LinkedHashMap<>();
-        // 按照sortList的顺序，结合 topCateMap 依次更新SysProductCategory 的 sortNum的排序
-        for (int i = 0; i < sortList.size(); i++) {
-            topCateSortMap.put(sortList.get(i).getProdCateId(), i + 1);
-        }
-        // 顶级分类的数量
-        Integer topCateSize = Math.toIntExact(cateList.stream().filter(x -> Objects.equals(x.getParentId(), 1L)).count());
-        // 次级分类列表
-        List<SysProductCategory> updateList = cateList.stream().filter(x -> Objects.equals(x.getParentId(), 1L))
-                // 如果存在具体销售数量，则按照具体销售数量排序，否则将排序置为最大值
-                .peek(x -> x.setOrderNum(topCateSortMap.getOrDefault(x.getId(), topCateSize)))
-                .collect(Collectors.toList());
-        this.prodCateMapper.updateById(updateList);
-    }
-
-    /**
-     * 每晚12点30更新档口的标签
-     */
-    @Transactional
-    public void dailyStoreTag() {
-        // 先删除所有的档口标签，保证数据唯一性
-        List<DailyStoreTag> existList = this.dailyStoreTagMapper.selectList(new LambdaQueryWrapper<DailyStoreTag>()
-                .eq(DailyStoreTag::getDelFlag, Constants.UNDELETED));
-        if (CollectionUtils.isNotEmpty(existList)) {
-            this.dailyStoreTagMapper.deleteByIds(existList.stream().map(DailyStoreTag::getId).collect(Collectors.toList()));
-        }
-        List<DailyStoreTag> tagList = new ArrayList<>();
-        // 单据日期为当然
-        final Date now = java.sql.Date.valueOf(LocalDate.now());
-        // 根据LocalDate 获取当前日期前一天
-        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
-        // 使用LocalDate 获取当前日期前一天的前一周，并转为 Date 格式
-        final Date oneWeekAgo = java.sql.Date.valueOf(LocalDate.now().minusWeeks(1));
-        // 使用LocalDate 获取当前日期前一天的前一个月
-        final Date oneMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(1));
-        // 1. 打 月销千件 标签
-        this.tagSaleThousand(now, yesterday, oneMonthAgo, tagList);
-        // 2. 打 销量榜 标签
-        this.tagStoreSaleRank(now, yesterday, oneMonthAgo, tagList);
-        // 3. 打 爆款频出 标签，根据销量前50的商品中 档口 先后顺序排列
-        this.tagHotRank(now, yesterday, oneMonthAgo, tagList);
-        // 4. 打 新款频出 标签，根据最近一周档口商品上新速度，先后排序
-        this.tagNewProd(now, yesterday, oneWeekAgo, tagList);
-        // 5. 打 关注榜 标签，根据关注量，进行排序
-        this.tagAttentionRank(now, yesterday, tagList);
-        // 6. 打 库存榜 标签，根据库存量，进行排序
-        this.tagStockTag(yesterday, oneMonthAgo, tagList);
-        // 7. 打 七日上新 标签
-        this.tag7DaysNewTag(now, yesterday, oneWeekAgo, tagList);
-        if (CollectionUtils.isEmpty(tagList)) {
-            return;
-        }
-        this.dailyStoreTagMapper.insert(tagList);
-    }
-
-    /**
-     * 每晚12点40更新商品标签
-     */
-    @Transactional
-    public void dailyProdTag() throws IOException {
-        // 先删除所有的商品标签，保证数据唯一性
-        List<DailyProdTag> existList = this.dailyProdTagMapper.selectList(new LambdaQueryWrapper<DailyProdTag>()
-                .eq(DailyProdTag::getDelFlag, Constants.UNDELETED));
-        if (CollectionUtils.isNotEmpty(existList)) {
-            this.dailyProdTagMapper.deleteByIds(existList.stream().map(DailyProdTag::getId).collect(Collectors.toList()));
-        }
-        final Date now = java.sql.Date.valueOf(LocalDate.now());
-        // 根据LocalDate 获取当前日期前一天
-        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
-        // 使用LocalDate 获取当前日期4天前，并转为 Date 格式
-        final Date fourDaysAgo = java.sql.Date.valueOf(LocalDate.now().minusDays(4));
-        // 使用LocalDate 获取当前日期前一天的前一周，并转为 Date 格式
-        final Date oneWeekAgo = java.sql.Date.valueOf(LocalDate.now().minusWeeks(1));
-        // 使用LocalDate 获取当前日期前一天的前一个月
-        final Date oneMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(1));
-        List<DailyProdTag> tagList = new ArrayList<>();
-        // 1. 打 月销千件 标签
-        this.tagMonthSaleThousand(now, yesterday, oneMonthAgo, tagList);
-        // 2. 打 销量榜 标签
-        this.tagProdSaleTop10(now, yesterday, oneMonthAgo, tagList);
-        // 3. 当月（近一月）爆款
-        this.tagMonthHot(now, yesterday, oneMonthAgo, tagList);
-        // 4. 档口热卖
-        this.tagStoreHotTop20(now, yesterday, oneMonthAgo, tagList);
-        // 5. 图搜榜
-        this.tagImgSearchTop10(now, yesterday, oneMonthAgo, tagList);
-        // 6. 收藏榜
-        this.tagCollectionTop10(now, yesterday, oneMonthAgo, tagList);
-        // 7. 下载榜 铺货榜
-        this.tagDownloadTop10(now, yesterday, oneMonthAgo, tagList);
-        // 8. 三日上新
-        this.tagThreeDayNew(now, yesterday, fourDaysAgo, tagList);
-        // 9. 七日上新
-        this.tagSevenDayNew(now, yesterday, fourDaysAgo, oneWeekAgo, tagList);
-        // 10. 风格
-        this.tagStyle(now, yesterday, tagList);
-        if (CollectionUtils.isEmpty(tagList)) {
-            return;
-        }
-        this.dailyProdTagMapper.insert(tagList);
-        // 更新商品的标签到ES
-        this.updateESProdTags(tagList);
-    }
-
-
-    /**
-     * 每天凌晨1:00更新档口商品的各项权重数据
-     */
-    @Transactional
-    public void dailyProdWeight() {
-        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                .eq(StoreProduct::getDelFlag, Constants.UNDELETED));
-        if (CollectionUtils.isEmpty(storeProdList)) {
-            return;
-        }
-        // 获取 商品销售、商品浏览量、商品收藏量、商品下载量
-        List<StoreProductStatistics> statisticsList = this.prodStatMapper.selectList(new LambdaQueryWrapper<StoreProductStatistics>()
-                .eq(StoreProductStatistics::getDelFlag, Constants.UNDELETED));
-        // 商品浏览量、下载量
-        Map<Long, StoreProductStatistics> prodStatMap = statisticsList.stream().collect(Collectors.toMap(StoreProductStatistics::getStoreProdId, Function.identity()));
-        // 商品收藏量
-        List<UserFavorites> userFavList = this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
-                .eq(UserFavorites::getDelFlag, Constants.UNDELETED));
-        Map<Long, Long> userFavMap = userFavList.stream().collect(Collectors.groupingBy(UserFavorites::getStoreProdId, Collectors.summingLong(UserFavorites::getId)));
-        // 商品销售量
-        List<StoreSaleDetail> saleDetailList = this.saleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
-                .eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED).eq(StoreSaleDetail::getSaleType, SaleType.GENERAL_SALE.getValue()));
-        Map<Long, Long> saleMap = saleDetailList.stream().collect(Collectors.groupingBy(StoreSaleDetail::getStoreProdId,
-                Collectors.summingLong(StoreSaleDetail::getQuantity)));
-        storeProdList.forEach(x -> {
-            final long viewCount = ObjectUtils.isEmpty(prodStatMap.get(x.getId())) ? 0L : prodStatMap.get(x.getId()).getViewCount();
-            final long downloadCount = ObjectUtils.isEmpty(prodStatMap.get(x.getId())) ? 0L : prodStatMap.get(x.getId()).getDownloadCount();
-            final long favCount = ObjectUtils.isEmpty(userFavMap.get(x.getId())) ? 0L : userFavMap.get(x.getId());
-            final long saleCount = ObjectUtils.isEmpty(saleMap.get(x.getId())) ? 0L : saleMap.get(x.getId());
-            // 计算推荐权重，权重计算公式为：(浏览次数 * 0.3 + 下载次数 + 收藏次数 + 销售量 * 0.3)
-            final long recommendWeight = (long) (viewCount * 0.3 + downloadCount + favCount + saleCount * 0.3);
-            // 根据销售数量计算销售权重，权重占销售数量的30%
-            final long saleWeight = (long) (saleCount * 0.3);
-            // 计算人气权重，权重计算公式为：(浏览次数 * 0.1 和 100 取最小值) + 下载次数 + 收藏次数
-            final long popularityWeight = (long) (Math.min(viewCount * 0.1, 100) + downloadCount + favCount);
-            x.setRecommendWeight(recommendWeight).setSaleWeight(saleWeight).setPopularityWeight(popularityWeight);
+        storeList.forEach(store -> {
+            redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store, 1, TimeUnit.DAYS);
         });
-        this.storeProdMapper.updateById(storeProdList);
     }
 
     /**
-     * 每天凌晨1:10更新档口权重数据
+     * 凌晨12:01 更新推广轮次
      */
     @Transactional
-    public void dailyStoreWeight() {
-        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>().eq(StoreProduct::getDelFlag, Constants.UNDELETED));
-        if (CollectionUtils.isEmpty(storeProdList)) {
-            return;
-        }
-        // 按照storeId 的维度，对档口权重 按照 recommendWeight 进行汇总，按照降序排列
-        Map<Long, Long> storeWeightMap = storeProdList.stream().collect(Collectors.groupingBy(StoreProduct::getStoreId,
-                Collectors.summingLong(x -> ObjectUtils.defaultIfNull(x.getRecommendWeight(), 0L))));
-        // 筛选每个档口最新的4个商品及主图
-        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED));
-        Map<Long, Store> storeMap = storeList.stream().collect(Collectors.toMap(Store::getId, Function.identity()));
-        List<DailyStoreTag> storeTagList = this.dailyStoreTagMapper.selectList(new LambdaQueryWrapper<DailyStoreTag>()
-                .eq(DailyStoreTag::getDelFlag, Constants.UNDELETED));
-        // 档口标签map
-        Map<Long, List<String>> storeTagMap = storeTagList.stream().collect(Collectors
-                .groupingBy(DailyStoreTag::getStoreId, Collectors.collectingAndThen(Collectors.toList(), list -> list.stream()
-                        .sorted(Comparator.comparing(DailyStoreTag::getType)).map(DailyStoreTag::getTag).collect(Collectors.toList()))));
-        List<StoreProdFileLatestFourProdDTO> latest4ProdList = this.storeProdFileMapper.selectLatestFourProdList();
-        Map<Long, List<StoreProdFileLatestFourProdDTO>> latestProdMap = latest4ProdList.stream().collect(Collectors
-                .groupingBy(StoreProdFileLatestFourProdDTO::getStoreId));
-        List<PCStoreRecommendTempDTO> storeRecommendList = new ArrayList<>();
-        storeWeightMap.forEach((storeId, recommendWeight) -> {
-            final Store store = storeMap.get(storeId);
-            storeRecommendList.add(new PCStoreRecommendTempDTO().setStoreId(storeId).setTags(storeTagMap.get(storeId))
-                    .setAdvert(Boolean.FALSE).setRecommendWeight(recommendWeight)
-                    .setStoreWeight(ObjectUtils.isNotEmpty(store) ? store.getStoreWeight() : null)
-                    .setStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "")
-                    .setStoreAddress(ObjectUtils.isNotEmpty(store) ? store.getStoreAddress() : "")
-                    .setContactPhone(ObjectUtils.isNotEmpty(store) ? store.getContactPhone() : "")
-                    .setQqAccount(ObjectUtils.isNotEmpty(store) ? store.getQqAccount() : "")
-                    .setWechatAccount(ObjectUtils.isNotEmpty(store) ? store.getWechatAccount() : "")
-                    .setProdList(BeanUtil.copyToList(latestProdMap.get(storeId), PCStoreRecommendTempDTO.PCSRNewProdDTO.class)));
-        });
-        if (CollectionUtils.isEmpty(storeRecommendList)) {
-            return;
-        }
-        // 先按照 档口权重 倒序排，再按照 推荐权重 倒序排
-        storeRecommendList.sort(Comparator.comparing(PCStoreRecommendTempDTO::getStoreWeight, Comparator.nullsLast(Comparator.reverseOrder()))
-                .thenComparing(PCStoreRecommendTempDTO::getRecommendWeight, Comparator.nullsLast(Comparator.reverseOrder())));
-        // 返回给前端的数据 不包含 storeWeight  和 storeRecommnedWeight
-        List<PCStoreRecommendDTO> recommendList = BeanUtil.copyToList(storeRecommendList, PCStoreRecommendDTO.class);
-        // 放到redis中
-        redisCache.setCacheObject(CacheConstants.PC_STORE_RECOMMEND_LIST, recommendList);
-    }
-
-    /**
-     * 定时任务更新推广的播放轮次，这个要次日凌晨更新 凌晨12:01:00分更新
-     */
-    @Transactional
-    public void dailyAdvertRound() throws ParseException {
+    public void dailyAdvertRound() {
         List<Advert> advertList = this.advertMapper.selectList(new LambdaQueryWrapper<Advert>()
                 .eq(Advert::getDelFlag, Constants.UNDELETED).eq(Advert::getOnlineStatus, AdOnlineStatus.ONLINE.getValue()));
         if (CollectionUtils.isEmpty(advertList)) {
@@ -449,7 +178,8 @@ public class XktTask {
                         final int roundId = i + 1;
                         updateList.add(new AdvertRound().setAdvertId(advert.getId()).setTypeId(advert.getTypeId()).setRoundId(roundId).setLaunchStatus(launchStatus)
                                 .setStartTime(java.sql.Date.valueOf(now)).setEndTime(java.sql.Date.valueOf(endDate)).setPosition(position).setStartPrice(advert.getStartPrice())
-                                .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType()).setDisplayType(advert.getDisplayType())
+                                .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType())
+                                .setDisplayType(advert.getDisplayType()).setDeadline(advert.getDeadline())
                                 .setSymbol(Objects.equals(advert.getShowType(), AdShowType.POSITION_ENUM.getValue())
                                         // 如果是位置枚举的推广位，则需要精确到某一个position的推广位，反之，若是时间范围，则直接精确到播放轮次即可
                                         ? advert.getBasicSymbol() + roundId + position : advert.getBasicSymbol() + roundId));
@@ -499,14 +229,12 @@ public class XktTask {
                                         .setLaunchStatus(AdLaunchStatus.UN_LAUNCH.getValue()).setPosition(position).setStartPrice(advert.getStartPrice())
                                         .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType()).setDisplayType(advert.getDisplayType())
                                         // java.sql.Date 直接转化成yyyy-MM-dd格式
-                                        .setStartTime(java.sql.Date.valueOf(startDate)).setEndTime(java.sql.Date.valueOf(endDate))
+                                        .setStartTime(java.sql.Date.valueOf(startDate)).setEndTime(java.sql.Date.valueOf(endDate)).setDeadline(advert.getDeadline())
                                         .setSymbol(Objects.equals(advert.getShowType(), AdShowType.POSITION_ENUM.getValue())
                                                 // 如果是位置枚举的推广位，则需要精确到某一个position的推广位，反之，若是时间范围，则直接精确到播放轮次即可
                                                 ? advert.getBasicSymbol() + maxRoundId + position : advert.getBasicSymbol() + maxRoundId));
                             }
                         }
-                        // 需要更新推广位轮次最新的资源锁
-                        this.advertRoundService.initAdvertLockMap();
                     }
                 }
             }
@@ -514,48 +242,229 @@ public class XktTask {
         if (CollectionUtils.isNotEmpty(updateList)) {
             this.advertRoundMapper.insertOrUpdate(updateList);
         }
-        // 更新推广轮次截止时间到redis
-        this.saveAdvertDeadlineToRedis();
     }
 
     /**
-     * 每晚22:00:10更新广告位竞价状态 将biddingTempStatus赋值给biddingStatus
+     * 凌晨00:04更新symbol对应的锁资源到redis中
      */
-    @Transactional
-    public void updateAdvertRoundBiddingStatus() throws ParseException {
-        this.advertRoundService.updateBiddingStatus();
+    public void saveSymbolToRedis() {
+        advertRoundService.initAdvertLockMap();
     }
 
     /**
-     * 通过定时任务（每天凌晨12:00:01秒）往redis中放当前推广位 当前播放轮 或 即将播放轮 的截止时间；
-     * 比如：5.1 - 5.3
-     * a. 现在是4.30 则截止时间是 4.30 22:00
-     * b. 现在是5.2，则截止时间是 5.2 22:00:00 。
-     * c. 现在是5.3，则第一轮还有请求，肯定是人为的不用管。每一轮都要放到redis中
-     *
-     * @throws ParseException
+     * 凌晨00:08更新各推广轮次结束时间
      */
-    public void saveAdvertDeadlineToRedis() throws ParseException {
+    public void saveAdvertDeadlineToRedis() {
         // 直接调service方法，若当时redis出了问题，也方便第一时间 通过业务流程弥补 两边都有一个补偿机制
         this.advertRoundService.saveAdvertDeadlineToRedis();
     }
 
     /**
-     * 通过定时任务（每天凌晨12:00:01秒）将store数据暂存到redis中
+     * 凌晨00:10 同步档口销售数据
      */
-    public void saveStoreToRedis() {
-        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
-                .eq(Store::getDelFlag, Constants.UNDELETED));
-        if (CollectionUtils.isEmpty(storeList)) {
+    @Transactional
+    public void dailySale() {
+        // 使用LocalDate获取当前日期前一天，并转为 Date 格式
+        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
+        // 先检查是否有该天的销售数据，若有则先删除，保证数据唯一性
+        List<DailySale> existList = this.dailySaleMapper.selectList(new LambdaQueryWrapper<DailySale>()
+                .eq(DailySale::getVoucherDate, yesterday).eq(DailySale::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isNotEmpty(existList)) {
+            this.dailySaleMapper.deleteByIds(existList.stream().map(DailySale::getId).collect(Collectors.toList()));
+        }
+        // 查询当前的销售数据
+        List<DailySaleDTO> saleList = this.dailySaleMapper.selectDailySale(yesterday);
+        if (CollectionUtils.isEmpty(saleList)) {
             return;
         }
-        storeList.forEach(store -> {
-            redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store, 1, TimeUnit.DAYS);
-        });
+        this.dailySaleMapper.insert(saleList.stream().map(x -> BeanUtil.toBean(x, DailySale.class)
+                .setVoucherDate(yesterday)).collect(Collectors.toList()));
     }
 
     /**
-     * 每天凌晨12:45:00秒 将advert的数据暂存到redis中
+     * 凌晨00:15 同步档口客户销售数据
+     */
+    @Transactional
+    public void dailySaleCustomer() {
+        // 使用LocalDate获取当前日期前一天，并转为 Date 格式
+        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
+        // 先检查是否有该天的销售数据，若有则先删除，保证数据唯一性
+        List<DailySaleCustomer> existList = this.dailySaleCusMapper.selectList(new LambdaQueryWrapper<DailySaleCustomer>()
+                .eq(DailySaleCustomer::getVoucherDate, yesterday).eq(DailySaleCustomer::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isNotEmpty(existList)) {
+            this.dailySaleCusMapper.deleteByIds(existList.stream().map(DailySaleCustomer::getId).collect(Collectors.toList()));
+        }
+        // 查询当前的客户销售数据
+        List<DailySaleCusDTO> cusSaleList = this.dailySaleCusMapper.selectDailySale(yesterday);
+        if (CollectionUtils.isEmpty(cusSaleList)) {
+            return;
+        }
+        this.dailySaleCusMapper.insert(cusSaleList.stream().map(x -> BeanUtil.toBean(x, DailySaleCustomer.class)
+                .setVoucherDate(yesterday)).collect(Collectors.toList()));
+    }
+
+    /**
+     * 凌晨00:20 同步档口商品销售数据
+     */
+    @Transactional
+    public void dailySaleProduct() {
+        // 使用LocalDate获取当前日期前一天，并转为 Date 格式
+        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
+        // 先检查是否有该天的销售数据，若有则先删除，保证数据唯一性
+        List<DailySaleProduct> existList = this.dailySaleProdMapper.selectList(new LambdaQueryWrapper<DailySaleProduct>()
+                .eq(DailySaleProduct::getVoucherDate, yesterday).eq(DailySaleProduct::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isNotEmpty(existList)) {
+            this.dailySaleProdMapper.deleteByIds(existList.stream().map(DailySaleProduct::getId).collect(Collectors.toList()));
+        }
+        // 查询档口商品的销售数据
+        List<DailySaleProdDTO> saleList = this.dailySaleProdMapper.selectDailySale(yesterday);
+        if (CollectionUtils.isEmpty(saleList)) {
+            return;
+        }
+        this.dailySaleProdMapper.insert(saleList.stream().map(x -> BeanUtil.toBean(x, DailySaleProduct.class)
+                .setVoucherDate(yesterday)).collect(Collectors.toList()));
+    }
+
+    /**
+     * 凌晨00:25 同步商品最新分类排序
+     */
+    @Transactional
+    public void dailyCategorySort() {
+        // 系统所有的商品分类
+        List<SysProductCategory> cateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED).eq(SysProductCategory::getStatus, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(cateList)) {
+            throw new ServiceException("商品分类不存在!", HttpStatus.ERROR);
+        }
+        // 根据LocalDate 获取当前日期前一天
+        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
+        // 及当前日期前一天的前一周，并转为 Date 格式
+        final Date pastDate = java.sql.Date.valueOf(LocalDate.now().minusDays(8));
+        // 获取各项子分类最近一周的销售数量
+        List<WeekCateSaleDTO> weekCateSaleList = this.weekCateSaleMapper.selectWeekCateSale(yesterday, pastDate);
+        if (CollectionUtils.isEmpty(weekCateSaleList)) {
+            return;
+        }
+        // 将各个小项销售数量转化为map
+        Map<Long, Integer> itemCateCountMap = weekCateSaleList.stream().collect(Collectors.toMap(WeekCateSaleDTO::getProdCateId, WeekCateSaleDTO::getCount));
+        // 按照大类对应的各小类以此进行数量统计及排序
+        List<WeekCateSaleDTO> sortList = new ArrayList<>();
+        cateList.stream()
+                // 过滤掉父级为0的分类，以及父级为1的分类（父级为1的为子分类）
+                .filter(x -> !Objects.equals(x.getParentId(), 0L) && !Objects.equals(x.getParentId(), 1L))
+                .collect(Collectors.groupingBy(SysProductCategory::getParentId))
+                .forEach((parentId, itemList) -> sortList.add(new WeekCateSaleDTO() {{
+                    setCount(itemList.stream().mapToInt(x -> itemCateCountMap.getOrDefault(x.getId(), 0)).sum());
+                    setProdCateId(parentId);
+                }}));
+        // 按照大类的数量倒序排列
+        sortList.sort(Comparator.comparing(WeekCateSaleDTO::getCount).reversed());
+        Map<Long, Integer> topCateSortMap = new LinkedHashMap<>();
+        // 按照sortList的顺序，结合 topCateMap 依次更新SysProductCategory 的 sortNum的排序
+        for (int i = 0; i < sortList.size(); i++) {
+            topCateSortMap.put(sortList.get(i).getProdCateId(), i + 1);
+        }
+        // 顶级分类的数量
+        Integer topCateSize = Math.toIntExact(cateList.stream().filter(x -> Objects.equals(x.getParentId(), 1L)).count());
+        // 次级分类列表
+        List<SysProductCategory> updateList = cateList.stream().filter(x -> Objects.equals(x.getParentId(), 1L))
+                // 如果存在具体销售数量，则按照具体销售数量排序，否则将排序置为最大值
+                .peek(x -> x.setOrderNum(topCateSortMap.getOrDefault(x.getId(), topCateSize)))
+                .collect(Collectors.toList());
+        this.prodCateMapper.updateById(updateList);
+    }
+
+    /**
+     * 凌晨00:30 更新档口的标签
+     */
+    @Transactional
+    public void dailyStoreTag() {
+        // 先删除所有的档口标签，保证数据唯一性
+        List<DailyStoreTag> existList = this.dailyStoreTagMapper.selectList(new LambdaQueryWrapper<DailyStoreTag>()
+                .eq(DailyStoreTag::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isNotEmpty(existList)) {
+            this.dailyStoreTagMapper.deleteByIds(existList.stream().map(DailyStoreTag::getId).collect(Collectors.toList()));
+        }
+        List<DailyStoreTag> tagList = new ArrayList<>();
+        // 单据日期为当然
+        final Date now = java.sql.Date.valueOf(LocalDate.now());
+        // 根据LocalDate 获取当前日期前一天
+        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
+        // 使用LocalDate 获取当前日期前一天的前一周，并转为 Date 格式
+        final Date oneWeekAgo = java.sql.Date.valueOf(LocalDate.now().minusWeeks(1));
+        // 使用LocalDate 获取当前日期前一天的前一个月
+        final Date oneMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(1));
+        // 1. 打 月销千件 标签
+        this.tagSaleThousand(now, yesterday, oneMonthAgo, tagList);
+        // 2. 打 销量榜 标签
+        this.tagStoreSaleRank(now, yesterday, oneMonthAgo, tagList);
+        // 3. 打 爆款频出 标签，根据销量前50的商品中 档口 先后顺序排列
+        this.tagHotRank(now, yesterday, oneMonthAgo, tagList);
+        // 4. 打 新款频出 标签，根据最近一周档口商品上新速度，先后排序
+        this.tagNewProd(now, yesterday, oneWeekAgo, tagList);
+        // 5. 打 关注榜 标签，根据关注量，进行排序
+        this.tagAttentionRank(now, yesterday, tagList);
+        // 6. 打 库存榜 标签，根据库存量，进行排序
+        this.tagStockTag(yesterday, oneMonthAgo, tagList);
+        // 7. 打 七日上新 标签
+        this.tag7DaysNewTag(now, yesterday, oneWeekAgo, tagList);
+        if (CollectionUtils.isEmpty(tagList)) {
+            return;
+        }
+        this.dailyStoreTagMapper.insert(tagList);
+    }
+
+    /**
+     * 凌晨00:40 更新商品标签
+     */
+    @Transactional
+    public void dailyProdTag() throws IOException {
+        // 先删除所有的商品标签，保证数据唯一性
+        List<DailyProdTag> existList = this.dailyProdTagMapper.selectList(new LambdaQueryWrapper<DailyProdTag>()
+                .eq(DailyProdTag::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isNotEmpty(existList)) {
+            this.dailyProdTagMapper.deleteByIds(existList.stream().map(DailyProdTag::getId).collect(Collectors.toList()));
+        }
+        final Date now = java.sql.Date.valueOf(LocalDate.now());
+        // 根据LocalDate 获取当前日期前一天
+        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
+        // 使用LocalDate 获取当前日期4天前，并转为 Date 格式
+        final Date fourDaysAgo = java.sql.Date.valueOf(LocalDate.now().minusDays(4));
+        // 使用LocalDate 获取当前日期前一天的前一周，并转为 Date 格式
+        final Date oneWeekAgo = java.sql.Date.valueOf(LocalDate.now().minusWeeks(1));
+        // 使用LocalDate 获取当前日期前一天的前一个月
+        final Date oneMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(1));
+        List<DailyProdTag> tagList = new ArrayList<>();
+        // 1. 打 月销千件 标签
+        this.tagMonthSaleThousand(now, yesterday, oneMonthAgo, tagList);
+        // 2. 打 销量榜 标签
+        this.tagProdSaleTop10(now, yesterday, oneMonthAgo, tagList);
+        // 3. 当月（近一月）爆款
+        this.tagMonthHot(now, yesterday, oneMonthAgo, tagList);
+        // 4. 档口热卖
+        this.tagStoreHotTop20(now, yesterday, oneMonthAgo, tagList);
+        // 5. 图搜榜
+        this.tagImgSearchTop10(now, yesterday, oneMonthAgo, tagList);
+        // 6. 收藏榜
+        this.tagCollectionTop10(now, yesterday, oneMonthAgo, tagList);
+        // 7. 下载榜 铺货榜
+        this.tagDownloadTop10(now, yesterday, oneMonthAgo, tagList);
+        // 8. 三日上新
+        this.tagThreeDayNew(now, yesterday, fourDaysAgo, tagList);
+        // 9. 七日上新
+        this.tagSevenDayNew(now, yesterday, fourDaysAgo, oneWeekAgo, tagList);
+        // 10. 风格
+        this.tagStyle(now, yesterday, tagList);
+        if (CollectionUtils.isEmpty(tagList)) {
+            return;
+        }
+        this.dailyProdTagMapper.insert(tagList);
+        // 更新商品的标签到ES
+        this.updateESProdTags(tagList);
+    }
+
+    /**
+     * 凌晨12:45 将advert的数据暂存到redis中
      */
     public void saveAdvertToRedis() {
         List<Advert> advertList = this.advertMapper.selectList(new LambdaQueryWrapper<Advert>()
@@ -568,33 +477,96 @@ public class XktTask {
     }
 
     /**
-     * 凌晨00:00:30通过定时任务将symbol存放到redis中
-     */
-    public void saveSymbolToRedis() {
-        advertRoundService.initAdvertLockMap();
-    }
-
-    /**
-     * 每个小时执行一次，发布商品
+     * 凌晨1:00 更新档口商品的各项权重数据
      */
     @Transactional
-    public void hourPublicStoreProduct() {
-
-        // TODO 定时任务发布商品，同步到ES中
-        // TODO 定时任务发布商品，同步到ES中
-        // TODO 定时任务发布商品，同步到ES中
-
-        // 向ES索引: product_info 创建文档
-//        this.createESDoc(storeProd, storeProdDTO);
-        // 搜图服务同步
-//        sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
-
-        // 新增档口商品动态、关注档口用户 通知公告
-
+    public void dailyProdWeight() {
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(storeProdList)) {
+            return;
+        }
+        // 获取 商品销售、商品浏览量、商品收藏量、商品下载量
+        List<StoreProductStatistics> statisticsList = this.prodStatMapper.selectList(new LambdaQueryWrapper<StoreProductStatistics>()
+                .eq(StoreProductStatistics::getDelFlag, Constants.UNDELETED));
+        // 商品浏览量、下载量
+        Map<Long, StoreProductStatistics> prodStatMap = statisticsList.stream().collect(Collectors.toMap(StoreProductStatistics::getStoreProdId, Function.identity()));
+        // 商品收藏量
+        List<UserFavorites> userFavList = this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
+                .eq(UserFavorites::getDelFlag, Constants.UNDELETED));
+        Map<Long, Long> userFavMap = userFavList.stream().collect(Collectors.groupingBy(UserFavorites::getStoreProdId, Collectors.summingLong(UserFavorites::getId)));
+        // 商品销售量
+        List<StoreSaleDetail> saleDetailList = this.saleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
+                .eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED).eq(StoreSaleDetail::getSaleType, SaleType.GENERAL_SALE.getValue()));
+        Map<Long, Long> saleMap = saleDetailList.stream().collect(Collectors.groupingBy(StoreSaleDetail::getStoreProdId,
+                Collectors.summingLong(StoreSaleDetail::getQuantity)));
+        storeProdList.forEach(x -> {
+            final long viewCount = ObjectUtils.isEmpty(prodStatMap.get(x.getId())) ? 0L : prodStatMap.get(x.getId()).getViewCount();
+            final long downloadCount = ObjectUtils.isEmpty(prodStatMap.get(x.getId())) ? 0L : prodStatMap.get(x.getId()).getDownloadCount();
+            final long favCount = ObjectUtils.isEmpty(userFavMap.get(x.getId())) ? 0L : userFavMap.get(x.getId());
+            final long saleCount = ObjectUtils.isEmpty(saleMap.get(x.getId())) ? 0L : saleMap.get(x.getId());
+            // 计算推荐权重，权重计算公式为：(浏览次数 * 0.3 + 下载次数 + 收藏次数 + 销售量 * 0.3)
+            final long recommendWeight = (long) (viewCount * 0.3 + downloadCount + favCount + saleCount * 0.3);
+            // 根据销售数量计算销售权重，权重占销售数量的30%
+            final long saleWeight = (long) (saleCount * 0.3);
+            // 计算人气权重，权重计算公式为：(浏览次数 * 0.1 和 100 取最小值) + 下载次数 + 收藏次数
+            final long popularityWeight = (long) (Math.min(viewCount * 0.1, 100) + downloadCount + favCount);
+            x.setRecommendWeight(recommendWeight).setSaleWeight(saleWeight).setPopularityWeight(popularityWeight);
+        });
+        this.storeProdMapper.updateById(storeProdList);
     }
 
     /**
-     * 每天凌晨2点更新用户搜索历史入库
+     * 凌晨1:10 更新档口权重数据
+     */
+    @Transactional
+    public void dailyStoreWeight() {
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>().eq(StoreProduct::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(storeProdList)) {
+            return;
+        }
+        // 按照storeId 的维度，对档口权重 按照 recommendWeight 进行汇总，按照降序排列
+        Map<Long, Long> storeWeightMap = storeProdList.stream().collect(Collectors.groupingBy(StoreProduct::getStoreId,
+                Collectors.summingLong(x -> ObjectUtils.defaultIfNull(x.getRecommendWeight(), 0L))));
+        // 筛选每个档口最新的4个商品及主图
+        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED));
+        Map<Long, Store> storeMap = storeList.stream().collect(Collectors.toMap(Store::getId, Function.identity()));
+        List<DailyStoreTag> storeTagList = this.dailyStoreTagMapper.selectList(new LambdaQueryWrapper<DailyStoreTag>()
+                .eq(DailyStoreTag::getDelFlag, Constants.UNDELETED));
+        // 档口标签map
+        Map<Long, List<String>> storeTagMap = storeTagList.stream().collect(Collectors
+                .groupingBy(DailyStoreTag::getStoreId, Collectors.collectingAndThen(Collectors.toList(), list -> list.stream()
+                        .sorted(Comparator.comparing(DailyStoreTag::getType)).map(DailyStoreTag::getTag).collect(Collectors.toList()))));
+        List<StoreProdFileLatestFourProdDTO> latest4ProdList = this.storeProdFileMapper.selectLatestFourProdList();
+        Map<Long, List<StoreProdFileLatestFourProdDTO>> latestProdMap = latest4ProdList.stream().collect(Collectors
+                .groupingBy(StoreProdFileLatestFourProdDTO::getStoreId));
+        List<PCStoreRecommendTempDTO> storeRecommendList = new ArrayList<>();
+        storeWeightMap.forEach((storeId, recommendWeight) -> {
+            final Store store = storeMap.get(storeId);
+            storeRecommendList.add(new PCStoreRecommendTempDTO().setStoreId(storeId).setTags(storeTagMap.get(storeId))
+                    .setAdvert(Boolean.FALSE).setRecommendWeight(recommendWeight)
+                    .setStoreWeight(ObjectUtils.isNotEmpty(store) ? store.getStoreWeight() : null)
+                    .setStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "")
+                    .setStoreAddress(ObjectUtils.isNotEmpty(store) ? store.getStoreAddress() : "")
+                    .setContactPhone(ObjectUtils.isNotEmpty(store) ? store.getContactPhone() : "")
+                    .setQqAccount(ObjectUtils.isNotEmpty(store) ? store.getQqAccount() : "")
+                    .setWechatAccount(ObjectUtils.isNotEmpty(store) ? store.getWechatAccount() : "")
+                    .setProdList(BeanUtil.copyToList(latestProdMap.get(storeId), PCStoreRecommendTempDTO.PCSRNewProdDTO.class)));
+        });
+        if (CollectionUtils.isEmpty(storeRecommendList)) {
+            return;
+        }
+        // 先按照 档口权重 倒序排，再按照 推荐权重 倒序排
+        storeRecommendList.sort(Comparator.comparing(PCStoreRecommendTempDTO::getStoreWeight, Comparator.nullsLast(Comparator.reverseOrder()))
+                .thenComparing(PCStoreRecommendTempDTO::getRecommendWeight, Comparator.nullsLast(Comparator.reverseOrder())));
+        // 返回给前端的数据 不包含 storeWeight  和 storeRecommnedWeight
+        List<PCStoreRecommendDTO> recommendList = BeanUtil.copyToList(storeRecommendList, PCStoreRecommendDTO.class);
+        // 放到redis中
+        redisCache.setCacheObject(CacheConstants.PC_STORE_RECOMMEND_LIST, recommendList);
+    }
+
+    /**
+     * 凌晨02:00 更新用户搜索历史入库
      */
     @Transactional
     public void dailyUpdateUserSearchHistory() {
@@ -631,7 +603,7 @@ public class XktTask {
     }
 
     /**
-     * 每天凌晨2:05更新用户浏览记录入库
+     * 凌晨02:05 更新用户浏览记录入库
      */
     @Transactional
     public void dailyUpdateUserBrowsingHistory() {
@@ -666,7 +638,7 @@ public class XktTask {
     }
 
     /**
-     * 每晚凌晨2:10更新系统热搜到redis中
+     * 凌晨02:10 更新系统热搜到redis中
      */
     @Transactional
     public void dailyUpdateSearchHotToRedis() {
@@ -686,6 +658,43 @@ public class XktTask {
                 .limit(20).collect(Collectors.toList());
         List<String> top20Keys = top20List.stream().map(Map.Entry::getKey).collect(Collectors.toList());
         redisCache.setCacheObject(CacheConstants.SEARCH_HOT_KEY, top20Keys);
+    }
+
+    /**
+     * 凌晨02:30 更新统计图搜热款
+     */
+    public void imgSearchTopProductStatistics() {
+        log.info("-------------统计图搜热款开始-------------");
+        pictureSearchService.cacheImgSearchTopProduct();
+        log.info("-------------统计图搜热款结束-------------");
+    }
+
+
+    /**
+     * 每晚22:00:10 更新广告位竞价状态 将biddingTempStatus赋值给biddingStatus
+     */
+    @Transactional
+    public void updateAdvertRoundBiddingStatus() throws ParseException {
+        this.advertRoundService.updateBiddingStatus();
+    }
+
+    /**
+     * 每个小时执行一次，发布商品
+     */
+    @Transactional
+    public void hourPublicStoreProduct() {
+
+        // TODO 定时任务发布商品，同步到ES中
+        // TODO 定时任务发布商品，同步到ES中
+        // TODO 定时任务发布商品，同步到ES中
+
+        // 向ES索引: product_info 创建文档
+//        this.createESDoc(storeProd, storeProdDTO);
+        // 搜图服务同步
+//        sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
+
+        // 新增档口商品动态、关注档口用户 通知公告
+
     }
 
 
@@ -854,24 +863,6 @@ public class XktTask {
 //        redisCache.deleteObject(CacheConstants.PRODUCT_STATISTICS_DOWNLOAD_COUNT);
         log.info("-------------商品信息每日统计结束-------------");
     }
-
-    /**
-     * 凌晨2:30更新统计图搜热款
-     */
-    public void imgSearchTopProductStatistics() {
-        log.info("-------------统计图搜热款开始-------------");
-        pictureSearchService.cacheImgSearchTopProduct();
-        log.info("-------------统计图搜热款结束-------------");
-    }
-
-
-    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
-    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
-    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
-    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
-    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
-    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
-    // TODO 每天凌晨12:05 将当天的推广加入到redis 中
 
 
     /**

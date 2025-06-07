@@ -73,13 +73,13 @@ public class DailyTaskController extends BaseController {
     }
 
     @PostMapping("/advert-round")
-    public R dailyRound(SysJob sysJob) throws ParseException {
+    public R dailyRound(SysJob sysJob) {
         task.dailyAdvertRound();
         return R.ok();
     }
 
     @PostMapping("/advert-round-filter")
-    public R dailyRoundFilterTime(SysJob sysJob) throws ParseException {
+    public R dailyRoundFilterTime(SysJob sysJob) {
         task.saveAdvertDeadlineToRedis();
         return R.ok();
     }
