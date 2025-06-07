@@ -18,7 +18,7 @@ import java.util.List;
 @Data
 @Builder
 @Accessors(chain = true)
-public class StoreProdFuzzyResDTO {
+public class StoreProdFuzzyColorResDTO {
 
     @ApiModelProperty("档口商品ID")
     private Long storeProdId;
@@ -27,11 +27,11 @@ public class StoreProdFuzzyResDTO {
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
     @ApiModelProperty("商品下颜色列表")
-    private List<StoreProdFuzzyColorResDTO> colorList;
+    private List<SPFCColorDTO> colorList;
 
     @Data
     @RequiredArgsConstructor
-    public static class StoreProdFuzzyColorResDTO {
+    public static class SPFCColorDTO {
         @ApiModelProperty("档口颜色ID")
         private Long storeColorId;
         @ApiModelProperty("颜色名称")

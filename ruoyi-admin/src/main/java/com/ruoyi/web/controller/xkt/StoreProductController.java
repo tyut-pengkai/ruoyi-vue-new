@@ -45,17 +45,17 @@ public class StoreProductController extends XktBaseController {
     }
 
     /**
-     * 模糊查询档口商品
+     * 模糊查询档口商品（返回商品下颜色列表）
      */
     @ApiOperation(value = "模糊查询档口商品", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy/color")
-    public R<List<StoreProdFuzzyResVO>> fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
-                                                            @RequestParam("storeId") Long storeId) {
-        return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryList(storeId, prodArtNum), StoreProdFuzzyResVO.class));
+    public R<List<StoreProdFuzzyColorResVO>> fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
+                                                                 @RequestParam("storeId") Long storeId) {
+        return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryColorList(storeId, prodArtNum), StoreProdFuzzyColorResVO.class));
     }
 
     /**
-     * 模糊查询档口商品
+     * 模糊查询档口商品（返回商品主图）
      */
     @ApiOperation(value = "模糊查询档口商品", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy/pic")
@@ -63,6 +63,17 @@ public class StoreProductController extends XktBaseController {
                                                                 @RequestParam("storeId") Long storeId) {
         return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryResPicList(storeId, prodArtNum), StoreProdFuzzyResPicVO.class));
     }
+
+    /**
+     * 推广营销（新品馆）模糊查询最新20天上新商品
+     */
+    @ApiOperation(value = "推广营销（新品馆）模糊查询最新20天上新商品", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/fuzzy/latest20")
+    public R<List<StoreProdFuzzyLatest20ResVO>> fuzzyQueryLatest20List(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
+                                                                @RequestParam("storeId") Long storeId) {
+        return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryLatest20List(storeId, prodArtNum), StoreProdFuzzyLatest20ResVO.class));
+    }
+
 
     /**
      * 查询档口商品列表
@@ -135,9 +146,18 @@ public class StoreProductController extends XktBaseController {
     @Log(title = "修改档口商品状态", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "修改档口商品状态", httpMethod = "PUT", response = R.class)
     @PutMapping("/prod-status")
-    public R editProdStatus(@Validated @RequestBody StoreProdStatusVO prodStatusVO) throws IOException {
-        storeProdService.updateStoreProductStatus(BeanUtil.toBean(prodStatusVO, StoreProdStatusDTO.class));
-        return R.ok();
+    public R<Integer> editProdStatus(@Validated @RequestBody StoreProdStatusVO prodStatusVO) throws IOException {
+        return R.ok(storeProdService.updateStoreProductStatus(BeanUtil.toBean(prodStatusVO, StoreProdStatusDTO.class)));
+    }
+
+    /**
+     * 删除商品
+     */
+    @Log(title = "删除商品", businessType = BusinessType.DELETE)
+    @ApiOperation(value = "删除商品", httpMethod = "DELETE", response = R.class)
+    @DeleteMapping()
+    public R<Integer> batchDelete(@Validated @RequestBody StoreProdDeleteVO deleteVO) throws IOException {
+        return R.ok(storeProdService.batchDelete(BeanUtil.toBean(deleteVO, StoreProdDeleteDTO.class)));
     }
 
     /**

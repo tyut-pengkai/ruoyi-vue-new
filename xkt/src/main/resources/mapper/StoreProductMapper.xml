@@ -16,6 +16,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 LEFT JOIN sys_file sf ON spf.file_id = sf.id
         WHERE
             sp.del_flag = 0
+          AND sp.prod_status IN (2,3)
           AND spf.order_num = 1
           AND spf.file_type = 1
           AND sp.store_id = #{storeId}
@@ -97,6 +98,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             LEFT JOIN sys_file sf ON spf.file_id = sf.id
         WHERE
             sp.del_flag = 0
+            AND sp.prod_status IN (2,3)
             AND sp.id IN
             <foreach item="id" collection="storeProdIdList" open="(" separator="," close=")">
                 #{id}
@@ -132,6 +134,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             LEFT JOIN sys_product_category spc ON sp.prod_cate_id = spc.id
         WHERE
             sp.del_flag = 0
+            AND sp.prod_status IN (2,3)
             AND sp.id IN
             <foreach item="id" collection="storeProdIdList" open="(" separator="," close=")">
                 #{id}
@@ -164,6 +167,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 LEFT JOIN daily_prod_tag dpt ON sp.id = dpt.store_prod_id AND dpt.del_flag = 0
         WHERE
             sp.del_flag = 0
+            AND sp.prod_status IN (2,3)
             AND sp.id IN
             <foreach item="id" collection="storeProdIdList" open="(" separator="," close=")">
                 #{id}

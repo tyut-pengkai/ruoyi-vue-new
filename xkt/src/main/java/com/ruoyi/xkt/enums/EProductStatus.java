@@ -1,5 +1,7 @@
 package com.ruoyi.xkt.enums;
 
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.exception.ServiceException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -26,7 +28,7 @@ public enum EProductStatus {
                 return e;
             }
         }
-        return null;
+        throw new ServiceException("未知商品状态", HttpStatus.ERROR);
     }
 
     /**

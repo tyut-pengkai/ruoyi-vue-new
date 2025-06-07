@@ -63,7 +63,7 @@ public interface IStoreProductService {
      *
      * @param prodStatusDTO 更新状态入参
      */
-    void updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO) throws IOException;
+    Integer updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO) throws IOException;
 
     /**
      * 根据档口ID和商品货号模糊查询货号列表
@@ -72,7 +72,7 @@ public interface IStoreProductService {
      * @param prodArtNum 商品货号
      * @return List<StoreProdFuzzyResDTO>
      */
-    List<StoreProdFuzzyResDTO> fuzzyQueryList(Long storeId, String prodArtNum);
+    List<StoreProdFuzzyColorResDTO> fuzzyQueryColorList(Long storeId, String prodArtNum);
 
     /**
      * 根据档口ID和商品货号模糊查询货号列表，返回数据带上商品主图
@@ -141,4 +141,21 @@ public interface IStoreProductService {
      * @return StoreProdStatusCateCountResDTO
      */
     List<StoreProdStatusCateCountResDTO> getStatusCateNum(StoreProdStatusCateNumDTO dto);
+
+    /**
+     * 删除商品
+     *
+     * @param deleteDTO 删除商品入参
+     * @return Integer
+     */
+    Integer batchDelete(StoreProdDeleteDTO deleteDTO) throws IOException;
+
+    /**
+     * 推广营销查询最近20天上新商品
+     *
+     * @param storeId    档口ID
+     * @param prodArtNum 商品货号
+     * @return List<StoreProdFuzzyLatest20ResDTO>
+     */
+    List<StoreProdFuzzyLatest20ResDTO> fuzzyQueryLatest20List(Long storeId, String prodArtNum);
 }

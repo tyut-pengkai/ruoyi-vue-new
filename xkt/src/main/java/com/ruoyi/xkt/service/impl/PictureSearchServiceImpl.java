@@ -100,7 +100,7 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
         if (CollectionUtils.isEmpty(results)) {
             return BeanUtil.copyToList(picSearchAdverts, StoreProdViewDTO.class);
         }
-        // 档口商品显示的基本属性
+        // 档口商品显示的基本属性 数据库筛选，必须要带prodStatus，因为图搜搜出来的可能是下架的商品
         List<StoreProdViewDTO> storeProdViewAttrList = this.storeProdMapper.getStoreProdViewAttr(results.stream()
                         .map(ProductMatchDTO::getStoreProductId).distinct().collect(Collectors.toList()),
                 java.sql.Date.valueOf(LocalDate.now().minusMonths(2)), java.sql.Date.valueOf(LocalDate.now()));
