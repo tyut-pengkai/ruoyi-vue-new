@@ -28,6 +28,8 @@ public class ShoppingCartDTO {
     private Long storeProdId;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
+    @ApiModelProperty(value = "商品主图")
+    private String mainPicUrl;
     @ApiModelProperty(value = "进货车明细列表")
     List<SCDetailDTO> detailList;
 

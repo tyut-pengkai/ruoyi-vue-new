@@ -53,18 +53,6 @@ public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
                                                          @Param("storeProdIdList") List<Long> storeProdIdList);
 
     /**
-     * 查询所有的商品主图
-     *
-     * @param storeProdId 档口商品ID
-     * @param storeId     档口ID
-     * @param fileType    文件类型
-     * @return
-     */
-    List<StoreProdFileResDTO> selectTotalMainPicList(@Param("storeProdId") Long storeProdId,
-                                                     @Param("storeId") Long storeId,
-                                                     @Param("fileType") Integer fileType);
-
-    /**
      * 根据storeProdIdList 查询所有主图
      *
      * @param storeProdIdList 商品ID列表

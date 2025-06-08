@@ -69,8 +69,6 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         // TODO 判断当前登录用户角色，只有电商卖家才可操作，其它角色不允许操作，直接报错
 
 
-
-
         // 判断当前商品是否已添加过进货车
        /* List<ShoppingCart> existList = this.shopCartMapper.selectList(new LambdaQueryWrapper<ShoppingCart>()
                 .eq(ShoppingCart::getUserId, loginUser.getUserId()).eq(ShoppingCart::getStoreProdId, shoppingCartDTO.getStoreProdId())
@@ -287,6 +285,10 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 .in(ShoppingCartDetail::getShoppingCartId, shoppingCartList.stream().map(ShoppingCart::getId).collect(Collectors.toList()))
                 .eq(ShoppingCartDetail::getDelFlag, Constants.UNDELETED));
         Map<Long, List<ShoppingCartDetail>> detailMap = detailList.stream().collect(Collectors.groupingBy(ShoppingCartDetail::getShoppingCartId));
+        // 商品第一张主图
+        List<StoreProdMainPicDTO> mainPicList = this.prodFileMapper.selectMainPicByStoreProdIdList(listDTO.getStoreProdIdList(), FileType.MAIN_PIC.getValue(), ORDER_NUM_1);
+        Map<Long, String> mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
+                .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
         // 获取明细商品的价格
         List<StoreProductColorPrice> priceList = this.prodColorPriceMapper.selectList(new LambdaQueryWrapper<StoreProductColorPrice>()
                 .in(StoreProductColorPrice::getStoreProdId, shoppingCartList.stream().map(ShoppingCart::getStoreProdId).collect(Collectors.toList()))
@@ -304,7 +306,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         Map<String, Long> priceSizeMap = priceSizeList.stream().collect(Collectors
                 .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString() + x.getSize(), StoreProductColorSize::getId));
         return shoppingCartList.stream().map(x -> {
-            ShoppingCartDTO shopCartDTO = BeanUtil.toBean(x, ShoppingCartDTO.class)
+            ShoppingCartDTO shopCartDTO = BeanUtil.toBean(x, ShoppingCartDTO.class).setMainPicUrl(mainPicMap.get(x.getStoreProdId()))
                     .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(x.getStoreId())) ? storeMap.get(x.getStoreId()).getStoreName() : "");
             List<ShoppingCartDTO.SCDetailDTO> shopCartDetailList = detailMap.get(x.getId()).stream().map(detail -> {
                 final BigDecimal price = ObjectUtils.defaultIfNull(priceMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString()), BigDecimal.ZERO);
