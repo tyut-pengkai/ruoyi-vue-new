@@ -1,8 +1,16 @@
 package com.ruoyi.framework.config;
 
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.sign.Md5Utils;
+import com.ruoyi.framework.config.properties.PermitAllUrlProperties;
+import com.ruoyi.framework.security.filter.JwtAuthenticationTokenFilter;
+import com.ruoyi.framework.security.handle.AuthenticationEntryPointImpl;
+import com.ruoyi.framework.security.handle.LogoutSuccessHandlerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -12,14 +20,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
-import com.ruoyi.framework.config.properties.PermitAllUrlProperties;
-import com.ruoyi.framework.security.filter.JwtAuthenticationTokenFilter;
-import com.ruoyi.framework.security.handle.AuthenticationEntryPointImpl;
-import com.ruoyi.framework.security.handle.LogoutSuccessHandlerImpl;
 
 /**
  * spring security配置
@@ -34,7 +39,15 @@ public class SecurityConfig
      * 自定义用户认证逻辑
      */
     @Autowired
+    @Qualifier("userDetailsServiceImpl")
     private UserDetailsService userDetailsService;
+
+    /**
+     * 自定义用户认证逻辑
+     */
+    @Autowired
+    @Qualifier("mobileUserDetailsServiceImpl")
+    private UserDetailsService mobileUserDetailsService;
     
     /**
      * 认证失败处理类
@@ -67,14 +80,26 @@ public class SecurityConfig
     private PermitAllUrlProperties permitAllUrl;
 
     /**
-     * 身份验证实现
+     * PC端后台身份验证实现
      */
-    @Bean
-    public AuthenticationManager authenticationManager()
+    @Bean("pcAuthenticationManager")
+    @Primary
+    public AuthenticationManager pcAuthenticationManager()
     {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
+        return new ProviderManager(daoAuthenticationProvider);
+    }
+
+    /**
+     * 移动端端后台身份验证实现
+     */
+    @Bean("mobileAuthenticationManager")
+    public AuthenticationManager mobileAuthenticationManager() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(mobileUserDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(md5PasswordEncoder());
         return new ProviderManager(daoAuthenticationProvider);
     }
 
@@ -135,5 +160,32 @@ public class SecurityConfig
     public BCryptPasswordEncoder bCryptPasswordEncoder()
     {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * 自定义MD5加密实现 by liyj
+     */
+    @Bean
+    public PasswordEncoder md5PasswordEncoder() {
+        return new PasswordEncoder(){
+
+            @Override
+            public String encode(CharSequence rawPassword) {
+                if (rawPassword == null) {
+                    throw new IllegalArgumentException("rawPassword cannot be null");
+                } else {
+                    return Md5Utils.hash(rawPassword.toString());
+                }
+            }
+
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                if (rawPassword == null) {
+                    throw new IllegalArgumentException("rawPassword cannot be null");
+                } else {
+                    return StringUtils.equalsIgnoreCase(encode(rawPassword), encodedPassword);
+                }
+            }
+        };
     }
 }

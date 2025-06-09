@@ -185,6 +185,18 @@
                 <version>${ruoyi.version}</version>
             </dependency>
 
+            <!-- jcloud模块-->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>ruoyi-rs-core</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>ruoyi-rs-jcloud</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -195,6 +207,8 @@
         <module>ruoyi-quartz</module>
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
+        <module>ruoyi-rs-core</module>
+        <module>ruoyi-rs-jcloud</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -1,6 +1,7 @@
 package com.ruoyi.framework.web.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
@@ -56,11 +57,15 @@ public class GlobalExceptionHandler
      * 业务异常
      */
     @ExceptionHandler(ServiceException.class)
-    public AjaxResult handleServiceException(ServiceException e, HttpServletRequest request)
+    public AjaxResult handleServiceException(ServiceException e, HttpServletRequest request, HttpServletResponse response)
     {
         log.error(e.getMessage(), e);
         Integer code = e.getCode();
-        return StringUtils.isNotNull(code) ? AjaxResult.error(code, e.getMessage()) : AjaxResult.error(e.getMessage());
+        AjaxResult result = StringUtils.isNotNull(code) ? AjaxResult.error(code, e.getMessage()) : AjaxResult.error(e.getMessage());
+        if(!response.isCommitted()){
+            response.setStatus(Convert.toInt(result.get(AjaxResult.CODE_TAG)));
+        }
+        return result;
     }
 
     /**

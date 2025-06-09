@@ -12,7 +12,7 @@ import java.util.Set;
  * 
  * @author ruoyi
  */
-public class LoginUser implements UserDetails
+public class LoginUser extends AbstractLoginUser
 {
     private static final long serialVersionUID = 1L;
 

@@ -7,7 +7,7 @@ ruoyi:
   # 版权年份
   copyrightYear: 2025
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: D:/ruoyi/uploadPath
+  profile: /Users/juincenlee/dev/RuoYi-Vue/uploadPath
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证
@@ -16,7 +16,7 @@ ruoyi:
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 8080
+  port: 9000
   servlet:
     # 应用的访问路径
     context-path: /
@@ -97,13 +97,18 @@ token:
   secret: abcdefghijklmnopqrstuvwxyz
   # 令牌有效期（默认30分钟）
   expireTime: 30
+  app-header: AuthToken
+  app-secret: abcdefghijklmnopqrstuvwxyz
+  app-expireTime: 10080
 
 # MyBatis配置
 mybatis:
   # 搜索指定包别名
   typeAliasesPackage: com.ruoyi.**.domain
   # 配置mapper的扫描，找到所有的mapper.xml映射文件
-  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  mapperLocations: classpath*:mapper/**/*Mapper.xml,com/ruoyi/**/*Mapper.xml
+#    - classpath*:com/ruoyi/**/*Mapper.xml      # 扫描 java 目录下包路径里的 XML
+#    - classpath*:mapper/**/*Mapper.xml         # 原 resources 下的 XML 扫描
   # 加载全局的配置文件
   configLocation: classpath:mybatis/mybatis-config.xml
 

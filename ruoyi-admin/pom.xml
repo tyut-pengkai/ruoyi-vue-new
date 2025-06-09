@@ -54,6 +54,16 @@
             <artifactId>ruoyi-generator</artifactId>
         </dependency>
 
+        <!-- 红石的模块-->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-rs-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-rs-jcloud</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

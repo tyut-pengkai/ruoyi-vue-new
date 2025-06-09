@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.rs.jcloud.mybatis.dao.TIotDragonBowlMapper">
+    <resultMap id="BaseResultMap" type="com.ruoyi.rs.jcloud.mybatis.domain.TIotDragonBowl">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="status" jdbcType="VARCHAR" property="status" />
+        <result column="fixed_time_open_1" jdbcType="VARCHAR" property="fixedTimeOpen1" />
+        <result column="fixed_time_open_2" jdbcType="VARCHAR" property="fixedTimeOpen2" />
+        <result column="fixed_time_open_3" jdbcType="VARCHAR" property="fixedTimeOpen3" />
+        <result column="fixed_time_close_1" jdbcType="VARCHAR" property="fixedTimeClose1" />
+        <result column="fixed_time_close_2" jdbcType="VARCHAR" property="fixedTimeClose2" />
+        <result column="fixed_time_close_3" jdbcType="VARCHAR" property="fixedTimeClose3" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or" >
+                <if test="criteria.valid" >
+                    <trim prefix="(" suffix=")" prefixOverrides="and" >
+                        <foreach collection="criteria.criteria" item="criterion" >
+                            <choose >
+                                <when test="criterion.noValue" >
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue" >
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue" >
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue" >
+                                    and ${criterion.condition}
+                                <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                                    #{listItem}
+                                </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+        `id`,
+        `user_id`,
+        `status`,
+        `fixed_time_open_1`,
+        `fixed_time_open_2`,
+        `fixed_time_open_3`,
+        `fixed_time_close_1`,
+        `fixed_time_close_2`,
+        `fixed_time_close_3`,
+        `remark`
+    </sql>
+    <select id="selectByExample" parameterType="com.ruoyi.rs.jcloud.mybatis.domain.TIotDragonBowlExample" resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List" />
+        from t_iot_dragon_bowl
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_iot_dragon_bowl
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from t_iot_dragon_bowl
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteByExample" parameterType="com.ruoyi.rs.jcloud.mybatis.domain.TIotDragonBowlExample">
+        delete from t_iot_dragon_bowl
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause" />
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.ruoyi.rs.jcloud.mybatis.domain.TIotDragonBowl">
+        insert into t_iot_dragon_bowl (
+               `id`,
+               `user_id`,
+               `status`,
+               `fixed_time_open_1`,
+               `fixed_time_open_2`,
+               `fixed_time_open_3`,
+               `fixed_time_close_1`,
+               `fixed_time_close_2`,
+               `fixed_time_close_3`,
+               `remark`
+        )
+        values (
+               #{id,jdbcType=VARCHAR},
+               #{userId,jdbcType=VARCHAR},
+               #{status,jdbcType=VARCHAR},
+               #{fixedTimeOpen1,jdbcType=VARCHAR},
+               #{fixedTimeOpen2,jdbcType=VARCHAR},
+               #{fixedTimeOpen3,jdbcType=VARCHAR},
+               #{fixedTimeClose1,jdbcType=VARCHAR},
+               #{fixedTimeClose2,jdbcType=VARCHAR},
+               #{fixedTimeClose3,jdbcType=VARCHAR},
+               #{remark,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.ruoyi.rs.jcloud.mybatis.domain.TIotDragonBowl">
+        insert into t_iot_dragon_bowl
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                `id`,
+            </if>
+            <if test="userId != null">
+                `user_id`,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="fixedTimeOpen1 != null">
+                `fixed_time_open_1`,
+            </if>
+            <if test="fixedTimeOpen2 != null">
+                `fixed_time_open_2`,
+            </if>
+            <if test="fixedTimeOpen3 != null">
+                `fixed_time_open_3`,
+            </if>
+            <if test="fixedTimeClose1 != null">
+                `fixed_time_close_1`,
+            </if>
+            <if test="fixedTimeClose2 != null">
+                `fixed_time_close_2`,
+            </if>
+            <if test="fixedTimeClose3 != null">
+                `fixed_time_close_3`,
+            </if>
+            <if test="remark != null">
+                `remark`,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="fixedTimeOpen1 != null">
+                #{fixedTimeOpen1,jdbcType=VARCHAR},
+            </if>
+            <if test="fixedTimeOpen2 != null">
+                #{fixedTimeOpen2,jdbcType=VARCHAR},
+            </if>
+            <if test="fixedTimeOpen3 != null">
+                #{fixedTimeOpen3,jdbcType=VARCHAR},
+            </if>
+            <if test="fixedTimeClose1 != null">
+                #{fixedTimeClose1,jdbcType=VARCHAR},
+            </if>
+            <if test="fixedTimeClose2 != null">
+                #{fixedTimeClose2,jdbcType=VARCHAR},
+            </if>
+            <if test="fixedTimeClose3 != null">
+                #{fixedTimeClose3,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into t_iot_dragon_bowl (
+               `id`,
+               `user_id`,
+               `status`,
+               `fixed_time_open_1`,
+               `fixed_time_open_2`,
+               `fixed_time_open_3`,
+               `fixed_time_close_1`,
+               `fixed_time_close_2`,
+               `fixed_time_close_3`,
+               `remark`
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+        (
+               #{item.id,jdbcType=VARCHAR},
+               #{item.userId,jdbcType=VARCHAR},
+               #{item.status,jdbcType=VARCHAR},
+               #{item.fixedTimeOpen1,jdbcType=VARCHAR},
+               #{item.fixedTimeOpen2,jdbcType=VARCHAR},
+               #{item.fixedTimeOpen3,jdbcType=VARCHAR},
+               #{item.fixedTimeClose1,jdbcType=VARCHAR},
+               #{item.fixedTimeClose2,jdbcType=VARCHAR},
+               #{item.fixedTimeClose3,jdbcType=VARCHAR},
+               #{item.remark,jdbcType=VARCHAR}
+        )
+        </foreach>
+    </insert>
+    <select id="countByExample" parameterType="com.ruoyi.rs.jcloud.mybatis.domain.TIotDragonBowlExample" resultType="java.lang.Integer">
+        select count(*) from t_iot_dragon_bowl
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause" />
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update t_iot_dragon_bowl
+        <set>
+        <if test="record.id != null">
+            `id` = #{record.id,jdbcType=INTEGER},
+        </if>
+        <if test="record.userId != null">
+            `user_id` = #{record.userId,jdbcType=INTEGER},
+        </if>
+        <if test="record.status != null">
+            `status` = #{record.status,jdbcType=VARCHAR},
+        </if>
+        <if test="record.fixedTimeOpen1 != null">
+            `fixed_time_open_1` = #{record.fixedTimeOpen1,jdbcType=VARCHAR},
+        </if>
+        <if test="record.fixedTimeOpen2 != null">
+            `fixed_time_open_2` = #{record.fixedTimeOpen2,jdbcType=VARCHAR},
+        </if>
+        <if test="record.fixedTimeOpen3 != null">
+            `fixed_time_open_3` = #{record.fixedTimeOpen3,jdbcType=VARCHAR},
+        </if>
+        <if test="record.fixedTimeClose1 != null">
+            `fixed_time_close_1` = #{record.fixedTimeClose1,jdbcType=VARCHAR},
+        </if>
+        <if test="record.fixedTimeClose2 != null">
+            `fixed_time_close_2` = #{record.fixedTimeClose2,jdbcType=VARCHAR},
+        </if>
+        <if test="record.fixedTimeClose3 != null">
+            `fixed_time_close_3` = #{record.fixedTimeClose3,jdbcType=VARCHAR},
+        </if>
+        <if test="record.remark != null">
+            `remark` = #{record.remark,jdbcType=VARCHAR},
+        </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause" />
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update t_iot_dragon_bowl
+           set
+               `id` = #{record.id,jdbcType=INTEGER},
+               `user_id` = #{record.userId,jdbcType=INTEGER},
+               `status` = #{record.status,jdbcType=VARCHAR},
+               `fixed_time_open_1` = #{record.fixedTimeOpen1,jdbcType=VARCHAR},
+               `fixed_time_open_2` = #{record.fixedTimeOpen2,jdbcType=VARCHAR},
+               `fixed_time_open_3` = #{record.fixedTimeOpen3,jdbcType=VARCHAR},
+               `fixed_time_close_1` = #{record.fixedTimeClose1,jdbcType=VARCHAR},
+               `fixed_time_close_2` = #{record.fixedTimeClose2,jdbcType=VARCHAR},
+               `fixed_time_close_3` = #{record.fixedTimeClose3,jdbcType=VARCHAR},
+               `remark` = #{record.remark,jdbcType=VARCHAR}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause" />
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.rs.jcloud.mybatis.domain.TIotDragonBowl">
+        update t_iot_dragon_bowl
+        <set>
+        <if test="id != null">
+            `id` = #{id,jdbcType=INTEGER},
+        </if>
+        <if test="userId != null">
+            `user_id` = #{userId,jdbcType=INTEGER},
+        </if>
+        <if test="status != null">
+            `status` = #{status,jdbcType=VARCHAR},
+        </if>
+        <if test="fixedTimeOpen1 != null">
+            `fixed_time_open_1` = #{fixedTimeOpen1,jdbcType=VARCHAR},
+        </if>
+        <if test="fixedTimeOpen2 != null">
+            `fixed_time_open_2` = #{fixedTimeOpen2,jdbcType=VARCHAR},
+        </if>
+        <if test="fixedTimeOpen3 != null">
+            `fixed_time_open_3` = #{fixedTimeOpen3,jdbcType=VARCHAR},
+        </if>
+        <if test="fixedTimeClose1 != null">
+            `fixed_time_close_1` = #{fixedTimeClose1,jdbcType=VARCHAR},
+        </if>
+        <if test="fixedTimeClose2 != null">
+            `fixed_time_close_2` = #{fixedTimeClose2,jdbcType=VARCHAR},
+        </if>
+        <if test="fixedTimeClose3 != null">
+            `fixed_time_close_3` = #{fixedTimeClose3,jdbcType=VARCHAR},
+        </if>
+        <if test="remark != null">
+            `remark` = #{remark,jdbcType=VARCHAR},
+        </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.ruoyi.rs.jcloud.mybatis.domain.TIotDragonBowl">
+        update t_iot_dragon_bowl
+           set
+               `id` = #{id,jdbcType=INTEGER},
+               `user_id` = #{userId,jdbcType=INTEGER},
+               `status` = #{status,jdbcType=VARCHAR},
+               `fixed_time_open_1` = #{fixedTimeOpen1,jdbcType=VARCHAR},
+               `fixed_time_open_2` = #{fixedTimeOpen2,jdbcType=VARCHAR},
+               `fixed_time_open_3` = #{fixedTimeOpen3,jdbcType=VARCHAR},
+               `fixed_time_close_1` = #{fixedTimeClose1,jdbcType=VARCHAR},
+               `fixed_time_close_2` = #{fixedTimeClose2,jdbcType=VARCHAR},
+               `fixed_time_close_3` = #{fixedTimeClose3,jdbcType=VARCHAR},
+               `remark` = #{remark,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>
