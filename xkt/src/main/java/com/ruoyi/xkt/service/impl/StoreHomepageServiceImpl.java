@@ -181,10 +181,15 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream()
                 .collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, Function.identity()));
         return recommendList.stream().map(x -> {
-            StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
-            final List<String> tags = ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? Arrays.asList(dto.getTagStr().split(",")) : null;
-            return BeanUtil.toBean(dto, StoreRecommendResDTO.class).setTags(tags);
-        }).collect(Collectors.toList());
+                    StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
+                    if (ObjectUtils.isEmpty(dto)) {
+                        return null;
+                    }
+                    final List<String> tags = ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? Arrays.asList(dto.getTagStr().split(",")) : null;
+                    return BeanUtil.toBean(dto, StoreRecommendResDTO.class).setTags(tags);
+                })
+                .filter(ObjectUtils::isNotEmpty)
+                .collect(Collectors.toList());
     }
 
     /**

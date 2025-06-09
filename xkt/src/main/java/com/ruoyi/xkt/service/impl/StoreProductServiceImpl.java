@@ -483,8 +483,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<StoreProdFuzzyLatest20ResDTO> fuzzyQueryLatest20List(Long storeId, String prodArtNum) {
-        LocalDateTime daysAgo = LocalDateTime.now().minusDays(20).withHour(0).withMinute(0).withSecond(0);
+    public List<StoreProdFuzzyLatest20ResDTO> fuzzyQueryLatest30List(Long storeId, String prodArtNum) {
+        LocalDateTime daysAgo = LocalDateTime.now().minusDays(30).withHour(0).withMinute(0).withSecond(0);
         LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
                 .between(StoreProduct::getCreateTime, daysAgo, LocalDateTime.now());

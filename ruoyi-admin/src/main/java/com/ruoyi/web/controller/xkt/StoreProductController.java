@@ -65,13 +65,13 @@ public class StoreProductController extends XktBaseController {
     }
 
     /**
-     * 推广营销（新品馆）模糊查询最新20天上新商品
+     * 推广营销（新品馆）模糊查询最新30天上新商品
      */
-    @ApiOperation(value = "推广营销（新品馆）模糊查询最新20天上新商品", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/fuzzy/latest20")
-    public R<List<StoreProdFuzzyLatest20ResVO>> fuzzyQueryLatest20List(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
+    @ApiOperation(value = "推广营销（新品馆）模糊查询最新30天上新商品", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/fuzzy/latest30")
+    public R<List<StoreProdFuzzyLatest20ResVO>> fuzzyQueryLatest30List(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
                                                                 @RequestParam("storeId") Long storeId) {
-        return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryLatest20List(storeId, prodArtNum), StoreProdFuzzyLatest20ResVO.class));
+        return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryLatest30List(storeId, prodArtNum), StoreProdFuzzyLatest20ResVO.class));
     }
 
 

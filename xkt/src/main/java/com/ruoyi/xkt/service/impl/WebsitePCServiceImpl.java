@@ -1666,12 +1666,12 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     .build();
             boolQuery.filter(f -> f.terms(t -> t.field("season.keyword").terms(termsQueryField)));
         }
-        // 如果是按照时间过滤，则表明是“新品”，则限制 时间范围 20天前到现在
+        // 如果是按照时间过滤，则表明是“新品”，则限制 时间范围 30天前到现在
         if (Objects.equals(searchDTO.getSort(), "createTime")) {
             // 当前时间
             final String nowStr = DateUtils.getTime();
-            // 当前时间往前推20天，获取当天的0点0分0秒
-            LocalDateTime ago = LocalDateTime.now().minusDays(20).withHour(0).withMinute(0).withSecond(0);
+            // 当前时间往前推30天，获取当天的0点0分0秒
+            LocalDateTime ago = LocalDateTime.now().minusDays(30).withHour(0).withMinute(0).withSecond(0);
             // ago 转化为 yyyy-MM-dd HH:mm:ss
             String agoStr = ago.format(DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS));
             RangeQuery.Builder builder = new RangeQuery.Builder();

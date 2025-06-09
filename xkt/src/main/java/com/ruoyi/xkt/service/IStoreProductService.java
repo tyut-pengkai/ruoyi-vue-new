@@ -151,11 +151,11 @@ public interface IStoreProductService {
     Integer batchDelete(StoreProdDeleteDTO deleteDTO) throws IOException;
 
     /**
-     * 推广营销查询最近20天上新商品
+     * 推广营销查询最近30天上新商品
      *
      * @param storeId    档口ID
      * @param prodArtNum 商品货号
      * @return List<StoreProdFuzzyLatest20ResDTO>
      */
-    List<StoreProdFuzzyLatest20ResDTO> fuzzyQueryLatest20List(Long storeId, String prodArtNum);
+    List<StoreProdFuzzyLatest20ResDTO> fuzzyQueryLatest30List(Long storeId, String prodArtNum);
 }
