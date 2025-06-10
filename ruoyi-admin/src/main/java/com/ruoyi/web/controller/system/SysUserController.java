@@ -11,18 +11,19 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.entity.SysUser;
-import com.ruoyi.common.core.domain.model.UserInfo;
-import com.ruoyi.common.core.domain.model.UserInfoEdit;
-import com.ruoyi.common.core.domain.model.UserListItem;
-import com.ruoyi.common.core.domain.model.UserQuery;
+import com.ruoyi.common.core.domain.model.*;
 import com.ruoyi.common.core.page.PageVO;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.framework.web.service.TokenService;
+import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.web.controller.system.vo.*;
 import com.ruoyi.web.controller.xkt.vo.IdsVO;
+import com.ruoyi.web.controller.xkt.vo.PhoneNumberVO;
+import com.ruoyi.web.controller.xkt.vo.UsernameVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  *
  * @author ruoyi
  */
-@Api(tags = "用户信息")
+@Api(tags = "系统用户/档口子用户")
 @RestController
 @RequestMapping("/rest/v1/sys/user")
 public class SysUserController extends BaseController {
@@ -50,7 +50,11 @@ public class SysUserController extends BaseController {
     @Autowired
     private ISysUserService userService;
     @Autowired
+    private ISysRoleService roleService;
+    @Autowired
     private TokenService tokenService;
+    @Autowired
+    private SysLoginService loginService;
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "用户分页查询 - 管理员")
@@ -66,16 +70,18 @@ public class SysUserController extends BaseController {
     @ApiOperation(value = "用户分页查询 - 档口")
     @PostMapping("/store/page")
     public R<PageVO<UserListItemVO>> pageByStore(@Validated @RequestBody UserQueryVO vo) {
+        Long storeId = SecurityUtils.getStoreId();
+        Assert.notNull(storeId);
         UserQuery query = BeanUtil.toBean(vo, UserQuery.class);
         // 只能查询当前档口
-        query.setStoreIds(Collections.singletonList(SecurityUtils.getStoreId()));
+        query.setStoreIds(Collections.singletonList(storeId));
         Page<UserListItem> page = PageHelper.startPage(vo.getPageNum(), vo.getPageSize());
         userService.listUser(query);
         return R.ok(PageVO.of(page, UserListItemVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
-    @ApiOperation(value = "用户详情")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @ApiOperation(value = "用户详情 - 管理员")
     @GetMapping(value = "/{id}")
     public R<UserInfoVO> getInfo(@PathVariable("id") Long id) {
         UserInfo infoDTO = userService.getUserById(id);
@@ -85,9 +91,33 @@ public class SysUserController extends BaseController {
         return R.ok(vo);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')")
+    @ApiOperation(value = "用户详情 - 档口")
+    @GetMapping(value = "/store/{id}")
+    public R<UserInfoVO> getInfoByStore(@PathVariable("id") Long id) {
+        Long storeId = SecurityUtils.getStoreId();
+        Assert.notNull(storeId);
+        UserInfo infoDTO = userService.getUserById(id);
+        boolean access = CollUtil.emptyIfNull(infoDTO.getRoles())
+                .stream()
+                .anyMatch(o -> Objects.equals(o.getStoreId(), storeId));
+        if (!access) {
+            return R.ok();
+        }
+        Set<Long> subRoleIds = roleService.getSubRoleIdsByStore(storeId);
+        UserInfoVO vo = BeanUtil.toBean(infoDTO, UserInfoVO.class);
+        // 只展示当前档口角色
+        vo.setRoles(CollUtil.emptyIfNull(vo.getRoles())
+                .stream()
+                .filter(r -> subRoleIds.contains(r.getRoleId()))
+                .collect(Collectors.toList()));
+        vo.setRoleIds(vo.getRoles().stream().map(RoleInfoVO::getRoleId).collect(Collectors.toList()));
+        return R.ok(vo);
+    }
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.INSERT)
-    @ApiOperation("创建用户")
+    @ApiOperation("创建用户 - 管理员")
     @PostMapping("create")
     public R<Long> create(@Valid @RequestBody UserInfoEditVO vo) {
         UserInfoEdit dto = BeanUtil.toBean(vo, UserInfoEdit.class);
@@ -96,9 +126,43 @@ public class SysUserController extends BaseController {
         return R.ok(userId);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')")
+    @ApiOperation(value = "发送子账号创建短信验证码 - 档口")
+    @PostMapping("/store/sendSmsVerificationCode")
+    public R sendSmsVerificationCode(@Validated @RequestBody PhoneNumberVO vo) {
+        loginService.sendSmsVerificationCode(vo.getPhoneNumber(), false, null, null);
+        return R.ok();
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('store')")
+    @Log(title = "用户管理", businessType = BusinessType.INSERT)
+    @ApiOperation("创建用户 - 档口")
+    @PostMapping("/store/create")
+    public R<Long> createByStore(@Valid @RequestBody UserInfoEditByStoreVO vo) {
+        Long storeId = SecurityUtils.getStoreId();
+        Assert.notNull(storeId);
+        Assert.notEmpty(vo.getPhonenumber(), "手机号不能为空");
+        Assert.notEmpty(vo.getUserName(), "账号名称不能为空");
+        //短信验证码
+        loginService.validateSmsVerificationCode(vo.getPhonenumber(), vo.getCode());
+        UserInfoEdit dto = BeanUtil.toBean(vo, UserInfoEdit.class);
+        dto.setUserId(null);
+        //昵称默认手机号
+        dto.setNickName(dto.getPhonenumber());
+        Set<Long> subRoleIds = roleService.getSubRoleIdsByStore(storeId);
+        if (CollUtil.isEmpty(dto.getRoleIds())) {
+            dto.setRoleIds(Collections.singletonList(ESystemRole.SELLER.getId()));
+        } else {
+            dto.getRoleIds().forEach(roleId -> Assert.isTrue(subRoleIds.contains(roleId), "角色非法"));
+            dto.getRoleIds().add(ESystemRole.SELLER.getId());
+        }
+        Long userId = userService.createUser(dto);
+        return R.ok(userId);
+    }
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
-    @ApiOperation("修改用户")
+    @ApiOperation("修改用户 - 管理员")
     @PostMapping("edit")
     public R<Long> edit(@Valid @RequestBody UserInfoEditVO vo) {
         Assert.notNull(vo.getUserId(), "用户ID不能为空");
@@ -109,9 +173,42 @@ public class SysUserController extends BaseController {
         return R.ok(userId);
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')")
+    @Log(title = "用户管理", businessType = BusinessType.UPDATE)
+    @ApiOperation("修改用户 - 档口")
+    @PostMapping("/store/edit")
+    public R<Long> editByStore(@Valid @RequestBody UserInfoEditByStoreVO vo) {
+        Long storeId = SecurityUtils.getStoreId();
+        Assert.notNull(storeId);
+        Assert.notEmpty(vo.getPhonenumber(), "用户手机号不能为空");
+        Set<Long> subRoleIds = roleService.getSubRoleIdsByStore(storeId);
+        UserInfo info = userService.getUserByPhoneNumber(vo.getPhonenumber());
+        Assert.notNull(info, "用户不存在");
+        List<Long> roleIds = new ArrayList<>();
+        List<Long> csRoleIds = new ArrayList<>();
+        for (RoleInfo roleInfo : CollUtil.emptyIfNull(info.getRoles())) {
+            if (subRoleIds.contains(roleInfo.getRoleId())) {
+                csRoleIds.add(roleInfo.getRoleId());
+            } else {
+                roleIds.add(roleInfo.getRoleId());
+            }
+        }
+        if (csRoleIds.isEmpty()) {
+            //原来不是当前档口子账号，校验短信验证码
+            loginService.validateSmsVerificationCode(vo.getPhonenumber(), vo.getCode());
+        }
+        UserInfoEdit dto = BeanUtil.toBean(info, UserInfoEdit.class);
+        roleIds.addAll(CollUtil.emptyIfNull(vo.getRoleIds()));
+        dto.setRoleIds(roleIds);
+        Long userId = userService.updateUser(dto);
+        // 清除用户缓存（退出登录）
+        tokenService.deleteCacheUser(userId);
+        return R.ok(userId);
+    }
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.EXPORT)
-    @ApiOperation("导出")
+    @ApiOperation("导出 - 管理员")
     @PostMapping("/export")
     public void export(@Validated @RequestBody UserQueryVO vo, HttpServletResponse response) {
         UserQuery query = BeanUtil.toBean(vo, UserQuery.class);
@@ -122,7 +219,7 @@ public class SysUserController extends BaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.IMPORT)
-    @ApiOperation("导入")
+    @ApiOperation("导入 - 管理员")
     @PostMapping("/importData")
     public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception {
         ExcelUtil<SysUser> util = new ExcelUtil<SysUser>(SysUser.class);
@@ -133,7 +230,7 @@ public class SysUserController extends BaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @ApiOperation("导入模板")
+    @ApiOperation("导入模板 - 管理员")
     @PostMapping("/importTemplate")
     public void importTemplate(HttpServletResponse response) {
         ExcelUtil<SysUser> util = new ExcelUtil<SysUser>(SysUser.class);
@@ -143,7 +240,7 @@ public class SysUserController extends BaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
-    @ApiOperation("删除用户")
+    @ApiOperation("删除用户 - 管理员")
     @PostMapping("/remove")
     public R<Integer> remove(@Validated @RequestBody IdsVO vo) {
         int count = userService.batchDeleteUser(vo.getIds());
@@ -154,9 +251,31 @@ public class SysUserController extends BaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
-    @ApiOperation("修改用户状态")
+    @ApiOperation("修改用户状态 - 管理员")
     @PostMapping("/changeStatus")
     public R<Integer> changeStatus(@Validated @RequestBody BatchOptStatusVO vo) {
+        int count = userService.batchUpdateUserStatus(vo.getIds(), vo.getStatus());
+        if (!Constants.SYS_NORMAL_STATUS.equals(vo.getStatus())) {
+            // 清除用户缓存（退出登录）
+            tokenService.deleteCacheUser(vo.getIds());
+        }
+        return R.ok(count);
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('store')")
+    @Log(title = "用户管理", businessType = BusinessType.UPDATE)
+    @ApiOperation("修改用户状态 - 档口")
+    @PostMapping("/store/changeStatus")
+    public R<Integer> changeStatusByStore(@Validated @RequestBody BatchOptStatusVO vo) {
+        Long storeId = SecurityUtils.getStoreId();
+        Assert.notNull(storeId);
+        Assert.isTrue(vo.getIds().size() == 1, "档口不支持同时修改多个用户的状态");
+        UserInfo info = userService.getUserById(vo.getIds().get(0));
+        Set<Long> subRoleIds = roleService.getSubRoleIdsByStore(storeId);
+        boolean accessOpt = CollUtil.emptyIfNull(info.getRoles())
+                .stream()
+                .anyMatch(roleInfo -> subRoleIds.contains(roleInfo.getRoleId()));
+        Assert.isTrue(accessOpt, "当前角色无权修改用户状态");
         int count = userService.batchUpdateUserStatus(vo.getIds(), vo.getStatus());
         if (!Constants.SYS_NORMAL_STATUS.equals(vo.getStatus())) {
             // 清除用户缓存（退出登录）
@@ -169,11 +288,29 @@ public class SysUserController extends BaseController {
      * 重置密码
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @ApiOperation("重置密码")
+    @ApiOperation("重置密码 - 管理员")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PostMapping("/resetPwd")
     public R resetPwd(@Validated @RequestBody PwdResetVO vo) {
         userService.resetPassword(vo.getId(), vo.getNewPwd());
         return R.ok();
+    }
+
+    @ApiOperation(value = "手机号是否已注册")
+    @PostMapping("/isPhoneNumberRegistered")
+    public R<Boolean> isPhoneNumberRegistered(@Validated @RequestBody PhoneNumberVO phoneNumberVO) {
+        SysUser u = new SysUser();
+        u.setPhonenumber(phoneNumberVO.getPhoneNumber());
+        boolean unique = userService.checkPhoneUnique(u);
+        return R.ok(!unique);
+    }
+
+    @ApiOperation(value = "账号名称是否已注册")
+    @PostMapping("/isUsernameRegistered")
+    public R<Boolean> isUsernameRegistered(@Validated @RequestBody UsernameVO usernameVO) {
+        SysUser u = new SysUser();
+        u.setUserName(usernameVO.getUserName());
+        boolean unique = userService.checkUserNameUnique(u);
+        return R.ok(!unique);
     }
 }

@@ -1,6 +1,8 @@
 package com.ruoyi.common.core.page;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.ListUtil;
+import com.ruoyi.common.core.domain.vo.BasePageVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,6 +45,10 @@ public class PageVO<T> implements Serializable {
     public static <T> PageVO<T> of(com.github.pagehelper.Page page, Class<T> clazz) {
         return new PageVO<>((long) page.getPageNum(), (long) page.getPageSize(), page.getTotal(),
                 BeanUtil.copyToList(page.getResult(), clazz));
+    }
+
+    public static <T, E extends BasePageVO> PageVO<T> empty(E params) {
+        return new PageVO((long) params.getPageNum(), (long) params.getPageSize(), 0L, ListUtil.empty());
     }
 
 }

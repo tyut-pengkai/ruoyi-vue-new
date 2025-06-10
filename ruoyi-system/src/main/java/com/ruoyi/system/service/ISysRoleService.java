@@ -3,6 +3,7 @@ package com.ruoyi.system.service;
 import com.ruoyi.common.core.domain.model.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 角色业务层
@@ -81,4 +82,12 @@ public interface ISysRoleService {
      * @return
      */
     List<RoleSelectItem> listRoleSelectItem(Long userId);
+
+    /**
+     * 获取档口子角色ID
+     *
+     * @param storeId
+     * @return
+     */
+    Set<Long> getSubRoleIdsByStore(Long storeId);
 }

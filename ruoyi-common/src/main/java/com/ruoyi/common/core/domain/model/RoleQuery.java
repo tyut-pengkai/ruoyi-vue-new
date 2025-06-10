@@ -1,6 +1,9 @@
 package com.ruoyi.common.core.domain.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
@@ -10,6 +13,9 @@ import java.util.List;
  * @date 2025-05-28 19:36
  */
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RoleQuery {
     /**
      * 角色ID

@@ -240,17 +240,20 @@ public class SysLoginService {
     /**
      * 发送登录/注册短信验证码
      *
-     * @param phoneNumber 电话号码
-     * @param code        图形验证码code
-     * @param uuid        图形验证码uuid
+     * @param phoneNumber  电话号码
+     * @param checkPicCode 校验图形验证码
+     * @param code         图形验证码code
+     * @param uuid         图形验证码uuid
      */
-    public void sendSmsVerificationCode(String phoneNumber, String code, String uuid) {
+    public void sendSmsVerificationCode(String phoneNumber, boolean checkPicCode, String code, String uuid) {
         String k = CacheConstants.SMS_CAPTCHA_CODE_CD_PHONE_NUM_KEY + phoneNumber;
         String v = redisCache.getCacheObject(k);
         if (StrUtil.isNotEmpty(v)) {
             throw new ServiceException("验证码发送间隔需大于60S");
         }
-        validateCaptcha(null, code, uuid);
+        if (checkPicCode) {
+            validateCaptcha(null, code, uuid);
+        }
         sendSmsVerificationCode(phoneNumber);
         redisCache.setCacheObject(k, "1", 60, TimeUnit.SECONDS);
     }

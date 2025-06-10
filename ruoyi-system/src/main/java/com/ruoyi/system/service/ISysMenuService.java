@@ -6,6 +6,7 @@ import com.ruoyi.system.domain.vo.menu.SysMenuDTO;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 菜单 业务层
@@ -104,4 +105,11 @@ public interface ISysMenuService {
      * @return 结果 true 存在 false 不存在
      */
     public boolean checkMenuExistRole(Long menuId);
+
+    /**
+     * 档口可用的菜单ID
+     *
+     * @return
+     */
+    Set<Long> storeUsableMenuIds();
 }

@@ -25,4 +25,7 @@ public class UserLoginInfoVO extends UserInfoVO {
     @ApiModelProperty("当前菜单树")
     private List<MenuTreeNodeVO> currentMenuTreeNodes;
 
+    @ApiModelProperty("当前档口ID")
+    private Long currentStoreId;
+
 }

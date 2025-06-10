@@ -1,6 +1,6 @@
 package com.ruoyi.web.controller.system.vo;
 
-import com.ruoyi.web.controller.xkt.vo.BasePageVO;
+import com.ruoyi.common.core.domain.vo.BasePageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

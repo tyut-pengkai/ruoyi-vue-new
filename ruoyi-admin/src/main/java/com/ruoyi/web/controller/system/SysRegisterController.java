@@ -90,7 +90,7 @@ public class SysRegisterController extends BaseController {
     @ApiOperation(value = "发送登录短信验证码")
     @PostMapping("/sendSmsVerificationCode")
     public R sendSmsVerificationCode(@Validated @RequestBody LoginSmsReqVO vo) {
-        loginService.sendSmsVerificationCode(vo.getPhoneNumber(), vo.getCode(), vo.getUuid());
+        loginService.sendSmsVerificationCode(vo.getPhoneNumber(), true, vo.getCode(), vo.getUuid());
         return R.ok();
     }
 

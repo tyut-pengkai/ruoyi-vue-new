@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.model.*;
@@ -19,10 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 角色 业务层处理
@@ -153,6 +152,17 @@ public class SysRoleServiceImpl implements ISysRoleService {
     @Override
     public List<RoleSelectItem> listRoleSelectItem(Long userId) {
         return userRoleMapper.listRoleSelectItem(userId);
+    }
+
+    @Override
+    public Set<Long> getSubRoleIdsByStore(Long storeId) {
+        if (storeId == null) {
+            return Collections.EMPTY_SET;
+        }
+        return roleMapper.selectList(Wrappers.lambdaQuery(SysRole.class).eq(SysRole::getStoreId, storeId))
+                .stream()
+                .map(SysRole::getRoleId)
+                .collect(Collectors.toSet());
     }
 
     /**

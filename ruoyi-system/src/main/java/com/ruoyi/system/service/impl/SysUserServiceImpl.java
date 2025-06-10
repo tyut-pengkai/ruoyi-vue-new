@@ -89,6 +89,7 @@ public class SysUserServiceImpl implements ISysUserService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Long createUser(UserInfoEdit userEdit) {
+        checkRoles(userEdit.getRoleIds());
         // 创建用户
         SysUser user = BeanUtil.toBean(userEdit, SysUser.class);
         if (StrUtil.isNotEmpty(userEdit.getPassword())) {
@@ -107,6 +108,7 @@ public class SysUserServiceImpl implements ISysUserService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Long updateUser(UserInfoEdit userEdit) {
+        checkRoles(userEdit.getRoleIds());
         // 修改用户信息
         Assert.notNull(userEdit.getUserId());
         SysUser user = userMapper.selectById(userEdit.getUserId());
@@ -467,6 +469,35 @@ public class SysUserServiceImpl implements ISysUserService {
         }
         if (StrUtil.isNotEmpty(user.getPhonenumber())) {
             Assert.isTrue(checkPhoneUnique(user), "手机号已被注册");
+        }
+    }
+
+    private void checkRoles(Collection<Long> roleIds) {
+        if (CollUtil.isEmpty(roleIds) || roleIds.size() == 1) {
+            return;
+        }
+        int sellerCount = 0;
+        int otherCount = 0;
+        int subCount = 0;
+        for (Long roleId : roleIds) {
+            if (ESystemRole.SELLER.getId().equals(roleId)) {
+                sellerCount++;
+            } else if (ESystemRole.isDefaultRole(roleId)) {
+                otherCount++;
+            } else {
+                SysRole r = roleMapper.selectById(roleId);
+                if (r.getStoreId() != null) {
+                    subCount++;
+                } else {
+                    otherCount++;
+                }
+            }
+        }
+        if (subCount > 0 && otherCount > 0) {
+            throw new ServiceException("用户不能同时有子角色与\"电商卖家\"以外的角色");
+        }
+        if ((sellerCount + otherCount) > 0) {
+            throw new ServiceException("用户只能有一个系统角色");
         }
     }
 

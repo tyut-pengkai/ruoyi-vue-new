@@ -1,3 +1,4 @@
+/*
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
@@ -20,12 +21,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+*/
 /**
  * 档口子账号Controller
  *
  * @author ruoyi
  * @date 2025-03-26
- */
+ *//*
+
 @Api(tags = "档口子账号")
 @RestController
 @RequiredArgsConstructor
@@ -34,9 +37,11 @@ public class StoreRoleAccountController extends XktBaseController {
 
     final IStoreRoleAccountService storeRoleAccService;
 
-    /**
+    */
+/**
      * 新增档口子账号
-     */
+     *//*
+
     // @PreAuthorize("@ss.hasPermi('system:account:add')")
     @ApiOperation(value = "新增档口子账号", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口子账号", businessType = BusinessType.INSERT)
@@ -45,9 +50,11 @@ public class StoreRoleAccountController extends XktBaseController {
         return R.ok(storeRoleAccService.insert(BeanUtil.toBean(roleAccVO, StoreRoleAccDTO.class)));
     }
 
-    /**
+    */
+/**
      * 修改档口子账号
-     */
+     *//*
+
     // @PreAuthorize("@ss.hasPermi('system:account:edit')")
     @ApiOperation(value = "修改档口子账号", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口子账号", businessType = BusinessType.UPDATE)
@@ -56,9 +63,11 @@ public class StoreRoleAccountController extends XktBaseController {
         return R.ok(storeRoleAccService.update(BeanUtil.toBean(accUpdateVO, StoreRoleAccUpdateDTO.class)));
     }
 
-    /**
+    */
+/**
      * 获取档口子账号列表
-     */
+     *//*
+
     // @PreAuthorize("@ss.hasPermi('system:role:list')")
     @ApiOperation(value = "获取档口子账号列表", httpMethod = "POST", response = R.class)
     @PostMapping("/list")
@@ -66,9 +75,11 @@ public class StoreRoleAccountController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(storeRoleAccService.list(BeanUtil.toBean(accListVO, StoreRoleAccListDTO.class)), StoreRoleAccResVO.class));
     }
 
-    /**
+    */
+/**
      * 获取档口子账号详情
-     */
+     *//*
+
     // @PreAuthorize("@ss.hasPermi('system:account:query')")
     @ApiOperation(value = "获取档口子账号详情", httpMethod = "POST", response = R.class)
     @GetMapping(value = "/{storeRoleAccId}")
@@ -76,9 +87,11 @@ public class StoreRoleAccountController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeRoleAccService.selectByStoreRoleAccId(storeRoleAccId), StoreRoleAccDetailResVO.class));
     }
 
-    /**
+    */
+/**
      * 停用/启用档口子账号
-     */
+     *//*
+
     // @PreAuthorize("@ss.hasPermi('system:role:edit')")
     @ApiOperation(value = "停用/启用档口子账号", httpMethod = "PUT", response = R.class)
     @Log(title = "停用/启用档口子账号", businessType = BusinessType.UPDATE)
@@ -88,3 +101,4 @@ public class StoreRoleAccountController extends XktBaseController {
     }
 
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package com.ruoyi.web.controller.xkt;
 
 import com.ruoyi.common.annotation.Log;
@@ -15,21 +16,25 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
+*/
 /**
  * 档口子角色菜单Controller
  *
  * @author ruoyi
  * @date 2025-03-26
- */
+ *//*
+
 @RestController
 @RequestMapping("/rest/v1/store-role-menus")
 public class StoreRoleMenuController extends XktBaseController {
     @Autowired
     private IStoreRoleMenuService storeRoleMenuService;
 
-    /**
+    */
+/**
      * 查询档口子角色菜单列表
-     */
+     *//*
+
 //    // @PreAuthorize("@ss.hasPermi('system:menu:list')")
     @GetMapping("/list")
     public TableDataInfo list(StoreRoleMenu storeRoleMenu) {
@@ -38,9 +43,11 @@ public class StoreRoleMenuController extends XktBaseController {
         return getDataTable(list);
     }
 
-    /**
+    */
+/**
      * 导出档口子角色菜单列表
-     */
+     *//*
+
 //    // @PreAuthorize("@ss.hasPermi('system:menu:export')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
@@ -50,18 +57,22 @@ public class StoreRoleMenuController extends XktBaseController {
         util.exportExcel(response, list, "档口子角色菜单数据");
     }
 
-    /**
+    */
+/**
      * 获取档口子角色菜单详细信息
-     */
+     *//*
+
 //    // @PreAuthorize("@ss.hasPermi('system:menu:query')")
     @GetMapping(value = "/{storeRoleMenuId}")
     public R getInfo(@PathVariable("storeRoleMenuId") Long storeRoleMenuId) {
         return success(storeRoleMenuService.selectStoreRoleMenuByStoreRoleMenuId(storeRoleMenuId));
     }
 
-    /**
+    */
+/**
      * 新增档口子角色菜单
-     */
+     *//*
+
 //    // @PreAuthorize("@ss.hasPermi('system:menu:add')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.INSERT)
     @PostMapping
@@ -69,9 +80,11 @@ public class StoreRoleMenuController extends XktBaseController {
         return success(storeRoleMenuService.insertStoreRoleMenu(storeRoleMenu));
     }
 
-    /**
+    */
+/**
      * 修改档口子角色菜单
-     */
+     *//*
+
 //    // @PreAuthorize("@ss.hasPermi('system:menu:edit')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -79,9 +92,11 @@ public class StoreRoleMenuController extends XktBaseController {
         return success(storeRoleMenuService.updateStoreRoleMenu(storeRoleMenu));
     }
 
-    /**
+    */
+/**
      * 删除档口子角色菜单
-     */
+     *//*
+
 //    // @PreAuthorize("@ss.hasPermi('system:menu:remove')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeRoleMenuIds}")
@@ -89,3 +104,4 @@ public class StoreRoleMenuController extends XktBaseController {
         return success(storeRoleMenuService.deleteStoreRoleMenuByStoreRoleMenuIds(storeRoleMenuIds));
     }
 }
+*/

@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.Constants;
@@ -20,14 +21,17 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 菜单信息
  *
  * @author ruoyi
  */
-@Api(tags = "菜单信息")
+@Api(tags = "系统菜单/档口菜单")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/rest/v1/sys/menu")
@@ -37,7 +41,8 @@ public class SysMenuController extends XktBaseController {
 
     final TokenService tokenService;
 
-    @ApiOperation(value = "菜单列表查询")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @ApiOperation(value = "菜单列表查询 - 管理员")
     @PostMapping("/list")
     public R<List<MenuListItemVO>> list(@Validated @RequestBody MenuQueryVO vo) {
         MenuQuery query = BeanUtil.toBean(vo, MenuQuery.class);
@@ -45,10 +50,39 @@ public class SysMenuController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(list, MenuListItemVO.class));
     }
 
-    @ApiOperation(value = "菜单树查询")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @ApiOperation(value = "菜单树查询 - 管理员")
     @PostMapping("/tree")
     public R<List<MenuTreeNodeVO>> tree(@Validated @RequestBody MenuQueryVO vo) {
         MenuQuery query = BeanUtil.toBean(vo, MenuQuery.class);
+        List<MenuTreeNode> tree = menuService.getMenuTree(query);
+        return R.ok(BeanUtil.copyToList(tree, MenuTreeNodeVO.class));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('store')")
+    @ApiOperation(value = "菜单列表查询 - 档口")
+    @PostMapping("/store/list")
+    public R<List<MenuListItemVO>> listByStore(@Validated @RequestBody MenuQueryVO vo) {
+        MenuQuery query = BeanUtil.toBean(vo, MenuQuery.class);
+        Set<Long> usableMenuIds = menuService.storeUsableMenuIds();
+        List<MenuListItem> list = menuService.listMenu(query)
+                .stream()
+                .filter(o->usableMenuIds.contains(o.getMenuId()))
+                .collect(Collectors.toList());
+        return R.ok(BeanUtil.copyToList(list, MenuListItemVO.class));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('store')")
+    @ApiOperation(value = "菜单树查询 - 档口")
+    @PostMapping("/store/tree")
+    public R<List<MenuTreeNodeVO>> treeByStore(@Validated @RequestBody MenuQueryVO vo) {
+        MenuQuery query = BeanUtil.toBean(vo, MenuQuery.class);
+        Set<Long> usableMenuIds = menuService.storeUsableMenuIds();
+        if (CollUtil.isNotEmpty(query.getMenuIds())) {
+            query.setMenuIds(new ArrayList<>(CollUtil.intersection(usableMenuIds, query.getMenuIds())));
+        } else {
+            query.setMenuIds(new ArrayList<>(usableMenuIds));
+        }
         List<MenuTreeNode> tree = menuService.getMenuTree(query);
         return R.ok(BeanUtil.copyToList(tree, MenuTreeNodeVO.class));
     }
