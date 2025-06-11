@@ -344,6 +344,8 @@ public class ExpressServiceImpl implements IExpressService {
         Assert.notEmpty(editDTO.getRegionCode());
         Assert.notNull(editDTO.getFirstItemAmount());
         Assert.notNull(editDTO.getNextItemAmount());
+        Assert.isTrue(editDTO.getFirstItemAmount().compareTo(editDTO.getNextItemAmount()) == 0,
+                "首件运费和续件续费必须相等");
         boolean exists = expressFeeConfigMapper.exists(Wrappers.lambdaQuery(ExpressFeeConfig.class)
                 .eq(ExpressFeeConfig::getExpressId, editDTO.getExpressId())
                 .eq(ExpressFeeConfig::getRegionCode, editDTO.getRegionCode()));
@@ -363,6 +365,8 @@ public class ExpressServiceImpl implements IExpressService {
         Assert.notEmpty(editDTO.getRegionCode());
         Assert.notNull(editDTO.getFirstItemAmount());
         Assert.notNull(editDTO.getNextItemAmount());
+        Assert.isTrue(editDTO.getFirstItemAmount().compareTo(editDTO.getNextItemAmount()) == 0,
+                "首件运费和续件续费必须相等");
         ExpressFeeConfig config = expressFeeConfigMapper.selectById(editDTO.getId());
         Assert.notNull(config);
         boolean exists = expressFeeConfigMapper.exists(Wrappers.lambdaQuery(ExpressFeeConfig.class)

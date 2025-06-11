@@ -18,9 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -110,11 +108,37 @@ public class ExpressController extends XktBaseController {
 
     @ApiOperation(value = "快递费配置分页查询")
     @PostMapping("/fee-config/page")
-    public R<PageVO<ExpressFeeConfigListItemVO>> pageExpressFeeConfig(@Validated @RequestBody ExpressFeeConfigQueryVO vo) {
+    public R<PageVO<ExpressFeeConfigListItemVO>> pageExpressFeeConfig(@Validated @RequestBody
+                                                                              ExpressFeeConfigQueryVO vo) {
         ExpressFeeConfigQueryDTO queryDTO = BeanUtil.toBean(vo, ExpressFeeConfigQueryDTO.class);
         Page<ExpressFeeConfigListItemDTO> pageDTO = PageHelper.startPage(vo.getPageNum(), vo.getPageSize());
         expressService.listFeeConfig(queryDTO);
         return success(PageVO.of(pageDTO, ExpressFeeConfigListItemVO.class));
+    }
+
+    @ApiOperation(value = "快递费展示")
+    @GetMapping(value = "/fee/show")
+    public R<List<ExpressFeeShowVO>> showExpressFee() {
+        List<ExpressFeeConfigListItemDTO> configItems = expressService.listFeeConfig(new ExpressFeeConfigQueryDTO());
+        Map<String, Map<String, ExpressFeeShowVO.Item>> map = new HashMap<>();
+        for (ExpressFeeConfigListItemDTO configItem : configItems) {
+            Map<String, ExpressFeeShowVO.Item> itemMap = map.computeIfAbsent(configItem.getExpressName(),
+                    k -> new HashMap<>());
+            String ik = configItem.getFirstItemAmount() + "-" + configItem.getNextItemAmount();
+            ExpressFeeShowVO.Item item = itemMap.computeIfAbsent(ik,
+                    k -> new ExpressFeeShowVO.Item(configItem.getRegionName(), 1,
+                            configItem.getFirstItemAmount(), 1, configItem.getNextItemAmount()));
+            if (!item.getAres().equals(configItem.getRegionName())) {
+                item.setAres(item.getAres() + "," + configItem.getRegionName());
+            }
+        }
+        List<ExpressFeeShowVO> vos = new ArrayList<>(map.size());
+        for (Map.Entry<String, Map<String, ExpressFeeShowVO.Item>> entry : map.entrySet()) {
+            ExpressFeeShowVO vo = new ExpressFeeShowVO();
+            vo.setExpressName(entry.getKey());
+            vo.setItems(new ArrayList<>(entry.getValue().values()));
+        }
+        return R.ok(vos);
     }
 
 }
