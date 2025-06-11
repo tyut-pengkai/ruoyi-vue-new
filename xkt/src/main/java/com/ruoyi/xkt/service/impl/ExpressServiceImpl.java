@@ -11,6 +11,7 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.express.*;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -288,6 +290,8 @@ public class ExpressServiceImpl implements IExpressService {
         expressTrackRecord.setDescription(addDTO.getDescription());
         expressTrackRecord.setRemark(addDTO.getRemark());
         expressTrackRecord.setDelFlag(Constants.UNDELETED);
+        expressTrackRecord.setCreateBy(SecurityUtils.getUsernameSafe());
+        expressTrackRecord.setUpdateBy(SecurityUtils.getUsernameSafe());
         expressTrackRecordMapper.insert(expressTrackRecord);
         return expressTrackRecord.getId();
     }
@@ -311,5 +315,68 @@ public class ExpressServiceImpl implements IExpressService {
 //                        .orderByAsc(SimpleEntity::getCreateTime)
         );
         return BeanUtil.copyToList(expressTrackRecords, ExpressTrackRecordDTO.class);
+    }
+
+    @Override
+    public List<ExpressFeeConfigListItemDTO> listFeeConfig(ExpressFeeConfigQueryDTO queryDTO) {
+        return expressFeeConfigMapper.listFeeConfig(queryDTO);
+    }
+
+    @Override
+    public ExpressFeeConfigDTO getExpressFeeConfigById(Long id) {
+        ExpressFeeConfig config = expressFeeConfigMapper.selectById(id);
+        return BeanUtil.toBean(config, ExpressFeeConfigDTO.class);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void deleteExpressFeeConfig(Long id) {
+        Assert.notNull(id);
+        //物理删除
+        expressFeeConfigMapper.deleteById(id);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Long createExpressFeeConfig(ExpressFeeConfigEditDTO editDTO) {
+        Assert.isNull(editDTO.getId());
+        Assert.notNull(editDTO.getExpressId());
+        Assert.notEmpty(editDTO.getRegionCode());
+        Assert.notNull(editDTO.getFirstItemAmount());
+        Assert.notNull(editDTO.getNextItemAmount());
+        boolean exists = expressFeeConfigMapper.exists(Wrappers.lambdaQuery(ExpressFeeConfig.class)
+                .eq(ExpressFeeConfig::getExpressId, editDTO.getExpressId())
+                .eq(ExpressFeeConfig::getRegionCode, editDTO.getRegionCode()));
+        Assert.isFalse(exists, "地区费用配置已存在");
+        ExpressFeeConfig config = BeanUtil.toBean(editDTO, ExpressFeeConfig.class);
+        config.setCreateBy(SecurityUtils.getUsernameSafe());
+        config.setUpdateBy(SecurityUtils.getUsernameSafe());
+        expressFeeConfigMapper.insert(config);
+        return config.getId();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void modifyExpressFeeConfig(ExpressFeeConfigEditDTO editDTO) {
+        Assert.notNull(editDTO.getId());
+        Assert.notNull(editDTO.getExpressId());
+        Assert.notEmpty(editDTO.getRegionCode());
+        Assert.notNull(editDTO.getFirstItemAmount());
+        Assert.notNull(editDTO.getNextItemAmount());
+        ExpressFeeConfig config = expressFeeConfigMapper.selectById(editDTO.getId());
+        Assert.notNull(config);
+        boolean exists = expressFeeConfigMapper.exists(Wrappers.lambdaQuery(ExpressFeeConfig.class)
+                .eq(ExpressFeeConfig::getExpressId, editDTO.getExpressId())
+                .eq(ExpressFeeConfig::getRegionCode, editDTO.getRegionCode())
+                .ne(SimpleEntity::getId, editDTO.getId()));
+        Assert.isFalse(exists, "地区费用配置已存在");
+        config.setExpressId(editDTO.getExpressId());
+        config.setRegionCode(editDTO.getRegionCode());
+        config.setParentRegionCode(editDTO.getParentRegionCode());
+        config.setFirstItemAmount(editDTO.getFirstItemAmount());
+        config.setNextItemAmount(editDTO.getNextItemAmount());
+        config.setUpdateBy(SecurityUtils.getUsernameSafe());
+        config.setUpdateTime(new Date());
+        expressFeeConfigMapper.updateById(config);
     }
 }

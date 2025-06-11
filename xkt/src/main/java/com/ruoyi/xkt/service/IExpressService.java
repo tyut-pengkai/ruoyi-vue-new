@@ -142,4 +142,44 @@ public interface IExpressService {
      * @return
      */
     List<ExpressTrackRecordDTO> listTrackRecord(Collection<String> expressWaybillNos);
+
+    /**
+     * 快递费配置列表
+     *
+     * @param queryDTO
+     * @return
+     */
+    List<ExpressFeeConfigListItemDTO> listFeeConfig(ExpressFeeConfigQueryDTO queryDTO);
+
+    /**
+     * 快递费配置
+     *
+     * @param id
+     * @return
+     */
+    ExpressFeeConfigDTO getExpressFeeConfigById(Long id);
+
+    /**
+     * 删除快递费配置
+     *
+     * @param id
+     */
+    void deleteExpressFeeConfig(Long id);
+
+    /**
+     * 创建快递费配置
+     *
+     * @param editDTO
+     * @return
+     */
+    Long createExpressFeeConfig(ExpressFeeConfigEditDTO editDTO);
+
+    /**
+     * 修改快递费配置
+     *
+     * @param editDTO
+     */
+    void modifyExpressFeeConfig(ExpressFeeConfigEditDTO editDTO);
+
+
 }

@@ -1,17 +1,20 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.page.PageVO;
+import com.ruoyi.web.controller.xkt.vo.IdVO;
 import com.ruoyi.web.controller.xkt.vo.express.*;
-import com.ruoyi.xkt.dto.express.ExpressFeeDTO;
-import com.ruoyi.xkt.dto.express.ExpressRegionTreeNodeDTO;
-import com.ruoyi.xkt.dto.express.ExpressStructAddressDTO;
-import com.ruoyi.xkt.dto.express.ExpressTrackRecordDTO;
+import com.ruoyi.xkt.dto.express.*;
 import com.ruoyi.xkt.service.IExpressService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -70,6 +73,48 @@ public class ExpressController extends XktBaseController {
         Map<String, List<TrackRecordVO>> voMap = list.stream().map(o -> BeanUtil.toBean(o, TrackRecordVO.class))
                 .collect(Collectors.groupingBy(TrackRecordVO::getExpressWaybillNo));
         return success(voMap);
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @ApiOperation("创建快递费配置 - 管理员")
+    @PostMapping("/fee-config/create")
+    public R<Long> createFeeConfig(@Valid @RequestBody ExpressFeeConfigEditVO vo) {
+        ExpressFeeConfigEditDTO dto = BeanUtil.toBean(vo, ExpressFeeConfigEditDTO.class);
+        Long id = expressService.createExpressFeeConfig(dto);
+        return success(id);
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @ApiOperation("修改快递费配置 - 管理员")
+    @PostMapping("/fee-config/edit")
+    public R<Long> editExpressFeeConfig(@Valid @RequestBody ExpressFeeConfigEditVO vo) {
+        ExpressFeeConfigEditDTO dto = BeanUtil.toBean(vo, ExpressFeeConfigEditDTO.class);
+        expressService.modifyExpressFeeConfig(dto);
+        return success(dto.getId());
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @ApiOperation("删除快递费配置 - 管理员")
+    @PostMapping("/fee-config/remove")
+    public R removeExpressFeeConfigInfo(@Validated @RequestBody IdVO vo) {
+        expressService.deleteExpressFeeConfig(vo.getId());
+        return R.ok();
+    }
+
+    @ApiOperation(value = "快递费配置详情")
+    @GetMapping(value = "/fee-config/{id}")
+    public R<ExpressFeeConfigVO> getExpressFeeConfigInfo(@PathVariable("id") Long id) {
+        ExpressFeeConfigDTO infoDTO = expressService.getExpressFeeConfigById(id);
+        return success(BeanUtil.toBean(infoDTO, ExpressFeeConfigVO.class));
+    }
+
+    @ApiOperation(value = "快递费配置分页查询")
+    @PostMapping("/fee-config/page")
+    public R<PageVO<ExpressFeeConfigListItemVO>> pageExpressFeeConfig(@Validated @RequestBody ExpressFeeConfigQueryVO vo) {
+        ExpressFeeConfigQueryDTO queryDTO = BeanUtil.toBean(vo, ExpressFeeConfigQueryDTO.class);
+        Page<ExpressFeeConfigListItemDTO> pageDTO = PageHelper.startPage(vo.getPageNum(), vo.getPageSize());
+        expressService.listFeeConfig(queryDTO);
+        return success(PageVO.of(pageDTO, ExpressFeeConfigListItemVO.class));
     }
 
 }
