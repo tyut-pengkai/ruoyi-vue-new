@@ -91,4 +91,11 @@ public interface IStoreProductStockService {
      */
     Integer checkAndUpdateStock(Long storeId, StoreProdCheckStockDTO checkStockDTO);
 
+    /**
+     * 导出库存明细
+     *
+     * @param exportDTO 导出入参
+     * @return List<StoreProdStockDownloadDTO>
+     */
+    List<StoreProdStockDownloadDTO> export(StoreProdStockExportDTO exportDTO);
 }

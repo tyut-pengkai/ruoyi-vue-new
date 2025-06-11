@@ -3,6 +3,7 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductStock;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDownloadDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
 import org.apache.ibatis.annotations.Param;
@@ -33,4 +34,19 @@ public interface StoreProductStockMapper extends BaseMapper<StoreProductStock> {
      * @return List<DailyStoreTagDTO>
      */
     List<DailyStoreTagDTO> selectTop10List(@Param("yesterday") Date yesterday, @Param("oneMonthAgo") Date oneMonthAgo);
+
+    /**
+     * 筛选库存导出列表
+     *
+     * @param storeProdStockIdList 档口商品库存ID列表
+     * @return List<StoreProdStockDownloadDTO>
+     */
+    List<StoreProdStockDownloadDTO> selectExportList(@Param("storeProdStockIdList") List<Long> storeProdStockIdList);
+
+    /**
+     * 筛选库存所有列表
+     *
+     * @return List<StoreProdStockDownloadDTO>
+     */
+    List<StoreProdStockDownloadDTO> selectAllStockList();
 }

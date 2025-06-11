@@ -6,7 +6,12 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storeProdStock.*;
+import com.ruoyi.web.controller.xkt.vo.storeProdStorage.StoreStorageExportVO;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageDetailDownloadDTO;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageExportDTO;
 import com.ruoyi.xkt.dto.storeProductStock.*;
 import com.ruoyi.xkt.service.IStoreProductStockService;
 import io.swagger.annotations.Api;
@@ -15,6 +20,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.List;
 
@@ -76,6 +84,18 @@ public class StoreProductStockController extends XktBaseController {
     public R<StoreProdStockAndDiscountResVO> getStockAndCusDiscount(@Validated @RequestBody StoreProdStockAndDiscountVO stockAndDiscountVO) {
         return R.ok(BeanUtil.toBean(storeProdStockService.getStockAndCusDiscount(BeanUtil
                 .toBean(stockAndDiscountVO, StoreProdStockAndDiscountDTO.class)), StoreProdStockAndDiscountResVO.class));
+    }
+
+    @ApiOperation(value = "导出库存", httpMethod = "POST", response = R.class)
+    @Log(title = "导出库存", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, @Validated @RequestBody StoreProdStockExportVO exportVO) throws UnsupportedEncodingException {
+        List<StoreProdStockDownloadDTO> downloadList = storeProdStockService.export(BeanUtil.toBean(exportVO, StoreProdStockExportDTO.class));
+        ExcelUtil<StoreProdStockDownloadDTO> util = new ExcelUtil<>(StoreProdStockDownloadDTO.class);
+        // 设置下载excel名
+        String encodedFileName = URLEncoder.encode("库存明细" + DateUtils.getDate(),  "UTF-8").replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName + ".xlsx");
+        util.exportExcel(response, downloadList, "库存明细");
     }
 
 

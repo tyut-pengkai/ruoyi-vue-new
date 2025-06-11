@@ -193,6 +193,26 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
         return this.storeProdStockMapper.updateById(stockList).size();
     }
 
+    /**
+     * 导出库存明细
+     *
+     * @param exportDTO 导出入参
+     * @return List<StoreProdStockDownloadDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<StoreProdStockDownloadDTO> export(StoreProdStockExportDTO exportDTO) {
+        // 导出勾选
+        if (CollectionUtils.isNotEmpty(exportDTO.getStoreProdStockIdList())) {
+            return this.storeProdStockMapper.selectExportList(exportDTO.getStoreProdStockIdList());
+            // 导出所有库存明细
+        } else {
+            Optional.ofNullable(exportDTO.getFullExport())
+                    .orElseThrow(() -> new ServiceException("全量导出，fullExport不能为空!", HttpStatus.ERROR));
+            return this.storeProdStockMapper.selectAllStockList();
+        }
+    }
+
 
     /**
      * 增加库存
