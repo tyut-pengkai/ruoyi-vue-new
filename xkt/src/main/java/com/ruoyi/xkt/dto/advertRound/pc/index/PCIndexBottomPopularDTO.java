@@ -58,6 +58,8 @@ public class PCIndexBottomPopularDTO {
     @ApiModel(value = "右侧商品")
     @Accessors(chain = true)
     public static class PCIBPPopularRightDTO {
+        @ApiModelProperty(value = "档口ID")
+        private Long storeId;
         @ApiModelProperty(value = "2商品")
         private Integer displayType;
         @ApiModelProperty(value = "档口商品ID")

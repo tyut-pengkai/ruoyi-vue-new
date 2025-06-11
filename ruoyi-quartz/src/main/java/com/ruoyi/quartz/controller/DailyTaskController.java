@@ -102,6 +102,12 @@ public class DailyTaskController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/search-hot")
+    public R dailySearchHot(SysJob sysJob) {
+        task.dailyUpdateSearchHotToRedis();
+        return R.ok();
+    }
+
 
 
 }

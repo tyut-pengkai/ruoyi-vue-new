@@ -652,7 +652,7 @@ public class XktTask {
             CollectionUtils.addAll(redisSearchList, tempList);
         });
         Map<String, Long> searchCountMap = redisSearchList.stream().collect(Collectors.groupingBy(UserSearchHistoryDTO::getSearchContent,
-                Collectors.summingLong(UserSearchHistoryDTO::getId)));
+                Collectors.summingLong(UserSearchHistoryDTO::getUserId)));
         // searchCountMap 按照 value 大小倒序排，取前20条热搜
         List<Map.Entry<String, Long>> top20List = searchCountMap.entrySet().stream().sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                 .limit(20).collect(Collectors.toList());

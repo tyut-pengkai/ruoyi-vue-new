@@ -1,9 +1,11 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.category.APPCateVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexHotSaleRightFixVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexMidBrandVO;
@@ -53,6 +55,7 @@ public class WebsiteController extends XktBaseController {
 
     final IWebsitePCService websitePCService;
     final IWebsiteAPPService websiteAPPService;
+    final RedisCache redisCache;
 
     @ApiOperation(value = "PC 首页 为你推荐", httpMethod = "POST", response = R.class)
     @PostMapping("/pc/index/recommend")
@@ -243,6 +246,12 @@ public class WebsiteController extends XktBaseController {
     @GetMapping("/app/own/guess-like")
     public R<List<APPOwnGuessLikeVO>> getAppOwnGuessLikeList() {
         return R.ok(BeanUtil.copyToList(websiteAPPService.getAppOwnGuessLikeList(), APPOwnGuessLikeVO.class));
+    }
+
+    @ApiOperation(value = "热门搜索", httpMethod = "GET", response = R.class)
+    @GetMapping("/search-hot")
+    public R<List<String>> getSearchHotList() {
+        return R.ok(redisCache.getCacheObject(CacheConstants.SEARCH_HOT_KEY));
     }
 
 }

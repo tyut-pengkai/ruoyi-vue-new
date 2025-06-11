@@ -50,6 +50,8 @@ public class PCIndexBottomPopularVO {
 
     @Data
     public static class PCIBPPopularRightVO {
+        @ApiModelProperty(value = "档口ID")
+        private Long storeId;
         @ApiModelProperty(value = "2商品")
         private Integer displayType;
         @ApiModelProperty(value = "档口商品ID")

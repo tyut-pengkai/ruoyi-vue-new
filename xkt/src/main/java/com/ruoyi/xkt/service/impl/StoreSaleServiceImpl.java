@@ -177,6 +177,27 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     }
 
     /**
+     * 导出销售出库列表
+     *
+     * @param exportDTO 导出入参
+     * @return List<StoreSaleDownloadDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<StoreSaleDownloadDTO> export(StoreSaleExportDTO exportDTO) {
+        // 导出指定销售出库单
+        if (CollectionUtils.isNotEmpty(exportDTO.getStoreSaleIdList())) {
+            return this.storeSaleMapper.selectExportList(exportDTO.getStoreSaleIdList());
+        } else {
+            // 如果是全量导出，则开始时间 和 结束时间 不能为空
+            if (ObjectUtils.isEmpty(exportDTO.getVoucherDateStart()) && ObjectUtils.isEmpty(exportDTO.getVoucherDateEnd())) {
+                throw new ServiceException("全量导出时，开始时间和结束时间不能为空!", HttpStatus.ERROR);
+            }
+            return this.storeSaleMapper.selectExportListVoucherDateBetween(exportDTO.getVoucherDateStart(), exportDTO.getVoucherDateEnd());
+        }
+    }
+
+    /**
      * 新增档口销售出库
      *
      * @param storeSaleDTO 档口销售出库
@@ -207,7 +228,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         int count = storeSaleMapper.insert(storeSale);
         // 处理订单明细
         List<StoreSaleDetail> saleDetailList = storeSaleDTO.getDetailList().stream().map(x -> BeanUtil.toBean(x, StoreSaleDetail.class)
-                .setSaleType(storeSaleDTO.getSaleType()).setStoreSaleId(storeSale.getId()).setStoreId(storeSale.getStoreId()).setVoucherDate(voucherDate))
+                        .setSaleType(storeSaleDTO.getSaleType()).setStoreSaleId(storeSale.getId()).setStoreId(storeSale.getStoreId()).setVoucherDate(voucherDate))
                 .collect(Collectors.toList());
         this.storeSaleDetailMapper.insert(saleDetailList);
         // 先汇总当前这笔订单商品明细的销售数量，包括销售及退货 key： prodArtNum + storeProdId + storeProdColorId + colorName, value: map(key:size,value:count)
@@ -268,7 +289,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         this.storeSaleDetailMapper.updateById(saleDetailList.stream().peek(x -> x.setDelFlag(Constants.DELETED)).collect(Collectors.toList()));
         // 再新增档口销售出库明细数据
         List<StoreSaleDetail> detailList = storeSaleDTO.getDetailList().stream().map(x -> BeanUtil.toBean(x, StoreSaleDetail.class)
-                .setSaleType(storeSaleDTO.getSaleType()).setStoreSaleId(storeSale.getId()).setStoreId(storeSale.getStoreId()).setVoucherDate(voucherDate))
+                        .setSaleType(storeSaleDTO.getSaleType()).setStoreSaleId(storeSale.getId()).setStoreId(storeSale.getStoreId()).setVoucherDate(voucherDate))
                 .collect(Collectors.toList());
         this.storeSaleDetailMapper.insert(detailList);
         // 汇总编辑的存货总数量

@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.StoreProductStorageDetail;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageDetailDownloadDTO;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageExportDTO;
 
 import java.util.List;
 
@@ -11,51 +12,13 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface IStoreProductStorageDetailService {
-    /**
-     * 查询档口商品入库明细
-     *
-     * @param storeProdStorDetailId 档口商品入库明细主键
-     * @return 档口商品入库明细
-     */
-    public StoreProductStorageDetail selectStoreProductStorageDetailByStoreProdStorDetailId(Long storeProdStorDetailId);
 
     /**
-     * 查询档口商品入库明细列表
+     * 导出档口商品入库明细
      *
-     * @param storeProductStorageDetail 档口商品入库明细
-     * @return 档口商品入库明细集合
+     * @param exportDTO 导出参数
+     * @return 导出数据
      */
-    public List<StoreProductStorageDetail> selectStoreProductStorageDetailList(StoreProductStorageDetail storeProductStorageDetail);
+    List<StoreStorageDetailDownloadDTO> export(StoreStorageExportDTO exportDTO);
 
-    /**
-     * 新增档口商品入库明细
-     *
-     * @param storeProductStorageDetail 档口商品入库明细
-     * @return 结果
-     */
-    public int insertStoreProductStorageDetail(StoreProductStorageDetail storeProductStorageDetail);
-
-    /**
-     * 修改档口商品入库明细
-     *
-     * @param storeProductStorageDetail 档口商品入库明细
-     * @return 结果
-     */
-    public int updateStoreProductStorageDetail(StoreProductStorageDetail storeProductStorageDetail);
-
-    /**
-     * 批量删除档口商品入库明细
-     *
-     * @param storeProdStorDetailIds 需要删除的档口商品入库明细主键集合
-     * @return 结果
-     */
-    public int deleteStoreProductStorageDetailByStoreProdStorDetailIds(Long[] storeProdStorDetailIds);
-
-    /**
-     * 删除档口商品入库明细信息
-     *
-     * @param storeProdStorDetailId 档口商品入库明细主键
-     * @return 结果
-     */
-    public int deleteStoreProductStorageDetailByStoreProdStorDetailId(Long storeProdStorDetailId);
 }

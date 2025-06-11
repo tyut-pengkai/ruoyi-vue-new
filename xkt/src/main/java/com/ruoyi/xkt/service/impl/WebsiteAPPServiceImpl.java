@@ -384,7 +384,8 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         } else {
             appIndexMidBrandList = launchingList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                 final Long storeProdId = Long.parseLong(x.getProdIdStr());
-                return new APPIndexMidBrandDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId).setOrderNum(this.positionToNumber(x.getPosition()))
+                return new APPIndexMidBrandDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
+                        .setOrderNum(this.positionToNumber(x.getPosition())).setStoreId(x.getStoreId())
                         .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
                         .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
             }).limit(5).collect(Collectors.toList());
@@ -408,8 +409,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Override
     @Transactional(readOnly = true)
     public List<APPIndexHotSaleRightFixDTO> getAppIndexHotSaleRightFix() {
-        return null;
-        /*// 从redis中获取数据
+        // 从redis中获取数据
         List<APPIndexHotSaleRightFixDTO> appIndexHotSaleRightFixList;
         // 从redis 中获取数据
         List<APPIndexHotSaleRightFixDTO> redisList = redisCache.getCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_HOT_SALE_RIGHT_FIX);
@@ -432,7 +432,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         if (CollectionUtils.isEmpty(launchingList)) {
             appIndexHotSaleRightFixList = expiredList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                 Long storeProdId = Long.parseLong(x.getProdIdStr());
-                return new APPIndexHotSaleRightFixDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
+                return new APPIndexHotSaleRightFixDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId).setStoreId(x.getStoreId())
                         .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
             }).limit(5).collect(Collectors.toList());
             for (int i = 0; i < appIndexHotSaleRightFixList.size(); i++) {
@@ -441,13 +441,14 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         } else {
             appIndexHotSaleRightFixList = launchingList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                 Long storeProdId = Long.parseLong(x.getProdIdStr());
-                return new APPIndexHotSaleRightFixDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId).setOrderNum(this.positionToNumber(x.getPosition()))
+                return new APPIndexHotSaleRightFixDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
+                        .setOrderNum(this.positionToNumber(x.getPosition())).setStoreId(x.getStoreId())
                         .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
             }).limit(5).collect(Collectors.toList());
         }
         // 放到redis中，有效期1天
         redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_HOT_SALE_RIGHT_FIX, appIndexHotSaleRightFixList, 1, TimeUnit.DAYS);
-        return appIndexHotSaleRightFixList;*/
+        return appIndexHotSaleRightFixList;
     }
 
     /**
@@ -567,7 +568,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     private List<APPIndexMidBrandDTO> getAppIndexMidBrandList(List<AdvertRound> advertRoundList, int limitCount, Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap) {
         return advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
             final Long storeProdId = Long.parseLong(x.getProdIdStr());
-            return new APPIndexMidBrandDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
+            return new APPIndexMidBrandDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId).setStoreId(x.getStoreId())
                     .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
                     .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
         }).limit(limitCount).collect(Collectors.toList());

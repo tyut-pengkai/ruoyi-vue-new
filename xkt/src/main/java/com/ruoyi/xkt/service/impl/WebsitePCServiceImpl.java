@@ -650,7 +650,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             bottomRightList = rightLaunchingList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                 final Long storeProdId = Long.parseLong(x.getProdIdStr());
                 return new PCIndexBottomPopularDTO.PCIBPPopularRightDTO().setDisplayType(AdDisplayType.PRODUCT.getValue())
-                        .setStoreProdId(storeProdId).setOrderNum(this.positionToNumber(x.getPosition()))
+                        .setStoreProdId(storeProdId).setOrderNum(this.positionToNumber(x.getPosition())).setStoreId(x.getStoreId())
                         .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
                         .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
                         .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
@@ -787,7 +787,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     .forEach((storeId, list) -> {
                         AdvertRound advertRound = list.get(0);
                         final Long storeProdId = Long.parseLong(advertRound.getProdIdStr());
-                        tempList.add(new PCIndexSearchRecommendProdDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
+                        tempList.add(new PCIndexSearchRecommendProdDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId).setStoreId(advertRound.getStoreId())
                                 .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
                                 .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : ""));
                     });
@@ -798,7 +798,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         } else {
             recommendList = launchingList.stream().map(advertRound -> {
                 final Long storeProdId = Long.parseLong(advertRound.getProdIdStr());
-                return new PCIndexSearchRecommendProdDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId).setOrderNum(this.positionToNumber(advertRound.getPosition()))
+                return new PCIndexSearchRecommendProdDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
+                        .setOrderNum(this.positionToNumber(advertRound.getPosition())).setStoreId(advertRound.getStoreId())
                         .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
                         .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
             }).collect(Collectors.toList());
@@ -1421,7 +1422,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     AdvertRound advertRound = list.get(0);
                     final Long storeProdId = Long.parseLong(advertRound.getProdIdStr());
                     tempRightList.add(new PCIndexBottomPopularDTO.PCIBPPopularRightDTO().setDisplayType(AdDisplayType.PRODUCT.getValue())
-                            .setStoreProdId(Long.valueOf(advertRound.getProdIdStr()))
+                            .setStoreProdId(Long.valueOf(advertRound.getProdIdStr())).setStoreId(advertRound.getStoreId())
                             .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
                             .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
                             .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : ""));

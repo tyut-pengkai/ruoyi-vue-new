@@ -6,6 +6,9 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.system.domain.SysOperLog;
 import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusGeneralSaleVO;
 import com.ruoyi.web.controller.xkt.vo.storeSale.*;
 import com.ruoyi.xkt.dto.storeSale.*;
@@ -16,6 +19,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
 
 /**
  * 档口销售出库Controller
@@ -77,7 +85,8 @@ public class StoreSaleController extends XktBaseController {
         return R.ok(storeSaleService.clearStoreCusDebt(BeanUtil.toBean(payStatusVO, StoreSalePayStatusDTO.class)));
     }
 
-    @Log(title = "档口销售出库", businessType = BusinessType.DELETE)
+    @ApiOperation(value = "删除档口销售出库", httpMethod = "PUT", response = R.class)
+    @Log(title = "删除档口销售出库", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeSaleId}")
     public R<Integer> remove(@PathVariable Long storeSaleId) {
         return R.ok(storeSaleService.deleteStoreSaleByStoreSaleId(storeSaleId));
@@ -88,6 +97,18 @@ public class StoreSaleController extends XktBaseController {
     @PutMapping("/memo")
     public R<Integer> updateMemo(@Validated @RequestBody StoreSaleUpdateMemoVO updateMemoVO) {
         return R.ok(storeSaleService.updateMemo(BeanUtil.toBean(updateMemoVO, StoreSaleUpdateMemoDTO.class)));
+    }
+
+    @ApiOperation(value = "导出销售出库列表", httpMethod = "POST", response = R.class)
+    @Log(title = "导出销售出库列表", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, @Validated @RequestBody StoreSaleExportVO exportVO) throws UnsupportedEncodingException {
+        List<StoreSaleDownloadDTO> downloadList = storeSaleService.export(BeanUtil.toBean(exportVO, StoreSaleExportDTO.class));
+        ExcelUtil<StoreSaleDownloadDTO> util = new ExcelUtil<>(StoreSaleDownloadDTO.class);
+        // 设置下载excel名
+        String encodedFileName = URLEncoder.encode("销售出库" + DateUtils.getDate(),  "UTF-8").replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName + ".xlsx");
+        util.exportExcel(response, downloadList, "销售出库");
     }
 
 }

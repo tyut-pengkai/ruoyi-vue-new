@@ -1,10 +1,14 @@
 package com.ruoyi.xkt.service.impl;
 
-import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.xkt.domain.StoreProductStorageDetail;
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageDetailDownloadDTO;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageExportDTO;
 import com.ruoyi.xkt.mapper.StoreProductStorageDetailMapper;
 import com.ruoyi.xkt.service.IStoreProductStorageDetailService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,80 +21,27 @@ import java.util.List;
  * @date 2025-03-26
  */
 @Service
+@RequiredArgsConstructor
 public class StoreProductStorageDetailServiceImpl implements IStoreProductStorageDetailService {
-    @Autowired
-    private StoreProductStorageDetailMapper storeProductStorageDetailMapper;
+
+    final StoreProductStorageDetailMapper storageDetailMapper;
 
     /**
-     * 查询档口商品入库明细
+     * 导出档口商品入库明细
      *
-     * @param storeProdStorDetailId 档口商品入库明细主键
-     * @return 档口商品入库明细
+     * @param exportDTO 导出参数
+     * @return 导出数据
      */
     @Override
     @Transactional(readOnly = true)
-    public StoreProductStorageDetail selectStoreProductStorageDetailByStoreProdStorDetailId(Long storeProdStorDetailId) {
-        return storeProductStorageDetailMapper.selectStoreProductStorageDetailByStoreProdStorDetailId(storeProdStorDetailId);
-    }
-
-    /**
-     * 查询档口商品入库明细列表
-     *
-     * @param storeProductStorageDetail 档口商品入库明细
-     * @return 档口商品入库明细
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<StoreProductStorageDetail> selectStoreProductStorageDetailList(StoreProductStorageDetail storeProductStorageDetail) {
-        return storeProductStorageDetailMapper.selectStoreProductStorageDetailList(storeProductStorageDetail);
-    }
-
-    /**
-     * 新增档口商品入库明细
-     *
-     * @param storeProductStorageDetail 档口商品入库明细
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int insertStoreProductStorageDetail(StoreProductStorageDetail storeProductStorageDetail) {
-        storeProductStorageDetail.setCreateTime(DateUtils.getNowDate());
-        return storeProductStorageDetailMapper.insertStoreProductStorageDetail(storeProductStorageDetail);
-    }
-
-    /**
-     * 修改档口商品入库明细
-     *
-     * @param storeProductStorageDetail 档口商品入库明细
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int updateStoreProductStorageDetail(StoreProductStorageDetail storeProductStorageDetail) {
-        storeProductStorageDetail.setUpdateTime(DateUtils.getNowDate());
-        return storeProductStorageDetailMapper.updateStoreProductStorageDetail(storeProductStorageDetail);
-    }
-
-    /**
-     * 批量删除档口商品入库明细
-     *
-     * @param storeProdStorDetailIds 需要删除的档口商品入库明细主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreProductStorageDetailByStoreProdStorDetailIds(Long[] storeProdStorDetailIds) {
-        return storeProductStorageDetailMapper.deleteStoreProductStorageDetailByStoreProdStorDetailIds(storeProdStorDetailIds);
-    }
-
-    /**
-     * 删除档口商品入库明细信息
-     *
-     * @param storeProdStorDetailId 档口商品入库明细主键
-     * @return 结果
-     */
-    @Override
-    public int deleteStoreProductStorageDetailByStoreProdStorDetailId(Long storeProdStorDetailId) {
-        return storeProductStorageDetailMapper.deleteStoreProductStorageDetailByStoreProdStorDetailId(storeProdStorDetailId);
+    public List<StoreStorageDetailDownloadDTO> export(StoreStorageExportDTO exportDTO) {
+        if (CollectionUtils.isNotEmpty(exportDTO.getStoreProdStorageIdList())) {
+            return this.storageDetailMapper.selectExportList(exportDTO.getStoreProdStorageIdList());
+        } else {
+            if (ObjectUtils.isEmpty(exportDTO.getVoucherDateStart()) && ObjectUtils.isEmpty(exportDTO.getVoucherDateEnd())) {
+                throw new ServiceException("全量导出时，开始时间和结束时间不能为空!", HttpStatus.ERROR);
+            }
+            return this.storageDetailMapper.selectExportListVoucherDateBetween(exportDTO.getVoucherDateStart(), exportDTO.getVoucherDateEnd());
+        }
     }
 }

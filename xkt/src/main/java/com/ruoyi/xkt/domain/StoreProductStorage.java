@@ -36,9 +36,9 @@ public class StoreProductStorage extends XktBaseEntity {
      */
     private Long storeId;
     /**
-     * 入库CODE
+     * code
      */
-    @Excel(name = "入库CODE")
+    @Excel(name = "code")
     private String code;
     /**
      * 入库类型 生产入库 1 PROD_STORAGE  其它入库 2 OTHER_STORAGE  维修入库 3 REPAIR_STORAGE

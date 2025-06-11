@@ -590,12 +590,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         final String mainPicUrl = fileList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
                 .filter(x -> Objects.equals(x.getOrderNum(), ORDER_NUM_1)).map(StoreProdFileResDTO::getFileUrl).findAny().orElse("");
         // 将用户浏览足迹添加到redis中
-        try {
-            this.updateUserBrowsingToRedis(storeProdId, appResDTO.getStoreId(), appResDTO.getStoreName(), appResDTO.getProdArtNum(),
-                    appResDTO.getProdTitle(), appResDTO.getMinPrice(), mainPicUrl);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.updateUserBrowsingToRedis(storeProdId, appResDTO.getStoreId(), appResDTO.getStoreName(), appResDTO.getProdArtNum(),
+                appResDTO.getProdTitle(), appResDTO.getMinPrice(), mainPicUrl);
         return appResDTO.setTags(StringUtils.isNotBlank(appResDTO.getTagStr()) ? StrUtil.split(appResDTO.getTagStr(), ",") : null)
                 // 拼接几色几码
                 .setSpecification((CollectionUtils.isNotEmpty(colorList) ? colorList.size() + "色" : "") +
@@ -726,11 +722,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         final String mainPicUrl = fileList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
                 .filter(x -> Objects.equals(x.getOrderNum(), ORDER_NUM_1)).map(StoreProdFileResDTO::getFileUrl).findAny().orElse("");
         // 将用户浏览足迹添加到redis中
-        try {
-            this.updateUserBrowsingToRedis(storeProdId, prodInfoDTO.getStoreId(), prodInfoDTO.getStoreName(), prodInfoDTO.getProdArtNum(), prodInfoDTO.getProdTitle(), minPrice, mainPicUrl);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.updateUserBrowsingToRedis(storeProdId, prodInfoDTO.getStoreId(), prodInfoDTO.getStoreName(), prodInfoDTO.getProdArtNum(), prodInfoDTO.getProdTitle(), minPrice, mainPicUrl);
         return prodInfoDTO.setColorList(colorList);
     }
 

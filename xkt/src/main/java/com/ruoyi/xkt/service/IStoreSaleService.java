@@ -5,6 +5,8 @@ import com.ruoyi.xkt.dto.dailySale.StoreTodaySaleDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusGeneralSaleDTO;
 import com.ruoyi.xkt.dto.storeSale.*;
 
+import java.util.List;
+
 /**
  * 档口销售出库Service接口
  *
@@ -88,4 +90,13 @@ public interface IStoreSaleService {
      * @return Integer
      */
     Integer updateMemo(StoreSaleUpdateMemoDTO updateMemoDTO);
+
+    /**
+     * 导出销售出库列表
+     *
+     * @param exportDTO 导出入参
+     * @return List<StoreSaleDownloadDTO>
+     */
+    List<StoreSaleDownloadDTO> export(StoreSaleExportDTO exportDTO);
+
 }
