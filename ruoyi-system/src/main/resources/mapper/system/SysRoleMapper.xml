@@ -41,7 +41,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</collection>
 	</resultMap>
 
-	<select id="getRoleInfoById" resultType="com.ruoyi.common.core.domain.model.RoleInfo">
+	<select id="getRoleInfoById" resultMap="RoleInfo">
 		SELECT
 			sr.*,
 			srm.role_id AS rel_role_id,

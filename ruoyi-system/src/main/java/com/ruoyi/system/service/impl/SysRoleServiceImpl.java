@@ -10,6 +10,7 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.model.*;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.domain.SysRoleMenu;
 import com.ruoyi.system.mapper.SysRoleMapper;
@@ -198,6 +199,9 @@ public class SysRoleServiceImpl implements ISysRoleService {
         role.setStatus(Constants.SYS_NORMAL_STATUS);
         role.setDelFlag(Constants.UNDELETED);
         role.setVersion(0L);
+        String currentUser = SecurityUtils.getUsernameSafe();
+        role.setCreateBy(currentUser);
+        role.setUpdateBy(currentUser);
         roleMapper.insert(role);
     }
 
@@ -210,6 +214,9 @@ public class SysRoleServiceImpl implements ISysRoleService {
     private void updateRoleBase(SysRole role) {
         checkRoleBase(role);
         Assert.notNull(role.getRoleId());
+        String currentUser = SecurityUtils.getUsernameSafe();
+        role.setUpdateBy(currentUser);
+        role.setUpdateTime(new Date());
         int c = roleMapper.updateById(role);
         if (c == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);

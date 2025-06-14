@@ -45,6 +45,18 @@ public class RoleInfoVO {
     private Long storeId;
 
     /**
+     * 角色状态（0正常 1停用）
+     */
+    @ApiModelProperty("角色状态（0正常 1停用）")
+    private String status;
+
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String remark;
+
+    /**
      * 创建者
      */
     @ApiModelProperty("创建者")

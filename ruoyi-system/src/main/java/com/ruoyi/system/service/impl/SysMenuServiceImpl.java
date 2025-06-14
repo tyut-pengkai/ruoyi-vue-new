@@ -11,6 +11,7 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysMenu;
 import com.ruoyi.common.core.domain.model.*;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysRoleMenu;
 import com.ruoyi.system.domain.vo.menu.SysMenuDTO;
@@ -170,6 +171,9 @@ public class SysMenuServiceImpl implements ISysMenuService {
         menu.setStatus(Constants.SYS_NORMAL_STATUS);
         menu.setDelFlag(Constants.UNDELETED);
         menu.setVersion(0L);
+        String currentUser = SecurityUtils.getUsernameSafe();
+        menu.setCreateBy(currentUser);
+        menu.setUpdateBy(currentUser);
         menuMapper.insert(menu);
     }
 
@@ -182,6 +186,9 @@ public class SysMenuServiceImpl implements ISysMenuService {
     private void updateMenuBase(SysMenu menu) {
         checkMenuBase(menu);
         Assert.notNull(menu.getMenuId());
+        String currentUser = SecurityUtils.getUsernameSafe();
+        menu.setUpdateBy(currentUser);
+        menu.setUpdateTime(new Date());
         int c = menuMapper.updateById(menu);
         if (c == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
