@@ -45,7 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT
 			sr.*,
 			srm.role_id AS rel_role_id,
-			sm.menu_id,
+			srm.menu_id,
 			sm.menu_name,
 			sm.parent_id,
 			sm.order_num,
