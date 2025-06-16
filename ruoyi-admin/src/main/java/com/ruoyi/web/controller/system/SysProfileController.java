@@ -28,7 +28,7 @@ import com.ruoyi.system.service.ISysUserService;
 
 /**
  * 个人信息 业务处理
- * 
+ *
  * @author ruoyi
  */
 @RestController
@@ -96,7 +96,8 @@ public class SysProfileController extends BaseController
         String newPassword = params.get("newPassword");
         LoginUser loginUser = getLoginUser();
         Long userId = loginUser.getUserId();
-        String password = loginUser.getPassword();
+        SysUser user = userService.selectUserById(userId);
+        String password = user.getPassword();
         if (!SecurityUtils.matchesPassword(oldPassword, password))
         {
             return error("修改密码失败，旧密码错误");
