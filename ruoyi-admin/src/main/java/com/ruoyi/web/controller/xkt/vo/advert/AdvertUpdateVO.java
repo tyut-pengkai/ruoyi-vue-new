@@ -73,6 +73,8 @@ public class AdvertUpdateVO {
     @ApiModelProperty(value = "折扣失效时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date discountEndTime;
+    @ApiModelProperty(value = "截止时间")
+    private String deadline;
 
     @Data
     public static class AdvertFileVO {

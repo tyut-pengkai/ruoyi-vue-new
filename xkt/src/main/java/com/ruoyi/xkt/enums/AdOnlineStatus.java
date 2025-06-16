@@ -15,8 +15,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum AdOnlineStatus {
 
-    // 上线中
-    ONLINE(1, "上线中"),
+    // 已上线
+    ONLINE(1, "已上线"),
     // 已下线
     OFFLINE(2, "已下线"),
 

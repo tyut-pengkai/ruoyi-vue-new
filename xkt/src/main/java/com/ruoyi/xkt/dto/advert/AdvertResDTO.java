@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.dto.advert;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,11 +15,14 @@ import java.util.Date;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("创建推广营销")
+@ApiModel("推广营销列表返回数据")
 @Data
 @Accessors(chain = true)
 public class AdvertResDTO {
 
+    @ApiModelProperty(value = "推广ID")
+    @JsonProperty("advertId")
+    private Long id;
     @ApiModelProperty(value = "推广平台ID")
     private Integer platformId;
     @ApiModelProperty(value = "推广类型")
@@ -59,6 +63,8 @@ public class AdvertResDTO {
     @ApiModelProperty(value = "折扣失效时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date discountEndTime;
+    @ApiModelProperty(value = "截止时间")
+    private String deadline;
 
     @Data
     @ApiModel(value = "广告范例图")

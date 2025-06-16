@@ -7,10 +7,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.web.controller.xkt.vo.advert.*;
-import com.ruoyi.xkt.dto.advert.AdvertCreateDTO;
-import com.ruoyi.xkt.dto.advert.AdvertPageDTO;
-import com.ruoyi.xkt.dto.advert.AdvertResDTO;
-import com.ruoyi.xkt.dto.advert.AdvertUpdateDTO;
+import com.ruoyi.xkt.dto.advert.*;
 import com.ruoyi.xkt.service.IAdvertService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -74,13 +71,13 @@ public class AdvertController extends XktBaseController {
 
 
     /**
-     * 推广营销下线
+     * 上线/下线 营销推广
      */
-    @ApiOperation(value = "推广营销下线", httpMethod = "PUT", response = R.class)
-    @Log(title = "推广营销下线", businessType = BusinessType.UPDATE)
-    @PutMapping("/offline/{advertId}")
-    public R<Integer> offline(@PathVariable Long advertId) {
-        return R.ok(advertService.offline(advertId));
+    @ApiOperation(value = "上线/下线 营销推广", httpMethod = "PUT", response = R.class)
+    @Log(title = "上线/下线 营销推广", businessType = BusinessType.UPDATE)
+    @PutMapping("/change-status")
+    public R<Integer> changeAdvertStatus(@Validated @RequestBody AdvertChangeStatusVO changeStatusVO) {
+        return R.ok(advertService.changeAdvertStatus(BeanUtil.toBean(changeStatusVO, AdvertChangeStatusDTO.class)));
     }
 
     /**

@@ -46,12 +46,12 @@ public interface IAdvertService {
     Integer updateAdvert(AdvertUpdateDTO updateDTO);
 
     /**
-     * 下线推广营销
+     * 上线 下线推广营销
      *
-     * @param advertId 推广营销ID
+     * @param changeStatusDTO 入参
      * @return Integer
      */
-    Integer offline(Long advertId);
+    Integer changeAdvertStatus(AdvertChangeStatusDTO changeStatusDTO);
 
     /**
      * 获取初始化平台列表

@@ -22,37 +22,37 @@ import java.util.Date;
 public class AdvertCreateVO {
 
     @NotNull(message = "推广平台ID不能为空!")
-    @ApiModelProperty(value = "推广平台ID")
+    @ApiModelProperty(value = "推广平台ID", required = true)
     private Integer platformId;
     @NotNull(message = "推广类型不能为空!")
-    @ApiModelProperty(value = "推广类型")
+    @ApiModelProperty(value = "推广类型", required = true)
     private Integer typeId;
     @NotNull(message = "推广tab不能为空!")
-    @ApiModelProperty(value = "推广tab")
+    @ApiModelProperty(value = "推广tab", required = true)
     private Integer tabId;
     @NotNull(message = "每个档口可以购买当前广告位数量限制不能为空!")
-    @ApiModelProperty(value = "每个档口可以购买当前广告位数量限制")
+    @ApiModelProperty(value = "每个档口可以购买当前广告位数量限制", required = true)
     private Integer storeBuyLimit;
     @NotNull(message = "播放轮次展示类型不能为空!")
-    @ApiModelProperty(value = "播放轮次展示类型  1 时间范围or 2位置枚举")
+    @ApiModelProperty(value = "播放轮次展示类型  1 时间范围or 2位置枚举", required = true)
     private Integer showType;
     @NotNull(message = "prodMaxNum不能为空!")
-    @ApiModelProperty(value = "播放商品，或者图及商品 最多可容纳的商品数量")
+    @ApiModelProperty(value = "播放商品，或者图及商品 最多可容纳的商品数量", required = true)
     private Integer prodMaxNum;
     @NotNull(message = "展示类型不能为空!")
-    @ApiModelProperty(value = "展示类型 1推广图、2商品、3推广图及商品")
+    @ApiModelProperty(value = "展示类型 1推广图、2商品、3推广图及商品", required = true)
     private Integer displayType;
     @NotNull(message = "起拍价格不能为空!")
-    @ApiModelProperty(value = "起拍价格")
+    @ApiModelProperty(value = "起拍价格", required = true)
     private BigDecimal startPrice;
     @NotNull(message = "播放间隔不能为空!")
-    @ApiModelProperty(value = "播放间隔")
+    @ApiModelProperty(value = "播放间隔", required = true)
     private Integer playInterval;
     @NotNull(message = "播放轮次不能为空!")
-    @ApiModelProperty(value = "播放轮次")
+    @ApiModelProperty(value = "播放轮次", required = true)
     private Integer playRound;
     @NotNull(message = "播放数量不能为空!")
-    @ApiModelProperty(value = "播放数量")
+    @ApiModelProperty(value = "播放数量", required = true)
     private Integer playNum;
     @ApiModelProperty(value = "推广范例图片")
     private AdvertFileVO example;
@@ -70,6 +70,8 @@ public class AdvertCreateVO {
     @ApiModelProperty(value = "折扣失效时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date discountEndTime;
+    @ApiModelProperty(value = "截止时间")
+    private String deadline;
 
     @Data
     public static class AdvertFileVO {

@@ -19,7 +19,6 @@ import javax.validation.constraints.NotNull;
 public class AdvertPageVO extends BasePageVO {
 
     @ApiModelProperty(value = "上线状态")
-    @NotNull(message = "上线状态不能为空")
     private Integer onlineStatus;
     @ApiModelProperty(value = "推广平台ID")
     private Integer platformId;

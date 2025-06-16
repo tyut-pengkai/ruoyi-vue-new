@@ -115,9 +115,11 @@ public class AdvertServiceImpl implements IAdvertService {
     @Override
     @Transactional(readOnly = true)
     public Page<AdvertResDTO> page(AdvertPageDTO pageDTO) {
-        LambdaQueryWrapper<Advert> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Advert::getDelFlag, Constants.UNDELETED);
-        queryWrapper.eq(Advert::getOnlineStatus, pageDTO.getOnlineStatus());
+        LambdaQueryWrapper<Advert> queryWrapper = new LambdaQueryWrapper<Advert>()
+                .eq(Advert::getDelFlag, Constants.UNDELETED).orderByDesc(Advert::getCreateTime);
+        if (ObjectUtils.isNotEmpty(pageDTO.getOnlineStatus())) {
+            queryWrapper.eq(Advert::getOnlineStatus, pageDTO.getOnlineStatus());
+        }
         if (ObjectUtils.isNotEmpty(pageDTO.getPlatformId())) {
             queryWrapper.eq(Advert::getPlatformId, pageDTO.getPlatformId());
         }
@@ -126,8 +128,8 @@ public class AdvertServiceImpl implements IAdvertService {
         }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<Advert> advertList = this.advertMapper.selectList(queryWrapper);
-       return CollectionUtils.isEmpty(advertList) ? Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum())
-               : Page.convert(new PageInfo<>(advertList), BeanUtil.copyToList(advertList, AdvertResDTO.class));
+        return CollectionUtils.isEmpty(advertList) ? Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum())
+                : Page.convert(new PageInfo<>(advertList), BeanUtil.copyToList(advertList, AdvertResDTO.class));
     }
 
     /**
@@ -145,27 +147,30 @@ public class AdvertServiceImpl implements IAdvertService {
         // TODO 判断当前是否超级管理员在操作
         this.isSuperAdmin();
 
-        // 将文件插入到SysFile表中
-        SysFile file = BeanUtil.toBean(updateDTO.getExample(), SysFile.class);
-        this.fileMapper.insert(file);
         Advert advert = Optional.ofNullable(this.advertMapper.selectOne(new LambdaQueryWrapper<Advert>()
                         .eq(Advert::getId, updateDTO.getAdvertId()).eq(Advert::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广营销不存在!", HttpStatus.ERROR));
         BeanUtil.copyProperties(updateDTO, advert);
-        advert.setExamplePicId(file.getId());
+        if (ObjectUtils.isNotEmpty(updateDTO.getExample())) {
+            // 将文件插入到SysFile表中
+            SysFile file = BeanUtil.toBean(updateDTO.getExample(), SysFile.class);
+            this.fileMapper.insert(file);
+            advert.setExamplePicId(file.getId());
+        }
         return this.advertMapper.updateById(advert);
     }
 
     /**
      * 下线推广营销
      *
-     * @param advertId 推广营销ID
+     * @param changeStatusDTO 推广营销入参
      * @return Integer
      */
     @Override
     @Transactional
-    public Integer offline(Long advertId) {
-
+    public Integer changeAdvertStatus(AdvertChangeStatusDTO changeStatusDTO) {
+        // 判断状态是否合法
+        AdOnlineStatus.of(changeStatusDTO.getStatus());
 
         // TODO 判断当前是否超级管理员在操作
         // TODO 判断当前是否超级管理员在操作
@@ -173,13 +178,10 @@ public class AdvertServiceImpl implements IAdvertService {
         this.isSuperAdmin();
 
         Advert advert = Optional.ofNullable(this.advertMapper.selectOne(new LambdaQueryWrapper<Advert>()
-                .eq(Advert::getId, advertId).eq(Advert::getDelFlag, Constants.UNDELETED)))
+                        .eq(Advert::getId, changeStatusDTO.getAdvertId()).eq(Advert::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广营销不存在!", HttpStatus.ERROR));
-        if (Objects.equals(advert.getOnlineStatus(), AdOnlineStatus.OFFLINE.getValue())) {
-            throw new ServiceException("推广营销已下线，不可再次操作!", HttpStatus.ERROR);
-        }
-        advert.setOnlineStatus(AdOnlineStatus.OFFLINE.getValue());
-       return this.advertMapper.updateById(advert);
+        advert.setOnlineStatus(changeStatusDTO.getStatus());
+        return this.advertMapper.updateById(advert);
     }
 
     /**

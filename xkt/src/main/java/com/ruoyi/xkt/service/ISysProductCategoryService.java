@@ -83,4 +83,11 @@ public interface ISysProductCategoryService {
      */
     List<ProdCateDTO> getAllSubList();
 
+    /**
+     * 管理员获取商品分类树
+     *
+     * @param listDTO 查询入参
+     * @return List<ProdCateListResDTO>
+     */
+    List<ProdCateListResDTO> tree(ProdCateListDTO listDTO);
 }
