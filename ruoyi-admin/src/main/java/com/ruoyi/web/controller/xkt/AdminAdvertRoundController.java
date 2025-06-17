@@ -33,6 +33,12 @@ public class AdminAdvertRoundController extends XktBaseController {
 
     final IAdminAdvertRoundService adminAdvertRoundService;
 
+    @ApiOperation(value = "管理员推广营销列表待投放/已投放数量", httpMethod = "GET", response = R.class)
+    @GetMapping("/status/count")
+    public R<AdminAdRoundStatusCountResVO> statusCount() {
+        return R.ok(BeanUtil.toBean(adminAdvertRoundService.statusCount(), AdminAdRoundStatusCountResVO.class));
+    }
+
     /**
      * 管理员获取推广营销列表
      */

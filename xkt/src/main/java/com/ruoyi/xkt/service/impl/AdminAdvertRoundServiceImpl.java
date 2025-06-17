@@ -297,6 +297,17 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     }
 
     /**
+     * 获取管理员推广营销列表 已投放/待投放数量
+     *
+     * @return AdminAdRoundPageStatusCountResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public AdminAdRoundStatusCountResDTO statusCount() {
+        return this.advertRoundMapper.statusCount();
+    }
+
+    /**
      * 记录竞价失败档口推广营销
      *
      * @param failAdvert 竞价失败的推广营销

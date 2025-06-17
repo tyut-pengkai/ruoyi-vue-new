@@ -70,6 +70,7 @@ public class AdvertCreateVO {
     @ApiModelProperty(value = "折扣失效时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date discountEndTime;
+    @NotBlank(message = "截止时间不能为空!")
     @ApiModelProperty(value = "截止时间")
     private String deadline;
 

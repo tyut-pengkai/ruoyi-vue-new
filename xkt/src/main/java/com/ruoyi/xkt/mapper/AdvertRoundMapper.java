@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.AdvertRound;
 import com.ruoyi.xkt.dto.adminAdvertRound.AdminAdRoundPageDTO;
 import com.ruoyi.xkt.dto.adminAdvertRound.AdminAdRoundPageResDTO;
+import com.ruoyi.xkt.dto.adminAdvertRound.AdminAdRoundStatusCountResDTO;
 import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageDTO;
 import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageResDTO;
 import org.apache.ibatis.annotations.Param;
@@ -62,13 +63,11 @@ public interface AdvertRoundMapper extends BaseMapper<AdvertRound> {
     List<Long> selectMostPopulars();
 
     /**
-     * 获取时间范围类型推广位 最高出价
+     * 推广状态数量
      *
-     * @param advertId 推广位ID
-     * @param roundId  播放轮次ID
-     * @return BigDecimal
+     * @return AdminAdRoundStatusCountResDTO
      */
-    BigDecimal selectMaxPayPrice(@Param("advertId") Long advertId, @Param("roundId") Integer roundId);
+    AdminAdRoundStatusCountResDTO statusCount();
 
 }
 

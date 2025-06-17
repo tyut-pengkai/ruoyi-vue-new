@@ -669,6 +669,28 @@ public class XktTask {
         log.info("-------------统计图搜热款结束-------------");
     }
 
+    /**
+     * 凌晨2:35 更新过期档口
+     */
+    public void autoCloseTimeoutStore() {
+
+        // TODO 更新未交年费档口
+        // TODO 更新未交年费档口
+
+    }
+
+    /**
+     * 凌晨2:40 更新档口过期会员
+     */
+    public void autoCloseExpireStoreMember() {
+
+        // TODO 更新档口过期会员 删除ES中商品标识
+        // TODO 更新档口过期会员 删除ES中商品标识
+        // TODO 更新档口过期会员 删除ES中商品标识
+
+//        this.storeMapper.updateExpireStoreMember();
+    }
+
 
     /**
      * 每晚22:00:10 更新广告位竞价状态 将biddingTempStatus赋值给biddingStatus

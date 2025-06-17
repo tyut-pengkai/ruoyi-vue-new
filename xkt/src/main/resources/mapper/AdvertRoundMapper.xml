@@ -135,14 +135,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             LIMIT 8
     </select>
 
-    <select id="selectMaxPayPrice">
+    <select id="statusCount" resultType="com.ruoyi.xkt.dto.adminAdvertRound.AdminAdRoundStatusCountResDTO">
         SELECT
-            MAX(IFNULL( pay_price, 0 )) AS pay_price
+            SUM( CASE WHEN ar.launch_status = 2 THEN 1 ELSE 0 END ) AS unLaunchCount,
+            SUM( CASE WHEN ar.launch_status = 1 THEN 1 ELSE 0 END ) AS launchCount
         FROM
-            advert_round
+            advert_round ar
         WHERE
-            advert_id = #{advertId}
-          AND round_id = #{roundId}
+            ar.del_flag = 0
     </select>
 
 

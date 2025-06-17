@@ -22,7 +22,7 @@ public class AdminAdRoundPageDTO extends BasePageDTO {
     @ApiModelProperty(value = "投放状态 1投放中  2待投放")
     private Integer launchStatus;
     @ApiModelProperty(value = "平台ID")
-    private Long platformId;
+    private Integer platformId;
     @ApiModelProperty(value = "推广类型")
     private Integer typeId;
     @ApiModelProperty(value = "图片审核状态 1 待审核 2 审核通过  3 审核驳回")

@@ -60,4 +60,11 @@ public interface IAdminAdvertRoundService {
      */
     Integer cancelIntercept(AdminAdRoundCancelInterceptDTO cancelInterceptDTO);
 
+    /**
+     * 获取管理员推广营销列表 已投放/待投放数量
+     *
+     * @return AdminAdRoundPageStatusCountResDTO
+     */
+    AdminAdRoundStatusCountResDTO statusCount();
+
 }

@@ -28,10 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -128,8 +126,19 @@ public class AdvertServiceImpl implements IAdvertService {
         }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<Advert> advertList = this.advertMapper.selectList(queryWrapper);
-        return CollectionUtils.isEmpty(advertList) ? Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum())
-                : Page.convert(new PageInfo<>(advertList), BeanUtil.copyToList(advertList, AdvertResDTO.class));
+        if (CollectionUtils.isEmpty(advertList)) {
+            return Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum());
+        }
+        List<Long> fileIdList = advertList.stream().map(Advert::getExamplePicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList());
+        Map<Long, SysFile> fileMap = this.fileMapper.selectByIds(fileIdList).stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
+        List<AdvertResDTO> advertResDTOList = advertList.stream().map(x -> {
+            AdvertResDTO advertResDTO = BeanUtil.toBean(x, AdvertResDTO.class);
+            if (ObjectUtils.isNotEmpty(x.getExamplePicId())) {
+                advertResDTO.setExample(BeanUtil.toBean(fileMap.get(x.getExamplePicId()), AdvertResDTO.AdvertFileDTO.class));
+            }
+            return advertResDTO;
+        }).collect(Collectors.toList());
+        return Page.convert(new PageInfo<>(advertList), advertResDTOList);
     }
 
     /**
@@ -251,6 +260,7 @@ public class AdvertServiceImpl implements IAdvertService {
 
     /**
      * 随机生成10位，包含大小写字母、数字的字符串
+     *
      * @return
      */
     public static String random10Str() {
@@ -266,7 +276,6 @@ public class AdvertServiceImpl implements IAdvertService {
         }
         return sb.toString();
     }
-
 
 
 }
