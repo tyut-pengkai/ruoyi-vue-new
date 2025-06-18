@@ -13,6 +13,7 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.enums.UserStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.exception.user.BlackListException;
 import com.ruoyi.common.exception.user.CaptchaException;
@@ -51,6 +52,9 @@ public class SysLoginService
 
     @Autowired
     private ISysConfigService configService;
+
+    @Autowired
+    private SysPermissionService permissionService;
 
     /**
      * 登录验证
@@ -95,6 +99,45 @@ public class SysLoginService
         }
         AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        recordLoginInfo(loginUser.getUserId());
+        // 生成token
+        return tokenService.createToken(loginUser);
+    }
+
+    /**
+     * 邮箱验证码登录验证
+     * 
+     * @param username 邮箱（通过username参数传递）
+     * @param code 验证码
+     * @param uuid 唯一标识（不使用）
+     * @return 结果
+     */
+    public String emailLogin(String username, String code, String uuid)
+    {
+        // 邮箱验证码校验
+        validateEmailCaptcha(username, code, uuid);
+        // 登录前置校验
+        emailLoginPreCheck(username);
+        // 用户验证
+        SysUser user = userService.selectUserByEmail(username);
+        if (StringUtils.isNull(user))
+        {
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.not.exists")));
+            throw new UserNotExistsException();
+        }
+        else if (UserStatus.DELETED.getCode().equals(user.getDelFlag()))
+        {
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.password.delete")));
+            throw new ServiceException(MessageUtils.message("user.password.delete"));
+        }
+        else if (UserStatus.DISABLE.getCode().equals(user.getStatus()))
+        {
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.blocked")));
+            throw new ServiceException(MessageUtils.message("user.blocked"));
+        }
+
+        AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        LoginUser loginUser = new LoginUser(user.getUserId(), user.getDeptId(), user, permissionService.getMenuPermission(user));
         recordLoginInfo(loginUser.getUserId());
         // 生成token
         return tokenService.createToken(loginUser);
@@ -160,6 +203,45 @@ public class SysLoginService
         String blackStr = configService.selectConfigByKey("sys.login.blackIPList");
         if (IpUtils.isMatchedIp(blackStr, IpUtils.getIpAddr()))
         {
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("login.blocked")));
+            throw new BlackListException();
+        }
+    }
+
+    /**
+     * 邮箱验证码校验
+     * @param username 邮箱
+     * @param code 验证码
+     * @param uuid 唯一标识
+     */
+    public void validateEmailCaptcha(String username, String code, String uuid) {
+        // 使用邮箱作为key，与EmailService保持一致
+        String verifyKey = CacheConstants.EMAIL_CODE_KEY + username;
+        String captcha = redisCache.getCacheObject(verifyKey);
+        if (captcha == null) {
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.expire")));
+            throw new CaptchaExpireException();
+        }
+        if (!code.equalsIgnoreCase(captcha)) {
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
+            throw new CaptchaException();
+        }
+        // 验证成功后删除验证码
+        redisCache.deleteObject(verifyKey);
+    }
+
+    /**
+     * 邮箱登录前置校验
+     * @param username 邮箱
+     */
+    public void emailLoginPreCheck(String username) {
+        if (StringUtils.isEmpty(username)) {
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("not.null")));
+            throw new UserNotExistsException();
+        }
+        // IP黑名单校验
+        String blackStr = configService.selectConfigByKey("sys.login.blackIPList");
+        if (IpUtils.isMatchedIp(blackStr, IpUtils.getIpAddr())) {
             AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("login.blocked")));
             throw new BlackListException();
         }

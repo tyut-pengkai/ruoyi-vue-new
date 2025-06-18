@@ -117,6 +117,25 @@ public class SysUserServiceImpl implements ISysUserService
     }
 
     /**
+     * 通过邮箱查询用户
+     * 
+     * @param email 邮箱
+     * @return 用户对象信息
+     */
+    @Override
+    public SysUser selectUserByEmail(String email)
+    {
+        log.info("通过邮箱查询用户：{}", email);
+        SysUser user = userMapper.selectUserByEmail(email);
+        if (user != null) {
+            log.info("找到用户：{}，邮箱：{}", user.getUserName(), user.getEmail());
+        } else {
+            log.info("未找到邮箱为 {} 的用户", email);
+        }
+        return user;
+    }
+
+    /**
      * 通过用户ID查询用户
      * 
      * @param userId 用户ID

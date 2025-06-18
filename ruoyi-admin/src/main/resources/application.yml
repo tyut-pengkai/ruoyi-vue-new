@@ -11,7 +11,7 @@ ruoyi:
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证
-  captchaType: math
+  captchaType: char
 
 # 开发环境配置
 server:
@@ -65,6 +65,21 @@ spring:
     restart:
       # 热部署开关
       enabled: true
+  # 邮件配置
+  mail:
+    host: smtp.126.com
+    port: 465
+    username: wdb_workspace@126.com
+    password: QMaxbvfSf8vGcECY
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+          auth: true
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
   # redis 配置
   redis:
     # 地址
@@ -74,7 +89,7 @@ spring:
     # 数据库索引
     database: 0
     # 密码
-    password:
+    password: Vfdgh@123yuyjN
     # 连接超时时间
     timeout: 10s
     lettuce:
@@ -92,8 +107,8 @@ spring:
 token:
   # 令牌自定义标识
   header: Authorization
-  # 令牌密钥
-  secret: abcdefghijklmnopqrstuvwxyz
+  # 令牌密钥  abcdefghijklmnopqrstuvwxyz
+  secret: ZDrsarefzgAixizrhfhgfzdgbz
   # 令牌有效期（默认30分钟）
   expireTime: 30
 

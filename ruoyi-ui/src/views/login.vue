@@ -7,7 +7,7 @@
           v-model="loginForm.username"
           type="text"
           auto-complete="off"
-          placeholder="账号"
+          placeholder="用户名或邮箱"
         >
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
@@ -51,12 +51,14 @@
         </el-button>
         <div style="float: right;" v-if="register">
           <router-link class="link-type" :to="'/register'">立即注册</router-link>
+          <span style="margin: 0 10px;">|</span>
+          <router-link class="link-type" :to="'/emailLogin'">邮箱验证码登录</router-link>
         </div>
       </el-form-item>
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2018-2025 ruoyi.vip All Rights Reserved.</span>
+      <span>Copyright © 2025 aivi.vip All Rights Reserved.</span>
     </div>
   </div>
 </template>
@@ -81,18 +83,39 @@ export default {
       },
       loginRules: {
         username: [
-          { required: true, trigger: "blur", message: "请输入您的账号" }
+          { required: true, trigger: "blur", message: "请输入您的用户名或邮箱" },
+          { 
+            validator: (rule, value, callback) => {
+              if (value && !/^[a-zA-Z0-9_@.-]+$/.test(value)) {
+                callback(new Error('用户名或邮箱格式不正确'));
+              } else {
+                callback();
+              }
+            }, 
+            trigger: "blur" 
+          }
         ],
         password: [
           { required: true, trigger: "blur", message: "请输入您的密码" }
         ],
-        code: [{ required: true, trigger: "change", message: "请输入验证码" }]
+        code: [
+          { 
+            validator: (rule, value, callback) => {
+              if (this.captchaEnabled && !value) {
+                callback(new Error('请输入验证码'));
+              } else {
+                callback();
+              }
+            }, 
+            trigger: "change" 
+          }
+        ]
       },
       loading: false,
       // 验证码开关
       captchaEnabled: true,
       // 注册开关
-      register: false,
+      register: true,
       redirect: undefined
     }
   },
