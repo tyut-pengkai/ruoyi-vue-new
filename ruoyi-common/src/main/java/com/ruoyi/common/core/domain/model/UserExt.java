@@ -116,7 +116,7 @@ public class UserExt extends SysUser {
             if (StrUtil.isNotEmpty(role.getRoleKey())) {
                 userExt.roleKeys.add(role.getRoleKey());
             }
-            if (ESystemRole.SELLER.getId().equals(role.getRoleId()) && role.getRelStoreId() != null) {
+            if (ESystemRole.SUPPLIER.getId().equals(role.getRoleId()) && role.getRelStoreId() != null) {
                 userExt.managedStoreIds.add(role.getRelStoreId());
             }
             if (!ESystemRole.isDefaultRole(role.getRoleId()) && role.getStoreId() != null) {
