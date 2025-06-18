@@ -8,6 +8,7 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.StoreCustomer;
 import com.ruoyi.xkt.domain.StoreCustomerProductDiscount;
 import com.ruoyi.xkt.domain.StoreProductColor;
@@ -52,6 +53,10 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
     @Override
     @Transactional
     public Integer updateStoreCusProdDiscount(StoreCusProdDiscountDTO cusProdDisDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(cusProdDisDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(new LambdaQueryWrapper<StoreCustomer>()
                 .eq(StoreCustomer::getStoreId, cusProdDisDTO.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)
                 .eq(StoreCustomer::getCusName, cusProdDisDTO.getStoreCusName()));
@@ -97,6 +102,10 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
     @Override
     @Transactional
     public Integer batchDiscount(StoreCusProdBatchDiscountDTO batchDiscDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(batchDiscDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         // 获取当前客户已有优惠列表
         List<StoreCustomerProductDiscount> prodCusDiscList = this.cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
                 .in(StoreCustomerProductDiscount::getStoreCusId, batchDiscDTO.getDiscountList().stream()
@@ -150,6 +159,10 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
     @Override
     @Transactional(readOnly = true)
     public Page<StoreCusProdDiscPageResDTO> selectPage(StoreCusProdDiscPageDTO pageDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<StoreCusProdDiscPageResDTO> list = this.cusProdDiscMapper.selectDiscPage(pageDTO);
         return Page.convert(new PageInfo<>(list));
@@ -164,6 +177,10 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
     @Override
     @Transactional(readOnly = true)
     public List<StoreCusProdDiscExistResDTO> discountExist(StoreCusProdDiscExistDTO existDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(existDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         List<StoreCustomerProductDiscount> discountList = this.cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
                 .eq(StoreCustomerProductDiscount::getStoreId, existDTO.getStoreId())
                 .in(StoreCustomerProductDiscount::getStoreProdColorId, existDTO.getDiscountList().stream().map(StoreCusProdDiscExistDTO.DiscountItemDTO::getStoreProdColorId).collect(Collectors.toList()))

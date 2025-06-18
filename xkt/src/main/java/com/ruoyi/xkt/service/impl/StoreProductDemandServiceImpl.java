@@ -9,6 +9,7 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeProductDemand.*;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
@@ -60,6 +61,10 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     @Override
     @Transactional(readOnly = true)
     public List<StoreProdDemandQuantityDTO> getStockAndProduceQuantity(Long storeId, Long storeProdId) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         List<StoreProductColor> prodColorList = Optional.ofNullable(this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
                         .eq(StoreProductColor::getStoreId, storeId).eq(StoreProductColor::getDelFlag, Constants.UNDELETED).eq(StoreProductColor::getStoreProdId, storeProdId)))
                 .orElseThrow(() -> new RuntimeException("该档口下没有商品及颜色"));
@@ -132,6 +137,10 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     @Override
     @Transactional
     public Integer createDemand(StoreProdDemandDTO demandDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(demandDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         StoreProductDemand demand = new StoreProductDemand();
         // 生成code
         demand.setCode(this.sequenceService.generateCode(demandDTO.getStoreId(), EVoucherSequenceType.DEMAND.getValue(), DateUtils.parseDateToStr(DateUtils.YYYYMMDD, new Date())))
@@ -162,6 +171,10 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
      * @return 返回一个包含查询结果的分页对象
      */
     public Page<StoreProdDemandPageResDTO> selectPage(StoreProdDemandPageDTO pageDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         // 启用分页查询
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         // 执行分页查询，获取需求列表
@@ -198,6 +211,10 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     @Override
     @Transactional
     public Integer updateWorkingStatus(StoreProdDemandWorkingDTO workingDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(workingDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         List<StoreProductDemandDetail> demandDetailList = Optional.ofNullable(this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
                         .eq(StoreProductDemandDetail::getStoreId, workingDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
                         .in(StoreProductDemandDetail::getId, workingDTO.getStoreProdDemandDetailIdList())))
@@ -218,6 +235,10 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     @Override
     @Transactional(readOnly = true)
     public StoreProdDemandVerifyResDTO verifyDemandExist(StoreProdDemandVerifyDTO demandVerifyDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(demandVerifyDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         // 所有的档口颜色ID列表
         List<Long> prodColorIdList = demandVerifyDTO.getDetailList().stream().map(StoreProdDemandVerifyDTO.DetailDTO::getStoreProdColorId).distinct().collect(Collectors.toList());
         List<StoreProductDemandDetail> demandDetailList = this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
@@ -356,6 +377,10 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     @Override
     @Transactional
     public int deleteByStoreProdDemandIds(StoreProdDemandDeleteDTO deleteDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(deleteDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         List<StoreProductDemandDetail> demandDetailList = Optional.ofNullable(this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
                         .eq(StoreProductDemandDetail::getStoreId, deleteDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
                         .in(StoreProductDemandDetail::getId, deleteDTO.getStoreProdDemandDetailIdList())))

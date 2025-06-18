@@ -65,11 +65,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
 
-    <select id="selectAdminAdvertPage" parameterType="com.ruoyi.xkt.dto.adminAdvertRound.AdminAdRoundPageDTO"  resultType="com.ruoyi.xkt.dto.adminAdvertRound.AdminAdRoundPageResDTO">
+    <select id="selectAdminAdvertPage" parameterType="com.ruoyi.xkt.dto.adminAdvertRound.AdminAdRoundPageDTO"
+            resultType="com.ruoyi.xkt.dto.adminAdvertRound.AdminAdRoundPageResDTO">
         SELECT
             ar.id AS advertRoundId,
             s.id AS storeId,
             s.store_name,
+            a.tab_id,
             a.platform_id,
             ar.type_id,
             ar.voucher_date,
@@ -82,7 +84,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ar.pic_design_type,
             ar.pic_set_type,
             ar.pic_audit_status,
-            ar.sys_intercept
+            ar.sys_intercept,
+            a.pic_pixel,
+            a.pic_size
         FROM
             advert_round ar
             JOIN advert a ON ar.advert_id = a.id

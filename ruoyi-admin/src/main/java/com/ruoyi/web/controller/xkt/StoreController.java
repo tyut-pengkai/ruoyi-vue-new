@@ -14,6 +14,7 @@ import com.ruoyi.xkt.service.IStoreService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,6 +41,7 @@ public class StoreController extends XktBaseController {
         return R.ok(storeService.create(BeanUtil.toBean(createVO, StoreCreateDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "修改档口基本信息", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口基本信息", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -47,12 +49,14 @@ public class StoreController extends XktBaseController {
         return R.ok(storeService.updateStore(BeanUtil.toBean(storeUpdateVO, StoreUpdateDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "查询档口列表 ", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StorePageResDTO>> page(@Validated @RequestBody StorePageVO pageVO) {
         return R.ok(storeService.page(BeanUtil.toBean(pageVO, StorePageDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "档口启用/停用", httpMethod = "PUT", response = R.class)
     @Log(title = "档口启用/停用", businessType = BusinessType.UPDATE)
     @PutMapping("/del-flag")
@@ -60,6 +64,7 @@ public class StoreController extends XktBaseController {
         return R.ok(storeService.updateDelFlag(BeanUtil.toBean(updateDelFlagVO, StoreUpdateDelFlagDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "档口审核", httpMethod = "PUT", response = R.class)
     @Log(title = "档口审核", businessType = BusinessType.UPDATE)
     @PutMapping("/approve")
@@ -79,48 +84,55 @@ public class StoreController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeService.getSimpleInfo(storeId), StoreSimpleResVO.class));
     }
 
-    @ApiOperation(value = "档口审核是获取档口基本信息", httpMethod = "GET", response = R.class)
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @ApiOperation(value = "档口审核时获取档口基本信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/approve/{storeId}")
     public R<StoreApproveResVO> getApproveInfo(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeService.getApproveInfo(storeId), StoreApproveResVO.class));
     }
 
-    @ApiOperation(value = "档口审核是获取档口基本信息", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "APP获取档口基本信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/app/{storeId}")
     public R<StoreAppResVO> getAppInfo(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeService.getAppInfo(storeId), StoreAppResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "管理员审核推广图获取档口联系信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/advert/{storeId}")
     public R<StoreAdvertResVO> getAdvertStoreInfo(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeService.getAdvertStoreInfo(storeId), StoreAdvertResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')")
     @ApiOperation(value = "获取档口首页 数据概览 ", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/index/overview")
     public R<StoreIndexOverviewResVO> indexOverview(@Validated @RequestBody StoreOverviewVO overviewVO) {
         return R.ok(BeanUtil.toBean(storeService.indexOverview(BeanUtil.toBean(overviewVO, StoreOverviewDTO.class)), StoreIndexOverviewResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')")
     @ApiOperation(value = "获取档口首页 销售额 ", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/index/sale-revenue")
     public R<List<StoreIndexSaleRevenueResVO>> indexSaleRevenue(@Validated @RequestBody StoreSaleRevenueVO revenueVO) {
         return R.ok(BeanUtil.copyToList(storeService.indexSaleRevenue(BeanUtil.toBean(revenueVO, StoreSaleRevenueDTO.class)), StoreIndexSaleRevenueResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')")
     @ApiOperation(value = "获取档口首页 今日销售额 ", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/index/today/sale-revenue/{storeId}")
     public R<StoreIndexTodaySaleResVO> indexTodaySaleRevenue(@PathVariable Long storeId) {
         return R.ok(BeanUtil.toBean(storeService.indexTodaySaleRevenue(storeId), StoreIndexTodaySaleResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')")
     @ApiOperation(value = "获取档口首页 商品销售额前10 ", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/index/sale/top10")
     public R<List<StoreIndexSaleTop10ResVO>> indexTop10Sale(@Validated @RequestBody StoreSaleTop10VO saleTop10VO) {
         return R.ok(BeanUtil.copyToList(storeService.indexTop10Sale(BeanUtil.toBean(saleTop10VO, StoreSaleTop10DTO.class)), StoreIndexSaleTop10ResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')")
     @ApiOperation(value = "获取档口首页 客户销售榜前10 ", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/index/sale-cus/top10")
     public R<List<StoreIndexCusSaleTop10ResVO>> indexTop10SaleCus(@Validated @RequestBody StoreSaleCustomerTop10VO saleCusTop10VO) {

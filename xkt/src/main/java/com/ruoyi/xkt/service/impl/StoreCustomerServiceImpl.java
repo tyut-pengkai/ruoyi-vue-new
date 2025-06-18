@@ -9,6 +9,7 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.StoreCustomer;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusFuzzyResDTO;
@@ -62,6 +63,10 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
     @Override
     @Transactional
     public int create(StoreCusDTO storeCusDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeCusDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         return this.storeCusMapper.insert(BeanUtil.toBean(storeCusDTO, StoreCustomer.class));
     }
 
@@ -71,6 +76,10 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
         StoreCustomer storeCus = Optional.ofNullable(this.storeCusMapper.selectOne(new LambdaQueryWrapper<StoreCustomer>()
                         .eq(StoreCustomer::getId, storeCusId).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口客户不存在!"));
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeCus.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         storeCus.setDelFlag(Constants.DELETED);
         this.storeCusMapper.updateById(storeCus);
     }
@@ -78,6 +87,10 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
     @Override
     @Transactional(readOnly = true)
     public Page<StoreCusPageResDTO> selectPage(StoreCusPageDTO storeCusPageDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeCusPageDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         LambdaQueryWrapper<StoreCustomer> queryWrapper = new LambdaQueryWrapper<StoreCustomer>()
                 .eq(StoreCustomer::getStoreId, storeCusPageDTO.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)
                 .orderByDesc(StoreCustomer::getCreateTime);
@@ -94,6 +107,10 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
     @Override
     @Transactional
     public int updateStoreCus(StoreCusDTO storeCusDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeCusDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         Optional.ofNullable(storeCusDTO.getStoreCusId()).orElseThrow(() -> new ServiceException("档口客户ID不可为空!"));
         StoreCustomer storeCus = Optional.ofNullable(this.storeCusMapper.selectOne(new LambdaQueryWrapper<StoreCustomer>()
                         .eq(StoreCustomer::getId, storeCusDTO.getStoreCusId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))

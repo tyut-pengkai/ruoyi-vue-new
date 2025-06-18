@@ -12,6 +12,7 @@ import com.ruoyi.xkt.service.IAdvertService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,9 +32,7 @@ public class AdvertController extends XktBaseController {
 
     final IAdvertService advertService;
 
-    /**
-     * 新增推广营销。只有超级管理员有权限
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "新增推广营销", httpMethod = "POST", response = R.class)
     @Log(title = "新增推广营销", businessType = BusinessType.INSERT)
     @PostMapping
@@ -41,27 +40,21 @@ public class AdvertController extends XktBaseController {
         return R.ok(advertService.create(BeanUtil.toBean(createVO, AdvertCreateDTO.class)));
     }
 
-    /**
-     * 获取推广营销详细信息
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "获取推广营销详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{advertId}")
     public R<AdvertResVO> getInfo(@PathVariable("advertId") Long advertId) {
         return R.ok(BeanUtil.toBean(advertService.getInfo(advertId), AdvertResVO.class));
     }
 
-    /**
-     * 查询推广营销列表
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "查询推广营销列表 ", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<AdvertResDTO>> page(@Validated @RequestBody AdvertPageVO pageVO) {
         return R.ok(advertService.page(BeanUtil.toBean(pageVO, AdvertPageDTO.class)));
     }
 
-    /**
-     * 修改推广营销信息
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "修改推广营销信息", httpMethod = "PUT", response = R.class)
     @Log(title = "修改推广营销信息", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -69,10 +62,7 @@ public class AdvertController extends XktBaseController {
         return R.ok(advertService.updateAdvert(BeanUtil.toBean(updateVO, AdvertUpdateDTO.class)));
     }
 
-
-    /**
-     * 上线/下线 营销推广
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "上线/下线 营销推广", httpMethod = "PUT", response = R.class)
     @Log(title = "上线/下线 营销推广", businessType = BusinessType.UPDATE)
     @PutMapping("/change-status")
@@ -80,18 +70,13 @@ public class AdvertController extends XktBaseController {
         return R.ok(advertService.changeAdvertStatus(BeanUtil.toBean(changeStatusVO, AdvertChangeStatusDTO.class)));
     }
 
-    /**
-     * 档口营销推广初始化数据
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "档口营销推广初始化数据", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/platform-list")
     public R<List<AdvertPlatformResVO>> getPlatformList() {
         return R.ok(BeanUtil.copyToList(advertService.getPlatformList(), AdvertPlatformResVO.class));
     }
 
-    /**
-     * 获取推广位示例图
-     */
     @ApiOperation(value = "获取推广位示例图", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/demo/{advertType}")
     public R<String> getDemoPic(@PathVariable Integer advertType) {

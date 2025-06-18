@@ -10,6 +10,7 @@ import com.ruoyi.xkt.service.IPictureSearchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,7 @@ public class PictureSearchController extends XktBaseController {
 
     final IPictureSearchService picSearchService;
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller')")
     @ApiOperation(value = "电商卖家 以图搜款", httpMethod = "POST", response = R.class)
     @PostMapping("")
     public R<List<StoreProdViewVO>> searchProductByPic(@Validated @RequestBody PicSearchVO searchVO) {

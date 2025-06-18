@@ -157,5 +157,5 @@ public interface IStoreProductService {
      * @param prodArtNum 商品货号
      * @return List<StoreProdFuzzyLatest20ResDTO>
      */
-    List<StoreProdFuzzyLatest20ResDTO> fuzzyQueryLatest30List(Long storeId, String prodArtNum);
+    List<StoreProdFuzzyLatest30ResDTO> fuzzyQueryLatest30List(Long storeId, String prodArtNum);
 }

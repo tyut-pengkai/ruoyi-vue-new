@@ -29,9 +29,6 @@ public class StoreProductColorPriceController extends XktBaseController {
 
     final IStoreProductColorPriceService prodColorPriceService;
 
-    /**
-     * 根据storeProdId获取所有颜色分类及定价
-     */
     @ApiOperation(value = "根据storeProdId获取所有颜色分类及定价", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}/{storeProdId}")
     public R<List<StoreProdColorPriceVO>> getColorPriceByStoreProdId(@PathVariable(value = "storeProdId") Long storeProdId, @PathVariable("storeId") Long storeId) {

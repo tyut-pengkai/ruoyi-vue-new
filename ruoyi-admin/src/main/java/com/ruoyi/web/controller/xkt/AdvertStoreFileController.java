@@ -15,6 +15,7 @@ import com.ruoyi.xkt.service.IAdvertStoreFileService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,9 +36,7 @@ public class AdvertStoreFileController extends XktBaseController {
 
     final IAdvertStoreFileService advertStoreFileService;
 
-    /**
-     * 查询图片管理列表
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "查询图片管理列表 ", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<AdvertStoreFileResDTO>> page(@Validated @RequestBody AdvertStoreFilePageVO pageVO) {

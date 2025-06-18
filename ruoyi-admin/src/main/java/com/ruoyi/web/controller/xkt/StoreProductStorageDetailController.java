@@ -14,6 +14,7 @@ import com.ruoyi.xkt.service.IStoreProductStorageDetailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,6 +41,7 @@ public class StoreProductStorageDetailController extends XktBaseController {
 
     final IStoreProductStorageDetailService storageDetailService;
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "导出入库记录", httpMethod = "POST", response = R.class)
     @Log(title = "导出入库记录", businessType = BusinessType.EXPORT)
     @PostMapping("/export")

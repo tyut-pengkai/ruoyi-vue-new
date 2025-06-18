@@ -146,6 +146,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional(readOnly = true)
     public StoreProdPicSpaceResDTO getStoreProductPicSpace(StoreProdPicSpaceDTO spaceDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(spaceDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>().eq(StoreProduct::getId, spaceDTO.getStoreId())
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED);
         if (StringUtils.isNotBlank(spaceDTO.getProdArtNum())) {
@@ -181,6 +185,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional(readOnly = true)
     public Page<StoreProdPageResDTO> page(StoreProdPageDTO pageDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         // 调用Mapper方法查询商店产品分页信息
         List<StoreProdPageResDTO> prodList = storeProdColorMapper.selectStoreProdColorPage(pageDTO);
@@ -220,7 +228,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // TODO 富文本标签过滤
         // TODO 富文本标签过滤
 
-
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeProdDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         // 组装StoreProduct数据
         StoreProduct storeProd = BeanUtil.toBean(storeProdDTO, StoreProduct.class).setVoucherDate(DateUtils.getNowDate())
                 .setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
@@ -434,6 +445,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional
     public Integer updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO) throws IOException {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(prodStatusDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         // 判断商品状态是否不存在
         EProductStatus.of(prodStatusDTO.getProdStatus());
         // 根据商品ID列表查询数据库中的商品信息
@@ -457,6 +472,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional
     public Integer batchDelete(StoreProdDeleteDTO deleteDTO) throws IOException {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(deleteDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, deleteDTO.getStoreId())
                 .in(StoreProduct::getId, deleteDTO.getStoreProdIdList()));
@@ -475,7 +494,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     }
 
     /**
-     * 推广营销查询最近20天上新商品
+     * 推广营销查询最近30天上新商品
      *
      * @param storeId    档口ID
      * @param prodArtNum 商品货号
@@ -483,7 +502,11 @@ public class StoreProductServiceImpl implements IStoreProductService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<StoreProdFuzzyLatest20ResDTO> fuzzyQueryLatest30List(Long storeId, String prodArtNum) {
+    public List<StoreProdFuzzyLatest30ResDTO> fuzzyQueryLatest30List(Long storeId, String prodArtNum) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         LocalDateTime daysAgo = LocalDateTime.now().minusDays(30).withHour(0).withMinute(0).withSecond(0);
         LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
@@ -492,7 +515,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
             queryWrapper.like(StoreProduct::getProdArtNum, prodArtNum);
         }
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(queryWrapper);
-        return storeProdList.stream().map(x -> new StoreProdFuzzyLatest20ResDTO().setStoreId(x.getStoreId())
+        return storeProdList.stream().map(x -> new StoreProdFuzzyLatest30ResDTO().setStoreId(x.getStoreId())
                 .setStoreProdId(x.getId()).setProdArtNum(x.getProdArtNum())).collect(Collectors.toList());
     }
 

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeHomepage.*;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
@@ -61,6 +62,10 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     @Override
     @Transactional
     public Integer insert(Long storeId, Integer templateNum, StoreHomeDecorationDTO homepageDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         List<StoreHomepage> homepageList = this.insertToHomepage(storeId, homepageDTO);
         // 当前档口首页各部分总的文件大小
         BigDecimal totalSize = homepageDTO.getBannerList().stream().map(x -> ObjectUtils.defaultIfNull(x.getFileSize(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -83,6 +88,10 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     @Override
     @Transactional(readOnly = true)
     public StoreHomeDecorationResDTO selectByStoreId(Long storeId) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                         .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
@@ -143,6 +152,10 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     @Override
     @Transactional
     public Integer updateStoreHomepage(Long storeId, Integer templateNum, StoreHomeDecorationDTO homepageDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         // 先将所有的档口模板的文件都删除掉
         List<StoreHomepage> oldHomeList = this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
                 .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED));

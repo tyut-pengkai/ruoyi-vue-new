@@ -65,6 +65,10 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     @Override
     @Transactional(readOnly = true)
     public StoreCusGeneralSaleDTO getCusGeneralSale(Integer days, Long storeId, Long storeCusId) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         StoreCustomer storeCus = Optional.ofNullable(this.storeCusMapper.selectOne(new LambdaQueryWrapper<StoreCustomer>()
                         .eq(StoreCustomer::getId, storeCusId).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口客户不存在!", HttpStatus.ERROR));
@@ -102,6 +106,10 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     @Override
     @Transactional(readOnly = true)
     public Page<StoreSalePageResDTO> page(StoreSalePageDTO pageDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<StoreSalePageResDTO> list = storeSaleMapper.selectPage(pageDTO);
         return Page.convert(new PageInfo<>(list));
@@ -122,6 +130,10 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         List<StoreSale> storeSaleList = Optional.ofNullable(this.storeSaleMapper.selectList(new LambdaQueryWrapper<StoreSale>()
                         .in(StoreSale::getId, payStatusDTO.getStoreSaleIdList()).eq(StoreSale::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("没有找到对应的销售出库单!", HttpStatus.ERROR));
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeSaleList.get(0).getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         // 勾选订单是否有已结算的
         List<StoreSale> settledList = storeSaleList.stream().filter(x -> Objects.equals(x.getPaymentStatus(), PaymentStatus.SETTLED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(settledList)) {
@@ -141,6 +153,10 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     @Override
     @Transactional(readOnly = true)
     public StoreTodaySaleDTO getTodaySale(Long storeId) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         // 今天 yyyy-MM-dd
         Date date = java.sql.Date.valueOf(LocalDate.now());
         List<StoreSaleDetail> saleDetailList = this.storeSaleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
@@ -172,6 +188,10 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         StoreSale storeSale = Optional.ofNullable(this.storeSaleMapper.selectOne(new LambdaQueryWrapper<StoreSale>()
                         .eq(StoreSale::getId, updateMemoDTO.getStoreSaleId()).eq(StoreSale::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("没有找到对应的销售出库单!", HttpStatus.ERROR));
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeSale.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         storeSale.setRemark(updateMemoDTO.getRemark());
         return this.storeSaleMapper.updateById(storeSale);
     }
@@ -185,6 +205,10 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     @Override
     @Transactional(readOnly = true)
     public List<StoreSaleDownloadDTO> export(StoreSaleExportDTO exportDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(exportDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         // 导出指定销售出库单
         if (CollectionUtils.isNotEmpty(exportDTO.getStoreSaleIdList())) {
             return this.storeSaleMapper.selectExportList(exportDTO.getStoreSaleIdList());
@@ -206,6 +230,10 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     @Override
     @Transactional
     public int insertStoreSale(StoreSaleDTO storeSaleDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeSaleDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
         StoreSale storeSale = BeanUtil.toBean(storeSaleDTO, StoreSale.class);
         // 生成code
@@ -251,6 +279,10 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     @Override
     @Transactional
     public int updateStoreSale(StoreSaleDTO storeSaleDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeSaleDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
         // 当前登录用户
         LoginUser loginUser = SecurityUtils.getLoginUser();
@@ -318,6 +350,10 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         StoreSale storeSale = Optional.ofNullable(this.storeSaleMapper.selectOne(new LambdaQueryWrapper<StoreSale>()
                         .eq(StoreSale::getId, storeSaleId).eq(StoreSale::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口销售出库订单不存在!", HttpStatus.ERROR));
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeSale.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         StoreSaleDTO storeSaleDTO = BeanUtil.toBean(storeSale, StoreSaleDTO.class);
         // 查询销售出库明细
         List<StoreSaleDetail> saleDetailList = this.storeSaleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
@@ -339,6 +375,10 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         StoreSale storeSale = Optional.ofNullable(this.storeSaleMapper.selectOne(new LambdaQueryWrapper<StoreSale>()
                         .eq(StoreSale::getId, storeSaleId).eq(StoreSale::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口销售出库订单不存在!", HttpStatus.ERROR));
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeSale.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         storeSale.setDelFlag(Constants.DELETED);
         int count = this.storeSaleMapper.updateById(storeSale);
         // 删除档口销售出库明细数据

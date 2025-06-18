@@ -11,6 +11,7 @@ import com.ruoyi.xkt.service.IAdvertRoundRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,9 +32,7 @@ public class AdvertRoundRecordController extends XktBaseController {
 
     final IAdvertRoundRecordService advertRoundRecordService;
 
-    /**
-     * 获取档口竞价失败列表
-     */
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取档口竞价失败列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<AdvertRoundRecordPageResDTO>> page(@Validated @RequestBody AdvertRoundRecordPageVO pageVO) {

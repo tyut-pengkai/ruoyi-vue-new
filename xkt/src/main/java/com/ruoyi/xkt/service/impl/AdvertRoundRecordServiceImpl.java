@@ -2,8 +2,11 @@ package com.ruoyi.xkt.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.AdType;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.dto.advertRoundRecord.AdvertRoundRecordPageDTO;
 import com.ruoyi.xkt.dto.advertRoundRecord.AdvertRoundRecordPageResDTO;
 import com.ruoyi.xkt.enums.*;
@@ -37,6 +40,10 @@ public class AdvertRoundRecordServiceImpl implements IAdvertRoundRecordService {
     @Override
     @Transactional(readOnly = true)
     public Page<AdvertRoundRecordPageResDTO> page(AdvertRoundRecordPageDTO pageDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<AdvertRoundRecordPageResDTO> list = this.advertRoundRecordMapper.selectRecordPage(pageDTO);
         list.forEach(item -> item.setPlatformName(AdPlatformType.of(item.getPlatformId()).getLabel())

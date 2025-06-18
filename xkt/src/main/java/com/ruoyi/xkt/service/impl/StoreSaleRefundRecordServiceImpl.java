@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.StoreSale;
 import com.ruoyi.xkt.domain.StoreSaleRefundRecord;
 import com.ruoyi.xkt.dto.storeSaleRefundRecord.StoreSaleRefundRecordDTO;
@@ -45,6 +46,10 @@ public class StoreSaleRefundRecordServiceImpl implements IStoreSaleRefundRecordS
     @Override
     @Transactional(readOnly = true)
     public List<StoreSaleRefundRecordDTO> selectList(Long storeId, Long storeSaleId) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         List<StoreSaleRefundRecord> refundRecordList = this.refundRecordMapper.selectList(new LambdaQueryWrapper<StoreSaleRefundRecord>()
                 .eq(StoreSaleRefundRecord::getStoreId, storeId).eq(StoreSaleRefundRecord::getStoreSaleId, storeSaleId).eq(StoreSaleRefundRecord::getDelFlag, Constants.UNDELETED));
         if (CollectionUtils.isEmpty(refundRecordList)) {

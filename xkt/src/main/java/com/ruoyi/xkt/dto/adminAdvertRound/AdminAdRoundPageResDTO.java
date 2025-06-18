@@ -21,6 +21,10 @@ public class AdminAdRoundPageResDTO {
     private Long storeId;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
+    @ApiModelProperty(value = "TabID")
+    private Integer tabId;
+    @ApiModelProperty(value = "Tab名称")
+    private String tabName;
     @ApiModelProperty(value = "投放平台")
     private Integer platformId;
     @ApiModelProperty(value = "投放平台")
@@ -59,5 +63,9 @@ public class AdminAdRoundPageResDTO {
     private String picAuditStatusName;
     @ApiModelProperty(value = "系统拦截 0 未拦截  1拦截")
     private Integer sysIntercept;
+    @ApiModelProperty(value = "推广图片尺寸")
+    private String picPixel;
+    @ApiModelProperty(value = "推广图片大小")
+    private String picSize;
 
 }

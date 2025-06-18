@@ -14,6 +14,7 @@ import com.ruoyi.xkt.service.IAdminAdvertRoundService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,24 +34,21 @@ public class AdminAdvertRoundController extends XktBaseController {
 
     final IAdminAdvertRoundService adminAdvertRoundService;
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "管理员推广营销列表待投放/已投放数量", httpMethod = "GET", response = R.class)
     @GetMapping("/status/count")
     public R<AdminAdRoundStatusCountResVO> statusCount() {
         return R.ok(BeanUtil.toBean(adminAdvertRoundService.statusCount(), AdminAdRoundStatusCountResVO.class));
     }
 
-    /**
-     * 管理员获取推广营销列表
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "管理员获取推广营销列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<AdminAdRoundPageResDTO>> page(@Validated @RequestBody AdminAdRoundPageVO pageVO) {
         return R.ok(adminAdvertRoundService.page(BeanUtil.toBean(pageVO, AdminAdRoundPageDTO.class)));
     }
 
-    /**
-     * 管理员审核档口推广图
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "管理员审核档口推广图", httpMethod = "PUT", response = R.class)
     @Log(title = "管理员审核档口推广图", businessType = BusinessType.UPDATE)
     @PutMapping("/audit-pic")
@@ -58,9 +56,7 @@ public class AdminAdvertRoundController extends XktBaseController {
         return R.ok(adminAdvertRoundService.auditPic(BeanUtil.toBean(auditVO, AdminAdRoundAuditDTO.class)));
     }
 
-    /**
-     * 管理员退订
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "管理员退订", httpMethod = "PUT", response = R.class)
     @Log(title = "管理员退订", businessType = BusinessType.UPDATE)
     @PutMapping("/unsubscribe")
@@ -68,9 +64,7 @@ public class AdminAdvertRoundController extends XktBaseController {
         return R.ok(adminAdvertRoundService.unsubscribe(BeanUtil.toBean(unsubscribeVO, AdminAdRoundUnsubscribeDTO.class)));
     }
 
-    /**
-     * 管理员上传档口推广图
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "管理员上传档口推广图", httpMethod = "PUT", response = R.class)
     @Log(title = "管理员上传档口推广图", businessType = BusinessType.UPDATE)
     @PutMapping("/upload/pic")
@@ -78,9 +72,7 @@ public class AdminAdvertRoundController extends XktBaseController {
         return R.ok(adminAdvertRoundService.uploadAdvertPic(BeanUtil.toBean(uploadPicVO, AdRoundUpdateDTO.class)));
     }
 
-    /**
-     * 系统拦截广告位
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "系统拦截广告位", httpMethod = "PUT", response = R.class)
     @Log(title = "系统拦截广告位", businessType = BusinessType.UPDATE)
     @PutMapping("/intercept")
@@ -88,9 +80,7 @@ public class AdminAdvertRoundController extends XktBaseController {
         return R.ok(adminAdvertRoundService.sysIntercept(BeanUtil.toBean(interceptVO, AdminAdRoundSysInterceptDTO.class)));
     }
 
-    /**
-     * 取消拦截广告位
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "取消拦截广告位", httpMethod = "PUT", response = R.class)
     @Log(title = "取消拦截广告位", businessType = BusinessType.UPDATE)
     @PutMapping("/cancel-intercept")

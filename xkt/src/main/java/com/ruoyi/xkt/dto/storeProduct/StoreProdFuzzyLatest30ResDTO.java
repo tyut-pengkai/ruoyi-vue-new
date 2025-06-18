@@ -11,10 +11,10 @@ import lombok.experimental.Accessors;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("推广营销查询最近20天上新产品")
+@ApiModel("推广营销查询最近30天上新产品")
 @Data
 @Accessors(chain = true)
-public class StoreProdFuzzyLatest20ResDTO {
+public class StoreProdFuzzyLatest30ResDTO {
 
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;

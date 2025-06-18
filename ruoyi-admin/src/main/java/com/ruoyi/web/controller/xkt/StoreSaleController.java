@@ -39,6 +39,7 @@ public class StoreSaleController extends XktBaseController {
 
     final IStoreSaleService storeSaleService;
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "根据当前客户查询最近的销售业绩，以及欠款金额", httpMethod = "GET", response = R.class)
     @GetMapping("/cus-overall")
     public R<StoreCusGeneralSaleVO> getCusGeneralSale(@RequestParam("days") Integer days, @RequestParam("storeId") Long storeId,
@@ -46,12 +47,14 @@ public class StoreSaleController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeSaleService.getCusGeneralSale(days, storeId, storeCusId), StoreCusGeneralSaleVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询档口销售出库列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreSalePageResDTO>> page(@Validated @RequestBody StoreSalePageVO salePageVO) {
         return R.ok(storeSaleService.page(BeanUtil.toBean(salePageVO, StoreSalePageDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "新增档口销售出库", httpMethod = "POST", response = R.class)
     @Log(title = "档口销售出库", businessType = BusinessType.INSERT)
     @PostMapping
@@ -59,6 +62,7 @@ public class StoreSaleController extends XktBaseController {
         return R.ok(storeSaleService.insertStoreSale(BeanUtil.toBean(storeSaleVO, StoreSaleDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @Log(title = "修改档口销售出库", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "返单后，更新档口销售出库", httpMethod = "PUT", response = R.class)
     @PutMapping
@@ -66,18 +70,21 @@ public class StoreSaleController extends XktBaseController {
         return R.ok(storeSaleService.updateStoreSale(BeanUtil.toBean(storeSaleVO, StoreSaleDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询档口销售出库详情", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeSaleId}")
     public R<StoreSaleVO> getInfo(@PathVariable("storeSaleId") Long storeSaleId) {
         return R.ok(BeanUtil.toBean(storeSaleService.selectStoreSaleByStoreSaleId(storeSaleId), StoreSaleVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询档口今日销售额", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/today-sale/{storeId}")
     public R<StoreTodaySaleVO> getTodaySale(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeSaleService.getTodaySale(storeId), StoreTodaySaleVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @Log(title = "客户欠款结算", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "客户欠款结算", httpMethod = "PUT", response = R.class)
     @PutMapping("/clear-debt")
@@ -85,6 +92,7 @@ public class StoreSaleController extends XktBaseController {
         return R.ok(storeSaleService.clearStoreCusDebt(BeanUtil.toBean(payStatusVO, StoreSalePayStatusDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "删除档口销售出库", httpMethod = "PUT", response = R.class)
     @Log(title = "删除档口销售出库", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeSaleId}")
@@ -92,6 +100,7 @@ public class StoreSaleController extends XktBaseController {
         return R.ok(storeSaleService.deleteStoreSaleByStoreSaleId(storeSaleId));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @Log(title = "修改备注", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "修改备注", httpMethod = "PUT", response = R.class)
     @PutMapping("/memo")
@@ -99,6 +108,7 @@ public class StoreSaleController extends XktBaseController {
         return R.ok(storeSaleService.updateMemo(BeanUtil.toBean(updateMemoVO, StoreSaleUpdateMemoDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "导出销售出库列表", httpMethod = "POST", response = R.class)
     @Log(title = "导出销售出库列表", businessType = BusinessType.EXPORT)
     @PostMapping("/export")

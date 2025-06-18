@@ -12,11 +12,11 @@ import com.ruoyi.xkt.service.IAdvertRoundService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -33,9 +33,7 @@ public class AdvertRoundController extends XktBaseController {
 
     final IAdvertRoundService advertRoundService;
 
-    /**
-     * 档口购买推广营销
-     */
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口购买推广营销", httpMethod = "POST", response = R.class)
     @Log(title = "档口购买推广营销", businessType = BusinessType.INSERT)
     @PostMapping
@@ -43,54 +41,42 @@ public class AdvertRoundController extends XktBaseController {
         return R.ok(advertRoundService.create(BeanUtil.toBean(createVO, AdRoundStoreCreateDTO.class)));
     }
 
-    /**
-     * 获取推广位数据及右侧 "已订购推广位"列表
-     */
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取推广位数据及右侧 已订购推广位 列表", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{advertId}/{storeId}/{showType}")
     public R<AdRoundStoreResVO> getStoreAdInfo(@PathVariable("advertId") Long advertId, @PathVariable("storeId") Long storeId, @PathVariable("showType") Integer showType) {
         return R.ok(BeanUtil.toBean(advertRoundService.getStoreAdInfo(storeId, advertId, showType), AdRoundStoreResVO.class));
     }
 
-    /**
-     * 获取当前最新的出价及设置的商品
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取当前最新的出价及设置的商品", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/latest")
     public R<AdRoundLatestResVO> getLatestInfo(@Validated @RequestBody AdRoundLatestVO latestVO) {
         return R.ok(BeanUtil.toBean(advertRoundService.getLatestInfo(BeanUtil.toBean(latestVO, AdRoundLatestDTO.class)), AdRoundLatestResVO.class));
     }
 
-    /**
-     * 位置枚举类型的推广位，获取推广商品
-     */
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "位置枚举类型的推广位，获取推广商品", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/position/{advertRoundId}")
     public R<List<AdRoundSetProdResVO>> getSetProdInfo(@PathVariable("advertRoundId") Long advertRoundId) {
         return R.ok(BeanUtil.copyToList(advertRoundService.getSetProdInfo(advertRoundId), AdRoundSetProdResVO.class));
     }
 
-    /**
-     * 获取档口已购推广列表
-     */
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取档口已购推广列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<AdvertRoundStorePageResDTO>> page(@Validated @RequestBody AdvertRoundStorePageVO pageVO) {
         return R.ok(advertRoundService.page(BeanUtil.toBean(pageVO, AdvertRoundStorePageDTO.class)));
     }
 
-    /**
-     * 查看当前广告位推广图
-     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查看当前广告位推广图", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/pic/{storeId}/{advertRoundId}")
     public R<AdRoundStoreSetResVO> getAdvertStoreSetInfo(@PathVariable("storeId") Long storeId, @PathVariable("advertRoundId") Long advertRoundId) {
         return R.ok(BeanUtil.toBean(advertRoundService.getAdvertStoreSetInfo(storeId, advertRoundId), AdRoundStoreSetResVO.class));
     }
 
-    /**
-     * 退订
-     */
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "退订", httpMethod = "POST", response = R.class)
     @Log(title = "退订", businessType = BusinessType.UPDATE)
     @PutMapping("/unsubscribe/{storeId}/{advertRoundId}")
@@ -98,32 +84,25 @@ public class AdvertRoundController extends XktBaseController {
         return R.ok(advertRoundService.unsubscribe(storeId, advertRoundId));
     }
 
-    /**
-     * 取最受欢迎的8个推广位
-     */
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "取最受欢迎的8个推广位", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/populars")
     public R<List<AdRoundPopularResVO>> getMostPopulars() {
         return R.ok(BeanUtil.copyToList(advertRoundService.getMostPopulars(), AdRoundPopularResVO.class));
     }
 
-    /**
-     * 档口上传推广图 或 修改商品
-     */
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口上传推广图 或 修改商品", httpMethod = "PUT", response = R.class)
     @PutMapping("/update")
     public R<Integer> updateAdvert(@Valid @RequestBody AdRoundUpdateVO uploadPicVO) {
         return R.ok(advertRoundService.updateAdvert(BeanUtil.toBean(uploadPicVO, AdRoundUpdateDTO.class)));
     }
 
-    /**
-     * 查看图片审核拒绝理由
-     */
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查看图片审核拒绝理由", httpMethod = "PUT", response = R.class)
     @PutMapping("/reject-reason/{advertRoundId}")
     public R<String> getRejectReason(@PathVariable Long advertRoundId) {
         return R.ok(advertRoundService.getRejectReason(advertRoundId));
     }
-
 
 }

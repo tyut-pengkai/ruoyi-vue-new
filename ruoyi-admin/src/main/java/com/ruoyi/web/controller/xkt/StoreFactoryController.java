@@ -18,6 +18,7 @@ import com.ruoyi.xkt.service.IStoreFactoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,12 +39,14 @@ public class StoreFactoryController extends XktBaseController {
 
     final IStoreFactoryService storeFactoryService;
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "生产需求管理 工厂下拉列表", httpMethod = "GET", response = R.class)
     @GetMapping("/list")
     public R<List<StoreFactoryResVO>> getList() {
         return R.ok(BeanUtil.copyToList(storeFactoryService.getList(), StoreFactoryResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "新增档口合作工厂", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口合作工厂", businessType = BusinessType.INSERT)
     @PostMapping
@@ -51,6 +54,7 @@ public class StoreFactoryController extends XktBaseController {
         return R.ok(storeFactoryService.insertStoreFactory(BeanUtil.toBean(storeFactoryVO, StoreFactoryDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "修改档口合作工厂", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口合作工厂", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -58,12 +62,14 @@ public class StoreFactoryController extends XktBaseController {
         return R.ok(storeFactoryService.updateStoreFactory(BeanUtil.toBean(storeFactoryVO, StoreFactoryDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询档口合作工厂列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreFactoryResDTO>> selectPage(@Validated @RequestBody StoreFactoryPageVO pageVO) {
         return R.ok(storeFactoryService.selectFactoryPage(BeanUtil.toBean(pageVO, StoreFactoryPageDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取档口合作工厂详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}/{storeFactoryId}")
     public R<StoreFactoryVO> getInfo(@PathVariable("storeId") Long storeId, @PathVariable("storeFactoryId") Long storeFactoryId) {

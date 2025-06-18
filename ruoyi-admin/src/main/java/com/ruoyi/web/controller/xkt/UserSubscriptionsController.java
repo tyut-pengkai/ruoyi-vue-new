@@ -17,6 +17,7 @@ import com.ruoyi.xkt.service.IUserSubscriptionsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +35,7 @@ public class UserSubscriptionsController extends XktBaseController {
 
     final IUserSubscriptionsService userSubService;
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @ApiOperation(value = "新增用户关注档口", httpMethod = "POST", response = R.class)
     @Log(title = "新增用户关注档口", businessType = BusinessType.INSERT)
     @PostMapping
@@ -41,12 +43,14 @@ public class UserSubscriptionsController extends XktBaseController {
         return R.ok(userSubService.create(BeanUtil.toBean(subscVO, UserSubscDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @ApiOperation(value = "用户关注档口列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<UserSubscPageResDTO>> page(@Validated @RequestBody UserSubscPageVO pageVO) {
         return R.ok(userSubService.page(BeanUtil.toBean(pageVO, UserSubscPageDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @ApiOperation(value = "用户取消关注档口", httpMethod = "DELETE", response = R.class)
     @Log(title = "用户取消关注档口", businessType = BusinessType.DELETE)
     @DeleteMapping("/batch")

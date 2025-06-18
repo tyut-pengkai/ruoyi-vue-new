@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service.impl;
 
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageDetailDownloadDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageExportDTO;
 import com.ruoyi.xkt.mapper.StoreProductStorageDetailMapper;
@@ -35,6 +36,10 @@ public class StoreProductStorageDetailServiceImpl implements IStoreProductStorag
     @Override
     @Transactional(readOnly = true)
     public List<StoreStorageDetailDownloadDTO> export(StoreStorageExportDTO exportDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(exportDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         if (CollectionUtils.isNotEmpty(exportDTO.getStoreProdStorageIdList())) {
             return this.storageDetailMapper.selectExportList(exportDTO.getStoreProdStorageIdList());
         } else {

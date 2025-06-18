@@ -30,10 +30,6 @@ public class StoreProductColorController extends XktBaseController {
 
     final IStoreProductColorService storeProdColorService;
 
-    /**
-     * 模糊查询档口所有的商品颜色分类
-     */
-    // @PreAuthorize("@ss.hasPermi('system:color:query')")
     @ApiOperation(value = "模糊查询档口所有的商品颜色分类", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy")
     public R<List<StoreProdColorResVO>> fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,

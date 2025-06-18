@@ -163,6 +163,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         if (!Objects.equals(advertRound.getShowType(), AdShowType.POSITION_ENUM.getValue())) {
             throw new ServiceException("当前推广位非位置枚举，不可调用该接口!", HttpStatus.ERROR);
         }
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(advertRound.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         if (StringUtils.isEmpty(advertRound.getProdIdStr())) {
             return Collections.emptyList();
         }
@@ -184,6 +188,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Override
     @Transactional(readOnly = true)
     public AdRoundStoreResDTO getStoreAdInfo(final Long storeId, final Long advertId, final Integer showType) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         final LocalTime now = LocalTime.now();
         // 当前时间 是否在  晚上22:00:00  到 晚上23:59:59之间 决定 biddingStatus 和  biddingTempStatus 用那一个字段
         boolean tenClockAfter = now.isAfter(LocalTime.of(22, 0, 0)) && now.isBefore(LocalTime.of(23, 59, 59));
@@ -333,7 +341,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Override
     @Transactional
     public Integer create(AdRoundStoreCreateDTO createDTO) {
-        // 截止时间都是当天 22:00:00，并且只会处理马上播放的这一轮。比如 5.1-5.3，当前为4.30，处理这一轮；当前为5.2，处理这一轮；当前为5.3（最后一天），处理下一轮。
+        // 判断截止时间是否超时，并且只会处理马上播放的这一轮。比如 5.1-5.3，当前为4.30，处理这一轮；当前为5.2，处理这一轮；当前为5.3（最后一天），处理下一轮。
         if (DateUtils.getTime().compareTo(this.getDeadline(createDTO.getSymbol())) > 0) {
             throw new ServiceException("竞价失败，已经有档口出价更高了噢!", HttpStatus.ERROR);
         }
@@ -348,6 +356,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         // 如果是时间范围的推广位，则不需要传position
         if (Objects.equals(createDTO.getShowType(), AdShowType.TIME_RANGE.getValue()) && StringUtils.isNotBlank(createDTO.getPosition())) {
             throw new ServiceException("当前推广类型position：不传!", HttpStatus.ERROR);
+        }
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(createDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         // 当前营销推广位的锁
         Object lockObj = Optional.ofNullable(advertLockMap.get(createDTO.getSymbol())).orElseThrow(() -> new ServiceException("symbol不存在!", HttpStatus.ERROR));
@@ -424,6 +436,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Override
     @Transactional(readOnly = true)
     public Page<AdvertRoundStorePageResDTO> page(AdvertRoundStorePageDTO pageDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<AdvertRoundStorePageResDTO> list = this.advertRoundMapper.selectStoreAdvertPage(pageDTO);
         list.forEach(item -> item.setPlatformName(AdPlatformType.of(item.getPlatformId()).getLabel())
@@ -481,6 +497,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Override
     @Transactional
     public Integer unsubscribe(Long storeId, Long advertRoundId) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                         .eq(AdvertRound::getId, advertRoundId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                         .eq(AdvertRound::getStoreId, storeId)))
@@ -584,6 +604,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Override
     @Transactional
     public Integer updateAdvert(AdRoundUpdateDTO picDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(picDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                         .eq(AdvertRound::getId, picDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
@@ -615,7 +639,11 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         if (ObjectUtils.isNotEmpty(picDTO.getFile())) {
             SysFile file = BeanUtil.toBean(picDTO, SysFile.class);
             this.fileMapper.insert(file);
-            advertRound.setPicId(file.getId());
+            advertRound.setPicId(file.getId())
+                    // 设置推广图审核状态 为待审核 因为有可能是 审核驳回后再次提交图片
+                    .setPicSetType(AdPicSetType.SET.getValue())
+                    // 设置推广图状态为 待审核，有可能是审核驳回后再次提交图片
+                    .setPicAuditStatus(AdPicAuditStatus.UN_AUDIT.getValue());
         }
         return this.advertRoundMapper.updateById(advertRound);
     }
@@ -633,6 +661,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                         .eq(AdvertRound::getId, advertRoundId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                         .eq(AdvertRound::getPicAuditStatus, AdPicAuditStatus.AUDIT_REJECTED.getValue())))
                 .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(advertRound.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         return advertRound.getRejectReason();
     }
 

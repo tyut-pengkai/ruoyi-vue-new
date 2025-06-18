@@ -1,9 +1,5 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.StoreProductColorSize;
-
-import java.util.List;
-
 /**
  * 档口商品颜色的尺码Service接口
  *
@@ -11,51 +7,5 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface IStoreProductColorSizeService {
-    /**
-     * 查询档口商品颜色的尺码
-     *
-     * @param storeProdColorSizeId 档口商品颜色的尺码主键
-     * @return 档口商品颜色的尺码
-     */
-    public StoreProductColorSize selectStoreProductColorSizeByStoreProdColorSizeId(Long storeProdColorSizeId);
 
-    /**
-     * 查询档口商品颜色的尺码列表
-     *
-     * @param storeProductColorSize 档口商品颜色的尺码
-     * @return 档口商品颜色的尺码集合
-     */
-    public List<StoreProductColorSize> selectStoreProductColorSizeList(StoreProductColorSize storeProductColorSize);
-
-    /**
-     * 新增档口商品颜色的尺码
-     *
-     * @param storeProductColorSize 档口商品颜色的尺码
-     * @return 结果
-     */
-    public int insertStoreProductColorSize(StoreProductColorSize storeProductColorSize);
-
-    /**
-     * 修改档口商品颜色的尺码
-     *
-     * @param storeProductColorSize 档口商品颜色的尺码
-     * @return 结果
-     */
-    public int updateStoreProductColorSize(StoreProductColorSize storeProductColorSize);
-
-    /**
-     * 批量删除档口商品颜色的尺码
-     *
-     * @param storeProdColorSizeIds 需要删除的档口商品颜色的尺码主键集合
-     * @return 结果
-     */
-    public int deleteStoreProductColorSizeByStoreProdColorSizeIds(Long[] storeProdColorSizeIds);
-
-    /**
-     * 删除档口商品颜色的尺码信息
-     *
-     * @param storeProdColorSizeId 档口商品颜色的尺码主键
-     * @return 结果
-     */
-    public int deleteStoreProductColorSizeByStoreProdColorSizeId(Long storeProdColorSizeId);
 }

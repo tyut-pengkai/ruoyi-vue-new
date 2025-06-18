@@ -6,12 +6,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
-import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.AdvertRound;
 import com.ruoyi.xkt.domain.AdvertRoundRecord;
 import com.ruoyi.xkt.domain.AdvertStoreFile;
@@ -68,20 +66,17 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional(readOnly = true)
     public Page<AdminAdRoundPageResDTO> page(AdminAdRoundPageDTO pageDTO) {
-
-        // TODO 判断当前是否是管理员
-        this.isSuperAdmin();
-
         Optional.ofNullable(pageDTO.getLaunchStatus()).orElseThrow(() -> new ServiceException("投放状态launchStatus必传", HttpStatus.ERROR));
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<AdminAdRoundPageResDTO> list = this.advertRoundMapper.selectAdminAdvertPage(pageDTO);
         list.forEach(item -> item.setPlatformName(AdPlatformType.of(item.getPlatformId()).getLabel())
+                .setTypeName(AdType.of(item.getTypeId()).getLabel())
+                .setTabName(ObjectUtils.isNotEmpty(item.getTabId()) ? AdTab.of(item.getTabId()).getLabel() : "")
                 .setLaunchStatusName(ObjectUtils.isNotEmpty(item.getLaunchStatus()) ? AdLaunchStatus.of(item.getLaunchStatus()).getLabel() : "")
                 .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
                 .setPicDesignTypeName(ObjectUtils.isNotEmpty(item.getPicDesignType()) ? AdDesignType.of(item.getPicDesignType()).getLabel() : "")
                 .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
                 .setPicSetTypeName(ObjectUtils.isNotEmpty(item.getPicSetType()) ? AdPicSetType.of(item.getPicSetType()).getLabel() : "")
-                .setTypeName(AdType.of(item.getTypeId()).getLabel())
                 .setBiddingStatusName(ObjectUtils.isNotEmpty(item.getBiddingStatus()) ? AdBiddingStatus.of(item.getBiddingStatus()).getLabel() : ""));
         return Page.convert(new PageInfo<>(list));
     }
@@ -95,10 +90,6 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional
     public Integer auditPic(AdminAdRoundAuditDTO auditDTO) {
-
-        // TODO 是否为超级管理管理员
-        this.isSuperAdmin();
-
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                         .eq(AdvertRound::getId, auditDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
@@ -129,10 +120,6 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional
     public Integer unsubscribe(AdminAdRoundUnsubscribeDTO unsubscribeDTO) {
-
-        // TODO 判断当前是否是管理员
-        this.isSuperAdmin();
-
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                         .eq(AdvertRound::getId, unsubscribeDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                         .eq(AdvertRound::getStoreId, unsubscribeDTO.getStoreId())))
@@ -161,10 +148,6 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional
     public Integer uploadAdvertPic(AdRoundUpdateDTO picDTO) {
-
-        // TODO 判断当前是否是管理员
-        this.isSuperAdmin();
-
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                         .eq(AdvertRound::getId, picDTO.getAdvertRoundId()).eq(AdvertRound::getStoreId, picDTO.getStoreId())
                         .eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
@@ -191,10 +174,6 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional
     public synchronized Integer sysIntercept(AdminAdRoundSysInterceptDTO interceptDTO) {
-
-        // TODO 判断当前是否是管理员
-        this.isSuperAdmin();
-
         final LocalDateTime nineThirty = LocalDateTime.of(LocalDate.now(), LocalTime.of(21, 30));
         final LocalDateTime tenFive = LocalDateTime.of(LocalDate.now(), LocalTime.of(22, 5));
         // 判断当前时间是否为晚上9:30 - 10:05区间，若是，则管理员不可操作推广拦截
@@ -283,10 +262,6 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional
     public Integer cancelIntercept(AdminAdRoundCancelInterceptDTO cancelInterceptDTO) {
-
-        // TODO 判断当前是否是管理员
-        this.isSuperAdmin();
-
         // 该推广位是否被拦截
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                         .eq(AdvertRound::getId, cancelInterceptDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
@@ -319,21 +294,6 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
                 // 置为竞价失败
                 .setBiddingStatus(AdBiddingStatus.BIDDING_FAIL.getValue());
         this.advertRoundRecordMapper.insert(record);
-    }
-
-
-    /**
-     * 校验当前是否是超级管理员操作
-     */
-    private void isSuperAdmin() {
-        // 获取当前登录用户
-        LoginUser loginUser = SecurityUtils.getLoginUser();
-        if (ObjectUtils.isEmpty(loginUser)) {
-            throw new ServiceException("当前用户不存在!", HttpStatus.ERROR);
-        }
-        if (!SecurityUtils.isSuperAdmin()) {
-            throw new ServiceException("当前用户不是超级管理员，不可操作!", HttpStatus.ERROR);
-        }
     }
 
 }

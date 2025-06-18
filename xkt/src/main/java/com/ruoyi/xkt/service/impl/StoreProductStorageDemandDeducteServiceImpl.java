@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.StoreProductStorage;
 import com.ruoyi.xkt.domain.StoreProductStorageDemandDeduct;
 import com.ruoyi.xkt.domain.StoreProductStorageDetail;
@@ -49,6 +50,10 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
     @Override
     @Transactional(readOnly = true)
     public StoreProdStorageDemandDeductDTO getStorageDemandDeductList(Long storeId, String storageCode) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         // 根据storageCode找到入库单
         StoreProductStorage storage = Optional.ofNullable(this.prodStorageMapper.selectOne(new LambdaQueryWrapper<StoreProductStorage>()
                 .eq(StoreProductStorage::getCode, storageCode).eq(StoreProductStorage::getStoreId, storeId)
