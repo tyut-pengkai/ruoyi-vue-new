@@ -69,6 +69,51 @@ public class SecurityUtils {
     }
 
     /**
+     * 是否有指定档口的管理权限
+     *
+     * @param storeId
+     * @return
+     */
+    public static boolean isStoreSub(Long storeId) {
+        if (storeId == null) {
+            return false;
+        }
+        try {
+            Authentication auth = getAuthentication();
+            if (auth != null) {
+                LoginUser user = (LoginUser) auth.getPrincipal();
+                return user.getUser().getSubStoreIds().contains(storeId);
+            }
+        } catch (Exception e) {
+            log.error("判断档口管理权限异常", e);
+        }
+        return false;
+    }
+
+    /**
+     * 是否有指定档口的管理/子账号权限
+     *
+     * @param storeId
+     * @return
+     */
+    public static boolean isStoreManagerOrSub(Long storeId) {
+        if (storeId == null) {
+            return false;
+        }
+        try {
+            Authentication auth = getAuthentication();
+            if (auth != null) {
+                LoginUser user = (LoginUser) auth.getPrincipal();
+                return user.getUser().getManagedStoreIds().contains(storeId)
+                        || user.getUser().getSubStoreIds().contains(storeId);
+            }
+        } catch (Exception e) {
+            log.error("判断档口管理权限异常", e);
+        }
+        return false;
+    }
+
+    /**
      * 判断是否有指定角色中的任意一个
      *
      * @param roles
