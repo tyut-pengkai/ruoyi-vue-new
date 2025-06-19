@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.device.mapper.DeviceInfoMapper">
+    
+    <resultMap type="DeviceInfo" id="DeviceInfoResult">
+        <result property="deviceId"    column="device_id"    />
+        <result property="deviceCode"    column="device_code"    />
+        <result property="deviceName"    column="device_name"    />
+        <result property="mxcAddr"    column="mxc_addr"    />
+        <result property="ipAddr"    column="ip_addr"    />
+        <result property="area"    column="area"    />
+        <result property="onlineStatus"    column="online_status"    />
+        <result property="otaVersion"    column="ota_version"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectDeviceInfoVo">
+        select di.device_id, di.device_code, di.device_name, di.mxc_addr, di.ip_addr, di.area, di.online_status, di.ota_version, di.status, di.del_flag, di.create_time, di.update_time 
+        from device_info di
+    </sql>
+
+    <select id="selectDeviceInfoList" parameterType="DeviceInfo" resultMap="DeviceInfoResult">
+        <include refid="selectDeviceInfoVo"/>
+        <where>  
+            <if test="deviceCode != null  and deviceCode != ''"> and device_code = #{deviceCode}</if>
+            <if test="deviceName != null  and deviceName != ''"> and device_name like concat('%', #{deviceName}, '%')</if>
+            <if test="mxcAddr != null  and mxcAddr != ''"> and mxc_addr = #{mxcAddr}</if>
+            <if test="ipAddr != null  and ipAddr != ''"> and ip_addr = #{ipAddr}</if>
+            <if test="area != null  and area != ''"> and area = #{area}</if>
+            <if test="onlineStatus != null  and onlineStatus != ''"> and online_status = #{onlineStatus}</if>
+            <if test="otaVersion != null  and otaVersion != ''"> and ota_version = #{otaVersion}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectDeviceInfoByDeviceId" parameterType="Long" resultMap="DeviceInfoResult">
+        <include refid="selectDeviceInfoVo"/>
+        where device_id = #{deviceId}
+    </select>
+
+    <insert id="insertDeviceInfo" parameterType="DeviceInfo" useGeneratedKeys="true" keyProperty="deviceId">
+        insert into device_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceCode != null and deviceCode != ''">device_code,</if>
+            <if test="deviceName != null and deviceName != ''">device_name,</if>
+            <if test="mxcAddr != null and mxcAddr != ''">mxc_addr,</if>
+            <if test="ipAddr != null">ip_addr,</if>
+            <if test="area != null">area,</if>
+            <if test="onlineStatus != null">online_status,</if>
+            <if test="otaVersion != null">ota_version,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deviceCode != null and deviceCode != ''">#{deviceCode},</if>
+            <if test="deviceName != null and deviceName != ''">#{deviceName},</if>
+            <if test="mxcAddr != null and mxcAddr != ''">#{mxcAddr},</if>
+            <if test="ipAddr != null">#{ipAddr},</if>
+            <if test="area != null">#{area},</if>
+            <if test="onlineStatus != null">#{onlineStatus},</if>
+            <if test="otaVersion != null">#{otaVersion},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDeviceInfo" parameterType="DeviceInfo">
+        update device_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deviceCode != null and deviceCode != ''">device_code = #{deviceCode},</if>
+            <if test="deviceName != null and deviceName != ''">device_name = #{deviceName},</if>
+            <if test="mxcAddr != null and mxcAddr != ''">mxc_addr = #{mxcAddr},</if>
+            <if test="ipAddr != null">ip_addr = #{ipAddr},</if>
+            <if test="area != null">area = #{area},</if>
+            <if test="onlineStatus != null">online_status = #{onlineStatus},</if>
+            <if test="otaVersion != null">ota_version = #{otaVersion},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where device_id = #{deviceId}
+    </update>
+
+    <delete id="deleteDeviceInfoByDeviceId" parameterType="Long">
+        delete from device_info where device_id = #{deviceId}
+    </delete>
+
+    <delete id="deleteDeviceInfoByDeviceIds" parameterType="String">
+        delete from device_info where device_id in 
+        <foreach item="deviceId" collection="array" open="(" separator="," close=")">
+            #{deviceId}
+        </foreach>
+    </delete>
+
+    <select id="selectDeviceInfoListByUserId" resultMap="DeviceInfoResult">
+        <include refid="selectDeviceInfoVo"/>
+        inner join device_user du on di.device_id = du.device_id
+        where du.user_id = #{userId}
+    </select>
+
+    <select id="selectByCodeOrMxc" resultMap="DeviceInfoResult">
+        select * from device_info
+        where (device_code = #{deviceCode} and #{deviceCode} is not null and #{deviceCode} != '')
+           or (mxc_addr = #{mxcAddr} and #{mxcAddr} is not null and #{mxcAddr} != '')
+        limit 1
+    </select>
+</mapper>
