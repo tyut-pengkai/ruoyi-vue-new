@@ -112,7 +112,7 @@
 
     <el-table v-loading="loading" :data="infoList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="设备id" align="center" prop="deviceId" />
+      <el-table-column v-if="isAdmin" label="设备id" align="center" prop="deviceId" />
       <el-table-column label="设备编码" align="center" prop="deviceCode" />
       <el-table-column label="设备名称" align="center" prop="deviceName" />
       <el-table-column label="mxc地址" align="center" prop="mxcAddr" />
@@ -191,7 +191,10 @@
       <el-form :model="bindDeviceForm" label-width="120px">
         <el-form-item label="设备编码或mxc地址">
           <el-input v-model="bindDeviceForm.deviceMxcCode" placeholder="请输入设备编码或mxc地址"></el-input>
-        </el-form-item>   
+          <div style="color: #f56c6c; font-size: 12px; margin-top: 0px;">设备编码请查看设备背面的一串数字.</div>
+
+        </el-form-item>
+        
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="bindDeviceDialogVisible = false">取 消</el-button>
@@ -377,7 +380,8 @@ export default {
         this.$message.success('绑定成功');
         this.bindDeviceDialogVisible = false;
         this.getList();
-      }).catch(() => {});
+      }).catch(err => {
+      });
     },
     handleUnbind(row) {
       this.$confirm('确定要解绑该设备吗？', '提示', {

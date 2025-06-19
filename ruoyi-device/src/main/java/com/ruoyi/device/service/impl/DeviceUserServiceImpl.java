@@ -96,10 +96,11 @@ public class DeviceUserServiceImpl implements IDeviceUserService
 
     @Override
     public int bindDeviceToUser(Long userId, Long deviceId) {
-        // 检查是否已绑定
-        Integer count = deviceUserMapper.countByUserIdAndDeviceId(userId, deviceId);
+        // 检查该设备是否已被任何用户绑定
+        Integer count = deviceUserMapper.countByDeviceId(deviceId);
         if (count != null && count > 0) {
-            return 0; // 已绑定
+            // 已被绑定
+            return -1;
         }
         return deviceUserMapper.insertDeviceUser(userId, deviceId);
     }

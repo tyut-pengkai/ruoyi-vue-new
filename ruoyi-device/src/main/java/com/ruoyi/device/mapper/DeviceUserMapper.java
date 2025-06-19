@@ -73,4 +73,9 @@ public interface DeviceUserMapper
      * 按用户和设备解绑
      */
     int deleteByUserIdAndDeviceId(@org.apache.ibatis.annotations.Param("userId") Long userId, @org.apache.ibatis.annotations.Param("deviceId") Long deviceId);
+
+    /**
+     * 统计某设备是否已被任何用户绑定
+     */
+    Integer countByDeviceId(@org.apache.ibatis.annotations.Param("deviceId") Long deviceId);
 }
