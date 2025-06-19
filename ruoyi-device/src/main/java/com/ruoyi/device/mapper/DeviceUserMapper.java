@@ -68,4 +68,9 @@ public interface DeviceUserMapper
      * 插入用户设备绑定关系
      */
     int insertDeviceUser(@org.apache.ibatis.annotations.Param("userId") Long userId, @org.apache.ibatis.annotations.Param("deviceId") Long deviceId);
+
+    /**
+     * 按用户和设备解绑
+     */
+    int deleteByUserIdAndDeviceId(@org.apache.ibatis.annotations.Param("userId") Long userId, @org.apache.ibatis.annotations.Param("deviceId") Long deviceId);
 }

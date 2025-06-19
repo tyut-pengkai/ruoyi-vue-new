@@ -63,4 +63,9 @@ public interface IDeviceUserService
      * 绑定设备到用户
      */
     int bindDeviceToUser(Long userId, Long deviceId);
+
+    /**
+     * 解绑设备
+     */
+    int unbindDeviceFromUser(Long userId, Long deviceId);
 }

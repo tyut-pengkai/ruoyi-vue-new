@@ -122,4 +122,13 @@ public class DeviceInfoController extends BaseController
         int result = deviceUserService.bindDeviceToUser(userId, device.getDeviceId());
         return result > 0 ? AjaxResult.success() : AjaxResult.error("设备已绑定");
     }
+
+    @PreAuthorize("@ss.hasPermi('device:info:unbindToUser')")
+    @PostMapping("/unbindDeviceToUser")
+    public AjaxResult unbindDeviceToUser(@RequestBody Map<String, Long> params) {
+        Long userId = SecurityUtils.getUserId();
+        Long deviceId = params.get("deviceId");
+        int result = deviceUserService.unbindDeviceFromUser(userId, deviceId);
+        return result > 0 ? AjaxResult.success() : AjaxResult.error("解绑失败");
+    }
 }

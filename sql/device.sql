@@ -21,11 +21,12 @@ create table device_info (
 ) engine=innodb auto_increment=200 comment = '设备信息';
 
 
+-- 设备管理 菜单
 INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) 
-VALUES (5, '设备管理', 0, 5, 'device', NULL, '', '', 1, 0, 'M', '0', '0', '', 'tool', 'admin', '2025-06-17 09:17:10', '', NULL, '设备管理目录');
+VALUES (5, '设备管理', 0, 5, 'device', NULL, '', '', 1, 0, 'M', '0', '0', '', 'tool', 'admin', sysdate(), '', NULL, '设备管理目录');
 
 
--- 菜单 SQL
+-- 设备信息
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
 values('设备信息', '5', '1', 'info', 'device/info/index', 1, 0, 'C', '0', '0', 'device:info:list', '#', 'admin', sysdate(), '', null, '设备信息菜单');
 
@@ -48,20 +49,24 @@ values('设备信息删除', @parentId, '4',  '#', '', 1, 0, 'F', '0', '0', 'dev
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
 values('设备信息导出', @parentId, '5',  '#', '', 1, 0, 'F', '0', '0', 'device:info:export',       '#', 'admin', sysdate(), '', null, '');
 
-
-
+-- 绑定与解绑
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) 
+VALUES (2006, '添加绑定设备', 2000, 6, '', NULL, NULL, '', 1, 0, 'F', '0', '0', 'device:info:bindToUser', '#', 'admin', sysdate(), '', NULL, '');
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) 
+VALUES (2008, '解绑', 2000, 7, '', NULL, NULL, '', 1, 0, 'F', '0', '0', 'device:info:unbindToUser', '#', 'admin', sysdate(), '', NULL, '');
 
 
 -- 初始化注册用户角色
 INSERT INTO `sys_role`(`role_id`, `role_name`, `role_key`, `role_sort`, `data_scope`, `menu_check_strictly`, `dept_check_strictly`, `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) 
-VALUES (100, '普通注册用户角色', 'common_register', 3, '1', 1, 1, '0', '0', 'admin', '2025-06-18 20:02:44', '', NULL, NULL);
+VALUES (100, '普通注册用户角色', 'common_register', 3, '1', 1, 1, '0', '0', 'admin',  sysdate(), '', NULL, NULL);
 
 
 -- 初始化注册用户角色 的菜单权限
-INSERT INTO `sys_role_menu`(`role_id`, `menu_id`) VALUES (100, 5);
-INSERT INTO `sys_role_menu`(`role_id`, `menu_id`) VALUES (100, 2000);
-INSERT INTO `sys_role_menu`(`role_id`, `menu_id`) VALUES (100, 2001);
-
+INSERT INTO `sys_role_menu`(`role_id`, `menu_id`) VALUES (3, 5);
+INSERT INTO `sys_role_menu`(`role_id`, `menu_id`) VALUES (3, 2000);
+INSERT INTO `sys_role_menu`(`role_id`, `menu_id`) VALUES (3, 2001);
+INSERT INTO `sys_role_menu`(`role_id`, `menu_id`) VALUES (3, 2006);
+INSERT INTO `sys_role_menu`(`role_id`, `menu_id`) VALUES (3, 2008);
 
 
 

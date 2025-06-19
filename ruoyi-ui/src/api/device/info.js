@@ -51,3 +51,12 @@ export function bindDeviceToUser(data) {
     data: { deviceMxcCode: data.deviceMxcCode }
   })
 }
+
+// 解绑设备
+export function unbindDeviceToUser(data) {
+  return request({
+    url: '/device/info/unbindDeviceToUser',
+    method: 'post',
+    data
+  })
+}

@@ -73,4 +73,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{deviceId}
         </foreach>
     </delete>
+
+    <delete id="deleteByUserIdAndDeviceId">
+        delete from device_user where user_id = #{userId} and device_id = #{deviceId}
+    </delete>
 </mapper>

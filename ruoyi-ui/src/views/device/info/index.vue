@@ -100,6 +100,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
+          v-if="!isAdmin"
           type="primary"
           icon="el-icon-plus"
           size="mini"
@@ -136,6 +137,13 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['device:info:remove']"
           >删除</el-button>
+          <el-button
+            v-if="!isAdmin"
+            size="mini"
+            type="text"
+            icon="el-icon-unlock"
+            @click="handleUnbind(scope.row)"
+          >解绑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -194,7 +202,8 @@
 </template>
 
 <script>
-import { listInfo, getInfo, delInfo, addInfo, updateInfo, bindDeviceToUser } from "@/api/device/info"
+import { listInfo, getInfo, delInfo, addInfo, updateInfo, bindDeviceToUser, unbindDeviceToUser } from "@/api/device/info"
+import store from '@/store'
 
 export default {
   name: "Info",
@@ -246,10 +255,13 @@ export default {
       bindDeviceForm: {
         deviceMxcCode: ''
       },
+      isAdmin: false,
     }
   },
   created() {
     this.getList()
+    // 用store获取用户名判断是否admin
+    this.isAdmin = store.getters.name === 'admin';
   },
   methods: {
     /** 查询设备信息列表 */
@@ -364,6 +376,21 @@ export default {
       bindDeviceToUser({ deviceMxcCode: this.bindDeviceForm.deviceMxcCode }).then(res => {
         this.$message.success('绑定成功');
         this.bindDeviceDialogVisible = false;
+        this.getList();
+      }).catch(() => {});
+    },
+    handleUnbind(row) {
+      this.$confirm('确定要解绑该设备吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.unbindDeviceToUser(row.deviceId)
+      })
+    },
+    unbindDeviceToUser(deviceId) {
+      unbindDeviceToUser({ deviceId }).then(res => {
+        this.$message.success('解绑成功');
         this.getList();
       }).catch(() => {});
     },

@@ -103,4 +103,9 @@ public class DeviceUserServiceImpl implements IDeviceUserService
         }
         return deviceUserMapper.insertDeviceUser(userId, deviceId);
     }
+
+    @Override
+    public int unbindDeviceFromUser(Long userId, Long deviceId) {
+        return deviceUserMapper.deleteByUserIdAndDeviceId(userId, deviceId);
+    }
 }
