@@ -105,7 +105,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectDeviceInfoListByUserId" resultMap="DeviceInfoResult">
         <include refid="selectDeviceInfoVo"/>
         inner join device_user du on di.device_id = du.device_id
-        where du.user_id = #{userId}
+        <where>
+            du.user_id = #{userId}
+            <if test="deviceInfo.deviceCode != null and deviceInfo.deviceCode != ''"> and di.device_code = #{deviceInfo.deviceCode}</if>
+            <if test="deviceInfo.deviceName != null and deviceInfo.deviceName != ''"> and di.device_name like concat('%', #{deviceInfo.deviceName}, '%')</if>
+            <if test="deviceInfo.mxcAddr != null and deviceInfo.mxcAddr != ''"> and di.mxc_addr = #{deviceInfo.mxcAddr}</if>
+            <if test="deviceInfo.ipAddr != null and deviceInfo.ipAddr != ''"> and di.ip_addr = #{deviceInfo.ipAddr}</if>
+            <if test="deviceInfo.area != null and deviceInfo.area != ''"> and di.area = #{deviceInfo.area}</if>
+            <if test="deviceInfo.onlineStatus != null and deviceInfo.onlineStatus != ''"> and di.online_status = #{deviceInfo.onlineStatus}</if>
+            <if test="deviceInfo.otaVersion != null and deviceInfo.otaVersion != ''"> and di.ota_version = #{deviceInfo.otaVersion}</if>
+            <if test="deviceInfo.status != null and deviceInfo.status != ''"> and di.status = #{deviceInfo.status}</if>
+        </where>
     </select>
 
     <select id="selectByCodeOrMxc" resultMap="DeviceInfoResult">
