@@ -17,11 +17,11 @@ import java.util.List;
 public class StoreOrderRefundRejectVO {
 
     @NotNull(message = "订单ID不能为空")
-    @ApiModelProperty(value = "订单ID")
+    @ApiModelProperty(value = "订单ID", required = true)
     private Long storeOrderId;
 
     @NotEmpty(message = "明细ID不能为空")
-    @ApiModelProperty(value = "明细ID集合")
+    @ApiModelProperty(value = "明细ID集合", required = true)
     private List<Long> storeOrderDetailIds;
 
     @ApiModelProperty(value = "原因")

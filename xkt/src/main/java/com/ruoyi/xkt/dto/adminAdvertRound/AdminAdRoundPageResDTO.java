@@ -31,6 +31,8 @@ public class AdminAdRoundPageResDTO {
     private String platformName;
     @ApiModelProperty(value = "投放类型")
     private Integer typeId;
+    @ApiModelProperty(value = "展示类型 推广图、商品、推广图及商品、档口名称")
+    private Integer displayType;
     @ApiModelProperty(value = "投放类型")
     private String typeName;
     @ApiModelProperty(value = "投放位置")

@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 public class UserSubscVO {
 
     @NotNull(message = "档口ID不能为空!")
-    @ApiModelProperty(value = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;
 
 }

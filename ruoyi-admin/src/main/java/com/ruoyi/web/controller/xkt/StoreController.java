@@ -41,6 +41,14 @@ public class StoreController extends XktBaseController {
         return R.ok(storeService.create(BeanUtil.toBean(createVO, StoreCreateDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "模糊查询档口", httpMethod = "GET", response = R.class)
+    @Log(title = "模糊查询档口", businessType = BusinessType.UPDATE)
+    @GetMapping("/fuzzy")
+    public R<List<StoreNameResVO>> fuzzyQuery(@RequestParam(value = "storeName", required = false) String storeName) {
+        return R.ok(BeanUtil.copyToList(storeService.fuzzyQuery(storeName), StoreNameResVO.class));
+    }
+
     @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "修改档口基本信息", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口基本信息", businessType = BusinessType.UPDATE)

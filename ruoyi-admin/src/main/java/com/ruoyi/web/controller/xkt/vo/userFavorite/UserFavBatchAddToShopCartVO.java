@@ -22,19 +22,19 @@ public class UserFavBatchAddToShopCartVO {
 
     @Valid
     @NotNull(message = "批量操作列表不能为空!")
-    @ApiModelProperty(value = "批量操作列表")
+    @ApiModelProperty(value = "批量操作列表", required = true)
     List<BatchVO> batchList;
 
     @Data
     public static class BatchVO {
         @NotBlank(message = "商品货号不能为空!")
-        @ApiModelProperty(value = "商品货号")
+        @ApiModelProperty(value = "商品货号", required = true)
         private String prodArtNum;
         @NotNull(message = "档口ID不能为空!")
-        @ApiModelProperty(value = "档口ID")
+        @ApiModelProperty(value = "档口ID", required = true)
         private Long storeId;
         @NotNull(message = "档口商品ID不能为空!")
-        @ApiModelProperty(value = "档口商品ID")
+        @ApiModelProperty(value = "档口商品ID", required = true)
         private Long storeProdId;
     }
 

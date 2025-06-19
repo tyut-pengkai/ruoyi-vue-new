@@ -17,10 +17,10 @@ import java.math.BigDecimal;
 public class AdminAdRoundUnsubscribeVO {
 
     @NotNull(message = "advertRoundId不能为空")
-    @ApiModelProperty(value = "推广轮次ID")
+    @ApiModelProperty(value = "推广轮次ID", required = true)
     private Long advertRoundId;
     @NotNull(message = "storeId不能为空")
-    @ApiModelProperty(value = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;
     @ApiModelProperty(value = "扣除金额")
     private BigDecimal deductionFee;

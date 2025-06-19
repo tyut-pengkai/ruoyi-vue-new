@@ -18,13 +18,13 @@ import javax.validation.constraints.Size;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreRoleAccUpdateVO {
 
-    @ApiModelProperty(value = "档口子账号ID")
+    @ApiModelProperty(value = "档口子账号ID", required = true)
     @NotNull(message = "档口子账号ID不能为空!")
     private Long storeRoleAccId;
     @ApiModelProperty(value = "子账户名称")
     @Size(min = 0, max = 30, message = "子账户名称长度不能超过30个字!")
     private String accountName;
-    @ApiModelProperty(value = "档口子角色ID")
+    @ApiModelProperty(value = "档口子角色ID", required = true)
     @NotNull(message = "档口子角色ID不能为空!")
     private Long storeRoleId;
     @ApiModelProperty(value = "档口ID", required = true)

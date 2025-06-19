@@ -19,7 +19,7 @@ import java.util.List;
 public class UserFavoriteDeleteVO {
 
     @NotNull(message = "用户收藏ID列表不能为空!")
-    @ApiModelProperty(value = "用户收藏ID列表")
+    @ApiModelProperty(value = "用户收藏ID列表", required = true)
     private List<Long> userFavoriteIdList;
 
 }

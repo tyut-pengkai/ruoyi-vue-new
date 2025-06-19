@@ -74,6 +74,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             a.tab_id,
             a.platform_id,
             ar.type_id,
+            ar.display_type,
             ar.voucher_date,
             CONCAT('位置', ar.position) AS position,
             ar.start_time,

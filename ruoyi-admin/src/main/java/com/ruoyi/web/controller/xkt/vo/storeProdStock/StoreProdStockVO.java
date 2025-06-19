@@ -19,16 +19,16 @@ import javax.validation.constraints.NotNull;
 public class StoreProdStockVO {
 
     @NotNull(message = "档口商品库存ID不能为空")
-    @ApiModelProperty(value = "档口商品库存ID")
+    @ApiModelProperty(value = "档口商品库存ID", required = true)
     private Long storeProdStockId;
     @NotNull(message = "档口商品ID不能为空")
-    @ApiModelProperty(value = "档口商品ID")
+    @ApiModelProperty(value = "档口商品ID", required = true)
     private Long storeProdId;
     @NotBlank(message = "商品货号不能为空")
-    @ApiModelProperty(value = "商品货号")
+    @ApiModelProperty(value = "商品货号", required = true)
     private String prodArtNum;
     @NotNull(message = "档口商品颜色ID不能为空")
-    @ApiModelProperty(value = "档口商品颜色ID")
+    @ApiModelProperty(value = "档口商品颜色ID", required = true)
     private Long storeProdColorId;
     @ApiModelProperty(value = "档口颜色ID")
     private Long storeColorId;

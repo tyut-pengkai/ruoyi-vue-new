@@ -142,4 +142,12 @@ public interface IStoreService {
      * @return
      */
     Map<Long, String> getStoreNameByIds(Collection<Long> ids);
+
+    /**
+     * 模糊查询档口名称
+     *
+     * @param storeName 档口名称
+     * @return
+     */
+    List<StoreNameResDTO> fuzzyQuery(String storeName);
 }

@@ -218,7 +218,9 @@ public class AdvertServiceImpl implements IAdvertService {
                             // tab下所有的推广类型
                             .setTypeList(typeList.stream().map(type -> new AdvertPlatformResDTO.APTypeDTO()
                                     .setAdvertId(type.getAdvertId()).setTypeId(type.getTypeId()).setTypeName(AdType.of(type.getTypeId()).getLabel())
-                                    .setDemoUrl(AdType.of(type.getTypeId()).getDemoUrl())).collect(Collectors.toList()))));
+//                                    .setDemoUrl(AdType.of(type.getTypeId()).getDemoUrl())
+                                    )
+                                    .collect(Collectors.toList()))));
                     platformList.add(new AdvertPlatformResDTO().setPlatformId(platformId)
                             .setPlatformName(AdPlatformType.of(platformId).getLabel())
                             .setTabList(tabList));

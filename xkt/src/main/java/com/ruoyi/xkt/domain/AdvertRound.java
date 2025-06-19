@@ -32,7 +32,7 @@ public class AdvertRound extends XktBaseEntity {
      */
     private Integer showType;
     /**
-     * 展示类型 推广图、商品、推广图及商品
+     * 展示类型 推广图、商品、推广图及商品、档口名称
      */
     private Integer displayType;
     /**

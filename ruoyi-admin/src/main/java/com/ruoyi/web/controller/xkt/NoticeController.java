@@ -12,6 +12,7 @@ import com.ruoyi.xkt.service.INoticeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class NoticeController extends BaseController {
 
     final INoticeService noticeService;
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "新增公告（档口公告、系统公告）", httpMethod = "POST", response = R.class)
     @Log(title = "新增公告（档口公告、系统公告）", businessType = BusinessType.INSERT)
     @PostMapping
@@ -35,6 +37,7 @@ public class NoticeController extends BaseController {
         return R.ok(noticeService.create(BeanUtil.toBean(createVO, NoticeCreateDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "编辑公告（档口公告、系统公告）", httpMethod = "PUT", response = R.class)
     @Log(title = "编辑公告", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -48,6 +51,7 @@ public class NoticeController extends BaseController {
         return R.ok(BeanUtil.toBean(noticeService.getInfo(noticeId), NoticeResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "删除公告（档口公告、系统公告）", httpMethod = "DELETE", response = R.class)
     @Log(title = "删除公告", businessType = BusinessType.DELETE)
     @DeleteMapping("")
@@ -55,6 +59,7 @@ public class NoticeController extends BaseController {
         return R.ok(noticeService.delete(BeanUtil.toBean(deleteVO, NoticeDeleteDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口公告列表、系统公告列表 ", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<NoticeResDTO>> page(@Validated @RequestBody NoticePageVO pageVO) {

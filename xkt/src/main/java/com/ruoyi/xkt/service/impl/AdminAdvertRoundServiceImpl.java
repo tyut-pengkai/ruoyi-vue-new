@@ -156,6 +156,8 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         int count = this.fileMapper.insert(file);
         // 更新推广位的图片ID
         advertRound.setPicId(file.getId());
+        advertRound.setPicSetType(AdPicSetType.SET.getValue());
+        advertRound.setPicAuditStatus(AdPicAuditStatus.AUDIT_PASS.getValue());
         this.advertRoundMapper.updateById(advertRound);
         // 将档口上传图片保存到AdvertStoreFile
         AdvertStoreFile advertStoreFile = new AdvertStoreFile().setAdvertRoundId(advertRound.getId())

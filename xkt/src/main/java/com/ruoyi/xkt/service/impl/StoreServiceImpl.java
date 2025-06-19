@@ -13,6 +13,7 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bigDecimal.CollectorsUtil;
 import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.xkt.domain.*;
@@ -379,6 +380,24 @@ public class StoreServiceImpl implements IStoreService {
             return MapUtil.empty();
         }
         return storeMapper.selectByIds(ids).stream().collect(Collectors.toMap(Store::getId, Store::getStoreName));
+    }
+
+    /**
+     * 模糊查询档口名称
+     *
+     * @param storeName 档口名称
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<StoreNameResDTO> fuzzyQuery(String storeName) {
+        LambdaQueryWrapper<Store> queryWrapper = new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED);
+        if (StringUtils.isNotBlank(storeName)) {
+            queryWrapper.like(Store::getStoreName, storeName);
+        }
+        List<Store> storeList = this.storeMapper.selectList(queryWrapper);
+        return storeList.stream().map(x -> new StoreNameResDTO().setStoreId(x.getId()).setStoreName(x.getStoreName()))
+                .collect(Collectors.toList());
     }
 
 }

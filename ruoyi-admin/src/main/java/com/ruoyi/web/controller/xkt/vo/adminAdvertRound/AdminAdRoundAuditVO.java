@@ -16,10 +16,10 @@ import javax.validation.constraints.NotNull;
 public class AdminAdRoundAuditVO {
 
     @NotNull(message = "advertRoundId不能为空")
-    @ApiModelProperty(value = "推广轮次ID")
+    @ApiModelProperty(value = "推广轮次ID", required = true)
     private Long advertRoundId;
     @NotNull(message = "storeId不能为空")
-    @ApiModelProperty(value = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;
     @ApiModelProperty(value = "图片审核状态 1 待审核 2 审核通过  3 审核驳回")
     private Integer picAuditStatus;

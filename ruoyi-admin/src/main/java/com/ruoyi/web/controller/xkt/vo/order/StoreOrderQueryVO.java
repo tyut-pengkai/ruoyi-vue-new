@@ -92,7 +92,7 @@ public class StoreOrderQueryVO extends BasePageVO {
     private String prodArtNum;
 
     @NotNull(message = "来源页面不能为空")
-    @ApiModelProperty(value = "来源页面[1:卖家订单列表 2:档口订单列表]")
+    @ApiModelProperty(value = "来源页面[1:卖家订单列表 2:档口订单列表]", required = true)
     private Integer srcPage;
 
 }

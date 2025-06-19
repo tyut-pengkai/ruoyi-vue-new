@@ -21,7 +21,7 @@ import java.util.List;
 public class StoreCusProdDiscExistVO {
 
     @NotNull(message = "档口ID不能为空!")
-    @ApiModelProperty(value = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;
     @NotNull(message = "优惠列表不能为空!")
     @Valid
@@ -31,16 +31,16 @@ public class StoreCusProdDiscExistVO {
     @Data
     public static class DiscountItemVO {
         @NotNull(message = "档口商品ID不能为空!")
-        @ApiModelProperty(value = "档口商品ID")
+        @ApiModelProperty(value = "档口商品ID", required = true)
         private Long storeProdId;
         @NotBlank(message = "商品货号不能为空!")
-        @ApiModelProperty(value = "商品货号")
+        @ApiModelProperty(value = "商品货号", required = true)
         private String prodArtNum;
-        @ApiModelProperty(value = "商品颜色名称")
+        @ApiModelProperty(value = "商品颜色名称", required = true)
         @NotBlank(message = "商品颜色名称不能为空!")
         private String colorName;
         @NotNull(message = "档口商品颜色ID不能为空!")
-        @ApiModelProperty(value = "档口商品颜色ID")
+        @ApiModelProperty(value = "档口商品颜色ID", required = true)
         private Long storeProdColorId;
         @NotNull(message = "优惠金额不能为空!")
         @ApiModelProperty(value = "优惠金额", required = true)

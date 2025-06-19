@@ -41,7 +41,7 @@ public class IndexSearchVO extends BasePageVO {
     @ApiModelProperty(value = "排序")
     private String sort;
     @NotNull(message = "排序方式不能为空")
-    @ApiModelProperty(value = "排序方式")
+    @ApiModelProperty(value = "排序方式", required = true)
     private SortOrder order;
 
 

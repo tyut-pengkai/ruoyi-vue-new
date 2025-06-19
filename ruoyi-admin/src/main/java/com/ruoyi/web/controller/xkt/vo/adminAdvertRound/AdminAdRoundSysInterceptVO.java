@@ -23,13 +23,13 @@ import java.util.List;
 public class AdminAdRoundSysInterceptVO {
 
     @NotNull(message = "推广轮次ID不能为空")
-    @ApiModelProperty(value = "推广轮次ID")
+    @ApiModelProperty(value = "推广轮次ID", required = true)
     private Long advertRoundId;
     @NotNull(message = "档口ID不能为空")
-    @ApiModelProperty(value = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;
     @NotBlank(message = "档口名称不能为空")
-    @ApiModelProperty(value = "档口名称")
+    @ApiModelProperty(value = "档口名称", required = true)
     private String storeName;
     @ApiModelProperty(value = "管理员上传推广图")
     private AARSIFileVO file;
