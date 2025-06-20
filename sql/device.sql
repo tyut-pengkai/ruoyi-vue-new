@@ -10,7 +10,7 @@ create table device_info (
   ,ip_addr          varchar(100)      default null             comment 'IP地址'
   ,area             varchar(100)      default null             comment '所属区域'
   ,online_status    char(1)           default 1                comment '在线状态（0线上 1下线）'
-  ,ota_version      varchar(100)      default 'v1.0.0'         comment '固件版本'
+  ,ota_version      varchar(100)                               comment '固件版本'
   ,status           char(1)           default '0'              comment '状态（0正常 1停用）'
   ,del_flag         char(1)           default '0'              comment '删除标志（0代表存在 2代表删除）'
   ,create_time 	    TIMESTAMP        DEFAULT CURRENT_TIMESTAMP                                        comment '创建时间'
@@ -54,6 +54,10 @@ INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`,
 VALUES (2006, '添加绑定设备', 2000, 6, '', NULL, NULL, '', 1, 0, 'F', '0', '0', 'device:info:bindToUser', '#', 'admin', sysdate(), '', NULL, '');
 INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) 
 VALUES (2008, '解绑', 2000, 7, '', NULL, NULL, '', 1, 0, 'F', '0', '0', 'device:info:unbindToUser', '#', 'admin', sysdate(), '', NULL, '');
+
+-- 设备导入
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) 
+VALUES (2009, '导入', 2000, 8, '', NULL, NULL, '', 1, 0, 'F', '0', '0', 'device:info:import', '#', 'admin', '2025-06-19 18:12:49', '', NULL, '');
 
 
 -- 初始化注册用户角色

@@ -23,6 +23,8 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.utils.SecurityUtils;
 import java.util.Map;
 import com.ruoyi.device.service.IDeviceUserService;
+import org.springframework.web.multipart.MultipartFile;
+import com.ruoyi.common.annotation.Anonymous;
 
 /**
  * 设备信息Controller
@@ -133,5 +135,25 @@ public class DeviceInfoController extends BaseController
         Long deviceId = params.get("deviceId");
         int result = deviceUserService.unbindDeviceFromUser(userId, deviceId);
         return result > 0 ? AjaxResult.success() : AjaxResult.error("解绑失败");
+    }
+
+    @Log(title = "设备信息", businessType = BusinessType.IMPORT)
+    @PreAuthorize("@ss.hasPermi('device:info:import')")
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception
+    {
+        ExcelUtil<DeviceInfo> util = new ExcelUtil<DeviceInfo>(DeviceInfo.class);
+        List<DeviceInfo> deviceList = util.importExcel(file.getInputStream());
+        String operName = getUsername();
+        String message = deviceInfoService.importDevice(deviceList, updateSupport, operName);
+        return success(message);
+    }
+
+    @PreAuthorize("@ss.hasPermi('device:info:import')")
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response)
+    {
+        ExcelUtil<DeviceInfo> util = new ExcelUtil<DeviceInfo>(DeviceInfo.class);
+        util.importTemplateExcel(response, "设备数据");
     }
 }

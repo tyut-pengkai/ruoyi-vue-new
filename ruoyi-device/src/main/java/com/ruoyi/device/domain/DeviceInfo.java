@@ -39,7 +39,7 @@ public class DeviceInfo extends BaseEntity
     private String area;
 
     /** 在线状态（0线上 1下线） */
-    @Excel(name = "在线状态", readConverterExp = "0=线上,1=下线")
+    @Excel(name = "在线状态", readConverterExp = "0=线上,1=下线", combo = {"线上", "下线"})
     private String onlineStatus;
 
     /** 固件版本 */
@@ -47,7 +47,7 @@ public class DeviceInfo extends BaseEntity
     private String otaVersion;
 
     /** 状态（0正常 1停用） */
-    @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
+    @Excel(name = "状态", readConverterExp = "0=正常,1=停用", combo = {"正常", "停用"})
     private String status;
 
     /** 删除标志（0代表存在 2代表删除） */

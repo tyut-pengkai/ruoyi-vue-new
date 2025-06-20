@@ -72,4 +72,9 @@ public interface IDeviceInfoService
      * 通过设备编码或mxc地址查找设备
      */
     DeviceInfo selectByCodeOrMxc(String deviceCode, String mxcAddr);
+
+    /**
+     * 导入设备信息
+     */
+    String importDevice(List<DeviceInfo> deviceList, boolean updateSupport, String operName);
 }

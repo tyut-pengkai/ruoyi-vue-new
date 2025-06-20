@@ -107,4 +107,46 @@ public class DeviceInfoServiceImpl implements IDeviceInfoService
     public DeviceInfo selectByCodeOrMxc(String deviceCode, String mxcAddr) {
         return deviceInfoMapper.selectByCodeOrMxc(deviceCode, mxcAddr);
     }
+
+    @Override
+    public String importDevice(List<DeviceInfo> deviceList, boolean updateSupport, String operName) {
+        if (deviceList == null || deviceList.isEmpty()) {
+            throw new RuntimeException("导入设备数据不能为空！");
+        }
+        int successNum = 0, failureNum = 0;
+        StringBuilder successMsg = new StringBuilder();
+        StringBuilder failureMsg = new StringBuilder();
+        for (DeviceInfo device : deviceList) {
+            try {
+                // 仅用mxc_addr唯一性校验
+                DeviceInfo exist = deviceInfoMapper.selectByCodeOrMxc(null, device.getMxcAddr());
+                if (exist == null) {
+                    device.setCreateBy(operName);
+                    deviceInfoMapper.insertDeviceInfo(device);
+                    successNum++;
+                    successMsg.append("<br/>" + successNum + "、设备 " + device.getDeviceCode() + " 导入成功");
+                } else if (updateSupport) {
+                    device.setDeviceId(exist.getDeviceId());
+                    device.setUpdateBy(operName);
+                    deviceInfoMapper.updateDeviceInfo(device);
+                    successNum++;
+                    successMsg.append("<br/>" + successNum + "、设备 " + device.getDeviceCode() + " 更新成功");
+                } else {
+                    failureNum++;
+                    failureMsg.append("<br/>" + failureNum + "、设备 " + device.getDeviceCode() + " 已存在");
+                }
+            } catch (Exception e) {
+                failureNum++;
+                String msg = "<br/>" + failureNum + "、设备 " + device.getDeviceCode() + " 导入失败：" + e.getMessage();
+                failureMsg.append(msg);
+            }
+        }
+        if (failureNum > 0) {
+            failureMsg.insert(0, "很抱歉，导入失败！共 " + failureNum + " 条数据格式不正确，错误如下：");
+            throw new RuntimeException(failureMsg.toString());
+        } else {
+            successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
+        }
+        return successMsg.toString();
+    }
 }

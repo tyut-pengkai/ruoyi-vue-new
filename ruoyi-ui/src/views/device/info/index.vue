@@ -107,6 +107,9 @@
           @click="openBindDeviceDialog"
         >添加绑定设备</el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button type="info" plain icon="el-icon-upload2" size="mini" @click="handleImport" v-hasPermi="['device:info:import']">导入</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -201,12 +204,41 @@
         <el-button type="primary" @click="handleBindDevice">确 定</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
+      <el-upload
+        ref="upload"
+        :limit="1"
+        accept=".xlsx, .xls"
+        :headers="upload.headers"
+        :action="upload.url + '?updateSupport=' + upload.updateSupport"
+        :disabled="upload.isUploading"
+        :on-progress="handleFileUploadProgress"
+        :on-success="handleFileSuccess"
+        :auto-upload="false"
+        drag>
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip text-center" slot="tip">
+          <div class="el-upload__tip" slot="tip">
+            <el-checkbox v-model="upload.updateSupport" />是否更新已经存在的设备数据
+          </div>
+          <span>仅允许导入xls、xlsx格式文件。</span>
+          <el-link type="primary" :underline="false" style="font-size: 12px; vertical-align: baseline" @click="importTemplate">下载模板</el-link>
+        </div>
+      </el-upload>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFileForm">确 定</el-button>
+        <el-button @click="upload.open = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { listInfo, getInfo, delInfo, addInfo, updateInfo, bindDeviceToUser, unbindDeviceToUser } from "@/api/device/info"
 import store from '@/store'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: "Info",
@@ -259,6 +291,14 @@ export default {
         deviceMxcCode: ''
       },
       isAdmin: false,
+      upload: {
+        open: false,
+        title: "设备导入",
+        isUploading: false,
+        url: process.env.VUE_APP_BASE_API + "/device/info/importData",
+        headers: { Authorization: "Bearer " + getToken() },
+        updateSupport: false
+      },
     }
   },
   created() {
@@ -397,6 +437,27 @@ export default {
         this.$message.success('解绑成功');
         this.getList();
       }).catch(() => {});
+    },
+    handleImport() {
+      this.upload.open = true;
+      this.upload.title = "设备导入";
+    },
+    importTemplate() {
+      // 拼接token参数
+      const token = getToken();
+      this.download('device/info/importTemplate', {}, `device_template_${new Date().getTime()}.xlsx`)
+    },
+    submitFileForm() {
+      this.$refs.upload.submit();
+    },
+    handleFileUploadProgress(event, file, fileList) {
+      this.upload.isUploading = true;
+    },
+    handleFileSuccess(response, file, fileList) {
+      this.upload.open = false;
+      this.upload.isUploading = false;
+      this.$message.success(response.msg);
+      this.getList();
     },
   }
 }
