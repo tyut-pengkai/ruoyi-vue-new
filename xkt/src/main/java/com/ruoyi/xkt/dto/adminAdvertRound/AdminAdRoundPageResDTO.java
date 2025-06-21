@@ -43,21 +43,23 @@ public class AdminAdRoundPageResDTO {
     private String endTime;
     @ApiModelProperty(value = "出价")
     private String payPrice;
+    @ApiModelProperty(value = "播放轮次")
+    private Integer playRound;
     @ApiModelProperty(value = "投放状态")
     private Integer launchStatus;
-    @ApiModelProperty(value = "投放状态")
+    @ApiModelProperty(value = "投放状态名称")
     private String launchStatusName;
     @ApiModelProperty(value = "竞价状态")
     private Integer biddingStatus;
-    @ApiModelProperty(value = "竞价状态")
+    @ApiModelProperty(value = "竞价状态名称")
     private String biddingStatusName;
     @ApiModelProperty(value = "图片设计类型")
     private Integer picDesignType;
-    @ApiModelProperty(value = "竞价状态")
+    @ApiModelProperty(value = "图片设计类型名称")
     private String picDesignTypeName;
     @ApiModelProperty(value = "图片是否设置")
     private Integer picSetType;
-    @ApiModelProperty(value = "图片是否设置")
+    @ApiModelProperty(value = "图片是否设置名称")
     private String picSetTypeName;
     @ApiModelProperty(value = "图片审核状态")
     private Integer picAuditStatus;

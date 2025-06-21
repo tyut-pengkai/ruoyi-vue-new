@@ -73,6 +73,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             s.store_name,
             a.tab_id,
             a.platform_id,
+            a.play_round,
             ar.type_id,
             ar.display_type,
             ar.voucher_date,

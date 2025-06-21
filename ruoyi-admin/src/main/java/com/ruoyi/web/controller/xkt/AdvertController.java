@@ -78,9 +78,9 @@ public class AdvertController extends XktBaseController {
     }
 
     @ApiOperation(value = "获取推广位示例图", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/demo/{advertType}")
-    public R<String> getDemoPic(@PathVariable Integer advertType) {
-        return R.ok(advertService.getDemoPic(advertType));
+    @GetMapping(value = "/demo/{typeId}")
+    public R<String> getDemoPic(@PathVariable Integer typeId) {
+        return R.ok(advertService.getDemoPic(typeId));
     }
 
 
