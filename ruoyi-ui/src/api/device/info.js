@@ -48,7 +48,7 @@ export function bindDeviceToUser(data) {
   return request({
     url: '/device/info/bindDeviceToUser',
     method: 'post',
-    data: { deviceMxcCode: data.deviceMxcCode }
+    data: { deviceMacCode: data.deviceMacCode }
   })
 }
 
@@ -58,5 +58,14 @@ export function unbindDeviceToUser(data) {
     url: '/device/info/unbindDeviceToUser',
     method: 'post',
     data
+  })
+}
+
+// 绑定智能体
+export function bindAgent(data) {
+  return request({
+    url: '/device/info/bind-agent',
+    method: 'put',
+    data: data
   })
 }

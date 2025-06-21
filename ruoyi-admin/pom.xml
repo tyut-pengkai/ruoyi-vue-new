@@ -66,6 +66,13 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-device</artifactId>
         </dependency>
+        <!-- 智能体管理模块-->
+         
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-agent</artifactId>
+            
+        </dependency>
 
         <!-- Spring Mail 邮件发送 -->
         <dependency>

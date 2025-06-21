@@ -26,9 +26,9 @@ public class DeviceInfo extends BaseEntity
     @Excel(name = "设备名称")
     private String deviceName;
 
-    /** mxc地址 */
-    @Excel(name = "mxc地址")
-    private String mxcAddr;
+    /** mac地址 */
+    @Excel(name = "mac地址")
+    private String macAddr;
 
     /** IP地址 */
     @Excel(name = "IP地址")
@@ -52,6 +52,12 @@ public class DeviceInfo extends BaseEntity
 
     /** 删除标志（0代表存在 2代表删除） */
     private String delFlag;
+
+    /** 绑定的智能体ID */
+    private Long agentId;
+
+    /** 绑定的智能体名称 */
+    private String agentName;
 
     public void setDeviceId(Long deviceId) 
     {
@@ -83,14 +89,14 @@ public class DeviceInfo extends BaseEntity
         return deviceName;
     }
 
-    public void setMxcAddr(String mxcAddr) 
+    public void setMacAddr(String macAddr)
     {
-        this.mxcAddr = mxcAddr;
+        this.macAddr = macAddr;
     }
 
-    public String getMxcAddr() 
+    public String getMacAddr()
     {
-        return mxcAddr;
+        return macAddr;
     }
 
     public void setIpAddr(String ipAddr) 
@@ -153,13 +159,33 @@ public class DeviceInfo extends BaseEntity
         return delFlag;
     }
 
+    public void setAgentId(Long agentId)
+    {
+        this.agentId = agentId;
+    }
+
+    public Long getAgentId()
+    {
+        return agentId;
+    }
+
+    public void setAgentName(String agentName)
+    {
+        this.agentName = agentName;
+    }
+
+    public String getAgentName()
+    {
+        return agentName;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("deviceId", getDeviceId())
             .append("deviceCode", getDeviceCode())
             .append("deviceName", getDeviceName())
-            .append("mxcAddr", getMxcAddr())
+            .append("macAddr", getMacAddr())
             .append("ipAddr", getIpAddr())
             .append("area", getArea())
             .append("onlineStatus", getOnlineStatus())
@@ -168,6 +194,9 @@ public class DeviceInfo extends BaseEntity
             .append("delFlag", getDelFlag())
             .append("createTime", getCreateTime())
             .append("updateTime", getUpdateTime())
+            .append("remark", getRemark())
+            .append("agentId", getAgentId())
+            .append("agentName", getAgentName())
             .toString();
     }
 }

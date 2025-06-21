@@ -69,9 +69,9 @@ public interface IDeviceInfoService
     public List<DeviceInfo> selectDeviceInfoListByUser(Long userId, boolean isAdmin, DeviceInfo deviceInfo);
 
     /**
-     * 通过设备编码或mxc地址查找设备
+     * 通过设备编码或mac地址查找设备
      */
-    DeviceInfo selectByCodeOrMxc(String deviceCode, String mxcAddr);
+    DeviceInfo selectByCodeOrMac(String deviceCode, String macAddr);
 
     /**
      * 导入设备信息

@@ -25,6 +25,8 @@ import java.util.Map;
 import com.ruoyi.device.service.IDeviceUserService;
 import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.annotation.Anonymous;
+import com.ruoyi.agent.domain.AgentDevice;
+import com.ruoyi.agent.service.IAgentDeviceService;
 
 /**
  * 设备信息Controller
@@ -41,6 +43,9 @@ public class DeviceInfoController extends BaseController
 
     @Autowired
     private IDeviceUserService deviceUserService;
+
+    @Autowired
+    private IAgentDeviceService agentDeviceService;
 
     /**
      * 查询设备信息列表
@@ -102,6 +107,16 @@ public class DeviceInfoController extends BaseController
     }
 
     /**
+     * 绑定智能体到设备
+     */
+    @Log(title = "设备信息", businessType = BusinessType.UPDATE)
+    @PutMapping("/bind-agent")
+    public AjaxResult bindAgent(@RequestBody AgentDevice agentDevice)
+    {
+        return toAjax(agentDeviceService.updateAgentDevice(agentDevice));
+    }
+
+    /**
      * 删除设备信息
      */
     @PreAuthorize("@ss.hasPermi('device:info:remove')")
@@ -116,8 +131,8 @@ public class DeviceInfoController extends BaseController
     @PostMapping("/bindDeviceToUser")
     public AjaxResult bindDevice(@RequestBody Map<String, String> params) {
         Long userId = SecurityUtils.getUserId();
-        String codeOrMxc = params.get("deviceMxcCode");
-        DeviceInfo device = deviceInfoService.selectByCodeOrMxc(codeOrMxc, codeOrMxc);
+        String codeOrMac = params.get("deviceMacCode");
+        DeviceInfo device = deviceInfoService.selectByCodeOrMac(codeOrMac, codeOrMac);
         if (device == null) {
             return AjaxResult.error("设备不存在");
         }

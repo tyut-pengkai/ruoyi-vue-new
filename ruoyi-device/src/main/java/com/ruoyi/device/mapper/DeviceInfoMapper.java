@@ -68,7 +68,7 @@ public interface DeviceInfoMapper
     List<DeviceInfo> selectDeviceInfoListByUserId(@org.apache.ibatis.annotations.Param("userId") Long userId, @org.apache.ibatis.annotations.Param("deviceInfo") DeviceInfo deviceInfo);
 
     /**
-     * 通过设备编码或mxc地址查找设备
+     * 通过设备编码或mac地址查找设备
      */
-    DeviceInfo selectByCodeOrMxc(@org.apache.ibatis.annotations.Param("deviceCode") String deviceCode, @org.apache.ibatis.annotations.Param("mxcAddr") String mxcAddr);
+    DeviceInfo selectByCodeOrMac(@org.apache.ibatis.annotations.Param("deviceCode") String deviceCode, @org.apache.ibatis.annotations.Param("macAddr") String macAddr);
 }

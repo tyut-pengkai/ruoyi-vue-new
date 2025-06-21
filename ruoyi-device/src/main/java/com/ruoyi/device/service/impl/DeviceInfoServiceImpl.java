@@ -104,8 +104,8 @@ public class DeviceInfoServiceImpl implements IDeviceInfoService
     }
 
     @Override
-    public DeviceInfo selectByCodeOrMxc(String deviceCode, String mxcAddr) {
-        return deviceInfoMapper.selectByCodeOrMxc(deviceCode, mxcAddr);
+    public DeviceInfo selectByCodeOrMac(String deviceCode, String macAddr) {
+        return deviceInfoMapper.selectByCodeOrMac(deviceCode, macAddr);
     }
 
     @Override
@@ -118,8 +118,8 @@ public class DeviceInfoServiceImpl implements IDeviceInfoService
         StringBuilder failureMsg = new StringBuilder();
         for (DeviceInfo device : deviceList) {
             try {
-                // 仅用mxc_addr唯一性校验
-                DeviceInfo exist = deviceInfoMapper.selectByCodeOrMxc(null, device.getMxcAddr());
+                // 仅用mac_addr唯一性校验
+                DeviceInfo exist = deviceInfoMapper.selectByCodeOrMac(null, device.getMacAddr());
                 if (exist == null) {
                     device.setCreateBy(operName);
                     deviceInfoMapper.insertDeviceInfo(device);

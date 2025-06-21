@@ -17,10 +17,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="mxc地址" prop="mxcAddr">
+      <el-form-item label="mac地址" prop="macAddr">
         <el-input
-          v-model="queryParams.mxcAddr"
-          placeholder="请输入mxc地址"
+          v-model="queryParams.macAddr"
+          placeholder="请输入mac地址"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -118,7 +118,8 @@
       <el-table-column v-if="isAdmin" label="设备id" align="center" prop="deviceId" />
       <el-table-column label="设备编码" align="center" prop="deviceCode" />
       <el-table-column label="设备名称" align="center" prop="deviceName" />
-      <el-table-column label="mxc地址" align="center" prop="mxcAddr" />
+      <el-table-column label="mac地址" align="center" prop="macAddr" />
+      <el-table-column label="当前音色" align="center" prop="agentName" />
       <el-table-column label="IP地址" align="center" prop="ipAddr" />
       <el-table-column label="所属区域" align="center" prop="area" />
       <el-table-column label="在线状态" align="center" prop="onlineStatus" />
@@ -147,6 +148,13 @@
             icon="el-icon-unlock"
             @click="handleUnbind(scope.row)"
           >解绑</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-microphone"
+            @click="handleChooseAgent(scope.row)"
+            v-hasPermi="['device:info:chooseAgent']"
+          >选择音色</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -168,8 +176,8 @@
         <el-form-item label="设备名称" prop="deviceName">
           <el-input v-model="form.deviceName" placeholder="请输入设备名称" />
         </el-form-item>
-        <el-form-item label="mxc地址" prop="mxcAddr">
-          <el-input v-model="form.mxcAddr" placeholder="请输入mxc地址" />
+        <el-form-item label="mac地址" prop="macAddr">
+          <el-input v-model="form.macAddr" placeholder="请输入mac地址" />
         </el-form-item>
         <el-form-item label="IP地址" prop="ipAddr">
           <el-input v-model="form.ipAddr" placeholder="请输入IP地址" />
@@ -192,8 +200,8 @@
 
     <el-dialog title="绑定设备" :visible.sync="bindDeviceDialogVisible" width="400px">
       <el-form :model="bindDeviceForm" label-width="120px">
-        <el-form-item label="设备编码或mxc地址">
-          <el-input v-model="bindDeviceForm.deviceMxcCode" placeholder="请输入设备编码或mxc地址"></el-input>
+        <el-form-item label="设备编码或mac地址">
+          <el-input v-model="bindDeviceForm.deviceMacCode" placeholder="请输入设备编码或mac地址"></el-input>
           <div style="color: #f56c6c; font-size: 12px; margin-top: 0px;">设备编码请查看设备背面的一串数字.</div>
 
         </el-form-item>
@@ -232,11 +240,36 @@
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 选择音色对话框 -->
+    <el-dialog :title="chooseAgent.title" :visible.sync="chooseAgent.open" width="600px" append-to-body>
+      <el-table ref="agentTable" :data="agentList" @current-change="handleCurrentAgentChange" highlight-current-row :show-header="false">
+        <el-table-column width="55">
+          <template slot-scope="scope">
+              <el-radio :label="scope.row.agentId" v-model="chooseAgent.selectedAgentId">&nbsp;</el-radio>
+          </template>
+        </el-table-column>
+        <el-table-column>
+          <template slot-scope="scope">
+            <span>{{ scope.row.agentName.replace(/^\d+\s*/, '') }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div v-if="chooseAgent.currentAgentDescription" class="description-box">
+          <h4 v-if="chooseAgent.currentAgentName">{{ chooseAgent.currentAgentName }}介绍</h4>
+          <p>{{ chooseAgent.currentAgentDescription }}</p>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitAgentChoice">确 定</el-button>
+        <el-button @click="cancelAgentChoice">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { listInfo, getInfo, delInfo, addInfo, updateInfo, bindDeviceToUser, unbindDeviceToUser } from "@/api/device/info"
+import { listInfo, getInfo, delInfo, addInfo, updateInfo, bindDeviceToUser, unbindDeviceToUser, bindAgent } from "@/api/device/info"
+import { listInfo as listAgent } from "@/api/agent/info"
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 
@@ -268,7 +301,7 @@ export default {
         pageSize: 10,
         deviceCode: null,
         deviceName: null,
-        mxcAddr: null,
+        macAddr: null,
         ipAddr: null,
         area: null,
         onlineStatus: null,
@@ -285,10 +318,13 @@ export default {
         deviceName: [
           { required: true, message: "设备名称不能为空", trigger: "blur" }
         ],
+        macAddr: [
+          { required: true, message: "mac地址不能为空", trigger: "blur" }
+        ]
       },
       bindDeviceDialogVisible: false,
       bindDeviceForm: {
-        deviceMxcCode: ''
+        deviceMacCode: ''
       },
       isAdmin: false,
       upload: {
@@ -299,6 +335,17 @@ export default {
         headers: { Authorization: "Bearer " + getToken() },
         updateSupport: false
       },
+      // 音色选择对话框
+      chooseAgent: {
+        open: false,
+        title: "选择音色",
+        currentDeviceId: null,
+        selectedAgentId: null,
+        currentAgentName: null,
+        currentAgentDescription: null,
+      },
+      // 智能体列表
+      agentList: [],
     }
   },
   created() {
@@ -321,13 +368,21 @@ export default {
       this.open = false
       this.reset()
     },
+    // 取消选择音色
+    cancelAgentChoice() {
+      this.chooseAgent.open = false;
+      this.chooseAgent.currentDeviceId = null;
+      this.chooseAgent.selectedAgentId = null;
+      this.chooseAgent.currentAgentDescription = null;
+      this.chooseAgent.currentAgentName = null;
+    },
     // 表单重置
     reset() {
       this.form = {
         deviceId: null,
         deviceCode: null,
         deviceName: null,
-        mxcAddr: null,
+        macAddr: null,
         ipAddr: null,
         area: null,
         onlineStatus: null,
@@ -338,6 +393,7 @@ export default {
         updateTime: null
       }
       this.resetForm("form")
+      this.getList()
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -408,23 +464,22 @@ export default {
       }, `info_${new Date().getTime()}.xlsx`)
     },
     openBindDeviceDialog() {
-      this.bindDeviceForm.deviceMxcCode = '';
       this.bindDeviceDialogVisible = true;
+      this.bindDeviceForm.deviceMacCode = '';
     },
     handleBindDevice() {
-      if (!this.bindDeviceForm.deviceMxcCode ) {
-        this.$message.error('请填写设备编码或mxc地址');
+      if (!this.bindDeviceForm.deviceMacCode) {
+        this.$message.error("请填写设备编码或mac地址");
         return;
       }
-      bindDeviceToUser({ deviceMxcCode: this.bindDeviceForm.deviceMxcCode }).then(res => {
-        this.$message.success('绑定成功');
-        this.bindDeviceDialogVisible = false;
+      bindDeviceToUser({ deviceMacCode: this.bindDeviceForm.deviceMacCode }).then(res => {
+        this.$message.success("绑定成功");
         this.getList();
-      }).catch(err => {
+        this.bindDeviceDialogVisible = false;
       });
     },
     handleUnbind(row) {
-      this.$confirm('确定要解绑该设备吗？', '提示', {
+      this.$confirm('确定要解绑设备"' + row.deviceName + '"吗?', "警告", {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -459,6 +514,69 @@ export default {
       this.$message.success(response.msg);
       this.getList();
     },
+    // 处理音色单选
+    handleCurrentAgentChange(currentRow) {
+      if (currentRow) {
+        this.chooseAgent.selectedAgentId = currentRow.agentId;
+        this.chooseAgent.currentAgentName = currentRow.agentName.replace(/^\d+\s*/, '');
+        this.chooseAgent.currentAgentDescription = currentRow.agentDesc;
+      } else {
+        this.chooseAgent.currentAgentName = null;
+        this.chooseAgent.currentAgentDescription = null;
+      }
+    },
+    /** 选择音色按钮操作 */
+    handleChooseAgent(row) {
+      this.chooseAgent.currentDeviceId = row.deviceId;
+      this.chooseAgent.selectedAgentId = row.agentId;
+      this.chooseAgent.currentAgentName = null;
+      this.chooseAgent.currentAgentDescription = null;
+      // 获取可选的智能体列表
+      listAgent({ pageNum: 1, pageSize: 999 }).then(response => {
+        this.agentList = response.rows;
+        if(this.chooseAgent.selectedAgentId) {
+            const selectedAgent = this.agentList.find(agent => agent.agentId === this.chooseAgent.selectedAgentId);
+            if(selectedAgent) {
+                this.chooseAgent.currentAgentName = selectedAgent.agentName.replace(/^\d+\s*/, '');
+                this.chooseAgent.currentAgentDescription = selectedAgent.agentDesc;
+            }
+        }
+        this.chooseAgent.open = true;
+      });
+    },
+    /** 提交音色选择 */
+    submitAgentChoice() {
+      if (!this.chooseAgent.selectedAgentId) {
+        this.$modal.msgError("请选择一个音色");
+        return;
+      }
+      const data = {
+        deviceId: this.chooseAgent.currentDeviceId,
+        agentId: this.chooseAgent.selectedAgentId
+      };
+      bindAgent(data).then(response => {
+        this.$modal.msgSuccess("绑定成功");
+        this.cancelAgentChoice();
+        this.getList();
+      });
+    },
   }
 }
 </script>
+
+<style scoped>
+.description-box {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #e2e2e2;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+.description-box h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+.description-box p {
+  margin-bottom: 0;
+}
+</style>

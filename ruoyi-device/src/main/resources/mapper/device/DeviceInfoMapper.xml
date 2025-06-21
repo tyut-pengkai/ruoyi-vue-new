@@ -8,7 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="deviceId"    column="device_id"    />
         <result property="deviceCode"    column="device_code"    />
         <result property="deviceName"    column="device_name"    />
-        <result property="mxcAddr"    column="mxc_addr"    />
+        <result property="macAddr"    column="mac_addr"    />
         <result property="ipAddr"    column="ip_addr"    />
         <result property="area"    column="area"    />
         <result property="onlineStatus"    column="online_status"    />
@@ -17,11 +17,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="del_flag"    />
         <result property="createTime"    column="create_time"    />
         <result property="updateTime"    column="update_time"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
     </resultMap>
 
     <sql id="selectDeviceInfoVo">
-        select di.device_id, di.device_code, di.device_name, di.mxc_addr, di.ip_addr, di.area, di.online_status, di.ota_version, di.status, di.del_flag, di.create_time, di.update_time 
+        select di.device_id, di.device_code, di.device_name, di.mac_addr, di.ip_addr, di.area, di.online_status, di.ota_version, di.status, di.del_flag, di.create_time, di.update_time, ad.agent_id, ai.agent_name 
         from device_info di
+        left join agent_device ad on di.device_id = ad.device_id
+        left join agent_info ai on ad.agent_id = ai.agent_id
     </sql>
 
     <select id="selectDeviceInfoList" parameterType="DeviceInfo" resultMap="DeviceInfoResult">
@@ -29,7 +33,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="deviceCode != null  and deviceCode != ''"> and device_code = #{deviceCode}</if>
             <if test="deviceName != null  and deviceName != ''"> and device_name like concat('%', #{deviceName}, '%')</if>
-            <if test="mxcAddr != null  and mxcAddr != ''"> and mxc_addr = #{mxcAddr}</if>
+            <if test="macAddr != null  and macAddr != ''"> and mac_addr = #{macAddr}</if>
             <if test="ipAddr != null  and ipAddr != ''"> and ip_addr = #{ipAddr}</if>
             <if test="area != null  and area != ''"> and area = #{area}</if>
             <if test="onlineStatus != null  and onlineStatus != ''"> and online_status = #{onlineStatus}</if>
@@ -40,7 +44,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectDeviceInfoByDeviceId" parameterType="Long" resultMap="DeviceInfoResult">
         <include refid="selectDeviceInfoVo"/>
-        where device_id = #{deviceId}
+        where di.device_id = #{deviceId}
     </select>
 
     <insert id="insertDeviceInfo" parameterType="DeviceInfo" useGeneratedKeys="true" keyProperty="deviceId">
@@ -48,7 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="deviceCode != null and deviceCode != ''">device_code,</if>
             <if test="deviceName != null and deviceName != ''">device_name,</if>
-            <if test="mxcAddr != null and mxcAddr != ''">mxc_addr,</if>
+            <if test="macAddr != null and macAddr != ''">mac_addr,</if>
             <if test="ipAddr != null">ip_addr,</if>
             <if test="area != null">area,</if>
             <if test="onlineStatus != null">online_status,</if>
@@ -61,7 +65,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="deviceCode != null and deviceCode != ''">#{deviceCode},</if>
             <if test="deviceName != null and deviceName != ''">#{deviceName},</if>
-            <if test="mxcAddr != null and mxcAddr != ''">#{mxcAddr},</if>
+            <if test="macAddr != null and macAddr != ''">#{macAddr},</if>
             <if test="ipAddr != null">#{ipAddr},</if>
             <if test="area != null">#{area},</if>
             <if test="onlineStatus != null">#{onlineStatus},</if>
@@ -78,7 +82,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="deviceCode != null and deviceCode != ''">device_code = #{deviceCode},</if>
             <if test="deviceName != null and deviceName != ''">device_name = #{deviceName},</if>
-            <if test="mxcAddr != null and mxcAddr != ''">mxc_addr = #{mxcAddr},</if>
+            <if test="macAddr != null and macAddr != ''">mac_addr = #{macAddr},</if>
             <if test="ipAddr != null">ip_addr = #{ipAddr},</if>
             <if test="area != null">area = #{area},</if>
             <if test="onlineStatus != null">online_status = #{onlineStatus},</if>
@@ -109,7 +113,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             du.user_id = #{userId}
             <if test="deviceInfo.deviceCode != null and deviceInfo.deviceCode != ''"> and di.device_code = #{deviceInfo.deviceCode}</if>
             <if test="deviceInfo.deviceName != null and deviceInfo.deviceName != ''"> and di.device_name like concat('%', #{deviceInfo.deviceName}, '%')</if>
-            <if test="deviceInfo.mxcAddr != null and deviceInfo.mxcAddr != ''"> and di.mxc_addr = #{deviceInfo.mxcAddr}</if>
+            <if test="deviceInfo.macAddr != null and deviceInfo.macAddr != ''"> and di.mac_addr = #{deviceInfo.macAddr}</if>
             <if test="deviceInfo.ipAddr != null and deviceInfo.ipAddr != ''"> and di.ip_addr = #{deviceInfo.ipAddr}</if>
             <if test="deviceInfo.area != null and deviceInfo.area != ''"> and di.area = #{deviceInfo.area}</if>
             <if test="deviceInfo.onlineStatus != null and deviceInfo.onlineStatus != ''"> and di.online_status = #{deviceInfo.onlineStatus}</if>
@@ -118,10 +122,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
 
-    <select id="selectByCodeOrMxc" resultMap="DeviceInfoResult">
+    <select id="selectByCodeOrMac" resultMap="DeviceInfoResult">
         select * from device_info
         where (device_code = #{deviceCode} and #{deviceCode} is not null and #{deviceCode} != '')
-           or (mxc_addr = #{mxcAddr} and #{mxcAddr} is not null and #{mxcAddr} != '')
+           or (mac_addr = #{macAddr} and #{macAddr} is not null and #{macAddr} != '')
         limit 1
     </select>
 </mapper>

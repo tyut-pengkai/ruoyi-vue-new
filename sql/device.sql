@@ -6,7 +6,7 @@ create table device_info (
    device_id        bigint(20)        not null auto_increment  comment '设备id'
   ,device_code      varchar(100)      not null                 comment '设备编码'
   ,device_name      varchar(200)      not null                 comment '设备名称'
-  ,mxc_addr         varchar(100)      not null                 comment 'mxc地址'
+  ,mac_addr         varchar(100)      not null                 comment 'mac地址'
   ,ip_addr          varchar(100)      default null             comment 'IP地址'
   ,area             varchar(100)      default null             comment '所属区域'
   ,online_status    char(1)           default 1                comment '在线状态（0线上 1下线）'
@@ -16,7 +16,7 @@ create table device_info (
   ,create_time 	    TIMESTAMP        DEFAULT CURRENT_TIMESTAMP                                        comment '创建时间'
   ,update_time      TIMESTAMP        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP            comment '更新时间'
   ,primary key (device_id)
-  ,UNIQUE INDEX idx_uni_mxc_addr (mxc_addr)
+  ,UNIQUE INDEX idx_uni_mac_addr (mac_addr)
   ,UNIQUE INDEX idx_uni_device_code (device_code)
 ) engine=innodb auto_increment=200 comment = '设备信息';
 

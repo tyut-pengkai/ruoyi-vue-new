@@ -1,6 +1,9 @@
 package com.ruoyi.device.service.impl;
 
 import java.util.List;
+
+import com.ruoyi.agent.domain.AgentDevice;
+import com.ruoyi.agent.service.IAgentDeviceService;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,9 @@ public class DeviceUserServiceImpl implements IDeviceUserService
 {
     @Autowired
     private DeviceUserMapper deviceUserMapper;
+
+    @Autowired
+    private IAgentDeviceService agentDeviceService;
 
     /**
      * 查询用户设备关联
@@ -102,11 +108,30 @@ public class DeviceUserServiceImpl implements IDeviceUserService
             // 已被绑定
             return -1;
         }
-        return deviceUserMapper.insertDeviceUser(userId, deviceId);
+
+        // 绑定设备到用户
+        int result = deviceUserMapper.insertDeviceUser(userId, deviceId);
+        if (result > 0) {
+            // 绑定默认的智能体
+            AgentDevice agentDevice = new AgentDevice();
+            agentDevice.setAgentId(1001L);
+            agentDevice.setDeviceId(deviceId);
+            agentDeviceService.insertAgentDevice(agentDevice);
+        }
+
+        return result;
     }
 
     @Override
     public int unbindDeviceFromUser(Long userId, Long deviceId) {
-        return deviceUserMapper.deleteByUserIdAndDeviceId(userId, deviceId);
+
+        // 解绑设备
+        int result = deviceUserMapper.deleteByUserIdAndDeviceId(userId, deviceId);
+
+        if (result > 0) {
+            // 同时解绑设备上关联的智能体
+            agentDeviceService.deleteAgentDeviceByDeviceId(deviceId);
+        }
+        return result;
     }
 }
