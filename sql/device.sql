@@ -1,5 +1,5 @@
--- ----------------------------
--- 设备信息表 20250618
+-- ---------------------------- 20250622
+-- 设备信息表 
 -- ----------------------------
 drop table if exists device_info;
 create table device_info (
@@ -21,61 +21,9 @@ create table device_info (
 ) engine=innodb auto_increment=200 comment = '设备信息';
 
 
--- 设备管理 菜单
-INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) 
-VALUES (5, '设备管理', 0, 5, 'device', NULL, '', '', 1, 0, 'M', '0', '0', '', 'tool', 'admin', sysdate(), '', NULL, '设备管理目录');
-
-
--- 设备信息
-insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('设备信息', '5', '1', 'info', 'device/info/index', 1, 0, 'C', '0', '0', 'device:info:list', '#', 'admin', sysdate(), '', null, '设备信息菜单');
-
--- 按钮父菜单ID
-SELECT @parentId := LAST_INSERT_ID();
-
--- 按钮 SQL
-insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('设备信息查询', @parentId, '1',  '#', '', 1, 0, 'F', '0', '0', 'device:info:query',        '#', 'admin', sysdate(), '', null, '');
-
-insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('设备信息新增', @parentId, '2',  '#', '', 1, 0, 'F', '0', '0', 'device:info:add',          '#', 'admin', sysdate(), '', null, '');
-
-insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('设备信息修改', @parentId, '3',  '#', '', 1, 0, 'F', '0', '0', 'device:info:edit',         '#', 'admin', sysdate(), '', null, '');
-
-insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('设备信息删除', @parentId, '4',  '#', '', 1, 0, 'F', '0', '0', 'device:info:remove',       '#', 'admin', sysdate(), '', null, '');
-
-insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('设备信息导出', @parentId, '5',  '#', '', 1, 0, 'F', '0', '0', 'device:info:export',       '#', 'admin', sysdate(), '', null, '');
-
--- 绑定与解绑
-INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) 
-VALUES (2006, '添加绑定设备', 2000, 6, '', NULL, NULL, '', 1, 0, 'F', '0', '0', 'device:info:bindToUser', '#', 'admin', sysdate(), '', NULL, '');
-INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) 
-VALUES (2008, '解绑', 2000, 7, '', NULL, NULL, '', 1, 0, 'F', '0', '0', 'device:info:unbindToUser', '#', 'admin', sysdate(), '', NULL, '');
-
--- 设备导入
-INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) 
-VALUES (2009, '导入', 2000, 8, '', NULL, NULL, '', 1, 0, 'F', '0', '0', 'device:info:import', '#', 'admin', '2025-06-19 18:12:49', '', NULL, '');
-
-
--- 初始化注册用户角色
-INSERT INTO `sys_role`(`role_id`, `role_name`, `role_key`, `role_sort`, `data_scope`, `menu_check_strictly`, `dept_check_strictly`, `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) 
-VALUES (100, '普通注册用户角色', 'common_register', 3, '1', 1, 1, '0', '0', 'admin',  sysdate(), '', NULL, NULL);
-
-
--- 初始化注册用户角色 的菜单权限
-INSERT INTO `sys_role_menu`(`role_id`, `menu_id`) VALUES (3, 5);
-INSERT INTO `sys_role_menu`(`role_id`, `menu_id`) VALUES (3, 2000);
-INSERT INTO `sys_role_menu`(`role_id`, `menu_id`) VALUES (3, 2001);
-INSERT INTO `sys_role_menu`(`role_id`, `menu_id`) VALUES (3, 2006);
-INSERT INTO `sys_role_menu`(`role_id`, `menu_id`) VALUES (3, 2008);
-
-
 
 -- ----------------------------
--- 用户设备关联表 20250618
+-- 用户设备关联表  
 -- ----------------------------
 drop table if exists device_user;
 create table device_user (
@@ -86,5 +34,18 @@ create table device_user (
   ,primary key (device_id)
 ) engine=innodb auto_increment=200 comment = '用户设备关联表';
 
+
+--------------- 设备菜单  
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (5   , '设备管理'      , 0   , 5, 'device', NULL               , ''  , '', 1, 0, 'M', '0', '0', ''                        , 'tool', 'admin', sysdate(), '', sysdate(), '设备管理目录');
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2000, '设备信息'      , 5   , 1, 'info'  , 'device/info/index', NULL, '', 1, 0, 'C', '0', '0', 'device:info:list'        , '#'   , 'admin', sysdate(), '', sysdate(), '设备信息菜单');
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2001, '设备信息查询'  , 2000, 1, '#'     , ''                 , NULL, '', 1, 0, 'F', '0', '0', 'device:info:query'       , '#'   , 'admin', sysdate(), '', sysdate(), '');
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2002, '设备信息新增'  , 2000, 2, '#'     , ''                 , NULL, '', 1, 0, 'F', '0', '0', 'device:info:add'         , '#'   , 'admin', sysdate(), '', sysdate(), '');
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2003, '设备信息修改'  , 2000, 3, '#'     , ''                 , NULL, '', 1, 0, 'F', '0', '0', 'device:info:edit'        , '#'   , 'admin', sysdate(), '', sysdate(), '');
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2004, '设备信息删除'  , 2000, 4, '#'     , ''                 , NULL, '', 1, 0, 'F', '0', '0', 'device:info:remove'      , '#'   , 'admin', sysdate(), '', sysdate(), '');
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2005, '设备信息导出'  , 2000, 5, '#'     , ''                 , NULL, '', 1, 0, 'F', '0', '0', 'device:info:export'      , '#'   , 'admin', sysdate(), '', sysdate(), '');
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2006, '添加绑定设备'  , 2000, 6, ''      , NULL               , NULL, '', 1, 0, 'F', '0', '0', 'device:info:bindToUser'  , '#'   , 'admin', sysdate(), '', sysdate(), '');
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2008, '解绑'          , 2000, 7, ''      , NULL               , NULL, '', 1, 0, 'F', '0', '0', 'device:info:unbindToUser', '#'   , 'admin', sysdate(), '', sysdate(), '');
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2009, '导入'          , 2000, 8, ''      , NULL               , NULL, '', 1, 0, 'F', '0', '0', 'device:info:import'      , '#'   , 'admin', sysdate(), '', sysdate(), '');
+INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2023, '选择音色'      , 2000, 9, '#'     , NULL               , NULL, '', 1, 0, 'F', '0', '0', 'device:info:chooseAgent' , '#'   , 'admin', sysdate(), '', sysdate(), '');
 
 
