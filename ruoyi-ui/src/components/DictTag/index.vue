@@ -1,28 +1,29 @@
 <template>
   <div>
-    <template v-for="(item, index) in options">
-      <template v-if="values.includes(item.value)">
+    <template v-for="(valueItem, number) in values">
+      <template v-for="item in matchedOptions(valueItem)">
+        <template v-if="number < limit">
         <span
           v-if="(item.raw.listClass == 'default' || item.raw.listClass == '') && (item.raw.cssClass == '' || item.raw.cssClass == null)"
-          :key="item.value"
-          :index="index"
           :class="item.raw.cssClass"
-          >{{ item.label + ' ' }}</span
-        >
-        <el-tag
-          v-else
-          :disable-transitions="true"
-          :key="item.value"
-          :index="index"
-          :type="item.raw.listClass == 'primary' ? '' : item.raw.listClass"
-          :class="item.raw.cssClass"
-        >
-          {{ item.label + ' ' }}
-        </el-tag>
+        >{{ item.label + ' ' }}</span>
+          <el-tag v-else
+                  :disable-transitions="true"
+                  :type="item.raw.listClass == 'primary' ? '' : item.raw.listClass"
+                  :class="item.raw.cssClass"
+          >
+            {{ item.label + ' ' }}
+          </el-tag>
+        </template>
       </template>
     </template>
     <template v-if="unmatch && showValue">
       {{ unmatchArray | handleArray }}
+    </template>
+    <template v-if="values.length > limit">
+      <el-tooltip class="item" effect="dark" :content="moreText" placement="top">
+        <span>...</span>
+      </el-tooltip>
     </template>
   </div>
 </template>
@@ -36,6 +37,11 @@ export default {
       default: null,
     },
     value: [Number, String, Array],
+    // 最大显示数量
+    limit: {
+      type: Number,
+      default: Number.MAX_VALUE,
+    },
     // 当未找到匹配的数据时，显示value
     showValue: {
       type: Boolean,
@@ -49,36 +55,70 @@ export default {
   data() {
     return {
       unmatchArray: [], // 记录未匹配的项
+      valueMap: null // 字典Map集合
     }
   },
   computed: {
     values() {
       if (this.value === null || typeof this.value === 'undefined' || this.value === '') return []
-      return Array.isArray(this.value) ? this.value.map(item => '' + item) : String(this.value).split(this.separator)
+      const result = Array.isArray(this.value) ?
+        this.value.map(item => String(item)) :
+        String(this.value).split(this.separator)
+      this.valueMap = new Map(this.options
+        .filter(option => typeof option.value !== 'undefined')
+        .map(option => [String(option.value), option]))
+      return result
     },
     unmatch() {
-      this.unmatchArray = []
-      // 没有value不显示
-      if (this.value === null || typeof this.value === 'undefined' || this.value === '' || this.options.length === 0) return false
-      // 传入值为数组
-      let unmatch = false // 添加一个标志来判断是否有未匹配项
+      const unmatchArray = []
+      let unmatch = false
+
+      if (this.value === null || typeof this.value === 'undefined' ||
+        this.value === '' || this.options.length === 0) {
+        return false
+      }
+
       this.values.forEach(item => {
-        if (!this.options.some(v => v.value === item)) {
-          this.unmatchArray.push(item)
-          unmatch = true // 如果有未匹配项，将标志设置为true
+        if (!this.valueMap.has(item)) {
+          if (unmatchArray.length < this.limit) {
+            unmatchArray.push(item)
+            unmatch = true
+          }
         }
       })
-      return unmatch // 返回标志的值
-    },
 
+      this.unmatchArray = unmatchArray
+      return unmatch
+    },
+    moreText() {
+      if (this.value === null || typeof this.value === 'undefined' ||
+        this.value === '' || this.options.length === 0) {
+        return ''
+      }
+
+      const matchText = this.values
+        .map(value => this.valueMap.get(value))
+        .filter(Boolean)
+        .map(option => option.label)
+        .join(' ')
+
+      const unmatchText = this.values
+        .filter(value => !this.valueMap.has(value))
+        .join(' ')
+
+      return `${matchText} ${unmatchText}`
+    }
   },
   filters: {
     handleArray(array) {
-      if (array.length === 0) return ''
-      return array.reduce((pre, cur) => {
-        return pre + ' ' + cur
-      })
-    },
+      return array.length === 0 ? '' : array.join(' ')
+    }
+  },
+  methods: {
+    matchedOptions(valueItem) {
+      const valueStr = String(valueItem)
+      return this.options.filter(item => String(item.value) === valueStr)
+    }
   }
 }
 </script>
