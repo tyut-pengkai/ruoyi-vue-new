@@ -34,6 +34,13 @@ public class AdvertRoundController extends XktBaseController {
     final IAdvertRoundService advertRoundService;
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "获取当前系统时间", httpMethod = "GET", response = R.class)
+    @GetMapping("/sys-time")
+    public R<Long> sysTime() {
+        return R.ok(System.currentTimeMillis());
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口购买推广营销", httpMethod = "POST", response = R.class)
     @Log(title = "档口购买推广营销", businessType = BusinessType.INSERT)
     @PostMapping
@@ -47,6 +54,29 @@ public class AdvertRoundController extends XktBaseController {
     public R<AdRoundStoreResVO> getStoreAdInfo(@PathVariable("advertId") Long advertId, @PathVariable("storeId") Long storeId, @PathVariable("showType") Integer showType) {
         return R.ok(BeanUtil.toBean(advertRoundService.getStoreAdInfo(storeId, advertId, showType), AdRoundStoreResVO.class));
     }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "获取当前推广所有轮次", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/rounds/{storeId}/{typeId}")
+    public R<List<AdRoundTypeRoundResVO>> getTypeRoundList(@PathVariable("storeId") Long storeId, @PathVariable("typeId") Long typeId) {
+        return R.ok(BeanUtil.copyToList(advertRoundService.getTypeRoundList(storeId, typeId), AdRoundTypeRoundResVO.class));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "获取位置枚举的推广位当前轮次购买情况", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/position-bought/{typeId}/{roundId}/{storeId}")
+    public R<List<AdRoundTypeRoundBoughtResVO>> getTypeRoundBoughtInfo(@PathVariable("roundId") Long roundId, @PathVariable("storeId") Long storeId,
+                                                                       @PathVariable("typeId") Long typeId) {
+        return R.ok(BeanUtil.copyToList(advertRoundService.getTypeRoundBoughtInfo(storeId, typeId, roundId), AdRoundTypeRoundBoughtResVO.class));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "当前档口已购推广列表", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/bought-record/{storeId}")
+    public R<List<AdRoundStoreBoughtResVO>> getStoreBoughtRecord(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.copyToList(advertRoundService.getStoreBoughtRecord(storeId), AdRoundStoreBoughtResVO.class));
+    }
+
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取当前最新的出价及设置的商品", httpMethod = "POST", response = R.class)

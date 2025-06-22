@@ -34,7 +34,6 @@ public interface IAdvertRoundService {
 
     /**
      * 初始化每天购买广告的截止时间
-     *
      */
     void saveAdvertDeadlineToRedis();
 
@@ -113,4 +112,30 @@ public interface IAdvertRoundService {
      */
     String getRejectReason(Long advertRoundId);
 
+    /**
+     * 获取推广类型所有轮次
+     *
+     * @param storeId 档口ID
+     * @param typeId  推广类型ID
+     * @return List<AdTypeRoundResDTO>
+     */
+    List<AdRoundTypeRoundResDTO> getTypeRoundList(Long storeId, Long typeId);
+
+    /**
+     * 位置枚举的推广位档口购买情况
+     *
+     * @param storeId 档口ID
+     * @param typeId  类型ID
+     * @param roundId 轮次ID
+     * @return List<AdTypeRoundBoughtResDTO>
+     */
+    List<AdRoundTypeRoundBoughtResDTO> getTypeRoundBoughtInfo(Long storeId, Long typeId, Long roundId);
+
+    /**
+     * 档口购买推广轮次列表
+     *
+     * @param storeId 档口ID
+     * @return List<AdRoundStoreBoughtResDTO>
+     */
+    List<AdRoundStoreBoughtResDTO> getStoreBoughtRecord(Long storeId);
 }
