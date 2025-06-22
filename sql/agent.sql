@@ -1,4 +1,4 @@
-----------------------------智能体信息 20250622
+-- --------------------------智能体信息 20250622
 
 -- ----------------------------
 -- 智能体信息表  
@@ -44,7 +44,7 @@ create table agent_device (
 ) engine=innodb auto_increment=200 comment = '智能体设备关联表';
 
 
--------------------------------------智能体 菜单
+-- -----------------------------------智能体 菜单
 INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (6   , '智能体管理'    , 0   , 6, 'agent' , NULL               , NULL, '', 1, 0, 'M', '0', '0', NULL                      , 'tool', 'admin', sysdate(), '', sysdate(), '智能体管理目录');
 INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2017, '智能体信息'    , 6   , 1, 'info'  , 'agent/info/index' , NULL, '', 1, 0, 'C', '0', '0', 'agent:info:list'         , '#'   , 'admin', sysdate(), '', sysdate(), '智能体信息菜单');
 INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2018, '智能体信息查询', 2017, 1, '#'     , ''                 , NULL, '', 1, 0, 'F', '0', '0', 'agent:info:query'        , '#'   , 'admin', sysdate(), '', sysdate(), '');

@@ -35,7 +35,7 @@ create table device_user (
 ) engine=innodb auto_increment=200 comment = '用户设备关联表';
 
 
---------------- 设备菜单  
+-- ------------- 设备菜单  
 INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (5   , '设备管理'      , 0   , 5, 'device', NULL               , ''  , '', 1, 0, 'M', '0', '0', ''                        , 'tool', 'admin', sysdate(), '', sysdate(), '设备管理目录');
 INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2000, '设备信息'      , 5   , 1, 'info'  , 'device/info/index', NULL, '', 1, 0, 'C', '0', '0', 'device:info:list'        , '#'   , 'admin', sysdate(), '', sysdate(), '设备信息菜单');
 INSERT INTO `sys_menu`(`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2001, '设备信息查询'  , 2000, 1, '#'     , ''                 , NULL, '', 1, 0, 'F', '0', '0', 'device:info:query'       , '#'   , 'admin', sysdate(), '', sysdate(), '');

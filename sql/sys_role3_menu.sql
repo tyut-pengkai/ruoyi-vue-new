@@ -1,5 +1,5 @@
 
---------------------------------注册用户角色3 的权限 20250622
+-- ------------------------------注册用户角色3 的权限 20250622
 
 -- 初始化注册用户角色
 INSERT INTO `sys_role`(`role_id`, `role_name`, `role_key`, `role_sort`, `data_scope`, `menu_check_strictly`, `dept_check_strictly`, `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) 
