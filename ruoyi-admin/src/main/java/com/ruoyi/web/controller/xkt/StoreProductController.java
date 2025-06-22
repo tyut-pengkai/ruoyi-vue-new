@@ -56,7 +56,7 @@ public class StoreProductController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryResPicList(storeId, prodArtNum), StoreProdFuzzyResPicVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "推广营销（新品馆）模糊查询最新30天上新商品", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy/latest30")
     public R<List<StoreProdFuzzyLatest30ResVO>> fuzzyQueryLatest30List(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
@@ -64,7 +64,7 @@ public class StoreProductController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryLatest30List(storeId, prodArtNum), StoreProdFuzzyLatest30ResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询档口商品列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreProdPageResDTO>> page(@Validated @RequestBody StoreProdPageVO pageVO) {
@@ -96,7 +96,7 @@ public class StoreProductController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeProdService.getSkuList(storeProdId), StoreProdSkuResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "档口商品", businessType = BusinessType.INSERT)
     @ApiOperation(value = "新增档口商品", httpMethod = "POST", response = R.class)
     @PostMapping
@@ -104,7 +104,7 @@ public class StoreProductController extends XktBaseController {
         return R.ok(storeProdService.insertStoreProduct(BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "修改档口商品", httpMethod = "PUT", response = R.class)
     @Log(title = "档口商品", businessType = BusinessType.UPDATE)
     @PutMapping("/{storeProdId}")
@@ -112,7 +112,7 @@ public class StoreProductController extends XktBaseController {
         return R.ok(storeProdService.updateStoreProduct(storeProdId, BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "修改档口商品状态", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "修改档口商品状态", httpMethod = "PUT", response = R.class)
     @PutMapping("/prod-status")
@@ -120,7 +120,7 @@ public class StoreProductController extends XktBaseController {
         return R.ok(storeProdService.updateStoreProductStatus(BeanUtil.toBean(prodStatusVO, StoreProdStatusDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "删除商品", businessType = BusinessType.DELETE)
     @ApiOperation(value = "删除商品", httpMethod = "DELETE", response = R.class)
     @DeleteMapping()
@@ -128,7 +128,7 @@ public class StoreProductController extends XktBaseController {
         return R.ok(storeProdService.batchDelete(BeanUtil.toBean(deleteVO, StoreProdDeleteDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取档口图片空间", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/pic-space")
     public R<StoreProdPicSpaceResVO> getStoreProductPicSpace(@Validated @RequestBody StoreProdPicSpaceVO picSpaceVO) {

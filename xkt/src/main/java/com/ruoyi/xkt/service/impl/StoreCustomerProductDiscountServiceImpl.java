@@ -54,7 +54,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
     @Transactional
     public Integer updateStoreCusProdDiscount(StoreCusProdDiscountDTO cusProdDisDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(cusProdDisDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(cusProdDisDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(new LambdaQueryWrapper<StoreCustomer>()
@@ -103,7 +103,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
     @Transactional
     public Integer batchDiscount(StoreCusProdBatchDiscountDTO batchDiscDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(batchDiscDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(batchDiscDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         // 获取当前客户已有优惠列表
@@ -160,7 +160,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
     @Transactional(readOnly = true)
     public Page<StoreCusProdDiscPageResDTO> selectPage(StoreCusProdDiscPageDTO pageDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
@@ -178,7 +178,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
     @Transactional(readOnly = true)
     public List<StoreCusProdDiscExistResDTO> discountExist(StoreCusProdDiscExistDTO existDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(existDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(existDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         List<StoreCustomerProductDiscount> discountList = this.cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()

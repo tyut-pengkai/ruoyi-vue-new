@@ -47,7 +47,7 @@ public class StoreSaleRefundRecordServiceImpl implements IStoreSaleRefundRecordS
     @Transactional(readOnly = true)
     public List<StoreSaleRefundRecordDTO> selectList(Long storeId, Long storeSaleId) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         List<StoreSaleRefundRecord> refundRecordList = this.refundRecordMapper.selectList(new LambdaQueryWrapper<StoreSaleRefundRecord>()

@@ -36,7 +36,7 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
 
     final IStoreCustomerProductDiscountService storeCusProdDiscService;
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "销售出库时，新增或修改档口客户优惠（全店商品优惠）", httpMethod = "PUT", response = R.class)
     @Log(title = "销售出库时，新增或修改档口客户优惠（全店商品优惠）", businessType = BusinessType.UPDATE)
     @PutMapping("/all-prod-discount")
@@ -44,7 +44,7 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
         return R.ok(storeCusProdDiscService.updateStoreCusProdDiscount(BeanUtil.toBean(cusProdDisVO, StoreCusProdDiscountDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "客户销售管理 批量减价、批量抹零减价、新增客户定价优惠", httpMethod = "PUT", response = R.class)
     @Log(title = "客户销售管理 批量减价、批量抹零减价、新增客户定价优惠", businessType = BusinessType.UPDATE)
     @PutMapping("/batch")
@@ -52,14 +52,14 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
         return R.ok(storeCusProdDiscService.batchDiscount(BeanUtil.toBean(batchDiscVO, StoreCusProdBatchDiscountDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询客户销售管理列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreCusProdDiscPageResDTO>> selectPage(@Validated @RequestBody StoreCusProdDiscPageVO pageVO) {
         return R.ok(storeCusProdDiscService.selectPage(BeanUtil.toBean(pageVO, StoreCusProdDiscPageDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "新增客户销售定价时，根据入参查询是否已存在优惠", httpMethod = "POST", response = R.class)
     @PostMapping("/exists")
     public R<List<StoreCusProdDiscExistResDTO>> discountExist(@Validated @RequestBody StoreCusProdDiscExistVO existVO) {

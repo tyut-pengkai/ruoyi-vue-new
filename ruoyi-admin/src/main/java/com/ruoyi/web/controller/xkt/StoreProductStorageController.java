@@ -41,7 +41,7 @@ public class StoreProductStorageController extends XktBaseController {
 
     final IStoreProductStorageService storeProdStorageService;
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "新增档口商品入库", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口商品入库", businessType = BusinessType.INSERT)
     @PostMapping
@@ -49,21 +49,21 @@ public class StoreProductStorageController extends XktBaseController {
         return R.ok(storeProdStorageService.create(BeanUtil.toBean(storeProdStorageVO, StoreProdStorageDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询档口商品入库列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreProdStoragePageResDTO>> page(@Validated @RequestBody StoreProdStoragePageVO pageVO) {
         return R.ok(storeProdStorageService.page(BeanUtil.toBean(pageVO, StoreProdStoragePageDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取档口商品入库详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeProdStorageId}")
     public R<StoreProdStorageResVO> getInfo(@PathVariable("storeProdStorageId") Long storeProdStorageId) {
         return R.ok(BeanUtil.toBean(storeProdStorageService.selectByStoreProdStorageId(storeProdStorageId), StoreProdStorageResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "撤销档口商品入库", httpMethod = "DELETE", response = R.class)
     @Log(title = "撤销档口商品入库", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeProdStorageId}")

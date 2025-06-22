@@ -32,7 +32,7 @@ public class AdvertRoundRecordController extends XktBaseController {
 
     final IAdvertRoundRecordService advertRoundRecordService;
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取档口竞价失败列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<AdvertRoundRecordPageResDTO>> page(@Validated @RequestBody AdvertRoundRecordPageVO pageVO) {

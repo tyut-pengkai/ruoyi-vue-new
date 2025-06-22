@@ -43,7 +43,7 @@ public class StoreCustomerController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(storeCusService.fuzzyQueryList(storeId, cusName), StoreCusFuzzyResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "新增档口客户", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口客户", businessType = BusinessType.INSERT)
     @PostMapping
@@ -51,7 +51,7 @@ public class StoreCustomerController extends XktBaseController {
         return R.ok(storeCusService.create(BeanUtil.toBean(storeCusVO, StoreCusDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "修改档口客户", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口客户", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -59,7 +59,7 @@ public class StoreCustomerController extends XktBaseController {
         return R.ok(storeCusService.updateStoreCus(BeanUtil.toBean(storeCusVO, StoreCusDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "删除档口客户", httpMethod = "DELETE", response = R.class)
     @Log(title = "删除档口客户", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeCusId}")
@@ -74,7 +74,7 @@ public class StoreCustomerController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeCusService.selectByStoreCusId(storeCusId), StoreCusVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询档口客户列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreCusPageResDTO>> selectPage(@Validated @RequestBody StoreCusPageVO pageVO) {

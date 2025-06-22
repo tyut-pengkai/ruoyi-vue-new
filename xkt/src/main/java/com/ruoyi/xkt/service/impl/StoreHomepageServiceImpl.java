@@ -63,7 +63,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     @Transactional
     public Integer insert(Long storeId, Integer templateNum, StoreHomeDecorationDTO homepageDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         List<StoreHomepage> homepageList = this.insertToHomepage(storeId, homepageDTO);
@@ -89,7 +89,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     @Transactional(readOnly = true)
     public StoreHomeDecorationResDTO selectByStoreId(Long storeId) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
@@ -153,7 +153,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     @Transactional
     public Integer updateStoreHomepage(Long storeId, Integer templateNum, StoreHomeDecorationDTO homepageDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         // 先将所有的档口模板的文件都删除掉

@@ -93,11 +93,11 @@ public enum AdType {
     // APP首页热卖推荐 轮播商品
     APP_HOME_HOT_RECOMMEND_FIXED_PROD(503, "APP首页热卖推荐固定轮播商品"),
     // APP首页热卖推荐 商品列表
-    APP_HOME_HOT_RECOMMEND_PROD(504, "APP首页热卖推荐"),
+    APP_HOME_HOT_RECOMMEND_PROD(504, "APP首页热卖推荐商品列表"),
     // APP首页人气榜 商品列表
-    APP_HOME_POP_RECOMMEND_PROD(505, "APP首页人气榜"),
+    APP_HOME_POP_RECOMMEND_PROD(505, "APP首页人气榜商品列表"),
     // APP首页新品榜 商品列表
-    APP_HOME_NEW_PROD_RECOMMEND_PROD(506, "APP首页新品榜"),
+    APP_HOME_NEW_PROD_RECOMMEND_PROD(506, "APP首页新品榜商品列表"),
     // APP搜索结果
     APP_SEARCH_RESULT(507, "APP搜索结果"),
 

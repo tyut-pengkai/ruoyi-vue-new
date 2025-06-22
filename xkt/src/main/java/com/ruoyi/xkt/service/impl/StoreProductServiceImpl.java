@@ -147,7 +147,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional(readOnly = true)
     public StoreProdPicSpaceResDTO getStoreProductPicSpace(StoreProdPicSpaceDTO spaceDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(spaceDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(spaceDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>().eq(StoreProduct::getId, spaceDTO.getStoreId())
@@ -186,7 +186,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional(readOnly = true)
     public Page<StoreProdPageResDTO> page(StoreProdPageDTO pageDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
@@ -229,7 +229,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // TODO 富文本标签过滤
 
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(storeProdDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeProdDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         // 组装StoreProduct数据
@@ -446,7 +446,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional
     public Integer updateStoreProductStatus(StoreProdStatusDTO prodStatusDTO) throws IOException {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(prodStatusDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(prodStatusDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         // 判断商品状态是否不存在
@@ -473,7 +473,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional
     public Integer batchDelete(StoreProdDeleteDTO deleteDTO) throws IOException {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(deleteDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(deleteDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
@@ -504,7 +504,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional(readOnly = true)
     public List<StoreProdFuzzyLatest30ResDTO> fuzzyQueryLatest30List(Long storeId, String prodArtNum) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         LocalDateTime daysAgo = LocalDateTime.now().minusDays(30).withHour(0).withMinute(0).withSecond(0);

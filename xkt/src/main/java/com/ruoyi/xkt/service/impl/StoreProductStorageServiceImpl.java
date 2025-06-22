@@ -66,7 +66,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
     @Transactional(readOnly = true)
     public Page<StoreProdStoragePageResDTO> page(StoreProdStoragePageDTO pageDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
@@ -84,7 +84,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
     @Transactional
     public int create(StoreProdStorageDTO storeProdStorageDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(storeProdStorageDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeProdStorageDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         // 生成code
@@ -168,7 +168,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
                         .eq(StoreProductStorage::getId, storeProdStorageId).eq(StoreProductStorage::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品入库不存在!", HttpStatus.ERROR));
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(storage.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storage.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         // 档口商品入库明细
@@ -199,7 +199,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
                         .eq(StoreProductStorage::getId, storeProdStorageId).eq(StoreProductStorage::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品入库不存在!", HttpStatus.ERROR));
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(storage.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storage.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         storage.setDelFlag(Constants.DELETED);

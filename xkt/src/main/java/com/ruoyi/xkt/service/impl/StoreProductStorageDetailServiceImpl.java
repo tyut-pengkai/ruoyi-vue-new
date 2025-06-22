@@ -37,7 +37,7 @@ public class StoreProductStorageDetailServiceImpl implements IStoreProductStorag
     @Transactional(readOnly = true)
     public List<StoreStorageDetailDownloadDTO> export(StoreStorageExportDTO exportDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(exportDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(exportDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         if (CollectionUtils.isNotEmpty(exportDTO.getStoreProdStorageIdList())) {

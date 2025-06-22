@@ -52,7 +52,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     @Transactional(readOnly = true)
     public Page<StoreProdStockPageResDTO> selectPage(StoreProdStockPageDTO pageDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
@@ -98,7 +98,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     @Transactional(readOnly = true)
     public StoreProdStockAndDiscountResDTO getStockAndCusDiscount(StoreProdStockAndDiscountDTO dto) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(dto.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(dto.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         StoreProductStock stock = this.storeProdStockMapper.selectOne(new LambdaQueryWrapper<StoreProductStock>()
@@ -144,7 +144,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     @Transactional
     public Integer checkAndUpdateStock(Long storeId, StoreProdCheckStockDTO checkStockDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         List<StoreProductStock> stockList = Optional.ofNullable(this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
@@ -216,7 +216,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     @Transactional(readOnly = true)
     public List<StoreProdStockDownloadDTO> export(StoreProdStockExportDTO exportDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(exportDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(exportDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         // 导出勾选
@@ -290,7 +290,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     @Transactional
     public int clearStockToZero(StoreProdStockClearZeroDTO clearZeroDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(clearZeroDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(clearZeroDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         List<StoreProductStock> stockList = Optional.ofNullable(this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
@@ -315,7 +315,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     @Transactional
     public int updateStock(Long storeId, List<StoreProdStockDTO> updateStockList, Integer multiplierFactor) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         List<StoreProductStock> stockList = Optional.ofNullable(this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()

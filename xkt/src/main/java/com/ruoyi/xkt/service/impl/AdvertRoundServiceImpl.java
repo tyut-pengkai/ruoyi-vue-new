@@ -164,7 +164,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             throw new ServiceException("当前推广位非位置枚举，不可调用该接口!", HttpStatus.ERROR);
         }
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(advertRound.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(advertRound.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         if (StringUtils.isEmpty(advertRound.getProdIdStr())) {
@@ -189,7 +189,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Transactional(readOnly = true)
     public AdRoundStoreResDTO getStoreAdInfo(final Long storeId, final Long advertId, final Integer showType) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         final LocalTime now = LocalTime.now();
@@ -221,9 +221,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         final Date firstRoundEndTime = advertRoundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.PLAY_ROUND.getValue()))
                 .max(Comparator.comparing(AdvertRound::getEndTime))
                 .orElseThrow(() -> new ServiceException("获取推广结束时间失败，请联系客服!", HttpStatus.ERROR)).getEndTime();
-        // 如果当前非第一轮最后一天，则展示前4轮；如果当前是第一轮最后一天，则展示第2到第5轮。
+        // 如果当前非第一轮最后一天，则展示前3轮；如果当前是第一轮最后一天，则展示第2到第4轮。
         advertRoundList = voucherDate.before(firstRoundEndTime)
-                ? advertRoundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.FIFTH_ROUND.getValue())).collect(Collectors.toList())
+                ? advertRoundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.FOURTH_ROUND.getValue())).collect(Collectors.toList())
                 : advertRoundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())).collect(Collectors.toList());
         // 如果投放类型是：时间范围，则只需要返回每一轮的开始时间和结束时间；如果投放类型是：位置枚举，则需要返回每一个位置的详细情况
         if (Objects.equals(showType, AdShowType.TIME_RANGE.getValue())) {
@@ -358,7 +358,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             throw new ServiceException("当前推广类型position：不传!", HttpStatus.ERROR);
         }
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(createDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(createDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         // 当前营销推广位的锁
@@ -437,7 +437,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Transactional(readOnly = true)
     public Page<AdvertRoundStorePageResDTO> page(AdvertRoundStorePageDTO pageDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
@@ -498,7 +498,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Transactional
     public Integer unsubscribe(Long storeId, Long advertRoundId) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(storeId)) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
@@ -605,7 +605,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Transactional
     public Integer updateAdvert(AdRoundUpdateDTO picDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(picDTO.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(picDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
@@ -662,7 +662,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                         .eq(AdvertRound::getPicAuditStatus, AdPicAuditStatus.AUDIT_REJECTED.getValue())))
                 .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isStoreManagerOrSub(advertRound.getStoreId())) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(advertRound.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         return advertRound.getRejectReason();

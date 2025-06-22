@@ -28,7 +28,7 @@ public class StoreProductStorageDemandDeductController extends XktBaseController
 
     final IStoreProductStorageDemandDeducteService prodStorageDemandDeductService;
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "入库单列表获取抵扣需求明细", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}/{storageCode}")
     public R<StoreProdStorageDemandDeductVO> getStorageDemandDeductList(@PathVariable("storeId") Long storeId, @PathVariable("storageCode") String storageCode) {

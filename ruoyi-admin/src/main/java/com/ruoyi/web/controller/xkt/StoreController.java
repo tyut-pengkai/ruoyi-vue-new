@@ -49,7 +49,7 @@ public class StoreController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(storeService.fuzzyQuery(storeName), StoreNameResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "修改档口基本信息", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口基本信息", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -112,35 +112,35 @@ public class StoreController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeService.getAdvertStoreInfo(storeId), StoreAdvertResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @ApiOperation(value = "获取档口首页 数据概览 ", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/index/overview")
     public R<StoreIndexOverviewResVO> indexOverview(@Validated @RequestBody StoreOverviewVO overviewVO) {
         return R.ok(BeanUtil.toBean(storeService.indexOverview(BeanUtil.toBean(overviewVO, StoreOverviewDTO.class)), StoreIndexOverviewResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @ApiOperation(value = "获取档口首页 销售额 ", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/index/sale-revenue")
     public R<List<StoreIndexSaleRevenueResVO>> indexSaleRevenue(@Validated @RequestBody StoreSaleRevenueVO revenueVO) {
         return R.ok(BeanUtil.copyToList(storeService.indexSaleRevenue(BeanUtil.toBean(revenueVO, StoreSaleRevenueDTO.class)), StoreIndexSaleRevenueResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @ApiOperation(value = "获取档口首页 今日销售额 ", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/index/today/sale-revenue/{storeId}")
     public R<StoreIndexTodaySaleResVO> indexTodaySaleRevenue(@PathVariable Long storeId) {
         return R.ok(BeanUtil.toBean(storeService.indexTodaySaleRevenue(storeId), StoreIndexTodaySaleResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @ApiOperation(value = "获取档口首页 商品销售额前10 ", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/index/sale/top10")
     public R<List<StoreIndexSaleTop10ResVO>> indexTop10Sale(@Validated @RequestBody StoreSaleTop10VO saleTop10VO) {
         return R.ok(BeanUtil.copyToList(storeService.indexTop10Sale(BeanUtil.toBean(saleTop10VO, StoreSaleTop10DTO.class)), StoreIndexSaleTop10ResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @ApiOperation(value = "获取档口首页 客户销售榜前10 ", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/index/sale-cus/top10")
     public R<List<StoreIndexCusSaleTop10ResVO>> indexTop10SaleCus(@Validated @RequestBody StoreSaleCustomerTop10VO saleCusTop10VO) {

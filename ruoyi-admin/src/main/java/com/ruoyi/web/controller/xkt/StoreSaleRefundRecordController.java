@@ -31,7 +31,7 @@ public class StoreSaleRefundRecordController extends XktBaseController {
 
     final IStoreSaleRefundRecordService storeSaleRefundRecordService;
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询档口销售出库返单记录", httpMethod = "POST", response = R.class)
     @GetMapping("/list/{storeId}/{storeSaleId}")
     public R<List<StoreSaleRefundRecordVO>> selectPage(@PathVariable("storeId") Long storeId, @PathVariable("storeSaleId") Long storeSaleId) {

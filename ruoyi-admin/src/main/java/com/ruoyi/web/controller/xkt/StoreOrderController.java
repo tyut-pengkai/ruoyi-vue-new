@@ -144,7 +144,7 @@ public class StoreOrderController extends XktBaseController {
         return success(PageVO.of(pageDTO, StoreOrderPageItemVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("发货-平台物流")
     @PostMapping("ship/platform")
@@ -161,7 +161,7 @@ public class StoreOrderController extends XktBaseController {
         return success(respList);
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("发货-档口物流")
     @PostMapping("ship/store")
@@ -178,7 +178,7 @@ public class StoreOrderController extends XktBaseController {
         return success(respList);
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("打印面单")
     @PostMapping("ship/print")
@@ -240,7 +240,7 @@ public class StoreOrderController extends XktBaseController {
         return success(afterSaleApplyResult.getStoreOrderId());
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("确认退款")
     @PostMapping("refund/confirm")
@@ -272,7 +272,7 @@ public class StoreOrderController extends XktBaseController {
         return success();
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("拒绝退款")
     @PostMapping("refund/reject")

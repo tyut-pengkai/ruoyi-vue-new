@@ -31,7 +31,7 @@ public class StoreHomepageController extends XktBaseController {
 
     final IStoreHomepageService storeHomeService;
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "新增档口装修数据", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口装修数据", businessType = BusinessType.INSERT)
     @PostMapping("/decoration/{storeId}/{templateNum}")
@@ -40,14 +40,14 @@ public class StoreHomepageController extends XktBaseController {
         return R.ok(storeHomeService.insert(storeId, templateNum, BeanUtil.toBean(decorationVO, StoreHomeDecorationDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询档口装修数据", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/decoration/{storeId}")
     public R<StoreHomeDecorationVO> getDecorationInfo(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeHomeService.selectByStoreId(storeId), StoreHomeDecorationVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "修改档口装修数据", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口装修数据", businessType = BusinessType.UPDATE)
     @PutMapping("/decoration/{storeId}/{templateNum}")

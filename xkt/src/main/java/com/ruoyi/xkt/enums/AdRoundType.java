@@ -22,8 +22,6 @@ public enum AdRoundType {
     THIRD_ROUND(3, "第三轮"),
     // 第四轮
     FOURTH_ROUND(4, "第四轮"),
-    // 第五轮
-    FIFTH_ROUND(5, "第五轮"),
 
 
     ;
