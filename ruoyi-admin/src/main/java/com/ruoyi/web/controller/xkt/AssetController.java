@@ -22,6 +22,7 @@ import com.ruoyi.xkt.service.IAssetService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +42,7 @@ public class AssetController extends XktBaseController {
     @Autowired
     private FsNotice fsNotice;
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口资产")
     @GetMapping(value = "store/current")
     public R<AssetInfoVO> getCurrentStoreAsset() {
@@ -48,6 +50,7 @@ public class AssetController extends XktBaseController {
         return success(BeanUtil.toBean(dto, AssetInfoVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @ApiOperation(value = "卖家资产")
     @GetMapping(value = "user/current")
     public R<AssetInfoVO> getCurrentUserAsset() {
@@ -55,6 +58,7 @@ public class AssetController extends XktBaseController {
         return success(BeanUtil.toBean(dto, AssetInfoVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store,seller')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "发送短信验证码（资产相关功能）")
     @PostMapping("/sendSmsVerificationCode")
     public R sendSmsVerificationCode(@Validated @RequestBody PhoneNumberVO vo) {
@@ -62,6 +66,7 @@ public class AssetController extends XktBaseController {
         return R.ok();
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口绑定支付宝")
     @PostMapping(value = "store/alipay/bind")
     public R<AssetInfoVO> bindStoreAlipay(@Validated @RequestBody AlipayStoreBindVO vo) {
@@ -71,6 +76,7 @@ public class AssetController extends XktBaseController {
         return success(BeanUtil.toBean(assetService.bindAlipay(dto), AssetInfoVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @ApiOperation(value = "卖家绑定支付宝")
     @PostMapping(value = "user/alipay/bind")
     public R<AssetInfoVO> bindUserAlipay(@Validated @RequestBody AlipayUserBindVO vo) {
@@ -80,6 +86,7 @@ public class AssetController extends XktBaseController {
         return success(BeanUtil.toBean(assetService.bindAlipay(dto), AssetInfoVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口设置交易密码")
     @PostMapping(value = "store/transaction-password/set")
     public R<AssetInfoVO> setTransactionPassword(@Validated @RequestBody TransactionPasswordSetVO vo) {
@@ -88,6 +95,7 @@ public class AssetController extends XktBaseController {
         return success(BeanUtil.toBean(assetService.setTransactionPassword(dto), AssetInfoVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口支付宝提现")
     @PostMapping(value = "store/alipay/withdraw")
     public R withdrawByAlipay(@Validated @RequestBody WithdrawReqVO vo) {
@@ -106,6 +114,7 @@ public class AssetController extends XktBaseController {
         return success();
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口交易明细")
     @PostMapping("store/trans-detail/page")
     public R<PageVO<TransDetailStorePageItemVO>> pageStoreTransDetail(@Validated @RequestBody BasePageVO vo) {
@@ -115,6 +124,7 @@ public class AssetController extends XktBaseController {
         return success(PageVO.of(pageDTO, TransDetailStorePageItemVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @ApiOperation(value = "卖家交易明细")
     @PostMapping("user/trans-detail/page")
     public R<PageVO<TransDetailUserPageItemVO>> pageUserTransDetail(@Validated @RequestBody BasePageVO vo) {
@@ -124,6 +134,7 @@ public class AssetController extends XktBaseController {
         return success(PageVO.of(pageDTO, TransDetailUserPageItemVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口充值")
     @PostMapping(value = "store/recharge")
     public R<StoreRechargeRespVO> rechargeByStore(@Validated @RequestBody StoreRechargeReqVO vo) {
@@ -137,6 +148,7 @@ public class AssetController extends XktBaseController {
                 result.getPayRtnStr()));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口充值结果")
     @PostMapping(value = "store/recharge/result")
     public R<StoreRechargeResultRespVO> getRechargeResult(@Validated @RequestBody StoreRechargeResultReqVO vo) {

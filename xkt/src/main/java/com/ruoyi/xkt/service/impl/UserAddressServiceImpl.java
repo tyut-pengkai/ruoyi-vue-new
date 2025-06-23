@@ -7,6 +7,7 @@ import cn.hutool.core.lang.Assert;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.XktBaseEntity;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.domain.UserAddress;
 import com.ruoyi.xkt.dto.express.ExpressStructAddressDTO;
 import com.ruoyi.xkt.dto.express.UserAddressInfoDTO;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -146,5 +148,16 @@ public class UserAddressServiceImpl implements IUserAddressService {
         userAddress.setVersion(origin.getVersion());
         userAddress.setDelFlag(Constants.DELETED);
         userAddressMapper.updateById(userAddress);
+    }
+
+    @Override
+    public void checkOwner(Long id, Long userId) {
+        UserAddress ua = userAddressMapper.selectById(id);
+        if (ua == null) {
+            return;
+        }
+        if (!Objects.equals(ua.getUserId(), userId)) {
+            throw new ServiceException("无权操作");
+        }
     }
 }

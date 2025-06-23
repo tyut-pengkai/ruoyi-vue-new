@@ -21,8 +21,8 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
-@RestController
-@RequestMapping("/rest/v1/user-accs")
+//@RestController
+//@RequestMapping("/rest/v1/user-accs")
 public class UserAccountController extends XktBaseController {
     @Autowired
     private IUserAccountService userAccountService;

@@ -1323,6 +1323,34 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         return storeOrderRefunds;
     }
 
+    @Override
+    public void checkOrderUser(Long storeOrderId, Long userId) {
+        StoreOrder order = storeOrderMapper.selectById(storeOrderId);
+        Assert.notNull(order, "订单不存在");
+        if (!Objects.equals(userId, order.getOrderUserId())) {
+            throw new ServiceException(CharSequenceUtil.format("无订单[{}]权限", order.getId()));
+        }
+    }
+
+    @Override
+    public void checkOrderStore(Long storeOrderId, Long storeId) {
+        StoreOrder order = storeOrderMapper.selectById(storeOrderId);
+        Assert.notNull(order, "订单不存在");
+        if (!Objects.equals(storeId, order.getStoreId())) {
+            throw new ServiceException(CharSequenceUtil.format("无订单[{}]权限", order.getId()));
+        }
+    }
+
+    @Override
+    public void checkOrderStore(Collection<Long> storeOrderDetailIds, Long storeId) {
+        Assert.notEmpty(storeOrderDetailIds);
+        Set<Long> storeOrderIds = storeOrderDetailMapper.selectByIds(storeOrderDetailIds)
+                .stream()
+                .map(StoreOrderDetail::getStoreOrderId)
+                .collect(Collectors.toSet());
+        storeOrderIds.forEach(id -> checkOrderStore(id, storeId));
+    }
+
     /**
      * 添加操作记录
      *

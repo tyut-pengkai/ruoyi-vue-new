@@ -57,4 +57,12 @@ public interface IUserAddressService {
      * @param id
      */
     void deleteUserAddress(Long id);
+
+    /**
+     * 校验地址归属
+     *
+     * @param id
+     * @param userId
+     */
+    void checkOwner(Long id, Long userId);
 }

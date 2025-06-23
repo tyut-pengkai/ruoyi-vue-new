@@ -13,6 +13,7 @@ import com.ruoyi.xkt.service.IUserAddressService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,6 +32,7 @@ public class UserAddressController extends XktBaseController {
     @Autowired
     private IUserAddressService userAddressService;
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @ApiOperation("创建用户收货地址")
     @PostMapping("create")
     public R<UserAddressInfoVO> create(@Valid @RequestBody UserAddressCreateVO vo) {
@@ -39,37 +41,44 @@ public class UserAddressController extends XktBaseController {
         return success(BeanUtil.toBean(userAddressService.createUserAddress(dto), UserAddressInfoVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @ApiOperation("修改用户收货地址")
     @PostMapping("edit")
     public R<UserAddressInfoVO> edit(@Valid @RequestBody UserAddressModifyVO vo) {
         UserAddressInfoDTO dto = BeanUtil.toBean(vo, UserAddressInfoDTO.class);
         dto.setUserId(SecurityUtils.getUserId());
-        //TODO 非本人不允许修改
+        userAddressService.checkOwner(dto.getId(), dto.getUserId());
         return success(BeanUtil.toBean(userAddressService.modifyUserAddress(dto), UserAddressInfoVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @ApiOperation("复制用户收货地址")
     @PostMapping("copy")
     public R<UserAddressInfoVO> copy(@Valid @RequestBody IdVO vo) {
+        userAddressService.checkOwner(vo.getId(), SecurityUtils.getUserId());
         UserAddressInfoDTO dto = userAddressService.copyUserAddress(vo.getId());
         return success(BeanUtil.toBean(dto, UserAddressInfoVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @ApiOperation("删除用户收货地址")
     @PostMapping("delete")
     public R delete(@Valid @RequestBody IdVO vo) {
+        userAddressService.checkOwner(vo.getId(), SecurityUtils.getUserId());
         userAddressService.deleteUserAddress(vo.getId());
         return success();
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @ApiOperation(value = "用户收货地址详情")
     @GetMapping("/{id}")
     public R<UserAddressInfoVO> getInfo(@PathVariable("id") Long id) {
+        userAddressService.checkOwner(id, SecurityUtils.getUserId());
         UserAddressInfoDTO infoDTO = userAddressService.getUserAddress(id);
-        //TODO 非本人不允许查询
         return success(BeanUtil.toBean(infoDTO, UserAddressInfoVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
     @ApiOperation(value = "用户收货地址列表")
     @PostMapping("/list")
     public R<List<UserAddressInfoVO>> list() {

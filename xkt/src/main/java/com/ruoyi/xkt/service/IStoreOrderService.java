@@ -8,6 +8,7 @@ import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -193,4 +194,28 @@ public interface IStoreOrderService {
      * @return
      */
     List<StoreOrderRefund> listNeedContinueRefundOrder(Integer count);
+
+    /**
+     * 订单是否属于用户
+     *
+     * @param storeOrderId
+     * @param userId
+     */
+    void checkOrderUser(Long storeOrderId, Long userId);
+
+    /**
+     * 订单是否属于档口
+     *
+     * @param storeOrderId
+     * @param storeId
+     */
+    void checkOrderStore(Long storeOrderId, Long storeId);
+
+    /**
+     * 订单明细是否属于档口
+     *
+     * @param storeOrderDetailIds
+     * @param storeId
+     */
+    void checkOrderStore(Collection<Long> storeOrderDetailIds, Long storeId);
 }

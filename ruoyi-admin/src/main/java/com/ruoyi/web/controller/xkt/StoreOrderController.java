@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -86,8 +87,9 @@ public class StoreOrderController extends XktBaseController {
     public R<Long> edit(@Valid @RequestBody StoreOrderUpdateReqVO vo) {
         StoreOrderUpdateDTO dto = BeanUtil.toBean(vo, StoreOrderUpdateDTO.class);
         dto.setOrderUserId(SecurityUtils.getUserId());
+        //仅本人可修改
+        storeOrderService.checkOrderUser(dto.getId(), dto.getOrderUserId());
         StoreOrderExt result = storeOrderService.modifyOrder(dto);
-        //TODO 非下单人，不允许修改
         return success(result.getOrder().getId());
     }
 
@@ -96,6 +98,8 @@ public class StoreOrderController extends XktBaseController {
     @ApiOperation("支付订单")
     @PostMapping("pay")
     public R<StoreOrderPayRespVO> pay(@Valid @RequestBody StoreOrderPayReqVO vo) {
+        //仅本人可支付
+        storeOrderService.checkOrderUser(vo.getStoreOrderId(), SecurityUtils.getUserId());
         EPayChannel payChannel = EPayChannel.of(vo.getPayChannel());
         PaymentManager paymentManager = getPaymentManager(payChannel);
         //订单支付状态->支付中
@@ -115,8 +119,9 @@ public class StoreOrderController extends XktBaseController {
                 .storeOrderId(vo.getStoreOrderId())
                 .operatorId(SecurityUtils.getUserId())
                 .build();
+        //仅本人可取消
+        storeOrderService.checkOrderUser(dto.getStoreOrderId(), dto.getOperatorId());
         storeOrderService.cancelOrder(dto);
-        //TODO 非下单人，不允许取消
         return success();
     }
 
@@ -124,8 +129,13 @@ public class StoreOrderController extends XktBaseController {
     @GetMapping(value = "/{id}")
     public R<StoreOrderInfoVO> getInfo(@PathVariable("id") Long id) {
         StoreOrderInfoDTO infoDTO = storeOrderService.getInfo(id);
-        //TODO 非下单人，非所属档口不允许查询
-        return success(BeanUtil.toBean(infoDTO, StoreOrderInfoVO.class));
+        if (SecurityUtils.isAdmin()
+                || Objects.equals(infoDTO.getOrderUserId(), SecurityUtils.getUserId())
+                || Objects.equals(infoDTO.getStoreId(), SecurityUtils.getStoreId())) {
+            return success(BeanUtil.toBean(infoDTO, StoreOrderInfoVO.class));
+        }
+        //没有订单权限
+        return success();
     }
 
 
@@ -138,7 +148,12 @@ public class StoreOrderController extends XktBaseController {
         if (1 == vo.getSrcPage()) {
             queryDTO.setOrderUserId(SecurityUtils.getUserId());
         } else {
-            queryDTO.setStoreId(SecurityUtils.getStoreId());
+            Long storeId = SecurityUtils.getStoreId();
+            if (storeId == null && !SecurityUtils.isAdmin()) {
+                //没有权限
+                return success();
+            }
+            queryDTO.setStoreId(storeId);
         }
         Page<StoreOrderPageItemDTO> pageDTO = storeOrderService.page(queryDTO);
         return success(PageVO.of(pageDTO, StoreOrderPageItemVO.class));
@@ -149,7 +164,10 @@ public class StoreOrderController extends XktBaseController {
     @ApiOperation("发货-平台物流")
     @PostMapping("ship/platform")
     public R<List<StoreOrderShipRespVO>> shipByPlatform(@Valid @RequestBody StoreOrderShipByPlatformReqVO vo) {
-        //TODO 权限
+        if (!SecurityUtils.isAdmin()) {
+            //仅档口可操作
+            storeOrderService.checkOrderStore(vo.getStoreOrderId(), SecurityUtils.getStoreId());
+        }
         StoreOrderExt orderExt = storeOrderService.shipOrderByPlatform(vo.getStoreOrderId(),
                 vo.getStoreOrderDetailIds(), vo.getExpressId(), SecurityUtils.getUserId());
         List<StoreOrderShipRespVO> respList = new ArrayList<>(vo.getStoreOrderDetailIds().size());
@@ -166,7 +184,10 @@ public class StoreOrderController extends XktBaseController {
     @ApiOperation("发货-档口物流")
     @PostMapping("ship/store")
     public R<List<StoreOrderShipRespVO>> shipByStore(@Valid @RequestBody StoreOrderShipByStoreReqVO vo) {
-        //TODO 权限
+        if (!SecurityUtils.isAdmin()) {
+            //仅档口可操作
+            storeOrderService.checkOrderStore(vo.getStoreOrderId(), SecurityUtils.getStoreId());
+        }
         StoreOrderExt orderExt = storeOrderService.shipOrderByStore(vo.getStoreOrderId(),
                 vo.getStoreOrderDetailIds(), vo.getExpressId(), vo.getExpressWaybillNo(), SecurityUtils.getUserId());
         List<StoreOrderShipRespVO> respList = new ArrayList<>(vo.getStoreOrderDetailIds().size());
@@ -183,7 +204,10 @@ public class StoreOrderController extends XktBaseController {
     @ApiOperation("打印面单")
     @PostMapping("ship/print")
     public R<List<StoreOrderPrintRespVO>> print(@Valid @RequestBody StoreOrderPrintReqVO vo) {
-        //TODO 权限
+        if (!SecurityUtils.isAdmin()) {
+            //仅档口可操作
+            storeOrderService.checkOrderStore(vo.getStoreOrderDetailIds(), SecurityUtils.getStoreId());
+        }
         List<ExpressPrintDTO> dtoList = storeOrderService.printOrder(vo.getStoreOrderDetailIds());
         List<StoreOrderPrintRespVO> rtnList = dtoList.stream().map(o -> {
             StoreOrderPrintRespVO rtn = new StoreOrderPrintRespVO();
@@ -199,7 +223,10 @@ public class StoreOrderController extends XktBaseController {
     @ApiOperation("确认收货")
     @PostMapping("receipt")
     public R receipt(@Valid @RequestBody StoreOrderReceiptReqVO vo) {
-        //TODO 权限
+        if (!SecurityUtils.isAdmin()) {
+            //仅档口可操作
+            storeOrderService.checkOrderStore(vo.getStoreOrderId(), SecurityUtils.getStoreId());
+        }
         storeOrderService.receiptOrder(vo.getStoreOrderId(), SecurityUtils.getUserId());
         return success();
     }
@@ -209,7 +236,8 @@ public class StoreOrderController extends XktBaseController {
     @ApiOperation("申请售后（创建售后订单）")
     @PostMapping("refund/apply")
     public R<Long> applyRefund(@Valid @RequestBody StoreOrderAfterSaleReqVO vo) {
-        //TODO 权限
+        //仅本人可操作
+        storeOrderService.checkOrderUser(vo.getStoreOrderId(), SecurityUtils.getUserId());
         StoreOrderAfterSaleDTO dto = BeanUtil.toBean(vo, StoreOrderAfterSaleDTO.class);
         dto.setOperatorId(SecurityUtils.getUserId());
         //创建售后订单
@@ -245,7 +273,10 @@ public class StoreOrderController extends XktBaseController {
     @ApiOperation("确认退款")
     @PostMapping("refund/confirm")
     public R confirmRefund(@Valid @RequestBody StoreOrderRefundConfirmVO vo) {
-        //TODO 权限
+        if (!SecurityUtils.isAdmin()) {
+            //仅档口可操作
+            storeOrderService.checkOrderStore(vo.getStoreOrderId(), SecurityUtils.getStoreId());
+        }
         StoreOrderRefundConfirmDTO dto = BeanUtil.toBean(vo, StoreOrderRefundConfirmDTO.class);
         dto.setOperatorId(SecurityUtils.getUserId());
         //支付宝接口要求：同一笔交易的退款至少间隔3s后发起
@@ -277,7 +308,10 @@ public class StoreOrderController extends XktBaseController {
     @ApiOperation("拒绝退款")
     @PostMapping("refund/reject")
     public R rejectRefund(@Valid @RequestBody StoreOrderRefundRejectVO vo) {
-        //TODO 权限
+        if (!SecurityUtils.isAdmin()) {
+            //仅档口可操作
+            storeOrderService.checkOrderStore(vo.getStoreOrderId(), SecurityUtils.getStoreId());
+        }
         StoreOrderRefundRejectDTO dto = BeanUtil.toBean(vo, StoreOrderRefundRejectDTO.class);
         dto.setOperatorId(SecurityUtils.getUserId());
         storeOrderService.rejectRefundOrder(dto);
