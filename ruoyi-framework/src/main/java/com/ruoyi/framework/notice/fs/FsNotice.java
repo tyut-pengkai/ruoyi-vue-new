@@ -1,10 +1,13 @@
 package com.ruoyi.framework.notice.fs;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.notice.AbstractNotice;
 import com.ruoyi.framework.notice.fs.entity.*;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +35,10 @@ public class FsNotice extends AbstractNotice {
     private String defaultAppSecret;
     @Value("${fs.robot.defaultChatId:oc_4f66ce3cf471f50aac6c3fdae7f0aad9}")
     private String defaultChatId;
+    @Value("${fs.robot.monitorSwitch:true}")
+    private Boolean monitorSwitch;
+    @Value("${fs.robot.monitorChartId:oc_34e207df88addd15d83ec274fda95ef6}")
+    private String monitorChartId;
 
     /**
      * 发送消息给默认会话
@@ -41,6 +48,41 @@ public class FsNotice extends AbstractNotice {
      */
     public void sendMsg2DefaultChat(String title, String content) {
         ThreadUtil.execAsync(() -> sendMsg(title, content, new String[]{defaultChatId}));
+    }
+
+    /**
+     * 发送异常信息给监控群
+     *
+     * @param e
+     */
+    public <T extends Exception> void sendException2MonitorChat(T e) {
+        if (Boolean.TRUE.equals(monitorSwitch)) {
+            ThreadUtil.execAsync(() -> {
+                try {
+                    //内容
+                    FeiShuMsg.ZhCn zhCn = new FeiShuMsg.ZhCn();
+                    List<List<FeiShuMsg.BaseField>> contentFields = new ArrayList<>();
+                    contentFields.add(Collections.singletonList(FeiShuTextField
+                            .createText(CharSequenceUtil.format("主机：{}", IpUtils.getHostIp()))));
+                    contentFields.add(Collections.singletonList(FeiShuTextField
+                            .createText(CharSequenceUtil.format("时间：{}", DateUtil.now()))));
+                    contentFields.add(Collections.singletonList(FeiShuTextField
+                            .createText(CharSequenceUtil.format("异常：{}", e.getClass().getName()))));
+                    contentFields.add(Collections.singletonList(FeiShuTextField
+                            .createText(CharSequenceUtil.format("错误信息：{}", StrUtil.truncateUtf8(e.getMessage(),512)))));
+                    zhCn.setContent(contentFields);
+                    //消息体
+                    FeiShuMsg feiShuMsg = new FeiShuMsg();
+                    feiShuMsg.setChatId(monitorChartId);
+                    feiShuMsg.setMsgType("post");
+                    feiShuMsg.setContent(FeiShuMsg.Content.builder().post(FeiShuMsg.Post.builder().zhCn(zhCn).build()).build());
+                    //发送
+                    httpPost(FEI_SHU_ROBOT_SEND_MSG_URL, createDefaultHeader(), JSON.toJSONString(feiShuMsg));
+                } catch (Exception ex) {
+                    log.error("[FS]发送消息异常", ex);
+                }
+            });
+        }
     }
 
 
