@@ -251,6 +251,13 @@
                 <artifactId>ruoyi-agent</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
+            
+            <!-- 支付模块-->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>ruoyi-payment</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -264,6 +271,7 @@
         <module>ruoyi-common</module>
         <module>ruoyi-device</module>
         <module>ruoyi-agent</module>
+        <module>ruoyi-payment</module>
     </modules>
     <packaging>pom</packaging>
 
