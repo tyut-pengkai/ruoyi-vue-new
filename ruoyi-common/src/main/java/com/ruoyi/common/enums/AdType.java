@@ -16,25 +16,25 @@ import lombok.Getter;
 public enum AdType {
 
     // 顶部横向大图
-    PC_HOME_TOP_LEFT_BANNER(1, "顶部横向大图"),
+    PC_HOME_TOP_LEFT_BANNER(1, "首页顶部横向大图"),
     // 顶部纵向小图
-    PC_HOME_TOP_RIGHT_BANNER(2, "顶部纵向小图"),
+    PC_HOME_TOP_RIGHT_BANNER(2, "首页顶部纵向小图"),
     // 首页销售榜榜一
-    PC_HOME_SALE_RANK_ONE(3, "销售榜榜一"),
+    PC_HOME_SALE_RANK_ONE(3, "首页销售榜榜一"),
     // 首页销售榜榜二
-    PC_HOME_SALE_RANK_TWO(4, "销售榜榜二"),
+    PC_HOME_SALE_RANK_TWO(4, "首页销售榜榜二"),
     // 首页销售榜榜三
-    PC_HOME_SALE_RANK_THREE(5, "销售榜榜三"),
+    PC_HOME_SALE_RANK_THREE(5, "首页销售榜榜三"),
     // 首页销售榜榜四
-    PC_HOME_SALE_RANK_FOUR(6, "销售榜榜四"),
+    PC_HOME_SALE_RANK_FOUR(6, "首页销售榜榜四"),
     // 风格榜
-    PC_HOME_STYLE_RANK(7, "风格榜"),
+    PC_HOME_STYLE_RANK(7, "首页风格榜"),
     // 人气榜左侧大图
-    PC_HOME_POP_LEFT_BANNER(8, "人气榜左大图"),
+    PC_HOME_POP_LEFT_BANNER(8, "首页人气榜左大图"),
     // 人气榜中间图
-    PC_HOME_POP_MID(9, "人气榜中间图"),
+    PC_HOME_POP_MID(9, "首页人气榜中间图"),
     // 人气榜右侧图
-    PC_HOME_POP_RIGHT(10, "人气榜右侧图"),
+    PC_HOME_POP_RIGHT(10, "首页人气榜右侧图"),
 
 
     // 首页档口横幅

@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -225,7 +226,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     Integer durationDay = calculateDurationDay(advertRound.getStartTime(), advertRound.getEndTime(), Boolean.TRUE);
                     AdRoundTypeRoundResDTO typeRoundResDTO = new AdRoundTypeRoundResDTO().setAdvertId(advertRound.getAdvertId()).setRoundId(advertRound.getRoundId())
                             .setSymbol(advertRound.getSymbol()).setStartTime(advertRound.getStartTime()).setEndTime(advertRound.getEndTime())
-                            .setStartWeekDay(getDayOfWeek(advertRound.getStartTime())).setEndWeekDay(getDayOfWeek(advertRound.getEndTime())).setDurationDay(durationDay);
+                            .setStartWeekDay(getDayOfWeek(advertRound.getStartTime())).setEndWeekDay(getDayOfWeek(advertRound.getEndTime()))
+                            .setDurationDay(durationDay).setShowType(advertRound.getShowType()).setPosition(advertRound.getPosition());
                     // 展示类型 为时间范围 则，修改价格并显示每一轮竞价状态
                     if (Objects.equals(advertRound.getShowType(), AdShowType.TIME_RANGE.getValue())) {
                         // 只有时间范围类型才显示起始价格
@@ -824,7 +826,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         // 如果当前档口购买该推广位，且设置商品不为空，则返回设置的商品信息
         if (Objects.equals(advertRound.getStoreId(), latestDTO.getStoreId()) && StringUtils.isNotBlank(advertRound.getProdIdStr())) {
             List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                            .eq(StoreProduct::getId, Arrays.stream(advertRound.getProdIdStr().split(",")))
+                            .in(StoreProduct::getId, StrUtil.split(advertRound.getProdIdStr(), ","))
                             .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, advertRound.getStoreId())))
                     .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
             latestInfo.setProdList(storeProdList.stream().map(x -> new AdRoundLatestResDTO.ARLProdDTO()

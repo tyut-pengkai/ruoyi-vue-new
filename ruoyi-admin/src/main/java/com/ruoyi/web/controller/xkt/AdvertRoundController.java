@@ -43,7 +43,7 @@ public class AdvertRoundController extends XktBaseController {
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口购买推广营销", httpMethod = "POST", response = R.class)
     @Log(title = "档口购买推广营销", businessType = BusinessType.INSERT)
-    @PostMapping
+    @PostMapping("/create")
     public R<Integer> create(@Validated @RequestBody AdRoundStoreCreateVO createVO) {
         return R.ok(advertRoundService.create(BeanUtil.toBean(createVO, AdRoundStoreCreateDTO.class)));
     }
@@ -77,7 +77,6 @@ public class AdvertRoundController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(advertRoundService.getStoreBoughtRecord(storeId), AdRoundStoreBoughtResVO.class));
     }
 
-
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取当前最新的出价及设置的商品", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/latest")
@@ -93,7 +92,7 @@ public class AdvertRoundController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "获取档口已购推广列表", httpMethod = "POST", response = R.class)
+    @ApiOperation(value = "已购推广菜单列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<AdvertRoundStorePageResDTO>> page(@Validated @RequestBody AdvertRoundStorePageVO pageVO) {
         return R.ok(advertRoundService.page(BeanUtil.toBean(pageVO, AdvertRoundStorePageDTO.class)));

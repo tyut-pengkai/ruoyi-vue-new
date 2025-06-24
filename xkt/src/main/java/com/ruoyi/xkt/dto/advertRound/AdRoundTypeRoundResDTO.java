@@ -23,6 +23,10 @@ public class AdRoundTypeRoundResDTO {
     private Long advertId;
     @ApiModelProperty(value = "广告轮次ID")
     private Integer roundId;
+    @ApiModelProperty(value = "展示类型")
+    private Integer showType;
+    @ApiModelProperty(value = "广告位置 A B C D E")
+    private String position;
     @ApiModelProperty(value = "投放开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date startTime;
