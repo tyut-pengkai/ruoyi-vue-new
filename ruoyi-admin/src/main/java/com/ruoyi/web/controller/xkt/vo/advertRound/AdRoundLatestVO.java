@@ -20,16 +20,16 @@ import javax.validation.constraints.NotNull;
 public class AdRoundLatestVO {
 
     @NotNull(message = "档口ID不能为空!")
-    @ApiModelProperty(value = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;
     @NotNull(message = "广告类型ID不能为空!")
-    @ApiModelProperty(value = "广告类型ID")
+    @ApiModelProperty(value = "广告类型ID", required = true)
     private Long advertId;
     @NotNull(message = "播放轮次ID不能为空!")
-    @ApiModelProperty(value = "播放轮次ID")
+    @ApiModelProperty(value = "播放轮次ID", required = true)
     private Integer roundId;
     @NotNull(message = "展示类型不能为空!")
-    @ApiModelProperty(value = "展示类型 时间范围 位置枚举")
+    @ApiModelProperty(value = "展示类型 时间范围 位置枚举", required = true)
     private Integer showType;
     @ApiModelProperty(value = "位置 A B C D E")
     private String position;

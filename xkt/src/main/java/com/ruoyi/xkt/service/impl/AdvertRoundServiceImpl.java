@@ -582,7 +582,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     public Integer create(AdRoundStoreCreateDTO createDTO) {
         // 判断截止时间是否超时，并且只会处理马上播放的这一轮。比如 5.1-5.3，当前为4.30，处理这一轮；当前为5.2，处理这一轮；当前为5.3（最后一天），处理下一轮。
         if (DateUtils.getTime().compareTo(this.getDeadline(createDTO.getSymbol())) > 0) {
-            throw new ServiceException("竞价失败，已经有档口出价更高了噢!", HttpStatus.ERROR);
+            throw new ServiceException("竞价失败，已过系统截止时间!", HttpStatus.ERROR);
         }
         Store store = redisCache.getCacheObject(CacheConstants.STORE_KEY + createDTO.getStoreId());
         if (ObjectUtils.isEmpty(store)) {

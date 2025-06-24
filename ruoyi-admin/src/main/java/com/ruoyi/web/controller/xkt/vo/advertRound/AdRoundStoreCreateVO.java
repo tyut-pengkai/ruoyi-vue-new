@@ -22,31 +22,31 @@ import java.math.BigDecimal;
 public class AdRoundStoreCreateVO {
 
     @NotNull(message = "广告ID不能为空!")
-    @ApiModelProperty(value = "广告ID")
+    @ApiModelProperty(value = "广告ID", required = true)
     private Long advertId;
     @NotNull(message = "广告轮次ID不能为空!")
-    @ApiModelProperty(value = "广告轮次ID")
+    @ApiModelProperty(value = "广告轮次ID", required = true)
     private Long roundId;
     @NotNull(message = "推广展示类型不能为空!")
-    @ApiModelProperty(value = "推广展示类型 时间范围  位置枚举")
+    @ApiModelProperty(value = "推广展示类型", required = true)
     private Integer showType;
     @ApiModelProperty(value = "[不一定传]广告位置 A B C D E")
     private String position;
     @NotNull(message = "推广档口ID不能为空!")
-    @ApiModelProperty(value = "推广档口ID")
+    @ApiModelProperty(value = "推广档口ID", required = true)
     private Long storeId;
     @NotNull(message = "推广档口出价不能为空!")
-    @ApiModelProperty(value = "推广档口出价")
+    @ApiModelProperty(value = "推广档口出价", required = true)
     private BigDecimal payPrice;
     @ApiModelProperty(value = "图片设计（1 自主设计、2 平台设计）")
     private Integer picDesignType;
     @ApiModelProperty(value = "推广商品ID列表")
     private String prodIdStr;
     @NotBlank(message = "对象锁符号不能为空!")
-    @ApiModelProperty(value = "对象锁符号")
+    @ApiModelProperty(value = "对象锁符号", required = true)
     private String symbol;
     @NotBlank(message = "交易密码不能为空!")
-    @ApiModelProperty(value = "交易密码")
+    @ApiModelProperty(value = "交易密码", required = true)
     private String transactionPassword;
 
 }
