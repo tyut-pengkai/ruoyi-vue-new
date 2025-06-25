@@ -74,7 +74,7 @@ spring:
     # 数据库索引
     database: 0
     # 密码
-    password:
+    password: 123456
     # 连接超时时间
     timeout: 10s
     lettuce:
@@ -127,3 +127,9 @@ xss:
   excludes: /system/notice
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*
+
+# 微信小程序配置
+wx:
+  minApp:
+    appId: wx12d9cd451e64a760
+    appSecret: 9094446bb87569958d05c85ce1ea06a8

@@ -51,6 +51,13 @@ public interface ISysUserService
     public SysUser selectUserById(Long userId);
 
     /**
+     * 根据openId查询用户信息
+     * @param openId
+     * @return
+     */
+    public SysUser getUserByOpenId(String openId);
+
+    /**
      * 根据用户ID查询用户所属角色组
      * 
      * @param userName 用户名

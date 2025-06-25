@@ -60,6 +60,8 @@ create table sys_user (
   update_by         varchar(64)     default ''                 comment '更新者',
   update_time       datetime                                   comment '更新时间',
   remark            varchar(500)    default null               comment '备注',
+  open_id            varchar(50)    default null               comment 'open_id',
+  union_id            varchar(50)    default null               comment 'union_id',
   primary key (user_id)
 ) engine=innodb auto_increment=100 comment = '用户信息表';
 

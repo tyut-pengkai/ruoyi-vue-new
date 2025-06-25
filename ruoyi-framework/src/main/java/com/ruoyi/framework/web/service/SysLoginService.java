@@ -1,11 +1,20 @@
 package com.ruoyi.framework.web.service;
 
 import javax.annotation.Resource;
+
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONUtil;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.framework.pojo.dos.WxMiniAppLoginResponseDO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
@@ -28,6 +37,11 @@ import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.security.context.AuthenticationContextHolder;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
+import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
+import com.ruoyi.common.core.domain.model.WxLoginBody;
 
 /**
  * 登录校验方法
@@ -37,6 +51,14 @@ import com.ruoyi.system.service.ISysUserService;
 @Component
 public class SysLoginService
 {
+//    //微信小程序appId
+//    @Value("${wx.minApp.appId}")
+//    private String appId;
+//
+//    //微信小程序密钥
+//    @Value("${wx.minApp.appSecret}")
+//    private String appSecret;
+
     @Autowired
     private TokenService tokenService;
 
@@ -51,6 +73,9 @@ public class SysLoginService
 
     @Autowired
     private ISysConfigService configService;
+
+    @Resource
+    private WxMaService wxMaService;
 
     /**
      * 登录验证
@@ -177,5 +202,71 @@ public class SysLoginService
         sysUser.setLoginIp(IpUtils.getIpAddr());
         sysUser.setLoginDate(DateUtils.getNowDate());
         userService.updateUserProfile(sysUser);
+    }
+
+    /**
+     * 小程序一键登录（含微信昵称头像和手机号）
+     * @param wxLoginBody 微信小程序登录参数对象
+     * @return token
+     */
+    public String miniProgramLogin(WxLoginBody wxLoginBody) {
+        try {
+            // 1. code换session
+            WxMaJscode2SessionResult session = wxMaService.getUserService().getSessionInfo(wxLoginBody.getCode());
+            String openId = session.getOpenid();
+            String unionId = session.getUnionid();
+            String sessionKey = session.getSessionKey();
+
+            // 2. 校验签名
+            boolean check = wxMaService.getUserService().checkUserInfo(sessionKey, wxLoginBody.getRawData(), wxLoginBody.getSignature());
+            if (!check) {
+                throw new ServiceException("微信用户信息签名校验失败");
+            }
+
+            // 3. 解密用户信息（昵称、头像、性别等）
+            WxMaUserInfo wxUserInfo = wxMaService.getUserService().getUserInfo(sessionKey, wxLoginBody.getEncryptedData(), wxLoginBody.getIv());
+            String nickName = wxUserInfo.getNickName();
+            String avatarUrl = wxUserInfo.getAvatarUrl();
+            String gender = wxUserInfo.getGender(); // 0未知 1男 2女
+
+            // 4. 解密手机号
+            String phoneNumber = null;
+            if (wxLoginBody.getPhoneEncryptedData() != null && wxLoginBody.getPhoneIv() != null) {
+                WxMaPhoneNumberInfo phoneInfo = wxMaService.getUserService().getPhoneNoInfo(sessionKey, wxLoginBody.getPhoneEncryptedData(), wxLoginBody.getPhoneIv());
+                if (phoneInfo != null) {
+                    phoneNumber = phoneInfo.getPhoneNumber();
+                }
+            }
+
+            // 5. 查库并保存
+            SysUser user = userService.getUserByOpenId(openId);
+            if (user == null) {
+                user = new SysUser();
+                user.setOpenId(openId);
+                user.setUnionId(unionId);
+                user.setNickName(nickName);
+                user.setAvatar(avatarUrl);
+                user.setSex(gender);
+                user.setPhonenumber(phoneNumber);
+                user.setUserName("微信用户_" + java.util.UUID.randomUUID().toString().replace("-", ""));
+                user.setPassword(SecurityUtils.encryptPassword(configService.selectConfigByKey("sys.user.initPassword")));
+                userService.registerUser(user);
+            } else {
+                user.setUnionId(unionId);
+                user.setNickName(nickName);
+                user.setAvatar(avatarUrl);
+                user.setSex(gender);
+                user.setPhonenumber(phoneNumber);
+                userService.updateUser(user);
+            }
+
+            // 6. 登录并生成token
+            UserDetails userDetail = new UserDetailsServiceImpl().createLoginUser(user);
+            LoginUser loginUser = cn.hutool.core.bean.BeanUtil.copyProperties(userDetail, LoginUser.class);
+            recordLoginInfo(loginUser.getUserId());
+            return tokenService.createToken(loginUser);
+        } catch (Exception e) {
+            throw new ServiceException("小程序登录失败: " + e.getMessage());
+        }
     }
 }

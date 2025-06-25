@@ -3,6 +3,10 @@ package com.ruoyi.web.controller.system;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import com.ruoyi.common.core.domain.model.WxLoginBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -128,4 +132,15 @@ public class SysLoginController
         }
         return false;
     }
+
+    @PostMapping("/wxLogin")
+    public AjaxResult wxLogin(@RequestBody WxLoginBody wxLoginBody)
+    {
+        // 直接调用服务层一键登录
+        String token = loginService.miniProgramLogin(wxLoginBody);
+        AjaxResult ajax = AjaxResult.success();
+        ajax.put(Constants.TOKEN, token);
+        return ajax;
+    }
+
 }
