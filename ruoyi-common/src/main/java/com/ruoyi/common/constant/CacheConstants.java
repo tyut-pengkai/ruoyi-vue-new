@@ -257,5 +257,9 @@ public class CacheConstants {
      * 所有的推广
      */
     public static final String ADVERT_KEY = "advert:";
+    /**
+     * 档口会员
+     */
+    public static final String STORE_MEMBER = "store_member:";
 
 }

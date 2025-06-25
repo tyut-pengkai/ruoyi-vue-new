@@ -30,6 +30,8 @@ public class AdRoundStoreBoughtResDTO {
     private String typeName;
     @ApiModelProperty(value = "推广档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "广告位置类型 时间范围 位置枚举")
+    private Integer displayType;
     @ApiModelProperty(value = "1 时间范围  2位置枚举")
     private Integer showType;
     @ApiModelProperty(value = "投放开始时间")

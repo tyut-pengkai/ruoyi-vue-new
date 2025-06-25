@@ -259,7 +259,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     }
                     resList.add(typeRoundResDTO);
                 });
-        return resList;
+        // 按照roundId升序排
+        return resList.stream().sorted(Comparator.comparing(AdRoundTypeRoundResDTO::getRoundId)).collect(Collectors.toList());
     }
 
     /**
@@ -360,7 +361,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     // 如果是最近的播放轮次，且当前时间在 晚上10:00:01 之后到 当天23:59:59 都显示 biddingTempStatus 字段
                     final Integer biddingStatus = tenClockAfter && roundIdList.contains(x.getRoundId()) ? x.getBiddingTempStatus() : x.getBiddingStatus();
                     return BeanUtil.toBean(x, AdRoundStoreBoughtResDTO.class).setAdvertRoundId(x.getId()).setBiddingStatus(biddingStatus)
-                            .setBiddingStatusName(AdBiddingStatus.of(biddingStatus).getLabel()).setTypeName(AdType.of(x.getTypeId()).getLabel())
+                            // 如果是已出价，则显示 "已出价:50"
+                            .setBiddingStatusName(AdBiddingStatus.of(biddingStatus).getLabel() +
+                                    (Objects.equals(biddingStatus, AdBiddingStatus.BIDDING.getValue()) ? ":" + x.getPayPrice() : ""))
+                            .setTypeName(AdType.of(x.getTypeId()).getLabel())
                             // 如果是时间范围则不返回position
                             .setPosition(Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()) ? null : x.getPosition());
                 })
@@ -408,8 +412,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 boughtRoundList.add(BeanUtil.toBean(record, AdRoundStoreBoughtResDTO.class)
                         .setTypeName(AdType.of(record.getTypeId()).getLabel())
                         .setBiddingStatusName(AdBiddingStatus.of(record.getBiddingStatus()).getLabel()
-                                + "，最新出价:" + positionEnumMaxPriceMap.get(record.getAdvertRoundId()))
-                );
+                                + "，最新出价:" + positionEnumMaxPriceMap.get(record.getAdvertRoundId())));
             });
         }
         return boughtRoundList;
@@ -581,9 +584,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Transactional
     public Integer create(AdRoundStoreCreateDTO createDTO) {
         // 判断截止时间是否超时，并且只会处理马上播放的这一轮。比如 5.1-5.3，当前为4.30，处理这一轮；当前为5.2，处理这一轮；当前为5.3（最后一天），处理下一轮。
-        if (DateUtils.getTime().compareTo(this.getDeadline(createDTO.getSymbol())) > 0) {
+        /*if (DateUtils.getTime().compareTo(this.getDeadline(createDTO.getSymbol())) > 0) {
             throw new ServiceException("竞价失败，已过系统截止时间!", HttpStatus.ERROR);
-        }
+        }*/
         Store store = redisCache.getCacheObject(CacheConstants.STORE_KEY + createDTO.getStoreId());
         if (ObjectUtils.isEmpty(store)) {
             throw new ServiceException("档口不存在!", HttpStatus.ERROR);

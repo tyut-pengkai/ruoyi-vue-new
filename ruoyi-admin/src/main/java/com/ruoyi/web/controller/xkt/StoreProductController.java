@@ -148,9 +148,6 @@ public class StoreProductController extends XktBaseController {
                 BeanUtil.toBean(cateCountVO, StoreProdStatusCateNumDTO.class)), StoreProdStatusCateCountResVO.class));
     }
 
-    /**
-     * 导出档口商品列表
-     */
     @Log(title = "档口商品", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreProduct storeProduct) {
