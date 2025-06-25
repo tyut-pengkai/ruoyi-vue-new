@@ -108,6 +108,7 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['payment:order:add']"
+          v-show="false"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -130,6 +131,7 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['payment:order:remove']"
+          v-show="false"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -147,14 +149,15 @@
 
     <el-table v-loading="loading" :data="orderList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="订单ID" align="center" prop="orderId" />
-      <el-table-column label="订单号" align="center" prop="orderNo" />
-      <el-table-column label="用户ID" align="center" prop="userId" />
-      <el-table-column label="套餐ID" align="center" prop="packageId" />
-      <el-table-column label="套餐名称" align="center" prop="packageName" />
+      <el-table-column label="订单ID" align="center" prop="orderId" width="80" />
+      <el-table-column label="订单号" align="center" prop="orderNo" width="100" show-overflow-tooltip />
+      <el-table-column label="用户" align="center" prop="userName" min-width="100" />
+      <el-table-column label="设备名称" align="center" prop="deviceName" min-width="120" show-overflow-tooltip />
+      <el-table-column label="套餐名称" align="center" prop="packageName" min-width="120" show-overflow-tooltip />
       <el-table-column label="套餐时长" align="center" prop="packageHours" />
-      <el-table-column label="订单金额" align="center" prop="amount" />
-      <el-table-column label="币种" align="center" prop="currency">
+      <el-table-column label="套餐赠送时长" align="center" prop="packageFreeHours" />
+      <el-table-column label="支付金额" align="center" prop="amount" />
+      <el-table-column label="货币类型" align="center" prop="currency">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.payment_currency" :value="scope.row.currency"/>
         </template>
@@ -164,15 +167,30 @@
           <dict-tag :options="dict.type.payment_order_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
-      <el-table-column label="支付渠道" align="center" prop="paymentChannel" />
-      <el-table-column label="第三方交易号" align="center" prop="thirdPartyNo" />
+
       <el-table-column label="支付成功时间" align="center" prop="payTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="支付渠道" align="center" prop="paymentChannel" />
+      <el-table-column label="第三方交易号" align="center" prop="thirdPartyNo" />
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180" fixed="right">
         <template slot-scope="scope">
+          <el-button
+            v-if="scope.row.status == '0'"
+            size="mini"
+            type="text"
+            icon="el-icon-check"
+            @click="handleMockPay(scope.row)"
+          >去支付</el-button>
+          <el-button
+            v-if="scope.row.status == '0'"
+            size="mini"
+            type="text"
+            icon="el-icon-close"
+            @click="handleCancel(scope.row)"
+          >取消订单</el-button>
           <el-button
             size="mini"
             type="text"
@@ -186,6 +204,7 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['payment:order:remove']"
+            v-show="false"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -217,10 +236,13 @@
         <el-form-item label="套餐时长" prop="packageHours">
           <el-input v-model="form.packageHours" placeholder="请输入套餐时长" />
         </el-form-item>
-        <el-form-item label="订单金额" prop="amount">
-          <el-input v-model="form.amount" placeholder="请输入订单金额" />
+        <el-form-item label="套餐赠送时长" prop="packageFreeHours">
+          <el-input v-model="form.packageFreeHours" placeholder="请输入套餐赠送时长" />
         </el-form-item>
-        <el-form-item label="币种(USD=美金, CNY=人民币)" prop="currency">
+        <el-form-item label="支付金额" prop="amount">
+          <el-input v-model="form.amount" placeholder="请输入支付金额" />
+        </el-form-item>
+        <el-form-item label="货币类型" prop="currency">
           <el-radio-group v-model="form.currency">
             <el-radio
               v-for="dict in dict.type.payment_currency"
@@ -268,7 +290,7 @@
 </template>
 
 <script>
-import { listOrder, getOrder, delOrder, addOrder, updateOrder } from "@/api/payment/order"
+import { listOrder, getOrder, delOrder, addOrder, updateOrder, mockPay, cancelOrder } from "@/api/payment/order"
 
 export default {
   name: "Order",
@@ -308,6 +330,8 @@ export default {
         paymentChannel: null,
         thirdPartyNo: null,
         payTime: null,
+        deviceId: null,
+        deviceName: null
       },
       // 表单参数
       form: {},
@@ -323,7 +347,7 @@ export default {
           { required: true, message: "订单金额不能为空", trigger: "blur" }
         ],
         currency: [
-          { required: true, message: "币种(USD=美金, CNY=人民币)不能为空", trigger: "change" }
+          { required: true, message: "币种不能为空", trigger: "change" }
         ],
         status: [
           { required: true, message: "订单状态不能为空", trigger: "change" }
@@ -375,8 +399,8 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1
-      this.getList()
+      this.queryParams.pageNum = 1;
+      this.getList();
     },
     /** 重置按钮操作 */
     resetQuery() {
@@ -404,6 +428,30 @@ export default {
         this.open = true
         this.title = "修改支付订单"
       })
+    },
+    handleMockPay(row) {
+      this.$confirm('是否确认模拟支付订单号为"' + row.orderNo + '"的数据项？', "确认", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(function() {
+          return mockPay(row.orderNo);
+        }).then(() => {
+          this.getList();
+          this.$message.success("模拟支付成功");
+        }).catch(() => {});
+    },
+    handleCancel(row) {
+      this.$confirm('是否确认取消订单号为"' + row.orderNo + '"的数据项？', "确认", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(function() {
+          return cancelOrder(row.orderId);
+        }).then(() => {
+          this.getList();
+          this.$message.success("取消成功");
+        }).catch(() => {});
     },
     /** 提交按钮 */
     submitForm() {

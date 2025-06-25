@@ -10,6 +10,11 @@ import org.springframework.stereotype.Service;
 import com.ruoyi.device.mapper.DeviceUserMapper;
 import com.ruoyi.device.domain.DeviceUser;
 import com.ruoyi.device.service.IDeviceUserService;
+import com.ruoyi.device.mapper.DeviceHourMapper;
+import com.ruoyi.system.service.ISysConfigService;
+import org.springframework.transaction.annotation.Transactional;
+import com.ruoyi.device.domain.DeviceHour;
+import com.ruoyi.device.domain.DeviceInfo;
 
 /**
  * 用户设备关联Service业务层处理
@@ -22,6 +27,12 @@ public class DeviceUserServiceImpl implements IDeviceUserService
 {
     @Autowired
     private DeviceUserMapper deviceUserMapper;
+
+    @Autowired
+    private DeviceHourMapper deviceHourMapper;
+
+    @Autowired
+    private ISysConfigService configService;
 
     @Autowired
     private IAgentDeviceService agentDeviceService;
@@ -101,24 +112,58 @@ public class DeviceUserServiceImpl implements IDeviceUserService
     }
 
     @Override
-    public int bindDeviceToUser(Long userId, Long deviceId) {
-        // 检查该设备是否已被任何用户绑定
-        Integer count = deviceUserMapper.countByDeviceId(deviceId);
-        if (count != null && count > 0) {
-            // 已被绑定
+    @Transactional
+    public int bindDeviceToUser(Long userId, DeviceInfo device) {
+        Long deviceId = device.getDeviceId();
+        // 检查设备是否已被任何用户绑定
+        DeviceUser existingBinding = deviceUserMapper.selectDeviceUserByDeviceId(deviceId);
+        if (existingBinding != null) {
+            // 如果已被当前用户绑定，则返回成功（幂等性）
+            if (existingBinding.getUserId().equals(userId)) {
+                return 1;
+            }
+            // 如果已被其他用户绑定，则返回错误标识
             return -1;
         }
 
-        // 绑定设备到用户
-        int result = deviceUserMapper.insertDeviceUser(userId, deviceId);
-        if (result > 0) {
-            // 绑定默认的智能体
-            AgentDevice agentDevice = new AgentDevice();
-            agentDevice.setAgentId(1001L);
-            agentDevice.setDeviceId(deviceId);
-            agentDeviceService.insertAgentDevice(agentDevice);
-        }
+        // 绑定设备
+        DeviceUser newDeviceUser = new DeviceUser();
+        newDeviceUser.setUserId(userId);
+        newDeviceUser.setDeviceId(deviceId);
+        int result = deviceUserMapper.insertDeviceUser(newDeviceUser);
 
+        if(result > 0) {
+             // 绑定默认的智能体
+             AgentDevice agentDevice = new AgentDevice();
+             agentDevice.setAgentId(1001L);
+             agentDevice.setDeviceId(deviceId);
+             agentDeviceService.insertAgentDevice(agentDevice);
+            
+            // 初始化赠送设备时长,时长从配置参数device.hour.init_free_hours获取. 先判断初始绑定(设备时长表是否有记录),非初始绑定初始化,不赠送
+            // 检查设备时长记录是否已存在
+            DeviceHour deviceHour = deviceHourMapper.selectDeviceHourByDeviceId(deviceId);
+            if (deviceHour == null) {
+                // 如果不存在，则进行初始化
+                String freeHoursStr = configService.selectConfigByKey("device.hour.init_free_hours");
+                int freeHours = 0;
+                try {
+                    if (freeHoursStr != null && !freeHoursStr.isEmpty()){
+                        freeHours = Integer.parseInt(freeHoursStr);
+                    }
+                } catch (NumberFormatException e) {
+                   // log error or handle, here we default to 0
+                }
+
+                DeviceHour newDeviceHour = new DeviceHour();
+                newDeviceHour.setDeviceId(deviceId);
+                newDeviceHour.setDeviceName(device.getDeviceName());
+                newDeviceHour.setAvailFreeHours((long) freeHours);
+                newDeviceHour.setAvailProHours(0L);
+                newDeviceHour.setUsedFreeHours(0L);
+                newDeviceHour.setUsedProHours(0L);
+                deviceHourMapper.insertDeviceHour(newDeviceHour);
+            }
+        }
         return result;
     }
 

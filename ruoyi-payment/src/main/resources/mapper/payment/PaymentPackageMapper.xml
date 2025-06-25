@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="packageId"    column="package_id"    />
         <result property="name"    column="name"    />
         <result property="hours"    column="hours"    />
+        <result property="freeHours"    column="free_hours"    />
         <result property="price"    column="price"    />
         <result property="currency"    column="currency"    />
         <result property="discountLabel"    column="discount_label"    />
@@ -21,7 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectPaymentPackageVo">
-        select package_id, name, hours, price, currency, discount_label, status, create_by, create_time, update_by, update_time, remark, del_flag from payment_package
+        select package_id, name, hours, free_hours, price, currency, discount_label, status, del_flag, create_by, create_time, update_by, update_time, remark from payment_package
     </sql>
 
     <select id="selectPaymentPackageList" parameterType="PaymentPackage" resultMap="PaymentPackageResult">
@@ -46,9 +47,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>
             <if test="hours != null">hours,</if>
+            <if test="freeHours != null">free_hours,</if>
             <if test="price != null">price,</if>
             <if test="currency != null and currency != ''">currency,</if>
-            <if test="discountLabel != null">discount_label,</if>
+            <if test="discountLabel != null and discountLabel != ''">discount_label,</if>
             <if test="status != null and status != ''">status,</if>
             <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
@@ -60,9 +62,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
             <if test="hours != null">#{hours},</if>
+            <if test="freeHours != null">#{freeHours},</if>
             <if test="price != null">#{price},</if>
             <if test="currency != null and currency != ''">#{currency},</if>
-            <if test="discountLabel != null">#{discountLabel},</if>
+            <if test="discountLabel != null and discountLabel != ''">#{discountLabel},</if>
             <if test="status != null and status != ''">#{status},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
@@ -78,9 +81,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null and name != ''">name = #{name},</if>
             <if test="hours != null">hours = #{hours},</if>
+            <if test="freeHours != null">free_hours = #{freeHours},</if>
             <if test="price != null">price = #{price},</if>
             <if test="currency != null and currency != ''">currency = #{currency},</if>
-            <if test="discountLabel != null">discount_label = #{discountLabel},</if>
+            <if test="discountLabel != null and discountLabel != ''">discount_label = #{discountLabel},</if>
             <if test="status != null and status != ''">status = #{status},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>

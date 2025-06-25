@@ -27,6 +27,10 @@ public class PaymentPackage extends BaseEntity
     @Excel(name = "套餐时长")
     private Long hours;
 
+    /** 套餐赠送时长 */
+    @Excel(name = "套餐赠送时长")
+    private Integer freeHours;
+
     /** 价格 */
     @Excel(name = "价格")
     private BigDecimal price;
@@ -74,6 +78,16 @@ public class PaymentPackage extends BaseEntity
     public Long getHours() 
     {
         return hours;
+    }
+
+    public void setFreeHours(Integer freeHours)
+    {
+        this.freeHours = freeHours;
+    }
+
+    public Integer getFreeHours()
+    {
+        return freeHours;
     }
 
     public void setPrice(BigDecimal price) 
@@ -132,6 +146,7 @@ public class PaymentPackage extends BaseEntity
             .append("packageId", getPackageId())
             .append("name", getName())
             .append("hours", getHours())
+            .append("freeHours", getFreeHours())
             .append("price", getPrice())
             .append("currency", getCurrency())
             .append("discountLabel", getDiscountLabel())

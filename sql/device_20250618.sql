@@ -15,6 +15,7 @@ create table device_info (
   ,del_flag         char(1)           default '0'              comment '删除标志（0代表存在 2代表删除）'
   ,create_time 	    TIMESTAMP        DEFAULT CURRENT_TIMESTAMP                                        comment '创建时间'
   ,update_time      TIMESTAMP        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP            comment '更新时间'
+  ,remark           varchar(500)     DEFAULT NULL              COMMENT '备注'
   ,primary key (device_id)
   ,UNIQUE INDEX idx_uni_mac_addr (mac_addr)
   ,UNIQUE INDEX idx_uni_device_code (device_code)

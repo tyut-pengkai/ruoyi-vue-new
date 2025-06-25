@@ -48,6 +48,17 @@ public class DeviceInfoController extends BaseController
     private IAgentDeviceService agentDeviceService;
 
     /**
+     * 查询当前用户拥有的设备信息列表
+     */
+    @GetMapping("/listForCurrentUser")
+    public TableDataInfo listForCurrentUser()
+    {
+        Long userId = getUserId();
+        List<DeviceInfo> list = deviceInfoService.selectAllDeviceInfoByUserId(userId);
+        return getDataTable(list);
+    }
+
+    /**
      * 查询设备信息列表
      */
     @PreAuthorize("@ss.hasPermi('device:info:list')")
@@ -136,7 +147,7 @@ public class DeviceInfoController extends BaseController
         if (device == null) {
             return AjaxResult.error("设备不存在");
         }
-        int result = deviceUserService.bindDeviceToUser(userId, device.getDeviceId());
+        int result = deviceUserService.bindDeviceToUser(userId, device);
         if (result == -1) {
             return AjaxResult.error("该设备已被其他用户绑定");
         }

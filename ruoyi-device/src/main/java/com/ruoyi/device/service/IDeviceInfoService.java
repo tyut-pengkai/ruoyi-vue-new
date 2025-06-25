@@ -77,4 +77,22 @@ public interface IDeviceInfoService
      * 导入设备信息
      */
     String importDevice(List<DeviceInfo> deviceList, boolean updateSupport, String operName);
+
+    /**
+     * 根据用户ID查询所有设备信息列表
+     *
+     * @param userId 用户ID
+     * @return 设备信息列表
+     */
+    public List<DeviceInfo> selectAllDeviceInfoByUserId(Long userId);
+
+    /**
+     * 根据用户ID和条件查询设备信息列表
+     *
+     * @param userId 用户ID
+     * @param deviceInfo 查询条件
+     * @return 设备信息列表
+     */
+    public List<DeviceInfo> selectDeviceInfoListByUserId(Long userId, DeviceInfo deviceInfo);
 }
+

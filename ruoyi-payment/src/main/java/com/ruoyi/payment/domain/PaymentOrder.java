@@ -29,6 +29,10 @@ public class PaymentOrder extends BaseEntity
     @Excel(name = "用户ID")
     private Long userId;
 
+    /** 用户名 */
+    @Excel(name = "用户名")
+    private String userName;
+
     /** 套餐ID */
     @Excel(name = "套餐ID")
     private Long packageId;
@@ -40,6 +44,10 @@ public class PaymentOrder extends BaseEntity
     /** 套餐时长（小时） */
     @Excel(name = "套餐时长", readConverterExp = "小=时")
     private Integer packageHours;
+
+    /** 套餐赠送时长 */
+    @Excel(name = "套餐赠送时长")
+    private Integer packageFreeHours;
 
     /** 支付金额 */
     @Excel(name = "支付金额")
@@ -66,8 +74,20 @@ public class PaymentOrder extends BaseEntity
     @Excel(name = "支付成功时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date payTime;
 
+    /** 设备id */
+    @Excel(name = "设备id")
+    private Long deviceId;
+
+    /** 设备名称 */
+    @Excel(name = "设备名称")
+    private String deviceName;
+
     /** 删除标志（0代表存在 2代表删除） */
     private String delFlag;
+
+    /** 备注 */
+    @Excel(name = "备注")
+    private String remark;
 
     public void setOrderId(Long orderId) 
     {
@@ -99,6 +119,16 @@ public class PaymentOrder extends BaseEntity
         return userId;
     }
 
+    public void setUserName(String userName) 
+    {
+        this.userName = userName;
+    }
+
+    public String getUserName() 
+    {
+        return userName;
+    }
+
     public void setPackageId(Long packageId) 
     {
         this.packageId = packageId;
@@ -127,6 +157,16 @@ public class PaymentOrder extends BaseEntity
     public Integer getPackageHours() 
     {
         return packageHours;
+    }
+
+    public void setPackageFreeHours(Integer packageFreeHours)
+    {
+        this.packageFreeHours = packageFreeHours;
+    }
+
+    public Integer getPackageFreeHours()
+    {
+        return packageFreeHours;
     }
 
     public void setAmount(BigDecimal amount) 
@@ -189,6 +229,22 @@ public class PaymentOrder extends BaseEntity
         return payTime;
     }
 
+    public Long getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(Long deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
     public void setDelFlag(String delFlag) 
     {
         this.delFlag = delFlag;
@@ -199,27 +255,41 @@ public class PaymentOrder extends BaseEntity
         return delFlag;
     }
 
+    public void setRemark(String remark) 
+    {
+        this.remark = remark;
+    }
+
+    public String getRemark() 
+    {
+        return remark;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("orderId", getOrderId())
             .append("orderNo", getOrderNo())
             .append("userId", getUserId())
+            .append("userName", getUserName())
             .append("packageId", getPackageId())
             .append("packageName", getPackageName())
             .append("packageHours", getPackageHours())
+            .append("packageFreeHours", getPackageFreeHours())
             .append("amount", getAmount())
             .append("currency", getCurrency())
             .append("status", getStatus())
             .append("paymentChannel", getPaymentChannel())
             .append("thirdPartyNo", getThirdPartyNo())
             .append("payTime", getPayTime())
+            .append("deviceId", getDeviceId())
+            .append("deviceName", getDeviceName())
+            .append("delFlag", getDelFlag())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())
             .append("updateBy", getUpdateBy())
             .append("updateTime", getUpdateTime())
             .append("remark", getRemark())
-            .append("delFlag", getDelFlag())
             .toString();
     }
 }

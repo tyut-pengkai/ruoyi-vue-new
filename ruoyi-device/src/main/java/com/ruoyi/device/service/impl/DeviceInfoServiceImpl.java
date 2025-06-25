@@ -149,4 +149,14 @@ public class DeviceInfoServiceImpl implements IDeviceInfoService
         }
         return successMsg.toString();
     }
+
+    @Override
+    public List<DeviceInfo> selectAllDeviceInfoByUserId(Long userId) {
+        return deviceInfoMapper.selectAllDeviceInfoByUserId(userId);
+    }
+
+    @Override
+    public List<DeviceInfo> selectDeviceInfoListByUserId(Long userId, DeviceInfo deviceInfo) {
+        return deviceInfoMapper.selectDeviceInfoListByUserId(userId, deviceInfo);
+    }
 }

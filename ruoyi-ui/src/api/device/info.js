@@ -69,3 +69,20 @@ export function bindAgent(data) {
     data: data
   })
 }
+
+// 查询当前用户设备列表
+export function listDeviceForCurrentUser() {
+  return request({
+    url: '/device/info/listForCurrentUser',
+    method: 'get'
+  })
+}
+
+// 导出设备信息
+export function exportInfo(query) {
+  return request({
+    url: '/device/info/export',
+    method: 'post',
+    data: query
+  })
+}

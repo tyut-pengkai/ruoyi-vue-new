@@ -17,6 +17,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.payment.domain.PaymentOrder;
+import com.ruoyi.payment.domain.dto.CreateOrderRequest;
 import com.ruoyi.payment.service.IPaymentOrderService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -46,6 +47,11 @@ public class PaymentOrderController extends BaseController
     public TableDataInfo list(PaymentOrder paymentOrder)
     {
         startPage();
+        // 如果不是管理员，则只查询自己的订单
+        if (!SecurityUtils.isAdmin(getUserId()))
+        {
+            paymentOrder.setUserId(getUserId());
+        }
         List<PaymentOrder> list = paymentOrderService.selectPaymentOrderList(paymentOrder);
         return getDataTable(list);
     }
@@ -107,28 +113,33 @@ public class PaymentOrderController extends BaseController
     }
 
     /**
-     * 用户创建支付订单
+     * 用户创建订单
      */
+    @Log(title = "用户创建订单", businessType = BusinessType.INSERT)
     @PostMapping("/create")
-    public AjaxResult createOrder(@RequestBody Map<String, Long> payload) {
-        Long packageId = payload.get("packageId");
-        if (packageId == null)
-        {
-            return AjaxResult.error("套餐ID不能为空");
-        }
+    public AjaxResult create(@RequestBody CreateOrderRequest request)
+    {
+        return AjaxResult.success(paymentOrderService.createOrder(request));
+    }
 
-        // 获取当前登录用户
-        LoginUser loginUser = SecurityUtils.getLoginUser();
-        if (loginUser == null) {
-            return AjaxResult.error("用户未登录");
-        }
-        Long userId = loginUser.getUserId();
+    /**
+     * 取消支付订单
+     */
+    @Log(title = "取消支付订单", businessType = BusinessType.UPDATE)
+    @PostMapping("/cancel/{orderId}")
+    public AjaxResult cancel(@PathVariable Long orderId)
+    {
+        return toAjax(paymentOrderService.cancelOrder(orderId));
+    }
 
-        try {
-            PaymentOrder order = paymentOrderService.createPaymentOrder(userId, packageId);
-            return AjaxResult.success("订单创建成功", order);
-        } catch (Exception e) {
-            return AjaxResult.error("订单创建失败: " + e.getMessage());
-        }
+    /**
+     * 模拟支付成功回调
+     */
+    @Log(title = "模拟支付", businessType = BusinessType.UPDATE)
+    @PostMapping("/mock-pay/{orderNo}")
+    public AjaxResult mockPay(@PathVariable String orderNo)
+    {
+        paymentOrderService.processPaymentSuccess(orderNo);
+        return AjaxResult.success("模拟支付成功");
     }
 }

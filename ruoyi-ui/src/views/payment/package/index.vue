@@ -110,6 +110,7 @@
       <el-table-column label="套餐ID" align="center" prop="packageId" />
       <el-table-column label="套餐名称" align="center" prop="name" />
       <el-table-column label="套餐时长" align="center" prop="hours" />
+      <el-table-column label="套餐赠送时长" align="center" prop="freeHours" />
       <el-table-column label="价格" align="center" prop="price" />
       <el-table-column label="币种" align="center" prop="currency">
         <template slot-scope="scope">
@@ -158,19 +159,23 @@
           <el-input v-model="form.name" placeholder="请输入套餐名称" />
         </el-form-item>
         <el-form-item label="套餐时长" prop="hours">
-          <el-input v-model="form.hours" placeholder="请输入套餐时长" />
+          <el-input-number v-model="form.hours" placeholder="请输入套餐时长" :min="0"></el-input-number>
+        </el-form-item>
+        <el-form-item label="套餐赠送时长" prop="freeHours">
+          <el-input-number v-model="form.freeHours" placeholder="请输入套餐赠送时长" :min="0"></el-input-number>
         </el-form-item>
         <el-form-item label="价格" prop="price">
-          <el-input v-model="form.price" placeholder="请输入价格" />
+          <el-input-number v-model="form.price" placeholder="请输入价格" :min="0" :precision="2"></el-input-number>
         </el-form-item>
         <el-form-item label="币种" prop="currency">
-          <el-radio-group v-model="form.currency">
-            <el-radio
+          <el-select v-model="form.currency" placeholder="请选择币种">
+            <el-option
               v-for="dict in dict.type.payment_currency"
               :key="dict.value"
-              :label="dict.value"
-            >{{dict.label}}</el-radio>
-          </el-radio-group>
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="折扣标签" prop="discountLabel">
           <el-input v-model="form.discountLabel" placeholder="请输入折扣标签" />
@@ -281,9 +286,10 @@ export default {
       this.form = {
         packageId: null,
         name: null,
-        hours: null,
-        price: null,
-        currency: null,
+        hours: 0,
+        freeHours: 0,
+        price: 0.00,
+        currency: 'USD',
         discountLabel: null,
         status: null,
         createBy: null,

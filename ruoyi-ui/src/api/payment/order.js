@@ -51,3 +51,19 @@ export function delOrder(orderId) {
     method: 'delete'
   })
 }
+
+// 模拟支付
+export function mockPay(orderNo) {
+  return request({
+    url: '/payment/order/mock-pay/' + orderNo,
+    method: 'post'
+  })
+}
+
+// 取消订单
+export function cancelOrder(orderId) {
+  return request({
+    url: '/payment/order/cancel/' + orderId,
+    method: 'post'
+  })
+}

@@ -2,6 +2,7 @@ package com.ruoyi.device.service;
 
 import java.util.List;
 import com.ruoyi.device.domain.DeviceUser;
+import com.ruoyi.device.domain.DeviceInfo;
 
 /**
  * 用户设备关联Service接口
@@ -60,12 +61,16 @@ public interface IDeviceUserService
     public int deleteDeviceUserByDeviceId(Long deviceId);
 
     /**
-     * 绑定设备到用户
+     * 绑定设备到用户同时绑定默认音色(智能体)，并初始化设备时长
+     *
+     * @param userId 用户ID
+     * @param device 设备信息
+     * @return 结果
      */
-    int bindDeviceToUser(Long userId, Long deviceId);
+    int bindDeviceToUser(Long userId, DeviceInfo device);
 
     /**
-     * 解绑设备
+     * 解绑设备同时解绑音色(智能体)
      */
     int unbindDeviceFromUser(Long userId, Long deviceId);
 }

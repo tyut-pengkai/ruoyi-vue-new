@@ -2,6 +2,7 @@ package com.ruoyi.payment.service;
 
 import java.util.List;
 import com.ruoyi.payment.domain.PaymentOrder;
+import com.ruoyi.payment.domain.dto.CreateOrderRequest;
 
 /**
  * 支付订单Service接口
@@ -11,6 +12,13 @@ import com.ruoyi.payment.domain.PaymentOrder;
  */
 public interface IPaymentOrderService 
 {
+    /**
+     * 用户创建订单
+     * @param request
+     * @return
+     */
+    public PaymentOrder createOrder(CreateOrderRequest request);
+
     /**
      * 查询支付订单
      * 
@@ -60,19 +68,16 @@ public interface IPaymentOrderService
     public int deletePaymentOrderByOrderId(Long orderId);
 
     /**
-     * 处理支付成功逻辑
-     *
-     * @param orderNo 订单号
+     * 取消订单
+     * @param orderId 订单ID
      * @return 结果
      */
-    public boolean processPaymentSuccess(String orderNo);
+    public int cancelOrder(Long orderId);
 
     /**
-     * 创建支付订单
-     *
-     * @param userId 用户ID
-     * @param packageId 套餐ID
-     * @return 支付订单
+     * 处理支付成功后的逻辑
+     * @param orderNo
+     * @return
      */
-    public PaymentOrder createPaymentOrder(Long userId, Long packageId);
+    public boolean processPaymentSuccess(String orderNo);
 }

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.device.mapper.DeviceHourMapper">
+    
+    <resultMap type="DeviceHour" id="DeviceHourResult">
+        <result property="deviceId"    column="device_id"    />
+        <result property="deviceName"    column="device_name"    />
+        <result property="availFreeHours"    column="avail_free_hours"    />
+        <result property="availProHours"    column="avail_Pro_hours"    />
+        <result property="usedFreeHours"    column="used_free_hours"    />
+        <result property="usedProHours"    column="used_Pro_hours"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectDeviceHourVo">
+        select device_id, device_name, avail_free_hours, avail_Pro_hours, used_free_hours, used_Pro_hours, remark, create_by, create_time, update_by, update_time from device_hour
+    </sql>
+
+    <select id="selectDeviceHourList" parameterType="DeviceHour" resultMap="DeviceHourResult">
+        <include refid="selectDeviceHourVo"/>
+        <where>  
+            <if test="deviceName != null  and deviceName != ''"> and device_name like concat('%', #{deviceName}, '%')</if>
+            <if test="availFreeHours != null "> and avail_free_hours = #{availFreeHours}</if>
+            <if test="availProHours != null "> and avail_Pro_hours = #{availProHours}</if>
+            <if test="usedFreeHours != null "> and used_free_hours = #{usedFreeHours}</if>
+            <if test="usedProHours != null "> and used_Pro_hours = #{usedProHours}</if>
+        </where>
+    </select>
+    
+    <select id="selectDeviceHourByDeviceId" parameterType="Long" resultMap="DeviceHourResult">
+        <include refid="selectDeviceHourVo"/>
+        where device_id = #{deviceId}
+    </select>
+
+    <insert id="insertDeviceHour" parameterType="DeviceHour">
+        insert into device_hour
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">device_id,</if>
+            <if test="deviceName != null and deviceName != ''">device_name,</if>
+            <if test="availFreeHours != null">avail_free_hours,</if>
+            <if test="availProHours != null">avail_Pro_hours,</if>
+            <if test="usedFreeHours != null">used_free_hours,</if>
+            <if test="usedProHours != null">used_Pro_hours,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="deviceName != null and deviceName != ''">#{deviceName},</if>
+            <if test="availFreeHours != null">#{availFreeHours},</if>
+            <if test="availProHours != null">#{availProHours},</if>
+            <if test="usedFreeHours != null">#{usedFreeHours},</if>
+            <if test="usedProHours != null">#{usedProHours},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDeviceHour" parameterType="DeviceHour">
+        update device_hour
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deviceName != null and deviceName != ''">device_name = #{deviceName},</if>
+            <if test="availFreeHours != null">avail_free_hours = #{availFreeHours},</if>
+            <if test="availProHours != null">avail_Pro_hours = #{availProHours},</if>
+            <if test="usedFreeHours != null">used_free_hours = #{usedFreeHours},</if>
+            <if test="usedProHours != null">used_Pro_hours = #{usedProHours},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where device_id = #{deviceId}
+    </update>
+
+    <delete id="deleteDeviceHourByDeviceId" parameterType="Long">
+        delete from device_hour where device_id = #{deviceId}
+    </delete>
+
+    <delete id="deleteDeviceHourByDeviceIds" parameterType="String">
+        delete from device_hour where device_id in 
+        <foreach item="deviceId" collection="array" open="(" separator="," close=")">
+            #{deviceId}
+        </foreach>
+    </delete>
+</mapper>
