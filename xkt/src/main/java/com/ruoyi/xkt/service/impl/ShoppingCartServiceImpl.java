@@ -62,20 +62,6 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     public Integer create(ShoppingCartDTO shoppingCartDTO) {
         // 判断当前登录用户角色 只有电商卖家才可操作
         LoginUser loginUser = SecurityUtils.getLoginUser();
-
-        // TODO 判断当前登录用户角色，只有电商卖家才可操作，其它角色不允许操作，直接报错
-        // TODO 判断当前登录用户角色，只有电商卖家才可操作，其它角色不允许操作，直接报错
-        // TODO 判断当前登录用户角色，只有电商卖家才可操作，其它角色不允许操作，直接报错
-        // TODO 判断当前登录用户角色，只有电商卖家才可操作，其它角色不允许操作，直接报错
-
-
-        // 判断当前商品是否已添加过进货车
-       /* List<ShoppingCart> existList = this.shopCartMapper.selectList(new LambdaQueryWrapper<ShoppingCart>()
-                .eq(ShoppingCart::getUserId, loginUser.getUserId()).eq(ShoppingCart::getStoreProdId, shoppingCartDTO.getStoreProdId())
-                .eq(ShoppingCart::getDelFlag, Constants.UNDELETED));
-        if (CollectionUtils.isNotEmpty(existList)) {
-            throw new ServiceException("商品已经添加到进货单了，不可重复添加喔!", HttpStatus.ERROR);
-        }*/
         ShoppingCart exist = this.shopCartMapper.selectOne(new LambdaQueryWrapper<ShoppingCart>()
                 .eq(ShoppingCart::getUserId, loginUser.getUserId()).eq(ShoppingCart::getStoreProdId, shoppingCartDTO.getStoreProdId())
                 .eq(ShoppingCart::getDelFlag, Constants.UNDELETED));

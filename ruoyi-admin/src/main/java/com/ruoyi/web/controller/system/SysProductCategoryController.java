@@ -15,6 +15,7 @@ import com.ruoyi.xkt.service.ISysProductCategoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,7 @@ public class SysProductCategoryController extends XktBaseController {
 
     final ISysProductCategoryService prodCateService;
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "新增商品分类", httpMethod = "POST", response = R.class)
     @Log(title = "新增商品分类", businessType = BusinessType.INSERT)
     @PostMapping
@@ -40,6 +42,7 @@ public class SysProductCategoryController extends XktBaseController {
         return R.ok(prodCateService.create(BeanUtil.toBean(prodCateVO, ProdCateDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "修改商品分类", httpMethod = "PUT", response = R.class)
     @Log(title = "修改商品分类", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -47,6 +50,7 @@ public class SysProductCategoryController extends XktBaseController {
         return R.ok(prodCateService.update(BeanUtil.toBean(prodCateVO, ProdCateDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "删除商品分类", httpMethod = "DELETE", response = R.class)
     @Log(title = "删除商品分类", businessType = BusinessType.DELETE)
     @DeleteMapping("/{prodCateId}")
@@ -54,13 +58,14 @@ public class SysProductCategoryController extends XktBaseController {
         return R.ok(prodCateService.delete(prodCateId));
     }
 
-
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "查询商品分类详细", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{prodCateId}")
     public R<ProdCateVO> getInfo(@PathVariable Long prodCateId) {
         return R.ok(BeanUtil.toBean(prodCateService.selectById(prodCateId), ProdCateVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "管理员菜单获取商品分类树", httpMethod = "POST", response = R.class)
     @PostMapping("/tree")
     public R<List<ProdCateListResVO>> tree(@RequestBody ProdCateListVO listVO) {

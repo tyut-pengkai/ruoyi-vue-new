@@ -132,14 +132,11 @@ public class SecurityConfig
                         .antMatchers("/rest/v1/store-home/template/**").permitAll()
                         // 档口推荐
                         .antMatchers("/rest/v1/store-home/recommend/**").permitAll()
-
-
-                        // TODO 临时放开 临时放开
-                        .antMatchers("/rest/v1/pic-search/hot").permitAll()
-                        .antMatchers("/rest/v1/pic-search").permitAll()
+                        // 档口简易返回信息
                         .antMatchers("/rest/v1/stores/simple/**").permitAll()
+                        // 商品状态数量
                         .antMatchers("/rest/v1/prods/status/num/**").permitAll()
-                        .antMatchers("/rest/v1/prods/status/num/**").permitAll()
+                        // PC 商品详情
                         .antMatchers("/rest/v1/prods/pc/detail/**").permitAll()
 
 

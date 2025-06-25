@@ -68,16 +68,6 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
                 ObjectUtils.isEmpty(requestDTO.getPicSize()) || requestDTO.getNum() <= 0) {
             return BeanUtil.copyToList(picSearchAdverts, StoreProdViewDTO.class);
         }
-
-
-
-        // TODO 校验当前登录者角色，若非电商卖家 或 管理员 或 超级管理员，则不可操作
-        // TODO 校验当前登录者角色，若非电商卖家 或 管理员 或 超级管理员，则不可操作
-        // TODO 校验当前登录者角色，若非电商卖家 或 管理员 或 超级管理员，则不可操作
-        // TODO 校验当前登录者角色，若非电商卖家 或 管理员 或 超级管理员，则不可操作
-
-
-
         Assert.notEmpty(requestDTO.getPicKey());
         SysFile sysFile = new SysFile().setFileUrl(requestDTO.getPicKey()).setFileName(requestDTO.getPicName()).setFileSize(requestDTO.getPicSize());
         sysFile.setVersion(0);
@@ -112,6 +102,7 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
 
     /**
      * 图搜热款列表
+     *
      * @return List<TopProductMatchDTO>
      */
     @Override

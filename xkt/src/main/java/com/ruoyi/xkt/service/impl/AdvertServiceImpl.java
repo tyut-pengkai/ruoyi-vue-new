@@ -6,11 +6,9 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
-import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.Advert;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.advert.*;
@@ -54,16 +52,9 @@ public class AdvertServiceImpl implements IAdvertService {
     @Override
     @Transactional
     public Integer create(AdvertCreateDTO createDTO) {
-
-        // TODO 判断当前是否超级管理员在操作
-        // TODO 判断当前是否超级管理员在操作
-        // TODO 判断当前是否超级管理员在操作
-        this.isSuperAdmin();
-
         Advert advert = BeanUtil.toBean(createDTO, Advert.class);
         advert.setBasicSymbol(random10Str());
         advert.setOnlineStatus(AdOnlineStatus.ONLINE.getValue());
-
         // 推广类型为 推广图 或者 图及商品 则新增系统文件
         if ((Objects.equals(createDTO.getDisplayType(), AdDisplayType.PICTURE.getValue()) || Objects.equals(createDTO.getDisplayType(), AdDisplayType.PIC_AND_PROD.getValue()))
                 && ObjectUtils.isNotEmpty(createDTO.getExample())) {
@@ -85,12 +76,6 @@ public class AdvertServiceImpl implements IAdvertService {
     @Override
     @Transactional(readOnly = true)
     public AdvertResDTO getInfo(Long advertId) {
-
-        // TODO 判断当前是否超级管理员在操作
-        // TODO 判断当前是否超级管理员在操作
-        // TODO 判断当前是否超级管理员在操作
-        this.isSuperAdmin();
-
         Advert advert = Optional.ofNullable(this.advertMapper.selectOne(new LambdaQueryWrapper<Advert>()
                         .eq(Advert::getId, advertId).eq(Advert::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广营销不存在!", HttpStatus.ERROR));
@@ -150,12 +135,6 @@ public class AdvertServiceImpl implements IAdvertService {
     @Override
     @Transactional
     public Integer updateAdvert(AdvertUpdateDTO updateDTO) {
-
-        // TODO 判断当前是否超级管理员在操作
-        // TODO 判断当前是否超级管理员在操作
-        // TODO 判断当前是否超级管理员在操作
-        this.isSuperAdmin();
-
         Advert advert = Optional.ofNullable(this.advertMapper.selectOne(new LambdaQueryWrapper<Advert>()
                         .eq(Advert::getId, updateDTO.getAdvertId()).eq(Advert::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广营销不存在!", HttpStatus.ERROR));
@@ -180,12 +159,6 @@ public class AdvertServiceImpl implements IAdvertService {
     public Integer changeAdvertStatus(AdvertChangeStatusDTO changeStatusDTO) {
         // 判断状态是否合法
         AdOnlineStatus.of(changeStatusDTO.getStatus());
-
-        // TODO 判断当前是否超级管理员在操作
-        // TODO 判断当前是否超级管理员在操作
-        // TODO 判断当前是否超级管理员在操作
-        this.isSuperAdmin();
-
         Advert advert = Optional.ofNullable(this.advertMapper.selectOne(new LambdaQueryWrapper<Advert>()
                         .eq(Advert::getId, changeStatusDTO.getAdvertId()).eq(Advert::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广营销不存在!", HttpStatus.ERROR));
@@ -217,7 +190,7 @@ public class AdvertServiceImpl implements IAdvertService {
                             .setTabId(tabId).setTabName(AdTab.of(tabId).getLabel())
                             // tab下所有的推广类型
                             .setTypeList(typeList.stream().map(type -> new AdvertPlatformResDTO.APTypeDTO()
-                                    .setAdvertId(type.getAdvertId()).setTypeId(type.getTypeId()).setTypeName(AdType.of(type.getTypeId()).getLabel())
+                                                    .setAdvertId(type.getAdvertId()).setTypeId(type.getTypeId()).setTypeName(AdType.of(type.getTypeId()).getLabel())
 //                                    .setDemoUrl(AdType.of(type.getTypeId()).getDemoUrl())
                                     )
                                     .collect(Collectors.toList()))));
@@ -244,21 +217,6 @@ public class AdvertServiceImpl implements IAdvertService {
                 .orElseThrow(() -> new ServiceException("示例图不存在!", HttpStatus.ERROR));
         return file.getFileUrl();
     }
-
-    /**
-     * 校验当前是否是超级管理员操作
-     */
-    private void isSuperAdmin() {
-        // 获取当前登录用户
-        LoginUser loginUser = SecurityUtils.getLoginUser();
-        if (ObjectUtils.isEmpty(loginUser)) {
-            throw new ServiceException("当前用户不存在!", HttpStatus.ERROR);
-        }
-        if (!SecurityUtils.isSuperAdmin()) {
-            throw new ServiceException("当前用户不是超级管理员，不可操作!", HttpStatus.ERROR);
-        }
-    }
-
 
     /**
      * 随机生成10位，包含大小写字母、数字的字符串

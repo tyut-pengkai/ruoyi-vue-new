@@ -14,6 +14,7 @@ import com.ruoyi.xkt.service.IQuickFunctionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,7 @@ public class QuickFunctionController extends XktBaseController {
 
     private static final String MENU_TYPE_C = "C";
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,store')")
     @ApiOperation(value = "档口首页 档口或电商卖家选择的快捷功能", httpMethod = "GET", response = R.class)
     @GetMapping("/selected/{roleId}/{bizId}")
     public R<List<StoreQuickFuncVO>> getSelectedList(@PathVariable("roleId") Long roleId, @PathVariable("bizId") Long bizId) {
@@ -44,6 +46,7 @@ public class QuickFunctionController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(checkedList, StoreQuickFuncVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,store')")
     @ApiOperation(value = "档口常用功能 点击 设置", httpMethod = "GET", response = R.class)
     @GetMapping("/menus/{roleId}/{bizId}")
     public R<QuickFuncVO> getMenuList(@PathVariable("roleId") Long roleId, @PathVariable("bizId") Long bizId) {
@@ -57,6 +60,7 @@ public class QuickFunctionController extends XktBaseController {
                 .build());
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,store')")
     @ApiOperation(value = "修改快捷功能", httpMethod = "PUT", response = R.class)
     @Log(title = "修改快捷功能", businessType = BusinessType.UPDATE)
     @PutMapping("/checked")
