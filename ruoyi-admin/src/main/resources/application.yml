@@ -13,14 +13,14 @@ ruoyi:
   # 验证码类型 math 数字计算 char 字符验证  num 纯数字
   captchaType: num
 oss:
-  endPoint: oss-cn-beijing.aliyuncs.com
-  accessKeyId: LTAI5tFXTfY5Rsiwvrg9gUuk
-  accessKeySecret: Ebbj7anXSdbJwfm5zbTfHkJ5QWDbTP
-  bucketName: lyq-private
-  publicBucketName: lyq-public
+  endPoint: oss-cn-hangzhou.aliyuncs.com
+  accessKeyId: LTAI5tCrN19aDVWLLfpKVEZw
+  accessKeySecret: aVddl48X8SoKua7NaI51CL1Am84XNp
+  bucketName: cdbuju
+  publicBucketName: xkt-pub
   https: true
-  regionId: cn-beijing
-  roleArn: acs:ram::1919425406190533:role/sts-role
+  regionId: cn-hangzhou
+  roleArn: acs:ram::1970150216435822:role/oss-upload
   expiredDuration: 3600
   tempDir: E:/temp/
   stsCacheDuration: 1800
@@ -42,10 +42,10 @@ sms:
     templateCode: SMS_318925388
 es:
   #多个用","分割
-  hosts: 49.234.41.39:9222
+  hosts: es-cn-em94bkrrl0005djma.public.elasticsearch.aliyuncs.com:9200
   ssl: false
   username: elastic
-  password: eguMAH-Fg*dPETkgJTkD
+  password: 0tP&3!GZZDMrglBm&kWJyw
   maxConnTotal: 4
   maxConnPerRoute: 2
 # 开发环境配置
@@ -103,13 +103,13 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: 47.100.64.234
+    host: r-bp1qhhpf6g2wcvvt71pd.redis.rds.aliyuncs.com
     # 端口，默认为6379
-    port: 6699
+    port: 6379
     # 数据库索引
     database: 0
     # 密码
-    password: hongtu56@Redis0212
+    password: E5tVB*dSkc38UDP%F1#WjZ
     # 连接超时时间
     timeout: 10s
     lettuce:

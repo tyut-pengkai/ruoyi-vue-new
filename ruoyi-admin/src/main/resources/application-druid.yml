@@ -6,9 +6,9 @@ spring:
         druid:
             # 主库数据源
             master:
-                url: jdbc:mysql://47.100.64.234:3377/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-                username: root
-                password: hongtu56@Mysql0212
+                url: jdbc:mysql://rm-bp17756y86qdc110z5o.mysql.rds.aliyuncs.com:3306/xiekutong?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                username: xkt
+                password: mtd@3XKSoXm671Yc7oZ5G
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
@@ -42,7 +42,7 @@ spring:
             webStatFilter: 
                 enabled: true
             statViewServlet:
-                enabled: true
+                enabled: false
                 # 设置白名单，不填则允许所有访问
                 allow:
                 url-pattern: /druid/*
