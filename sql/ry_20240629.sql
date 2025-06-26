@@ -832,8 +832,6 @@ create table notice (
 -- ----------------------------
 -- 初始化-公告信息表数据
 -- ----------------------------
-insert into sys_notice values('1', '温馨提醒：2018-07-01 若依新版本发布啦', '2', '新版本内容', '0', 'admin', sysdate(), '', null, '管理员');
-insert into sys_notice values('2', '维护通知：2018-07-01 若依系统凌晨维护', '1', '维护内容',   '0', 'admin', sysdate(), '', null, '管理员');
 
 
 -- ----------------------------
@@ -898,73 +896,74 @@ create table gen_table_column (
 
 
 DROP TABLE IF EXISTS `sys_product_category`;
-CREATE TABLE `sys_product_category`(
-    `id`          bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '商品分类ID',
-    `name`        varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '分类名称',
-    `parent_id`   bigint UNSIGNED NULL DEFAULT 0 COMMENT '父菜单ID',
-    `order_num`   int UNSIGNED NULL DEFAULT 0 COMMENT '显示顺序',
-    `status`      char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '菜单状态（0正常 1停用）',
-    `remark`      varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '备注',
-    `version`     bigint UNSIGNED NOT NULL COMMENT '版本号',
-    `del_flag`    char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
-    `create_by`   varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
-    `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
-    `update_by`   varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
-    `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
-    PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+CREATE TABLE `sys_product_category`  (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '商品分类ID',
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '分类名称',
+  `parent_id` bigint UNSIGNED NULL DEFAULT 0 COMMENT '父菜单ID',
+  `order_num` int UNSIGNED NULL DEFAULT 0 COMMENT '显示顺序',
+  `status` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '菜单状态（0正常 1停用）',
+  `icon_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '分类ICON路径',
+  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '备注',
+  `version` bigint UNSIGNED NOT NULL COMMENT '版本号',
+  `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
+  `create_by` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 50 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_product_category
 -- ----------------------------
-INSERT INTO `sys_product_category` VALUES (1, '鞋库通商品分类', 0, 1, '0', '最顶层商品分类', 0, '0', 'admin', '2025-04-15 19:42:19', '', '2025-04-15 19:42:23');
-INSERT INTO `sys_product_category` VALUES (2, '靴子', 1, 1, '0', '', 0, '0', '', '2025-04-15 19:46:49', '', '2025-04-15 19:46:49');
-INSERT INTO `sys_product_category` VALUES (3, '单鞋', 1, 2, '0', '', 0, '0', '', '2025-04-15 19:47:06', '', '2025-04-15 19:47:06');
-INSERT INTO `sys_product_category` VALUES (4, '凉鞋', 1, 3, '0', '', 0, '0', '', '2025-04-15 19:47:23', '', '2025-04-15 19:47:23');
-INSERT INTO `sys_product_category` VALUES (5, '休闲鞋', 1, 4, '0', '', 0, '0', '', '2025-04-15 19:47:33', '', '2025-04-15 19:47:33');
-INSERT INTO `sys_product_category` VALUES (6, '雪地靴', 1, 5, '0', '', 0, '0', '', '2025-04-15 19:47:44', '', '2025-04-15 19:47:44');
-INSERT INTO `sys_product_category` VALUES (7, '帆布鞋', 1, 6, '0', '', 0, '0', '', '2025-04-15 19:48:20', '', '2025-04-15 19:48:20');
-INSERT INTO `sys_product_category` VALUES (8, '拖鞋', 1, 7, '0', '', 0, '0', '', '2025-04-15 19:48:26', '', '2025-04-15 19:48:26');
-INSERT INTO `sys_product_category` VALUES (9, '高帮鞋', 1, 8, '0', '', 0, '0', '', '2025-04-15 19:48:32', '', '2025-04-15 19:48:32');
-INSERT INTO `sys_product_category` VALUES (10, '汉服鞋', 1, 9, '0', '', 0, '0', '', '2025-04-15 19:48:39', '', '2025-04-15 19:48:39');
-INSERT INTO `sys_product_category` VALUES (11, '绣花鞋', 1, 10, '0', '', 0, '0', '', '2025-04-15 19:48:46', '', '2025-04-15 19:48:46');
-INSERT INTO `sys_product_category` VALUES (12, '传统布鞋', 1, 11, '0', '', 0, '0', '', '2025-04-15 19:48:52', '', '2025-04-15 19:48:52');
-INSERT INTO `sys_product_category` VALUES (13, '弹力靴/袜靴', 2, 1, '0', '', 0, '0', '', '2025-04-15 19:51:18', '', '2025-04-15 19:51:18');
-INSERT INTO `sys_product_category` VALUES (14, '马丁靴', 2, 2, '0', '', 0, '0', '', '2025-04-15 19:51:31', '', '2025-04-15 19:51:31');
-INSERT INTO `sys_product_category` VALUES (15, '骑士靴', 2, 3, '0', '', 0, '0', '', '2025-04-15 19:51:44', '', '2025-04-15 19:51:44');
-INSERT INTO `sys_product_category` VALUES (16, '切尔西靴', 2, 4, '0', '', 0, '0', '', '2025-04-15 19:51:51', '', '2025-04-15 19:51:51');
-INSERT INTO `sys_product_category` VALUES (17, '时装靴', 2, 5, '0', '', 0, '0', '', '2025-04-15 19:51:57', '', '2025-04-15 19:51:57');
-INSERT INTO `sys_product_category` VALUES (18, '西部靴', 2, 6, '0', '', 0, '0', '', '2025-04-15 19:52:03', '', '2025-04-15 19:52:03');
-INSERT INTO `sys_product_category` VALUES (19, '烟筒靴', 2, 7, '0', '', 0, '0', '', '2025-04-15 19:52:09', '', '2025-04-15 19:52:09');
-INSERT INTO `sys_product_category` VALUES (20, '勃肯鞋/软木鞋', 3, 1, '0', '', 0, '0', '', '2025-04-15 19:52:36', '', '2025-04-15 19:52:36');
-INSERT INTO `sys_product_category` VALUES (21, '乐福鞋（豆豆鞋）', 3, 2, '0', '', 0, '0', '', '2025-04-15 19:52:56', '', '2025-04-15 19:52:56');
-INSERT INTO `sys_product_category` VALUES (22, '玛丽珍鞋', 3, 3, '0', '', 0, '0', '', '2025-04-15 19:53:07', '', '2025-04-15 19:53:07');
-INSERT INTO `sys_product_category` VALUES (23, '穆勒鞋', 3, 4, '0', '', 0, '0', '', '2025-04-15 19:53:13', '', '2025-04-15 19:53:13');
-INSERT INTO `sys_product_category` VALUES (24, '婚鞋', 3, 5, '0', '', 0, '0', '', '2025-04-15 19:53:21', '', '2025-04-15 19:53:21');
-INSERT INTO `sys_product_category` VALUES (25, '浅口单鞋', 3, 6, '0', '', 0, '0', '', '2025-04-15 19:53:37', '', '2025-04-15 19:53:37');
-INSERT INTO `sys_product_category` VALUES (26, '深口单鞋', 3, 7, '0', '', 0, '0', '', '2025-04-15 19:53:44', '', '2025-04-15 19:53:44');
-INSERT INTO `sys_product_category` VALUES (27, '时尚芭蕾鞋', 3, 8, '0', '', 0, '0', '', '2025-04-15 19:53:51', '', '2025-04-15 19:53:51');
-INSERT INTO `sys_product_category` VALUES (28, '牛津鞋/布洛克鞋/德比鞋', 3, 9, '0', '', 0, '0', '', '2025-04-15 19:54:07', '', '2025-04-15 19:54:07');
-INSERT INTO `sys_product_category` VALUES (29, '松糕（摇摇）鞋', 3, 10, '0', '', 0, '0', '', '2025-04-15 19:54:20', '', '2025-04-15 19:54:20');
-INSERT INTO `sys_product_category` VALUES (30, '渔夫鞋', 3, 11, '0', '', 0, '0', '', '2025-04-15 19:54:26', '', '2025-04-15 19:54:26');
-INSERT INTO `sys_product_category` VALUES (31, '洞洞鞋', 4, 1, '0', '', 0, '0', '', '2025-04-15 19:54:48', '', '2025-04-15 19:54:48');
-INSERT INTO `sys_product_category` VALUES (32, '罗马凉鞋', 4, 2, '0', '', 0, '0', '', '2025-04-15 19:54:55', '', '2025-04-15 19:54:55');
-INSERT INTO `sys_product_category` VALUES (33, '沙滩鞋', 4, 3, '0', '', 0, '0', '', '2025-04-15 19:55:00', '', '2025-04-15 19:55:00');
-INSERT INTO `sys_product_category` VALUES (34, '时装凉鞋', 4, 4, '0', '', 0, '0', '', '2025-04-15 19:55:06', '', '2025-04-15 19:55:06');
-INSERT INTO `sys_product_category` VALUES (35, '休闲凉鞋', 4, 5, '0', '', 0, '0', '', '2025-04-15 19:55:13', '', '2025-04-15 19:55:13');
-INSERT INTO `sys_product_category` VALUES (36, '一字带凉鞋', 4, 6, '0', '', 0, '0', '', '2025-04-15 19:55:19', '', '2025-04-15 19:55:19');
-INSERT INTO `sys_product_category` VALUES (37, '德训鞋', 5, 1, '0', '', 0, '0', '', '2025-04-15 19:55:37', '', '2025-04-15 19:55:37');
-INSERT INTO `sys_product_category` VALUES (38, '工装鞋', 5, 2, '0', '', 0, '0', '', '2025-04-15 19:55:43', '', '2025-04-15 19:55:43');
-INSERT INTO `sys_product_category` VALUES (39, '健步鞋', 5, 3, '0', '', 0, '0', '', '2025-04-15 19:55:50', '', '2025-04-15 19:55:50');
-INSERT INTO `sys_product_category` VALUES (40, '老爹鞋', 5, 4, '0', '', 0, '0', '', '2025-04-15 19:55:56', '', '2025-04-15 19:55:56');
-INSERT INTO `sys_product_category` VALUES (41, '棉鞋', 5, 5, '0', '', 0, '0', '', '2025-04-15 19:56:01', '', '2025-04-15 19:56:01');
-INSERT INTO `sys_product_category` VALUES (42, '时尚休闲鞋', 5, 6, '0', '', 0, '0', '', '2025-04-15 19:56:07', '', '2025-04-15 19:56:07');
-INSERT INTO `sys_product_category` VALUES (43, '网面鞋', 5, 7, '0', '', 0, '0', '', '2025-04-15 19:56:13', '', '2025-04-15 19:56:13');
-INSERT INTO `sys_product_category` VALUES (44, '休闲板鞋', 5, 8, '0', '', 0, '0', '', '2025-04-15 19:56:19', '', '2025-04-15 19:56:19');
-INSERT INTO `sys_product_category` VALUES (45, '包头拖', 8, 1, '0', '', 0, '0', '', '2025-04-15 19:56:44', '', '2025-04-15 19:56:44');
-INSERT INTO `sys_product_category` VALUES (46, '毛毛鞋', 8, 2, '0', '', 0, '0', '', '2025-04-15 19:56:51', '', '2025-04-15 19:56:51');
-INSERT INTO `sys_product_category` VALUES (47, '人字拖', 8, 3, '0', '', 0, '0', '', '2025-04-15 19:56:58', '', '2025-04-15 19:56:58');
-INSERT INTO `sys_product_category` VALUES (48, '一字拖', 8, 4, '0', '', 0, '0', '', '2025-04-15 19:57:04', '', '2025-04-15 19:57:04');
-INSERT INTO `sys_product_category` VALUES (49, '其他拖鞋', 8, 5, '0', '', 0, '0', '', '2025-04-15 19:57:12', '', '2025-04-15 19:57:12');
+INSERT INTO `sys_product_category` VALUES (1, '鞋库通商品分类', 0, 3, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '最顶层商品分类', 2, '0', 'admin', '2025-04-15 19:42:19', '', '2025-04-15 19:42:23');
+INSERT INTO `sys_product_category` VALUES (2, '靴子', 1, 2, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 2, '0', '', '2025-04-15 19:46:49', '', '2025-04-15 19:46:49');
+INSERT INTO `sys_product_category` VALUES (3, '单鞋', 1, 1, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 2, '0', '', '2025-04-15 19:47:06', '', '2025-04-15 19:47:06');
+INSERT INTO `sys_product_category` VALUES (4, '凉鞋', 1, 3, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 2, '0', '', '2025-04-15 19:47:23', '', '2025-04-15 19:47:23');
+INSERT INTO `sys_product_category` VALUES (5, '休闲鞋', 1, 4, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 2, '0', '', '2025-04-15 19:47:33', '', '2025-04-15 19:47:33');
+INSERT INTO `sys_product_category` VALUES (6, '雪地靴', 1, 11, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 2, '0', '', '2025-04-15 19:47:44', '', '2025-04-15 19:47:44');
+INSERT INTO `sys_product_category` VALUES (7, '帆布鞋', 1, 11, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 2, '0', '', '2025-04-15 19:48:20', '', '2025-04-15 19:48:20');
+INSERT INTO `sys_product_category` VALUES (8, '拖鞋', 1, 5, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 2, '0', '', '2025-04-15 19:48:26', '', '2025-04-15 19:48:26');
+INSERT INTO `sys_product_category` VALUES (9, '高帮鞋', 1, 11, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 2, '0', '', '2025-04-15 19:48:32', '', '2025-04-15 19:48:32');
+INSERT INTO `sys_product_category` VALUES (10, '汉服鞋', 1, 11, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 2, '0', '', '2025-04-15 19:48:39', '', '2025-04-15 19:48:39');
+INSERT INTO `sys_product_category` VALUES (11, '绣花鞋', 1, 11, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 2, '0', '', '2025-04-15 19:48:46', '', '2025-04-15 19:48:46');
+INSERT INTO `sys_product_category` VALUES (12, '传统布鞋', 1, 11, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 2, '0', '', '2025-04-15 19:48:52', '', '2025-04-15 19:48:52');
+INSERT INTO `sys_product_category` VALUES (13, '弹力靴/袜靴', 2, 1, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:51:18', '', '2025-04-15 19:51:18');
+INSERT INTO `sys_product_category` VALUES (14, '马丁靴', 2, 2, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:51:31', '', '2025-04-15 19:51:31');
+INSERT INTO `sys_product_category` VALUES (15, '骑士靴', 2, 3, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:51:44', '', '2025-04-15 19:51:44');
+INSERT INTO `sys_product_category` VALUES (16, '切尔西靴', 2, 4, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:51:51', '', '2025-04-15 19:51:51');
+INSERT INTO `sys_product_category` VALUES (17, '时装靴', 2, 5, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:51:57', '', '2025-04-15 19:51:57');
+INSERT INTO `sys_product_category` VALUES (18, '西部靴', 2, 6, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:52:03', '', '2025-04-15 19:52:03');
+INSERT INTO `sys_product_category` VALUES (19, '烟筒靴', 2, 7, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:52:09', '', '2025-04-15 19:52:09');
+INSERT INTO `sys_product_category` VALUES (20, '勃肯鞋/软木鞋', 3, 1, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:52:36', '', '2025-04-15 19:52:36');
+INSERT INTO `sys_product_category` VALUES (21, '乐福鞋（豆豆鞋）', 3, 2, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:52:56', '', '2025-04-15 19:52:56');
+INSERT INTO `sys_product_category` VALUES (22, '玛丽珍鞋', 3, 3, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:53:07', '', '2025-04-15 19:53:07');
+INSERT INTO `sys_product_category` VALUES (23, '穆勒鞋', 3, 4, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:53:13', '', '2025-04-15 19:53:13');
+INSERT INTO `sys_product_category` VALUES (24, '婚鞋', 3, 5, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:53:21', '', '2025-04-15 19:53:21');
+INSERT INTO `sys_product_category` VALUES (25, '浅口单鞋', 3, 6, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:53:37', '', '2025-04-15 19:53:37');
+INSERT INTO `sys_product_category` VALUES (26, '深口单鞋', 3, 7, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:53:44', '', '2025-04-15 19:53:44');
+INSERT INTO `sys_product_category` VALUES (27, '时尚芭蕾鞋', 3, 8, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:53:51', '', '2025-04-15 19:53:51');
+INSERT INTO `sys_product_category` VALUES (28, '牛津鞋/布洛克鞋/德比鞋', 3, 9, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:54:07', '', '2025-04-15 19:54:07');
+INSERT INTO `sys_product_category` VALUES (29, '松糕（摇摇）鞋', 3, 10, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:54:20', '', '2025-04-15 19:54:20');
+INSERT INTO `sys_product_category` VALUES (30, '渔夫鞋', 3, 11, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:54:26', '', '2025-04-15 19:54:26');
+INSERT INTO `sys_product_category` VALUES (31, '洞洞鞋', 4, 1, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:54:48', '', '2025-04-15 19:54:48');
+INSERT INTO `sys_product_category` VALUES (32, '罗马凉鞋', 4, 2, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:54:55', '', '2025-04-15 19:54:55');
+INSERT INTO `sys_product_category` VALUES (33, '沙滩鞋', 4, 3, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:55:00', '', '2025-04-15 19:55:00');
+INSERT INTO `sys_product_category` VALUES (34, '时装凉鞋', 4, 4, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:55:06', '', '2025-04-15 19:55:06');
+INSERT INTO `sys_product_category` VALUES (35, '休闲凉鞋', 4, 5, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:55:13', '', '2025-04-15 19:55:13');
+INSERT INTO `sys_product_category` VALUES (36, '一字带凉鞋', 4, 6, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:55:19', '', '2025-04-15 19:55:19');
+INSERT INTO `sys_product_category` VALUES (37, '德训鞋', 5, 1, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:55:37', '', '2025-04-15 19:55:37');
+INSERT INTO `sys_product_category` VALUES (38, '工装鞋', 5, 2, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:55:43', '', '2025-04-15 19:55:43');
+INSERT INTO `sys_product_category` VALUES (39, '健步鞋', 5, 3, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:55:50', '', '2025-04-15 19:55:50');
+INSERT INTO `sys_product_category` VALUES (40, '老爹鞋', 5, 4, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:55:56', '', '2025-04-15 19:55:56');
+INSERT INTO `sys_product_category` VALUES (41, '棉鞋', 5, 5, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:56:01', '', '2025-04-15 19:56:01');
+INSERT INTO `sys_product_category` VALUES (42, '时尚休闲鞋', 5, 6, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:56:07', '', '2025-04-15 19:56:07');
+INSERT INTO `sys_product_category` VALUES (43, '网面鞋', 5, 7, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:56:13', '', '2025-04-15 19:56:13');
+INSERT INTO `sys_product_category` VALUES (44, '休闲板鞋', 5, 8, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:56:19', '', '2025-04-15 19:56:19');
+INSERT INTO `sys_product_category` VALUES (45, '包头拖', 8, 1, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:56:44', '', '2025-04-15 19:56:44');
+INSERT INTO `sys_product_category` VALUES (46, '毛毛鞋', 8, 2, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:56:51', '', '2025-04-15 19:56:51');
+INSERT INTO `sys_product_category` VALUES (47, '人字拖', 8, 3, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:56:58', '', '2025-04-15 19:56:58');
+INSERT INTO `sys_product_category` VALUES (48, '一字拖', 8, 4, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:57:04', '', '2025-04-15 19:57:04');
+INSERT INTO `sys_product_category` VALUES (49, '其他拖鞋', 8, 5, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:57:12', '', '2025-04-15 19:57:12');
 
 SET FOREIGN_KEY_CHECKS = 1;
