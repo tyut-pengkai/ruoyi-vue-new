@@ -1,11 +1,10 @@
-package com.ruoyi.web.controller.xkt.vo.storeMember;
+package com.ruoyi.xkt.dto.storeMember;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -16,15 +15,12 @@ import java.math.BigDecimal;
 @ApiModel("档口购买会员")
 @Data
 @Accessors(chain = true)
-public class StoreMemberCreateVO {
+public class StoreMemberCreateDTO {
 
-    @NotNull(message = "档口ID不能为空!")
-    @ApiModelProperty(value = "档口ID", required = true)
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @NotNull(message = "支付金额不能为空!")
-    @ApiModelProperty(value = "支付金额", required = true)
+    @ApiModelProperty(value = "支付金额")
     private BigDecimal payPrice;
-    @NotNull(message = "交易密码不能为空!")
     @ApiModelProperty(value = "交易密码")
     private String transactionPassword;
 

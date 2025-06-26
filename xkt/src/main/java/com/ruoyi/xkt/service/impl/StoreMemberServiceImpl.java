@@ -4,8 +4,14 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.StoreMember;
+import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
+import com.ruoyi.xkt.enums.NoticeOwnerType;
+import com.ruoyi.xkt.enums.NoticeType;
 import com.ruoyi.xkt.enums.StoreMemberLevel;
+import com.ruoyi.xkt.enums.UserNoticeType;
 import com.ruoyi.xkt.mapper.StoreMemberMapper;
+import com.ruoyi.xkt.service.IAssetService;
+import com.ruoyi.xkt.service.INoticeService;
 import com.ruoyi.xkt.service.IStoreMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,19 +32,22 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
 
     final StoreMemberMapper storeMemberMapper;
     final RedisCache redisCache;
+    final IAssetService assetService;
+    final INoticeService noticeService;
 
     /**
      * 档口购买会员
      *
-     * @param storeId 档口ID
+     * @param createDTO 新增入参
      * @return Integer
      */
     @Override
     @Transactional
-    public Integer create(Long storeId) {
-        Optional.ofNullable(storeId).orElseThrow(() -> new RuntimeException("档口ID不能为空"));
+    public Integer create(StoreMemberCreateDTO createDTO) {
+        Optional.ofNullable(createDTO.getStoreId()).orElseThrow(() -> new RuntimeException("档口ID不能为空!"));
+        Optional.ofNullable(createDTO.getPayPrice()).orElseThrow(() -> new RuntimeException("购买金额不能为空!"));
         StoreMember storeMember = new StoreMember();
-        storeMember.setStoreId(storeId);
+        storeMember.setStoreId(createDTO.getStoreId());
         // 最低等级会员：实力质造
         storeMember.setLevel(StoreMemberLevel.STRENGTH_CONSTRUCT.getValue());
         storeMember.setStartTime(java.sql.Date.valueOf(LocalDate.now()));
@@ -47,7 +56,12 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
         storeMember.setCreateBy(SecurityUtils.getUsername());
         int count = this.storeMemberMapper.insert(storeMember);
         // 将档口会员信息添加到 redis 中
-        redisCache.setCacheObject(CacheConstants.STORE_MEMBER + storeId, StoreMemberLevel.STRENGTH_CONSTRUCT.getValue());
+        redisCache.setCacheObject(CacheConstants.STORE_MEMBER + createDTO.getStoreId(), StoreMemberLevel.STRENGTH_CONSTRUCT.getValue());
+        // 新增订购成功的消息通知
+        this.noticeService.createSingleNotice(SecurityUtils.getUserId(), "购买会员成功!", NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
+                createDTO.getStoreId(), UserNoticeType.SYSTEM_MSG.getValue(), "恭喜您！购买:实力质造 会员成功!");
+        // 扣除推广费
+        assetService.payAdvertFee(createDTO.getStoreId(), createDTO.getPayPrice(), createDTO.getTransactionPassword());
         return count;
     }
 

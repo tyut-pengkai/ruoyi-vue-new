@@ -106,7 +106,7 @@ public class AdvertRoundController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "退订", httpMethod = "POST", response = R.class)
+    @ApiOperation(value = "退订", httpMethod = "PUT", response = R.class)
     @Log(title = "退订", businessType = BusinessType.UPDATE)
     @PutMapping("/unsubscribe/{storeId}/{advertRoundId}")
     public R<Integer> unsubscribe(@PathVariable("storeId") Long storeId, @PathVariable("advertRoundId") Long advertRoundId) {

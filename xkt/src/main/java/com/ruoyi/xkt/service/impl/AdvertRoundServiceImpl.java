@@ -584,9 +584,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Transactional
     public Integer create(AdRoundStoreCreateDTO createDTO) {
         // 判断截止时间是否超时，并且只会处理马上播放的这一轮。比如 5.1-5.3，当前为4.30，处理这一轮；当前为5.2，处理这一轮；当前为5.3（最后一天），处理下一轮。
-        /*if (DateUtils.getTime().compareTo(this.getDeadline(createDTO.getSymbol())) > 0) {
+        if (DateUtils.getTime().compareTo(this.getDeadline(createDTO.getSymbol())) > 0) {
             throw new ServiceException("竞价失败，已过系统截止时间!", HttpStatus.ERROR);
-        }*/
+        }
         Store store = redisCache.getCacheObject(CacheConstants.STORE_KEY + createDTO.getStoreId());
         if (ObjectUtils.isEmpty(store)) {
             throw new ServiceException("档口不存在!", HttpStatus.ERROR);
@@ -687,8 +687,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         List<String> idList = list.stream().map(AdvertRoundStorePageResDTO::getProdIdStr)
                 .filter(StringUtils::isNotBlank).flatMap(str -> StrUtil.split(str, ",").stream())
                 .distinct().collect(Collectors.toList());
-        List<StoreProduct> storeProdList = this.storeProdMapper.selectByIds(idList);
-        Map<String, StoreProduct> storeProdMap = storeProdList.stream().collect(Collectors.toMap(x -> x.getId().toString(), x -> x));
+        Map<String, StoreProduct> storeProdMap = CollectionUtils.isEmpty(idList) ? new HashMap<>()
+                : this.storeProdMapper.selectByIds(idList).stream().collect(Collectors.toMap(x -> x.getId().toString(), x -> x));
         list.forEach(item -> {
             final List<String> prodArtNumList = StringUtils.isEmpty(item.getProdIdStr()) ? new ArrayList<>() : StrUtil.split(item.getProdIdStr(), ",").stream()
                     .map(storeProdMap::get).filter(Objects::nonNull).map(StoreProduct::getProdArtNum).collect(Collectors.toList());
@@ -889,13 +889,14 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         advertRound.setProdIdStr(picDTO.getProdIdStr());
         // 修改推广图
         if (ObjectUtils.isNotEmpty(picDTO.getFile())) {
-            SysFile file = BeanUtil.toBean(picDTO, SysFile.class);
+            SysFile file = BeanUtil.toBean(picDTO.getFile(), SysFile.class);
             this.fileMapper.insert(file);
             advertRound.setPicId(file.getId())
                     // 设置推广图审核状态 为待审核 因为有可能是 审核驳回后再次提交图片
                     .setPicSetType(AdPicSetType.SET.getValue())
                     // 设置推广图状态为 待审核，有可能是审核驳回后再次提交图片
-                    .setPicAuditStatus(AdPicAuditStatus.UN_AUDIT.getValue());
+                    .setPicAuditStatus(AdPicAuditStatus.UN_AUDIT.getValue())
+                    .setUpdateTime(new Date());
         }
         return this.advertRoundMapper.updateById(advertRound);
     }

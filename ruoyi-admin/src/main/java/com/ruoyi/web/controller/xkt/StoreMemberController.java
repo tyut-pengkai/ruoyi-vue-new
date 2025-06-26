@@ -1,10 +1,12 @@
 package com.ruoyi.web.controller.xkt;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.web.controller.xkt.vo.storeMember.StoreMemberCreateVO;
+import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
 import com.ruoyi.xkt.service.IStoreMemberService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +35,7 @@ public class StoreMemberController extends XktBaseController {
     @Log(title = "", businessType = BusinessType.INSERT)
     @PostMapping
     public R<Integer> create(@Validated @RequestBody StoreMemberCreateVO createVO) {
-        return R.ok(storeMemberService.create(createVO.getStoreId()));
+        return R.ok(storeMemberService.create(BeanUtil.toBean(createVO, StoreMemberCreateDTO.class)));
     }
 
 

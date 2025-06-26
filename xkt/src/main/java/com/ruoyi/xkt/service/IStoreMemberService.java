@@ -1,5 +1,7 @@
 package com.ruoyi.xkt.service;
 
+import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
+
 /**
  * 推广营销Service接口
  *
@@ -11,8 +13,8 @@ public interface IStoreMemberService {
     /**
      * 档口购买会员
      *
-     * @param storeId 档口ID
+     * @param createDTO 新增入参
      * @return Integer
      */
-    Integer create(Long storeId);
+    Integer create(StoreMemberCreateDTO createDTO);
 }
